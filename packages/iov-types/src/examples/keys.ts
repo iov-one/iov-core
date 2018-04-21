@@ -13,3 +13,6 @@ export const publicKeyBuffer: PublicKeyBuffer = Buffer.from(
 );
 
 export const address: Address = "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2";
+
+export const mnemonic: Mnemonic =
+  "lake famous pass outer smoke horse suspect obey subject step spirit bless evoke amazing seat";

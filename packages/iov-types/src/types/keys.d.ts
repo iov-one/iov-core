@@ -5,3 +5,5 @@ type PublicKeyBuffer = Uint8Array;
 type PublicKeyString = string;
 
 type Address = string;
+
+type Mnemonic = string;
