@@ -16,3 +16,6 @@ export const address: Address = "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2";
 
 export const mnemonic: Mnemonic =
   "lake famous pass outer smoke horse suspect obey subject step spirit bless evoke amazing seat";
+
+export const seedString: SeedString = "000102030405060708090a0b0c0d0e0f";
+export const seedBuffer: SeedBuffer = Buffer.from(seedString);
