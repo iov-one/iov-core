@@ -9,6 +9,7 @@
     "url": "https://github.com/iov-one/web4/tree/master/packages/iov-types"
   },
   "scripts": {
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
