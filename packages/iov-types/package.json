@@ -9,11 +9,12 @@
     "url": "https://github.com/iov-one/web4/tree/master/packages/iov-types"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "yarn format && yarn lint && yarn transpile",
     "format": "prettier --write src/**/*.ts",
     "lint": "tslint --project .",
     "lint-fix": "yarn lint --fix",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "transpile": "tsc"
   },
   "devDependencies": {
     "@types/node": "^9.6.6",
