@@ -14,7 +14,11 @@
     "lint": "tslint --project .",
     "lint-fix": "yarn lint --fix",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "transpile": "tsc"
+    "transpile": "tsc",
+    "pbts": "node ../../node_modules/protobufjs/cli/bin/pbts",
+    "pbjs": "node ../../node_modules/protobufjs/cli/bin/pbjs",
+    "findProto": "find $GOPATH/src/github.com/confio/weave/crypto -name '*.proto' -not -path '*/vendor/*'",
+    "packProto": "yarn pbjs -t static-module -w commonjs -o src/types/proto.js `yarn -s findProto` && yarn pbts -o src/types/proto.d.ts src/types/proto.js"
   },
   "devDependencies": {
     "@types/node": "^9.6.6",
@@ -23,5 +27,8 @@
     "tslint-config-prettier": "^1.12.0",
     "tslint-immutable": "^4.5.4",
     "typescript": "^2.8.3"
+  },
+  "dependencies": {
+    "protobufjs": "^6.8.6"
   }
 }
