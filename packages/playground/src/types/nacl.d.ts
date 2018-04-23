@@ -14,6 +14,19 @@ export type Message = Uint8Array;
 export type Signature = Uint8Array;
 export type MessageWithSignature = Uint8Array;
 
+// types for secrets
+export type BoxSecretKey = Uint8Array;
+export type BoxPublicKey = Uint8Array;
+export interface BoxKeyPair {
+  signPk: BoxPublicKey;
+  signSk: BoxSecretKey;
+}
+export type Nonce = Uint8Array;
+export type CipherText = Uint8Array;
+export interface BoxSharedSecret {
+  boxK: Uint8Array;
+}
+
 // Nacl functions taken from js-nacl api spec
 export interface Nacl {
   // strings vs. binary
@@ -27,8 +40,6 @@ export interface Nacl {
   // hash
   crypto_hash: (raw: Uint8Array) => Uint8Array;
   crypto_hash_sha256: (raw: Uint8Array) => Uint8Array;
-
-  // TODO: crypto_box, crypto_secretbox, crypto_stream
 
   // crypto_sign
   crypto_sign_keypair: () => SignKeyPair;
@@ -44,7 +55,53 @@ export interface Nacl {
     pk: SignerPublicKey
   ) => boolean;
 
+  // crypto_box
+  crypto_box_keypair: () => BoxKeyPair;
+  crypto_box_random_nonce: () => Nonce;
+  crypto_box: (
+    msg: Message,
+    nonce: Nonce,
+    rcpt: BoxPublicKey,
+    sender: BoxSecretKey
+  ) => CipherText;
+  crypto_box_open: (
+    cipher: CipherText,
+    nonce: Nonce,
+    sender: BoxPublicKey,
+    rcpt: BoxSecretKey
+  ) => Message;
+  crypto_box_precompute: (
+    sender: BoxPublicKey,
+    rcpt: BoxSecretKey
+  ) => BoxSharedSecret;
+  crypto_box_precomputed: (
+    msg: Message,
+    nonce: Nonce,
+    shared: BoxSharedSecret
+  ) => CipherText;
+  crypto_box_open_precomputed: (
+    cipher: CipherText,
+    nonce: Nonce,
+    shared: BoxSharedSecret
+  ) => Message;
+
+  // crypto_secretbox
+  crypto_secretbox_random_nonce: () => Nonce;
+  crypto_secretbox: (
+    msg: Message,
+    nonce: Nonce,
+    key: BoxSecretKey
+  ) => CipherText;
+  crypto_secretbox_open: (
+    cipher: CipherText,
+    nonce: Nonce,
+    key: BoxSecretKey
+  ) => Message;
+
   // derived keys
   crypto_sign_seed_keypair: (seed: Uint8Array) => SignKeyPair;
-  // TODO: derived box keypairs
+  crypto_box_seed_keypair: (seed: Uint8Array) => BoxKeyPair;
+  crypto_box_seed_keypair_from_raw_sk: (seed: Uint8Array) => BoxKeyPair;
+
+  // TODO: crypto_stream, crypto_auth, crypto_onetimeauth
 }
