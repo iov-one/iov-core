@@ -29,6 +29,7 @@
     "typescript": "^2.8.3"
   },
   "dependencies": {
+    "js-nacl": "^1.2.2",
     "protobufjs": "^6.8.6"
   }
 }
