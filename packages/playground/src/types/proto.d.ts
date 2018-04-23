@@ -2,283 +2,318 @@ import * as $protobuf from "protobufjs";
 
 /** Namespace crypto. */
 export namespace crypto {
+  /** Properties of a PublicKey. */
+  interface IPublicKey {
+    /** PublicKey ed25519 */
+    ed25519?: Uint8Array | null;
+  }
 
-    /** Properties of a PublicKey. */
-    interface IPublicKey {
+  /** Represents a PublicKey. */
+  class PublicKey implements IPublicKey {
+    /**
+     * Constructs a new PublicKey.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: crypto.IPublicKey);
 
-        /** PublicKey ed25519 */
-        ed25519?: (Uint8Array|null);
-    }
+    /** PublicKey ed25519. */
+    public ed25519: Uint8Array;
 
-    /** Represents a PublicKey. */
-    class PublicKey implements IPublicKey {
+    /** PublicKey pub. */
+    public pub?: "ed25519";
 
-        /**
-         * Constructs a new PublicKey.
-         * @param [properties] Properties to set
-         */
-        constructor(properties?: crypto.IPublicKey);
+    /**
+     * Creates a new PublicKey instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns PublicKey instance
+     */
+    public static create(properties?: crypto.IPublicKey): crypto.PublicKey;
 
-        /** PublicKey ed25519. */
-        public ed25519: Uint8Array;
+    /**
+     * Encodes the specified PublicKey message. Does not implicitly {@link crypto.PublicKey.verify|verify} messages.
+     * @param message PublicKey message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: crypto.IPublicKey,
+      writer?: $protobuf.Writer
+    ): $protobuf.Writer;
 
-        /** PublicKey pub. */
-        public pub?: "ed25519";
+    /**
+     * Encodes the specified PublicKey message, length delimited. Does not implicitly {@link crypto.PublicKey.verify|verify} messages.
+     * @param message PublicKey message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: crypto.IPublicKey,
+      writer?: $protobuf.Writer
+    ): $protobuf.Writer;
 
-        /**
-         * Creates a new PublicKey instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns PublicKey instance
-         */
-        public static create(properties?: crypto.IPublicKey): crypto.PublicKey;
+    /**
+     * Decodes a PublicKey message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns PublicKey
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number
+    ): crypto.PublicKey;
 
-        /**
-         * Encodes the specified PublicKey message. Does not implicitly {@link crypto.PublicKey.verify|verify} messages.
-         * @param message PublicKey message or plain object to encode
-         * @param [writer] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(message: crypto.IPublicKey, writer?: $protobuf.Writer): $protobuf.Writer;
+    /**
+     * Decodes a PublicKey message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns PublicKey
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(
+      reader: $protobuf.Reader | Uint8Array
+    ): crypto.PublicKey;
 
-        /**
-         * Encodes the specified PublicKey message, length delimited. Does not implicitly {@link crypto.PublicKey.verify|verify} messages.
-         * @param message PublicKey message or plain object to encode
-         * @param [writer] Writer to encode to
-         * @returns Writer
-         */
-        public static encodeDelimited(message: crypto.IPublicKey, writer?: $protobuf.Writer): $protobuf.Writer;
+    /**
+     * Verifies a PublicKey message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
 
-        /**
-         * Decodes a PublicKey message from the specified reader or buffer.
-         * @param reader Reader or buffer to decode from
-         * @param [length] Message length if known beforehand
-         * @returns PublicKey
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): crypto.PublicKey;
+    /**
+     * Creates a PublicKey message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns PublicKey
+     */
+    public static fromObject(object: { [k: string]: any }): crypto.PublicKey;
 
-        /**
-         * Decodes a PublicKey message from the specified reader or buffer, length delimited.
-         * @param reader Reader or buffer to decode from
-         * @returns PublicKey
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): crypto.PublicKey;
+    /**
+     * Creates a plain object from a PublicKey message. Also converts values to other types if specified.
+     * @param message PublicKey
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: crypto.PublicKey,
+      options?: $protobuf.IConversionOptions
+    ): { [k: string]: any };
 
-        /**
-         * Verifies a PublicKey message.
-         * @param message Plain object to verify
-         * @returns `null` if valid, otherwise the reason why it is not
-         */
-        public static verify(message: { [k: string]: any }): (string|null);
+    /**
+     * Converts this PublicKey to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
 
-        /**
-         * Creates a PublicKey message from a plain object. Also converts values to their respective internal types.
-         * @param object Plain object
-         * @returns PublicKey
-         */
-        public static fromObject(object: { [k: string]: any }): crypto.PublicKey;
+  /** Properties of a PrivateKey. */
+  interface IPrivateKey {
+    /** PrivateKey ed25519 */
+    ed25519?: Uint8Array | null;
+  }
 
-        /**
-         * Creates a plain object from a PublicKey message. Also converts values to other types if specified.
-         * @param message PublicKey
-         * @param [options] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(message: crypto.PublicKey, options?: $protobuf.IConversionOptions): { [k: string]: any };
+  /** Represents a PrivateKey. */
+  class PrivateKey implements IPrivateKey {
+    /**
+     * Constructs a new PrivateKey.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: crypto.IPrivateKey);
 
-        /**
-         * Converts this PublicKey to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-    }
+    /** PrivateKey ed25519. */
+    public ed25519: Uint8Array;
 
-    /** Properties of a PrivateKey. */
-    interface IPrivateKey {
+    /** PrivateKey priv. */
+    public priv?: "ed25519";
 
-        /** PrivateKey ed25519 */
-        ed25519?: (Uint8Array|null);
-    }
+    /**
+     * Creates a new PrivateKey instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns PrivateKey instance
+     */
+    public static create(properties?: crypto.IPrivateKey): crypto.PrivateKey;
 
-    /** Represents a PrivateKey. */
-    class PrivateKey implements IPrivateKey {
+    /**
+     * Encodes the specified PrivateKey message. Does not implicitly {@link crypto.PrivateKey.verify|verify} messages.
+     * @param message PrivateKey message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: crypto.IPrivateKey,
+      writer?: $protobuf.Writer
+    ): $protobuf.Writer;
 
-        /**
-         * Constructs a new PrivateKey.
-         * @param [properties] Properties to set
-         */
-        constructor(properties?: crypto.IPrivateKey);
+    /**
+     * Encodes the specified PrivateKey message, length delimited. Does not implicitly {@link crypto.PrivateKey.verify|verify} messages.
+     * @param message PrivateKey message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: crypto.IPrivateKey,
+      writer?: $protobuf.Writer
+    ): $protobuf.Writer;
 
-        /** PrivateKey ed25519. */
-        public ed25519: Uint8Array;
+    /**
+     * Decodes a PrivateKey message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns PrivateKey
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number
+    ): crypto.PrivateKey;
 
-        /** PrivateKey priv. */
-        public priv?: "ed25519";
+    /**
+     * Decodes a PrivateKey message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns PrivateKey
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(
+      reader: $protobuf.Reader | Uint8Array
+    ): crypto.PrivateKey;
 
-        /**
-         * Creates a new PrivateKey instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns PrivateKey instance
-         */
-        public static create(properties?: crypto.IPrivateKey): crypto.PrivateKey;
+    /**
+     * Verifies a PrivateKey message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
 
-        /**
-         * Encodes the specified PrivateKey message. Does not implicitly {@link crypto.PrivateKey.verify|verify} messages.
-         * @param message PrivateKey message or plain object to encode
-         * @param [writer] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(message: crypto.IPrivateKey, writer?: $protobuf.Writer): $protobuf.Writer;
+    /**
+     * Creates a PrivateKey message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns PrivateKey
+     */
+    public static fromObject(object: { [k: string]: any }): crypto.PrivateKey;
 
-        /**
-         * Encodes the specified PrivateKey message, length delimited. Does not implicitly {@link crypto.PrivateKey.verify|verify} messages.
-         * @param message PrivateKey message or plain object to encode
-         * @param [writer] Writer to encode to
-         * @returns Writer
-         */
-        public static encodeDelimited(message: crypto.IPrivateKey, writer?: $protobuf.Writer): $protobuf.Writer;
+    /**
+     * Creates a plain object from a PrivateKey message. Also converts values to other types if specified.
+     * @param message PrivateKey
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: crypto.PrivateKey,
+      options?: $protobuf.IConversionOptions
+    ): { [k: string]: any };
 
-        /**
-         * Decodes a PrivateKey message from the specified reader or buffer.
-         * @param reader Reader or buffer to decode from
-         * @param [length] Message length if known beforehand
-         * @returns PrivateKey
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): crypto.PrivateKey;
+    /**
+     * Converts this PrivateKey to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
 
-        /**
-         * Decodes a PrivateKey message from the specified reader or buffer, length delimited.
-         * @param reader Reader or buffer to decode from
-         * @returns PrivateKey
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): crypto.PrivateKey;
+  /** Properties of a Signature. */
+  interface ISignature {
+    /** Signature ed25519 */
+    ed25519?: Uint8Array | null;
+  }
 
-        /**
-         * Verifies a PrivateKey message.
-         * @param message Plain object to verify
-         * @returns `null` if valid, otherwise the reason why it is not
-         */
-        public static verify(message: { [k: string]: any }): (string|null);
+  /** Represents a Signature. */
+  class Signature implements ISignature {
+    /**
+     * Constructs a new Signature.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: crypto.ISignature);
 
-        /**
-         * Creates a PrivateKey message from a plain object. Also converts values to their respective internal types.
-         * @param object Plain object
-         * @returns PrivateKey
-         */
-        public static fromObject(object: { [k: string]: any }): crypto.PrivateKey;
+    /** Signature ed25519. */
+    public ed25519: Uint8Array;
 
-        /**
-         * Creates a plain object from a PrivateKey message. Also converts values to other types if specified.
-         * @param message PrivateKey
-         * @param [options] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(message: crypto.PrivateKey, options?: $protobuf.IConversionOptions): { [k: string]: any };
+    /** Signature sig. */
+    public sig?: "ed25519";
 
-        /**
-         * Converts this PrivateKey to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-    }
+    /**
+     * Creates a new Signature instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Signature instance
+     */
+    public static create(properties?: crypto.ISignature): crypto.Signature;
 
-    /** Properties of a Signature. */
-    interface ISignature {
+    /**
+     * Encodes the specified Signature message. Does not implicitly {@link crypto.Signature.verify|verify} messages.
+     * @param message Signature message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: crypto.ISignature,
+      writer?: $protobuf.Writer
+    ): $protobuf.Writer;
 
-        /** Signature ed25519 */
-        ed25519?: (Uint8Array|null);
-    }
+    /**
+     * Encodes the specified Signature message, length delimited. Does not implicitly {@link crypto.Signature.verify|verify} messages.
+     * @param message Signature message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: crypto.ISignature,
+      writer?: $protobuf.Writer
+    ): $protobuf.Writer;
 
-    /** Represents a Signature. */
-    class Signature implements ISignature {
+    /**
+     * Decodes a Signature message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Signature
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number
+    ): crypto.Signature;
 
-        /**
-         * Constructs a new Signature.
-         * @param [properties] Properties to set
-         */
-        constructor(properties?: crypto.ISignature);
+    /**
+     * Decodes a Signature message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Signature
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(
+      reader: $protobuf.Reader | Uint8Array
+    ): crypto.Signature;
 
-        /** Signature ed25519. */
-        public ed25519: Uint8Array;
+    /**
+     * Verifies a Signature message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
 
-        /** Signature sig. */
-        public sig?: "ed25519";
+    /**
+     * Creates a Signature message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Signature
+     */
+    public static fromObject(object: { [k: string]: any }): crypto.Signature;
 
-        /**
-         * Creates a new Signature instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns Signature instance
-         */
-        public static create(properties?: crypto.ISignature): crypto.Signature;
+    /**
+     * Creates a plain object from a Signature message. Also converts values to other types if specified.
+     * @param message Signature
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: crypto.Signature,
+      options?: $protobuf.IConversionOptions
+    ): { [k: string]: any };
 
-        /**
-         * Encodes the specified Signature message. Does not implicitly {@link crypto.Signature.verify|verify} messages.
-         * @param message Signature message or plain object to encode
-         * @param [writer] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(message: crypto.ISignature, writer?: $protobuf.Writer): $protobuf.Writer;
-
-        /**
-         * Encodes the specified Signature message, length delimited. Does not implicitly {@link crypto.Signature.verify|verify} messages.
-         * @param message Signature message or plain object to encode
-         * @param [writer] Writer to encode to
-         * @returns Writer
-         */
-        public static encodeDelimited(message: crypto.ISignature, writer?: $protobuf.Writer): $protobuf.Writer;
-
-        /**
-         * Decodes a Signature message from the specified reader or buffer.
-         * @param reader Reader or buffer to decode from
-         * @param [length] Message length if known beforehand
-         * @returns Signature
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): crypto.Signature;
-
-        /**
-         * Decodes a Signature message from the specified reader or buffer, length delimited.
-         * @param reader Reader or buffer to decode from
-         * @returns Signature
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): crypto.Signature;
-
-        /**
-         * Verifies a Signature message.
-         * @param message Plain object to verify
-         * @returns `null` if valid, otherwise the reason why it is not
-         */
-        public static verify(message: { [k: string]: any }): (string|null);
-
-        /**
-         * Creates a Signature message from a plain object. Also converts values to their respective internal types.
-         * @param object Plain object
-         * @returns Signature
-         */
-        public static fromObject(object: { [k: string]: any }): crypto.Signature;
-
-        /**
-         * Creates a plain object from a Signature message. Also converts values to other types if specified.
-         * @param message Signature
-         * @param [options] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(message: crypto.Signature, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-        /**
-         * Converts this Signature to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-    }
+    /**
+     * Converts this Signature to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
 }
