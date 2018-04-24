@@ -13,7 +13,7 @@
     "format": "prettier --write src/**/*.ts",
     "lint": "tslint --project .",
     "lint-fix": "yarn lint --fix",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "transpile": "tsc",
     "pbts": "node ../../node_modules/protobufjs/cli/bin/pbts",
     "pbjs": "node ../../node_modules/protobufjs/cli/bin/pbjs",
@@ -21,8 +21,11 @@
     "packProto": "yarn pbjs -t static-module -w commonjs -o src/types/proto.js `yarn -s findProto` && yarn pbts -o src/types/proto.d.ts src/types/proto.js"
   },
   "devDependencies": {
+    "@types/jest": "^22.2.3",
     "@types/node": "^9.6.6",
+    "jest": "^22.4.3",
     "prettier": "1.12.1",
+    "ts-jest": "^22.4.4",
     "tslint": "^5.9.1",
     "tslint-config-prettier": "^1.12.0",
     "tslint-immutable": "^4.5.4",
@@ -31,5 +34,28 @@
   "dependencies": {
     "js-nacl": "^1.2.2",
     "protobufjs": "^6.8.6"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "node",
+      "json"
+    ],
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$",
+    "setupFiles": [],
+    "collectCoverage": true,
+    "coverageDirectory": "./",
+    "coverageReporters": [
+      "lcov"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/",
+      "/dist/"
+    ]
   }
 }

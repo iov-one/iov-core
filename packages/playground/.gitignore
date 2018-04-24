@@ -1,1 +1,3 @@
 dist/
+lcov-report
+lcov.info
