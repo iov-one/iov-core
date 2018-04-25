@@ -35,6 +35,8 @@
     "js-nacl": "^1.2.2",
     "protobufjs": "^6.8.6"
   },
+  "baseUrl": "types",
+  "typeRoots": ["src/types"],
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"

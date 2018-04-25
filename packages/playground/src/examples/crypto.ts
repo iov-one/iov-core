@@ -1,13 +1,12 @@
 // import shajs from 'sha.js';
 import {
+  instantiate,
   Nacl,
   NaclCallback,
   NaclOpts,
   SignerPublicKey,
   SignerSecretKey
-} from "../types/nacl";
-
-import nacl_factory from "js-nacl";
+} from "js-nacl";
 
 type SignatureBuffer = Uint8Array;
 type Message = Uint8Array;
@@ -27,7 +26,7 @@ export function initNacl(opts: NaclOpts): Promise<Nacl> {
   return new Promise((res: NaclCallback, _: any) => {
     const setup = (nacl: Nacl) => res(nacl);
     // tslint:disable-next-line:no-expression-statement
-    nacl_factory.instantiate(setup, opts);
+    instantiate(setup, opts);
   });
 }
 
