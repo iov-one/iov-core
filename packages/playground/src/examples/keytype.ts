@@ -37,5 +37,7 @@ function signMessage(msg: string, secret: IPrivateKey): Uint8Array {
 
 function shouldError(): Uint8Array {
   const pair = demoKeyPair();
-  return signMessage("some message to sign", pair.pubkey);
+  // this errors on tsc, uncomment and see
+  //  return signMessage("some message to sign", pair.pubkey);
+  return signMessage("some message to sign", pair.secret);
 }
