@@ -1,0 +1,20 @@
+{
+  "name": "@iov/tslint",
+  "version": "0.0.0",
+  "description": "Keybase component of IOV web4",
+  "author": "will-iov <will-iov@users.noreply.github.com>",
+  "license": "AGPL-3.0",
+  "main": "tslint.json",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iov-one/web4/tree/master/packages/tslint"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "tslint": "^5.9.1",
+    "tslint-config-prettier": "^1.12.0",
+    "tslint-immutable": "^4.5.4"
+  }
+}

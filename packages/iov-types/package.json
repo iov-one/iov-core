@@ -19,6 +19,7 @@
     "transpile": "tsc"
   },
   "devDependencies": {
+    "@iov/tslint": "./packages/tslint",
     "@types/node": "^9.6.6",
     "prettier": "1.12.1",
     "ts-node": "^6.0.1",
