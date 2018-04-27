@@ -1,3 +1,14 @@
+import {
+  Address,
+  Mnemonic,
+  PrivateKeyBuffer,
+  PrivateKeyString,
+  PublicKeyBuffer,
+  PublicKeyString,
+  SeedBuffer,
+  SeedString,
+} from '../types/keys'
+
 export const privateKeyString: PrivateKeyString =
   "e9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262";
 export const privateKeyBuffer: PrivateKeyBuffer = Buffer.from(

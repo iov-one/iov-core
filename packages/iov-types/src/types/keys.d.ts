@@ -1,12 +1,12 @@
-type PrivateKeyBuffer = Uint8Array;
-type PrivateKeyString = string;
+export type PrivateKeyBuffer = Uint8Array;
+export type PrivateKeyString = string;
 
-type PublicKeyBuffer = Uint8Array;
-type PublicKeyString = string;
+export type PublicKeyBuffer = Uint8Array;
+export type PublicKeyString = string;
 
-type Address = string;
+export type Address = string;
 
-type Mnemonic = string;
+export type Mnemonic = string;
 
-type SeedBuffer = Uint8Array;
-type SeedString = string;
+export type SeedBuffer = Uint8Array;
+export type SeedString = string;
