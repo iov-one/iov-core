@@ -1,5 +1,7 @@
 import {
   AddressString,
+  IKeyPairBuffer,
+  IKeyPairString,
   MnemonicString,
   PrivateKeyBuffer,
   PrivateKeyString,
@@ -27,6 +29,16 @@ export const publicKeyString: PublicKeyString = "0350863ad64a87ae8a2fe83c1af1a84
 export const publicKeyBuffer: PublicKeyBuffer = convertHexStringToUint8Array(
   publicKeyString
 ) as PublicKeyBuffer;
+
+export const keyPairBuffer: IKeyPairBuffer = {
+  private: privateKeyBuffer,
+  public: publicKeyBuffer
+};
+
+export const keyPairString: IKeyPairString = {
+  private: privateKeyString,
+  public: publicKeyString
+};
 
 export const seedString: SeedString = "000102030405060708090a0b0c0d0e0f" as SeedString;
 export const seedBuffer: SeedBuffer = convertHexStringToUint8Array(

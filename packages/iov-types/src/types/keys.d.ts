@@ -12,6 +12,16 @@ declare const enum PublicKey {}
 export type PublicKeyBuffer = PublicKey & Uint8Array;
 export type PublicKeyString = PublicKey & string;
 
+export interface IKeyPairBuffer {
+  readonly private: PrivateKeyBuffer;
+  readonly public: PublicKeyBuffer;
+}
+
+export interface IKeyPairString {
+  readonly private: PrivateKeyString;
+  readonly public: PublicKeyString;
+}
+
 declare const enum Seed {}
 export type SeedBuffer = Seed & Uint8Array;
 export type SeedString = Seed & string;
