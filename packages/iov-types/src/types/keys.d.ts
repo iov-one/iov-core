@@ -1,12 +1,17 @@
-export type PrivateKeyBuffer = Uint8Array;
-export type PrivateKeyString = string;
+declare const enum Address {}
+export type AddressString = Address & string;
 
-export type PublicKeyBuffer = Uint8Array;
-export type PublicKeyString = string;
+declare const enum Mnemonic {}
+export type MnemonicString = Mnemonic & string;
 
-export type Address = string;
+declare const enum PrivateKey {}
+export type PrivateKeyBuffer = PrivateKey & Uint8Array;
+export type PrivateKeyString = PrivateKey & string;
 
-export type Mnemonic = string;
+declare const enum PublicKey {}
+export type PublicKeyBuffer = PublicKey & Uint8Array;
+export type PublicKeyString = PublicKey & string;
 
-export type SeedBuffer = Uint8Array;
-export type SeedString = string;
+declare const enum Seed {}
+export type SeedBuffer = Seed & Uint8Array;
+export type SeedString = Seed & string;
