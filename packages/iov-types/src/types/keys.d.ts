@@ -12,12 +12,12 @@ declare const enum PublicKey {}
 export type PublicKeyBuffer = PublicKey & Uint8Array;
 export type PublicKeyString = PublicKey & string;
 
-export interface IKeyPairBuffer {
+export interface KeyPairBuffer {
   readonly private: PrivateKeyBuffer;
   readonly public: PublicKeyBuffer;
 }
 
-export interface IKeyPairString {
+export interface KeyPairString {
   readonly private: PrivateKeyString;
   readonly public: PublicKeyString;
 }

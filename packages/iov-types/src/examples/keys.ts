@@ -1,7 +1,7 @@
 import {
   AddressString,
-  IKeyPairBuffer,
-  IKeyPairString,
+  KeyPairBuffer,
+  KeyPairString,
   MnemonicString,
   PrivateKeyBuffer,
   PrivateKeyString,
@@ -30,12 +30,12 @@ export const publicKeyBuffer: PublicKeyBuffer = convertHexStringToUint8Array(
   publicKeyString
 ) as PublicKeyBuffer;
 
-export const keyPairBuffer: IKeyPairBuffer = {
+export const keyPairBuffer: KeyPairBuffer = {
   private: privateKeyBuffer,
   public: publicKeyBuffer
 };
 
-export const keyPairString: IKeyPairString = {
+export const keyPairString: KeyPairString = {
   private: privateKeyString,
   public: publicKeyString
 };
