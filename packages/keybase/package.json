@@ -1,0 +1,15 @@
+{
+  "name": "@iov/keybase",
+  "version": "0.0.0",
+  "description": "Keybase component of IOV web4",
+  "author": "will-iov <will-iov@users.noreply.github.com>",
+  "license": "AGPL-3.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iov-one/web4/tree/master/packages/keybase"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
