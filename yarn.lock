@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@iov/tslint@./packages/tslint":
+"@iov/tslint-config@./packages/tslint-config":
   version "0.0.0"
   dependencies:
     tslint "^5.9.1"
