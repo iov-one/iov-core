@@ -21,50 +21,43 @@ interface IKeyPair {
 //   readonly [key: string]: T;
 // }
 
-// init must be called and the promise resolved before any other functions are called
-export function initNacl(opts: NaclOpts): Promise<Nacl> {
-  return new Promise((res: NaclCallback, _: any) => {
-    const setup = (nacl: Nacl) => res(nacl);
-    // tslint:disable-next-line:no-expression-statement
-    instantiate(setup, opts);
-  });
-}
-
-export function getAddress(nacl: Nacl, pubkey: SignerPublicKey): string {
-  // this is a prefix for all pubkey signatures
-  const id = getIdentifier(pubkey);
-  return nacl.to_hex(nacl.crypto_hash_sha256(id)).slice(0, 40); // 20 bytes
-}
-
 // ugh, how to get this to compile????
-export function getIdentifier(pubkey: SignerPublicKey): Uint8Array {
+export const getIdentifier = (pubkey: SignerPublicKey): Uint8Array => {
   const prefix = Buffer.from("sigs/ed25519/");
   return new Uint8Array([...prefix, ...pubkey]);
-}
+};
+
+// init must be called and the promise resolved before any other functions are called
+export const initNacl = (opts: NaclOpts): Promise<Nacl> =>
+  new Promise((res: NaclCallback): void => {
+    const setup = (nacl: Nacl) => res(nacl);
+    return instantiate(setup, opts);
+  });
+
+export const getAddress = (nacl: Nacl) => (pubkey: SignerPublicKey): string => {
+  // this is a prefix for all pubkey signatures
+  const id = getIdentifier(pubkey);
+  const hash = nacl.crypto_hash_sha256(id);
+  return nacl.to_hex(hash).slice(0, 40); // 20 bytes
+};
 
 // generateKeyPair creates a private/public key pair
-export function generateKeyPair(nacl: Nacl): IKeyPair {
+export const generateKeyPair = (nacl: Nacl) => (): IKeyPair => {
   const keypair: any = nacl.crypto_sign_keypair();
   return {
     // nonce: {},
     pubkey: keypair.signPk,
     secret: keypair.signSk
   };
-}
+};
 
-export function sign(
-  nacl: Nacl,
+export const sign = (nacl: Nacl) => (
   msg: Message,
   secret: SignerSecretKey
-): SignatureBuffer {
-  return nacl.crypto_sign_detached(msg, secret);
-}
+): SignatureBuffer => nacl.crypto_sign_detached(msg, secret);
 
-export function verify(
-  nacl: Nacl,
+export const verify = (nacl: Nacl) => (
   msg: Message,
   sig: SignatureBuffer,
   pubkey: SignerPublicKey
-): boolean {
-  return nacl.crypto_sign_verify_detached(sig, msg, pubkey);
-}
+): boolean => nacl.crypto_sign_verify_detached(sig, msg, pubkey);
