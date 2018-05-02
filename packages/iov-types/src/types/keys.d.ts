@@ -1,16 +1,20 @@
-declare const Address: unique symbol;
-export type AddressString = typeof Address & string;
+declare const AddressSymbol: unique symbol;
+type Address = typeof AddressSymbol;
+export type AddressString = Address & string;
 
-declare const Mnemonic: unique symbol;
-export type MnemonicString = typeof Mnemonic & string;
+declare const MnemonicSymbol: unique symbol;
+type Mnemonic = typeof MnemonicSymbol;
+export type MnemonicString = Mnemonic & string;
 
-declare const PrivateKey: unique symbol;
-export type PrivateKeyBuffer = typeof PrivateKey & Uint8Array;
-export type PrivateKeyString = typeof PrivateKey & string;
+declare const PrivateKeySymbol: unique symbol;
+type PrivateKey = typeof PrivateKeySymbol;
+export type PrivateKeyBuffer = PrivateKey & Uint8Array;
+export type PrivateKeyString = PrivateKey & string;
 
-declare const PublicKey: unique symbol;
-export type PublicKeyBuffer = typeof PublicKey & Uint8Array;
-export type PublicKeyString = typeof PublicKey & string;
+declare const PublicKeySymbol: unique symbol;
+type PublicKey = typeof PublicKeySymbol;
+export type PublicKeyBuffer = PublicKey & Uint8Array;
+export type PublicKeyString = PublicKey & string;
 
 export interface KeyPairBuffer {
   readonly private: PrivateKeyBuffer;
@@ -22,6 +26,7 @@ export interface KeyPairString {
   readonly public: PublicKeyString;
 }
 
-declare const Seed: unique symbol;
-export type SeedBuffer = typeof Seed & Uint8Array;
-export type SeedString = typeof Seed & string;
+declare const SeedSymbol: unique symbol;
+type Seed = typeof SeedSymbol;
+export type SeedBuffer = Seed & Uint8Array;
+export type SeedString = Seed & string;
