@@ -14,6 +14,7 @@
     "lint": "tslint --project .",
     "lint-fix": "yarn lint --fix",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "prebuild": "yarn format && yarn lint",
     "build": "tsc"
   },
   "devDependencies": {
