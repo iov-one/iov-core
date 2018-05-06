@@ -11,12 +11,12 @@
   },
   "scripts": {
     "run-dev": "ts-node",
-    "build": "yarn format && yarn lint && yarn transpile",
     "format": "prettier --write src/**/*.ts",
     "lint": "tslint --project .",
     "lint-fix": "yarn lint --fix",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "transpile": "tsc"
+    "prebuild": "yarn format && yarn lint",
+    "build": "tsc"
   },
   "devDependencies": {
     "@iov/tslint-config": "^0.0.0",
