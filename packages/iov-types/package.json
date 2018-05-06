@@ -19,9 +19,9 @@
     "transpile": "tsc"
   },
   "devDependencies": {
-    "@iov/tslint-config": "./packages/tslint-config",
+    "@iov/tslint-config": "^0.0.0",
     "@types/node": "^9.6.6",
-    "prettier": "1.12.1",
+    "prettier": "^1.12.1",
     "ts-node": "^6.0.1",
     "typescript": "^2.8.3"
   }

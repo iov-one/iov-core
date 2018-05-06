@@ -13,7 +13,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
-    "@iov/tslint-config": "./packages/tslint-config",
-    "@iov/types": "./packages/iov-types"
+    "@iov/tslint-config": "^0.0.0",
+    "@iov/types": "^0.0.0"
   }
 }
