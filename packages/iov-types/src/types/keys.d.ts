@@ -1,14 +1,18 @@
-declare const enum Address {}
+declare const AddressSymbol: unique symbol;
+type Address = typeof AddressSymbol;
 export type AddressString = Address & string;
 
-declare const enum Mnemonic {}
+declare const MnemonicSymbol: unique symbol;
+type Mnemonic = typeof MnemonicSymbol;
 export type MnemonicString = Mnemonic & string;
 
-declare const enum PrivateKey {}
+declare const PrivateKeySymbol: unique symbol;
+type PrivateKey = typeof PrivateKeySymbol;
 export type PrivateKeyBuffer = PrivateKey & Uint8Array;
 export type PrivateKeyString = PrivateKey & string;
 
-declare const enum PublicKey {}
+declare const PublicKeySymbol: unique symbol;
+type PublicKey = typeof PublicKeySymbol;
 export type PublicKeyBuffer = PublicKey & Uint8Array;
 export type PublicKeyString = PublicKey & string;
 
@@ -22,6 +26,7 @@ export interface KeyPairString {
   readonly public: PublicKeyString;
 }
 
-declare const enum Seed {}
+declare const SeedSymbol: unique symbol;
+type Seed = typeof SeedSymbol;
 export type SeedBuffer = Seed & Uint8Array;
 export type SeedString = Seed & string;
