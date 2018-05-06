@@ -10,12 +10,14 @@
     "url": "https://github.com/iov-one/web4/tree/master/packages/keybase"
   },
   "scripts": {
+    "format": "prettier --write **/*.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc"
   },
   "devDependencies": {
     "@iov/tslint-config": "^0.0.0",
     "@iov/types": "^0.0.0",
+    "prettier": "^1.12.1",
     "typescript": "^2.8.3"
   }
 }
