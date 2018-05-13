@@ -9,7 +9,9 @@ import {
   ImportPrivateKey,
   ListUsers,
   PrivateAction,
+  PrivateActionType,
   PublicAction,
+  PublicActionType,
   RequestAPIAccess,
   RequestSignMessage,
   RequestSignTx,
@@ -21,74 +23,74 @@ import {
 } from "../types/actions";
 
 export const requestAPIAccessAction: RequestAPIAccess = {
-  type: "REQUEST_API_ACCESS"
+  type: PublicActionType.REQUEST_API_ACCESS
 };
 
 export const getCurrentAccountAction: GetCurrentAccount = {
-  type: "GET_CURRENT_ACCOUNT"
+  type: PublicActionType.GET_CURRENT_ACCOUNT
 };
 
 export const changeEventAction: ChangeEvent = {
-  type: "CHANGE_EVENT"
+  type: PublicActionType.CHANGE_EVENT
 };
 
 export const requestSignTxAction: RequestSignTx = {
-  type: "REQUEST_SIGN_TX"
+  type: PublicActionType.REQUEST_SIGN_TX
 };
 
 export const requestSignMessageAction: RequestSignMessage = {
-  type: "REQUEST_SIGN_MESSAGE"
+  type: PublicActionType.REQUEST_SIGN_MESSAGE
 };
 
 export const handlePublicAction = (action: PublicAction) => action;
 export const handledPublicAction = handlePublicAction(requestAPIAccessAction);
 
 export const listUsersAction: ListUsers = {
-  type: "LIST_USERS"
+  type: PrivateActionType.LIST_USERS
 };
 
 export const submitPasswordAction: SubmitPassword = {
-  type: "SUBMIT_PASSWORD"
+  type: PrivateActionType.SUBMIT_PASSWORD
 };
 
 export const createUserAction: CreateUser = {
-  type: "CREATE_USER"
+  type: PrivateActionType.CREATE_USER
 };
 
 export const restoreUserAction: RestoreUser = {
-  type: "RESTORE_USER"
+  type: PrivateActionType.RESTORE_USER
 };
 
 export const importPrivateKeyAction: ImportPrivateKey = {
-  type: "IMPORT_PRIVATE_KEY"
+  type: PrivateActionType.IMPORT_PRIVATE_KEY
 };
 
 export const addAccountAction: AddAccount = {
-  type: "ADD_ACCOUNT"
+  type: PrivateActionType.ADD_ACCOUNT
 };
 
 export const exportUserAction: ExportUser = {
-  type: "EXPORT_USER"
+  type: PrivateActionType.EXPORT_USER
 };
 
 export const signMessageAction: SignMessage = {
-  type: "SIGN_MESSAGE"
+  type: PrivateActionType.SIGN_MESSAGE
 };
 
 export const signTransactionAction: SignTransaction = {
-  type: "SIGN_TRANSACTION"
+  type: PrivateActionType.SIGN_TRANSACTION
 };
 
 export const decryptMessageAction: DecryptMessage = {
-  type: "DECRYPT_MESSAGE"
+  type: PrivateActionType.DECRYPT_MESSAGE
 };
 
 export const setActiveKeyAction: SetActiveKey = {
-  type: "SET_ACTIVE_KEY"
+  type: PrivateActionType.SET_ACTIVE_KEY
 };
 
 export const grantStoreAccessAction: GrantStoreAccess = {
-  type: "GRANT_STORE_ACCESS"
+  type: PrivateActionType.GRANT_STORE_ACCESS
 };
 
 export const handlePrivateAction = (action: PrivateAction) => action;
