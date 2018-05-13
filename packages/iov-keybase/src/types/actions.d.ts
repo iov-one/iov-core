@@ -1,3 +1,7 @@
+import {
+  Transaction,
+} from '@iov/types'
+
 export const enum PublicActionType {
   REQUEST_API_ACCESS = "REQUEST_API_ACCESS",
   GET_CURRENT_ACCOUNT = "GET_CURRENT_ACCOUNT",
@@ -8,6 +12,7 @@ export const enum PublicActionType {
 
 export interface RequestAPIAccess {
   readonly type: PublicActionType.REQUEST_API_ACCESS;
+  readonly options?: {};
 }
 
 export interface GetCurrentAccount {
@@ -18,19 +23,21 @@ export interface ChangeEvent {
   readonly type: PublicActionType.CHANGE_EVENT;
 }
 
-export interface RequestSignTx {
+export interface RequestSignTransaction {
   readonly type: PublicActionType.REQUEST_SIGN_TX;
+  readonly transaction: Transaction;
 }
 
 export interface RequestSignMessage {
   readonly type: PublicActionType.REQUEST_SIGN_MESSAGE;
+  readonly message: Uint8Array;
 }
 
 export type PublicAction =
   | RequestAPIAccess
   | GetCurrentAccount
   | ChangeEvent
-  | RequestSignTx
+  | RequestSignTransaction
   | RequestSignMessage;
 
 export const enum PrivateActionType {
