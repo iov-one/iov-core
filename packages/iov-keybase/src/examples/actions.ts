@@ -1,4 +1,7 @@
 import {
+  PublicKeyString,
+} from '@iov/types'
+import {
   AddAccount,
   ChangeEvent,
   CreateUser,
@@ -14,7 +17,7 @@ import {
   PublicActionType,
   RequestAPIAccess,
   RequestSignMessage,
-  RequestSignTx,
+  RequestSignTransaction,
   RestoreUser,
   SetActiveKey,
   SignMessage,
@@ -26,6 +29,13 @@ export const requestAPIAccessAction: RequestAPIAccess = {
   type: PublicActionType.REQUEST_API_ACCESS
 };
 
+export const requestAPIAccessActionWithOptions: RequestAPIAccess = {
+  options: {
+    some: 'future option',
+  },
+  type: PublicActionType.REQUEST_API_ACCESS,
+}
+
 export const getCurrentAccountAction: GetCurrentAccount = {
   type: PublicActionType.GET_CURRENT_ACCOUNT
 };
@@ -34,12 +44,18 @@ export const changeEventAction: ChangeEvent = {
   type: PublicActionType.CHANGE_EVENT
 };
 
-export const requestSignTxAction: RequestSignTx = {
-  type: PublicActionType.REQUEST_SIGN_TX
+export const requestSignTransactionAction: RequestSignTransaction = {
+  transaction: {
+    amount: 123,
+    kind: 'send',
+    sender: '0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352' as PublicKeyString,
+  },
+  type: PublicActionType.REQUEST_SIGN_TX,
 };
 
 export const requestSignMessageAction: RequestSignMessage = {
-  type: PublicActionType.REQUEST_SIGN_MESSAGE
+  message: new Uint8Array([10, 20, 30]),
+  type: PublicActionType.REQUEST_SIGN_MESSAGE,
 };
 
 export const handlePublicAction = (action: PublicAction) => action;
