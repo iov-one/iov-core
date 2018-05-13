@@ -1,13 +1,13 @@
 {
-  "name": "@iov/types",
+  "name": "@iov/keybase",
   "version": "0.0.0",
-  "description": "General types for IOV projects",
+  "description": "Keybase component of IOV web4",
   "author": "will-iov <will-iov@users.noreply.github.com>",
   "license": "AGPL-3.0",
-  "main": "index.d.ts",
+  "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iov-one/web4/tree/master/packages/iov-types"
+    "url": "https://github.com/iov-one/web4/tree/master/packages/keybase"
   },
   "scripts": {
     "run-dev": "ts-node",
@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@iov/tslint-config": "^0.0.0",
-    "@types/node": "^9.6.6",
+    "@iov/types": "^0.0.0",
     "prettier": "^1.12.1",
     "ts-node": "^6.0.3",
     "tslint": "^5.10.0",
