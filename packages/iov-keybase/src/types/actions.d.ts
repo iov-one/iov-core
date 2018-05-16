@@ -19,8 +19,18 @@ export interface GetCurrentAccount {
   readonly type: PublicActionType.GET_CURRENT_ACCOUNT;
 }
 
+export const enum PublicEventType {
+  ACCESS_GRANTED = "ACCESS_GRANTED",
+  PUBLIC_KEY_RELEASED = "PUBLIC_KEY_RELEASED",
+  WALLET_LOCKED = "WALLET_LOCKED"
+}
+
 export interface ChangeEvent {
   readonly type: PublicActionType.CHANGE_EVENT;
+  readonly event: PublicEventType;
+  // no-mixed-interface protects against OO-style methods, but this is passing a handler
+  // tslint:disable-next-line no-mixed-interface
+  readonly handler: () => any;
 }
 
 export interface RequestSignTransaction {

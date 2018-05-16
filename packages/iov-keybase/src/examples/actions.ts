@@ -15,6 +15,7 @@ import {
   PrivateActionType,
   PublicAction,
   PublicActionType,
+  PublicEventType,
   RequestAPIAccess,
   RequestSignMessage,
   RequestSignTransaction,
@@ -41,6 +42,8 @@ export const getCurrentAccountAction: GetCurrentAccount = {
 };
 
 export const changeEventAction: ChangeEvent = {
+  event: PublicEventType.ACCESS_GRANTED,
+  handler: () => "We were given access",
   type: PublicActionType.CHANGE_EVENT
 };
 
