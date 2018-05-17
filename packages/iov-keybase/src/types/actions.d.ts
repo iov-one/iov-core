@@ -6,6 +6,10 @@ import {
   Transaction,
   TTLBuffer
 } from "@iov/types";
+import {
+  PasswordString,
+  UsernameString
+} from './accounts'
 
 export const enum PublicActionType {
   REQUEST_API_ACCESS = "REQUEST_API_ACCESS",
@@ -79,28 +83,28 @@ export interface ListUsers {
 
 export interface SubmitPassword {
   readonly type: PrivateActionType.SUBMIT_PASSWORD;
-  readonly username: string;
-  readonly password: string;
+  readonly username: UsernameString;
+  readonly password: PasswordString;
 }
 
 export interface CreateUser {
   readonly type: PrivateActionType.CREATE_USER;
-  readonly username: string;
-  readonly password: string;
+  readonly username: UsernameString;
+  readonly password: PasswordString;
   readonly options?: {};
 }
 
 export interface RestoreUser {
   readonly type: PrivateActionType.RESTORE_USER;
-  readonly username: string;
-  readonly password: string;
+  readonly username: UsernameString;
+  readonly password: PasswordString;
   readonly seed: SeedString;
 }
 
 export interface ImportPrivateKey {
   readonly type: PrivateActionType.IMPORT_PRIVATE_KEY;
-  readonly username: string;
-  readonly password: string;
+  readonly username: UsernameString;
+  readonly password: PasswordString;
   readonly privateKey: PrivateKeyString;
 }
 
@@ -111,8 +115,8 @@ export interface AddAccount {
 
 export interface ExportUser {
   readonly type: PrivateActionType.EXPORT_USER;
-  readonly username: string;
-  readonly password: string;
+  readonly username: UsernameString;
+  readonly password: PasswordString;
   readonly options?: {};
 }
 
