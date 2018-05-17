@@ -12,3 +12,8 @@ export interface Transaction {
   readonly kind: string,
   readonly sender: PublicKeyString,
 }
+
+declare const TTLSymbol: unique symbol;
+type TTL = typeof TTLSymbol;
+export type TTLBuffer = TTL & Uint8Array;
+export type TTLString = TTL & string;
