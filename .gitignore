@@ -62,3 +62,6 @@ typings/
 
 # Unsupported files
 package-lock.json
+
+# IDE-specific and temporary directories
+tmp/
