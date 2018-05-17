@@ -1,4 +1,6 @@
 import {
+  ClientNameString,
+  ClientTokenString,
   NonceBuffer,
   PrivateKeyString,
   PublicKeyString,
@@ -203,9 +205,9 @@ export const setActiveKeyAction: SetActiveKey = {
 };
 
 export const grantStoreAccessAction: GrantStoreAccess = {
-  origin: "my.website.com",
+  origin: "my.website.com" as ClientNameString,
   publicKey: "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString,
-  token: "abcd1234",
+  token: "abcd1234" as ClientTokenString,
   type: PrivateActionType.GRANT_STORE_ACCESS
 };
 

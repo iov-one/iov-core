@@ -1,4 +1,6 @@
 import {
+  ClientNameString,
+  ClientTokenString,
   NonceBuffer,
   PrivateKeyString,
   PublicKeyString,
@@ -165,8 +167,8 @@ export interface SetActiveKey {
 export interface GrantStoreAccess {
   readonly type: PrivateActionType.GRANT_STORE_ACCESS;
   readonly publicKey: PublicKeyString;
-  readonly origin: string;
-  readonly token: string;
+  readonly origin: ClientNameString;
+  readonly token: ClientTokenString;
 }
 
 export type PrivateAction =
