@@ -3,7 +3,8 @@ import {
   PrivateKeyString,
   PublicKeyString,
   SeedString,
-  Transaction
+  Transaction,
+  TTLBuffer
 } from "@iov/types";
 
 export const enum PublicActionType {
@@ -120,7 +121,7 @@ export interface SignTransaction {
   readonly publicKey: PublicKeyString;
   readonly transaction: Transaction;
   readonly nonce: NonceBuffer | null;
-  readonly ttl: string | null;
+  readonly ttl: TTLBuffer | null;
 }
 
 export interface VerifyTransaction {

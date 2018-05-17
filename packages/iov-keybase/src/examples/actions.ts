@@ -2,7 +2,8 @@ import {
   NonceBuffer,
   PrivateKeyString,
   PublicKeyString,
-  SeedString
+  SeedString,
+  TTLBuffer
 } from "@iov/types";
 import {
   AddAccount,
@@ -155,7 +156,7 @@ export const signTransactionActionWithNonceAndTTL: SignTransaction = {
     kind: "send",
     sender: "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString
   },
-  ttl: "10000",
+  ttl: new Uint8Array([1, 0, 0, 0]) as TTLBuffer,
   type: PrivateActionType.SIGN_TRANSACTION
 };
 
