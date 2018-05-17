@@ -1,4 +1,9 @@
-import { PrivateKeyString, PublicKeyString, SeedString } from "@iov/types";
+import {
+  NonceBuffer,
+  PrivateKeyString,
+  PublicKeyString,
+  SeedString
+} from "@iov/types";
 import {
   AddAccount,
   ChangeEvent,
@@ -143,7 +148,7 @@ export const signTransactionAction: SignTransaction = {
 };
 
 export const signTransactionActionWithNonceAndTTL: SignTransaction = {
-  nonce: "12",
+  nonce: new Uint8Array([0, 0, 0, 4]) as NonceBuffer,
   publicKey: "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString,
   transaction: {
     amount: 123,

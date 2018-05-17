@@ -1,4 +1,5 @@
 import {
+  NonceBuffer,
   PrivateKeyString,
   PublicKeyString,
   SeedString,
@@ -118,7 +119,7 @@ export interface SignTransaction {
   readonly type: PrivateActionType.SIGN_TRANSACTION;
   readonly publicKey: PublicKeyString;
   readonly transaction: Transaction;
-  readonly nonce: string | null;
+  readonly nonce: NonceBuffer | null;
   readonly ttl: string | null;
 }
 
