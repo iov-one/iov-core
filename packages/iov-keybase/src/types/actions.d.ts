@@ -1,6 +1,9 @@
 import {
-  Transaction,
-} from '@iov/types'
+  PrivateKeyString,
+  PublicKeyString,
+  SeedString,
+  Transaction
+} from "@iov/types";
 
 export const enum PublicActionType {
   REQUEST_API_ACCESS = "REQUEST_API_ACCESS",
@@ -58,8 +61,11 @@ export const enum PrivateActionType {
   IMPORT_PRIVATE_KEY = "IMPORT_PRIVATE_KEY",
   ADD_ACCOUNT = "ADD_ACCOUNT",
   EXPORT_USER = "EXPORT_USER",
-  SIGN_MESSAGE = "SIGN_MESSAGE",
   SIGN_TRANSACTION = "SIGN_TRANSACTION",
+  VERIFY_TRANSACTION = "VERIFY_TRANSACTION",
+  SIGN_MESSAGE = "SIGN_MESSAGE",
+  VERIFY_MESSAGE = "VERIFY_MESSAGE",
+  ENCRYPT_MESSAGE = "ENCRYPT_MESSAGE",
   DECRYPT_MESSAGE = "DECRYPT_MESSAGE",
   SET_ACTIVE_KEY = "SET_ACTIVE_KEY",
   GRANT_STORE_ACCESS = "GRANT_STORE_ACCESS"
@@ -71,46 +77,93 @@ export interface ListUsers {
 
 export interface SubmitPassword {
   readonly type: PrivateActionType.SUBMIT_PASSWORD;
+  readonly username: string;
+  readonly password: string;
 }
 
 export interface CreateUser {
   readonly type: PrivateActionType.CREATE_USER;
+  readonly username: string;
+  readonly password: string;
+  readonly options?: {};
 }
 
 export interface RestoreUser {
   readonly type: PrivateActionType.RESTORE_USER;
+  readonly username: string;
+  readonly password: string;
+  readonly seed: SeedString;
 }
 
 export interface ImportPrivateKey {
   readonly type: PrivateActionType.IMPORT_PRIVATE_KEY;
+  readonly username: string;
+  readonly password: string;
+  readonly privateKey: PrivateKeyString;
 }
 
 export interface AddAccount {
   readonly type: PrivateActionType.ADD_ACCOUNT;
+  readonly options?: {};
 }
 
 export interface ExportUser {
   readonly type: PrivateActionType.EXPORT_USER;
-}
-
-export interface SignMessage {
-  readonly type: PrivateActionType.SIGN_MESSAGE;
+  readonly username: string;
+  readonly password: string;
+  readonly options?: {};
 }
 
 export interface SignTransaction {
   readonly type: PrivateActionType.SIGN_TRANSACTION;
+  readonly publicKey: PublicKeyString;
+  readonly transaction: Transaction;
+  readonly nonce: string | null;
+  readonly ttl: string | null;
+}
+
+export interface VerifyTransaction {
+  readonly type: PrivateActionType.VERIFY_TRANSACTION;
+  readonly transaction: Transaction;
+}
+
+export interface SignMessage {
+  readonly type: PrivateActionType.SIGN_MESSAGE;
+  readonly message: Uint8Array;
+  readonly publicKey: PublicKeyString;
+}
+
+export interface VerifyMessage {
+  readonly type: PrivateActionType.VERIFY_MESSAGE;
+  readonly message: Uint8Array;
+  readonly publicKey: PublicKeyString;
+  readonly signature: Uint8Array;
+}
+
+export interface EncryptMessage {
+  readonly type: PrivateActionType.ENCRYPT_MESSAGE;
+  readonly message: Uint8Array;
+  readonly publicKey: PublicKeyString;
+  readonly recipient: PublicKeyString;
 }
 
 export interface DecryptMessage {
   readonly type: PrivateActionType.DECRYPT_MESSAGE;
+  readonly message: Uint8Array;
+  readonly publicKey: PublicKeyString;
+  readonly sender: PublicKeyString;
 }
 
 export interface SetActiveKey {
   readonly type: PrivateActionType.SET_ACTIVE_KEY;
+  readonly index: number;
 }
 
 export interface GrantStoreAccess {
   readonly type: PrivateActionType.GRANT_STORE_ACCESS;
+  readonly publicKey: PublicKeyString;
+  readonly origin: string;
+  readonly token: string;
 }
 
 export type PrivateAction =
