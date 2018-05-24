@@ -19,7 +19,8 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@iov/types": "^0.0.0"
+    "@iov/types": "^0.0.0",
+    "xstream": "^11.3.0"
   },
   "devDependencies": {
     "prettier": "^1.12.1",

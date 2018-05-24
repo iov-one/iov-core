@@ -1,11 +1,9 @@
-import {
-  // NonceBuffer,
-  // PrivateKeyString,
-  PublicKeyString,
-  TransactionIDString
-  // SeedString,
-  // TTLBuffer
-} from "@iov/types";
+import { PublicKeyString, TransactionIDString } from "@iov/types";
+import { Observable } from "xstream";
+
+// SubscribeChangeEvent is a function in my world, it makes no change to state
+// on the keybase, but rather subscribes to a stream of events
+export type SubscribeChanges = () => Observable<PublicEvent>;
 
 export const enum PublicEventType {
   PUBLIC_KEY_CHANGED = "PUBLIC_KEY_CHANGED",

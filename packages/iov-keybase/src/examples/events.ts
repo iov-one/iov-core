@@ -1,9 +1,12 @@
 import { PublicKeyString, TransactionIDString } from "@iov/types";
+import xs from "xstream";
 import {
+  PublicEvent,
   PublicEventType,
   PublicKeyChangedEvent,
   SendTransactionFailureEvent,
   SendTransactionSuccessEvent,
+  SubscribeChanges,
   WalletLockedEvent
 } from "../types/events";
 
@@ -31,3 +34,10 @@ export const sendTransactionFailureEvent: SendTransactionFailureEvent = {
   txId: sampleTxId,
   type: PublicEventType.SEND_TRANSACTION_FAILURE
 };
+
+export const subscribe: SubscribeChanges = () =>
+  xs.of(
+    publicKeyChangedEvent as PublicEvent,
+    sendTransactionSuccessEvent,
+    walletLockedEvent
+  );
