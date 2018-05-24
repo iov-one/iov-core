@@ -9,6 +9,7 @@ import {
   TTLBuffer
 } from "@iov/types";
 import { PasswordString, UsernameString } from "./accounts";
+import { PublicEvent } from "./events";
 
 export const enum PrivateActionType {
   LIST_USERS = "LIST_USERS",
