@@ -5,10 +5,7 @@ import {
   SeedString,
   TTLBuffer
 } from "@iov/types";
-import {
-  PasswordString,
-  UsernameString
-} from '../types/accounts'
+import { PasswordString, UsernameString } from "../types/accounts";
 import {
   AddAccount,
   ChangeEvent,
@@ -171,7 +168,7 @@ export const verifyTransaction: VerifyTransaction = {
     sender: "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString
   },
   type: PrivateActionType.VERIFY_TRANSACTION
-}
+};
 
 export const signMessageAction: SignMessage = {
   message: new Uint8Array([10, 20, 30]),

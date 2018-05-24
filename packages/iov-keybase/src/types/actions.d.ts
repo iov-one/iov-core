@@ -6,10 +6,7 @@ import {
   Transaction,
   TTLBuffer
 } from "@iov/types";
-import {
-  PasswordString,
-  UsernameString
-} from './accounts'
+import { PasswordString, UsernameString } from "./accounts";
 
 export const enum PublicActionType {
   REQUEST_API_ACCESS = "REQUEST_API_ACCESS",
