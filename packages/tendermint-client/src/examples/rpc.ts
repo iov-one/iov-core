@@ -1,5 +1,6 @@
 import { Stream } from "xstream";
-import { ParsedState, StateBuffer, StateParser } from "../types/state";
+import { StateParser } from "../types/parsed";
+import { ParsedState, StateBuffer } from "../types/state";
 
 // parseWith is just to typecheck, no need to a function
 // here, can just call map directly

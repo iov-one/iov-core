@@ -6,8 +6,12 @@ export type TransactionString = string & Transaction;
 
 declare const TransactionIDSymbol: unique symbol;
 type TransactionID = typeof TransactionIDSymbol;
-// export type TransactionIDBuffer = Uint8Array & TransactionID;
+export type TransactionIDBuffer = Uint8Array & TransactionID;
 export type TransactionIDString = string & TransactionID;
+
+declare const TxQuerySymbol: unique symbol;
+type TxQuery = typeof TxQuerySymbol;
+export type TxQueryString = string & TxQuery;
 
 export type Identifier = (tx: Transaction) => TransactionIDString;
 
@@ -54,9 +58,12 @@ export interface TransactionStateConfirmed {
   // TODO: tags?
 }
 
+export type ProcessedTransactionState =
+  | TransactionStateUnconfirmed
+  | TransactionStateConfirmed;
+
 // TransactionState is the current state of the transaction
 export type TransactionState =
   | TransactionStatePending
   | TransactionStateRejected
-  | TransactionStateUnconfirmed
-  | TransactionStateConfirmed;
+  | ProcessedTransactionState;
