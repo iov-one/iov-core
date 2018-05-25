@@ -66,7 +66,11 @@ export interface TransactionStateConfirmed {
 }
 
 // TransactionState is the current state of the transaction
-export type TransactionState = TransactionStatePending | TransactionStateRejected | TransactionStateUnconfirmed | TransactionStateConfirmed;
+export type TransactionState =
+  | TransactionStatePending
+  | TransactionStateRejected
+  | TransactionStateUnconfirmed
+  | TransactionStateConfirmed;
 
 export interface Header {
   readonly height: number;
@@ -80,7 +84,7 @@ export interface Block {
   // TODO: more?
 }
 
-// RPC captures the needed functionality 
+// RPC captures the needed functionality
 export interface RPC {
   // headers returns all headers in that range.
   // If max is underfined, subscribe to all new headers
@@ -100,7 +104,7 @@ export interface RPC {
 
   // watchKey will query the current state at the given key
   // and be notified upon any change
-  watchKey(ws: Websocket, key: StateKey): Observable<StateBuffer>; 
+  watchKey(ws: Websocket, key: StateKey): Observable<StateBuffer>;
 }
 
 // Note, we can add transformations on top....
@@ -118,4 +122,3 @@ export interface StateKey {
 }
 
 export type StateParser = (state: StateBuffer) => ParsedState;
-
