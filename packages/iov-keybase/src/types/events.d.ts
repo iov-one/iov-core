@@ -7,8 +7,8 @@ export type SubscribeChanges = () => Observable<PublicEvent>;
 
 export const enum PublicEventType {
   PUBLIC_KEY_CHANGED = "PUBLIC_KEY_CHANGED",
-  SEND_TRANSACTION_SUCCESS = "SEND_TRANSACTION_SUCCESS",
-  SEND_TRANSACTION_FAILURE = "SEND_TRANSACTION_FAILURE",
+  SEND_TRANSACTION_SUCCEEDED = "SEND_TRANSACTION_SUCCEEDED",
+  SEND_TRANSACTION_FAILED = "SEND_TRANSACTION_FAILED",
   WALLET_LOCKED = "WALLET_LOCKED"
 }
 
@@ -18,14 +18,14 @@ export interface PublicKeyChangedEvent {
 }
 
 export interface SendTransactionSuccessEvent {
-  readonly type: PublicEventType.SEND_TRANSACTION_SUCCESS;
+  readonly type: PublicEventType.SEND_TRANSACTION_SUCCEEDED;
   readonly txId: TransactionIDString;
   readonly data: Uint8Array;
   readonly height: number;
 }
 
 export interface SendTransactionFailureEvent {
-  readonly type: PublicEventType.SEND_TRANSACTION_FAILURE;
+  readonly type: PublicEventType.SEND_TRANSACTION_FAILED;
   readonly txId: TransactionIDString;
   readonly error: any;
 }

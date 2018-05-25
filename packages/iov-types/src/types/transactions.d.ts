@@ -22,3 +22,4 @@ export interface Transaction {
   readonly sender: PublicKeyString;
 }
 
+export type Identifier = (tx: Transaction) => TransactionIDString;

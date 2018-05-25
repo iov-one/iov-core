@@ -26,18 +26,18 @@ export const sendTransactionSuccessEvent: SendTransactionSuccessEvent = {
   data: Buffer.from("1234567890abcdef", "hex"),
   height: 34000,
   txId: sampleTxId,
-  type: PublicEventType.SEND_TRANSACTION_SUCCESS
+  type: PublicEventType.SEND_TRANSACTION_SUCCEEDED
 };
 
 export const sendTransactionFailureEvent: SendTransactionFailureEvent = {
   error: "Invalid base64 encoding at byte 2",
   txId: sampleTxId,
-  type: PublicEventType.SEND_TRANSACTION_FAILURE
+  type: PublicEventType.SEND_TRANSACTION_FAILED
 };
 
 export const subscribe: SubscribeChanges = () =>
-  xs.of(
-    publicKeyChangedEvent as PublicEvent,
+  xs.of<PublicEvent>(
+    publicKeyChangedEvent,
     sendTransactionSuccessEvent,
     walletLockedEvent
   );
