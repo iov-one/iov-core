@@ -7,7 +7,8 @@ import {
   ProcessedTransactionState,
   TransactionBuffer,
   TransactionState,
-  TxQueryString
+  TxQueryString,
+  TransactionIDString
 } from "./transactions";
 
 // ParsedRPC handles all the serialization of data structures, and allows
@@ -22,14 +23,17 @@ export interface ParsedRPC {
   // block will query for one block if height is provider,
   // returning it immediately if available, or as soon as it
   // is produced, if in the future.
-  // If not height is provided, it will subscribe to all new
-  // block events
-  block(ws: Websocket, height?: number): Stream<Block>;
+  // If not height is provided, it will get most recent block
+  block(ws: Websocket, height?: number): Promise<Block>;
+  allBlocks(ws: Websocket): Stream<Block>;
 
   // sendTx submits a signed tx as is notified on every state change
   sendTx(ws: Websocket, tx: Transaction): Stream<TransactionState>;
+  // sendTx(ws: Websocket, tx: Transaction): void;
+  // sendTx(ws: Websocket, tx: Transaction): Promise<any>;
 
   // searchTx searches for all tx that match these tags and subscribes to new ones
+  // watchTx is a subset, searching by TxID, not tags
   searchTx(
     ws: Websocket,
     query: TxQueryString
@@ -48,3 +52,28 @@ export type ParseRPC = (
   parseState: StateParser,
   encodeTx: TxEncoder
 ) => (rpc: RPC) => ParsedRPC;
+
+/*
+dispatch(action) .... reducer(action, state) => state 
+
+components: props: (state) => state.foo.bar
+*/
+
+/*
+dispatch(action) => promise(success|failure)
+like async middleware / axios....
+
+watch(state, 'foo.bar') => Stream<Updates>
+
+you may want to compose all these streams into one reactive state....
+
+combine(watch1, watch2, watch3).map((w1, w2, w3) => ({
+  foo: w1,
+  bar: w2,
+  baz: w3
+})).subscribe(state => dispatch({type: SET_STATE, data: state}));
+
+watch1.subscribe(state => dispatch({type: UPDATE_FOO,  data: state}));
+watch2.subscribe(state => dispatch({type: UPDATE_BAR,  data: state}));
+watch3.subscribe(state => dispatch({type: UPDATE_BAZ,  data: state}));
+*/

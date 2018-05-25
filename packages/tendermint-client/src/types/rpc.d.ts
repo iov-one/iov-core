@@ -23,9 +23,9 @@ export interface RPC {
   // block will query for one block if height is provider,
   // returning it immediately if available, or as soon as it
   // is produced, if in the future.
-  // If not height is provided, it will subscribe to all new
-  // block events
-  block(ws: Websocket, height?: number): Stream<Block>;
+  // If not height is provided, it will get most recent block
+  block(ws: Websocket, height?: number): Promise<Block>;
+  allBlocks(ws: Websocket): Stream<Block>;
 
   // sendTx submits a signed tx as is notified on every state change
   sendTx(ws: Websocket, tx: TransactionBuffer): Stream<TransactionState>;
