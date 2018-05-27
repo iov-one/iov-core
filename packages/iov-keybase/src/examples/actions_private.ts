@@ -20,16 +20,16 @@ import {
   RestoreUser,
   SetActiveKey,
   SignTransaction,
-  SubmitPassword
+  UnlockUser
 } from "../types/actions_private";
 
 export const listUsersAction: ListUsers = {
   type: PrivateActionType.LIST_USERS
 };
 
-export const submitPasswordAction: SubmitPassword = {
+export const unlockUserAction: UnlockUser = {
   password: "password123" as PasswordString,
-  type: PrivateActionType.SUBMIT_PASSWORD,
+  type: PrivateActionType.UNLOCK_USER,
   username: "my_username" as UsernameString
 };
 

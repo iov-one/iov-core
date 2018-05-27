@@ -12,7 +12,7 @@ import { PasswordString, UsernameString } from "./accounts";
 
 export const enum PrivateActionType {
   LIST_USERS = "LIST_USERS",
-  SUBMIT_PASSWORD = "SUBMIT_PASSWORD",
+  UNLOCK_USER = "UNLOCK_USER",
   CREATE_USER = "CREATE_USER",
   RESTORE_USER = "RESTORE_USER",
   IMPORT_PRIVATE_KEY = "IMPORT_PRIVATE_KEY",
@@ -27,8 +27,8 @@ export interface ListUsers {
   readonly type: PrivateActionType.LIST_USERS;
 }
 
-export interface SubmitPassword {
-  readonly type: PrivateActionType.SUBMIT_PASSWORD;
+export interface UnlockUser {
+  readonly type: PrivateActionType.UNLOCK_USER;
   readonly username: UsernameString;
   readonly password: PasswordString;
 }
@@ -87,7 +87,7 @@ export interface GrantStoreAccess {
 
 export type PrivateAction =
   | ListUsers
-  | SubmitPassword
+  | UnlockUser
   | CreateUser
   | RestoreUser
   | ImportPrivateKey
