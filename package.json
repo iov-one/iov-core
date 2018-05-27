@@ -15,7 +15,16 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "format": "lerna run format",
+    "lint": "lerna run lint",
+    "lint-fix": "lerna run lint-fix",
+    "test": "lerna run test",
+    "build": "lerna run build"
+  },
   "devDependencies": {
-    "lerna": "^2.10.2"
+    "lerna": "^2.10.2",
+    "tslint-config-prettier": "^1.13.0",
+    "tslint-immutable": "^4.5.4"
   }
 }

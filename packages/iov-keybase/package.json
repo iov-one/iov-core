@@ -22,7 +22,6 @@
     "@iov/types": "^0.0.0"
   },
   "devDependencies": {
-    "@iov/tslint-config": "^0.0.0",
     "prettier": "^1.12.1",
     "ts-node": "^6.0.3",
     "tslint": "^5.10.0",

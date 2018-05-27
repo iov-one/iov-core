@@ -19,7 +19,6 @@
     "build": "tsc"
   },
   "devDependencies": {
-    "@iov/tslint-config": "^0.0.0",
     "@types/node": "^9.6.6",
     "prettier": "^1.12.1",
     "ts-node": "^6.0.3",
