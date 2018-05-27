@@ -19,11 +19,6 @@ export const enum PrivateActionType {
   ADD_ACCOUNT = "ADD_ACCOUNT",
   EXPORT_USER = "EXPORT_USER",
   SIGN_TRANSACTION = "SIGN_TRANSACTION",
-  VERIFY_TRANSACTION = "VERIFY_TRANSACTION",
-  SIGN_MESSAGE = "SIGN_MESSAGE",
-  VERIFY_MESSAGE = "VERIFY_MESSAGE",
-  ENCRYPT_MESSAGE = "ENCRYPT_MESSAGE",
-  DECRYPT_MESSAGE = "DECRYPT_MESSAGE",
   SET_ACTIVE_KEY = "SET_ACTIVE_KEY",
   GRANT_STORE_ACCESS = "GRANT_STORE_ACCESS"
 }
@@ -79,38 +74,6 @@ export interface SignTransaction {
   readonly ttl: TTLBuffer | null;
 }
 
-export interface VerifyTransaction {
-  readonly type: PrivateActionType.VERIFY_TRANSACTION;
-  readonly transaction: Transaction;
-}
-
-export interface SignMessage {
-  readonly type: PrivateActionType.SIGN_MESSAGE;
-  readonly message: Uint8Array;
-  readonly publicKey: PublicKeyString;
-}
-
-export interface VerifyMessage {
-  readonly type: PrivateActionType.VERIFY_MESSAGE;
-  readonly message: Uint8Array;
-  readonly publicKey: PublicKeyString;
-  readonly signature: Uint8Array;
-}
-
-export interface EncryptMessage {
-  readonly type: PrivateActionType.ENCRYPT_MESSAGE;
-  readonly message: Uint8Array;
-  readonly publicKey: PublicKeyString;
-  readonly recipient: PublicKeyString;
-}
-
-export interface DecryptMessage {
-  readonly type: PrivateActionType.DECRYPT_MESSAGE;
-  readonly message: Uint8Array;
-  readonly publicKey: PublicKeyString;
-  readonly sender: PublicKeyString;
-}
-
 export interface SetActiveKey {
   readonly type: PrivateActionType.SET_ACTIVE_KEY;
   readonly index: number;
@@ -131,8 +94,6 @@ export type PrivateAction =
   | ImportPrivateKey
   | AddAccount
   | ExportUser
-  | SignMessage
   | SignTransaction
-  | DecryptMessage
   | SetActiveKey
   | GrantStoreAccess;
