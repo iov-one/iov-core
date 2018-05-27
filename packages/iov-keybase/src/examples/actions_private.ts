@@ -56,7 +56,6 @@ export const restoreUserAction: RestoreUser = {
 };
 
 export const importPrivateKeyAction: ImportPrivateKey = {
-  password: "password123" as PasswordString,
   privateKey: "e9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262" as PrivateKeyString,
   type: PrivateActionType.IMPORT_PRIVATE_KEY,
   username: "my_username" as UsernameString

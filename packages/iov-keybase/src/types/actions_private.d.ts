@@ -50,7 +50,6 @@ export interface RestoreUser {
 export interface ImportPrivateKey {
   readonly type: PrivateActionType.IMPORT_PRIVATE_KEY;
   readonly username: UsernameString;
-  readonly password: PasswordString;
   readonly privateKey: PrivateKeyString;
 }
 
