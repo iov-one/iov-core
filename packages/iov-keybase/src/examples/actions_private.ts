@@ -11,8 +11,6 @@ import { PasswordString, UsernameString } from "../types/accounts";
 import {
   AddAccount,
   CreateUser,
-  DecryptMessage,
-  EncryptMessage,
   ExportUser,
   GrantStoreAccess,
   ImportPrivateKey,
@@ -21,20 +19,17 @@ import {
   PrivateActionType,
   RestoreUser,
   SetActiveKey,
-  SignMessage,
   SignTransaction,
-  SubmitPassword,
-  VerifyMessage,
-  VerifyTransaction
+  UnlockUser
 } from "../types/actions_private";
 
 export const listUsersAction: ListUsers = {
   type: PrivateActionType.LIST_USERS
 };
 
-export const submitPasswordAction: SubmitPassword = {
+export const unlockUserAction: UnlockUser = {
   password: "password123" as PasswordString,
-  type: PrivateActionType.SUBMIT_PASSWORD,
+  type: PrivateActionType.UNLOCK_USER,
   username: "my_username" as UsernameString
 };
 
@@ -61,7 +56,6 @@ export const restoreUserAction: RestoreUser = {
 };
 
 export const importPrivateKeyAction: ImportPrivateKey = {
-  password: "password123" as PasswordString,
   privateKey: "e9873d79c6d87dc0fb6a5778633389f4453213303da61f20bd67fc233aa33262" as PrivateKeyString,
   type: PrivateActionType.IMPORT_PRIVATE_KEY,
   username: "my_username" as UsernameString
@@ -115,42 +109,6 @@ export const signTransactionActionWithNonceAndTTL: SignTransaction = {
   },
   ttl: new Uint8Array([1, 0, 0, 0]) as TTLBuffer,
   type: PrivateActionType.SIGN_TRANSACTION
-};
-
-export const verifyTransaction: VerifyTransaction = {
-  transaction: {
-    amount: 123,
-    kind: "send",
-    sender: "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString
-  },
-  type: PrivateActionType.VERIFY_TRANSACTION
-};
-
-export const signMessageAction: SignMessage = {
-  message: new Uint8Array([10, 20, 30]),
-  publicKey: "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString,
-  type: PrivateActionType.SIGN_MESSAGE
-};
-
-export const verifyMessageAction: VerifyMessage = {
-  message: new Uint8Array([10, 20, 30]),
-  publicKey: "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString,
-  signature: new Uint8Array([40, 50, 61]),
-  type: PrivateActionType.VERIFY_MESSAGE
-};
-
-export const encryptMessageAction: EncryptMessage = {
-  message: new Uint8Array([10, 20, 30]),
-  publicKey: "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString,
-  recipient: "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString,
-  type: PrivateActionType.ENCRYPT_MESSAGE
-};
-
-export const decryptMessageAction: DecryptMessage = {
-  message: new Uint8Array([10, 20, 30]),
-  publicKey: "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString,
-  sender: "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString,
-  type: PrivateActionType.DECRYPT_MESSAGE
 };
 
 export const setActiveKeyAction: SetActiveKey = {
