@@ -4,9 +4,9 @@ import { RPC, Websocket } from "./rpc";
 import { Block, Header } from "./blocks";
 import { ParsedStateObject, StateKey, StateBuffer } from "./state";
 import {
-  ProcessedTransactionState,
   TransactionBuffer,
   TransactionState,
+  TransactionStateProcessed,
   TxQueryString,
   TransactionIDString
 } from "./transactions";
@@ -37,7 +37,7 @@ export interface ParsedRPC {
   searchTx(
     ws: Websocket,
     query: TxQueryString
-  ): Stream<ProcessedTransactionState>;
+  ): Stream<TransactionStateProcessed>;
 
   // watchKey will query the current state at the given key
   // and be notified upon any change

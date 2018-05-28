@@ -12,12 +12,12 @@ import {
 } from "@iov/types";
 import { PasswordString, UsernameString } from "./accounts";
 
-// do we listen as one giant blob, or a separate listener 
+// do we listen as one giant blob, or a separate listener
 // for each subset of the state tree
 type StateWatcher = () => Stream<KeybaseState>;
 type UserWatcher = () => Stream<UsernameString>;
 
-// this makes sense for eg. create account, which will just 
+// this makes sense for eg. create account, which will just
 // show response by updating state sent to StateWatcher
 // type PrivateDispatcher = (action: PrivateAction) => void;
 

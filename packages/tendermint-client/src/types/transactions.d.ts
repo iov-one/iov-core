@@ -26,12 +26,12 @@ export const enum TransactionStateType {
 // made it in a block yet.
 export interface TransactionStatePending {
   type: TransactionStateType.PENDING;
-  txID: TransactionIDString;
+  transactionId: TransactionIDString;
 }
 
 export interface TransactionStateRejected {
   type: TransactionStateType.REJECTED;
-  txID: TransactionIDString;
+  transactionId: TransactionIDString;
   error: any;
 }
 
@@ -41,24 +41,24 @@ export interface TransactionStateRejected {
 // to standardize across multiple chains
 export interface TransactionStateUnconfirmed {
   type: TransactionStateType.UNCONFIRMED;
-  txID: TransactionIDString;
+  transactionId: TransactionIDString;
   // confidence ranges from 0 to 1 where 1 is confirmed
   // this can be used to show progress
   confidence: number;
-  blockHeight: number;
-  result: Uint8Array;
+  height: number;
+  data?: Uint8Array;
   // TODO: tags?
 }
 
 export interface TransactionStateConfirmed {
   type: TransactionStateType.CONFIRMED;
-  txID: TransactionIDString;
-  blockHeight: number;
-  result: Uint8Array;
+  transactionId: TransactionIDString;
+  height: number;
+  data?: Uint8Array;
   // TODO: tags?
 }
 
-export type ProcessedTransactionState =
+export type TransactionStateProcessed =
   | TransactionStateUnconfirmed
   | TransactionStateConfirmed;
 
@@ -66,4 +66,4 @@ export type ProcessedTransactionState =
 export type TransactionState =
   | TransactionStatePending
   | TransactionStateRejected
-  | ProcessedTransactionState;
+  | TransactionStateProcessed;

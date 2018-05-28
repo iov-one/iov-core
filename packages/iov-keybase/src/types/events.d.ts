@@ -5,6 +5,9 @@ import { Observable } from "xstream";
 // on the keybase, but rather subscribes to a stream of events
 export type SubscribeChanges = () => Observable<PublicEvent>;
 
+// Placeholder until we figure out what type this should be
+export type TransactionError = any;
+
 export const enum PublicEventType {
   PUBLIC_KEY_CHANGED = "PUBLIC_KEY_CHANGED",
   SEND_TRANSACTION_SUCCEEDED = "SEND_TRANSACTION_SUCCEEDED",
@@ -20,14 +23,14 @@ export interface PublicKeyChangedEvent {
 export interface SendTransactionSuccessEvent {
   readonly type: PublicEventType.SEND_TRANSACTION_SUCCEEDED;
   readonly txId: TransactionIDString;
-  readonly data: Uint8Array;
   readonly height: number;
+  readonly data?: Uint8Array;
 }
 
 export interface SendTransactionFailureEvent {
   readonly type: PublicEventType.SEND_TRANSACTION_FAILED;
   readonly txId: TransactionIDString;
-  readonly error: any;
+  readonly error: TransactionError;
 }
 
 export interface WalletLockedEvent {
