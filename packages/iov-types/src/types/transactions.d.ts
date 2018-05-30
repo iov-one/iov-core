@@ -31,7 +31,7 @@ export type SwapIDString = SwapID & string;
 
 export interface Coin {
   readonly whole: number;
-  readonly fractional?: number;
+  readonly fractional: number;
   readonly currency: CurrencyCode;
 }
 
@@ -55,7 +55,7 @@ export interface SetNameTx extends BaseTx {
 
 export interface SwapOfferTx extends BaseTx {
   readonly kind: "swap_offer";
-  readonly amount: Coin;
+  readonly amount: ReadonlyArray<Coin>;
   readonly recipient: PublicKeyString;
   readonly timeout: number; // number of blocks in the future
   readonly preimage: Uint8Array;
@@ -63,7 +63,7 @@ export interface SwapOfferTx extends BaseTx {
 
 export interface SwapCounterTx extends BaseTx {
   readonly kind: "swap_counter";
-  readonly amount: Coin;
+  readonly amount: ReadonlyArray<Coin>;
   readonly recipient: PublicKeyString;
   readonly timeout: number; // number of blocks in the future
   readonly hash: Uint8Array;

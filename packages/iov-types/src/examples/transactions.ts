@@ -23,7 +23,7 @@ export const nonceString: NonceString = "12" as NonceString;
 export const iov: CurrencyCode = "IOV" as CurrencyCode;
 
 export const sendTx: SendTx = {
-  amount: { whole: 123, currency: iov },
+  amount: { whole: 123, fractional: 0, currency: iov },
   chainId: "bns-testnet-01" as ChainID,
   fee: { whole: 0, fractional: 100, currency: iov },
   kind: "send",
