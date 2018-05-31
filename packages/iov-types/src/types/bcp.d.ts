@@ -1,8 +1,8 @@
 // import { Transaction } from "@iov/types";
 import { Stream } from "xstream";
 import { PublicKey, AddressString } from "./keys";
-import { SignableTransaction } from "./signable";
-import { Coin, Nonce } from "./transactions";
+import { SignableTransaction } from "./signables";
+import { Coin, Nonce, CurrencyCode } from "./transactions";
 
 // import { RPC, Websocket } from "./rpc";
 // import { Block, Header } from "./blocks";
@@ -36,10 +36,13 @@ export interface Node {
   // is produced, if in the future.
   // If not height is provided, it will get most recent block
   block(height?: number): Promise<Block>;
-  allBlocks(): Stream<Block>;
+  // streamBlocks starts sending a stream of blocks from now on
+  streamBlocks(): Stream<Block>;
 
   // postTx submits a signed tx as is notified on every state change
   postTx(tx: SignableTransaction): Stream<TransactionState>;
+
+  // TODO----
 
   // // searchTx searches for all tx that match these tags and subscribes to new ones
   // // watchTx is a subset, searching by TxID, not tags
@@ -51,6 +54,9 @@ export interface Node {
   // streams current data and all changes
   watchAccount(query: AccountQuery): Stream<Account>;
   watchNonce(query: AccountQuery): Stream<AccountNonce>;
+
+  getTicker(ticker: CurrencyCode): Promise<Ticker>;
+  watchAllTickers(): Stream<Ticker>;
 }
 
 // TODO: expand on this
@@ -104,6 +110,14 @@ export interface Account extends AccountNonce {
 }
 
 export interface Balance extends Coin {
+  tokenName?: string;
+  sigFigs: number;
+}
+
+//----
+
+export interface Ticker {
+  tokenTicker: CurrencyCode;
   tokenName?: string;
   sigFigs: number;
 }
