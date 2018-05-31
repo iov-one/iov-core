@@ -16,6 +16,11 @@ type PublicKey = typeof PublicKeySymbol;
 export type PublicKeyBuffer = PublicKey & Uint8Array;
 export type PublicKeyString = PublicKey & string;
 
+declare const SignatureSymbol: unique symbol;
+type Signature = typeof SignatureSymbol;
+export type SignatureBuffer = Signature & Uint8Array;
+export type SignatureString = Signature & string;
+
 export interface KeyPairBuffer {
   readonly private: PrivateKeyBuffer;
   readonly public: PublicKeyBuffer;
