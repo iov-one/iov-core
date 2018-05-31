@@ -2,12 +2,10 @@ import { PublicKeyString } from "../types/keys";
 import {
   ChainID,
   CurrencyCode,
-  Identifier,
   NonceBuffer,
   NonceString,
   SendTx,
   Transaction,
-  TransactionIDString,
   TTLBuffer,
   TTLString
 } from "../types/transactions";
@@ -35,6 +33,3 @@ export const transaction: Transaction = sendTx;
 
 export const ttlBuffer: TTLBuffer = new Uint8Array([0, 2, 0, 0]) as TTLBuffer;
 export const ttlString: TTLString = "1000" as TTLString;
-
-export const ident: Identifier = (tx: Transaction) =>
-  `${tx.kind}:foobarbaz` as TransactionIDString;

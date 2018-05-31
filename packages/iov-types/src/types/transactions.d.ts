@@ -5,11 +5,6 @@ type Nonce = typeof NonceSymbol;
 export type NonceBuffer = Nonce & Uint8Array;
 export type NonceString = Nonce & string;
 
-declare const TransactionIDSymbol: unique symbol;
-type TransactionID = typeof TransactionIDSymbol;
-export type TransactionIDBuffer = TransactionID & Uint8Array;
-export type TransactionIDString = TransactionID & string;
-
 // TODO: can't we just make this a number (block height?)
 declare const TTLSymbol: unique symbol;
 type TTL = typeof TTLSymbol;
@@ -87,6 +82,3 @@ export type Transaction =
   | SwapCounterTx
   | SwapClaimTx
   | SwapTimeoutTx;
-
-// TODO: Identifier is chain-dependent.. maybe rethink this as generic function
-export type Identifier = (tx: Transaction) => TransactionIDString;
