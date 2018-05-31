@@ -1,9 +1,7 @@
 import { PublicKeyString } from "./keys";
 
 declare const NonceSymbol: unique symbol;
-type Nonce = typeof NonceSymbol;
-export type NonceBuffer = Nonce & Uint8Array;
-export type NonceString = Nonce & string;
+export type Nonce = typeof NonceSymbol & number;
 
 // TODO: can't we just make this a number (block height?)
 declare const TTLSymbol: unique symbol;
@@ -27,7 +25,7 @@ export type SwapIDString = SwapID & string;
 export interface Coin {
   readonly whole: number;
   readonly fractional: number;
-  readonly currency: CurrencyCode;
+  readonly tokenTicker: CurrencyCode;
 }
 
 export interface BaseTx {

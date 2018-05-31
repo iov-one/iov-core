@@ -7,12 +7,12 @@ import {
   TransactionIDString,
   TxCodec
 } from "../types/signables";
-import { NonceString } from "../types/transactions";
+import { Nonce } from "../types/transactions";
 
 import { sendTx } from "./transactions";
 
 export const fullSignature: FullSignature = {
-  nonce: "1234" as NonceString,
+  nonce: 1234 as Nonce,
   publicKey: "abcd1234abcd1234" as PublicKeyString,
   signature: "deadbeef00cafe00" as SignatureString
 };

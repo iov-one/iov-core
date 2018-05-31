@@ -2,6 +2,10 @@ import {
   AddressString,
   ClientNameString,
   ClientTokenString,
+<<<<<<< 469c5cc9f4a52b3e5f20342f052badfe7571adf0
+=======
+  Nonce,
+>>>>>>> Define bcp node and account types
   PrivateKeyString,
   PublicKeyString,
   SeedString,

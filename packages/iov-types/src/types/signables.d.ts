@@ -1,5 +1,5 @@
 import { PublicKeyString, SignatureString } from "./keys";
-import { NonceString, Transaction } from "./transactions";
+import { Nonce, Transaction } from "./transactions";
 
 declare const TransactionIDSymbol: unique symbol;
 type TransactionID = typeof TransactionIDSymbol;
@@ -19,7 +19,7 @@ export type PostableString = Postable & string;
 // NB: use Buffer or String, we should be consistent....
 // I figure string if this will be json dumped, but maybe less efficient
 export interface FullSignature {
-  readonly nonce: NonceString;
+  readonly nonce: Nonce;
   readonly publicKey: PublicKeyString;
   readonly signature: SignatureString;
 }
@@ -41,7 +41,7 @@ export interface TxCodec {
   // they often include nonce and chainID, but not other signatures
   readonly bytesToSign: (
     tx: SignableTransaction,
-    nonce: NonceString
+    nonce: Nonce
   ) => SignableBuffer;
   // bytesToPost includes the raw transaction appended with the various signatures
   readonly bytesToPost: (tx: SignableTransaction) => PostableBuffer;
