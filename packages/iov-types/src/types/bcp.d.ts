@@ -1,6 +1,6 @@
 // import { Transaction } from "@iov/types";
 import { Stream } from "xstream";
-import { PublicKeyString, AddressString } from "./keys";
+import { PublicKey, AddressString } from "./keys";
 import { SignableTransaction } from "./signable";
 import { Coin, Nonce } from "./transactions";
 
@@ -50,6 +50,7 @@ export interface Node {
   // various types of queries to get a stream of accounts...
   // streams current data and all changes
   watchAccount(query: AccountQuery): Stream<Account>;
+  watchNonce(query: AccountQuery): Stream<AccountNonce>;
 }
 
 // TODO: expand on this
@@ -76,7 +77,7 @@ export interface AccountQueryByAddress {
 
 export interface AccountQueryByPublicKey {
   type: AccountQueryType.PUBLIC_KEY;
-  publicKey: PublicKeyString;
+  publicKey: PublicKey;
 }
 
 export interface AccountQueryByName {
@@ -89,13 +90,15 @@ export type AccountQuery =
   | AccountQueryByName
   | AccountQueryByPublicKey;
 
-export interface Account {
-  name?: string;
-  // TODO:
-  // algo: string ??? this is tied with pubkey representation
-  publicKey?: PublicKeyString;
+// Nonce is a minimal subset of Account for efficiency
+export interface AccountNonce {
+  publicKey?: PublicKey;
   address: AddressString;
   nonce: Nonce;
+}
+
+export interface Account extends AccountNonce {
+  name?: string;
   balances: ReadonlyArray<Balance>;
   extended: any;
 }

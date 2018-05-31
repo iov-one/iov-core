@@ -1,4 +1,9 @@
-import { PublicKeyString, SignatureString } from "../types/keys";
+import {
+  Algorithm,
+  PublicKey,
+  PublicKeyString,
+  SignatureString
+} from "../types/keys";
 import {
   FullSignature,
   PostableBuffer,
@@ -11,9 +16,14 @@ import { Nonce } from "../types/transactions";
 
 import { sendTx } from "./transactions";
 
+export const signer: PublicKey = {
+  algo: Algorithm.ED25519,
+  data: "abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234" as PublicKeyString
+};
+
 export const fullSignature: FullSignature = {
   nonce: 1234 as Nonce,
-  publicKey: "abcd1234abcd1234" as PublicKeyString,
+  publicKey: signer,
   signature: "deadbeef00cafe00" as SignatureString
 };
 

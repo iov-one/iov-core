@@ -1,4 +1,4 @@
-import { PublicKeyString } from "./keys";
+import { PublicKey, AddressString } from "./keys";
 
 declare const NonceSymbol: unique symbol;
 export type Nonce = typeof NonceSymbol & number;
@@ -31,14 +31,14 @@ export interface Coin {
 export interface BaseTx {
   readonly chainId: ChainID;
   readonly fee: Coin;
-  readonly signer: PublicKeyString;
+  readonly signer: PublicKey;
   readonly ttl?: TTLString;
 }
 
 export interface SendTx extends BaseTx {
   readonly kind: "send";
   readonly amount: Coin;
-  readonly recipient: PublicKeyString;
+  readonly recipient: PublicKey;
 }
 
 export interface SetNameTx extends BaseTx {
@@ -49,7 +49,7 @@ export interface SetNameTx extends BaseTx {
 export interface SwapOfferTx extends BaseTx {
   readonly kind: "swap_offer";
   readonly amount: ReadonlyArray<Coin>;
-  readonly recipient: PublicKeyString;
+  readonly recipient: PublicKey;
   readonly timeout: number; // number of blocks in the future
   readonly preimage: Uint8Array;
 }
@@ -57,7 +57,7 @@ export interface SwapOfferTx extends BaseTx {
 export interface SwapCounterTx extends BaseTx {
   readonly kind: "swap_counter";
   readonly amount: ReadonlyArray<Coin>;
-  readonly recipient: PublicKeyString;
+  readonly recipient: PublicKey;
   readonly timeout: number; // number of blocks in the future
   readonly hash: Uint8Array;
 }

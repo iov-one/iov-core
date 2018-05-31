@@ -6,15 +6,28 @@ declare const MnemonicSymbol: unique symbol;
 type Mnemonic = typeof MnemonicSymbol;
 export type MnemonicString = Mnemonic & string;
 
+export const enum Algorithm {
+  ED25519 = "ed25519",
+  SECP256K1 = "secp256k1"
+}
+
 declare const PrivateKeySymbol: unique symbol;
-type PrivateKey = typeof PrivateKeySymbol;
-export type PrivateKeyBuffer = PrivateKey & Uint8Array;
-export type PrivateKeyString = PrivateKey & string;
+type PrivateKeyType = typeof PrivateKeySymbol;
+export type PrivateKeyBuffer = PrivateKeyType & Uint8Array;
+export type PrivateKeyString = PrivateKeyType & string;
+export interface PrivateKey {
+  algo: Algorithm;
+  data: PrivateKeyString;
+}
 
 declare const PublicKeySymbol: unique symbol;
-type PublicKey = typeof PublicKeySymbol;
-export type PublicKeyBuffer = PublicKey & Uint8Array;
-export type PublicKeyString = PublicKey & string;
+type PublicKeyType = typeof PublicKeySymbol;
+export type PublicKeyBuffer = PublicKeyType & Uint8Array;
+export type PublicKeyString = PublicKeyType & string;
+export interface PublicKey {
+  algo: Algorithm;
+  data: PublicKeyString;
+}
 
 declare const SignatureSymbol: unique symbol;
 type Signature = typeof SignatureSymbol;

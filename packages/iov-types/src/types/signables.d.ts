@@ -1,4 +1,4 @@
-import { PublicKeyString, SignatureString } from "./keys";
+import { PublicKey, SignatureString } from "./keys";
 import { Nonce, Transaction } from "./transactions";
 
 declare const TransactionIDSymbol: unique symbol;
@@ -20,7 +20,7 @@ export type PostableString = Postable & string;
 // I figure string if this will be json dumped, but maybe less efficient
 export interface FullSignature {
   readonly nonce: Nonce;
-  readonly publicKey: PublicKeyString;
+  readonly publicKey: PublicKey;
   readonly signature: SignatureString;
 }
 
