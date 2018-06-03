@@ -8,8 +8,7 @@ import {
   Transaction,
   TTLBuffer
 } from "@iov/types";
-import { Observable } from "xstream";
-import { Account, PasswordString, UsernameString } from "./accounts";
+import { PasswordString, UsernameString } from "./accounts";
 import {
   AddAccount,
   CreateUser,
@@ -22,61 +21,45 @@ import {
   SignTransaction,
   UnlockUser
 } from "./actions_private";
-import {
-  PublicAction,
-  RequestAPIAccess,
-  RequestSignTransaction
-} from "./actions_public";
 
-export interface KeybasePrivate {
-  readonly dispatch: (action: PrivateAction) => PrivateAction;
-
-  readonly addAccount: (options?: {}) => AddAccount;
-  readonly createUser: (
+// tslint:disable-next-line:no-class
+export default class KeybasePrivate {
+  public readonly addAccount: (options?: {}) => AddAccount;
+  public readonly createUser: (
     username: UsernameString,
     password: PasswordString,
     options?: {}
   ) => CreateUser;
-  readonly exportUser: (
+  public readonly exportUser: (
     username: UsernameString,
     password: PasswordString,
     options?: {}
   ) => ExportUser;
-  readonly grantStoreAccess: (
+  public readonly grantStoreAccess: (
     publicKey: PublicKeyString,
     origin: ClientNameString,
     token: ClientTokenString
   ) => GrantStoreAccess;
-  readonly importPrivateKey: (
+  public readonly importPrivateKey: (
     username: UsernameString,
     privateKey: PrivateKeyString
   ) => ImportPrivateKey;
-  readonly restoreUser: (
+  public readonly restoreUser: (
     username: UsernameString,
     password: PasswordString,
     seed: SeedString
   ) => RestoreUser;
-  readonly setActiveKey: (index: number) => SetActiveKey;
-  readonly signTransaction: (
+  public readonly setActiveKey: (index: number) => SetActiveKey;
+  public readonly signTransaction: (
     publicKey: PublicKeyString,
     transaction: Transaction,
     nonce: NonceBuffer | null,
     ttl: TTLBuffer | null
   ) => SignTransaction;
-  readonly unlockUser: (
+  public readonly unlockUser: (
     username: UsernameString,
     password: PasswordString
   ) => UnlockUser;
-}
 
-export interface KeybasePublic {
-  readonly dispatch: (action: PublicAction) => PublicAction;
-
-  readonly requestAPIAccess: (options?: {}) => RequestAPIAccess;
-  readonly requestSignTransaction: (
-    transaction: Transaction
-  ) => RequestSignTransaction;
-
-  readonly getAccountsObservable: () => Observable<Account>;
-  readonly getTransactionsObservable: () => Observable<Transaction>;
+  private readonly dispatch: (action: PrivateAction) => PrivateAction;
 }
