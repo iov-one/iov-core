@@ -1,11 +1,8 @@
 import {
-  ChangeEvent,
   GetCurrentAccount,
   PublicAction,
   PublicActionType,
-  PublicEventType,
   RequestAPIAccess,
-  RequestSignMessage,
   RequestSignTransaction
 } from "../types/actions_public";
 import { sendTx } from "./iov-types";
@@ -25,20 +22,9 @@ export const getCurrentAccountAction: GetCurrentAccount = {
   type: PublicActionType.GET_CURRENT_ACCOUNT
 };
 
-export const changeEventAction: ChangeEvent = {
-  event: PublicEventType.ACCESS_GRANTED,
-  handler: () => "We were given access",
-  type: PublicActionType.CHANGE_EVENT
-};
-
 export const requestSignTransactionAction: RequestSignTransaction = {
   transaction: sendTx,
   type: PublicActionType.REQUEST_SIGN_TX
-};
-
-export const requestSignMessageAction: RequestSignMessage = {
-  message: new Uint8Array([10, 20, 30]),
-  type: PublicActionType.REQUEST_SIGN_MESSAGE
 };
 
 export const handlePublicAction = (action: PublicAction) => action;
