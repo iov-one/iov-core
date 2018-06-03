@@ -41,3 +41,28 @@ interface KeybaseState {
   readonly users: ReadonlyArray<UsernameString>;
   readonly activeKey: PublicKeyString | null;
 }
+
+/*
+dispatch(action) .... reducer(action, state) => state
+
+components: props: (state) => state.foo.bar
+*/
+
+/*
+dispatch(action) => promise(success|failure)
+like async middleware / axios....
+
+watch(state, 'foo.bar') => Stream<Updates>
+
+you may want to compose all these streams into one reactive state....
+
+combine(watch1, watch2, watch3).map((w1, w2, w3) => ({
+  foo: w1,
+  bar: w2,
+  baz: w3
+})).subscribe(state => dispatch({type: SET_STATE, data: state}));
+
+watch1.subscribe(state => dispatch({type: UPDATE_FOO,  data: state}));
+watch2.subscribe(state => dispatch({type: UPDATE_BAR,  data: state}));
+watch3.subscribe(state => dispatch({type: UPDATE_BAZ,  data: state}));
+*/
