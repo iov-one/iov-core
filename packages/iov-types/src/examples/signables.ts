@@ -6,7 +6,7 @@ import {
   SignableTransaction,
   TransactionIDString,
   TxCodec
-} from "../types/signable";
+} from "../types/signables";
 import { NonceString } from "../types/transactions";
 
 import { sendTx } from "./transactions";
