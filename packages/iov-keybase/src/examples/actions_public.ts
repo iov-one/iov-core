@@ -1,4 +1,3 @@
-import { PublicKeyString } from "@iov/types";
 import {
   ChangeEvent,
   GetCurrentAccount,
@@ -9,6 +8,7 @@ import {
   RequestSignMessage,
   RequestSignTransaction
 } from "../types/actions_public";
+import { sendTx } from "./iov-types";
 
 export const requestAPIAccessAction: RequestAPIAccess = {
   type: PublicActionType.REQUEST_API_ACCESS
@@ -32,11 +32,7 @@ export const changeEventAction: ChangeEvent = {
 };
 
 export const requestSignTransactionAction: RequestSignTransaction = {
-  transaction: {
-    amount: 123,
-    kind: "send",
-    sender: "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString
-  },
+  transaction: sendTx,
   type: PublicActionType.REQUEST_SIGN_TX
 };
 
