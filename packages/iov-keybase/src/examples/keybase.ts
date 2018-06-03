@@ -11,11 +11,16 @@ import {
   restoreUserAction,
   setActiveKeyAction,
   signTransactionAction,
-  unlockUserAction,
-} from './actions_private'
-import { requestAPIAccessAction, requestSignTransactionAction} from './actions_public'
+  unlockUserAction
+} from "./actions_private";
+import {
+  requestAPIAccessAction,
+  requestSignTransactionAction
+} from "./actions_public";
 
 export const privateKeybase: KeybasePrivate = {
+  dispatch: action => action,
+
   addAccount: () => addAccountAction,
   createUser: () => createUserAction,
   exportUser: () => exportUserAction,
@@ -24,8 +29,8 @@ export const privateKeybase: KeybasePrivate = {
   restoreUser: () => restoreUserAction,
   setActiveKey: () => setActiveKeyAction,
   signTransaction: () => signTransactionAction,
-  unlockUser: () => unlockUserAction,
-}
+  unlockUser: () => unlockUserAction
+};
 
 const accountsObservable: Observable<Account> = {
   subscribe: () => ({
@@ -39,6 +44,8 @@ const transactionsObservable: Observable<Transaction> = {
 };
 
 export const publicKeybase: KeybasePublic = {
+  dispatch: action => action,
+
   requestAPIAccess: () => requestAPIAccessAction,
   requestSignTransaction: () => requestSignTransactionAction,
 
