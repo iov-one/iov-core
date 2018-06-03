@@ -8,7 +8,7 @@ import {
   SendTransactionSuccessEvent,
   SubscribeChanges,
   WalletLockedEvent
-} from "../types/events";
+} from "./types";
 
 const samplePubKey = "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString;
 const sampleTxId = "afda0a922b8b40eb645e5caf8ce6cb2f4fe2af84" as TransactionIDString;

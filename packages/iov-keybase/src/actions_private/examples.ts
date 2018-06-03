@@ -7,7 +7,8 @@ import {
   SeedString,
   TTLBuffer
 } from "@iov/types";
-import { PasswordString, UsernameString } from "../types/accounts";
+import { PasswordString, UsernameString } from "../accounts/types";
+import { sendTx } from "../examples/iov-types";
 import {
   AddAccount,
   CreateUser,
@@ -21,8 +22,7 @@ import {
   SetActiveKey,
   SignTransaction,
   UnlockUser
-} from "../types/actions_private";
-import { sendTx } from "./iov-types";
+} from "./types";
 
 export const listUsersAction: ListUsers = {
   type: PrivateActionType.LIST_USERS

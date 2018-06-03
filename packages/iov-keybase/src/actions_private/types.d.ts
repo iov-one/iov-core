@@ -10,7 +10,7 @@ import {
   TTLBuffer
 } from "@iov/types";
 import { Stream } from "xstream";
-import { PasswordString, UsernameString } from "./accounts";
+import { PasswordString, UsernameString } from "../accounts/types";
 
 // do we listen as one giant blob, or a separate listener
 // for each subset of the state tree
