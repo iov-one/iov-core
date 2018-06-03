@@ -1,5 +1,5 @@
-import { Stream } from "xstream";
 import {
+  AddressString,
   ClientNameString,
   ClientTokenString,
   NonceBuffer,
@@ -7,9 +7,9 @@ import {
   PublicKeyString,
   SeedString,
   Transaction,
-  TTLBuffer,
-  AddressString
+  TTLBuffer
 } from "@iov/types";
+import { Stream } from "xstream";
 import { PasswordString, UsernameString } from "./accounts";
 
 // do we listen as one giant blob, or a separate listener
@@ -38,7 +38,7 @@ interface KeybaseState {
 }
 
 export const enum PrivateActionType {
-  LIST_USERS = "LIST_USERS",  // looks at current state, really a query
+  LIST_USERS = "LIST_USERS", // looks at current state, really a query
   UNLOCK_USER = "UNLOCK_USER",
   CREATE_USER = "CREATE_USER",
   RESTORE_USER = "RESTORE_USER",
