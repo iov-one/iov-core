@@ -14,7 +14,6 @@ import {
   ExportUser,
   GrantStoreAccess,
   ImportPrivateKey,
-  ListUsers,
   PrivateAction,
   PrivateActionType,
   RestoreUser,
@@ -23,10 +22,6 @@ import {
   UnlockUser
 } from "../types/actions_private";
 import { sendTx } from "./iov-types";
-
-export const listUsersAction: ListUsers = {
-  type: PrivateActionType.LIST_USERS
-};
 
 export const unlockUserAction: UnlockUser = {
   password: "password123" as PasswordString,
@@ -117,4 +112,4 @@ export const grantStoreAccessAction: GrantStoreAccess = {
 };
 
 export const handlePrivateAction = (action: PrivateAction) => action;
-export const handledPrivateAction = handlePrivateAction(listUsersAction);
+export const handledPrivateAction = handlePrivateAction(unlockUserAction);

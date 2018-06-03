@@ -12,7 +12,6 @@ import {
 import { PasswordString, UsernameString } from "./accounts";
 
 export const enum PrivateActionType {
-  LIST_USERS = "LIST_USERS", // looks at current state, really a query
   UNLOCK_USER = "UNLOCK_USER",
   CREATE_USER = "CREATE_USER",
   RESTORE_USER = "RESTORE_USER",
@@ -22,10 +21,6 @@ export const enum PrivateActionType {
   SIGN_TRANSACTION = "SIGN_TRANSACTION",
   SET_ACTIVE_KEY = "SET_ACTIVE_KEY",
   GRANT_STORE_ACCESS = "GRANT_STORE_ACCESS"
-}
-
-export interface ListUsers {
-  readonly type: PrivateActionType.LIST_USERS;
 }
 
 export interface UnlockUser {
@@ -87,7 +82,6 @@ export interface GrantStoreAccess {
 }
 
 export type PrivateAction =
-  | ListUsers
   | UnlockUser
   | CreateUser
   | RestoreUser
