@@ -11,3 +11,8 @@ export type PasswordString = Password & string;
 export interface Account {
   readonly publicKey: PublicKeyString;
 }
+
+export interface User {
+  readonly username: UsernameString;
+  readonly accounts: ReadonlyArray<Account>;
+}
