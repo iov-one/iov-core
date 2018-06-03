@@ -10,7 +10,7 @@ import {
   TTLBuffer
 } from "@iov/types";
 import { Stream } from "xstream";
-import { PasswordString, UsernameString } from "./accounts";
+import { PasswordString, User, UsernameString } from "./accounts";
 import {
   ImportPrivateKey,
   PrivateAction,
@@ -38,7 +38,7 @@ type SignDispatcher = (action: SignTransaction) => Promise<Transaction>;
 type ImportDispatcher = (action: ImportPrivateKey) => Promise<true>; // ??
 
 interface KeybaseState {
-  readonly users: ReadonlyArray<UsernameString>;
+  readonly users: ReadonlyArray<User>;
   readonly activeKey: PublicKeyString | null;
 }
 
