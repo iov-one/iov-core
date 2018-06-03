@@ -1,4 +1,4 @@
-import { ClientNameString, ClientTokenString } from "../types/clients";
+import { ClientNameString, ClientTokenString } from "./";
 
 export const clientName: ClientNameString = "my.web4client.com" as ClientNameString;
 

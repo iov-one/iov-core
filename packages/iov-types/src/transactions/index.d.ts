@@ -1,4 +1,4 @@
-import { PublicKeyString } from "./keys";
+import { PublicKeyString } from "../keys";
 
 declare const NonceSymbol: unique symbol;
 type Nonce = typeof NonceSymbol;

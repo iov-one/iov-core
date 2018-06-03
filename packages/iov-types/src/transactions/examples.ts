@@ -1,4 +1,4 @@
-import { PublicKeyString } from "../types/keys";
+import { PublicKeyString } from "../keys";
 import {
   ChainID,
   CurrencyCode,
@@ -8,7 +8,7 @@ import {
   Transaction,
   TTLBuffer,
   TTLString
-} from "../types/transactions";
+} from "./";
 
 export const nonceBuffer: NonceBuffer = new Uint8Array([
   0,
