@@ -1,5 +1,4 @@
 import {
-  GetCurrentAccount,
   PublicAction,
   PublicActionType,
   RequestAPIAccess,
@@ -16,10 +15,6 @@ export const requestAPIAccessActionWithOptions: RequestAPIAccess = {
     some: "future option"
   },
   type: PublicActionType.REQUEST_API_ACCESS
-};
-
-export const getCurrentAccountAction: GetCurrentAccount = {
-  type: PublicActionType.GET_CURRENT_ACCOUNT
 };
 
 export const requestSignTransactionAction: RequestSignTransaction = {
