@@ -21,9 +21,13 @@ import {
   SignTransaction,
   UnlockUser
 } from "./actions_private";
+import { KeybaseState } from "./states";
 
 // tslint:disable-next-line:no-class
 export default class KeybasePrivate {
+  // tslint:disable-next-line:readonly-keyword
+  public state: KeybaseState;
+
   public readonly addAccount: (options?: {}) => AddAccount;
   public readonly createUser: (
     username: UsernameString,
