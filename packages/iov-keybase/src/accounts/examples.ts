@@ -1,4 +1,4 @@
-import { PasswordString, UsernameString } from "../types/accounts";
+import { PasswordString, UsernameString } from "./types";
 
 export const password: PasswordString = "password123" as PasswordString;
 

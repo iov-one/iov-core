@@ -1,4 +1,6 @@
-import { PublicKeyString, SignatureString } from "../types/keys";
+import { PublicKeyString, SignatureString } from "../keys";
+import { NonceString } from "../transactions";
+import { sendTx } from "../transactions/examples";
 import {
   FullSignature,
   PostableBuffer,
@@ -6,10 +8,7 @@ import {
   SignableTransaction,
   TransactionIDString,
   TxCodec
-} from "../types/signables";
-import { NonceString } from "../types/transactions";
-
-import { sendTx } from "./transactions";
+} from "./";
 
 export const fullSignature: FullSignature = {
   nonce: "1234" as NonceString,

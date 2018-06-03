@@ -1,3 +1,4 @@
+import { sendTx } from "../examples/iov-types";
 import {
   ChangeEvent,
   GetCurrentAccount,
@@ -7,8 +8,7 @@ import {
   RequestAPIAccess,
   RequestSignMessage,
   RequestSignTransaction
-} from "../types/actions_public";
-import { sendTx } from "./iov-types";
+} from "./types";
 
 export const requestAPIAccessAction: RequestAPIAccess = {
   type: PublicActionType.REQUEST_API_ACCESS

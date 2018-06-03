@@ -1,5 +1,5 @@
-import { PublicKeyString, SignatureString } from "./keys";
-import { NonceString, Transaction } from "./transactions";
+import { PublicKeyString, SignatureString } from "../keys";
+import { NonceString, Transaction } from "../transactions";
 
 declare const TransactionIDSymbol: unique symbol;
 type TransactionID = typeof TransactionIDSymbol;
