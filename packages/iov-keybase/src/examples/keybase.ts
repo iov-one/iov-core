@@ -1,7 +1,19 @@
 import { Transaction } from "@iov/types";
 import { Observable } from "xstream";
 import { Account } from "../types/accounts";
-import { KeybasePublic } from "../types/keybase";
+import { KeybasePrivate, KeybasePublic } from "../types/keybase";
+
+export const privateKeybase: KeybasePrivate = {
+  addAccount: () => true,
+  createUser: () => true,
+  exportUser: () => true,
+  grantStoreAccess: () => true,
+  importPrivateKey: () => true,
+  restoreUser: () => true,
+  setActiveKey: () => true,
+  signTransaction: () => true,
+  unlockUser: () => true,
+}
 
 const accountsObservable: Observable<Account> = {
   subscribe: () => ({
