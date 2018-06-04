@@ -1,3 +1,16 @@
+os:
+  - linux
+  - osx
+
 language: node_js
 node_js:
   - "6"
+
+script:
+- |
+  if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    # Test browser
+    cd packages/testable-demo && yarn test-safari
+  else
+    yarn test
+  fi
