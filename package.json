@@ -23,6 +23,7 @@
     "build": "lerna run build"
   },
   "devDependencies": {
+    "jasmine-node": "^1.14.5",
     "lerna": "^2.10.2",
     "tslint-config-prettier": "^1.13.0",
     "tslint-immutable": "^4.5.4"
