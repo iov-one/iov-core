@@ -1,7 +1,7 @@
 {
   "name": "@iov/testable-demo",
   "version": "0.0.0",
-  "description": "Tendermint RPC client wrapper",
+  "description": "Demo project showing how to test code in NodeJS and browsers",
   "author": "simon <webmaster128@users.noreply.github.com>",
   "license": "AGPL-3.0",
   "main": "index.js",
@@ -10,16 +10,10 @@
     "url": "https://github.com/iov-one/web4/tree/master/packages/testable-demo"
   },
   "scripts": {
-    "run-dev": "ts-node",
-    "format": "prettier --write **/*.ts",
-    "lint": "tslint --project .",
-    "lint-fix": "yarn lint --fix",
     "test-node": "./node_modules/.bin/jasmine-node tests",
     "test-firefox": "./node_modules/.bin/karma start --single-run --browsers Firefox",
     "test-chrome": "./node_modules/.bin/karma start --single-run --browsers Chrome",
-    "test": "yarn test-node && yarn test-firefox",
-    "prebuild": "yarn format && yarn lint",
-    "build": "tsc"
+    "test": "yarn test-node && yarn test-firefox"
   },
   "dependencies": {},
   "devDependencies": {
