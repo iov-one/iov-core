@@ -1,4 +1,4 @@
-import { PublicKeyBundle, SignatureString } from "./keys";
+import { PublicKeyBundle, SignatureBytes } from "./keys";
 import { Nonce, Transaction } from "./transactions";
 
 declare const TransactionIDSymbol: unique symbol;
@@ -21,7 +21,7 @@ export type PostableString = Postable & string;
 export interface FullSignature {
   readonly nonce: Nonce;
   readonly publicKey: PublicKeyBundle;
-  readonly signature: SignatureString;
+  readonly signature: SignatureBytes;
 }
 
 // A signable transaction knows how to serialize itself
@@ -46,7 +46,7 @@ export interface TxCodec {
   // bytesToPost includes the raw transaction appended with the various signatures
   readonly bytesToPost: (tx: SignableTransaction) => PostableBytes;
   // identifier is usually some sort of hash of bytesToPost, chain-dependent
-  readonly identifier: (tx: SignableTransaction) => TransactionIDString;
+  readonly identifier: (tx: SignableTransaction) => TransactionIDBytes;
   // parseBytes will recover bytes from the blockchain into a format we can use
   readonly parseBytes: (bytes: PostableBytes) => SignableTransaction;
 }

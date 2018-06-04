@@ -1,6 +1,6 @@
 // import { Transaction } from "@iov/types";
 import { Stream } from "xstream";
-import { PublicKeyBundle, AddressString } from "./keys";
+import { AddressBytes, PublicKeyBundle } from "./keys";
 import { SignableTransaction } from "./signables";
 import { FungibleToken, Nonce, TokenTicker } from "./transactions";
 
@@ -78,7 +78,7 @@ export const enum AccountQueryType {
 
 export interface AccountQueryByAddress {
   type: AccountQueryType.ADDRESS;
-  address: AddressString;
+  address: AddressBytes;
 }
 
 export interface AccountQueryByPublicKeyBundle {
@@ -99,7 +99,7 @@ export type AccountQuery =
 // Nonce is a minimal subset of Account for efficiency
 export interface AccountNonce {
   PublicKeyBundle?: PublicKeyBundle;
-  address: AddressString;
+  address: AddressBytes;
   nonce: Nonce;
 }
 
@@ -133,7 +133,7 @@ export type BlockHashString = string & BlockHash;
 // Header is an abstraction
 export interface Header {
   readonly height: number;
-  readonly hash: BlockHashString;
+  readonly hash: BlockHashBytes;
   // TODO: much more...
 }
 

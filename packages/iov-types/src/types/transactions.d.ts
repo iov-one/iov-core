@@ -1,4 +1,4 @@
-import { PublicKeyBundle, AddressString } from "./keys";
+import { PublicKeyBundle } from "./keys";
 
 declare const NonceSymbol: unique symbol;
 export type Nonce = typeof NonceSymbol & number;
@@ -32,7 +32,7 @@ export interface BaseTx {
   readonly chainId: ChainID;
   readonly fee: FungibleToken;
   readonly signer: PublicKeyBundle;
-  readonly ttl?: TTLString;
+  readonly ttl?: TTLBytes;
 }
 
 export interface SendTx extends BaseTx {
@@ -65,12 +65,12 @@ export interface SwapCounterTx extends BaseTx {
 export interface SwapClaimTx extends BaseTx {
   readonly kind: "swap_claim";
   readonly preimage: Uint8Array;
-  readonly swapId: SwapIDString;
+  readonly swapId: SwapIDBytes;
 }
 
 export interface SwapTimeoutTx extends BaseTx {
   readonly kind: "swap_timeout";
-  readonly swapId: SwapIDString;
+  readonly swapId: SwapIDBytes;
 }
 
 export type Transaction =

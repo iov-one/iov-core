@@ -11,13 +11,11 @@ import {
   PublicKeyBytes,
   PublicKeyString,
   SeedBytes,
-  SeedString
+  SeedString,
+  SignatureBytes,
+  SignatureString
 } from "../types/keys";
-
-const convertHexStringToUint8Array = (str: string): Uint8Array => {
-  const buffer = Buffer.from(str, "hex");
-  return Uint8Array.from(buffer);
-};
+import { convertHexStringToUint8Array } from "./utils";
 
 export const addressString: AddressString = "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2" as AddressString;
 
@@ -62,3 +60,8 @@ export const seedString: SeedString = "000102030405060708090a0b0c0d0e0f" as Seed
 export const seedBytes: SeedBytes = convertHexStringToUint8Array(
   seedString
 ) as SeedBytes;
+
+export const signatureString: SignatureString = "78a2863ad64a87ae8a2fe83c1afa5bdf5841d9c56d6d975c1ab56ba569c3e367aafa2f9e2ce3dc518eab2594b771a8403cb53f53e486d8511dad8a04887e5b2352" as SignatureString;
+export const signatureBytes: SignatureBytes = convertHexStringToUint8Array(
+  signatureString
+) as SignatureBytes;

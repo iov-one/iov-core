@@ -1,16 +1,17 @@
-import { Algorithm, PublicKeyBundle, SignatureString } from "../types/keys";
+import { Algorithm, PublicKeyBundle } from "../types/keys";
 import {
   FullSignature,
   PostableBytes,
   SignableBytes,
   SignableTransaction,
-  TransactionIDString,
+  TransactionIDBytes,
   TxCodec
 } from "../types/signables";
 import { Nonce } from "../types/transactions";
 
-import { publicKeyBytes } from "./keys";
+import { publicKeyBytes, signatureBytes } from "./keys";
 import { sendTx } from "./transactions";
+import { convertHexStringToUint8Array } from "./utils";
 
 export const signer: PublicKeyBundle = {
   algo: Algorithm.ED25519,
@@ -20,7 +21,7 @@ export const signer: PublicKeyBundle = {
 export const fullSignature: FullSignature = {
   nonce: 1234 as Nonce,
   publicKey: signer,
-  signature: "deadbeef00cafe00" as SignatureString
+  signature: signatureBytes
 };
 
 export const signableTransaction = (): SignableTransaction => ({
@@ -32,6 +33,7 @@ export const signableTransaction = (): SignableTransaction => ({
 export const encoder: TxCodec = {
   bytesToPost: () => (Buffer.from("1234") as Uint8Array) as PostableBytes,
   bytesToSign: () => (Buffer.from("1234") as Uint8Array) as SignableBytes,
-  identifier: () => "1234" as TransactionIDString,
+  identifier: () =>
+    convertHexStringToUint8Array("12345678") as TransactionIDBytes,
   parseBytes: () => signableTransaction()
 };

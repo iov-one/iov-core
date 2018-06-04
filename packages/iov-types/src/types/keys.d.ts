@@ -1,6 +1,7 @@
 declare const AddressSymbol: unique symbol;
 type Address = typeof AddressSymbol;
 export type AddressString = Address & string;
+export type AddressBytes = Address & Uint8Array;
 
 declare const MnemonicSymbol: unique symbol;
 type Mnemonic = typeof MnemonicSymbol;
