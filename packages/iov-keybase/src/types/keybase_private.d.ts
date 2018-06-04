@@ -23,6 +23,16 @@ import {
 } from "./actions_private";
 import { KeybaseState } from "./states";
 
+/*
+TODO:
+I'm a bit confused here....
+
+The dispatch on a stateful object makes sense to me.
+But the rest, eg. createUser create a PrivateAction that can then be passed into dispatch.
+Why are these Action constructors tied to the class?
+
+Why does dispatch return another action, not eg. Promise<ActionResult>?
+*/
 // tslint:disable-next-line:no-class
 export default class KeybasePrivate {
   // tslint:disable-next-line:readonly-keyword
