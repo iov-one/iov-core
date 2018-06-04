@@ -1,9 +1,9 @@
 import { Algorithm, PublicKey, PublicKeyString } from "../types/keys";
 import {
   ChainID,
-  CurrencyCode,
   Nonce,
   SendTx,
+  TokenTicker,
   Transaction,
   TTLBuffer,
   TTLString
@@ -11,7 +11,7 @@ import {
 
 export const nonce: Nonce = 123 as Nonce;
 
-export const iov: CurrencyCode = "IOV" as CurrencyCode;
+export const iov: TokenTicker = "IOV" as TokenTicker;
 
 export const sender: PublicKey = {
   algo: Algorithm.ED25519,

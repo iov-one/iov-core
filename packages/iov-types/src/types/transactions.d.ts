@@ -9,9 +9,9 @@ type TTL = typeof TTLSymbol;
 export type TTLBuffer = TTL & Uint8Array;
 export type TTLString = TTL & string;
 
-// CurrencyCode should be 3-4 letters, uppercase
-declare const CurrencySymbol: unique symbol;
-export type CurrencyCode = typeof CurrencySymbol & string;
+// TokenTicker should be 3-4 letters, uppercase
+declare const TokenTickerSymbol: unique symbol;
+export type TokenTicker = typeof TokenTickerSymbol & string;
 
 // ChainID should be 3-4 letters, uppercase
 declare const ChainSymbol: unique symbol;
@@ -22,22 +22,22 @@ type SwapID = typeof SwapIDSymbol;
 export type SwapIDBuffer = SwapID & Uint8Array;
 export type SwapIDString = SwapID & string;
 
-export interface Coin {
+export interface FungibleToken {
   readonly whole: number;
   readonly fractional: number;
-  readonly tokenTicker: CurrencyCode;
+  readonly tokenTicker: TokenTicker;
 }
 
 export interface BaseTx {
   readonly chainId: ChainID;
-  readonly fee: Coin;
+  readonly fee: FungibleToken;
   readonly signer: PublicKey;
   readonly ttl?: TTLString;
 }
 
 export interface SendTx extends BaseTx {
   readonly kind: "send";
-  readonly amount: Coin;
+  readonly amount: FungibleToken;
   readonly recipient: PublicKey;
 }
 
@@ -48,7 +48,7 @@ export interface SetNameTx extends BaseTx {
 
 export interface SwapOfferTx extends BaseTx {
   readonly kind: "swap_offer";
-  readonly amount: ReadonlyArray<Coin>;
+  readonly amount: ReadonlyArray<FungibleToken>;
   readonly recipient: PublicKey;
   readonly timeout: number; // number of blocks in the future
   readonly preimage: Uint8Array;
@@ -56,7 +56,7 @@ export interface SwapOfferTx extends BaseTx {
 
 export interface SwapCounterTx extends BaseTx {
   readonly kind: "swap_counter";
-  readonly amount: ReadonlyArray<Coin>;
+  readonly amount: ReadonlyArray<FungibleToken>;
   readonly recipient: PublicKey;
   readonly timeout: number; // number of blocks in the future
   readonly hash: Uint8Array;

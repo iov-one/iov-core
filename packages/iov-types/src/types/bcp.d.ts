@@ -2,7 +2,7 @@
 import { Stream } from "xstream";
 import { PublicKey, AddressString } from "./keys";
 import { SignableTransaction } from "./signables";
-import { Coin, Nonce, CurrencyCode } from "./transactions";
+import { FungibleToken, Nonce, TokenTicker } from "./transactions";
 
 // import { RPC, Websocket } from "./rpc";
 // import { Block, Header } from "./blocks";
@@ -55,7 +55,7 @@ export interface Node {
   watchAccount(query: AccountQuery): Stream<Account>;
   watchNonce(query: AccountQuery): Stream<AccountNonce>;
 
-  getTicker(ticker: CurrencyCode): Promise<Ticker>;
+  getTicker(ticker: TokenTicker): Promise<Ticker>;
   watchAllTickers(): Stream<Ticker>;
 }
 
@@ -109,7 +109,7 @@ export interface Account extends AccountNonce {
   extended: any;
 }
 
-export interface Balance extends Coin {
+export interface Balance extends FungibleToken {
   tokenName?: string;
   sigFigs: number;
 }
@@ -117,7 +117,7 @@ export interface Balance extends Coin {
 //----
 
 export interface Ticker {
-  tokenTicker: CurrencyCode;
+  tokenTicker: TokenTicker;
   tokenName?: string;
   sigFigs: number;
 }
