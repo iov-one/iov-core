@@ -13,38 +13,40 @@ export const enum Algorithm {
 
 declare const PrivateKeySymbol: unique symbol;
 type PrivateKeyType = typeof PrivateKeySymbol;
-export type PrivateKeyBuffer = PrivateKeyType & Uint8Array;
+export type PrivateKeyBytes = PrivateKeyType & Uint8Array;
 export type PrivateKeyString = PrivateKeyType & string;
-export interface PrivateKey {
-  algo: Algorithm;
-  data: PrivateKeyString;
+export interface PrivateKeyBundle {
+  readonly algo: Algorithm;
+  readonly data: PrivateKeyBytes;
 }
 
 declare const PublicKeySymbol: unique symbol;
 type PublicKeyType = typeof PublicKeySymbol;
-export type PublicKeyBuffer = PublicKeyType & Uint8Array;
+export type PublicKeyBytes = PublicKeyType & Uint8Array;
 export type PublicKeyString = PublicKeyType & string;
-export interface PublicKey {
-  algo: Algorithm;
-  data: PublicKeyString;
+export interface PublicKeyBundle {
+  readonly algo: Algorithm;
+  readonly data: PublicKeyBytes;
 }
 
 declare const SignatureSymbol: unique symbol;
 type Signature = typeof SignatureSymbol;
-export type SignatureBuffer = Signature & Uint8Array;
+export type SignatureBytes = Signature & Uint8Array;
 export type SignatureString = Signature & string;
 
-export interface KeyPairBuffer {
-  readonly private: PrivateKeyBuffer;
-  readonly public: PublicKeyBuffer;
+export interface KeyPairBytes {
+  readonly algo: Algorithm;
+  readonly private: PrivateKeyBytes;
+  readonly public: PublicKeyBytes;
 }
 
 export interface KeyPairString {
+  readonly algo: Algorithm;
   readonly private: PrivateKeyString;
   readonly public: PublicKeyString;
 }
 
 declare const SeedSymbol: unique symbol;
 type Seed = typeof SeedSymbol;
-export type SeedBuffer = Seed & Uint8Array;
+export type SeedBytes = Seed & Uint8Array;
 export type SeedString = Seed & string;

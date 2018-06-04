@@ -1,26 +1,26 @@
-import { PublicKey, SignatureString } from "./keys";
+import { PublicKeyBundle, SignatureString } from "./keys";
 import { Nonce, Transaction } from "./transactions";
 
 declare const TransactionIDSymbol: unique symbol;
 type TransactionID = typeof TransactionIDSymbol;
-export type TransactionIDBuffer = TransactionID & Uint8Array;
+export type TransactionIDBytes = TransactionID & Uint8Array;
 export type TransactionIDString = TransactionID & string;
 
 declare const SignableSymbol: unique symbol;
 type Signable = typeof SignableSymbol;
-export type SignableBuffer = Signable & Uint8Array;
+export type SignableBytes = Signable & Uint8Array;
 export type SignableString = Signable & string;
 
 declare const PostableSymbol: unique symbol;
 type Postable = typeof PostableSymbol;
-export type PostableBuffer = Postable & Uint8Array;
+export type PostableBytes = Postable & Uint8Array;
 export type PostableString = Postable & string;
 
 // NB: use Buffer or String, we should be consistent....
 // I figure string if this will be json dumped, but maybe less efficient
 export interface FullSignature {
   readonly nonce: Nonce;
-  readonly publicKey: PublicKey;
+  readonly publicKey: PublicKeyBundle;
   readonly signature: SignatureString;
 }
 
@@ -42,11 +42,11 @@ export interface TxCodec {
   readonly bytesToSign: (
     tx: SignableTransaction,
     nonce: Nonce
-  ) => SignableBuffer;
+  ) => SignableBytes;
   // bytesToPost includes the raw transaction appended with the various signatures
-  readonly bytesToPost: (tx: SignableTransaction) => PostableBuffer;
+  readonly bytesToPost: (tx: SignableTransaction) => PostableBytes;
   // identifier is usually some sort of hash of bytesToPost, chain-dependent
   readonly identifier: (tx: SignableTransaction) => TransactionIDString;
   // parseBytes will recover bytes from the blockchain into a format we can use
-  readonly parseBytes: (bytes: PostableBuffer) => SignableTransaction;
+  readonly parseBytes: (bytes: PostableBytes) => SignableTransaction;
 }

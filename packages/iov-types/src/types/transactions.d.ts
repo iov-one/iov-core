@@ -1,4 +1,4 @@
-import { PublicKey, AddressString } from "./keys";
+import { PublicKeyBundle, AddressString } from "./keys";
 
 declare const NonceSymbol: unique symbol;
 export type Nonce = typeof NonceSymbol & number;
@@ -6,7 +6,7 @@ export type Nonce = typeof NonceSymbol & number;
 // TODO: can't we just make this a number (block height?)
 declare const TTLSymbol: unique symbol;
 type TTL = typeof TTLSymbol;
-export type TTLBuffer = TTL & Uint8Array;
+export type TTLBytes = TTL & Uint8Array;
 export type TTLString = TTL & string;
 
 // TokenTicker should be 3-4 letters, uppercase
@@ -19,7 +19,7 @@ export type ChainID = typeof ChainSymbol & string;
 
 declare const SwapIDSymbol: unique symbol;
 type SwapID = typeof SwapIDSymbol;
-export type SwapIDBuffer = SwapID & Uint8Array;
+export type SwapIDBytes = SwapID & Uint8Array;
 export type SwapIDString = SwapID & string;
 
 export interface FungibleToken {
@@ -31,14 +31,14 @@ export interface FungibleToken {
 export interface BaseTx {
   readonly chainId: ChainID;
   readonly fee: FungibleToken;
-  readonly signer: PublicKey;
+  readonly signer: PublicKeyBundle;
   readonly ttl?: TTLString;
 }
 
 export interface SendTx extends BaseTx {
   readonly kind: "send";
   readonly amount: FungibleToken;
-  readonly recipient: PublicKey;
+  readonly recipient: PublicKeyBundle;
 }
 
 export interface SetNameTx extends BaseTx {
@@ -49,7 +49,7 @@ export interface SetNameTx extends BaseTx {
 export interface SwapOfferTx extends BaseTx {
   readonly kind: "swap_offer";
   readonly amount: ReadonlyArray<FungibleToken>;
-  readonly recipient: PublicKey;
+  readonly recipient: PublicKeyBundle;
   readonly timeout: number; // number of blocks in the future
   readonly preimage: Uint8Array;
 }
@@ -57,7 +57,7 @@ export interface SwapOfferTx extends BaseTx {
 export interface SwapCounterTx extends BaseTx {
   readonly kind: "swap_counter";
   readonly amount: ReadonlyArray<FungibleToken>;
-  readonly recipient: PublicKey;
+  readonly recipient: PublicKeyBundle;
   readonly timeout: number; // number of blocks in the future
   readonly hash: Uint8Array;
 }

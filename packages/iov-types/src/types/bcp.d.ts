@@ -1,14 +1,14 @@
 // import { Transaction } from "@iov/types";
 import { Stream } from "xstream";
-import { PublicKey, AddressString } from "./keys";
+import { PublicKeyBundle, AddressString } from "./keys";
 import { SignableTransaction } from "./signables";
 import { FungibleToken, Nonce, TokenTicker } from "./transactions";
 
 // import { RPC, Websocket } from "./rpc";
 // import { Block, Header } from "./blocks";
-// import { ParsedStateObject, StateKey, StateBuffer } from "./state";
+// import { ParsedStateObject, StateKey, StateBytes } from "./state";
 // import {
-//   TransactionBuffer,
+//   TransactionBytes,
 //   TransactionState,
 //   TransactionStateProcessed,
 //   TxQueryString,
@@ -81,9 +81,9 @@ export interface AccountQueryByAddress {
   address: AddressString;
 }
 
-export interface AccountQueryByPublicKey {
+export interface AccountQueryByPublicKeyBundle {
   type: AccountQueryType.PUBLIC_KEY;
-  publicKey: PublicKey;
+  PublicKeyBundle: PublicKeyBundle;
 }
 
 export interface AccountQueryByName {
@@ -94,11 +94,11 @@ export interface AccountQueryByName {
 export type AccountQuery =
   | AccountQueryByAddress
   | AccountQueryByName
-  | AccountQueryByPublicKey;
+  | AccountQueryByPublicKeyBundle;
 
 // Nonce is a minimal subset of Account for efficiency
 export interface AccountNonce {
-  publicKey?: PublicKey;
+  PublicKeyBundle?: PublicKeyBundle;
   address: AddressString;
   nonce: Nonce;
 }
@@ -127,7 +127,7 @@ export interface Ticker {
 
 declare const BlockHashSymbol: unique symbol;
 type BlockHash = typeof BlockHashSymbol;
-export type BlockHashBuffer = Uint8Array & BlockHash;
+export type BlockHashBytes = Uint8Array & BlockHash;
 export type BlockHashString = string & BlockHash;
 
 // Header is an abstraction
