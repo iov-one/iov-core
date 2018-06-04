@@ -2,12 +2,10 @@ import {
   AddressString,
   ClientNameString,
   ClientTokenString,
-  NonceBuffer,
   PrivateKeyString,
   PublicKeyString,
   SeedString,
-  Transaction,
-  TTLBuffer
+  Transaction
 } from "@iov/types";
 import { Stream } from "xstream";
 import { PasswordString, User, UsernameString } from "./accounts";

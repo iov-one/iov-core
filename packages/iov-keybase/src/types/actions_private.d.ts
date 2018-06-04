@@ -2,15 +2,11 @@ import {
   AddressString,
   ClientNameString,
   ClientTokenString,
-<<<<<<< 469c5cc9f4a52b3e5f20342f052badfe7571adf0
-=======
-  Nonce,
->>>>>>> Define bcp node and account types
   PrivateKeyString,
   PublicKeyString,
   SeedString,
   Transaction,
-  TTLBuffer
+  TTLBytes
 } from "@iov/types";
 import { PasswordString, UsernameString } from "./accounts";
 
@@ -68,7 +64,7 @@ export interface SignTransaction {
   readonly type: PrivateActionType.SIGN_TRANSACTION;
   readonly publicKey: PublicKeyString;
   readonly transaction: Transaction;
-  readonly ttl: TTLBuffer | null;
+  readonly ttl: TTLBytes | null;
 }
 
 export interface SetActiveKey {
