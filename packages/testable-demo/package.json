@@ -16,6 +16,7 @@
     "lint-fix": "yarn lint --fix",
     "test-node": "./node_modules/.bin/jasmine-node tests",
     "test-firefox": "./node_modules/.bin/karma start --single-run --browsers Firefox",
+    "test-chrome": "./node_modules/.bin/karma start --single-run --browsers Chrome",
     "test": "yarn test-node && yarn test-firefox",
     "prebuild": "yarn format && yarn lint",
     "build": "tsc"
