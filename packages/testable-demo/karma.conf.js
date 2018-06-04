@@ -4,19 +4,18 @@ module.exports = function(config) {
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '.',
 
-
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine', 'browserify'],
-
+    frameworks: ['jasmine', 'karma-typescript'],
 
     // list of files / patterns to load in the browser
     files: [
-      'tests/**/*.spec.js',
+      'src/**/*.ts',
+      'tests/**/*.spec.ts',
     ],
 
     preprocessors: {
-      'tests/**/*.spec.js': ['browserify'],
+      '**/*.ts': ['karma-typescript'],
     },
 
     browserify: {
@@ -31,7 +30,7 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ["progress", "karma-typescript"],
 
     // web server port
     port: 9876,

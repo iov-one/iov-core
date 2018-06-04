@@ -10,22 +10,23 @@
     "url": "https://github.com/iov-one/web4/tree/master/packages/testable-demo"
   },
   "scripts": {
-    "test-node": "./node_modules/.bin/jasmine-node tests",
+    "test-node": "./node_modules/.bin/jasmine-node dist/tests",
     "test-firefox": "./node_modules/.bin/karma start --single-run --browsers Firefox",
     "test-chrome": "./node_modules/.bin/karma start --single-run --browsers Chrome",
     "test-safari": "./node_modules/.bin/karma start --single-run --browsers Safari",
-    "test": "yarn test-node"
+    "test": "yarn test-node",
+    "build": "tsc"
   },
   "dependencies": {},
   "devDependencies": {
-    "browserify": "^16.2.2",
+    "@types/jasmine": "^2.8.8",
     "jasmine": "^3.1.0",
     "jasmine-node": "^1.14.5",
     "karma": "^2.0.2",
-    "karma-browserify": "^5.2.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-firefox-launcher": "^1.1.0",
     "karma-jasmine": "^1.1.2",
-    "karma-safari-launcher": "^1.0.0"
+    "karma-safari-launcher": "^1.0.0",
+    "karma-typescript": "^3.0.12"
   }
 }

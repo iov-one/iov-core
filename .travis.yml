@@ -12,5 +12,5 @@ script:
     # Test browser
     cd packages/testable-demo && yarn test-safari
   else
-    yarn test
+    yarn build && yarn test
   fi
