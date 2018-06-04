@@ -1,14 +1,14 @@
 import { Transaction } from "@iov/types";
 import { Stream } from "xstream";
-import { RPC, Websocket } from "./rpc";
 import { Block, Header } from "./blocks";
-import { ParsedStateObject, StateKey, StateBuffer } from "./state";
+import { RPC, Websocket } from "./rpc";
+import { ParsedStateObject, StateBuffer, StateKey } from "./state";
 import {
   TransactionBuffer,
+  TransactionIDString,
   TransactionState,
   TransactionStateProcessed,
-  TxQueryString,
-  TransactionIDString
+  TxQueryString
 } from "./transactions";
 
 // ParsedRPC handles all the serialization of data structures, and allows
@@ -52,28 +52,3 @@ export type ParseRPC = (
   parseState: StateParser,
   encodeTx: TxEncoder
 ) => (rpc: RPC) => ParsedRPC;
-
-/*
-dispatch(action) .... reducer(action, state) => state 
-
-components: props: (state) => state.foo.bar
-*/
-
-/*
-dispatch(action) => promise(success|failure)
-like async middleware / axios....
-
-watch(state, 'foo.bar') => Stream<Updates>
-
-you may want to compose all these streams into one reactive state....
-
-combine(watch1, watch2, watch3).map((w1, w2, w3) => ({
-  foo: w1,
-  bar: w2,
-  baz: w3
-})).subscribe(state => dispatch({type: SET_STATE, data: state}));
-
-watch1.subscribe(state => dispatch({type: UPDATE_FOO,  data: state}));
-watch2.subscribe(state => dispatch({type: UPDATE_BAR,  data: state}));
-watch3.subscribe(state => dispatch({type: UPDATE_BAZ,  data: state}));
-*/

@@ -1,7 +1,6 @@
 import {
   ClientNameString,
   ClientTokenString,
-  NonceBuffer,
   PrivateKeyString,
   PublicKeyString,
   SeedString,
@@ -14,7 +13,6 @@ import {
   ExportUser,
   GrantStoreAccess,
   ImportPrivateKey,
-  ListUsers,
   PrivateAction,
   PrivateActionType,
   RestoreUser,
@@ -22,10 +20,7 @@ import {
   SignTransaction,
   UnlockUser
 } from "../types/actions_private";
-
-export const listUsersAction: ListUsers = {
-  type: PrivateActionType.LIST_USERS
-};
+import { sendTx } from "./iov-types";
 
 export const unlockUserAction: UnlockUser = {
   password: "password123" as PasswordString,
@@ -88,25 +83,15 @@ export const exportUserActionWithOptions: ExportUser = {
 };
 
 export const signTransactionAction: SignTransaction = {
-  nonce: null,
   publicKey: "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString,
-  transaction: {
-    amount: 123,
-    kind: "send",
-    sender: "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString
-  },
+  transaction: sendTx,
   ttl: null,
   type: PrivateActionType.SIGN_TRANSACTION
 };
 
 export const signTransactionActionWithNonceAndTTL: SignTransaction = {
-  nonce: new Uint8Array([0, 0, 0, 4]) as NonceBuffer,
   publicKey: "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString,
-  transaction: {
-    amount: 123,
-    kind: "send",
-    sender: "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString
-  },
+  transaction: sendTx,
   ttl: new Uint8Array([1, 0, 0, 0]) as TTLBuffer,
   type: PrivateActionType.SIGN_TRANSACTION
 };
@@ -124,4 +109,4 @@ export const grantStoreAccessAction: GrantStoreAccess = {
 };
 
 export const handlePrivateAction = (action: PrivateAction) => action;
-export const handledPrivateAction = handlePrivateAction(listUsersAction);
+export const handledPrivateAction = handlePrivateAction(unlockUserAction);

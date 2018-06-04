@@ -2,43 +2,15 @@ import {
   AddressString,
   ClientNameString,
   ClientTokenString,
-  NonceBuffer,
   PrivateKeyString,
   PublicKeyString,
   SeedString,
   Transaction,
   TTLBuffer
 } from "@iov/types";
-import { Stream } from "xstream";
 import { PasswordString, UsernameString } from "./accounts";
 
-// do we listen as one giant blob, or a separate listener
-// for each subset of the state tree
-type StateWatcher = () => Stream<KeybaseState>;
-type UserWatcher = () => Stream<UsernameString>;
-
-// this makes sense for eg. create account, which will just
-// show response by updating state sent to StateWatcher
-// type PrivateDispatcher = (action: PrivateAction) => void;
-
-// this makes sense for signmessage, which wants to pass the
-// return value into another pipe.
-// unless we have some WatchAllSignedMessages() stream....
-
-// Do we have one generate function, or specific types ones?
-// Can we use overloading to define all possible
-// request/response pairs on one dispath function
-type PrivateDispatcher = (action: PrivateAction) => Promise<any>;
-type SignDispatcher = (action: SignTransaction) => Promise<Transaction>;
-type ImportDispatcher = (action: ImportPrivateKey) => Promise<true>; // ??
-
-interface KeybaseState {
-  readonly users: ReadonlyArray<UsernameString>;
-  readonly activeKey: PublicKeyString | null;
-}
-
 export const enum PrivateActionType {
-  LIST_USERS = "LIST_USERS", // looks at current state, really a query
   UNLOCK_USER = "UNLOCK_USER",
   CREATE_USER = "CREATE_USER",
   RESTORE_USER = "RESTORE_USER",
@@ -48,10 +20,6 @@ export const enum PrivateActionType {
   SIGN_TRANSACTION = "SIGN_TRANSACTION",
   SET_ACTIVE_KEY = "SET_ACTIVE_KEY",
   GRANT_STORE_ACCESS = "GRANT_STORE_ACCESS"
-}
-
-export interface ListUsers {
-  readonly type: PrivateActionType.LIST_USERS;
 }
 
 export interface UnlockUser {
@@ -96,7 +64,6 @@ export interface SignTransaction {
   readonly type: PrivateActionType.SIGN_TRANSACTION;
   readonly publicKey: PublicKeyString;
   readonly transaction: Transaction;
-  readonly nonce: NonceBuffer | null;
   readonly ttl: TTLBuffer | null;
 }
 
@@ -113,7 +80,6 @@ export interface GrantStoreAccess {
 }
 
 export type PrivateAction =
-  | ListUsers
   | UnlockUser
   | CreateUser
   | RestoreUser
