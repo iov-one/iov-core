@@ -2,10 +2,9 @@ import { Transaction } from "@iov/types";
 import { Stream } from "xstream";
 import { Block, Header } from "./blocks";
 import { RPC, Websocket } from "./rpc";
-import { ParsedStateObject, StateBuffer, StateKey } from "./state";
+import { ParsedStateObject, StateKey, StateBytes } from "./state";
 import {
-  TransactionBuffer,
-  TransactionIDString,
+  TransactionBytes,
   TransactionState,
   TransactionStateProcessed,
   TxQueryString
@@ -44,9 +43,9 @@ export interface ParsedRPC {
   watchKey(ws: Websocket, key: StateKey): Stream<ParsedStateObject>;
 }
 
-export type StateParser = (state: StateBuffer) => ParsedStateObject;
-export type TxEncoder = (tx: Transaction) => TransactionBuffer;
-// export type TxParser = (rawTx: TransactionBuffer) => Transaction;
+export type StateParser = (state: StateBytes) => ParsedStateObject;
+export type TxEncoder = (tx: Transaction) => TransactionBytes;
+// export type TxParser = (rawTx: TransactionBytes) => Transaction;
 
 export type ParseRPC = (
   parseState: StateParser,

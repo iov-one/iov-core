@@ -1,8 +1,8 @@
 import { Stream } from "xstream";
 import { Block, Header } from "./blocks";
-import { StateKey, StateBuffer } from "./state";
+import { StateKey, StateBytes } from "./state";
 import {
-  TransactionBuffer,
+  TransactionBytes,
   TransactionState,
   TransactionStateProcessed,
   TxQueryString
@@ -28,7 +28,7 @@ export interface RPC {
   allBlocks(ws: Websocket): Stream<Block>;
 
   // sendTx submits a signed tx as is notified on every state change
-  sendTx(ws: Websocket, tx: TransactionBuffer): Stream<TransactionState>;
+  sendTx(ws: Websocket, tx: TransactionBytes): Stream<TransactionState>;
 
   // searchTx searches for all tx that match these tags and subscribes to new ones
   searchTx(
@@ -38,5 +38,5 @@ export interface RPC {
 
   // watchKey will query the current state at the given key
   // and be notified upon any change
-  watchKey(ws: Websocket, key: StateKey): Stream<StateBuffer>;
+  watchKey(ws: Websocket, key: StateKey): Stream<StateBytes>;
 }
