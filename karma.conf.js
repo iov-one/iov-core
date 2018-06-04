@@ -7,24 +7,26 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'browserify'],
 
 
     // list of files / patterns to load in the browser
     files: [
-      // add implementation files
-      'spec/hello_world_spec.js',
+      'tests/**/*.spec.js',
     ],
 
+    preprocessors: {
+      'tests/**/*.spec.js': ['browserify'],
+    },
+
+    browserify: {
+      debug: true,
+      transform: []
+    },
 
     // list of files to exclude
     exclude: [
     ],
-
-    // preprocess matching files before serving them to the browser
-    // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-    },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
