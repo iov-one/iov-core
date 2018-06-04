@@ -2,7 +2,6 @@ import {
   AddressString,
   ClientNameString,
   ClientTokenString,
-  NonceBuffer,
   PrivateKeyString,
   PublicKeyString,
   SeedString,
@@ -65,7 +64,6 @@ export interface SignTransaction {
   readonly type: PrivateActionType.SIGN_TRANSACTION;
   readonly publicKey: PublicKeyString;
   readonly transaction: Transaction;
-  readonly nonce: NonceBuffer | null;
   readonly ttl: TTLBuffer | null;
 }
 

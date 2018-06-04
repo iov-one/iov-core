@@ -1,7 +1,6 @@
 import {
   ClientNameString,
   ClientTokenString,
-  NonceBuffer,
   PrivateKeyString,
   PublicKeyString,
   SeedString,
@@ -84,7 +83,6 @@ export const exportUserActionWithOptions: ExportUser = {
 };
 
 export const signTransactionAction: SignTransaction = {
-  nonce: null,
   publicKey: "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString,
   transaction: sendTx,
   ttl: null,
@@ -92,7 +90,6 @@ export const signTransactionAction: SignTransaction = {
 };
 
 export const signTransactionActionWithNonceAndTTL: SignTransaction = {
-  nonce: new Uint8Array([0, 0, 0, 4]) as NonceBuffer,
   publicKey: "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString,
   transaction: sendTx,
   ttl: new Uint8Array([1, 0, 0, 0]) as TTLBuffer,
