@@ -20,26 +20,26 @@ https://github.com/MetaMask/KeyringController/blob/master/docs/keyring.md
 */
 export interface Keyring {
   // addAccounts will create n new accounts (default 1)
-  addAccounts: (n?: number) => ReadonlyArray<NamedAccount>;
+  addAccounts: (n?: number) => Promise<ReadonlyArray<NamedAccount>>;
   // setName sets the name for the nth account, if it exists
-  setName: (n: number, name: string) => void;
+  setName: (n: number, name: string) => Promise<true>;
 
   // getAccounts returns all accounts currently registered
-  getAccounts: () => ReadonlyArray<NamedAccount>;
+  getAccounts: () => Promise<ReadonlyArray<NamedAccount>>;
   // signTransaction will return a detached signature for the signable bytes
   // with the private key that matches the given account.
   // If the account is not present in this keyring, throws an Error
   signTransaction: (
     account: PublicKeyBundle,
     tx: SignableBytes
-  ) => SignatureBytes;
+  ) => Promise<SignatureBytes>;
 
   // serialize will produce a representation that can be writen to disk.
   // this will contain secret info, so handle securely!
-  serialize: () => KeyDataString;
+  serialize: () => Promise<KeyDataString>;
   // deserialize will take a string that came from serialize (of the same class)
   // and reinitialize internal state
-  deserialize: (data: KeyDataString) => void;
+  deserialize: (data: KeyDataString) => Promise<true>;
 }
 
 // KeyringOpts are everything provided to the factory
