@@ -24,11 +24,6 @@ module.exports = function(config) {
       },
     },
 
-    browserify: {
-      debug: true,
-      transform: []
-    },
-
     // list of files to exclude
     exclude: [
     ],
