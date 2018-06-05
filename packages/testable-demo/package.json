@@ -17,7 +17,9 @@
     "test": "yarn test-node",
     "build": "tsc"
   },
-  "dependencies": {},
+  "dependencies": {
+    "libsodium-wrappers": "^0.7.3"
+  },
   "devDependencies": {
     "@types/jasmine": "^2.8.8",
     "jasmine": "^3.1.0",
