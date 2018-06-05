@@ -1,4 +1,4 @@
-const sodium = require('libsodium-wrappers');
+import * as sodium from "libsodium-wrappers";
 
 export class Ed25519 {
   static async generateKeypair(): Promise<any> {
