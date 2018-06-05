@@ -39,7 +39,7 @@ export interface UnlockUserEvent {
 
 // On any change to this unlocked account, send the new state.
 // This involves both naming an account, as well as adding
-// new accounts. 
+// new accounts.
 //
 // Or shall we make separate events to each modification
 // (which are smaller, but may be harder to track)?

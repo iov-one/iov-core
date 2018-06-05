@@ -3,7 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    /* Needed for https://github.com/staltz/xstream/issues/231 */
+    "strictFunctionTypes": false
   },
   "include": [
     "src/*.ts"
