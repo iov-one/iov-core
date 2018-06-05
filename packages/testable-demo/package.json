@@ -1,0 +1,32 @@
+{
+  "name": "@iov/testable-demo",
+  "version": "0.0.0",
+  "description": "Demo project showing how to test code in NodeJS and browsers",
+  "author": "simon <webmaster128@users.noreply.github.com>",
+  "license": "AGPL-3.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iov-one/web4/tree/master/packages/testable-demo"
+  },
+  "scripts": {
+    "test-node": "jasmine-node build/tests",
+    "test-firefox": "karma start --single-run --browsers Firefox",
+    "test-chrome": "karma start --single-run --browsers Chrome",
+    "test-safari": "karma start --single-run --browsers Safari",
+    "test": "yarn test-node",
+    "build": "tsc"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/jasmine": "^2.8.8",
+    "jasmine": "^3.1.0",
+    "jasmine-node": "^1.14.5",
+    "karma": "^2.0.2",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-jasmine": "^1.1.2",
+    "karma-safari-launcher": "^1.0.0",
+    "karma-typescript": "^3.0.12"
+  }
+}

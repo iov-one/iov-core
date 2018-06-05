@@ -1,0 +1,24 @@
+os:
+  - linux
+  - osx
+
+language: node_js
+node_js:
+  - "8"
+
+script:
+- |
+  if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    # Test browser
+    cd packages/testable-demo && yarn test-safari
+  else
+    yarn build && yarn test
+  fi
+
+# whitelist long living branches to avoid testing feature branches twice (as branch and as pull request)
+branches:
+  only:
+  - master
+
+notifications:
+  email: false
