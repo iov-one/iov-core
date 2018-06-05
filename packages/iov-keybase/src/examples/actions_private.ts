@@ -1,12 +1,13 @@
 import {
   ClientNameString,
   ClientTokenString,
+  PasswordString,
   PrivateKeyString,
   PublicKeyString,
   SeedString,
-  TTLBytes
+  TTLBytes,
+  UsernameString
 } from "@iov/types";
-import { PasswordString, UsernameString } from "../types/accounts";
 import {
   AddAccount,
   CreateUser,

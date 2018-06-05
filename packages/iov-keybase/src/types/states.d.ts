@@ -2,13 +2,15 @@ import {
   AddressString,
   ClientNameString,
   ClientTokenString,
+  PasswordString,
   PrivateKeyString,
   PublicKeyString,
   SeedString,
-  Transaction
+  Transaction,
+  UsernameString
 } from "@iov/types";
 import { Stream } from "xstream";
-import { PasswordString, User, UsernameString } from "./accounts";
+import { User } from "./accounts";
 import {
   ImportPrivateKey,
   PrivateAction,

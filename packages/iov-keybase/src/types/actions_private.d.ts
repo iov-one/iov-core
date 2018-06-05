@@ -2,13 +2,14 @@ import {
   AddressString,
   ClientNameString,
   ClientTokenString,
+  PasswordString,
   PrivateKeyString,
   PublicKeyString,
   SeedString,
   Transaction,
-  TTLBytes
+  TTLBytes,
+  UsernameString
 } from "@iov/types";
-import { PasswordString, UsernameString } from "./accounts";
 
 export const enum PrivateActionType {
   UNLOCK_USER = "UNLOCK_USER",

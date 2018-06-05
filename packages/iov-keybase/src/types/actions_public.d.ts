@@ -1,5 +1,4 @@
-import { Transaction } from "@iov/types";
-import { PasswordString, UsernameString } from "./accounts";
+import { PasswordString, UsernameString, Transaction } from "@iov/types";
 
 export const enum PublicActionType {
   REQUEST_API_ACCESS = "REQUEST_API_ACCESS",
