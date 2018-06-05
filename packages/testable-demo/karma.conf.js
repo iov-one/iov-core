@@ -18,9 +18,10 @@ module.exports = function(config) {
       '**/*.ts': ['karma-typescript'],
     },
 
-    browserify: {
-      debug: true,
-      transform: []
+    karmaTypescriptConfig: {
+      compilerOptions: {
+        target: "ES6", // karma-typescript defaults to ES5
+      },
     },
 
     // list of files to exclude
