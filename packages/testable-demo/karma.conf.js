@@ -18,6 +18,12 @@ module.exports = function(config) {
       '**/*.ts': ['karma-typescript'],
     },
 
+    karmaTypescriptConfig: {
+      compilerOptions: {
+        target: "ES6", // karma-typescript defaults to ES5
+      },
+    },
+
     browserify: {
       debug: true,
       transform: []

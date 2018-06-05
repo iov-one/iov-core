@@ -5,4 +5,9 @@ describe("Hello World Server", function() {
     expect(helloWorldModule).toBeTruthy();
     expect(helloWorldModule.helloWorld()).toEqual('Hello world!');
   });
+
+  it("supports promises", () => {
+    const unresolvedPromise = new Promise(() => {});
+    expect(unresolvedPromise).toBeTruthy();
+  });
 });
