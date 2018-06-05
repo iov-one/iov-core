@@ -14,3 +14,6 @@ script:
   else
     yarn build && yarn test
   fi
+
+notifications:
+  email: false
