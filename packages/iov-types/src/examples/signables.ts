@@ -1,3 +1,5 @@
+import Long from "long";
+
 import { Algorithm, PublicKeyBundle } from "../types/keys";
 import {
   FullSignature,
@@ -19,7 +21,7 @@ export const signer: PublicKeyBundle = {
 };
 
 export const fullSignature: FullSignature = {
-  nonce: 1234 as Nonce,
+  nonce: Long.fromNumber(1234) as Nonce,
   publicKey: signer,
   signature: signatureBytes
 };

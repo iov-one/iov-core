@@ -1,3 +1,5 @@
+import Long from "long";
+
 import { Algorithm, PublicKeyBundle } from "../types/keys";
 import {
   ChainID,
@@ -10,7 +12,7 @@ import {
 } from "../types/transactions";
 import { publicKeyBytes, publicKeyBytes2 } from "./keys";
 
-export const nonce: Nonce = 123 as Nonce;
+export const nonce: Nonce = Long.fromNumber(123) as Nonce;
 
 export const iov: TokenTicker = "IOV" as TokenTicker;
 

@@ -1,7 +1,8 @@
 import { PublicKeyBundle } from "./keys";
+import Long from "long";
 
 declare const NonceSymbol: unique symbol;
-export type Nonce = typeof NonceSymbol & number;
+export type Nonce = typeof NonceSymbol & Long;
 
 // TODO: can't we just make this a number (block height?)
 declare const TTLSymbol: unique symbol;
