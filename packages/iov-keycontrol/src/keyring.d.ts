@@ -4,6 +4,11 @@ declare const KeyDataSymbol: unique symbol;
 type KeyData = typeof KeyDataSymbol;
 export type KeyDataString = KeyData & string;
 
+// NamedAccount allows us to store names on the keys
+export interface NamedAccount extends PublicKeyBundle {
+  readonly name?: string;
+}
+
 /*
 Keyring is a generic interface for managing a set of keys and
 signing data with them. A KeyController can instantiate these
@@ -15,9 +20,12 @@ https://github.com/MetaMask/KeyringController/blob/master/docs/keyring.md
 */
 export interface Keyring {
   // addAccounts will create n new accounts (default 1)
-  addAccounts: (n?: number) => ReadonlyArray<PublicKeyBundle>;
+  addAccounts: (n?: number) => ReadonlyArray<NamedAccount>;
+  // setName sets the name for the nth account, if it exists
+  setName: (n: number, name: string) => void;
+
   // getAccounts returns all accounts currently registered
-  getAccounts: () => ReadonlyArray<PublicKeyBundle>;
+  getAccounts: () => ReadonlyArray<NamedAccount>;
   // signTransaction will return a detached signature for the signable bytes
   // with the private key that matches the given account.
   // If the account is not present in this keyring, throws an Error
@@ -25,12 +33,23 @@ export interface Keyring {
     account: PublicKeyBundle,
     tx: SignableBytes
   ) => SignatureBytes;
+
   // serialize will produce a representation that can be writen to disk.
   // this will contain secret info, so handle securely!
   serialize: () => KeyDataString;
   // deserialize will take a string that came from serialize (of the same class)
   // and reinitialize internal state
   deserialize: (data: KeyDataString) => void;
-  // type just provides a label on what this
-  type: () => string;
 }
+
+// KeyringOpts are everything provided to the factory
+export interface KeyringOpts {
+  // TODO: these should be references to modules that are
+  // initialized so we can reuse wasm module in multiple keyrings
+  readonly libsodium: any;
+  readonly libsecp: any;
+}
+
+// A KeyringFactory may use the information in opts
+// or ignore it, but has no access to other info
+export type KeyringFactory = (opts: KeyringOpts) => Keyring;
