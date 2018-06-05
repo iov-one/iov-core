@@ -1,27 +1,27 @@
-import { PublicKeyString, SignatureString } from "./keys";
-import { NonceString, Transaction } from "./transactions";
+import { PublicKeyBundle, SignatureBytes } from "./keys";
+import { Nonce, Transaction } from "./transactions";
 
 declare const TransactionIDSymbol: unique symbol;
 type TransactionID = typeof TransactionIDSymbol;
-export type TransactionIDBuffer = TransactionID & Uint8Array;
+export type TransactionIDBytes = TransactionID & Uint8Array;
 export type TransactionIDString = TransactionID & string;
 
 declare const SignableSymbol: unique symbol;
 type Signable = typeof SignableSymbol;
-export type SignableBuffer = Signable & Uint8Array;
+export type SignableBytes = Signable & Uint8Array;
 export type SignableString = Signable & string;
 
 declare const PostableSymbol: unique symbol;
 type Postable = typeof PostableSymbol;
-export type PostableBuffer = Postable & Uint8Array;
+export type PostableBytes = Postable & Uint8Array;
 export type PostableString = Postable & string;
 
 // NB: use Buffer or String, we should be consistent....
 // I figure string if this will be json dumped, but maybe less efficient
 export interface FullSignature {
-  readonly nonce: NonceString;
-  readonly publicKey: PublicKeyString;
-  readonly signature: SignatureString;
+  readonly nonce: Nonce;
+  readonly publicKey: PublicKeyBundle;
+  readonly signature: SignatureBytes;
 }
 
 // A signable transaction knows how to serialize itself
@@ -41,12 +41,12 @@ export interface TxCodec {
   // they often include nonce and chainID, but not other signatures
   readonly bytesToSign: (
     tx: SignableTransaction,
-    nonce: NonceString
-  ) => SignableBuffer;
+    nonce: Nonce
+  ) => SignableBytes;
   // bytesToPost includes the raw transaction appended with the various signatures
-  readonly bytesToPost: (tx: SignableTransaction) => PostableBuffer;
+  readonly bytesToPost: (tx: SignableTransaction) => PostableBytes;
   // identifier is usually some sort of hash of bytesToPost, chain-dependent
-  readonly identifier: (tx: SignableTransaction) => TransactionIDString;
+  readonly identifier: (tx: SignableTransaction) => TransactionIDBytes;
   // parseBytes will recover bytes from the blockchain into a format we can use
-  readonly parseBytes: (bytes: PostableBuffer) => SignableTransaction;
+  readonly parseBytes: (bytes: PostableBytes) => SignableTransaction;
 }

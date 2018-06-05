@@ -9,4 +9,4 @@ export type ParsedStateObject = Object & ParsedState;
 
 declare const StateSymbol: unique symbol;
 type State = typeof StateSymbol;
-export type StateBuffer = Uint8Array & State;
+export type StateBytes = Uint8Array & State;

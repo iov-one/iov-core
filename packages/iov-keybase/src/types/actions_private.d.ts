@@ -6,7 +6,7 @@ import {
   PublicKeyString,
   SeedString,
   Transaction,
-  TTLBuffer
+  TTLBytes
 } from "@iov/types";
 import { PasswordString, UsernameString } from "./accounts";
 
@@ -64,7 +64,7 @@ export interface SignTransaction {
   readonly type: PrivateActionType.SIGN_TRANSACTION;
   readonly publicKey: PublicKeyString;
   readonly transaction: Transaction;
-  readonly ttl: TTLBuffer | null;
+  readonly ttl: TTLBytes | null;
 }
 
 export interface SetActiveKey {

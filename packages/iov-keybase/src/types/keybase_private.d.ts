@@ -1,12 +1,11 @@
 import {
   ClientNameString,
   ClientTokenString,
-  NonceBuffer,
   PrivateKeyString,
   PublicKeyString,
   SeedString,
   Transaction,
-  TTLBuffer
+  TTLBytes
 } from "@iov/types";
 import { PasswordString, UsernameString } from "./accounts";
 import {
@@ -67,8 +66,7 @@ export default class KeybasePrivate {
   public readonly signTransaction: (
     publicKey: PublicKeyString,
     transaction: Transaction,
-    nonce: NonceBuffer | null,
-    ttl: TTLBuffer | null
+    ttl: TTLBytes | null
   ) => SignTransaction;
   public readonly unlockUser: (
     username: UsernameString,
