@@ -1,4 +1,4 @@
-const { Ed25519 } = require('../src/crypto');
+import { Ed25519 } from "../src/crypto";
 
 describe("Crypto", () => {
   describe('Ed25519', () => {
