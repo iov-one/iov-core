@@ -4,6 +4,9 @@ declare const KeyDataSymbol: unique symbol;
 type KeyData = typeof KeyDataSymbol;
 export type KeyDataString = KeyData & string;
 
+declare const KeyringNameSymbol: unique symbol;
+export type KeyringName = typeof KeyringNameSymbol & string;
+
 // NamedAccount allows us to store names on the keys
 export interface NamedAccount extends PublicKeyBundle {
   readonly name?: string;

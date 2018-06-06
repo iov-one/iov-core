@@ -26,6 +26,7 @@
     "typescript": "^2.8.3"
   },
   "dependencies": {
-    "@iov/types": "^0.0.0"
+    "@iov/types": "^0.0.0",
+    "xstream": "^11.4.0"
   }
 }

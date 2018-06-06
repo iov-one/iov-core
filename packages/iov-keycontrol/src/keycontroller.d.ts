@@ -1,12 +1,12 @@
-import { Stream } from "xstream";
-
 import {
   KeyEvent,
   UnlockUserEvent,
   RemoveUserEvent,
   AddUserEvent,
   LockUserEvent,
-  ModifyUserEvent
+  ModifyUserEvent,
+  SignedTransactionEvent,
+  VerifiedTransactionEvent
 } from "./events";
 import {
   PasswordString,
@@ -18,9 +18,7 @@ import {
   UsernameString,
   Transaction
 } from "@iov/types";
-
-declare const KeyringNameSymbol: unique symbol;
-export type KeyringName = typeof KeyringNameSymbol & string;
+import { KeyringName } from "./keyring";
 
 /*
 A KeyController is the main interface to key signing.
@@ -70,8 +68,8 @@ export interface KeyController {
     keyring: KeyringName
   ) => Promise<AddUserEvent>;
 
-  // deleteUser requires original password to delete.
-  deleteUser: (
+  // removeUser requires original password to delete.
+  removeUser: (
     user: UsernameString,
     password: PasswordString
   ) => Promise<RemoveUserEvent>;
@@ -95,13 +93,6 @@ export interface KeyController {
     name: string
   ) => Promise<ModifyUserEvent>;
 
-  //------------ Watch state --------
-
-  // watchState lets an API reflect current state without worrying about
-  // return codes of each action.... actions can just resolve to error
-  // to signify failure... or shall those failed tx be another event???
-  watchState: () => Stream<KeyEvent>;
-
   //---------- Perform computations ----
   //
   // These are special... we actually need the return value, not
@@ -110,22 +101,16 @@ export interface KeyController {
 
   // This signs the given transaction and returns a new transaction
   // with the this signature appended
-  appendSignature: (
+  signTransaction: (
     user: UsernameString,
     account: PublicKeyBundle,
     tx: SignableTransaction,
     nonce: Nonce
-  ) => Promise<SignableTransaction>;
-
-  // verifySignature makes use of the loaded crypto libraries
-  // to verify if a signature matches the given key and data
-  verifySignature: (
-    account: PublicKeyBundle,
-    tx: SignableBytes,
-    signature: SignatureBytes
-  ) => Promise<boolean>;
+  ) => Promise<SignedTransactionEvent>;
 
   // verifyTransaction will return true if all signatures
   // on the signable transaction are valid
-  verifyTransaction: (tx: SignableTransaction) => Promise<boolean>; 
+  verifyTransaction: (
+    tx: SignableTransaction
+  ) => Promise<VerifiedTransactionEvent>;
 }

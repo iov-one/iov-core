@@ -1,4 +1,4 @@
-import { UsernameString } from "@iov/types";
+import { SignableTransaction, UsernameString } from "@iov/types";
 
 import { NamedAccount } from "./keyring";
 
@@ -7,7 +7,9 @@ export const enum KeyEventType {
   REMOVE_USER = "REMOVE_USER",
   UNLOCK_USER = "UNLOCK_USER",
   LOCK_USER = "LOCK_USER",
-  MODIFY_USER = "MODIFY_USER"
+  MODIFY_USER = "MODIFY_USER",
+  SIGNED_TRANSACTION = "SIGNED_TRANSACTION",
+  VERIFIED_TRANSACTION = "VERIFIED_TRANSACTION"
 }
 
 export type KeyEvent =
@@ -15,7 +17,9 @@ export type KeyEvent =
   | RemoveUserEvent
   | UnlockUserEvent
   | ModifyUserEvent
-  | LockUserEvent;
+  | LockUserEvent
+  | SignedTransactionEvent
+  | VerifiedTransactionEvent;
 
 // We can get multiple AddUserEvents in a row in order to
 // provide us with the current user list.
@@ -52,4 +56,15 @@ export interface ModifyUserEvent {
 export interface LockUserEvent {
   readonly type: KeyEventType.LOCK_USER;
   readonly user: UsernameString;
+}
+
+export interface SignedTransactionEvent {
+  readonly type: KeyEventType.SIGNED_TRANSACTION;
+  readonly tx: SignableTransaction;
+}
+
+export interface VerifiedTransactionEvent {
+  readonly type: KeyEventType.VERIFIED_TRANSACTION;
+  readonly tx: SignableTransaction;
+  readonly valid: boolean;
 }
