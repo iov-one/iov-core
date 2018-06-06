@@ -43,12 +43,8 @@ export interface Keyring {
 }
 
 // KeyringOpts are everything provided to the factory
-export interface KeyringOpts {
-  // TODO: these should be references to modules that are
-  // initialized so we can reuse wasm module in multiple keyrings
-  readonly libsodium: any;
-  readonly libsecp: any;
-}
+// We need to figure out what this will hold
+export type KeyringOpts = any;
 
 // A KeyringFactory may use the information in opts
 // or ignore it, but has no access to other info

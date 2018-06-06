@@ -6,7 +6,7 @@ import {
   PublicKeyString,
   SeedString,
   TTLBytes,
-  UsernameString
+  UsernameString,
 } from "@iov/types";
 import {
   AddAccount,
@@ -19,7 +19,7 @@ import {
   RestoreUser,
   SetActiveKey,
   SignTransaction,
-  UnlockUser
+  UnlockUser,
 } from "../types/actions_private";
 import { sendTx } from "./iov-types";
 

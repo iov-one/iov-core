@@ -1,12 +1,22 @@
 import { Stream } from "xstream";
 
-import { KeyEvent } from "./events";
+import {
+  KeyEvent,
+  UnlockUserEvent,
+  RemoveUserEvent,
+  AddUserEvent,
+  LockUserEvent,
+  ModifyUserEvent
+} from "./events";
 import {
   PasswordString,
   PublicKeyBundle,
+  Nonce,
   SignableBytes,
+  SignableTransaction,
   SignatureBytes,
-  UsernameString
+  UsernameString,
+  Transaction
 } from "@iov/types";
 
 declare const KeyringNameSymbol: unique symbol;
@@ -38,6 +48,10 @@ which removes this info from memory.
 The KeyController also provides an event stream that a UI
 can listen to in order to reflect the current state
 (which users, which are logged in, which accounts are available).
+
+Question: do we only want to allow max. one "unlocked" user at a time?
+In such a case, we can remove the user arg from most of the methods,
+and just store the currently unlocked user in the KeyController
 */
 export interface KeyController {
   //-------------- Update state ------------
@@ -45,34 +59,41 @@ export interface KeyController {
   // This section just updates the current state, any changes
   // can be streamed into the watcher
 
-  // TODO: addUser will update state, do we want to return new account here as well?
-  // do we want to return errors?
-  // is this async or sync?
+  // addUser creates a new user and return a promise to the change event.
+  // this event is also sent to the watchState stream, which is meant
+  // to update another store (eg. UI redux store).
+  //
+  // You can usually ignore this promise unless you want to chain this
   addUser: (
     user: UsernameString,
     password: PasswordString,
     keyring: KeyringName
-  ) => Promise<true>;
+  ) => Promise<AddUserEvent>;
 
   // deleteUser requires original password to delete.
-  // returns a promise that resolves to true or throws error
-  deleteUser: (user: UsernameString, password: PasswordString) => Promise<true>;
+  deleteUser: (
+    user: UsernameString,
+    password: PasswordString
+  ) => Promise<RemoveUserEvent>;
 
-  // TODO: same questions as above...
-  unlockUser: (user: UsernameString, password: PasswordString) => Promise<true>;
+  // unlock user gives us access to the private keys for the user
+  unlockUser: (
+    user: UsernameString,
+    password: PasswordString
+  ) => Promise<UnlockUserEvent>;
 
-  // TODO: same questions as above... but this never fails (unless bad username)
-  lockUser: (user: UsernameString) => Promise<true>;
+  // lock user removes access to those account keys until we unlock again
+  lockUser: (user: UsernameString) => Promise<LockUserEvent>;
 
-  // TODO: same questions as above...
-  addAccounts: (user: UsernameString, n?: number) => Promise<true>;
+  // addAccounts creates more public/private keypairs locally
+  addAccounts: (user: UsernameString, n?: number) => Promise<ModifyUserEvent>;
 
-  // TODO: same questions as above...
+  // setAccountName assigns a new name to one of the accounts
   setAccountName: (
     user: UsernameString,
-    n: number,
+    publicKey: PublicKeyBundle,
     name: string
-  ) => Promise<true>;
+  ) => Promise<ModifyUserEvent>;
 
   //------------ Watch state --------
 
@@ -87,13 +108,14 @@ export interface KeyController {
   // to update the UI state but to continue on in our flow....
   // this is almost a transform.
 
-  // I guess we could scan all users to find where the account matches,
-  // not sure if that makes this easier or more confusing?
-  signTransaction: (
+  // This signs the given transaction and returns a new transaction
+  // with the this signature appended
+  appendSignature: (
     user: UsernameString,
     account: PublicKeyBundle,
-    tx: SignableBytes
-  ) => Promise<SignatureBytes>;
+    tx: SignableTransaction,
+    nonce: Nonce
+  ) => Promise<SignableTransaction>;
 
   // verifySignature makes use of the loaded crypto libraries
   // to verify if a signature matches the given key and data
@@ -101,5 +123,9 @@ export interface KeyController {
     account: PublicKeyBundle,
     tx: SignableBytes,
     signature: SignatureBytes
-  ) => boolean;
+  ) => Promise<boolean>;
+
+  // verifyTransaction will return true if all signatures
+  // on the signable transaction are valid
+  verifyTransaction: (tx: SignableTransaction) => Promise<boolean>; 
 }
