@@ -4,6 +4,10 @@
     "baseUrl": ".",
     "outDir": "build",
     "rootDir": ".",
+    "typeRoots": [
+      "../../node_modules/@types",
+      "custom_types"
+    ],
   },
   "include": [
     "src/**/*",
