@@ -14,7 +14,7 @@
     "test-firefox": "karma start --single-run --browsers Firefox",
     "test-chrome": "karma start --single-run --browsers Chrome",
     "test-safari": "karma start --single-run --browsers Safari",
-    "test": "yarn test-node",
+    "test": "yarn build && yarn test-node",
     "build": "tsc"
   },
   "dependencies": {
