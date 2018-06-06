@@ -1,4 +1,12 @@
-import { Ed25519 } from "../src/crypto";
+import { Ed25519, Sha256 } from "../src/crypto";
+
+function toHex(data: Uint8Array): string {
+  let out: string = "";
+  for (let byte of data) {
+    out += ('0' + byte.toString(16)).slice(-2);
+  }
+  return out;
+}
 
 describe("Crypto", () => {
   describe('Ed25519', () => {
@@ -59,6 +67,21 @@ describe("Crypto", () => {
           let ok = await Ed25519.verifySignature(signature, message, wrongPubkey);
           expect(ok).toEqual(false);
         }
+
+        done();
+      })();
+    });
+  });
+
+  describe('Sha256', () => {
+    it('exists', () => {
+      expect(Sha256).toBeTruthy();
+    });
+
+    it('works for empty input', (done) => {
+      (async () => {
+        let hash = await Sha256.digest(new Uint8Array([]));
+        expect(toHex(hash)).toEqual("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
 
         done();
       })();

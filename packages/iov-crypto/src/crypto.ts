@@ -4,6 +4,8 @@
 // https://github.com/jedisct1/libsodium.js/issues/148
 import sodium = require("libsodium-wrappers");
 
+import shajs from 'sha.js';
+
 interface Keypair {
   pubkey: Uint8Array,
   privkey: Uint8Array,
@@ -27,5 +29,14 @@ export class Ed25519 {
   static async verifySignature(signature: Uint8Array, message: Uint8Array, pubkey: Uint8Array): Promise<boolean> {
     await sodium.ready;
     return sodium.crypto_sign_verify_detached(signature, message, pubkey);
+  }
+}
+
+export class Sha256 {
+  // async interface to support implementations that rely on WebAssemby compilation later on
+  static digest(data: Uint8Array): Promise<Uint8Array> {
+    const hasher = shajs('sha256');
+    hasher.update(data);
+    return Promise.resolve(hasher.digest());
   }
 }
