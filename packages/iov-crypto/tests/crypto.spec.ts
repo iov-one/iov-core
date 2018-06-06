@@ -2,15 +2,15 @@ import { Ed25519, Sha256 } from "../src/crypto";
 
 function toHex(data: Uint8Array): string {
   let out: string = "";
-  for (let byte of data) {
+  for (const byte of data) {
     out += ('0' + byte.toString(16)).slice(-2);
   }
   return out;
 }
 
 function fromHex(hexstring: string): Uint8Array {
-  var listOfInts: number[] = [];
-  for (var i = 0; i < hexstring.length; i+=2) {
+  const listOfInts: number[] = [];
+  for (let i = 0; i < hexstring.length; i+=2) {
     listOfInts.push(parseInt(hexstring.substr(i, 2), 16));
   }
   return new Uint8Array(listOfInts);
@@ -28,7 +28,7 @@ describe("Crypto", () => {
 
     it("generates keypairs", (done) => {
       (async () => {
-        let keypair = await Ed25519.generateKeypair();
+        const keypair = await Ed25519.generateKeypair();
         expect(keypair).toBeTruthy();
         expect(keypair.pubkey).toBeTruthy();
         expect(keypair.privkey).toBeTruthy();
@@ -41,9 +41,9 @@ describe("Crypto", () => {
 
     it("creates signatures", (done) => {
       (async () => {
-        let keypair = await Ed25519.generateKeypair();
-        let message = new Uint8Array([0x11, 0x22]);
-        let signature = await Ed25519.createSignature(message, keypair.privkey);
+        const keypair = await Ed25519.generateKeypair();
+        const message = new Uint8Array([0x11, 0x22]);
+        const signature = await Ed25519.createSignature(message, keypair.privkey);
         expect(signature).toBeTruthy();
         expect(signature.byteLength).toEqual(64);
 
@@ -53,32 +53,32 @@ describe("Crypto", () => {
 
     it("verifies signatures", (done) => {
       (async () => {
-        let keypair = await Ed25519.generateKeypair();
-        let message = new Uint8Array([0x11, 0x22]);
-        let signature = await Ed25519.createSignature(message, keypair.privkey);
+        const keypair = await Ed25519.generateKeypair();
+        const message = new Uint8Array([0x11, 0x22]);
+        const signature = await Ed25519.createSignature(message, keypair.privkey);
 
         { // valid
-          let ok = await Ed25519.verifySignature(signature, message, keypair.pubkey);
+          const ok = await Ed25519.verifySignature(signature, message, keypair.pubkey);
           expect(ok).toEqual(true);
         }
 
         { // message corrupted
-          let corruptedMessage = copy(message);
+          const corruptedMessage = copy(message);
           corruptedMessage[0] ^= 0x01;
-          let ok = await Ed25519.verifySignature(signature, corruptedMessage, keypair.pubkey);
+          const ok = await Ed25519.verifySignature(signature, corruptedMessage, keypair.pubkey);
           expect(ok).toEqual(false);
         }
 
         { // signature corrupted
-          let corruptedSignature = copy(signature);
+          const corruptedSignature = copy(signature);
           corruptedSignature[0] ^= 0x01;
-          let ok = await Ed25519.verifySignature(corruptedSignature, message, keypair.pubkey);
+          const ok = await Ed25519.verifySignature(corruptedSignature, message, keypair.pubkey);
           expect(ok).toEqual(false);
         }
 
         { // wrong pubkey
-          let wrongPubkey = (await Ed25519.generateKeypair()).pubkey;
-          let ok = await Ed25519.verifySignature(signature, message, wrongPubkey);
+          const wrongPubkey = (await Ed25519.generateKeypair()).pubkey;
+          const ok = await Ed25519.verifySignature(signature, message, wrongPubkey);
           expect(ok).toEqual(false);
         }
 
@@ -94,7 +94,7 @@ describe("Crypto", () => {
 
     it('works for empty input', (done) => {
       (async () => {
-        let hash = await Sha256.digest(new Uint8Array([]));
+        const hash = await Sha256.digest(new Uint8Array([]));
         expect(toHex(hash)).toEqual("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
 
         done();
