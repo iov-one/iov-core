@@ -4,13 +4,13 @@
 // https://github.com/jedisct1/libsodium.js/issues/148
 import sodium = require("libsodium-wrappers");
 
-interface KeyPair {
+interface Keypair {
   pubkey: Uint8Array,
   privkey: Uint8Array,
 }
 
 export class Ed25519 {
-  static async generateKeypair(): Promise<KeyPair> {
+  static async generateKeypair(): Promise<Keypair> {
     await sodium.ready;
     let keypair = sodium.crypto_sign_keypair();
     return {
