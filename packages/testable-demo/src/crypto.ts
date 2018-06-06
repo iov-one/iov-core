@@ -18,4 +18,9 @@ export class Ed25519 {
       privkey: keypair.privateKey
     }
   }
+
+  static async createSignature(message: Uint8Array, privkey: Uint8Array): Promise<Uint8Array> {
+    await sodium.ready;
+    return sodium.crypto_sign_detached(message, privkey);
+  }
 }

@@ -17,5 +17,16 @@ describe("Crypto", () => {
         done();
       })();
     });
+
+    it("creates signatures", (done) => {
+      (async () => {
+        let keypair = await Ed25519.generateKeypair();
+        let message = new Uint8Array([0x11, 0x22]);
+        let signature = await Ed25519.createSignature(message, keypair.privkey);
+        expect(signature).toBeTruthy();
+        expect(signature.byteLength).toEqual(64);
+        done();
+      })();
+    });
   });
 });
