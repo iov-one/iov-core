@@ -7,6 +7,12 @@ export type KeyDataString = KeyData & string;
 // NamedAccount allows us to store names on the keys
 export interface NamedAccount extends PublicKeyBundle {
   readonly name?: string;
+
+  // canSign flag means the private key is currently accessible.
+  // if a hardware ledger is not plugged in, we may
+  // see the public keys, but have it "inactive"
+  // as long as this flag is false
+  readonly canSign: boolean;
 }
 
 /*
