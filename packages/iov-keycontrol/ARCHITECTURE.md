@@ -137,3 +137,46 @@ I'm not sure we could abstract that any further....
 Hmmm... maybe `redux-promises` or `redux-saga` would have some useful
 inspiration on how to combine these async workflows with actions
 and dispatchers....
+
+## A semi-concrete use case
+
+Let's make a harder example, where maybe the actor model or 
+reactive streams start to make sense.
+
+We connect to 3 different blockchains, I have a wallet UI (in chrome 
+extension), and a webapp connected. I have two accounts currently
+unlocked. One is a software key to use for atomic swaps, and the
+other is a ledger that manages long-term storage.
+
+Wallet UI unlocks both account and queries balances.
+See a good deal in the webapp, and initiate an atomic swap.
+This goes to be signed by the software key and a confirmation
+is presented in the wallet UI. After confirm, the offer signed 
+and posted to the blockchain, and my desired trade rate is stored
+in my swap-bot (in the wallet UI).
+
+While I am waiting for the counter-party to respond, I deside to move
+1000 IOV off the ledger to my day-trader account. I initiate a transaction
+to send this from the wallet UI and a transaction is sent to the ledger.
+In the meantime, web4 receives a notification from the second chain in
+the swap that an escrow is proposed. The counter is compared to the original
+agreement, and as it matches, the trusted swap-bot creates a claim tx
+and initiates it for signing (this may happen automatically or pop
+up something on the UI). I click "okay" on the ledger app to finalize the
+send transaction. Both transactions head to the chain, swaps and sends
+are being resolved, and all account balances get updated.
+
+This is a lot of data moving around at once. How do we model such a case
+without going crazy?
+
+This may seem a bit far-fetched, but once we provide this web4 API, and
+some nice tools, we can allow all kinds of actions, like receiving state
+channel payments and auto-claiming part every eg. 50 IOV tokens. Or
+passing along multi-sig transactions to the next signatory on the message
+after signing.
+
+We should be able to handle information streams and automate many of the
+responses by simple bots (IFTTT style). Hopefully this gives a bit of 
+inspiration of where to head with the architecture. I'm still not
+sure what the proper architecture is to fulfill these use cases, but
+I think simple promise chains won't work so well.
