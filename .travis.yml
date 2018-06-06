@@ -10,7 +10,7 @@ script:
 - |
   if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     # Test browser
-    cd packages/testable-demo && yarn test-safari
+    cd packages/iov-crypto && yarn test-safari
   else
     yarn build && yarn test
   fi
