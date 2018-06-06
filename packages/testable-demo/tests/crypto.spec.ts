@@ -12,6 +12,8 @@ describe("Crypto", () => {
         expect(keypair).toBeTruthy();
         expect(keypair.pubkey).toBeTruthy();
         expect(keypair.privkey).toBeTruthy();
+        expect(keypair.pubkey.byteLength).toEqual(32);
+        expect(keypair.privkey.byteLength).toEqual(64);
         done();
       })();
     });
