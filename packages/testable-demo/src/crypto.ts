@@ -23,4 +23,9 @@ export class Ed25519 {
     await sodium.ready;
     return sodium.crypto_sign_detached(message, privkey);
   }
+
+  static async verifySignature(signature: Uint8Array, message: Uint8Array, pubkey: Uint8Array): Promise<boolean> {
+    await sodium.ready;
+    return sodium.crypto_sign_verify_detached(signature, message, pubkey);
+  }
 }

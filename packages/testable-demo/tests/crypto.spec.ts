@@ -30,5 +30,38 @@ describe("Crypto", () => {
         done();
       })();
     });
+
+    it("verifies signatures", (done) => {
+      (async () => {
+        let keypair = await Ed25519.generateKeypair();
+        let message = new Uint8Array([0x11, 0x22]);
+        let signature = await Ed25519.createSignature(message, keypair.privkey);
+
+        { // valid
+          let ok = await Ed25519.verifySignature(signature, message, keypair.pubkey);
+          expect(ok).toEqual(true);
+        }
+
+        { // message corrupted
+          message[0] ^= 0x01;
+          let ok = await Ed25519.verifySignature(signature, message, keypair.pubkey);
+          expect(ok).toEqual(false);
+        }
+
+        { // signature corrupted
+          signature[0] ^= 0x01;
+          let ok = await Ed25519.verifySignature(signature, message, keypair.pubkey);
+          expect(ok).toEqual(false);
+        }
+
+        { // wrong pubkey
+          let wrongPubkey = (await Ed25519.generateKeypair()).pubkey;
+          let ok = await Ed25519.verifySignature(signature, message, wrongPubkey);
+          expect(ok).toEqual(false);
+        }
+
+        done();
+      })();
+    });
   });
 });
