@@ -14,6 +14,7 @@ describe("Crypto", () => {
         expect(keypair.privkey).toBeTruthy();
         expect(keypair.pubkey.byteLength).toEqual(32);
         expect(keypair.privkey.byteLength).toEqual(64);
+
         done();
       })();
     });
@@ -25,6 +26,7 @@ describe("Crypto", () => {
         let signature = await Ed25519.createSignature(message, keypair.privkey);
         expect(signature).toBeTruthy();
         expect(signature.byteLength).toEqual(64);
+
         done();
       })();
     });
