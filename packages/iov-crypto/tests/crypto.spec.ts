@@ -16,6 +16,10 @@ function fromHex(hexstring: string): Uint8Array {
   return new Uint8Array(listOfInts);
 }
 
+function copy(source: Uint8Array): Uint8Array {
+  return Uint8Array.from(source);
+}
+
 describe("Crypto", () => {
   describe('Ed25519', () => {
     it('exists', () => {
@@ -59,14 +63,16 @@ describe("Crypto", () => {
         }
 
         { // message corrupted
-          message[0] ^= 0x01;
-          let ok = await Ed25519.verifySignature(signature, message, keypair.pubkey);
+          let corruptedMessage = copy(message);
+          corruptedMessage[0] ^= 0x01;
+          let ok = await Ed25519.verifySignature(signature, corruptedMessage, keypair.pubkey);
           expect(ok).toEqual(false);
         }
 
         { // signature corrupted
-          signature[0] ^= 0x01;
-          let ok = await Ed25519.verifySignature(signature, message, keypair.pubkey);
+          let corruptedSignature = copy(signature);
+          corruptedSignature[0] ^= 0x01;
+          let ok = await Ed25519.verifySignature(corruptedSignature, message, keypair.pubkey);
           expect(ok).toEqual(false);
         }
 
