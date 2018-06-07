@@ -9,10 +9,12 @@ yarn test
   # Test browser
   cd packages/iov-crypto
 
-  yarn test-firefox
+  yarn test-chrome
 
   if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       yarn test-safari
-      yarn test-chrome
+
+      # Firefox does not run on Linux VMs because "no DISPLAY environment variable specified"
+      yarn test-firefox
   fi
 )
