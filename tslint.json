@@ -7,7 +7,6 @@
   ],
   "jsRules": {},
   "rules": {
-    "no-bitwise": false,
     "no-var-keyword": true,
     "no-parameter-reassignment": true,
     "typedef": [true, "call-signature"],
