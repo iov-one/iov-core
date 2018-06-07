@@ -1,4 +1,9 @@
-import { PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
+import {
+  ChainID,
+  PublicKeyBundle,
+  SignableBytes,
+  SignatureBytes,
+} from "@iov/types";
 
 declare const KeyDataSymbol: unique symbol;
 type KeyData = typeof KeyDataSymbol;
@@ -30,9 +35,10 @@ https://github.com/MetaMask/KeyringController/blob/master/docs/keyring.md
 */
 export interface Keyring {
   // createIdentity will create one new identity
-  createIdentity: () => Promise<ReadonlyArray<Identity>>;
-  // setName sets the name for the nth account, if it exists
-  setName: (n: number, name: string) => Promise<true>;
+  createIdentity: () => Promise<Identity>;
+
+  // setName sets the name associated with the public key, if it exists
+  setName: (identity: PublicKeyBundle, name: string) => Promise<true>;
 
   // getIdentities returns all identities currently registered
   getIdentities: () => Promise<ReadonlyArray<Identity>>;
@@ -40,9 +46,13 @@ export interface Keyring {
   // createTransactionSignature will return a detached signature for the signable bytes
   // with the private key that matches the given identity.
   // If a matching identity is not present in this keyring, throws an Error
+  //
+  // We provide chainID explicitly (which should be in tx as well), to help
+  // an implementation to do checks (such as ledger to switch apps)
   createTransactionSignature: (
     identity: PublicKeyBundle,
     tx: SignableBytes,
+    chainID: ChainID,
   ) => Promise<SignatureBytes>;
 
   // serialize will produce a representation that can be writen to disk.
