@@ -1,4 +1,4 @@
-/* tslint:disable:no-let readonly-array */
+/* tslint:disable:no-let readonly-array no-bitwise */
 import { Ed25519, Sha256 } from "../src/crypto";
 
 function toHex(data: Uint8Array): string {

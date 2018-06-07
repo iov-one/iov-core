@@ -1,7 +1,6 @@
 {
   "extends": "../../tslint.json",
   "rules": {
-    "no-bitwise": false,
     "object-literal-sort-keys": false,
     "no-unnecessary-class": ["allow-static-only"]
   }
