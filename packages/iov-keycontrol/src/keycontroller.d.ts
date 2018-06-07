@@ -80,15 +80,32 @@ export interface KeyController {
     password: PasswordString,
   ) => Promise<UnlockUserEvent>;
 
-  // lock user removes access to those account keys until we unlock again
-  lockUser: (user: UsernameString) => Promise<LockUserEvent>;
+  // verifyTransaction will return true if all signatures
+  // on the signable transaction are valid.
+  // Requires no access to private key material
+  verifyTransaction: (
+    tx: SignableTransaction,
+  ) => Promise<VerifiedTransactionEvent>;
+}
 
-  // createAccount creates more public/private keypairs locally
-  createAccount: (user: UsernameString, n?: number) => Promise<ModifyUserEvent>;
+/*
+When we unlock a user, we get a UserSession, which is a "capability" to enable
+us to use those private keys. All methods must go though the UserSession
+(which may just append a token to a private KeyController function).
+Once the UserSession is locked, it can no longer be used.
+*/
+export interface UserSession {
+  // whoami is a sanity check if needed
+  whoami: () => UsernameString;
 
-  // setAccountName assigns a new name to one of the accounts
-  setAccountName: (
-    user: UsernameString,
+  // lock user removes access to these account keys until we unlock again
+  lock: () => Promise<LockUserEvent>;
+
+  // createIdentity creates a public/private keypairs
+  createIdentity: () => Promise<ModifyUserEvent>;
+
+  // setIdentityName assigns a new name to one of the identities
+  setIdentityName: (
     publicKey: PublicKeyBundle,
     name: string,
   ) => Promise<ModifyUserEvent>;
@@ -102,15 +119,8 @@ export interface KeyController {
   // This signs the given transaction and returns a new transaction
   // with the this signature appended
   signTransaction: (
-    user: UsernameString,
-    account: PublicKeyBundle,
+    identity: PublicKeyBundle,
     tx: SignableTransaction,
     nonce: Nonce,
   ) => Promise<SignedTransactionEvent>;
-
-  // verifyTransaction will return true if all signatures
-  // on the signable transaction are valid
-  verifyTransaction: (
-    tx: SignableTransaction,
-  ) => Promise<VerifiedTransactionEvent>;
 }

@@ -59,7 +59,6 @@ export interface LockUserAction {
 export interface CreateAccountAction {
   readonly type: KeyActionType.CREATE_ACCOUNT;
   readonly user: UsernameString;
-  readonly n?: number;
 }
 
 export interface SetAccountNameAction {
