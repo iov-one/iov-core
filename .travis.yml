@@ -2,18 +2,19 @@ os:
   - linux
   - osx
 
+# Workaround for Chrome sandboxing issue (https://github.com/travis-ci/travis-ci/issues/8836)
+sudo: required
+
 language: node_js
 node_js:
   - "8"
 
+addons:
+  firefox: latest
+  chrome: stable
+
 script:
-- |
-  if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-    # Test browser
-    cd packages/iov-crypto && yarn test-safari
-  else
-    yarn build && yarn test
-  fi
+- ./travis.sh
 
 # whitelist long living branches to avoid testing feature branches twice (as branch and as pull request)
 branches:
