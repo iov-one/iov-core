@@ -12,7 +12,7 @@ export const enum KeyActionType {
   REMOVE_USER = "REMOVE_USER",
   UNLOCK_USER = "UNLOCK_USER",
   LOCK_USER = "LOCK_USER",
-  ADD_ACCOUNT = "ADD_ACCOUNT",
+  CREATE_ACCOUNT = "CREATE_ACCOUNT",
   SET_ACCOUNT_NAME = "SET_ACCOUNT_NAME",
   SIGN_TRANSACTION = "SIGN_TRANSACTION",
   VERIFY_TRANSACTION = "VERIFY_TRANSACTION",
@@ -23,7 +23,7 @@ export type KeyAction =
   | RemoveUserAction
   | UnlockUserAction
   | LockUserAction
-  | AddAccountAction
+  | CreateAccountAction
   | SetAccountNameAction
   | SignTransactionAction
   | VerifyTransactionAction;
@@ -56,8 +56,8 @@ export interface LockUserAction {
   readonly user: UsernameString;
 }
 
-export interface AddAccountAction {
-  readonly type: KeyActionType.ADD_ACCOUNT;
+export interface CreateAccountAction {
+  readonly type: KeyActionType.CREATE_ACCOUNT;
   readonly user: UsernameString;
   readonly n?: number;
 }

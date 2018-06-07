@@ -28,8 +28,8 @@ It is inspired by metamask's design:
 https://github.com/MetaMask/KeyringController/blob/master/docs/keyring.md
 */
 export interface Keyring {
-  // addAccounts will create n new accounts (default 1)
-  addAccounts: (n?: number) => Promise<ReadonlyArray<NamedAccount>>;
+  // createAccount will create n new accounts (default 1)
+  createAccount: (n?: number) => Promise<ReadonlyArray<NamedAccount>>;
   // setName sets the name for the nth account, if it exists
   setName: (n: number, name: string) => Promise<true>;
 

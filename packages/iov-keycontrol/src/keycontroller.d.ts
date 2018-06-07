@@ -83,8 +83,8 @@ export interface KeyController {
   // lock user removes access to those account keys until we unlock again
   lockUser: (user: UsernameString) => Promise<LockUserEvent>;
 
-  // addAccounts creates more public/private keypairs locally
-  addAccounts: (user: UsernameString, n?: number) => Promise<ModifyUserEvent>;
+  // createAccount creates more public/private keypairs locally
+  createAccount: (user: UsernameString, n?: number) => Promise<ModifyUserEvent>;
 
   // setAccountName assigns a new name to one of the accounts
   setAccountName: (
