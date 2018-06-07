@@ -1,6 +1,6 @@
 import { SignableTransaction, UsernameString } from "@iov/types";
 
-import { NamedAccount } from "./keyring";
+import { Identity } from "./keyring";
 
 export const enum KeyEventType {
   ADD_USER = "ADD_USER",
@@ -38,19 +38,19 @@ export interface RemoveUserEvent {
 export interface UnlockUserEvent {
   readonly type: KeyEventType.UNLOCK_USER;
   readonly user: UsernameString;
-  readonly accounts: ReadonlyArray<NamedAccount>;
+  readonly identities: ReadonlyArray<Identity>;
 }
 
 // On any change to this unlocked account, send the new state.
 // This involves both naming an account, as well as adding
-// new accounts.
+// new identities.
 //
 // Or shall we make separate events to each modification
 // (which are smaller, but may be harder to track)?
 export interface ModifyUserEvent {
   readonly type: KeyEventType.MODIFY_USER;
   readonly user: UsernameString;
-  readonly accounts: ReadonlyArray<NamedAccount>;
+  readonly identities: ReadonlyArray<Identity>;
 }
 
 export interface LockUserEvent {

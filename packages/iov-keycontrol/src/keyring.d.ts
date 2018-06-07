@@ -7,8 +7,8 @@ export type KeyDataString = KeyData & string;
 declare const KeyringNameSymbol: unique symbol;
 export type KeyringName = typeof KeyringNameSymbol & string;
 
-// NamedAccount allows us to store names on the keys
-export interface NamedAccount extends PublicKeyBundle {
+// Identity allows us to store names on the keys
+export interface Identity extends PublicKeyBundle {
   readonly name?: string;
 
   // canSign flag means the private key is currently accessible.
@@ -29,12 +29,13 @@ https://github.com/MetaMask/KeyringController/blob/master/docs/keyring.md
 */
 export interface Keyring {
   // createAccount will create n new accounts (default 1)
-  createAccount: (n?: number) => Promise<ReadonlyArray<NamedAccount>>;
+  createAccount: (n?: number) => Promise<ReadonlyArray<Identity>>;
   // setName sets the name for the nth account, if it exists
   setName: (n: number, name: string) => Promise<true>;
 
   // getAccounts returns all accounts currently registered
-  getAccounts: () => Promise<ReadonlyArray<NamedAccount>>;
+  getAccounts: () => Promise<ReadonlyArray<Identity>>;
+  
   // signTransaction will return a detached signature for the signable bytes
   // with the private key that matches the given account.
   // If the account is not present in this keyring, throws an Error
