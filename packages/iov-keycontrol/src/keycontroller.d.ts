@@ -6,7 +6,7 @@ import {
   LockUserEvent,
   ModifyUserEvent,
   SignedTransactionEvent,
-  VerifiedTransactionEvent
+  VerifiedTransactionEvent,
 } from "./events";
 import {
   PasswordString,
@@ -16,7 +16,7 @@ import {
   SignableTransaction,
   SignatureBytes,
   UsernameString,
-  Transaction
+  Transaction,
 } from "@iov/types";
 import { KeyringName } from "./keyring";
 
@@ -65,19 +65,19 @@ export interface KeyController {
   addUser: (
     user: UsernameString,
     password: PasswordString,
-    keyring: KeyringName
+    keyring: KeyringName,
   ) => Promise<AddUserEvent>;
 
   // removeUser requires original password to delete.
   removeUser: (
     user: UsernameString,
-    password: PasswordString
+    password: PasswordString,
   ) => Promise<RemoveUserEvent>;
 
   // unlock user gives us access to the private keys for the user
   unlockUser: (
     user: UsernameString,
-    password: PasswordString
+    password: PasswordString,
   ) => Promise<UnlockUserEvent>;
 
   // lock user removes access to those account keys until we unlock again
@@ -90,7 +90,7 @@ export interface KeyController {
   setAccountName: (
     user: UsernameString,
     publicKey: PublicKeyBundle,
-    name: string
+    name: string,
   ) => Promise<ModifyUserEvent>;
 
   //---------- Perform computations ----
@@ -105,12 +105,12 @@ export interface KeyController {
     user: UsernameString,
     account: PublicKeyBundle,
     tx: SignableTransaction,
-    nonce: Nonce
+    nonce: Nonce,
   ) => Promise<SignedTransactionEvent>;
 
   // verifyTransaction will return true if all signatures
   // on the signable transaction are valid
   verifyTransaction: (
-    tx: SignableTransaction
+    tx: SignableTransaction,
   ) => Promise<VerifiedTransactionEvent>;
 }

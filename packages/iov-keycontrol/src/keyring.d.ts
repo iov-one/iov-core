@@ -40,7 +40,7 @@ export interface Keyring {
   // If the account is not present in this keyring, throws an Error
   signTransaction: (
     account: PublicKeyBundle,
-    tx: SignableBytes
+    tx: SignableBytes,
   ) => Promise<SignatureBytes>;
 
   // serialize will produce a representation that can be writen to disk.

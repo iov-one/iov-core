@@ -11,7 +11,7 @@
   },
   "scripts": {
     "run-dev": "ts-node",
-    "format": "prettier --write **/*.ts",
+    "format": "prettier --trailing-comma all --write **/*.ts",
     "lint": "tslint --project .",
     "lint-fix": "yarn lint --fix",
     "test": "echo 'Info: no test specified'",

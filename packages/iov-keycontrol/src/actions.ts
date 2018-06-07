@@ -3,7 +3,7 @@ import {
   PasswordString,
   PublicKeyBundle,
   SignableTransaction,
-  UsernameString
+  UsernameString,
 } from "@iov/types";
 import { KeyringName } from "./keyring";
 
@@ -15,7 +15,7 @@ export const enum KeyActionType {
   ADD_ACCOUNT = "ADD_ACCOUNT",
   SET_ACCOUNT_NAME = "SET_ACCOUNT_NAME",
   SIGN_TRANSACTION = "SIGN_TRANSACTION",
-  VERIFY_TRANSACTION = "VERIFY_TRANSACTION"
+  VERIFY_TRANSACTION = "VERIFY_TRANSACTION",
 }
 
 export type KeyAction =
