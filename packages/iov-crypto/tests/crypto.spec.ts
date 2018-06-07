@@ -1,4 +1,4 @@
-/* tslint:disable:no-let readonly-array no-object-mutation */
+/* tslint:disable:no-let readonly-array */
 import { Ed25519, Sha256 } from "../src/crypto";
 
 function toHex(data: Uint8Array): string {
@@ -15,10 +15,6 @@ function fromHex(hexstring: string): Uint8Array {
     listOfInts.push(parseInt(hexstring.substr(i, 2), 16));
   }
   return new Uint8Array(listOfInts);
-}
-
-function copy(source: Uint8Array): Uint8Array {
-  return Uint8Array.from(source);
 }
 
 describe("Crypto", () => {
@@ -64,15 +60,13 @@ describe("Crypto", () => {
         }
 
         { // message corrupted
-          const corruptedMessage = copy(message);
-          corruptedMessage[0] ^= 0x01;
+          const corruptedMessage = message.map((x, i) => i === 0 ? x^0x01 : x);
           const ok = await Ed25519.verifySignature(signature, corruptedMessage, keypair.pubkey);
           expect(ok).toEqual(false);
         }
 
         { // signature corrupted
-          const corruptedSignature = copy(signature);
-          corruptedSignature[0] ^= 0x01;
+          const corruptedSignature = signature.map((x, i) => i === 0 ? x^0x01 : x);
           const ok = await Ed25519.verifySignature(corruptedSignature, message, keypair.pubkey);
           expect(ok).toEqual(false);
         }
