@@ -11,13 +11,7 @@ addons:
   chrome: stable
 
 script:
-- |
-  if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-    # Test browser
-    cd packages/iov-crypto && yarn test-safari
-  else
-    yarn build && yarn test
-  fi
+- ./travis.sh
 
 # whitelist long living branches to avoid testing feature branches twice (as branch and as pull request)
 branches:
