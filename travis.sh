@@ -7,6 +7,8 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     (
       cd packages/iov-crypto
       yarn test-safari
+      yarn test-firefox
+      yarn test-chrome
     )
 else
     yarn build
