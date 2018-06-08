@@ -69,7 +69,7 @@ A `PublicIdentity` is a derived `Algo:Data` pair, which can be used to create a 
 
 ## PublicPersonality
 
-The `PublicPersonality` is the result of a chain specific mapping, which requires a `PublicIdentity` derived from a `SecretIdentity` and cryptographic algorithm for creating a `publicKey`. From this `PublicIdentity`, a `Personality` can be generated, following chain specific rules for addressing.
+The `PublicPersonality` is the result of a chain specific mapping, which requires a `PublicIdentity` derived from a `SecretIdentity`. From this `PublicIdentity`, a `Personality` can be generated, following chain specific rules for addressing.
 
 - AddPublicPersonality: Creates a `PublicPersonality`, based on a `PublicIdentity:chain` pair
 - DeletePublicPersonality: Removes a `PublicPersonality` from the store.
