@@ -54,4 +54,17 @@ export class Chacha20poly1305Ietf {
       nonce,
       key);
   }
+
+  public static async decrypt(ciphertext: Uint8Array, key: Uint8Array, nonce: Uint8Array): Promise<Uint8Array> {
+    await sodium.ready;
+
+    const additionalData = undefined;
+
+    return sodium.crypto_aead_chacha20poly1305_ietf_decrypt(
+      null, // secret nonce: unused and should be null (https://download.libsodium.org/doc/secret-key_cryptography/ietf_chacha20-poly1305_construction.html)
+      ciphertext,
+      additionalData,
+      nonce,
+      key);
+  }
 }
