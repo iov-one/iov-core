@@ -37,8 +37,8 @@ export interface Keyring {
   // createIdentity will create one new identity
   createIdentity: () => Promise<PublicIdentity>;
 
-  // setName sets the name associated with the public key, if it exists
-  setName: (identity: PublicKeyBundle, name: string) => Promise<true>;
+  // setIdentityName sets the name associated with the public key, if it exists
+  setIdentityName: (identity: PublicKeyBundle, name: string) => Promise<true>;
 
   // getIdentities returns all identities currently registered
   getIdentities: () => Promise<ReadonlyArray<PublicIdentity>>;
