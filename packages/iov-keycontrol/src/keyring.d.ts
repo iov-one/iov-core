@@ -15,7 +15,9 @@ export type KeyringName = typeof KeyringNameSymbol & string;
 // PublicIdentity is a public key we can identify with on a blockchain,
 // as well as local info, like our nickname and if it is enabled currently
 export interface PublicIdentity extends PublicKeyBundle {
-  readonly name?: string;
+  // nickname is an optional, local name.
+  // this is not exposed to other people, use BNS registration for that
+  readonly nickname?: string;
 
   // canSign flag means the private key is currently accessible.
   // if a hardware ledger is not plugged in, we may
