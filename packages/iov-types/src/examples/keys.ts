@@ -1,8 +1,8 @@
 import {
   AddressString,
   Algorithm,
-  KeyPairBytes,
-  KeyPairString,
+  KeypairBytes,
+  KeypairString,
   MnemonicString,
   PrivateKeyBundle,
   PrivateKeyBytes,
@@ -44,13 +44,13 @@ export const publicKeyBundle: PublicKeyBundle = {
   data: publicKeyBytes
 };
 
-export const keyPairBytes: KeyPairBytes = {
+export const keypairBytes: KeypairBytes = {
   algo: Algorithm.ED25519,
   private: privateKeyBytes,
   public: publicKeyBytes
 };
 
-export const keyPairString: KeyPairString = {
+export const keypairString: KeypairString = {
   algo: Algorithm.ED25519,
   private: privateKeyString,
   public: publicKeyString

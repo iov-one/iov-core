@@ -35,13 +35,13 @@ type Signature = typeof SignatureSymbol;
 export type SignatureBytes = Signature & Uint8Array;
 export type SignatureString = Signature & string;
 
-export interface KeyPairBytes {
+export interface KeypairBytes {
   readonly algo: Algorithm;
   readonly private: PrivateKeyBytes;
   readonly public: PublicKeyBytes;
 }
 
-export interface KeyPairString {
+export interface KeypairString {
   readonly algo: Algorithm;
   readonly private: PrivateKeyString;
   readonly public: PublicKeyString;
