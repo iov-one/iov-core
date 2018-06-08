@@ -25,10 +25,10 @@ The following functions are called from the `SecureElementController`, through t
 
 ## UserProfile
 
-A `UserProfile` contains a `KeyRing` entry, `AddressBook` and other user specific details that need to be kept seperate from other users.
+A `UserProfile` contains a `Keyring` entry, `AddressBook` and other user specific details that need to be kept seperate from other users.
 
 - AddressBook: Holds common `PublicPersonality` mappings the user interacts with
-- KeyRing: Hold all of the users `KeyRingEntry`s that hold private keys.
+- Keyring: Hold all of the users `KeyringEntry`s that hold private keys.
 
 ## AddressBook
 
@@ -38,19 +38,19 @@ Contains a list of addresses a user has interacted with, or added for frequent u
 - DeleteContact: Deletes a contact from a `UserProfile`
 - GetContact: Returns the `chain:address:humanName` for use in the application.
 
-## KeyRing
+## Keyring
 
-The `KeyRing` acts as a central loop, which holds all of the `User`'s `KeyRingEntry`s.
+The `Keyring` acts as a central loop, which holds all of the `User`'s `KeyringEntry`s.
 
-- GetKeyRingEntry: Returns a requested `KeyRingEntry`'s details, such as `PublicIdentity` or `PublicPersonality`
-- AddKeyRingEntry: Adds a new `KeyRingEntry` to the `KeyRing`.
-- DeleteKeyRingEntry: Removes an existing `KeyRingEntry`
-- ExportKeyRingEntry: Exports a `KeyRingEntry` in plain text
+- GetKeyringEntry: Returns a requested `KeyringEntry`'s details, such as `PublicIdentity` or `PublicPersonality`
+- AddKeyringEntry: Adds a new `KeyringEntry` to the `Keyring`.
+- DeleteKeyringEntry: Removes an existing `KeyringEntry`
+- ExportKeyringEntry: Exports a `KeyringEntry` in plain text
 
 
-## KeyRingEntry
+## KeyringEntry
 
-A `KeyRingEntry` contains all of the related identity and personality information for an associated `SecretIdentity`. A `SecretIdentity` can be a plaintext `PrivateKey`, `Mnemonic Passphrase` or even a hardware device identifier for a `Ledger`.
+A `KeyringEntry` contains all of the related identity and personality information for an associated `SecretIdentity`. A `SecretIdentity` can be a plaintext `PrivateKey`, `Mnemonic Passphrase` or even a hardware device identifier for a `Ledger`.
 
 - GetPublicIdentity: Returns `PublicIdentity` details for a specific algorithm.
 
