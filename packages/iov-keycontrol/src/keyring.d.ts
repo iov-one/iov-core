@@ -12,9 +12,9 @@ export type KeyDataString = KeyData & string;
 declare const KeyringNameSymbol: unique symbol;
 export type KeyringName = typeof KeyringNameSymbol & string;
 
-// Identity is a public key we can identify with on a blockchain,
+// PublicIdentity is a public key we can identify with on a blockchain,
 // as well as local info, like our nickname and if it is enabled currently
-export interface Identity extends PublicKeyBundle {
+export interface PublicIdentity extends PublicKeyBundle {
   readonly name?: string;
 
   // canSign flag means the private key is currently accessible.
@@ -35,17 +35,17 @@ https://github.com/MetaMask/KeyringController/blob/master/docs/keyring.md
 */
 export interface Keyring {
   // createIdentity will create one new identity
-  createIdentity: () => Promise<Identity>;
+  createIdentity: () => Promise<PublicIdentity>;
 
   // setName sets the name associated with the public key, if it exists
   setName: (identity: PublicKeyBundle, name: string) => Promise<true>;
 
   // getIdentities returns all identities currently registered
-  getIdentities: () => Promise<ReadonlyArray<Identity>>;
+  getIdentities: () => Promise<ReadonlyArray<PublicIdentity>>;
 
   // createTransactionSignature will return a detached signature for the signable bytes
-  // with the private key that matches the given identity.
-  // If a matching identity is not present in this keyring, throws an Error
+  // with the private key that matches the given PublicIdentity.
+  // If a matching PublicIdentity is not present in this keyring, throws an Error
   //
   // We provide chainID explicitly (which should be in tx as well), to help
   // an implementation to do checks (such as ledger to switch apps)

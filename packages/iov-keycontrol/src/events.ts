@@ -1,6 +1,6 @@
 import { SignableTransaction, UsernameString } from "@iov/types";
 
-import { Identity } from "./keyring";
+import { PublicIdentity } from "./keyring";
 
 export const enum KeyEventType {
   ADD_USER = "ADD_USER",
@@ -38,7 +38,7 @@ export interface RemoveUserEvent {
 export interface UnlockUserEvent {
   readonly type: KeyEventType.UNLOCK_USER;
   readonly user: UsernameString;
-  readonly identities: ReadonlyArray<Identity>;
+  readonly identities: ReadonlyArray<PublicIdentity>;
 }
 
 // On any change to this unlocked account, send the new state.
@@ -50,7 +50,7 @@ export interface UnlockUserEvent {
 export interface ModifyUserEvent {
   readonly type: KeyEventType.MODIFY_USER;
   readonly user: UsernameString;
-  readonly identities: ReadonlyArray<Identity>;
+  readonly identities: ReadonlyArray<PublicIdentity>;
 }
 
 export interface LockUserEvent {
