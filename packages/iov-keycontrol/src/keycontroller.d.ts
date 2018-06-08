@@ -1,10 +1,10 @@
 import {
   KeyEvent,
-  UnlockUserEvent,
-  RemoveUserEvent,
-  AddUserEvent,
-  LockUserEvent,
-  ModifyUserEvent,
+  UnlockProfileEvent,
+  RemoveProfileEvent,
+  AddProfileEvent,
+  LockProfileEvent,
+  ModifyProfileEvent,
   SignedTransactionEvent,
   VerifiedTransactionEvent,
 } from "./events";
@@ -18,7 +18,7 @@ import {
   UsernameString,
   Transaction,
 } from "@iov/types";
-import { KeyringName } from "./keyring";
+import { KeyringName, PublicIdentity } from "./keyring";
 
 /*
 A KeyController is the main interface to key signing.
@@ -57,28 +57,28 @@ export interface KeyController {
   // This section just updates the current state, any changes
   // can be streamed into the watcher
 
-  // addUser creates a new user and return a promise to the change event.
+  // addProfile creates a new user and return a promise to the change event.
   // this event is also sent to the watchState stream, which is meant
   // to update another store (eg. UI redux store).
   //
   // You can usually ignore this promise unless you want to chain this
-  addUser: (
+  addProfile: (
     user: UsernameString,
     password: PasswordString,
     keyring: KeyringName,
-  ) => Promise<AddUserEvent>;
+  ) => Promise<AddProfileEvent>;
 
-  // removeUser requires original password to delete.
-  removeUser: (
+  // removeProfile requires original password to delete.
+  removeProfile: (
     user: UsernameString,
     password: PasswordString,
-  ) => Promise<RemoveUserEvent>;
+  ) => Promise<RemoveProfileEvent>;
 
-  // unlock user gives us access to the private keys for the user
-  unlockUser: (
+  // unlockProfile user gives us access to the private keys for the profile
+  unlockProfile: (
     user: UsernameString,
     password: PasswordString,
-  ) => Promise<UnlockUserEvent>;
+  ) => Promise<UnlockProfileEvent>;
 
   // verifyTransaction will return true if all signatures
   // on the signable transaction are valid.
@@ -89,26 +89,30 @@ export interface KeyController {
 }
 
 /*
-When we unlock a user, we get a UserSession, which is a "capability" to enable
-us to use those private keys. All methods must go though the UserSession
+When we unlock a profile, we get a Profile handle, which is a 
+"capability" to enable us to use those private keys. 
+
+All methods must go though the Profile
 (which may just append a token to a private KeyController function).
-Once the UserSession is locked, it can no longer be used.
+Once the Profile is locked (aka logged out), it can no longer be used.
 */
-export interface UserSession {
+export interface Profile {
   // whoami is a sanity check if needed
   whoami: () => UsernameString;
 
   // lock user removes access to these account keys until we unlock again
-  lock: () => Promise<LockUserEvent>;
+  lock: () => Promise<LockProfileEvent>;
 
   // createIdentity creates a public/private keypairs
-  createIdentity: () => Promise<ModifyUserEvent>;
+  createIdentity: () => Promise<ModifyProfileEvent>;
 
   // setIdentityName assigns a new name to one of the identities
   setIdentityName: (
     publicKey: PublicKeyBundle,
     name: string,
-  ) => Promise<ModifyUserEvent>;
+  ) => Promise<ModifyProfileEvent>;
+
+  getIdentities: () => Promise<ReadonlyArray<PublicIdentity>>;
 
   //---------- Perform computations ----
   //
