@@ -27,15 +27,23 @@ export interface PublicIdentity extends PublicKeyBundle {
 }
 
 /*
-Keyring is a generic interface for managing a set of keys and
-signing data with them. A KeyController can instantiate these
-keyrings and manage persistence, they are responsible for
-generating secure (random) private keys and signing with them.
+A Keyring is a list of KeyringEntrys
+*/
+export type Keyring = Array<KeyringEntry>;
+
+/*
+KeyringEntry is a generic interface for managing a set of keys and signing
+data with them. A KeyringEntry is instanciated using KeyringEntryFactory
+and assigned to a Keyring.
+
+A KeyringEntry is responsible for generating secure (random) private keys
+and signing with them. KeyringEntry can be implemented in software or as
+a bridge to a hardware wallet.
 
 It is inspired by metamask's design:
 https://github.com/MetaMask/KeyringController/blob/master/docs/keyring.md
 */
-export interface Keyring {
+export interface KeyringEntry {
   // createIdentity will create one new identity
   createIdentity: () => Promise<PublicIdentity>;
 
@@ -62,12 +70,12 @@ export interface Keyring {
   serialize: () => Promise<KeyDataString>;
 }
 
-// A KeyringFactory is a constructor, but since `new` cannot be
+// A KeyringEntryFactory is a constructor, but since `new` cannot be
 // asynchronous, we use the factory model.
 //
-// The first time a Keyring is created, it will receive no data and
+// The first time a KeyringEntry is created, it will receive no data and
 // is responsible for initializing a random state.
-// When a Keyring is loaded from stored data, it will be passed
+// When a KeyringEntry is loaded from stored data, it will be passed
 // a KeyDataString that came out of the `serialize` method of the
 // same class on a prior run.
-export type KeyringFactory = (data?: KeyDataString) => Promise<Keyring>;
+export type KeyringEntryFactory = (data?: KeyDataString) => Promise<KeyringEntry>;
