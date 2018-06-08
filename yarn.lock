@@ -4551,6 +4551,12 @@ xstream@^11.3.0:
   dependencies:
     symbol-observable "1.2.0"
 
+xstream@^11.4.0:
+  version "11.4.0"
+  resolved "https://registry.yarnpkg.com/xstream/-/xstream-11.4.0.tgz#e1b65693e36c3c60b3cf29f50d8d8e85954b91fd"
+  dependencies:
+    symbol-observable "1.2.0"
+
 xtend@^4.0.0, xtend@~4.0.0, xtend@~4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.1.tgz#a5c6d532be656e23db820efb943a1f04998d63af"

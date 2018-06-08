@@ -1,10 +1,5 @@
-import { PublicKeyString } from "@iov/types";
-import {
-  Account,
-  PasswordString,
-  User,
-  UsernameString
-} from "../types/accounts";
+import { PasswordString, PublicKeyString, UsernameString } from "@iov/types";
+import { Account, User } from "../types/accounts";
 
 export const password: PasswordString = "password123" as PasswordString;
 

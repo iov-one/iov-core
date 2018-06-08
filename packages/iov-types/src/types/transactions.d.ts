@@ -14,7 +14,8 @@ export type TTLString = TTL & string;
 declare const TokenTickerSymbol: unique symbol;
 export type TokenTicker = typeof TokenTickerSymbol & string;
 
-// ChainID should be 3-4 letters, uppercase
+// ChainID is used to differentiate a blockchain
+// should be alphanumeric or -_/ and unique
 declare const ChainSymbol: unique symbol;
 export type ChainID = typeof ChainSymbol & string;
 

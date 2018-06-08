@@ -1,12 +1,13 @@
 import {
   ClientNameString,
   ClientTokenString,
+  PasswordString,
   PrivateKeyString,
   PublicKeyString,
   SeedString,
-  TTLBytes
+  TTLBytes,
+  UsernameString,
 } from "@iov/types";
-import { PasswordString, UsernameString } from "../types/accounts";
 import {
   AddAccount,
   CreateUser,
@@ -18,7 +19,7 @@ import {
   RestoreUser,
   SetActiveKey,
   SignTransaction,
-  UnlockUser
+  UnlockUser,
 } from "../types/actions_private";
 import { sendTx } from "./iov-types";
 
