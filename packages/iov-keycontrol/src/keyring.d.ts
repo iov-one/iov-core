@@ -58,15 +58,14 @@ export interface Keyring {
   // serialize will produce a representation that can be writen to disk.
   // this will contain secret info, so handle securely!
   serialize: () => Promise<KeyDataString>;
-  // deserialize will take a string that came from serialize (of the same class)
-  // and reinitialize internal state
-  deserialize: (data: KeyDataString) => Promise<true>;
 }
 
-// KeyringOpts are everything provided to the factory
-// We need to figure out what this will hold
-export type KeyringOpts = any;
-
-// A KeyringFactory may use the information in opts
-// or ignore it, but has no access to other info
-export type KeyringFactory = (opts: KeyringOpts) => Keyring;
+// A KeyringFactory is a constructor, but since `new` cannot be
+// asynchronous, we use the factory model.
+//
+// The first time a Keyring is created, it will receive no data and
+// is responsible for initializing a random state.
+// When a Keyring is loaded from stored data, it will be passed
+// a KeyDataString that came out of the `serialize` method of the
+// same class on a prior run.
+export type KeyringFactory = (data?: KeyDataString) => Promise<Keyring>;
