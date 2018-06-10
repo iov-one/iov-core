@@ -29,18 +29,18 @@ export interface Node {
   // If max is underfined, subscribe to all new headers
   // If max is defined, but higher than current height,
   // subscribe to all new headers until max.
-  headers(min?: number, max?: number): Stream<Header>;
+  readonly headers: (min?: number, max?: number) => Stream<Header>;
 
   // block will query for one block if height is provider,
   // returning it immediately if available, or as soon as it
   // is produced, if in the future.
   // If not height is provided, it will get most recent block
-  block(height?: number): Promise<Block>;
+  readonly block: (height?: number) => Promise<Block>;
   // streamBlocks starts sending a stream of blocks from now on
-  streamBlocks(): Stream<Block>;
+  readonly streamBlocks: () => Stream<Block>;
 
   // postTx submits a signed tx as is notified on every state change
-  postTx(tx: SignableTransaction): Stream<TransactionState>;
+  readonly postTx: (tx: SignableTransaction) => Stream<TransactionState>;
 
   // TODO----
 
@@ -52,11 +52,11 @@ export interface Node {
 
   // various types of queries to get a stream of accounts...
   // streams current data and all changes
-  watchAccount(query: AccountQuery): Stream<Account>;
-  watchNonce(query: AccountQuery): Stream<AccountNonce>;
+  readonly watchAccount: (query: AccountQuery) => Stream<Account>;
+  readonly watchNonce: (query: AccountQuery) => Stream<AccountNonce>;
 
-  getTicker(ticker: TokenTicker): Promise<Ticker>;
-  watchAllTickers(): Stream<Ticker>;
+  readonly getTicker: (ticker: TokenTicker) => Promise<Ticker>;
+  readonly watchAllTickers: () => Stream<Ticker>;
 }
 
 // TODO: expand on this
@@ -67,7 +67,7 @@ export const enum TransactionState {
   REJECTED = "REJECTED"
 }
 
-//------------------------------------------------------------------------
+// ------------------------------------------------------------------------
 // State types
 
 export const enum AccountQueryType {
@@ -77,18 +77,18 @@ export const enum AccountQueryType {
 }
 
 export interface AccountQueryByAddress {
-  type: AccountQueryType.ADDRESS;
-  address: AddressBytes;
+  readonly type: AccountQueryType.ADDRESS;
+  readonly address: AddressBytes;
 }
 
 export interface AccountQueryByPublicKeyBundle {
-  type: AccountQueryType.PUBLIC_KEY;
-  PublicKeyBundle: PublicKeyBundle;
+  readonly type: AccountQueryType.PUBLIC_KEY;
+  readonly PublicKeyBundle: PublicKeyBundle;
 }
 
 export interface AccountQueryByName {
-  type: AccountQueryType.NAME;
-  name: string;
+  readonly type: AccountQueryType.NAME;
+  readonly name: string;
 }
 
 export type AccountQuery =
@@ -98,31 +98,31 @@ export type AccountQuery =
 
 // Nonce is a minimal subset of Account for efficiency
 export interface AccountNonce {
-  PublicKeyBundle?: PublicKeyBundle;
-  address: AddressBytes;
-  nonce: Nonce;
+  readonly PublicKeyBundle?: PublicKeyBundle;
+  readonly address: AddressBytes;
+  readonly nonce: Nonce;
 }
 
 export interface Account extends AccountNonce {
-  name?: string;
-  balances: ReadonlyArray<Balance>;
-  extended: any;
+  readonly name?: string;
+  readonly balances: ReadonlyArray<Balance>;
+  readonly extended: any;
 }
 
 export interface Balance extends FungibleToken {
-  tokenName?: string;
-  sigFigs: number;
+  readonly tokenName?: string;
+  readonly sigFigs: number;
 }
 
-//----
+// ----
 
 export interface Ticker {
-  tokenTicker: TokenTicker;
-  tokenName?: string;
-  sigFigs: number;
+  readonly tokenTicker: TokenTicker;
+  readonly tokenName?: string;
+  readonly sigFigs: number;
 }
 
-//------------------------------------------------------------------------
+// ------------------------------------------------------------------------
 // Block types
 
 declare const BlockHashSymbol: unique symbol;
