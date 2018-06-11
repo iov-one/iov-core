@@ -20,7 +20,6 @@
   },
   "devDependencies": {
     "@types/node": "^9.6.6",
-    "prettier": "^1.12.1",
     "ts-node": "^6.0.3",
     "tslint": "^5.10.0",
     "typescript": "^2.8.3"

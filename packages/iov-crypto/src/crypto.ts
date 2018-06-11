@@ -4,11 +4,11 @@
 // https://github.com/jedisct1/libsodium.js/issues/148
 import sodium = require("libsodium-wrappers");
 
-import shajs from 'sha.js';
+import shajs from "sha.js";
 
 export interface Keypair {
-  readonly pubkey: Uint8Array,
-  readonly privkey: Uint8Array,
+  readonly pubkey: Uint8Array;
+  readonly privkey: Uint8Array;
 }
 
 export class Ed25519 {
@@ -17,16 +17,23 @@ export class Ed25519 {
     const keypair = sodium.crypto_sign_keypair();
     return {
       pubkey: keypair.publicKey,
-      privkey: keypair.privateKey
-    }
+      privkey: keypair.privateKey,
+    };
   }
 
-  public static async createSignature(message: Uint8Array, privkey: Uint8Array): Promise<Uint8Array> {
+  public static async createSignature(
+    message: Uint8Array,
+    privkey: Uint8Array,
+  ): Promise<Uint8Array> {
     await sodium.ready;
     return sodium.crypto_sign_detached(message, privkey);
   }
 
-  public static async verifySignature(signature: Uint8Array, message: Uint8Array, pubkey: Uint8Array): Promise<boolean> {
+  public static async verifySignature(
+    signature: Uint8Array,
+    message: Uint8Array,
+    pubkey: Uint8Array,
+  ): Promise<boolean> {
     await sodium.ready;
     return sodium.crypto_sign_verify_detached(signature, message, pubkey);
   }
@@ -35,14 +42,18 @@ export class Ed25519 {
 export class Sha256 {
   // async interface to support implementations that rely on WebAssemby compilation later on
   public static digest(data: Uint8Array): Promise<Uint8Array> {
-    const hasher = shajs('sha256');
+    const hasher = shajs("sha256");
     hasher.update(data);
     return Promise.resolve(hasher.digest());
   }
 }
 
 export class Chacha20poly1305Ietf {
-  public static async encrypt(message: Uint8Array, key: Uint8Array, nonce: Uint8Array): Promise<Uint8Array> {
+  public static async encrypt(
+    message: Uint8Array,
+    key: Uint8Array,
+    nonce: Uint8Array,
+  ): Promise<Uint8Array> {
     await sodium.ready;
 
     const additionalData = undefined;
@@ -52,10 +63,15 @@ export class Chacha20poly1305Ietf {
       additionalData,
       null, // secret nonce: unused and should be null (https://download.libsodium.org/doc/secret-key_cryptography/ietf_chacha20-poly1305_construction.html)
       nonce,
-      key);
+      key,
+    );
   }
 
-  public static async decrypt(ciphertext: Uint8Array, key: Uint8Array, nonce: Uint8Array): Promise<Uint8Array> {
+  public static async decrypt(
+    ciphertext: Uint8Array,
+    key: Uint8Array,
+    nonce: Uint8Array,
+  ): Promise<Uint8Array> {
     await sodium.ready;
 
     const additionalData = undefined;
@@ -65,6 +81,7 @@ export class Chacha20poly1305Ietf {
       ciphertext,
       additionalData,
       nonce,
-      key);
+      key,
+    );
   }
 }
