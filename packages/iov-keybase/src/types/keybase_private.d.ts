@@ -7,7 +7,7 @@ import {
   SeedString,
   Transaction,
   TTLBytes,
-  UsernameString
+  UsernameString,
 } from "@iov/types";
 import {
   AddAccount,
@@ -19,7 +19,7 @@ import {
   RestoreUser,
   SetActiveKey,
   SignTransaction,
-  UnlockUser
+  UnlockUser,
 } from "./actions_private";
 import { KeybaseState } from "./states";
 
@@ -42,36 +42,36 @@ export default class KeybasePrivate {
   public readonly createUser: (
     username: UsernameString,
     password: PasswordString,
-    options?: {}
+    options?: {},
   ) => CreateUser;
   public readonly exportUser: (
     username: UsernameString,
     password: PasswordString,
-    options?: {}
+    options?: {},
   ) => ExportUser;
   public readonly grantStoreAccess: (
     publicKey: PublicKeyString,
     origin: ClientNameString,
-    token: ClientTokenString
+    token: ClientTokenString,
   ) => GrantStoreAccess;
   public readonly importPrivateKey: (
     username: UsernameString,
-    privateKey: PrivateKeyString
+    privateKey: PrivateKeyString,
   ) => ImportPrivateKey;
   public readonly restoreUser: (
     username: UsernameString,
     password: PasswordString,
-    seed: SeedString
+    seed: SeedString,
   ) => RestoreUser;
   public readonly setActiveKey: (index: number) => SetActiveKey;
   public readonly signTransaction: (
     publicKey: PublicKeyString,
     transaction: Transaction,
-    ttl: TTLBytes | null
+    ttl: TTLBytes | null,
   ) => SignTransaction;
   public readonly unlockUser: (
     username: UsernameString,
-    password: PasswordString
+    password: PasswordString,
   ) => UnlockUser;
 
   private readonly dispatch: (action: PrivateAction) => PrivateAction;

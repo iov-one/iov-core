@@ -27,5 +27,8 @@
     "lerna": "^2.10.2",
     "tslint-config-prettier": "^1.13.0",
     "tslint-immutable": "^4.5.4"
+  },
+  "prettier": {
+    "trailingComma": "all"
   }
 }

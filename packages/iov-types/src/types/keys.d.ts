@@ -9,7 +9,7 @@ export type MnemonicString = Mnemonic & string;
 
 export const enum Algorithm {
   ED25519 = "ed25519",
-  SECP256K1 = "secp256k1"
+  SECP256K1 = "secp256k1",
 }
 
 declare const PrivateKeySymbol: unique symbol;

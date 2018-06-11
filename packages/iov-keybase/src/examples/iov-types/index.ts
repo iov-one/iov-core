@@ -4,7 +4,7 @@ import {
   PublicKeyBundle,
   PublicKeyBytes,
   SendTx,
-  TokenTicker
+  TokenTicker,
 } from "@iov/types";
 
 const convertHexStringToUint8Array = (str: string): Uint8Array => {
@@ -17,15 +17,15 @@ export const iov: TokenTicker = "IOV" as TokenTicker;
 const recipient: PublicKeyBundle = {
   algo: Algorithm.ED25519,
   data: convertHexStringToUint8Array(
-    "a5bdf5841d9c56d6d975c1ab56ba569c3e367aafa2f9e2ce3dc518eab2594b77"
-  ) as PublicKeyBytes
+    "a5bdf5841d9c56d6d975c1ab56ba569c3e367aafa2f9e2ce3dc518eab2594b77",
+  ) as PublicKeyBytes,
 };
 
 const sender: PublicKeyBundle = {
   algo: Algorithm.ED25519,
   data: convertHexStringToUint8Array(
-    "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352"
-  ) as PublicKeyBytes
+    "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352",
+  ) as PublicKeyBytes,
 };
 
 export const sendTx: SendTx = {
@@ -34,5 +34,5 @@ export const sendTx: SendTx = {
   fee: { whole: 0, fractional: 100, tokenTicker: iov },
   kind: "send",
   recipient,
-  signer: sender
+  signer: sender,
 };

@@ -8,7 +8,7 @@ import {
   SeedString,
   Transaction,
   TTLBytes,
-  UsernameString
+  UsernameString,
 } from "@iov/types";
 
 export const enum PrivateActionType {
@@ -20,7 +20,7 @@ export const enum PrivateActionType {
   EXPORT_USER = "EXPORT_USER",
   SIGN_TRANSACTION = "SIGN_TRANSACTION",
   SET_ACTIVE_KEY = "SET_ACTIVE_KEY",
-  GRANT_STORE_ACCESS = "GRANT_STORE_ACCESS"
+  GRANT_STORE_ACCESS = "GRANT_STORE_ACCESS",
 }
 
 export interface UnlockUser {

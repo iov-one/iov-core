@@ -4,7 +4,7 @@ import { Account } from "./accounts";
 import {
   PublicAction,
   RequestAPIAccess,
-  RequestSignTransaction
+  RequestSignTransaction,
 } from "./actions_public";
 
 /*
@@ -21,7 +21,7 @@ Why does dispatch return another action, not eg. Promise<ActionResult>?
 export default class KeybasePublic {
   public readonly requestAPIAccess: (options?: {}) => RequestAPIAccess;
   public readonly requestSignTransaction: (
-    transaction: Transaction
+    transaction: Transaction,
   ) => RequestSignTransaction;
 
   public readonly getAccountsObservable: () => Observable<Account>;

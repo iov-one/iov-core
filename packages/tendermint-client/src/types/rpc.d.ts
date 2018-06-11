@@ -5,7 +5,7 @@ import {
   TransactionBytes,
   TransactionState,
   TransactionStateProcessed,
-  TxQueryString
+  TxQueryString,
 } from "./transactions";
 
 // TODO: define this for real, now just unique type
@@ -33,7 +33,7 @@ export interface RPC {
   // searchTx searches for all tx that match these tags and subscribes to new ones
   searchTx(
     ws: Websocket,
-    query: TxQueryString
+    query: TxQueryString,
   ): Stream<TransactionStateProcessed>;
 
   // watchKey will query the current state at the given key

@@ -7,7 +7,7 @@ import {
   SignableBytes,
   SignableTransaction,
   TransactionIDBytes,
-  TxCodec
+  TxCodec,
 } from "../types/signables";
 import { Nonce } from "../types/transactions";
 
@@ -17,19 +17,19 @@ import { convertHexStringToUint8Array } from "./utils";
 
 export const signer: PublicKeyBundle = {
   algo: Algorithm.ED25519,
-  data: publicKeyBytes
+  data: publicKeyBytes,
 };
 
 export const fullSignature: FullSignature = {
   nonce: Long.fromNumber(1234) as Nonce,
   publicKey: signer,
-  signature: signatureBytes
+  signature: signatureBytes,
 };
 
 export const signableTransaction = (): SignableTransaction => ({
   codec: encoder,
   signatures: [fullSignature],
-  transaction: sendTx
+  transaction: sendTx,
 });
 
 export const encoder: TxCodec = {
@@ -37,5 +37,5 @@ export const encoder: TxCodec = {
   bytesToSign: () => (Buffer.from("1234") as Uint8Array) as SignableBytes,
   identifier: () =>
     convertHexStringToUint8Array("12345678") as TransactionIDBytes,
-  parseBytes: () => signableTransaction()
+  parseBytes: () => signableTransaction(),
 };

@@ -7,14 +7,14 @@ import {
   PublicKeyString,
   SeedString,
   Transaction,
-  UsernameString
+  UsernameString,
 } from "@iov/types";
 import { Stream } from "xstream";
 import { User } from "./accounts";
 import {
   ImportPrivateKey,
   PrivateAction,
-  SignTransaction
+  SignTransaction,
 } from "./actions_private";
 
 // do we listen as one giant blob, or a separate listener

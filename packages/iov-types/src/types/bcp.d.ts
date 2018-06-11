@@ -64,7 +64,7 @@ export const enum TransactionState {
   PENDING = "PENDING",
   UNCONFIRMED = "UNCONFIRMED",
   CONFIRMED = "CONFIRMED",
-  REJECTED = "REJECTED"
+  REJECTED = "REJECTED",
 }
 
 // ------------------------------------------------------------------------
@@ -73,7 +73,7 @@ export const enum TransactionState {
 export const enum AccountQueryType {
   ADDRESS = "ADDRESS",
   NAME = "NAME",
-  PUBLIC_KEY = "PUBLIC_KEY"
+  PUBLIC_KEY = "PUBLIC_KEY",
 }
 
 export interface AccountQueryByAddress {
