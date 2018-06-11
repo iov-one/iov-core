@@ -1,0 +1,38 @@
+{
+  "name": "@iov/bns-codec",
+  "version": "0.0.0",
+  "description": "Codec to encode/decode bns transactions and state objects",
+  "author": "Ethan Frey <ethanfrey@users.noreply.github.com>",
+  "license": "AGPL-3.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iov-one/web4/tree/master/packages/iov-crypto"
+  },
+  "scripts": {
+    "lint": "tslint --project .",
+    "format": "prettier --write **/*.ts",
+    "test-node": "./jasmine-testrunner.js",
+    "test-firefox": "karma start --single-run --browsers Firefox",
+    "test-chrome": "karma start --single-run --browsers ChromeHeadless",
+    "test-safari": "karma start --single-run --browsers Safari",
+    "test": "yarn build && yarn test-node",
+    "prebuild": "yarn lint && yarn format",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@iov/types": "^0.0.0"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^2.8.8",
+    "jasmine": "^3.1.0",
+    "jasmine-console-reporter": "^3.0.2",
+    "karma": "^2.0.2",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-jasmine": "^1.1.2",
+    "karma-safari-launcher": "^1.0.0",
+    "karma-typescript": "^3.0.12",
+    "tslint": "^5.10.0"
+  }
+}
