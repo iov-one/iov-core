@@ -1,11 +1,15 @@
 import {
+  FullSignature,
   // Nonce,
   PostableBytes,
+  SendTx,
   SignableBytes,
   SignableTransaction,
   TransactionIDBytes,
   TxCodec,
+  FungibleToken,
 } from "@iov/types";
+import codec from "./codec";
 
 class Codec {
   // these are the bytes we create to add a signature
@@ -19,7 +23,12 @@ class Codec {
   }
 
   // bytesToPost includes the raw transaction appended with the various signatures
-  public static bytesToPost(/*tx: SignableTransaction*/): PostableBytes {
+  public static bytesToPost(tx: SignableTransaction): PostableBytes {
+    switch (tx.transaction.kind) {
+      case "send":
+      const obj = buildSendTx(tx.transaction, tx.signatures);
+      return codec.app.Tx.encode(obj).finish() as PostableBytes;
+    }
     throw new Error("Not yet implemented");
   }
 
@@ -36,3 +45,34 @@ class Codec {
 
 // we need to create a const to properly type-check the export...
 export const BNSCodec: TxCodec = Codec;
+
+function buildSendTx(tx: SendTx, sigs: ReadonlyArray<FullSignature>) : codec.app.ITx {
+
+}
+
+function encodeSig(sig: FullSignature): codec.sigs.IStdSignature {
+  throw new Error("not implemented");
+}
+
+function encodeToken(token: FungibleToken): codec.x.ICoin {
+  return codec.x.Coin.create({
+    whole: token.whole,
+    fractional: token.fractional,
+    ticker: token.tokenTicker,
+  });
+}
+
+/*
+function buildSendTx(Tx, sender, rcpt, amount, currency, chainID) {
+  rcpt = Buffer.from(rcpt, 'hex');  // may be bytes or a hex string
+  let msg = weave.cash.SendMsg.create({
+      src: sender.addressBytes(),
+      dest: rcpt,
+      amount: weave.x.Coin.create({whole: amount, ticker: currency})
+  });
+  let tx = Tx.create({
+      sendMsg: msg
+  });
+  return signTx(Tx, tx, sender, chainID);
+}
+*/

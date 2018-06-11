@@ -25,6 +25,7 @@
     "protoc": "yarn packProto `yarn run -s findProto` && yarn defineProto && yarn format"
   },
   "dependencies": {
+    "@iov/crypto": "^0.0.0",
     "@iov/types": "^0.0.0",
     "@types/long": "^4.0.0",
     "@types/node": "^10.3.2",
