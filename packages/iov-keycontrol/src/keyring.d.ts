@@ -37,13 +37,13 @@ https://github.com/MetaMask/KeyringController/blob/master/docs/keyring.md
 */
 export interface Keyring {
   // createIdentity will create one new identity
-  createIdentity: () => Promise<PublicIdentity>;
+  readonly createIdentity: () => Promise<PublicIdentity>;
 
   // setIdentityName sets the name associated with the public key, if it exists
-  setIdentityName: (identity: PublicKeyBundle, name: string) => Promise<true>;
+  readonly setIdentityName: (identity: PublicKeyBundle, name: string) => Promise<true>;
 
   // getIdentities returns all identities currently registered
-  getIdentities: () => Promise<ReadonlyArray<PublicIdentity>>;
+  readonly getIdentities: () => Promise<ReadonlyArray<PublicIdentity>>;
 
   // createTransactionSignature will return a detached signature for the signable bytes
   // with the private key that matches the given PublicIdentity.
@@ -51,7 +51,7 @@ export interface Keyring {
   //
   // We provide chainID explicitly (which should be in tx as well), to help
   // an implementation to do checks (such as ledger to switch apps)
-  createTransactionSignature: (
+  readonly createTransactionSignature: (
     identity: PublicKeyBundle,
     tx: SignableBytes,
     chainID: ChainID,
@@ -59,7 +59,7 @@ export interface Keyring {
 
   // serialize will produce a representation that can be writen to disk.
   // this will contain secret info, so handle securely!
-  serialize: () => Promise<KeyDataString>;
+  readonly serialize: () => Promise<KeyDataString>;
 }
 
 // A KeyringFactory is a constructor, but since `new` cannot be

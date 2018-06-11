@@ -1,23 +1,23 @@
 import {
-  KeyEvent,
-  UnlockProfileEvent,
-  RemoveProfileEvent,
-  AddProfileEvent,
-  LockProfileEvent,
-  ModifyProfileEvent,
-  SignedTransactionEvent,
-  VerifiedTransactionEvent,
-} from "./events";
-import {
+  Nonce,
   PasswordString,
   PublicKeyBundle,
-  Nonce,
   SignableBytes,
   SignableTransaction,
   SignatureBytes,
-  UsernameString,
   Transaction,
+  UsernameString,
 } from "@iov/types";
+import {
+  AddProfileEvent,
+  KeyEvent,
+  LockProfileEvent,
+  ModifyProfileEvent,
+  RemoveProfileEvent,
+  SignedTransactionEvent,
+  UnlockProfileEvent,
+  VerifiedTransactionEvent,
+} from "./events";
 import { KeyringName, PublicIdentity } from "./keyring";
 
 /*
@@ -52,7 +52,7 @@ In such a case, we can remove the user arg from most of the methods,
 and just store the currently unlocked user in the KeyController
 */
 export interface KeyController {
-  //-------------- Update state ------------
+  // -------------- Update state ------------
   //
   // This section just updates the current state, any changes
   // can be streamed into the watcher
@@ -62,20 +62,20 @@ export interface KeyController {
   // to update another store (eg. UI redux store).
   //
   // You can usually ignore this promise unless you want to chain this
-  addProfile: (
+  readonly addProfile: (
     user: UsernameString,
     password: PasswordString,
     keyring: KeyringName,
   ) => Promise<AddProfileEvent>;
 
   // removeProfile requires original password to delete.
-  removeProfile: (
+  readonly removeProfile: (
     user: UsernameString,
     password: PasswordString,
   ) => Promise<RemoveProfileEvent>;
 
   // unlockProfile user gives us access to the private keys for the profile
-  unlockProfile: (
+  readonly unlockProfile: (
     user: UsernameString,
     password: PasswordString,
   ) => Promise<UnlockProfileEvent>;
@@ -83,14 +83,14 @@ export interface KeyController {
   // verifyTransaction will return true if all signatures
   // on the signable transaction are valid.
   // Requires no access to private key material
-  verifyTransaction: (
+  readonly verifyTransaction: (
     tx: SignableTransaction,
   ) => Promise<VerifiedTransactionEvent>;
 }
 
 /*
-When we unlock a profile, we get a Profile handle, which is a 
-"capability" to enable us to use those private keys. 
+When we unlock a profile, we get a Profile handle, which is a
+"capability" to enable us to use those private keys.
 
 All methods must go though the Profile
 (which may just append a token to a private KeyController function).
@@ -98,23 +98,23 @@ Once the Profile is locked (aka logged out), it can no longer be used.
 */
 export interface Profile {
   // whoami is a sanity check if needed
-  whoami: () => UsernameString;
+  readonly whoami: () => UsernameString;
 
   // lock user removes access to these account keys until we unlock again
-  lock: () => Promise<LockProfileEvent>;
+  readonly lock: () => Promise<LockProfileEvent>;
 
   // createIdentity creates a public/private keypairs
-  createIdentity: () => Promise<ModifyProfileEvent>;
+  readonly createIdentity: () => Promise<ModifyProfileEvent>;
 
   // setIdentityName assigns a new name to one of the identities
-  setIdentityName: (
+  readonly setIdentityName: (
     publicKey: PublicKeyBundle,
     name: string,
   ) => Promise<ModifyProfileEvent>;
 
-  getIdentities: () => Promise<ReadonlyArray<PublicIdentity>>;
+  readonly getIdentities: () => Promise<ReadonlyArray<PublicIdentity>>;
 
-  //---------- Perform computations ----
+  // ---------- Perform computations ----
   //
   // These are special... we actually need the return value, not
   // to update the UI state but to continue on in our flow....
@@ -122,7 +122,7 @@ export interface Profile {
 
   // This signs the given transaction and returns a new transaction
   // with the this signature appended
-  signTransaction: (
+  readonly signTransaction: (
     identity: PublicKeyBundle,
     tx: SignableTransaction,
     nonce: Nonce,

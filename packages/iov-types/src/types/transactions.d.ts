@@ -1,5 +1,5 @@
-import { PublicKeyBundle } from "./keys";
 import Long from "long";
+import { PublicKeyBundle } from "./keys";
 
 declare const NonceSymbol: unique symbol;
 export type Nonce = typeof NonceSymbol & Long;
