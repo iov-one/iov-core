@@ -1,4 +1,4 @@
-import { ChainID, PublicKeyBundle, SendTx, TokenTicker } from "@iov/types";
+import { ChainID, PublicKeyBundle, SendTx, TokenTicker, TransactionKind } from "@iov/types";
 
 export const sendTx = (
   sender: PublicKeyBundle,
@@ -8,7 +8,7 @@ export const sendTx = (
   chainID: ChainID,
 ) => {
   const res: SendTx = {
-    kind: "send",
+    kind: TransactionKind.SEND,
     amount: { whole: amount, fractional: 0, tokenTicker: token },
     chainId: chainID,
     fee: { whole: 0, fractional: 0, tokenTicker: token },

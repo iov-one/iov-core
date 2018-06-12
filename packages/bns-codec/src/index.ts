@@ -1,13 +1,14 @@
 import {
   FullSignature,
-  FungibleToken,
   Nonce,
   PostableBytes,
   SendTx,
+  SetNameTx,
   SignableBytes,
   SignableTransaction,
   Transaction,
   TransactionIDBytes,
+  TransactionKind,
   // TxCodec,
 } from "@iov/types";
 import codec from "./codec";
@@ -46,33 +47,37 @@ export class Codec {
 // we need to create a const to properly type-check the export...
 // export const BNSCodec: TxCodec = Codec;
 
-async function buildTx(tx: Transaction, sigs: ReadonlyArray<FullSignature>): Promise<codec.app.ITx> {
+const buildTx = async (tx: Transaction, sigs: ReadonlyArray<FullSignature>): Promise<codec.app.ITx> => {
+  const msg = await buildMsg(tx);
+  return codec.app.Tx.create({
+    ...msg,
+    fees: { fees: encodeToken(tx.fee) },
+    signatures: sigs.map(encodeFullSig),
+  });
+};
+
+const buildMsg = (tx: Transaction): Promise<codec.app.ITx> => {
   switch (tx.kind) {
-    case "send":
-      return buildSendTx(tx, sigs);
+    case TransactionKind.SEND:
+      return buildSendTx(tx);
+    case TransactionKind.SET_NAME:
+      return buildSetNameTx(tx);
     default:
       throw new Error("tx type not supported: " + tx.kind);
   }
-}
+};
 
-// buildSendTx builds
-async function buildSendTx(tx: SendTx, sigs: ReadonlyArray<FullSignature>): Promise<codec.app.ITx> {
-  const msg = {
-    sendMsg: codec.cash.SendMsg.create({
-      src: await keyToAddress(tx.signer),
-      dest: await keyToAddress(tx.recipient),
-      amount: encodeToken(tx.amount),
-    }),
-  };
-  return extendTx(msg, tx.fee, sigs);
-}
+const buildSendTx = async (tx: SendTx): Promise<codec.app.ITx> => ({
+  sendMsg: codec.cash.SendMsg.create({
+    src: await keyToAddress(tx.signer),
+    dest: await keyToAddress(tx.recipient),
+    amount: encodeToken(tx.amount),
+  }),
+});
 
-// extendTx take a tx with the message set and adds
-// the fee info and signatures as provided
-function extendTx(msg: codec.app.ITx, fee: FungibleToken, sigs: ReadonlyArray<FullSignature>): codec.app.ITx {
-  return codec.app.Tx.create({
-    ...msg,
-    fees: { fees: encodeToken(fee) },
-    signatures: sigs.map(encodeFullSig),
-  });
-}
+const buildSetNameTx = async (tx: SetNameTx): Promise<codec.app.ITx> => ({
+  setNameMsg: codec.namecoin.SetWalletNameMsg.create({
+    address: await keyToAddress(tx.signer),
+    name: tx.name,
+  }),
+});
