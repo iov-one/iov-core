@@ -1,5 +1,6 @@
 import {
   FullSignature,
+  FungibleToken,
   // Nonce,
   PostableBytes,
   SendTx,
@@ -7,7 +8,6 @@ import {
   SignableTransaction,
   TransactionIDBytes,
   TxCodec,
-  FungibleToken,
 } from "@iov/types";
 import codec from "./codec";
 
@@ -26,8 +26,8 @@ class Codec {
   public static bytesToPost(tx: SignableTransaction): PostableBytes {
     switch (tx.transaction.kind) {
       case "send":
-      const obj = buildSendTx(tx.transaction, tx.signatures);
-      return codec.app.Tx.encode(obj).finish() as PostableBytes;
+        const obj = buildSendTx(tx.transaction, tx.signatures);
+        return codec.app.Tx.encode(obj).finish() as PostableBytes;
     }
     throw new Error("Not yet implemented");
   }
@@ -46,8 +46,8 @@ class Codec {
 // we need to create a const to properly type-check the export...
 export const BNSCodec: TxCodec = Codec;
 
-function buildSendTx(tx: SendTx, sigs: ReadonlyArray<FullSignature>) : codec.app.ITx {
-
+function buildSendTx(/*tx: SendTx, sigs: ReadonlyArray<FullSignature>*/): codec.app.ITx {
+  throw new Error("not implemented");
 }
 
 function encodeSig(sig: FullSignature): codec.sigs.IStdSignature {
