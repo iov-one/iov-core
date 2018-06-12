@@ -74,5 +74,24 @@ describe("Keyring", () => {
         done();
       })();
     });
+
+    it("can serialize multiple keys", done => {
+      (async () => {
+        const keyringEntry = new Ed25519KeyringEntry();
+        await keyringEntry.createIdentity();
+        await keyringEntry.createIdentity();
+        await keyringEntry.createIdentity();
+
+        const serialized = await keyringEntry.serialize();
+        expect(serialized).toBeTruthy();
+        expect(serialized.length).toBeGreaterThan(100);
+
+        const decodedJson = JSON.parse(serialized);
+        expect(decodedJson).toBeTruthy();
+        expect(decodedJson.length).toEqual(3);
+
+        done();
+      })();
+    });
   });
 });
