@@ -37,6 +37,24 @@ describe("Crypto", () => {
       expect(() => {
         Encoding.fromHex("aaa");
       }).toThrow();
+      expect(() => {
+        Encoding.fromHex("a!");
+      }).toThrow();
+      expect(() => {
+        Encoding.fromHex("a ");
+      }).toThrow();
+      expect(() => {
+        Encoding.fromHex("aa ");
+      }).toThrow();
+      expect(() => {
+        Encoding.fromHex(" aa");
+      }).toThrow();
+      expect(() => {
+        Encoding.fromHex("a a");
+      }).toThrow();
+      expect(() => {
+        Encoding.fromHex("gg");
+      }).toThrow();
     });
   });
 

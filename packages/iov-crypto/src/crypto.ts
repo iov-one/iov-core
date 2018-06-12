@@ -25,7 +25,11 @@ export class Encoding {
     const listOfInts: number[] = [];
     // tslint:disable-next-line:no-let
     for (let i = 0; i < hexstring.length; i += 2) {
-      listOfInts.push(parseInt(hexstring.substr(i, 2), 16));
+      const hexByteAsString = hexstring.substr(i, 2);
+      if (!hexByteAsString.match(/[0-9a-f]{2}/i)) {
+        throw new Error("hex string contains invalid characters");
+      }
+      listOfInts.push(parseInt(hexByteAsString, 16));
     }
     return new Uint8Array(listOfInts);
   }
