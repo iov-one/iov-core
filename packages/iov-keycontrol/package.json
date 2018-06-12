@@ -14,7 +14,8 @@
     "format": "prettier --write **/*.ts",
     "lint": "tslint -t verbose --project .",
     "lint-fix": "yarn lint --fix",
-    "test": "echo 'Info: no test specified'",
+    "test-node": "./jasmine-testrunner.js",
+    "test": "yarn build && yarn test-node",
     "prebuild": "yarn format && yarn lint",
     "build": "tsc"
   },
