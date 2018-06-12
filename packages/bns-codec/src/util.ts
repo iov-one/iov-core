@@ -30,3 +30,8 @@ export const appendSignBytes = (bz: Uint8Array, chainID: ChainID, nonce: Nonce) 
 // probably only works after 0.21, but no need to import ripemd160 now
 export const tendermintHash = (data: Uint8Array) =>
   Sha256.digest(data).then((bz: Uint8Array) => bz.slice(0, 20));
+
+// TODO: verify prefix, make const
+export const hashPreimage = (data: Uint8Array) => Sha256.digest(data);
+export const hashIdentifier = (hash: Uint8Array) =>
+  Uint8Array.from([...stringToArray("hash/sha256/"), ...hash]);

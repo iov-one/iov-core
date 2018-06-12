@@ -6,6 +6,8 @@ import {
   SetNameTx,
   SignableBytes,
   SignableTransaction,
+  SwapCounterTx,
+  SwapOfferTx,
   Transaction,
   TransactionIDBytes,
   TransactionKind,
@@ -13,7 +15,14 @@ import {
 } from "@iov/types";
 import codec from "./codec";
 import { encodeFullSig, encodeToken } from "./types";
-import { appendSignBytes, keyToAddress, tendermintHash } from "./util";
+import {
+  appendSignBytes,
+  hashIdentifier,
+  hashPreimage,
+  keyToAddress,
+  keyToIdentifier,
+  tendermintHash,
+} from "./util";
 
 export class Codec {
   // these are the bytes we create to add a signature
@@ -62,6 +71,10 @@ const buildMsg = (tx: Transaction): Promise<codec.app.ITx> => {
       return buildSendTx(tx);
     case TransactionKind.SET_NAME:
       return buildSetNameTx(tx);
+    case TransactionKind.SWAP_OFFER:
+      return buildSwapOfferTx(tx);
+    case TransactionKind.SWAP_COUNTER:
+      return buildSwapCounterTx(tx);
     default:
       throw new Error("tx type not supported: " + tx.kind);
   }
@@ -79,5 +92,20 @@ const buildSetNameTx = async (tx: SetNameTx): Promise<codec.app.ITx> => ({
   setNameMsg: codec.namecoin.SetWalletNameMsg.create({
     address: await keyToAddress(tx.signer),
     name: tx.name,
+  }),
+});
+
+const buildSwapOfferTx = async (tx: SwapOfferTx): Promise<codec.app.ITx> => {
+  const hashed = { ...tx, hash: await hashPreimage(tx.preimage), kind: TransactionKind.SWAP_COUNTER };
+  return buildSwapCounterTx(hashed as SwapCounterTx);
+};
+
+const buildSwapCounterTx = async (tx: SwapCounterTx): Promise<codec.app.ITx> => ({
+  createEscrowMsg: codec.escrow.CreateEscrowMsg.create({
+    sender: await keyToIdentifier(tx.signer),
+    arbiter: hashIdentifier(tx.hash),
+    recipient: await keyToIdentifier(tx.recipient),
+    timeout: tx.timeout,
+    amount: tx.amount.map(encodeToken),
   }),
 });
