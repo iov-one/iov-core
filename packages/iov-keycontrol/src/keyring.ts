@@ -1,4 +1,11 @@
-import { ChainID, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
+import {
+  Algorithm,
+  ChainID,
+  PublicKeyBundle,
+  PublicKeyBytes,
+  SignableBytes,
+  SignatureBytes,
+} from "@iov/types";
 
 declare const KeyDataSymbol: unique symbol;
 type KeyData = typeof KeyDataSymbol;
@@ -74,3 +81,55 @@ export interface KeyringEntry {
 // a KeyDataString that came out of the `serialize` method of the
 // same class on a prior run.
 export type KeyringEntryFactory = (data?: KeyDataString) => Promise<KeyringEntry>;
+
+export class Ed25519KeyringEntry implements KeyringEntry {
+  private identities: PublicIdentity[] = [];
+  private privkeys = new Map<string, Uint8Array>();
+  private names = new Map<string, string>();
+
+  constructor() {
+  }
+
+  async createIdentity(): Promise<PublicIdentity> {
+    // TODO: generate keypair from RNG
+    const newIdentity: PublicIdentity = {
+      algo: Algorithm.ED25519,
+      data: new Uint8Array([0x11, 0x11, 0x11, 0x11, 0x11]) as PublicKeyBytes,
+      canSign: true,
+    }
+    const id = this.identityId(newIdentity);
+    // TODO: store privkey
+    this.identities.push(newIdentity);
+    return newIdentity;
+  }
+
+  async setIdentityName(identity: PublicKeyBundle, name: string): Promise<void> {
+    const id = this.identityId(identity);
+    this.names.set(id, name);
+  }
+
+  async getIdentities(): Promise<ReadonlyArray<PublicIdentity>> {
+    return this.identities;
+  }
+
+  async createTransactionSignature(
+    identity: PublicKeyBundle,
+    tx: SignableBytes,
+    chainID: ChainID,
+  ): Promise<SignatureBytes> {
+    const privkey = this.privkeys.get(this.identityId(identity));
+    // TODO: sign with privkey
+  }
+
+  private toHex(data: Uint8Array): string {
+    let out: string = "";
+    for (const byte of data) {
+      out += ('0' + byte.toString(16)).slice(-2);
+    }
+    return out;
+  }
+
+  private identityId(identity: PublicKeyBundle): string {
+    return identity.algo + "|" + this.toHex(identity.data);
+  }
+}
