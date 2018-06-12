@@ -7,6 +7,8 @@ import {
   SignatureBytes,
 } from "@iov/types";
 
+import { Ed25519 } from "@iov/crypto";
+
 declare const KeyDataSymbol: unique symbol;
 type KeyData = typeof KeyDataSymbol;
 export type KeyDataString = KeyData & string;
@@ -91,14 +93,15 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   }
 
   async createIdentity(): Promise<PublicIdentity> {
-    // TODO: generate keypair from RNG
+    const keypair = await Ed25519.generateKeypair();
+
     const newIdentity: PublicIdentity = {
       algo: Algorithm.ED25519,
-      data: new Uint8Array([0x11, 0x11, 0x11, 0x11, 0x11]) as PublicKeyBytes,
+      data: keypair.pubkey as PublicKeyBytes,
       canSign: true,
     }
     const id = this.identityId(newIdentity);
-    // TODO: store privkey
+    this.privkeys.set(id, keypair.privkey);
     this.identities.push(newIdentity);
     return newIdentity;
   }
@@ -117,8 +120,12 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     tx: SignableBytes,
     chainID: ChainID,
   ): Promise<SignatureBytes> {
-    const privkey = this.privkeys.get(this.identityId(identity));
-    // TODO: sign with privkey
+    const id = this.identityId(identity);
+    const privkey = this.privkeys.get(id);
+    if (!privkey) throw new Error("No private key found for identity '" + id + "'");
+
+    const signature = await Ed25519.createSignature(tx, privkey);
+    return signature as SignatureBytes;
   }
 
   private toHex(data: Uint8Array): string {
