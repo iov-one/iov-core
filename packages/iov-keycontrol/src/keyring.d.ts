@@ -40,7 +40,10 @@ export interface Keyring {
   readonly createIdentity: () => Promise<PublicIdentity>;
 
   // setIdentityName sets the name associated with the public key, if it exists
-  readonly setIdentityName: (identity: PublicKeyBundle, name: string) => Promise<true>;
+  readonly setIdentityName: (
+    identity: PublicKeyBundle,
+    name: string,
+  ) => Promise<true>;
 
   // getIdentities returns all identities currently registered
   readonly getIdentities: () => Promise<ReadonlyArray<PublicIdentity>>;

@@ -19,7 +19,7 @@ export const enum TransactionStateType {
   PENDING = "PENDING",
   REJECTED = "REJECTED",
   UNCONFIRMED = "UNCONFIRMED",
-  CONFIRMED = "CONFIRMED"
+  CONFIRMED = "CONFIRMED",
 }
 
 // TransactionStatePending signfies it is in the mempool, but hasn't

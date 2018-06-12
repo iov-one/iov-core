@@ -7,7 +7,7 @@ import {
   TransactionBytes,
   TransactionState,
   TransactionStateProcessed,
-  TxQueryString
+  TxQueryString,
 } from "./transactions";
 
 // ParsedRPC handles all the serialization of data structures, and allows
@@ -35,7 +35,7 @@ export interface ParsedRPC {
   // watchTx is a subset, searching by TxID, not tags
   searchTx(
     ws: Websocket,
-    query: TxQueryString
+    query: TxQueryString,
   ): Stream<TransactionStateProcessed>;
 
   // watchKey will query the current state at the given key
@@ -49,5 +49,5 @@ export type TxEncoder = (tx: Transaction) => TransactionBytes;
 
 export type ParseRPC = (
   parseState: StateParser,
-  encodeTx: TxEncoder
+  encodeTx: TxEncoder,
 ) => (rpc: RPC) => ParsedRPC;

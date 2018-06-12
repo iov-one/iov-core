@@ -23,7 +23,6 @@
     "xstream": "^11.3.0"
   },
   "devDependencies": {
-    "prettier": "^1.12.1",
     "ts-node": "^6.0.3",
     "tslint": "^5.10.0",
     "typescript": "^2.8.3"

@@ -3,5 +3,5 @@ import { user } from "./accounts";
 
 export const keybaseState: KeybaseState = {
   activeKey: null,
-  users: [user]
+  users: [user],
 };

@@ -13,12 +13,13 @@
   "scripts": {
     "update-type-declarations": "tsc --declaration --outDir types --emitDeclarationOnly",
     "lint": "tslint --project .",
+    "format": "prettier --write **/*.ts",
     "test-node": "./jasmine-testrunner.js",
     "test-firefox": "karma start --single-run --browsers Firefox",
     "test-chrome": "karma start --single-run --browsers ChromeHeadless",
     "test-safari": "karma start --single-run --browsers Safari",
     "test": "yarn build && yarn test-node",
-    "prebuild": "yarn lint",
+    "prebuild": "yarn lint && yarn format",
     "build": "tsc"
   },
   "dependencies": {

@@ -8,7 +8,7 @@ import {
   TokenTicker,
   Transaction,
   TTLBytes,
-  TTLString
+  TTLString,
 } from "../types/transactions";
 import { publicKeyBytes, publicKeyBytes2 } from "./keys";
 
@@ -18,12 +18,12 @@ export const iov: TokenTicker = "IOV" as TokenTicker;
 
 export const sender: PublicKeyBundle = {
   algo: Algorithm.ED25519,
-  data: publicKeyBytes
+  data: publicKeyBytes,
 };
 
 export const rcpt: PublicKeyBundle = {
   algo: Algorithm.SECP256K1,
-  data: publicKeyBytes2
+  data: publicKeyBytes2,
 };
 
 export const sendTx: SendTx = {
@@ -32,7 +32,7 @@ export const sendTx: SendTx = {
   fee: { whole: 0, fractional: 100, tokenTicker: iov },
   kind: "send",
   recipient: rcpt,
-  signer: sender
+  signer: sender,
 };
 
 export const transaction: Transaction = sendTx;

@@ -2,24 +2,24 @@ import {
   PublicAction,
   PublicActionType,
   RequestAPIAccess,
-  RequestSignTransaction
+  RequestSignTransaction,
 } from "../types/actions_public";
 import { sendTx } from "./iov-types";
 
 export const requestAPIAccessAction: RequestAPIAccess = {
-  type: PublicActionType.REQUEST_API_ACCESS
+  type: PublicActionType.REQUEST_API_ACCESS,
 };
 
 export const requestAPIAccessActionWithOptions: RequestAPIAccess = {
   options: {
-    some: "future option"
+    some: "future option",
   },
-  type: PublicActionType.REQUEST_API_ACCESS
+  type: PublicActionType.REQUEST_API_ACCESS,
 };
 
 export const requestSignTransactionAction: RequestSignTransaction = {
   transaction: sendTx,
-  type: PublicActionType.REQUEST_SIGN_TX
+  type: PublicActionType.REQUEST_SIGN_TX,
 };
 
 export const handlePublicAction = (action: PublicAction) => action;
