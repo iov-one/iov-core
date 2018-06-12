@@ -6,7 +6,7 @@ import sodium = require("libsodium-wrappers");
 
 import shajs from 'sha.js';
 
-interface Keypair {
+export interface Keypair {
   readonly pubkey: Uint8Array,
   readonly privkey: Uint8Array,
 }
