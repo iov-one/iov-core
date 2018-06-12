@@ -128,11 +128,18 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   }
 
   public async serialize(): Promise<KeyDataString> {
-    const out = this.identities.map(value => {
-      const id = this.identityId(value);
+    const out = this.identities.map(identity => {
+      const id = this.identityId(identity);
+      const privkey = this.privkeys.get(id);
+      if (!privkey) {
+        throw new Error("No private key found for identity '" + id + "'");
+      }
       return {
-        publicIdentity: value,
-        privkey: this.privkeys.get(id),
+        publicIdentity: {
+          algo: identity.algo,
+          data: this.toHex(identity.data),
+        },
+        privkey: this.toHex(privkey),
         name: this.names.get(id),
       };
     });
