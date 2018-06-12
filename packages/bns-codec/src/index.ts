@@ -6,8 +6,10 @@ import {
   SetNameTx,
   SignableBytes,
   SignableTransaction,
+  SwapClaimTx,
   SwapCounterTx,
   SwapOfferTx,
+  SwapTimeoutTx,
   Transaction,
   TransactionIDBytes,
   TransactionKind,
@@ -75,8 +77,10 @@ const buildMsg = (tx: Transaction): Promise<codec.app.ITx> => {
       return buildSwapOfferTx(tx);
     case TransactionKind.SWAP_COUNTER:
       return buildSwapCounterTx(tx);
-    default:
-      throw new Error("tx type not supported: " + tx.kind);
+    case TransactionKind.SWAP_CLAIM:
+      return buildSwapClaimTx(tx);
+    case TransactionKind.SWAP_TIMEOUT:
+      return buildSwapTimeoutTx(tx);
   }
 };
 
@@ -107,5 +111,18 @@ const buildSwapCounterTx = async (tx: SwapCounterTx): Promise<codec.app.ITx> => 
     recipient: await keyToIdentifier(tx.recipient),
     timeout: tx.timeout,
     amount: tx.amount.map(encodeToken),
+  }),
+});
+
+const buildSwapClaimTx = async (tx: SwapClaimTx): Promise<codec.app.ITx> => ({
+  releaseEscrowMsg: codec.escrow.ReleaseEscrowMsg.create({
+    escrowId: tx.swapId,
+  }),
+  preimage: tx.preimage,
+});
+
+const buildSwapTimeoutTx = async (tx: SwapTimeoutTx): Promise<codec.app.ITx> => ({
+  returnEscrowMsg: codec.escrow.ReturnEscrowMsg.create({
+    escrowId: tx.swapId,
   }),
 });
