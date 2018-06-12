@@ -260,6 +260,16 @@ describe("Crypto", () => {
     });
   });
 
+  describe("Secp256k1", () => {
+    // How to generate Secp256k1 test vectors:
+    // $ git clone https://github.com/pyca/cryptography.git && cd cryptography
+    // $ python2 -m virtualenv venv
+    // $ source venv/bin/activate
+    // $ pip install cryptography cryptography_vectors pytest ecdsa
+    // $ curl https://patch-diff.githubusercontent.com/raw/webmaster128/cryptography/pull/1.diff | git apply
+    // $ python ./docs/development/custom-vectors/secp256k1/generate_secp256k1.py > secp256k1_test_vectors.txt
+  });
+
   describe("Sha256", () => {
     it("exists", () => {
       expect(Sha256).toBeTruthy();
