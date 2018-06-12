@@ -29,6 +29,14 @@ describe("Crypto", () => {
       // capital letters
       expect(Encoding.fromHex("AA")).toEqual(new Uint8Array([0xaa]));
       expect(Encoding.fromHex("aAbBcCdDeEfF")).toEqual(new Uint8Array([0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff]));
+
+      // error
+      expect(() => {
+        Encoding.fromHex("a");
+      }).toThrow();
+      expect(() => {
+        Encoding.fromHex("aaa");
+      }).toThrow();
     });
   });
 

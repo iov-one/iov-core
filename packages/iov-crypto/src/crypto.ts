@@ -17,6 +17,10 @@ export class Encoding {
   }
 
   public static fromHex(hexstring: string): Uint8Array {
+    if (hexstring.length % 2 !== 0) {
+      throw new Error("hex string length must be a multiple of 2");
+    }
+
     // tslint:disable-next-line:readonly-array
     const listOfInts: number[] = [];
     // tslint:disable-next-line:no-let
