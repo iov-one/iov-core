@@ -1,3 +1,4 @@
+import { ChainID, SignableBytes } from "@iov/types";
 import { Ed25519KeyringEntry } from "./keyring";
 
 describe("Keyring", () => {
@@ -54,6 +55,21 @@ describe("Keyring", () => {
         expect(newIdentity5.data).toEqual(lastIdentity.data);
         expect(newIdentity5.nickname).toEqual(lastIdentity.nickname);
         expect(newIdentity5.canSign).toEqual(lastIdentity.canSign);
+
+        done();
+      })();
+    });
+
+    it("can sign", done => {
+      (async () => {
+        const keyringEntry = new Ed25519KeyringEntry();
+        const newIdentity = await keyringEntry.createIdentity();
+
+        const tx = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
+        const chainId = "some-chain" as ChainID;
+        const signature = await keyringEntry.createTransactionSignature(newIdentity, tx, chainId);
+        expect(signature).toBeTruthy();
+        expect(signature.length).toEqual(64);
 
         done();
       })();
