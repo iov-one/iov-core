@@ -3,12 +3,7 @@ import { Stream } from "xstream";
 import { Block, Header } from "./blocks";
 import { RPC, Websocket } from "./rpc";
 import { ParsedStateObject, StateKey, StateBytes } from "./state";
-import {
-  TransactionBytes,
-  TransactionState,
-  TransactionStateProcessed,
-  TxQueryString,
-} from "./transactions";
+import { TransactionBytes, TransactionState, TransactionStateProcessed, TxQueryString } from "./transactions";
 
 // ParsedRPC handles all the serialization of data structures, and allows
 // us to work with high-level concepts
@@ -33,10 +28,7 @@ export interface ParsedRPC {
 
   // searchTx searches for all tx that match these tags and subscribes to new ones
   // watchTx is a subset, searching by TxID, not tags
-  searchTx(
-    ws: Websocket,
-    query: TxQueryString,
-  ): Stream<TransactionStateProcessed>;
+  searchTx(ws: Websocket, query: TxQueryString): Stream<TransactionStateProcessed>;
 
   // watchKey will query the current state at the given key
   // and be notified upon any change
@@ -47,7 +39,4 @@ export type StateParser = (state: StateBytes) => ParsedStateObject;
 export type TxEncoder = (tx: Transaction) => TransactionBytes;
 // export type TxParser = (rawTx: TransactionBytes) => Transaction;
 
-export type ParseRPC = (
-  parseState: StateParser,
-  encodeTx: TxEncoder,
-) => (rpc: RPC) => ParsedRPC;
+export type ParseRPC = (parseState: StateParser, encodeTx: TxEncoder) => (rpc: RPC) => ParsedRPC;

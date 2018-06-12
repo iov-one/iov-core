@@ -58,12 +58,7 @@ export interface TransactionStateConfirmed {
   // TODO: tags?
 }
 
-export type TransactionStateProcessed =
-  | TransactionStateUnconfirmed
-  | TransactionStateConfirmed;
+export type TransactionStateProcessed = TransactionStateUnconfirmed | TransactionStateConfirmed;
 
 // TransactionState is the current state of the transaction
-export type TransactionState =
-  | TransactionStatePending
-  | TransactionStateRejected
-  | TransactionStateProcessed;
+export type TransactionState = TransactionStatePending | TransactionStateRejected | TransactionStateProcessed;

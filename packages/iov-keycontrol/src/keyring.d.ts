@@ -1,9 +1,4 @@
-import {
-  ChainID,
-  PublicKeyBundle,
-  SignableBytes,
-  SignatureBytes,
-} from "@iov/types";
+import { ChainID, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
 
 declare const KeyDataSymbol: unique symbol;
 type KeyData = typeof KeyDataSymbol;
@@ -40,10 +35,7 @@ export interface Keyring {
   readonly createIdentity: () => Promise<PublicIdentity>;
 
   // setIdentityName sets the name associated with the public key, if it exists
-  readonly setIdentityName: (
-    identity: PublicKeyBundle,
-    name: string,
-  ) => Promise<true>;
+  readonly setIdentityName: (identity: PublicKeyBundle, name: string) => Promise<true>;
 
   // getIdentities returns all identities currently registered
   readonly getIdentities: () => Promise<ReadonlyArray<PublicIdentity>>;

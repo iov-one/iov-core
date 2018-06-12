@@ -91,10 +91,7 @@ export interface AccountQueryByName {
   readonly name: string;
 }
 
-export type AccountQuery =
-  | AccountQueryByAddress
-  | AccountQueryByName
-  | AccountQueryByPublicKeyBundle;
+export type AccountQuery = AccountQueryByAddress | AccountQueryByName | AccountQueryByPublicKeyBundle;
 
 // Nonce is a minimal subset of Account for efficiency
 export interface AccountNonce {

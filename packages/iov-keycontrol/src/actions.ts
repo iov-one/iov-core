@@ -1,10 +1,4 @@
-import {
-  Nonce,
-  PasswordString,
-  PublicKeyBundle,
-  SignableTransaction,
-  UsernameString,
-} from "@iov/types";
+import { Nonce, PasswordString, PublicKeyBundle, SignableTransaction, UsernameString } from "@iov/types";
 import { KeyringName } from "./keyring";
 
 export const enum KeyActionType {

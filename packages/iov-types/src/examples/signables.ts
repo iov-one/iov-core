@@ -35,7 +35,6 @@ export const signableTransaction = (): SignableTransaction => ({
 export const encoder: TxCodec = {
   bytesToPost: () => (Buffer.from("1234") as Uint8Array) as PostableBytes,
   bytesToSign: () => (Buffer.from("1234") as Uint8Array) as SignableBytes,
-  identifier: () =>
-    convertHexStringToUint8Array("12345678") as TransactionIDBytes,
+  identifier: () => convertHexStringToUint8Array("12345678") as TransactionIDBytes,
   parseBytes: () => signableTransaction(),
 };

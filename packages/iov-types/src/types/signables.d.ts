@@ -39,10 +39,7 @@ export interface SignableTransaction {
 export interface TxCodec {
   // these are the bytes we create to add a signature
   // they often include nonce and chainID, but not other signatures
-  readonly bytesToSign: (
-    tx: SignableTransaction,
-    nonce: Nonce,
-  ) => SignableBytes;
+  readonly bytesToSign: (tx: SignableTransaction, nonce: Nonce) => SignableBytes;
   // bytesToPost includes the raw transaction appended with the various signatures
   readonly bytesToPost: (tx: SignableTransaction) => PostableBytes;
   // identifier is usually some sort of hash of bytesToPost, chain-dependent

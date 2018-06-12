@@ -11,11 +11,7 @@ import {
 } from "@iov/types";
 import { Stream } from "xstream";
 import { User } from "./accounts";
-import {
-  ImportPrivateKey,
-  PrivateAction,
-  SignTransaction,
-} from "./actions_private";
+import { ImportPrivateKey, PrivateAction, SignTransaction } from "./actions_private";
 
 // do we listen as one giant blob, or a separate listener
 // for each subset of the state tree
