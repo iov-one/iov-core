@@ -6,6 +6,27 @@ import sodium = require("libsodium-wrappers");
 
 import shajs from "sha.js";
 
+export class Encoding {
+  public static toHex(data: Uint8Array): string {
+    // tslint:disable-next-line:no-let
+    let out: string = "";
+    for (const byte of data) {
+      out += ("0" + byte.toString(16)).slice(-2);
+    }
+    return out;
+  }
+
+  public static fromHex(hexstring: string): Uint8Array {
+    // tslint:disable-next-line:readonly-array
+    const listOfInts: number[] = [];
+    // tslint:disable-next-line:no-let
+    for (let i = 0; i < hexstring.length; i += 2) {
+      listOfInts.push(parseInt(hexstring.substr(i, 2), 16));
+    }
+    return new Uint8Array(listOfInts);
+  }
+}
+
 export interface Keypair {
   readonly pubkey: Uint8Array;
   readonly privkey: Uint8Array;

@@ -1,21 +1,8 @@
-/* tslint:disable:no-let readonly-array no-bitwise */
-import { Chacha20poly1305Ietf, Ed25519, Sha256 } from "../src/crypto";
+/* tslint:disable:no-bitwise */
+import { Chacha20poly1305Ietf, Ed25519, Encoding, Sha256 } from "../src/crypto";
 
-function toHex(data: Uint8Array): string {
-  let out: string = "";
-  for (const byte of data) {
-    out += ("0" + byte.toString(16)).slice(-2);
-  }
-  return out;
-}
-
-function fromHex(hexstring: string): Uint8Array {
-  const listOfInts: number[] = [];
-  for (let i = 0; i < hexstring.length; i += 2) {
-    listOfInts.push(parseInt(hexstring.substr(i, 2), 16));
-  }
-  return new Uint8Array(listOfInts);
-}
+const toHex = Encoding.toHex;
+const fromHex = Encoding.fromHex;
 
 describe("Crypto", () => {
   describe("Ed25519", () => {

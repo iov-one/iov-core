@@ -1,3 +1,7 @@
+export declare class Encoding {
+    static toHex(data: Uint8Array): string;
+    static fromHex(hexstring: string): Uint8Array;
+}
 export interface Keypair {
     readonly pubkey: Uint8Array;
     readonly privkey: Uint8Array;
