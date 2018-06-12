@@ -28,8 +28,8 @@ export interface PublicIdentity extends PublicKeyBundle {
 
 /*
 A Keyring is a list of KeyringEntrys
+TODO: define interface
 */
-export type Keyring = Array<KeyringEntry>;
 
 /*
 KeyringEntry is a generic interface for managing a set of keys and signing
