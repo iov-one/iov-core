@@ -1,17 +1,20 @@
 import {
+  Algorithm,
   FullSignature,
   FungibleToken,
-  // Nonce,
   PostableBytes,
+  PublicKeyBundle,
   SendTx,
   SignableBytes,
   SignableTransaction,
+  SignatureBytes,
   TransactionIDBytes,
-  TxCodec,
+  // TxCodec,
 } from "@iov/types";
 import codec from "./codec";
+import { keyToAddress } from "./util";
 
-class Codec {
+export class Codec {
   // these are the bytes we create to add a signature
   // they often include nonce and chainID, but not other signatures
   public static bytesToSign(): /*
@@ -23,10 +26,10 @@ class Codec {
   }
 
   // bytesToPost includes the raw transaction appended with the various signatures
-  public static bytesToPost(tx: SignableTransaction): PostableBytes {
+  public static async bytesToPost(tx: SignableTransaction): Promise<PostableBytes> {
     switch (tx.transaction.kind) {
       case "send":
-        const obj = buildSendTx(tx.transaction, tx.signatures);
+        const obj = await buildSendTx(tx.transaction, tx.signatures);
         return codec.app.Tx.encode(obj).finish() as PostableBytes;
     }
     throw new Error("Not yet implemented");
@@ -44,14 +47,29 @@ class Codec {
 }
 
 // we need to create a const to properly type-check the export...
-export const BNSCodec: TxCodec = Codec;
+// export const BNSCodec: TxCodec = Codec;
 
-function buildSendTx(/*tx: SendTx, sigs: ReadonlyArray<FullSignature>*/): codec.app.ITx {
-  throw new Error("not implemented");
+async function buildSendTx(tx: SendTx, sigs: ReadonlyArray<FullSignature>): Promise<codec.app.ITx> {
+  const msg = {
+    sendMsg: codec.cash.SendMsg.create({
+      src: await keyToAddress(tx.signer),
+      dest: await keyToAddress(tx.recipient),
+      amount: encodeToken(tx.amount),
+    }),
+  };
+  return extendTx(msg, tx.fee, sigs);
 }
 
-function encodeSig(sig: FullSignature): codec.sigs.IStdSignature {
-  throw new Error("not implemented");
+async function extendTx(
+  msg: codec.app.ITx,
+  fee: FungibleToken,
+  sigs: ReadonlyArray<FullSignature>,
+): Promise<codec.app.ITx> {
+  return codec.app.Tx.create({
+    ...msg,
+    fees: { fees: encodeToken(fee) },
+    signatures: sigs.map(encodeFullSig),
+  });
 }
 
 function encodeToken(token: FungibleToken): codec.x.ICoin {
@@ -60,6 +78,33 @@ function encodeToken(token: FungibleToken): codec.x.ICoin {
     fractional: token.fractional,
     ticker: token.tokenTicker,
   });
+}
+
+function encodeFullSig(sig: FullSignature): codec.sigs.IStdSignature {
+  return codec.sigs.StdSignature.create({
+    sequence: sig.nonce,
+    pubKey: encodePubKey(sig.publicKey),
+    signature: encodeSignature(sig.publicKey.algo, sig.signature),
+  });
+}
+
+function encodePubKey(publicKey: PublicKeyBundle): codec.crypto.IPublicKey {
+  switch (publicKey.algo) {
+    case Algorithm.ED25519:
+      return { ed25519: publicKey.data };
+    default:
+      throw new Error("unsupported algorithm: " + publicKey.algo);
+  }
+}
+
+// encodeSignature needs the PublicKeyBundle to determine the type
+function encodeSignature(algo: Algorithm, sigs: SignatureBytes): codec.crypto.ISignature {
+  switch (algo) {
+    case Algorithm.ED25519:
+      return { ed25519: sigs };
+    default:
+      throw new Error("unsupported algorithm: " + algo);
+  }
 }
 
 /*
