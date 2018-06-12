@@ -1,5 +1,5 @@
 import { Algorithm, FullSignature, FungibleToken, PublicKeyBundle, SignatureBytes } from "@iov/types";
-import codec from "./codec";
+import * as codec from "./codec";
 
 export const encodeToken = (token: FungibleToken) =>
   codec.x.Coin.create({

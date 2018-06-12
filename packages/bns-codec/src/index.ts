@@ -15,7 +15,7 @@ import {
   TransactionKind,
   // TxCodec,
 } from "@iov/types";
-import codec from "./codec";
+import * as codec from "./codec";
 import { encodeFullSig, encodeToken } from "./types";
 import {
   appendSignBytes,
