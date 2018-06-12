@@ -85,53 +85,65 @@ export interface KeyringEntry {
 export type KeyringEntryFactory = (data?: KeyDataString) => Promise<KeyringEntry>;
 
 export class Ed25519KeyringEntry implements KeyringEntry {
-  private identities: PublicIdentity[] = [];
-  private privkeys = new Map<string, Uint8Array>();
-  private names = new Map<string, string>();
+  private readonly identities: PublicIdentity[] = [];
+  private readonly privkeys = new Map<string, Uint8Array>();
+  private readonly names = new Map<string, string>();
 
-  constructor() {
-  }
-
-  async createIdentity(): Promise<PublicIdentity> {
+  public async createIdentity(): Promise<PublicIdentity> {
     const keypair = await Ed25519.generateKeypair();
 
     const newIdentity: PublicIdentity = {
       algo: Algorithm.ED25519,
       data: keypair.pubkey as PublicKeyBytes,
       canSign: true,
-    }
+    };
     const id = this.identityId(newIdentity);
     this.privkeys.set(id, keypair.privkey);
     this.identities.push(newIdentity);
     return newIdentity;
   }
 
-  async setIdentityName(identity: PublicKeyBundle, name: string): Promise<void> {
+  public async setIdentityName(identity: PublicKeyBundle, name: string): Promise<void> {
     const id = this.identityId(identity);
     this.names.set(id, name);
   }
 
-  async getIdentities(): Promise<ReadonlyArray<PublicIdentity>> {
+  public async getIdentities(): Promise<ReadonlyArray<PublicIdentity>> {
     return this.identities;
   }
 
-  async createTransactionSignature(
+  public async createTransactionSignature(
     identity: PublicKeyBundle,
     tx: SignableBytes,
-    chainID: ChainID,
+    _: ChainID,
   ): Promise<SignatureBytes> {
     const id = this.identityId(identity);
     const privkey = this.privkeys.get(id);
-    if (!privkey) throw new Error("No private key found for identity '" + id + "'");
+    if (!privkey) {
+      throw new Error("No private key found for identity '" + id + "'");
+    }
 
     const signature = await Ed25519.createSignature(tx, privkey);
     return signature as SignatureBytes;
   }
 
+  public async serialize(): Promise<KeyDataString> {
+    const out = this.identities.map(value => {
+      const id = this.identityId(value);
+      return {
+        publicIdentity: value,
+        privkey: this.privkeys.get(id),
+        name: this.names.get(id),
+      };
+    });
+    return JSON.stringify(out) as KeyDataString;
+  }
+
   private toHex(data: Uint8Array): string {
+    // tslint:disable-next-line:no-let
     let out: string = "";
     for (const byte of data) {
-      out += ('0' + byte.toString(16)).slice(-2);
+      out += ("0" + byte.toString(16)).slice(-2);
     }
     return out;
   }
