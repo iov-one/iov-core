@@ -28,8 +28,5 @@
     "prettier": "^1.12.1",
     "tslint-config-prettier": "^1.13.0",
     "tslint-immutable": "^4.5.4"
-  },
-  "prettier": {
-    "trailingComma": "all"
   }
 }

@@ -21,10 +21,7 @@ export class Ed25519 {
     };
   }
 
-  public static async createSignature(
-    message: Uint8Array,
-    privkey: Uint8Array,
-  ): Promise<Uint8Array> {
+  public static async createSignature(message: Uint8Array, privkey: Uint8Array): Promise<Uint8Array> {
     await sodium.ready;
     return sodium.crypto_sign_detached(message, privkey);
   }
@@ -49,11 +46,7 @@ export class Sha256 {
 }
 
 export class Chacha20poly1305Ietf {
-  public static async encrypt(
-    message: Uint8Array,
-    key: Uint8Array,
-    nonce: Uint8Array,
-  ): Promise<Uint8Array> {
+  public static async encrypt(message: Uint8Array, key: Uint8Array, nonce: Uint8Array): Promise<Uint8Array> {
     await sodium.ready;
 
     const additionalData = undefined;
