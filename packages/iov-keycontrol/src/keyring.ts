@@ -85,9 +85,34 @@ export interface KeyringEntry {
 export type KeyringEntryFactory = (data?: KeyDataString) => Promise<KeyringEntry>;
 
 export class Ed25519KeyringEntry implements KeyringEntry {
-  private readonly identities: PublicIdentity[] = [];
-  private readonly privkeys = new Map<string, Uint8Array>();
-  private readonly names = new Map<string, string>();
+  private readonly identities: PublicIdentity[];
+  private readonly privkeys: Map<string, Uint8Array>;
+  private readonly names: Map<string, string>;
+
+  constructor(data?: KeyDataString) {
+    const identities: PublicIdentity[] = [];
+    const privkeys = new Map<string, Uint8Array>();
+    const names = new Map<string, string>();
+    if (data) {
+      const decodedData = JSON.parse(data);
+      for (const record of decodedData) {
+        const identity: PublicIdentity = {
+          algo: record.publicIdentity.algo,
+          data: this.fromHex(record.publicIdentity.data) as PublicKeyBytes,
+          nickname: "", // TODO: get from serialized data
+          canSign: true, // TODO: get from serialized data
+        };
+        const identityId = this.identityId(identity);
+        identities.push(identity);
+        privkeys.set(identityId, this.fromHex(record.privkey));
+        names.set(identityId, record.name);
+      }
+    }
+
+    this.identities = identities;
+    this.privkeys = privkeys;
+    this.names = names;
+  }
 
   public async createIdentity(): Promise<PublicIdentity> {
     const keypair = await Ed25519.generateKeypair();
@@ -153,6 +178,15 @@ export class Ed25519KeyringEntry implements KeyringEntry {
       out += ("0" + byte.toString(16)).slice(-2);
     }
     return out;
+  }
+
+  private fromHex(hexstring: string): Uint8Array {
+    const listOfInts: number[] = [];
+    // tslint:disable-next-line:no-let
+    for (let i = 0; i < hexstring.length; i += 2) {
+      listOfInts.push(parseInt(hexstring.substr(i, 2), 16));
+    }
+    return new Uint8Array(listOfInts);
   }
 
   private identityId(identity: PublicKeyBundle): string {
