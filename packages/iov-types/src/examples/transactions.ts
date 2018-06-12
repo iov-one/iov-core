@@ -1,15 +1,7 @@
 import Long from "long";
 
 import { Algorithm, PublicKeyBundle } from "../types/keys";
-import {
-  ChainID,
-  Nonce,
-  SendTx,
-  TokenTicker,
-  Transaction,
-  TTLBytes,
-  TTLString,
-} from "../types/transactions";
+import { ChainID, Nonce, SendTx, TokenTicker, Transaction, TTLBytes, TTLString } from "../types/transactions";
 import { publicKeyBytes, publicKeyBytes2 } from "./keys";
 
 export const nonce: Nonce = Long.fromNumber(123) as Nonce;

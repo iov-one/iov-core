@@ -32,9 +32,7 @@ export const privateKeyBundle: PrivateKeyBundle = {
 };
 
 export const publicKeyString: PublicKeyString = "0350863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352" as PublicKeyString;
-export const publicKeyBytes: PublicKeyBytes = convertHexStringToUint8Array(
-  publicKeyString,
-) as PublicKeyBytes;
+export const publicKeyBytes: PublicKeyBytes = convertHexStringToUint8Array(publicKeyString) as PublicKeyBytes;
 export const publicKeyBytes2: PublicKeyBytes = convertHexStringToUint8Array(
   "a5bdf5841d9c56d6d975c1ab56ba569c3e367aafa2f9e2ce3dc518eab2594b77",
 ) as PublicKeyBytes;
@@ -57,11 +55,7 @@ export const keypairString: KeypairString = {
 };
 
 export const seedString: SeedString = "000102030405060708090a0b0c0d0e0f" as SeedString;
-export const seedBytes: SeedBytes = convertHexStringToUint8Array(
-  seedString,
-) as SeedBytes;
+export const seedBytes: SeedBytes = convertHexStringToUint8Array(seedString) as SeedBytes;
 
 export const signatureString: SignatureString = "78a2863ad64a87ae8a2fe83c1afa5bdf5841d9c56d6d975c1ab56ba569c3e367aafa2f9e2ce3dc518eab2594b771a8403cb53f53e486d8511dad8a04887e5b2352" as SignatureString;
-export const signatureBytes: SignatureBytes = convertHexStringToUint8Array(
-  signatureString,
-) as SignatureBytes;
+export const signatureBytes: SignatureBytes = convertHexStringToUint8Array(signatureString) as SignatureBytes;

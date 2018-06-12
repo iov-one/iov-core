@@ -69,23 +69,15 @@ export interface KeyController {
   ) => Promise<AddProfileEvent>;
 
   // removeProfile requires original password to delete.
-  readonly removeProfile: (
-    user: UsernameString,
-    password: PasswordString,
-  ) => Promise<RemoveProfileEvent>;
+  readonly removeProfile: (user: UsernameString, password: PasswordString) => Promise<RemoveProfileEvent>;
 
   // unlockProfile user gives us access to the private keys for the profile
-  readonly unlockProfile: (
-    user: UsernameString,
-    password: PasswordString,
-  ) => Promise<UnlockProfileEvent>;
+  readonly unlockProfile: (user: UsernameString, password: PasswordString) => Promise<UnlockProfileEvent>;
 
   // verifyTransaction will return true if all signatures
   // on the signable transaction are valid.
   // Requires no access to private key material
-  readonly verifyTransaction: (
-    tx: SignableTransaction,
-  ) => Promise<VerifiedTransactionEvent>;
+  readonly verifyTransaction: (tx: SignableTransaction) => Promise<VerifiedTransactionEvent>;
 }
 
 /*
@@ -107,10 +99,7 @@ export interface Profile {
   readonly createIdentity: () => Promise<ModifyProfileEvent>;
 
   // setIdentityName assigns a new name to one of the identities
-  readonly setIdentityName: (
-    publicKey: PublicKeyBundle,
-    name: string,
-  ) => Promise<ModifyProfileEvent>;
+  readonly setIdentityName: (publicKey: PublicKeyBundle, name: string) => Promise<ModifyProfileEvent>;
 
   readonly getIdentities: () => Promise<ReadonlyArray<PublicIdentity>>;
 

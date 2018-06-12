@@ -69,10 +69,7 @@ export default class KeybasePrivate {
     transaction: Transaction,
     ttl: TTLBytes | null,
   ) => SignTransaction;
-  public readonly unlockUser: (
-    username: UsernameString,
-    password: PasswordString,
-  ) => UnlockUser;
+  public readonly unlockUser: (username: UsernameString, password: PasswordString) => UnlockUser;
 
   private readonly dispatch: (action: PrivateAction) => PrivateAction;
 }

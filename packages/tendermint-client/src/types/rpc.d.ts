@@ -1,12 +1,7 @@
 import { Stream } from "xstream";
 import { Block, Header } from "./blocks";
 import { StateKey, StateBytes } from "./state";
-import {
-  TransactionBytes,
-  TransactionState,
-  TransactionStateProcessed,
-  TxQueryString,
-} from "./transactions";
+import { TransactionBytes, TransactionState, TransactionStateProcessed, TxQueryString } from "./transactions";
 
 // TODO: define this for real, now just unique type
 declare const WebsocketSymbol: unique symbol;
@@ -31,10 +26,7 @@ export interface RPC {
   sendTx(ws: Websocket, tx: TransactionBytes): Stream<TransactionState>;
 
   // searchTx searches for all tx that match these tags and subscribes to new ones
-  searchTx(
-    ws: Websocket,
-    query: TxQueryString,
-  ): Stream<TransactionStateProcessed>;
+  searchTx(ws: Websocket, query: TxQueryString): Stream<TransactionStateProcessed>;
 
   // watchKey will query the current state at the given key
   // and be notified upon any change

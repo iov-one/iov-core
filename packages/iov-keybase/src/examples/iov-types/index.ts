@@ -1,11 +1,4 @@
-import {
-  Algorithm,
-  ChainID,
-  PublicKeyBundle,
-  PublicKeyBytes,
-  SendTx,
-  TokenTicker,
-} from "@iov/types";
+import { Algorithm, ChainID, PublicKeyBundle, PublicKeyBytes, SendTx, TokenTicker } from "@iov/types";
 
 const convertHexStringToUint8Array = (str: string): Uint8Array => {
   const buffer = Buffer.from(str, "hex");
