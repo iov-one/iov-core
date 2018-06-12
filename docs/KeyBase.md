@@ -1,31 +1,19 @@
-# BCP specification
+# Web4 KeyBase architecture
 
-# SecureElementController
+## UserProfileController
 
-The `SecureElementController` provides all of the top level functionality and entry mechanisms into the `KeyBase`. This controller contains the logic to pass login details to the user profile controller.
+The `UserProfileController` houses the logic to decrypt a user profile, when provided a valid `username:password` pair.
 
-The following functions are exposed through the `SecureElementController`.
+The following functions are called by the `User`, through the `UserProfileController`
 
 - CreateUser: Creates a new user in the `UserProfileController`
 - LoginUser: Passes `username:password` pair to the `UserProfileController`
 - DeleteUser: Requests deletion of a `UserProfile` to the `UserProfileController`
 - ExportUser: Requests the plaintext export of `UserProfile` details, requires a correct `login`
 
-## UserProfileController
-
-The `UserProfileController` houses the logic to decrypt a user profile, when provided a valid `username:password` pair.
-
-The following functions are called from the `SecureElementController`, through the `UserProfileController0`
-
-- DecryptProfile: Completes the login process, using the `username:password` pair provided by the `SecureElementController`
-- CreateProfile: Creates a new `UserProfile` using information passed by the `SecureElementController`
-- DeleteProfile: Deletes a `UserProfile` using information passed by the `SecureElementController`
-- ExportProfile: Calls `DecryptProfile`, and provides a plaintext copy to the `SecureElementController`
-
-
 ## UserProfile
 
-A `UserProfile` contains a `Keyring` entry, `AddressBook` and other user specific details that need to be kept separate from other users. This is a `1:N` relation, where `N` is each `UserProfile` created by the `UserProfileController`.
+A `UserProfile` contains a `Keyring`, `AddressBook` and other user specific details that need to be kept separate from other users. This is a `1:N` relation, where `N` is each `UserProfile` created by the `UserProfileController`.
 
 - AddressBook: Holds common `PublicPersonality` mappings the user interacts with
 - Keyring: Hold all of the users `KeyringEntry`s that hold private keys.
@@ -34,13 +22,13 @@ A `UserProfile` contains a `Keyring` entry, `AddressBook` and other user specifi
 
 Contains a list of addresses a user has interacted with, or added for frequent use.
 
-- AddContact: Adds a contact to a `UserProfile` with the specified information. EX: `chain:address:humanName`
-- DeleteContact: Deletes a contact from a `UserProfile`
+- AddContact: Adds a contact to a `AddressBook` with the specified information. EX: `chain:address:humanName`
+- DeleteContact: Deletes a contact from a `AddressBook`
 - GetContact: Returns the `chain:address:humanName` for use in the application.
 
 ## Keyring
 
-The `Keyring` acts as a central loop, which holds all of the `User`'s `KeyringEntry`s. A `Keyring` indicates which algorithm is in use for all the `KeyringEntry`s that it contains. This is a `1:N` relation inside of a `UserProfile`, where `N` is each cryptographic algorithm.
+The `Keyring` acts as a central loop, which holds all of the `UserProfile`'s `KeyringEntry`s. A `Keyring` contains all of the `KeyringEntry`s that as user has added. This is a `1:1` relation inside of a `UserProfile`.
 
 - GetKeyringEntry: Returns a requested `KeyringEntry`'s details, such as `PublicIdentity` or `PublicPersonality`
 - AddKeyringEntry: Adds a new `KeyringEntry` to the `Keyring`.
@@ -50,7 +38,7 @@ The `Keyring` acts as a central loop, which holds all of the `User`'s `KeyringEn
 
 ## KeyringEntry
 
-A `KeyringEntry` contains all of the related identity and personality information for an associated `SecretIdentity`. A `SecretIdentity` can be a plaintext `PrivateKey`, `Mnemonic Passphrase` or even a hardware device identifier for a `Ledger`. This is a `1:N` relation inside of a `Keyring`, where `N` is each `SecretIdentity` added by a user.
+A `KeyringEntry` contains all of the related identity and personality information for an associated `SecretIdentity`. A `SecretIdentity` is only an HD Seed value (`Mnemonic Passphrase`) or a hardware device identifier for a `Ledger`. This is a `1:N` relation inside of a `Keyring`, where `N` is each `SecretIdentity` added by a user.
 
 - GetPublicIdentity: Returns `PublicIdentity` details for a specific algorithm.
 
