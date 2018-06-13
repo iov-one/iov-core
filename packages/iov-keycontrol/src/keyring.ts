@@ -1,4 +1,5 @@
 /* tslint:disable:object-literal-shorthand */
+import { Ed25519, Encoding } from "@iov/crypto";
 import {
   Algorithm,
   ChainID,
@@ -7,8 +8,6 @@ import {
   SignableBytes,
   SignatureBytes,
 } from "@iov/types";
-
-import { Ed25519 } from "@iov/crypto";
 
 declare const KeyDataSymbol: unique symbol;
 type KeyData = typeof KeyDataSymbol;
@@ -98,13 +97,13 @@ export class Ed25519KeyringEntry implements KeyringEntry {
       for (const record of decodedData) {
         const identity: PublicIdentity = {
           algo: record.publicIdentity.algo,
-          data: this.fromHex(record.publicIdentity.data) as PublicKeyBytes,
+          data: Encoding.fromHex(record.publicIdentity.data) as PublicKeyBytes,
           nickname: record.publicIdentity.nickname,
           canSign: true, // TODO: get from serialized data
         };
         const identityId = this.identityId(identity);
         identities.push(identity);
-        privkeys.set(identityId, this.fromHex(record.privkey));
+        privkeys.set(identityId, Encoding.fromHex(record.privkey));
       }
     }
 
@@ -171,35 +170,17 @@ export class Ed25519KeyringEntry implements KeyringEntry {
       return {
         publicIdentity: {
           algo: identity.algo,
-          data: this.toHex(identity.data),
+          data: Encoding.toHex(identity.data),
           nickname: identity.nickname,
           canSign: identity.canSign,
         },
-        privkey: this.toHex(privkey),
+        privkey: Encoding.toHex(privkey),
       };
     });
     return JSON.stringify(out) as KeyDataString;
   }
 
-  private toHex(data: Uint8Array): string {
-    // tslint:disable-next-line:no-let
-    let out: string = "";
-    for (const byte of data) {
-      out += ("0" + byte.toString(16)).slice(-2);
-    }
-    return out;
-  }
-
-  private fromHex(hexstring: string): Uint8Array {
-    const listOfInts: number[] = [];
-    // tslint:disable-next-line:no-let
-    for (let i = 0; i < hexstring.length; i += 2) {
-      listOfInts.push(parseInt(hexstring.substr(i, 2), 16));
-    }
-    return new Uint8Array(listOfInts);
-  }
-
   private identityId(identity: PublicKeyBundle): string {
-    return identity.algo + "|" + this.toHex(identity.data);
+    return identity.algo + "|" + Encoding.toHex(identity.data);
   }
 }

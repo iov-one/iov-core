@@ -1,15 +1,6 @@
+import { Encoding } from "@iov/crypto";
 import { ChainID, SignableBytes } from "@iov/types";
 import { Ed25519KeyringEntry, KeyDataString } from "./keyring";
-
-function fromHex(hexstring: string): Uint8Array {
-  // tslint:disable-next-line:readonly-array
-  const listOfInts: number[] = [];
-  // tslint:disable-next-line:no-let
-  for (let i = 0; i < hexstring.length; i += 2) {
-    listOfInts.push(parseInt(hexstring.substr(i, 2), 16));
-  }
-  return new Uint8Array(listOfInts);
-}
 
 describe("Keyring", () => {
   describe("Ed25519KeyringEntry", () => {
@@ -168,7 +159,7 @@ describe("Keyring", () => {
           expect(entry).toBeTruthy();
           expect((await entry.getIdentities()).length).toEqual(1);
           expect((await entry.getIdentities())[0].algo).toEqual("ed25519");
-          expect((await entry.getIdentities())[0].data).toEqual(fromHex("aabbccdd"));
+          expect((await entry.getIdentities())[0].data).toEqual(Encoding.fromHex("aabbccdd"));
           expect((await entry.getIdentities())[0].nickname).toEqual("foo");
           expect((await entry.getIdentities())[0].canSign).toEqual(true);
         }
@@ -180,11 +171,11 @@ describe("Keyring", () => {
           expect(entry).toBeTruthy();
           expect((await entry.getIdentities()).length).toEqual(2);
           expect((await entry.getIdentities())[0].algo).toEqual("ed25519");
-          expect((await entry.getIdentities())[0].data).toEqual(fromHex("aabbccdd"));
+          expect((await entry.getIdentities())[0].data).toEqual(Encoding.fromHex("aabbccdd"));
           expect((await entry.getIdentities())[0].nickname).toEqual("foo");
           expect((await entry.getIdentities())[0].canSign).toEqual(true);
           expect((await entry.getIdentities())[1].algo).toEqual("ed25519");
-          expect((await entry.getIdentities())[1].data).toEqual(fromHex("ddccbbaa"));
+          expect((await entry.getIdentities())[1].data).toEqual(Encoding.fromHex("ddccbbaa"));
           expect((await entry.getIdentities())[1].nickname).toEqual("bar");
           expect((await entry.getIdentities())[1].canSign).toEqual(true);
         }
