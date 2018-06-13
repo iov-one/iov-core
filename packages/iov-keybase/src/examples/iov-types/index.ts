@@ -1,4 +1,12 @@
-import { Algorithm, ChainID, PublicKeyBundle, PublicKeyBytes, SendTx, TokenTicker } from "@iov/types";
+import {
+  AddressBytes,
+  Algorithm,
+  ChainID,
+  PublicKeyBundle,
+  PublicKeyBytes,
+  SendTx,
+  TokenTicker,
+} from "@iov/types";
 
 const convertHexStringToUint8Array = (str: string): Uint8Array => {
   const buffer = Buffer.from(str, "hex");
@@ -7,12 +15,9 @@ const convertHexStringToUint8Array = (str: string): Uint8Array => {
 
 export const iov: TokenTicker = "IOV" as TokenTicker;
 
-const recipient: PublicKeyBundle = {
-  algo: Algorithm.ED25519,
-  data: convertHexStringToUint8Array(
-    "a5bdf5841d9c56d6d975c1ab56ba569c3e367aafa2f9e2ce3dc518eab2594b77",
-  ) as PublicKeyBytes,
-};
+const recipient: AddressBytes = convertHexStringToUint8Array(
+  "a5bdf5841d9c56d6d975c1ab56ba569c",
+) as AddressBytes;
 
 const sender: PublicKeyBundle = {
   algo: Algorithm.ED25519,
