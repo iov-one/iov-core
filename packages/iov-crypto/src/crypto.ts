@@ -35,15 +35,27 @@ export class Encoding {
   }
 }
 
+export class Random {
+  // Get `count` bytes of cryptographically secure random bytes
+  public static async getBytes(count: number): Promise<Uint8Array> {
+    await sodium.ready;
+    return sodium.randombytes_buf(count);
+  }
+}
+
 export interface Keypair {
   readonly pubkey: Uint8Array;
   readonly privkey: Uint8Array;
 }
 
 export class Ed25519 {
-  public static async generateKeypair(): Promise<Keypair> {
+  // Generates a keypair deterministically from a given 32 bytes seed
+  //
+  // For implementation details see crypto_sign_seed_keypair in
+  // https://download.libsodium.org/doc/public-key_cryptography/public-key_signatures.html
+  public static async generateKeypair(seed: Uint8Array): Promise<Keypair> {
     await sodium.ready;
-    const keypair = sodium.crypto_sign_keypair();
+    const keypair = sodium.crypto_sign_seed_keypair(seed);
     return {
       pubkey: keypair.publicKey,
       privkey: keypair.privateKey,
