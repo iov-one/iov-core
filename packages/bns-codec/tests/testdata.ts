@@ -58,9 +58,10 @@ const amount = {
   fractional: 0,
   tokenTicker: "ETH" as TokenTicker,
 };
+export const chainId = "test-123" as ChainID;
 // the sender in this tx is the above pubkey, pubkey->address should match
 export const sendTxJSON: SendTx = {
-  chainId: "test-123" as ChainID,
+  chainId,
   signer: pubJSON,
   kind: TransactionKind.SEND,
   recipient: fromHex("552385cb38847474fe9febfd56ab67e14bcd56f3") as AddressBytes,

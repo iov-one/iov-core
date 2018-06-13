@@ -1,6 +1,7 @@
 import { Ed25519, Encoding } from "@iov/crypto";
 
 import * as codec from "../src/codec";
+import { parseTx } from "../src/decode";
 import { buildMsg, buildTx } from "../src/encode";
 import {
   decodePrivKey,
@@ -14,6 +15,7 @@ import { appendSignBytes, keyToAddress } from "../src/util";
 
 import {
   address,
+  chainId,
   coinBin,
   coinJSON,
   privBin,
@@ -140,5 +142,13 @@ describe("Decode helpers", () => {
     const decoded = codec.x.Coin.decode(coinBin);
     const token = decodeToken(decoded);
     expect(token).toEqual(coinJSON);
+  });
+});
+
+describe("Decode transactions", () => {
+  it("decode unsigned transaction", () => {
+    const decoded = codec.app.Tx.decode(sendTxBin);
+    const tx = parseTx(decoded, chainId);
+    expect(tx.transaction).toEqual(sendTxJSON);
   });
 });
