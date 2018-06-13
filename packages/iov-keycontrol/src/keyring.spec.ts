@@ -94,12 +94,15 @@ describe("Keyring", () => {
       })();
     });
 
-    it("can serialize multiple keys", done => {
+    it("can serialize multiple identities", done => {
       (async () => {
         const keyringEntry = new Ed25519KeyringEntry();
-        await keyringEntry.createIdentity();
-        await keyringEntry.createIdentity();
-        await keyringEntry.createIdentity();
+        const identity1 = await keyringEntry.createIdentity();
+        const identity2 = await keyringEntry.createIdentity();
+        const identity3 = await keyringEntry.createIdentity();
+        keyringEntry.setIdentityNickname(identity1, undefined);
+        keyringEntry.setIdentityNickname(identity2, "");
+        keyringEntry.setIdentityNickname(identity3, "foo");
 
         const serialized = await keyringEntry.serialize();
         expect(serialized).toBeTruthy();
@@ -117,13 +120,13 @@ describe("Keyring", () => {
         expect(decodedJson[1].publicIdentity).toBeTruthy();
         expect(decodedJson[1].publicIdentity.algo).toEqual("ed25519");
         expect(decodedJson[1].publicIdentity.data).toMatch(/[0-9a-f]{64}/);
-        expect(decodedJson[1].publicIdentity.nickname).toBeUndefined();
+        expect(decodedJson[1].publicIdentity.nickname).toEqual("");
         expect(decodedJson[1].publicIdentity.canSign).toEqual(true);
         expect(decodedJson[1].privkey).toMatch(/[0-9a-f]{128}/);
         expect(decodedJson[2].publicIdentity).toBeTruthy();
         expect(decodedJson[2].publicIdentity.algo).toEqual("ed25519");
         expect(decodedJson[2].publicIdentity.data).toMatch(/[0-9a-f]{64}/);
-        expect(decodedJson[2].publicIdentity.nickname).toBeUndefined();
+        expect(decodedJson[2].publicIdentity.nickname).toEqual("foo");
         expect(decodedJson[2].publicIdentity.canSign).toEqual(true);
         expect(decodedJson[2].privkey).toMatch(/[0-9a-f]{128}/);
 
