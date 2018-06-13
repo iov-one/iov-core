@@ -45,6 +45,9 @@ export const privBin = fromHex(
   "0a40e404ff758df0c269c9105bc597351e7934339ef27dbf509b020eae68d8f8eace1a1b68a2042ba64436282d1cacb1e91c0166ad2e967e2c0543c99f2230ee04b3",
 );
 
+// address is calculated by bov for the public key
+export const address = fromHex("715d326689e88080afdfb22adf19394ceb8e9035") as AddressBytes;
+
 export const coinJSON: FungibleToken = {
   whole: 878,
   fractional: 1567000,

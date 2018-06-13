@@ -1,8 +1,10 @@
 import { Encoding } from "@iov/crypto";
 
 import * as codec from "../src/codec";
-import { encodePubKey } from "../src/types";
-import { pubBin, pubJSON } from "./testdata";
+import { encodePubKey, encodeToken } from "../src/types";
+import { keyToAddress } from "../src/util";
+
+import { address, coinBin, coinJSON, pubBin, pubJSON } from "./testdata";
 
 const { fromHex, toHex } = Encoding;
 
@@ -26,5 +28,17 @@ describe("Encode helpers", () => {
     // if buffer of correct type as well
     expect(encoded.length).toEqual(pubBin.length);
     expect(Uint8Array.from(encoded)).toEqual(pubBin);
+  });
+
+  it("create address", async done => {
+    const calc = await keyToAddress(pubJSON);
+    expect(Uint8Array.from(calc)).toEqual(address);
+    done();
+  });
+
+  it("encode coin", () => {
+    const token = encodeToken(coinJSON);
+    const encoded = codec.x.Coin.encode(token).finish();
+    expect(Uint8Array.from(encoded)).toEqual(coinBin);
   });
 });
