@@ -11,7 +11,7 @@ import {
 } from "@iov/types";
 import * as codec from "./codec";
 import { encodeFullSig, encodeToken } from "./types";
-import { hashIdentifier, hashPreimage, keyToAddress, keyToIdentifier } from "./util";
+import { hashIdentifier, keyToAddress } from "./util";
 
 export const buildTx = async (
   tx: Transaction,
@@ -45,7 +45,7 @@ const buildMsg = (tx: Transaction): Promise<codec.app.ITx> => {
 const buildSendTx = async (tx: SendTx): Promise<codec.app.ITx> => ({
   sendMsg: codec.cash.SendMsg.create({
     src: await keyToAddress(tx.signer),
-    dest: await keyToAddress(tx.recipient),
+    dest: tx.recipient,
     amount: encodeToken(tx.amount),
   }),
 });
@@ -58,15 +58,15 @@ const buildSetNameTx = async (tx: SetNameTx): Promise<codec.app.ITx> => ({
 });
 
 const buildSwapOfferTx = async (tx: SwapOfferTx): Promise<codec.app.ITx> => {
-  const hashed = { ...tx, hash: await hashPreimage(tx.preimage), kind: TransactionKind.SWAP_COUNTER };
+  const hashed = { ...tx, hashCode: await hashIdentifier(tx.preimage), kind: TransactionKind.SWAP_COUNTER };
   return buildSwapCounterTx(hashed as SwapCounterTx);
 };
 
 const buildSwapCounterTx = async (tx: SwapCounterTx): Promise<codec.app.ITx> => ({
   createEscrowMsg: codec.escrow.CreateEscrowMsg.create({
-    sender: await keyToIdentifier(tx.signer),
-    arbiter: hashIdentifier(tx.hash),
-    recipient: await keyToIdentifier(tx.recipient),
+    sender: await keyToAddress(tx.signer),
+    arbiter: tx.hashCode,
+    recipient: tx.recipient,
     timeout: tx.timeout,
     amount: tx.amount.map(encodeToken),
   }),

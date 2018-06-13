@@ -1,8 +1,8 @@
-import { ChainID, PublicKeyBundle, SendTx, TokenTicker, TransactionKind } from "@iov/types";
+import { AddressBytes, ChainID, PublicKeyBundle, SendTx, TokenTicker, TransactionKind } from "@iov/types";
 
 export const sendTx = (
   sender: PublicKeyBundle,
-  recipient: PublicKeyBundle,
+  recipient: AddressBytes,
   amount: number,
   token: TokenTicker,
   chainID: ChainID,

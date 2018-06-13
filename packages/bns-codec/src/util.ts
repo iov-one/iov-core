@@ -32,6 +32,5 @@ export const tendermintHash = (data: Uint8Array) =>
   Sha256.digest(data).then((bz: Uint8Array) => bz.slice(0, 20));
 
 // TODO: verify prefix, make const
-export const hashPreimage = (data: Uint8Array) => Sha256.digest(data);
-export const hashIdentifier = (hash: Uint8Array) =>
-  Uint8Array.from([...stringToArray("hash/sha256/"), ...hash]);
+export const hashIdentifier = async (data: Uint8Array) =>
+  Uint8Array.from([...stringToArray("hash/sha256/"), ...(await Sha256.digest(data))]);
