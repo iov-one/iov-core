@@ -65,12 +65,61 @@ describe("Crypto", () => {
 
     it("generates keypairs", done => {
       (async () => {
-        const keypair = await Ed25519.generateKeypair();
-        expect(keypair).toBeTruthy();
-        expect(keypair.pubkey).toBeTruthy();
-        expect(keypair.privkey).toBeTruthy();
-        expect(keypair.pubkey.byteLength).toEqual(32);
-        expect(keypair.privkey.byteLength).toEqual(64);
+        {
+          // ok
+          const seed = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0b9");
+          const keypair = await Ed25519.generateKeypair(seed);
+          expect(keypair).toBeTruthy();
+          expect(keypair.pubkey).toBeTruthy();
+          expect(keypair.privkey).toBeTruthy();
+          expect(keypair.pubkey.byteLength).toEqual(32);
+          expect(keypair.privkey.byteLength).toEqual(64);
+        }
+
+        {
+          // seed too short
+          const seed = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0");
+          await Ed25519.generateKeypair(seed)
+            .then(() => {
+              fail("promise must not resolve");
+            })
+            .catch(error => {
+              expect(error.message).toContain("invalid seed length");
+            });
+        }
+
+        {
+          // seed too long
+          const seed = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0b9aa");
+          await Ed25519.generateKeypair(seed)
+            .then(() => {
+              fail("promise must not resolve");
+            })
+            .catch(error => {
+              expect(error.message).toContain("invalid seed length");
+            });
+        }
+
+        done();
+      })();
+    });
+
+    it("generates keypairs deterministically", done => {
+      (async () => {
+        const seedA1 = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0b9");
+        const seedA2 = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0b9");
+        const seedB1 = fromHex("c0c42a0276d456ee007faae2cc7d1bc8925dd74983726d548e10da14c3aed12a");
+        const seedB2 = fromHex("c0c42a0276d456ee007faae2cc7d1bc8925dd74983726d548e10da14c3aed12a");
+
+        const keypairA1 = await Ed25519.generateKeypair(seedA1);
+        const keypairA2 = await Ed25519.generateKeypair(seedA2);
+        const keypairB1 = await Ed25519.generateKeypair(seedB1);
+        const keypairB2 = await Ed25519.generateKeypair(seedB2);
+
+        expect(keypairA1).toEqual(keypairA2);
+        expect(keypairB1).toEqual(keypairB2);
+        expect(keypairA1).not.toEqual(keypairB1);
+        expect(keypairA2).not.toEqual(keypairB2);
 
         done();
       })();
@@ -78,7 +127,8 @@ describe("Crypto", () => {
 
     it("creates signatures", done => {
       (async () => {
-        const keypair = await Ed25519.generateKeypair();
+        const seed = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0b9");
+        const keypair = await Ed25519.generateKeypair(seed);
         const message = new Uint8Array([0x11, 0x22]);
         const signature = await Ed25519.createSignature(message, keypair.privkey);
         expect(signature).toBeTruthy();
@@ -90,7 +140,8 @@ describe("Crypto", () => {
 
     it("verifies signatures", done => {
       (async () => {
-        const keypair = await Ed25519.generateKeypair();
+        const seed = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0b9");
+        const keypair = await Ed25519.generateKeypair(seed);
         const message = new Uint8Array([0x11, 0x22]);
         const signature = await Ed25519.createSignature(message, keypair.privkey);
 
@@ -116,7 +167,8 @@ describe("Crypto", () => {
 
         {
           // wrong pubkey
-          const wrongPubkey = (await Ed25519.generateKeypair()).pubkey;
+          const otherSeed = fromHex("91099374790843e29552c3cfa5e9286d6c77e00a2c109aaf3d0a307081314a09");
+          const wrongPubkey = (await Ed25519.generateKeypair(otherSeed)).pubkey;
           const ok = await Ed25519.verifySignature(signature, message, wrongPubkey);
           expect(ok).toEqual(false);
         }
