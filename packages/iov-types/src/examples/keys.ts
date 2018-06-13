@@ -1,4 +1,5 @@
 import {
+  AddressBytes,
   AddressString,
   Algorithm,
   KeypairBytes,
@@ -18,6 +19,7 @@ import {
 import { convertHexStringToUint8Array } from "./utils";
 
 export const addressString: AddressString = "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2" as AddressString;
+export const addressBytes: AddressBytes = convertHexStringToUint8Array(addressString) as AddressBytes;
 
 export const mnemonicString: MnemonicString = "lake famous pass outer smoke horse suspect obey subject step spirit bless evoke amazing seat" as MnemonicString;
 
