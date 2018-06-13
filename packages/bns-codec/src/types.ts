@@ -4,7 +4,9 @@ import {
   FungibleToken,
   PrivateKeyBundle,
   PublicKeyBundle,
+  PublicKeyBytes,
   SignatureBytes,
+  TokenTicker,
 } from "@iov/types";
 import * as codec from "./codec";
 
@@ -42,12 +44,39 @@ export const encodePrivKey = (privateKey: PrivateKeyBundle) => {
   }
 };
 
-// encodeSignature needs the PublicKeyBundle to determine the type
+// encodeSignature needs the Algorithm to determine the type
 export const encodeSignature = (algo: Algorithm, sigs: SignatureBytes) => {
   switch (algo) {
     case Algorithm.ED25519:
       return { ed25519: sigs };
     default:
       throw new Error("unsupported algorithm: " + algo);
+  }
+};
+
+const decodeLong = (maybeLong: Long | number | null | undefined): number => {
+  if (!maybeLong) {
+    return 0;
+  } else if (typeof maybeLong === "number") {
+    return maybeLong;
+  } else {
+    return maybeLong.toInt();
+  }
+};
+
+export const decodeToken = (token: codec.x.ICoin): FungibleToken => ({
+  whole: decodeLong(token.whole),
+  fractional: decodeLong(token.fractional),
+  tokenTicker: (token.ticker || "") as TokenTicker,
+});
+
+export const decodePubKey = (publicKey: codec.crypto.IPublicKey): PublicKeyBundle => {
+  if (publicKey.ed25519) {
+    return {
+      algo: Algorithm.ED25519,
+      data: publicKey.ed25519 as PublicKeyBytes,
+    };
+  } else {
+    throw new Error("Unknown public key algorithm");
   }
 };
