@@ -25,7 +25,7 @@ export const buildTx = async (
   });
 };
 
-const buildMsg = (tx: Transaction): Promise<codec.app.ITx> => {
+export const buildMsg = (tx: Transaction): Promise<codec.app.ITx> => {
   switch (tx.kind) {
     case TransactionKind.SEND:
       return buildSendTx(tx);
@@ -47,6 +47,7 @@ const buildSendTx = async (tx: SendTx): Promise<codec.app.ITx> => ({
     src: await keyToAddress(tx.signer),
     dest: tx.recipient,
     amount: encodeToken(tx.amount),
+    memo: tx.memo,
   }),
 });
 

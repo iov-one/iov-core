@@ -3,8 +3,10 @@ import * as codec from "./codec";
 
 export const encodeToken = (token: FungibleToken) =>
   codec.x.Coin.create({
-    whole: token.whole,
-    fractional: token.fractional,
+    // use null instead of 0 to not encode zero fields
+    // for compatibility with golang encoder
+    whole: token.whole || null,
+    fractional: token.fractional || null,
     ticker: token.tokenTicker,
   });
 
