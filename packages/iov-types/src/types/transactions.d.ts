@@ -45,7 +45,7 @@ export const enum TransactionKind {
 
 export interface BaseTx {
   readonly chainId: ChainID;
-  readonly fee: FungibleToken;
+  readonly fee?: FungibleToken;
   // signer needs to be a PublicKey as we use that to as an identifier to the Keyring for lookup
   readonly signer: PublicKeyBundle;
   readonly ttl?: TTLBytes;
@@ -55,6 +55,7 @@ export interface SendTx extends BaseTx {
   readonly kind: TransactionKind.SEND;
   readonly amount: FungibleToken;
   readonly recipient: RecipientId;
+  readonly memo?: string;
 }
 
 export interface SetNameTx extends BaseTx {

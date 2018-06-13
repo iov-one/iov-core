@@ -20,7 +20,7 @@ export const buildTx = async (
   const msg = await buildMsg(tx);
   return codec.app.Tx.create({
     ...msg,
-    fees: { fees: encodeToken(tx.fee) },
+    fees: tx.fee ? { fees: encodeToken(tx.fee) } : null,
     signatures: sigs.map(encodeFullSig),
   });
 };
