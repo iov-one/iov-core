@@ -51,8 +51,8 @@ export interface KeyringEntry {
   // createIdentity will create one new identity
   readonly createIdentity: () => Promise<PublicIdentity>;
 
-  // setIdentityName sets the name associated with the public key, if it exists
-  readonly setIdentityName: (identity: PublicKeyBundle, name: string) => Promise<void>;
+  // setIdentityNickname sets the name associated with the public key, if it exists
+  readonly setIdentityNickname: (identity: PublicKeyBundle, name: string) => Promise<void>;
 
   // getIdentities returns all identities currently registered
   readonly getIdentities: () => Promise<ReadonlyArray<PublicIdentity>>;
@@ -128,9 +128,9 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     return newIdentity;
   }
 
-  public async setIdentityName(identity: PublicKeyBundle, name: string): Promise<void> {
+  public async setIdentityNickname(identity: PublicKeyBundle, nickname: string): Promise<void> {
     const id = this.identityId(identity);
-    this.names.set(id, name);
+    this.names.set(id, nickname);
   }
 
   public async getIdentities(): Promise<ReadonlyArray<PublicIdentity>> {
