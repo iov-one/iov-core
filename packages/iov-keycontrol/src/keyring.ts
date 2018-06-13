@@ -53,7 +53,8 @@ export interface KeyringEntry {
   readonly createIdentity: () => Promise<PublicIdentity>;
 
   // setIdentityNickname sets the name associated with the public key, if it exists
-  readonly setIdentityNickname: (identity: PublicKeyBundle, name: string) => Promise<void>;
+  // To clear a nickname, set it to undefined
+  readonly setIdentityNickname: (identity: PublicKeyBundle, name: string | undefined) => Promise<void>;
 
   // getIdentities returns all identities currently registered
   readonly getIdentities: () => Promise<ReadonlyArray<PublicIdentity>>;
@@ -125,7 +126,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     return newIdentity;
   }
 
-  public async setIdentityNickname(identity: PublicKeyBundle, nickname: string): Promise<void> {
+  public async setIdentityNickname(identity: PublicKeyBundle, nickname: string | undefined): Promise<void> {
     const id = this.identityId(identity);
     const index = this.identities.findIndex(i => this.identityId(i) === id);
     if (index === -1) {

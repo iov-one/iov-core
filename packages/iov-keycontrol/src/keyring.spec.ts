@@ -60,7 +60,7 @@ describe("Keyring", () => {
       })();
     });
 
-    it("can set an identity nickname", done => {
+    it("can set, change and unset an identity nickname", done => {
       (async () => {
         const keyringEntry = new Ed25519KeyringEntry();
         const newIdentity = await keyringEntry.createIdentity();
@@ -71,6 +71,9 @@ describe("Keyring", () => {
 
         keyringEntry.setIdentityNickname(newIdentity, "bar");
         expect((await keyringEntry.getIdentities())[0].nickname).toEqual("bar");
+
+        keyringEntry.setIdentityNickname(newIdentity, undefined);
+        expect((await keyringEntry.getIdentities())[0].nickname).toBeUndefined();
 
         done();
       })();
