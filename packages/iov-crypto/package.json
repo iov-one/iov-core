@@ -12,7 +12,7 @@
   },
   "scripts": {
     "update-type-declarations": "tsc --declaration --outDir types --emitDeclarationOnly",
-    "lint": "tslint --project .",
+    "lint": "tslint -t verbose --project .",
     "format": "prettier --write **/*.ts",
     "test-node": "./jasmine-testrunner.js",
     "test-firefox": "karma start --single-run --browsers Firefox",
