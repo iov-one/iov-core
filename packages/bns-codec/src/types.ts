@@ -1,4 +1,11 @@
-import { Algorithm, FullSignature, FungibleToken, PublicKeyBundle, SignatureBytes } from "@iov/types";
+import {
+  Algorithm,
+  FullSignature,
+  FungibleToken,
+  PrivateKeyBundle,
+  PublicKeyBundle,
+  SignatureBytes,
+} from "@iov/types";
 import * as codec from "./codec";
 
 export const encodeToken = (token: FungibleToken) =>
@@ -23,6 +30,15 @@ export const encodePubKey = (publicKey: PublicKeyBundle) => {
       return { ed25519: publicKey.data };
     default:
       throw new Error("unsupported algorithm: " + publicKey.algo);
+  }
+};
+
+export const encodePrivKey = (privateKey: PrivateKeyBundle) => {
+  switch (privateKey.algo) {
+    case Algorithm.ED25519:
+      return { ed25519: privateKey.data };
+    default:
+      throw new Error("unsupported algorithm: " + privateKey.algo);
   }
 };
 
