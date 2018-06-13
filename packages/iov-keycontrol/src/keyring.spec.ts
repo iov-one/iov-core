@@ -89,6 +89,32 @@ describe("Keyring", () => {
         const decodedJson = JSON.parse(serialized);
         expect(decodedJson).toBeTruthy();
         expect(decodedJson.length).toEqual(3);
+        expect(decodedJson[0].publicIdentity).toBeTruthy();
+        expect(decodedJson[0].publicIdentity.algo).toEqual("ed25519");
+        expect(decodedJson[0].publicIdentity.data).toMatch(/[0-9a-f]{64}/);
+        expect(decodedJson[0].publicIdentity.nickname).toBeUndefined();
+        expect(decodedJson[0].publicIdentity.canSign).toEqual(true);
+        expect(decodedJson[0].privkey).toMatch(/[0-9a-f]{128}/);
+        expect(decodedJson[1].publicIdentity).toBeTruthy();
+        expect(decodedJson[1].publicIdentity.algo).toEqual("ed25519");
+        expect(decodedJson[1].publicIdentity.data).toMatch(/[0-9a-f]{64}/);
+        expect(decodedJson[1].publicIdentity.nickname).toBeUndefined();
+        expect(decodedJson[1].publicIdentity.canSign).toEqual(true);
+        expect(decodedJson[1].privkey).toMatch(/[0-9a-f]{128}/);
+        expect(decodedJson[2].publicIdentity).toBeTruthy();
+        expect(decodedJson[2].publicIdentity.algo).toEqual("ed25519");
+        expect(decodedJson[2].publicIdentity.data).toMatch(/[0-9a-f]{64}/);
+        expect(decodedJson[2].publicIdentity.nickname).toBeUndefined();
+        expect(decodedJson[2].publicIdentity.canSign).toEqual(true);
+        expect(decodedJson[2].privkey).toMatch(/[0-9a-f]{128}/);
+
+        // keys are different
+        expect(decodedJson[0].publicIdentity.data).not.toEqual(decodedJson[1].publicIdentity.data);
+        expect(decodedJson[1].publicIdentity.data).not.toEqual(decodedJson[2].publicIdentity.data);
+        expect(decodedJson[2].publicIdentity.data).not.toEqual(decodedJson[0].publicIdentity.data);
+        expect(decodedJson[0].privkey).not.toEqual(decodedJson[1].privkey);
+        expect(decodedJson[1].privkey).not.toEqual(decodedJson[2].privkey);
+        expect(decodedJson[2].privkey).not.toEqual(decodedJson[0].privkey);
 
         done();
       })();
