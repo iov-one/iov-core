@@ -106,6 +106,16 @@ export class Secp256k1 {
     const messageHash = await Sha256.digest(message);
     return secp256k1.signMessageHashDER(privkey, messageHash);
   }
+
+  public static async verifySignature(
+    signature: Uint8Array,
+    message: Uint8Array,
+    pubkey: Uint8Array,
+  ): Promise<boolean> {
+    const secp256k1 = await secp256k1Promise;
+    const messageHash = await Sha256.digest(message);
+    return secp256k1.verifySignatureDER(signature, pubkey, messageHash);
+  }
 }
 
 export class Sha256 {

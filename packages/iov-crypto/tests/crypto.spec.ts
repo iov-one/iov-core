@@ -316,6 +316,45 @@ describe("Crypto", () => {
         done();
       })();
     });
+
+    it("verifies signatures", done => {
+      (async () => {
+        const privkey = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0b9");
+        const keypair = await Secp256k1.makeKeypair(privkey);
+        const message = new Uint8Array([0x11, 0x22]);
+        const signature = await Secp256k1.createSignature(message, keypair.privkey);
+
+        {
+          // valid
+          const ok = await Secp256k1.verifySignature(signature, message, keypair.pubkey);
+          expect(ok).toEqual(true);
+        }
+
+        {
+          // message corrupted
+          const corruptedMessage = message.map((x, i) => (i === 0 ? x ^ 0x01 : x));
+          const ok = await Secp256k1.verifySignature(signature, corruptedMessage, keypair.pubkey);
+          expect(ok).toEqual(false);
+        }
+
+        {
+          // signature corrupted
+          const corruptedSignature = signature.map((x, i) => (i === 0 ? x ^ 0x01 : x));
+          const ok = await Secp256k1.verifySignature(corruptedSignature, message, keypair.pubkey);
+          expect(ok).toEqual(false);
+        }
+
+        {
+          // wrong pubkey
+          const otherPrivkey = fromHex("91099374790843e29552c3cfa5e9286d6c77e00a2c109aaf3d0a307081314a09");
+          const wrongPubkey = (await Secp256k1.makeKeypair(otherPrivkey)).pubkey;
+          const ok = await Secp256k1.verifySignature(signature, message, wrongPubkey);
+          expect(ok).toEqual(false);
+        }
+
+        done();
+      })();
+    });
   });
 
   describe("Sha256", () => {
