@@ -4,7 +4,10 @@
 // https://github.com/jedisct1/libsodium.js/issues/148
 import sodium = require("libsodium-wrappers");
 
+import { instantiateSecp256k1 } from "bitcoin-ts";
 import shajs from "sha.js";
+
+const secp256k1Promise = instantiateSecp256k1();
 
 export class Encoding {
   public static toHex(data: Uint8Array): string {
@@ -74,6 +77,28 @@ export class Ed25519 {
   ): Promise<boolean> {
     await sodium.ready;
     return sodium.crypto_sign_verify_detached(signature, message, pubkey);
+  }
+}
+
+export class Secp256k1 {
+  public static async makeKeypair(privkey: Uint8Array): Promise<Keypair> {
+    const secp256k1 = await secp256k1Promise;
+
+    if (privkey.length !== 32) {
+      // is this check missing in secp256k1.validatePrivateKey?
+      // https://github.com/bitjson/bitcoin-ts/issues/4
+      throw new Error("input data is not a valid secp256k1 private key");
+    }
+
+    if (!secp256k1.validatePrivateKey(privkey)) {
+      throw new Error("input data is not a valid secp256k1 private key");
+    }
+
+    const pubkey = secp256k1.derivePublicKeyUncompressed(privkey);
+    return {
+      privkey: privkey,
+      pubkey: pubkey,
+    };
   }
 }
 

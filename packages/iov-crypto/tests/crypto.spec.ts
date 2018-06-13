@@ -1,5 +1,5 @@
 /* tslint:disable:no-bitwise */
-import { Chacha20poly1305Ietf, Ed25519, Encoding, Random, Sha256 } from "../src/crypto";
+import { Chacha20poly1305Ietf, Ed25519, Encoding, Random, Secp256k1, Sha256 } from "../src/crypto";
 
 const toHex = Encoding.toHex;
 const fromHex = Encoding.fromHex;
@@ -268,6 +268,40 @@ describe("Crypto", () => {
     // $ pip install cryptography cryptography_vectors pytest ecdsa
     // $ curl https://patch-diff.githubusercontent.com/raw/webmaster128/cryptography/pull/1.diff | git apply
     // $ python ./docs/development/custom-vectors/secp256k1/generate_secp256k1.py > secp256k1_test_vectors.txt
+
+    it("can load private keys", done => {
+      (async () => {
+        expect(await Secp256k1.makeKeypair(fromHex("5eaf4344dab73d0caee1fd03607bb969074fb217f076896c2125f8607feab7b1"))).toBeTruthy();
+        expect(await Secp256k1.makeKeypair(fromHex("f7ac570ea2844e29e7f3b3c6a724ee1f47d3de8c2175a69abae94ae871573d0e"))).toBeTruthy();
+        expect(await Secp256k1.makeKeypair(fromHex("e4ade2a5232a7c6f37e7b854a774e25e6047ee7c6d63e8304ae04fa190bc1732"))).toBeTruthy();
+
+        // too short and too long
+        await Secp256k1.makeKeypair(fromHex("e4ade2a5232a7c6f37e7b854a774e25e6047ee7c6d63e8304ae04fa190bc17"))
+          .then(() => {
+            fail("promise must be rejected");
+          })
+          .catch(error => {
+            expect(error.message).toContain("not a valid secp256k1 private key");
+          });
+        await Secp256k1.makeKeypair(fromHex("e4ade2a5232a7c6f37e7b854a774e25e6047ee7c6d63e8304ae04fa190bc1732aa"))
+          .then(() => {
+            fail("promise must be rejected");
+          })
+          .catch(error => {
+            expect(error.message).toContain("not a valid secp256k1 private key");
+          });
+        // value out of range
+        await Secp256k1.makeKeypair(fromHex("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"))
+          .then(() => {
+            fail("promise must be rejected");
+          })
+          .catch(error => {
+            expect(error.message).toContain("not a valid secp256k1 private key");
+          });
+
+        done();
+      })();
+    });
   });
 
   describe("Sha256", () => {
