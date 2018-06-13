@@ -100,6 +100,12 @@ export class Secp256k1 {
       pubkey: pubkey,
     };
   }
+
+  public static async createSignature(message: Uint8Array, privkey: Uint8Array): Promise<Uint8Array> {
+    const secp256k1 = await secp256k1Promise;
+    const messageHash = await Sha256.digest(message);
+    return secp256k1.signMessageHashDER(privkey, messageHash);
+  }
 }
 
 export class Sha256 {

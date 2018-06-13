@@ -16,6 +16,7 @@ export declare class Ed25519 {
 }
 export declare class Secp256k1 {
     static makeKeypair(privkey: Uint8Array): Promise<Keypair>;
+    static createSignature(message: Uint8Array, privkey: Uint8Array): Promise<Uint8Array>;
 }
 export declare class Sha256 {
     static digest(data: Uint8Array): Promise<Uint8Array>;
