@@ -60,6 +60,22 @@ describe("Keyring", () => {
       })();
     });
 
+    it("can set an identity nickname", done => {
+      (async () => {
+        const keyringEntry = new Ed25519KeyringEntry();
+        const newIdentity = await keyringEntry.createIdentity();
+        expect((await keyringEntry.getIdentities())[0].nickname).toBeUndefined();
+
+        keyringEntry.setIdentityNickname(newIdentity, "foo");
+        expect((await keyringEntry.getIdentities())[0].nickname).toEqual("foo");
+
+        keyringEntry.setIdentityNickname(newIdentity, "bar");
+        expect((await keyringEntry.getIdentities())[0].nickname).toEqual("bar");
+
+        done();
+      })();
+    });
+
     it("can sign", done => {
       (async () => {
         const keyringEntry = new Ed25519KeyringEntry();
