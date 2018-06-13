@@ -1,7 +1,10 @@
+import { Encoding } from "@iov/crypto";
+
 import * as codec from "../src/codec";
 import { encodePubKey } from "../src/types";
+import { pubBin, pubJSON } from "./testdata";
 
-import { fromHex, pubBin, pubJSON, toHex } from "./testdata";
+const { fromHex, toHex } = Encoding;
 
 describe("Control", () => {
   it("hex utils work", () => {
@@ -21,6 +24,7 @@ describe("Encode helpers", () => {
     const encoded = codec.crypto.PublicKey.encode(pubkey).finish();
     // force result into Uint8Array for tests so it passes
     // if buffer of correct type as well
+    expect(encoded.length).toEqual(pubBin.length);
     expect(Uint8Array.from(encoded)).toEqual(pubBin);
   });
 });
