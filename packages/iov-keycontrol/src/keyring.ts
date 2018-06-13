@@ -1,3 +1,4 @@
+/* tslint:disable:object-literal-shorthand */
 import {
   Algorithm,
   ChainID,
@@ -87,31 +88,27 @@ export type KeyringEntryFactory = (data?: KeyDataString) => Promise<KeyringEntry
 export class Ed25519KeyringEntry implements KeyringEntry {
   private readonly identities: PublicIdentity[];
   private readonly privkeys: Map<string, Uint8Array>;
-  private readonly names: Map<string, string>;
 
   constructor(data?: KeyDataString) {
     const identities: PublicIdentity[] = [];
     const privkeys = new Map<string, Uint8Array>();
-    const names = new Map<string, string>();
     if (data) {
       const decodedData = JSON.parse(data);
       for (const record of decodedData) {
         const identity: PublicIdentity = {
           algo: record.publicIdentity.algo,
           data: this.fromHex(record.publicIdentity.data) as PublicKeyBytes,
-          nickname: "", // TODO: get from serialized data
+          nickname: record.publicIdentity.nickname,
           canSign: true, // TODO: get from serialized data
         };
         const identityId = this.identityId(identity);
         identities.push(identity);
         privkeys.set(identityId, this.fromHex(record.privkey));
-        names.set(identityId, record.name);
       }
     }
 
     this.identities = identities;
     this.privkeys = privkeys;
-    this.names = names;
   }
 
   public async createIdentity(): Promise<PublicIdentity> {
@@ -130,7 +127,18 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
   public async setIdentityNickname(identity: PublicKeyBundle, nickname: string): Promise<void> {
     const id = this.identityId(identity);
-    this.names.set(id, nickname);
+    const index = this.identities.findIndex(i => this.identityId(i) === id);
+    if (index === -1) {
+      throw new Error("identity with id '" + id + "' not found");
+    }
+
+    // tslint:disable-next-line:no-object-mutation
+    this.identities[index] = {
+      algo: this.identities[index].algo,
+      data: this.identities[index].data,
+      nickname: nickname,
+      canSign: this.identities[index].canSign,
+    };
   }
 
   public async getIdentities(): Promise<ReadonlyArray<PublicIdentity>> {
@@ -163,9 +171,10 @@ export class Ed25519KeyringEntry implements KeyringEntry {
         publicIdentity: {
           algo: identity.algo,
           data: this.toHex(identity.data),
+          nickname: identity.nickname,
+          canSign: identity.canSign,
         },
         privkey: this.toHex(privkey),
-        name: this.names.get(id),
       };
     });
     return JSON.stringify(out) as KeyDataString;
