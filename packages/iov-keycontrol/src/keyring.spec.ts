@@ -1,5 +1,15 @@
 import { ChainID, SignableBytes } from "@iov/types";
-import { Ed25519KeyringEntry } from "./keyring";
+import { Ed25519KeyringEntry, KeyDataString } from "./keyring";
+
+function fromHex(hexstring: string): Uint8Array {
+  // tslint:disable-next-line:readonly-array
+  const listOfInts: number[] = [];
+  // tslint:disable-next-line:no-let
+  for (let i = 0; i < hexstring.length; i += 2) {
+    listOfInts.push(parseInt(hexstring.substr(i, 2), 16));
+  }
+  return new Uint8Array(listOfInts);
+}
 
 describe("Keyring", () => {
   describe("Ed25519KeyringEntry", () => {
@@ -137,6 +147,47 @@ describe("Keyring", () => {
         expect(decodedJson[0].privkey).not.toEqual(decodedJson[1].privkey);
         expect(decodedJson[1].privkey).not.toEqual(decodedJson[2].privkey);
         expect(decodedJson[2].privkey).not.toEqual(decodedJson[0].privkey);
+
+        done();
+      })();
+    });
+
+    it("can deserialize", done => {
+      (async () => {
+        {
+          // empty
+          const entry = new Ed25519KeyringEntry("[]" as KeyDataString);
+          expect(entry).toBeTruthy();
+          expect((await entry.getIdentities()).length).toEqual(0);
+        }
+
+        {
+          // one element
+          const serialized = '[{"publicIdentity": { "algo": "ed25519", "data": "aabbccdd", "nickname": "foo", "canSign": true }, "privkey": "223322112233aabb"}]' as KeyDataString;
+          const entry = new Ed25519KeyringEntry(serialized);
+          expect(entry).toBeTruthy();
+          expect((await entry.getIdentities()).length).toEqual(1);
+          expect((await entry.getIdentities())[0].algo).toEqual("ed25519");
+          expect((await entry.getIdentities())[0].data).toEqual(fromHex("aabbccdd"));
+          expect((await entry.getIdentities())[0].nickname).toEqual("foo");
+          expect((await entry.getIdentities())[0].canSign).toEqual(true);
+        }
+
+        {
+          // two elements
+          const serialized = '[{"publicIdentity": { "algo": "ed25519", "data": "aabbccdd", "nickname": "foo", "canSign": true }, "privkey": "223322112233aabb"}, {"publicIdentity": { "algo": "ed25519", "data": "ddccbbaa", "nickname": "bar", "canSign": true }, "privkey": "ddddeeee"}]' as KeyDataString;
+          const entry = new Ed25519KeyringEntry(serialized);
+          expect(entry).toBeTruthy();
+          expect((await entry.getIdentities()).length).toEqual(2);
+          expect((await entry.getIdentities())[0].algo).toEqual("ed25519");
+          expect((await entry.getIdentities())[0].data).toEqual(fromHex("aabbccdd"));
+          expect((await entry.getIdentities())[0].nickname).toEqual("foo");
+          expect((await entry.getIdentities())[0].canSign).toEqual(true);
+          expect((await entry.getIdentities())[1].algo).toEqual("ed25519");
+          expect((await entry.getIdentities())[1].data).toEqual(fromHex("ddccbbaa"));
+          expect((await entry.getIdentities())[1].nickname).toEqual("bar");
+          expect((await entry.getIdentities())[1].canSign).toEqual(true);
+        }
 
         done();
       })();
