@@ -1,23 +1,8 @@
+import { Encoding } from "@iov/crypto";
 import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/types";
 
-export function toHex(data: Uint8Array): string {
-  /* tslint:disable-next-line:no-let */
-  let out: string = "";
-  for (const byte of data) {
-    out += ("0" + byte.toString(16)).slice(-2);
-  }
-  return out;
-}
-
-export function fromHex(hexstring: string): Uint8Array {
-  /* tslint:disable-next-line:readonly-array */
-  const listOfInts: number[] = [];
-  /* tslint:disable-next-line:no-let */
-  for (let i = 0; i < hexstring.length; i += 2) {
-    listOfInts.push(parseInt(hexstring.substr(i, 2), 16));
-  }
-  return new Uint8Array(listOfInts);
-}
+export const toHex = Encoding.toHex;
+export const fromHex = Encoding.fromHex;
 
 /*
 This info came from `bov testgen <dir>`.
