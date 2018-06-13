@@ -35,6 +35,14 @@ export class Encoding {
   }
 }
 
+export class Random {
+  // Get `count` bytes of cryptographically secure random bytes
+  public static async getBytes(count: number): Promise<Uint8Array> {
+    await sodium.ready;
+    return sodium.randombytes_buf(count);
+  }
+}
+
 export interface Keypair {
   readonly pubkey: Uint8Array;
   readonly privkey: Uint8Array;

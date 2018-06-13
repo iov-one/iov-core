@@ -1,5 +1,5 @@
 /* tslint:disable:no-bitwise */
-import { Chacha20poly1305Ietf, Ed25519, Encoding, Sha256 } from "../src/crypto";
+import { Chacha20poly1305Ietf, Ed25519, Encoding, Random, Sha256 } from "../src/crypto";
 
 const toHex = Encoding.toHex;
 const fromHex = Encoding.fromHex;
@@ -55,6 +55,38 @@ describe("Crypto", () => {
       expect(() => {
         Encoding.fromHex("gg");
       }).toThrow();
+    });
+  });
+
+  describe("Random", () => {
+    it("creates random bytes", () => {
+      (async () => {
+        {
+          const bytes = await Random.getBytes(0);
+          expect(bytes.length).toEqual(0);
+        }
+
+        {
+          const bytes = await Random.getBytes(1);
+          expect(bytes.length).toEqual(1);
+        }
+
+        {
+          const bytes = await Random.getBytes(32);
+          expect(bytes.length).toEqual(32);
+        }
+
+        {
+          const bytes = await Random.getBytes(4096);
+          expect(bytes.length).toEqual(4096);
+        }
+
+        {
+          const bytes1 = await Random.getBytes(32);
+          const bytes2 = await Random.getBytes(32);
+          expect(bytes1).not.toEqual(bytes2);
+        }
+      })();
     });
   });
 
