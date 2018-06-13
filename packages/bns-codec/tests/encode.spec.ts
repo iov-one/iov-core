@@ -2,7 +2,14 @@ import { Ed25519, Encoding } from "@iov/crypto";
 
 import * as codec from "../src/codec";
 import { buildMsg, buildTx } from "../src/encode";
-import { decodePubKey, decodeToken, encodePrivKey, encodePubKey, encodeToken } from "../src/types";
+import {
+  decodePrivKey,
+  decodePubKey,
+  decodeToken,
+  encodePrivKey,
+  encodePubKey,
+  encodeToken,
+} from "../src/types";
 import { appendSignBytes, keyToAddress } from "../src/util";
 
 import {
@@ -123,11 +130,11 @@ describe("Decode helpers", () => {
     expect(pubkey).toEqual(pubJSON);
   });
 
-  // it("encode private key", () => {
-  //   const privkey = encodePrivKey(privJSON);
-  //   const encoded = codec.crypto.PublicKey.encode(privkey).finish();
-  //   expect(Uint8Array.from(encoded)).toEqual(privBin);
-  // });
+  it("decode privkey", () => {
+    const decoded = codec.crypto.PrivateKey.decode(privBin);
+    const privkey = decodePrivKey(decoded);
+    expect(privkey).toEqual(privJSON);
+  });
 
   it("decode coin", () => {
     const decoded = codec.x.Coin.decode(coinBin);

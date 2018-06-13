@@ -2,12 +2,15 @@ import {
   Algorithm,
   FullSignature,
   FungibleToken,
+  Nonce,
   PrivateKeyBundle,
+  PrivateKeyBytes,
   PublicKeyBundle,
   PublicKeyBytes,
   SignatureBytes,
   TokenTicker,
 } from "@iov/types";
+import Long from "long";
 import * as codec from "./codec";
 
 export const encodeToken = (token: FungibleToken) =>
@@ -54,19 +57,9 @@ export const encodeSignature = (algo: Algorithm, sigs: SignatureBytes) => {
   }
 };
 
-const decodeLong = (maybeLong: Long | number | null | undefined): number => {
-  if (!maybeLong) {
-    return 0;
-  } else if (typeof maybeLong === "number") {
-    return maybeLong;
-  } else {
-    return maybeLong.toInt();
-  }
-};
-
 export const decodeToken = (token: codec.x.ICoin): FungibleToken => ({
-  whole: decodeLong(token.whole),
-  fractional: decodeLong(token.fractional),
+  whole: asNumber(token.whole),
+  fractional: asNumber(token.fractional),
   tokenTicker: (token.ticker || "") as TokenTicker,
 });
 
@@ -79,4 +72,56 @@ export const decodePubKey = (publicKey: codec.crypto.IPublicKey): PublicKeyBundl
   } else {
     throw new Error("Unknown public key algorithm");
   }
+};
+
+export const decodePrivKey = (privateKey: codec.crypto.IPrivateKey): PrivateKeyBundle => {
+  if (privateKey.ed25519) {
+    return {
+      algo: Algorithm.ED25519,
+      data: privateKey.ed25519 as PrivateKeyBytes,
+    };
+  } else {
+    throw new Error("Unknown private key algorithm");
+  }
+};
+
+export const decodeSignature = (signature: codec.crypto.ISignature): SignatureBytes => {
+  if (signature.ed25519) {
+    return signature.ed25519 as SignatureBytes;
+  } else {
+    throw new Error("Unknown private key algorithm");
+  }
+};
+
+export const decodeFullSig = (sig: codec.sigs.IStdSignature): FullSignature => ({
+  nonce: asLong(sig.sequence) as Nonce,
+  publicKey: decodePubKey(ensure(sig.pubKey)),
+  signature: decodeSignature(ensure(sig.signature)),
+});
+
+export const asNumber = (maybeLong: Long | number | null | undefined): number => {
+  if (!maybeLong) {
+    return 0;
+  } else if (typeof maybeLong === "number") {
+    return maybeLong;
+  } else {
+    return maybeLong.toInt();
+  }
+};
+
+export const asLong = (maybeLong: Long | number | null | undefined): Long => {
+  if (!maybeLong) {
+    return Long.fromInt(0);
+  } else if (typeof maybeLong === "number") {
+    return Long.fromNumber(maybeLong);
+  } else {
+    return maybeLong;
+  }
+};
+
+export const ensure = <T>(maybe: T | null | undefined, msg?: string): T => {
+  if (!maybe) {
+    throw new Error(msg || "missing");
+  }
+  return maybe;
 };

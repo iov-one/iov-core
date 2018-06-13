@@ -1,5 +1,13 @@
-import { Nonce, PostableBytes, SignableBytes, SignableTransaction, TransactionIDBytes } from "@iov/types";
+import {
+  ChainID,
+  Nonce,
+  PostableBytes,
+  SignableBytes,
+  SignableTransaction,
+  TransactionIDBytes,
+} from "@iov/types";
 import * as codec from "./codec";
+import { parseTx } from "./decode";
 import { buildTx } from "./encode";
 import { appendSignBytes, tendermintHash } from "./util";
 
@@ -27,8 +35,9 @@ export class Codec {
   }
 
   // parseBytes will recover bytes from the blockchain into a format we can use
-  public static parseBytes(/*bz: PostableBytes*/): SignableTransaction {
-    throw new Error("not yet implemented");
+  public static parseBytes(bz: PostableBytes, chainID: ChainID): SignableTransaction {
+    const parsed = codec.app.Tx.decode(bz);
+    return parseTx(parsed, chainID);
   }
 }
 
