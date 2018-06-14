@@ -37,7 +37,8 @@ export const hashIdentifier = async (data: Uint8Array) =>
 // typescript forces us to return number on reduce, so we count how many elements match
 // and make sure it is all
 export const arraysEqual = (a: Uint8Array, b: Uint8Array): boolean =>
-  a.reduce((acc: number, x: number, i: number) => (x === b[i] ? acc + 1 : acc)) === b.length;
+  a.length === b.length &&
+  a.reduce((acc: number, x: number, i: number) => (x === b[i] ? acc + 1 : acc), 0) === b.length;
 
 export const isHashIdentifier = (ident: Uint8Array): boolean =>
   arraysEqual(HashId, ident.slice(0, HashId.length));

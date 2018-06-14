@@ -1,7 +1,46 @@
-import { Ed25519 } from "@iov/crypto";
+import { Ed25519, Encoding } from "@iov/crypto";
 import { PostableBytes, SignedTransaction } from "@iov/types";
 import { Codec } from "../src";
-import { chainId, sendTxJson, sig, signedTxBin, signedTxJson } from "./testdata";
+import { arraysEqual, isHashIdentifier } from "../src/util";
+import {
+  chainId,
+  hashCode,
+  randomTxJson,
+  sendTxJson,
+  setNameTxJson,
+  sig,
+  signedTxBin,
+  signedTxJson,
+  swapClaimTxJson,
+  swapCounterTxJson,
+  swapTimeoutTxJson,
+} from "./testdata";
+
+const { fromHex } = Encoding;
+
+describe("Verify util functions", () => {
+  it("verify array comparison", () => {
+    const a = fromHex("12345678");
+    const b = fromHex("000012345678");
+    const same = arraysEqual(a, b.slice(2));
+    expect(same).toBeTruthy("same");
+
+    const different = arraysEqual(a, a.slice(0, 2));
+    expect(different).toBeFalsy();
+    const diff2 = arraysEqual(a.slice(0, 2), a);
+    expect(diff2).toBeFalsy();
+    const diff3 = arraysEqual(a, fromHex("12335678"));
+    expect(diff3).toBeFalsy();
+  });
+
+  it("verify hash checks out", () => {
+    const a = fromHex("1234567890abcdef1234567890abcdef");
+    const badHash = isHashIdentifier(a);
+    expect(badHash).toBeFalsy();
+    const goodHash = isHashIdentifier(hashCode);
+    expect(goodHash).toBeTruthy();
+  });
+});
 
 describe("Check codec", () => {
   it("properly encodes transactions", async done => {
@@ -41,7 +80,16 @@ describe("Check codec", () => {
       const decoded = Codec.parseBytes(noBuffer, trial.transaction.chainId);
       expect(decoded).toEqual(trial);
     };
-    await verify(signedTxJson);
+    try {
+      await verify(signedTxJson);
+      await verify(randomTxJson);
+      await verify(setNameTxJson);
+      await verify(swapCounterTxJson);
+      await verify(swapClaimTxJson);
+      await verify(swapTimeoutTxJson);
+    } catch (err) {
+      expect(err).toBe(false);
+    }
     done();
   });
 });
