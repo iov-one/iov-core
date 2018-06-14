@@ -291,6 +291,10 @@ describe("Crypto", () => {
         expect(await Secp256k1.makeKeypair(fromHex("f7ac570ea2844e29e7f3b3c6a724ee1f47d3de8c2175a69abae94ae871573d0e"))).toBeTruthy();
         expect(await Secp256k1.makeKeypair(fromHex("e4ade2a5232a7c6f37e7b854a774e25e6047ee7c6d63e8304ae04fa190bc1732"))).toBeTruthy();
 
+        // smallest and largest allowed values: 1 and N-1 (from https://crypto.stackexchange.com/a/30273)
+        expect(await Secp256k1.makeKeypair(fromHex("0000000000000000000000000000000000000000000000000000000000000001"))).toBeTruthy();
+        expect(await Secp256k1.makeKeypair(fromHex("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364140"))).toBeTruthy();
+
         // too short and too long
         await Secp256k1.makeKeypair(fromHex("e4ade2a5232a7c6f37e7b854a774e25e6047ee7c6d63e8304ae04fa190bc17"))
           .then(() => {
@@ -306,8 +310,23 @@ describe("Crypto", () => {
           .catch(error => {
             expect(error.message).toContain("not a valid secp256k1 private key");
           });
-        // value out of range
+        // value out of range (too small)
+        await Secp256k1.makeKeypair(fromHex("0000000000000000000000000000000000000000000000000000000000000000"))
+          .then(() => {
+            fail("promise must be rejected");
+          })
+          .catch(error => {
+            expect(error.message).toContain("not a valid secp256k1 private key");
+          });
+        // value out of range (>= n)
         await Secp256k1.makeKeypair(fromHex("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"))
+          .then(() => {
+            fail("promise must be rejected");
+          })
+          .catch(error => {
+            expect(error.message).toContain("not a valid secp256k1 private key");
+          });
+        await Secp256k1.makeKeypair(fromHex("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141"))
           .then(() => {
             fail("promise must be rejected");
           })
