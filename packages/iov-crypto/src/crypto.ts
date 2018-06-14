@@ -1,5 +1,6 @@
 // libsodium.js API: https://gist.github.com/webmaster128/b2dbe6d54d36dd168c9fabf441b9b09c
 
+import BN = require("bn.js");
 import elliptic = require("elliptic");
 // use require instead of import because of this bug
 // https://github.com/jedisct1/libsodium.js/issues/148
@@ -7,6 +8,7 @@ import sodium = require("libsodium-wrappers");
 import shajs from "sha.js";
 
 const secp256k1 = new elliptic.ec("secp256k1");
+const secp256k1N = new BN("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141", "hex");
 
 export class Encoding {
   public static toHex(data: Uint8Array): string {
@@ -89,6 +91,13 @@ export class Secp256k1 {
 
     const keypair = secp256k1.keyFromPrivate(privkey);
     if (keypair.validate().result !== true) {
+      throw new Error("input data is not a valid secp256k1 private key");
+    }
+
+    // range test that is not part of the elliptic implementation
+    const privkeyAsBigInteger = new BN(privkey);
+    if (privkeyAsBigInteger.gte(secp256k1N)) {
+      // not strictly smaller than N
       throw new Error("input data is not a valid secp256k1 private key");
     }
 
