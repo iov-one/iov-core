@@ -57,7 +57,7 @@ const parseSendTx = (base: BaseTx, msg: codec.cash.ISendMsg): SendTx => ({
   // TODO: would we want to ensure these match?
   //    src: await keyToAddress(tx.signer),
   kind: TransactionKind.SEND,
-  recipient: ensure(msg.dest) as AddressBytes,
+  recipient: ensure(msg.dest, "recipient") as AddressBytes,
   amount: decodeToken(ensure(msg.amount)),
   memo: msg.memo || undefined,
   ...base,
@@ -65,14 +65,14 @@ const parseSendTx = (base: BaseTx, msg: codec.cash.ISendMsg): SendTx => ({
 
 const parseSetNameTx = (base: BaseTx, msg: codec.namecoin.ISetWalletNameMsg): SetNameTx => ({
   kind: TransactionKind.SET_NAME,
-  name: ensure(msg.name),
+  name: ensure(msg.name, "name"),
   ...base,
 });
 
 const parseSwapCounterTx = (base: BaseTx, msg: codec.escrow.ICreateEscrowMsg): SwapCounterTx => ({
   kind: TransactionKind.SWAP_COUNTER,
-  hashCode: ensure(msg.arbiter),
-  recipient: ensure(msg.recipient) as AddressBytes,
+  hashCode: ensure(msg.arbiter, "arbiter"),
+  recipient: ensure(msg.recipient, "recipient") as AddressBytes,
   timeout: asNumber(msg.timeout),
   amount: (msg.amount || []).map(decodeToken),
   ...base,
@@ -98,5 +98,5 @@ const parseSwapTimeoutTx = (base: BaseTx, msg: codec.escrow.IReturnEscrowMsg): S
 const parseBaseTx = (tx: codec.app.ITx, chainId: ChainID): BaseTx => ({
   chainId,
   // TODO: fee
-  signer: decodePubKey(ensure(ensure(tx.signatures)[0].pubKey)),
+  signer: decodePubKey(ensure(ensure(tx.signatures, "sigs")[0].pubKey, "pubKey")),
 });

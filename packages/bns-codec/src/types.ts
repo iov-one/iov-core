@@ -121,7 +121,7 @@ export const asLong = (maybeLong: Long | number | null | undefined): Long => {
 
 export const ensure = <T>(maybe: T | null | undefined, msg?: string): T => {
   if (!maybe) {
-    throw new Error(msg || "missing");
+    throw new Error("missing " + (msg || "field"));
   }
   return maybe;
 };
