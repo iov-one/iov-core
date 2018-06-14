@@ -1,4 +1,4 @@
-import { Ed25519, Encoding } from "@iov/crypto";
+import { Ed25519 } from "@iov/crypto";
 
 import * as codec from "../src/codec";
 import { parseTx } from "../src/decode";
@@ -27,20 +27,6 @@ import {
   signedTxBin,
   sigs,
 } from "./testdata";
-
-const { fromHex, toHex } = Encoding;
-
-describe("Control", () => {
-  it("hex utils work", () => {
-    const input = "1234567890abcdef";
-    const bin = fromHex(input);
-    expect(bin).toBeTruthy();
-    expect(bin.length).toEqual(8);
-    const decode = toHex(bin);
-    expect(decode).toBeTruthy();
-    expect(decode).toEqual(input);
-  });
-});
 
 describe("Encode helpers", () => {
   it("encode pubkey", () => {
