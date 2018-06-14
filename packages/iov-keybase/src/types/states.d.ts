@@ -6,7 +6,7 @@ import {
   PrivateKeyString,
   PublicKeyString,
   SeedString,
-  Transaction,
+  SignedTransaction,
   UsernameString,
 } from "@iov/types";
 import { Stream } from "xstream";
@@ -30,7 +30,7 @@ type UserWatcher = () => Stream<UsernameString>;
 // Can we use overloading to define all possible
 // request/response pairs on one dispath function
 type PrivateDispatcher = (action: PrivateAction) => Promise<any>;
-type SignDispatcher = (action: SignTransaction) => Promise<Transaction>;
+type SignDispatcher = (action: SignTransaction) => Promise<SignedTransaction>;
 type ImportDispatcher = (action: ImportPrivateKey) => Promise<true>; // ??
 
 interface KeybaseState {
