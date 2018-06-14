@@ -1,4 +1,4 @@
-import { Transaction } from "@iov/types";
+import { SignedTransaction } from "@iov/types";
 import { Stream } from "xstream";
 import { Block, Header } from "./blocks";
 import { RPC, Websocket } from "./rpc";
@@ -22,9 +22,9 @@ export interface ParsedRPC {
   allBlocks(ws: Websocket): Stream<Block>;
 
   // sendTx submits a signed tx as is notified on every state change
-  sendTx(ws: Websocket, tx: Transaction): Stream<TransactionState>;
-  // sendTx(ws: Websocket, tx: Transaction): void;
-  // sendTx(ws: Websocket, tx: Transaction): Promise<any>;
+  sendTx(ws: Websocket, tx: SignedTransaction): Stream<TransactionState>;
+  // sendTx(ws: Websocket, tx: SignedTransaction): void;
+  // sendTx(ws: Websocket, tx: SignedTransaction): Promise<any>;
 
   // searchTx searches for all tx that match these tags and subscribes to new ones
   // watchTx is a subset, searching by TxID, not tags
@@ -36,7 +36,7 @@ export interface ParsedRPC {
 }
 
 export type StateParser = (state: StateBytes) => ParsedStateObject;
-export type TxEncoder = (tx: Transaction) => TransactionBytes;
-// export type TxParser = (rawTx: TransactionBytes) => Transaction;
+export type TxEncoder = (tx: SignedTransaction) => TransactionBytes;
+// export type TxParser = (rawTx: TransactionBytes) => SignedTransaction;
 
 export type ParseRPC = (parseState: StateParser, encodeTx: TxEncoder) => (rpc: RPC) => ParsedRPC;
