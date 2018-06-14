@@ -316,7 +316,11 @@ describe("Crypto", () => {
           });
 
         done();
-      })();
+      })().catch(error => {
+        setTimeout(() => {
+          throw error;
+        });
+      });
     });
 
     it("creates signatures", done => {
@@ -330,7 +334,11 @@ describe("Crypto", () => {
         expect(signature.byteLength).toBeLessThanOrEqual(72);
 
         done();
-      })();
+      })().catch(error => {
+        setTimeout(() => {
+          throw error;
+        });
+      });
     });
 
     it("creates signatures deterministically", done => {
@@ -344,7 +352,11 @@ describe("Crypto", () => {
         expect(signature1).toEqual(signature2);
 
         done();
-      })();
+      })().catch(error => {
+        setTimeout(() => {
+          throw error;
+        });
+      });
     });
 
     it("verifies signatures", done => {
@@ -383,7 +395,11 @@ describe("Crypto", () => {
         }
 
         done();
-      })();
+      })().catch(error => {
+        setTimeout(() => {
+          throw error;
+        });
+      });
     });
 
     it("matches pyca/cryptography data", done => {
