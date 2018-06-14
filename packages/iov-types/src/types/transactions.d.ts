@@ -24,6 +24,10 @@ type SwapID = typeof SwapIDSymbol;
 export type SwapIDBytes = SwapID & Uint8Array;
 export type SwapIDString = SwapID & string;
 
+// TODO: we may want to make this a union type BNSName | PublicKey | Address
+// but waiting on clarity on BNS spec, for now simplest working solution...
+export type RecipientID = AddressBytes;
+
 export interface FungibleToken {
   readonly whole: number;
   readonly fractional: number;
@@ -41,9 +45,7 @@ export interface BaseTx {
 export interface SendTx extends BaseTx {
   readonly kind: "send";
   readonly amount: FungibleToken;
-  // TODO: we may want to make this a union type BNSName | PublicKey | Address
-  // but waiting on clarity on BNS spec, for now simplest working solution...
-  readonly recipient: AddressBytes;
+  readonly recipient: RecipientID;
 }
 
 export interface SetNameTx extends BaseTx {
@@ -54,9 +56,7 @@ export interface SetNameTx extends BaseTx {
 export interface SwapOfferTx extends BaseTx {
   readonly kind: "swap_offer";
   readonly amount: ReadonlyArray<FungibleToken>;
-  // TODO: we may want to make this a union type BNSName | PublicKey | Address
-  // but waiting on clarity on BNS spec, for now simplest working solution...
-  readonly recipient: AddressBytes;
+  readonly recipient: RecipientID;
   readonly timeout: number; // number of blocks in the future
   readonly preimage: Uint8Array;
 }
@@ -64,9 +64,7 @@ export interface SwapOfferTx extends BaseTx {
 export interface SwapCounterTx extends BaseTx {
   readonly kind: "swap_counter";
   readonly amount: ReadonlyArray<FungibleToken>;
-  // TODO: we may want to make this a union type BNSName | PublicKey | Address
-  // but waiting on clarity on BNS spec, for now simplest working solution...
-  readonly recipient: AddressBytes;
+  readonly recipient: RecipientID;
   readonly timeout: number; // number of blocks in the future
   readonly hashCode: Uint8Array; // pulled from the offer transaction
 }
