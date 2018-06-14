@@ -93,8 +93,8 @@ describe("Ensure crypto", () => {
 
     // make sure we can validate this signature (our signBytes are correct)
     const signature = sig.signature;
-    const value = await Ed25519.verifySignature(signature, signBytes, pubKey);
-    expect(value).toBeTruthy();
+    const valid = await Ed25519.verifySignature(signature, signBytes, pubKey);
+    expect(valid).toBeTruthy();
 
     // make sure we can generate a compatible signature
     const mySig = await Ed25519.createSignature(signBytes, privKey);
