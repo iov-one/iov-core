@@ -24,8 +24,6 @@
     "build-browser": "yarn build && webpack --mode development"
   },
   "dependencies": {
-    "@types/webassembly-js-api": "^0.0.1",
-    "bitcoin-ts": "^1.0.3",
     "bn.js": "^4.11.8",
     "elliptic": "^6.4.0",
     "libsodium-wrappers": "^0.7.3",
