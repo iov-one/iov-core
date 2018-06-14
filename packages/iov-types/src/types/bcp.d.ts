@@ -1,7 +1,7 @@
 // import { Transaction } from "@iov/types";
 import { Stream } from "xstream";
 import { AddressBytes, PublicKeyBundle } from "./keys";
-import { SignableTransaction } from "./signables";
+import { SignedTransaction } from "./signables";
 import { FungibleToken, Nonce, TokenTicker } from "./transactions";
 
 // import { RPC, Websocket } from "./rpc";
@@ -40,7 +40,7 @@ export interface Node {
   readonly streamBlocks: () => Stream<Block>;
 
   // postTx submits a signed tx as is notified on every state change
-  readonly postTx: (tx: SignableTransaction) => Stream<TransactionState>;
+  readonly postTx: (tx: SignedTransaction) => Stream<TransactionState>;
 
   // TODO----
 
@@ -137,6 +137,6 @@ export interface Header {
 // Block is a generic abstraction of a block, including all transactions
 export interface Block {
   readonly header: Header;
-  readonly transactions: ReadonlyArray<SignableTransaction>;
+  readonly transactions: ReadonlyArray<SignedTransaction>;
   // TODO: more?
 }

@@ -5,8 +5,8 @@ import {
   PrivateKeyString,
   PublicKeyString,
   SeedString,
-  Transaction,
   TTLBytes,
+  UnsignedTransaction,
   UsernameString,
 } from "@iov/types";
 import {
@@ -66,7 +66,7 @@ export default class KeybasePrivate {
   public readonly setActiveKey: (index: number) => SetActiveKey;
   public readonly signTransaction: (
     publicKey: PublicKeyString,
-    transaction: Transaction,
+    transaction: UnsignedTransaction,
     ttl: TTLBytes | null,
   ) => SignTransaction;
   public readonly unlockUser: (username: UsernameString, password: PasswordString) => UnlockUser;

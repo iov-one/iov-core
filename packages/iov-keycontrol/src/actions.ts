@@ -1,4 +1,11 @@
-import { Nonce, PasswordString, PublicKeyBundle, SignableTransaction, UsernameString } from "@iov/types";
+import {
+  Nonce,
+  PasswordString,
+  PublicKeyBundle,
+  SignedTransaction,
+  UnsignedTransaction,
+  UsernameString,
+} from "@iov/types";
 import { KeyringName } from "./keyring";
 
 export const enum KeyActionType {
@@ -66,11 +73,11 @@ export interface SignTransactionAction {
   readonly type: KeyActionType.SIGN_TRANSACTION;
   readonly user: UsernameString;
   readonly account: PublicKeyBundle;
-  readonly tx: SignableTransaction;
+  readonly tx: UnsignedTransaction;
   readonly nonce: Nonce;
 }
 
 export interface VerifyTransactionAction {
   readonly type: KeyActionType.VERIFY_TRANSACTION;
-  readonly tx: SignableTransaction;
+  readonly tx: SignedTransaction;
 }

@@ -1,4 +1,4 @@
-import { PasswordString, UsernameString, Transaction } from "@iov/types";
+import { PasswordString, UsernameString, UnsignedTransaction } from "@iov/types";
 
 export const enum PublicActionType {
   REQUEST_API_ACCESS = "REQUEST_API_ACCESS",
@@ -12,7 +12,7 @@ export interface RequestAPIAccess {
 
 export interface RequestSignTransaction {
   readonly type: PublicActionType.REQUEST_SIGN_TX;
-  readonly transaction: Transaction;
+  readonly transaction: UnsignedTransaction;
 }
 
 export type PublicAction = RequestAPIAccess | RequestSignTransaction;

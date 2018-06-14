@@ -80,4 +80,10 @@ export interface SwapTimeoutTx extends BaseTx {
   readonly swapId: SwapIDBytes; // pulled from the offer transaction
 }
 
-export type Transaction = SendTx | SetNameTx | SwapOfferTx | SwapCounterTx | SwapClaimTx | SwapTimeoutTx;
+export type UnsignedTransaction =
+  | SendTx
+  | SetNameTx
+  | SwapOfferTx
+  | SwapCounterTx
+  | SwapClaimTx
+  | SwapTimeoutTx;

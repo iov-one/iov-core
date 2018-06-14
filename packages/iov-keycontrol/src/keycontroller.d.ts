@@ -3,9 +3,10 @@ import {
   PasswordString,
   PublicKeyBundle,
   SignableBytes,
-  SignableTransaction,
   SignatureBytes,
-  Transaction,
+  SignedTransaction,
+  TxCodec,
+  UnsignedTransaction,
   UsernameString,
 } from "@iov/types";
 import {
@@ -14,7 +15,6 @@ import {
   LockProfileEvent,
   ModifyProfileEvent,
   RemoveProfileEvent,
-  SignedTransactionEvent,
   UnlockProfileEvent,
   VerifiedTransactionEvent,
 } from "./events";
@@ -77,7 +77,7 @@ export interface KeyController {
   // verifyTransaction will return true if all signatures
   // on the signable transaction are valid.
   // Requires no access to private key material
-  readonly verifyTransaction: (tx: SignableTransaction) => Promise<VerifiedTransactionEvent>;
+  readonly verifyTransaction: (tx: SignedTransaction) => Promise<VerifiedTransactionEvent>;
 }
 
 /*
@@ -113,7 +113,15 @@ export interface Profile {
   // with the this signature appended
   readonly signTransaction: (
     identity: PublicKeyBundle,
-    tx: SignableTransaction,
+    tx: UnsignedTransaction,
+    codec: TxCodec,
     nonce: Nonce,
-  ) => Promise<SignedTransactionEvent>;
+  ) => Promise<SignedTransaction>;
+
+  readonly appendSignature: (
+    identity: PublicKeyBundle,
+    tx: SignedTransaction,
+    codec: TxCodec,
+    nonce: Nonce,
+  ) => Promise<SignedTransaction>;
 }
