@@ -8,20 +8,20 @@ import { appendSignBytes, keyToAddress } from "../src/util";
 import {
   address,
   coinBin,
-  coinJSON,
+  coinJson,
   privBin,
-  privJSON,
+  privJson,
   pubBin,
-  pubJSON,
+  pubJson,
   sendTxBin,
-  sendTxJSON,
+  sendTxJson,
   signedTxBin,
   sigs,
 } from "./testdata";
 
 describe("Encode helpers", () => {
   it("encode pubkey", () => {
-    const pubkey: codec.crypto.IPublicKey = encodePubKey(pubJSON);
+    const pubkey: codec.crypto.IPublicKey = encodePubKey(pubJson);
     const encoded = codec.crypto.PublicKey.encode(pubkey).finish();
     // force result into Uint8Array for tests so it passes
     // if buffer of correct type as well
@@ -30,19 +30,19 @@ describe("Encode helpers", () => {
   });
 
   it("create address", async done => {
-    const calc = await keyToAddress(pubJSON);
+    const calc = await keyToAddress(pubJson);
     expect(Uint8Array.from(calc)).toEqual(address);
     done();
   });
 
   it("encode private key", () => {
-    const privkey = encodePrivKey(privJSON);
+    const privkey = encodePrivKey(privJson);
     const encoded = codec.crypto.PublicKey.encode(privkey).finish();
     expect(Uint8Array.from(encoded)).toEqual(privBin);
   });
 
   it("encode coin", () => {
-    const token = encodeToken(coinJSON);
+    const token = encodeToken(coinJson);
     const encoded = codec.x.Coin.encode(token).finish();
     expect(Uint8Array.from(encoded)).toEqual(coinBin);
   });
@@ -50,21 +50,21 @@ describe("Encode helpers", () => {
 
 describe("Encode transactions", () => {
   it("encodes unsigned message", async done => {
-    const tx = await buildMsg(sendTxJSON);
+    const tx = await buildMsg(sendTxJson);
     const encoded = codec.app.Tx.encode(tx).finish();
     expect(Uint8Array.from(encoded)).toEqual(sendTxBin);
     done();
   });
 
   it("encodes unsigned transaction", async done => {
-    const tx = await buildTx(sendTxJSON, []);
+    const tx = await buildTx(sendTxJson, []);
     const encoded = codec.app.Tx.encode(tx).finish();
     expect(Uint8Array.from(encoded)).toEqual(sendTxBin);
     done();
   });
 
   it("encodes signed transaction", async done => {
-    const tx = await buildTx(sendTxJSON, sigs);
+    const tx = await buildTx(sendTxJson, sigs);
     const encoded = codec.app.Tx.encode(tx).finish();
     expect(Uint8Array.from(encoded)).toEqual(signedTxBin);
     done();
@@ -73,8 +73,8 @@ describe("Encode transactions", () => {
 
 describe("Ensure crypto", () => {
   it("private key and public key match", async done => {
-    const privKey = privJSON.data;
-    const pubKey = pubJSON.data;
+    const privKey = privJson.data;
+    const pubKey = pubJson.data;
     const msg = Uint8Array.from([12, 54, 98, 243, 11]);
     const sig = await Ed25519.createSignature(msg, privKey);
     const value = await Ed25519.verifySignature(sig, msg, pubKey);
@@ -83,12 +83,12 @@ describe("Ensure crypto", () => {
   });
 
   it("sign bytes match", async done => {
-    const privKey = privJSON.data;
-    const pubKey = pubJSON.data;
+    const privKey = privJson.data;
+    const pubKey = pubJson.data;
 
-    const tx = await buildTx(sendTxJSON, []);
+    const tx = await buildTx(sendTxJson, []);
     const encoded = codec.app.Tx.encode(tx).finish();
-    const signBytes = appendSignBytes(encoded, sendTxJSON.chainId, sigs[0].nonce);
+    const signBytes = appendSignBytes(encoded, sendTxJson.chainId, sigs[0].nonce);
 
     // make sure we can validate this signature (our signBytes are correct)
     const signature = sigs[0].signature;
