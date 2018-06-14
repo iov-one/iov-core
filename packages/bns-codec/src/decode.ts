@@ -95,8 +95,16 @@ const parseSwapTimeoutTx = (base: BaseTx, msg: codec.escrow.IReturnEscrowMsg): S
   ...base,
 });
 
-const parseBaseTx = (tx: codec.app.ITx, chainId: ChainID): BaseTx => ({
-  chainId,
-  // TODO: fee
-  signer: decodePubKey(ensure(ensure(tx.signatures, "sigs")[0].pubKey, "pubKey")),
-});
+const parseBaseTx = (tx: codec.app.ITx, chainId: ChainID): BaseTx => {
+  const sigs = ensure(tx.signatures, "signatures");
+  const sig = ensure(sigs[0], "first signature");
+  const pubKey = ensure(sig.pubKey, "pubKey");
+  const base: BaseTx = {
+    chainId,
+    signer: decodePubKey(pubKey),
+  };
+  if (tx.fees && tx.fees.fees) {
+    return { ...base, fee: decodeToken(tx.fees.fees) };
+  }
+  return base;
+};

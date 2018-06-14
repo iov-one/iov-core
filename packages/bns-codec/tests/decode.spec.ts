@@ -54,7 +54,7 @@ describe("Decode transactions", () => {
     try {
       parseTx(decoded, chainId);
     } catch (err) {
-      expect(err.toString()).toContain("TypeError");
+      expect(err.toString()).toContain("missing first signature");
       return;
     }
     expect(false).toBeTruthy();
