@@ -30,6 +30,14 @@ export const appendSignBytes = (bz: Uint8Array, chainID: ChainID, nonce: Nonce) 
 export const tendermintHash = (data: Uint8Array) =>
   Sha256.digest(data).then((bz: Uint8Array) => bz.slice(0, 20));
 
-// TODO: verify prefix, make const
+export const HashId = decodeAscii("hash/sha256/");
 export const hashIdentifier = async (data: Uint8Array) =>
-  Uint8Array.from([...decodeAscii("hash/sha256/"), ...(await Sha256.digest(data))]);
+  Uint8Array.from([...HashId, ...(await Sha256.digest(data))]);
+
+// typescript forces us to return number on reduce, so we count how many elements match
+// and make sure it is all
+export const arraysEqual = (a: Uint8Array, b: Uint8Array): boolean =>
+  a.reduce((acc: number, x: number, i: number) => (x === b[i] ? acc + 1 : acc)) === b.length;
+
+export const isHashIdentifier = (ident: Uint8Array): boolean =>
+  arraysEqual(HashId, ident.slice(0, HashId.length));

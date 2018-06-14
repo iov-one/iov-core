@@ -15,6 +15,7 @@ import {
 } from "@iov/types";
 import * as codec from "./codec";
 import { asNumber, decodeFullSig, decodePubKey, decodeToken, ensure } from "./types";
+import { isHashIdentifier } from "./util";
 
 // export const buildTx = async (
 //   tx: Transaction,
@@ -43,7 +44,6 @@ export const parseMsg = (base: BaseTx, tx: codec.app.ITx): Transaction => {
   } else if (tx.setNameMsg) {
     return parseSetNameTx(base, tx.setNameMsg);
   } else if (tx.createEscrowMsg) {
-    // TODO: we need to distinguish this better based on the arbiter
     return parseSwapCounterTx(base, tx.createEscrowMsg);
   } else if (tx.releaseEscrowMsg) {
     return parseSwapClaimTx(base, tx.releaseEscrowMsg, tx);
@@ -69,14 +69,20 @@ const parseSetNameTx = (base: BaseTx, msg: codec.namecoin.ISetWalletNameMsg): Se
   ...base,
 });
 
-const parseSwapCounterTx = (base: BaseTx, msg: codec.escrow.ICreateEscrowMsg): SwapCounterTx => ({
-  kind: TransactionKind.SWAP_COUNTER,
-  hashCode: ensure(msg.arbiter, "arbiter"),
-  recipient: ensure(msg.recipient, "recipient") as AddressBytes,
-  timeout: asNumber(msg.timeout),
-  amount: (msg.amount || []).map(decodeToken),
-  ...base,
-});
+const parseSwapCounterTx = (base: BaseTx, msg: codec.escrow.ICreateEscrowMsg): SwapCounterTx => {
+  const hashCode = ensure(msg.arbiter, "arbiter");
+  if (!isHashIdentifier(hashCode)) {
+    throw new Error("escrow not controlled by hashlock");
+  }
+  return {
+    kind: TransactionKind.SWAP_COUNTER,
+    hashCode,
+    recipient: ensure(msg.recipient, "recipient") as AddressBytes,
+    timeout: asNumber(msg.timeout),
+    amount: (msg.amount || []).map(decodeToken),
+    ...base,
+  };
+};
 
 const parseSwapClaimTx = (
   base: BaseTx,
