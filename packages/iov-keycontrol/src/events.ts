@@ -1,4 +1,4 @@
-import { SignableTransaction, UsernameString } from "@iov/types";
+import { SignedTransaction, UsernameString } from "@iov/types";
 
 import { Profile } from "./keycontroller";
 import { PublicIdentity } from "./keyring";
@@ -19,7 +19,6 @@ export type KeyEvent =
   | UnlockProfileEvent
   | ModifyProfileEvent
   | LockProfileEvent
-  | SignedTransactionEvent
   | VerifiedTransactionEvent;
 
 // We can get multiple AddProfileEvents in a row in order to
@@ -58,13 +57,8 @@ export interface LockProfileEvent {
   readonly user: UsernameString;
 }
 
-export interface SignedTransactionEvent {
-  readonly type: KeyEventType.SIGNED_TRANSACTION;
-  readonly tx: SignableTransaction;
-}
-
 export interface VerifiedTransactionEvent {
   readonly type: KeyEventType.VERIFIED_TRANSACTION;
-  readonly tx: SignableTransaction;
+  readonly tx: SignedTransaction;
   readonly valid: boolean;
 }
