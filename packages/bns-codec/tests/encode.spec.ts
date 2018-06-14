@@ -1,7 +1,7 @@
 import { Ed25519 } from "@iov/crypto";
 
 import * as codec from "../src/codec";
-import { buildMsg, buildTx } from "../src/encode";
+import { buildMsg, buildSignedTx, buildUnsignedTx } from "../src/encode";
 import { encodePrivKey, encodePubKey, encodeToken } from "../src/types";
 import { appendSignBytes, keyToAddress } from "../src/util";
 
@@ -15,8 +15,9 @@ import {
   pubJson,
   sendTxBin,
   sendTxJson,
+  sig,
   signedTxBin,
-  sigs,
+  signedTxJson,
 } from "./testdata";
 
 describe("Encode helpers", () => {
@@ -57,14 +58,14 @@ describe("Encode transactions", () => {
   });
 
   it("encodes unsigned transaction", async done => {
-    const tx = await buildTx(sendTxJson, []);
+    const tx = await buildUnsignedTx(sendTxJson);
     const encoded = codec.app.Tx.encode(tx).finish();
     expect(Uint8Array.from(encoded)).toEqual(sendTxBin);
     done();
   });
 
   it("encodes signed transaction", async done => {
-    const tx = await buildTx(sendTxJson, sigs);
+    const tx = await buildSignedTx(signedTxJson);
     const encoded = codec.app.Tx.encode(tx).finish();
     expect(Uint8Array.from(encoded)).toEqual(signedTxBin);
     done();
@@ -76,8 +77,8 @@ describe("Ensure crypto", () => {
     const privKey = privJson.data;
     const pubKey = pubJson.data;
     const msg = Uint8Array.from([12, 54, 98, 243, 11]);
-    const sig = await Ed25519.createSignature(msg, privKey);
-    const value = await Ed25519.verifySignature(sig, msg, pubKey);
+    const signature = await Ed25519.createSignature(msg, privKey);
+    const value = await Ed25519.verifySignature(signature, msg, pubKey);
     expect(value).toBeTruthy();
     done();
   });
@@ -86,12 +87,12 @@ describe("Ensure crypto", () => {
     const privKey = privJson.data;
     const pubKey = pubJson.data;
 
-    const tx = await buildTx(sendTxJson, []);
+    const tx = await buildUnsignedTx(sendTxJson);
     const encoded = codec.app.Tx.encode(tx).finish();
-    const signBytes = appendSignBytes(encoded, sendTxJson.chainId, sigs[0].nonce);
+    const signBytes = appendSignBytes(encoded, sendTxJson.chainId, sig.nonce);
 
     // make sure we can validate this signature (our signBytes are correct)
-    const signature = sigs[0].signature;
+    const signature = sig.signature;
     const value = await Ed25519.verifySignature(signature, signBytes, pubKey);
     expect(value).toBeTruthy();
 

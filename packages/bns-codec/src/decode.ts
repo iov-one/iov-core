@@ -2,19 +2,19 @@ import {
   AddressBytes,
   BaseTx,
   ChainID,
+  FullSignature,
   SendTx,
   SetNameTx,
-  SignableTransaction,
+  SignedTransaction,
   SwapClaimTx,
   SwapCounterTx,
   SwapIDBytes,
   SwapTimeoutTx,
-  Transaction,
   TransactionKind,
-  TxCodec,
+  UnsignedTransaction,
 } from "@iov/types";
 import * as codec from "./codec";
-import { asNumber, decodeFullSig, decodePubKey, decodeToken, ensure } from "./types";
+import { asNumber, decodeFullSig, decodeToken, ensure } from "./types";
 import { isHashIdentifier } from "./util";
 
 // export const buildTx = async (
@@ -29,16 +29,16 @@ import { isHashIdentifier } from "./util";
 //   });
 // };
 
-const txCodec: any = {};
-export const parseTx = (tx: codec.app.ITx, chainId: ChainID): SignableTransaction => ({
-  // TODO: get rid of this ugly placeholder....
-  // I think we need to change the SignableTransaction interface
-  codec: txCodec as TxCodec,
-  transaction: parseMsg(parseBaseTx(tx, chainId), tx),
-  signatures: (tx.signatures || []).map(decodeFullSig),
-});
-
-export const parseMsg = (base: BaseTx, tx: codec.app.ITx): Transaction => {
+export const parseTx = (tx: codec.app.ITx, chainId: ChainID): SignedTransaction => {
+  const sigs = ensure(tx.signatures, "signatures").map(decodeFullSig);
+  const sig = ensure(sigs[0], "first signature");
+  return {
+    transaction: parseMsg(parseBaseTx(tx, sig, chainId), tx),
+    primarySignature: sig,
+    otherSignatures: sigs.slice(1),
+  };
+};
+export const parseMsg = (base: BaseTx, tx: codec.app.ITx): UnsignedTransaction => {
   if (tx.sendMsg) {
     return parseSendTx(base, tx.sendMsg);
   } else if (tx.setNameMsg) {
@@ -101,13 +101,10 @@ const parseSwapTimeoutTx = (base: BaseTx, msg: codec.escrow.IReturnEscrowMsg): S
   ...base,
 });
 
-const parseBaseTx = (tx: codec.app.ITx, chainId: ChainID): BaseTx => {
-  const sigs = ensure(tx.signatures, "signatures");
-  const sig = ensure(sigs[0], "first signature");
-  const pubKey = ensure(sig.pubKey, "pubKey");
+const parseBaseTx = (tx: codec.app.ITx, sig: FullSignature, chainId: ChainID): BaseTx => {
   const base: BaseTx = {
     chainId,
-    signer: decodePubKey(pubKey),
+    signer: sig.publicKey,
   };
   if (tx.fees && tx.fees.fees) {
     return { ...base, fee: decodeToken(tx.fees.fees) };

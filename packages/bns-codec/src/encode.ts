@@ -2,30 +2,33 @@ import {
   FullSignature,
   SendTx,
   SetNameTx,
+  SignedTransaction,
   SwapClaimTx,
   SwapCounterTx,
   SwapOfferTx,
   SwapTimeoutTx,
-  Transaction,
   TransactionKind,
+  UnsignedTransaction,
 } from "@iov/types";
 import * as codec from "./codec";
 import { encodeFullSig, encodeToken } from "./types";
 import { hashIdentifier, keyToAddress } from "./util";
 
-export const buildTx = async (
-  tx: Transaction,
-  sigs: ReadonlyArray<FullSignature>,
-): Promise<codec.app.ITx> => {
+export const buildSignedTx = async (tx: SignedTransaction): Promise<codec.app.ITx> => {
+  const sigs: ReadonlyArray<FullSignature> = [tx.primarySignature, ...tx.otherSignatures];
+  const built = await buildUnsignedTx(tx.transaction);
+  return { ...built, signatures: sigs.map(encodeFullSig) };
+};
+
+export const buildUnsignedTx = async (tx: UnsignedTransaction): Promise<codec.app.ITx> => {
   const msg = await buildMsg(tx);
   return codec.app.Tx.create({
     ...msg,
     fees: tx.fee ? { fees: encodeToken(tx.fee) } : null,
-    signatures: sigs.map(encodeFullSig),
   });
 };
 
-export const buildMsg = (tx: Transaction): Promise<codec.app.ITx> => {
+export const buildMsg = (tx: UnsignedTransaction): Promise<codec.app.ITx> => {
   switch (tx.kind) {
     case TransactionKind.SEND:
       return buildSendTx(tx);
