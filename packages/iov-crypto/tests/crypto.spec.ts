@@ -170,6 +170,20 @@ describe("Crypto", () => {
       })();
     });
 
+    it("creates signatures deterministically", done => {
+      (async () => {
+        const seed = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0b9");
+        const keypair = await Ed25519.generateKeypair(seed);
+        const message = new Uint8Array([0x11, 0x22]);
+
+        const signature1 = await Ed25519.createSignature(message, keypair.privkey);
+        const signature2 = await Ed25519.createSignature(message, keypair.privkey);
+        expect(signature1).toEqual(signature2);
+
+        done();
+      })();
+    });
+
     it("verifies signatures", done => {
       (async () => {
         const seed = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0b9");
@@ -312,6 +326,20 @@ describe("Crypto", () => {
         expect(signature).toBeTruthy();
         expect(signature.byteLength).toBeGreaterThanOrEqual(70);
         expect(signature.byteLength).toBeLessThanOrEqual(72);
+
+        done();
+      })();
+    });
+
+    it("creates signatures deterministically", done => {
+      (async () => {
+        const privkey = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0b9");
+        const keypair = await Secp256k1.makeKeypair(privkey);
+        const message = new Uint8Array([0x11, 0x22]);
+
+        const signature1 = await Secp256k1.createSignature(message, keypair.privkey);
+        const signature2 = await Secp256k1.createSignature(message, keypair.privkey);
+        expect(signature1).toEqual(signature2);
 
         done();
       })();
