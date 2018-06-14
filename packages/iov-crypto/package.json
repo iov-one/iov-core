@@ -26,6 +26,7 @@
   "dependencies": {
     "@types/webassembly-js-api": "^0.0.1",
     "bitcoin-ts": "^1.0.3",
+    "elliptic": "^6.4.0",
     "libsodium-wrappers": "^0.7.3",
     "sha.js": "^2.4.11"
   },
