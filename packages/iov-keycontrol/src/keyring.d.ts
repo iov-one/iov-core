@@ -42,8 +42,9 @@ export interface KeyringEntry {
   // createIdentity will create one new identity
   readonly createIdentity: () => Promise<PublicIdentity>;
 
-  // setIdentityName sets the name associated with the public key, if it exists
-  readonly setIdentityName: (identity: PublicKeyBundle, name: string) => Promise<true>;
+  // setIdentityNickname sets the name associated with the public key, if it exists
+  // To clear a nickname, set it to undefined
+  readonly setIdentityNickname: (identity: PublicKeyBundle, name: string | undefined) => Promise<void>;
 
   // getIdentities returns all identities currently registered
   readonly getIdentities: () => Promise<ReadonlyArray<PublicIdentity>>;

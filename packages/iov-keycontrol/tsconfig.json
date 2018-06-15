@@ -8,6 +8,6 @@
     "strictFunctionTypes": false
   },
   "include": [
-    "src/*.ts"
+    "src/**/*.ts"
   ]
 }

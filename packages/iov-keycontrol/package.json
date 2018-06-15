@@ -14,7 +14,8 @@
     "format": "prettier --write **/*.ts",
     "lint": "tslint -t verbose --project .",
     "lint-fix": "yarn lint --fix",
-    "test": "echo 'Info: no test specified'",
+    "test-node": "./jasmine-testrunner.js",
+    "test": "yarn build && yarn test-node",
     "prebuild": "yarn format && yarn lint",
     "build": "tsc"
   },
@@ -25,6 +26,7 @@
     "typescript": "^2.8.3"
   },
   "dependencies": {
+    "@iov/crypto": "^0.0.0",
     "@iov/types": "^0.0.0",
     "xstream": "^11.4.0"
   }
