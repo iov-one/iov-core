@@ -20,7 +20,8 @@
     "test-safari": "karma start --single-run --browsers Safari",
     "test": "yarn build && yarn test-node",
     "prebuild": "yarn lint && yarn format",
-    "build": "yarn update-type-declarations && tsc && webpack"
+    "build": "yarn update-type-declarations && tsc",
+    "build-browser": "yarn build && webpack"
   },
   "dependencies": {
     "libsodium-wrappers": "^0.7.3",
