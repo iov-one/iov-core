@@ -23,7 +23,7 @@ import {
 } from "@iov/types";
 import Long from "long";
 
-import { HashId } from "../src/util";
+import { hashId } from "../src/util";
 
 const { fromHex } = Encoding;
 
@@ -146,7 +146,7 @@ export const setNameTxJson: SignedTransaction = {
   otherSignatures: [],
 };
 
-export const hashCode = Uint8Array.from([...HashId, ...fromHex("1122334455aabbccddee")]);
+export const hashCode = Uint8Array.from([...hashId, ...fromHex("1122334455aabbccddee")]);
 const swapCounterMsg: SwapCounterTx = {
   chainId: "swap-a-doo" as ChainID,
   signer: pubJson,
