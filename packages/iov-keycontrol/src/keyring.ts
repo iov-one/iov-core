@@ -124,17 +124,17 @@ export class Ed25519KeyringEntry implements KeyringEntry {
       data: keypair.pubkey as PublicKeyBytes,
       canSign: true,
     };
-    const id = Ed25519KeyringEntry.identityId(newIdentity);
-    this.privkeys.set(id, keypair.privkey);
+    const identityId = Ed25519KeyringEntry.identityId(newIdentity);
+    this.privkeys.set(identityId, keypair.privkey);
     this.identities.push(newIdentity);
     return newIdentity;
   }
 
   public async setIdentityNickname(identity: PublicKeyBundle, nickname: string | undefined): Promise<void> {
-    const id = Ed25519KeyringEntry.identityId(identity);
-    const index = this.identities.findIndex(i => Ed25519KeyringEntry.identityId(i) === id);
+    const identityId = Ed25519KeyringEntry.identityId(identity);
+    const index = this.identities.findIndex(i => Ed25519KeyringEntry.identityId(i) === identityId);
     if (index === -1) {
-      throw new Error("identity with id '" + id + "' not found");
+      throw new Error("identity with id '" + identityId + "' not found");
     }
 
     // tslint:disable-next-line:no-object-mutation
@@ -155,10 +155,10 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     tx: SignableBytes,
     _: ChainID,
   ): Promise<SignatureBytes> {
-    const id = Ed25519KeyringEntry.identityId(identity);
-    const privkey = this.privkeys.get(id);
+    const identityId = Ed25519KeyringEntry.identityId(identity);
+    const privkey = this.privkeys.get(identityId);
     if (!privkey) {
-      throw new Error("No private key found for identity '" + id + "'");
+      throw new Error("No private key found for identity '" + identityId + "'");
     }
 
     const signature = await Ed25519.createSignature(tx, privkey);
@@ -167,10 +167,10 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
   public async serialize(): Promise<KeyDataString> {
     const out = this.identities.map(identity => {
-      const id = Ed25519KeyringEntry.identityId(identity);
-      const privkey = this.privkeys.get(id);
+      const identityId = Ed25519KeyringEntry.identityId(identity);
+      const privkey = this.privkeys.get(identityId);
       if (!privkey) {
-        throw new Error("No private key found for identity '" + id + "'");
+        throw new Error("No private key found for identity '" + identityId + "'");
       }
       return {
         publicIdentity: {
