@@ -6,6 +6,7 @@ import {
   PublicKeyBytes,
   SendTx,
   TokenTicker,
+  TransactionKind,
 } from "@iov/types";
 
 const convertHexStringToUint8Array = (str: string): Uint8Array => {
@@ -30,7 +31,7 @@ export const sendTx: SendTx = {
   amount: { whole: 123, fractional: 0, tokenTicker: iov },
   chainId: "bns-testnet-01" as ChainID,
   fee: { whole: 0, fractional: 100, tokenTicker: iov },
-  kind: "send",
+  kind: TransactionKind.SEND,
   recipient,
   signer: sender,
 };

@@ -1,4 +1,4 @@
-import Long from "long";
+import * as Long from "long";
 import { AddressBytes, PublicKeyBundle } from "./keys";
 
 declare const NonceSymbol: unique symbol;
@@ -34,27 +34,37 @@ export interface FungibleToken {
   readonly tokenTicker: TokenTicker;
 }
 
+export const enum TransactionKind {
+  SEND = "send",
+  SET_NAME = "set_name",
+  SWAP_OFFER = "swap_offer",
+  SWAP_COUNTER = "swap_counter",
+  SWAP_CLAIM = "swap_claim",
+  SWAP_TIMEOUT = "swap_timeout",
+}
+
 export interface BaseTx {
   readonly chainId: ChainID;
-  readonly fee: FungibleToken;
+  readonly fee?: FungibleToken;
   // signer needs to be a PublicKey as we use that to as an identifier to the Keyring for lookup
   readonly signer: PublicKeyBundle;
   readonly ttl?: TTLBytes;
 }
 
 export interface SendTx extends BaseTx {
-  readonly kind: "send";
+  readonly kind: TransactionKind.SEND;
   readonly amount: FungibleToken;
   readonly recipient: RecipientId;
+  readonly memo?: string;
 }
 
 export interface SetNameTx extends BaseTx {
-  readonly kind: "set_name";
+  readonly kind: TransactionKind.SET_NAME;
   readonly name: string;
 }
 
 export interface SwapOfferTx extends BaseTx {
-  readonly kind: "swap_offer";
+  readonly kind: TransactionKind.SWAP_OFFER;
   readonly amount: ReadonlyArray<FungibleToken>;
   readonly recipient: RecipientId;
   readonly timeout: number; // number of blocks in the future
@@ -62,7 +72,7 @@ export interface SwapOfferTx extends BaseTx {
 }
 
 export interface SwapCounterTx extends BaseTx {
-  readonly kind: "swap_counter";
+  readonly kind: TransactionKind.SWAP_COUNTER;
   readonly amount: ReadonlyArray<FungibleToken>;
   readonly recipient: RecipientId;
   readonly timeout: number; // number of blocks in the future
@@ -70,13 +80,13 @@ export interface SwapCounterTx extends BaseTx {
 }
 
 export interface SwapClaimTx extends BaseTx {
-  readonly kind: "swap_claim";
+  readonly kind: TransactionKind.SWAP_CLAIM;
   readonly preimage: Uint8Array;
   readonly swapId: SwapIDBytes; // pulled from the offer transaction
 }
 
 export interface SwapTimeoutTx extends BaseTx {
-  readonly kind: "swap_timeout";
+  readonly kind: TransactionKind.SWAP_TIMEOUT;
   readonly swapId: SwapIDBytes; // pulled from the offer transaction
 }
 
