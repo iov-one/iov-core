@@ -1,10 +1,8 @@
-import { Ed25519, Encoding } from "@iov/crypto";
+import { Ed25519 } from "@iov/crypto";
 import { PostableBytes, SignedTransaction } from "@iov/types";
 import { Codec } from "../src";
-import { arraysEqual, isHashIdentifier } from "../src/util";
 import {
   chainId,
-  hashCode,
   randomTxJson,
   sendTxJson,
   setNameTxJson,
@@ -15,32 +13,6 @@ import {
   swapCounterTxJson,
   swapTimeoutTxJson,
 } from "./testdata";
-
-const { fromHex } = Encoding;
-
-describe("Verify util functions", () => {
-  it("verify array comparison", () => {
-    const a = fromHex("12345678");
-    const b = fromHex("000012345678");
-    const same = arraysEqual(a, b.slice(2));
-    expect(same).toBeTruthy("same");
-
-    const different = arraysEqual(a, a.slice(0, 2));
-    expect(different).toBeFalsy();
-    const diff2 = arraysEqual(a.slice(0, 2), a);
-    expect(diff2).toBeFalsy();
-    const diff3 = arraysEqual(a, fromHex("12335678"));
-    expect(diff3).toBeFalsy();
-  });
-
-  it("verify hash checks out", () => {
-    const a = fromHex("1234567890abcdef1234567890abcdef");
-    const badHash = isHashIdentifier(a);
-    expect(badHash).toBeFalsy();
-    const goodHash = isHashIdentifier(hashCode);
-    expect(goodHash).toBeTruthy();
-  });
-});
 
 describe("Check codec", () => {
   it("properly encodes transactions", async done => {
