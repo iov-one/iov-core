@@ -26,7 +26,6 @@ describe("Encode helpers", () => {
     const encoded = codec.crypto.PublicKey.encode(pubkey).finish();
     // force result into Uint8Array for tests so it passes
     // if buffer of correct type as well
-    expect(encoded.length).toEqual(pubBin.length);
     expect(Uint8Array.from(encoded)).toEqual(pubBin);
   });
 

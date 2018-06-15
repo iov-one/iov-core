@@ -9,14 +9,14 @@ describe("Verify util functions", () => {
     const a = fromHex("12345678");
     const b = fromHex("000012345678");
     const same = arraysEqual(a, b.slice(2));
-    expect(same).toBeTruthy("same");
+    expect(same).toEqual(true);
 
     const different = arraysEqual(a, a.slice(0, 2));
-    expect(different).toBeFalsy();
+    expect(different).toEqual(false);
     const diff2 = arraysEqual(a.slice(0, 2), a);
-    expect(diff2).toBeFalsy();
+    expect(diff2).toEqual(false);
     const diff3 = arraysEqual(a, fromHex("12335678"));
-    expect(diff3).toBeFalsy();
+    expect(diff3).toEqual(false);
   });
 
   it("arraysEqual works", () => {
@@ -55,8 +55,8 @@ describe("Verify util functions", () => {
   it("verify hash checks out", () => {
     const a = fromHex("1234567890abcdef1234567890abcdef");
     const badHash = isHashIdentifier(a);
-    expect(badHash).toBeFalsy();
+    expect(badHash).toEqual(false);
     const goodHash = isHashIdentifier(hashCode);
-    expect(goodHash).toBeTruthy();
+    expect(goodHash).toEqual(true);
   });
 });

@@ -45,7 +45,7 @@ describe("Decode transactions", () => {
       expect(err.toString()).toContain("RangeError");
       return;
     }
-    expect(false).toBeTruthy();
+    fail("Should throw error");
   });
 
   // unsigned tx will fail as parsing requires a sig to extract signer
@@ -57,7 +57,7 @@ describe("Decode transactions", () => {
       expect(err.toString()).toContain("missing first signature");
       return;
     }
-    expect(false).toBeTruthy();
+    fail("Should throw error");
   });
 
   it("decode signed transaction", () => {

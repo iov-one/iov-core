@@ -60,7 +60,7 @@ describe("Check codec", () => {
       await verify(swapClaimTxJson);
       await verify(swapTimeoutTxJson);
     } catch (err) {
-      expect(err).toBe(false);
+      fail("Unexpected exception: " + err.message);
     }
     done();
   });
