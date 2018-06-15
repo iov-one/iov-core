@@ -6,32 +6,17 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine', 'karma-typescript'],
+    frameworks: ['jasmine'],
 
     // list of files / patterns to load in the browser
     files: [
-      'src/**/*.ts',
-      'tests/**/*.spec.ts',
-    ],
-
-    preprocessors: {
-      '**/*.ts': ['karma-typescript'],
-    },
-
-    karmaTypescriptConfig: {
-      compilerOptions: {
-        target: "ES6", // karma-typescript defaults to ES5
-      },
-    },
-
-    // list of files to exclude
-    exclude: [
+      'dist/tests.js',
     ],
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ["progress", "karma-typescript"],
+    reporters: ["progress"],
 
     // web server port
     port: 9876,

@@ -20,7 +20,7 @@
     "test-safari": "karma start --single-run --browsers Safari",
     "test": "yarn build && yarn test-node",
     "prebuild": "yarn lint && yarn format",
-    "build": "yarn update-type-declarations && tsc"
+    "build": "yarn update-type-declarations && tsc && webpack"
   },
   "dependencies": {
     "libsodium-wrappers": "^0.7.3",
@@ -35,7 +35,7 @@
     "karma-firefox-launcher": "^1.1.0",
     "karma-jasmine": "^1.1.2",
     "karma-safari-launcher": "^1.0.0",
-    "karma-typescript": "^3.0.12",
-    "tslint": "^5.10.0"
+    "tslint": "^5.10.0",
+    "webpack-command": "^0.2.1"
   }
 }
