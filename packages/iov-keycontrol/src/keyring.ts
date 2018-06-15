@@ -1,5 +1,5 @@
 /* tslint:disable:object-literal-shorthand */
-import { Ed25519, Encoding } from "@iov/crypto";
+import { Ed25519, Encoding, Random } from "@iov/crypto";
 import {
   Algorithm,
   ChainID,
@@ -112,7 +112,8 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   }
 
   public async createIdentity(): Promise<PublicIdentity> {
-    const keypair = await Ed25519.generateKeypair();
+    const seed = await Random.getBytes(32);
+    const keypair = await Ed25519.generateKeypair(seed);
 
     const newIdentity: PublicIdentity = {
       algo: Algorithm.ED25519,
