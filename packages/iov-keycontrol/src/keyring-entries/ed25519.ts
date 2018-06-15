@@ -73,23 +73,14 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     tx: SignableBytes,
     _: ChainID,
   ): Promise<SignatureBytes> {
-    const identityId = Ed25519KeyringEntry.identityId(identity);
-    const privkey = this.privkeys.get(identityId);
-    if (!privkey) {
-      throw new Error("No private key found for identity '" + identityId + "'");
-    }
-
+    const privkey = this.privateKeyForIdentity(identity);
     const signature = await Ed25519.createSignature(tx, privkey);
     return signature as SignatureBytes;
   }
 
   public async serialize(): Promise<KeyDataString> {
     const out = this.identities.map(identity => {
-      const identityId = Ed25519KeyringEntry.identityId(identity);
-      const privkey = this.privkeys.get(identityId);
-      if (!privkey) {
-        throw new Error("No private key found for identity '" + identityId + "'");
-      }
+      const privkey = this.privateKeyForIdentity(identity);
       return {
         publicIdentity: {
           algo: identity.algo,
@@ -101,5 +92,15 @@ export class Ed25519KeyringEntry implements KeyringEntry {
       };
     });
     return JSON.stringify(out) as KeyDataString;
+  }
+
+  // This throws an exception when private key is missing
+  private privateKeyForIdentity(identity: PublicKeyBundle): Uint8Array {
+    const identityId = Ed25519KeyringEntry.identityId(identity);
+    const privkey = this.privkeys.get(identityId);
+    if (!privkey) {
+      throw new Error("No private key found for identity '" + identityId + "'");
+    }
+    return privkey;
   }
 }
