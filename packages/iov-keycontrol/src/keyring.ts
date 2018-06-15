@@ -86,6 +86,10 @@ export interface KeyringEntry {
 export type KeyringEntryFactory = (data?: KeyDataString) => Promise<KeyringEntry>;
 
 export class Ed25519KeyringEntry implements KeyringEntry {
+  private static identityId(identity: PublicKeyBundle): string {
+    return identity.algo + "|" + Encoding.toHex(identity.data);
+  }
+
   private readonly identities: PublicIdentity[];
   private readonly privkeys: Map<string, Uint8Array>;
 
@@ -101,7 +105,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
           nickname: record.publicIdentity.nickname,
           canSign: true, // TODO: get from serialized data
         };
-        const identityId = this.identityId(identity);
+        const identityId = Ed25519KeyringEntry.identityId(identity);
         identities.push(identity);
         privkeys.set(identityId, Encoding.fromHex(record.privkey));
       }
@@ -120,15 +124,15 @@ export class Ed25519KeyringEntry implements KeyringEntry {
       data: keypair.pubkey as PublicKeyBytes,
       canSign: true,
     };
-    const id = this.identityId(newIdentity);
+    const id = Ed25519KeyringEntry.identityId(newIdentity);
     this.privkeys.set(id, keypair.privkey);
     this.identities.push(newIdentity);
     return newIdentity;
   }
 
   public async setIdentityNickname(identity: PublicKeyBundle, nickname: string | undefined): Promise<void> {
-    const id = this.identityId(identity);
-    const index = this.identities.findIndex(i => this.identityId(i) === id);
+    const id = Ed25519KeyringEntry.identityId(identity);
+    const index = this.identities.findIndex(i => Ed25519KeyringEntry.identityId(i) === id);
     if (index === -1) {
       throw new Error("identity with id '" + id + "' not found");
     }
@@ -151,7 +155,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     tx: SignableBytes,
     _: ChainID,
   ): Promise<SignatureBytes> {
-    const id = this.identityId(identity);
+    const id = Ed25519KeyringEntry.identityId(identity);
     const privkey = this.privkeys.get(id);
     if (!privkey) {
       throw new Error("No private key found for identity '" + id + "'");
@@ -163,7 +167,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
   public async serialize(): Promise<KeyDataString> {
     const out = this.identities.map(identity => {
-      const id = this.identityId(identity);
+      const id = Ed25519KeyringEntry.identityId(identity);
       const privkey = this.privkeys.get(id);
       if (!privkey) {
         throw new Error("No private key found for identity '" + id + "'");
@@ -179,9 +183,5 @@ export class Ed25519KeyringEntry implements KeyringEntry {
       };
     });
     return JSON.stringify(out) as KeyDataString;
-  }
-
-  private identityId(identity: PublicKeyBundle): string {
-    return identity.algo + "|" + Encoding.toHex(identity.data);
   }
 }
