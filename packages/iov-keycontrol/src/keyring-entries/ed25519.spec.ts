@@ -184,4 +184,30 @@ describe("Ed25519KeyringEntry", () => {
       done();
     })();
   });
+
+  it("can serialize and restore a full keyring entry", done => {
+    (async () => {
+      const original = new Ed25519KeyringEntry();
+      const identity1 = await original.createIdentity();
+      const identity2 = await original.createIdentity();
+      const identity3 = await original.createIdentity();
+      original.setIdentityNickname(identity1, undefined);
+      original.setIdentityNickname(identity2, "");
+      original.setIdentityNickname(identity3, "foo");
+
+      const restored = new Ed25519KeyringEntry(await original.serialize());
+
+      // pubkeys and nicknames match
+      expect(await original.getIdentities()).toEqual(await restored.getIdentities());
+
+      // privkeys match
+      const tx = new Uint8Array([]) as SignableBytes;
+      const chainId = "" as ChainID;
+      expect(await original.createTransactionSignature(identity1, tx, chainId)).toEqual(await restored.createTransactionSignature(identity1, tx, chainId));
+      expect(await original.createTransactionSignature(identity2, tx, chainId)).toEqual(await restored.createTransactionSignature(identity2, tx, chainId));
+      expect(await original.createTransactionSignature(identity2, tx, chainId)).toEqual(await restored.createTransactionSignature(identity2, tx, chainId));
+
+      done();
+    })();
+  });
 });
