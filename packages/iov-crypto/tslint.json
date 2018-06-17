@@ -1,10 +1,6 @@
 {
   "extends": "../../tslint.json",
   "rules": {
-    "object-literal-shorthand": false,
-    "object-literal-sort-keys": false,
-    "no-implicit-dependencies": [true, "dev"],
-    "no-mixed-interface": false,
-    "no-unnecessary-class": ["allow-static-only"]
+    "no-mixed-interface": false
   }
 }
