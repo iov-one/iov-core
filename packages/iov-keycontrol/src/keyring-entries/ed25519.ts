@@ -59,7 +59,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     this.identities[index] = {
       algo: this.identities[index].algo,
       data: this.identities[index].data,
-      nickname: nickname,
+      nickname,
       canSign: this.identities[index].canSign,
     };
   }

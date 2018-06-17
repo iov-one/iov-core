@@ -1,7 +1,6 @@
 {
   "extends": "../../tslint.json",
   "rules": {
-    "object-literal-shorthand": false,
     "readonly-array": false
   }
 }
