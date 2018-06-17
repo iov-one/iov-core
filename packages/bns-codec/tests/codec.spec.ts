@@ -52,16 +52,14 @@ describe("Check codec", () => {
       const decoded = Codec.parseBytes(noBuffer, trial.transaction.chainId);
       expect(decoded).toEqual(trial);
     };
-    try {
+    expect(async () => {
       await verify(signedTxJson);
       await verify(randomTxJson);
       await verify(setNameTxJson);
       await verify(swapCounterTxJson);
       await verify(swapClaimTxJson);
       await verify(swapTimeoutTxJson);
-    } catch (err) {
-      fail("Unexpected exception: " + err.message);
-    }
-    done();
+      done();
+    }).not.toThrow();
   });
 });
