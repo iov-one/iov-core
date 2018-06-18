@@ -2,40 +2,43 @@
 
 Web4 needs to support a variety of chains, each with their own specifications for how addresses (accounts) are derived.
 
-Key Terms:
+## Key Terms:
 
 - UserProfile: A collection of User materials. Includes multiple `keyringEntries` associated with a UserProfile.
-- SecretIdentity: Private material, used for signing transactions and deriving PublicIdentities. Examples:  Secret Mnemonic (HD Seed/Passphrase), Hardware Device
-- PublicIdentity: Public materials. Contains the master publicKey for the `SecretIdentity + Algo` pair, and any extended keys.
-- Personality: Derived Addresses that are chain specific. Usually defined via the HD specifications. Used for end user queries for balances and transaction histories.
+- Keyring: An object containing `keyringEntries`.
+- keyringEntries: An array owned by the `keyring`, which houses individual `KeyringEntry`s
+- keyringEntry: An object which houses ONE `SecretIdentity` and N `PublicIdentities`.
+- SecretIdentity: Single Private material entry in a `KeyringEntry`, used for signing transactions and deriving `PublicIdentities`.
+- PublicIdentities: Public materials collection. Contains the an array of objects related to `SecretIdentity`.
+- PublicIdentity: Derived Addresses, PublicKeys, and curve data that is chain specific. Always defined via the HD specifications. Used for end user queries for balances and transaction histories.
 
 
-Feature set:
+## Feature set:
 
-## Hierarchical Deterministic Wallets
+### Hierarchical Deterministic Wallets
 HD wallets will be created through this standard to yield a master publickey:privatekey pair.
 
 - BIP32: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
 
-## Multi-Account Hierarchy for Deterministic Wallets
+### Multi-Account Hierarchy for Deterministic Wallets
 HD Wallets for chain specific support will be created through the following standards for each algorithm.
 
-### secp256k1
+#### secp256k1
 - BIP43: https://github.com/bitcoin/bips/blob/master/bip-0043.mediawiki
 - BIP44: https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
 
-### ed25519
+#### ed25519
 - SLIP0010: https://github.com/satoshilabs/slips/blob/master/slip-0010.md
 
-### Both
+#### Both
 - SLIP0044: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 
-## Seed Generation:
+### Seed Generation:
 Seed generation will be performed through the BIP39 specification for HD seeds
 
 - BIP39: https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki
 
-## What we should support
+### What we should support
 
 - HD Seeds as the root SecretIdentity
 - Importing HD Seeds
@@ -43,17 +46,17 @@ Seed generation will be performed through the BIP39 specification for HD seeds
 - Sending HW Wallet TX for compatible BCP Chains
 - The Full HD Spec defined by BIPs 32/44/84 (maybe 141?)
 
-## What we shouldn't support right now
+### What we shouldn't support right now
 
 - Importing raw private keys
 - Using raw private keys
 - Sending HW Wallet TX for non supported chains
 
-## What will we support in the future
+### What will we support in the future
 
 - Sending HW Wallet TX for compatible chains, non BCP
 
-## What users will have to deal with
+### What users will have to deal with
 
 - Moving coins from non HD wallets into HD Seed based wallets implemented by the BCP
 - Using other clients for their non HD keys, not unifying but necessary for some applications (ex: lisk delegates)
