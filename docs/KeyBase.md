@@ -1,6 +1,8 @@
 # Keybase Architecture
 
-Web4 needs to support a variety of chains, each with their own specifications for how addresses (accounts) are derived.
+This document details the construction of an BCP compatible keybase system. It
+describes the core concepts of UserProfiles, Keyrings, and the identity types
+they contain.
 
 ## Key Terms:
 
@@ -29,6 +31,7 @@ These are the two "industry standard" cryptographic algorithms. Both need to be 
 ### Hardware wallets, Ledger (Others TBA)
 
 Hardware wallet support is necessary as more users are using these devices. Ledger will be the first device type supported by the Keybase.
+
 ### Transaction/Message operations
 
 The Keybase will have the following features:
@@ -242,11 +245,12 @@ This is a `1:N` relation, where 1 is the `SecretIdentity` for which the
 ```
 
 ## Complete Object Definition
+
+The following is what a fully initialized profile with one relation of each type created.
 ```
 "UserProfile": {
   "username": "isabella",
-  "label": "My Profile"
-  "email": "isabella@iov.one",
+  "label": "My Profile",
   "created": "2018-06-18T14:52:26+00:00" #  ISO 8601 compatible
   "securityModel": {
     "password": "010000000105287a343ffb315b1...",
@@ -297,6 +301,19 @@ This is a `1:N` relation, where 1 is the `SecretIdentity` for which the
 
 # Address Architecture
 
+There are type main types of addresses implemented into the Keybase. These are `Universal Address` and `Extended Addresses`. The Universal address will implement the base set of features offered by BIP32. The extended addresses will implement the full suite of BIP44 features.
+
+## Universal Address:
+
+The BCP and BNS will both support the standard cryptography algorithms found in the majority of blockchain ecosystems. This includes `ed25519` and `secp256k1`. While these algorithms are different, we can use some key features of Bitcoin that have propogated and become standard throughout many implementations.
+
+### Default Key Path (Purpose 0)
+
+BIP32 describes the standard HD path specification. It reserves Purpose 0 for this purpose, below is a quote from BIP44 about this claimed position.
+
+> Note that m / 0' / * is already taken by BIP32 (default account), which preceded this BIP.
+
+We can use this knowledge of default account from BIP32 to establish the universal wallet independent of coin_type, which resides at Purpose 0, and coin_type 0. This can be then used to derive a public key for both support cryptographic algorithms, and provides us the highest level of compatibility, as only BIP32 is required for support.
 
 ## Extended Addresses:
 
@@ -309,18 +326,6 @@ Purpose MUST follow the BIP44 specification and as such, be set to be `44'`. `co
 Users MAY use these individual chain specific addresses.
 
 This is support is also critical for users who are importing HD seeds from other software, so that we can locate existing tokens for that user. During the import process, that user should be given a choice of supported tokens to add to the list and the software can automatically derive the addresses that are already used. In the case of many addresses, the user can use a `load more` button.
-
-### Keyring Mappings
-
-Each UserProfile will MAY contain Multiple `keyringEntries` under its `Keyring`. Each `keyringEntry` will contain an HD Seed, or HW wallet identifier and some information that has been exported from that device (pubkey, address). These entries will be referred to as `KeyringEntries`.
-
-The `KeyringEntries` will be differentiated in the profile with a Label. This label will be user specifiable, but by default indicate the type.
-
-- HD Seed (When decrypted): `Magic Word #` :unlock:
-- HD Seed (When Encrypted): `Magic Word #` :lock:
-- HW Device: `Ledger #` || `Trezor #` || `Other HW Device #`
-
-Users can import a preexisting `seed` into the system, but Users will NOT be able to import raw private keys into the system. This is necessary to reduce code complexity and user integration. Users who wish to migrate into our system should be provided documentation on the process to generate a new HD Seed, and what is required to move their tokens into that wallet.
 
 # Security Concerns
 
