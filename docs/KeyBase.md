@@ -62,20 +62,18 @@ Seed generation will be performed through the BIP39 specification for HD seeds
 The code for keyring management is broken down into logical units, each performing a specific task. The design can be visualized as follows:
 
 ```
-UserProfileController (1)
+UserProfileController (1 UserProfileController)
   |
-  | > UserProfile (1:N)
+  | > UserProfile (1 UserProfile : N Users)
       |
-      | > AddressBook (1:1)
-      | > Keyring (1:1)
+      | > AddressBook (1 Address Book : 1 UserProfile)
+      | > Keyring (1 Keyring : 1 UserProfile)
           |
-          | > keyringEntries (1:N)
+          | > keyringEntries (1 Keyring : N KeyringEntries)
               |
-              | > SecretIdentities (1:N)
-              |
-              | > PublicIdentities (1:N)
+              | > SecretIdentity (1 KeyringEntry : 1 SecretIdentity)
                   |
-                  | > Personalities (1:N)
+                  | > PublicIdentities (1 SecretIdentity : N PublicIdentities)
 ```
 
 
@@ -102,7 +100,9 @@ The following functions are called by the `User`, through the `UserProfileContro
 
 ## UserProfile
 
-A `UserProfile` contains an array called `keyringEntries`, an object called `addressBook`, and an object called `securityModel`. This is a `1:N` relation, where `N` is each `UserProfile` created by the `UserProfileController`.
+ A `UserProfile` contains an array called `keyringEntries`, an object called
+`addressBook`, and an object called `securityModel`. This is a `1:N` relation,
+where `N` is each `UserProfile` created by the `UserProfileController`.
 
 ### Object Definition:
 - username: The name used for login
@@ -156,7 +156,9 @@ Contains a list of addresses a user has interacted with, or added for frequent u
 
 ## Keyring
 
-The `Keyring` is an object that houses `keyringEntries`. This Object holds all of the `UserProfile`'s `KeyringEntries`. This is a `1:1` relation inside of a `UserProfile`.
+The `Keyring` is an object that houses `keyringEntries`. This Object holds all
+of the `UserProfile`'s `KeyringEntries`. This is a `1:1` relation inside of a
+`UserProfile`.
 
 ### Functions:
 - GetKeyringEntry: Returns a requested `KeyringEntry`'s details, such as `PublicIdentity` or `PublicPersonality`
@@ -167,7 +169,7 @@ The `Keyring` is an object that houses `keyringEntries`. This Object holds all o
 ### Object Definition:
 ```
 "keyring": {
-  "keyringEntries": [],
+  "keyringEntries": []
 },
 ```
 
