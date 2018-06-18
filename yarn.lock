@@ -3106,6 +3106,10 @@ jasmine-core@~3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-3.1.0.tgz#a4785e135d5df65024dfc9224953df585bd2766c"
 
+jasmine2-custom-message@^0.9.1:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/jasmine2-custom-message/-/jasmine2-custom-message-0.9.1.tgz#27cf35ef615910719335cc2572c5e0592bad911a"
+
 jasmine@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-3.1.0.tgz#2bd59fd7ec6ec0e8acb64e09f45a68ed2ad1952a"
