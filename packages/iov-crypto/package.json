@@ -21,7 +21,7 @@
     "test": "yarn build && yarn test-node",
     "prebuild": "yarn lint && yarn format",
     "build": "yarn update-type-declarations && tsc",
-    "build-browser": "yarn build && webpack"
+    "build-browser": "yarn build && webpack --mode development"
   },
   "dependencies": {
     "libsodium-wrappers": "^0.7.3",
