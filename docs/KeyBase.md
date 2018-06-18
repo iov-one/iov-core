@@ -66,7 +66,11 @@ UserProfileController (1 UserProfileController)
   |
   | > UserProfile (1 UserProfile : N Users)
       |
-      | > AddressBook (1 Address Book : 1 UserProfile)
+      | > AddressBook (1 AddressBook : 1 UserProfile)
+      |   | > AddressBookEntries (1 AddressBook : N AddressBookEntries)
+      |
+      | > SecurityModel (1 SecurityModel : 1 UserProfile)
+      |
       | > Keyring (1 Keyring : 1 UserProfile)
           |
           | > keyringEntries (1 Keyring : N KeyringEntries)
