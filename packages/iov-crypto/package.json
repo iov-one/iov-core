@@ -4,8 +4,8 @@
   "description": "Cryptography resources for IOV projects",
   "author": "simon <webmaster128@users.noreply.github.com>",
   "license": "AGPL-3.0",
-  "main": "build/src/crypto.js",
-  "types": "types/index.d.ts",
+  "main": "build/src/index.js",
+  "types": "types/src/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/iov-one/web4/tree/master/packages/iov-crypto"

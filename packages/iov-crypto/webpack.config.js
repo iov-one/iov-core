@@ -3,7 +3,7 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    "index.js": "./build/src/crypto.js",
+    "index.js": "./build/src/index.js",
     "tests.js": glob.sync("./build/**/*.spec.js"),
   },
   output: {

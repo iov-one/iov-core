@@ -1,7 +1,7 @@
 /* tslint:disable:no-bitwise */
 import since = require("jasmine2-custom-message");
 
-import { Chacha20poly1305Ietf, Ed25519, Encoding, Random, Secp256k1, Sha256 } from "../src/crypto";
+import { Chacha20poly1305Ietf, Ed25519, Encoding, Random, Secp256k1, Sha256 } from "../src";
 
 const toHex = Encoding.toHex;
 const fromHex = Encoding.fromHex;
