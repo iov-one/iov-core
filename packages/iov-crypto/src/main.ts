@@ -1,3 +1,6 @@
+// Keep all classes requiring libsodium-js in one file as having multiple
+// requiring of the libsodium-wrappers module currently crashes browsers
+//
 // libsodium.js API: https://gist.github.com/webmaster128/b2dbe6d54d36dd168c9fabf441b9b09c
 
 // use require instead of import because of this bug
