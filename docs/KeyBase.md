@@ -63,7 +63,7 @@ Additionally, individual KeyringEntries can be encrypted by a separate passphras
 ## Standards Used:
 
 The Keybase will implement a variety of standards regarding address derivation
-and time stamp generation. These have been listed here for review.
+and timestamp generation. These have been listed here for review.
 
 ### Hierarchical Deterministic Wallets
 HD wallets will be created through this standard to yield a master publickey:privatekey pair.
@@ -178,8 +178,10 @@ Contains a list of addresses a user has interacted with, or added for frequent u
   "addressBookEntries": [
     {
       "address": "0x52b96095d265a93308fcf5cb9627085f029546be8b3",
-      "chain": "ETH",
-      "ticker": "ANT"
+      "chain": {
+        "chain": "ETH",
+        "tickers": ["ETH","ANT"]
+      },
       "created": "1985-04-12T23:20:50.52Z", #  RFC 3339
       "label": "Friend's Account"
     }
@@ -279,6 +281,10 @@ This is a `1:N` relation, where 1 is the `SecretIdentity` for which the
       "algo": ed25519,
       "data": "52b96095d265a93308fcf5cb9627085f029546be8b31eccb00bad386a92544d7"
     },
+    "chain": {
+      "chain": "ETH",
+      "tickers": ["ETH","ANT"]
+    },
     "path": {
       "root": "m",
       "purpose": "44'",
@@ -321,13 +327,20 @@ The following is what a fully initialized profile will look like. This includes 
               "algo": ed25519,
               "data": "52b96095d265a93308fcf5cb9627085f029546be8b31eccb00bad386a92544d7"
             },
-            "curve": {
+            "chain": {
+              "chain": "ETH",
+              "tickers": ["ETH","ANT"]
+            },
+            "path": {
               "root": "m",
               "purpose": "44'",
               "coin_type": "60'", # Defined here: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
               "account": "0'",
               "change": "0'",
               "address_index": "0"
+            },
+            "curve": {
+              (TBD)
             }
           }
         ]
@@ -339,7 +352,7 @@ The following is what a fully initialized profile will look like. This includes 
       {
         "address": "0x52b96095d265a93308fcf5cb9627085f029546be8b3",
         "chain": "ETH",
-        "ticker": "ANT",
+        "tickers": ["ETH","ANT"],
         "created": "1985-04-12T23:20:50.52Z", #  RFC 3339
         "label": "Friend's Account"
       }
