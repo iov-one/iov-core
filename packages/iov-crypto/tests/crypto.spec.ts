@@ -283,6 +283,10 @@ describe("Crypto", () => {
     // $ source venv/bin/activate
     // $ pip install cryptography cryptography_vectors pytest ecdsa
     // $ curl https://patch-diff.githubusercontent.com/raw/webmaster128/cryptography/pull/1.diff | git apply
+    //
+    // optionally normalize signatures to lowS representation:
+    // $ curl https://patch-diff.githubusercontent.com/raw/webmaster128/cryptography/pull/2.diff | git apply
+    //
     // $ python ./docs/development/custom-vectors/secp256k1/generate_secp256k1.py > secp256k1_test_vectors.txt
 
     it("can load private keys", done => {
@@ -533,6 +537,97 @@ describe("Crypto", () => {
           since(`(index ${index}) #{message}`)
             .expect(isValid)
             .toEqual(true);
+        }
+
+        done();
+      })().catch(error => {
+        setTimeout(() => {
+          throw error;
+        });
+      });
+    });
+
+    it("matches normalized pyca/cryptography signatures", done => {
+      (async () => {
+        // signatures are normalized to lowS
+        const data: ReadonlyArray<any> = [
+          {
+            message: fromHex("5c868fedb8026979ebd26f1ba07c27eedf4ff6d10443505a96ecaf21ba8c4f0937b3cd23ffdc3dd429d4cd1905fb8dbcceeff1350020e18b58d2ba70887baa3a9b783ad30d3fbf210331cdd7df8d77defa398cdacdfc2e359c7ba4cae46bb74401deb417f8b912a1aa966aeeba9c39c7dd22479ae2b30719dca2f2206c5eb4b7"),
+            privkey: fromHex("1812bcfaa7566ba0724846d47dd4cc39306a506382cba33710ce6abd4d86553c"),
+            signature: fromHex("3044022045c0b7f8c09a9e1f1cea0c25785594427b6bf8f9f878a8af0b1abbb48e16d09202200d8becd0c220f67c51217eecfd7184ef0732481c843857e6bc7fc095c4f6b788"),
+          },
+          {
+            message: fromHex("17cd4a74d724d55355b6fb2b0759ca095298e3fd1856b87ca1cb2df5409058022736d21be071d820b16dfc441be97fbcea5df787edc886e759475469e2128b22f26b82ca993be6695ab190e673285d561d3b6d42fcc1edd6d12db12dcda0823e9d6079e7bc5ff54cd452dad308d52a15ce9c7edd6ef3dad6a27becd8e001e80f"),
+            privkey: fromHex("1aea57ea357cecc13b876b76a1825f433ff603d76e6794fdb55aeda481b9482b"),
+            signature: fromHex("304402204e0ea79d4a476276e4b067facdec7460d2c98c8a65326a6e5c998fd7c650611402200e45aea5034af973410e65cf97651b3f2b976e3fc79c6a93065ed7cb69a2ab5a"),
+          },
+          {
+            message: fromHex("db0d31717b04802adbbae1997487da8773440923c09b869e12a57c36dda34af11b8897f266cd81c02a762c6b74ea6aaf45aaa3c52867eb8f270f5092a36b498f88b65b2ebda24afe675da6f25379d1e194d093e7a2f66e450568dbdffebff97c4597a00c96a5be9ba26deefcca8761c1354429622c8db269d6a0ec0cc7a8585c"),
+            privkey: fromHex("03708999fddd22091e93a8fd6b2205b662089a97507623cb5ce04240bcae55b8"),
+            signature: fromHex("3045022100f25b86e1d8a11d72475b3ed273b0781c7d7f6f9e1dae0dd5d3ee9b84f3fab891022063d9c4e1391de077244583e9a6e3d8e8e1f236a3bf5963735353b93b1a3ba935"),
+          },
+          {
+            message: fromHex("47c9deddfd8c841a63a99be96e972e40fa035ae10d929babfc86c437b9d5d495577a45b7f8a35ce3f880e7d8ae8cd8eb685cf41f0506e68046ccf5559232c674abb9c3683829dcc8002683c4f4ca3a29a7bfde20d96dd0f1a0ead847dea18f297f220f94932536ca4deacedc2c6701c3ee50e28e358dcc54cdbf69daf0eb87f6"),
+            privkey: fromHex("44da7ab9eab17b93175bf4d5388c6b334f35a3283215b9e602a264d2e831fea3"),
+            signature: fromHex("3045022100f2cab57d108aaf7c9c9dd061404447d59f968d1468b25dd827d624b64601c32a022077558dbf7bf90885b9128c371959085e9dd1b7d8a5c45b7265e8e7d9f125c008"),
+          },
+          {
+            message: fromHex("f15433188c2bbc93b2150bb2f34d36ba8ae49f8f7e4e81aed651c8fb2022b2a7e851c4dbbbc21c14e27380316bfdebb0a049246349537dba687581c1344e40f75afd2735bb21ea074861de6801d28b22e8beb76fdd25598812b2061ca3fba229daf59a4ab416704543b02e16b8136c22acc7e197748ae19b5cbbc160fdc3a8cd"),
+            privkey: fromHex("5452b1bf1b1d96929f7ee3637a1bca637490f97634e6d164aeddda3dbb243a26"),
+            signature: fromHex("3045022100d702bec0f058f5e18f5fcdb204f79250562f11121f5513ae1006c9b93ddafb11022063de551c508405a280a21fb007b660542b58fcd3256b7cea45e3f2ebe9a29ecd"),
+          },
+          {
+            message: fromHex("1bc796124b87793b7f7fdd53b896f8f0d0f2d2be36d1944e3c2a0ac5c6b2839f59a4b4fad200f8035ec98630c51ef0d40863a5ddd69b703d73f06b4afae8ad1a88e19b1b26e8c10b7bff953c05eccc82fd771b220910165f3a906b7c931683e431998d1fd06c32dd11b4f872bf980d547942f22124c7e50c9523321aee23a36d"),
+            privkey: fromHex("a4095a3d464d20ea154f4312c087bd22c8a92207717cca40b1f3267e13cbf05c"),
+            signature: fromHex("3045022100ae17ab6a3bd2ccd0901cc3904103e825895540bf416a5f717b74b529512e4c1802204bc049a8a2287cfccea77fb3769755ba92c35154c635448cf633244edf4f6fe1"),
+          },
+          {
+            message: fromHex("18e55ac264031da435b613fc9dc6c4aafc49aae8ddf6f220d523415896ff915fae5c5b2e6aed61d88e5721823f089c46173afc5d9b47fd917834c85284f62dda6ed2d7a6ff10eb553b9312b05dad7decf7f73b69479c02f14ea0a2aa9e05ec07396cd37c28795c90e590631137102315635d702278e352aa41d0826adadff5e1"),
+            privkey: fromHex("4babce8321dcd2b5e3ac936e278519fb4b9be96688bbefb2e87d53b863a349b8"),
+            signature: fromHex("3044022003b51d02eac41f2969fc36c816c9772da21a139376b09d1c8809bb8f543be62f02200629c1396ae304d2c2e7b63890d91e56dfc3459f4d664cb914c7ff2a12a21925"),
+          },
+          {
+            message: fromHex("a5290666c97294d090f8da898e555cbd33990579e5e95498444bfb318b4aa1643e0d4348425e21c7c6f99f9955f3048f56c22b68c4a516af5c90ed5268acc9c5a20fec0200c2a282a90e20d3c46d4ecdda18ba18b803b19263de2b79238da921707a0864799cdee9f02913b40681c02c6923070688844b58fe415b7d71ea6845"),
+            privkey: fromHex("02f98a6eb5320fc0c65f3eb2911b8500bedf47230bdfa2ba5e1c0c1c0bf9fc0a"),
+            signature: fromHex("30440220400f52f4c4925b4b8886706331535230fafb6455c3a3eef6fbf19a82593812300220727cc4b3341d7d95d0dc404d910dc009b3b5f21baadc0c4ee199a46e558d7f56"),
+          },
+          {
+            message: fromHex("13ad0600229c2a66b2f11617f69c7210ad044c49265dc98ec3c64f56e56a083234d277d404e2c40523c414ad23af5cc2f91a47fe59e7ca572f7fe1d3d3cfceaedadac4396749a292a38e92727273272335f12b2acea21cf069682e67d7e7d7a31ab5bb8e472298a9451aeae6f160f36e6623c9b632b9c93371a002818addc243"),
+            privkey: fromHex("f2a08a52b0edbaa64dacb3244666d4fdb684e6cc995bed81ec9d86c58f9999de"),
+            signature: fromHex("3045022100b2927afc8856b7e14d02e01e7aa3c76951a4621bfde5d794adda165b51dbe198022006eee6e0b087143ed06933cba699fbe4097ba7d7b038b173cbbd183718a86d43"),
+          },
+          {
+            message: fromHex("51ad843da5eafc177d49a50a82609555e52773c5dfa14d7c02db5879c11a6b6e2e0860df38452dc579d763f91a83ade23b73f4fcbd703f35dd6ecfbb4c9578d5b604ed809c8633e6ac5679a5f742ce94fea3b97b5ba8a29ea28101a7b35f9eaa894dda54e3431f2464d18faf8342b7c59dfe0598c0ab29a14622a08eea70126b"),
+            privkey: fromHex("e27f10d444fa50b53283863941619b11d585b27018b0e29301371371b45e3c65"),
+            signature: fromHex("3044022100fe9717965673fbe585780e18d892a3cfa77b59ac2f44f5337a3e58ce6ecd4409021f155459b19d2e9a2e676d7d8d48a9303391ffb9befdd3a57324306d69e0e0ab"),
+          },
+        ];
+
+        for (const [index, row] of data.entries()) {
+          const keypair = await Secp256k1.makeKeypair(row.privkey);
+
+          // create signature
+          const calculatedSignature = await Secp256k1.createSignature(row.message, row.privkey);
+          since(`(index ${index}) #{message}`)
+            .expect(toHex(calculatedSignature))
+            .toEqual(toHex(row.signature));
+
+          // verify calculated signature
+          const ok1 = await Secp256k1.verifySignature(calculatedSignature, row.message, keypair.pubkey);
+          since(`(index ${index}) #{message}`)
+            .expect(ok1)
+            .toEqual(true);
+
+          // verify original signature
+          const ok2 = await Secp256k1.verifySignature(row.signature, row.message, keypair.pubkey);
+          since(`(index ${index}) #{message}`)
+            .expect(ok2)
+            .toEqual(true);
+
+          // compare signatures
+          since(`(index ${index}) #{message}`)
+            .expect(calculatedSignature)
+            .toEqual(row.signature);
         }
 
         done();
