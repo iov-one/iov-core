@@ -62,8 +62,8 @@ Additionally, individual KeyringEntries can be encrypted by a separate passphras
 
 ## Standards Used:
 
-The Keybase will implement a variety of standards regarding address derivation.
-These have been listed here for review.
+The Keybase will implement a variety of standards regarding address derivation
+and time stamp generation. These have been listed here for review.
 
 ### Hierarchical Deterministic Wallets
 HD wallets will be created through this standard to yield a master publickey:privatekey pair.
@@ -88,6 +88,10 @@ Seed generation will be performed through the BIP39 specification for HD seeds
 
 - BIP39: https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki
 
+### Timestamp Generation
+Timestamps are generated using a widely known standard to enable deterministic parsing.
+
+- RFC 3339: https://tools.ietf.org/html/rfc3339
 
 # Code Architecture
 The code for keyring management is broken down into logical units, each performing a specific task. The design can be visualized as follows:
