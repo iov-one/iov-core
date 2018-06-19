@@ -59,13 +59,16 @@ of the `keyringEntry`, and its `type` set to `seed`.
 Create a `keyringEntry` and scrape hardware identifiers from the device to
 populate the `SecretIdentity`.
 
-#### I want to create an Universal Address
+#### I want to create an Universal Address Pair
 
-Add a `publicIdentity` to `publicIdentities` using the `SecretIdentity`.
+Add two `publicIdentity`s, one for `ed25519` and one for `secp256k1`, to
+`publicIdentities` using the `SecretIdentity`. These identities use only the
+BIP32 standard.
 
 #### I want to create an Extended Address
 
-Add a `publicIdentity` to `publicIdentities` using the `SecretIdentity`.
+Add a `publicIdentity` to `publicIdentities` using the `SecretIdentity`. This
+identity uses the full BIP44 and BIP32 standards.
 
 # Usage
 
