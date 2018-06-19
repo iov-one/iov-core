@@ -3,14 +3,13 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "build",
-    "rootDir": ".",
+    "rootDir": "src",
     "typeRoots": [
       "../../node_modules/@types",
       "custom_types"
     ],
   },
   "include": [
-    "src/**/*",
-    "tests/**/*"
+    "src/**/*"
   ]
 }
