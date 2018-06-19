@@ -1,12 +1,12 @@
 export declare class Random {
     static getBytes(count: number): Promise<Uint8Array>;
 }
-export interface Keypair {
+export interface Ed25519Keypair {
     readonly pubkey: Uint8Array;
     readonly privkey: Uint8Array;
 }
 export declare class Ed25519 {
-    static generateKeypair(seed: Uint8Array): Promise<Keypair>;
+    static generateKeypair(seed: Uint8Array): Promise<Ed25519Keypair>;
     static createSignature(message: Uint8Array, privkey: Uint8Array): Promise<Uint8Array>;
     static verifySignature(signature: Uint8Array, message: Uint8Array, pubkey: Uint8Array): Promise<boolean>;
 }

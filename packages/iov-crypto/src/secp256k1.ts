@@ -1,4 +1,4 @@
-import { Keypair, Sha256 } from "./crypto";
+import { Sha256 } from "./crypto";
 
 import BN = require("bn.js");
 import elliptic = require("elliptic");
@@ -6,8 +6,13 @@ import elliptic = require("elliptic");
 const secp256k1 = new elliptic.ec("secp256k1");
 const secp256k1N = new BN("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141", "hex");
 
+export interface Secp256k1Keypair {
+  readonly pubkey: Uint8Array;
+  readonly privkey: Uint8Array;
+}
+
 export class Secp256k1 {
-  public static async makeKeypair(privkey: Uint8Array): Promise<Keypair> {
+  public static async makeKeypair(privkey: Uint8Array): Promise<Secp256k1Keypair> {
     if (privkey.length !== 32) {
       // is this check missing in secp256k1.validatePrivateKey?
       // https://github.com/bitjson/bitcoin-ts/issues/4

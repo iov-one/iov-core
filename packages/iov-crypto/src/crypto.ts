@@ -13,7 +13,7 @@ export class Random {
   }
 }
 
-export interface Keypair {
+export interface Ed25519Keypair {
   readonly pubkey: Uint8Array;
   readonly privkey: Uint8Array;
 }
@@ -23,7 +23,7 @@ export class Ed25519 {
   //
   // For implementation details see crypto_sign_seed_keypair in
   // https://download.libsodium.org/doc/public-key_cryptography/public-key_signatures.html
-  public static async generateKeypair(seed: Uint8Array): Promise<Keypair> {
+  public static async generateKeypair(seed: Uint8Array): Promise<Ed25519Keypair> {
     await sodium.ready;
     const keypair = sodium.crypto_sign_seed_keypair(seed);
     return {
