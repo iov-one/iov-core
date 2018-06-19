@@ -41,6 +41,10 @@ module.exports = function(config) {
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: ['Firefox'],
 
+    // Sometimes Safari needs more than the default 10s
+    // to perform bigger elliptic curve tests
+    browserNoActivityTimeout: 20000,
+
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
     singleRun: false
