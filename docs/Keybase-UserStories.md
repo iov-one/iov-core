@@ -1,44 +1,112 @@
-
 # User Stories
 
 Below is a list of User Stories that can guide a developer on an End Users work
-flow when using the Keybase.
+flow when using the Keybase. It is broken down into stories around the following topics:
 
-## User Profiles
+- User Management
+- Identity Management
+- Usage
+- Export / Backup
 
-### I want to Add a Profile
+# User Management
 
-Create a profile with `username`, `label`, and a `password` calling
-`UserProfileController.CreateUser`.
+This section details what a User may want to do with their User profile, or
+situations the system may encounter.
+
+#### I want to Add a Profile
+
+Create a profile with `username`, `label`, and a `password`.
 
 This has an empty `addressBook` and `keyring`. The `securityModel` is
 initialized from the system defaults.
 
-### I have Profile and want to Login.
+#### I have Profile and want to Login.
 
-Request login using supplied `username` and `password` by calling
-`UserProfileController.LoginUser`. This password needs to match against the hash
-in the `UserProfile.securityModel.password`.
+Request login using supplied `username` and `password`.
 
-### I want to delete my User Profile.
+This decrypts the associated profile.
 
-Request profile deletion using supplied `username` and `password` by calling
-`UserProfileController.DeleteUser`. This password needs to match against the
-hash in the `UserProfile.securityModel.password`.
+#### I want to delete my Profile.
 
-### I want to export my profile
+Request profile deletion using supplied `username` and `password`.
 
-Request profile export using supplied `username` and `password` by calling
-`UserProfileController.DeleteUser`. This password needs to match against the
-hash in the `UserProfile.securityModel.password`.
+This removes the `UserProfile` from the store and logs the `User` out.
 
-## SecretIdentity
+#### I am a User who is away from my computer for X time.
 
-### I don't have a `SecretIdentity` and want to Add one
+The profile should lock according to the timeout set in the `User`'s `securityModel`.
 
-Create a new a `keyringEntry` populated with a `SecretIdentity`. This
+#### I want to logout of my `UserProfile`
+
+Flush in memory changes to disk, after encrypting the `UserProfile`.
+
+# Identity Management
+
+The following entries discuss the routes a User will take to make identities.
+
+#### I don't have a `SecretIdentity` and want to Add one
+
+Create a new a `keyringEntry` with a generated `SecretIdentity`. This
 `keyringEntry` is added to the `keyringEntries` array.
 
-## I have a `SecretIdentity` and I want to create an address
+#### I want to Import a `SecretIdentity` from an `HD Seed`
+
+Create a new `keyringEntry`. The `HD Seed` is inserted into the `SecretIdentity`
+of the `keyringEntry`, and its `type` set to `seed`.
+
+#### I want to add a Hardware `SecretIdentity` to the `Keyring`.
+
+Create a `keyringEntry` and scrape hardware identifiers from the device to
+populate the `SecretIdentity`.
+
+#### I want to create an Universal Address
 
 Add a `publicIdentity` to `publicIdentities` using the `SecretIdentity`.
+
+#### I want to create an Extended Address
+
+Add a `publicIdentity` to `publicIdentities` using the `SecretIdentity`.
+
+# Usage
+
+The following entries discuss the routes a User will take to use their profile.
+
+####  I want to add a `contact` to my `AddressBook`
+
+Add a `contact` to the `addressBook` in the `UserProfile`
+
+#### I have a populated `KeyringEntry` and want to sign a something
+
+Create a signature from `bytes`, a `SecretIdentity` and `PublicIdentity`
+pair. Return a `signature`.
+
+####  I have a populated `KeyringEntry` and want to get a balance
+
+Return an `address` and a `chain` from a `PublicIdentity`. These will be used
+query the associated chain.
+
+
+# Export / Backup
+
+Users will need a way to pull material out of the system. This is usually done
+for backup purposes, but other reasons may include:
+
+- Setting up a watch only wallet on a device
+- Making an alternate installation on another machine
+- Recreating a profile on the same device
+
+#### I want to export my `UserProfile`
+
+Return a JSON file with the contents of the `UserProfile`
+
+#### I want to export the whole `Keyring`
+
+Return a JSON file with the contents of the `Keyring`
+
+#### I want to export a `SecretIdentity` from a `KeyringEntry`
+
+Return the `seed` in plain text from the `SecretIdentity`.
+
+#### I want to export a `PublicIdentity` from a `KeyringEntry`
+
+Return the `PublicIdentity` as a JSON file.
