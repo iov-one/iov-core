@@ -3,7 +3,7 @@ import { Chacha20poly1305Ietf, Ed25519, Encoding, Random } from "../src";
 
 const fromHex = Encoding.fromHex;
 
-describe("Main", () => {
+describe("Libsodium", () => {
   describe("Random", () => {
     it("creates random bytes", () => {
       (async () => {

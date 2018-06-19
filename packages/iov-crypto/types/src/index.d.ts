@@ -1,4 +1,4 @@
 export * from "./encoding";
-export * from "./main";
+export * from "./libsodium";
 export * from "./secp256k1";
 export * from "./sha";
