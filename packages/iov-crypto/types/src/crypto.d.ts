@@ -10,9 +10,6 @@ export declare class Ed25519 {
     static createSignature(message: Uint8Array, privkey: Uint8Array): Promise<Uint8Array>;
     static verifySignature(signature: Uint8Array, message: Uint8Array, pubkey: Uint8Array): Promise<boolean>;
 }
-export declare class Sha256 {
-    static digest(data: Uint8Array): Promise<Uint8Array>;
-}
 export declare class Chacha20poly1305Ietf {
     static encrypt(message: Uint8Array, key: Uint8Array, nonce: Uint8Array): Promise<Uint8Array>;
     static decrypt(ciphertext: Uint8Array, key: Uint8Array, nonce: Uint8Array): Promise<Uint8Array>;
