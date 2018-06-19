@@ -7,9 +7,8 @@ they contain.
 ## Key Terms:
 
 - UserProfile: A collection of User materials. Includes multiple `keyringEntries` associated with a UserProfile.
-- Keyring: An object containing `keyringEntries`.
-- keyringEntries: An array owned by the `keyring`, which houses individual `KeyringEntry`s
-- keyringEntry: An object which houses ONE `SecretIdentity` and N `PublicIdentities`.
+- Keyring: An object containing `keyringEntry`'s.
+- KeyringEntry: An object which houses ONE `SecretIdentity` and N `PublicIdentities`.
 - SecretIdentity: Single Private material entry in a `KeyringEntry`, used for signing transactions and deriving `PublicIdentities`.
 - PublicIdentities: Public materials collection. Contains the an array of objects related to `SecretIdentity`.
 - PublicIdentity: Derived Addresses, PublicKeys, and curve data that is chain specific. Always defined via the HD specifications. Used for end user queries for balances and transaction histories.
@@ -35,24 +34,25 @@ addresses for use with blockchain technology.
 
 These are the two "industry standard" cryptographic algorithms. Both need to be
 supported to enable the greatest compatibility. Others can be supported later,
-such as `zk-snarks`.
+such as `bls signatures` or `zk-snarks`.
 
 ### Hardware wallets, Ledger (Others TBA)
 
-Hardware wallet support is necessary as more users are using these devices.
-Ledger will be the first device type supported by the Keybase.
+Hardware wallet support is necessary as more users are using these devices and
+they provide extremely high security for the key material while remaining
+practical to use. Ledger will be the first device type supported by the Keybase.
 
 ### Transaction/Message operations
 
 The Keybase will have the following features:
-- Sign Transactions
+- Sign and Verify Transactions
 - Encrypt and Decrypt Messages
 - Sign and Verify Messages
 
 ### Profile and HD Seed encryption
 
 All data entered into a profile is encrypted before it is stored on disk.
-Additionally, individual entries can be encrypted by a seperate passphrase. ##
+Additionally, individual KeyringEntries can be encrypted by a separate passphrase.
 
 ## Standards Used:
 
@@ -108,16 +108,16 @@ UserProfileController (1 UserProfileController)
 
 ## UserProfileController
 
-The `UserProfileController` houses the logic to decrypt a user profile, when provided a valid `username:password` pair.
+The primary purpose of the `UserProfileController` is to manage multiple `UserProfile`s. It provides the logic to manipulate  `UserProfile`s.
 
 The following functions are called by the `User`, through the `UserProfileController`
 
 ### Functions:
 
-- CreateUser: Creates a new user in the `UserProfileController`
-- LoginUser: Passes `username:password` pair to the `UserProfileController`
-- DeleteUser: Requests deletion of a `UserProfile` to the `UserProfileController`
-- ExportUser: Requests the plaintext export of `UserProfile` details, requires a correct `login`
+- CreateUserProfile: Creates a new user in the `UserProfileController`
+- LoginUserProfile: Passes `username:password` pair to the `UserProfileController`
+- DeleteUserProfile: Requests deletion of a `UserProfile` to the `UserProfileController`
+- ExportUserProfile: Requests the plaintext export of `UserProfile` details, requires a correct `login`
 
 ### Object Definition:
 
@@ -129,7 +129,7 @@ The following functions are called by the `User`, through the `UserProfileContro
 
 ## UserProfile
 
- A `UserProfile` contains an array called `keyringEntries`, an object called
+ A `UserProfile` contains an object called `keyring`, an object called
 `addressBook`, and an object called `securityModel`. This is a `1:N` relation,
 where `N` is each `UserProfile` created by the `UserProfileController`.
 
@@ -138,11 +138,9 @@ where `N` is each `UserProfile` created by the `UserProfileController`.
 "UserProfile": {
   "username": "isabella",
   "label": "My Profile",
-  "created": "2018-06-18T14:52:26+00:00" #  ISO 8601 compatible
+  "created": "1985-04-12T23:20:50.52Z", #  RFC 3339
   "securityModel": {
-    "password": "010000000105287a343ffb315b1...",
-    "timeout": 3600,
-    "retries": 100
+    "timeout": 3600
   },
   "keyring": {
     "keyringEntries": [],
@@ -153,14 +151,16 @@ where `N` is each `UserProfile` created by the `UserProfileController`.
 }
 ```
 
-## addressBook
+## AddressBook
 
 Contains a list of addresses a user has interacted with, or added for frequent use.
 
 ### Functions:
-- AddContact: Adds a contact to a `AddressBook` with the specified information. EX: `chain:address:humanName`
+- AddContact: Adds a contact to a `AddressBook` with the specified information.
 - DeleteContact: Deletes a contact from a `AddressBook`
 - GetContact: Returns the `chain:address:humanName` for use in the application.
+- ExportContact: Returns a `contact` in plain text for import in another Web4 system.
+- ImportContact: Adds a `contact` from a predefined plain text entry.
 
 ### Object Definition:
 ```
@@ -168,12 +168,31 @@ Contains a list of addresses a user has interacted with, or added for frequent u
   "addressBookEntries": [
     {
       "address": "0x52b96095d265a93308fcf5cb9627085f029546be8b3",
-      "chain": "ETH", # Up for debate, can be coin_type instead
-      "created": "2018-06-18T14:52:26+00:00" #  ISO 8601 compatible,
+      "chain": "ETH",
+      "ticker": "ANT"
+      "created": "1985-04-12T23:20:50.52Z", #  RFC 3339
       "label": "Friend's Account"
     }
   ]
 }
+```
+
+## SecurityModel
+
+The `UserProfile` contains an object called `securityModel`. This object defines
+the security parameters of the profile. The entries in this object establish
+when a profile will lock down through inactivity. This is a `1:1` relation
+inside of a `UserProfile`.
+
+### Functions:
+- GetSecurityDetails: Returns a security information for the `UserProfile`.
+- ModifySecurityDetails: Changes security information for the `UserProfile`.
+
+### Object Definition:
+```
+"securityModel": {
+  "timeout": 3600
+},
 ```
 
 ## Keyring
@@ -184,9 +203,10 @@ of the `UserProfile`'s `KeyringEntries`. This is a `1:1` relation inside of a
 
 ### Functions:
 - GetKeyringEntry: Returns a requested `KeyringEntry`'s details, such as `PublicIdentities`.
-- AddKeyringEntry: Adds a new `KeyringEntry`, with a specified `SecretIdentity` to the `Keyring`.
-- DeleteKeyringEntry: Removes an existing `KeyringEntry` from the `KeyringEntries` array.
-- ExportKeyringEntry: Exports a `KeyringEntry` in plain text
+- AddKeyringEntry: Adds a new `KeyringEntry`, with an autogenerated or imported `SecretIdentity` to the `Keyring`.
+- DeleteKeyringEntry: Removes an existing `KeyringEntry` from the `Keyring`.
+- ExportKeyringEntry: Exports a `KeyringEntry` in plain text, for use in another `Keyring`.
+- ImportKeyringEntry: Imports a whole `KeyringEntry`, complete with a `SecretIdentity` and the list `PublicIdentities`.
 
 ### Object Definition:
 ```
@@ -209,7 +229,7 @@ This is a `1:1` relation, where each `KeyringEntry` has one `SecretIdentity`.
 - CreateSecretIdentity: Creates a `SecretIdentity`, if the `KeyRingEntry` has none.
 - RenameSecretIdentity: Changes the label of the `keyringEntry`.
 - DeleteSecretIdentity: Removes the `SecretIdentity` from the `keyringEntry`.
-- ExportSecretIdentity: Exports the `SecretIdentity` in plain text.
+- ExportSecretIdentity: Exports the `SecretIdentity` in plain text. Only the type of `HD` can be exported.
 
 ### Object Definition:
 ```
@@ -249,13 +269,16 @@ This is a `1:N` relation, where 1 is the `SecretIdentity` for which the
       "algo": ed25519,
       "data": "52b96095d265a93308fcf5cb9627085f029546be8b31eccb00bad386a92544d7"
     },
-    "curve": {
+    "path": {
       "root": "m",
       "purpose": "44'",
       "coin_type": "60'", # Defined here: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
       "account": "0'",
       "change": "0'",
       "address_index": "0"
+    },
+    "curve": {
+      (To be filled)
     }
   }
 ]
@@ -268,11 +291,9 @@ The following is what a fully initialized profile will look like. This includes 
 "UserProfile": {
   "username": "isabella",
   "label": "My Profile",
-  "created": "2018-06-18T14:52:26+00:00" #  ISO 8601 compatible
+  "created": "1985-04-12T23:20:50.52Z", #  RFC 3339
   "securityModel": {
-    "password": "010000000105287a343ffb315b1...",
-    "timeout": 3600,
-    "retries": 100
+    "timeout": 3600
   },
   "keyring": {
     "keyringEntries": [
@@ -307,8 +328,9 @@ The following is what a fully initialized profile will look like. This includes 
     "addressBookEntries": [
       {
         "address": "0x52b96095d265a93308fcf5cb9627085f029546be8b3",
-        "chain": "ETH", # Up for debate, can be coin_type instead
-        "created": "2018-06-18T14:52:26+00:00" #  ISO 8601 compatible,
+        "chain": "ETH",
+        "ticker": "ANT",
+        "created": "1985-04-12T23:20:50.52Z", #  RFC 3339
         "label": "Friend's Account"
       }
     ]
@@ -318,7 +340,7 @@ The following is what a fully initialized profile will look like. This includes 
 
 # Address Architecture
 
-There are type main types of addresses implemented into the Keybase. These are `Universal Address` and `Extended Addresses`. The Universal address will implement the base set of features offered by BIP32. The extended addresses will implement the full suite of BIP44 features.
+There are two main types of addresses implemented into the Keybase. These are `Universal Address` and `Extended Addresses`. The Universal address will implement the base set of features offered by BIP32. The extended addresses will implement the full suite of BIP44 features.
 
 ## Universal Address:
 
@@ -342,7 +364,16 @@ Purpose MUST follow the BIP44 specification and as such, be set to be `44'`. `co
 
 Users MAY use these individual chain specific addresses.
 
-This is support is also critical for users who are importing HD seeds from other software, so that we can locate existing tokens for that user. During the import process, that user should be given a choice of supported tokens to add to the list and the software can automatically derive the addresses that are already used. In the case of many addresses, the user can use a `load more` button.
+This feature set provides compatibility with other wallets (eg. metamask),
+allowing the user  to use the same seed in other wallets for any features or
+integrations that are not present in web4 at launch (although we will work over
+time to provide most of these features).
+
+This is support is also critical for users who are importing HD seeds from other
+software, so that we can locate existing tokens for that user. During the import
+process, that user should be given a choice of supported tokens to add to the
+list and the software can automatically derive the addresses that are already
+used. In the case of many addresses, the user can use a `load more` button.
 
 # Security Concerns
 
@@ -356,51 +387,8 @@ encrypting each Seed separately.
 
 ## Private Keys Per Curve
 
-We can reuse the same seed for each `Curve`, and derive different
-publickey/private key pairs using the instructions found in SLIP-0010. This
-mitigates security concerns around private key reuse. This method is how Trezor
-and Ledger derive keys for different curves.
-
-# User Stories
-
-Below is a list of User Stories that can guide a developer on an End Users work
-flow when using the Keybase.
-
-## User Profiles
-
-### I want to Add a Profile
-
-Create a profile with `username`, `label`, and a `password` calling
-`UserProfileController.CreateUser`.
-
-This has an empty `addressBook` and `keyring`. The `securityModel` is
-initialized from the system defaults.
-
-### I have Profile and want to Login.
-
-Request login using supplied `username` and `password` by calling
-`UserProfileController.LoginUser`. This password needs to match against the hash
-in the `UserProfile.securityModel.password`.
-
-### I want to delete my User Profile.
-
-Request profile deletion using supplied `username` and `password` by calling
-`UserProfileController.DeleteUser`. This password needs to match against the
-hash in the `UserProfile.securityModel.password`.
-
-### I want to export my profile
-
-Request profile export using supplied `username` and `password` by calling
-`UserProfileController.DeleteUser`. This password needs to match against the
-hash in the `UserProfile.securityModel.password`.
-
-## SecretIdentity
-
-### I don't have a `SecretIdentity` and want to Add one
-
-Create a new a `keyringEntry` populated with a `SecretIdentity`. This
-`keyringEntry` is added to the `keyringEntries` array.
-
-## I have a `SecretIdentity` and I want to create an address
-
-Add a `publicIdentity` to `publicIdentities` using the `SecretIdentity`.
+We can reuse the same seed for each `Curve`, and derive different public/private
+key pairs using the instructions found in SLIP-0010. Security concerns around
+private key reuse are mitigated by using an HMAC-SHA512 pseudo random number
+generator. This results in new private keys which are created for each curve.
+This method is how Trezor and Ledger derive keys for different curves.
