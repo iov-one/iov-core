@@ -32,6 +32,7 @@ export class Secp256k1 {
       throw new Error("input data is not a valid secp256k1 private key");
     }
 
+    // tslint:disable-next-line:no-object-literal-type-assertion
     return {
       privkey: keypair.getPrivate(),
       pubkey: keypair.getPublic(),

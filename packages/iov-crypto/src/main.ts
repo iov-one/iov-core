@@ -29,6 +29,8 @@ export class Ed25519 {
   public static async generateKeypair(seed: Uint8Array): Promise<Ed25519Keypair> {
     await sodium.ready;
     const keypair = sodium.crypto_sign_seed_keypair(seed);
+
+    // tslint:disable-next-line:no-object-literal-type-assertion
     return {
       pubkey: keypair.publicKey,
       privkey: keypair.privateKey,
