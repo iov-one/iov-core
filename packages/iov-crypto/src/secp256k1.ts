@@ -6,11 +6,11 @@ import { Sha256 } from "./sha";
 const secp256k1 = new elliptic.ec("secp256k1");
 const secp256k1N = new BN("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141", "hex");
 
-declare const Secp256k1KeypairSymbol: unique symbol;
+export declare const Secp256k1KeypairSymbol: unique symbol;
 export type Secp256k1Keypair = typeof Secp256k1KeypairSymbol & {
   readonly pubkey: Uint8Array;
   readonly privkey: Uint8Array;
-}
+};
 
 export class Secp256k1 {
   public static async makeKeypair(privkey: Uint8Array): Promise<Secp256k1Keypair> {

@@ -15,11 +15,11 @@ export class Random {
   }
 }
 
-declare const Ed25519KeypairSymbol: unique symbol;
+export declare const Ed25519KeypairSymbol: unique symbol;
 export type Ed25519Keypair = typeof Ed25519KeypairSymbol & {
   readonly pubkey: Uint8Array;
   readonly privkey: Uint8Array;
-}
+};
 
 export class Ed25519 {
   // Generates a keypair deterministically from a given 32 bytes seed
