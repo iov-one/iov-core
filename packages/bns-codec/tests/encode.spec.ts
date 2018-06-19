@@ -16,6 +16,7 @@ import {
   sendTxBin,
   sendTxJson,
   sig,
+  signBytes,
   signedTxBin,
   signedTxJson,
 } from "./testdata";
@@ -88,15 +89,16 @@ describe("Ensure crypto", () => {
 
     const tx = await buildUnsignedTx(sendTxJson);
     const encoded = codec.app.Tx.encode(tx).finish();
-    const signBytes = appendSignBytes(encoded, sendTxJson.chainId, sig.nonce);
+    const toSign = appendSignBytes(encoded, sendTxJson.chainId, sig.nonce);
+    expect(toSign).toEqual(signBytes);
 
     // make sure we can validate this signature (our signBytes are correct)
     const signature = sig.signature;
-    const valid = await Ed25519.verifySignature(signature, signBytes, pubKey);
+    const valid = await Ed25519.verifySignature(signature, toSign, pubKey);
     expect(valid).toBeTruthy();
 
     // make sure we can generate a compatible signature
-    const mySig = await Ed25519.createSignature(signBytes, privKey);
+    const mySig = await Ed25519.createSignature(toSign, privKey);
     expect(Uint8Array.from(mySig)).toEqual(signature);
     done();
   });
