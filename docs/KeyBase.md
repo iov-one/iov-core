@@ -11,7 +11,7 @@ they contain.
 - KeyringEntry: An object which houses ONE `SecretIdentity` and N `PublicIdentities`.
 - SecretIdentity: Single Private material entry in a `KeyringEntry`, used for signing transactions and deriving `PublicIdentities`.
 - PublicIdentities: Public materials collection. Contains the an array of objects related to `SecretIdentity`.
-- PublicIdentity: Derived Addresses, PublicKeys, and curve data that is chain specific. Always defined via the HD specifications. Used for end user queries for balances and transaction histories.
+- PublicIdentity: A collection of information derived from a `SecretIdentity`. It includes an address, publicKey, and HD path data which is always defined via the HD specifications. Used for end user queries for balances and transaction histories.
 
 ## Feature Set:
 
@@ -293,9 +293,6 @@ This is a `1:N` relation, where 1 is the `SecretIdentity` for which the
       "change": "0'",
       "address_index": "0"
     },
-    "curve": {
-      (To be filled)
-    }
   }
 ]
 ```
@@ -338,9 +335,6 @@ The following is what a fully initialized profile will look like. This includes 
               "account": "0'",
               "change": "0'",
               "address_index": "0"
-            },
-            "curve": {
-              (TBD)
             }
           }
         ]
