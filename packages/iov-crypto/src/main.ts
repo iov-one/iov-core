@@ -15,7 +15,8 @@ export class Random {
   }
 }
 
-export interface Ed25519Keypair {
+declare const Ed25519KeypairSymbol: unique symbol;
+export type Ed25519Keypair = typeof Ed25519KeypairSymbol & {
   readonly pubkey: Uint8Array;
   readonly privkey: Uint8Array;
 }
@@ -31,7 +32,7 @@ export class Ed25519 {
     return {
       pubkey: keypair.publicKey,
       privkey: keypair.privateKey,
-    };
+    } as Ed25519Keypair;
   }
 
   public static async createSignature(message: Uint8Array, privkey: Uint8Array): Promise<Uint8Array> {
