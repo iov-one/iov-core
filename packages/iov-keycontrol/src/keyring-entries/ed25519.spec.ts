@@ -17,7 +17,9 @@ describe("Ed25519KeyringEntry", () => {
       expect(await keyringEntry.serialize()).toEqual("[]");
 
       done();
-    })();
+    })().catch(error => {
+      setTimeout(() => { throw error });
+    });
   });
 
   it("can create an identity", done => {
@@ -33,7 +35,9 @@ describe("Ed25519KeyringEntry", () => {
       expect(newIdentity.canSign).toEqual(firstIdentity.canSign);
 
       done();
-    })();
+    })().catch(error => {
+      setTimeout(() => { throw error });
+    });
   });
 
   it("can create multiple identities", done => {
@@ -59,7 +63,9 @@ describe("Ed25519KeyringEntry", () => {
       expect(newIdentity5.canSign).toEqual(lastIdentity.canSign);
 
       done();
-    })();
+    })().catch(error => {
+      setTimeout(() => { throw error });
+    });
   });
 
   it("can set, change and unset an identity nickname", done => {
@@ -78,7 +84,9 @@ describe("Ed25519KeyringEntry", () => {
       expect((await keyringEntry.getIdentities())[0].nickname).toBeUndefined();
 
       done();
-    })();
+    })().catch(error => {
+      setTimeout(() => { throw error });
+    });
   });
 
   it("can sign", done => {
@@ -93,7 +101,9 @@ describe("Ed25519KeyringEntry", () => {
       expect(signature.length).toEqual(64);
 
       done();
-    })();
+    })().catch(error => {
+      setTimeout(() => { throw error });
+    });
   });
 
   it("can serialize multiple identities", done => {
@@ -141,7 +151,9 @@ describe("Ed25519KeyringEntry", () => {
       expect(decodedJson[2].privkey).not.toEqual(decodedJson[0].privkey);
 
       done();
-    })();
+    })().catch(error => {
+      setTimeout(() => { throw error });
+    });
   });
 
   it("can deserialize", done => {
@@ -182,7 +194,9 @@ describe("Ed25519KeyringEntry", () => {
       }
 
       done();
-    })();
+    })().catch(error => {
+      setTimeout(() => { throw error });
+    });
   });
 
   it("can serialize and restore a full keyring entry", done => {
@@ -208,6 +222,8 @@ describe("Ed25519KeyringEntry", () => {
       expect(await original.createTransactionSignature(identity3, tx, chainId)).toEqual(await restored.createTransactionSignature(identity3, tx, chainId));
 
       done();
-    })();
+    })().catch(error => {
+      setTimeout(() => { throw error });
+    });
   });
 });
