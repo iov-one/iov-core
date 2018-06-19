@@ -107,10 +107,15 @@ export class Secp256k1 {
     };
   }
 
+  // Creates a signature that is
+  // - deterministic (RFC 6979)
+  // - lowS signature
+  // - DER encoded
   public static async createSignature(message: Uint8Array, privkey: Uint8Array): Promise<Uint8Array> {
     const messageHash = await Sha256.digest(message);
     const keypair = secp256k1.keyFromPrivate(privkey);
-    const signature = new Uint8Array(keypair.sign(messageHash).toDER());
+    // the `canonical` option ensures creation of lowS signature representations
+    const signature = new Uint8Array(keypair.sign(messageHash, { canonical: true }).toDER());
     return signature;
   }
 
