@@ -1,4 +1,4 @@
-import { Encoding } from "../src";
+import { Encoding } from "./encoding";
 
 describe("Encoding", () => {
   it("encodes to hex", () => {

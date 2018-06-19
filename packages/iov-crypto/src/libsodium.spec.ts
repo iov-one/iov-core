@@ -1,5 +1,6 @@
 /* tslint:disable:no-bitwise */
-import { Chacha20poly1305Ietf, Ed25519, Encoding, Random } from "../src";
+import { Encoding } from "./encoding";
+import { Chacha20poly1305Ietf, Ed25519, Random } from "./libsodium";
 
 const fromHex = Encoding.fromHex;
 

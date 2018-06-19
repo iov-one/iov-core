@@ -1,4 +1,5 @@
-import { Encoding, Sha256 } from "../src";
+import { Encoding } from "./encoding";
+import { Sha256 } from "./sha";
 
 const toHex = Encoding.toHex;
 const fromHex = Encoding.fromHex;
