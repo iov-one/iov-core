@@ -4,7 +4,7 @@
 const Jasmine = require('jasmine');
 const jasmine = new Jasmine();
 jasmine.loadConfig({
-    spec_dir: 'build/tests',
+    spec_dir: 'build',
     spec_files: ['**/*.spec.js'],
     helpers: [],
     random: false,
