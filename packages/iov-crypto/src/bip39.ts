@@ -31,12 +31,12 @@ export class EnglishMnemonic {
 }
 
 export class Bip39 {
-  public static encode(entropy: Uint8Array): string {
+  public static encode(entropy: Uint8Array): EnglishMnemonic {
     if (entropy.length !== 16 && entropy.length !== 24 && entropy.length !== 32) {
       throw new Error("invalid input length");
     }
 
-    return bip39.entropyToMnemonic(Encoding.toHex(entropy));
+    return new EnglishMnemonic(bip39.entropyToMnemonic(Encoding.toHex(entropy)));
   }
 
   public static decode(mnemonic: EnglishMnemonic): Uint8Array {
