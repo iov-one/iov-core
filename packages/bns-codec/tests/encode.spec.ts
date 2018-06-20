@@ -99,7 +99,7 @@ describe("Ensure crypto", () => {
 
     // make sure we can generate a compatible signature
     const mySig = await Ed25519.createSignature(toSign, privKey);
-    expect(Uint8Array.from(mySig)).toEqual(signature);
+    expect(mySig).toEqual(signature);
     done();
   });
 });

@@ -24,14 +24,18 @@ export const encodeAsAscii = (str: string) => Uint8Array.from(toNums(str));
 const signCodev1: Uint8Array = Uint8Array.from([0, 0xca, 0xfe, 0]);
 
 // append chainID and nonce to the raw tx bytes to prepare for signing
-export const appendSignBytes = (bz: Uint8Array, chainId: ChainID, nonce: Nonce) =>
-  Uint8Array.from([
+export const appendSignBytes = (bz: Uint8Array, chainId: ChainID, nonce: Nonce) => {
+  if (chainId.length > 255) {
+    throw new Error("chainId must not exceed a length of 255 characters");
+  }
+  return Uint8Array.from([
     ...signCodev1,
-    chainId.length % 256,
+    chainId.length,
     ...encodeAsAscii(chainId),
     ...nonce.toBytesBE(),
     ...bz,
   ]) as SignableBytes;
+};
 
 // tendermint hash (will be) first 20 bytes of sha256
 // probably only works after 0.21, but no need to import ripemd160 now
