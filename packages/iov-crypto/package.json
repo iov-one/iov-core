@@ -18,7 +18,7 @@
     "test-chrome": "yarn build-browser && karma start --single-run --browsers ChromeHeadless",
     "test-safari": "yarn build-browser && karma start --single-run --browsers Safari",
     "test": "yarn build && yarn test-node",
-    "prebuild": "yarn lint && yarn format",
+    "prebuild": "yarn format && yarn lint",
     "build": "tsc --declaration && rm ./types/* && mv build/*.d.ts ./types",
     "build-browser": "yarn build && webpack --mode development"
   },
