@@ -43,7 +43,7 @@ export class Bip39 {
     return Encoding.fromHex(bip39.mnemonicToEntropy(mnemonic.asString()));
   }
 
-  public static mnemonicToSeed(mnemonic: string, password?: string): Uint8Array {
-    return new Uint8Array(bip39.mnemonicToSeed(mnemonic, password));
+  public static mnemonicToSeed(mnemonic: EnglishMnemonic, password?: string): Uint8Array {
+    return new Uint8Array(bip39.mnemonicToSeed(mnemonic.asString(), password));
   }
 }
