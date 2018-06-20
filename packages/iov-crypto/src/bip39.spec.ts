@@ -128,8 +128,9 @@ describe("Bip39", () => {
     }).toThrowError(/invalid mnemonic checksum/i);
   });
 
-  it("can calculate seed from mnemonic", () => {
-    // trezor test vectors (password "TREZOR")
+  it("can calculate seed from mnemonic (trezor test vectors)", () => {
+    // only activate first 12 test vectors because mnemonicToSeed is very slow
+    // in Chrome at the moment
     expect(Bip39.mnemonicToSeed("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about", "TREZOR")).toEqual(fromHex("c55257c360c07c72029aebc1b53c05ed0362ada38ead3e3e9efa3708e53495531f09a6987599d18264c1e1c92f2cf141630c7a3c4ab7c81b2f001698e7463b04"));
     expect(Bip39.mnemonicToSeed("legal winner thank year wave sausage worth useful legal winner thank yellow", "TREZOR")).toEqual(fromHex("2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6fa457fe1296106559a3c80937a1c1069be3a3a5bd381ee6260e8d9739fce1f607"));
     expect(Bip39.mnemonicToSeed("letter advice cage absurd amount doctor acoustic avoid letter advice cage above", "TREZOR")).toEqual(fromHex("d71de856f81a8acc65e6fc851a38d4d7ec216fd0796d0a6827a3ad6ed5511a30fa280f12eb2e47ed2ac03b5c462a0358d18d69fe4f985ec81778c1b370b652a8"));
@@ -142,6 +143,7 @@ describe("Bip39", () => {
     expect(Bip39.mnemonicToSeed("legal winner thank year wave sausage worth useful legal winner thank year wave sausage worth useful legal winner thank year wave sausage worth title", "TREZOR")).toEqual(fromHex("bc09fca1804f7e69da93c2f2028eb238c227f2e9dda30cd63699232578480a4021b146ad717fbb7e451ce9eb835f43620bf5c514db0f8add49f5d121449d3e87"));
     expect(Bip39.mnemonicToSeed("letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic bless", "TREZOR")).toEqual(fromHex("c0c519bd0e91a2ed54357d9d1ebef6f5af218a153624cf4f2da911a0ed8f7a09e2ef61af0aca007096df430022f7a2b6fb91661a9589097069720d015e4e982f"));
     expect(Bip39.mnemonicToSeed("zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo vote", "TREZOR")).toEqual(fromHex("dd48c104698c30cfe2b6142103248622fb7bb0ff692eebb00089b32d22484e1613912f0a5b694407be899ffd31ed3992c456cdf60f5d4564b8ba3f05a69890ad"));
+    /*
     expect(Bip39.mnemonicToSeed("ozone drill grab fiber curtain grace pudding thank cruise elder eight picnic", "TREZOR")).toEqual(fromHex("274ddc525802f7c828d8ef7ddbcdc5304e87ac3535913611fbbfa986d0c9e5476c91689f9c8a54fd55bd38606aa6a8595ad213d4c9c9f9aca3fb217069a41028"));
     expect(Bip39.mnemonicToSeed("gravity machine north sort system female filter attitude volume fold club stay feature office ecology stable narrow fog", "TREZOR")).toEqual(fromHex("628c3827a8823298ee685db84f55caa34b5cc195a778e52d45f59bcf75aba68e4d7590e101dc414bc1bbd5737666fbbef35d1f1903953b66624f910feef245ac"));
     expect(Bip39.mnemonicToSeed("hamster diagram private dutch cause delay private meat slide toddler razor book happy fancy gospel tennis maple dilemma loan word shrug inflict delay length", "TREZOR")).toEqual(fromHex("64c87cde7e12ecf6704ab95bb1408bef047c22db4cc7491c4271d170a1b213d20b385bc1588d9c7b38f1b39d415665b8a9030c9ec653d75e65f847d8fc1fc440"));
@@ -154,7 +156,10 @@ describe("Bip39", () => {
     expect(Bip39.mnemonicToSeed("vessel ladder alter error federal sibling chat ability sun glass valve picture", "TREZOR")).toEqual(fromHex("2aaa9242daafcee6aa9d7269f17d4efe271e1b9a529178d7dc139cd18747090bf9d60295d0ce74309a78852a9caadf0af48aae1c6253839624076224374bc63f"));
     expect(Bip39.mnemonicToSeed("scissors invite lock maple supreme raw rapid void congress muscle digital elegant little brisk hair mango congress clump", "TREZOR")).toEqual(fromHex("7b4a10be9d98e6cba265566db7f136718e1398c71cb581e1b2f464cac1ceedf4f3e274dc270003c670ad8d02c4558b2f8e39edea2775c9e232c7cb798b069e88"));
     expect(Bip39.mnemonicToSeed("void come effort suffer camp survey warrior heavy shoot primary clutch crush open amazing screen patrol group space point ten exist slush involve unfold", "TREZOR")).toEqual(fromHex("01f5bced59dec48e362f2c45b5de68b9fd6c92c6634f44d6d40aab69056506f0e35524a518034ddc1192e1dacd32c1ed3eaa3c3b131c88ed8e7e54c49a5d0998"));
+    */
+  });
 
+  it("can calculate seed from mnemonic (no password)", () => {
     // custom test vectors using
     // $ git clone https://github.com/trezor/python-mnemonic.git && cd python-mnemonic
     // $ python3 -m venv venv
@@ -173,8 +178,9 @@ describe("Bip39", () => {
     expect(Bip39.mnemonicToSeed("robust pipe raise illness symptom crowd trip will slow assault recipe oven")).toEqual(fromHex("5539eed11e1096e9d52f69f15ad3d7c6547a40a3865b9517dbcbb03c31f231900622f58616d64d2d1cc0440f31d67fb0b2699a5fc885f796c746e0f844477093"));
     expect(Bip39.mnemonicToSeed("pair ethics august street tornado spare present under capital raise cross current main craft stone clutch tray all")).toEqual(fromHex("1272467e954cec4e0ad720002d037a3aaf795a57ffbeea6aaa0c242d410eb52050292447aa2c68470a07ecc80171edfa9e027793265047be3128d94e867a4f99"));
     expect(Bip39.mnemonicToSeed("allow finger front connect strategy purchase journey distance trouble guitar honey alpha giraffe canal junk vintage chronic blade gate custom soap flip first mix")).toEqual(fromHex("476a41ac016b5bdf9f114456929975a036ae326e2efdca441ac5a0949ef89ab9246dc9e49a5d2d64d1926eb9dbe17576cb010471c2a821b216202acdf3d7a27b"));
+  });
 
-    // function is defined over arbitraty input strings
+  it("can calculate seed from mnemonic (arbitraty input strings)", () => {
     expect(Bip39.mnemonicToSeed("")).toEqual(fromHex("4ed8d4b17698ddeaa1f1559f152f87b5d472f725ca86d341bd0276f1b61197e21dd5a391f9f5ed7340ff4d4513aab9cce44f9497a5e7ed85fd818876b6eb402e"));
     expect(Bip39.mnemonicToSeed("foo")).toEqual(fromHex("5d12c1e43c65846ae89f712e146297ca337a449b775ad25214f823b81675cc1334e5c9a45fc318a047501b58603eaa0408e6f3bc2dc202cb1afc568ea1b90995"));
     expect(Bip39.mnemonicToSeed("foo bar")).toEqual(fromHex("a9c35719c7c9d12428fd82e35e0b9c0e06ab4b1b8f94c53891e7db6af8846e32f5bfcc33c3160e9e76d2c83ba8aa7e3f44fb7ddac398ca0a2303926da380018e"));
