@@ -24,6 +24,10 @@ export class Bip39 {
     return Encoding.fromHex(bip39.mnemonicToEntropy(mnemonic));
   }
 
+  public static mnemonicToSeed(mnemonic: string, password?: string): Uint8Array {
+    return new Uint8Array(bip39.mnemonicToSeed(mnemonic, password));
+  }
+
   // list of space separated words (1 or more)
   private static readonly mnemonicMatcher = /^[a-z]+( [a-z]+)*$/;
 }
