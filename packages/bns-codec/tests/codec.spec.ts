@@ -7,6 +7,7 @@ import {
   sendTxJson,
   setNameTxJson,
   sig,
+  signBytes,
   signedTxBin,
   signedTxJson,
   swapClaimTxJson,
@@ -27,10 +28,13 @@ describe("Check codec", () => {
   });
 
   it("properly generates signbytes", async done => {
-    const signBytes = await Codec.bytesToSign(sendTxJson, sig.nonce);
-    // it should match the signature
+    const toSign = await Codec.bytesToSign(sendTxJson, sig.nonce);
+    // it should match the canonical sign bytes
+    expect(toSign).toEqual(signBytes);
+
+    // it should validate
     const pubKey = sig.publicKey.data;
-    const valid = await Ed25519.verifySignature(sig.signature, signBytes, pubKey);
+    const valid = await Ed25519.verifySignature(sig.signature, toSign, pubKey);
     expect(valid).toBeTruthy();
     done();
   });

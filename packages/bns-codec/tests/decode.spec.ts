@@ -39,7 +39,7 @@ describe("Decode transactions", () => {
   it("decode invalid transaction fails", () => {
     /* tslint:disable-next-line:no-bitwise */
     const badBin = signedTxBin.map((x: number, i: number) => (i % 5 ? x ^ 0x01 : x));
-    expect(codec.app.Tx.decode.bind(null, badBin)).toThrowError(RangeError);
+    expect(codec.app.Tx.decode.bind(null, badBin)).toThrowError();
   });
 
   // unsigned tx will fail as parsing requires a sig to extract signer

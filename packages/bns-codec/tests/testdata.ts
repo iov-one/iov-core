@@ -36,23 +36,23 @@ const { fromHex } = Encoding;
 
 export const pubJson: PublicKeyBundle = {
   algo: Algorithm.ED25519,
-  data: fromHex("1a1b68a2042ba64436282d1cacb1e91c0166ad2e967e2c0543c99f2230ee04b3") as PublicKeyBytes,
+  data: fromHex("507629b5f1d3946efb8fde961e146359e33610fa1536185d44fdd5011ca011d5") as PublicKeyBytes,
 };
-export const pubBin = fromHex("0a201a1b68a2042ba64436282d1cacb1e91c0166ad2e967e2c0543c99f2230ee04b3");
+export const pubBin = fromHex("0a20507629b5f1d3946efb8fde961e146359e33610fa1536185d44fdd5011ca011d5");
 
 // this private key matches the above public key
 export const privJson: PrivateKeyBundle = {
   algo: Algorithm.ED25519,
   data: fromHex(
-    "e404ff758df0c269c9105bc597351e7934339ef27dbf509b020eae68d8f8eace1a1b68a2042ba64436282d1cacb1e91c0166ad2e967e2c0543c99f2230ee04b3",
+    "516e6af7454f31fa56a43d112ea847c7e5aeea754f08385ca55935757161ad96507629b5f1d3946efb8fde961e146359e33610fa1536185d44fdd5011ca011d5",
   ) as PrivateKeyBytes,
 };
 export const privBin = fromHex(
-  "0a40e404ff758df0c269c9105bc597351e7934339ef27dbf509b020eae68d8f8eace1a1b68a2042ba64436282d1cacb1e91c0166ad2e967e2c0543c99f2230ee04b3",
+  "0a40516e6af7454f31fa56a43d112ea847c7e5aeea754f08385ca55935757161ad96507629b5f1d3946efb8fde961e146359e33610fa1536185d44fdd5011ca011d5",
 );
 
 // address is calculated by bov for the public key
-export const address = fromHex("715d326689e88080afdfb22adf19394ceb8e9035") as AddressBytes;
+export const address = fromHex("acc00b8f2e26fd093894c5b1d87e03afab71cf99") as AddressBytes;
 
 export const coinJson: FungibleToken = {
   whole: 878,
@@ -72,19 +72,22 @@ export const sendTxJson: SendTx = {
   chainId,
   signer: pubJson,
   kind: TransactionKind.SEND,
-  recipient: fromHex("552385cb38847474fe9febfd56ab67e14bcd56f3") as AddressBytes,
+  recipient: fromHex("6f0a3e37845b6a3c8ccbe6219199abc3ae0b26d9") as AddressBytes,
   memo: "Test payment",
   amount,
 };
 export const sendTxBin = fromHex(
-  "0a440a14715d326689e88080afdfb22adf19394ceb8e90351214552385cb38847474fe9febfd56ab67e14bcd56f31a0808fa011a03455448220c54657374207061796d656e74",
+  "0a440a14acc00b8f2e26fd093894c5b1d87e03afab71cf9912146f0a3e37845b6a3c8ccbe6219199abc3ae0b26d91a0808fa011a03455448220c54657374207061796d656e74",
 );
 
+export const signBytes = fromHex(
+  "00cafe0008746573742d31323300000000000000110a440a14acc00b8f2e26fd093894c5b1d87e03afab71cf9912146f0a3e37845b6a3c8ccbe6219199abc3ae0b26d91a0808fa011a03455448220c54657374207061796d656e74",
+);
 export const sig: FullSignature = {
   nonce: Long.fromInt(17) as Nonce,
   publicKey: pubJson,
   signature: fromHex(
-    "f52af3946c43a0bece8675da9d005f2018b69820673d57f5500ae2728d3e5012a44c786133cd911cc40761cda9ccf9094c1bbe1dc11f2d568cc4998072819a0c",
+    "f838ecb02d960345fa101f1ecfa5acc18396d4e122cfb2f7f7af6b38e7318a4b2ddf7a5e5f5a214ed1c759780a2fe187c1c30effcfb4c6a0174e44133fe0630e",
   ) as SignatureBytes,
 };
 export const signedTxJson: SignedTransaction = {
@@ -93,7 +96,7 @@ export const signedTxJson: SignedTransaction = {
   otherSignatures: [],
 };
 export const signedTxBin = fromHex(
-  "0a440a14715d326689e88080afdfb22adf19394ceb8e90351214552385cb38847474fe9febfd56ab67e14bcd56f31a0808fa011a03455448220c54657374207061796d656e74aa016a081112220a201a1b68a2042ba64436282d1cacb1e91c0166ad2e967e2c0543c99f2230ee04b322420a40f52af3946c43a0bece8675da9d005f2018b69820673d57f5500ae2728d3e5012a44c786133cd911cc40761cda9ccf9094c1bbe1dc11f2d568cc4998072819a0c",
+  "0a440a14acc00b8f2e26fd093894c5b1d87e03afab71cf9912146f0a3e37845b6a3c8ccbe6219199abc3ae0b26d91a0808fa011a03455448220c54657374207061796d656e74aa016a081112220a20507629b5f1d3946efb8fde961e146359e33610fa1536185d44fdd5011ca011d522420a40f838ecb02d960345fa101f1ecfa5acc18396d4e122cfb2f7f7af6b38e7318a4b2ddf7a5e5f5a214ed1c759780a2fe187c1c30effcfb4c6a0174e44133fe0630e",
 );
 
 // ------------------- random data --------------------------
