@@ -10,4 +10,20 @@ export class Bip39 {
 
     return bip39.entropyToMnemonic(Encoding.toHex(entropy));
   }
+
+  public static decode(mnemonic: string): Uint8Array {
+    if (!this.mnemonicMatcher.test(mnemonic)) {
+      throw new Error("Invalid mnemonic format");
+    }
+
+    const wordCount = mnemonic.split(" ").length;
+    if (wordCount !== 12 && wordCount !== 18 && wordCount !== 24) {
+      throw new Error(`Invalid word count in mnemonic (allowed: 12, 18, 24 got: ${wordCount})`);
+    }
+
+    return Encoding.fromHex(bip39.mnemonicToEntropy(mnemonic));
+  }
+
+  // list of space separated words (1 or more)
+  private static readonly mnemonicMatcher = /^[a-z]+( [a-z]+)*$/;
 }
