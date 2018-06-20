@@ -3,7 +3,7 @@ import * as bip39 from "bip39";
 import { Encoding } from "./encoding";
 
 export class EnglishMnemonic {
-  // list of space separated words (1 or more)
+  // list of space separated lower case words (1 or more)
   private static readonly mnemonicMatcher = /^[a-z]+( [a-z]+)*$/;
 
   private readonly data: string;

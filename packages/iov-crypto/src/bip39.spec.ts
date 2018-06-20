@@ -98,6 +98,26 @@ describe("Bip39", () => {
       new EnglishMnemonic("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about ");
     }).toThrowError(/invalid mnemonic format/i);
 
+    // Disallowed letters in words (capital, number, special char)
+    expect(() => {
+      new EnglishMnemonic("Abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
+    }).toThrowError(/invalid mnemonic format/i);
+    expect(() => {
+      new EnglishMnemonic("abandon abandon Abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
+    }).toThrowError(/invalid mnemonic format/i);
+    expect(() => {
+      new EnglishMnemonic("route66 abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
+    }).toThrowError(/invalid mnemonic format/i);
+    expect(() => {
+      new EnglishMnemonic("abandon abandon route66 abandon abandon abandon abandon abandon abandon abandon abandon about");
+    }).toThrowError(/invalid mnemonic format/i);
+    expect(() => {
+      new EnglishMnemonic("lötkolben abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
+    }).toThrowError(/invalid mnemonic format/i);
+    expect(() => {
+      new EnglishMnemonic("abandon abandon lötkolben abandon abandon abandon abandon abandon abandon abandon abandon about");
+    }).toThrowError(/invalid mnemonic format/i);
+
     // too few and too many words (11, 13, 17, 19, 23, 25)
     expect(() => {
       new EnglishMnemonic("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
