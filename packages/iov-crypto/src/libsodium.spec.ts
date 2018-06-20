@@ -6,7 +6,7 @@ const fromHex = Encoding.fromHex;
 
 describe("Libsodium", () => {
   describe("Random", () => {
-    it("creates random bytes", () => {
+    it("creates random bytes", done => {
       (async () => {
         {
           const bytes = await Random.getBytes(0);
@@ -33,6 +33,8 @@ describe("Libsodium", () => {
           const bytes2 = await Random.getBytes(32);
           expect(bytes1).not.toEqual(bytes2);
         }
+
+        done();
       })();
     });
   });
