@@ -12,5 +12,5 @@ export declare class Slip0010 {
     static hardenedIndex(i: number): BN;
     static normalIndex(i: number): BN;
     private static master(curve, seed);
-    private static childPrivkey(curve, parentPrivkey, parentChainCode, index);
+    private static child(curve, parentPrivkey, parentChainCode, index);
 }

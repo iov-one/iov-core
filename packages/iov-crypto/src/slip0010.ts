@@ -20,7 +20,7 @@ export class Slip0010 {
     // tslint:disable-next-line:no-let
     let result = this.master(curve, seed);
     for (const index of path) {
-      result = this.childPrivkey(curve, result.privkey, result.chainCode, index);
+      result = this.child(curve, result.privkey, result.chainCode, index);
     }
     return result;
   }
@@ -49,7 +49,7 @@ export class Slip0010 {
     };
   }
 
-  private static childPrivkey(
+  private static child(
     curve: Slip0010Curve,
     parentPrivkey: Uint8Array,
     parentChainCode: Uint8Array,
