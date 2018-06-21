@@ -16,7 +16,24 @@ export enum Slip0010Curves {
 }
 
 export class Slip0010 {
-  public static master(curve: Slip0010Curves, seed: Uint8Array): MasterResult {
+  public static derivePath(curve: Slip0010Curves, seed: Uint8Array, path: ReadonlyArray<BN>): MasterResult {
+    // tslint:disable-next-line:no-let
+    let result = this.master(curve, seed);
+    for (const index of path) {
+      result = this.childPrivkey(curve, result.privkey, result.chainCode, index);
+    }
+    return result;
+  }
+
+  public static hardenedIndex(i: number): BN {
+    return new BN(i).add(new BN(2 ** 31));
+  }
+
+  public static normalIndex(i: number): BN {
+    return new BN(i);
+  }
+
+  private static master(curve: Slip0010Curves, seed: Uint8Array): MasterResult {
     const i = new Hmac(Sha512, encodeAsAscii(curve)).update(seed).digest();
     const il = i.slice(0, 32);
     const ir = i.slice(32, 64);
@@ -32,7 +49,7 @@ export class Slip0010 {
     };
   }
 
-  public static childPrivkey(
+  private static childPrivkey(
     curve: Slip0010Curves,
     parentPrivkey: Uint8Array,
     parentChainCode: Uint8Array,
@@ -68,22 +85,5 @@ export class Slip0010 {
     } else {
       throw new Error("curve support not implemented");
     }
-  }
-
-  public static derivePath(curve: Slip0010Curves, seed: Uint8Array, path: ReadonlyArray<BN>): MasterResult {
-    // tslint:disable-next-line:no-let
-    let result = this.master(curve, seed);
-    for (const index of path) {
-      result = this.childPrivkey(curve, result.privkey, result.chainCode, index);
-    }
-    return result;
-  }
-
-  public static hardenedIndex(i: number): BN {
-    return new BN(i).add(new BN(2 ** 31));
-  }
-
-  public static normalIndex(i: number): BN {
-    return new BN(i);
   }
 }
