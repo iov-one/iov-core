@@ -9,6 +9,10 @@ export class Hmac<H extends HashFunction> implements HashFunction {
   private readonly hash: (data: Uint8Array) => Uint8Array;
 
   constructor(hashFunctionConstructor: new () => H, originalKey: Uint8Array) {
+    // This implementation is based on https://en.wikipedia.org/wiki/HMAC#Implementation
+    // with the addition of incremental hashing support. Thus part of the algorithm
+    // is in the constructor and the rest in digest().
+
     const blockSize = new hashFunctionConstructor().blockSize;
 
     this.hash = data => new hashFunctionConstructor().update(data).digest();
