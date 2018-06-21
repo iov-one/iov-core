@@ -6,7 +6,7 @@ import { Sha512 } from "./sha";
 const toNums = (str: string) => str.split("").map((x: string) => x.charCodeAt(0));
 const encodeAsAscii = (str: string) => Uint8Array.from(toNums(str));
 
-export interface MasterResult {
+export interface Slip0010Result {
   readonly chainCode: Uint8Array;
   readonly privkey: Uint8Array;
 }
@@ -16,7 +16,7 @@ export enum Slip0010Curves {
 }
 
 export class Slip0010 {
-  public static derivePath(curve: Slip0010Curves, seed: Uint8Array, path: ReadonlyArray<BN>): MasterResult {
+  public static derivePath(curve: Slip0010Curves, seed: Uint8Array, path: ReadonlyArray<BN>): Slip0010Result {
     // tslint:disable-next-line:no-let
     let result = this.master(curve, seed);
     for (const index of path) {
@@ -33,7 +33,7 @@ export class Slip0010 {
     return new BN(i);
   }
 
-  private static master(curve: Slip0010Curves, seed: Uint8Array): MasterResult {
+  private static master(curve: Slip0010Curves, seed: Uint8Array): Slip0010Result {
     const i = new Hmac(Sha512, encodeAsAscii(curve)).update(seed).digest();
     const il = i.slice(0, 32);
     const ir = i.slice(32, 64);
@@ -54,7 +54,7 @@ export class Slip0010 {
     parentPrivkey: Uint8Array,
     parentChainCode: Uint8Array,
     index: BN,
-  ): MasterResult {
+  ): Slip0010Result {
     if (index.isNeg() || index.gt(new BN(4294967295))) {
       throw new Error("index not in uint32 range: " + index.toString());
     }
