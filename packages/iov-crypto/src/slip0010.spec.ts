@@ -52,4 +52,51 @@ describe("Slip0010", () => {
       expect(derived.privkey).toEqual(fromHex("8f94d394a8e8fd6b1bc2f3f49f5c47e385281d5c17e65324b0f62483e37e8793"));
     });
   });
+
+  describe("Test vector 2 for ed25519", () => {
+    // https://github.com/satoshilabs/slips/blob/master/slip-0010.md#test-vector-2-for-ed25519
+    const seed = fromHex("fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542");
+
+    it("can derive path /", () => {
+      const path: ReadonlyArray<BN> = [];
+      const derived = Slip0010.derivePath(Slip0010Curve.Ed25519, seed, path);
+      expect(derived.chainCode).toEqual(fromHex("ef70a74db9c3a5af931b5fe73ed8e1a53464133654fd55e7a66f8570b8e33c3b"));
+      expect(derived.privkey).toEqual(fromHex("171cb88b1b3c1db25add599712e36245d75bc65a1a5c9e18d76f9f2b1eab4012"));
+    });
+
+    it("can derive path /0_H", () => {
+      const path: ReadonlyArray<BN> = [Slip0010.hardenedIndex(0)];
+      const derived = Slip0010.derivePath(Slip0010Curve.Ed25519, seed, path);
+      expect(derived.chainCode).toEqual(fromHex("0b78a3226f915c082bf118f83618a618ab6dec793752624cbeb622acb562862d"));
+      expect(derived.privkey).toEqual(fromHex("1559eb2bbec5790b0c65d8693e4d0875b1747f4970ae8b650486ed7470845635"));
+    });
+
+    it("can derive path /0_H/2147483647_H", () => {
+      const path: ReadonlyArray<BN> = [Slip0010.hardenedIndex(0), Slip0010.hardenedIndex(2147483647)];
+      const derived = Slip0010.derivePath(Slip0010Curve.Ed25519, seed, path);
+      expect(derived.chainCode).toEqual(fromHex("138f0b2551bcafeca6ff2aa88ba8ed0ed8de070841f0c4ef0165df8181eaad7f"));
+      expect(derived.privkey).toEqual(fromHex("ea4f5bfe8694d8bb74b7b59404632fd5968b774ed545e810de9c32a4fb4192f4"));
+    });
+
+    it("can derive path /0_H/2147483647_H/1_H", () => {
+      const path: ReadonlyArray<BN> = [Slip0010.hardenedIndex(0), Slip0010.hardenedIndex(2147483647), Slip0010.hardenedIndex(1)];
+      const derived = Slip0010.derivePath(Slip0010Curve.Ed25519, seed, path);
+      expect(derived.chainCode).toEqual(fromHex("73bd9fff1cfbde33a1b846c27085f711c0fe2d66fd32e139d3ebc28e5a4a6b90"));
+      expect(derived.privkey).toEqual(fromHex("3757c7577170179c7868353ada796c839135b3d30554bbb74a4b1e4a5a58505c"));
+    });
+
+    it("can derive path /0_H/2147483647_H/1_H/2147483646_H", () => {
+      const path: ReadonlyArray<BN> = [Slip0010.hardenedIndex(0), Slip0010.hardenedIndex(2147483647), Slip0010.hardenedIndex(1), Slip0010.hardenedIndex(2147483646)];
+      const derived = Slip0010.derivePath(Slip0010Curve.Ed25519, seed, path);
+      expect(derived.chainCode).toEqual(fromHex("0902fe8a29f9140480a00ef244bd183e8a13288e4412d8389d140aac1794825a"));
+      expect(derived.privkey).toEqual(fromHex("5837736c89570de861ebc173b1086da4f505d4adb387c6a1b1342d5e4ac9ec72"));
+    });
+
+    it("can derive path /0_H/2147483647_H/1_H/2147483646_H/2_H", () => {
+      const path: ReadonlyArray<BN> = [Slip0010.hardenedIndex(0), Slip0010.hardenedIndex(2147483647), Slip0010.hardenedIndex(1), Slip0010.hardenedIndex(2147483646), Slip0010.hardenedIndex(2)];
+      const derived = Slip0010.derivePath(Slip0010Curve.Ed25519, seed, path);
+      expect(derived.chainCode).toEqual(fromHex("5d70af781f3a37b829f0d060924d5e960bdc02e85423494afc0b1a41bbe196d4"));
+      expect(derived.privkey).toEqual(fromHex("551d333177df541ad876a60ea71f00447931c0a9da16f227c11ea080d7391b8d"));
+    });
+  });
 });
