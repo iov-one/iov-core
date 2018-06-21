@@ -70,6 +70,15 @@ export class Slip0010 {
     }
   }
 
+  public static derivePath(curve: Slip0010Curves, seed: Uint8Array, path: ReadonlyArray<BN>): MasterResult {
+    // tslint:disable-next-line:no-let
+    let result = this.master(curve, seed);
+    for (const index of path) {
+      result = this.childPrivkey(curve, result.privkey, result.chainCode, index);
+    }
+    return result;
+  }
+
   public static hardenedKeyIndex(i: number): BN {
     return new BN(i).add(new BN(2 ** 31));
   }
