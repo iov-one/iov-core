@@ -82,4 +82,24 @@ describe("HMAC", () => {
     hmac.update(fromHex(""));
     expect(hmac.digest()).toEqual(fromHex("B617318655057264E28BC0B6FB378C8EF146BE00"));
   });
+
+  it("works with empty keys", () => {
+    // Generated using Python 3
+    // hmac.new(b'', bytearray.fromhex("7061756c"), hashlib.sha256).hexdigest()
+    {
+      const hmac = new Hmac(Sha256, fromHex(""));
+      hmac.update(fromHex("7061756c"));
+      expect(hmac.digest()).toEqual(fromHex("50972b73add1dbbbe6884104d0f91efcef184e0aef6e485a075b3cab1f70e572"));
+    }
+    {
+      const hmac = new Hmac(Sha256, fromHex(""));
+      hmac.update(fromHex("70"));
+      expect(hmac.digest()).toEqual(fromHex("a1d75fa8dc0d1a84cf6df6f0e55cb52d89d44acb26e786c9329cf8dc8804a94e"));
+    }
+    {
+      const hmac = new Hmac(Sha256, fromHex(""));
+      hmac.update(fromHex(""));
+      expect(hmac.digest()).toEqual(fromHex("b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad"));
+    }
+  });
 });
