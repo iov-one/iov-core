@@ -7,4 +7,7 @@ export declare enum Slip0010Curves {
 }
 export declare class Slip0010 {
     static master(curve: Slip0010Curves, seed: Uint8Array): MasterResult;
+    static childPrivkey(curve: Slip0010Curves, parentPrivkey: Uint8Array, parentChainCode: Uint8Array, index: any): MasterResult;
+    static hardenedKeyIndex(i: number): any;
+    static normalKeyIndex(i: number): any;
 }
