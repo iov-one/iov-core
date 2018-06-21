@@ -7,7 +7,8 @@ describe("Slip0010", () => {
   it("can derive ed25519 master key", () => {
     // https://github.com/satoshilabs/slips/blob/master/slip-0010.md#test-vector-1-for-ed25519
     const seed = fromHex("000102030405060708090a0b0c0d0e0f");
-    const result = Slip0010.masterKey(Slip0010Curves.Ed25519, seed);
-    expect(result).toEqual(fromHex("2b4be7f19ee27bbf30c667b642d5f4aa69fd169872f8fc3059c08ebae2eb19e7"));
+    const result = Slip0010.master(Slip0010Curves.Ed25519, seed);
+    expect(result.chainCode).toEqual(fromHex("90046a93de5380a72b5e45010748567d5ea02bbf6522f979e05c0d8d8ca9fffb"));
+    expect(result.privkey).toEqual(fromHex("2b4be7f19ee27bbf30c667b642d5f4aa69fd169872f8fc3059c08ebae2eb19e7"));
   });
 });
