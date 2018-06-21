@@ -41,7 +41,7 @@ export class Slip0010 {
   ): MasterResult {
     // tslint:disable-next-line:no-let
     let i: Uint8Array;
-    if (index.gte(2 ** 31)) {
+    if (index.gte(new BN(2 ** 31))) {
       // child is a hardened key
       const payload = new Uint8Array([0x00, ...parentPrivkey, ...index.toArray("be", 4)]);
       i = new Hmac(Sha512, parentChainCode).update(payload).digest();
