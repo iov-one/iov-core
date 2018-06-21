@@ -11,12 +11,12 @@ export interface Slip0010Result {
   readonly privkey: Uint8Array;
 }
 
-export enum Slip0010Curves {
+export enum Slip0010Curve {
   Ed25519 = "ed25519 seed",
 }
 
 export class Slip0010 {
-  public static derivePath(curve: Slip0010Curves, seed: Uint8Array, path: ReadonlyArray<BN>): Slip0010Result {
+  public static derivePath(curve: Slip0010Curve, seed: Uint8Array, path: ReadonlyArray<BN>): Slip0010Result {
     // tslint:disable-next-line:no-let
     let result = this.master(curve, seed);
     for (const index of path) {
@@ -33,12 +33,12 @@ export class Slip0010 {
     return new BN(i);
   }
 
-  private static master(curve: Slip0010Curves, seed: Uint8Array): Slip0010Result {
+  private static master(curve: Slip0010Curve, seed: Uint8Array): Slip0010Result {
     const i = new Hmac(Sha512, encodeAsAscii(curve)).update(seed).digest();
     const il = i.slice(0, 32);
     const ir = i.slice(32, 64);
 
-    if (curve !== Slip0010Curves.Ed25519) {
+    if (curve !== Slip0010Curve.Ed25519) {
       // TODO: implement step 5 of https://github.com/satoshilabs/slips/blob/master/slip-0010.md#master-key-generation
       throw new Error("Curve not yet supported");
     }
@@ -50,7 +50,7 @@ export class Slip0010 {
   }
 
   private static childPrivkey(
-    curve: Slip0010Curves,
+    curve: Slip0010Curve,
     parentPrivkey: Uint8Array,
     parentChainCode: Uint8Array,
     index: BN,
@@ -67,7 +67,7 @@ export class Slip0010 {
       i = new Hmac(Sha512, parentChainCode).update(payload).digest();
     } else {
       // child is a normal key
-      if (curve === Slip0010Curves.Ed25519) {
+      if (curve === Slip0010Curve.Ed25519) {
         throw new Error("Normal keys are not allowed with ed25519");
       } else {
         throw new Error("Non-ed25519 normal key derivation not yet implemented");
@@ -77,7 +77,7 @@ export class Slip0010 {
     const il = i.slice(0, 32);
     const ir = i.slice(32, 64);
 
-    if (curve === Slip0010Curves.Ed25519) {
+    if (curve === Slip0010Curve.Ed25519) {
       return {
         chainCode: ir,
         privkey: il,
