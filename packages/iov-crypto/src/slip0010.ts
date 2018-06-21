@@ -12,6 +12,7 @@ export interface Slip0010Result {
 }
 
 export enum Slip0010Curve {
+  Secp256k1 = "Bitcoin seed",
   Ed25519 = "ed25519 seed",
 }
 
@@ -38,9 +39,8 @@ export class Slip0010 {
     const il = i.slice(0, 32);
     const ir = i.slice(32, 64);
 
-    if (curve !== Slip0010Curve.Ed25519) {
-      // TODO: implement step 5 of https://github.com/satoshilabs/slips/blob/master/slip-0010.md#master-key-generation
-      throw new Error("Curve not yet supported");
+    if (curve !== Slip0010Curve.Ed25519 && (this.isZero(il) || this.isGteN(curve, il))) {
+      return this.master(curve, i);
     }
 
     return {
@@ -74,16 +74,65 @@ export class Slip0010 {
       }
     }
 
+    return this.childImpl(curve, parentPrivkey, parentChainCode, index, i);
+  }
+
+  private static childImpl(
+    curve: Slip0010Curve,
+    parentPrivkey: Uint8Array,
+    parentChainCode: Uint8Array,
+    index: BN,
+    i: Uint8Array,
+  ): Slip0010Result {
+    // step 2 (of the Private parent key → private child key algorithm)
+
     const il = i.slice(0, 32);
     const ir = i.slice(32, 64);
 
+    // step 3
+    const returnChainCode = ir;
+
+    // step 4
     if (curve === Slip0010Curve.Ed25519) {
       return {
-        chainCode: ir,
+        chainCode: returnChainCode,
         privkey: il,
       };
-    } else {
-      throw new Error("curve support not implemented");
+    }
+
+    // step 5
+    if (this.isGteN(curve, il) || new BN(new Buffer(il)).add(new BN(new Buffer(parentPrivkey))).isZero()) {
+      const newI = new Hmac(Sha512, parentChainCode)
+        .update(new Uint8Array([0x01, ...ir, ...index.toArray("be", 4)]))
+        .digest();
+      return this.childImpl(curve, parentPrivkey, parentChainCode, index, newI);
+    }
+
+    // step 6
+    const n = this.n(curve);
+    const returnChildKeyAsNumber = new BN(new Buffer(il)).add(new BN(new Buffer(parentPrivkey))).mod(n);
+    const returnChildKey = new Uint8Array(returnChildKeyAsNumber.toArray("be", 32));
+    return {
+      chainCode: returnChainCode,
+      privkey: returnChildKey,
+    };
+  }
+
+  private static isZero(privkey: Uint8Array): boolean {
+    return privkey.every(byte => byte === 0);
+  }
+
+  private static isGteN(curve: Slip0010Curve, privkey: Uint8Array): boolean {
+    const keyAsNumber = new BN(new Buffer(privkey));
+    return keyAsNumber.gte(this.n(curve));
+  }
+
+  private static n(curve: Slip0010Curve): BN {
+    switch (curve) {
+      case Slip0010Curve.Secp256k1:
+        return new BN("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141", 16);
+      default:
+        throw new Error("curve not supported");
     }
   }
 }

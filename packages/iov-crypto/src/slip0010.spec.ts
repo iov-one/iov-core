@@ -6,6 +6,25 @@ import { Slip0010, Slip0010Curve } from "./slip0010";
 const fromHex = Encoding.fromHex;
 
 describe("Slip0010", () => {
+  describe("Test vector 1 for secp256k1", () => {
+    // https://github.com/satoshilabs/slips/blob/master/slip-0010.md#test-vector-1-for-secp256k1
+    const seed = fromHex("000102030405060708090a0b0c0d0e0f");
+
+    it("can derive path /", () => {
+      const path: ReadonlyArray<BN> = [];
+      const derived = Slip0010.derivePath(Slip0010Curve.Secp256k1, seed, path);
+      expect(derived.chainCode).toEqual(fromHex("873dff81c02f525623fd1fe5167eac3a55a049de3d314bb42ee227ffed37d508"));
+      expect(derived.privkey).toEqual(fromHex("e8f32e723decf4051aefac8e2c93c9c5b214313817cdb01a1494b917c8436b35"));
+    });
+
+    it("can derive path /0_H", () => {
+      const path: ReadonlyArray<BN> = [Slip0010.hardenedIndex(0)];
+      const derived = Slip0010.derivePath(Slip0010Curve.Secp256k1, seed, path);
+      expect(derived.chainCode).toEqual(fromHex("47fdacbd0f1097043b78c63c20c34ef4ed9a111d980047ad16282c7ae6236141"));
+      expect(derived.privkey).toEqual(fromHex("edb2e14f9ee77d26dd93b4ecede8d16ed408ce149b6cd80b0715a2d911a0afea"));
+    });
+  });
+
   describe("Test vector 1 for ed25519", () => {
     // https://github.com/satoshilabs/slips/blob/master/slip-0010.md#test-vector-1-for-ed25519
     const seed = fromHex("000102030405060708090a0b0c0d0e0f");
