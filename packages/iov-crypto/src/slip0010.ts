@@ -79,11 +79,11 @@ export class Slip0010 {
     return result;
   }
 
-  public static hardenedKeyIndex(i: number): BN {
+  public static hardenedIndex(i: number): BN {
     return new BN(i).add(new BN(2 ** 31));
   }
 
-  public static normalKeyIndex(i: number): BN {
+  public static normalIndex(i: number): BN {
     return new BN(i);
   }
 }

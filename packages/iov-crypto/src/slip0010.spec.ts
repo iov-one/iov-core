@@ -19,7 +19,7 @@ describe("Slip0010", () => {
     it("can derive first child", () => {
       const master = Slip0010.master(Slip0010Curves.Ed25519, seed);
 
-      const index = Slip0010.hardenedKeyIndex(0);
+      const index = Slip0010.hardenedIndex(0);
       const derived = Slip0010.childPrivkey(Slip0010Curves.Ed25519, master.privkey, master.chainCode, index);
 
       expect(derived.chainCode).toEqual(fromHex("8b59aa11380b624e81507a27fedda59fea6d0b779a778918a2fd3590e16e9c69"));
@@ -27,7 +27,7 @@ describe("Slip0010", () => {
     });
 
     it("can derive path 0_H/1_H", () => {
-      const path: ReadonlyArray<BN> = [Slip0010.hardenedKeyIndex(0), Slip0010.hardenedKeyIndex(1)];
+      const path: ReadonlyArray<BN> = [Slip0010.hardenedIndex(0), Slip0010.hardenedIndex(1)];
       const derived = Slip0010.derivePath(Slip0010Curves.Ed25519, seed, path);
       expect(derived.chainCode).toEqual(fromHex("a320425f77d1b5c2505a6b1b27382b37368ee640e3557c315416801243552f14"));
       expect(derived.privkey).toEqual(fromHex("b1d0bad404bf35da785a64ca1ac54b2617211d2777696fbffaf208f746ae84f2"));

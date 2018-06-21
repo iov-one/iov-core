@@ -11,6 +11,6 @@ export declare class Slip0010 {
     static master(curve: Slip0010Curves, seed: Uint8Array): MasterResult;
     static childPrivkey(curve: Slip0010Curves, parentPrivkey: Uint8Array, parentChainCode: Uint8Array, index: BN): MasterResult;
     static derivePath(curve: Slip0010Curves, seed: Uint8Array, path: ReadonlyArray<BN>): MasterResult;
-    static hardenedKeyIndex(i: number): BN;
-    static normalKeyIndex(i: number): BN;
+    static hardenedIndex(i: number): BN;
+    static normalIndex(i: number): BN;
 }
