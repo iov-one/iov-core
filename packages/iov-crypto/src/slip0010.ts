@@ -32,13 +32,16 @@ export class Slip0010 {
     };
   }
 
-  // index is a big integer in uint32 range (4 bytes)
   public static childPrivkey(
     curve: Slip0010Curves,
     parentPrivkey: Uint8Array,
     parentChainCode: Uint8Array,
-    index: any,
+    index: BN,
   ): MasterResult {
+    if (index.isNeg() || index.gt(new BN(4294967295))) {
+      throw new Error("index not in uint32 range: " + index.toString());
+    }
+
     // tslint:disable-next-line:no-let
     let i: Uint8Array;
     if (index.gte(new BN(2 ** 31))) {
@@ -67,11 +70,11 @@ export class Slip0010 {
     }
   }
 
-  public static hardenedKeyIndex(i: number): any {
+  public static hardenedKeyIndex(i: number): BN {
     return new BN(i).add(new BN(2 ** 31));
   }
 
-  public static normalKeyIndex(i: number): any {
+  public static normalKeyIndex(i: number): BN {
     return new BN(i);
   }
 }

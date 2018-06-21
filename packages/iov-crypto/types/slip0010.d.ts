@@ -1,3 +1,5 @@
+/// <reference types="bn.js" />
+import BN = require("bn.js");
 export interface MasterResult {
     readonly chainCode: Uint8Array;
     readonly privkey: Uint8Array;
@@ -7,7 +9,7 @@ export declare enum Slip0010Curves {
 }
 export declare class Slip0010 {
     static master(curve: Slip0010Curves, seed: Uint8Array): MasterResult;
-    static childPrivkey(curve: Slip0010Curves, parentPrivkey: Uint8Array, parentChainCode: Uint8Array, index: any): MasterResult;
-    static hardenedKeyIndex(i: number): any;
-    static normalKeyIndex(i: number): any;
+    static childPrivkey(curve: Slip0010Curves, parentPrivkey: Uint8Array, parentChainCode: Uint8Array, index: BN): MasterResult;
+    static hardenedKeyIndex(i: number): BN;
+    static normalKeyIndex(i: number): BN;
 }
