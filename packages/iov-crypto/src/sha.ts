@@ -25,11 +25,26 @@ export class Sha1 implements HashFunction {
   }
 }
 
-export class Sha256 {
+export class Sha256 implements HashFunction {
   // async interface to support implementations that rely on WebAssemby compilation later on
   public static digest(data: Uint8Array): Promise<Uint8Array> {
-    const hasher = shajs("sha256");
-    hasher.update(data);
-    return Promise.resolve(hasher.digest());
+    return Promise.resolve(new Sha256().update(data).digest());
+  }
+
+  public readonly blockSize = 512 / 8;
+
+  private readonly impl: any;
+
+  constructor() {
+    this.impl = shajs("sha256");
+  }
+
+  public update(data: Uint8Array): Sha256 {
+    this.impl.update(data);
+    return this;
+  }
+
+  public digest(): Uint8Array {
+    return new Uint8Array(this.impl.digest());
   }
 }
