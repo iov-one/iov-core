@@ -101,17 +101,19 @@ export class Slip0010 {
     }
 
     // step 5
-    if (this.isGteN(curve, il) || new BN(new Buffer(il)).add(new BN(new Buffer(parentPrivkey))).isZero()) {
+    const n = this.n(curve);
+    const returnChildKeyAsNumber = new BN(new Buffer(il)).add(new BN(new Buffer(parentPrivkey))).mod(n);
+    const returnChildKey = new Uint8Array(returnChildKeyAsNumber.toArray("be", 32));
+
+    // step 6
+    if (this.isGteN(curve, il) || this.isZero(returnChildKey)) {
       const newI = new Hmac(Sha512, parentChainCode)
         .update(new Uint8Array([0x01, ...ir, ...index.toArray("be", 4)]))
         .digest();
       return this.childImpl(curve, parentPrivkey, parentChainCode, index, newI);
     }
 
-    // step 6
-    const n = this.n(curve);
-    const returnChildKeyAsNumber = new BN(new Buffer(il)).add(new BN(new Buffer(parentPrivkey))).mod(n);
-    const returnChildKey = new Uint8Array(returnChildKeyAsNumber.toArray("be", 32));
+    // step 7
     return {
       chainCode: returnChainCode,
       privkey: returnChildKey,
