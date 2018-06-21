@@ -18,3 +18,10 @@ export declare class Sha256 implements HashFunction {
     update(data: Uint8Array): Sha256;
     digest(): Uint8Array;
 }
+export declare class Sha512 implements HashFunction {
+    readonly blockSize: number;
+    private readonly impl;
+    constructor();
+    update(data: Uint8Array): Sha512;
+    digest(): Uint8Array;
+}

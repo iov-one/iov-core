@@ -48,3 +48,22 @@ export class Sha256 implements HashFunction {
     return new Uint8Array(this.impl.digest());
   }
 }
+
+export class Sha512 implements HashFunction {
+  public readonly blockSize = 1024 / 8;
+
+  private readonly impl: any;
+
+  constructor() {
+    this.impl = shajs("sha512");
+  }
+
+  public update(data: Uint8Array): Sha512 {
+    this.impl.update(data);
+    return this;
+  }
+
+  public digest(): Uint8Array {
+    return new Uint8Array(this.impl.digest());
+  }
+}
