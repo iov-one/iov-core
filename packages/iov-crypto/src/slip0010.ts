@@ -28,6 +28,8 @@ function serializeUint32BigEndian(int: number): ReadonlyArray<number> {
   return bytes.slice(4, 8);
 }
 
+// Universal private key derivation accoring to
+// https://github.com/satoshilabs/slips/blob/master/slip-0010.md
 export class Slip0010 {
   public static derivePath(
     curve: Slip0010Curve,
@@ -86,6 +88,9 @@ export class Slip0010 {
       if (curve === Slip0010Curve.Ed25519) {
         throw new Error("Normal keys are not allowed with ed25519");
       } else {
+        // Step 1 of https://github.com/satoshilabs/slips/blob/master/slip-0010.md#private-parent-key--private-child-key
+        // Calculate I = HMAC-SHA512(Key = c_par, Data = ser_P(point(k_par)) || ser_32(i)).
+        // where the functions point() and ser_p() are defined in BIP-0032
         throw new Error("Non-ed25519 normal key derivation not yet implemented");
       }
     }
