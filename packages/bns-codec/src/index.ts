@@ -1,5 +1,5 @@
 import {
-  ChainID,
+  ChainId,
   Nonce,
   PostableBytes,
   SignableBytes,
@@ -36,9 +36,9 @@ export class Codec {
   }
 
   // parseBytes will recover bytes from the blockchain into a format we can use
-  public static parseBytes(bz: PostableBytes, chainID: ChainID): SignedTransaction {
+  public static parseBytes(bz: PostableBytes, chainId: ChainId): SignedTransaction {
     const parsed = codec.app.Tx.decode(bz);
-    return parseTx(parsed, chainID);
+    return parseTx(parsed, chainId);
   }
 }
 

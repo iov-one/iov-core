@@ -1,14 +1,14 @@
 import {
   AddressBytes,
   BaseTx,
-  ChainID,
+  ChainId,
   FullSignature,
   SendTx,
   SetNameTx,
   SignedTransaction,
   SwapClaimTx,
   SwapCounterTx,
-  SwapIDBytes,
+  SwapIdBytes,
   SwapTimeoutTx,
   TransactionKind,
   UnsignedTransaction,
@@ -29,7 +29,7 @@ import { isHashIdentifier } from "./util";
 //   });
 // };
 
-export const parseTx = (tx: codec.app.ITx, chainId: ChainID): SignedTransaction => {
+export const parseTx = (tx: codec.app.ITx, chainId: ChainId): SignedTransaction => {
   const sigs = ensure(tx.signatures, "signatures").map(decodeFullSig);
   const sig = ensure(sigs[0], "first signature");
   return {
@@ -90,18 +90,18 @@ const parseSwapClaimTx = (
   tx: codec.app.ITx,
 ): SwapClaimTx => ({
   kind: TransactionKind.SWAP_CLAIM,
-  swapId: ensure(msg.escrowId) as SwapIDBytes,
+  swapId: ensure(msg.escrowId) as SwapIdBytes,
   preimage: ensure(tx.preimage),
   ...base,
 });
 
 const parseSwapTimeoutTx = (base: BaseTx, msg: codec.escrow.IReturnEscrowMsg): SwapTimeoutTx => ({
   kind: TransactionKind.SWAP_TIMEOUT,
-  swapId: ensure(msg.escrowId) as SwapIDBytes,
+  swapId: ensure(msg.escrowId) as SwapIdBytes,
   ...base,
 });
 
-const parseBaseTx = (tx: codec.app.ITx, sig: FullSignature, chainId: ChainID): BaseTx => {
+const parseBaseTx = (tx: codec.app.ITx, sig: FullSignature, chainId: ChainId): BaseTx => {
   const base: BaseTx = {
     chainId,
     signer: sig.publicKey,

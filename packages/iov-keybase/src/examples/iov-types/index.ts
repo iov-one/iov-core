@@ -1,7 +1,7 @@
 import {
   AddressBytes,
   Algorithm,
-  ChainID,
+  ChainId,
   PublicKeyBundle,
   PublicKeyBytes,
   SendTx,
@@ -29,7 +29,7 @@ const sender: PublicKeyBundle = {
 
 export const sendTx: SendTx = {
   amount: { whole: 123, fractional: 0, tokenTicker: iov },
-  chainId: "bns-testnet-01" as ChainID,
+  chainId: "bns-testnet-01" as ChainId,
   fee: { whole: 0, fractional: 100, tokenTicker: iov },
   kind: TransactionKind.SEND,
   recipient,
