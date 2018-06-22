@@ -25,4 +25,9 @@ export class Encoding {
     }
     return new Uint8Array(listOfInts);
   }
+
+  public static encodeAsAscii(input: string): Uint8Array {
+    const toNums = (str: string) => str.split("").map((x: string) => x.charCodeAt(0));
+    return Uint8Array.from(toNums(input));
+  }
 }

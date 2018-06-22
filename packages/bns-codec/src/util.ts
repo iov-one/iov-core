@@ -1,4 +1,4 @@
-import { Sha256 } from "@iov/crypto";
+import { Encoding, Sha256 } from "@iov/crypto";
 import { AddressBytes, Algorithm, ChainID, Nonce, PublicKeyBundle, SignableBytes } from "@iov/types";
 
 export const keyToAddress = (key: PublicKeyBundle) =>
@@ -10,16 +10,13 @@ export const keyToIdentifier = (key: PublicKeyBundle) =>
 const algoToPrefix = (algo: Algorithm) => {
   switch (algo) {
     case Algorithm.ED25519:
-      return encodeAsAscii("sigs/ed25519/");
+      return Encoding.encodeAsAscii("sigs/ed25519/");
     case Algorithm.SECP256K1:
-      return encodeAsAscii("sigs/secp256k1/");
+      return Encoding.encodeAsAscii("sigs/secp256k1/");
     default:
       throw new Error("Unsupported algorithm: " + algo);
   }
 };
-
-const toNums = (str: string) => str.split("").map((x: string) => x.charCodeAt(0));
-export const encodeAsAscii = (str: string) => Uint8Array.from(toNums(str));
 
 const signCodev1: Uint8Array = Uint8Array.from([0, 0xca, 0xfe, 0]);
 
@@ -31,7 +28,7 @@ export const appendSignBytes = (bz: Uint8Array, chainId: ChainID, nonce: Nonce) 
   return Uint8Array.from([
     ...signCodev1,
     chainId.length,
-    ...encodeAsAscii(chainId),
+    ...Encoding.encodeAsAscii(chainId),
     ...nonce.toBytesBE(),
     ...bz,
   ]) as SignableBytes;
@@ -42,7 +39,7 @@ export const appendSignBytes = (bz: Uint8Array, chainId: ChainID, nonce: Nonce) 
 export const tendermintHash = (data: Uint8Array) =>
   Sha256.digest(data).then((bz: Uint8Array) => bz.slice(0, 20));
 
-export const hashId = encodeAsAscii("hash/sha256/");
+export const hashId = Encoding.encodeAsAscii("hash/sha256/");
 export const hashIdentifier = async (data: Uint8Array) =>
   Uint8Array.from([...hashId, ...(await Sha256.digest(data))]);
 
