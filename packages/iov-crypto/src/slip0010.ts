@@ -24,18 +24,18 @@ export class Slip0010 {
   ): Slip0010Result {
     // tslint:disable-next-line:no-let
     let result = this.master(curve, seed);
-    for (const index of path) {
-      result = this.child(curve, result.privkey, result.chainCode, index);
+    for (const rawIndex of path) {
+      result = this.child(curve, result.privkey, result.chainCode, rawIndex);
     }
     return result;
   }
 
-  public static hardenedIndex(i: number): number {
-    return i + 2 ** 31;
+  public static rawIndexFromHardened(hardenedIndex: number): number {
+    return hardenedIndex + 2 ** 31;
   }
 
-  public static normalIndex(i: number): number {
-    return i;
+  public static rawIndexFromNormal(normalIndex: number): number {
+    return normalIndex;
   }
 
   private static master(curve: Slip0010Curve, seed: Uint8Array): Slip0010Result {
@@ -57,17 +57,17 @@ export class Slip0010 {
     curve: Slip0010Curve,
     parentPrivkey: Uint8Array,
     parentChainCode: Uint8Array,
-    index: number,
+    rawIndex: number,
   ): Slip0010Result {
-    if (index < 0 || index > 4294967295) {
-      throw new Error("index not in uint32 range: " + index.toString());
+    if (rawIndex < 0 || rawIndex > 4294967295) {
+      throw new Error("index not in uint32 range: " + rawIndex.toString());
     }
 
     // tslint:disable-next-line:no-let
     let i: Uint8Array;
-    if (index >= 2 ** 31) {
+    if (rawIndex >= 2 ** 31) {
       // child is a hardened key
-      const payload = new Uint8Array([0x00, ...parentPrivkey, ...new BN(index).toArray("be", 4)]);
+      const payload = new Uint8Array([0x00, ...parentPrivkey, ...new BN(rawIndex).toArray("be", 4)]);
       i = new Hmac(Sha512, parentChainCode).update(payload).digest();
     } else {
       // child is a normal key
@@ -78,14 +78,14 @@ export class Slip0010 {
       }
     }
 
-    return this.childImpl(curve, parentPrivkey, parentChainCode, index, i);
+    return this.childImpl(curve, parentPrivkey, parentChainCode, rawIndex, i);
   }
 
   private static childImpl(
     curve: Slip0010Curve,
     parentPrivkey: Uint8Array,
     parentChainCode: Uint8Array,
-    index: number,
+    rawIndex: number,
     i: Uint8Array,
   ): Slip0010Result {
     // step 2 (of the Private parent key → private child key algorithm)
@@ -112,9 +112,9 @@ export class Slip0010 {
     // step 6
     if (this.isGteN(curve, il) || this.isZero(returnChildKey)) {
       const newI = new Hmac(Sha512, parentChainCode)
-        .update(new Uint8Array([0x01, ...ir, ...new BN(index).toArray("be", 4)]))
+        .update(new Uint8Array([0x01, ...ir, ...new BN(rawIndex).toArray("be", 4)]))
         .digest();
-      return this.childImpl(curve, parentPrivkey, parentChainCode, index, newI);
+      return this.childImpl(curve, parentPrivkey, parentChainCode, rawIndex, newI);
     }
 
     // step 7
