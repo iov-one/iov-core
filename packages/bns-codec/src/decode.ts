@@ -8,7 +8,7 @@ import {
   SignedTransaction,
   SwapClaimTx,
   SwapCounterTx,
-  SwapIDBytes,
+  SwapIdBytes,
   SwapTimeoutTx,
   TransactionKind,
   UnsignedTransaction,
@@ -90,14 +90,14 @@ const parseSwapClaimTx = (
   tx: codec.app.ITx,
 ): SwapClaimTx => ({
   kind: TransactionKind.SWAP_CLAIM,
-  swapId: ensure(msg.escrowId) as SwapIDBytes,
+  swapId: ensure(msg.escrowId) as SwapIdBytes,
   preimage: ensure(tx.preimage),
   ...base,
 });
 
 const parseSwapTimeoutTx = (base: BaseTx, msg: codec.escrow.IReturnEscrowMsg): SwapTimeoutTx => ({
   kind: TransactionKind.SWAP_TIMEOUT,
-  swapId: ensure(msg.escrowId) as SwapIDBytes,
+  swapId: ensure(msg.escrowId) as SwapIdBytes,
   ...base,
 });
 

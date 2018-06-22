@@ -16,7 +16,7 @@ import {
   SignedTransaction,
   SwapClaimTx,
   SwapCounterTx,
-  SwapIDBytes,
+  SwapIdBytes,
   SwapTimeoutTx,
   TokenTicker,
   TransactionKind,
@@ -176,7 +176,7 @@ const swapClaimMsg: SwapClaimTx = {
   signer: pubJson,
   kind: TransactionKind.SWAP_CLAIM,
   preimage: fromHex("00000000fffffffffff000000000"),
-  swapId: fromHex("1234") as SwapIDBytes,
+  swapId: fromHex("1234") as SwapIdBytes,
 };
 export const swapClaimTxJson: SignedTransaction = {
   transaction: swapClaimMsg,
@@ -188,7 +188,7 @@ const swapTimeoutMsg: SwapTimeoutTx = {
   chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
   kind: TransactionKind.SWAP_TIMEOUT,
-  swapId: fromHex("1234") as SwapIDBytes,
+  swapId: fromHex("1234") as SwapIdBytes,
 };
 export const swapTimeoutTxJson: SignedTransaction = {
   transaction: swapTimeoutMsg,

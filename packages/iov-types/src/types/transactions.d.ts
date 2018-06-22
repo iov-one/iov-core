@@ -19,10 +19,10 @@ export type TokenTicker = typeof TokenTickerSymbol & string;
 declare const ChainIdSymbol: unique symbol;
 export type ChainId = typeof ChainIdSymbol & string;
 
-declare const SwapIDSymbol: unique symbol;
-type SwapID = typeof SwapIDSymbol;
-export type SwapIDBytes = SwapID & Uint8Array;
-export type SwapIDString = SwapID & string;
+declare const SwapIdSymbol: unique symbol;
+type SwapId = typeof SwapIdSymbol;
+export type SwapIdBytes = SwapId & Uint8Array;
+export type SwapIdString = SwapId & string;
 
 // TODO: we may want to make this a union type BNSName | PublicKey | Address
 // but waiting on clarity on BNS spec, for now simplest working solution...
@@ -82,12 +82,12 @@ export interface SwapCounterTx extends BaseTx {
 export interface SwapClaimTx extends BaseTx {
   readonly kind: TransactionKind.SWAP_CLAIM;
   readonly preimage: Uint8Array;
-  readonly swapId: SwapIDBytes; // pulled from the offer transaction
+  readonly swapId: SwapIdBytes; // pulled from the offer transaction
 }
 
 export interface SwapTimeoutTx extends BaseTx {
   readonly kind: TransactionKind.SWAP_TIMEOUT;
-  readonly swapId: SwapIDBytes; // pulled from the offer transaction
+  readonly swapId: SwapIdBytes; // pulled from the offer transaction
 }
 
 export type UnsignedTransaction =
