@@ -1,10 +1,8 @@
 import BN = require("bn.js");
 
+import { Encoding } from "./encoding";
 import { Hmac } from "./hmac";
 import { Sha512 } from "./sha";
-
-const toNums = (str: string) => str.split("").map((x: string) => x.charCodeAt(0));
-const encodeAsAscii = (str: string) => Uint8Array.from(toNums(str));
 
 export interface Slip0010Result {
   readonly chainCode: Uint8Array;
@@ -39,7 +37,7 @@ export class Slip0010 {
   }
 
   private static master(curve: Slip0010Curve, seed: Uint8Array): Slip0010Result {
-    const i = new Hmac(Sha512, encodeAsAscii(curve)).update(seed).digest();
+    const i = new Hmac(Sha512, Encoding.asAscii(curve)).update(seed).digest();
     const il = i.slice(0, 32);
     const ir = i.slice(32, 64);
 
