@@ -17,7 +17,11 @@ export enum Slip0010Curve {
 }
 
 export class Slip0010 {
-  public static derivePath(curve: Slip0010Curve, seed: Uint8Array, path: ReadonlyArray<BN>): Slip0010Result {
+  public static derivePath(
+    curve: Slip0010Curve,
+    seed: Uint8Array,
+    path: ReadonlyArray<number>,
+  ): Slip0010Result {
     // tslint:disable-next-line:no-let
     let result = this.master(curve, seed);
     for (const index of path) {
@@ -26,12 +30,12 @@ export class Slip0010 {
     return result;
   }
 
-  public static hardenedIndex(i: number): BN {
-    return new BN(i).add(new BN(2 ** 31));
+  public static hardenedIndex(i: number): number {
+    return i + 2 ** 31;
   }
 
-  public static normalIndex(i: number): BN {
-    return new BN(i);
+  public static normalIndex(i: number): number {
+    return i;
   }
 
   private static master(curve: Slip0010Curve, seed: Uint8Array): Slip0010Result {
@@ -53,17 +57,17 @@ export class Slip0010 {
     curve: Slip0010Curve,
     parentPrivkey: Uint8Array,
     parentChainCode: Uint8Array,
-    index: BN,
+    index: number,
   ): Slip0010Result {
-    if (index.isNeg() || index.gt(new BN(4294967295))) {
+    if (index < 0 || index > 4294967295) {
       throw new Error("index not in uint32 range: " + index.toString());
     }
 
     // tslint:disable-next-line:no-let
     let i: Uint8Array;
-    if (index.gte(new BN(2 ** 31))) {
+    if (index >= 2 ** 31) {
       // child is a hardened key
-      const payload = new Uint8Array([0x00, ...parentPrivkey, ...index.toArray("be", 4)]);
+      const payload = new Uint8Array([0x00, ...parentPrivkey, ...new BN(index).toArray("be", 4)]);
       i = new Hmac(Sha512, parentChainCode).update(payload).digest();
     } else {
       // child is a normal key
@@ -81,7 +85,7 @@ export class Slip0010 {
     curve: Slip0010Curve,
     parentPrivkey: Uint8Array,
     parentChainCode: Uint8Array,
-    index: BN,
+    index: number,
     i: Uint8Array,
   ): Slip0010Result {
     // step 2 (of the Private parent key → private child key algorithm)
@@ -108,7 +112,7 @@ export class Slip0010 {
     // step 6
     if (this.isGteN(curve, il) || this.isZero(returnChildKey)) {
       const newI = new Hmac(Sha512, parentChainCode)
-        .update(new Uint8Array([0x01, ...ir, ...index.toArray("be", 4)]))
+        .update(new Uint8Array([0x01, ...ir, ...new BN(index).toArray("be", 4)]))
         .digest();
       return this.childImpl(curve, parentPrivkey, parentChainCode, index, newI);
     }
