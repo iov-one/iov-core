@@ -4,7 +4,7 @@ import elliptic = require("elliptic");
 import { Sha256 } from "./sha";
 
 const secp256k1 = new elliptic.ec("secp256k1");
-const secp256k1N = new BN("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141", 16);
+const secp256k1N = new BN("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141", "hex");
 
 export declare const Secp256k1KeypairSymbol: unique symbol;
 export type Secp256k1Keypair = typeof Secp256k1KeypairSymbol & {
@@ -26,7 +26,7 @@ export class Secp256k1 {
     }
 
     // range test that is not part of the elliptic implementation
-    const privkeyAsBigInteger = new BN(new Buffer(privkey));
+    const privkeyAsBigInteger = new BN(privkey);
     if (privkeyAsBigInteger.gte(secp256k1N)) {
       // not strictly smaller than N
       throw new Error("input data is not a valid secp256k1 private key");
