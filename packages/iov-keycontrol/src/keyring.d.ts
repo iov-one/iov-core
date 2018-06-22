@@ -1,4 +1,4 @@
-import { ChainID, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
+import { ChainId, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
 
 declare const KeyDataSymbol: unique symbol;
 type KeyData = typeof KeyDataSymbol;
@@ -58,7 +58,7 @@ export interface KeyringEntry {
   readonly createTransactionSignature: (
     identity: PublicKeyBundle,
     tx: SignableBytes,
-    chainID: ChainID,
+    chainID: ChainId,
   ) => Promise<SignatureBytes>;
 
   // serialize will produce a representation that can be writen to disk.

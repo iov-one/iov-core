@@ -1,5 +1,5 @@
 import { Encoding, Sha256 } from "@iov/crypto";
-import { AddressBytes, Algorithm, ChainID, Nonce, PublicKeyBundle, SignableBytes } from "@iov/types";
+import { AddressBytes, Algorithm, ChainId, Nonce, PublicKeyBundle, SignableBytes } from "@iov/types";
 
 export const keyToAddress = (key: PublicKeyBundle) =>
   Sha256.digest(keyToIdentifier(key)).then((bz: Uint8Array) => bz.slice(0, 20) as AddressBytes);
@@ -21,7 +21,7 @@ const algoToPrefix = (algo: Algorithm) => {
 const signCodev1: Uint8Array = Uint8Array.from([0, 0xca, 0xfe, 0]);
 
 // append chainID and nonce to the raw tx bytes to prepare for signing
-export const appendSignBytes = (bz: Uint8Array, chainId: ChainID, nonce: Nonce) => {
+export const appendSignBytes = (bz: Uint8Array, chainId: ChainId, nonce: Nonce) => {
   if (chainId.length > 255) {
     throw new Error("chainId must not exceed a length of 255 characters");
   }

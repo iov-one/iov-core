@@ -2,7 +2,7 @@ import { Encoding } from "@iov/crypto";
 import {
   AddressBytes,
   Algorithm,
-  ChainID,
+  ChainId,
   FullSignature,
   FungibleToken,
   Nonce,
@@ -66,7 +66,7 @@ const amount = {
   fractional: 0,
   tokenTicker: "ETH" as TokenTicker,
 };
-export const chainId = "test-123" as ChainID;
+export const chainId = "test-123" as ChainId;
 // the sender in this tx is the above pubkey, pubkey->address should match
 export const sendTxJson: SendTx = {
   chainId,
@@ -115,7 +115,7 @@ const sig2: FullSignature = {
   ) as SignatureBytes,
 };
 const randomMsg: SendTx = {
-  chainId: "foo-bar-baz" as ChainID,
+  chainId: "foo-bar-baz" as ChainId,
   signer: pubJson,
   kind: TransactionKind.SEND,
   recipient: fromHex("009985cb38847474fe9febfd56ab67e14bcd56f3") as AddressBytes,
@@ -138,7 +138,7 @@ export const randomTxJson: SignedTransaction = {
 };
 
 const setNameMsg: SetNameTx = {
-  chainId: "bns-mainnet" as ChainID,
+  chainId: "bns-mainnet" as ChainId,
   signer: pubJson,
   kind: TransactionKind.SET_NAME,
   name: "king*iov.one",
@@ -151,7 +151,7 @@ export const setNameTxJson: SignedTransaction = {
 
 export const hashCode = Uint8Array.from([...hashId, ...fromHex("1122334455aabbccddee")]);
 const swapCounterMsg: SwapCounterTx = {
-  chainId: "swap-a-doo" as ChainID,
+  chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
   kind: TransactionKind.SWAP_COUNTER,
   recipient: fromHex("123485cb38847474fe9febfd56ab67e14bcd56f3") as AddressBytes,
@@ -172,7 +172,7 @@ export const swapCounterTxJson: SignedTransaction = {
 };
 
 const swapClaimMsg: SwapClaimTx = {
-  chainId: "swap-a-doo" as ChainID,
+  chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
   kind: TransactionKind.SWAP_CLAIM,
   preimage: fromHex("00000000fffffffffff000000000"),
@@ -185,7 +185,7 @@ export const swapClaimTxJson: SignedTransaction = {
 };
 
 const swapTimeoutMsg: SwapTimeoutTx = {
-  chainId: "swap-a-doo" as ChainID,
+  chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
   kind: TransactionKind.SWAP_TIMEOUT,
   swapId: fromHex("1234") as SwapIDBytes,

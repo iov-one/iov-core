@@ -14,10 +14,10 @@ export type TTLString = TTL & string;
 declare const TokenTickerSymbol: unique symbol;
 export type TokenTicker = typeof TokenTickerSymbol & string;
 
-// ChainID is used to differentiate a blockchain
+// ChainId is used to differentiate a blockchain
 // should be alphanumeric or -_/ and unique
-declare const ChainSymbol: unique symbol;
-export type ChainID = typeof ChainSymbol & string;
+declare const ChainIdSymbol: unique symbol;
+export type ChainId = typeof ChainIdSymbol & string;
 
 declare const SwapIDSymbol: unique symbol;
 type SwapID = typeof SwapIDSymbol;
@@ -44,7 +44,7 @@ export const enum TransactionKind {
 }
 
 export interface BaseTx {
-  readonly chainId: ChainID;
+  readonly chainId: ChainId;
   readonly fee?: FungibleToken;
   // signer needs to be a PublicKey as we use that to as an identifier to the Keyring for lookup
   readonly signer: PublicKeyBundle;
