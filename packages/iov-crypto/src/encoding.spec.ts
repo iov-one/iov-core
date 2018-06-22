@@ -56,5 +56,12 @@ describe("Encoding", () => {
     expect(Encoding.encodeAsAscii("")).toEqual(new Uint8Array([]));
     expect(Encoding.encodeAsAscii("abc")).toEqual(new Uint8Array([0x61, 0x62, 0x63]));
     expect(Encoding.encodeAsAscii(" ?=-n|~+-*/\\")).toEqual(new Uint8Array([0x20, 0x3f, 0x3d, 0x2d, 0x6e, 0x7c, 0x7e, 0x2b, 0x2d, 0x2a, 0x2f, 0x5c]));
+
+    expect(() => {
+      Encoding.encodeAsAscii("ö");
+    }).toThrow();
+    expect(() => {
+      Encoding.encodeAsAscii("ß");
+    }).toThrow();
   });
 });
