@@ -17,7 +17,7 @@
     "test-chrome": "karma start --single-run --browsers ChromeHeadless",
     "test-safari": "karma start --single-run --browsers Safari",
     "test": "yarn build && yarn test-node",
-    "prebuild": "yarn lint && yarn format",
+    "prebuild": "yarn format && yarn lint",
     "build": "tsc && cp ./src/codec.* ./build/src",
     "find-proto": "find $GOPATH/src/github.com/confio/weave $GOPATH/src/github.com/iov-one/bcp-demo -name '*.proto' -not -path '*/vendor/*' -not -path '*/examples/*'",
     "pack-proto": "yarn run pbjs -t static-module -w commonjs -o src/codec.js",
@@ -28,24 +28,7 @@
     "@iov/crypto": "^0.0.0",
     "@iov/types": "^0.0.0",
     "@types/long": "^4.0.0",
-    "@types/node": "^10.3.2",
     "long": "^4.0.0",
     "protobufjs": "^6.8.6"
-  },
-  "devDependencies": {
-    "@types/jasmine": "^2.8.8",
-    "jasmine": "^3.1.0",
-    "jasmine-console-reporter": "^3.0.2",
-    "karma": "^2.0.2",
-    "karma-chrome-launcher": "^2.2.0",
-    "karma-firefox-launcher": "^1.1.0",
-    "karma-jasmine": "^1.1.2",
-    "karma-safari-launcher": "^1.0.0",
-    "karma-sourcemap-loader": "^0.3.7",
-    "karma-typescript": "^3.0.12",
-    "karma-webpack": "^3.0.0",
-    "ts-loader": "^4.4.1",
-    "tslint": "^5.10.0",
-    "webpack": "^4.12.0"
   }
 }

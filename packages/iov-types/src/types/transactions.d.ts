@@ -1,4 +1,4 @@
-import * as Long from "long";
+import Long from "long";
 import { AddressBytes, PublicKeyBundle } from "./keys";
 
 declare const NonceSymbol: unique symbol;
