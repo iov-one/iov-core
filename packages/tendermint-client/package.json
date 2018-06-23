@@ -21,10 +21,5 @@
   "dependencies": {
     "@iov/types": "^0.0.0",
     "xstream": "^11.3.0"
-  },
-  "devDependencies": {
-    "ts-node": "^6.0.3",
-    "tslint": "^5.10.0",
-    "typescript": "^2.8.3"
   }
 }
