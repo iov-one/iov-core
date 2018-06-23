@@ -18,14 +18,9 @@
     "prebuild": "yarn format && yarn lint",
     "build": "tsc"
   },
-  "devDependencies": {
-    "@types/node": "^9.6.6",
-    "ts-node": "^6.0.3",
-    "tslint": "^5.10.0",
-    "typescript": "^2.8.3"
-  },
   "dependencies": {
     "@types/long": "^4.0.0",
+    "@types/node": "^9.6.6",
     "long": "^4.0.0",
     "xstream": "^11.4.0"
   }
