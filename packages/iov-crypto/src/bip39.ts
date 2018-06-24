@@ -15,9 +15,9 @@ export class EnglishMnemonic {
       throw new Error("Invalid mnemonic format");
     }
 
-    const wordCount = mnemonic.split(" ").length;
-    if (wordCount !== 12 && wordCount !== 18 && wordCount !== 24) {
-      throw new Error(`Invalid word count in mnemonic (allowed: 12, 18, 24 got: ${wordCount})`);
+    const words = mnemonic.split(" ");
+    if (words.length !== 12 && words.length !== 18 && words.length !== 24) {
+      throw new Error(`Invalid word count in mnemonic (allowed: 12, 18, 24 got: ${words.length})`);
     }
 
     // Throws with informative error message if mnemonic is not valid
