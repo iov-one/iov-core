@@ -149,6 +149,26 @@ describe("Bip39", () => {
       new EnglishMnemonic("zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo");
     }).toThrowError(/invalid mnemonic checksum/i);
 
+    // valid Spanish and Italian bip39 mnemonics
+    expect(() => {
+      new EnglishMnemonic("humo odio oriente colina taco fingir salto geranio glaciar academia suave vigor");
+    }).toThrowError(/contains invalid word/i);
+    expect(() => {
+      new EnglishMnemonic("yema folleto tos llave obtener natural fruta deseo laico sopa novato lazo imponer afinar vena hoja zarza cama");
+    }).toThrowError(/contains invalid word/i);
+    expect(() => {
+      new EnglishMnemonic("burla plaza arroz ronda pregunta vacuna veloz boina retiro exento prensa tortuga cabeza pilar anual molino molde fiesta masivo jefe leve fatiga clase plomo");
+    }).toThrowError(/contains invalid word/i);
+    expect(() => {
+      new EnglishMnemonic("braccio trincea armonia emiro svedese lepre stridulo metallo baldo rasente potassio rilassato");
+    }).toThrowError(/contains invalid word/i);
+    expect(() => {
+      new EnglishMnemonic("riparato arrosto globulo singolo bozzolo roba pirolisi ultimato padrone munto leggero avanzato monetario guanto lorenzo latino inoltrare modulo");
+    }).toThrowError(/contains invalid word/i);
+    expect(() => {
+      new EnglishMnemonic("promessa mercurio spessore snodo trave risata mecenate vichingo ceto orecchino vissuto risultato canino scarso futile fune epilogo uovo inedito apatico folata egoismo rifugio coma");
+    }).toThrowError(/contains invalid word/i);
+
     // tslint:enable:no-unused-expression
   });
 
