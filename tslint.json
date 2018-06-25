@@ -22,6 +22,7 @@
     "no-parameter-reassignment": true,
     "no-unnecessary-class": ["allow-static-only"],
     "no-var-keyword": true,
+    "object-literal-shorthand": false,
     "object-literal-sort-keys": false,
     "readonly-array": true,
     "readonly-keyword": true,
