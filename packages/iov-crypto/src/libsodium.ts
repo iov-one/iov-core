@@ -15,11 +15,21 @@ export class Random {
   }
 }
 
-export declare const Ed25519KeypairSymbol: unique symbol;
-export type Ed25519Keypair = typeof Ed25519KeypairSymbol & {
-  readonly pubkey: Uint8Array;
-  readonly privkey: Uint8Array;
-};
+export class Ed25519Keypair {
+  // a libsodium privkey has the format `<ed25519 privkey> + <ed25519 pubkey>`
+  public static fromLibsodiumPrivkey(libsodiumPrivkey: Uint8Array): Ed25519Keypair {
+    if (libsodiumPrivkey.length !== 64) {
+      throw new Error(`Unexpected key length ${libsodiumPrivkey.length}. Must be 64.`);
+    }
+    return new Ed25519Keypair(libsodiumPrivkey.slice(0, 32), libsodiumPrivkey.slice(32, 64));
+  }
+
+  constructor(public readonly privkey: Uint8Array, public readonly pubkey: Uint8Array) {}
+
+  public toLibsodiumPrivkey(): Uint8Array {
+    return new Uint8Array([...this.privkey, ...this.pubkey]);
+  }
+}
 
 export class Ed25519 {
   // Generates a keypair deterministically from a given 32 bytes seed
@@ -29,17 +39,12 @@ export class Ed25519 {
   public static async generateKeypair(seed: Uint8Array): Promise<Ed25519Keypair> {
     await sodium.ready;
     const keypair = sodium.crypto_sign_seed_keypair(seed);
-
-    // tslint:disable-next-line:no-object-literal-type-assertion
-    return {
-      pubkey: keypair.publicKey,
-      privkey: keypair.privateKey,
-    } as Ed25519Keypair;
+    return Ed25519Keypair.fromLibsodiumPrivkey(keypair.privateKey);
   }
 
-  public static async createSignature(message: Uint8Array, privkey: Uint8Array): Promise<Uint8Array> {
+  public static async createSignature(message: Uint8Array, keyPair: Ed25519Keypair): Promise<Uint8Array> {
     await sodium.ready;
-    return sodium.crypto_sign_detached(message, privkey);
+    return sodium.crypto_sign_detached(message, keyPair.toLibsodiumPrivkey());
   }
 
   public static async verifySignature(
