@@ -1,4 +1,6 @@
 import * as bip39 from "bip39";
+// tslint:disable-next-line:no-submodule-imports
+import bip39_wordlist_english from "bip39/wordlists/english.json";
 import { pbkdf2 } from "pbkdf2";
 import * as unorm from "unorm";
 
@@ -15,9 +17,15 @@ export class EnglishMnemonic {
       throw new Error("Invalid mnemonic format");
     }
 
-    const wordCount = mnemonic.split(" ").length;
-    if (wordCount !== 12 && wordCount !== 18 && wordCount !== 24) {
-      throw new Error(`Invalid word count in mnemonic (allowed: 12, 18, 24 got: ${wordCount})`);
+    const words = mnemonic.split(" ");
+    if (words.length !== 12 && words.length !== 18 && words.length !== 24) {
+      throw new Error(`Invalid word count in mnemonic (allowed: 12, 18, 24 got: ${words.length})`);
+    }
+
+    for (const word of words) {
+      if ((bip39_wordlist_english as ReadonlyArray<string>).indexOf(word) === -1) {
+        throw new Error("Mnemonic contains invalid word");
+      }
     }
 
     // Throws with informative error message if mnemonic is not valid
