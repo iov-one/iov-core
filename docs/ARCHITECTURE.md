@@ -87,56 +87,112 @@ I want to use the KeyController to perform a calculation
 and then feed the results into the next step of a longer
 workflow. How do I represent this?
 
-This is an open question and I would love an alternative response.
-What is below is rough ideas of what could be done....
-
 ## Two types of flow
 
-We have one workflow that modifies the state of the system
-(currently activated account, creating new keys, granting
-permission to websites). These state changes can be represented
-by serializable actions that can be reduced into a given state,
-like the whole flux/redux idea.
+**Proposal** 
+(after discussion and reflection, I like this, but please give feedback)
 
-There is another workflow that uses the current state of the
-system to perform actions (sign transactions, sign messages,
-submit transactions to the blockchain). These ones can
-use standard promise chaining (or async/await) to perform
-sequential computation.
+**Async Actions** Just like when we call a website to perform an action 
+in redux. We get a promise back, which we can resolve to some state.
+This is the case that should be used when we want to perform a
+state-changing action on a remote system. This allows us to handle
+success and failure modes at least, or possible use the result for
+other actions. Here we can use standard promise chaining
+(or async/await) to perform sequential computation.
 
-Thus any method may be a "state-changing action" and collapsed
-into the `dispatch` / `listen` methods, or a "workflow computation"
-and return a Promise calculated on 
+**Reactive State Mirror** If we want to display the current
+state of the system (list of accounts, current balance, etc),
+the client can choose to mirror a subset of the state of the server. 
+We can add `GetState` and `SubscribeToStateChanges` functionality. 
+Such that on initial connect the client copies that substate 
+locally. It then subscribes to an event stream of all changes. Those
+changes can be applied to the local state mirror via redux-like dispatcher
+keeping the two in sync. Or course it could also be used in a fully
+(functional) reactive programming style like 
+[cycle.js](https://cycle.js.org/). 
 
-## Higher-order coupling
+An API should exist of multiple asynchronous actions for every
+state transition that can be triggered from outside, and a
+standardized subscription API to reactively mirror state.
+The first part is pretty standard, the second one will be visited
+in more detail in th next section.
 
-But wait... if we see the UI component and the KeyController as
-independent state machines that we can couple with change events,
-isn't the blockchain just another such state machine? Transactions
-are just another name for actions. They are dispatched to
-the blockchain by posting the signed bytes, and they will either
-produce a change of state, or return an error, just like above.
+## Reactively Mirroring State
 
-We clearly cannot sync the entire state of the blockchain locally,
-but we could query some subset of the state (my account, my nonce,
-my previous transaction) and even subscribe to changes there to 
-get an event stream and just reduce those events into our local
-image of the portion blockchain state that interests us.
+We have some system state and we want to display it on a client.
+Basically we need a local mirror of the state. This can be
+acheived by:
 
-Maybe we could conceive of the blockchain as a `dispatch`/`listen`-er
-(what is the name here? an actor?). We no longer await on data or
-results... we have the local copy of the nonce always available.
-And we just get events on the state of the posted transaction.
+* Querying on refresh (typical web pages, always show old state)
+* Polling to auto-refresh (get responsiveness but kill the server)
+* Subscribing to changes (websockets, etc.)
 
-The only `await` left in this whole workflow is the signing of
-the transaction to deal with the latency of a hardware wallet.
-I'm not sure we could abstract that any further.... 
+### Types of Subscriptions
 
-## Other thoughts
+A subscription will often look something like "Give me state +
+Subscribe to all change events on that state". Assuming 
+"give me state" can be done efficiently and there is a
+consistent connection between client and server, this can work well.
+The client has no memory and just mirrors the server.
+One of the most advanced examples of such an architecture
+is [Rethink DB Change Feed API](https://rethinkdb.com/docs/changefeeds/javascript/)
+You can optionally [include the initial value](https://rethinkdb.com/docs/changefeeds/javascript/#including-initial-values)
+and get a callback on every change.
 
-Hmmm... maybe `redux-promises` or `redux-saga` would have some useful
-inspiration on how to combine these async workflows with actions
-and dispatchers....
+With modern javascript, we could replace the callback with
+a streams and Observables, like 
+[RxJs](https://rxjs-dev.firebaseapp.com/) or 
+[xstream](http://staltz.github.io/xstream/). But the logic would
+remain the same.
+
+PostgreSQL has a concept of [streaming replication](https://www.postgresql.org/docs/10/static/protocol-replication.html)
+and is designed for the case where we cannot copy the entire state
+when a connection breaks. This may inform a design where the client
+has a memory of information (eg. all transactions on many accounts,
+the votes in an election) and after a short disconnect wants to update
+the information reactively again. Rather than being forced to query
+the entire state, or just streaming changes from the time of
+reconnection (possibly losing some changes while disconnected),
+we want to be able to query for "all changes since the last one I saw",
+which we can pass to the server.
+
+In the case of PostgreSQL, you first 
+[CREATE_REPLICATION_SLOT](https://www.postgresql.org/docs/10/static/protocol-replication.html#PROTOCOL-REPLICATION-CREATE-SLOT)
+to create a queue, and start appending all change events from that 
+point on. When you want to start (or restart) replication,
+you [START_REPLICATION](https://www.postgresql.org/docs/10/static/protocol-replication.html#id-1.10.5.9.4.1.5.1.8), which 
+`Instructs server to start streaming WAL,  starting at WAL location XXX/XXX.` 
+Note the use of two (long) integers to denote the location in a stream
+of events. 
+`The receiving process can send replies back to the sender at any time`,
+including 
+`The location of the last WAL byte + 1 received and written to disk in the standby.`
+Once the receiving process has acknowledged receipt up to a given point,
+the sending process is free to clean up this replication slot.
+Otherwise it maintains history until memory limits and garbage
+collection force a cleanup.
+
+From the above, we can see how we can design a client with persistence
+to maintain an offline-usable view as well as quickly reestablish
+a live view of the state over flaky connections. This may sound a bit
+theoretical, but if we aim for a mobile wallet, we should build
+in such a mechanism for the client-server connections. If we want a
+live view from another module in the same process, or another
+process guaranteed to be on the same machine, the simpler 
+"change feed" is sufficient to maintain a smooth user experience.
+
+### Filtering state
+
+When the state we query is the unlocked public identities in a local
+key store, it is simple enough to mirror the entire state in the UI and
+decide what to display in the UI itself. However, if we wish to monitor
+the balance of 3 accounts, we hardly have to stream the entire state
+of a blockchain to do so. For this case we will we need some filter
+on the connection, so only a targetted subset of the data is transmitted.
+
+**TODO** Specify this out clearly...
+
+^^^ This is the last open question of efficiently reactively streaming blockchain state ^^^
 
 ## A semi-concrete use case
 
