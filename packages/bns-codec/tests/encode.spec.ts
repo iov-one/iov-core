@@ -1,4 +1,4 @@
-import { Ed25519 } from "@iov/crypto";
+import { Ed25519, Ed25519Keypair } from "@iov/crypto";
 
 import * as codec from "../src/codec";
 import { buildMsg, buildSignedTx, buildUnsignedTx } from "../src/encode";
@@ -74,17 +74,17 @@ describe("Encode transactions", () => {
 
 describe("Ensure crypto", () => {
   it("private key and public key match", async done => {
-    const privKey = privJson.data;
+    const keypair = Ed25519Keypair.fromLibsodiumPrivkey(privJson.data);
     const pubKey = pubJson.data;
     const msg = Uint8Array.from([12, 54, 98, 243, 11]);
-    const signature = await Ed25519.createSignature(msg, privKey);
+    const signature = await Ed25519.createSignature(msg, keypair);
     const value = await Ed25519.verifySignature(signature, msg, pubKey);
     expect(value).toBeTruthy();
     done();
   });
 
   it("sign bytes match", async done => {
-    const privKey = privJson.data;
+    const keypair = Ed25519Keypair.fromLibsodiumPrivkey(privJson.data);
     const pubKey = pubJson.data;
 
     const tx = await buildUnsignedTx(sendTxJson);
@@ -98,7 +98,7 @@ describe("Ensure crypto", () => {
     expect(valid).toBeTruthy();
 
     // make sure we can generate a compatible signature
-    const mySig = await Ed25519.createSignature(toSign, privKey);
+    const mySig = await Ed25519.createSignature(toSign, keypair);
     expect(mySig).toEqual(signature);
     done();
   });
