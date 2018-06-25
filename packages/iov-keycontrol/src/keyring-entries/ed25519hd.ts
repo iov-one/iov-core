@@ -6,20 +6,20 @@ export class Ed25519HdKeyringEntry /* implements KeyringEntry */ {
   public static fromEntropy(bip39Entropy: Uint8Array): Ed25519HdKeyringEntry {
     const mnemonic = Bip39.encode(bip39Entropy);
     const data = {
-      secretIdentity: mnemonic.asString()
+      secret: mnemonic.asString(),
     };
     return new Ed25519HdKeyringEntry(JSON.stringify(data) as KeyDataString);
   }
 
-  private readonly secretIdentity: EnglishMnemonic;
+  private readonly secret: EnglishMnemonic;
 
   constructor(data: KeyDataString) {
-    this.secretIdentity = JSON.parse(data).secretIdentity;
+    this.secret = JSON.parse(data).secret;
   }
 
   public async serialize(): Promise<KeyDataString> {
     const data = {
-      secretIdentity: this.secretIdentity.asString()
+      secret: this.secret.asString(),
     };
     return JSON.stringify(data) as KeyDataString;
   }
