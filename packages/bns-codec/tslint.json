@@ -1,7 +1,3 @@
 {
-  "extends": "../../tslint.json",
-  "rules": {
-    "object-literal-sort-keys": false,
-    "no-unnecessary-class": ["allow-static-only"]
-  }
+  "extends": "../../tslint.json"
 }
