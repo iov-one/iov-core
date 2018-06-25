@@ -9,7 +9,7 @@ export declare class Ed25519Keypair {
     toLibsodiumPrivkey(): Uint8Array;
 }
 export declare class Ed25519 {
-    static generateKeypair(seed: Uint8Array): Promise<Ed25519Keypair>;
+    static makeKeypair(seed: Uint8Array): Promise<Ed25519Keypair>;
     static createSignature(message: Uint8Array, keyPair: Ed25519Keypair): Promise<Uint8Array>;
     static verifySignature(signature: Uint8Array, message: Uint8Array, pubkey: Uint8Array): Promise<boolean>;
 }

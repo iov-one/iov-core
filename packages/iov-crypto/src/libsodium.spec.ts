@@ -53,18 +53,19 @@ describe("Libsodium", () => {
         {
           // ok
           const seed = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0b9");
-          const keypair = await Ed25519.generateKeypair(seed);
+          const keypair = await Ed25519.makeKeypair(seed);
           expect(keypair).toBeTruthy();
           expect(keypair.pubkey).toBeTruthy();
           expect(keypair.privkey).toBeTruthy();
           expect(keypair.pubkey.byteLength).toEqual(32);
           expect(keypair.privkey.byteLength).toEqual(32);
+          expect(keypair.privkey).toEqual(seed);
         }
 
         {
           // seed too short
           const seed = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0");
-          await Ed25519.generateKeypair(seed)
+          await Ed25519.makeKeypair(seed)
             .then(() => {
               fail("promise must not resolve");
             })
@@ -76,7 +77,7 @@ describe("Libsodium", () => {
         {
           // seed too long
           const seed = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0b9aa");
-          await Ed25519.generateKeypair(seed)
+          await Ed25519.makeKeypair(seed)
             .then(() => {
               fail("promise must not resolve");
             })
@@ -100,10 +101,10 @@ describe("Libsodium", () => {
         const seedB1 = fromHex("c0c42a0276d456ee007faae2cc7d1bc8925dd74983726d548e10da14c3aed12a");
         const seedB2 = fromHex("c0c42a0276d456ee007faae2cc7d1bc8925dd74983726d548e10da14c3aed12a");
 
-        const keypairA1 = await Ed25519.generateKeypair(seedA1);
-        const keypairA2 = await Ed25519.generateKeypair(seedA2);
-        const keypairB1 = await Ed25519.generateKeypair(seedB1);
-        const keypairB2 = await Ed25519.generateKeypair(seedB2);
+        const keypairA1 = await Ed25519.makeKeypair(seedA1);
+        const keypairA2 = await Ed25519.makeKeypair(seedA2);
+        const keypairB1 = await Ed25519.makeKeypair(seedB1);
+        const keypairB2 = await Ed25519.makeKeypair(seedB2);
 
         expect(keypairA1).toEqual(keypairA2);
         expect(keypairB1).toEqual(keypairB2);
@@ -121,7 +122,7 @@ describe("Libsodium", () => {
     it("creates signatures", done => {
       (async () => {
         const seed = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0b9");
-        const keypair = await Ed25519.generateKeypair(seed);
+        const keypair = await Ed25519.makeKeypair(seed);
         const message = new Uint8Array([0x11, 0x22]);
         const signature = await Ed25519.createSignature(message, keypair);
         expect(signature).toBeTruthy();
@@ -138,7 +139,7 @@ describe("Libsodium", () => {
     it("creates signatures deterministically", done => {
       (async () => {
         const seed = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0b9");
-        const keypair = await Ed25519.generateKeypair(seed);
+        const keypair = await Ed25519.makeKeypair(seed);
         const message = new Uint8Array([0x11, 0x22]);
 
         const signature1 = await Ed25519.createSignature(message, keypair);
@@ -156,7 +157,7 @@ describe("Libsodium", () => {
     it("verifies signatures", done => {
       (async () => {
         const seed = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0b9");
-        const keypair = await Ed25519.generateKeypair(seed);
+        const keypair = await Ed25519.makeKeypair(seed);
         const message = new Uint8Array([0x11, 0x22]);
         const signature = await Ed25519.createSignature(message, keypair);
 
@@ -183,7 +184,7 @@ describe("Libsodium", () => {
         {
           // wrong pubkey
           const otherSeed = fromHex("91099374790843e29552c3cfa5e9286d6c77e00a2c109aaf3d0a307081314a09");
-          const wrongPubkey = (await Ed25519.generateKeypair(otherSeed)).pubkey;
+          const wrongPubkey = (await Ed25519.makeKeypair(otherSeed)).pubkey;
           const ok = await Ed25519.verifySignature(signature, message, wrongPubkey);
           expect(ok).toEqual(false);
         }
