@@ -34,7 +34,6 @@ describe("Ed25519KeyringEntry", () => {
       expect(newIdentity.algo).toEqual(firstIdentity.algo);
       expect(newIdentity.data).toEqual(firstIdentity.data);
       expect(newIdentity.nickname).toEqual(firstIdentity.nickname);
-      expect(newIdentity.canSign).toEqual(firstIdentity.canSign);
 
       done();
     })().catch(error => {
@@ -58,13 +57,11 @@ describe("Ed25519KeyringEntry", () => {
       expect(newIdentity1.algo).toEqual(firstIdentity.algo);
       expect(newIdentity1.data).toEqual(firstIdentity.data);
       expect(newIdentity1.nickname).toEqual(firstIdentity.nickname);
-      expect(newIdentity1.canSign).toEqual(firstIdentity.canSign);
 
       const lastIdentity = (await keyringEntry.getIdentities())[4];
       expect(newIdentity5.algo).toEqual(lastIdentity.algo);
       expect(newIdentity5.data).toEqual(lastIdentity.data);
       expect(newIdentity5.nickname).toEqual(lastIdentity.nickname);
-      expect(newIdentity5.canSign).toEqual(lastIdentity.canSign);
 
       done();
     })().catch(error => {
@@ -137,19 +134,16 @@ describe("Ed25519KeyringEntry", () => {
       expect(decodedJson[0].publicIdentity.algo).toEqual("ed25519");
       expect(decodedJson[0].publicIdentity.data).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson[0].publicIdentity.nickname).toBeUndefined();
-      expect(decodedJson[0].publicIdentity.canSign).toEqual(true);
       expect(decodedJson[0].privkey).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson[1].publicIdentity).toBeTruthy();
       expect(decodedJson[1].publicIdentity.algo).toEqual("ed25519");
       expect(decodedJson[1].publicIdentity.data).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson[1].publicIdentity.nickname).toEqual("");
-      expect(decodedJson[1].publicIdentity.canSign).toEqual(true);
       expect(decodedJson[1].privkey).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson[2].publicIdentity).toBeTruthy();
       expect(decodedJson[2].publicIdentity.algo).toEqual("ed25519");
       expect(decodedJson[2].publicIdentity.data).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson[2].publicIdentity.nickname).toEqual("foo");
-      expect(decodedJson[2].publicIdentity.canSign).toEqual(true);
       expect(decodedJson[2].privkey).toMatch(/[0-9a-f]{64}/);
 
       // keys are different
@@ -179,30 +173,27 @@ describe("Ed25519KeyringEntry", () => {
 
       {
         // one element
-        const serialized = '[{"publicIdentity": { "algo": "ed25519", "data": "aabbccdd", "nickname": "foo", "canSign": true }, "privkey": "223322112233aabb"}]' as KeyDataString;
+        const serialized = '[{"publicIdentity": { "algo": "ed25519", "data": "aabbccdd", "nickname": "foo" }, "privkey": "223322112233aabb"}]' as KeyDataString;
         const entry = new Ed25519KeyringEntry(serialized);
         expect(entry).toBeTruthy();
         expect((await entry.getIdentities()).length).toEqual(1);
         expect((await entry.getIdentities())[0].algo).toEqual("ed25519");
         expect((await entry.getIdentities())[0].data).toEqual(Encoding.fromHex("aabbccdd"));
         expect((await entry.getIdentities())[0].nickname).toEqual("foo");
-        expect((await entry.getIdentities())[0].canSign).toEqual(true);
       }
 
       {
         // two elements
-        const serialized = '[{"publicIdentity": { "algo": "ed25519", "data": "aabbccdd", "nickname": "foo", "canSign": true }, "privkey": "223322112233aabb"}, {"publicIdentity": { "algo": "ed25519", "data": "ddccbbaa", "nickname": "bar", "canSign": true }, "privkey": "ddddeeee"}]' as KeyDataString;
+        const serialized = '[{"publicIdentity": { "algo": "ed25519", "data": "aabbccdd", "nickname": "foo" }, "privkey": "223322112233aabb"}, {"publicIdentity": { "algo": "ed25519", "data": "ddccbbaa", "nickname": "bar" }, "privkey": "ddddeeee"}]' as KeyDataString;
         const entry = new Ed25519KeyringEntry(serialized);
         expect(entry).toBeTruthy();
         expect((await entry.getIdentities()).length).toEqual(2);
         expect((await entry.getIdentities())[0].algo).toEqual("ed25519");
         expect((await entry.getIdentities())[0].data).toEqual(Encoding.fromHex("aabbccdd"));
         expect((await entry.getIdentities())[0].nickname).toEqual("foo");
-        expect((await entry.getIdentities())[0].canSign).toEqual(true);
         expect((await entry.getIdentities())[1].algo).toEqual("ed25519");
         expect((await entry.getIdentities())[1].data).toEqual(Encoding.fromHex("ddccbbaa"));
         expect((await entry.getIdentities())[1].nickname).toEqual("bar");
-        expect((await entry.getIdentities())[1].canSign).toEqual(true);
       }
 
       done();

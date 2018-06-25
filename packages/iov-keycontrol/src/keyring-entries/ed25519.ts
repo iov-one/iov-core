@@ -15,6 +15,8 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     return identity.algo + "|" + Encoding.toHex(identity.data);
   }
 
+  public readonly canSign = true;
+
   private readonly identities: PublicIdentity[];
   private readonly privkeys: Map<string, Ed25519Keypair>;
 
@@ -32,7 +34,6 @@ export class Ed25519KeyringEntry implements KeyringEntry {
           algo: record.publicIdentity.algo,
           data: keypair.pubkey as PublicKeyBytes,
           nickname: record.publicIdentity.nickname,
-          canSign: true, // TODO: get from serialized data
         };
         const identityId = Ed25519KeyringEntry.identityId(identity);
         identities.push(identity);
@@ -51,7 +52,6 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     const newIdentity: PublicIdentity = {
       algo: Algorithm.ED25519,
       data: keypair.pubkey as PublicKeyBytes,
-      canSign: true,
     };
     const identityId = Ed25519KeyringEntry.identityId(newIdentity);
     this.privkeys.set(identityId, keypair);
@@ -71,7 +71,6 @@ export class Ed25519KeyringEntry implements KeyringEntry {
       algo: this.identities[index].algo,
       data: this.identities[index].data,
       nickname: nickname,
-      canSign: this.identities[index].canSign,
     };
   }
 
@@ -97,7 +96,6 @@ export class Ed25519KeyringEntry implements KeyringEntry {
           algo: identity.algo,
           data: Encoding.toHex(identity.data),
           nickname: identity.nickname,
-          canSign: identity.canSign,
         },
         privkey: Encoding.toHex(keypair.privkey),
       };
