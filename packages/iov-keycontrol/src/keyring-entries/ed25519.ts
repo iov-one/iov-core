@@ -1,5 +1,12 @@
 import { Ed25519, Encoding, Random } from "@iov/crypto";
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
+import {
+  Algorithm,
+  ChainId,
+  PublicKeyBundle,
+  PublicKeyBytes,
+  SignableBytes,
+  SignatureBytes,
+} from "@iov/types";
 
 import { KeyDataString, KeyringEntry, PublicIdentity } from "../keyring";
 
