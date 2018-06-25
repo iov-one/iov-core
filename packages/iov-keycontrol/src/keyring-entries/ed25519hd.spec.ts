@@ -37,4 +37,27 @@ describe("Ed25519HdKeyringEntry", () => {
       });
     });
   });
+
+  it("can set, change and unset an identity nickname", done => {
+    (async () => {
+      const entry = new Ed25519HdKeyringEntry(`{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive" }` as KeyDataString);
+      const newIdentity = await entry.createIdentity();
+      expect(entry.getIdentities()[0].nickname).toBeUndefined();
+
+      entry.setIdentityNickname(newIdentity, "foo");
+      expect(entry.getIdentities()[0].nickname).toEqual("foo");
+
+      entry.setIdentityNickname(newIdentity, "bar");
+      expect(entry.getIdentities()[0].nickname).toEqual("bar");
+
+      entry.setIdentityNickname(newIdentity, undefined);
+      expect(entry.getIdentities()[0].nickname).toBeUndefined();
+
+      done();
+    })().catch(error => {
+      setTimeout(() => {
+        throw error;
+      });
+    });
+  });
 });
