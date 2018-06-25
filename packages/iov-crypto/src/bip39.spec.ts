@@ -62,6 +62,12 @@ describe("Bip39", () => {
   describe("EnglishMnemonic", () => {
     // tslint:disable:no-unused-expression
 
+    it("works for valid inputs", () => {
+      new EnglishMnemonic("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
+      new EnglishMnemonic("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon agent");
+      new EnglishMnemonic("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art");
+    });
+
     it("rejects invalid whitespacing", () => {
       // extra space (leading, middle, trailing)
       expect(() => {
