@@ -35,7 +35,11 @@ describe("Libsodium", () => {
         }
 
         done();
-      })();
+      })().catch(error => {
+        setTimeout(() => {
+          throw error;
+        });
+      });
     });
   });
 
@@ -82,7 +86,11 @@ describe("Libsodium", () => {
         }
 
         done();
-      })();
+      })().catch(error => {
+        setTimeout(() => {
+          throw error;
+        });
+      });
     });
 
     it("generates keypairs deterministically", done => {
@@ -103,7 +111,11 @@ describe("Libsodium", () => {
         expect(keypairA2).not.toEqual(keypairB2);
 
         done();
-      })();
+      })().catch(error => {
+        setTimeout(() => {
+          throw error;
+        });
+      });
     });
 
     it("creates signatures", done => {
@@ -116,7 +128,11 @@ describe("Libsodium", () => {
         expect(signature.byteLength).toEqual(64);
 
         done();
-      })();
+      })().catch(error => {
+        setTimeout(() => {
+          throw error;
+        });
+      });
     });
 
     it("creates signatures deterministically", done => {
@@ -130,7 +146,11 @@ describe("Libsodium", () => {
         expect(signature1).toEqual(signature2);
 
         done();
-      })();
+      })().catch(error => {
+        setTimeout(() => {
+          throw error;
+        });
+      });
     });
 
     it("verifies signatures", done => {
@@ -169,7 +189,11 @@ describe("Libsodium", () => {
         }
 
         done();
-      })();
+      })().catch(error => {
+        setTimeout(() => {
+          throw error;
+        });
+      });
     });
 
     it("works with RFC8032 test vectors", done => {
@@ -219,7 +243,11 @@ describe("Libsodium", () => {
         }
 
         done();
-      })();
+      })().catch(error => {
+        setTimeout(() => {
+          throw error;
+        });
+      });
     });
   });
 
@@ -239,7 +267,11 @@ describe("Libsodium", () => {
         expect(decrypted).toEqual(originalMessage);
 
         done();
-      })();
+      })().catch(error => {
+        setTimeout(() => {
+          throw error;
+        });
+      });
     });
 
     it("decryption fails with wrong ciphertext/key/nonce", done => {
@@ -301,7 +333,11 @@ describe("Libsodium", () => {
         }
 
         done();
-      })();
+      })().catch(error => {
+        setTimeout(() => {
+          throw error;
+        });
+      });
     });
 
     it("encrypt conforms to Botan implementation ", done => {
@@ -354,7 +390,11 @@ describe("Libsodium", () => {
         }
 
         done();
-      })();
+      })().catch(error => {
+        setTimeout(() => {
+          throw error;
+        });
+      });
     });
 
     it("decrypt conforms to Botan implementation ", done => {
@@ -406,7 +446,11 @@ describe("Libsodium", () => {
         }
 
         done();
-      })();
+      })().catch(error => {
+        setTimeout(() => {
+          throw error;
+        });
+      });
     });
   });
 });
