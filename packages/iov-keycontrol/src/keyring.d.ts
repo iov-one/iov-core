@@ -13,12 +13,6 @@ export interface PublicIdentity extends PublicKeyBundle {
   // nickname is an optional, local name.
   // this is not exposed to other people, use BNS registration for that
   readonly nickname?: string;
-
-  // canSign flag means the private key is currently accessible.
-  // if a hardware ledger is not plugged in, we may
-  // see the public keys, but have it "inactive"
-  // as long as this flag is false
-  readonly canSign: boolean;
 }
 
 /*
@@ -48,6 +42,11 @@ export interface KeyringEntry {
 
   // getIdentities returns all identities currently registered
   readonly getIdentities: () => Promise<ReadonlyArray<PublicIdentity>>;
+
+  // canSign flag means the private key material is currently accessible.
+  // If a hardware ledger is not plugged in, we may see the public keys,
+  // but have it "inactive" as long as this flag is false.
+  readonly canSign: boolean;
 
   // createTransactionSignature will return a detached signature for the signable bytes
   // with the private key that matches the given PublicIdentity.
