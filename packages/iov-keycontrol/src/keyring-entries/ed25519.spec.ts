@@ -18,7 +18,9 @@ describe("Ed25519KeyringEntry", () => {
 
       done();
     })().catch(error => {
-      setTimeout(() => { throw error });
+      setTimeout(() => {
+        throw error;
+      });
     });
   });
 
@@ -36,7 +38,9 @@ describe("Ed25519KeyringEntry", () => {
 
       done();
     })().catch(error => {
-      setTimeout(() => { throw error });
+      setTimeout(() => {
+        throw error;
+      });
     });
   });
 
@@ -64,7 +68,9 @@ describe("Ed25519KeyringEntry", () => {
 
       done();
     })().catch(error => {
-      setTimeout(() => { throw error });
+      setTimeout(() => {
+        throw error;
+      });
     });
   });
 
@@ -85,7 +91,9 @@ describe("Ed25519KeyringEntry", () => {
 
       done();
     })().catch(error => {
-      setTimeout(() => { throw error });
+      setTimeout(() => {
+        throw error;
+      });
     });
   });
 
@@ -102,7 +110,9 @@ describe("Ed25519KeyringEntry", () => {
 
       done();
     })().catch(error => {
-      setTimeout(() => { throw error });
+      setTimeout(() => {
+        throw error;
+      });
     });
   });
 
@@ -152,7 +162,9 @@ describe("Ed25519KeyringEntry", () => {
 
       done();
     })().catch(error => {
-      setTimeout(() => { throw error });
+      setTimeout(() => {
+        throw error;
+      });
     });
   });
 
@@ -195,7 +207,9 @@ describe("Ed25519KeyringEntry", () => {
 
       done();
     })().catch(error => {
-      setTimeout(() => { throw error });
+      setTimeout(() => {
+        throw error;
+      });
     });
   });
 
@@ -223,7 +237,9 @@ describe("Ed25519KeyringEntry", () => {
 
       done();
     })().catch(error => {
-      setTimeout(() => { throw error });
+      setTimeout(() => {
+        throw error;
+      });
     });
   });
 });
