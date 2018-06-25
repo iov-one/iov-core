@@ -73,6 +73,14 @@ describe("Bip39", () => {
       expect(() => {
         new EnglishMnemonic("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about ");
       }).toThrowError(/invalid mnemonic format/i);
+
+      // newline, tab
+      expect(() => {
+        new EnglishMnemonic("abandon\nabandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
+      }).toThrowError(/invalid mnemonic format/i);
+      expect(() => {
+        new EnglishMnemonic("abandon\tabandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
+      }).toThrowError(/invalid mnemonic format/i);
     });
 
     it("rejects disallowed letters", () => {
