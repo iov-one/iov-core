@@ -43,6 +43,19 @@ describe("Libsodium", () => {
     });
   });
 
+  describe("Ed25519Keypair", () => {
+    it("loads from Libsodium private key", () => {
+      const keypair = Ed25519Keypair.fromLibsodiumPrivkey(fromHex("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"));
+      expect(keypair.privkey).toEqual(fromHex("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
+      expect(keypair.pubkey).toEqual(fromHex("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"));
+    });
+
+    it("exports Libsodium private key", () => {
+      const keypair = new Ed25519Keypair(fromHex("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), fromHex("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"));
+      expect(keypair.toLibsodiumPrivkey()).toEqual(fromHex("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"));
+    });
+  });
+
   describe("Ed25519", () => {
     it("exists", () => {
       expect(Ed25519).toBeTruthy();
