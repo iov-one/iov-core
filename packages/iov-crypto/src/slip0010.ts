@@ -1,9 +1,9 @@
 import BN = require("bn.js");
-import Long = require("long");
 
 import { Encoding } from "./encoding";
 import { Hmac } from "./hmac";
 import { Sha512 } from "./sha";
+import { Uint32 } from "./utils";
 
 export interface Slip0010Result {
   readonly chainCode: Uint8Array;
@@ -15,17 +15,10 @@ export enum Slip0010Curve {
   Ed25519 = "ed25519 seed",
 }
 
-function serializeUint32BigEndian(int: number): ReadonlyArray<number> {
-  if (int < 0 || int > 4294967295) {
-    throw new Error("int not in uint32 range: " + int.toString());
+export class Slip0010RawIndex extends Uint32 {
+  public isHardened(): boolean {
+    return this.data >= 2 ** 31;
   }
-
-  const bytes = Long.fromInt(int).toBytesBE();
-  if (bytes.length !== 8) {
-    throw new Error("Panic! Long is not 8 bytes long.");
-  }
-
-  return bytes.slice(4, 8);
 }
 
 // Universal private key derivation accoring to
@@ -34,7 +27,7 @@ export class Slip0010 {
   public static derivePath(
     curve: Slip0010Curve,
     seed: Uint8Array,
-    path: ReadonlyArray<number>,
+    path: ReadonlyArray<Slip0010RawIndex>,
   ): Slip0010Result {
     // tslint:disable-next-line:no-let
     let result = this.master(curve, seed);
@@ -44,12 +37,12 @@ export class Slip0010 {
     return result;
   }
 
-  public static rawIndexFromHardened(hardenedIndex: number): number {
-    return hardenedIndex + 2 ** 31;
+  public static rawIndexFromHardened(hardenedIndex: number): Slip0010RawIndex {
+    return new Slip0010RawIndex(hardenedIndex + 2 ** 31);
   }
 
-  public static rawIndexFromNormal(normalIndex: number): number {
-    return normalIndex;
+  public static rawIndexFromNormal(normalIndex: number): Slip0010RawIndex {
+    return new Slip0010RawIndex(normalIndex);
   }
 
   private static master(curve: Slip0010Curve, seed: Uint8Array): Slip0010Result {
@@ -71,20 +64,14 @@ export class Slip0010 {
     curve: Slip0010Curve,
     parentPrivkey: Uint8Array,
     parentChainCode: Uint8Array,
-    rawIndex: number,
+    rawIndex: Slip0010RawIndex,
   ): Slip0010Result {
-    if (rawIndex < 0 || rawIndex > 4294967295) {
-      throw new Error("index not in uint32 range: " + rawIndex.toString());
-    }
-
     // tslint:disable-next-line:no-let
     let i: Uint8Array;
-    if (rawIndex >= 2 ** 31) {
-      // child is a hardened key
-      const payload = new Uint8Array([0x00, ...parentPrivkey, ...serializeUint32BigEndian(rawIndex)]);
+    if (rawIndex.isHardened()) {
+      const payload = new Uint8Array([0x00, ...parentPrivkey, ...rawIndex.toBytesBigEndian()]);
       i = new Hmac(Sha512, parentChainCode).update(payload).digest();
     } else {
-      // child is a normal key
       if (curve === Slip0010Curve.Ed25519) {
         throw new Error("Normal keys are not allowed with ed25519");
       } else {
@@ -102,7 +89,7 @@ export class Slip0010 {
     curve: Slip0010Curve,
     parentPrivkey: Uint8Array,
     parentChainCode: Uint8Array,
-    rawIndex: number,
+    rawIndex: Slip0010RawIndex,
     i: Uint8Array,
   ): Slip0010Result {
     // step 2 (of the Private parent key → private child key algorithm)
@@ -129,7 +116,7 @@ export class Slip0010 {
     // step 6
     if (this.isGteN(curve, il) || this.isZero(returnChildKey)) {
       const newI = new Hmac(Sha512, parentChainCode)
-        .update(new Uint8Array([0x01, ...ir, ...serializeUint32BigEndian(rawIndex)]))
+        .update(new Uint8Array([0x01, ...ir, ...rawIndex.toBytesBigEndian()]))
         .digest();
       return this.childImpl(curve, parentPrivkey, parentChainCode, rawIndex, newI);
     }
