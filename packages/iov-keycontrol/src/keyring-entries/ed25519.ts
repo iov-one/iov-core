@@ -1,4 +1,4 @@
-import { Ed25519, Encoding, Random } from "@iov/crypto";
+import { Ed25519, Ed25519Keypair, Encoding, Random } from "@iov/crypto";
 import {
   Algorithm,
   ChainId,
@@ -16,23 +16,27 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   }
 
   private readonly identities: PublicIdentity[];
-  private readonly privkeys: Map<string, Uint8Array>;
+  private readonly privkeys: Map<string, Ed25519Keypair>;
 
   constructor(data?: KeyDataString) {
     const identities: PublicIdentity[] = [];
-    const privkeys = new Map<string, Uint8Array>();
+    const privkeys = new Map<string, Ed25519Keypair>();
     if (data) {
       const decodedData = JSON.parse(data);
       for (const record of decodedData) {
+        const keypair = new Ed25519Keypair(
+          Encoding.fromHex(record.privkey),
+          Encoding.fromHex(record.publicIdentity.data),
+        );
         const identity: PublicIdentity = {
           algo: record.publicIdentity.algo,
-          data: Encoding.fromHex(record.publicIdentity.data) as PublicKeyBytes,
+          data: keypair.pubkey as PublicKeyBytes,
           nickname: record.publicIdentity.nickname,
           canSign: true, // TODO: get from serialized data
         };
         const identityId = Ed25519KeyringEntry.identityId(identity);
         identities.push(identity);
-        privkeys.set(identityId, Encoding.fromHex(record.privkey));
+        privkeys.set(identityId, keypair);
       }
     }
 
@@ -42,7 +46,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
   public async createIdentity(): Promise<PublicIdentity> {
     const seed = await Random.getBytes(32);
-    const keypair = await Ed25519.generateKeypair(seed);
+    const keypair = await Ed25519.makeKeypair(seed);
 
     const newIdentity: PublicIdentity = {
       algo: Algorithm.ED25519,
@@ -50,7 +54,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
       canSign: true,
     };
     const identityId = Ed25519KeyringEntry.identityId(newIdentity);
-    this.privkeys.set(identityId, keypair.privkey);
+    this.privkeys.set(identityId, keypair);
     this.identities.push(newIdentity);
     return newIdentity;
   }
@@ -87,7 +91,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
   public async serialize(): Promise<KeyDataString> {
     const out = this.identities.map(identity => {
-      const privkey = this.privateKeyForIdentity(identity);
+      const keypair = this.privateKeyForIdentity(identity);
       return {
         publicIdentity: {
           algo: identity.algo,
@@ -95,14 +99,14 @@ export class Ed25519KeyringEntry implements KeyringEntry {
           nickname: identity.nickname,
           canSign: identity.canSign,
         },
-        privkey: Encoding.toHex(privkey),
+        privkey: Encoding.toHex(keypair.privkey),
       };
     });
     return JSON.stringify(out) as KeyDataString;
   }
 
   // This throws an exception when private key is missing
-  private privateKeyForIdentity(identity: PublicKeyBundle): Uint8Array {
+  private privateKeyForIdentity(identity: PublicKeyBundle): Ed25519Keypair {
     const identityId = Ed25519KeyringEntry.identityId(identity);
     const privkey = this.privkeys.get(identityId);
     if (!privkey) {

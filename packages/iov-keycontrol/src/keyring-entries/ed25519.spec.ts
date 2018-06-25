@@ -138,19 +138,19 @@ describe("Ed25519KeyringEntry", () => {
       expect(decodedJson[0].publicIdentity.data).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson[0].publicIdentity.nickname).toBeUndefined();
       expect(decodedJson[0].publicIdentity.canSign).toEqual(true);
-      expect(decodedJson[0].privkey).toMatch(/[0-9a-f]{128}/);
+      expect(decodedJson[0].privkey).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson[1].publicIdentity).toBeTruthy();
       expect(decodedJson[1].publicIdentity.algo).toEqual("ed25519");
       expect(decodedJson[1].publicIdentity.data).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson[1].publicIdentity.nickname).toEqual("");
       expect(decodedJson[1].publicIdentity.canSign).toEqual(true);
-      expect(decodedJson[1].privkey).toMatch(/[0-9a-f]{128}/);
+      expect(decodedJson[1].privkey).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson[2].publicIdentity).toBeTruthy();
       expect(decodedJson[2].publicIdentity.algo).toEqual("ed25519");
       expect(decodedJson[2].publicIdentity.data).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson[2].publicIdentity.nickname).toEqual("foo");
       expect(decodedJson[2].publicIdentity.canSign).toEqual(true);
-      expect(decodedJson[2].privkey).toMatch(/[0-9a-f]{128}/);
+      expect(decodedJson[2].privkey).toMatch(/[0-9a-f]{64}/);
 
       // keys are different
       expect(decodedJson[0].publicIdentity.data).not.toEqual(decodedJson[1].publicIdentity.data);
