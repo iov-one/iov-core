@@ -1,9 +1,9 @@
 import BN = require("bn.js");
-import Long = require("long");
 
 import { Encoding } from "./encoding";
 import { Hmac } from "./hmac";
 import { Sha512 } from "./sha";
+import { Uint32 } from "./utils";
 
 export interface Slip0010Result {
   readonly chainCode: Uint8Array;
@@ -13,19 +13,6 @@ export interface Slip0010Result {
 export enum Slip0010Curve {
   Secp256k1 = "Bitcoin seed",
   Ed25519 = "ed25519 seed",
-}
-
-function serializeUint32BigEndian(int: number): ReadonlyArray<number> {
-  if (int < 0 || int > 4294967295) {
-    throw new Error("int not in uint32 range: " + int.toString());
-  }
-
-  const bytes = Long.fromInt(int).toBytesBE();
-  if (bytes.length !== 8) {
-    throw new Error("Panic! Long is not 8 bytes long.");
-  }
-
-  return bytes.slice(4, 8);
 }
 
 // Universal private key derivation accoring to
@@ -81,7 +68,7 @@ export class Slip0010 {
     let i: Uint8Array;
     if (rawIndex >= 2 ** 31) {
       // child is a hardened key
-      const payload = new Uint8Array([0x00, ...parentPrivkey, ...serializeUint32BigEndian(rawIndex)]);
+      const payload = new Uint8Array([0x00, ...parentPrivkey, ...new Uint32(rawIndex).toBytesBigEndian()]);
       i = new Hmac(Sha512, parentChainCode).update(payload).digest();
     } else {
       // child is a normal key
@@ -129,7 +116,7 @@ export class Slip0010 {
     // step 6
     if (this.isGteN(curve, il) || this.isZero(returnChildKey)) {
       const newI = new Hmac(Sha512, parentChainCode)
-        .update(new Uint8Array([0x01, ...ir, ...serializeUint32BigEndian(rawIndex)]))
+        .update(new Uint8Array([0x01, ...ir, ...new Uint32(rawIndex).toBytesBigEndian()]))
         .digest();
       return this.childImpl(curve, parentPrivkey, parentChainCode, rawIndex, newI);
     }
