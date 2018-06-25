@@ -6,12 +6,12 @@ they contain.
 
 ## Key Terms:
 
-- UserProfile: A collection of User materials. Includes multiple `keyringEntries` associated with a UserProfile.
-- Keyring: An object containing `keyringEntry`'s.
-- KeyringEntry: An object which houses ONE `SecretIdentity` and N `PublicIdentities`.
-- SecretIdentity: Single Private material entry in a `KeyringEntry`, used for signing transactions and deriving `PublicIdentities`.
-- PublicIdentities: Public materials collection. Contains the an array of objects related to `SecretIdentity`.
-- PublicIdentity: A collection of information derived from a `SecretIdentity`. It includes an address, publicKey, and HD path data which is always defined via the HD specifications. Used for end user queries for balances and transaction histories.
+- `UserProfile`: A collection of User materials. Includes multiple `keyringEntries` associated with a `UserProfile`.
+- `Keyring`: An object containing `keyringEntry`'s.
+- `KeyringEntry`: An object which houses ONE `SeedIdentity` and N `PublicIdentities`.
+- `SeedIdentity`: Single Private material entry in a `KeyringEntry`, used for deriving a `secret` to sign  transactions and generate `PublicIdentities`.
+- `PublicIdentities`: Public materials collection. Contains the an array of objects related to a `SeedIdentity`.
+- `PublicIdentity`: A collection of information derived from a `secret`. It includes an address, publicKey, and HD path data which is always defined via the HD specifications. Used for end user queries for balances and transaction histories.
 
 ## Feature Set:
 
@@ -110,7 +110,7 @@ UserProfileController (1 UserProfileController)
           |
           | > keyringEntries (1 Keyring : N KeyringEntries)
               |
-              | > SecretIdentity (1 KeyringEntry : 1 SecretIdentity)
+              | > SeedIdentity (1 KeyringEntry : 1 SeedIdentity)
                   |
                   | > PublicIdentities (1 SecretIdentity : N PublicIdentities)
 ```
@@ -229,25 +229,25 @@ of the `UserProfile`'s `KeyringEntry`s. This is a `1:1` relation inside of a
 
 ## KeyringEntry
 
-A `KeyringEntry` contains all of the related `SecretIdentity`,
-`PublicIdentities` and personality information for an associated `SecretIdentity`.
+A `KeyringEntry` contains all of the related `SeedIdentity`,
+`PublicIdentities` and personality information for an associated `SeedIdentity`.
 
-A `SecretIdentity` is only an HD Seed value (`Mnemonic Passphrase`) or a
+A `SeedIdentity` is only an HD Seed value (`Mnemonic Passphrase`) or a
 hardware device identifier for a `Ledger`.
 
-This is a `1:1` relation, where each `KeyringEntry` has one `SecretIdentity`.
+This is a `1:1` relation, where each `KeyringEntry` has one `SeedIdentity`.
 
 ### Functions:
-- CreateSecretIdentity: Creates a `SecretIdentity`, if the `KeyRingEntry` has none.
-- RenameSecretIdentity: Changes the label of the `keyringEntry`.
-- DeleteSecretIdentity: Removes the `SecretIdentity` from the `keyringEntry`.
-- ExportSecretIdentity: Exports the `SecretIdentity` in plain text. Only the type of `HD` can be exported.
+- CreateSeedIdentity: Creates a `SeedIdentity`, if the `KeyRingEntry` has none.
+- RenameSeedIdentity: Changes the label of the `keyringEntry`.
+- DeleteSeedIdentity: Removes the `SeedIdentity` from the `keyringEntry`.
+- ExportSeedIdentity: Exports the `SeedIdentity` in plain text. Only the type of `HD` can be exported.
 
 ### Object Definition:
 ```
 "KeyringEntry": {
   "label": "My Account",
-  "SecretIdentity": {
+  "SeedIdentity": {
    "seed": "shift nature mean excess demise mule winter between swing success bitter patch",
    "type": "HD" || "hardware"
   },
@@ -262,12 +262,12 @@ This is a `1:1` relation, where each `KeyringEntry` has one `SecretIdentity`.
 A `PublicIdentities` are derived from `seed:curve` pairs, which are used to
 create a `PublicIdentity`.
 
-This is a `1:N` relation, where 1 is the `SecretIdentity` for which the
+This is a `1:N` relation, where 1 is the `SeedIdentity` for which the
 `PublicIdentity` is related and N are the generated `PublicIdentities`.  
 
 ### Functions:
 - GetPublicIdentity: Returns `PublicIdentity` details for a specific algorithm.
-- CreatePublicIdentity: Creates a `PublicIdentity` from the `SecretIdentity`.
+- CreatePublicIdentity: Creates a `PublicIdentity` from the `SeedIdentity`.
 - DeletePublicIdentity: Removes a `PublicIdentity` from `PublicIdentities`.
 - ExportPublicIdentity: Exports  a `PublicIdentity` in plain text.
 
@@ -311,7 +311,7 @@ The following is what a fully initialized profile will look like. This includes 
   "keyring": {
     "keyringEntries": [
       "KeyringEntry": {
-        "SecretIdentity": {
+        "SeedIdentity": {
          "label": "My Account",
          "seed": "shift nature mean excess demise mule winter between swing success bitter patch",
          "type": "HD" || "hardware"
