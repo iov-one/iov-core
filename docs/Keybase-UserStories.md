@@ -44,30 +44,30 @@ Flush in memory changes to disk, after encrypting the `UserProfile`.
 
 The following entries discuss the routes a User will take to make identities.
 
-#### I don't have a `SecretIdentity` and want to Add one
+#### I don't have a `SeedIdentity` and want to Add one
 
-Create a new a `keyringEntry` with a generated `SecretIdentity`. This
+Create a new a `keyringEntry` with a generated `SeedIdentity`. This
 `keyringEntry` is added to the `keyringEntries` array.
 
-#### I want to Import a `SecretIdentity` from an `HD Seed`
+#### I want to Import a `SeedIdentity` from an `HD Seed`
 
-Create a new `keyringEntry`. The `HD Seed` is inserted into the `SecretIdentity`
+Create a new `keyringEntry`. The `HD Seed` is inserted into the `SeedIdentity`
 of the `keyringEntry`, and its `type` set to `seed`.
 
-#### I want to add a Hardware `SecretIdentity` to the `Keyring`.
+#### I want to add a Hardware `SeedIdentity` to the `Keyring`.
 
 Create a `keyringEntry` and scrape hardware identifiers from the device to
-populate the `SecretIdentity`.
+populate the `SeedIdentity`.
 
 #### I want to create an Universal Address Pair
 
 Add two `publicIdentity`s, one for `ed25519` and one for `secp256k1`, to
-`publicIdentities` using the `SecretIdentity`. These identities use only the
+`publicIdentities` using the `SeedIdentity`. These identities use only the
 BIP32 standard.
 
 #### I want to create an Extended Address
 
-Add a `publicIdentity` to `publicIdentities` using the `SecretIdentity`. This
+Add a `publicIdentity` to `publicIdentities` using the `SeedIdentity`. This
 identity uses the full BIP44 and BIP32 standards.
 
 # Usage
@@ -80,7 +80,7 @@ Add a `contact` to the `addressBook` in the `UserProfile`
 
 #### I have a populated `KeyringEntry` and want to sign a something
 
-Create a signature from `bytes`, a `SecretIdentity` and `PublicIdentity`
+Create a signature from `bytes`, a `SeedIdentity` and `PublicIdentity`
 pair. Return a `signature`.
 
 ####  I have a populated `KeyringEntry` and want to get a balance
@@ -106,9 +106,9 @@ Return a JSON file with the contents of the `UserProfile`
 
 Return a JSON file with the contents of the `Keyring`
 
-#### I want to export a `SecretIdentity` from a `KeyringEntry`
+#### I want to export a `SeedIdentity` from a `KeyringEntry`
 
-Return the `seed` in plain text from the `SecretIdentity`.
+Return the `seed` in plain text from the `SeedIdentity`.
 
 #### I want to export a `PublicIdentity` from a `KeyringEntry`
 
