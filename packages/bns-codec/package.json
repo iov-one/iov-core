@@ -11,7 +11,7 @@
   },
   "scripts": {
     "lint": "tslint --project .",
-    "format": "prettier --write **/*.ts",
+    "format": "prettier --write ./src/**/*.ts ./tests/**/*.ts",
     "test-node": "./jasmine-testrunner.js",
     "test-firefox": "karma start --single-run --browsers Firefox",
     "test-chrome": "karma start --single-run --browsers ChromeHeadless",
