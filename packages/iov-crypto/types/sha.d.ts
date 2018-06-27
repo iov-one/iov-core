@@ -11,7 +11,6 @@ export declare class Sha1 implements HashFunction {
     digest(): Uint8Array;
 }
 export declare class Sha256 implements HashFunction {
-    static digest(data: Uint8Array): Promise<Uint8Array>;
     readonly blockSize: number;
     private readonly impl;
     constructor(firstData?: Uint8Array);

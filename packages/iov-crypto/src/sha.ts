@@ -30,11 +30,6 @@ export class Sha1 implements HashFunction {
 }
 
 export class Sha256 implements HashFunction {
-  // async interface to support implementations that rely on WebAssemby compilation later on
-  public static digest(data: Uint8Array): Promise<Uint8Array> {
-    return Promise.resolve(new Sha256().update(data).digest());
-  }
-
   public readonly blockSize = 512 / 8;
 
   private readonly impl: any;
