@@ -9,13 +9,15 @@ describe("Sha256", () => {
     expect(Sha256).toBeTruthy();
   });
 
-  it("works for empty input", done => {
-    (async () => {
-      const hash = await Sha256.digest(new Uint8Array([]));
+  it("works for empty input", () => {
+    {
+      const hash = new Sha256(new Uint8Array([])).digest();
       expect(toHex(hash)).toEqual("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
-
-      done();
-    })();
+    }
+    {
+      const hash = new Sha256().digest();
+      expect(toHex(hash)).toEqual("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+    }
   });
 
   it("works for all the Botan test vectors", done => {
