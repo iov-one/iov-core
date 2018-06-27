@@ -1,3 +1,4 @@
+import { Encoding } from "@iov/crypto";
 import { Algorithm } from "@iov/types";
 
 import { KeyDataString } from "../keyring";
@@ -5,8 +6,15 @@ import { Ed25519HdKeyringEntry } from "./ed25519hd";
 
 describe("Ed25519HdKeyringEntry", () => {
   it("can be deserialized", () => {
-    const keyringEntry = new Ed25519HdKeyringEntry(`{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive" }` as KeyDataString);
-    expect(keyringEntry).toBeTruthy();
+    const entry = new Ed25519HdKeyringEntry(`{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive" }` as KeyDataString);
+    expect(entry).toBeTruthy();
+    expect(entry.getIdentities().length).toEqual(0);
+  });
+
+  it("can be created from entropy", () => {
+    const entry = Ed25519HdKeyringEntry.fromEntropy(Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"));
+    expect(entry).toBeTruthy();
+    expect(entry.getIdentities().length).toEqual(0);
   });
 
   it("can create identities", done => {
