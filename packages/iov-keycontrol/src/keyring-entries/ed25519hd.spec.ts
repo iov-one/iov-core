@@ -1,5 +1,5 @@
 import { Encoding } from "@iov/crypto";
-import { Algorithm } from "@iov/types";
+import { Algorithm, ChainId, SignableBytes } from "@iov/types";
 
 import { KeyDataString } from "../keyring";
 import { Ed25519HdKeyringEntry } from "./ed25519hd";
@@ -60,6 +60,27 @@ describe("Ed25519HdKeyringEntry", () => {
 
       entry.setIdentityNickname(newIdentity, undefined);
       expect(entry.getIdentities()[0].nickname).toBeUndefined();
+
+      done();
+    })().catch(error => {
+      setTimeout(() => {
+        throw error;
+      });
+    });
+  });
+
+  it("can sign", done => {
+    (async () => {
+      const entry = new Ed25519HdKeyringEntry(`{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive" }` as KeyDataString);
+      const newIdentity = await entry.createIdentity();
+
+      expect(entry.canSign).toEqual(true);
+
+      const tx = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
+      const chainId = "some-chain" as ChainId;
+      const signature = await entry.createTransactionSignature(newIdentity, tx, chainId);
+      expect(signature).toBeTruthy();
+      expect(signature.length).toEqual(64);
 
       done();
     })().catch(error => {
