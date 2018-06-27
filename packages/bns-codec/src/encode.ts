@@ -14,21 +14,21 @@ import * as codec from "./codec";
 import { encodeFullSig, encodeToken } from "./types";
 import { hashIdentifier, keyToAddress } from "./util";
 
-export const buildSignedTx = async (tx: SignedTransaction): Promise<codec.app.ITx> => {
+export const buildSignedTx = (tx: SignedTransaction): codec.app.ITx => {
   const sigs: ReadonlyArray<FullSignature> = [tx.primarySignature, ...tx.otherSignatures];
-  const built = await buildUnsignedTx(tx.transaction);
+  const built = buildUnsignedTx(tx.transaction);
   return { ...built, signatures: sigs.map(encodeFullSig) };
 };
 
-export const buildUnsignedTx = async (tx: UnsignedTransaction): Promise<codec.app.ITx> => {
-  const msg = await buildMsg(tx);
+export const buildUnsignedTx = (tx: UnsignedTransaction): codec.app.ITx => {
+  const msg = buildMsg(tx);
   return codec.app.Tx.create({
     ...msg,
     fees: tx.fee ? { fees: encodeToken(tx.fee) } : null,
   });
 };
 
-export const buildMsg = (tx: UnsignedTransaction): Promise<codec.app.ITx> => {
+export const buildMsg = (tx: UnsignedTransaction): codec.app.ITx => {
   switch (tx.kind) {
     case TransactionKind.SEND:
       return buildSendTx(tx);
@@ -45,7 +45,7 @@ export const buildMsg = (tx: UnsignedTransaction): Promise<codec.app.ITx> => {
   }
 };
 
-const buildSendTx = async (tx: SendTx): Promise<codec.app.ITx> => ({
+const buildSendTx = (tx: SendTx): codec.app.ITx => ({
   sendMsg: codec.cash.SendMsg.create({
     src: keyToAddress(tx.signer),
     dest: tx.recipient,
@@ -54,19 +54,19 @@ const buildSendTx = async (tx: SendTx): Promise<codec.app.ITx> => ({
   }),
 });
 
-const buildSetNameTx = async (tx: SetNameTx): Promise<codec.app.ITx> => ({
+const buildSetNameTx = (tx: SetNameTx): codec.app.ITx => ({
   setNameMsg: codec.namecoin.SetWalletNameMsg.create({
     address: keyToAddress(tx.signer),
     name: tx.name,
   }),
 });
 
-const buildSwapOfferTx = async (tx: SwapOfferTx): Promise<codec.app.ITx> => {
+const buildSwapOfferTx = (tx: SwapOfferTx): codec.app.ITx => {
   const hashed = { ...tx, hashCode: hashIdentifier(tx.preimage), kind: TransactionKind.SWAP_COUNTER };
   return buildSwapCounterTx(hashed as SwapCounterTx);
 };
 
-const buildSwapCounterTx = async (tx: SwapCounterTx): Promise<codec.app.ITx> => ({
+const buildSwapCounterTx = (tx: SwapCounterTx): codec.app.ITx => ({
   createEscrowMsg: codec.escrow.CreateEscrowMsg.create({
     sender: keyToAddress(tx.signer),
     arbiter: tx.hashCode,
@@ -76,14 +76,14 @@ const buildSwapCounterTx = async (tx: SwapCounterTx): Promise<codec.app.ITx> => 
   }),
 });
 
-const buildSwapClaimTx = async (tx: SwapClaimTx): Promise<codec.app.ITx> => ({
+const buildSwapClaimTx = (tx: SwapClaimTx): codec.app.ITx => ({
   releaseEscrowMsg: codec.escrow.ReleaseEscrowMsg.create({
     escrowId: tx.swapId,
   }),
   preimage: tx.preimage,
 });
 
-const buildSwapTimeoutTx = async (tx: SwapTimeoutTx): Promise<codec.app.ITx> => ({
+const buildSwapTimeoutTx = (tx: SwapTimeoutTx): codec.app.ITx => ({
   returnEscrowMsg: codec.escrow.ReturnEscrowMsg.create({
     escrowId: tx.swapId,
   }),
