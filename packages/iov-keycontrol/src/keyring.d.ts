@@ -41,7 +41,7 @@ export interface KeyringEntry {
   readonly setIdentityNickname: (identity: PublicKeyBundle, name: string | undefined) => Promise<void>;
 
   // getIdentities returns all identities currently registered
-  readonly getIdentities: () => Promise<ReadonlyArray<PublicIdentity>>;
+  readonly getIdentities: () => ReadonlyArray<PublicIdentity>;
 
   // canSign flag means the private key material is currently accessible.
   // If a hardware ledger is not plugged in, we may see the public keys,

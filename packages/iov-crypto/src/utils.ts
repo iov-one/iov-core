@@ -18,4 +18,8 @@ export class Uint32 {
     }
     return bytes.slice(4, 8);
   }
+
+  public asNumber(): number {
+    return this.data;
+  }
 }
