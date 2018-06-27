@@ -16,6 +16,14 @@ export enum Slip0010Curve {
 }
 
 export class Slip0010RawIndex extends Uint32 {
+  public static hardened(hardenedIndex: number): Slip0010RawIndex {
+    return new Slip0010RawIndex(hardenedIndex + 2 ** 31);
+  }
+
+  public static normal(normalIndex: number): Slip0010RawIndex {
+    return new Slip0010RawIndex(normalIndex);
+  }
+
   public isHardened(): boolean {
     return this.data >= 2 ** 31;
   }
@@ -35,14 +43,6 @@ export class Slip0010 {
       result = this.child(curve, result.privkey, result.chainCode, rawIndex);
     }
     return result;
-  }
-
-  public static rawIndexFromHardened(hardenedIndex: number): Slip0010RawIndex {
-    return new Slip0010RawIndex(hardenedIndex + 2 ** 31);
-  }
-
-  public static rawIndexFromNormal(normalIndex: number): Slip0010RawIndex {
-    return new Slip0010RawIndex(normalIndex);
   }
 
   private static master(curve: Slip0010Curve, seed: Uint8Array): Slip0010Result {

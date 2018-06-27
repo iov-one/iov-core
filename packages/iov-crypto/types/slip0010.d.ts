@@ -8,12 +8,12 @@ export declare enum Slip0010Curve {
     Ed25519 = "ed25519 seed",
 }
 export declare class Slip0010RawIndex extends Uint32 {
+    static hardened(hardenedIndex: number): Slip0010RawIndex;
+    static normal(normalIndex: number): Slip0010RawIndex;
     isHardened(): boolean;
 }
 export declare class Slip0010 {
     static derivePath(curve: Slip0010Curve, seed: Uint8Array, path: ReadonlyArray<Slip0010RawIndex>): Slip0010Result;
-    static rawIndexFromHardened(hardenedIndex: number): Slip0010RawIndex;
-    static rawIndexFromNormal(normalIndex: number): Slip0010RawIndex;
     private static master(curve, seed);
     private static child(curve, parentPrivkey, parentChainCode, rawIndex);
     private static childImpl(curve, parentPrivkey, parentChainCode, rawIndex, i);
