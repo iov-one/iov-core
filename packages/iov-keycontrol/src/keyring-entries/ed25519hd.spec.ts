@@ -27,18 +27,18 @@ describe("Ed25519HdKeyringEntry", () => {
       const newIdentity2 = await entry.createIdentity();
       const newIdentity3 = await entry.createIdentity();
 
-      expect(newIdentity1.data).not.toEqual(newIdentity2.data);
-      expect(newIdentity2.data).not.toEqual(newIdentity3.data);
-      expect(newIdentity3.data).not.toEqual(newIdentity1.data);
+      expect(newIdentity1.pubkey.data).not.toEqual(newIdentity2.pubkey.data);
+      expect(newIdentity2.pubkey.data).not.toEqual(newIdentity3.pubkey.data);
+      expect(newIdentity3.pubkey.data).not.toEqual(newIdentity1.pubkey.data);
 
       const identities = entry.getIdentities();
       expect(identities.length).toEqual(3);
-      expect(identities[0].algo).toEqual(Algorithm.ED25519);
-      expect(identities[0].data).toEqual(newIdentity1.data);
-      expect(identities[1].algo).toEqual(Algorithm.ED25519);
-      expect(identities[1].data).toEqual(newIdentity2.data);
-      expect(identities[2].algo).toEqual(Algorithm.ED25519);
-      expect(identities[2].data).toEqual(newIdentity3.data);
+      expect(identities[0].pubkey.algo).toEqual(Algorithm.ED25519);
+      expect(identities[0].pubkey.data).toEqual(newIdentity1.pubkey.data);
+      expect(identities[1].pubkey.algo).toEqual(Algorithm.ED25519);
+      expect(identities[1].pubkey.data).toEqual(newIdentity2.pubkey.data);
+      expect(identities[2].pubkey.algo).toEqual(Algorithm.ED25519);
+      expect(identities[2].pubkey.data).toEqual(newIdentity3.pubkey.data);
 
       done();
     })().catch(error => {
@@ -111,28 +111,28 @@ describe("Ed25519HdKeyringEntry", () => {
       expect(decodedJson.secret).toMatch(/^[a-z]+( [a-z]+)*$/);
       expect(decodedJson.identities.length).toEqual(3);
       expect(decodedJson.identities[0].localIdentity).toBeTruthy();
-      expect(decodedJson.identities[0].localIdentity.algo).toEqual("ed25519");
-      expect(decodedJson.identities[0].localIdentity.data).toMatch(/[0-9a-f]{64}/);
+      expect(decodedJson.identities[0].localIdentity.pubkey.algo).toEqual("ed25519");
+      expect(decodedJson.identities[0].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson.identities[0].localIdentity.nickname).toBeUndefined();
       expect(decodedJson.identities[0].privkeyPath).toEqual(jasmine.any(Array));
       expect(decodedJson.identities[0].privkeyPath.length).toBeGreaterThanOrEqual(1);
       expect(decodedJson.identities[1].localIdentity).toBeTruthy();
-      expect(decodedJson.identities[1].localIdentity.algo).toEqual("ed25519");
-      expect(decodedJson.identities[1].localIdentity.data).toMatch(/[0-9a-f]{64}/);
+      expect(decodedJson.identities[1].localIdentity.pubkey.algo).toEqual("ed25519");
+      expect(decodedJson.identities[1].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson.identities[1].localIdentity.nickname).toEqual("");
       expect(decodedJson.identities[1].privkeyPath).toEqual(jasmine.any(Array));
       expect(decodedJson.identities[1].privkeyPath.length).toBeGreaterThanOrEqual(1);
       expect(decodedJson.identities[2].localIdentity).toBeTruthy();
-      expect(decodedJson.identities[2].localIdentity.algo).toEqual("ed25519");
-      expect(decodedJson.identities[2].localIdentity.data).toMatch(/[0-9a-f]{64}/);
+      expect(decodedJson.identities[2].localIdentity.pubkey.algo).toEqual("ed25519");
+      expect(decodedJson.identities[2].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson.identities[2].localIdentity.nickname).toEqual("foo");
       expect(decodedJson.identities[2].privkeyPath).toEqual(jasmine.any(Array));
       expect(decodedJson.identities[2].privkeyPath.length).toBeGreaterThanOrEqual(1);
 
       // keys are different
-      expect(decodedJson.identities[0].localIdentity.data).not.toEqual(decodedJson.identities[1].localIdentity.data);
-      expect(decodedJson.identities[1].localIdentity.data).not.toEqual(decodedJson.identities[2].localIdentity.data);
-      expect(decodedJson.identities[2].localIdentity.data).not.toEqual(decodedJson.identities[0].localIdentity.data);
+      expect(decodedJson.identities[0].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[1].localIdentity.pubkey.data);
+      expect(decodedJson.identities[1].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[2].localIdentity.pubkey.data);
+      expect(decodedJson.identities[2].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[0].localIdentity.pubkey.data);
       expect(decodedJson.identities[0].privkeyPath).not.toEqual(decodedJson.identities[1].privkeyPath);
       expect(decodedJson.identities[1].privkeyPath).not.toEqual(decodedJson.identities[2].privkeyPath);
       expect(decodedJson.identities[2].privkeyPath).not.toEqual(decodedJson.identities[0].privkeyPath);
@@ -155,26 +155,26 @@ describe("Ed25519HdKeyringEntry", () => {
 
     {
       // one element
-      const serialized = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [{"localIdentity": { "algo": "ed25519", "data": "aabbccdd", "nickname": "foo" }, "privkeyPath": [2147483649]}] }' as KeyDataString;
+      const serialized = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "nickname": "foo" }, "privkeyPath": [2147483649]}] }' as KeyDataString;
       const entry = new Ed25519HdKeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(1);
-      expect(entry.getIdentities()[0].algo).toEqual("ed25519");
-      expect(entry.getIdentities()[0].data).toEqual(Encoding.fromHex("aabbccdd"));
+      expect(entry.getIdentities()[0].pubkey.algo).toEqual("ed25519");
+      expect(entry.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
       expect(entry.getIdentities()[0].nickname).toEqual("foo");
     }
 
     {
       // two elements
-      const serialized = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [{"localIdentity": { "algo": "ed25519", "data": "aabbccdd", "nickname": "foo" }, "privkeyPath": [2147483649]}, {"localIdentity": { "algo": "ed25519", "data": "ddccbbaa", "nickname": "bar" }, "privkeyPath": [2147483650]}] }' as KeyDataString;
+      const serialized = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "nickname": "foo" }, "privkeyPath": [2147483649]}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "nickname": "bar" }, "privkeyPath": [2147483650]}] }' as KeyDataString;
       const entry = new Ed25519HdKeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(2);
-      expect(entry.getIdentities()[0].algo).toEqual("ed25519");
-      expect(entry.getIdentities()[0].data).toEqual(Encoding.fromHex("aabbccdd"));
+      expect(entry.getIdentities()[0].pubkey.algo).toEqual("ed25519");
+      expect(entry.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
       expect(entry.getIdentities()[0].nickname).toEqual("foo");
-      expect(entry.getIdentities()[1].algo).toEqual("ed25519");
-      expect(entry.getIdentities()[1].data).toEqual(Encoding.fromHex("ddccbbaa"));
+      expect(entry.getIdentities()[1].pubkey.algo).toEqual("ed25519");
+      expect(entry.getIdentities()[1].pubkey.data).toEqual(Encoding.fromHex("ddccbbaa"));
       expect(entry.getIdentities()[1].nickname).toEqual("bar");
     }
   });

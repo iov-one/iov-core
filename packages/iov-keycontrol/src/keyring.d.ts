@@ -8,7 +8,8 @@ declare const KeyringNameSymbol: unique symbol;
 export type KeyringName = typeof KeyringNameSymbol & string;
 
 // PublicIdentity is a public key we can identify with on a blockchain
-export interface PublicIdentity extends PublicKeyBundle {
+export interface PublicIdentity {
+  readonly pubkey: PublicKeyBundle
 }
 
 // LocalIdentity is a local version of a PublicIdentity that contains

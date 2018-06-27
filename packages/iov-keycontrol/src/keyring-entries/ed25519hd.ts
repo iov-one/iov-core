@@ -12,9 +12,13 @@ import { Algorithm, ChainId, PublicKeyBytes, SignableBytes, SignatureBytes } fro
 
 import { KeyDataString, KeyringEntry, LocalIdentity, PublicIdentity } from "../keyring";
 
-interface LocalIdentitySerialization {
+interface PubkeySerialization {
   readonly algo: string;
   readonly data: string;
+}
+
+interface LocalIdentitySerialization {
+  readonly pubkey: PubkeySerialization;
   readonly nickname?: string;
 }
 
@@ -39,7 +43,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   }
 
   private static identityId(identity: PublicIdentity): string {
-    return identity.algo + "|" + Encoding.toHex(identity.data);
+    return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
   }
 
   private static algorithmFromString(input: string): Algorithm {
@@ -68,8 +72,10 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     const privkeyPaths = new Map<string, ReadonlyArray<Slip0010RawIndex>>();
     for (const record of decodedData.identities) {
       const identity: LocalIdentity = {
-        algo: Ed25519HdKeyringEntry.algorithmFromString(record.localIdentity.algo),
-        data: Encoding.fromHex(record.localIdentity.data) as PublicKeyBytes,
+        pubkey: {
+          algo: Ed25519HdKeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo),
+          data: Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
+        },
         nickname: record.localIdentity.nickname,
       };
       const privkeyPath: ReadonlyArray<Slip0010RawIndex> = record.privkeyPath.map(
@@ -94,8 +100,10 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     const keypair = await Ed25519.makeKeypair(derivationResult.privkey);
 
     const newIdentity = {
-      algo: Algorithm.ED25519,
-      data: keypair.pubkey as PublicKeyBytes,
+      pubkey: {
+        algo: Algorithm.ED25519,
+        data: keypair.pubkey as PublicKeyBytes,
+      },
       nickname: undefined,
     };
     const newIdentityId = Ed25519HdKeyringEntry.identityId(newIdentity);
@@ -115,8 +123,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
 
     // tslint:disable-next-line:no-object-mutation
     this.identities[index] = {
-      algo: this.identities[index].algo,
-      data: this.identities[index].data,
+      pubkey: this.identities[index].pubkey,
       nickname: nickname,
     };
   }
@@ -140,8 +147,10 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
       const privkeyPath = this.privkeyPathForIdentity(identity);
       return {
         localIdentity: {
-          algo: identity.algo,
-          data: Encoding.toHex(identity.data),
+          pubkey: {
+            algo: identity.pubkey.algo,
+            data: Encoding.toHex(identity.pubkey.data),
+          },
           nickname: identity.nickname,
         },
         privkeyPath: privkeyPath.map(rawIndex => rawIndex.asNumber()),

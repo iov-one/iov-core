@@ -5,7 +5,7 @@ import { KeyDataString, KeyringEntry, LocalIdentity, PublicIdentity } from "../k
 
 export class Ed25519KeyringEntry implements KeyringEntry {
   private static identityId(identity: PublicIdentity): string {
-    return identity.algo + "|" + Encoding.toHex(identity.data);
+    return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
   }
 
   public readonly canSign = true;
@@ -21,11 +21,13 @@ export class Ed25519KeyringEntry implements KeyringEntry {
       for (const record of decodedData) {
         const keypair = new Ed25519Keypair(
           Encoding.fromHex(record.privkey),
-          Encoding.fromHex(record.publicIdentity.data),
+          Encoding.fromHex(record.publicIdentity.pubkey.data),
         );
         const identity: LocalIdentity = {
-          algo: record.publicIdentity.algo,
-          data: keypair.pubkey as PublicKeyBytes,
+          pubkey: {
+            algo: record.publicIdentity.pubkey.algo,
+            data: keypair.pubkey as PublicKeyBytes,
+          },
           nickname: record.publicIdentity.nickname,
         };
         const identityId = Ed25519KeyringEntry.identityId(identity);
@@ -43,8 +45,10 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     const keypair = await Ed25519.makeKeypair(seed);
 
     const newIdentity: LocalIdentity = {
-      algo: Algorithm.ED25519,
-      data: keypair.pubkey as PublicKeyBytes,
+      pubkey: {
+        algo: Algorithm.ED25519,
+        data: keypair.pubkey as PublicKeyBytes,
+      },
       nickname: undefined,
     };
     const identityId = Ed25519KeyringEntry.identityId(newIdentity);
@@ -62,8 +66,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
     // tslint:disable-next-line:no-object-mutation
     this.identities[index] = {
-      algo: this.identities[index].algo,
-      data: this.identities[index].data,
+      pubkey: this.identities[index].pubkey,
       nickname: nickname,
     };
   }
@@ -87,8 +90,10 @@ export class Ed25519KeyringEntry implements KeyringEntry {
       const keypair = this.privateKeyForIdentity(identity);
       return {
         publicIdentity: {
-          algo: identity.algo,
-          data: Encoding.toHex(identity.data),
+          pubkey: {
+            algo: identity.pubkey.algo,
+            data: Encoding.toHex(identity.pubkey.data),
+          },
           nickname: identity.nickname,
         },
         privkey: Encoding.toHex(keypair.privkey),
