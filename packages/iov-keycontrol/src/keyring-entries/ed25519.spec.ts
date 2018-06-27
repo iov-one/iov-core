@@ -130,26 +130,26 @@ describe("Ed25519KeyringEntry", () => {
       const decodedJson = JSON.parse(serialized);
       expect(decodedJson).toBeTruthy();
       expect(decodedJson.length).toEqual(3);
-      expect(decodedJson[0].publicIdentity).toBeTruthy();
-      expect(decodedJson[0].publicIdentity.pubkey.algo).toEqual("ed25519");
-      expect(decodedJson[0].publicIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
-      expect(decodedJson[0].publicIdentity.nickname).toBeUndefined();
+      expect(decodedJson[0].localIdentity).toBeTruthy();
+      expect(decodedJson[0].localIdentity.pubkey.algo).toEqual("ed25519");
+      expect(decodedJson[0].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
+      expect(decodedJson[0].localIdentity.nickname).toBeUndefined();
       expect(decodedJson[0].privkey).toMatch(/[0-9a-f]{64}/);
-      expect(decodedJson[1].publicIdentity).toBeTruthy();
-      expect(decodedJson[1].publicIdentity.pubkey.algo).toEqual("ed25519");
-      expect(decodedJson[1].publicIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
-      expect(decodedJson[1].publicIdentity.nickname).toEqual("");
+      expect(decodedJson[1].localIdentity).toBeTruthy();
+      expect(decodedJson[1].localIdentity.pubkey.algo).toEqual("ed25519");
+      expect(decodedJson[1].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
+      expect(decodedJson[1].localIdentity.nickname).toEqual("");
       expect(decodedJson[1].privkey).toMatch(/[0-9a-f]{64}/);
-      expect(decodedJson[2].publicIdentity).toBeTruthy();
-      expect(decodedJson[2].publicIdentity.pubkey.algo).toEqual("ed25519");
-      expect(decodedJson[2].publicIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
-      expect(decodedJson[2].publicIdentity.nickname).toEqual("foo");
+      expect(decodedJson[2].localIdentity).toBeTruthy();
+      expect(decodedJson[2].localIdentity.pubkey.algo).toEqual("ed25519");
+      expect(decodedJson[2].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
+      expect(decodedJson[2].localIdentity.nickname).toEqual("foo");
       expect(decodedJson[2].privkey).toMatch(/[0-9a-f]{64}/);
 
       // keys are different
-      expect(decodedJson[0].publicIdentity.pubkey.data).not.toEqual(decodedJson[1].publicIdentity.pubkey.data);
-      expect(decodedJson[1].publicIdentity.pubkey.data).not.toEqual(decodedJson[2].publicIdentity.pubkey.data);
-      expect(decodedJson[2].publicIdentity.pubkey.data).not.toEqual(decodedJson[0].publicIdentity.pubkey.data);
+      expect(decodedJson[0].localIdentity.pubkey.data).not.toEqual(decodedJson[1].localIdentity.pubkey.data);
+      expect(decodedJson[1].localIdentity.pubkey.data).not.toEqual(decodedJson[2].localIdentity.pubkey.data);
+      expect(decodedJson[2].localIdentity.pubkey.data).not.toEqual(decodedJson[0].localIdentity.pubkey.data);
       expect(decodedJson[0].privkey).not.toEqual(decodedJson[1].privkey);
       expect(decodedJson[1].privkey).not.toEqual(decodedJson[2].privkey);
       expect(decodedJson[2].privkey).not.toEqual(decodedJson[0].privkey);
@@ -172,7 +172,7 @@ describe("Ed25519KeyringEntry", () => {
 
     {
       // one element
-      const serialized = '[{"publicIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "nickname": "foo" }, "privkey": "223322112233aabb"}]' as KeyDataString;
+      const serialized = '[{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "nickname": "foo" }, "privkey": "223322112233aabb"}]' as KeyDataString;
       const entry = new Ed25519KeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(1);
@@ -183,7 +183,7 @@ describe("Ed25519KeyringEntry", () => {
 
     {
       // two elements
-      const serialized = '[{"publicIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "nickname": "foo" }, "privkey": "223322112233aabb"}, {"publicIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "nickname": "bar" }, "privkey": "ddddeeee"}]' as KeyDataString;
+      const serialized = '[{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "nickname": "foo" }, "privkey": "223322112233aabb"}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "nickname": "bar" }, "privkey": "ddddeeee"}]' as KeyDataString;
       const entry = new Ed25519KeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(2);

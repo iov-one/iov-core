@@ -21,14 +21,14 @@ export class Ed25519KeyringEntry implements KeyringEntry {
       for (const record of decodedData) {
         const keypair = new Ed25519Keypair(
           Encoding.fromHex(record.privkey),
-          Encoding.fromHex(record.publicIdentity.pubkey.data),
+          Encoding.fromHex(record.localIdentity.pubkey.data),
         );
         const identity: LocalIdentity = {
           pubkey: {
-            algo: record.publicIdentity.pubkey.algo,
+            algo: record.localIdentity.pubkey.algo,
             data: keypair.pubkey as PublicKeyBytes,
           },
-          nickname: record.publicIdentity.nickname,
+          nickname: record.localIdentity.nickname,
         };
         const identityId = Ed25519KeyringEntry.identityId(identity);
         identities.push(identity);
@@ -89,7 +89,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     const out = this.identities.map(identity => {
       const keypair = this.privateKeyForIdentity(identity);
       return {
-        publicIdentity: {
+        localIdentity: {
           pubkey: {
             algo: identity.pubkey.algo,
             data: Encoding.toHex(identity.pubkey.data),
