@@ -19,10 +19,26 @@ import {
 
 import { KeyDataString, KeyringEntry, PublicIdentity } from "../keyring";
 
+interface PublicIdentitySerialization {
+  readonly algo: string;
+  readonly data: string;
+  readonly nickname?: string;
+}
+
+interface IdentitySerialization {
+  readonly publicIdentity: PublicIdentitySerialization;
+  readonly privkeyPath: ReadonlyArray<number>;
+}
+
+interface Ed25519HdKeyringEntrySerialization {
+  readonly secret: string;
+  readonly identities: ReadonlyArray<IdentitySerialization>;
+}
+
 export class Ed25519HdKeyringEntry implements KeyringEntry {
   public static fromEntropy(bip39Entropy: Uint8Array): Ed25519HdKeyringEntry {
     const mnemonic = Bip39.encode(bip39Entropy);
-    const data = {
+    const data: Ed25519HdKeyringEntrySerialization = {
       secret: mnemonic.asString(),
       identities: [],
     };
@@ -33,6 +49,17 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     return identity.algo + "|" + Encoding.toHex(identity.data);
   }
 
+  private static algorithmFromString(input: string): Algorithm {
+    switch (input) {
+      case "ed25519":
+        return Algorithm.ED25519;
+      case "secp256k1":
+        return Algorithm.SECP256K1;
+      default:
+        throw new Error("Unknown alogorithm string found");
+    }
+  }
+
   public readonly canSign: boolean = true;
 
   private readonly secret: EnglishMnemonic;
@@ -40,22 +67,19 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   private readonly privkeyPaths: Map<string, ReadonlyArray<Slip0010RawIndex>>;
 
   constructor(data: KeyDataString) {
-    const decodedData = JSON.parse(data);
+    const decodedData: Ed25519HdKeyringEntrySerialization = JSON.parse(data);
 
     this.secret = new EnglishMnemonic(decodedData.secret);
 
-    if (!Array.isArray(decodedData.identities)) {
-      throw new Error("identities field is not a an array");
-    }
     const identities: PublicIdentity[] = [];
     const privkeyPaths = new Map<string, ReadonlyArray<Slip0010RawIndex>>();
     for (const record of decodedData.identities) {
       const identity: PublicIdentity = {
-        algo: record.publicIdentity.algo,
+        algo: Ed25519HdKeyringEntry.algorithmFromString(record.publicIdentity.algo),
         data: Encoding.fromHex(record.publicIdentity.data) as PublicKeyBytes,
         nickname: record.publicIdentity.nickname,
       };
-      const privkeyPath: ReadonlyArray<Slip0010RawIndex> = (record.privkeyPath as number[]).map(
+      const privkeyPath: ReadonlyArray<Slip0010RawIndex> = record.privkeyPath.map(
         n => new Slip0010RawIndex(n),
       );
 
@@ -119,7 +143,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   }
 
   public async serialize(): Promise<KeyDataString> {
-    const identities = this.identities.map(identity => {
+    const identities: ReadonlyArray<IdentitySerialization> = this.identities.map(identity => {
       const privkeyPath = this.privkeyPathForIdentity(identity);
       return {
         publicIdentity: {
@@ -131,7 +155,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
       };
     });
 
-    const out = {
+    const out: Ed25519HdKeyringEntrySerialization = {
       secret: this.secret.asString(),
       identities: identities,
     };
