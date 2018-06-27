@@ -52,7 +52,6 @@ practical to use. Ledger will be the first device type supported by the Keybase.
 
 The Keybase will have the following features:
 - Sign and Verify Transactions
-- Encrypt and Decrypt Messages
 - Sign and Verify Messages
 
 ### Profile and HD Seed encryption
