@@ -175,4 +175,34 @@ describe("Ed25519HdKeyringEntry", () => {
       expect(entry.getIdentities()[1].nickname).toEqual("bar");
     }
   });
+
+  it("can serialize and restore a full keyring entry", done => {
+    (async () => {
+      const original = new Ed25519HdKeyringEntry(emptyEntry);
+      const identity1 = await original.createIdentity();
+      const identity2 = await original.createIdentity();
+      const identity3 = await original.createIdentity();
+      original.setIdentityNickname(identity1, undefined);
+      original.setIdentityNickname(identity2, "");
+      original.setIdentityNickname(identity3, "foo");
+
+      const restored = new Ed25519HdKeyringEntry(await original.serialize());
+
+      // pubkeys and nicknames match
+      expect(original.getIdentities()).toEqual(restored.getIdentities());
+
+      // privkeys match
+      const tx = new Uint8Array([]) as SignableBytes;
+      const chainId = "" as ChainId;
+      expect(await original.createTransactionSignature(identity1, tx, chainId)).toEqual(await restored.createTransactionSignature(identity1, tx, chainId));
+      expect(await original.createTransactionSignature(identity2, tx, chainId)).toEqual(await restored.createTransactionSignature(identity2, tx, chainId));
+      expect(await original.createTransactionSignature(identity3, tx, chainId)).toEqual(await restored.createTransactionSignature(identity3, tx, chainId));
+
+      done();
+    })().catch(error => {
+      setTimeout(() => {
+        throw error;
+      });
+    });
+  });
 });
