@@ -114,25 +114,28 @@ describe("Ed25519HdKeyringEntry", () => {
       expect(decodedJson.identities[0].publicIdentity.algo).toEqual("ed25519");
       expect(decodedJson.identities[0].publicIdentity.data).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson.identities[0].publicIdentity.nickname).toBeUndefined();
-      expect(decodedJson.identities[0].privkey).toMatch(/[0-9a-f]{64}/);
+      expect(decodedJson.identities[0].privkeyPath).toEqual(jasmine.any(Array));
+      expect(decodedJson.identities[0].privkeyPath.length).toBeGreaterThanOrEqual(1);
       expect(decodedJson.identities[1].publicIdentity).toBeTruthy();
       expect(decodedJson.identities[1].publicIdentity.algo).toEqual("ed25519");
       expect(decodedJson.identities[1].publicIdentity.data).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson.identities[1].publicIdentity.nickname).toEqual("");
-      expect(decodedJson.identities[1].privkey).toMatch(/[0-9a-f]{64}/);
+      expect(decodedJson.identities[1].privkeyPath).toEqual(jasmine.any(Array));
+      expect(decodedJson.identities[1].privkeyPath.length).toBeGreaterThanOrEqual(1);
       expect(decodedJson.identities[2].publicIdentity).toBeTruthy();
       expect(decodedJson.identities[2].publicIdentity.algo).toEqual("ed25519");
       expect(decodedJson.identities[2].publicIdentity.data).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson.identities[2].publicIdentity.nickname).toEqual("foo");
-      expect(decodedJson.identities[2].privkey).toMatch(/[0-9a-f]{64}/);
+      expect(decodedJson.identities[2].privkeyPath).toEqual(jasmine.any(Array));
+      expect(decodedJson.identities[2].privkeyPath.length).toBeGreaterThanOrEqual(1);
 
       // keys are different
       expect(decodedJson.identities[0].publicIdentity.data).not.toEqual(decodedJson.identities[1].publicIdentity.data);
       expect(decodedJson.identities[1].publicIdentity.data).not.toEqual(decodedJson.identities[2].publicIdentity.data);
       expect(decodedJson.identities[2].publicIdentity.data).not.toEqual(decodedJson.identities[0].publicIdentity.data);
-      expect(decodedJson.identities[0].privkey).not.toEqual(decodedJson.identities[1].privkey);
-      expect(decodedJson.identities[1].privkey).not.toEqual(decodedJson.identities[2].privkey);
-      expect(decodedJson.identities[2].privkey).not.toEqual(decodedJson.identities[0].privkey);
+      expect(decodedJson.identities[0].privkeyPath).not.toEqual(decodedJson.identities[1].privkeyPath);
+      expect(decodedJson.identities[1].privkeyPath).not.toEqual(decodedJson.identities[2].privkeyPath);
+      expect(decodedJson.identities[2].privkeyPath).not.toEqual(decodedJson.identities[0].privkeyPath);
 
       done();
     })().catch(error => {
@@ -152,7 +155,7 @@ describe("Ed25519HdKeyringEntry", () => {
 
     {
       // one element
-      const serialized = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [{"publicIdentity": { "algo": "ed25519", "data": "aabbccdd", "nickname": "foo" }, "privkey": "223322112233aabb"}] }' as KeyDataString;
+      const serialized = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [{"publicIdentity": { "algo": "ed25519", "data": "aabbccdd", "nickname": "foo" }, "privkeyPath": [2147483649]}] }' as KeyDataString;
       const entry = new Ed25519HdKeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(1);
@@ -163,7 +166,7 @@ describe("Ed25519HdKeyringEntry", () => {
 
     {
       // two elements
-      const serialized = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [{"publicIdentity": { "algo": "ed25519", "data": "aabbccdd", "nickname": "foo" }, "privkey": "223322112233aabb"}, {"publicIdentity": { "algo": "ed25519", "data": "ddccbbaa", "nickname": "bar" }, "privkey": "ddddeeee"}] }' as KeyDataString;
+      const serialized = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [{"publicIdentity": { "algo": "ed25519", "data": "aabbccdd", "nickname": "foo" }, "privkeyPath": [2147483649]}, {"publicIdentity": { "algo": "ed25519", "data": "ddccbbaa", "nickname": "bar" }, "privkeyPath": [2147483650]}] }' as KeyDataString;
       const entry = new Ed25519HdKeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(2);

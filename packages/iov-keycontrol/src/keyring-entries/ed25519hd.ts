@@ -37,7 +37,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
 
   private readonly secret: EnglishMnemonic;
   private readonly identities: PublicIdentity[];
-  private readonly privkeys: Map<string, Ed25519Keypair>;
+  private readonly privkeyPaths: Map<string, ReadonlyArray<Slip0010RawIndex>>;
 
   constructor(data: KeyDataString) {
     const decodedData = JSON.parse(data);
@@ -48,24 +48,24 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
       throw new Error("identities field is not a an array");
     }
     const identities: PublicIdentity[] = [];
-    const privkeys = new Map<string, Ed25519Keypair>();
+    const privkeyPaths = new Map<string, ReadonlyArray<Slip0010RawIndex>>();
     for (const record of decodedData.identities) {
-      const keypair = new Ed25519Keypair(
-        Encoding.fromHex(record.privkey),
-        Encoding.fromHex(record.publicIdentity.data),
-      );
       const identity: PublicIdentity = {
         algo: record.publicIdentity.algo,
-        data: keypair.pubkey as PublicKeyBytes,
+        data: Encoding.fromHex(record.publicIdentity.data) as PublicKeyBytes,
         nickname: record.publicIdentity.nickname,
       };
+      const privkeyPath: ReadonlyArray<Slip0010RawIndex> = (record.privkeyPath as number[]).map(
+        n => new Slip0010RawIndex(n),
+      );
+
       const identityId = Ed25519HdKeyringEntry.identityId(identity);
       identities.push(identity);
-      privkeys.set(identityId, keypair);
+      privkeyPaths.set(identityId, privkeyPath);
     }
 
     this.identities = identities;
-    this.privkeys = privkeys;
+    this.privkeyPaths = privkeyPaths;
   }
 
   public async createIdentity(): Promise<PublicIdentity> {
@@ -83,7 +83,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     };
     const newIdentityId = Ed25519HdKeyringEntry.identityId(newIdentity);
 
-    this.privkeys.set(newIdentityId, keypair);
+    this.privkeyPaths.set(newIdentityId, path);
     this.identities.push(newIdentity);
 
     return newIdentity;
@@ -113,21 +113,21 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     tx: SignableBytes,
     _: ChainId,
   ): Promise<SignatureBytes> {
-    const keypair = this.privateKeyForIdentity(identity);
+    const keypair = await this.privkeyForIdentity(identity);
     const signature = await Ed25519.createSignature(tx, keypair);
     return signature as SignatureBytes;
   }
 
   public async serialize(): Promise<KeyDataString> {
     const identities = this.identities.map(identity => {
-      const keypair = this.privateKeyForIdentity(identity);
+      const privkeyPath = this.privkeyPathForIdentity(identity);
       return {
         publicIdentity: {
           algo: identity.algo,
           data: Encoding.toHex(identity.data),
           nickname: identity.nickname,
         },
-        privkey: Encoding.toHex(keypair.privkey),
+        privkeyPath: privkeyPath.map(rawIndex => rawIndex.asNumber()),
       };
     });
 
@@ -139,12 +139,21 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   }
 
   // This throws an exception when private key is missing
-  private privateKeyForIdentity(identity: PublicKeyBundle): Ed25519Keypair {
+  private privkeyPathForIdentity(identity: PublicKeyBundle): ReadonlyArray<Slip0010RawIndex> {
     const identityId = Ed25519HdKeyringEntry.identityId(identity);
-    const privkey = this.privkeys.get(identityId);
-    if (!privkey) {
-      throw new Error("No private key found for identity '" + identityId + "'");
+    const privkeyPath = this.privkeyPaths.get(identityId);
+    if (!privkeyPath) {
+      throw new Error("No private key path found for identity '" + identityId + "'");
     }
-    return privkey;
+    return privkeyPath;
+  }
+
+  // This throws an exception when private key is missing
+  private async privkeyForIdentity(identity: PublicKeyBundle): Promise<Ed25519Keypair> {
+    const privkeyPath = this.privkeyPathForIdentity(identity);
+    const seed = await Bip39.mnemonicToSeed(this.secret);
+    const derivationResult = Slip0010.derivePath(Slip0010Curve.Ed25519, seed, privkeyPath);
+    const keypair = await Ed25519.makeKeypair(derivationResult.privkey);
+    return keypair;
   }
 }
