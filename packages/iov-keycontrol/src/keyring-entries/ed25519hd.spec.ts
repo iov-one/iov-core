@@ -89,4 +89,54 @@ describe("Ed25519HdKeyringEntry", () => {
       });
     });
   });
+
+  it("can serialize multiple identities", done => {
+    (async () => {
+      const entry = new Ed25519HdKeyringEntry(`{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive" }` as KeyDataString);
+      const identity1 = await entry.createIdentity();
+      const identity2 = await entry.createIdentity();
+      const identity3 = await entry.createIdentity();
+      entry.setIdentityNickname(identity1, undefined);
+      entry.setIdentityNickname(identity2, "");
+      entry.setIdentityNickname(identity3, "foo");
+
+      const serialized = await entry.serialize();
+      expect(serialized).toBeTruthy();
+      expect(serialized.length).toBeGreaterThan(100);
+
+      const decodedJson = JSON.parse(serialized);
+      expect(decodedJson).toBeTruthy();
+      expect(decodedJson.secret).toMatch(/^[a-z]+( [a-z]+)*$/);
+      expect(decodedJson.identities.length).toEqual(3);
+      expect(decodedJson.identities[0].publicIdentity).toBeTruthy();
+      expect(decodedJson.identities[0].publicIdentity.algo).toEqual("ed25519");
+      expect(decodedJson.identities[0].publicIdentity.data).toMatch(/[0-9a-f]{64}/);
+      expect(decodedJson.identities[0].publicIdentity.nickname).toBeUndefined();
+      expect(decodedJson.identities[0].privkey).toMatch(/[0-9a-f]{64}/);
+      expect(decodedJson.identities[1].publicIdentity).toBeTruthy();
+      expect(decodedJson.identities[1].publicIdentity.algo).toEqual("ed25519");
+      expect(decodedJson.identities[1].publicIdentity.data).toMatch(/[0-9a-f]{64}/);
+      expect(decodedJson.identities[1].publicIdentity.nickname).toEqual("");
+      expect(decodedJson.identities[1].privkey).toMatch(/[0-9a-f]{64}/);
+      expect(decodedJson.identities[2].publicIdentity).toBeTruthy();
+      expect(decodedJson.identities[2].publicIdentity.algo).toEqual("ed25519");
+      expect(decodedJson.identities[2].publicIdentity.data).toMatch(/[0-9a-f]{64}/);
+      expect(decodedJson.identities[2].publicIdentity.nickname).toEqual("foo");
+      expect(decodedJson.identities[2].privkey).toMatch(/[0-9a-f]{64}/);
+
+      // keys are different
+      expect(decodedJson.identities[0].publicIdentity.data).not.toEqual(decodedJson.identities[1].publicIdentity.data);
+      expect(decodedJson.identities[1].publicIdentity.data).not.toEqual(decodedJson.identities[2].publicIdentity.data);
+      expect(decodedJson.identities[2].publicIdentity.data).not.toEqual(decodedJson.identities[0].publicIdentity.data);
+      expect(decodedJson.identities[0].privkey).not.toEqual(decodedJson.identities[1].privkey);
+      expect(decodedJson.identities[1].privkey).not.toEqual(decodedJson.identities[2].privkey);
+      expect(decodedJson.identities[2].privkey).not.toEqual(decodedJson.identities[0].privkey);
+
+      done();
+    })().catch(error => {
+      setTimeout(() => {
+        throw error;
+      });
+    });
+  });
 });

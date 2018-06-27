@@ -97,10 +97,23 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   }
 
   public async serialize(): Promise<KeyDataString> {
-    const data = {
+    const identities = this.identities.map(identity => {
+      const keypair = this.privateKeyForIdentity(identity);
+      return {
+        publicIdentity: {
+          algo: identity.algo,
+          data: Encoding.toHex(identity.data),
+          nickname: identity.nickname,
+        },
+        privkey: Encoding.toHex(keypair.privkey),
+      };
+    });
+
+    const out = {
       secret: this.secret.asString(),
+      identities: identities,
     };
-    return JSON.stringify(data) as KeyDataString;
+    return JSON.stringify(out) as KeyDataString;
   }
 
   // This throws an exception when private key is missing
