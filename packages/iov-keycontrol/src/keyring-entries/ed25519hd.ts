@@ -8,25 +8,18 @@ import {
   Slip0010Curve,
   Slip0010RawIndex,
 } from "@iov/crypto";
-import {
-  Algorithm,
-  ChainId,
-  PublicKeyBundle,
-  PublicKeyBytes,
-  SignableBytes,
-  SignatureBytes,
-} from "@iov/types";
+import { Algorithm, ChainId, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
 
-import { KeyDataString, KeyringEntry, PublicIdentity } from "../keyring";
+import { KeyDataString, KeyringEntry, LocalIdentity, PublicIdentity } from "../keyring";
 
-interface PublicIdentitySerialization {
+interface LocalIdentitySerialization {
   readonly algo: string;
   readonly data: string;
   readonly nickname?: string;
 }
 
 interface IdentitySerialization {
-  readonly publicIdentity: PublicIdentitySerialization;
+  readonly publicIdentity: LocalIdentitySerialization;
   readonly privkeyPath: ReadonlyArray<number>;
 }
 
@@ -45,7 +38,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     return new Ed25519HdKeyringEntry(JSON.stringify(data) as KeyDataString);
   }
 
-  private static identityId(identity: PublicKeyBundle): string {
+  private static identityId(identity: PublicIdentity): string {
     return identity.algo + "|" + Encoding.toHex(identity.data);
   }
 
@@ -63,7 +56,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   public readonly canSign: boolean = true;
 
   private readonly secret: EnglishMnemonic;
-  private readonly identities: PublicIdentity[];
+  private readonly identities: LocalIdentity[];
   private readonly privkeyPaths: Map<string, ReadonlyArray<Slip0010RawIndex>>;
 
   constructor(data: KeyDataString) {
@@ -71,10 +64,10 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
 
     this.secret = new EnglishMnemonic(decodedData.secret);
 
-    const identities: PublicIdentity[] = [];
+    const identities: LocalIdentity[] = [];
     const privkeyPaths = new Map<string, ReadonlyArray<Slip0010RawIndex>>();
     for (const record of decodedData.identities) {
-      const identity: PublicIdentity = {
+      const identity: LocalIdentity = {
         algo: Ed25519HdKeyringEntry.algorithmFromString(record.publicIdentity.algo),
         data: Encoding.fromHex(record.publicIdentity.data) as PublicKeyBytes,
         nickname: record.publicIdentity.nickname,
@@ -92,7 +85,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     this.privkeyPaths = privkeyPaths;
   }
 
-  public async createIdentity(): Promise<PublicIdentity> {
+  public async createIdentity(): Promise<LocalIdentity> {
     const nextIndex = this.identities.length;
 
     const seed = await Bip39.mnemonicToSeed(this.secret);
@@ -113,7 +106,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     return newIdentity;
   }
 
-  public async setIdentityNickname(identity: PublicKeyBundle, nickname: string | undefined): Promise<void> {
+  public async setIdentityNickname(identity: PublicIdentity, nickname: string | undefined): Promise<void> {
     const identityId = Ed25519HdKeyringEntry.identityId(identity);
     const index = this.identities.findIndex(i => Ed25519HdKeyringEntry.identityId(i) === identityId);
     if (index === -1) {
@@ -128,12 +121,12 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     };
   }
 
-  public getIdentities(): ReadonlyArray<PublicIdentity> {
+  public getIdentities(): ReadonlyArray<LocalIdentity> {
     return this.identities;
   }
 
   public async createTransactionSignature(
-    identity: PublicKeyBundle,
+    identity: PublicIdentity,
     tx: SignableBytes,
     _: ChainId,
   ): Promise<SignatureBytes> {
@@ -163,7 +156,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   }
 
   // This throws an exception when private key is missing
-  private privkeyPathForIdentity(identity: PublicKeyBundle): ReadonlyArray<Slip0010RawIndex> {
+  private privkeyPathForIdentity(identity: PublicIdentity): ReadonlyArray<Slip0010RawIndex> {
     const identityId = Ed25519HdKeyringEntry.identityId(identity);
     const privkeyPath = this.privkeyPaths.get(identityId);
     if (!privkeyPath) {
@@ -173,7 +166,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   }
 
   // This throws an exception when private key is missing
-  private async privkeyForIdentity(identity: PublicKeyBundle): Promise<Ed25519Keypair> {
+  private async privkeyForIdentity(identity: PublicIdentity): Promise<Ed25519Keypair> {
     const privkeyPath = this.privkeyPathForIdentity(identity);
     const seed = await Bip39.mnemonicToSeed(this.secret);
     const derivationResult = Slip0010.derivePath(Slip0010Curve.Ed25519, seed, privkeyPath);
