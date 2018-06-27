@@ -44,7 +44,7 @@ export class Secp256k1 {
   // - lowS signature
   // - DER encoded
   public static async createSignature(message: Uint8Array, privkey: Uint8Array): Promise<Uint8Array> {
-    const messageHash = await Sha256.digest(message);
+    const messageHash = new Sha256(message).digest();
     const keypair = secp256k1.keyFromPrivate(privkey);
     // the `canonical` option ensures creation of lowS signature representations
     const signature = new Uint8Array(keypair.sign(messageHash, { canonical: true }).toDER());
@@ -56,7 +56,7 @@ export class Secp256k1 {
     message: Uint8Array,
     pubkey: Uint8Array,
   ): Promise<boolean> {
-    const messageHash = await Sha256.digest(message);
+    const messageHash = new Sha256(message).digest();
     const keypair = secp256k1.keyFromPublic(pubkey);
 
     // From https://github.com/indutny/elliptic:
