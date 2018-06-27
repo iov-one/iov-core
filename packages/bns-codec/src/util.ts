@@ -42,8 +42,6 @@ export const hashId = Encoding.asAscii("hash/sha256/");
 export const hashIdentifier = (data: Uint8Array) =>
   Uint8Array.from([...hashId, ...new Sha256(data).digest()]);
 
-// typescript forces us to return number on reduce, so we count how many elements match
-// and make sure it is all
 export const arraysEqual = (a: Uint8Array, b: Uint8Array): boolean =>
   a.length === b.length && a.every((n: number, i: number): boolean => n === b[i]);
 
