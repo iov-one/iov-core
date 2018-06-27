@@ -24,6 +24,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     const mnemonic = Bip39.encode(bip39Entropy);
     const data = {
       secret: mnemonic.asString(),
+      identities: [],
     };
     return new Ed25519HdKeyringEntry(JSON.stringify(data) as KeyDataString);
   }
@@ -39,11 +40,32 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   private readonly privkeys: Map<string, Ed25519Keypair>;
 
   constructor(data: KeyDataString) {
-    this.secret = new EnglishMnemonic(JSON.parse(data).secret);
+    const decodedData = JSON.parse(data);
 
-    // TODO: deserialize
-    this.identities = [];
-    this.privkeys = new Map<string, Ed25519Keypair>();
+    this.secret = new EnglishMnemonic(decodedData.secret);
+
+    if (!Array.isArray(decodedData.identities)) {
+      throw new Error("identities field is not a an array");
+    }
+    const identities: PublicIdentity[] = [];
+    const privkeys = new Map<string, Ed25519Keypair>();
+    for (const record of decodedData.identities) {
+      const keypair = new Ed25519Keypair(
+        Encoding.fromHex(record.privkey),
+        Encoding.fromHex(record.publicIdentity.data),
+      );
+      const identity: PublicIdentity = {
+        algo: record.publicIdentity.algo,
+        data: keypair.pubkey as PublicKeyBytes,
+        nickname: record.publicIdentity.nickname,
+      };
+      const identityId = Ed25519HdKeyringEntry.identityId(identity);
+      identities.push(identity);
+      privkeys.set(identityId, keypair);
+    }
+
+    this.identities = identities;
+    this.privkeys = privkeys;
   }
 
   public async createIdentity(): Promise<PublicIdentity> {

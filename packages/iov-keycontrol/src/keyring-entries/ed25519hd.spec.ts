@@ -5,8 +5,10 @@ import { KeyDataString } from "../keyring";
 import { Ed25519HdKeyringEntry } from "./ed25519hd";
 
 describe("Ed25519HdKeyringEntry", () => {
+  const emptyEntry = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [] }' as KeyDataString;
+
   it("can be deserialized", () => {
-    const entry = new Ed25519HdKeyringEntry(`{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive" }` as KeyDataString);
+    const entry = new Ed25519HdKeyringEntry(emptyEntry);
     expect(entry).toBeTruthy();
     expect(entry.getIdentities().length).toEqual(0);
   });
@@ -19,7 +21,7 @@ describe("Ed25519HdKeyringEntry", () => {
 
   it("can create identities", done => {
     (async () => {
-      const entry = new Ed25519HdKeyringEntry(`{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive" }` as KeyDataString);
+      const entry = new Ed25519HdKeyringEntry(emptyEntry);
 
       const newIdentity1 = await entry.createIdentity();
       const newIdentity2 = await entry.createIdentity();
@@ -48,7 +50,7 @@ describe("Ed25519HdKeyringEntry", () => {
 
   it("can set, change and unset an identity nickname", done => {
     (async () => {
-      const entry = new Ed25519HdKeyringEntry(`{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive" }` as KeyDataString);
+      const entry = new Ed25519HdKeyringEntry(emptyEntry);
       const newIdentity = await entry.createIdentity();
       expect(entry.getIdentities()[0].nickname).toBeUndefined();
 
@@ -71,7 +73,7 @@ describe("Ed25519HdKeyringEntry", () => {
 
   it("can sign", done => {
     (async () => {
-      const entry = new Ed25519HdKeyringEntry(`{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive" }` as KeyDataString);
+      const entry = new Ed25519HdKeyringEntry(emptyEntry);
       const newIdentity = await entry.createIdentity();
 
       expect(entry.canSign).toEqual(true);
@@ -92,7 +94,7 @@ describe("Ed25519HdKeyringEntry", () => {
 
   it("can serialize multiple identities", done => {
     (async () => {
-      const entry = new Ed25519HdKeyringEntry(`{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive" }` as KeyDataString);
+      const entry = new Ed25519HdKeyringEntry(emptyEntry);
       const identity1 = await entry.createIdentity();
       const identity2 = await entry.createIdentity();
       const identity3 = await entry.createIdentity();
@@ -138,5 +140,39 @@ describe("Ed25519HdKeyringEntry", () => {
         throw error;
       });
     });
+  });
+
+  it("can deserialize", () => {
+    {
+      // empty
+      const entry = new Ed25519HdKeyringEntry('{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [] }' as KeyDataString);
+      expect(entry).toBeTruthy();
+      expect(entry.getIdentities().length).toEqual(0);
+    }
+
+    {
+      // one element
+      const serialized = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [{"publicIdentity": { "algo": "ed25519", "data": "aabbccdd", "nickname": "foo" }, "privkey": "223322112233aabb"}] }' as KeyDataString;
+      const entry = new Ed25519HdKeyringEntry(serialized);
+      expect(entry).toBeTruthy();
+      expect(entry.getIdentities().length).toEqual(1);
+      expect(entry.getIdentities()[0].algo).toEqual("ed25519");
+      expect(entry.getIdentities()[0].data).toEqual(Encoding.fromHex("aabbccdd"));
+      expect(entry.getIdentities()[0].nickname).toEqual("foo");
+    }
+
+    {
+      // two elements
+      const serialized = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [{"publicIdentity": { "algo": "ed25519", "data": "aabbccdd", "nickname": "foo" }, "privkey": "223322112233aabb"}, {"publicIdentity": { "algo": "ed25519", "data": "ddccbbaa", "nickname": "bar" }, "privkey": "ddddeeee"}] }' as KeyDataString;
+      const entry = new Ed25519HdKeyringEntry(serialized);
+      expect(entry).toBeTruthy();
+      expect(entry.getIdentities().length).toEqual(2);
+      expect(entry.getIdentities()[0].algo).toEqual("ed25519");
+      expect(entry.getIdentities()[0].data).toEqual(Encoding.fromHex("aabbccdd"));
+      expect(entry.getIdentities()[0].nickname).toEqual("foo");
+      expect(entry.getIdentities()[1].algo).toEqual("ed25519");
+      expect(entry.getIdentities()[1].data).toEqual(Encoding.fromHex("ddccbbaa"));
+      expect(entry.getIdentities()[1].nickname).toEqual("bar");
+    }
   });
 });
