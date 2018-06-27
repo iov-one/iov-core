@@ -19,7 +19,7 @@ interface LocalIdentitySerialization {
 }
 
 interface IdentitySerialization {
-  readonly publicIdentity: LocalIdentitySerialization;
+  readonly localIdentity: LocalIdentitySerialization;
   readonly privkeyPath: ReadonlyArray<number>;
 }
 
@@ -68,9 +68,9 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     const privkeyPaths = new Map<string, ReadonlyArray<Slip0010RawIndex>>();
     for (const record of decodedData.identities) {
       const identity: LocalIdentity = {
-        algo: Ed25519HdKeyringEntry.algorithmFromString(record.publicIdentity.algo),
-        data: Encoding.fromHex(record.publicIdentity.data) as PublicKeyBytes,
-        nickname: record.publicIdentity.nickname,
+        algo: Ed25519HdKeyringEntry.algorithmFromString(record.localIdentity.algo),
+        data: Encoding.fromHex(record.localIdentity.data) as PublicKeyBytes,
+        nickname: record.localIdentity.nickname,
       };
       const privkeyPath: ReadonlyArray<Slip0010RawIndex> = record.privkeyPath.map(
         n => new Slip0010RawIndex(n),
@@ -139,7 +139,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     const identities: ReadonlyArray<IdentitySerialization> = this.identities.map(identity => {
       const privkeyPath = this.privkeyPathForIdentity(identity);
       return {
-        publicIdentity: {
+        localIdentity: {
           algo: identity.algo,
           data: Encoding.toHex(identity.data),
           nickname: identity.nickname,
