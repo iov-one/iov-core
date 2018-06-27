@@ -2,7 +2,7 @@ import { Encoding, Sha256 } from "@iov/crypto";
 import { AddressBytes, Algorithm, ChainId, Nonce, PublicKeyBundle, SignableBytes } from "@iov/types";
 
 export const keyToAddress = (key: PublicKeyBundle) =>
-  Sha256.digest(keyToIdentifier(key)).then((bz: Uint8Array) => bz.slice(0, 20) as AddressBytes);
+  new Sha256(keyToIdentifier(key)).digest().slice(0, 20) as AddressBytes;
 
 export const keyToIdentifier = (key: PublicKeyBundle) =>
   Uint8Array.from([...algoToPrefix(key.algo), ...key.data]);
@@ -36,12 +36,11 @@ export const appendSignBytes = (bz: Uint8Array, chainId: ChainId, nonce: Nonce) 
 
 // tendermint hash (will be) first 20 bytes of sha256
 // probably only works after 0.21, but no need to import ripemd160 now
-export const tendermintHash = (data: Uint8Array) =>
-  Sha256.digest(data).then((bz: Uint8Array) => bz.slice(0, 20));
+export const tendermintHash = (data: Uint8Array) => new Sha256(data).digest().slice(0, 20);
 
 export const hashId = Encoding.asAscii("hash/sha256/");
-export const hashIdentifier = async (data: Uint8Array) =>
-  Uint8Array.from([...hashId, ...(await Sha256.digest(data))]);
+export const hashIdentifier = (data: Uint8Array) =>
+  Uint8Array.from([...hashId, ...new Sha256(data).digest()]);
 
 // typescript forces us to return number on reduce, so we count how many elements match
 // and make sure it is all

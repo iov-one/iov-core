@@ -47,7 +47,7 @@ export const buildMsg = (tx: UnsignedTransaction): Promise<codec.app.ITx> => {
 
 const buildSendTx = async (tx: SendTx): Promise<codec.app.ITx> => ({
   sendMsg: codec.cash.SendMsg.create({
-    src: await keyToAddress(tx.signer),
+    src: keyToAddress(tx.signer),
     dest: tx.recipient,
     amount: encodeToken(tx.amount),
     memo: tx.memo,
@@ -56,19 +56,19 @@ const buildSendTx = async (tx: SendTx): Promise<codec.app.ITx> => ({
 
 const buildSetNameTx = async (tx: SetNameTx): Promise<codec.app.ITx> => ({
   setNameMsg: codec.namecoin.SetWalletNameMsg.create({
-    address: await keyToAddress(tx.signer),
+    address: keyToAddress(tx.signer),
     name: tx.name,
   }),
 });
 
 const buildSwapOfferTx = async (tx: SwapOfferTx): Promise<codec.app.ITx> => {
-  const hashed = { ...tx, hashCode: await hashIdentifier(tx.preimage), kind: TransactionKind.SWAP_COUNTER };
+  const hashed = { ...tx, hashCode: hashIdentifier(tx.preimage), kind: TransactionKind.SWAP_COUNTER };
   return buildSwapCounterTx(hashed as SwapCounterTx);
 };
 
 const buildSwapCounterTx = async (tx: SwapCounterTx): Promise<codec.app.ITx> => ({
   createEscrowMsg: codec.escrow.CreateEscrowMsg.create({
-    sender: await keyToAddress(tx.signer),
+    sender: keyToAddress(tx.signer),
     arbiter: tx.hashCode,
     recipient: tx.recipient,
     timeout: tx.timeout,

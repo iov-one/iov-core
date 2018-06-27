@@ -30,10 +30,9 @@ describe("Encode helpers", () => {
     expect(Uint8Array.from(encoded)).toEqual(pubBin);
   });
 
-  it("create address", async done => {
-    const calc = await keyToAddress(pubJson);
-    expect(Uint8Array.from(calc)).toEqual(address);
-    done();
+  it("create address", () => {
+    const calculatedAddress = keyToAddress(pubJson);
+    expect(calculatedAddress).toEqual(address);
   });
 
   it("encode private key", () => {

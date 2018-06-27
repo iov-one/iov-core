@@ -32,7 +32,7 @@ export class Codec {
   // identifier is usually some sort of hash of bytesToPost, chain-dependent
   public static async identifier(tx: SignedTransaction): Promise<TransactionIDBytes> {
     const post = await this.bytesToPost(tx);
-    return tendermintHash(post) as Promise<TransactionIDBytes>;
+    return tendermintHash(post) as TransactionIDBytes;
   }
 
   // parseBytes will recover bytes from the blockchain into a format we can use
