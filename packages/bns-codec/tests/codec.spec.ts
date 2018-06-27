@@ -16,10 +16,9 @@ import {
 } from "./testdata";
 
 describe("Check codec", () => {
-  it("properly encodes transactions", async done => {
-    const encoded = await Codec.bytesToPost(signedTxJson);
+  it("properly encodes transactions", () => {
+    const encoded = Codec.bytesToPost(signedTxJson);
     expect(Uint8Array.from(encoded)).toEqual(signedTxBin);
-    done();
   });
 
   it("properly decodes transactions", () => {
@@ -28,7 +27,7 @@ describe("Check codec", () => {
   });
 
   it("properly generates signbytes", async done => {
-    const toSign = await Codec.bytesToSign(sendTxJson, sig.nonce);
+    const toSign = Codec.bytesToSign(sendTxJson, sig.nonce);
     // it should match the canonical sign bytes
     expect(toSign).toEqual(signBytes);
 
@@ -39,16 +38,15 @@ describe("Check codec", () => {
     done();
   });
 
-  it("generates transaction id", async done => {
-    const id = await Codec.identifier(signedTxJson);
+  it("generates transaction id", () => {
+    const id = Codec.identifier(signedTxJson);
     expect(id).toBeTruthy();
     expect(id.length).toBe(20);
-    done();
   });
 
-  it("round trip works", async done => {
-    const verify = async (trial: SignedTransaction) => {
-      const encoded = await Codec.bytesToPost(trial);
+  it("round trip works", () => {
+    const verify = (trial: SignedTransaction) => {
+      const encoded = Codec.bytesToPost(trial);
       // Note: odd work-around.
       // If we don't do this, we get the same data back, but stored
       // as Buffer in node, rather than Uint8Array, so toEqual fails
@@ -56,14 +54,12 @@ describe("Check codec", () => {
       const decoded = Codec.parseBytes(noBuffer, trial.transaction.chainId);
       expect(decoded).toEqual(trial);
     };
-    expect(async () => {
-      await verify(signedTxJson);
-      await verify(randomTxJson);
-      await verify(setNameTxJson);
-      await verify(swapCounterTxJson);
-      await verify(swapClaimTxJson);
-      await verify(swapTimeoutTxJson);
-      done();
-    }).not.toThrow();
+
+    verify(signedTxJson);
+    verify(randomTxJson);
+    verify(setNameTxJson);
+    verify(swapCounterTxJson);
+    verify(swapClaimTxJson);
+    verify(swapTimeoutTxJson);
   });
 });

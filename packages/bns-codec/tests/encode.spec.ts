@@ -49,25 +49,22 @@ describe("Encode helpers", () => {
 });
 
 describe("Encode transactions", () => {
-  it("encodes unsigned message", async done => {
-    const tx = await buildMsg(sendTxJson);
+  it("encodes unsigned message", () => {
+    const tx = buildMsg(sendTxJson);
     const encoded = codec.app.Tx.encode(tx).finish();
     expect(Uint8Array.from(encoded)).toEqual(sendTxBin);
-    done();
   });
 
-  it("encodes unsigned transaction", async done => {
-    const tx = await buildUnsignedTx(sendTxJson);
+  it("encodes unsigned transaction", () => {
+    const tx = buildUnsignedTx(sendTxJson);
     const encoded = codec.app.Tx.encode(tx).finish();
     expect(Uint8Array.from(encoded)).toEqual(sendTxBin);
-    done();
   });
 
-  it("encodes signed transaction", async done => {
-    const tx = await buildSignedTx(signedTxJson);
+  it("encodes signed transaction", () => {
+    const tx = buildSignedTx(signedTxJson);
     const encoded = codec.app.Tx.encode(tx).finish();
     expect(Uint8Array.from(encoded)).toEqual(signedTxBin);
-    done();
   });
 });
 
@@ -86,7 +83,7 @@ describe("Ensure crypto", () => {
     const keypair = Ed25519Keypair.fromLibsodiumPrivkey(privJson.data);
     const pubKey = pubJson.data;
 
-    const tx = await buildUnsignedTx(sendTxJson);
+    const tx = buildUnsignedTx(sendTxJson);
     const encoded = codec.app.Tx.encode(tx).finish();
     const toSign = appendSignBytes(encoded, sendTxJson.chainId, sig.nonce);
     expect(toSign).toEqual(signBytes);
