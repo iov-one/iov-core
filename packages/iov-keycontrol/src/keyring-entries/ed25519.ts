@@ -74,7 +74,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     };
   }
 
-  public async getIdentities(): Promise<ReadonlyArray<PublicIdentity>> {
+  public getIdentities(): ReadonlyArray<PublicIdentity> {
     return this.identities;
   }
 

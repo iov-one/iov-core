@@ -13,7 +13,7 @@ describe("Ed25519KeyringEntry", () => {
   it("is empty after construction", done => {
     (async () => {
       const keyringEntry = new Ed25519KeyringEntry();
-      expect((await keyringEntry.getIdentities()).length).toEqual(0);
+      expect(keyringEntry.getIdentities().length).toEqual(0);
       expect(await keyringEntry.serialize()).toEqual("[]");
 
       done();
@@ -28,9 +28,9 @@ describe("Ed25519KeyringEntry", () => {
     (async () => {
       const keyringEntry = new Ed25519KeyringEntry();
       const newIdentity = await keyringEntry.createIdentity();
-      expect((await keyringEntry.getIdentities()).length).toEqual(1);
+      expect(keyringEntry.getIdentities().length).toEqual(1);
 
-      const firstIdentity = (await keyringEntry.getIdentities())[0];
+      const firstIdentity = keyringEntry.getIdentities()[0];
       expect(newIdentity.algo).toEqual(firstIdentity.algo);
       expect(newIdentity.data).toEqual(firstIdentity.data);
       expect(newIdentity.nickname).toEqual(firstIdentity.nickname);
@@ -51,14 +51,14 @@ describe("Ed25519KeyringEntry", () => {
       await keyringEntry.createIdentity(); // 3
       await keyringEntry.createIdentity(); // 4
       const newIdentity5 = await keyringEntry.createIdentity(); // 5
-      expect((await keyringEntry.getIdentities()).length).toEqual(5);
+      expect(keyringEntry.getIdentities().length).toEqual(5);
 
-      const firstIdentity = (await keyringEntry.getIdentities())[0];
+      const firstIdentity = keyringEntry.getIdentities()[0];
       expect(newIdentity1.algo).toEqual(firstIdentity.algo);
       expect(newIdentity1.data).toEqual(firstIdentity.data);
       expect(newIdentity1.nickname).toEqual(firstIdentity.nickname);
 
-      const lastIdentity = (await keyringEntry.getIdentities())[4];
+      const lastIdentity = keyringEntry.getIdentities()[4];
       expect(newIdentity5.algo).toEqual(lastIdentity.algo);
       expect(newIdentity5.data).toEqual(lastIdentity.data);
       expect(newIdentity5.nickname).toEqual(lastIdentity.nickname);
@@ -75,16 +75,16 @@ describe("Ed25519KeyringEntry", () => {
     (async () => {
       const keyringEntry = new Ed25519KeyringEntry();
       const newIdentity = await keyringEntry.createIdentity();
-      expect((await keyringEntry.getIdentities())[0].nickname).toBeUndefined();
+      expect(keyringEntry.getIdentities()[0].nickname).toBeUndefined();
 
       keyringEntry.setIdentityNickname(newIdentity, "foo");
-      expect((await keyringEntry.getIdentities())[0].nickname).toEqual("foo");
+      expect(keyringEntry.getIdentities()[0].nickname).toEqual("foo");
 
       keyringEntry.setIdentityNickname(newIdentity, "bar");
-      expect((await keyringEntry.getIdentities())[0].nickname).toEqual("bar");
+      expect(keyringEntry.getIdentities()[0].nickname).toEqual("bar");
 
       keyringEntry.setIdentityNickname(newIdentity, undefined);
-      expect((await keyringEntry.getIdentities())[0].nickname).toBeUndefined();
+      expect(keyringEntry.getIdentities()[0].nickname).toBeUndefined();
 
       done();
     })().catch(error => {
@@ -162,46 +162,38 @@ describe("Ed25519KeyringEntry", () => {
     });
   });
 
-  it("can deserialize", done => {
-    (async () => {
-      {
-        // empty
-        const entry = new Ed25519KeyringEntry("[]" as KeyDataString);
-        expect(entry).toBeTruthy();
-        expect((await entry.getIdentities()).length).toEqual(0);
-      }
+  it("can deserialize", () => {
+    {
+      // empty
+      const entry = new Ed25519KeyringEntry("[]" as KeyDataString);
+      expect(entry).toBeTruthy();
+      expect(entry.getIdentities().length).toEqual(0);
+    }
 
-      {
-        // one element
-        const serialized = '[{"publicIdentity": { "algo": "ed25519", "data": "aabbccdd", "nickname": "foo" }, "privkey": "223322112233aabb"}]' as KeyDataString;
-        const entry = new Ed25519KeyringEntry(serialized);
-        expect(entry).toBeTruthy();
-        expect((await entry.getIdentities()).length).toEqual(1);
-        expect((await entry.getIdentities())[0].algo).toEqual("ed25519");
-        expect((await entry.getIdentities())[0].data).toEqual(Encoding.fromHex("aabbccdd"));
-        expect((await entry.getIdentities())[0].nickname).toEqual("foo");
-      }
+    {
+      // one element
+      const serialized = '[{"publicIdentity": { "algo": "ed25519", "data": "aabbccdd", "nickname": "foo" }, "privkey": "223322112233aabb"}]' as KeyDataString;
+      const entry = new Ed25519KeyringEntry(serialized);
+      expect(entry).toBeTruthy();
+      expect(entry.getIdentities().length).toEqual(1);
+      expect(entry.getIdentities()[0].algo).toEqual("ed25519");
+      expect(entry.getIdentities()[0].data).toEqual(Encoding.fromHex("aabbccdd"));
+      expect(entry.getIdentities()[0].nickname).toEqual("foo");
+    }
 
-      {
-        // two elements
-        const serialized = '[{"publicIdentity": { "algo": "ed25519", "data": "aabbccdd", "nickname": "foo" }, "privkey": "223322112233aabb"}, {"publicIdentity": { "algo": "ed25519", "data": "ddccbbaa", "nickname": "bar" }, "privkey": "ddddeeee"}]' as KeyDataString;
-        const entry = new Ed25519KeyringEntry(serialized);
-        expect(entry).toBeTruthy();
-        expect((await entry.getIdentities()).length).toEqual(2);
-        expect((await entry.getIdentities())[0].algo).toEqual("ed25519");
-        expect((await entry.getIdentities())[0].data).toEqual(Encoding.fromHex("aabbccdd"));
-        expect((await entry.getIdentities())[0].nickname).toEqual("foo");
-        expect((await entry.getIdentities())[1].algo).toEqual("ed25519");
-        expect((await entry.getIdentities())[1].data).toEqual(Encoding.fromHex("ddccbbaa"));
-        expect((await entry.getIdentities())[1].nickname).toEqual("bar");
-      }
-
-      done();
-    })().catch(error => {
-      setTimeout(() => {
-        throw error;
-      });
-    });
+    {
+      // two elements
+      const serialized = '[{"publicIdentity": { "algo": "ed25519", "data": "aabbccdd", "nickname": "foo" }, "privkey": "223322112233aabb"}, {"publicIdentity": { "algo": "ed25519", "data": "ddccbbaa", "nickname": "bar" }, "privkey": "ddddeeee"}]' as KeyDataString;
+      const entry = new Ed25519KeyringEntry(serialized);
+      expect(entry).toBeTruthy();
+      expect(entry.getIdentities().length).toEqual(2);
+      expect(entry.getIdentities()[0].algo).toEqual("ed25519");
+      expect(entry.getIdentities()[0].data).toEqual(Encoding.fromHex("aabbccdd"));
+      expect(entry.getIdentities()[0].nickname).toEqual("foo");
+      expect(entry.getIdentities()[1].algo).toEqual("ed25519");
+      expect(entry.getIdentities()[1].data).toEqual(Encoding.fromHex("ddccbbaa"));
+      expect(entry.getIdentities()[1].nickname).toEqual("bar");
+    }
   });
 
   it("can serialize and restore a full keyring entry", done => {
@@ -217,7 +209,7 @@ describe("Ed25519KeyringEntry", () => {
       const restored = new Ed25519KeyringEntry(await original.serialize());
 
       // pubkeys and nicknames match
-      expect(await original.getIdentities()).toEqual(await restored.getIdentities());
+      expect(original.getIdentities()).toEqual(restored.getIdentities());
 
       // privkeys match
       const tx = new Uint8Array([]) as SignableBytes;
