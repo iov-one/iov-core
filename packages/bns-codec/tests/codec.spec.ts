@@ -45,7 +45,16 @@ describe("Check codec", () => {
   });
 
   it("round trip works", () => {
-    const verify = (trial: SignedTransaction) => {
+    const transactionsToBeVerified: ReadonlyArray<SignedTransaction> = [
+      signedTxJson,
+      randomTxJson,
+      setNameTxJson,
+      swapCounterTxJson,
+      swapClaimTxJson,
+      swapTimeoutTxJson,
+    ];
+
+    for (const trial of transactionsToBeVerified) {
       const encoded = Codec.bytesToPost(trial);
       // Note: odd work-around.
       // If we don't do this, we get the same data back, but stored
@@ -53,13 +62,6 @@ describe("Check codec", () => {
       const noBuffer = Uint8Array.from(encoded) as PostableBytes;
       const decoded = Codec.parseBytes(noBuffer, trial.transaction.chainId);
       expect(decoded).toEqual(trial);
-    };
-
-    verify(signedTxJson);
-    verify(randomTxJson);
-    verify(setNameTxJson);
-    verify(swapCounterTxJson);
-    verify(swapClaimTxJson);
-    verify(swapTimeoutTxJson);
+    }
   });
 });
