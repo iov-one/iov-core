@@ -98,8 +98,8 @@ export interface Profile {
   // createIdentity creates a public/private keypairs
   readonly createIdentity: () => Promise<ModifyProfileEvent>;
 
-  // setIdentityName assigns a new name to one of the identities
-  readonly setIdentityName: (publicKey: PublicKeyBundle, name: string) => Promise<ModifyProfileEvent>;
+  // assigns a new nickname to one of the identities
+  readonly setIdentityNickname: (identity: PublicKeyBundle, name: string | undefined) => Promise<ModifyProfileEvent>;
 
   readonly getIdentities: () => Promise<ReadonlyArray<PublicIdentity>>;
 
