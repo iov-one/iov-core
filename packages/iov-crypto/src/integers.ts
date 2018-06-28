@@ -1,4 +1,4 @@
-import Long = require("long");
+/* tslint:disable:no-bitwise */
 
 export class Uint32 {
   protected readonly data: number;
@@ -16,11 +16,14 @@ export class Uint32 {
   }
 
   public toBytesBigEndian(): ReadonlyArray<number> {
-    const bytes = Long.fromInt(this.data).toBytesBE();
-    if (bytes.length !== 8) {
-      throw new Error("Panic! Long is not 8 bytes long.");
-    }
-    return bytes.slice(4, 8);
+    // Use division instead of shifting since bitwise operators are defined
+    // on SIGNED int32 in JavaScript and we don't want to risk surprises
+    return [
+      Math.floor(this.data / 2 ** 24) & 0xff,
+      Math.floor(this.data / 2 ** 16) & 0xff,
+      Math.floor(this.data / 2 ** 8) & 0xff,
+      Math.floor(this.data / 2 ** 0) & 0xff,
+    ];
   }
 
   public asNumber(): number {
