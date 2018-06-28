@@ -12,59 +12,60 @@ MVP just shows we can generate HD keys, save/load them, and use them to sign tra
 - [x] HD Keyring works (with fixed path)
 - [ ] KeyringController handles persistence
 - [x] We can encode the sendtx transaction for bcp-demo (`bns-codec`)
-- [ ] Tendermint rpc client
+- [ ] Tendermint RPC client
 - [ ] Client wrapper to parse data as defined in [bcp-minimal](https://github.com/iov-one/bcp-spec/blob/master/library/web4/rpc/README.md#bcp-minimal)
-- [ ] Simple cli (or repl) tool that will use web4 codebase to sign and send transactions, pulling proper nonce from the chain
+- [ ] Simple cli (using repl) tool that will use `web4` codebase to sign and send transactions. Queries proper nonce from the chain
 
 ## Web4-read proof of concept
 
-- [ ] Clarify interface for blockchain client, including subscriptions (observable) and [bcp-basic](https://github.com/iov-one/bcp-spec/blob/master/library/web4/rpc/README.md#bcp-basic) 
-- [ ] Enhance tendermint rpc wrapper to fulfill interface
+- [ ] Clarify interface for blockchain client, including subscriptions (observable) and [bcp-basic](https://github.com/iov-one/bcp-spec/blob/master/library/web4/rpc/README.md#bcp-basic)
+- [ ] Enhance Tendermint RPC wrapper to fulfill interface
 - [ ] Produce a webapp that can show account balances using this interface
 - [ ] Enhance webapp to show tx history
 
 ## BCP-Proxy proof of concept (Web4-read MVP)
 
-- [ ] Add bcp-client that talks to bcp proxy and fulfills bcp-basic blockchain interface (as above)
-- [ ] Add bcp-proxy implementation that talks to tendermint chain (demo: combing client and server)
-- [ ] Add bcp-proxy implementation that talks to lisk
-- [ ] Update above webapp to query over both lisk and tendermint chains with a chain selector
+- [ ] Add `bcp-client` that talks to `bcp-proxy` and fulfills bcp-basic blockchain interface (as above)
+- [ ] Add `bcp-proxy` implementation that communicates with a tendermint chain (demo: combing client and server)
+- [ ] Add `bcp-proxy` implementation that communicates with Lisk 1.0.0 chains
+- [ ] Update above webapp to query over both Lisk and Tendermint chains with a chain selector
 
 ## Web4-write Extension MVP
 
-- [ ] Define public API to call web4-write from webapp
-- [ ] Design simple chrome extension that displays data from web4-write, creates accounts, requests confirmations on signing transactions
+- [ ] Define public API to call `web4-write` from webapp
+- [ ] Design simple chrome extension that displays data from `web4-write`, creates accounts, requests confirmations on signing transactions
 - [ ] Update webapp to talk to web4-write to query current account and show that balance
 - [ ] Update webapp to send "sendtx" requests to web4-write based on user input in webapp
 - [ ] MVP should show balances and allow sending in normal webapp, all keys and transactions confirmation in chrome extension
-- [ ] Support both bcp-demo chain as well as Lisk (via bcp-proxy)
+- [ ] Support both `bcp-demo` and Lisk chains (via `bcp-proxy`)
 
 ## Enhancement: Flexible Web4-Read
-Depends on: Backend implmentation and deployment of "bcp-plus" chain as bcp-demo extended
+Depends on: Backend implementation and deployment of "bcp-plus" chain as `bcp-demo` extended
 
-- [ ] Design extensible query endpoints from client -> bcp-proxy -> chain
-- [ ] Define some "query definition format" to define/discover what queries are possible
-- [ ] Add "codec definition format" for protobuf parsing and transformation, use this with tendermint-rpc to talk to a bcp-plus chain 
-- [ ] Demonstrate adding a query over bcp-proxy (using in turn the expanded tendermint-rpc client to talk to the blockchain)
+- [ ] Design extensible query endpoints from `web4-read` -> `bcp-proxy` -> `blockchain`
+- [ ] Define some `query templates` to explain possible queries
+- [ ] Add `codec definition format` for protobuf parsing and transformation, use this with `tendermint-rpc` to talk to a `bcp-plus` chain
+- [ ] Provide documentation for adding a query over `bcp-proxy` (using in turn the expanded tendermint-rpc client to talk to the blockchain).
 
 ## Enhancement: Flexible Web4-Write
 
-- [ ] Design "meta-codec" format that can generate chain-specific tx-codec for a "blockchain family" given a defintion file...
-  - eg. all weave-based systems could share a meta-codec that allows adding individual tx, all ethereum chains could customize the swap contract in their definiton, etc.
-- [ ] Add definitions for bcp-demo and bcp-plus example to the package
-- [ ] Auto-generate chain codecs from meta-codec + definition in "txBuilder" lookup
-- [ ] Sign bcp-plus transactions without hardcoding them in web4-write (only using defintion files)
-- TODO.....
+- [ ] Design `meta-codec` format that can generate chain-specific tx-codec for a "blockchain family" given a definition file...
+  - all weave-based systems could share a meta-codec that allows adding individual tx,
+  - all Ethereum chains could customize the swap contract in their definition, etc.
+- [ ] Add definitions for `bcp-demo` and `bcp-plus` example to the package
+- [ ] Auto-generate chain codecs from `meta-codec` + definition in "txBuilder" lookup
+- [ ] Sign `bcp-plus` transactions using only definitions
+- TODO: Add more detail
 
 ## Enhancement: BNS Integration
 Depends on: BNS implementation on backend completed and deployed
 
-- [ ] Add BCP-Plus query integration for full BNS feature set
-- [ ] Complete full tx-codec support for all BNS transactions
-- [ ] Add support for name lookup to chrome extension
+- [ ] Add `BCP-Plus` query integration for full BNS feature set
+- [ ] Complete full `tx-codec` support for all BNS transactions
+- [ ] Add support for name lookup via chrome extension
 - [ ] Add management of value name (registration/transfer) to Chrome extension
-- [ ] Add lookup of chains to chrome extension and webapp (extend "chain selector")
-- [ ] Add queries and browsing of names/chains to webapp (not extension)
+- [ ] Add lookup of chains via chrome extension and webapp (extend "chain selector")
+- [ ] Add queries and browsing of names/chains via webapp (not extension)
 
 ## Enhancement Dynamic Codecs
 
