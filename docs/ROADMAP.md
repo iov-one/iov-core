@@ -3,6 +3,8 @@
 This is a rough map of major points that need to be done to reach
 some milestones
 
+The Roadmap is a work-in-progress, so please add comments to help clarify and point out missing items
+
 ## Web4-write proof of concept
 
 MVP just shows we can generate HD keys, save/load them, and use them to sign transactions and send tokens on the network.
