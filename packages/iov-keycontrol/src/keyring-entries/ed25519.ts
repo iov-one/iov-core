@@ -1,39 +1,34 @@
 import { Ed25519, Ed25519Keypair, Encoding, Random } from "@iov/crypto";
-import {
-  Algorithm,
-  ChainId,
-  PublicKeyBundle,
-  PublicKeyBytes,
-  SignableBytes,
-  SignatureBytes,
-} from "@iov/types";
+import { Algorithm, ChainId, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
 
-import { KeyDataString, KeyringEntry, PublicIdentity } from "../keyring";
+import { KeyDataString, KeyringEntry, LocalIdentity, PublicIdentity } from "../keyring";
 
 export class Ed25519KeyringEntry implements KeyringEntry {
-  private static identityId(identity: PublicKeyBundle): string {
-    return identity.algo + "|" + Encoding.toHex(identity.data);
+  private static identityId(identity: PublicIdentity): string {
+    return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
   }
 
   public readonly canSign = true;
 
-  private readonly identities: PublicIdentity[];
+  private readonly identities: LocalIdentity[];
   private readonly privkeys: Map<string, Ed25519Keypair>;
 
   constructor(data?: KeyDataString) {
-    const identities: PublicIdentity[] = [];
+    const identities: LocalIdentity[] = [];
     const privkeys = new Map<string, Ed25519Keypair>();
     if (data) {
       const decodedData = JSON.parse(data);
       for (const record of decodedData) {
         const keypair = new Ed25519Keypair(
           Encoding.fromHex(record.privkey),
-          Encoding.fromHex(record.publicIdentity.data),
+          Encoding.fromHex(record.localIdentity.pubkey.data),
         );
-        const identity: PublicIdentity = {
-          algo: record.publicIdentity.algo,
-          data: keypair.pubkey as PublicKeyBytes,
-          nickname: record.publicIdentity.nickname,
+        const identity: LocalIdentity = {
+          pubkey: {
+            algo: record.localIdentity.pubkey.algo,
+            data: keypair.pubkey as PublicKeyBytes,
+          },
+          nickname: record.localIdentity.nickname,
         };
         const identityId = Ed25519KeyringEntry.identityId(identity);
         identities.push(identity);
@@ -45,13 +40,16 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     this.privkeys = privkeys;
   }
 
-  public async createIdentity(): Promise<PublicIdentity> {
+  public async createIdentity(): Promise<LocalIdentity> {
     const seed = await Random.getBytes(32);
     const keypair = await Ed25519.makeKeypair(seed);
 
-    const newIdentity: PublicIdentity = {
-      algo: Algorithm.ED25519,
-      data: keypair.pubkey as PublicKeyBytes,
+    const newIdentity: LocalIdentity = {
+      pubkey: {
+        algo: Algorithm.ED25519,
+        data: keypair.pubkey as PublicKeyBytes,
+      },
+      nickname: undefined,
     };
     const identityId = Ed25519KeyringEntry.identityId(newIdentity);
     this.privkeys.set(identityId, keypair);
@@ -59,7 +57,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     return newIdentity;
   }
 
-  public async setIdentityNickname(identity: PublicKeyBundle, nickname: string | undefined): Promise<void> {
+  public async setIdentityNickname(identity: PublicIdentity, nickname: string | undefined): Promise<void> {
     const identityId = Ed25519KeyringEntry.identityId(identity);
     const index = this.identities.findIndex(i => Ed25519KeyringEntry.identityId(i) === identityId);
     if (index === -1) {
@@ -68,18 +66,17 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
     // tslint:disable-next-line:no-object-mutation
     this.identities[index] = {
-      algo: this.identities[index].algo,
-      data: this.identities[index].data,
+      pubkey: this.identities[index].pubkey,
       nickname: nickname,
     };
   }
 
-  public getIdentities(): ReadonlyArray<PublicIdentity> {
+  public getIdentities(): ReadonlyArray<LocalIdentity> {
     return this.identities;
   }
 
   public async createTransactionSignature(
-    identity: PublicKeyBundle,
+    identity: PublicIdentity,
     tx: SignableBytes,
     _: ChainId,
   ): Promise<SignatureBytes> {
@@ -92,9 +89,11 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     const out = this.identities.map(identity => {
       const keypair = this.privateKeyForIdentity(identity);
       return {
-        publicIdentity: {
-          algo: identity.algo,
-          data: Encoding.toHex(identity.data),
+        localIdentity: {
+          pubkey: {
+            algo: identity.pubkey.algo,
+            data: Encoding.toHex(identity.pubkey.data),
+          },
           nickname: identity.nickname,
         },
         privkey: Encoding.toHex(keypair.privkey),
@@ -104,7 +103,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   }
 
   // This throws an exception when private key is missing
-  private privateKeyForIdentity(identity: PublicKeyBundle): Ed25519Keypair {
+  private privateKeyForIdentity(identity: PublicIdentity): Ed25519Keypair {
     const identityId = Ed25519KeyringEntry.identityId(identity);
     const privkey = this.privkeys.get(identityId);
     if (!privkey) {

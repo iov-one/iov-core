@@ -1,7 +1,6 @@
 import {
   Nonce,
   PasswordString,
-  PublicKeyBundle,
   SignableBytes,
   SignatureBytes,
   SignedTransaction,
@@ -18,7 +17,7 @@ import {
   UnlockProfileEvent,
   VerifiedTransactionEvent,
 } from "./events";
-import { KeyringName, PublicIdentity } from "./keyring";
+import { KeyringName, LocalIdentity, PublicIdentity } from "./keyring";
 
 /*
 A KeyController is the main interface to key signing.
@@ -98,10 +97,10 @@ export interface Profile {
   // createIdentity creates a public/private keypairs
   readonly createIdentity: () => Promise<ModifyProfileEvent>;
 
-  // setIdentityName assigns a new name to one of the identities
-  readonly setIdentityName: (publicKey: PublicKeyBundle, name: string) => Promise<ModifyProfileEvent>;
+  // assigns a new nickname to one of the identities
+  readonly setIdentityNickname: (identity: PublicIdentity, name: string | undefined) => Promise<ModifyProfileEvent>;
 
-  readonly getIdentities: () => Promise<ReadonlyArray<PublicIdentity>>;
+  readonly getIdentities: () => Promise<ReadonlyArray<LocalIdentity>>;
 
   // ---------- Perform computations ----
   //
@@ -112,14 +111,14 @@ export interface Profile {
   // This signs the given transaction and returns a new transaction
   // with the this signature appended
   readonly signTransaction: (
-    identity: PublicKeyBundle,
+    identity: PublicIdentity,
     tx: UnsignedTransaction,
     codec: TxCodec,
     nonce: Nonce,
   ) => Promise<SignedTransaction>;
 
   readonly appendSignature: (
-    identity: PublicKeyBundle,
+    identity: PublicIdentity,
     tx: SignedTransaction,
     codec: TxCodec,
     nonce: Nonce,

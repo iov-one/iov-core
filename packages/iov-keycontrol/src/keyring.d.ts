@@ -6,9 +6,14 @@ declare class As<Tag extends string> { private '_ _ _': Tag; }
 export type KeyDataString = string & As<'key-data'>;
 export type KeyringName = string & As<'keyring-name'>;
 
-// PublicIdentity is a public key we can identify with on a blockchain,
-// as well as local info, like our nickname and if it is enabled currently
-export interface PublicIdentity extends PublicKeyBundle {
+// PublicIdentity is a public key we can identify with on a blockchain
+export interface PublicIdentity {
+  readonly pubkey: PublicKeyBundle
+}
+
+// LocalIdentity is a local version of a PublicIdentity that contains
+// additional local information
+export interface LocalIdentity extends PublicIdentity {
   // nickname is an optional, local name.
   // this is not exposed to other people, use BNS registration for that
   readonly nickname?: string;
@@ -33,14 +38,14 @@ https://github.com/MetaMask/KeyringController/blob/master/docs/keyring.md
 */
 export interface KeyringEntry {
   // createIdentity will create one new identity
-  readonly createIdentity: () => Promise<PublicIdentity>;
+  readonly createIdentity: () => Promise<LocalIdentity>;
 
   // setIdentityNickname sets the name associated with the public key, if it exists
   // To clear a nickname, set it to undefined
-  readonly setIdentityNickname: (identity: PublicKeyBundle, name: string | undefined) => Promise<void>;
+  readonly setIdentityNickname: (identity: PublicIdentity, name: string | undefined) => Promise<void>;
 
   // getIdentities returns all identities currently registered
-  readonly getIdentities: () => ReadonlyArray<PublicIdentity>;
+  readonly getIdentities: () => ReadonlyArray<LocalIdentity>;
 
   // canSign flag means the private key material is currently accessible.
   // If a hardware ledger is not plugged in, we may see the public keys,
@@ -54,7 +59,7 @@ export interface KeyringEntry {
   // We provide chainID explicitly (which should be in tx as well), to help
   // an implementation to do checks (such as ledger to switch apps)
   readonly createTransactionSignature: (
-    identity: PublicKeyBundle,
+    identity: PublicIdentity,
     tx: SignableBytes,
     chainID: ChainId,
   ) => Promise<SignatureBytes>;
