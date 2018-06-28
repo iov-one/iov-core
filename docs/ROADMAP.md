@@ -76,3 +76,29 @@ Depends on: BNS implementation on backend completed and deployed
 - [ ] Integrate this with tendermint rpc to produce secure query
 - [ ] Use Secure Queries to query BNS chain, provide a "root of trust" header in the app
 - TODO....
+
+## Enhancement: Ethereum Proxy
+
+- [ ] Upload (or use existing) contracts to provide support for swap and name service on ethereum
+- [ ] Add meta-codec to create ethereum transactions for these contracts
+- [ ] Add definition files for 1-2 testnets and mainnet
+- [ ] Add bcp-proxy support to provide bcp-basic support using the chosen contracts
+- [ ] Add secp256k1 HD support to keybase
+- [ ] Sign ethereum tx with same HD path as metamask (can import mneumonic to grant access to other account)
+- [ ] Verify we can use ethereum chains just like lisk or bcp-demo chain with same webapp, and switch between chains
+
+## Enhancement: Electron App
+
+- [ ] Package webapp (using web4-read) and web4-write into one electron binary
+- [ ] Provide nicer integration of confirmation steps (now that is it not a "malicious webapp" but the same binary making tx requests)
+- [ ] Provide downloadable version of electron app for download
+- [ ] Experiment with deterministic builds, allowing multiple people to compile and sign the same binary
+- TODO....
+
+## Enhancement: React-Native App
+
+- [ ] Package webapp (using web4-read) and web4-write into one react-native binary
+- [ ] Provide simple tx sending workflow (as per electron app)
+- [ ] Provide downloadable version of Android (and iOS?) app for download
+- [ ] Experiment with deterministic builds, allowing multiple people to compile and sign the same binary
+- TODO....
