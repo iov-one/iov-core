@@ -1,11 +1,10 @@
 import { ChainId, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
 
-declare const KeyDataSymbol: unique symbol;
-type KeyData = typeof KeyDataSymbol;
-export type KeyDataString = KeyData & string;
+// type tagging from https://github.com/Microsoft/TypeScript/issues/4895#issuecomment-399098397
+declare class As<Tag extends string> { private '_ _ _': Tag; }
 
-declare const KeyringNameSymbol: unique symbol;
-export type KeyringName = typeof KeyringNameSymbol & string;
+export type KeyDataString = string & As<'key-data'>;
+export type KeyringName = string & As<'keyring-name'>;
 
 // PublicIdentity is a public key we can identify with on a blockchain,
 // as well as local info, like our nickname and if it is enabled currently
