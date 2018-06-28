@@ -35,4 +35,14 @@ describe("Uint32", () => {
 
     // tslint:enable:no-unused-expression
   });
+
+  it("throws for invald numbers", () => {
+    // tslint:disable:no-unused-expression
+
+    expect(() => {
+      new Uint32(NaN);
+    }).toThrowError(/not a number/);
+
+    // tslint:enable:no-unused-expression
+  });
 });
