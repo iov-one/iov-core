@@ -1,4 +1,4 @@
-import { Uint32 } from "./utils";
+import { Uint32 } from "./integers";
 export interface Slip0010Result {
     readonly chainCode: Uint8Array;
     readonly privkey: Uint8Array;
