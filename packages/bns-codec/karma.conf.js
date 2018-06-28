@@ -37,6 +37,11 @@ module.exports = function(config) {
       }
     },
 
+    // fix .ts file being served as video/mp2t
+    mime: {
+      'text/x-typescript': ['ts','tsx']
+    },
+
     // webpackMiddleware: {
     //   devtool: true,
     // },
