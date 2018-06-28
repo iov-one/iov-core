@@ -10,11 +10,11 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'tests/*.spec.ts',
+      'src/*.spec.ts',
     ],
 
     preprocessors: {
-      'tests/*.spec.ts': ['webpack', 'sourcemap']
+      'src/*.spec.ts': ['webpack', 'sourcemap']
     },
 
     webpack: {

@@ -3,10 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "build",
-    "rootDir": "."
+    "rootDir": "src"
   },
   "include": [
-    "src/**/*",
-    "tests/**/*"
+    "src/**/*"
   ]
 }

@@ -1,6 +1,6 @@
-import * as codec from "../src/codec";
-import { parseTx } from "../src/decode";
-import { decodePrivKey, decodePubKey, decodeToken } from "../src/types";
+import * as codec from "./codec";
+import { parseTx } from "./decode";
+import { decodePrivKey, decodePubKey, decodeToken } from "./types";
 
 import {
   chainId,

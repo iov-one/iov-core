@@ -1,9 +1,9 @@
 import { Ed25519, Ed25519Keypair } from "@iov/crypto";
 
-import * as codec from "../src/codec";
-import { buildMsg, buildSignedTx, buildUnsignedTx } from "../src/encode";
-import { encodePrivKey, encodePubKey, encodeToken } from "../src/types";
-import { appendSignBytes, keyToAddress } from "../src/util";
+import * as codec from "./codec";
+import { buildMsg, buildSignedTx, buildUnsignedTx } from "./encode";
+import { encodePrivKey, encodePubKey, encodeToken } from "./types";
+import { appendSignBytes, keyToAddress } from "./util";
 
 import {
   address,

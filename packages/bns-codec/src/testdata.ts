@@ -23,7 +23,7 @@ import {
 } from "@iov/types";
 import Long from "long";
 
-import { hashId } from "../src/util";
+import { hashId } from "./util";
 
 const { fromHex } = Encoding;
 
