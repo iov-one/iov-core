@@ -55,7 +55,7 @@ Depends on: Backend implementation and deployment of "bcp-plus" chain as `bcp-de
 - [ ] Add definitions for `bcp-demo` and `bcp-plus` example to the package
 - [ ] Auto-generate chain codecs from `meta-codec` + definition in "txBuilder" lookup
 - [ ] Sign `bcp-plus` transactions using only definitions
-- TODO: Add more detail
+- TODO....
 
 ## Enhancement: BNS Integration
 Depends on: BNS implementation on backend completed and deployed
@@ -70,7 +70,7 @@ Depends on: BNS implementation on backend completed and deployed
 ## Enhancement Dynamic Codecs
 
 - [ ] Support downloading codec definitions from BNS
-- TODO.....
+- TODO: Add more detail
 
 ## Enhancement: Secure Queries
 
@@ -82,25 +82,25 @@ Depends on: BNS implementation on backend completed and deployed
 
 ## Enhancement: Ethereum Proxy
 
-- [ ] Upload (or use existing) contracts to provide support for swap and name service on ethereum
-- [ ] Add meta-codec to create ethereum transactions for these contracts
-- [ ] Add definition files for 1-2 testnets and mainnet
-- [ ] Add bcp-proxy support to provide bcp-basic support using the chosen contracts
-- [ ] Add secp256k1 HD support to keybase
-- [ ] Sign ethereum tx with same HD path as metamask (can import mneumonic to grant access to other account)
-- [ ] Verify we can use ethereum chains just like lisk or bcp-demo chain with same webapp, and switch between chains
+- [ ] Create example contract to provide support for swap and name service on Ethereum
+- [ ] Add `meta-codec` to create Ethereum transactions for the contract
+- [ ] Add definition files for 2 testnets and mainnet
+- [ ] Add `bcp-proxy` support to provide `bcp-basic` functionality using the chosen contracts
+- [ ] Add secp256k1 HD support to `keybase`
+- [ ] Sign Ethereum tx with same HD path as metamask. Importing mnemonic enables use in web4 and metamask
+- [ ] Verify we can use Ethereum chains just like Lisk or `bcp-demo` chain with same webapp, and switch between chains
 
 ## Enhancement: Electron App
 
-- [ ] Package webapp (using web4-read) and web4-write into one electron binary
-- [ ] Provide nicer integration of confirmation steps (now that is it not a "malicious webapp" but the same binary making tx requests)
-- [ ] Provide downloadable version of electron app for download
+- [ ] Package webapp containing `web4-read` and `web4-write` into an  electron binary
+- [ ] Provide streamlined integration of confirmation steps, as the binary should trust itself
+- [ ] Provide packaged version of electron app for download
 - [ ] Experiment with deterministic builds, allowing multiple people to compile and sign the same binary
 - TODO....
 
 ## Enhancement: React-Native App
 
-- [ ] Package webapp (using web4-read) and web4-write into one react-native binary
+- [ ] Package webapp containing `web4-read` and `web4-write` into a react-native binary
 - [ ] Provide simple tx sending workflow (as per electron app)
 - [ ] Provide downloadable version of Android (and iOS?) app for download
 - [ ] Experiment with deterministic builds, allowing multiple people to compile and sign the same binary
