@@ -1,8 +1,10 @@
 # Web4 Overview
 
-After discussion with Isabella, we have a general image for the high-level view of the web4 library we want for mainnet launch:
+Below is a general image of interactivity between components of the BCP/Web4 system proposed by IOV.
 
 ![Web4 Overview](./web4-overview.png)
+
+This document deals specifically with the Web4 components. However, in the interest of explaining the diagram completely, there are some non Web4 components described.
 
 # Web4 Components
 
@@ -56,4 +58,6 @@ The blockchain is a generic concept, it lives behind the proxy and provides its 
 The BNS is a first class citizen in the ecosystem of `web4`. It provides the critical functions of locating supported blockchains, and registered name <> accounts. This functionality is critical for `web4` operations and must have the highest level of trust. This means that `web4-write` must be able to query it directly to ensure there is no falsification of the data itself, or the proofs provided with the data.
 
 
-We cover how to get to this vision in the [roadmap](ROADMAP.md).
+# Roadmap
+
+The [roadmap](ROADMAP.md) covers the route needed to achieve the vision of the above system.
