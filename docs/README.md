@@ -13,6 +13,9 @@ The above diagram provides the connectivity flow which a Web4 based application 
 - web4-read: Queries BCP proxies for data for informational purposes
 - web4-write: Queries BCP Proxies or the BNS for data that must be verified before being used for write activity
 
+The various feature set of BCP (`BCP-Minimal`, `BCP-Basic`, ...) are covered in more detail in the 
+[BCP Specification](https://github.com/iov-one/bcp-spec/blob/master/library/web4/rpc/README.md#bcp-basic)
+
 ## web4-read
 
 The `web4-read` library provides the entire feature set of `BCP-Minimal` and support for `BCP-Basic` as well. `BCP-Minimal`, as evidenced in the diagram, provides the ability to query the proxy for nonce and balance. This does not include the write specific functionality of `sendTx` or `checkTx`, as those operations can only occur in a trusted environment offered by the `keybase`.
