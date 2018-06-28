@@ -1,6 +1,7 @@
 import { Encoding } from "@iov/crypto";
-import { arraysEqual, isHashIdentifier } from "../src/util";
+
 import { hashCode } from "./testdata";
+import { arraysEqual, isHashIdentifier } from "./util";
 
 const { fromHex } = Encoding;
 

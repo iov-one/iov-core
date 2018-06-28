@@ -1,6 +1,7 @@
 import { Ed25519 } from "@iov/crypto";
 import { PostableBytes, SignedTransaction } from "@iov/types";
-import { Codec } from "../src";
+
+import { Codec } from ".";
 import {
   chainId,
   randomTxJson,
