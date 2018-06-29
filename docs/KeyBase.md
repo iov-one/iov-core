@@ -147,7 +147,7 @@ where `N` is each `UserProfile` created by the `UserProfileController`.
 "UserProfile": {
   "username": "isabella",
   "label": "My Profile",
-  "created": "1985-04-12T23:20:50.52Z", #  RFC 3339
+  "created": "1985-04-12T23:20:50.52Z", # RFC 3339
   "securityModel": {
     "timeout": 3600
   },
@@ -181,7 +181,7 @@ Contains a list of addresses a user has interacted with, or added for frequent u
         "chain": "ETH",
         "tickers": ["ETH","ANT"]
       },
-      "created": "1985-04-12T23:20:50.52Z", #  RFC 3339
+      "created": "1985-04-12T23:20:50.52Z", # RFC 3339
       "label": "Friend's Account"
     }
   ]
@@ -262,7 +262,7 @@ A `PublicIdentities` are derived from `seed:curve` pairs, which are used to
 create a `PublicIdentity`.
 
 This is a `1:N` relation, where 1 is the `SeedIdentity` for which the
-`PublicIdentity` is related and N are the generated `PublicIdentities`.  
+`PublicIdentity` is related and N are the generated `PublicIdentities`.
 
 ### Functions:
 - GetPublicIdentity: Returns `PublicIdentity` details for a specific algorithm.
@@ -303,7 +303,7 @@ The following is what a fully initialized profile will look like. This includes 
 "UserProfile": {
   "username": "isabella",
   "label": "My Profile",
-  "created": "1985-04-12T23:20:50.52Z", #  RFC 3339
+  "created": "1985-04-12T23:20:50.52Z", # RFC 3339
   "securityModel": {
     "timeout": 3600
   },
@@ -346,7 +346,7 @@ The following is what a fully initialized profile will look like. This includes 
         "address": "0x52b96095d265a93308fcf5cb9627085f029546be8b3",
         "chain": "ETH",
         "tickers": ["ETH","ANT"],
-        "created": "1985-04-12T23:20:50.52Z", #  RFC 3339
+        "created": "1985-04-12T23:20:50.52Z", # RFC 3339
         "label": "Friend's Account"
       }
     ]
