@@ -1,11 +1,11 @@
 import { Encoding } from "@iov/crypto";
 import { Algorithm, ChainId, SignableBytes } from "@iov/types";
 
-import { KeyDataString } from "../keyring";
+import { KeyringEntrySerializationString } from "../keyring";
 import { Ed25519HdKeyringEntry, Ed25519HdKeyringEntrySerialization } from "./ed25519hd";
 
 describe("Ed25519HdKeyringEntry", () => {
-  const emptyEntry = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [] }' as KeyDataString;
+  const emptyEntry = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [] }' as KeyringEntrySerializationString;
 
   it("can be deserialized", () => {
     const entry = new Ed25519HdKeyringEntry(emptyEntry);
@@ -148,14 +148,14 @@ describe("Ed25519HdKeyringEntry", () => {
   it("can deserialize", () => {
     {
       // empty
-      const entry = new Ed25519HdKeyringEntry('{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [] }' as KeyDataString);
+      const entry = new Ed25519HdKeyringEntry('{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [] }' as KeyringEntrySerializationString);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(0);
     }
 
     {
       // one element
-      const serialized = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkeyPath": [2147483649]}] }' as KeyDataString;
+      const serialized = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkeyPath": [2147483649]}] }' as KeyringEntrySerializationString;
       const entry = new Ed25519HdKeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(1);
@@ -166,7 +166,7 @@ describe("Ed25519HdKeyringEntry", () => {
 
     {
       // two elements
-      const serialized = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkeyPath": [2147483649]}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "privkeyPath": [2147483650]}] }' as KeyDataString;
+      const serialized = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkeyPath": [2147483649]}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "privkeyPath": [2147483650]}] }' as KeyringEntrySerializationString;
       const entry = new Ed25519HdKeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(2);

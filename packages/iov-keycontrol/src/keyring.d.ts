@@ -5,7 +5,7 @@ declare class As<Tag extends string> {
   private "_ _ _": Tag;
 }
 
-export type KeyDataString = string & As<"key-data">;
+export type KeyringEntrySerializationString = string & As<"keyring-entry-serialization">;
 export type KeyringName = string & As<"keyring-name">;
 
 // PublicIdentity is a public key we can identify with on a blockchain
@@ -68,7 +68,7 @@ export interface KeyringEntry {
 
   // serialize will produce a representation that can be writen to disk.
   // this will contain secret info, so handle securely!
-  readonly serialize: () => Promise<KeyDataString>;
+  readonly serialize: () => Promise<KeyringEntrySerializationString>;
 }
 
 // A KeyringEntryFactory is a constructor, but since `new` cannot be
@@ -79,4 +79,4 @@ export interface KeyringEntry {
 // When a KeyringEntry is loaded from stored data, it will be passed
 // a KeyDataString that came out of the `serialize` method of the
 // same class on a prior run.
-export type KeyringEntryFactory = (data?: KeyDataString) => Promise<KeyringEntry>;
+export type KeyringEntryFactory = (data?: KeyringEntrySerializationString) => Promise<KeyringEntry>;

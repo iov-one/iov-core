@@ -1,7 +1,7 @@
 import { Encoding } from "@iov/crypto";
 import { ChainId, SignableBytes } from "@iov/types";
 
-import { KeyDataString } from "../keyring";
+import { KeyringEntrySerializationString } from "../keyring";
 import { Ed25519KeyringEntry } from "./ed25519";
 
 describe("Ed25519KeyringEntry", () => {
@@ -165,14 +165,14 @@ describe("Ed25519KeyringEntry", () => {
   it("can deserialize", () => {
     {
       // empty
-      const entry = new Ed25519KeyringEntry("[]" as KeyDataString);
+      const entry = new Ed25519KeyringEntry("[]" as KeyringEntrySerializationString);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(0);
     }
 
     {
       // one element
-      const serialized = '[{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}]' as KeyDataString;
+      const serialized = '[{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}]' as KeyringEntrySerializationString;
       const entry = new Ed25519KeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(1);
@@ -183,7 +183,7 @@ describe("Ed25519KeyringEntry", () => {
 
     {
       // two elements
-      const serialized = '[{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "privkey": "ddddeeee"}]' as KeyDataString;
+      const serialized = '[{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "privkey": "ddddeeee"}]' as KeyringEntrySerializationString;
       const entry = new Ed25519KeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(2);
