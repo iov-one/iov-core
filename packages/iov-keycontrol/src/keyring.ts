@@ -7,6 +7,7 @@ declare class As<Tag extends string> {
 
 export type KeyringEntrySerializationString = string & As<"keyring-entry-serialization">;
 export type KeyringSerializationString = string & As<"keyring-serialization">;
+export type KeyringEntryImplementationIdString = string & As<"keyring-entry-implementation-id">;
 
 // PublicIdentity is a public key we can identify with on a blockchain
 export interface PublicIdentity {
@@ -21,8 +22,13 @@ export interface LocalIdentity extends PublicIdentity {
   readonly label?: string;
 }
 
+export interface KeyringEntrySerialization {
+  readonly implementationId: string;
+  readonly data: string;
+}
+
 export interface KeyringSerialization {
-  readonly entries: string[];
+  readonly entries: KeyringEntrySerialization[];
 }
 
 /*
@@ -45,7 +51,12 @@ export class Keyring {
   // this will contain secret info, so handle securely!
   public serialize(): KeyringSerializationString {
     const out: KeyringSerialization = {
-      entries: this.entries.map(e => e.serialize()),
+      entries: this.entries.map(
+        (entry): KeyringEntrySerialization => ({
+          implementationId: entry.implementationId,
+          data: entry.serialize(),
+        }),
+      ),
     };
     return JSON.stringify(out) as KeyringSerializationString;
   }
@@ -78,6 +89,10 @@ export interface KeyringEntry {
   // If a hardware ledger is not plugged in, we may see the public keys,
   // but have it "inactive" as long as this flag is false.
   readonly canSign: boolean;
+
+  // A string identifying the concrete implementation of this interface
+  // for deserialization purpose
+  readonly implementationId: KeyringEntryImplementationIdString;
 
   // createTransactionSignature will return a detached signature for the signable bytes
   // with the private key that matches the given PublicIdentity.

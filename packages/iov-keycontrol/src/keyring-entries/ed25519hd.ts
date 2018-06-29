@@ -10,7 +10,13 @@ import {
 } from "@iov/crypto";
 import { Algorithm, ChainId, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
 
-import { KeyringEntry, KeyringEntrySerializationString, LocalIdentity, PublicIdentity } from "../keyring";
+import {
+  KeyringEntry,
+  KeyringEntryImplementationIdString,
+  KeyringEntrySerializationString,
+  LocalIdentity,
+  PublicIdentity,
+} from "../keyring";
 
 export interface PubkeySerialization {
   readonly algo: string;
@@ -60,6 +66,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   }
 
   public readonly canSign: boolean = true;
+  public readonly implementationId = "ed25519hd" as KeyringEntryImplementationIdString;
 
   private readonly secret: EnglishMnemonic;
   private readonly identities: LocalIdentity[];

@@ -57,7 +57,7 @@ describe("Keyring", () => {
     const entry = Ed25519HdKeyringEntry.fromEntropy(fromHex("c7f74844892fd7b707e74fc9b6c8ef917c13ddbb380cadbc"));
     keyring.add(entry);
 
-    expect(keyring.serialize()).toMatch(/^{\"entries\":\[\"{.*}\"\]}$/);
+    expect(keyring.serialize()).toMatch(/^{\"entries\":\[{\"implementationId\":\"ed25519hd\",\"data\":\"{.*}\"}\]}$/);
   });
 
   it("can serialize many entries", () => {
@@ -75,6 +75,6 @@ describe("Keyring", () => {
     keyring.add(entry5);
     keyring.add(entry6);
 
-    expect(keyring.serialize()).toMatch(/^{\"entries\":\[\"{.*}\"(,\"{.*}\")+\]}$/);
+    expect(keyring.serialize()).toMatch(/^{\"entries\":\[{\"implementationId\":\"ed25519hd\",\"data\":\"{.*}\"}(,{\"implementationId\":\"ed25519hd\",\"data\":\"{.*}\"})+\]}$/);
   });
 });

@@ -1,7 +1,13 @@
 import { Ed25519, Ed25519Keypair, Encoding, Random } from "@iov/crypto";
 import { Algorithm, ChainId, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
 
-import { KeyringEntry, KeyringEntrySerializationString, LocalIdentity, PublicIdentity } from "../keyring";
+import {
+  KeyringEntry,
+  KeyringEntryImplementationIdString,
+  KeyringEntrySerializationString,
+  LocalIdentity,
+  PublicIdentity,
+} from "../keyring";
 
 export class Ed25519KeyringEntry implements KeyringEntry {
   private static identityId(identity: PublicIdentity): string {
@@ -9,6 +15,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   }
 
   public readonly canSign = true;
+  public readonly implementationId = "ed25519" as KeyringEntryImplementationIdString;
 
   private readonly identities: LocalIdentity[];
   private readonly privkeys: Map<string, Ed25519Keypair>;
