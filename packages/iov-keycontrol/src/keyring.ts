@@ -24,16 +24,25 @@ export interface LocalIdentity extends PublicIdentity {
 /*
 A Keyring a collection of KeyringEntrys
 */
-export interface Keyring {
-  readonly add: (entry: KeyringEntry) => void;
+export class Keyring {
+  private readonly entries: KeyringEntry[] = [];
+
+  public add(entry: KeyringEntry): void {
+    this.entries.push(entry);
+  }
 
   // Note: this returns an array with mutable element references. Thus e.g.
-  // .entries().createIdentity() will change the keyring.
-  readonly entries: () => ReadonlyArray<KeyringEntry>;
+  // .getEntries().createIdentity() will change the keyring.
+  public getEntries(): ReadonlyArray<KeyringEntry> {
+    return this.entries;
+  }
 
   // serialize will produce a representation that can be writen to disk.
   // this will contain secret info, so handle securely!
-  readonly serialize: () => Promise<KeyringSerializationString>;
+  public serialize(): KeyringSerializationString {
+    const serializedEntries = this.entries.map(e => e.serialize);
+    return JSON.stringify(serializedEntries) as KeyringSerializationString;
+  }
 }
 
 /*
