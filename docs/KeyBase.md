@@ -377,7 +377,7 @@ In many circumstances, users will want a chain specific key that can be portable
 
 > m / purpose' / coin_type' / account' / change / address_index
 
-Purpose MUST follow the BIP44 specification and as such, be set to be `44'`. `coin_type` MUST be supported according to the SLIP list. This will provide the greatest compatibility, especially if a user needs to exit the system.
+Purpose MUST follow the BIP44 specification and as such, be set to be `44`. `coin_type` MUST be supported according to the SLIP list. This will provide the greatest compatibility, especially if a user needs to exit the system.
 
 Users MAY use these individual chain specific addresses.
 
