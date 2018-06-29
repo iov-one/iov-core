@@ -51,4 +51,15 @@ describe("Keyring", () => {
     expect(keyring.getEntries()[2]).toBe(entry3);
     expect(keyring.getEntries()[3]).toBe(entry4);
   });
+
+  it("can serialize", () => {
+    const keyring = new Keyring();
+    const entry1 = Ed25519HdKeyringEntry.fromEntropy(fromHex("065a823769888cbc84e8455522f0e1a066447cb1120aa92e6ee251b74257a7bf"));
+    const entry2 = Ed25519HdKeyringEntry.fromEntropy(fromHex("065a823769888cbc84e8455522f0e1a066447cb1120aa92e6ee251b74257a7bf"));
+
+    keyring.add(entry1);
+    keyring.add(entry2);
+
+    expect(keyring.serialize()).toMatch(/^\[\"{.*}\",\"{.*}\"\]$/);
+  });
 });

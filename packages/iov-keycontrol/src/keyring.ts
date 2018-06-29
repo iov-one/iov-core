@@ -40,7 +40,7 @@ export class Keyring {
   // serialize will produce a representation that can be writen to disk.
   // this will contain secret info, so handle securely!
   public serialize(): KeyringSerializationString {
-    const serializedEntries = this.entries.map(e => e.serialize);
+    const serializedEntries = this.entries.map(e => e.serialize());
     return JSON.stringify(serializedEntries) as KeyringSerializationString;
   }
 }
