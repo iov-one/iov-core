@@ -14,9 +14,9 @@ export interface PublicIdentity {
 // LocalIdentity is a local version of a PublicIdentity that contains
 // additional local information
 export interface LocalIdentity extends PublicIdentity {
-  // nickname is an optional, local name.
-  // this is not exposed to other people, use BNS registration for that
-  readonly nickname?: string;
+  // An optional, local label.
+  // This is not exposed to other people or other devices. Use BNS registration for that.
+  readonly label?: string;
 }
 
 /*
@@ -40,9 +40,9 @@ export interface KeyringEntry {
   // createIdentity will create one new identity
   readonly createIdentity: () => Promise<LocalIdentity>;
 
-  // setIdentityNickname sets the name associated with the public key, if it exists
-  // To clear a nickname, set it to undefined
-  readonly setIdentityNickname: (identity: PublicIdentity, name: string | undefined) => Promise<void>;
+  // Sets a local label associated with the public identity to be displayed in the UI.
+  // To clear a label, set it to undefined
+  readonly setIdentityLabel: (identity: PublicIdentity, label: string | undefined) => Promise<void>;
 
   // getIdentities returns all identities currently registered
   readonly getIdentities: () => ReadonlyArray<LocalIdentity>;
