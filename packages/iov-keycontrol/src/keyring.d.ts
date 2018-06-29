@@ -6,7 +6,6 @@ declare class As<Tag extends string> {
 }
 
 export type KeyringEntrySerializationString = string & As<"keyring-entry-serialization">;
-export type KeyringName = string & As<"keyring-name">;
 
 // PublicIdentity is a public key we can identify with on a blockchain
 export interface PublicIdentity {

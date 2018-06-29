@@ -6,7 +6,6 @@ import {
   UnsignedTransaction,
   UsernameString,
 } from "@iov/types";
-import { KeyringName } from "./keyring";
 
 export const enum KeyActionType {
   ADD_USER = "ADD_USER",
@@ -37,7 +36,6 @@ export interface AddUserAction {
   readonly type: KeyActionType.ADD_USER;
   readonly user: UsernameString;
   readonly password: PasswordString;
-  readonly keyring: KeyringName;
 }
 
 export interface RemoveUserAction {
