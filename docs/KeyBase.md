@@ -287,10 +287,10 @@ This is a `1:N` relation, where 1 is the `SeedIdentity` for which the
     "path": {
       "root": "m",
       "purpose": "44'",
-      "coin_type": "60'", # Defined here: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+      "coinType": "60'", # Defined here: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
       "account": "0'",
       "change": "0'",
-      "address_index": "0"
+      "addressIndex": "0"
     },
   }
 ]
@@ -330,10 +330,10 @@ The following is what a fully initialized profile will look like. This includes 
             "path": {
               "root": "m",
               "purpose": "44'",
-              "coin_type": "60'", # Defined here: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+              "coinType": "60'", # Defined here: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
               "account": "0'",
               "change": "0'",
-              "address_index": "0"
+              "addressIndex": "0"
             }
           }
         ]
