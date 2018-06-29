@@ -362,13 +362,14 @@ There are two main types of addresses implemented into the Keybase. These are `U
 
 The BCP and BNS will both support the standard cryptography algorithms found in the majority of blockchain ecosystems. This includes `ed25519` and `secp256k1`. While these algorithms are different, we can use some key features of Bitcoin that have propogated and become standard throughout many implementations.
 
-### Default Key Path (Purpose 0)
+### Default Account (Purpose 0)
 
-BIP32 describes the standard HD path specification. It reserves Purpose 0 for this purpose, below is a quote from BIP44 about this claimed position.
+BIP32 describes the standard HD path specification. It reserves `purpose = 0` for this purpose.
+Below is a quote from BIP44 about this claimed position.
 
-> Note that m / 0' / * is already taken by BIP32 (default account), which preceded this BIP.
+> Note that `m / 0' / *` is already taken by BIP32 (default account), which preceded this BIP.
 
-We can use this knowledge of default account from BIP32 to establish the universal wallet independent of coin_type, which resides at Purpose 0, and coin_type 0. This can be then used to derive a public key for both support cryptographic algorithms, and provides us the highest level of compatibility, as only BIP32 is required for support.
+We can use this knowledge of default account from BIP32 to establish the universal wallet independent of `coin_type`, which resides at `purpose = 0` and `coin_type = 0`. This can be then used to derive a public key for both support cryptographic algorithms, and provides us the highest level of compatibility, as only BIP32 is required for support.
 
 ## Extended Addresses:
 
