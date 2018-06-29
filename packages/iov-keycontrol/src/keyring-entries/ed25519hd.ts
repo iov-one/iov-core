@@ -12,22 +12,24 @@ import { Algorithm, ChainId, PublicKeyBytes, SignableBytes, SignatureBytes } fro
 
 import { KeyDataString, KeyringEntry, LocalIdentity, PublicIdentity } from "../keyring";
 
-interface PubkeySerialization {
+export interface PubkeySerialization {
   readonly algo: string;
   readonly data: string;
 }
 
-interface LocalIdentitySerialization {
+export interface LocalIdentitySerialization {
   readonly pubkey: PubkeySerialization;
-  readonly nickname?: string;
+  readonly label?: string;
 }
 
-interface IdentitySerialization {
+export interface IdentitySerialization {
   readonly localIdentity: LocalIdentitySerialization;
   readonly privkeyPath: ReadonlyArray<number>;
 }
 
-interface Ed25519HdKeyringEntrySerialization {
+// Only exported to be used in tests. This is implementation detail
+// for applications and must not be exported outside of the package.
+export interface Ed25519HdKeyringEntrySerialization {
   readonly secret: string;
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
@@ -76,7 +78,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
           algo: Ed25519HdKeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo),
           data: Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
         },
-        nickname: record.localIdentity.nickname,
+        label: record.localIdentity.label,
       };
       const privkeyPath: ReadonlyArray<Slip0010RawIndex> = record.privkeyPath.map(
         n => new Slip0010RawIndex(n),
@@ -104,7 +106,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
         algo: Algorithm.ED25519,
         data: keypair.pubkey as PublicKeyBytes,
       },
-      nickname: undefined,
+      label: undefined,
     };
     const newIdentityId = Ed25519HdKeyringEntry.identityId(newIdentity);
 
@@ -114,7 +116,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     return newIdentity;
   }
 
-  public async setIdentityNickname(identity: PublicIdentity, nickname: string | undefined): Promise<void> {
+  public async setIdentityLabel(identity: PublicIdentity, label: string | undefined): Promise<void> {
     const identityId = Ed25519HdKeyringEntry.identityId(identity);
     const index = this.identities.findIndex(i => Ed25519HdKeyringEntry.identityId(i) === identityId);
     if (index === -1) {
@@ -124,7 +126,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     // tslint:disable-next-line:no-object-mutation
     this.identities[index] = {
       pubkey: this.identities[index].pubkey,
-      nickname: nickname,
+      label: label,
     };
   }
 
@@ -143,23 +145,25 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   }
 
   public async serialize(): Promise<KeyDataString> {
-    const identities: ReadonlyArray<IdentitySerialization> = this.identities.map(identity => {
-      const privkeyPath = this.privkeyPathForIdentity(identity);
-      return {
-        localIdentity: {
-          pubkey: {
-            algo: identity.pubkey.algo,
-            data: Encoding.toHex(identity.pubkey.data),
+    const serializedIdentities = this.identities.map(
+      (identity): IdentitySerialization => {
+        const privkeyPath = this.privkeyPathForIdentity(identity);
+        return {
+          localIdentity: {
+            pubkey: {
+              algo: identity.pubkey.algo,
+              data: Encoding.toHex(identity.pubkey.data),
+            },
+            label: identity.label,
           },
-          nickname: identity.nickname,
-        },
-        privkeyPath: privkeyPath.map(rawIndex => rawIndex.asNumber()),
-      };
-    });
+          privkeyPath: privkeyPath.map(rawIndex => rawIndex.asNumber()),
+        };
+      },
+    );
 
     const out: Ed25519HdKeyringEntrySerialization = {
       secret: this.secret.asString(),
-      identities: identities,
+      identities: serializedIdentities,
     };
     return JSON.stringify(out) as KeyDataString;
   }

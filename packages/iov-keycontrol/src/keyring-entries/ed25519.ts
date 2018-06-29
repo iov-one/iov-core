@@ -28,7 +28,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
             algo: record.localIdentity.pubkey.algo,
             data: keypair.pubkey as PublicKeyBytes,
           },
-          nickname: record.localIdentity.nickname,
+          label: record.localIdentity.label,
         };
         const identityId = Ed25519KeyringEntry.identityId(identity);
         identities.push(identity);
@@ -49,7 +49,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
         algo: Algorithm.ED25519,
         data: keypair.pubkey as PublicKeyBytes,
       },
-      nickname: undefined,
+      label: undefined,
     };
     const identityId = Ed25519KeyringEntry.identityId(newIdentity);
     this.privkeys.set(identityId, keypair);
@@ -57,7 +57,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     return newIdentity;
   }
 
-  public async setIdentityNickname(identity: PublicIdentity, nickname: string | undefined): Promise<void> {
+  public async setIdentityLabel(identity: PublicIdentity, label: string | undefined): Promise<void> {
     const identityId = Ed25519KeyringEntry.identityId(identity);
     const index = this.identities.findIndex(i => Ed25519KeyringEntry.identityId(i) === identityId);
     if (index === -1) {
@@ -67,7 +67,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     // tslint:disable-next-line:no-object-mutation
     this.identities[index] = {
       pubkey: this.identities[index].pubkey,
-      nickname: nickname,
+      label: label,
     };
   }
 
@@ -94,7 +94,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
             algo: identity.pubkey.algo,
             data: Encoding.toHex(identity.pubkey.data),
           },
-          nickname: identity.nickname,
+          label: identity.label,
         },
         privkey: Encoding.toHex(keypair.privkey),
       };
