@@ -98,7 +98,10 @@ export interface Profile {
   readonly createIdentity: () => Promise<ModifyProfileEvent>;
 
   // assigns a new nickname to one of the identities
-  readonly setIdentityNickname: (identity: PublicIdentity, name: string | undefined) => Promise<ModifyProfileEvent>;
+  readonly setIdentityNickname: (
+    identity: PublicIdentity,
+    name: string | undefined,
+  ) => Promise<ModifyProfileEvent>;
 
   readonly getIdentities: () => Promise<ReadonlyArray<LocalIdentity>>;
 
