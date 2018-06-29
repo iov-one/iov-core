@@ -2,7 +2,7 @@ import { ChainId, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/ty
 
 // type tagging from https://github.com/Microsoft/TypeScript/issues/4895#issuecomment-399098397
 declare class As<Tag extends string> {
-  private "_ _ _": Tag;
+  private readonly "_ _ _": Tag;
 }
 
 export type KeyringEntrySerializationString = string & As<"keyring-entry-serialization">;
