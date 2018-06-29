@@ -17,7 +17,7 @@ import {
   UnlockProfileEvent,
   VerifiedTransactionEvent,
 } from "./events";
-import { KeyringName, LocalIdentity, PublicIdentity } from "./keyring";
+import { LocalIdentity, PublicIdentity } from "./keyring";
 
 /*
 A KeyController is the main interface to key signing.
@@ -61,11 +61,7 @@ export interface KeyController {
   // to update another store (eg. UI redux store).
   //
   // You can usually ignore this promise unless you want to chain this
-  readonly addProfile: (
-    user: UsernameString,
-    password: PasswordString,
-    keyring: KeyringName,
-  ) => Promise<AddProfileEvent>;
+  readonly addProfile: (user: UsernameString, password: PasswordString) => Promise<AddProfileEvent>;
 
   // removeProfile requires original password to delete.
   readonly removeProfile: (user: UsernameString, password: PasswordString) => Promise<RemoveProfileEvent>;

@@ -10,7 +10,13 @@ import {
 } from "@iov/crypto";
 import { Algorithm, ChainId, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
 
-import { KeyDataString, KeyringEntry, LocalIdentity, PublicIdentity } from "../keyring";
+import {
+  KeyringEntry,
+  KeyringEntryImplementationIdString,
+  KeyringEntrySerializationString,
+  LocalIdentity,
+  PublicIdentity,
+} from "../keyring";
 
 export interface PubkeySerialization {
   readonly algo: string;
@@ -41,7 +47,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
       secret: mnemonic.asString(),
       identities: [],
     };
-    return new Ed25519HdKeyringEntry(JSON.stringify(data) as KeyDataString);
+    return new Ed25519HdKeyringEntry(JSON.stringify(data) as KeyringEntrySerializationString);
   }
 
   private static identityId(identity: PublicIdentity): string {
@@ -60,12 +66,13 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   }
 
   public readonly canSign: boolean = true;
+  public readonly implementationId = "ed25519hd" as KeyringEntryImplementationIdString;
 
   private readonly secret: EnglishMnemonic;
   private readonly identities: LocalIdentity[];
   private readonly privkeyPaths: Map<string, ReadonlyArray<Slip0010RawIndex>>;
 
-  constructor(data: KeyDataString) {
+  constructor(data: KeyringEntrySerializationString) {
     const decodedData: Ed25519HdKeyringEntrySerialization = JSON.parse(data);
 
     this.secret = new EnglishMnemonic(decodedData.secret);
@@ -144,7 +151,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     return signature as SignatureBytes;
   }
 
-  public async serialize(): Promise<KeyDataString> {
+  public serialize(): KeyringEntrySerializationString {
     const serializedIdentities = this.identities.map(
       (identity): IdentitySerialization => {
         const privkeyPath = this.privkeyPathForIdentity(identity);
@@ -165,7 +172,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
       secret: this.secret.asString(),
       identities: serializedIdentities,
     };
-    return JSON.stringify(out) as KeyDataString;
+    return JSON.stringify(out) as KeyringEntrySerializationString;
   }
 
   // This throws an exception when private key is missing

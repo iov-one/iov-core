@@ -1,7 +1,13 @@
 import { Ed25519, Ed25519Keypair, Encoding, Random } from "@iov/crypto";
 import { Algorithm, ChainId, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
 
-import { KeyDataString, KeyringEntry, LocalIdentity, PublicIdentity } from "../keyring";
+import {
+  KeyringEntry,
+  KeyringEntryImplementationIdString,
+  KeyringEntrySerializationString,
+  LocalIdentity,
+  PublicIdentity,
+} from "../keyring";
 
 export class Ed25519KeyringEntry implements KeyringEntry {
   private static identityId(identity: PublicIdentity): string {
@@ -9,11 +15,12 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   }
 
   public readonly canSign = true;
+  public readonly implementationId = "ed25519" as KeyringEntryImplementationIdString;
 
   private readonly identities: LocalIdentity[];
   private readonly privkeys: Map<string, Ed25519Keypair>;
 
-  constructor(data?: KeyDataString) {
+  constructor(data?: KeyringEntrySerializationString) {
     const identities: LocalIdentity[] = [];
     const privkeys = new Map<string, Ed25519Keypair>();
     if (data) {
@@ -85,7 +92,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     return signature as SignatureBytes;
   }
 
-  public async serialize(): Promise<KeyDataString> {
+  public serialize(): KeyringEntrySerializationString {
     const out = this.identities.map(identity => {
       const keypair = this.privateKeyForIdentity(identity);
       return {
@@ -99,7 +106,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
         privkey: Encoding.toHex(keypair.privkey),
       };
     });
-    return JSON.stringify(out) as KeyDataString;
+    return JSON.stringify(out) as KeyringEntrySerializationString;
   }
 
   // This throws an exception when private key is missing
