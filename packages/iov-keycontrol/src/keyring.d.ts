@@ -6,6 +6,7 @@ declare class As<Tag extends string> {
 }
 
 export type KeyringEntrySerializationString = string & As<"keyring-entry-serialization">;
+export type KeyringSerializationString = string & As<"keyring-serialization">;
 
 // PublicIdentity is a public key we can identify with on a blockchain
 export interface PublicIdentity {
@@ -21,9 +22,19 @@ export interface LocalIdentity extends PublicIdentity {
 }
 
 /*
-A Keyring is a list of KeyringEntrys
-TODO: define interface
+A Keyring a collection of KeyringEntrys
 */
+export interface Keyring {
+  readonly add: (entry: KeyringEntry) => void;
+
+  // Note: this returns an array with mutable element references. Thus e.g.
+  // .entries().createIdentity() will change the keyring.
+  readonly entries: () => ReadonlyArray<KeyringEntry>;
+
+  // serialize will produce a representation that can be writen to disk.
+  // this will contain secret info, so handle securely!
+  readonly serialize: () => Promise<KeyringSerializationString>;
+}
 
 /*
 KeyringEntry is a generic interface for managing a set of keys and signing
