@@ -12,22 +12,24 @@ import { Algorithm, ChainId, PublicKeyBytes, SignableBytes, SignatureBytes } fro
 
 import { KeyDataString, KeyringEntry, LocalIdentity, PublicIdentity } from "../keyring";
 
-interface PubkeySerialization {
+export interface PubkeySerialization {
   readonly algo: string;
   readonly data: string;
 }
 
-interface LocalIdentitySerialization {
+export interface LocalIdentitySerialization {
   readonly pubkey: PubkeySerialization;
   readonly nickname?: string;
 }
 
-interface IdentitySerialization {
+export interface IdentitySerialization {
   readonly localIdentity: LocalIdentitySerialization;
   readonly privkeyPath: ReadonlyArray<number>;
 }
 
-interface Ed25519HdKeyringEntrySerialization {
+// Only exported to be used in tests. This is implementation detail
+// for applications and must not be exported outside of the package.
+export interface Ed25519HdKeyringEntrySerialization {
   readonly secret: string;
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
