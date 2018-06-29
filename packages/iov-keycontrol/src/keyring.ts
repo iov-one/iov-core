@@ -21,6 +21,10 @@ export interface LocalIdentity extends PublicIdentity {
   readonly label?: string;
 }
 
+export interface KeyringSerialization {
+  readonly entries: string[];
+}
+
 /*
 A Keyring a collection of KeyringEntrys
 */
@@ -40,8 +44,10 @@ export class Keyring {
   // serialize will produce a representation that can be writen to disk.
   // this will contain secret info, so handle securely!
   public serialize(): KeyringSerializationString {
-    const serializedEntries = this.entries.map(e => e.serialize());
-    return JSON.stringify(serializedEntries) as KeyringSerializationString;
+    const out: KeyringSerialization = {
+      entries: this.entries.map(e => e.serialize()),
+    };
+    return JSON.stringify(out) as KeyringSerializationString;
   }
 }
 
