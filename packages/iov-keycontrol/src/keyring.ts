@@ -38,30 +38,31 @@ export interface KeyringSerialization {
 A Keyring a collection of KeyringEntrys
 */
 export class Keyring {
+  private static deserializeKeyringEntry(serializedEntry: KeyringEntrySerialization): KeyringEntry {
+    switch (serializedEntry.implementationId) {
+      case "ed25519":
+        try {
+          return new Ed25519KeyringEntry(serializedEntry.data);
+        } catch (e) {
+          throw new Error("Error creating Ed25519KeyringEntry: " + e.message);
+        }
+      case "ed25519hd":
+        try {
+          return new Ed25519HdKeyringEntry(serializedEntry.data);
+        } catch (e) {
+          throw new Error("Error creating Ed25519HdKeyringEntry: " + e.message);
+        }
+      default:
+        throw new Error("Unknown implementationId found");
+    }
+  }
+
   private readonly entries: KeyringEntry[];
 
   constructor(data?: KeyringSerializationString) {
     if (data) {
-      this.entries = (JSON.parse(data) as KeyringSerialization).entries.map(
-        (serializedEntry): KeyringEntry => {
-          switch (serializedEntry.implementationId) {
-            case "ed25519":
-              try {
-                return new Ed25519KeyringEntry(serializedEntry.data);
-              } catch (e) {
-                throw new Error("Error creating Ed25519KeyringEntry: " + e.message);
-              }
-            case "ed25519hd":
-              try {
-                return new Ed25519HdKeyringEntry(serializedEntry.data);
-              } catch (e) {
-                throw new Error("Error creating Ed25519HdKeyringEntry: " + e.message);
-              }
-            default:
-              throw new Error("Unknown implementationId found");
-          }
-        },
-      );
+      const parsedData = JSON.parse(data) as KeyringSerialization;
+      this.entries = parsedData.entries.map(Keyring.deserializeKeyringEntry);
     } else {
       this.entries = [];
     }
