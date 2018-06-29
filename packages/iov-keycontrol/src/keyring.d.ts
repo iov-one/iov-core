@@ -1,14 +1,16 @@
 import { ChainId, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
 
 // type tagging from https://github.com/Microsoft/TypeScript/issues/4895#issuecomment-399098397
-declare class As<Tag extends string> { private '_ _ _': Tag; }
+declare class As<Tag extends string> {
+  private "_ _ _": Tag;
+}
 
-export type KeyDataString = string & As<'key-data'>;
-export type KeyringName = string & As<'keyring-name'>;
+export type KeyDataString = string & As<"key-data">;
+export type KeyringName = string & As<"keyring-name">;
 
 // PublicIdentity is a public key we can identify with on a blockchain
 export interface PublicIdentity {
-  readonly pubkey: PublicKeyBundle
+  readonly pubkey: PublicKeyBundle;
 }
 
 // LocalIdentity is a local version of a PublicIdentity that contains
