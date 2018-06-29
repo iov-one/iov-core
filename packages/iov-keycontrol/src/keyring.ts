@@ -1,5 +1,8 @@
 import { ChainId, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
 
+import { Ed25519KeyringEntry } from "./keyring-entries/ed25519";
+import { Ed25519HdKeyringEntry } from "./keyring-entries/ed25519hd";
+
 // type tagging from https://github.com/Microsoft/TypeScript/issues/4895#issuecomment-399098397
 declare class As<Tag extends string> {
   private readonly "_ _ _": Tag;
@@ -35,7 +38,34 @@ export interface KeyringSerialization {
 A Keyring a collection of KeyringEntrys
 */
 export class Keyring {
-  private readonly entries: KeyringEntry[] = [];
+  private readonly entries: KeyringEntry[];
+
+  constructor(data?: KeyringSerializationString) {
+    if (data) {
+      this.entries = (JSON.parse(data) as KeyringSerialization).entries.map(
+        (serializedEntry): KeyringEntry => {
+          switch (serializedEntry.implementationId) {
+            case "ed25519":
+              try {
+                return new Ed25519KeyringEntry(serializedEntry.data as KeyringEntrySerializationString);
+              } catch (e) {
+                throw new Error("Error creating Ed25519KeyringEntry: " + e.message);
+              }
+            case "ed25519hd":
+              try {
+                return new Ed25519HdKeyringEntry(serializedEntry.data as KeyringEntrySerializationString);
+              } catch (e) {
+                throw new Error("Error creating Ed25519HdKeyringEntry: " + e.message);
+              }
+            default:
+              throw new Error("Unknown implementationId found");
+          }
+        },
+      );
+    } else {
+      this.entries = [];
+    }
+  }
 
   public add(entry: KeyringEntry): void {
     this.entries.push(entry);
