@@ -365,7 +365,7 @@ The BCP and BNS will both support the standard cryptography algorithms found in 
 ### Default Account (Purpose 0)
 
 BIP32 describes the standard HD path specification. It reserves `purpose = 0` for this purpose.
-Below is a quote from BIP44 about this claimed position.
+Below is a quote from [BIP43](https://github.com/bitcoin/bips/blob/master/bip-0043.mediawiki#purpose) about this claimed position.
 
 > Note that `m / 0' / *` is already taken by BIP32 (default account), which preceded this BIP.
 
