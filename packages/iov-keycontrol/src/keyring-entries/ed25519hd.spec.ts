@@ -102,7 +102,7 @@ describe("Ed25519HdKeyringEntry", () => {
       entry.setIdentityLabel(identity2, "");
       entry.setIdentityLabel(identity3, "foo");
 
-      const serialized = await entry.serialize();
+      const serialized = entry.serialize();
       expect(serialized).toBeTruthy();
       expect(serialized.length).toBeGreaterThan(100);
 
@@ -189,7 +189,7 @@ describe("Ed25519HdKeyringEntry", () => {
       original.setIdentityLabel(identity2, "");
       original.setIdentityLabel(identity3, "foo");
 
-      const restored = new Ed25519HdKeyringEntry(await original.serialize());
+      const restored = new Ed25519HdKeyringEntry(original.serialize());
 
       // pubkeys and labels match
       expect(original.getIdentities()).toEqual(restored.getIdentities());

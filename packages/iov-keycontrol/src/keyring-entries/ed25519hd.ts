@@ -144,7 +144,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     return signature as SignatureBytes;
   }
 
-  public async serialize(): Promise<KeyringEntrySerializationString> {
+  public serialize(): KeyringEntrySerializationString {
     const serializedIdentities = this.identities.map(
       (identity): IdentitySerialization => {
         const privkeyPath = this.privkeyPathForIdentity(identity);

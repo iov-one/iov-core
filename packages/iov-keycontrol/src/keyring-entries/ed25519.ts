@@ -85,7 +85,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     return signature as SignatureBytes;
   }
 
-  public async serialize(): Promise<KeyringEntrySerializationString> {
+  public serialize(): KeyringEntrySerializationString {
     const out = this.identities.map(identity => {
       const keypair = this.privateKeyForIdentity(identity);
       return {

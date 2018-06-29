@@ -10,18 +10,10 @@ describe("Ed25519KeyringEntry", () => {
     expect(keyringEntry).toBeTruthy();
   });
 
-  it("is empty after construction", done => {
-    (async () => {
-      const keyringEntry = new Ed25519KeyringEntry();
-      expect(keyringEntry.getIdentities().length).toEqual(0);
-      expect(await keyringEntry.serialize()).toEqual("[]");
-
-      done();
-    })().catch(error => {
-      setTimeout(() => {
-        throw error;
-      });
-    });
+  it("is empty after construction", () => {
+    const keyringEntry = new Ed25519KeyringEntry();
+    expect(keyringEntry.getIdentities().length).toEqual(0);
+    expect(keyringEntry.serialize()).toEqual("[]");
   });
 
   it("can create an identity", done => {
@@ -123,7 +115,7 @@ describe("Ed25519KeyringEntry", () => {
       keyringEntry.setIdentityLabel(identity2, "");
       keyringEntry.setIdentityLabel(identity3, "foo");
 
-      const serialized = await keyringEntry.serialize();
+      const serialized = keyringEntry.serialize();
       expect(serialized).toBeTruthy();
       expect(serialized.length).toBeGreaterThan(100);
 
@@ -206,7 +198,7 @@ describe("Ed25519KeyringEntry", () => {
       original.setIdentityLabel(identity2, "");
       original.setIdentityLabel(identity3, "foo");
 
-      const restored = new Ed25519KeyringEntry(await original.serialize());
+      const restored = new Ed25519KeyringEntry(original.serialize());
 
       // pubkeys and labels match
       expect(original.getIdentities()).toEqual(restored.getIdentities());
