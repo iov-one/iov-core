@@ -70,13 +70,3 @@ export interface KeyringEntry {
   // this will contain secret info, so handle securely!
   readonly serialize: () => Promise<KeyringEntrySerializationString>;
 }
-
-// A KeyringEntryFactory is a constructor, but since `new` cannot be
-// asynchronous, we use the factory model.
-//
-// The first time a KeyringEntry is created, it will receive no data and
-// is responsible for initializing a random state.
-// When a KeyringEntry is loaded from stored data, it will be passed
-// a KeyDataString that came out of the `serialize` method of the
-// same class on a prior run.
-export type KeyringEntryFactory = (data?: KeyringEntrySerializationString) => Promise<KeyringEntry>;
