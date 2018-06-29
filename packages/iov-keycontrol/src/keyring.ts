@@ -26,8 +26,8 @@ export interface LocalIdentity extends PublicIdentity {
 }
 
 export interface KeyringEntrySerialization {
-  readonly implementationId: string;
-  readonly data: string;
+  readonly implementationId: KeyringEntryImplementationIdString;
+  readonly data: KeyringEntrySerializationString;
 }
 
 export interface KeyringSerialization {
@@ -47,13 +47,13 @@ export class Keyring {
           switch (serializedEntry.implementationId) {
             case "ed25519":
               try {
-                return new Ed25519KeyringEntry(serializedEntry.data as KeyringEntrySerializationString);
+                return new Ed25519KeyringEntry(serializedEntry.data);
               } catch (e) {
                 throw new Error("Error creating Ed25519KeyringEntry: " + e.message);
               }
             case "ed25519hd":
               try {
-                return new Ed25519HdKeyringEntry(serializedEntry.data as KeyringEntrySerializationString);
+                return new Ed25519HdKeyringEntry(serializedEntry.data);
               } catch (e) {
                 throw new Error("Error creating Ed25519HdKeyringEntry: " + e.message);
               }
