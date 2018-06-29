@@ -147,7 +147,7 @@ where `N` is each `UserProfile` created by the `UserProfileController`.
 "UserProfile": {
   "username": "isabella",
   "label": "My Profile",
-  "created": "1985-04-12T23:20:50.52Z", #  RFC 3339
+  "created": "1985-04-12T23:20:50.52Z", # RFC 3339
   "securityModel": {
     "timeout": 3600
   },
@@ -181,7 +181,7 @@ Contains a list of addresses a user has interacted with, or added for frequent u
         "chain": "ETH",
         "tickers": ["ETH","ANT"]
       },
-      "created": "1985-04-12T23:20:50.52Z", #  RFC 3339
+      "created": "1985-04-12T23:20:50.52Z", # RFC 3339
       "label": "Friend's Account"
     }
   ]
@@ -262,7 +262,7 @@ A `PublicIdentities` are derived from `seed:curve` pairs, which are used to
 create a `PublicIdentity`.
 
 This is a `1:N` relation, where 1 is the `SeedIdentity` for which the
-`PublicIdentity` is related and N are the generated `PublicIdentities`.  
+`PublicIdentity` is related and N are the generated `PublicIdentities`.
 
 ### Functions:
 - GetPublicIdentity: Returns `PublicIdentity` details for a specific algorithm.
@@ -287,10 +287,10 @@ This is a `1:N` relation, where 1 is the `SeedIdentity` for which the
     "path": {
       "root": "m",
       "purpose": "44'",
-      "coin_type": "60'", # Defined here: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+      "coinType": "60'", # Defined here: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
       "account": "0'",
       "change": "0'",
-      "address_index": "0"
+      "addressIndex": "0"
     },
   }
 ]
@@ -303,7 +303,7 @@ The following is what a fully initialized profile will look like. This includes 
 "UserProfile": {
   "username": "isabella",
   "label": "My Profile",
-  "created": "1985-04-12T23:20:50.52Z", #  RFC 3339
+  "created": "1985-04-12T23:20:50.52Z", # RFC 3339
   "securityModel": {
     "timeout": 3600
   },
@@ -330,10 +330,10 @@ The following is what a fully initialized profile will look like. This includes 
             "path": {
               "root": "m",
               "purpose": "44'",
-              "coin_type": "60'", # Defined here: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+              "coinType": "60'", # Defined here: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
               "account": "0'",
               "change": "0'",
-              "address_index": "0"
+              "addressIndex": "0"
             }
           }
         ]
@@ -346,7 +346,7 @@ The following is what a fully initialized profile will look like. This includes 
         "address": "0x52b96095d265a93308fcf5cb9627085f029546be8b3",
         "chain": "ETH",
         "tickers": ["ETH","ANT"],
-        "created": "1985-04-12T23:20:50.52Z", #  RFC 3339
+        "created": "1985-04-12T23:20:50.52Z", # RFC 3339
         "label": "Friend's Account"
       }
     ]
@@ -362,13 +362,14 @@ There are two main types of addresses implemented into the Keybase. These are `U
 
 The BCP and BNS will both support the standard cryptography algorithms found in the majority of blockchain ecosystems. This includes `ed25519` and `secp256k1`. While these algorithms are different, we can use some key features of Bitcoin that have propogated and become standard throughout many implementations.
 
-### Default Key Path (Purpose 0)
+### Default Account (Purpose 0)
 
-BIP32 describes the standard HD path specification. It reserves Purpose 0 for this purpose, below is a quote from BIP44 about this claimed position.
+BIP32 describes the standard HD path specification. It reserves `purpose = 0` for this purpose.
+Below is a quote from [BIP43](https://github.com/bitcoin/bips/blob/master/bip-0043.mediawiki#purpose) about this claimed position.
 
-> Note that m / 0' / * is already taken by BIP32 (default account), which preceded this BIP.
+> Note that `m / 0' / *` is already taken by BIP32 (default account), which preceded this BIP.
 
-We can use this knowledge of default account from BIP32 to establish the universal wallet independent of coin_type, which resides at Purpose 0, and coin_type 0. This can be then used to derive a public key for both support cryptographic algorithms, and provides us the highest level of compatibility, as only BIP32 is required for support.
+We can use this knowledge of default account from BIP32 to establish the universal wallet independent of `coin_type`, which resides at `purpose = 0` and `coin_type = 0`. This can be then used to derive a public key for both support cryptographic algorithms, and provides us the highest level of compatibility, as only BIP32 is required for support.
 
 ## Extended Addresses:
 
@@ -376,7 +377,7 @@ In many circumstances, users will want a chain specific key that can be portable
 
 > m / purpose' / coin_type' / account' / change / address_index
 
-Purpose MUST follow the BIP44 specification and as such, be set to be `44'`. `coin_type` MUST be supported according to the SLIP list. This will provide the greatest compatibility, especially if a user needs to exit the system.
+Purpose MUST follow the BIP44 specification and as such, be set to be `44`. `coin_type` MUST be supported according to the SLIP list. This will provide the greatest compatibility, especially if a user needs to exit the system.
 
 Users MAY use these individual chain specific addresses.
 
