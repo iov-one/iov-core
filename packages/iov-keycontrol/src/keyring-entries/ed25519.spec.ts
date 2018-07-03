@@ -1,7 +1,7 @@
 import { Encoding } from "@iov/crypto";
 import { ChainId, SignableBytes } from "@iov/types";
 
-import { KeyringEntrySerializationString } from "../keyring";
+import { KeyringEntrySerializationString, valueFromMemoryStream } from "../keyring";
 import { Ed25519KeyringEntry } from "./ed25519";
 
 describe("Ed25519KeyringEntry", () => {
@@ -90,6 +90,9 @@ describe("Ed25519KeyringEntry", () => {
     (async () => {
       const keyringEntry = new Ed25519KeyringEntry();
       const newIdentity = await keyringEntry.createIdentity();
+
+      const canSign = await valueFromMemoryStream(keyringEntry.canSign);
+      expect(canSign).toEqual(true);
 
       const tx = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
       const chainId = "some-chain" as ChainId;
