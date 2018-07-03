@@ -17,7 +17,7 @@ fi
 yarn test
 
 # Test browser
-for PACKAGE in bns-codec iov-crypto; do
+for PACKAGE in bns-codec iov-crypto iov-keycontrol; do
   (
     cd "packages/$PACKAGE"
 
