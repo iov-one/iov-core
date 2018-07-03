@@ -249,8 +249,8 @@ The following list shows ideas how to protect internal state against external
 manipulation. In order to find the right case, you need to know if a type is immutable
 or not.
 
-* **immutable types:** primitives (string, number, boolean, null, undefined, symbol), ReadonlyArray of immutable type
-* **mutable types:** TypedArrays, Arrays, other objects, classes, ReadonlyArray of mutable type
+* **immutable types:** primitives (string, number, boolean, null, undefined, symbol), ReadonlyArray of immutable type, ReadonlyDate
+* **mutable types:** TypedArrays, Arrays, Date, other objects, classes, ReadonlyArray of mutable type,
 
 #### Re-assignable members (no readonly keyword)
 
