@@ -10,50 +10,19 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'src/*.spec.ts',
+      'dist/tests.js',
     ],
 
-    preprocessors: {
-      'src/*.spec.ts': ['webpack', 'sourcemap']
-    },
-
-    webpack: {
-      mode: 'development',
-      devtool: 'inline-source-map',
-      module: {
-        rules: [
-          {
-            test: /\.tsx?$/,
-            use: 'ts-loader',
-            exclude: /node_modules/
-          }
-        ]
-      },
-      resolve: {
-        extensions: [ '.tsx', '.ts', '.js' ]
-      },
-      node: {
-        fs: 'empty'
+    client: {
+      jasmine: {
+        random: false,
       }
     },
-
-    // fix .ts file being served as video/mp2t
-    mime: {
-      'text/x-typescript': ['ts','tsx']
-    },
-
-    // webpackMiddleware: {
-    //   devtool: true,
-    // },
-
-    // list of files to exclude
-    exclude: [],
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ["progress"],
-    // reporters: ["progress", "karma-typescript"],
+    reporters: ["progress", "kjhtml"],
 
     // web server port
     port: 9876,
