@@ -32,7 +32,7 @@ failure.
 
 But if we only return a Promise here in order to emit a failure event,
 why can't the KeyController just emit those failure events directly.
-We are guaranteed to eventually get an event describing the 
+We are guaranteed to eventually get an event describing the
 desired state change or a failure event.
 
 ## Unifying actions
@@ -89,10 +89,10 @@ workflow. How do I represent this?
 
 ## Two types of flow
 
-**Proposal** 
+**Proposal**
 (after discussion and reflection, I like this, but please give feedback)
 
-**Async Actions** Just like when we call a website to perform an action 
+**Async Actions** Just like when we call a website to perform an action
 in redux. We get a promise back, which we can resolve to some state.
 This is the case that should be used when we want to perform a
 state-changing action on a remote system. This allows us to handle
@@ -102,14 +102,14 @@ other actions. Here we can use standard promise chaining
 
 **Reactive State Mirror** If we want to display the current
 state of the system (list of accounts, current balance, etc),
-the client can choose to mirror a subset of the state of the server. 
-We can add `GetState` and `SubscribeToStateChanges` functionality. 
-Such that on initial connect the client copies that substate 
+the client can choose to mirror a subset of the state of the server.
+We can add `GetState` and `SubscribeToStateChanges` functionality.
+Such that on initial connect the client copies that substate
 locally. It then subscribes to an event stream of all changes. Those
 changes can be applied to the local state mirror via redux-like dispatcher
 keeping the two in sync. Or course it could also be used in a fully
-(functional) reactive programming style like 
-[cycle.js](https://cycle.js.org/). 
+(functional) reactive programming style like
+[cycle.js](https://cycle.js.org/).
 
 An API should exist of multiple asynchronous actions for every
 state transition that can be triggered from outside, and a
@@ -130,7 +130,7 @@ acheived by:
 ### Types of Subscriptions
 
 A subscription will often look something like "Give me state +
-Subscribe to all change events on that state". Assuming 
+Subscribe to all change events on that state". Assuming
 "give me state" can be done efficiently and there is a
 consistent connection between client and server, this can work well.
 The client has no memory and just mirrors the server.
@@ -140,8 +140,8 @@ You can optionally [include the initial value](https://rethinkdb.com/docs/change
 and get a callback on every change.
 
 With modern javascript, we could replace the callback with
-a streams and Observables, like 
-[RxJs](https://rxjs-dev.firebaseapp.com/) or 
+a streams and Observables, like
+[RxJs](https://rxjs-dev.firebaseapp.com/) or
 [xstream](http://staltz.github.io/xstream/). But the logic would
 remain the same.
 
@@ -156,16 +156,16 @@ reconnection (possibly losing some changes while disconnected),
 we want to be able to query for "all changes since the last one I saw",
 which we can pass to the server.
 
-In the case of PostgreSQL, you first 
+In the case of PostgreSQL, you first
 [CREATE_REPLICATION_SLOT](https://www.postgresql.org/docs/10/static/protocol-replication.html#PROTOCOL-REPLICATION-CREATE-SLOT)
-to create a queue, and start appending all change events from that 
+to create a queue, and start appending all change events from that
 point on. When you want to start (or restart) replication,
-you [START_REPLICATION](https://www.postgresql.org/docs/10/static/protocol-replication.html#id-1.10.5.9.4.1.5.1.8), which 
-`Instructs server to start streaming WAL,  starting at WAL location XXX/XXX.` 
+you [START_REPLICATION](https://www.postgresql.org/docs/10/static/protocol-replication.html#id-1.10.5.9.4.1.5.1.8), which
+`Instructs server to start streaming WAL,  starting at WAL location XXX/XXX.`
 Note the use of two (long) integers to denote the location in a stream
-of events. 
+of events.
 `The receiving process can send replies back to the sender at any time`,
-including 
+including
 `The location of the last WAL byte + 1 received and written to disk in the standby.`
 Once the receiving process has acknowledged receipt up to a given point,
 the sending process is free to clean up this replication slot.
@@ -178,7 +178,7 @@ a live view of the state over flaky connections. This may sound a bit
 theoretical, but if we aim for a mobile wallet, we should build
 in such a mechanism for the client-server connections. If we want a
 live view from another module in the same process, or another
-process guaranteed to be on the same machine, the simpler 
+process guaranteed to be on the same machine, the simpler
 "change feed" is sufficient to maintain a smooth user experience.
 
 ### Filtering state
@@ -196,10 +196,10 @@ on the connection, so only a targetted subset of the data is transmitted.
 
 ## A semi-concrete use case
 
-Let's make a harder example, where maybe the actor model or 
+Let's make a harder example, where maybe the actor model or
 reactive streams start to make sense.
 
-We connect to 3 different blockchains, I have a wallet UI (in chrome 
+We connect to 3 different blockchains, I have a wallet UI (in chrome
 extension), and a webapp connected. I have two accounts currently
 unlocked. One is a software key to use for atomic swaps, and the
 other is a ledger that manages long-term storage.
@@ -207,7 +207,7 @@ other is a ledger that manages long-term storage.
 Wallet UI unlocks both account and queries balances.
 See a good deal in the webapp, and initiate an atomic swap.
 This goes to be signed by the software key and a confirmation
-is presented in the wallet UI. After confirm, the offer signed 
+is presented in the wallet UI. After confirm, the offer signed
 and posted to the blockchain, and my desired trade rate is stored
 in my swap-bot (in the wallet UI).
 
@@ -232,7 +232,141 @@ passing along multi-sig transactions to the next signatory on the message
 after signing.
 
 We should be able to handle information streams and automate many of the
-responses by simple bots (IFTTT style). Hopefully this gives a bit of 
+responses by simple bots (IFTTT style). Hopefully this gives a bit of
 inspiration of where to head with the architecture. I'm still not
 sure what the proper architecture is to fulfill these use cases, but
 I think simple promise chains won't work so well.
+
+## Protecting internal class state against external manipulation
+
+A class contains data and methods that operate on that data. Classes should distrust the outside world and make sure to all
+state manipulation happens through a method that can verify the requested change
+or update secondary data accoringly (e.g. flush a cache or recalculate a sum).
+
+### Stategies to protect internal state
+
+The following list shows ideas how to protect internal state against external
+manipulation. In order to find the right case, you need to know if a type is immutable
+or not.
+
+* **immutable types:** primitives (string, number, boolean, null, undefined, symbol), ReadonlyArray of immutable type
+* **mutable types:** TypedArrays, Arrays, other objects, classes, ReadonlyArray of mutable type
+
+#### Re-assignable members (no readonly keyword)
+
+This can usually be avoided and is excpluded via the `readonly-keyword` tslint rule.
+
+#### Private readonly immutable members
+
+Example:
+
+```ts
+class Foo {
+  private readonly isFoo: boolean = true;
+  private readonly myName: string = "foo";
+}
+```
+
+If those members should be exposed, either convert to public readonly immutable
+member or use simple getter method.
+
+```ts
+class Foo {
+  private readonly isFoo: boolean = true;
+
+  public getIsFoo(): boolean {
+    return this.isFoo;
+  }
+}
+```
+
+#### Private readonly mutable members
+
+Example:
+
+```ts
+class Foo {
+  public readonly privkey = new Uint8Array([0xaa, 0x22, 0xbb, 0x33]);
+}
+```
+
+If those members should be exposed, use a defensive copy getter method,
+since there is no general way to make mutable objects immutable.
+
+```ts
+class Foo {
+  private readonly privkey = new Uint8Array([0xaa, 0x22, 0xbb, 0x33]);
+
+  getPrivkey(): Uint8Array {
+    return new Uint8Array(this.privkey);
+  }
+}
+
+const foo = new Foo();
+const privkey = foo.getPrivkey();
+console.log(privkey); // Uint8Array [ 170, 34, 187, 51 ]
+privkey[3] = 0xff;
+console.log(privkey); // Uint8Array [ 170, 34, 187, 255 ]
+console.log(foo.getPrivkey()); // Uint8Array [ 170, 34, 187, 51 ]
+```
+
+#### Public readonly immutable members
+
+Example:
+
+```ts
+class Foo {
+  public readonly isFoo = true;
+  public readonly myName = "foo";
+}
+
+const foo = new Foo();
+foo.isFoo = false; // compile error
+foo.myName = "bar"; // compile error
+```
+
+Those are safe to use.
+
+#### Public readonly mutable members
+
+Example:
+
+```ts
+class Foo {
+  public readonly privkey = new Uint8Array([0xaa, 0x22, 0xbb, 0x33]);
+}
+```
+
+This is unsafe as a caller can manipulate internal state, e.g.
+
+```ts
+const foo = new Foo();
+console.log(foo.privkey); // Uint8Array [ 170, 34, 187, 51 ]
+foo.privkey[3] = 0xff;
+console.log(foo.privkey); // Uint8Array [ 170, 34, 187, 255 ]
+```
+
+Since there is no general way to make mutable objects immutable,
+defensive copies should be used in a getter method.
+
+```ts
+class Foo {
+  private readonly privkey = new Uint8Array([0xaa, 0x22, 0xbb, 0x33]);
+
+  public getPrivkey(): Uint8Array {
+    return new Uint8Array(this.privkey);
+  }
+}
+
+const foo = new Foo();
+const privkey = foo.getPrivkey();
+console.log(privkey); // Uint8Array [ 170, 34, 187, 51 ]
+privkey[3] = 0xff;
+console.log(privkey); // Uint8Array [ 170, 34, 187, 255 ]
+console.log(foo.getPrivkey()); // Uint8Array [ 170, 34, 187, 51 ]
+```
+
+### Edge cases to consider
+
+* Some mutable objects cannot be copied, so a different strategy than defensive copy must be applied.
+* Some immutable objects can do damage anyway. E.g. a rxjs [Subject](http://reactivex.io/rxjs/manual/overview.html#subject) can be abused by a caller to spam messages to other listeners using the `next` method, so it must be converted into an Observable.
