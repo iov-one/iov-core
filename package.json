@@ -39,6 +39,7 @@
     "karma-typescript": "^3.0.12",
     "karma-webpack": "^3.0.0",
     "lerna": "^2.10.2",
+    "memdown": "^3.0.0",
     "prettier": "^1.12.1",
     "ts-node": "^6.0.3",
     "tslint": "^5.10.0",

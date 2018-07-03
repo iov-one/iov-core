@@ -27,6 +27,8 @@
     "@iov/crypto": "^0.0.0",
     "@iov/types": "^0.0.0",
     "@types/node": "^9.6.6",
+    "leveldown": "^4.0.1",
+    "levelup": "^3.1.0",
     "xstream": "^11.4.0"
   }
 }
