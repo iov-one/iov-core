@@ -1,4 +1,5 @@
 import { ChainId, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
+import { MemoryStream } from "xstream";
 
 import { Ed25519KeyringEntry } from "./keyring-entries/ed25519";
 import { Ed25519HdKeyringEntry } from "./keyring-entries/ed25519hd";
@@ -119,7 +120,7 @@ export interface KeyringEntry {
   // canSign flag means the private key material is currently accessible.
   // If a hardware ledger is not plugged in, we may see the public keys,
   // but have it "inactive" as long as this flag is false.
-  readonly canSign: boolean;
+  readonly canSign: MemoryStream<boolean>;
 
   // A string identifying the concrete implementation of this interface
   // for deserialization purpose
@@ -140,4 +141,26 @@ export interface KeyringEntry {
   // serialize will produce a representation that can be writen to disk.
   // this will contain secret info, so handle securely!
   readonly serialize: () => KeyringEntrySerializationString;
+}
+
+// TODO: Move to a common package
+export function valueFromMemoryStream<T>(stream: MemoryStream<T>): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const listener = {
+      next: (value: T) => {
+        stream.removeListener(listener);
+        resolve(value);
+      },
+      error: (error: any) => {
+        stream.removeListener(listener);
+        reject(error);
+      },
+      complete: () => {
+        stream.removeListener(listener);
+        reject("Stream completed without providing a value");
+      },
+    };
+
+    stream.addListener(listener);
+  });
 }

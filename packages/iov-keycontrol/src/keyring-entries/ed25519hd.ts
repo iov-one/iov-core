@@ -9,6 +9,7 @@ import {
   Slip0010RawIndex,
 } from "@iov/crypto";
 import { Algorithm, ChainId, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
+import { Stream } from "xstream";
 
 import {
   KeyringEntry,
@@ -65,7 +66,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     }
   }
 
-  public readonly canSign: boolean = true;
+  public readonly canSign = Stream.fromArray<boolean>([]).startWith(true);
   public readonly implementationId = "ed25519hd" as KeyringEntryImplementationIdString;
 
   private readonly secret: EnglishMnemonic;
