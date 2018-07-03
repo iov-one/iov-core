@@ -356,20 +356,30 @@ The following is what a fully initialized profile will look like. This includes 
 
 # Address Architecture
 
-There are two main types of addresses implemented into the Keybase. These are `Universal Address` and `Extended Addresses`. The Universal address will implement the base set of features offered by BIP32. The extended addresses will implement the full suite of BIP44 features.
+There are two main types of addresses implemented into the Keybase.
+These are `Simple Addresses` and `Extended Addresses`.
+The simple address will implement the base set of features offered by BIP43.
+The extended addresses will implement the full suite of BIP44 features.
 
-## Universal Address:
+## Simple Addresses:
 
 The BCP and BNS will both support the standard cryptography algorithms found in the majority of blockchain ecosystems. This includes `ed25519` and `secp256k1`. While these algorithms are different, we can use some key features of Bitcoin that have propogated and become standard throughout many implementations.
 
-### Default Account (Purpose 0)
+Simple addresses are BIP43 compatible HD addresses using the IOV purpose.
 
-BIP32 describes the standard HD path specification. It reserves `purpose = 0` for this purpose.
-Below is a quote from [BIP43](https://github.com/bitcoin/bips/blob/master/bip-0043.mediawiki#purpose) about this claimed position.
+### IOV purpose (purpose = 4804438)
 
-> Note that `m / 0' / *` is already taken by BIP32 (default account), which preceded this BIP.
+BIP43 describes the standard HD path specification. It allows the use of custom `purpose`s for
+for custom address schemes. Simple addresses use `purpose = 4804438`.
+The choosen purpose value is the integer created by the ascii encoding of the letters "IOV".
+We hope it remains unique within the industry.
 
-We can use this knowledge of default account from BIP32 to establish the universal wallet independent of `coin_type`, which resides at `purpose = 0` and `coin_type = 0`. This can be then used to derive a public key for both support cryptographic algorithms, and provides us the highest level of compatibility, as only BIP32 is required for support.
+### Simple Address Derivation
+
+Using `purpose = 4804438`, we create BIP43 compatible HD addresses using the derivation path
+`m / 4804438' / i'` where `i` is an index starting at 0.
+
+This creates a simple, linear address space.
 
 ## Extended Addresses:
 
