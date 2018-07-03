@@ -290,7 +290,8 @@ class Foo {
 }
 ```
 
-If those members should be exposed, use a defensive copy getter method, since there is no neneral way to make mutable objects immutable.
+If those members should be exposed, use a defensive copy getter method,
+since there is no general way to make mutable objects immutable.
 
 ```ts
 class Foo {
