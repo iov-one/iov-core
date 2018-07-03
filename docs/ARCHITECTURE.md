@@ -236,3 +236,132 @@ responses by simple bots (IFTTT style). Hopefully this gives a bit of
 inspiration of where to head with the architecture. I'm still not
 sure what the proper architecture is to fulfill these use cases, but
 I think simple promise chains won't work so well.
+
+## Protecting internal class state against external manipulation
+
+A class contains data and methods that operate on that data. Classes should distrust the outside world and make sure to all
+state manipulation happens through a method that can verify the requested change
+or update secondary data accoringly (e.g. flush a cache or recalculate a sum).
+
+### Stategies to protect internal state
+
+The following list shows ideas how to protect internal state against external
+manipulation. In order to find the right case, you need to know if a type is immutable
+or not.
+
+* **immutable types:** primitives (string, number, boolean, null, undefined, symbol), ReadonlyArray of immutable type
+* **mutable types:** TypedArrays, Arrays, other objects, classes, ReadonlyArray of mutable type
+
+#### Re-assignable members (no readonly keyword)
+
+This can usually be avoided and is excpluded via the `readonly-keyword` tslint rule.
+
+#### Private readonly immutable members
+
+Example:
+
+```ts
+class Foo {
+  private readonly isFoo: boolean = true;
+  private readonly myName: string = "foo";
+}
+```
+
+If those members should be exposed, either convert to public readonly immutable
+member or use simple getter method.
+
+```ts
+class Foo {
+  private readonly isFoo: boolean = true;
+
+  public getIsFoo(): boolean {
+    return this.isFoo;
+  }
+}
+```
+
+#### Private readonly mutable members
+
+Example:
+
+```ts
+class Foo {
+  public readonly privkey = new Uint8Array([0xaa, 0x22, 0xbb, 0x33]);
+}
+```
+
+If those members should be exposed, use a defensive copy getter method, since there is no neneral way to make mutable objects immutable.
+
+```ts
+class Foo {
+  private readonly privkey = new Uint8Array([0xaa, 0x22, 0xbb, 0x33]);
+
+  getPrivkey(): Uint8Array {
+    return new Uint8Array(this.privkey);
+  }
+}
+
+const foo = new Foo();
+const privkey = foo.getPrivkey();
+console.log(privkey); // Uint8Array [ 170, 34, 187, 51 ]
+privkey[3] = 0xff;
+console.log(privkey); // Uint8Array [ 170, 34, 187, 255 ]
+console.log(foo.getPrivkey()); // Uint8Array [ 170, 34, 187, 51 ]
+```
+
+#### Public readonly immutable members
+
+Example:
+
+```ts
+class Foo {
+  public readonly isFoo = true;
+  public readonly myName = "foo";
+}
+
+const foo = new Foo();
+foo.isFoo = false; // compile error
+foo.myName = "bar"; // compile error
+```
+
+Those are safe to use.
+
+#### Public readonly mutable members
+
+Example:
+
+```ts
+class Foo {
+  public readonly privkey = new Uint8Array([0xaa, 0x22, 0xbb, 0x33]);
+}
+
+const foo = new Foo();
+console.log(foo.privkey); // Uint8Array [ 170, 34, 187, 51 ]
+foo.privkey[3] = 0xff;
+console.log(foo.privkey); // Uint8Array [ 170, 34, 187, 255 ]
+```
+
+Since there is no general way to make mutable objects immutable,
+defensive copies should be used in a getter method.
+
+```ts
+class Foo {
+  private readonly privkey = new Uint8Array([0xaa, 0x22, 0xbb, 0x33]);
+
+  public getPrivkey(): Uint8Array {
+    return new Uint8Array(this.privkey);
+  }
+}
+
+const foo = new Foo();
+const privkey = foo.getPrivkey();
+console.log(privkey); // Uint8Array [ 170, 34, 187, 51 ]
+privkey[3] = 0xff;
+console.log(privkey); // Uint8Array [ 170, 34, 187, 255 ]
+console.log(foo.getPrivkey()); // Uint8Array [ 170, 34, 187, 51 ]
+```
+
+### Edge cases to consider
+
+* Some mutable objects cannot be copied, so a different strategy than defensive copy must be applied.
+* Some immutable objects can do damage anyway. E.g. a rxjs [Subject](http://reactivex.io/rxjs/manual/overview.html#subject) can be abused by a caller to spam messages to other listeners using the `next` method, so it must be converted into an Observable.
