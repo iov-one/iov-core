@@ -335,7 +335,11 @@ Example:
 class Foo {
   public readonly privkey = new Uint8Array([0xaa, 0x22, 0xbb, 0x33]);
 }
+```
 
+This is unsafe as a caller can manipulate internal state, e.g.
+
+```ts
 const foo = new Foo();
 console.log(foo.privkey); // Uint8Array [ 170, 34, 187, 51 ]
 foo.privkey[3] = 0xff;
