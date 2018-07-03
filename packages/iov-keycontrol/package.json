@@ -15,9 +15,13 @@
     "lint": "tslint -t verbose --project .",
     "lint-fix": "yarn lint --fix",
     "test-node": "./jasmine-testrunner.js",
+    "test-firefox": "yarn build-browser && karma start --single-run --browsers Firefox",
+    "test-chrome": "yarn build-browser && karma start --single-run --browsers ChromeHeadless",
+    "test-safari": "yarn build-browser && karma start --single-run --browsers Safari",
     "test": "yarn build && yarn test-node",
     "prebuild": "yarn format && yarn lint",
-    "build": "tsc"
+    "build": "tsc",
+    "build-browser": "yarn build && webpack --mode development"
   },
   "dependencies": {
     "@iov/crypto": "^0.0.0",
