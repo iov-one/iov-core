@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "outDir": "dist",
+    "outDir": "build",
     "rootDir": "src",
     /* Needed for https://github.com/staltz/xstream/issues/231 */
     "strictFunctionTypes": false
