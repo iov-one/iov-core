@@ -93,8 +93,6 @@ export class Keyring {
   }
 }
 
-export interface KeyringEntryCreateIdentityOptions {}
-
 /*
 KeyringEntry is a generic interface for managing a set of keys and signing
 data with them. A KeyringEntry is instanciated using KeyringEntryFactory
@@ -109,7 +107,7 @@ https://github.com/MetaMask/KeyringController/blob/master/docs/keyring.md
 */
 export interface KeyringEntry {
   // createIdentity will create one new identity
-  readonly createIdentity: (options?: KeyringEntryCreateIdentityOptions) => Promise<LocalIdentity>;
+  readonly createIdentity: () => Promise<LocalIdentity>;
 
   // Sets a local label associated with the public identity to be displayed in the UI.
   // To clear a label, set it to undefined
