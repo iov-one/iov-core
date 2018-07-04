@@ -9,16 +9,12 @@ describe("Find Device", () => {
       if (ledger.path) {
         expect(ledger.path.slice(0, 11)).toEqual("/dev/hidraw");
       }
-      // tslint:disable-next-line:no-console
-      console.log(ledger);
     }
   });
 
   it("can connect to ledger", () => {
     try {
-      const transport = connectToFirstLedger();
-      // tslint:disable:no-console
-      console.log(transport);
+      connectToFirstLedger();
     } catch (err) {
       fail(err);
     }
