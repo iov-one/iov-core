@@ -116,19 +116,16 @@ describe("Ed25519HdKeyringEntry", () => {
       expect(decodedJson.identities[0].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson.identities[0].localIdentity.label).toBeUndefined();
       expect(decodedJson.identities[0].privkeyPath).toEqual([0x80000000 + 0]);
-      expect(decodedJson.identities[0].privkeyPath.length).toBeGreaterThanOrEqual(1);
       expect(decodedJson.identities[1].localIdentity).toBeTruthy();
       expect(decodedJson.identities[1].localIdentity.pubkey.algo).toEqual("ed25519");
       expect(decodedJson.identities[1].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson.identities[1].localIdentity.label).toEqual("");
       expect(decodedJson.identities[1].privkeyPath).toEqual([0x80000000 + 1]);
-      expect(decodedJson.identities[1].privkeyPath.length).toBeGreaterThanOrEqual(1);
       expect(decodedJson.identities[2].localIdentity).toBeTruthy();
       expect(decodedJson.identities[2].localIdentity.pubkey.algo).toEqual("ed25519");
       expect(decodedJson.identities[2].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson.identities[2].localIdentity.label).toEqual("foo");
       expect(decodedJson.identities[2].privkeyPath).toEqual([0x80000000 + 2, 0x80000000 + 0]);
-      expect(decodedJson.identities[2].privkeyPath.length).toBeGreaterThanOrEqual(1);
 
       // keys are different
       expect(decodedJson.identities[0].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[1].localIdentity.pubkey.data);
