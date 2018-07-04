@@ -19,7 +19,7 @@ export class UserProfile {
     creationDb.close();
   }
 
-  public static async openFrom(storage: AbstractLevelDOWN<string, string>): Promise<UserProfile> {
+  public static async loadFrom(storage: AbstractLevelDOWN<string, string>): Promise<UserProfile> {
     const db = levelup(storage);
     const createdAt = new ReadonlyDate(await db.get(storageKeyCreatedAt)); // TODO: add strict RFC 3339 parser
     const keyring = (await db.get(storageKeyKeyring)) as KeyringSerializationString;

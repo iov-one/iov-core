@@ -12,11 +12,11 @@ describe("UserProfile", () => {
     expect(profile).toBeTruthy();
   });
 
-  it("can be created from empty store", done => {
+  it("can be created in an empty store", done => {
     (async () => {
       const storage: MemDown<string, string> = MemDownConstructor<string, string>();
       await UserProfile.createIn(storage);
-      const profile = await UserProfile.openFrom(storage);
+      const profile = await UserProfile.loadFrom(storage);
       expect(profile).toBeTruthy();
 
       done();
