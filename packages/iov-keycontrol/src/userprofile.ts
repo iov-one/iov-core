@@ -2,11 +2,21 @@ import { AbstractLevelDOWN } from "abstract-leveldown";
 import levelup, { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
 
-import { Keyring, KeyringSerializationString } from "./keyring";
+import { ChainId, FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/types";
+
+import { Keyring, KeyringSerializationString, LocalIdentity, PublicIdentity } from "./keyring";
 
 const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
 
+/**
+ * When we unlock a profile, we get a UserProfile handle, which is a
+ * "capability" to enable us to use those private keys.
+ *
+ * All methods must go though the UserProfile
+ * (which may just append a token to a private KeyController function).
+ * Once the Profile is locked (aka logged out), it can no longer be used.
+ */
 export class UserProfile {
   public static async loadFrom(storage: AbstractLevelDOWN<string, string>): Promise<UserProfile> {
     const db = levelup(storage);
@@ -37,7 +47,8 @@ export class UserProfile {
     });
   }
 
-  private readonly keyring: Keyring;
+  // tslint:disable-next-line:readonly-keyword
+  private keyring: Keyring | undefined;
   private readonly createdAt: ReadonlyDate;
 
   constructor(createdAt: ReadonlyDate, keyringSerialization: KeyringSerializationString) {
@@ -47,6 +58,10 @@ export class UserProfile {
 
   // this will clear everything in storage and create a new UserProfile
   public async storeIn(storage: AbstractLevelDOWN<string, string>): Promise<void> {
+    if (!this.keyring) {
+      throw new Error("UserProfile is currently locked");
+    }
+
     const db = levelup(storage);
     await UserProfile.clearDb(db);
 
@@ -54,5 +69,90 @@ export class UserProfile {
     await db.put(storageKeyKeyring, this.keyring.serialize());
 
     await db.close();
+  }
+
+  // removes access to the keyring until we unlock again
+  public lock(): void {
+    // tslint:disable-next-line:no-object-mutation
+    this.keyring = undefined;
+  }
+
+  // creates an identitiy in the n-th keyring entry of the primary keyring
+  public createIdentity(n: number): Promise<LocalIdentity> {
+    if (!this.keyring) {
+      throw new Error("UserProfile is currently locked");
+    }
+    return this.keyring.getEntries()[n].createIdentity();
+  }
+
+  // assigns a new label to one of the identities
+  // in the n-th keyring entry of the primary keyring
+  public setIdentityLabel(n: number, identity: PublicIdentity, label: string | undefined): Promise<void> {
+    if (!this.keyring) {
+      throw new Error("UserProfile is currently locked");
+    }
+    return this.keyring.getEntries()[n].setIdentityLabel(identity, label);
+  }
+
+  // get identities of the n-th keyring entry of the primary keyring
+  public getIdentities(n: number): ReadonlyArray<LocalIdentity> {
+    if (!this.keyring) {
+      throw new Error("UserProfile is currently locked");
+    }
+    return this.keyring.getEntries()[n].getIdentities();
+  }
+
+  public async signTransaction(
+    n: number,
+    identity: PublicIdentity,
+    transaction: UnsignedTransaction,
+    codec: TxCodec,
+    nonce: Nonce,
+  ): Promise<SignedTransaction> {
+    if (!this.keyring) {
+      throw new Error("UserProfile is currently locked");
+    }
+
+    const bytes = codec.bytesToSign(transaction, nonce);
+    const signature: FullSignature = {
+      publicKey: identity.pubkey,
+      nonce: nonce,
+      signature: await this.keyring
+        .getEntries()
+        [n].createTransactionSignature(identity, bytes, "chain!" as ChainId),
+    };
+
+    return {
+      transaction: transaction,
+      primarySignature: signature,
+      otherSignatures: [],
+    };
+  }
+
+  public async appendSignature(
+    n: number,
+    identity: PublicIdentity,
+    originalTransaction: SignedTransaction,
+    codec: TxCodec,
+    nonce: Nonce,
+  ): Promise<SignedTransaction> {
+    if (!this.keyring) {
+      throw new Error("UserProfile is currently locked");
+    }
+
+    const bytes = codec.bytesToSign(originalTransaction.transaction, nonce);
+    const newSignature: FullSignature = {
+      publicKey: identity.pubkey,
+      nonce: nonce,
+      signature: await this.keyring
+        .getEntries()
+        [n].createTransactionSignature(identity, bytes, "chain!" as ChainId),
+    };
+
+    return {
+      transaction: originalTransaction.transaction,
+      primarySignature: originalTransaction.primarySignature,
+      otherSignatures: [...originalTransaction.otherSignatures, newSignature],
+    };
   }
 }
