@@ -19,6 +19,12 @@ describe("Ed25519HdKeyringEntry", () => {
     expect(entry.getIdentities().length).toEqual(0);
   });
 
+  it("can be created from mnemonic", () => {
+    const entry = Ed25519HdKeyringEntry.fromMnemonic("rhythm they leave position crowd cart pilot student razor indoor gesture thrive");
+    expect(entry).toBeTruthy();
+    expect(entry.getIdentities().length).toEqual(0);
+  });
+
   it("can create identities", done => {
     (async () => {
       const entry = new Ed25519HdKeyringEntry(emptyEntry);
