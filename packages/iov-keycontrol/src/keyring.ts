@@ -1,8 +1,7 @@
 import { ChainId, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
 import { MemoryStream } from "xstream";
 
-import { Ed25519KeyringEntry } from "./keyring-entries/ed25519";
-import { Ed25519HdKeyringEntry } from "./keyring-entries/ed25519hd";
+import { Ed25519KeyringEntry, Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
 
 // type tagging from https://github.com/Microsoft/TypeScript/issues/4895#issuecomment-399098397
 declare class As<Tag extends string> {
@@ -47,11 +46,11 @@ export class Keyring {
         } catch (e) {
           throw new Error("Error creating Ed25519KeyringEntry: " + e.message);
         }
-      case "ed25519hd":
+      case "ed25519simpleaddress":
         try {
-          return new Ed25519HdKeyringEntry(serializedEntry.data);
+          return new Ed25519SimpleAddressKeyringEntry(serializedEntry.data);
         } catch (e) {
-          throw new Error("Error creating Ed25519HdKeyringEntry: " + e.message);
+          throw new Error("Error creating Ed25519SimpleAddressKeyringEntry: " + e.message);
         }
       default:
         throw new Error("Unknown implementationId found");

@@ -12,7 +12,6 @@ import { Algorithm, ChainId, PublicKeyBytes, SignableBytes, SignatureBytes } fro
 import { Stream } from "xstream";
 
 import {
-  KeyringEntry,
   KeyringEntryImplementationIdString,
   KeyringEntrySerializationString,
   LocalIdentity,
@@ -41,14 +40,14 @@ export interface Ed25519HdKeyringEntrySerialization {
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
 
-export class Ed25519HdKeyringEntry implements KeyringEntry {
+export class Ed25519HdKeyringEntry {
   public static fromEntropy(bip39Entropy: Uint8Array): Ed25519HdKeyringEntry {
     const mnemonic = Bip39.encode(bip39Entropy);
     const data: Ed25519HdKeyringEntrySerialization = {
       secret: mnemonic.asString(),
       identities: [],
     };
-    return new Ed25519HdKeyringEntry(JSON.stringify(data) as KeyringEntrySerializationString);
+    return new this(JSON.stringify(data) as KeyringEntrySerializationString);
   }
 
   private static identityId(identity: PublicIdentity): string {
@@ -67,7 +66,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   }
 
   public readonly canSign = Stream.fromArray<boolean>([]).startWith(true);
-  public readonly implementationId = "ed25519hd" as KeyringEntryImplementationIdString;
+  public readonly implementationId = "override me!" as KeyringEntryImplementationIdString;
 
   private readonly secret: EnglishMnemonic;
   private readonly identities: LocalIdentity[];
@@ -101,11 +100,8 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     this.privkeyPaths = privkeyPaths;
   }
 
-  public async createIdentity(): Promise<LocalIdentity> {
-    const nextIndex = this.identities.length;
-
+  public async createIdentity(path: ReadonlyArray<Slip0010RawIndex>): Promise<LocalIdentity> {
     const seed = await Bip39.mnemonicToSeed(this.secret);
-    const path: ReadonlyArray<Slip0010RawIndex> = [Slip0010RawIndex.hardened(nextIndex)];
     const derivationResult = Slip0010.derivePath(Slip0010Curve.Ed25519, seed, path);
     const keypair = await Ed25519.makeKeypair(derivationResult.privkey);
 
