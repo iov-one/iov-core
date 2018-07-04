@@ -16,7 +16,7 @@ export class UserProfile {
     await creationDb.put(storageKeyCreatedAt, "1985-04-12T23:20:50.52Z");
     await creationDb.put(storageKeyKeyring, new Keyring().serialize());
 
-    creationDb.close();
+    await creationDb.close();
   }
 
   public static async loadFrom(storage: AbstractLevelDOWN<string, string>): Promise<UserProfile> {
@@ -38,10 +38,7 @@ export class UserProfile {
         .on("error", (error: any) => {
           reject(error);
         })
-        .on("close", () => {
-          reject("Key stream closed");
-        })
-        .on("end", async () => {
+        .on("close", async () => {
           for (const key of keysToClear) {
             await db.del(key);
           }
