@@ -65,7 +65,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     return newIdentity;
   }
 
-  public async setIdentityLabel(identity: PublicIdentity, label: string | undefined): Promise<void> {
+  public setIdentityLabel(identity: PublicIdentity, label: string | undefined): void {
     const identityId = Ed25519KeyringEntry.identityId(identity);
     const index = this.identities.findIndex(i => Ed25519KeyringEntry.identityId(i) === identityId);
     if (index === -1) {

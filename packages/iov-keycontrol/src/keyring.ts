@@ -111,7 +111,7 @@ export interface KeyringEntry {
 
   // Sets a local label associated with the public identity to be displayed in the UI.
   // To clear a label, set it to undefined
-  readonly setIdentityLabel: (identity: PublicIdentity, label: string | undefined) => Promise<void>;
+  readonly setIdentityLabel: (identity: PublicIdentity, label: string | undefined) => void;
 
   // getIdentities returns all identities currently registered
   readonly getIdentities: () => ReadonlyArray<LocalIdentity>;

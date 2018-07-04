@@ -87,11 +87,11 @@ export class UserProfile {
 
   // assigns a new label to one of the identities
   // in the n-th keyring entry of the primary keyring
-  public setIdentityLabel(n: number, identity: PublicIdentity, label: string | undefined): Promise<void> {
+  public setIdentityLabel(n: number, identity: PublicIdentity, label: string | undefined): void {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
-    return this.keyring.getEntries()[n].setIdentityLabel(identity, label);
+    this.keyring.getEntries()[n].setIdentityLabel(identity, label);
   }
 
   // get identities of the n-th keyring entry of the primary keyring
