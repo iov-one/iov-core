@@ -28,7 +28,32 @@ describe("UserProfile", () => {
     });
   });
 
-  it("flushed store when creating", done => {
+  it("can be stored", done => {
+    (async () => {
+      const storage: MemDown<string, string> = MemDownConstructor<string, string>();
+
+      const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+      const keyring = new Keyring().serialize();
+      const profile = new UserProfile(createdAt, keyring);
+
+      await profile.storeIn(storage);
+
+      {
+        const db = levelup(storage);
+        expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
+        expect(await db.get("keyring", { asBuffer: false })).toEqual('{"entries":[]}');
+        await db.close();
+      }
+
+      done();
+    })().catch(error => {
+      setTimeout(() => {
+        throw error;
+      });
+    });
+  });
+
+  it("flushed store when storing", done => {
     (async () => {
       const storage: MemDown<string, string> = MemDownConstructor<string, string>();
 
@@ -38,7 +63,8 @@ describe("UserProfile", () => {
         await db.close();
       }
 
-      await UserProfile.createIn(storage);
+      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), new Keyring().serialize());
+      await profile.storeIn(storage);
 
       {
         const db = levelup(storage);

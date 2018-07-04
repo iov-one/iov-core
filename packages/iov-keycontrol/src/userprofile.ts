@@ -55,6 +55,16 @@ export class UserProfile {
     this.keyring = new Keyring(keyringSerialization);
   }
 
+  public async storeIn(storage: AbstractLevelDOWN<string, string>): Promise<void> {
+    const db = levelup(storage);
+    await UserProfile.clearDb(db);
+
+    await db.put(storageKeyCreatedAt, this.createdAt.toISOString());
+    await db.put(storageKeyKeyring, this.keyring.serialize());
+
+    await db.close();
+  }
+
   // TODO: remove this method
   public debug(): string {
     return [this.createdAt.toISOString(), this.keyring.serialize()].join(", ");
