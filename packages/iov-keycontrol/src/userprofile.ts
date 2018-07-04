@@ -55,9 +55,4 @@ export class UserProfile {
 
     await db.close();
   }
-
-  // TODO: remove this method
-  public debug(): string {
-    return [this.createdAt.toISOString(), this.keyring.serialize()].join(", ");
-  }
 }
