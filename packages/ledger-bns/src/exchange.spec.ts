@@ -4,6 +4,6 @@ describe("Find Device", () => {
   it("can find ledger", () => {
     const ledgerPath = getPathForFirstLedgerNanoS();
     expect(ledgerPath).toBeTruthy();
-    expect(ledgerPath).toEqual("/dev/hidraw5");
+    expect((ledgerPath as string).slice(0, 11)).toEqual("/dev/hidraw");
   });
 });
