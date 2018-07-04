@@ -1,4 +1,4 @@
-import { Encoding } from "@iov/crypto";
+import { Encoding, Slip0010RawIndex } from "@iov/crypto";
 import { Algorithm, ChainId, SignableBytes } from "@iov/types";
 
 import { KeyringEntrySerializationString, valueFromMemoryStream } from "../keyring";
@@ -23,9 +23,9 @@ describe("Ed25519HdKeyringEntry", () => {
     (async () => {
       const entry = new Ed25519HdKeyringEntry(emptyEntry);
 
-      const newIdentity1 = await entry.createIdentity();
-      const newIdentity2 = await entry.createIdentity();
-      const newIdentity3 = await entry.createIdentity();
+      const newIdentity1 = await entry.createIdentity({ path: [Slip0010RawIndex.hardened(0)] });
+      const newIdentity2 = await entry.createIdentity({ path: [Slip0010RawIndex.hardened(1)] });
+      const newIdentity3 = await entry.createIdentity({ path: [Slip0010RawIndex.hardened(1), Slip0010RawIndex.hardened(0)] });
 
       expect(newIdentity1.pubkey.data).not.toEqual(newIdentity2.pubkey.data);
       expect(newIdentity2.pubkey.data).not.toEqual(newIdentity3.pubkey.data);
@@ -51,7 +51,7 @@ describe("Ed25519HdKeyringEntry", () => {
   it("can set, change and unset an identity label", done => {
     (async () => {
       const entry = new Ed25519HdKeyringEntry(emptyEntry);
-      const newIdentity = await entry.createIdentity();
+      const newIdentity = await entry.createIdentity({ path: [Slip0010RawIndex.hardened(0)] });
       expect(entry.getIdentities()[0].label).toBeUndefined();
 
       entry.setIdentityLabel(newIdentity, "foo");
@@ -74,7 +74,7 @@ describe("Ed25519HdKeyringEntry", () => {
   it("can sign", done => {
     (async () => {
       const entry = new Ed25519HdKeyringEntry(emptyEntry);
-      const newIdentity = await entry.createIdentity();
+      const newIdentity = await entry.createIdentity({ path: [Slip0010RawIndex.hardened(0)] });
 
       const canSign = await valueFromMemoryStream(entry.canSign);
       expect(canSign).toEqual(true);
@@ -96,9 +96,9 @@ describe("Ed25519HdKeyringEntry", () => {
   it("can serialize multiple identities", done => {
     (async () => {
       const entry = new Ed25519HdKeyringEntry(emptyEntry);
-      const identity1 = await entry.createIdentity();
-      const identity2 = await entry.createIdentity();
-      const identity3 = await entry.createIdentity();
+      const identity1 = await entry.createIdentity({ path: [Slip0010RawIndex.hardened(0)] });
+      const identity2 = await entry.createIdentity({ path: [Slip0010RawIndex.hardened(1)] });
+      const identity3 = await entry.createIdentity({ path: [Slip0010RawIndex.hardened(2), Slip0010RawIndex.hardened(0)] });
       entry.setIdentityLabel(identity1, undefined);
       entry.setIdentityLabel(identity2, "");
       entry.setIdentityLabel(identity3, "foo");
@@ -115,19 +115,19 @@ describe("Ed25519HdKeyringEntry", () => {
       expect(decodedJson.identities[0].localIdentity.pubkey.algo).toEqual("ed25519");
       expect(decodedJson.identities[0].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson.identities[0].localIdentity.label).toBeUndefined();
-      expect(decodedJson.identities[0].privkeyPath).toEqual(jasmine.any(Array));
+      expect(decodedJson.identities[0].privkeyPath).toEqual([0x80000000 + 0]);
       expect(decodedJson.identities[0].privkeyPath.length).toBeGreaterThanOrEqual(1);
       expect(decodedJson.identities[1].localIdentity).toBeTruthy();
       expect(decodedJson.identities[1].localIdentity.pubkey.algo).toEqual("ed25519");
       expect(decodedJson.identities[1].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson.identities[1].localIdentity.label).toEqual("");
-      expect(decodedJson.identities[1].privkeyPath).toEqual(jasmine.any(Array));
+      expect(decodedJson.identities[1].privkeyPath).toEqual([0x80000000 + 1]);
       expect(decodedJson.identities[1].privkeyPath.length).toBeGreaterThanOrEqual(1);
       expect(decodedJson.identities[2].localIdentity).toBeTruthy();
       expect(decodedJson.identities[2].localIdentity.pubkey.algo).toEqual("ed25519");
       expect(decodedJson.identities[2].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
       expect(decodedJson.identities[2].localIdentity.label).toEqual("foo");
-      expect(decodedJson.identities[2].privkeyPath).toEqual(jasmine.any(Array));
+      expect(decodedJson.identities[2].privkeyPath).toEqual([0x80000000 + 2, 0x80000000 + 0]);
       expect(decodedJson.identities[2].privkeyPath.length).toBeGreaterThanOrEqual(1);
 
       // keys are different
@@ -183,9 +183,9 @@ describe("Ed25519HdKeyringEntry", () => {
   it("can serialize and restore a full keyring entry", done => {
     (async () => {
       const original = new Ed25519HdKeyringEntry(emptyEntry);
-      const identity1 = await original.createIdentity();
-      const identity2 = await original.createIdentity();
-      const identity3 = await original.createIdentity();
+      const identity1 = await original.createIdentity({ path: [Slip0010RawIndex.hardened(0)] });
+      const identity2 = await original.createIdentity({ path: [Slip0010RawIndex.hardened(1)] });
+      const identity3 = await original.createIdentity({ path: [Slip0010RawIndex.hardened(2)] });
       original.setIdentityLabel(identity1, undefined);
       original.setIdentityLabel(identity2, "");
       original.setIdentityLabel(identity3, "foo");

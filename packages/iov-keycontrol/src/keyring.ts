@@ -1,8 +1,7 @@
 import { ChainId, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
 import { MemoryStream } from "xstream";
 
-import { Ed25519KeyringEntry } from "./keyring-entries/ed25519";
-import { Ed25519HdKeyringEntry } from "./keyring-entries/ed25519hd";
+import { Ed25519KeyringEntry, Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
 
 // type tagging from https://github.com/Microsoft/TypeScript/issues/4895#issuecomment-399098397
 declare class As<Tag extends string> {
@@ -47,11 +46,11 @@ export class Keyring {
         } catch (e) {
           throw new Error("Error creating Ed25519KeyringEntry: " + e.message);
         }
-      case "ed25519hd":
+      case "ed25519simpleaddress":
         try {
-          return new Ed25519HdKeyringEntry(serializedEntry.data);
+          return new Ed25519SimpleAddressKeyringEntry(serializedEntry.data);
         } catch (e) {
-          throw new Error("Error creating Ed25519HdKeyringEntry: " + e.message);
+          throw new Error("Error creating Ed25519SimpleAddressKeyringEntry: " + e.message);
         }
       default:
         throw new Error("Unknown implementationId found");
@@ -94,6 +93,8 @@ export class Keyring {
   }
 }
 
+export interface KeyringEntryCreateIdentityOptions {}
+
 /*
 KeyringEntry is a generic interface for managing a set of keys and signing
 data with them. A KeyringEntry is instanciated using KeyringEntryFactory
@@ -108,7 +109,7 @@ https://github.com/MetaMask/KeyringController/blob/master/docs/keyring.md
 */
 export interface KeyringEntry {
   // createIdentity will create one new identity
-  readonly createIdentity: () => Promise<LocalIdentity>;
+  readonly createIdentity: (options?: KeyringEntryCreateIdentityOptions) => Promise<LocalIdentity>;
 
   // Sets a local label associated with the public identity to be displayed in the UI.
   // To clear a label, set it to undefined

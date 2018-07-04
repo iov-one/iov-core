@@ -13,6 +13,7 @@ import { Stream } from "xstream";
 
 import {
   KeyringEntry,
+  KeyringEntryCreateIdentityOptions,
   KeyringEntryImplementationIdString,
   KeyringEntrySerializationString,
   LocalIdentity,
@@ -34,6 +35,10 @@ export interface IdentitySerialization {
   readonly privkeyPath: ReadonlyArray<number>;
 }
 
+export interface Ed25519HdKeyringEntryCreateIdentityOptions extends KeyringEntryCreateIdentityOptions {
+  readonly path: ReadonlyArray<Slip0010RawIndex>;
+}
+
 // Only exported to be used in tests. This is implementation detail
 // for applications and must not be exported outside of the package.
 export interface Ed25519HdKeyringEntrySerialization {
@@ -48,7 +53,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
       secret: mnemonic.asString(),
       identities: [],
     };
-    return new Ed25519HdKeyringEntry(JSON.stringify(data) as KeyringEntrySerializationString);
+    return new this(JSON.stringify(data) as KeyringEntrySerializationString);
   }
 
   private static identityId(identity: PublicIdentity): string {
@@ -67,7 +72,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   }
 
   public readonly canSign = Stream.fromArray<boolean>([]).startWith(true);
-  public readonly implementationId = "ed25519hd" as KeyringEntryImplementationIdString;
+  public readonly implementationId = "override me!" as KeyringEntryImplementationIdString;
 
   private readonly secret: EnglishMnemonic;
   private readonly identities: LocalIdentity[];
@@ -101,11 +106,13 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     this.privkeyPaths = privkeyPaths;
   }
 
-  public async createIdentity(): Promise<LocalIdentity> {
-    const nextIndex = this.identities.length;
+  public async createIdentity(options?: Ed25519HdKeyringEntryCreateIdentityOptions): Promise<LocalIdentity> {
+    if (!options) {
+      throw new Error("options.path must be available in Ed25519HdKeyringEntry.createIdentity");
+    }
 
     const seed = await Bip39.mnemonicToSeed(this.secret);
-    const path: ReadonlyArray<Slip0010RawIndex> = [Slip0010RawIndex.hardened(nextIndex)];
+    const path = options.path;
     const derivationResult = Slip0010.derivePath(Slip0010Curve.Ed25519, seed, path);
     const keypair = await Ed25519.makeKeypair(derivationResult.privkey);
 

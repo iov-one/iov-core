@@ -11,6 +11,7 @@
     "max-classes-per-file": false,
     "no-class": false,
     "no-delete": true,
+    "no-empty-interface": false,
     "no-expression-statement": false,
     "no-if-statement": false,
     "no-implicit-dependencies": false,
