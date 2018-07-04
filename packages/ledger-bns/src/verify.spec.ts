@@ -19,3 +19,23 @@ describe("Verifies sample signature from ledger", () => {
     done();
   });
 });
+
+describe("Verifies sample signature from ledger part two", () => {
+  const message = Encoding.fromHex("0a440a148a59e1dac0b8c5b59a9b2cfabe0be3fa6c2279f8121422feea060e235b06ffeef19015a50cdcb97d4f011a0808fa011a03455448220c466c61742032353020455448");
+  const messageHash = Encoding.fromHex("a26329dc1fa6cea63f7353c59693d0dd7b91d5de90afad9e62d884db943c6f7929830997ba1c5c8919da16d3464445ebe519fd6821973d2143e6fcb879e18f44");
+  const pubkey = Encoding.fromHex("02c45ff501e4ee1f3f30f134cf80a9cf437337b0fe29786aeb947b1e6ea803a0");
+  const signature = Encoding.fromHex("6b2de57b6e8b4b5623c9dd154feaea2842fdc1e6c02ed1fb8b017118160a977a1183d1c4d38d6154ea065307c625047288ecccbce1a5ac33f6af14736e6e6802");
+
+  it("Produces proper sha512 hash still", () => {
+    const hash = new Sha512(message).digest();
+    expect(messageHash).toEqual(hash);
+  });
+
+  it("Produces valid signature still", async done => {
+    const unhashed = await Ed25519.verifySignature(signature, message, pubkey);
+    expect(unhashed).toEqual(false);
+    const ok = await Ed25519.verifySignature(signature, messageHash, pubkey);
+    expect(ok).toEqual(true);
+    done();
+  });
+});
