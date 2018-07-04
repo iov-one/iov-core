@@ -1,4 +1,4 @@
-import { connectToFirstLedger, getFirstLedgerNanoS, getPublicKey } from "./exchange";
+import { connectToFirstLedger, getFirstLedgerNanoS } from "./exchange";
 
 describe("Find Device", () => {
   it("can find ledger", () => {
@@ -14,15 +14,13 @@ describe("Find Device", () => {
     }
   });
 
-  it("can read the public key", (done: any) => {
-    const checkKey = async () => {
+  it("can connect to ledger", () => {
+    try {
       const transport = connectToFirstLedger();
-      const pubkey = await getPublicKey(transport);
-      expect(pubkey).toBeTruthy();
-      expect(pubkey.length).toBe(32);
-    };
-    checkKey()
-      .catch(err => expect(err).toBeFalsy())
-      .then(done);
+      // tslint:disable:no-console
+      console.log(transport);
+    } catch (err) {
+      fail(err);
+    }
   });
 });
