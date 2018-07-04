@@ -20,6 +20,11 @@ describe("Verifies sample signature from ledger", () => {
   });
 });
 
+// Using 24-word restore phrase from BIP-0039 test vector:
+// "panda eyebrow bullet gorilla call smoke muffin taste mesh discover
+//  soft ostrich alcohol speed nation flash devote level hobby quick
+//  inner drive ghost inside" with path "4804438'/0'"
+
 describe("Verifies sample signature from ledger part two", () => {
   const message = Encoding.fromHex("0a440a148a59e1dac0b8c5b59a9b2cfabe0be3fa6c2279f8121422feea060e235b06ffeef19015a50cdcb97d4f011a0808fa011a03455448220c466c61742032353020455448");
   const messageHash = Encoding.fromHex("a26329dc1fa6cea63f7353c59693d0dd7b91d5de90afad9e62d884db943c6f7929830997ba1c5c8919da16d3464445ebe519fd6821973d2143e6fcb879e18f44");
