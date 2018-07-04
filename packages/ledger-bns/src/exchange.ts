@@ -1,8 +1,5 @@
 import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
 import { Device, devices, HID } from "node-hid";
-// import AppEthOuter from '@ledgerhq/hw-app-eth';
-
-// const AppEth = AppEthOuter.default;
 
 const LedgerDebug = false;
 const LedgerTimeout = 0;

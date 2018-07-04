@@ -24,7 +24,6 @@
   },
   "dependencies": {
     "@iov/crypto": "^0.0.0",
-    "@ledgerhq/hw-app-eth": "^4.15.0",
     "@ledgerhq/hw-transport-node-hid": "^4.16.0",
     "@types/node-hid": "^0.7.0",
     "node-hid": "^0.7.3"
