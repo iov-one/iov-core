@@ -16,6 +16,7 @@ export class UserProfile {
     return new UserProfile(createdAt, keyring);
   }
 
+  // unrelated to this class. Can move to a common place
   private static clearDb(db: LevelUp<AbstractLevelDOWN<string, string>>): Promise<void> {
     const keysToClear = new Array<string>();
 
@@ -44,6 +45,7 @@ export class UserProfile {
     this.keyring = new Keyring(keyringSerialization);
   }
 
+  // this will clear everything in storage and create a new UserProfile
   public async storeIn(storage: AbstractLevelDOWN<string, string>): Promise<void> {
     const db = levelup(storage);
     await UserProfile.clearDb(db);
