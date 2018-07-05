@@ -1,6 +1,11 @@
+import { skipTests } from "./common.spec";
 import { connectToFirstLedger, getFirstLedgerNanoS } from "./exchange";
 
 describe("Find Device", () => {
+  if (skipTests()) {
+    return;
+  }
+
   it("can find ledger", () => {
     const ledger = getFirstLedgerNanoS();
     expect(ledger).toBeTruthy();

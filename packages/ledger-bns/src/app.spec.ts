@@ -5,9 +5,14 @@ import { Ed25519, Encoding, Sha512 } from "@iov/crypto";
 import { Algorithm, ChainId, Nonce, PublicKeyBundle, PublicKeyBytes, RecipientId, SendTx, TokenTicker, TransactionKind } from "@iov/types";
 
 import { getPublicKey, signTransaction } from "./app";
+import { skipTests } from "./common.spec";
 import { connectToFirstLedger } from "./exchange";
 
 describe("Communicate with app", () => {
+  if (skipTests()) {
+    return;
+  }
+
   const transport = connectToFirstLedger();
 
   it("can read the public key", done => {
