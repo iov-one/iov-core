@@ -34,16 +34,22 @@ const checkEvent = (e: Event) => {
     return;
   }
 
-  // on add, check to see if we entered the app
-  const transport = connectToFirstLedger();
-  // use the function as a status check... if it works, we are in the app
-  // otherwise no
-  getPublicKey(transport)
-    .then(() => {
-      inApp = true;
-      console.log(">>> Entered app");
-    })
-    .catch(() => 0);
+  process.nextTick(() => {
+    // on add, check to see if we entered the app
+    try {
+      const transport = connectToFirstLedger();
+      // use the function as a status check... if it works, we are in the app
+      // otherwise no
+      getPublicKey(transport)
+        .then(() => {
+          inApp = true;
+          console.log(">>> Entered app");
+        })
+        .catch(() => 0);
+    } catch (err) {
+      console.log("Error connecting to ledger: " + err);
+    }
+  });
 };
 
 // listen for all changed
