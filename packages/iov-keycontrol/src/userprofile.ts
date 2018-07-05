@@ -28,6 +28,7 @@ export class UserProfile {
 
   public readonly createdAt: ReadonlyDate;
 
+  // Never pass the keyring reference to ensure the keyring is not retained after lock()
   // tslint:disable-next-line:readonly-keyword
   private keyring: Keyring | undefined;
 
