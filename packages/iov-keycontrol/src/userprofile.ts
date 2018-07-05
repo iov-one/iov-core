@@ -1,11 +1,12 @@
 import { AbstractLevelDOWN } from "abstract-leveldown";
 import levelup from "levelup";
 import { ReadonlyDate } from "readonly-date";
+import { MemoryStream } from "xstream";
 
 import { ChainId, FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/types";
 
 import { Keyring, KeyringSerializationString, LocalIdentity, PublicIdentity } from "./keyring";
-import { DatabaseUtils } from "./utils";
+import { DatabaseUtils, DefaultValueProducer } from "./utils";
 
 const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
@@ -27,14 +28,18 @@ export class UserProfile {
   }
 
   public readonly createdAt: ReadonlyDate;
+  public readonly locked: MemoryStream<boolean>;
 
   // Never pass the keyring reference to ensure the keyring is not retained after lock()
   // tslint:disable-next-line:readonly-keyword
   private keyring: Keyring | undefined;
+  private readonly lockedProducer: DefaultValueProducer<boolean>;
 
   constructor(createdAt: ReadonlyDate, keyringSerialization: KeyringSerializationString) {
     this.createdAt = createdAt;
     this.keyring = new Keyring(keyringSerialization);
+    this.lockedProducer = new DefaultValueProducer<boolean>(false);
+    this.locked = MemoryStream.createWithMemory(this.lockedProducer);
   }
 
   // this will clear everything in storage and create a new UserProfile
@@ -52,13 +57,10 @@ export class UserProfile {
     await db.close();
   }
 
-  public isLocked(): boolean {
-    return this.keyring === undefined;
-  }
-
   public lock(): void {
     // tslint:disable-next-line:no-object-mutation
     this.keyring = undefined;
+    this.lockedProducer.update(true);
   }
 
   // creates an identitiy in the n-th keyring entry of the primary keyring

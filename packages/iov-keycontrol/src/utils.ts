@@ -1,6 +1,6 @@
 import { AbstractLevelDOWN } from "abstract-leveldown";
 import { LevelUp } from "levelup";
-import { MemoryStream } from "xstream";
+import { Listener, MemoryStream, Producer } from "xstream";
 
 export class DatabaseUtils {
   public static clear<K, V>(db: LevelUp<AbstractLevelDOWN<K, V>>): Promise<void> {
@@ -44,5 +44,36 @@ export class MemoryStreamUtils {
 
       stream.addListener(listener);
     });
+  }
+}
+
+// allows pre-producing values before anyone is listening
+export class DefaultValueProducer<T> implements Producer<T> {
+  // tslint:disable-next-line:readonly-keyword
+  private value: T;
+  // tslint:disable-next-line:readonly-keyword
+  private listener: Listener<T> | undefined;
+
+  constructor(value: T) {
+    this.value = value;
+  }
+
+  public update(value: T): void {
+    // tslint:disable-next-line:no-object-mutation
+    this.value = value;
+    if (this.listener) {
+      this.listener.next(value);
+    }
+  }
+
+  public start(listener: Listener<T>): void {
+    // tslint:disable-next-line:no-object-mutation
+    this.listener = listener;
+    listener.next(this.value);
+  }
+
+  public stop(): void {
+    // tslint:disable-next-line:no-object-mutation
+    this.listener = undefined;
   }
 }

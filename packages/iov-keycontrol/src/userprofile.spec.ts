@@ -4,6 +4,7 @@ import { ReadonlyDate } from "readonly-date";
 
 import { Keyring } from "./keyring";
 import { UserProfile } from "./userprofile";
+import { MemoryStreamUtils } from "./utils";
 
 describe("UserProfile", () => {
   it("can be constructed", () => {
@@ -13,13 +14,21 @@ describe("UserProfile", () => {
     expect(profile).toBeTruthy();
   });
 
-  it("can be locked", () => {
-    const keyringSerializetion = new Keyring().serialize();
-    const createdAt = new ReadonlyDate(ReadonlyDate.now());
-    const profile = new UserProfile(createdAt, keyringSerializetion);
-    expect(profile.isLocked()).toEqual(false);
-    profile.lock();
-    expect(profile.isLocked()).toEqual(true);
+  it("can be locked", done => {
+    (async () => {
+      const keyringSerializetion = new Keyring().serialize();
+      const createdAt = new ReadonlyDate(ReadonlyDate.now());
+      const profile = new UserProfile(createdAt, keyringSerializetion);
+      expect(await MemoryStreamUtils.value(profile.locked)).toEqual(false);
+      profile.lock();
+      expect(await MemoryStreamUtils.value(profile.locked)).toEqual(true);
+
+      done();
+    })().catch(error => {
+      setTimeout(() => {
+        throw error;
+      });
+    });
   });
 
   it("can be stored", done => {
