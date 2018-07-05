@@ -35,6 +35,38 @@ describe("UserProfile", () => {
     });
   });
 
+  it("initial entries count works", done => {
+    (async () => {
+      {
+        const keyring = new Keyring();
+        const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring.serialize());
+        expect(await MemoryStreamUtils.value(profile.entriesCount)).toEqual(0);
+      }
+
+      {
+        const keyring = new Keyring();
+        keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+        const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring.serialize());
+        expect(await MemoryStreamUtils.value(profile.entriesCount)).toEqual(1);
+      }
+
+      {
+        const keyring = new Keyring();
+        keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+        keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil"));
+        keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
+        const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring.serialize());
+        expect(await MemoryStreamUtils.value(profile.entriesCount)).toEqual(3);
+      }
+
+      done();
+    })().catch(error => {
+      setTimeout(() => {
+        throw error;
+      });
+    });
+  });
+
   it("can be stored", done => {
     (async () => {
       const db = levelup(MemDownConstructor<string, string>());

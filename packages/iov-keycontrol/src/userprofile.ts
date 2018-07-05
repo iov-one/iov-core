@@ -27,17 +27,21 @@ export class UserProfile {
 
   public readonly createdAt: ReadonlyDate;
   public readonly locked: MemoryStream<boolean>;
+  public readonly entriesCount: MemoryStream<number>;
 
   // Never pass the keyring reference to ensure the keyring is not retained after lock()
   // tslint:disable-next-line:readonly-keyword
   private keyring: Keyring | undefined;
   private readonly lockedProducer: DefaultValueProducer<boolean>;
+  private readonly entiresCountProducer: DefaultValueProducer<number>;
 
   constructor(createdAt: ReadonlyDate, keyringSerialization: KeyringSerializationString) {
     this.createdAt = createdAt;
     this.keyring = new Keyring(keyringSerialization);
     this.lockedProducer = new DefaultValueProducer<boolean>(false);
     this.locked = MemoryStream.createWithMemory(this.lockedProducer);
+    this.entiresCountProducer = new DefaultValueProducer<number>(this.keyring.getEntries().length);
+    this.entriesCount = MemoryStream.createWithMemory(this.entiresCountProducer);
   }
 
   // this will clear everything in the database and store the user profile
