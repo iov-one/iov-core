@@ -11,12 +11,11 @@ const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
 
 /**
- * When we unlock a profile, we get a UserProfile handle, which is a
- * "capability" to enable us to use those private keys.
- *
- * All methods must go though the UserProfile
- * (which may just append a token to a private KeyController function).
- * Once the Profile is locked (aka logged out), it can no longer be used.
+ * All calls must go though the UserProfile. A newly created UserProfile
+ * is unlocked until lock() is called, which removes access to private key
+ * material. Once locked, a UserProfile cannot be unlocked anymore since the
+ * corresponding storage is not available anymore. Instead, re-create the
+ * UserProfile via the UserProfileController to get an unlocked UserProfile.
  */
 export class UserProfile {
   public static async loadFrom(storage: AbstractLevelDOWN<string, string>): Promise<UserProfile> {
@@ -56,7 +55,6 @@ export class UserProfile {
     return this.keyring === undefined;
   }
 
-  // removes access to the keyring until we unlock again
   public lock(): void {
     // tslint:disable-next-line:no-object-mutation
     this.keyring = undefined;
