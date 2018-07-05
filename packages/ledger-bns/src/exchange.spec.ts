@@ -18,10 +18,7 @@ describe("Find Device", () => {
   });
 
   it("can connect to ledger", () => {
-    try {
-      connectToFirstLedger();
-    } catch (err) {
-      fail(err);
-    }
+    const transport = connectToFirstLedger();
+    expect(transport).toBeTruthy();
   });
 });

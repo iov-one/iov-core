@@ -1,8 +1,8 @@
 import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
 import { Device, devices, HID } from "node-hid";
 
-const LedgerDebug = false;
-const LedgerTimeout = 0;
+const ledgerDebug = false;
+const ledgerTimeout = 0;
 
 // Transport is an alias for TransportNodeHid until we have some types....
 export type Transport = any;
@@ -21,7 +21,7 @@ export const connectToFirstLedger = (): Transport => {
     throw new Error("No ledger connected");
   }
   const hid = new HID(ledger.path);
-  const transport = new TransportNodeHid(hid, true, LedgerTimeout, LedgerDebug);
+  const transport = new TransportNodeHid(hid, true, ledgerTimeout, ledgerDebug);
   return transport as Transport;
 };
 
