@@ -6,8 +6,8 @@ import { MemoryStream } from "xstream";
 import { FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/types";
 
 import { Keyring, KeyringSerializationString, LocalIdentity, PublicIdentity } from "./keyring";
-import { DatabaseUtils, DefaultValueProducer } from "./utils";
-import { ValueAndUpdates } from "./valueandupdates";
+import { DatabaseUtils } from "./utils";
+import { DefaultValueProducer, ValueAndUpdates } from "./valueandupdates";
 
 const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";

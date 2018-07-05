@@ -1,5 +1,4 @@
-import { DefaultValueProducer } from "./utils";
-import { ValueAndUpdates } from "./valueandupdates";
+import { DefaultValueProducer, ValueAndUpdates } from "./valueandupdates";
 
 describe("ValueAndUpdates", () => {
   it("can be constructed", () => {

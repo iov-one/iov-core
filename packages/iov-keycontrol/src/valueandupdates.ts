@@ -1,6 +1,4 @@
-import { MemoryStream } from "xstream";
-
-import { DefaultValueProducer } from "./utils";
+import { Listener, MemoryStream, Producer } from "xstream";
 
 /**
  * A read only wrapper around DefaultValueProducer that allows
@@ -19,5 +17,40 @@ export class ValueAndUpdates<T> {
   constructor(producer: DefaultValueProducer<T>) {
     this.producer = producer;
     this.updates = MemoryStream.createWithMemory(this.producer);
+  }
+}
+
+// allows pre-producing values before anyone is listening
+export class DefaultValueProducer<T> implements Producer<T> {
+  public get value(): T {
+    return this.internalValue;
+  }
+
+  // tslint:disable-next-line:readonly-keyword
+  private internalValue: T;
+  // tslint:disable-next-line:readonly-keyword
+  private listener: Listener<T> | undefined;
+
+  constructor(value: T) {
+    this.internalValue = value;
+  }
+
+  public update(value: T): void {
+    // tslint:disable-next-line:no-object-mutation
+    this.internalValue = value;
+    if (this.listener) {
+      this.listener.next(value);
+    }
+  }
+
+  public start(listener: Listener<T>): void {
+    // tslint:disable-next-line:no-object-mutation
+    this.listener = listener;
+    listener.next(this.internalValue);
+  }
+
+  public stop(): void {
+    // tslint:disable-next-line:no-object-mutation
+    this.listener = undefined;
   }
 }
