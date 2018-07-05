@@ -64,11 +64,17 @@ export class UserProfile {
   }
 
   // creates an identitiy in the n-th keyring entry of the primary keyring
-  public createIdentity(n: number): Promise<LocalIdentity> {
+  public async createIdentity(n: number): Promise<LocalIdentity> {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
-    return this.keyring.getEntries()[n].createIdentity();
+
+    const entry = this.keyring.getEntries().find((_, index) => index === n);
+    if (!entry) {
+      throw new Error("Entry of index " + n + " does not exist in keyring");
+    }
+
+    return entry.createIdentity();
   }
 
   // assigns a new label to one of the identities
@@ -77,7 +83,13 @@ export class UserProfile {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
-    this.keyring.getEntries()[n].setIdentityLabel(identity, label);
+
+    const entry = this.keyring.getEntries().find((_, index) => index === n);
+    if (!entry) {
+      throw new Error("Entry of index " + n + " does not exist in keyring");
+    }
+
+    entry.setIdentityLabel(identity, label);
   }
 
   // get identities of the n-th keyring entry of the primary keyring
@@ -85,7 +97,13 @@ export class UserProfile {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
-    return this.keyring.getEntries()[n].getIdentities();
+
+    const entry = this.keyring.getEntries().find((_, index) => index === n);
+    if (!entry) {
+      throw new Error("Entry of index " + n + " does not exist in keyring");
+    }
+
+    return entry.getIdentities();
   }
 
   public async signTransaction(
@@ -99,13 +117,16 @@ export class UserProfile {
       throw new Error("UserProfile is currently locked");
     }
 
+    const entry = this.keyring.getEntries().find((_, index) => index === n);
+    if (!entry) {
+      throw new Error("Entry of index " + n + " does not exist in keyring");
+    }
+
     const bytes = codec.bytesToSign(transaction, nonce);
     const signature: FullSignature = {
       publicKey: identity.pubkey,
       nonce: nonce,
-      signature: await this.keyring
-        .getEntries()
-        [n].createTransactionSignature(identity, bytes, "chain!" as ChainId),
+      signature: await entry.createTransactionSignature(identity, bytes, "chain!" as ChainId),
     };
 
     return {
@@ -126,13 +147,16 @@ export class UserProfile {
       throw new Error("UserProfile is currently locked");
     }
 
+    const entry = this.keyring.getEntries().find((_, index) => index === n);
+    if (!entry) {
+      throw new Error("Entry of index " + n + " does not exist in keyring");
+    }
+
     const bytes = codec.bytesToSign(originalTransaction.transaction, nonce);
     const newSignature: FullSignature = {
       publicKey: identity.pubkey,
       nonce: nonce,
-      signature: await this.keyring
-        .getEntries()
-        [n].createTransactionSignature(identity, bytes, "chain!" as ChainId),
+      signature: await entry.createTransactionSignature(identity, bytes, "chain!" as ChainId),
     };
 
     return {
