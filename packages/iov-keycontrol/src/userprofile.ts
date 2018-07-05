@@ -3,7 +3,7 @@ import levelup from "levelup";
 import { ReadonlyDate } from "readonly-date";
 import { MemoryStream } from "xstream";
 
-import { ChainId, FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/types";
+import { FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/types";
 
 import { Keyring, KeyringSerializationString, LocalIdentity, PublicIdentity } from "./keyring";
 import { DatabaseUtils, DefaultValueProducer } from "./utils";
@@ -126,7 +126,7 @@ export class UserProfile {
     const signature: FullSignature = {
       publicKey: identity.pubkey,
       nonce: nonce,
-      signature: await entry.createTransactionSignature(identity, bytes, "chain!" as ChainId),
+      signature: await entry.createTransactionSignature(identity, bytes, transaction.chainId),
     };
 
     return {
@@ -156,7 +156,11 @@ export class UserProfile {
     const newSignature: FullSignature = {
       publicKey: identity.pubkey,
       nonce: nonce,
-      signature: await entry.createTransactionSignature(identity, bytes, "chain!" as ChainId),
+      signature: await entry.createTransactionSignature(
+        identity,
+        bytes,
+        originalTransaction.transaction.chainId,
+      ),
     };
 
     return {
