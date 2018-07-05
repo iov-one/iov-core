@@ -164,8 +164,7 @@ export class UserProfile {
     };
 
     return {
-      transaction: originalTransaction.transaction,
-      primarySignature: originalTransaction.primarySignature,
+      ...originalTransaction,
       otherSignatures: [...originalTransaction.otherSignatures, newSignature],
     };
   }
