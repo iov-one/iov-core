@@ -19,10 +19,10 @@ before_install:
   if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
     curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.7.0
     export PATH=$HOME/.yarn/bin:$PATH
+    # add dependencies to compile node-hid (no prebuilt available)
+    sudo apt-get install -y libudev-dev libusb-1.0-0 libusb-1.0-0-dev
+    npm install -g node-gyp
   fi
-# add dependencies to compile node-hid
-- sudo apt-get install -y libudev-dev libusb-1.0-0 libusb-1.0-0-dev
-- sudo npm install -g node-gyp
 
 install:
 - yarn install
