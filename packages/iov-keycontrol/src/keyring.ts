@@ -141,25 +141,3 @@ export interface KeyringEntry {
   // this will contain secret info, so handle securely!
   readonly serialize: () => KeyringEntrySerializationString;
 }
-
-// TODO: Move to a common package
-export function valueFromMemoryStream<T>(stream: MemoryStream<T>): Promise<T> {
-  return new Promise((resolve, reject) => {
-    const listener = {
-      next: (value: T) => {
-        stream.removeListener(listener);
-        resolve(value);
-      },
-      error: (error: any) => {
-        stream.removeListener(listener);
-        reject(error);
-      },
-      complete: () => {
-        stream.removeListener(listener);
-        reject("Stream completed without providing a value");
-      },
-    };
-
-    stream.addListener(listener);
-  });
-}
