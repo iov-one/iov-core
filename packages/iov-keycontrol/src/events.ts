@@ -1,7 +1,7 @@
 import { SignedTransaction, UsernameString } from "@iov/types";
 
-import { Profile } from "./keycontroller";
 import { PublicIdentity } from "./keyring";
+import { UserProfile } from "./userprofile";
 
 export const enum KeyEventType {
   ADD_PROFILE = "ADD_PROFILE",
@@ -37,7 +37,7 @@ export interface RemoveProfileEvent {
 
 export interface UnlockProfileEvent {
   readonly type: KeyEventType.UNLOCK_PROFILE;
-  readonly profile: Profile;
+  readonly profile: UserProfile;
 }
 
 // On any change to this unlocked account, send the new state.

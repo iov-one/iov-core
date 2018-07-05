@@ -1,7 +1,8 @@
 import { Encoding, Slip0010RawIndex } from "@iov/crypto";
 import { Algorithm, ChainId, SignableBytes } from "@iov/types";
 
-import { KeyringEntrySerializationString, valueFromMemoryStream } from "../keyring";
+import { KeyringEntrySerializationString } from "../keyring";
+import { MemoryStreamUtils } from "../utils";
 import { Ed25519HdKeyringEntry, Ed25519HdKeyringEntrySerialization } from "./ed25519hd";
 
 describe("Ed25519HdKeyringEntry", () => {
@@ -19,26 +20,39 @@ describe("Ed25519HdKeyringEntry", () => {
     expect(entry.getIdentities().length).toEqual(0);
   });
 
+  it("can be created from mnemonic", () => {
+    const entry = Ed25519HdKeyringEntry.fromMnemonic("execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard");
+    expect(entry).toBeTruthy();
+    expect(entry.getIdentities().length).toEqual(0);
+  });
+
   it("can create identities", done => {
     (async () => {
-      const entry = new Ed25519HdKeyringEntry(emptyEntry);
+      const emptyEntries = [
+        // all possible ways to construct an Ed25519HdKeyringEntry
+        new Ed25519HdKeyringEntry(emptyEntry),
+        Ed25519HdKeyringEntry.fromEntropy(Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad")),
+        Ed25519HdKeyringEntry.fromMnemonic("execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard"),
+      ];
 
-      const newIdentity1 = await entry.createIdentity([Slip0010RawIndex.hardened(0)]);
-      const newIdentity2 = await entry.createIdentity([Slip0010RawIndex.hardened(1)]);
-      const newIdentity3 = await entry.createIdentity([Slip0010RawIndex.hardened(1), Slip0010RawIndex.hardened(0)]);
+      for (const entry of emptyEntries) {
+        const newIdentity1 = await entry.createIdentity([Slip0010RawIndex.hardened(0)]);
+        const newIdentity2 = await entry.createIdentity([Slip0010RawIndex.hardened(1)]);
+        const newIdentity3 = await entry.createIdentity([Slip0010RawIndex.hardened(1), Slip0010RawIndex.hardened(0)]);
 
-      expect(newIdentity1.pubkey.data).not.toEqual(newIdentity2.pubkey.data);
-      expect(newIdentity2.pubkey.data).not.toEqual(newIdentity3.pubkey.data);
-      expect(newIdentity3.pubkey.data).not.toEqual(newIdentity1.pubkey.data);
+        expect(newIdentity1.pubkey.data).not.toEqual(newIdentity2.pubkey.data);
+        expect(newIdentity2.pubkey.data).not.toEqual(newIdentity3.pubkey.data);
+        expect(newIdentity3.pubkey.data).not.toEqual(newIdentity1.pubkey.data);
 
-      const identities = entry.getIdentities();
-      expect(identities.length).toEqual(3);
-      expect(identities[0].pubkey.algo).toEqual(Algorithm.ED25519);
-      expect(identities[0].pubkey.data).toEqual(newIdentity1.pubkey.data);
-      expect(identities[1].pubkey.algo).toEqual(Algorithm.ED25519);
-      expect(identities[1].pubkey.data).toEqual(newIdentity2.pubkey.data);
-      expect(identities[2].pubkey.algo).toEqual(Algorithm.ED25519);
-      expect(identities[2].pubkey.data).toEqual(newIdentity3.pubkey.data);
+        const identities = entry.getIdentities();
+        expect(identities.length).toEqual(3);
+        expect(identities[0].pubkey.algo).toEqual(Algorithm.ED25519);
+        expect(identities[0].pubkey.data).toEqual(newIdentity1.pubkey.data);
+        expect(identities[1].pubkey.algo).toEqual(Algorithm.ED25519);
+        expect(identities[1].pubkey.data).toEqual(newIdentity2.pubkey.data);
+        expect(identities[2].pubkey.algo).toEqual(Algorithm.ED25519);
+        expect(identities[2].pubkey.data).toEqual(newIdentity3.pubkey.data);
+      }
 
       done();
     })().catch(error => {
@@ -76,7 +90,7 @@ describe("Ed25519HdKeyringEntry", () => {
       const entry = new Ed25519HdKeyringEntry(emptyEntry);
       const newIdentity = await entry.createIdentity([Slip0010RawIndex.hardened(0)]);
 
-      const canSign = await valueFromMemoryStream(entry.canSign);
+      const canSign = await MemoryStreamUtils.value(entry.canSign);
       expect(canSign).toEqual(true);
 
       const tx = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;

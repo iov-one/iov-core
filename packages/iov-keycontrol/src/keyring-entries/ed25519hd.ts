@@ -42,9 +42,12 @@ export interface Ed25519HdKeyringEntrySerialization {
 
 export class Ed25519HdKeyringEntry {
   public static fromEntropy(bip39Entropy: Uint8Array): Ed25519HdKeyringEntry {
-    const mnemonic = Bip39.encode(bip39Entropy);
+    return this.fromMnemonic(Bip39.encode(bip39Entropy).asString());
+  }
+
+  public static fromMnemonic(mnemonicString: string): Ed25519HdKeyringEntry {
     const data: Ed25519HdKeyringEntrySerialization = {
-      secret: mnemonic.asString(),
+      secret: mnemonicString,
       identities: [],
     };
     return new this(JSON.stringify(data) as KeyringEntrySerializationString);
@@ -120,7 +123,7 @@ export class Ed25519HdKeyringEntry {
     return newIdentity;
   }
 
-  public async setIdentityLabel(identity: PublicIdentity, label: string | undefined): Promise<void> {
+  public setIdentityLabel(identity: PublicIdentity, label: string | undefined): void {
     const identityId = Ed25519HdKeyringEntry.identityId(identity);
     const index = this.identities.findIndex(i => Ed25519HdKeyringEntry.identityId(i) === identityId);
     if (index === -1) {

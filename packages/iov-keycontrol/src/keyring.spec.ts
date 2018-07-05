@@ -30,7 +30,7 @@ describe("Keyring", () => {
   it("can add multiple entries", () => {
     const keyring = new Keyring();
     const entry1 = Ed25519SimpleAddressKeyringEntry.fromEntropy(fromHex("f7e7f1bbb327113a46fd3fa1020413de"));
-    const entry2 = Ed25519SimpleAddressKeyringEntry.fromEntropy(fromHex("5757dc651a1bfbcc37c80b0393a00590becb80cfe193ca0e"));
+    const entry2 = Ed25519SimpleAddressKeyringEntry.fromMnemonic("flip hunt behind absorb blush proof hurry embody quantum start pencil rapid");
     // Entry 3 and 4 have the same seed. This is stupid but not the Keyring's problem
     const entry3 = Ed25519SimpleAddressKeyringEntry.fromEntropy(fromHex("3275a0acb9f697875d829119e4eda0f799afe5e8fb0bc7199c75ae19df610949"));
     const entry4 = Ed25519SimpleAddressKeyringEntry.fromEntropy(fromHex("3275a0acb9f697875d829119e4eda0f799afe5e8fb0bc7199c75ae19df610949"));

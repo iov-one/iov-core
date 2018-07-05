@@ -3,7 +3,11 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "build",
-    "rootDir": "src"
+    "rootDir": "src",
+    "typeRoots": [
+      "../../node_modules/@types",
+      "custom_types"
+    ]
   },
   "include": [
     "src/**/*.ts"
