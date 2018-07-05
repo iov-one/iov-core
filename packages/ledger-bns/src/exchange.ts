@@ -13,7 +13,7 @@ const isDeviceLedgerNanoS = (dev: Device) => dev.manufacturer === "Ledger" && de
 export const getFirstLedgerNanoS = (): Device | undefined =>
   devices()
     .filter(d => isDeviceLedgerNanoS(d) && d.path)
-    .shift();
+    .find(() => true);
 
 export const connectToFirstLedger = (): Transport => {
   const ledger = getFirstLedgerNanoS();
