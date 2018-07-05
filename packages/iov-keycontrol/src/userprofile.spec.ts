@@ -57,7 +57,7 @@ describe("UserProfile", () => {
     });
   });
 
-  it("clears stabase when storing", done => {
+  it("clears database when storing", done => {
     (async () => {
       const db = levelup(MemDownConstructor<string, string>());
 
