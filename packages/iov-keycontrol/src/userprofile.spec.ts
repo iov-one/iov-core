@@ -1,6 +1,6 @@
 import levelup from "levelup";
 import Long from "long";
-import MemDownConstructor, { MemDown } from "memdown";
+import MemDownConstructor from "memdown";
 import { ReadonlyDate } from "readonly-date";
 
 import { AddressBytes, Algorithm, ChainId, Nonce, PostableBytes, PublicKeyBytes, SendTx, SignableBytes, SignatureBytes, SignedTransaction, TokenTicker, TransactionIDBytes, TransactionKind, TxCodec } from "@iov/types";
@@ -85,17 +85,14 @@ describe("UserProfile", () => {
 
   it("can be loaded from storage", done => {
     (async () => {
-      const storage: MemDown<string, string> = MemDownConstructor<string, string>();
+      const db = levelup(MemDownConstructor<string, string>());
+      await db.put("created_at", "1985-04-12T23:20:50.521Z");
+      await db.put("keyring", '{"entries":[]}');
 
-      {
-        const db = levelup(storage);
-        await db.put("created_at", "1985-04-12T23:20:50.521Z");
-        await db.put("keyring", '{"entries":[]}');
-        await db.close();
-      }
-
-      const profile = await UserProfile.loadFrom(storage);
+      const profile = await UserProfile.loadFrom(db);
       expect(profile.createdAt).toEqual(new ReadonlyDate("1985-04-12T23:20:50.521Z"));
+
+      await db.close();
 
       done();
     })().catch(error => {

@@ -1,5 +1,5 @@
 import { AbstractLevelDOWN } from "abstract-leveldown";
-import levelup, { LevelUp } from "levelup";
+import { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
 import { MemoryStream } from "xstream";
 
@@ -19,11 +19,9 @@ const storageKeyKeyring = "keyring";
  * UserProfile via the UserProfileController to get an unlocked UserProfile.
  */
 export class UserProfile {
-  public static async loadFrom(storage: AbstractLevelDOWN<string, string>): Promise<UserProfile> {
-    const db = levelup(storage);
+  public static async loadFrom(db: LevelUp<AbstractLevelDOWN<string, string>>): Promise<UserProfile> {
     const createdAt = new ReadonlyDate(await db.get(storageKeyCreatedAt, { asBuffer: false })); // TODO: add strict RFC 3339 parser
     const keyring = (await db.get(storageKeyKeyring, { asBuffer: false })) as KeyringSerializationString;
-    db.close();
     return new UserProfile(createdAt, keyring);
   }
 
