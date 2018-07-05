@@ -8,7 +8,6 @@ import { AddressBytes, Algorithm, ChainId, Nonce, PostableBytes, PublicKeyBytes,
 import { Keyring } from "./keyring";
 import { Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
 import { UserProfile } from "./userprofile";
-import { MemoryStreamUtils } from "./utils";
 
 describe("UserProfile", () => {
   it("can be constructed", () => {
@@ -18,21 +17,13 @@ describe("UserProfile", () => {
     expect(profile).toBeTruthy();
   });
 
-  it("can be locked", done => {
-    (async () => {
-      const keyringSerializetion = new Keyring().serialize();
-      const createdAt = new ReadonlyDate(ReadonlyDate.now());
-      const profile = new UserProfile(createdAt, keyringSerializetion);
-      expect(await MemoryStreamUtils.value(profile.locked)).toEqual(false);
-      profile.lock();
-      expect(await MemoryStreamUtils.value(profile.locked)).toEqual(true);
-
-      done();
-    })().catch(error => {
-      setTimeout(() => {
-        throw error;
-      });
-    });
+  it("can be locked", () => {
+    const keyringSerializetion = new Keyring().serialize();
+    const createdAt = new ReadonlyDate(ReadonlyDate.now());
+    const profile = new UserProfile(createdAt, keyringSerializetion);
+    expect(profile.locked.value).toEqual(false);
+    profile.lock();
+    expect(profile.locked.value).toEqual(true);
   });
 
   it("initial entries count works", () => {
