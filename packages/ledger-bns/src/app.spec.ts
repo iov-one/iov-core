@@ -18,7 +18,8 @@ describe("Communicate with app", () => {
   });
 
   it("can properly sign valid message", done => {
-    const message = Encoding.fromHex("0a440a148a59e1dac0b8c5b59a9b2cfabe0be3fa6c2279f8121422feea060e235b06ffeef19015a50cdcb97d4f011a0808fa011a03455448220c466c61742032353020455448");
+    // this is pre-generated signbytes
+    const message = Encoding.fromHex("00cafe0008746573742d31323300000000000000110a440a1403694b56200b605a3a726304b6dfaa6e916458ee12146bc29ffe4fc6a4b2395c3f47b5ca9dfa377295f91a0808fa011a03455448220c54657374207061796d656e74");
     const messageHash = new Sha512(message).digest();
 
     const validateSig = async () => {
