@@ -71,4 +71,26 @@ describe("UserProfile", () => {
       });
     });
   });
+
+  it("can be loaded from storage", done => {
+    (async () => {
+      const storage: MemDown<string, string> = MemDownConstructor<string, string>();
+
+      {
+        const db = levelup(storage);
+        await db.put("created_at", "1985-04-12T23:20:50.521Z");
+        await db.put("keyring", '{"entries":[]}');
+        await db.close();
+      }
+
+      const profile = await UserProfile.loadFrom(storage);
+      expect(profile.createdAt).toEqual(new ReadonlyDate("1985-04-12T23:20:50.521Z"));
+
+      done();
+    })().catch(error => {
+      setTimeout(() => {
+        throw error;
+      });
+    });
+  });
 });

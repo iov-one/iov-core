@@ -20,8 +20,8 @@ const storageKeyKeyring = "keyring";
 export class UserProfile {
   public static async loadFrom(storage: AbstractLevelDOWN<string, string>): Promise<UserProfile> {
     const db = levelup(storage);
-    const createdAt = new ReadonlyDate(await db.get(storageKeyCreatedAt)); // TODO: add strict RFC 3339 parser
-    const keyring = (await db.get(storageKeyKeyring)) as KeyringSerializationString;
+    const createdAt = new ReadonlyDate(await db.get(storageKeyCreatedAt, { asBuffer: false })); // TODO: add strict RFC 3339 parser
+    const keyring = (await db.get(storageKeyKeyring, { asBuffer: false })) as KeyringSerializationString;
     db.close();
     return new UserProfile(createdAt, keyring);
   }
@@ -47,9 +47,10 @@ export class UserProfile {
     });
   }
 
+  public readonly createdAt: ReadonlyDate;
+
   // tslint:disable-next-line:readonly-keyword
   private keyring: Keyring | undefined;
-  private readonly createdAt: ReadonlyDate;
 
   constructor(createdAt: ReadonlyDate, keyringSerialization: KeyringSerializationString) {
     this.createdAt = createdAt;
