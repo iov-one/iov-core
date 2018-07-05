@@ -52,6 +52,10 @@ export class UserProfile {
     await db.close();
   }
 
+  public isLocked(): boolean {
+    return this.keyring === undefined;
+  }
+
   // removes access to the keyring until we unlock again
   public lock(): void {
     // tslint:disable-next-line:no-object-mutation

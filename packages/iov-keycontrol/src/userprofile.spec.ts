@@ -13,6 +13,15 @@ describe("UserProfile", () => {
     expect(profile).toBeTruthy();
   });
 
+  it("can be locked", () => {
+    const keyringSerializetion = new Keyring().serialize();
+    const createdAt = new ReadonlyDate(ReadonlyDate.now());
+    const profile = new UserProfile(createdAt, keyringSerializetion);
+    expect(profile.isLocked()).toEqual(false);
+    profile.lock();
+    expect(profile.isLocked()).toEqual(true);
+  });
+
   it("can be stored", done => {
     (async () => {
       const storage: MemDown<string, string> = MemDownConstructor<string, string>();
