@@ -21,7 +21,7 @@ describe("Ed25519HdKeyringEntry", () => {
   });
 
   it("can be created from mnemonic", () => {
-    const entry = Ed25519HdKeyringEntry.fromMnemonic("rhythm they leave position crowd cart pilot student razor indoor gesture thrive");
+    const entry = Ed25519HdKeyringEntry.fromMnemonic("execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard");
     expect(entry).toBeTruthy();
     expect(entry.getIdentities().length).toEqual(0);
   });
