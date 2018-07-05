@@ -50,15 +50,16 @@
 
 ```
 > const leveldown = require('leveldown')
-> const storage = leveldown('./my_userprofile_db')
-> profile.storeIn(storage)
+> const levelup = require('levelup')
+> const db = levelup(leveldown('./my_userprofile_db'))
+> profile.storeIn(db)
 ```
 
 6. and restore
 
 ```
-> var profileFromDisk; UserProfile.loadFrom(leveldown('./my_userprofile_db')).then(p => { profileFromDisk = p })
-> profileFromDisk
+> var profileFromDb; UserProfile.loadFrom(db).then(p => { profileFromDb = p })
+> profileFromDb
 UserProfile {
   createdAt: 2018-07-04T16:07:14.583Z,
   keyring: Keyring { entries: [ [Object] ] } }
