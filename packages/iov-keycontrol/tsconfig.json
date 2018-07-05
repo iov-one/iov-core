@@ -7,9 +7,7 @@
     "typeRoots": [
       "../../node_modules/@types",
       "custom_types"
-    ],
-    /* Needed for https://github.com/staltz/xstream/issues/231 */
-    "strictFunctionTypes": false
+    ]
   },
   "include": [
     "src/**/*.ts"
