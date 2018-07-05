@@ -1,7 +1,11 @@
+import Long from "long";
+
+import { Codec } from "@iov/bns-codec";
+import { Ed25519, Encoding, Sha512 } from "@iov/crypto";
+import { Algorithm, ChainId, Nonce, PublicKeyBundle, PublicKeyBytes, RecipientId, SendTx, TokenTicker, TransactionKind } from "@iov/types";
+
 import { getPublicKey, signTransaction } from "./app";
 import { connectToFirstLedger } from "./exchange";
-
-import { Ed25519, Encoding, Sha512 } from "@iov/crypto";
 
 describe("Communicate with app", () => {
   const transport = connectToFirstLedger();
@@ -25,6 +29,46 @@ describe("Communicate with app", () => {
     const validateSig = async () => {
       const pubkey = await getPublicKey(transport);
       expect(pubkey.length).toBe(32);
+      const signature = await signTransaction(transport, message);
+      expect(signature.length).toBe(64);
+      const ok = await Ed25519.verifySignature(signature, messageHash, pubkey);
+      expect(ok).toEqual(true);
+    };
+
+    return validateSig()
+      .catch(err => fail(err))
+      .then(done);
+  });
+
+  // Note: verify that this display expected info (1234.789 LGR and
+  // 0123... recipient) when verifying signature
+  it("is compatible with our codecs", async done => {
+    const pubkey = await getPublicKey(transport);
+    expect(pubkey.length).toBe(32);
+
+    const sender: PublicKeyBundle = {
+      algo: Algorithm.ED25519,
+      data: pubkey as PublicKeyBytes,
+    };
+
+    const tx: SendTx = {
+      kind: TransactionKind.SEND,
+      chainId: "test-bns-ledger" as ChainId,
+      recipient: Encoding.fromHex("0123456789012345678901234567890123456789") as RecipientId,
+      amount: {
+        // 1234.789 LGR
+        whole: 1234,
+        fractional: 789000000,
+        tokenTicker: "LGR" as TokenTicker,
+      },
+      signer: sender,
+      memo: "Hi Mom!",
+    };
+    const nonce = Long.fromNumber(123) as Nonce;
+    const message = Codec.bytesToSign(tx, nonce);
+    const messageHash = new Sha512(message).digest();
+
+    const validateSig = async () => {
       const signature = await signTransaction(transport, message);
       expect(signature.length).toBe(64);
       const ok = await Ed25519.verifySignature(signature, messageHash, pubkey);
