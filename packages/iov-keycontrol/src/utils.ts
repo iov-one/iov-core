@@ -49,18 +49,22 @@ export class MemoryStreamUtils {
 
 // allows pre-producing values before anyone is listening
 export class DefaultValueProducer<T> implements Producer<T> {
+  public get value(): T {
+    return this.internalValue;
+  }
+
   // tslint:disable-next-line:readonly-keyword
-  private value: T;
+  private internalValue: T;
   // tslint:disable-next-line:readonly-keyword
   private listener: Listener<T> | undefined;
 
   constructor(value: T) {
-    this.value = value;
+    this.internalValue = value;
   }
 
   public update(value: T): void {
     // tslint:disable-next-line:no-object-mutation
-    this.value = value;
+    this.internalValue = value;
     if (this.listener) {
       this.listener.next(value);
     }
@@ -69,7 +73,7 @@ export class DefaultValueProducer<T> implements Producer<T> {
   public start(listener: Listener<T>): void {
     // tslint:disable-next-line:no-object-mutation
     this.listener = listener;
-    listener.next(this.value);
+    listener.next(this.internalValue);
   }
 
   public stop(): void {
