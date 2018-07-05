@@ -1,5 +1,5 @@
 import { AbstractLevelDOWN } from "abstract-leveldown";
-import levelup from "levelup";
+import levelup, { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
 import { MemoryStream } from "xstream";
 
@@ -42,19 +42,16 @@ export class UserProfile {
     this.locked = MemoryStream.createWithMemory(this.lockedProducer);
   }
 
-  // this will clear everything in storage and create a new UserProfile
-  public async storeIn(storage: AbstractLevelDOWN<string, string>): Promise<void> {
+  // this will clear everything in the database and store the user profile
+  public async storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>): Promise<void> {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
 
-    const db = levelup(storage);
     await DatabaseUtils.clear(db);
 
     await db.put(storageKeyCreatedAt, this.createdAt.toISOString());
     await db.put(storageKeyKeyring, this.keyring.serialize());
-
-    await db.close();
   }
 
   public lock(): void {

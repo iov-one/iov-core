@@ -37,20 +37,17 @@ describe("UserProfile", () => {
 
   it("can be stored", done => {
     (async () => {
-      const storage: MemDown<string, string> = MemDownConstructor<string, string>();
+      const db = levelup(MemDownConstructor<string, string>());
 
       const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
       const keyring = new Keyring().serialize();
       const profile = new UserProfile(createdAt, keyring);
 
-      await profile.storeIn(storage);
+      await profile.storeIn(db);
+      expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
+      expect(await db.get("keyring", { asBuffer: false })).toEqual('{"entries":[]}');
 
-      {
-        const db = levelup(storage);
-        expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
-        expect(await db.get("keyring", { asBuffer: false })).toEqual('{"entries":[]}');
-        await db.close();
-      }
+      await db.close();
 
       done();
     })().catch(error => {
@@ -60,31 +57,23 @@ describe("UserProfile", () => {
     });
   });
 
-  it("flushed store when storing", done => {
+  it("clears stabase when storing", done => {
     (async () => {
-      const storage: MemDown<string, string> = MemDownConstructor<string, string>();
+      const db = levelup(MemDownConstructor<string, string>());
 
-      {
-        const db = levelup(storage);
-        await db.put("foo", "bar");
-        await db.close();
-      }
+      await db.put("foo", "bar");
 
       const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), new Keyring().serialize());
-      await profile.storeIn(storage);
+      await profile.storeIn(db);
 
-      {
-        const db = levelup(storage);
-        await db
-          .get("foo")
-          .then(() => {
-            fail("get 'foo' promise must not reslve");
-          })
-          .catch(error => {
-            expect(error.notFound).toBeTruthy();
-          });
-        await db.close();
-      }
+      await db
+        .get("foo")
+        .then(() => fail("get 'foo' promise must not reslve"))
+        .catch(error => {
+          expect(error.notFound).toBeTruthy();
+        });
+
+      await db.close();
 
       done();
     })().catch(error => {
