@@ -1,12 +1,12 @@
 import { AbstractLevelDOWN } from "abstract-leveldown";
 import { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
-import { MemoryStream } from "xstream";
 
 import { FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/types";
 
 import { Keyring, KeyringSerializationString, LocalIdentity, PublicIdentity } from "./keyring";
-import { DatabaseUtils, DefaultValueProducer } from "./utils";
+import { DatabaseUtils } from "./utils";
+import { DefaultValueProducer, ValueAndUpdates } from "./valueandupdates";
 
 const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
@@ -26,18 +26,22 @@ export class UserProfile {
   }
 
   public readonly createdAt: ReadonlyDate;
-  public readonly locked: MemoryStream<boolean>;
+  public readonly locked: ValueAndUpdates<boolean>;
+  public readonly entriesCount: ValueAndUpdates<number>;
 
   // Never pass the keyring reference to ensure the keyring is not retained after lock()
   // tslint:disable-next-line:readonly-keyword
   private keyring: Keyring | undefined;
   private readonly lockedProducer: DefaultValueProducer<boolean>;
+  private readonly entriesCountProducer: DefaultValueProducer<number>;
 
   constructor(createdAt: ReadonlyDate, keyringSerialization: KeyringSerializationString) {
     this.createdAt = createdAt;
     this.keyring = new Keyring(keyringSerialization);
-    this.lockedProducer = new DefaultValueProducer<boolean>(false);
-    this.locked = MemoryStream.createWithMemory(this.lockedProducer);
+    this.lockedProducer = new DefaultValueProducer(false);
+    this.locked = new ValueAndUpdates(this.lockedProducer);
+    this.entriesCountProducer = new DefaultValueProducer(this.keyring.getEntries().length);
+    this.entriesCount = new ValueAndUpdates(this.entriesCountProducer);
   }
 
   // this will clear everything in the database and store the user profile

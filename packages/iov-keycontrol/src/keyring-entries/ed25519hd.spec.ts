@@ -2,7 +2,6 @@ import { Encoding, Slip0010RawIndex } from "@iov/crypto";
 import { Algorithm, ChainId, SignableBytes } from "@iov/types";
 
 import { KeyringEntrySerializationString } from "../keyring";
-import { MemoryStreamUtils } from "../utils";
 import { Ed25519HdKeyringEntry, Ed25519HdKeyringEntrySerialization } from "./ed25519hd";
 
 describe("Ed25519HdKeyringEntry", () => {
@@ -90,8 +89,7 @@ describe("Ed25519HdKeyringEntry", () => {
       const entry = new Ed25519HdKeyringEntry(emptyEntry);
       const newIdentity = await entry.createIdentity([Slip0010RawIndex.hardened(0)]);
 
-      const canSign = await MemoryStreamUtils.value(entry.canSign);
-      expect(canSign).toEqual(true);
+      expect(entry.canSign.value).toEqual(true);
 
       const tx = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
       const chainId = "some-chain" as ChainId;

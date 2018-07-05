@@ -8,7 +8,6 @@ import { AddressBytes, Algorithm, ChainId, Nonce, PostableBytes, PublicKeyBytes,
 import { Keyring } from "./keyring";
 import { Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
 import { UserProfile } from "./userprofile";
-import { MemoryStreamUtils } from "./utils";
 
 describe("UserProfile", () => {
   it("can be constructed", () => {
@@ -18,21 +17,37 @@ describe("UserProfile", () => {
     expect(profile).toBeTruthy();
   });
 
-  it("can be locked", done => {
-    (async () => {
-      const keyringSerializetion = new Keyring().serialize();
-      const createdAt = new ReadonlyDate(ReadonlyDate.now());
-      const profile = new UserProfile(createdAt, keyringSerializetion);
-      expect(await MemoryStreamUtils.value(profile.locked)).toEqual(false);
-      profile.lock();
-      expect(await MemoryStreamUtils.value(profile.locked)).toEqual(true);
+  it("can be locked", () => {
+    const keyringSerializetion = new Keyring().serialize();
+    const createdAt = new ReadonlyDate(ReadonlyDate.now());
+    const profile = new UserProfile(createdAt, keyringSerializetion);
+    expect(profile.locked.value).toEqual(false);
+    profile.lock();
+    expect(profile.locked.value).toEqual(true);
+  });
 
-      done();
-    })().catch(error => {
-      setTimeout(() => {
-        throw error;
-      });
-    });
+  it("initial entries count works", () => {
+    {
+      const keyring = new Keyring();
+      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring.serialize());
+      expect(profile.entriesCount.value).toEqual(0);
+    }
+
+    {
+      const keyring = new Keyring();
+      keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring.serialize());
+      expect(profile.entriesCount.value).toEqual(1);
+    }
+
+    {
+      const keyring = new Keyring();
+      keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+      keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil"));
+      keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
+      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring.serialize());
+      expect(profile.entriesCount.value).toEqual(3);
+    }
   });
 
   it("can be stored", done => {

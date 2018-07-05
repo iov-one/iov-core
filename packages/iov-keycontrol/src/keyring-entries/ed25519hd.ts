@@ -9,7 +9,6 @@ import {
   Slip0010RawIndex,
 } from "@iov/crypto";
 import { Algorithm, ChainId, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
-import { Stream } from "xstream";
 
 import {
   KeyringEntryImplementationIdString,
@@ -17,6 +16,7 @@ import {
   LocalIdentity,
   PublicIdentity,
 } from "../keyring";
+import { DefaultValueProducer, ValueAndUpdates } from "../valueandupdates";
 
 export interface PubkeySerialization {
   readonly algo: string;
@@ -68,7 +68,7 @@ export class Ed25519HdKeyringEntry {
     }
   }
 
-  public readonly canSign = Stream.fromArray<boolean>([]).startWith(true);
+  public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
   public readonly implementationId = "override me!" as KeyringEntryImplementationIdString;
 
   private readonly secret: EnglishMnemonic;

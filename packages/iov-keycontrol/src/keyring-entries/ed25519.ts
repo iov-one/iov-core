@@ -1,6 +1,5 @@
 import { Ed25519, Ed25519Keypair, Encoding, Random } from "@iov/crypto";
 import { Algorithm, ChainId, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
-import { Stream } from "xstream";
 
 import {
   KeyringEntry,
@@ -9,13 +8,14 @@ import {
   LocalIdentity,
   PublicIdentity,
 } from "../keyring";
+import { DefaultValueProducer, ValueAndUpdates } from "../valueandupdates";
 
 export class Ed25519KeyringEntry implements KeyringEntry {
   private static identityId(identity: PublicIdentity): string {
     return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
   }
 
-  public readonly canSign = Stream.fromArray<boolean>([]).startWith(true);
+  public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
   public readonly implementationId = "ed25519" as KeyringEntryImplementationIdString;
 
   private readonly identities: LocalIdentity[];
