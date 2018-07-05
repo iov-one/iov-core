@@ -6,6 +6,7 @@ import { ReadonlyDate } from "readonly-date";
 import { AddressBytes, Algorithm, ChainId, Nonce, PostableBytes, PublicKeyBytes, SendTx, SignableBytes, SignatureBytes, SignedTransaction, TokenTicker, TransactionIDBytes, TransactionKind, TxCodec } from "@iov/types";
 
 import { Keyring } from "./keyring";
+import { Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
 import { UserProfile } from "./userprofile";
 import { MemoryStreamUtils } from "./utils";
 
@@ -174,6 +175,67 @@ describe("UserProfile", () => {
         .appendSignature(0, fakeIdentity, fakeSignedTransaction, fakeCodec, new Long(1, 2) as Nonce)
         .then(() => fail("Promise must not resolve"))
         .catch(error => expect(error).toMatch(/Entry of index 0 does not exist in keyring/));
+
+      done();
+    })().catch(error => {
+      setTimeout(() => {
+        throw error;
+      });
+    });
+  });
+
+  it("can sign and append signature", done => {
+    (async () => {
+      const createdAt = new ReadonlyDate(ReadonlyDate.now());
+      const keyring = new Keyring();
+      keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+      const mainIdentity = await keyring.getEntries()[0].createIdentity();
+      const profile = new UserProfile(createdAt, keyring.serialize());
+
+      const fakeTransaction: SendTx = {
+        chainId: "ethereum" as ChainId,
+        signer: mainIdentity.pubkey,
+        kind: TransactionKind.SEND,
+        amount: {
+          whole: 1,
+          fractional: 12,
+          tokenTicker: "ETH" as TokenTicker,
+        },
+        recipient: new Uint8Array([0x00, 0x11, 0x22]) as AddressBytes,
+      };
+
+      const fakeCodec: TxCodec = {
+        bytesToSign: (): SignableBytes => new Uint8Array([0xaa, 0xbb, 0xcc]) as SignableBytes,
+        bytesToPost: (): PostableBytes => {
+          throw new Error("not implemented");
+        },
+        identifier: (): TransactionIDBytes => {
+          throw new Error("not implemented");
+        },
+        parseBytes: (): SignedTransaction => {
+          throw new Error("not implemented");
+        },
+      };
+      const nonce = new Long(0x11223344, 0x55667788) as Nonce;
+
+      const signedTransaction = await profile.signTransaction(0, mainIdentity, fakeTransaction, fakeCodec, nonce);
+      expect(signedTransaction.transaction).toEqual(fakeTransaction);
+      expect(signedTransaction.primarySignature).toBeTruthy();
+      expect(signedTransaction.primarySignature.nonce).toEqual(nonce);
+      expect(signedTransaction.primarySignature.publicKey).toEqual(mainIdentity.pubkey);
+      expect(signedTransaction.primarySignature.signature.length).toBeGreaterThan(0);
+      expect(signedTransaction.otherSignatures).toEqual([]);
+
+      const doubleSignedTransaction = await profile.appendSignature(0, mainIdentity, signedTransaction, fakeCodec, nonce);
+      expect(doubleSignedTransaction.transaction).toEqual(fakeTransaction);
+      expect(doubleSignedTransaction.primarySignature).toBeTruthy();
+      expect(doubleSignedTransaction.primarySignature.nonce).toEqual(nonce);
+      expect(doubleSignedTransaction.primarySignature.publicKey).toEqual(mainIdentity.pubkey);
+      expect(doubleSignedTransaction.primarySignature.signature.length).toBeGreaterThan(0);
+      expect(doubleSignedTransaction.otherSignatures.length).toEqual(1);
+      expect(doubleSignedTransaction.otherSignatures[0].nonce).toEqual(nonce);
+      expect(doubleSignedTransaction.otherSignatures[0].publicKey).toEqual(mainIdentity.pubkey);
+      expect(doubleSignedTransaction.otherSignatures[0].signature.length).toBeGreaterThan(0);
 
       done();
     })().catch(error => {
