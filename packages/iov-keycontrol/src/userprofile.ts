@@ -1,10 +1,11 @@
 import { AbstractLevelDOWN } from "abstract-leveldown";
-import levelup, { LevelUp } from "levelup";
+import levelup from "levelup";
 import { ReadonlyDate } from "readonly-date";
 
 import { ChainId, FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/types";
 
 import { Keyring, KeyringSerializationString, LocalIdentity, PublicIdentity } from "./keyring";
+import { DatabaseUtils } from "./utils";
 
 const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
@@ -26,27 +27,6 @@ export class UserProfile {
     return new UserProfile(createdAt, keyring);
   }
 
-  // unrelated to this class. Can move to a common place
-  private static clearDb(db: LevelUp<AbstractLevelDOWN<string, string>>): Promise<void> {
-    const keysToClear = new Array<string>();
-
-    return new Promise((resolve, reject) => {
-      db.createKeyStream()
-        .on("data", (key: string) => {
-          keysToClear.push(key);
-        })
-        .on("error", (error: any) => {
-          reject(error);
-        })
-        .on("close", async () => {
-          for (const key of keysToClear) {
-            await db.del(key);
-          }
-          resolve();
-        });
-    });
-  }
-
   public readonly createdAt: ReadonlyDate;
 
   // tslint:disable-next-line:readonly-keyword
@@ -64,7 +44,7 @@ export class UserProfile {
     }
 
     const db = levelup(storage);
-    await UserProfile.clearDb(db);
+    await DatabaseUtils.clear(db);
 
     await db.put(storageKeyCreatedAt, this.createdAt.toISOString());
     await db.put(storageKeyKeyring, this.keyring.serialize());
