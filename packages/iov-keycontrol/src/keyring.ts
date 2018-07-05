@@ -1,7 +1,7 @@
 import { ChainId, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
-import { MemoryStream } from "xstream";
 
 import { Ed25519KeyringEntry, Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
+import { ValueAndUpdates } from "./valueandupdates";
 
 // type tagging from https://github.com/Microsoft/TypeScript/issues/4895#issuecomment-399098397
 declare class As<Tag extends string> {
@@ -119,7 +119,7 @@ export interface KeyringEntry {
   // canSign flag means the private key material is currently accessible.
   // If a hardware ledger is not plugged in, we may see the public keys,
   // but have it "inactive" as long as this flag is false.
-  readonly canSign: MemoryStream<boolean>;
+  readonly canSign: ValueAndUpdates<boolean>;
 
   // A string identifying the concrete implementation of this interface
   // for deserialization purpose
