@@ -42,6 +42,7 @@ export const enum Method {
   HEALTH = "health",
   STATUS = "status",
   TX = "tx",
+  TX_SEARCH = "tx_search",
   VALIDATORS = "validators",
   // TODO: subscribe, unsubscribe, random commands
 }
@@ -60,6 +61,7 @@ export type JsonRpcQuery =
   | HealthQuery
   | StatusQuery
   | TxQuery
+  | TxSearchQuery
   | ValidatorsQuery;
 
 export interface AbciInfoQuery extends JsonRpc {
@@ -128,8 +130,20 @@ export interface StatusQuery extends JsonRpc {
 export interface TxQuery {
   readonly method: Method.TX;
   readonly params: {
-    readonly hash: HexString;
+    readonly hash: Base64String;
     readonly prove?: boolean;
+  };
+}
+
+// TODO: clarify this type
+export type QueryString = string;
+export interface TxSearchQuery {
+  readonly method: Method.TX_SEARCH;
+  readonly params: {
+    readonly query: QueryString;
+    readonly prove?: boolean;
+    readonly page?: number;
+    readonly per_page?: number;
   };
 }
 
@@ -146,33 +160,35 @@ export type Result =
   | AbciInfoResult
   | AbciQueryResult
   | BlockResult
+  | BlockResultsResult
   | BlockchainResult
+  | BroadcastTxAsyncResult
+  | BroadcastTxSyncResult
+  | BroadcastTxCommitResult
   | CommitResult
   | GenesisResult
   | HealthResult
-  | StatusResult;
-// export type Result = AbciInfoResult | AbciQueryResult | BlockResult | BlockchainResult | BlockResultsResult | BroadcastTxResult | CommitResult | GenesisResult | HealthResult | StatusResult | TxResult | ValidatorsResult;
+  | StatusResult
+  | TxResult
+  | TxSearchResult
+  | ValidatorsResult;
 
-// abci_info
 export interface AbciInfoResult {
-  readonly response: AbciInfoResponse;
-}
-export interface AbciInfoResponse {
-  readonly data: string;
-  readonly last_block_height: number;
-  readonly last_block_app_hash: Base64String;
+  readonly response: {
+    readonly data: string;
+    readonly last_block_height: number;
+    readonly last_block_app_hash: Base64String;
+  };
 }
 
-// abci_query
 export interface AbciQueryResult {
-  readonly response: AbciQueryResponse;
-}
-export interface AbciQueryResponse {
-  readonly key: Base64String;
-  readonly value: Base64String;
-  readonly height: string; // (number encoded as string)
-  readonly code: number; // only for errors
-  readonly log: string;
+  readonly response: {
+    readonly key: Base64String;
+    readonly value: Base64String;
+    readonly height: string; // (number encoded as string)
+    readonly code: number; // only for errors
+    readonly log: string;
+  };
 }
 
 export interface BlockResult {
@@ -180,9 +196,26 @@ export interface BlockResult {
   readonly block: Block;
 }
 
+export interface BlockResultsResult {
+  readonly height: number;
+  readonly results: ReadonlyArray<TxResponse>;
+}
+
 export interface BlockchainResult {
   readonly last_height: number;
   readonly block_metas: ReadonlyArray<BlockMeta>;
+}
+
+export type BroadcastTxAsyncResult = BroadcastTxSyncResult;
+export interface BroadcastTxSyncResult extends TxResponse {
+  readonly hash: HexString;
+}
+
+export interface BroadcastTxCommitResult {
+  readonly height?: number;
+  readonly hash: HexString;
+  readonly check_tx: TxResponse;
+  readonly deliver_tx?: TxResponse;
 }
 
 export interface CommitResult {
@@ -217,7 +250,43 @@ export interface StatusResponse {
   readonly validator_info: ValidatorInfo;
 }
 
+export interface TxResult {
+  readonly tx: Base64String;
+  readonly tx_result: TxResponse;
+  readonly height: number;
+  readonly index: number;
+  readonly hash: HexString;
+  readonly proof?: TxProof;
+}
+
+export interface TxSearchResult {
+  readonly txs: ReadonlyArray<TxResult>;
+  readonly total_count: number;
+}
+
+export interface ValidatorsResult {
+  readonly block_height: number;
+  readonly results: ReadonlyArray<ValidatorResponse>;
+}
+
 /**** Helper items used above ******/
+
+export interface TxResponse {
+  readonly code: number;
+  readonly log: string;
+  readonly data: Base64String;
+  readonly hash: HexString;
+}
+
+export interface TxProof {
+  readonly Data: Base64String;
+  readonly RootHash: HexString;
+  readonly Total: number;
+  readonly Index: number;
+  readonly Proof: {
+    readonly aunts: ReadonlyArray<Base64String>;
+  };
+}
 
 export interface BlockMeta {
   readonly block_id: BlockId;
@@ -330,6 +399,10 @@ export interface ValidatorInfo {
   readonly address: HexString;
   readonly pub_key: RpcPubKey;
   readonly voting_power: number;
+}
+
+export interface ValidatorResponse extends ValidatorInfo {
+  readonly accum?: number;
 }
 
 export interface ConsensusParams {
