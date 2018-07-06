@@ -11,6 +11,7 @@ import {
 import { Algorithm, ChainId, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
 
 import {
+  KeyringEntry,
   KeyringEntryImplementationIdString,
   KeyringEntrySerializationString,
   LocalIdentity,
@@ -40,7 +41,7 @@ export interface Ed25519HdKeyringEntrySerialization {
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
 
-export class Ed25519HdKeyringEntry {
+export class Ed25519HdKeyringEntry implements KeyringEntry {
   public static fromEntropy(bip39Entropy: Uint8Array): Ed25519HdKeyringEntry {
     return this.fromMnemonic(Bip39.encode(bip39Entropy).asString());
   }
@@ -103,7 +104,11 @@ export class Ed25519HdKeyringEntry {
     this.privkeyPaths = privkeyPaths;
   }
 
-  public async createIdentity(path: ReadonlyArray<Slip0010RawIndex>): Promise<LocalIdentity> {
+  public async createIdentity(): Promise<LocalIdentity> {
+    throw new Error("Ed25519HdKeyringEntry.createIdentity must not be called directly. Use derived type.");
+  }
+
+  public async createIdentityWithPath(path: ReadonlyArray<Slip0010RawIndex>): Promise<LocalIdentity> {
     const seed = await Bip39.mnemonicToSeed(this.secret);
     const derivationResult = Slip0010.derivePath(Slip0010Curve.Ed25519, seed, path);
     const keypair = await Ed25519.makeKeypair(derivationResult.privkey);

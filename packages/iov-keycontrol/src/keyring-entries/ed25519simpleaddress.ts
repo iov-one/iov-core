@@ -1,9 +1,9 @@
 import { Slip0010RawIndex } from "@iov/crypto";
 
-import { KeyringEntry, KeyringEntryImplementationIdString, LocalIdentity } from "../keyring";
+import { KeyringEntryImplementationIdString, LocalIdentity } from "../keyring";
 import { Ed25519HdKeyringEntry } from "./ed25519hd";
 
-export class Ed25519SimpleAddressKeyringEntry extends Ed25519HdKeyringEntry implements KeyringEntry {
+export class Ed25519SimpleAddressKeyringEntry extends Ed25519HdKeyringEntry {
   // simple wrappers to cast return type
   public static fromEntropy(bip39Entropy: Uint8Array): Ed25519SimpleAddressKeyringEntry {
     return super.fromEntropy(bip39Entropy) as Ed25519SimpleAddressKeyringEntry;
@@ -22,6 +22,6 @@ export class Ed25519SimpleAddressKeyringEntry extends Ed25519HdKeyringEntry impl
       Slip0010RawIndex.hardened(purpose),
       Slip0010RawIndex.hardened(nextIndex),
     ];
-    return super.createIdentity(path);
+    return super.createIdentityWithPath(path);
   }
 }
