@@ -3,9 +3,7 @@ import { connectToFirstLedger, getFirstLedgerNanoS } from "./exchange";
 
 describe("Find Device", () => {
   it("can find ledger", () => {
-    if (pendingWithoutLedger()) {
-      return;
-    }
+    pendingWithoutLedger();
 
     const ledger = getFirstLedgerNanoS();
     expect(ledger).toBeTruthy();
@@ -15,9 +13,7 @@ describe("Find Device", () => {
   });
 
   it("can connect to ledger", () => {
-    if (pendingWithoutLedger()) {
-      return;
-    }
+    pendingWithoutLedger();
 
     const transport = connectToFirstLedger();
     expect(transport).toBeTruthy();

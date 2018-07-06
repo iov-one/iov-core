@@ -19,9 +19,7 @@ describe("Communicate with app", () => {
   });
 
   it("can read the public key", done => {
-    if (pendingWithoutLedger()) {
-      return;
-    }
+    pendingWithoutLedger();
 
     const checkKey = async () => {
       const pubkey = await getPublicKey(transport);
@@ -34,9 +32,8 @@ describe("Communicate with app", () => {
   });
 
   it("can properly sign valid message", done => {
-    if (pendingWithoutLedger()) {
-      return;
-    }
+    pendingWithoutLedger();
+
     // this is pre-generated signbytes
     const message = Encoding.fromHex("00cafe0008746573742d31323300000000000000110a440a1403694b56200b605a3a726304b6dfaa6e916458ee12146bc29ffe4fc6a4b2395c3f47b5ca9dfa377295f91a0808fa011a03455448220c54657374207061796d656e74");
     const messageHash = new Sha512(message).digest();
@@ -58,9 +55,7 @@ describe("Communicate with app", () => {
   // Note: verify that this display expected info (1234.789 LGR and
   // 0123... recipient) when verifying signature
   it("is compatible with our codecs", done => {
-    if (pendingWithoutLedger()) {
-      return;
-    }
+    pendingWithoutLedger();
 
     const validateSig = async () => {
       const pubkey = await getPublicKey(transport);
