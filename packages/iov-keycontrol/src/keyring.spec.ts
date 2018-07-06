@@ -161,4 +161,14 @@ describe("Keyring", () => {
       });
     });
   });
+
+  it("can be cloned", () => {
+    const original = new Keyring();
+    const entry = Ed25519SimpleAddressKeyringEntry.fromEntropy(fromHex("c7f74844892fd7b707e74fc9b6c8ef917c13ddbb380cadbc"));
+    original.add(entry);
+
+    const clone = original.clone();
+    expect(clone).not.toBe(original);
+    expect(clone.serialize()).toEqual(original.serialize());
+  });
 });

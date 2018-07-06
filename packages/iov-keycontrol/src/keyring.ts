@@ -91,6 +91,10 @@ export class Keyring {
     };
     return JSON.stringify(out) as KeyringSerializationString;
   }
+
+  public clone(): Keyring {
+    return new Keyring(this.serialize());
+  }
 }
 
 /*

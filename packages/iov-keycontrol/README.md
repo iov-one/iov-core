@@ -12,7 +12,7 @@
 > const { Ed25519SimpleAddressKeyringEntry, Keyring, UserProfile } = require("@iov/keycontrol")
 > const keyring = new Keyring()
 > keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"))
-> const profile = new UserProfile(new Date(Date.now()), keyring.serialize());
+> const profile = new UserProfile(new Date(Date.now()), keyring);
 
 > profile.getIdentities(0)
 []

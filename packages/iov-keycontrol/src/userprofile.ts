@@ -22,7 +22,7 @@ export class UserProfile {
   public static async loadFrom(db: LevelUp<AbstractLevelDOWN<string, string>>): Promise<UserProfile> {
     const createdAt = new ReadonlyDate(await db.get(storageKeyCreatedAt, { asBuffer: false })); // TODO: add strict RFC 3339 parser
     const keyring = (await db.get(storageKeyKeyring, { asBuffer: false })) as KeyringSerializationString;
-    return new UserProfile(createdAt, keyring);
+    return new UserProfile(createdAt, new Keyring(keyring));
   }
 
   public readonly createdAt: ReadonlyDate;
@@ -35,9 +35,10 @@ export class UserProfile {
   private readonly lockedProducer: DefaultValueProducer<boolean>;
   private readonly entriesCountProducer: DefaultValueProducer<number>;
 
-  constructor(createdAt: ReadonlyDate, keyringSerialization: KeyringSerializationString) {
+  // Stores a copy of keyring
+  constructor(createdAt: ReadonlyDate, keyring: Keyring) {
     this.createdAt = createdAt;
-    this.keyring = new Keyring(keyringSerialization);
+    this.keyring = keyring.clone();
     this.lockedProducer = new DefaultValueProducer(false);
     this.locked = new ValueAndUpdates(this.lockedProducer);
     this.entriesCountProducer = new DefaultValueProducer(this.keyring.getEntries().length);

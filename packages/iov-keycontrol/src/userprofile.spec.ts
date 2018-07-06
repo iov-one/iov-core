@@ -11,16 +11,29 @@ import { UserProfile } from "./userprofile";
 
 describe("UserProfile", () => {
   it("can be constructed", () => {
-    const keyringSerializetion = new Keyring().serialize();
+    const keyring = new Keyring();
     const createdAt = new ReadonlyDate(ReadonlyDate.now());
-    const profile = new UserProfile(createdAt, keyringSerializetion);
+    const profile = new UserProfile(createdAt, keyring);
     expect(profile).toBeTruthy();
   });
 
+  it("is safe against keyring manipulation", () => {
+    const keyring = new Keyring();
+    keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+    const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring);
+    expect(profile.entriesCount.value).toEqual(1);
+
+    // manipulate external keyring
+    keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("seed brass ranch destroy peasant upper steak toy hood cliff cabin kingdom"));
+
+    // profile remains unchanged
+    expect(profile.entriesCount.value).toEqual(1);
+  });
+
   it("can be locked", () => {
-    const keyringSerializetion = new Keyring().serialize();
+    const keyring = new Keyring();
     const createdAt = new ReadonlyDate(ReadonlyDate.now());
-    const profile = new UserProfile(createdAt, keyringSerializetion);
+    const profile = new UserProfile(createdAt, keyring);
     expect(profile.locked.value).toEqual(false);
     profile.lock();
     expect(profile.locked.value).toEqual(true);
@@ -29,14 +42,14 @@ describe("UserProfile", () => {
   it("initial entries count works", () => {
     {
       const keyring = new Keyring();
-      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring.serialize());
+      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring);
       expect(profile.entriesCount.value).toEqual(0);
     }
 
     {
       const keyring = new Keyring();
       keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
-      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring.serialize());
+      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring);
       expect(profile.entriesCount.value).toEqual(1);
     }
 
@@ -45,13 +58,13 @@ describe("UserProfile", () => {
       keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
       keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil"));
       keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
-      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring.serialize());
+      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring);
       expect(profile.entriesCount.value).toEqual(3);
     }
   });
 
   it("can add entries", () => {
-    const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), new Keyring().serialize());
+    const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), new Keyring());
     expect(profile.entriesCount.value).toEqual(0);
     profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
     expect(profile.entriesCount.value).toEqual(1);
@@ -66,7 +79,7 @@ describe("UserProfile", () => {
 
   it("added entry can not be manipulated from outside", done => {
     (async () => {
-      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), new Keyring().serialize());
+      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), new Keyring());
       const newEntry = Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
       profile.addEntry(newEntry);
       expect(profile.getIdentities(0).length).toEqual(0);
@@ -91,7 +104,7 @@ describe("UserProfile", () => {
       const db = levelup(MemDownConstructor<string, string>());
 
       const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
-      const keyring = new Keyring().serialize();
+      const keyring = new Keyring();
       const profile = new UserProfile(createdAt, keyring);
 
       await profile.storeIn(db);
@@ -114,7 +127,7 @@ describe("UserProfile", () => {
 
       await db.put("foo", "bar");
 
-      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), new Keyring().serialize());
+      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), new Keyring());
       await profile.storeIn(db);
 
       await db
@@ -155,9 +168,9 @@ describe("UserProfile", () => {
 
   it("throws for non-existing entry index", done => {
     (async () => {
-      const keyringSerializetion = new Keyring().serialize();
+      const keyring = new Keyring();
       const createdAt = new ReadonlyDate(ReadonlyDate.now());
-      const profile = new UserProfile(createdAt, keyringSerializetion);
+      const profile = new UserProfile(createdAt, keyring);
 
       const fakeIdentity = { pubkey: { algo: Algorithm.ED25519, data: new Uint8Array([0xaa]) as PublicKeyBytes } };
       const fakeTransaction: SendTx = {
@@ -227,7 +240,7 @@ describe("UserProfile", () => {
       const keyring = new Keyring();
       keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
       const mainIdentity = await keyring.getEntries()[0].createIdentity();
-      const profile = new UserProfile(createdAt, keyring.serialize());
+      const profile = new UserProfile(createdAt, keyring);
 
       const fakeTransaction: SendTx = {
         chainId: "ethereum" as ChainId,
