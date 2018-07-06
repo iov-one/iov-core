@@ -121,4 +121,31 @@ describe("ValueAndUpdates", () => {
 
     vau.updates.addListener(listener1);
   });
+
+  it("emits updates to listener", done => {
+    const producer = new DefaultValueProducer(11);
+    const vau = new ValueAndUpdates(producer);
+
+    // tslint:disable-next-line:no-let
+    let eventsCount = 0;
+    const emittedValues = new Array<number>();
+
+    vau.updates.addListener({
+      next: value => {
+        eventsCount++;
+        emittedValues.push(value);
+
+        if (eventsCount === 4) {
+          expect(emittedValues).toEqual([11, 22, 33, 44]);
+          done();
+        }
+      },
+      complete: () => fail(".updates stream must not complete"),
+      error: e => fail(e),
+    });
+
+    setTimeout(() => producer.update(22), 10);
+    setTimeout(() => producer.update(33), 20);
+    setTimeout(() => producer.update(44), 30);
+  });
 });
