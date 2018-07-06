@@ -35,14 +35,14 @@ export class UserProfile {
   public readonly createdAt: ReadonlyDate;
   public readonly locked: ValueAndUpdates<boolean>;
   public readonly entriesCount: ValueAndUpdates<number>;
-  public readonly entriyLabels: ValueAndUpdates<ReadonlyArray<string | undefined>>;
+  public readonly entryLabels: ValueAndUpdates<ReadonlyArray<string | undefined>>;
 
   // Never pass the keyring reference to ensure the keyring is not retained after lock()
   // tslint:disable-next-line:readonly-keyword
   private keyring: Keyring | undefined;
   private readonly lockedProducer: DefaultValueProducer<boolean>;
   private readonly entriesCountProducer: DefaultValueProducer<number>;
-  private readonly entriyLabelsProducer: DefaultValueProducer<ReadonlyArray<string | undefined>>;
+  private readonly entryLabelsProducer: DefaultValueProducer<ReadonlyArray<string | undefined>>;
 
   // Stores a copy of keyring
   constructor(options?: UserProfileOptions) {
@@ -58,10 +58,10 @@ export class UserProfile {
     this.locked = new ValueAndUpdates(this.lockedProducer);
     this.entriesCountProducer = new DefaultValueProducer(this.keyring.getEntries().length);
     this.entriesCount = new ValueAndUpdates(this.entriesCountProducer);
-    this.entriyLabelsProducer = new DefaultValueProducer(this.keyring
+    this.entryLabelsProducer = new DefaultValueProducer(this.keyring
       .getEntries()
       .map(e => e.label.value) as ReadonlyArray<string | undefined>);
-    this.entriyLabels = new ValueAndUpdates(this.entriyLabelsProducer);
+    this.entryLabels = new ValueAndUpdates(this.entryLabelsProducer);
   }
 
   // this will clear everything in the database and store the user profile
@@ -109,7 +109,7 @@ export class UserProfile {
     const updatedLabels: ReadonlyArray<string | undefined> = this.keyring
       .getEntries()
       .map(e => e.label.value);
-    this.entriyLabelsProducer.update(updatedLabels);
+    this.entryLabelsProducer.update(updatedLabels);
   }
 
   // creates an identitiy in the n-th keyring entry of the primary keyring
