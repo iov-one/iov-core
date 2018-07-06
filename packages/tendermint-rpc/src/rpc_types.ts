@@ -13,11 +13,6 @@ export interface JsonRpc {
   readonly id: RpcId;
 }
 
-export interface JsonRpcQuery extends JsonRpc {
-  readonly method: Method;
-  readonly params: Params;
-}
-
 export type JsonRpcResponse = JsonRpcSuccess | JsonRpcError;
 
 export interface JsonRpcSuccess extends JsonRpc {
@@ -51,26 +46,30 @@ export const enum Method {
   // TODO: subscribe, unsubscribe, random commands
 }
 
-/***** params *****/
+/***** queries *****/
 
-export type Params =
-  | AbciInfoParams
-  | AbciQueryParams
-  | BlockParams
-  | BlockchainParams
-  | BlockResultsParams
-  | BroadcastTxParams
-  | CommitParams
-  | GenesisParams
-  | HealthParams
-  | StatusParams
-  | TxParams
-  | ValidatorsParams;
+export type JsonRpcQuery =
+  | AbciInfoQuery
+  | AbciQueryQuery
+  | BlockQuery
+  | BlockchainQuery
+  | BlockResultsQuery
+  | BroadcastTxQuery
+  | CommitQuery
+  | GenesisQuery
+  | HealthQuery
+  | StatusQuery
+  | TxQuery
+  | ValidatorsQuery;
 
-// abci_info
-export type AbciInfoParams = null;
+export interface AbciInfoQuery extends JsonRpc {
+  readonly method: Method.ABCI_INFO;
+}
 
-// abci_query
+export interface AbciQueryQuery extends JsonRpc {
+  readonly method: Method.ABCI_QUERY;
+  readonly params: AbciQueryParams;
+}
 export interface AbciQueryParams {
   readonly path: string;
   readonly data: HexString;
@@ -78,51 +77,69 @@ export interface AbciQueryParams {
   readonly trusted?: boolean;
 }
 
-// block
-export interface BlockParams {
-  readonly height?: number;
+export interface BlockQuery extends JsonRpc {
+  readonly method: Method.BLOCK;
+  readonly params: {
+    readonly height?: number;
+  };
 }
 
-// blockchain
-export interface BlockchainParams {
-  readonly minHeight?: number;
-  readonly maxHeight?: number;
+export interface BlockchainQuery extends JsonRpc {
+  readonly method: Method.BLOCKCHAIN;
+  readonly params: {
+    readonly minHeight?: number;
+    readonly maxHeight?: number;
+  };
 }
 
-// block_results
-export interface BlockResultsParams {
-  readonly height?: number;
+export interface BlockResultsQuery extends JsonRpc {
+  readonly method: Method.BLOCK_RESULTS;
+  readonly params: {
+    readonly height?: number;
+  };
 }
 
-// broadcast_tx_*
-export interface BroadcastTxParams {
-  readonly tx: Base64String;
+export interface BroadcastTxQuery {
+  readonly method: Method.BROADCAST_TX_ASYNC | Method.BROADCAST_TX_SYNC | Method.BROADCAST_TX_COMMIT;
+  readonly params: {
+    readonly tx: Base64String;
+  };
 }
 
-// commit
-export interface CommitParams {
-  readonly height?: number;
+export interface CommitQuery extends JsonRpc {
+  readonly method: Method.COMMIT;
+  readonly params: {
+    readonly height?: number;
+  };
 }
 
-// genesis
-export type GenesisParams = null;
-
-// health
-export type HealthParams = null;
-
-// status
-export type StatusParams = null;
-
-// tx
-export interface TxParams {
-  readonly hash: Base64String;
-  readonly prove?: boolean;
+export interface GenesisQuery extends JsonRpc {
+  readonly method: Method.GENESIS;
 }
 
-// validators
-export interface ValidatorsParams {
-  readonly height?: number;
+export interface HealthQuery extends JsonRpc {
+  readonly method: Method.HEALTH;
 }
+
+export interface StatusQuery extends JsonRpc {
+  readonly method: Method.STATUS;
+}
+
+export interface TxQuery {
+  readonly method: Method.TX;
+  readonly params: {
+    readonly hash: HexString;
+    readonly prove?: boolean;
+  };
+}
+
+export interface ValidatorsQuery extends JsonRpc {
+  readonly method: Method.VALIDATORS;
+  readonly params: {
+    readonly height?: number;
+  };
+}
+
 /**** results *****/
 
 export type Result =
