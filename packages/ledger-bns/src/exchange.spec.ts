@@ -11,9 +11,6 @@ describe("Find Device", () => {
     expect(ledger).toBeTruthy();
     if (ledger) {
       expect(ledger.path).toBeTruthy();
-      if (ledger.path) {
-        expect(ledger.path.slice(0, 11)).toEqual("/dev/hidraw");
-      }
     }
   });
 
