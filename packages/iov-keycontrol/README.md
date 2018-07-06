@@ -46,7 +46,26 @@
 ```
 
 4. Congratulations, you created the first signed transaction!
-5. Now store to disk
+5. Add an additional entry
+
+```
+> profile.entriesCount.value
+1
+
+> profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("organ wheat manage mirror wish truly tool trumpet since equip flight bracket"))
+
+> profile.entriesCount.value
+2
+
+> profile.getIdentities(0)
+[ { pubkey: { algo: 'ed25519', data: [Object] },
+    label: undefined } ]
+
+> profile.getIdentities(1)
+[]
+```
+
+6. Now store to disk
 
 ```
 > const leveldown = require('leveldown')
@@ -55,7 +74,7 @@
 > profile.storeIn(db)
 ```
 
-6. and restore
+7. and restore
 
 ```
 > var profileFromDb; UserProfile.loadFrom(db).then(p => { profileFromDb = p })
