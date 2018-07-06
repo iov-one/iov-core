@@ -28,7 +28,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     const privkeys = new Map<string, Ed25519Keypair>();
     if (data) {
       const decodedData = JSON.parse(data);
-      for (const record of decodedData) {
+      for (const record of decodedData.identities) {
         const keypair = new Ed25519Keypair(
           Encoding.fromHex(record.privkey),
           Encoding.fromHex(record.localIdentity.pubkey.data),
@@ -102,19 +102,21 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   }
 
   public serialize(): KeyringEntrySerializationString {
-    const out = this.identities.map(identity => {
-      const keypair = this.privateKeyForIdentity(identity);
-      return {
-        localIdentity: {
-          pubkey: {
-            algo: identity.pubkey.algo,
-            data: Encoding.toHex(identity.pubkey.data),
+    const out = {
+      identities: this.identities.map(identity => {
+        const keypair = this.privateKeyForIdentity(identity);
+        return {
+          localIdentity: {
+            pubkey: {
+              algo: identity.pubkey.algo,
+              data: Encoding.toHex(identity.pubkey.data),
+            },
+            label: identity.label,
           },
-          label: identity.label,
-        },
-        privkey: Encoding.toHex(keypair.privkey),
-      };
-    });
+          privkey: Encoding.toHex(keypair.privkey),
+        };
+      }),
+    };
     return JSON.stringify(out) as KeyringEntrySerializationString;
   }
 

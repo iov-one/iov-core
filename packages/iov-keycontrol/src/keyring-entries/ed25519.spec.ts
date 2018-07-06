@@ -12,8 +12,8 @@ describe("Ed25519KeyringEntry", () => {
 
   it("is empty after construction", () => {
     const keyringEntry = new Ed25519KeyringEntry();
+    expect(keyringEntry.label.value).toBeUndefined();
     expect(keyringEntry.getIdentities().length).toEqual(0);
-    expect(keyringEntry.serialize()).toEqual("[]");
   });
 
   it("can have a label", () => {
@@ -132,32 +132,32 @@ describe("Ed25519KeyringEntry", () => {
       expect(serialized).toBeTruthy();
       expect(serialized.length).toBeGreaterThan(100);
 
-      const decodedJson = JSON.parse(serialized);
-      expect(decodedJson).toBeTruthy();
-      expect(decodedJson.length).toEqual(3);
-      expect(decodedJson[0].localIdentity).toBeTruthy();
-      expect(decodedJson[0].localIdentity.pubkey.algo).toEqual("ed25519");
-      expect(decodedJson[0].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
-      expect(decodedJson[0].localIdentity.label).toBeUndefined();
-      expect(decodedJson[0].privkey).toMatch(/[0-9a-f]{64}/);
-      expect(decodedJson[1].localIdentity).toBeTruthy();
-      expect(decodedJson[1].localIdentity.pubkey.algo).toEqual("ed25519");
-      expect(decodedJson[1].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
-      expect(decodedJson[1].localIdentity.label).toEqual("");
-      expect(decodedJson[1].privkey).toMatch(/[0-9a-f]{64}/);
-      expect(decodedJson[2].localIdentity).toBeTruthy();
-      expect(decodedJson[2].localIdentity.pubkey.algo).toEqual("ed25519");
-      expect(decodedJson[2].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
-      expect(decodedJson[2].localIdentity.label).toEqual("foo");
-      expect(decodedJson[2].privkey).toMatch(/[0-9a-f]{64}/);
+      const decoded = JSON.parse(serialized);
+      expect(decoded.identities).toBeTruthy();
+      expect(decoded.identities.length).toEqual(3);
+      expect(decoded.identities[0].localIdentity).toBeTruthy();
+      expect(decoded.identities[0].localIdentity.pubkey.algo).toEqual("ed25519");
+      expect(decoded.identities[0].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
+      expect(decoded.identities[0].localIdentity.label).toBeUndefined();
+      expect(decoded.identities[0].privkey).toMatch(/[0-9a-f]{64}/);
+      expect(decoded.identities[1].localIdentity).toBeTruthy();
+      expect(decoded.identities[1].localIdentity.pubkey.algo).toEqual("ed25519");
+      expect(decoded.identities[1].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
+      expect(decoded.identities[1].localIdentity.label).toEqual("");
+      expect(decoded.identities[1].privkey).toMatch(/[0-9a-f]{64}/);
+      expect(decoded.identities[2].localIdentity).toBeTruthy();
+      expect(decoded.identities[2].localIdentity.pubkey.algo).toEqual("ed25519");
+      expect(decoded.identities[2].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
+      expect(decoded.identities[2].localIdentity.label).toEqual("foo");
+      expect(decoded.identities[2].privkey).toMatch(/[0-9a-f]{64}/);
 
       // keys are different
-      expect(decodedJson[0].localIdentity.pubkey.data).not.toEqual(decodedJson[1].localIdentity.pubkey.data);
-      expect(decodedJson[1].localIdentity.pubkey.data).not.toEqual(decodedJson[2].localIdentity.pubkey.data);
-      expect(decodedJson[2].localIdentity.pubkey.data).not.toEqual(decodedJson[0].localIdentity.pubkey.data);
-      expect(decodedJson[0].privkey).not.toEqual(decodedJson[1].privkey);
-      expect(decodedJson[1].privkey).not.toEqual(decodedJson[2].privkey);
-      expect(decodedJson[2].privkey).not.toEqual(decodedJson[0].privkey);
+      expect(decoded.identities[0].localIdentity.pubkey.data).not.toEqual(decoded.identities[1].localIdentity.pubkey.data);
+      expect(decoded.identities[1].localIdentity.pubkey.data).not.toEqual(decoded.identities[2].localIdentity.pubkey.data);
+      expect(decoded.identities[2].localIdentity.pubkey.data).not.toEqual(decoded.identities[0].localIdentity.pubkey.data);
+      expect(decoded.identities[0].privkey).not.toEqual(decoded.identities[1].privkey);
+      expect(decoded.identities[1].privkey).not.toEqual(decoded.identities[2].privkey);
+      expect(decoded.identities[2].privkey).not.toEqual(decoded.identities[0].privkey);
 
       done();
     })().catch(error => {
@@ -170,14 +170,14 @@ describe("Ed25519KeyringEntry", () => {
   it("can deserialize", () => {
     {
       // empty
-      const entry = new Ed25519KeyringEntry("[]" as KeyringEntrySerializationString);
+      const entry = new Ed25519KeyringEntry('{ "identities": [] }' as KeyringEntrySerializationString);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(0);
     }
 
     {
       // one element
-      const serialized = '[{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}]' as KeyringEntrySerializationString;
+      const serialized = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}] }' as KeyringEntrySerializationString;
       const entry = new Ed25519KeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(1);
@@ -188,7 +188,7 @@ describe("Ed25519KeyringEntry", () => {
 
     {
       // two elements
-      const serialized = '[{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "privkey": "ddddeeee"}]' as KeyringEntrySerializationString;
+      const serialized = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "privkey": "ddddeeee"}] }' as KeyringEntrySerializationString;
       const entry = new Ed25519KeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(2);

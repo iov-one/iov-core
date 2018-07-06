@@ -92,7 +92,7 @@ describe("Keyring", () => {
   });
 
   it("can deserialize one ed25519 entry", () => {
-    const keyring = new Keyring('{"entries":[{"implementationId":"ed25519","data":"[{\\"localIdentity\\": { \\"pubkey\\": { \\"algo\\": \\"ed25519\\", \\"data\\": \\"aabbccdd\\" }, \\"nickname\\": \\"foo\\" }, \\"privkey\\": \\"223322112233aabb\\"}]"}]}' as KeyringSerializationString);
+    const keyring = new Keyring('{"entries":[{"implementationId":"ed25519","data":"{ \\"identities\\":[{\\"localIdentity\\": { \\"pubkey\\": { \\"algo\\": \\"ed25519\\", \\"data\\": \\"aabbccdd\\" }, \\"nickname\\": \\"foo\\" }, \\"privkey\\": \\"223322112233aabb\\"}] }"}]}' as KeyringSerializationString);
 
     expect(keyring.getEntries().length).toEqual(1);
     expect(keyring.getEntries()[0]).toEqual(jasmine.any(Ed25519KeyringEntry));
