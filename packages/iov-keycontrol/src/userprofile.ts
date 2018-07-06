@@ -35,12 +35,14 @@ export class UserProfile {
   public readonly createdAt: ReadonlyDate;
   public readonly locked: ValueAndUpdates<boolean>;
   public readonly entriesCount: ValueAndUpdates<number>;
+  public readonly entriyLabels: ValueAndUpdates<ReadonlyArray<string | undefined>>;
 
   // Never pass the keyring reference to ensure the keyring is not retained after lock()
   // tslint:disable-next-line:readonly-keyword
   private keyring: Keyring | undefined;
   private readonly lockedProducer: DefaultValueProducer<boolean>;
   private readonly entriesCountProducer: DefaultValueProducer<number>;
+  private readonly entriyLabelsProducer: DefaultValueProducer<ReadonlyArray<string | undefined>>;
 
   // Stores a copy of keyring
   constructor(options?: UserProfileOptions) {
@@ -56,6 +58,10 @@ export class UserProfile {
     this.locked = new ValueAndUpdates(this.lockedProducer);
     this.entriesCountProducer = new DefaultValueProducer(this.keyring.getEntries().length);
     this.entriesCount = new ValueAndUpdates(this.entriesCountProducer);
+    this.entriyLabelsProducer = new DefaultValueProducer(this.keyring
+      .getEntries()
+      .map(e => e.label.value) as ReadonlyArray<string | undefined>);
+    this.entriyLabels = new ValueAndUpdates(this.entriyLabelsProducer);
   }
 
   // this will clear everything in the database and store the user profile

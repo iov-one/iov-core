@@ -59,6 +59,40 @@ describe("UserProfile", () => {
     }
   });
 
+  it("initial entry labels work", () => {
+    {
+      const keyring = new Keyring();
+      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring);
+      expect(profile.entriyLabels.value).toEqual([]);
+    }
+
+    {
+      const entry = Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+      entry.setLabel("label 1");
+
+      const keyring = new Keyring();
+      keyring.add(entry);
+      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring);
+      expect(profile.entriyLabels.value).toEqual(["label 1"]);
+    }
+
+    {
+      const entry1 = Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+      entry1.setLabel("label 1");
+      const entry2 = Ed25519SimpleAddressKeyringEntry.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
+      entry2.setLabel("");
+      const entry3 = Ed25519SimpleAddressKeyringEntry.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
+      entry3.setLabel(undefined);
+
+      const keyring = new Keyring();
+      keyring.add(entry1);
+      keyring.add(entry2);
+      keyring.add(entry3);
+      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring);
+      expect(profile.entriyLabels.value).toEqual(["label 1", "", undefined]);
+    }
+  });
+
   it("can add entries", () => {
     const profile = new UserProfile();
     expect(profile.entriesCount.value).toEqual(0);
