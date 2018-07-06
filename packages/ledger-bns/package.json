@@ -16,11 +16,7 @@
     "test-node": "./jasmine-testrunner.js",
     "test": "yarn build && yarn test-node",
     "prebuild": "yarn format && yarn lint",
-    "build": "tsc --declaration && rm ./types/* && mv build/*.d.ts ./types",
-    "xxx-test-firefox": "yarn build-browser && karma start --single-run --browsers Firefox",
-    "xxx-test-chrome": "yarn build-browser && karma start --single-run --browsers ChromeHeadless",
-    "xxx-test-safari": "yarn build-browser && karma start --single-run --browsers Safari",
-    "xxx-build-browser": "yarn build && webpack --mode development"
+    "build": "tsc --declaration && rm ./types/* && mv build/*.d.ts ./types"
   },
   "dependencies": {
     "@iov/bns-codec": "^0.0.0",
