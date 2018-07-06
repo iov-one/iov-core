@@ -1,3 +1,5 @@
+import { Listener } from "xstream";
+
 import { DefaultValueProducer, ValueAndUpdates } from "./valueandupdates";
 
 describe("ValueAndUpdates", () => {
@@ -68,5 +70,55 @@ describe("ValueAndUpdates", () => {
       producer.update(null);
       expect(vau.value).toEqual(null);
     }
+  });
+
+  it("emits initial value to new listeners", done => {
+    const vau = new ValueAndUpdates(new DefaultValueProducer(123));
+
+    const listener2: Listener<number> = {
+      next: value => {
+        expect(value).toEqual(123);
+        done();
+      },
+      complete: () => fail(".updates stream must not complete"),
+      error: e => fail(e),
+    };
+
+    const listener1: Listener<number> = {
+      next: value => {
+        expect(value).toEqual(123);
+        vau.updates.addListener(listener2);
+      },
+      complete: () => fail(".updates stream must not complete"),
+      error: e => fail(e),
+    };
+
+    vau.updates.addListener(listener1);
+  });
+
+  it("emits current value to new listeners", done => {
+    const producer = new DefaultValueProducer(123);
+    const vau = new ValueAndUpdates(producer);
+    producer.update(99);
+
+    const listener2: Listener<number> = {
+      next: value => {
+        expect(value).toEqual(99);
+        done();
+      },
+      complete: () => fail(".updates stream must not complete"),
+      error: e => fail(e),
+    };
+
+    const listener1: Listener<number> = {
+      next: value => {
+        expect(value).toEqual(99);
+        vau.updates.addListener(listener2);
+      },
+      complete: () => fail(".updates stream must not complete"),
+      error: e => fail(e),
+    };
+
+    vau.updates.addListener(listener1);
   });
 });
