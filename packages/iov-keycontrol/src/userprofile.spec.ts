@@ -96,12 +96,15 @@ describe("UserProfile", () => {
   it("can add entries", () => {
     const profile = new UserProfile();
     expect(profile.entriesCount.value).toEqual(0);
+    expect(profile.entryLabels.value).toEqual([]);
     profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
     expect(profile.entriesCount.value).toEqual(1);
+    expect(profile.entryLabels.value).toEqual([undefined]);
     expect(profile.getIdentities(0)).toBeTruthy();
     profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil"));
     profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
     expect(profile.entriesCount.value).toEqual(3);
+    expect(profile.entryLabels.value).toEqual([undefined, undefined, undefined]);
     expect(profile.getIdentities(0)).toBeTruthy();
     expect(profile.getIdentities(1)).toBeTruthy();
     expect(profile.getIdentities(2)).toBeTruthy();

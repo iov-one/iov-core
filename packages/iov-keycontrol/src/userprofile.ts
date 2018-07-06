@@ -32,6 +32,10 @@ export class UserProfile {
     return new UserProfile({ createdAt, keyring });
   }
 
+  private static labels(entries: ReadonlyArray<KeyringEntry>): ReadonlyArray<string | undefined> {
+    return entries.map(e => e.label.value) as ReadonlyArray<string | undefined>;
+  }
+
   public readonly createdAt: ReadonlyDate;
   public readonly locked: ValueAndUpdates<boolean>;
   public readonly entriesCount: ValueAndUpdates<number>;
@@ -58,9 +62,7 @@ export class UserProfile {
     this.locked = new ValueAndUpdates(this.lockedProducer);
     this.entriesCountProducer = new DefaultValueProducer(this.keyring.getEntries().length);
     this.entriesCount = new ValueAndUpdates(this.entriesCountProducer);
-    this.entryLabelsProducer = new DefaultValueProducer(this.keyring
-      .getEntries()
-      .map(e => e.label.value) as ReadonlyArray<string | undefined>);
+    this.entryLabelsProducer = new DefaultValueProducer(UserProfile.labels(this.keyring.getEntries()));
     this.entryLabels = new ValueAndUpdates(this.entryLabelsProducer);
   }
 
@@ -91,6 +93,7 @@ export class UserProfile {
     const copy = entry.clone();
     this.keyring.add(copy);
     this.entriesCountProducer.update(this.keyring.getEntries().length);
+    this.entryLabelsProducer.update(UserProfile.labels(this.keyring.getEntries()));
   }
 
   // sets the label of the n-th keyring entry of the primary keyring
@@ -105,11 +108,7 @@ export class UserProfile {
     }
 
     entry.setLabel(label);
-
-    const updatedLabels: ReadonlyArray<string | undefined> = this.keyring
-      .getEntries()
-      .map(e => e.label.value);
-    this.entryLabelsProducer.update(updatedLabels);
+    this.entryLabelsProducer.update(UserProfile.labels(this.keyring.getEntries()));
   }
 
   // creates an identitiy in the n-th keyring entry of the primary keyring
