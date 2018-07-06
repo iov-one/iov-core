@@ -50,6 +50,42 @@ describe("UserProfile", () => {
     }
   });
 
+  it("can add entries", () => {
+    const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), new Keyring().serialize());
+    expect(profile.entriesCount.value).toEqual(0);
+    profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+    expect(profile.entriesCount.value).toEqual(1);
+    expect(profile.getIdentities(0)).toBeTruthy();
+    profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil"));
+    profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
+    expect(profile.entriesCount.value).toEqual(3);
+    expect(profile.getIdentities(0)).toBeTruthy();
+    expect(profile.getIdentities(1)).toBeTruthy();
+    expect(profile.getIdentities(2)).toBeTruthy();
+  });
+
+  it("added entry can not be manipulated from outside", done => {
+    (async () => {
+      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), new Keyring().serialize());
+      const newEntry = Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+      profile.addEntry(newEntry);
+      expect(profile.getIdentities(0).length).toEqual(0);
+
+      // manipulate entry reference that has been added before
+      await newEntry.createIdentity();
+      expect(newEntry.getIdentities().length).toEqual(1);
+
+      // nothing hapenned to the profile
+      expect(profile.getIdentities(0).length).toEqual(0);
+
+      done();
+    })().catch(error => {
+      setTimeout(() => {
+        throw error;
+      });
+    });
+  });
+
   it("can be stored", done => {
     (async () => {
       const db = levelup(MemDownConstructor<string, string>());

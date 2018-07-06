@@ -4,7 +4,7 @@ import { ReadonlyDate } from "readonly-date";
 
 import { FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/types";
 
-import { Keyring, KeyringSerializationString, LocalIdentity, PublicIdentity } from "./keyring";
+import { Keyring, KeyringEntry, KeyringSerializationString, LocalIdentity, PublicIdentity } from "./keyring";
 import { DatabaseUtils } from "./utils";
 import { DefaultValueProducer, ValueAndUpdates } from "./valueandupdates";
 
@@ -60,6 +60,17 @@ export class UserProfile {
     // tslint:disable-next-line:no-object-mutation
     this.keyring = undefined;
     this.lockedProducer.update(true);
+  }
+
+  // Adds a copy of the entry to the primary keyring
+  public addEntry(entry: KeyringEntry): void {
+    if (!this.keyring) {
+      throw new Error("UserProfile is currently locked");
+    }
+
+    const copy = entry.clone();
+    this.keyring.add(copy);
+    this.entriesCountProducer.update(this.keyring.getEntries().length);
   }
 
   // creates an identitiy in the n-th keyring entry of the primary keyring
