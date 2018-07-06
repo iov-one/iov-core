@@ -28,7 +28,7 @@ describe("Communicate with app", () => {
       expect(pubkey).toBeTruthy();
       expect(pubkey.length).toBe(32);
     };
-    return checkKey()
+    checkKey()
       .catch(err => fail(err))
       .then(done);
   });
@@ -50,7 +50,7 @@ describe("Communicate with app", () => {
       expect(ok).toEqual(true);
     };
 
-    return validateSig()
+    validateSig()
       .catch(err => fail(err))
       .then(done);
   });
@@ -94,7 +94,7 @@ describe("Communicate with app", () => {
       expect(ok).toEqual(true);
     };
 
-    return validateSig()
+    validateSig()
       .catch(err => fail(err))
       .then(done);
   });
