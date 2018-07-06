@@ -140,4 +140,6 @@ export interface KeyringEntry {
   // serialize will produce a representation that can be writen to disk.
   // this will contain secret info, so handle securely!
   readonly serialize: () => KeyringEntrySerializationString;
+
+  readonly clone: () => KeyringEntry;
 }
