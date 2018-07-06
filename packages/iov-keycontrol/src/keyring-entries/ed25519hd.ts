@@ -69,12 +69,14 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     }
   }
 
+  public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
   public readonly implementationId = "override me!" as KeyringEntryImplementationIdString;
 
   private readonly secret: EnglishMnemonic;
   private readonly identities: LocalIdentity[];
   private readonly privkeyPaths: Map<string, ReadonlyArray<Slip0010RawIndex>>;
+  private readonly labelProducer: DefaultValueProducer<string | undefined>;
 
   constructor(data: KeyringEntrySerializationString) {
     const decodedData: Ed25519HdKeyringEntrySerialization = JSON.parse(data);
@@ -102,6 +104,12 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
 
     this.identities = identities;
     this.privkeyPaths = privkeyPaths;
+    this.labelProducer = new DefaultValueProducer<string | undefined>(undefined); // TODO: set
+    this.label = new ValueAndUpdates(this.labelProducer);
+  }
+
+  public setLabel(label: string | undefined): void {
+    this.labelProducer.update(label);
   }
 
   public async createIdentity(): Promise<LocalIdentity> {

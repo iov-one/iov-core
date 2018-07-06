@@ -15,11 +15,13 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
   }
 
+  public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
   public readonly implementationId = "ed25519" as KeyringEntryImplementationIdString;
 
   private readonly identities: LocalIdentity[];
   private readonly privkeys: Map<string, Ed25519Keypair>;
+  private readonly labelProducer: DefaultValueProducer<string | undefined>;
 
   constructor(data?: KeyringEntrySerializationString) {
     const identities: LocalIdentity[] = [];
@@ -46,6 +48,12 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
     this.identities = identities;
     this.privkeys = privkeys;
+    this.labelProducer = new DefaultValueProducer<string | undefined>(undefined); // TODO: set
+    this.label = new ValueAndUpdates(this.labelProducer);
+  }
+
+  public setLabel(label: string | undefined): void {
+    this.labelProducer.update(label);
   }
 
   public async createIdentity(): Promise<LocalIdentity> {

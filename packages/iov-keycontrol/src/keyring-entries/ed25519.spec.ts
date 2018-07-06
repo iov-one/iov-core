@@ -16,6 +16,17 @@ describe("Ed25519KeyringEntry", () => {
     expect(keyringEntry.serialize()).toEqual("[]");
   });
 
+  it("can have a label", () => {
+    const entry = new Ed25519KeyringEntry();
+    expect(entry.label.value).toBeUndefined();
+
+    entry.setLabel("foo");
+    expect(entry.label.value).toEqual("foo");
+
+    entry.setLabel(undefined);
+    expect(entry.label.value).toBeUndefined();
+  });
+
   it("can create an identity", done => {
     (async () => {
       const keyringEntry = new Ed25519KeyringEntry();

@@ -25,6 +25,17 @@ describe("Ed25519HdKeyringEntry", () => {
     expect(entry.getIdentities().length).toEqual(0);
   });
 
+  it("can have a label", () => {
+    const entry = Ed25519HdKeyringEntry.fromMnemonic("execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard");
+    expect(entry.label.value).toBeUndefined();
+
+    entry.setLabel("foo");
+    expect(entry.label.value).toEqual("foo");
+
+    entry.setLabel(undefined);
+    expect(entry.label.value).toBeUndefined();
+  });
+
   it("can create identities", done => {
     (async () => {
       const emptyEntries = [
