@@ -107,6 +107,34 @@ describe("UserProfile", () => {
     expect(profile.getIdentities(2)).toBeTruthy();
   });
 
+  it("can update entry labels", () => {
+    const keyring = new Keyring();
+    keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+    keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+    const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring);
+    expect(profile.entriyLabels.value).toEqual([undefined, undefined]);
+
+    profile.setEntryLabel(0, "foo1");
+    expect(profile.entriyLabels.value).toEqual(["foo1", undefined]);
+
+    profile.setEntryLabel(1, "foo2");
+    expect(profile.entriyLabels.value).toEqual(["foo1", "foo2"]);
+
+    profile.setEntryLabel(0, "bar1");
+    profile.setEntryLabel(1, "bar2");
+    expect(profile.entriyLabels.value).toEqual(["bar1", "bar2"]);
+
+    profile.setEntryLabel(1, "");
+    expect(profile.entriyLabels.value).toEqual(["bar1", ""]);
+
+    profile.setEntryLabel(0, "");
+    expect(profile.entriyLabels.value).toEqual(["", ""]);
+
+    profile.setEntryLabel(0, undefined);
+    profile.setEntryLabel(1, undefined);
+    expect(profile.entriyLabels.value).toEqual([undefined, undefined]);
+  });
+
   it("added entry can not be manipulated from outside", done => {
     (async () => {
       const profile = new UserProfile();
@@ -239,6 +267,7 @@ describe("UserProfile", () => {
 
       // keyring entry of index 0 does not exist
 
+      expect(() => profile.setEntryLabel(0, "foo")).toThrowError(/Entry of index 0 does not exist in keyring/);
       expect(() => profile.getIdentities(0)).toThrowError(/Entry of index 0 does not exist in keyring/);
       expect(() => profile.setIdentityLabel(0, fakeIdentity, "foo")).toThrowError(/Entry of index 0 does not exist in keyring/);
       await profile

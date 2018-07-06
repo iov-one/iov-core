@@ -93,6 +93,25 @@ export class UserProfile {
     this.entriesCountProducer.update(this.keyring.getEntries().length);
   }
 
+  // sets the label of the n-th keyring entry of the primary keyring
+  public setEntryLabel(n: number, label: string | undefined): void {
+    if (!this.keyring) {
+      throw new Error("UserProfile is currently locked");
+    }
+
+    const entry = this.keyring.getEntries().find((_, index) => index === n);
+    if (!entry) {
+      throw new Error("Entry of index " + n + " does not exist in keyring");
+    }
+
+    entry.setLabel(label);
+
+    const updatedLabels: ReadonlyArray<string | undefined> = this.keyring
+      .getEntries()
+      .map(e => e.label.value);
+    this.entriyLabelsProducer.update(updatedLabels);
+  }
+
   // creates an identitiy in the n-th keyring entry of the primary keyring
   public async createIdentity(n: number): Promise<LocalIdentity> {
     if (!this.keyring) {
