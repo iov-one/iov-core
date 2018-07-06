@@ -180,6 +180,10 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     return JSON.stringify(out) as KeyringEntrySerializationString;
   }
 
+  public clone(): Ed25519HdKeyringEntry {
+    return new Ed25519HdKeyringEntry(this.serialize());
+  }
+
   // This throws an exception when private key is missing
   private privkeyPathForIdentity(identity: PublicIdentity): ReadonlyArray<Slip0010RawIndex> {
     const identityId = Ed25519HdKeyringEntry.identityId(identity);

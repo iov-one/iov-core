@@ -110,6 +110,10 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     return JSON.stringify(out) as KeyringEntrySerializationString;
   }
 
+  public clone(): Ed25519KeyringEntry {
+    return new Ed25519KeyringEntry(this.serialize());
+  }
+
   // This throws an exception when private key is missing
   private privateKeyForIdentity(identity: PublicIdentity): Ed25519Keypair {
     const identityId = Ed25519KeyringEntry.identityId(identity);

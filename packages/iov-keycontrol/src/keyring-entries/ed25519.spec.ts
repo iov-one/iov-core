@@ -219,4 +219,11 @@ describe("Ed25519KeyringEntry", () => {
       });
     });
   });
+
+  it("can be cloned", () => {
+    const original = new Ed25519KeyringEntry();
+    const clone = original.clone();
+    expect(clone).not.toBe(original);
+    expect(clone.serialize()).toEqual(original.serialize());
+  });
 });

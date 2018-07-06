@@ -218,4 +218,11 @@ describe("Ed25519HdKeyringEntry", () => {
       });
     });
   });
+
+  it("can be cloned", () => {
+    const original = new Ed25519HdKeyringEntry(emptyEntry);
+    const clone = original.clone();
+    expect(clone).not.toBe(original);
+    expect(clone.serialize()).toEqual(original.serialize());
+  });
 });
