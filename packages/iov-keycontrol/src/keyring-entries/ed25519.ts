@@ -10,9 +10,39 @@ import {
 } from "../keyring";
 import { DefaultValueProducer, ValueAndUpdates } from "../valueandupdates";
 
+interface PubkeySerialization {
+  readonly algo: string;
+  readonly data: string;
+}
+
+interface LocalIdentitySerialization {
+  readonly pubkey: PubkeySerialization;
+  readonly label?: string;
+}
+
+interface IdentitySerialization {
+  readonly localIdentity: LocalIdentitySerialization;
+  readonly privkey: string;
+}
+
+interface Ed25519KeyringEntrySerialization {
+  readonly identities: ReadonlyArray<IdentitySerialization>;
+}
+
 export class Ed25519KeyringEntry implements KeyringEntry {
   private static identityId(identity: PublicIdentity): string {
     return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
+  }
+
+  private static algorithmFromString(input: string): Algorithm {
+    switch (input) {
+      case "ed25519":
+        return Algorithm.ED25519;
+      case "secp256k1":
+        return Algorithm.SECP256K1;
+      default:
+        throw new Error("Unknown alogorithm string found");
+    }
   }
 
   public readonly label: ValueAndUpdates<string | undefined>;
@@ -27,7 +57,8 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     const identities: LocalIdentity[] = [];
     const privkeys = new Map<string, Ed25519Keypair>();
     if (data) {
-      const decodedData = JSON.parse(data);
+      const decodedData: Ed25519KeyringEntrySerialization = JSON.parse(data);
+
       for (const record of decodedData.identities) {
         const keypair = new Ed25519Keypair(
           Encoding.fromHex(record.privkey),
@@ -35,7 +66,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
         );
         const identity: LocalIdentity = {
           pubkey: {
-            algo: record.localIdentity.pubkey.algo,
+            algo: Ed25519KeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo),
             data: keypair.pubkey as PublicKeyBytes,
           },
           label: record.localIdentity.label,
@@ -102,7 +133,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   }
 
   public serialize(): KeyringEntrySerializationString {
-    const out = {
+    const out: Ed25519KeyringEntrySerialization = {
       identities: this.identities.map(identity => {
         const keypair = this.privateKeyForIdentity(identity);
         return {
