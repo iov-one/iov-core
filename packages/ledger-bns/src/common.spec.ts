@@ -4,10 +4,8 @@
 // Does this work in browsers??
 export const skipTests = (): boolean => !process.env.LEDGER_ENABLED;
 
-export const pendingWithoutLedger = (): boolean => {
+export const pendingWithoutLedger = (): void => {
   if (skipTests()) {
     pending("Set LEDGER_ENABLED to run ledger tests");
-    return true;
   }
-  return false;
 };
