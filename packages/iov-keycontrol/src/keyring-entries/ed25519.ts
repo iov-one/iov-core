@@ -26,6 +26,7 @@ interface IdentitySerialization {
 }
 
 interface Ed25519KeyringEntrySerialization {
+  readonly label: string | undefined;
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
 
@@ -54,11 +55,18 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
 
   constructor(data?: KeyringEntrySerializationString) {
+    // tslint:disable-next-line:no-let
+    let label: string | undefined;
     const identities: LocalIdentity[] = [];
     const privkeys = new Map<string, Ed25519Keypair>();
+
     if (data) {
       const decodedData: Ed25519KeyringEntrySerialization = JSON.parse(data);
 
+      // label
+      label = decodedData.label;
+
+      // identities
       for (const record of decodedData.identities) {
         const keypair = new Ed25519Keypair(
           Encoding.fromHex(record.privkey),
@@ -79,7 +87,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
     this.identities = identities;
     this.privkeys = privkeys;
-    this.labelProducer = new DefaultValueProducer<string | undefined>(undefined); // TODO: set
+    this.labelProducer = new DefaultValueProducer<string | undefined>(label);
     this.label = new ValueAndUpdates(this.labelProducer);
   }
 
@@ -134,6 +142,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
   public serialize(): KeyringEntrySerializationString {
     const out: Ed25519KeyringEntrySerialization = {
+      label: this.label.value,
       identities: this.identities.map(identity => {
         const keypair = this.privateKeyForIdentity(identity);
         return {

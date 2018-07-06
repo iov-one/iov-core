@@ -119,6 +119,7 @@ describe("Ed25519HdKeyringEntry", () => {
   it("can serialize multiple identities", done => {
     (async () => {
       const entry = new Ed25519HdKeyringEntry(emptyEntry);
+      entry.setLabel("entry with 3 identities");
       const identity1 = await entry.createIdentityWithPath([Slip0010RawIndex.hardened(0)]);
       const identity2 = await entry.createIdentityWithPath([Slip0010RawIndex.hardened(1)]);
       const identity3 = await entry.createIdentityWithPath([Slip0010RawIndex.hardened(2), Slip0010RawIndex.hardened(0)]);
@@ -132,6 +133,7 @@ describe("Ed25519HdKeyringEntry", () => {
 
       const decodedJson: Ed25519HdKeyringEntrySerialization = JSON.parse(serialized);
       expect(decodedJson).toBeTruthy();
+      expect(decodedJson.label).toEqual("entry with 3 identities");
       expect(decodedJson.secret).toMatch(/^[a-z]+( [a-z]+)*$/);
       expect(decodedJson.identities.length).toEqual(3);
       expect(decodedJson.identities[0].localIdentity).toBeTruthy();

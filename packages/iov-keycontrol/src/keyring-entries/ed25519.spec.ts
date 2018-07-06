@@ -121,6 +121,7 @@ describe("Ed25519KeyringEntry", () => {
   it("can serialize multiple identities", done => {
     (async () => {
       const keyringEntry = new Ed25519KeyringEntry();
+      keyringEntry.setLabel("entry with 3 identities");
       const identity1 = await keyringEntry.createIdentity();
       const identity2 = await keyringEntry.createIdentity();
       const identity3 = await keyringEntry.createIdentity();
@@ -133,6 +134,7 @@ describe("Ed25519KeyringEntry", () => {
       expect(serialized.length).toBeGreaterThan(100);
 
       const decoded = JSON.parse(serialized);
+      expect(decoded.label).toEqual("entry with 3 identities");
       expect(decoded.identities).toBeTruthy();
       expect(decoded.identities.length).toEqual(3);
       expect(decoded.identities[0].localIdentity).toBeTruthy();

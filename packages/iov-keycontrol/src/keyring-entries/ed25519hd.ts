@@ -38,6 +38,7 @@ export interface IdentitySerialization {
 // for applications and must not be exported outside of the package.
 export interface Ed25519HdKeyringEntrySerialization {
   readonly secret: string;
+  readonly label: string | undefined;
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
 
@@ -49,6 +50,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   public static fromMnemonic(mnemonicString: string): Ed25519HdKeyringEntry {
     const data: Ed25519HdKeyringEntrySerialization = {
       secret: mnemonicString,
+      label: undefined,
       identities: [],
     };
     return new this(JSON.stringify(data) as KeyringEntrySerializationString);
@@ -81,8 +83,14 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   constructor(data: KeyringEntrySerializationString) {
     const decodedData: Ed25519HdKeyringEntrySerialization = JSON.parse(data);
 
+    // secret
     this.secret = new EnglishMnemonic(decodedData.secret);
 
+    // label
+    this.labelProducer = new DefaultValueProducer<string | undefined>(decodedData.label);
+    this.label = new ValueAndUpdates(this.labelProducer);
+
+    // identities
     const identities: LocalIdentity[] = [];
     const privkeyPaths = new Map<string, ReadonlyArray<Slip0010RawIndex>>();
     for (const record of decodedData.identities) {
@@ -104,8 +112,6 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
 
     this.identities = identities;
     this.privkeyPaths = privkeyPaths;
-    this.labelProducer = new DefaultValueProducer<string | undefined>(undefined); // TODO: set
-    this.label = new ValueAndUpdates(this.labelProducer);
   }
 
   public setLabel(label: string | undefined): void {
@@ -183,6 +189,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
 
     const out: Ed25519HdKeyringEntrySerialization = {
       secret: this.secret.asString(),
+      label: this.label.value,
       identities: serializedIdentities,
     };
     return JSON.stringify(out) as KeyringEntrySerializationString;
