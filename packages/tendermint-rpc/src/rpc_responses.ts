@@ -4,7 +4,7 @@ import { Base64String, DateTimeString, HexString, IpPort } from "./encodings";
 export type JsonRpcResponse = JsonRpcSuccess | JsonRpcError;
 
 export interface JsonRpcSuccess extends JsonRpc {
-  readonly result: Result;
+  readonly result: RpcResponse;
 }
 
 export interface JsonRpcError extends JsonRpc {
@@ -17,129 +17,131 @@ export interface JsonRpcError extends JsonRpc {
 
 /**** results *****/
 
-export type Result =
+export type RpcResponse =
   | AbciInfoResult
   | AbciQueryResult
-  | BlockResult
-  | BlockResultsResult
-  | BlockchainResult
-  | BroadcastTxAsyncResult
-  | BroadcastTxSyncResult
-  | BroadcastTxCommitResult
-  | CommitResult
-  | GenesisResult
-  | HealthResult
-  | StatusResult
-  | TxResult
-  | TxSearchResult
-  | ValidatorsResult;
+  | RpcBlockResponse
+  | RpcBlockResultsResponse
+  | RpcBlockchainResponse
+  | RpcBroadcastTxAsyncResponse
+  | RpcBroadcastTxSyncResponse
+  | RpcBroadcastTxCommitResponse
+  | RpcCommitResponse
+  | RpcGenesisResponse
+  | HealthResponse
+  | RpcStatusResponse
+  | RpcTxResponse
+  | RpcTxSearchResponse
+  | RpcValidatorsResponse;
 
 export interface AbciInfoResult {
-  readonly response: {
-    readonly data: string;
-    readonly last_block_height: number;
-    readonly last_block_app_hash: Base64String;
-  };
+  readonly response: RpcAbciInfoResponse;
+}
+export interface RpcAbciInfoResponse {
+  readonly data: string;
+  readonly last_block_height: number;
+  readonly last_block_app_hash: Base64String;
 }
 
 export interface AbciQueryResult {
-  readonly response: {
-    readonly key: Base64String;
-    readonly value: Base64String;
-    readonly height: string; // (number encoded as string)
-    readonly code: number; // only for errors
-    readonly log: string;
-  };
+  readonly response: RpcAbciQueryResponse;
+}
+export interface RpcAbciQueryResponse {
+  readonly key: Base64String;
+  readonly value: Base64String;
+  readonly height: string; // (number encoded as string)
+  readonly code: number; // only for errors
+  readonly log: string;
 }
 
-export interface BlockResult {
-  readonly block_meta: BlockMeta;
-  readonly block: Block;
+export interface RpcBlockResponse {
+  readonly block_meta: RpcBlockMeta;
+  readonly block: RpcBlock;
 }
 
-export interface BlockResultsResult {
+export interface RpcBlockResultsResponse {
   readonly height: number;
-  readonly results: ReadonlyArray<TxResponse>;
+  readonly results: ReadonlyArray<RpcTxResponse>;
 }
 
-export interface BlockchainResult {
+export interface RpcBlockchainResponse {
   readonly last_height: number;
-  readonly block_metas: ReadonlyArray<BlockMeta>;
+  readonly block_metas: ReadonlyArray<RpcBlockMeta>;
 }
 
-export type BroadcastTxAsyncResult = BroadcastTxSyncResult;
-export interface BroadcastTxSyncResult extends TxResponse {
+export type RpcBroadcastTxAsyncResponse = RpcBroadcastTxSyncResponse;
+export interface RpcBroadcastTxSyncResponse extends RpcTxResponse {
   readonly hash: HexString;
 }
 
-export interface BroadcastTxCommitResult {
+export interface RpcBroadcastTxCommitResponse {
   readonly height?: number;
   readonly hash: HexString;
-  readonly check_tx: TxResponse;
-  readonly deliver_tx?: TxResponse;
+  readonly check_tx: RpcTxResponse;
+  readonly deliver_tx?: RpcTxResponse;
 }
 
-export interface CommitResult {
+export interface RpcCommitResponse {
   readonly SignedHeader: {
-    readonly header: Header;
-    readonly commit: Commit;
+    readonly header: RpcHeader;
+    readonly commit: RpcCommit;
   };
   readonly canonical: boolean;
 }
 
 export interface GenesisResult {
-  readonly genesis: Genesis;
+  readonly genesis: RpcGenesisResponse;
 }
-export interface Genesis {
+export interface RpcGenesisResponse {
   readonly genesis_time: DateTimeString;
   readonly chain_id: string; // ChainId;
   readonly consensus_params: ConsensusParams;
-  readonly validators: ReadonlyArray<Validator>;
+  readonly validators: ReadonlyArray<RpcValidatorGenesis>;
   readonly app_hash: string; // HexString, Base64String??
   readonly app_state: {};
 }
 
-export type HealthResult = null;
+export type HealthResponse = null;
 
 // status
 export interface StatusResult {
-  readonly response: StatusResponse;
+  readonly response: RpcStatusResponse;
 }
-export interface StatusResponse {
-  readonly node_info: NodeInfo;
-  readonly sync_info: SyncInfo;
-  readonly validator_info: ValidatorInfo;
+export interface RpcStatusResponse {
+  readonly node_info: RpcNodeInfo;
+  readonly sync_info: RpcSyncInfo;
+  readonly validator_info: RpcValidatorInfo;
 }
 
-export interface TxResult {
+export interface RpcTxResponse {
   readonly tx: Base64String;
-  readonly tx_result: TxResponse;
+  readonly tx_result: RpcTxData;
   readonly height: number;
   readonly index: number;
   readonly hash: HexString;
-  readonly proof?: TxProof;
+  readonly proof?: RpcTxProof;
 }
 
-export interface TxSearchResult {
-  readonly txs: ReadonlyArray<TxResult>;
+export interface RpcTxSearchResponse {
+  readonly txs: ReadonlyArray<RpcTxResponse>;
   readonly total_count: number;
 }
 
-export interface ValidatorsResult {
+export interface RpcValidatorsResponse {
   readonly block_height: number;
-  readonly results: ReadonlyArray<ValidatorResponse>;
+  readonly results: ReadonlyArray<RpcValidatorData>;
 }
 
 /**** Helper items used above ******/
 
-export interface TxResponse {
+export interface RpcTxData {
   readonly code: number;
   readonly log: string;
   readonly data: Base64String;
   readonly hash: HexString;
 }
 
-export interface TxProof {
+export interface RpcTxProof {
   readonly Data: Base64String;
   readonly RootHash: HexString;
   readonly Total: number;
@@ -149,12 +151,12 @@ export interface TxProof {
   };
 }
 
-export interface BlockMeta {
-  readonly block_id: BlockId;
-  readonly header: Header;
+export interface RpcBlockMeta {
+  readonly block_id: RpcBlockId;
+  readonly header: RpcHeader;
 }
 
-export interface BlockId {
+export interface RpcBlockId {
   readonly hash: HexString;
   readonly parts: {
     readonly total: number;
@@ -162,9 +164,9 @@ export interface BlockId {
   };
 }
 
-export interface Block {
-  readonly header: Header;
-  readonly last_commit: Commit;
+export interface RpcBlock {
+  readonly header: RpcHeader;
+  readonly last_commit: RpcCommit;
   readonly data: {
     readonly txs: ReadonlyArray<Base64String>; // TODO: HexString?
   };
@@ -176,9 +178,9 @@ export interface Block {
 // TODO: what is this???
 export type Evidence = any;
 
-export interface Commit {
-  readonly block_id: BlockId;
-  readonly precommits: ReadonlyArray<Precommit>;
+export interface RpcCommit {
+  readonly block_id: RpcBlockId;
+  readonly precommits: ReadonlyArray<RpcVote>;
 }
 
 export const enum VoteType {
@@ -186,30 +188,23 @@ export const enum VoteType {
   PRECOMMIT = 2,
 }
 
-export interface Prevote extends Vote {
-  readonly type: VoteType.PREVOTE;
-}
-
-export interface Precommit extends Vote {
-  readonly type: VoteType.PRECOMMIT;
-}
-
-export interface Vote {
+export interface RpcVote {
+  readonly type: VoteType;
   readonly validator_address: HexString;
   readonly validator_index: number;
   readonly height: number;
   readonly round: number;
   readonly timestamp: DateTimeString;
-  readonly block_id: BlockId;
+  readonly block_id: RpcBlockId;
   readonly signature: RpcSignature;
 }
 
-export interface Header {
+export interface RpcHeader {
   readonly chain_id: string; // ChainId
   readonly height: number;
   readonly time: DateTimeString;
   readonly num_txs: number;
-  readonly last_block_id: BlockId;
+  readonly last_block_id: RpcBlockId;
   readonly total_txs: number;
 
   // merkle roots for proofs
@@ -222,7 +217,7 @@ export interface Header {
   readonly validators_hash: HexString;
 }
 
-export interface NodeInfo {
+export interface RpcNodeInfo {
   readonly id: HexString;
   readonly listen_addr: IpPort;
   readonly network: string;
@@ -240,7 +235,7 @@ export interface NodeInfo {
   // ]
 }
 
-export interface SyncInfo {
+export interface RpcSyncInfo {
   readonly latest_block_hash: HexString;
   readonly latest_app_hash: HexString;
   readonly latest_block_height: number;
@@ -249,20 +244,20 @@ export interface SyncInfo {
 }
 
 // this is in genesis
-export interface Validator {
+export interface RpcValidatorGenesis {
   readonly pub_key: RpcPubKey;
   readonly power: number;
   readonly name: string;
 }
 
 // this is in status
-export interface ValidatorInfo {
+export interface RpcValidatorInfo {
   readonly address: HexString;
   readonly pub_key: RpcPubKey;
   readonly voting_power: number;
 }
 
-export interface ValidatorResponse extends ValidatorInfo {
+export interface RpcValidatorData extends RpcValidatorInfo {
   readonly accum?: number;
 }
 
