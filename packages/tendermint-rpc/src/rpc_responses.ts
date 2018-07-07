@@ -1,5 +1,5 @@
 import { JsonRpc } from "./common";
-import { Base64String, DateTimeString, HexString, IpPort } from "./encodings";
+import { Base64String, DateTimeString, HexString, IpPortString } from "./encodings";
 
 export type JsonRpcResponse = JsonRpcSuccess | JsonRpcError;
 
@@ -219,7 +219,7 @@ export interface RpcHeader {
 
 export interface RpcNodeInfo {
   readonly id: HexString;
-  readonly listen_addr: IpPort;
+  readonly listen_addr: IpPortString;
   readonly network: string;
   readonly version: string;
   readonly channels: string; // ???
