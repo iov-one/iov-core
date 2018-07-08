@@ -1,23 +1,23 @@
-declare const Base64Symbol: unique symbol;
-export type Base64String = typeof Base64Symbol & string;
+declare class As<Tag extends string> {
+  private readonly "_ _ _": Tag;
+}
 
-declare const HexSymbol: unique symbol;
-export type HexString = typeof HexSymbol & string;
-
-declare const IpPortSymbol: unique symbol;
-export type IpPortString = typeof IpPortSymbol & string;
-
-declare const DateTimeSymbol: unique symbol;
-export type DateTimeString = typeof DateTimeSymbol & string;
+export type Base64String = string & As<"base64">;
+export type HexString = string & As<"hex">;
+export type IpPortString = string & As<"ipport">;
+export type DateTimeString = string & As<"datetime">;
 
 // Note some code is copied from iov-crypto/encoding,
 // but I didn't want to consider iov-crypto a requirement...
 // Better way to do this?
 export class Hex {
-  // mustEncode throws an error if data was not provided
-  public static mustEncode(data?: Uint8Array): HexString {
-    if (data === undefined || data.length === 0) {
+  // mustEncode throws an error if data was not provided,
+  // notEmpty requires that the value is not []
+  public static mustEncode(data?: Uint8Array, notEmpty?: boolean): HexString {
+    if (data === undefined) {
       throw new Error("must provide a value");
+    } else if (notEmpty && data.length === 0) {
+      throw new Error("must provide a non-empty value");
     }
     return this.encode(data);
   }
@@ -40,10 +40,13 @@ export class Hex {
     return out as HexString;
   }
 
-  // mustDecode throws an error if data was not provided
-  public static mustDecode(hexstring?: HexString): Uint8Array {
-    if (hexstring === undefined || hexstring.length === 0) {
+  // mustDecode throws an error if data was not provided,
+  // notEmpty requires that the value is not ""
+  public static mustDecode(hexstring?: HexString, notEmpty?: boolean): Uint8Array {
+    if (hexstring === undefined) {
       throw new Error("must provide a value");
+    } else if (notEmpty && hexstring.length === 0) {
+      throw new Error("must provide a non-empty value");
     }
     return this.decode(hexstring);
   }
