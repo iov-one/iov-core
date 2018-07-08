@@ -7,6 +7,28 @@ export type HexString = string & As<"hex">;
 export type IpPortString = string & As<"ipport">;
 export type DateTimeString = string & As<"datetime">;
 
+interface Lengther {
+  readonly length: number;
+}
+
+// must can be used to anywhere to throw errors if missing before
+// encoding/decoding
+function must<T extends Lengther>(value: T | undefined, notEmpty?: boolean): T {
+  if (value === undefined) {
+    throw new Error("must provide a value");
+  } else if (notEmpty && value.length === 0) {
+    throw new Error("must provide a non-empty value");
+  }
+  return value;
+}
+
+// maybe uses the value or provides a default
+function maybe<T>(value: T | undefined, fallback: T): T {
+  return value || fallback;
+}
+
+const emptyBytes = new Uint8Array([]);
+
 // Note some code is copied from iov-crypto/encoding,
 // but I didn't want to consider iov-crypto a requirement...
 // Better way to do this?
@@ -14,20 +36,12 @@ export class Hex {
   // mustEncode throws an error if data was not provided,
   // notEmpty requires that the value is not []
   public static mustEncode(data?: Uint8Array, notEmpty?: boolean): HexString {
-    if (data === undefined) {
-      throw new Error("must provide a value");
-    } else if (notEmpty && data.length === 0) {
-      throw new Error("must provide a non-empty value");
-    }
-    return this.encode(data);
+    return this.encode(must(data, notEmpty));
   }
 
   // may encode returns "" if data was not provided
   public static mayEncode(data?: Uint8Array): HexString {
-    if (data === undefined) {
-      return "" as HexString;
-    }
-    return this.encode(data);
+    return this.encode(maybe(data, emptyBytes));
   }
 
   // encode hex-encodes whatever data was provided
@@ -43,20 +57,12 @@ export class Hex {
   // mustDecode throws an error if data was not provided,
   // notEmpty requires that the value is not ""
   public static mustDecode(hexstring?: HexString, notEmpty?: boolean): Uint8Array {
-    if (hexstring === undefined) {
-      throw new Error("must provide a value");
-    } else if (notEmpty && hexstring.length === 0) {
-      throw new Error("must provide a non-empty value");
-    }
-    return this.decode(hexstring);
+    return this.decode(must(hexstring, notEmpty));
   }
 
   // may Decode returns "" if hexstring was not provided
   public static mayDecode(hexstring?: HexString): Uint8Array {
-    if (hexstring === undefined) {
-      return new Uint8Array([]);
-    }
-    return this.decode(hexstring);
+    return this.decode(maybe(hexstring, "" as HexString));
   }
 
   public static decode(hexstring: HexString): Uint8Array {
