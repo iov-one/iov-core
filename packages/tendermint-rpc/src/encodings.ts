@@ -1,5 +1,6 @@
 import { Buffer } from "buffer";
 import { isNumber } from "util";
+import { ReadonlyDate } from 'readonly-date';
 
 declare class As<Tag extends string> {
   private readonly "_ _ _": Tag;
@@ -78,5 +79,15 @@ export class Base64 {
 
   public static decode(base64String: Base64String): Uint8Array {
     return new Buffer(base64String, "base64");
+  }
+}
+
+export class DateTime {
+  public static encode(date: ReadonlyDate): DateTimeString {
+    return date.toISOString() as DateTimeString;
+  }
+
+  public static decode(dateTimeString: DateTimeString): ReadonlyDate {
+    return new ReadonlyDate(dateTimeString);
   }
 }

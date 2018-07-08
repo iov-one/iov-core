@@ -23,6 +23,7 @@
     "build-browser": "yarn build && webpack --mode development"
   },
   "dependencies": {
-    "@types/node": "^10.3.2"
+    "@types/node": "^10.3.2",
+    "readonly-date": "0.0.0"
   }
 }
