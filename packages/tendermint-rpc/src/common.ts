@@ -16,6 +16,20 @@ export interface JsonRpcRequest extends JsonRpc {
   readonly params?: {};
 }
 
+export type JsonRpcResponse = JsonRpcSuccess | JsonRpcError;
+
+export interface JsonRpcSuccess extends JsonRpc {
+  readonly result: {};
+}
+
+export interface JsonRpcError extends JsonRpc {
+  readonly error: {
+    readonly code: number;
+    readonly message: string;
+    readonly data?: string;
+  };
+}
+
 export const jsonRpc = (): JsonRpc => ({ jsonrpc: "2.0", id: randomId() });
 export const jsonRpcWith = (method: string, params?: {}): JsonRpcRequest => ({
   ...jsonRpc(),
