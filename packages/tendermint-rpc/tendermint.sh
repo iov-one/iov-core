@@ -12,7 +12,7 @@ rm -rf "/tmp/tmtest/${VERSION}/{config,data}"
 docker run -v "${DIR}:/tendermint" \
   tendermint/tendermint:${VERSION} init
 
-docker run -p ${PORT}:26657 -v "${DIR}:/tendermint" \
+exec docker run -p ${PORT}:26657 -v "${DIR}:/tendermint" \
   tendermint/tendermint:${VERSION} node \
   --proxy_app=kvstore \
   --rpc.laddr=tcp://0.0.0.0:26657 \
