@@ -2,7 +2,7 @@
 import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
 import { Device } from "node-hid";
 
-import { getPublicKey } from "../app";
+import { appVersion } from "../app";
 import { connectToFirstLedger } from "../exchange";
 
 interface Event {
@@ -40,10 +40,10 @@ const checkEvent = (e: Event) => {
       const transport = connectToFirstLedger();
       // use the function as a status check... if it works, we are in the app
       // otherwise no
-      getPublicKey(transport)
-        .then(() => {
+      appVersion(transport)
+        .then((version: number) => {
           inApp = true;
-          console.log(">>> Entered app");
+          console.log(`>>> Entered app (version ${version})`);
         })
         .catch(() => 0);
     } catch (err) {
