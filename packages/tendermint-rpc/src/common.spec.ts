@@ -1,0 +1,52 @@
+import { jsonRpc, jsonRpcWith, randomChar, randomId } from "./common";
+
+describe("Generates random ids", () => {
+  it("Generates random chars", () => {
+    const char = randomChar();
+    expect(char.length).toEqual(1);
+
+    const char2 = randomChar();
+    expect(char2.length).toEqual(1);
+    expect(char2).not.toEqual(char);
+  });
+
+  it("Generates random id", () => {
+    const id = randomId();
+    expect(id).toBeTruthy();
+    expect(id.length).toBe(12);
+
+    const id2 = randomId();
+    expect(id2).toBeTruthy();
+    expect(id.length).toBe(12);
+    expect(id2).not.toEqual(id);
+  });
+});
+
+describe("Creates good requests", () => {
+  it("Generates random ids", () => {
+    const rpc = jsonRpc();
+    expect(rpc.jsonrpc).toEqual("2.0");
+    expect(rpc.id).toBeTruthy();
+    expect(rpc.id.length).toEqual(12);
+
+    const rpc2 = jsonRpc();
+    expect(rpc2.id).toBeTruthy();
+    expect(rpc2.id.length).toEqual(12);
+    expect(rpc2.id).not.toEqual(rpc.id);
+  });
+
+  it("Passes method and params", () => {
+    const method = "do_something";
+    const params = { foo: "bar" };
+    const rpc = jsonRpcWith(method, params);
+    expect(rpc.jsonrpc).toEqual("2.0");
+    expect(rpc.id).toBeTruthy();
+    expect(rpc.id.length).toEqual(12);
+    expect(rpc.method).toEqual(method);
+    expect(rpc.params).toEqual(params);
+  });
+
+  // it("Tries to auto-discover tendermint", () => {
+
+  // });
+});

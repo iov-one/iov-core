@@ -21,9 +21,9 @@ export type Response =
   | ValidatorsResponse;
 
 export interface AbciInfoResponse {
-  readonly data: string;
-  readonly lastBlockHeight: number;
-  readonly lastBlockAppHash: Uint8Array;
+  readonly data?: string;
+  readonly lastBlockHeight?: number;
+  readonly lastBlockAppHash?: Uint8Array;
 }
 
 export interface AbciQueryResponse {

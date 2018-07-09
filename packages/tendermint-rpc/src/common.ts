@@ -47,8 +47,6 @@ export const throwIfError = (resp: JsonRpcResponse): JsonRpcSuccess => {
 
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 // generate a random alphanumeric character
-const randomChar = (): string => chars[Math.floor(Math.random() * chars.length)];
-const randomId = (): RpcId =>
-  Array(12)
-    .map(() => randomChar())
-    .join("") as RpcId;
+export const randomChar = (): string => chars[Math.floor(Math.random() * chars.length)];
+export const randomId = (): RpcId =>
+  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(() => randomChar()).join("") as RpcId;

@@ -9,7 +9,6 @@ import {
   IntegerString,
   IpPortString,
   may,
-  notEmpty,
   optional,
   required,
 } from "../encodings";
@@ -45,14 +44,14 @@ export interface AbciInfoResult {
   readonly response: RpcAbciInfoResponse;
 }
 export interface RpcAbciInfoResponse {
-  readonly data: string;
-  readonly last_block_height: number;
-  readonly last_block_app_hash: Base64String;
+  readonly data?: string;
+  readonly last_block_height?: number;
+  readonly last_block_app_hash?: Base64String;
 }
 const decodeAbciInfo = (data: RpcAbciInfoResponse): responses.AbciInfoResponse => ({
-  data: required(data.data),
-  lastBlockHeight: notEmpty(required(data.last_block_height)),
-  lastBlockAppHash: Base64.decode(required(data.last_block_app_hash)),
+  data: data.data,
+  lastBlockHeight: data.last_block_height,
+  lastBlockAppHash: may(Base64.decode, data.last_block_app_hash),
 });
 
 export interface AbciQueryResult {

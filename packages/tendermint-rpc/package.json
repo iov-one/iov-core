@@ -19,7 +19,7 @@
     "test-safari": "yarn build-browser && karma start --single-run --browsers Safari",
     "test": "yarn build && yarn test-node",
     "prebuild": "yarn format && yarn lint",
-    "build": "tsc --declaration",
+    "build": "rm -rf build && tsc --declaration",
     "build-browser": "yarn build && webpack --mode development"
   },
   "dependencies": {
