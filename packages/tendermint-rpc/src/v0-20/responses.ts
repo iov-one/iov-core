@@ -1,4 +1,30 @@
-import { Base64String, DateTimeString, HexString, IpPortString } from "../encodings";
+import { JsonRpcSuccess } from "../common";
+import {
+  Base64,
+  Base64String,
+  DateTimeString,
+  HexString,
+  IpPortString,
+  notEmpty,
+  required,
+} from "../encodings";
+import * as responses from "../responses";
+
+/*** adaptor ***/
+
+export class Responses {
+  public static decodeAbciInfo(response: JsonRpcSuccess): responses.AbciInfoResponse {
+    const data = (response.result as AbciInfoResult).response;
+    if (!data) {
+      throw Error(`unexpected result for abci_info: ${response}`);
+    }
+    return {
+      data: required(data.data),
+      lastBlockHeight: notEmpty(required(data.last_block_height)),
+      lastBlockAppHash: Base64.decode(required(data.last_block_app_hash)),
+    };
+  }
+}
 
 /**** results *****/
 

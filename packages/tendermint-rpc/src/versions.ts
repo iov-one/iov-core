@@ -1,8 +1,9 @@
 // This module exposes translators for multiple tendermint versions
 // Pick a version that matches the server to properly encode the data types
 
-import { JsonRpcRequest, jsonRpcWith, throwIfError } from "./common";
+import { JsonRpcRequest, JsonRpcSuccess, jsonRpcWith, throwIfError } from "./common";
 import * as requests from "./requests";
+import * as responses from "./responses";
 import { RpcClient } from "./rpcclient";
 import { v0_20 as v0_20_ } from "./v0-20";
 
@@ -11,7 +12,7 @@ export const v0_20: Adaptor = v0_20_;
 
 export interface Adaptor {
   readonly params: Params;
-  // readonly response: Response;
+  readonly responses: Response;
 }
 
 export interface Params {
@@ -28,6 +29,10 @@ export interface Params {
   readonly encodeTx: (req: requests.TxRequest) => JsonRpcRequest;
   readonly encodeTxSearch: (req: requests.TxSearchRequest) => JsonRpcRequest;
   readonly encodeValidators: (req: requests.ValidatorsRequest) => JsonRpcRequest;
+}
+
+export interface Response {
+  readonly decodeAbciInfo: (res: JsonRpcSuccess) => responses.AbciInfoResponse;
 }
 
 // find adapter makes a status call with the client.

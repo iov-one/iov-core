@@ -1,9 +1,9 @@
 import axios from "axios";
 
-import { JsonRpcRequest, JsonRpcResponse } from "./common";
+import { JsonRpcRequest, JsonRpcSuccess, throwIfError } from "./common";
 
 export interface RpcClient {
-  readonly rpc: (request: JsonRpcRequest) => Promise<JsonRpcResponse>;
+  readonly rpc: (request: JsonRpcRequest) => Promise<JsonRpcSuccess>;
 }
 
 export class HttpClient implements RpcClient {
@@ -13,8 +13,9 @@ export class HttpClient implements RpcClient {
     this.url = rpcServer;
   }
 
-  public rpc(request: JsonRpcRequest): Promise<JsonRpcResponse> {
-    return axios.post(this.url, request).then(res => res.data as JsonRpcResponse);
+  public async rpc(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
+    const response = await axios.post(this.url, request);
+    return throwIfError(response.data);
   }
 }
 
