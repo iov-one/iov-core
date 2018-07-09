@@ -1,109 +1,98 @@
-import { JsonRpc } from "../common";
-import { Base64String, HexString, QueryString } from "../encodings";
-import { Method } from "../requests";
+import { JsonRpcRequest, jsonRpcWith } from "../common";
+import { Base64, Base64String, Hex, HexString, notEmpty } from "../encodings";
+import * as requests from "../requests";
 
 /***** queries *****/
 
-export type JsonRpcRequest =
-  | AbciInfoRequest
-  | AbciQueryRequest
-  | BlockRequest
-  | BlockchainRequest
-  | BlockResultsRequest
-  | BroadcastTxRequest
-  | CommitRequest
-  | GenesisRequest
-  | HealthRequest
-  | StatusRequest
-  | TxRequest
-  | TxSearchRequest
-  | ValidatorsRequest;
+export class Params {
+  public static encodeAbciInfo(req: requests.AbciInfoRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method);
+  }
 
-export interface AbciInfoRequest extends JsonRpc {
-  readonly method: Method.ABCI_INFO;
+  public static encodeAbciQuery(req: requests.AbciQueryRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, encodeAbciQueryParams(req.params));
+  }
+
+  public static encodeBlock(req: requests.BlockRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, req.params);
+  }
+
+  public static encodeBlockchain(req: requests.BlockchainRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, req.params);
+  }
+
+  public static encodeBlockResults(req: requests.BlockResultsRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, req.params);
+  }
+
+  public static encodeBroadcastTx(req: requests.BroadcastTxRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, encodeBroadcastTxParams(req.params));
+  }
+
+  public static encodeCommit(req: requests.CommitRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, req.params);
+  }
+
+  public static encodeGenesis(req: requests.GenesisRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method);
+  }
+
+  public static encodeHealth(req: requests.HealthRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method);
+  }
+
+  public static encodeStatus(req: requests.StatusRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method);
+  }
+
+  public static encodeTx(req: requests.TxRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, encodeTxParams(req.params));
+  }
+
+  // TODO: encode params for query string???
+  public static encodeTxSearch(req: requests.TxSearchRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, req.params);
+  }
+
+  public static encodeValidators(req: requests.ValidatorsRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, req.params);
+  }
 }
 
-export interface AbciQueryRequest extends JsonRpc {
-  readonly method: Method.ABCI_QUERY;
-  readonly params: AbciQueryParams;
-}
-export interface AbciQueryParams {
+interface RpcAbciQueryParams {
   readonly path: string;
   readonly data: HexString;
   readonly height?: number;
   readonly trusted?: boolean;
 }
+const encodeAbciQueryParams = (params: requests.AbciQueryParams): RpcAbciQueryParams => ({
+  path: notEmpty(params.path),
+  data: Hex.encode(notEmpty(params.data)),
+  height: params.height,
+  trusted: params.trusted,
+});
 
-export interface BlockRequest extends JsonRpc {
-  readonly method: Method.BLOCK;
-  readonly params: {
-    readonly height?: number;
-  };
+interface RpcBroadcastTxParams {
+  readonly tx: Base64String;
 }
+const encodeBroadcastTxParams = (params: requests.BroadcastTxParams): RpcBroadcastTxParams => ({
+  tx: Base64.encode(notEmpty(params.tx)),
+});
 
-export interface BlockchainRequest extends JsonRpc {
-  readonly method: Method.BLOCKCHAIN;
-  readonly params: {
-    readonly minHeight?: number;
-    readonly maxHeight?: number;
-  };
+interface RpcTxParams {
+  readonly hash: Base64String;
+  readonly prove?: boolean;
 }
-
-export interface BlockResultsRequest extends JsonRpc {
-  readonly method: Method.BLOCK_RESULTS;
-  readonly params: {
-    readonly height?: number;
-  };
-}
-
-export interface BroadcastTxRequest {
-  readonly method: Method.BROADCAST_TX_ASYNC | Method.BROADCAST_TX_SYNC | Method.BROADCAST_TX_COMMIT;
-  readonly params: {
-    readonly tx: Base64String;
-  };
-}
-
-export interface CommitRequest extends JsonRpc {
-  readonly method: Method.COMMIT;
-  readonly params: {
-    readonly height?: number;
-  };
-}
-
-export interface GenesisRequest extends JsonRpc {
-  readonly method: Method.GENESIS;
-}
-
-export interface HealthRequest extends JsonRpc {
-  readonly method: Method.HEALTH;
-}
-
-export interface StatusRequest extends JsonRpc {
-  readonly method: Method.STATUS;
-}
-
-export interface TxRequest {
-  readonly method: Method.TX;
-  readonly params: {
-    readonly hash: Base64String;
-    readonly prove?: boolean;
-  };
-}
+const encodeTxParams = (params: requests.TxParams): RpcTxParams => ({
+  hash: Base64.encode(notEmpty(params.hash)),
+  prove: params.prove,
+});
 
 // TODO: clarify this type
-export interface TxSearchRequest {
-  readonly method: Method.TX_SEARCH;
-  readonly params: {
-    readonly query: QueryString;
-    readonly prove?: boolean;
-    readonly page?: number;
-    readonly per_page?: number;
-  };
-}
-
-export interface ValidatorsRequest extends JsonRpc {
-  readonly method: Method.VALIDATORS;
-  readonly params: {
-    readonly height?: number;
-  };
-}
+// Do we need to transform query???
+// interface RpcTxSearchParams {
+//   readonly query: QueryString;
+//   readonly prove?: boolean;
+//   readonly page?: number;
+//   readonly per_page?: number;
+// }

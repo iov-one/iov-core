@@ -21,11 +21,26 @@ export const enum Method {
   // TODO: subscribe, unsubscribe, random commands
 }
 
-export interface AbciInfoRequest extends JsonRpc {
+export type JsonRpcRequest =
+  | AbciInfoRequest
+  | AbciQueryRequest
+  | BlockRequest
+  | BlockchainRequest
+  | BlockResultsRequest
+  | BroadcastTxRequest
+  | CommitRequest
+  | GenesisRequest
+  | HealthRequest
+  | StatusRequest
+  | TxRequest
+  | TxSearchRequest
+  | ValidatorsRequest;
+
+export interface AbciInfoRequest {
   readonly method: Method.ABCI_INFO;
 }
 
-export interface AbciQueryRequest extends JsonRpc {
+export interface AbciQueryRequest {
   readonly method: Method.ABCI_QUERY;
   readonly params: AbciQueryParams;
 }
@@ -60,9 +75,10 @@ export interface BlockResultsRequest extends JsonRpc {
 
 export interface BroadcastTxRequest {
   readonly method: Method.BROADCAST_TX_ASYNC | Method.BROADCAST_TX_SYNC | Method.BROADCAST_TX_COMMIT;
-  readonly params: {
-    readonly tx: Uint8Array;
-  };
+  readonly params: BroadcastTxParams;
+}
+export interface BroadcastTxParams {
+  readonly tx: Uint8Array;
 }
 
 export interface CommitRequest extends JsonRpc {
@@ -86,21 +102,23 @@ export interface StatusRequest extends JsonRpc {
 
 export interface TxRequest {
   readonly method: Method.TX;
-  readonly params: {
-    readonly hash: Uint8Array;
-    readonly prove?: boolean;
-  };
+  readonly params: TxParams;
+}
+export interface TxParams {
+  readonly hash: Uint8Array;
+  readonly prove?: boolean;
 }
 
 // TODO: clarify this type
 export interface TxSearchRequest {
   readonly method: Method.TX_SEARCH;
-  readonly params: {
-    readonly query: QueryString;
-    readonly prove?: boolean;
-    readonly page?: number;
-    readonly per_page?: number;
-  };
+  readonly params: TxSearchParams;
+}
+export interface TxSearchParams {
+  readonly query: QueryString;
+  readonly prove?: boolean;
+  readonly page?: number;
+  readonly per_page?: number;
 }
 
 export interface ValidatorsRequest extends JsonRpc {
