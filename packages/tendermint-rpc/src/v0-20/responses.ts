@@ -1,5 +1,5 @@
-import { JsonRpc } from "./common";
-import { Base64String, DateTimeString, HexString, IpPortString } from "./encodings";
+import { JsonRpc } from "../common";
+import { Base64String, DateTimeString, HexString, IpPortString } from "../encodings";
 
 export type JsonRpcResponse = JsonRpcSuccess | JsonRpcError;
 

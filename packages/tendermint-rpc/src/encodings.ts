@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
+import { ReadonlyDate } from "readonly-date";
 import { isNumber } from "util";
-import { ReadonlyDate } from 'readonly-date';
 
 declare class As<Tag extends string> {
   private readonly "_ _ _": Tag;
@@ -10,6 +10,7 @@ export type Base64String = string & As<"base64">;
 export type HexString = string & As<"hex">;
 export type IpPortString = string & As<"ipport">;
 export type DateTimeString = string & As<"datetime">;
+export type QueryString = string & As<"query">;
 
 interface Lengther {
   readonly length: number;

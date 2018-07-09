@@ -1,25 +1,23 @@
-import { JsonRpc } from "./common";
-import { QueryString } from "./encodings";
+import { JsonRpc } from "../common";
+import { Base64String, HexString, QueryString } from "../encodings";
+import { Method } from "../requests";
 
-// union type of all possible methods?
-export const enum Method {
-  ABCI_INFO = "abci_info",
-  ABCI_QUERY = "abci_query",
-  BLOCK = "block",
-  BLOCKCHAIN = "blockchain",
-  BLOCK_RESULTS = "block_results",
-  BROADCAST_TX_ASYNC = "broadcast_tx_async",
-  BROADCAST_TX_SYNC = "broadcast_tx_sync",
-  BROADCAST_TX_COMMIT = "broadcast_tx_commit",
-  COMMIT = "commit",
-  GENESIS = "genesis",
-  HEALTH = "health",
-  STATUS = "status",
-  TX = "tx",
-  TX_SEARCH = "tx_search",
-  VALIDATORS = "validators",
-  // TODO: subscribe, unsubscribe, random commands
-}
+/***** queries *****/
+
+export type JsonRpcRequest =
+  | AbciInfoRequest
+  | AbciQueryRequest
+  | BlockRequest
+  | BlockchainRequest
+  | BlockResultsRequest
+  | BroadcastTxRequest
+  | CommitRequest
+  | GenesisRequest
+  | HealthRequest
+  | StatusRequest
+  | TxRequest
+  | TxSearchRequest
+  | ValidatorsRequest;
 
 export interface AbciInfoRequest extends JsonRpc {
   readonly method: Method.ABCI_INFO;
@@ -31,7 +29,7 @@ export interface AbciQueryRequest extends JsonRpc {
 }
 export interface AbciQueryParams {
   readonly path: string;
-  readonly data: Uint8Array;
+  readonly data: HexString;
   readonly height?: number;
   readonly trusted?: boolean;
 }
@@ -61,7 +59,7 @@ export interface BlockResultsRequest extends JsonRpc {
 export interface BroadcastTxRequest {
   readonly method: Method.BROADCAST_TX_ASYNC | Method.BROADCAST_TX_SYNC | Method.BROADCAST_TX_COMMIT;
   readonly params: {
-    readonly tx: Uint8Array;
+    readonly tx: Base64String;
   };
 }
 
@@ -87,7 +85,7 @@ export interface StatusRequest extends JsonRpc {
 export interface TxRequest {
   readonly method: Method.TX;
   readonly params: {
-    readonly hash: Uint8Array;
+    readonly hash: Base64String;
     readonly prove?: boolean;
   };
 }
