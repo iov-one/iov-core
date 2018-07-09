@@ -4,7 +4,7 @@ import { Codec } from "@iov/bns-codec";
 import { Ed25519, Encoding, Sha512 } from "@iov/crypto";
 import { Algorithm, ChainId, Nonce, PublicKeyBundle, PublicKeyBytes, RecipientId, SendTx, TokenTicker, TransactionKind } from "@iov/types";
 
-import { getPublicKey, signTransaction } from "./app";
+import { appVersion, getPublicKey, getPublicKeyWithPath, signTransaction, signTransactionWithPath } from "./app";
 import { pendingWithoutLedger, skipTests } from "./common.spec";
 import { connectToFirstLedger } from "./exchange";
 
@@ -18,6 +18,15 @@ describe("Communicate with app", () => {
     }
   });
 
+  it("get proper version", done => {
+    pendingWithoutLedger();
+
+    appVersion(transport)
+      .catch(err => fail(err))
+      .then(num => expect(num).toEqual(0x0100))
+      .then(done);
+  });
+
   it("can read the public key", done => {
     pendingWithoutLedger();
 
@@ -25,6 +34,29 @@ describe("Communicate with app", () => {
       const pubkey = await getPublicKey(transport);
       expect(pubkey).toBeTruthy();
       expect(pubkey.length).toBe(32);
+    };
+    checkKey()
+      .catch(err => fail(err))
+      .then(done);
+  });
+
+  it("can get multiple public keys by path", done => {
+    pendingWithoutLedger();
+
+    const checkKey = async () => {
+      const pubkey = await getPublicKey(transport);
+      expect(pubkey).toBeTruthy();
+      expect(pubkey.length).toBe(32);
+
+      const pubkey0 = await getPublicKeyWithPath(transport, 0);
+      expect(pubkey0).toBeTruthy();
+      expect(pubkey0.length).toBe(32);
+      expect(pubkey0).toEqual(pubkey);
+
+      const pubkey1 = await getPublicKeyWithPath(transport, 267);
+      expect(pubkey1).toBeTruthy();
+      expect(pubkey1.length).toBe(32);
+      expect(pubkey1).not.toEqual(pubkey0);
     };
     checkKey()
       .catch(err => fail(err))
@@ -84,6 +116,47 @@ describe("Communicate with app", () => {
       const messageHash = new Sha512(message).digest();
 
       const signature = await signTransaction(transport, message);
+      expect(signature.length).toBe(64);
+      const ok = await Ed25519.verifySignature(signature, messageHash, pubkey);
+      expect(ok).toEqual(true);
+    };
+
+    validateSig()
+      .catch(err => fail(err))
+      .then(done);
+  });
+
+  // this is as above, but verifying a different path also works
+  it("can sign with multiple paths", done => {
+    pendingWithoutLedger();
+    const path = 0x787;
+
+    const validateSig = async () => {
+      const pubkey = await getPublicKeyWithPath(transport, path);
+      expect(pubkey.length).toBe(32);
+
+      const sender: PublicKeyBundle = {
+        algo: Algorithm.ED25519,
+        data: pubkey as PublicKeyBytes,
+      };
+
+      const tx: SendTx = {
+        kind: TransactionKind.SEND,
+        chainId: "test-ledger-paths" as ChainId,
+        recipient: Encoding.fromHex("1234ABCD0000AA0000FFFF0000AA00001234ABCD") as RecipientId,
+        amount: {
+          // 77.01001 PATH
+          whole: 77,
+          fractional: 10010000,
+          tokenTicker: "PATH" as TokenTicker,
+        },
+        signer: sender,
+      };
+      const nonce = Long.fromNumber(5) as Nonce;
+      const message = Codec.bytesToSign(tx, nonce);
+      const messageHash = new Sha512(message).digest();
+
+      const signature = await signTransactionWithPath(transport, message, path);
       expect(signature.length).toBe(64);
       const ok = await Ed25519.verifySignature(signature, messageHash, pubkey);
       expect(ok).toEqual(true);
