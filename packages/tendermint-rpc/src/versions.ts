@@ -12,7 +12,7 @@ export const v0_20: Adaptor = v0_20_;
 
 export interface Adaptor {
   readonly params: Params;
-  readonly responses: Response;
+  readonly responses: Responses;
 }
 
 export interface Params {
@@ -31,8 +31,12 @@ export interface Params {
   readonly encodeValidators: (req: requests.ValidatorsRequest) => JsonRpcRequest;
 }
 
-export interface Response {
-  readonly decodeAbciInfo: (res: JsonRpcSuccess) => responses.AbciInfoResponse;
+export interface Responses {
+  readonly decodeAbciInfo: (response: JsonRpcSuccess) => responses.AbciInfoResponse;
+  readonly decodeAbciQuery: (response: JsonRpcSuccess) => responses.AbciQueryResponse;
+  readonly decodeBroadcastTxSync: (response: JsonRpcSuccess) => responses.BroadcastTxSyncResponse;
+  readonly decodeBroadcastTxAsync: (response: JsonRpcSuccess) => responses.BroadcastTxSyncResponse;
+  readonly decodeBroadcastTxCommit: (response: JsonRpcSuccess) => responses.BroadcastTxCommitResponse;
 }
 
 // find adapter makes a status call with the client.

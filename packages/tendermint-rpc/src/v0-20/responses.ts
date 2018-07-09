@@ -3,9 +3,14 @@ import {
   Base64,
   Base64String,
   DateTimeString,
+  Hex,
   HexString,
+  Integer,
+  IntegerString,
   IpPortString,
+  may,
   notEmpty,
+  optional,
   required,
 } from "../encodings";
 import * as responses from "../responses";
@@ -14,15 +19,23 @@ import * as responses from "../responses";
 
 export class Responses {
   public static decodeAbciInfo(response: JsonRpcSuccess): responses.AbciInfoResponse {
-    const data = (response.result as AbciInfoResult).response;
-    if (!data) {
-      throw Error(`unexpected result for abci_info: ${response}`);
-    }
-    return {
-      data: required(data.data),
-      lastBlockHeight: notEmpty(required(data.last_block_height)),
-      lastBlockAppHash: Base64.decode(required(data.last_block_app_hash)),
-    };
+    return decodeAbciInfo(required((response.result as AbciInfoResult).response));
+  }
+
+  public static decodeAbciQuery(response: JsonRpcSuccess): responses.AbciQueryResponse {
+    return decodeAbciQuery(required((response.result as AbciQueryResult).response));
+  }
+
+  public static decodeBroadcastTxSync(response: JsonRpcSuccess): responses.BroadcastTxSyncResponse {
+    return decodeBroadcastTxSync(response.result as RpcBroadcastTxSyncResponse);
+  }
+
+  public static decodeBroadcastTxAsync(response: JsonRpcSuccess): responses.BroadcastTxSyncResponse {
+    return this.decodeBroadcastTxSync(response);
+  }
+
+  public static decodeBroadcastTxCommit(response: JsonRpcSuccess): responses.BroadcastTxCommitResponse {
+    return decodeBroadcastTxCommit(response.result as RpcBroadcastTxCommitResponse);
   }
 }
 
@@ -36,6 +49,11 @@ export interface RpcAbciInfoResponse {
   readonly last_block_height: number;
   readonly last_block_app_hash: Base64String;
 }
+const decodeAbciInfo = (data: RpcAbciInfoResponse): responses.AbciInfoResponse => ({
+  data: required(data.data),
+  lastBlockHeight: notEmpty(required(data.last_block_height)),
+  lastBlockAppHash: Base64.decode(required(data.last_block_app_hash)),
+});
 
 export interface AbciQueryResult {
   readonly response: RpcAbciQueryResponse;
@@ -43,10 +61,17 @@ export interface AbciQueryResult {
 export interface RpcAbciQueryResponse {
   readonly key: Base64String;
   readonly value: Base64String;
-  readonly height: string; // (number encoded as string)
-  readonly code: number; // only for errors
-  readonly log: string;
+  readonly height: IntegerString;
+  readonly code?: number; // only for errors
+  readonly log?: string;
 }
+const decodeAbciQuery = (data: RpcAbciQueryResponse): responses.AbciQueryResponse => ({
+  key: Base64.decode(optional(data.key, "" as Base64String)),
+  value: Base64.decode(optional(data.value, "" as Base64String)),
+  height: Integer.decode(data.height),
+  code: data.code,
+  log: data.log,
+});
 
 export interface RpcBlockResponse {
   readonly block_meta: RpcBlockMeta;
@@ -64,16 +89,28 @@ export interface RpcBlockchainResponse {
 }
 
 export type RpcBroadcastTxAsyncResponse = RpcBroadcastTxSyncResponse;
-export interface RpcBroadcastTxSyncResponse extends RpcTxResponse {
+export interface RpcBroadcastTxSyncResponse extends RpcTxData {
   readonly hash: HexString;
 }
+const decodeBroadcastTxSync = (data: RpcBroadcastTxSyncResponse): responses.BroadcastTxSyncResponse => ({
+  ...decodeTxData(data),
+  hash: Hex.decode(required(data.hash)),
+});
 
 export interface RpcBroadcastTxCommitResponse {
   readonly height?: number;
   readonly hash: HexString;
-  readonly check_tx: RpcTxResponse;
-  readonly deliver_tx?: RpcTxResponse;
+  readonly check_tx: RpcTxData;
+  readonly deliver_tx?: RpcTxData;
 }
+const decodeBroadcastTxCommit = (
+  data: RpcBroadcastTxCommitResponse,
+): responses.BroadcastTxCommitResponse => ({
+  height: data.height,
+  hash: Hex.decode(required(data.hash)),
+  checkTx: decodeTxData(required(data.check_tx)),
+  deliverTx: may(decodeTxData, data.deliver_tx),
+});
 
 export interface RpcCommitResponse {
   readonly SignedHeader: {
@@ -129,11 +166,15 @@ export interface RpcValidatorsResponse {
 /**** Helper items used above ******/
 
 export interface RpcTxData {
-  readonly code: number;
-  readonly log: string;
-  readonly data: Base64String;
-  readonly hash: HexString;
+  readonly code?: number;
+  readonly log?: string;
+  readonly data?: Base64String;
 }
+const decodeTxData = (data: RpcTxData): responses.TxData => ({
+  data: may(Base64.decode, data.data),
+  log: data.log,
+  code: data.code,
+});
 
 export interface RpcTxProof {
   readonly Data: Base64String;

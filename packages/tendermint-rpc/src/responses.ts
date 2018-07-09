@@ -29,9 +29,9 @@ export interface AbciInfoResponse {
 export interface AbciQueryResponse {
   readonly key: Uint8Array;
   readonly value: Uint8Array;
-  readonly height: string; // (number encoded as string)
-  readonly code: number; // only for errors
-  readonly log: string;
+  readonly height: number;
+  readonly code?: number; // non-falsy for errors
+  readonly log?: string;
 }
 
 export interface BlockResponse {
@@ -41,7 +41,7 @@ export interface BlockResponse {
 
 export interface BlockResultsResponse {
   readonly height: number;
-  readonly results: ReadonlyArray<TxResponse>;
+  readonly results: ReadonlyArray<TxData>;
 }
 
 export interface BlockchainResponse {
@@ -50,15 +50,15 @@ export interface BlockchainResponse {
 }
 
 export type BroadcastTxAsyncResponse = BroadcastTxSyncResponse;
-export interface BroadcastTxSyncResponse extends TxResponse {
+export interface BroadcastTxSyncResponse extends TxData {
   readonly hash: Uint8Array;
 }
 
 export interface BroadcastTxCommitResponse {
   readonly height?: number;
   readonly hash: Uint8Array;
-  readonly checkTx: TxResponse;
-  readonly deliverTx?: TxResponse;
+  readonly checkTx: TxData;
+  readonly deliverTx?: TxData;
 }
 
 export interface CommitResponse {
@@ -108,10 +108,9 @@ export interface ValidatorsResponse {
 /**** Helper items used above ******/
 
 export interface TxData {
-  readonly code: number;
-  readonly log: string;
-  readonly data: Uint8Array;
-  readonly hash: Uint8Array;
+  readonly code?: number;
+  readonly log?: string;
+  readonly data?: Uint8Array;
 }
 
 export interface TxProof {
