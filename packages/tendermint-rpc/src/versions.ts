@@ -3,12 +3,10 @@
 
 import { JsonRpcRequest } from "./common";
 import * as requests from "./requests";
-import * as v0_20_ from "./v0-20";
+import { v0_20 as v0_20_ } from "./v0-20";
 
 // tslint:disable-next-line:variable-name
-export const v0_20: Adaptor = {
-  params: v0_20_.Params,
-};
+export const v0_20: Adaptor = v0_20_;
 
 export interface Adaptor {
   readonly params: Params;
