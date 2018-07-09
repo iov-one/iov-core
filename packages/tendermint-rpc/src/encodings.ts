@@ -8,6 +8,7 @@ declare class As<Tag extends string> {
 
 export type Base64String = string & As<"base64">;
 export type HexString = string & As<"hex">;
+export type IntegerString = string & As<"integer">;
 export type IpPortString = string & As<"ipport">;
 export type DateTimeString = string & As<"datetime">;
 export type QueryString = string & As<"query">;
@@ -41,6 +42,11 @@ export function optional<T>(value: T | null | undefined, fallback: T): T {
   return value || fallback;
 }
 
+// may will run the transform if value is defined, otherwise returns undefined
+export function may<T, U>(transform: (val: T) => U, value: T | undefined): U | undefined {
+  return value === undefined ? value : transform(value);
+}
+
 export class Hex {
   // encode hex-encodes whatever data was provided
   public static encode(data: Uint8Array): HexString {
@@ -71,5 +77,20 @@ export class DateTime {
 
   public static decode(dateTimeString: DateTimeString): ReadonlyDate {
     return new ReadonlyDate(dateTimeString);
+  }
+}
+
+// Integer is used for go-amino string-encoded number support
+export class Integer {
+  public static encode(data: number): IntegerString {
+    return data.toString() as IntegerString;
+  }
+
+  public static decode(intstring: IntegerString): number {
+    const parsed = parseInt(intstring, 10);
+    if (isNaN(parsed)) {
+      throw Error("Not an integer: " + intstring);
+    }
+    return parsed;
   }
 }
