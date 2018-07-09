@@ -1,4 +1,4 @@
-import { JsonRpc } from "./common";
+import { JsonRpcRequest, jsonRpcWith } from "./common";
 import { QueryString } from "./encodings";
 
 // union type of all possible methods?
@@ -21,7 +21,7 @@ export const enum Method {
   // TODO: subscribe, unsubscribe, random commands
 }
 
-export type JsonRpcRequest =
+export type Request =
   | AbciInfoRequest
   | AbciQueryRequest
   | BlockRequest
@@ -51,14 +51,14 @@ export interface AbciQueryParams {
   readonly trusted?: boolean;
 }
 
-export interface BlockRequest extends JsonRpc {
+export interface BlockRequest {
   readonly method: Method.BLOCK;
   readonly params: {
     readonly height?: number;
   };
 }
 
-export interface BlockchainRequest extends JsonRpc {
+export interface BlockchainRequest {
   readonly method: Method.BLOCKCHAIN;
   readonly params: {
     readonly minHeight?: number;
@@ -66,7 +66,7 @@ export interface BlockchainRequest extends JsonRpc {
   };
 }
 
-export interface BlockResultsRequest extends JsonRpc {
+export interface BlockResultsRequest {
   readonly method: Method.BLOCK_RESULTS;
   readonly params: {
     readonly height?: number;
@@ -81,22 +81,22 @@ export interface BroadcastTxParams {
   readonly tx: Uint8Array;
 }
 
-export interface CommitRequest extends JsonRpc {
+export interface CommitRequest {
   readonly method: Method.COMMIT;
   readonly params: {
     readonly height?: number;
   };
 }
 
-export interface GenesisRequest extends JsonRpc {
+export interface GenesisRequest {
   readonly method: Method.GENESIS;
 }
 
-export interface HealthRequest extends JsonRpc {
+export interface HealthRequest {
   readonly method: Method.HEALTH;
 }
 
-export interface StatusRequest extends JsonRpc {
+export interface StatusRequest {
   readonly method: Method.STATUS;
 }
 
@@ -121,9 +121,49 @@ export interface TxSearchParams {
   readonly per_page?: number;
 }
 
-export interface ValidatorsRequest extends JsonRpc {
+export interface ValidatorsRequest {
   readonly method: Method.VALIDATORS;
   readonly params: {
     readonly height?: number;
   };
+}
+
+// DefaultParams provides pass-through for all types that
+// only use numbers, and no special string types
+export class DefaultParams {
+  public static encodeAbciInfo(req: AbciInfoRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method);
+  }
+
+  public static encodeBlock(req: BlockRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, req.params);
+  }
+
+  public static encodeBlockchain(req: BlockchainRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, req.params);
+  }
+
+  public static encodeBlockResults(req: BlockResultsRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, req.params);
+  }
+
+  public static encodeCommit(req: CommitRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, req.params);
+  }
+
+  public static encodeGenesis(req: GenesisRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method);
+  }
+
+  public static encodeHealth(req: HealthRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method);
+  }
+
+  public static encodeStatus(req: StatusRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method);
+  }
+
+  public static encodeValidators(req: ValidatorsRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, req.params);
+  }
 }

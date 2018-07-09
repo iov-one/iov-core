@@ -1,9 +1,19 @@
+// This module exposes translators for multiple tendermint versions
+// Pick a version that matches the server to properly encode the data types
+
 import { JsonRpcRequest } from "./common";
 import * as requests from "./requests";
 import * as v0_20_ from "./v0-20";
 
 // tslint:disable-next-line:variable-name
-export const v0_20: Params = v0_20_.Params;
+export const v0_20: Adaptor = {
+  params: v0_20_.Params,
+};
+
+export interface Adaptor {
+  readonly params: Params;
+  // readonly response: Response;
+}
 
 export interface Params {
   readonly encodeAbciInfo: (req: requests.AbciInfoRequest) => JsonRpcRequest;
