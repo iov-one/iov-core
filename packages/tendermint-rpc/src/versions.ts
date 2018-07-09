@@ -55,8 +55,6 @@ export const findAdaptor = async (client: RpcClient): Promise<Adaptor> => {
   const response = await client.rpc(req);
   const result: any = throwIfError(response).result;
 
-  // tslint:disable-next-line:no-console
-  console.log(result);
   if (!result || !result.node_info) {
     throw new Error("Unrecognized format for status response");
   }

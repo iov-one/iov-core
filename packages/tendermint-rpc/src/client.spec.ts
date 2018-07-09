@@ -1,4 +1,7 @@
+import { Encoding } from "@iov/crypto";
+
 import { Client } from "./client";
+import * as responses from "./responses";
 import { HttpClient } from "./rpcclient";
 import * as versions from "./versions";
 
@@ -12,9 +15,10 @@ const pendingWithoutTendermint = (): boolean => {
   return false;
 };
 
-describe("Verify client connects", () => {
-  const tendermintUrl = "http://localhost:12345";
+// TODO: make flexible, support multiple versions, etc...
+const tendermintUrl = "http://localhost:12345";
 
+describe("Verify client connects", () => {
   it("Tries to connect with known version to tendermint", done => {
     pendingWithoutTendermint();
 
@@ -32,5 +36,32 @@ describe("Verify client connects", () => {
       .then(client => client.abciInfo())
       .catch(err => fail(err))
       .then(done);
+  });
+});
+
+describe("Simple interaction with kvstore app", () => {
+  const client = new Client(new HttpClient(tendermintUrl), versions.v0_20);
+
+  it("Posts a transaction", done => {
+    pendingWithoutTendermint();
+
+    const tx = Encoding.asAscii("hello=byte");
+
+    const verifyResponse = async (res: responses.BroadcastTxCommitResponse) => {
+      expect(res.height).toBeGreaterThan(2);
+      expect(res.hash.length).toEqual(20);
+      // verify success
+      expect(res.checkTx.code).toBeFalsy();
+      expect(res.deliverTx).toBeTruthy();
+      if (res.deliverTx) {
+        expect(res.deliverTx.code).toBeFalsy();
+      }
+    };
+
+    client
+      .broadcastTxCommit({ tx: tx })
+      .then(verifyResponse)
+      .then(done)
+      .catch(err => fail(err));
   });
 });
