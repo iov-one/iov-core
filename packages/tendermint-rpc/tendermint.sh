@@ -8,6 +8,7 @@ DIR="${HOME}/tmtest/${VERSION}"
 mkdir -p "${DIR}"
 # be extra careful a missing variable doens't delete root
 rm -rf "${DIR:-/tmp}/{config,data}"
+chmod 777 "${DIR}"
 
 docker run -v "${DIR}:/tendermint" \
   tendermint/tendermint:${VERSION} init
