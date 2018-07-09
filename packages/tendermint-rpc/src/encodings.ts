@@ -16,23 +16,28 @@ interface Lengther {
   readonly length: number;
 }
 
+// notEmpty throws an error if this matches the empty type for the
+// given value (array/string of length 0, number of value 0, ...)
+export function notEmpty<T>(value: T): T {
+  if (isNumber(value) && value === 0) {
+    throw new Error("must provide a non-zero value");
+  } else if (((value as any) as Lengther).length === 0) {
+    throw new Error("must provide a non-empty value");
+  }
+  return value;
+}
+
 // required can be used to anywhere to throw errors if missing before
 // encoding/decoding. Works with anything with strings, arrays, or numbers
-export function required<T extends Lengther | number>(value: T | undefined, notEmpty?: boolean): T {
-  if (value === undefined) {
+export function required<T>(value: T | null | undefined): T {
+  if (value === undefined || value === null) {
     throw new Error("must provide a value");
-  } else if (notEmpty) {
-    if (isNumber(value) && value === 0) {
-      throw new Error("must provide a non-zero value");
-    } else if ((value as Lengther).length === 0) {
-      throw new Error("must provide a non-empty value");
-    }
   }
   return value;
 }
 
 // optional uses the value or provides a default
-export function optional<T>(value: T | undefined, fallback: T): T {
+export function optional<T>(value: T | null | undefined, fallback: T): T {
   return value || fallback;
 }
 
@@ -45,30 +50,6 @@ export class Hex {
 
   public static decode(hexstring: HexString): Uint8Array {
     return new Buffer(hexstring, "hex");
-  }
-
-  // do we need these???
-
-  // mustEncode throws an error if data was not provided,
-  // notEmpty requires that the value is not []
-  public static mustEncode(data?: Uint8Array, notEmpty?: boolean): HexString {
-    return this.encode(required(data, notEmpty));
-  }
-
-  // may encode returns "" if data was not provided
-  public static mayEncode(data?: Uint8Array): HexString {
-    return this.encode(optional(data, new Uint8Array([])));
-  }
-
-  // mustDecode throws an error if data was not provided,
-  // notEmpty requires that the value is not ""
-  public static mustDecode(hexstring?: HexString, notEmpty?: boolean): Uint8Array {
-    return this.decode(required(hexstring, notEmpty));
-  }
-
-  // may Decode returns "" if hexstring was not provided
-  public static mayDecode(hexstring?: HexString): Uint8Array {
-    return this.decode(optional(hexstring, "" as HexString));
   }
 }
 
