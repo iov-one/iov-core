@@ -1,8 +1,9 @@
 // This module exposes translators for multiple tendermint versions
 // Pick a version that matches the server to properly encode the data types
 
-import { JsonRpcRequest } from "./common";
+import { JsonRpcRequest, jsonRpcWith, throwIfError } from "./common";
 import * as requests from "./requests";
+import { RpcClient } from "./rpcclient";
 import { v0_20 as v0_20_ } from "./v0-20";
 
 // tslint:disable-next-line:variable-name
@@ -28,3 +29,22 @@ export interface Params {
   readonly encodeTxSearch: (req: requests.TxSearchRequest) => JsonRpcRequest;
   readonly encodeValidators: (req: requests.ValidatorsRequest) => JsonRpcRequest;
 }
+
+// find adapter makes a status call with the client.
+// if we cannot talk to the server or make sense of the response, throw an error
+// otherwise, grab the tendermint version from the response and
+// provide a compatible adaptor if available.
+// throws an error if we don't support this version of tendermint
+export const findAdaptor = async (client: RpcClient): Promise<Adaptor> => {
+  const req = jsonRpcWith(requests.Method.STATUS);
+  const response = await client.rpc(req);
+  const result: any = throwIfError(response).result;
+  if (!result || !result.response || !result.response.node_info) {
+    throw new Error("Unrecognized format for status response");
+  }
+  const version: string = result.response.node_info.version;
+  if (version.startsWith("0.20.")) {
+    return v0_20;
+  }
+  throw new Error(`Unsupported tendermint version: ${version}`);
+};

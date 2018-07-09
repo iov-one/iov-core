@@ -37,6 +37,14 @@ export const jsonRpcWith = (method: string, params?: {}): JsonRpcRequest => ({
   params,
 });
 
+export const throwIfError = (resp: JsonRpcResponse): JsonRpcSuccess => {
+  const asError = resp as JsonRpcError;
+  if (asError.error !== undefined) {
+    throw new Error(JSON.stringify(asError.error));
+  }
+  return resp as JsonRpcSuccess;
+};
+
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 // generate a random alphanumeric character
 const randomChar = (): string => chars[Math.floor(Math.random() * chars.length)];
