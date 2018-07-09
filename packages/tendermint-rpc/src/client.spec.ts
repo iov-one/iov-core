@@ -64,4 +64,23 @@ describe("Simple interaction with kvstore app", () => {
       .then(done)
       .catch(err => fail(err));
   });
+
+  it("Queries the state", () => {
+    pendingWithoutTendermint();
+
+    const key = Encoding.asAscii("hello");
+    const value = Encoding.asAscii("byte");
+    const queryParams = { path: "/key", data: key };
+
+    const verifyQuery = async (res: responses.AbciQueryResponse) => {
+      expect(new Uint8Array(res.key)).toEqual(key);
+      expect(new Uint8Array(res.value)).toEqual(value);
+      expect(res.code).toBeFalsy();
+    };
+
+    return client
+      .abciQuery(queryParams)
+      .then(verifyQuery)
+      .catch(err => fail(err));
+  });
 });

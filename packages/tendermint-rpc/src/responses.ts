@@ -29,7 +29,7 @@ export interface AbciInfoResponse {
 export interface AbciQueryResponse {
   readonly key: Uint8Array;
   readonly value: Uint8Array;
-  readonly height: number;
+  readonly height?: number;
   readonly code?: number; // non-falsy for errors
   readonly log?: string;
 }

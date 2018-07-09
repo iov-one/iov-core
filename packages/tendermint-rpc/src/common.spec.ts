@@ -12,7 +12,7 @@ describe("Generates random ids", () => {
     const char4 = randomChar();
 
     // two might be duplicates (1 in 62), but not all 4
-    expect((char === char2) && (char2 === char3) && (char3 === char4)).toBeFalsy();
+    expect(char === char2 && char2 === char3 && char3 === char4).toBeFalsy();
   });
 
   it("Generates random id", () => {

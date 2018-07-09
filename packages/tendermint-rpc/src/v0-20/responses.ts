@@ -60,14 +60,14 @@ export interface AbciQueryResult {
 export interface RpcAbciQueryResponse {
   readonly key: Base64String;
   readonly value: Base64String;
-  readonly height: IntegerString;
+  readonly height?: IntegerString;
   readonly code?: number; // only for errors
   readonly log?: string;
 }
 const decodeAbciQuery = (data: RpcAbciQueryResponse): responses.AbciQueryResponse => ({
   key: Base64.decode(optional(data.key, "" as Base64String)),
   value: Base64.decode(optional(data.value, "" as Base64String)),
-  height: Integer.decode(data.height),
+  height: may(Integer.decode, data.height),
   code: data.code,
   log: data.log,
 });

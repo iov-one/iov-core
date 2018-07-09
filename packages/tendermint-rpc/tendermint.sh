@@ -5,9 +5,9 @@ VERSION=${TM_VERSION:-0.20.0}
 
 DIR="${HOME}/tmtest/${VERSION}"
 
-mkdir -p "${DIR}"
 # be extra careful a missing variable doens't delete root
-rm -rf "${DIR:-/tmp}/{config,data}"
+sudo rm -rf "${DIR:-/tmp/foo}"
+mkdir -p "${DIR}"
 chmod 777 "${DIR}"
 
 docker run -v "${DIR}:/tendermint" \
@@ -17,4 +17,4 @@ exec docker run -p ${PORT}:26657 -v "${DIR}:/tendermint" \
   tendermint/tendermint:${VERSION} node \
   --proxy_app=kvstore \
   --rpc.laddr=tcp://0.0.0.0:26657 \
-  --log_level=state:info,*:error
+  --log_level=state:info,rpc:info,*:error
