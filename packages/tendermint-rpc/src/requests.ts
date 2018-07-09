@@ -128,27 +128,10 @@ export interface ValidatorsRequest {
   };
 }
 
-// DefaultParams provides pass-through for all types that
-// only use numbers, and no special string types
+// DefaultParams provides pass-through for calls with no params
 export class DefaultParams {
   public static encodeAbciInfo(req: AbciInfoRequest): JsonRpcRequest {
     return jsonRpcWith(req.method);
-  }
-
-  public static encodeBlock(req: BlockRequest): JsonRpcRequest {
-    return jsonRpcWith(req.method, req.params);
-  }
-
-  public static encodeBlockchain(req: BlockchainRequest): JsonRpcRequest {
-    return jsonRpcWith(req.method, req.params);
-  }
-
-  public static encodeBlockResults(req: BlockResultsRequest): JsonRpcRequest {
-    return jsonRpcWith(req.method, req.params);
-  }
-
-  public static encodeCommit(req: CommitRequest): JsonRpcRequest {
-    return jsonRpcWith(req.method, req.params);
   }
 
   public static encodeGenesis(req: GenesisRequest): JsonRpcRequest {
@@ -161,9 +144,5 @@ export class DefaultParams {
 
   public static encodeStatus(req: StatusRequest): JsonRpcRequest {
     return jsonRpcWith(req.method);
-  }
-
-  public static encodeValidators(req: ValidatorsRequest): JsonRpcRequest {
-    return jsonRpcWith(req.method, req.params);
   }
 }

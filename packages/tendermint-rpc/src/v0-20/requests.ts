@@ -9,8 +9,24 @@ export class Params extends requests.DefaultParams {
     return jsonRpcWith(req.method, encodeAbciQueryParams(req.params));
   }
 
+  public static encodeBlock(req: requests.BlockRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, req.params);
+  }
+
+  public static encodeBlockchain(req: requests.BlockchainRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, req.params);
+  }
+
+  public static encodeBlockResults(req: requests.BlockResultsRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, req.params);
+  }
+
   public static encodeBroadcastTx(req: requests.BroadcastTxRequest): JsonRpcRequest {
     return jsonRpcWith(req.method, encodeBroadcastTxParams(req.params));
+  }
+
+  public static encodeCommit(req: requests.CommitRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, req.params);
   }
 
   public static encodeTx(req: requests.TxRequest): JsonRpcRequest {
@@ -19,6 +35,10 @@ export class Params extends requests.DefaultParams {
 
   // TODO: encode params for query string???
   public static encodeTxSearch(req: requests.TxSearchRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method, req.params);
+  }
+
+  public static encodeValidators(req: requests.ValidatorsRequest): JsonRpcRequest {
     return jsonRpcWith(req.method, req.params);
   }
 }
