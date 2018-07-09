@@ -5,10 +5,10 @@ import { Ed25519, Encoding, Sha512 } from "@iov/crypto";
 import { Algorithm, ChainId, Nonce, PublicKeyBundle, PublicKeyBytes, RecipientId, SendTx, TokenTicker, TransactionKind } from "@iov/types";
 
 import { appVersion, getPublicKey, getPublicKeyWithPath, signTransaction, signTransactionWithPath } from "./app";
-import { pendingWithoutLedger, skipTests } from "./common.spec";
+import { pendingWithoutInteractiveLedger, pendingWithoutLedger, skipInteractiveTests, skipTests } from "./common.spec";
 import { connectToFirstLedger } from "./exchange";
 
-describe("Communicate with app", () => {
+describe("Query ledger app", () => {
   // tslint:disable-next-line:no-let
   let transport: Transport | undefined;
 
@@ -62,9 +62,20 @@ describe("Communicate with app", () => {
       .catch(err => fail(err))
       .then(done);
   });
+});
+
+describe("Sign with ledger app", () => {
+  // tslint:disable-next-line:no-let
+  let transport: Transport | undefined;
+
+  beforeAll(() => {
+    if (!skipInteractiveTests()) {
+      transport = connectToFirstLedger();
+    }
+  });
 
   it("can properly sign valid message", done => {
-    pendingWithoutLedger();
+    pendingWithoutInteractiveLedger();
 
     // this is pre-generated signbytes
     const message = Encoding.fromHex("00cafe0008746573742d31323300000000000000110a440a1403694b56200b605a3a726304b6dfaa6e916458ee12146bc29ffe4fc6a4b2395c3f47b5ca9dfa377295f91a0808fa011a03455448220c54657374207061796d656e74");
@@ -87,7 +98,7 @@ describe("Communicate with app", () => {
   // Note: verify that this display expected info (1234.789 LGR and
   // 0123... recipient) when verifying signature
   it("is compatible with our codecs", done => {
-    pendingWithoutLedger();
+    pendingWithoutInteractiveLedger();
 
     const validateSig = async () => {
       const pubkey = await getPublicKey(transport);
@@ -128,7 +139,7 @@ describe("Communicate with app", () => {
 
   // this is as above, but verifying a different path also works
   it("can sign with multiple paths", done => {
-    pendingWithoutLedger();
+    pendingWithoutInteractiveLedger();
     const path = 0x787;
 
     const validateSig = async () => {
