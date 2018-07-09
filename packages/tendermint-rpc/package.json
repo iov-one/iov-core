@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@types/node": "^10.3.2",
+    "axios": "^0.18.0",
     "readonly-date": "0.0.0"
   }
 }
