@@ -15,6 +15,12 @@ export interface Adaptor {
   readonly responses: Responses;
 }
 
+// Encoder is a generic that matches all methods of Params
+export type Encoder<T extends requests.Request> = (req: T) => JsonRpcRequest;
+
+// Decoder is a generic that matches all methods of Responses
+export type Decoder<T extends responses.Response> = (res: JsonRpcSuccess) => T;
+
 export interface Params {
   readonly encodeAbciInfo: (req: requests.AbciInfoRequest) => JsonRpcRequest;
   readonly encodeAbciQuery: (req: requests.AbciQueryRequest) => JsonRpcRequest;
