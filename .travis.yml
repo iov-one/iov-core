@@ -38,6 +38,8 @@ before_script:
 - echo "Started tendermint" $TM_PID
 - export TENDERMINT_ENABLED=1
 - sleep 2
+# for debug output
+- cat /tmp/foo.log
 
 script:
 - echo "use tendermint?" ${TENDERMINT_ENABLED}

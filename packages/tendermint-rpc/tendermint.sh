@@ -3,11 +3,11 @@
 PORT=${TM_PORT:-12345}
 VERSION=${TM_VERSION:-0.20.0}
 
-DIR="/tmp/tmtest/${VERSION}"
+DIR="${HOME}/tmtest/${VERSION}"
 
 mkdir -p "${DIR}"
 # be extra careful a missing variable doens't delete root
-rm -rf "/tmp/tmtest/${VERSION}/{config,data}"
+rm -rf "${DIR:-/tmp}/{config,data}"
 
 docker run -v "${DIR}:/tendermint" \
   tendermint/tendermint:${VERSION} init
