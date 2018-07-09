@@ -13,7 +13,7 @@ export interface JsonRpc {
 
 export interface JsonRpcRequest extends JsonRpc {
   readonly method: string;
-  readonly params?: {};
+  readonly params: {};
 }
 
 export type JsonRpcResponse = JsonRpcSuccess | JsonRpcError;
@@ -34,7 +34,7 @@ export const jsonRpc = (): JsonRpc => ({ jsonrpc: "2.0", id: randomId() });
 export const jsonRpcWith = (method: string, params?: {}): JsonRpcRequest => ({
   ...jsonRpc(),
   method,
-  params,
+  params: params || {},
 });
 
 export const throwIfError = (resp: JsonRpcResponse): JsonRpcSuccess => {

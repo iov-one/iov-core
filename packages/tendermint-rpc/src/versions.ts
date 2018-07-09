@@ -54,10 +54,13 @@ export const findAdaptor = async (client: RpcClient): Promise<Adaptor> => {
   const req = jsonRpcWith(requests.Method.STATUS);
   const response = await client.rpc(req);
   const result: any = throwIfError(response).result;
-  if (!result || !result.response || !result.response.node_info) {
+
+  // tslint:disable-next-line:no-console
+  console.log(result);
+  if (!result || !result.node_info) {
     throw new Error("Unrecognized format for status response");
   }
-  const version: string = result.response.node_info.version;
+  const version: string = result.node_info.version;
   if (version.startsWith("0.20.")) {
     return v0_20;
   }

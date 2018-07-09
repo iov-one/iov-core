@@ -13,7 +13,7 @@ const pendingWithoutTendermint = (): boolean => {
 };
 
 describe("Verify client connects", () => {
-  const tendermintUrl = "http://localhost:46657";
+  const tendermintUrl = "http://localhost:12345";
 
   it("Tries to connect with known version to tendermint", done => {
     pendingWithoutTendermint();
@@ -25,7 +25,12 @@ describe("Verify client connects", () => {
       .then(done);
   });
 
-  // it("Tries to auto-discover tendermint", () => {
+  it("Tries to auto-discover tendermint", done => {
+    pendingWithoutTendermint();
 
-  // });
+    Client.detectVersion(new HttpClient(tendermintUrl))
+      .then(client => client.abciInfo())
+      .catch(err => fail(err))
+      .then(done);
+  });
 });

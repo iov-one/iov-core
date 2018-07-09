@@ -134,9 +134,6 @@ export interface RpcGenesisResponse {
 export type HealthResponse = null;
 
 // status
-export interface StatusResult {
-  readonly response: RpcStatusResponse;
-}
 export interface RpcStatusResponse {
   readonly node_info: RpcNodeInfo;
   readonly sync_info: RpcSyncInfo;
