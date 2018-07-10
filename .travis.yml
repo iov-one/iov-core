@@ -29,7 +29,7 @@ before_install:
   fi
 # detect whether we can use docker, but don't fail if impossible
 # this currently passes on linux, fails on osx
-- (docker pull tendermint/tendermint:${TM_VERSION} && export TENDERMINT_ENABLED=1) || true
+- docker pull tendermint/tendermint:${TM_VERSION} && export TENDERMINT_ENABLED=1 || true
 
 install:
 - yarn install
