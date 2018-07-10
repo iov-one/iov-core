@@ -5,7 +5,7 @@ import { Ed25519, Encoding, Sha512 } from "@iov/crypto";
 import { Algorithm, ChainId, Nonce, PublicKeyBundle, PublicKeyBytes, RecipientId, SendTx, TokenTicker, TransactionKind } from "@iov/types";
 
 import { appVersion, getPublicKey, getPublicKeyWithPath, signTransaction, signTransactionWithPath } from "./app";
-import { pendingWithoutInteractiveLedger, pendingWithoutLedger, skipInteractiveTests, skipTests } from "./common.spec";
+import { hardened, pendingWithoutInteractiveLedger, pendingWithoutLedger, skipInteractiveTests, skipTests } from "./common.spec";
 import { connectToFirstLedger } from "./exchange";
 
 describe("Query ledger app", () => {
@@ -53,7 +53,12 @@ describe("Query ledger app", () => {
       expect(pubkey0.length).toEqual(32);
       expect(pubkey0).toEqual(pubkey);
 
-      const pubkey1 = await getPublicKeyWithPath(transport, 267);
+      const pubkeyZero = await getPublicKeyWithPath(transport, hardened(0));
+      expect(pubkeyZero).toBeTruthy();
+      expect(pubkeyZero.length).toEqual(32);
+      expect(pubkeyZero).toEqual(pubkey);
+
+      const pubkey1 = await getPublicKeyWithPath(transport, hardened(267));
       expect(pubkey1).toBeTruthy();
       expect(pubkey1.length).toEqual(32);
       expect(pubkey1).not.toEqual(pubkey0);
