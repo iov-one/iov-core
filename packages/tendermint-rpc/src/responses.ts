@@ -30,6 +30,7 @@ export interface AbciQueryResponse {
   readonly key: Uint8Array;
   readonly value: Uint8Array;
   readonly height?: number;
+  readonly index?: number;
   readonly code?: number; // non-falsy for errors
   readonly log?: string;
 }
@@ -42,6 +43,11 @@ export interface BlockResponse {
 export interface BlockResultsResponse {
   readonly height: number;
   readonly results: ReadonlyArray<TxData>;
+  readonly endBlock: {
+    readonly validatorUpdates: ReadonlyArray<Validator>;
+    readonly consensusUpdates?: ConsensusParams;
+    // TODO: tags (also TxData)
+  };
 }
 
 export interface BlockchainResponse {

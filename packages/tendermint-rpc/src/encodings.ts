@@ -39,7 +39,7 @@ export function required<T>(value: T | null | undefined): T {
 
 // optional uses the value or provides a default
 export function optional<T>(value: T | null | undefined, fallback: T): T {
-  return value || fallback;
+  return value === undefined || value === null ? fallback : value;
 }
 
 // may will run the transform if value is defined, otherwise returns undefined

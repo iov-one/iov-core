@@ -79,12 +79,12 @@ export class Client {
     return this.doCall(query, this.p.encodeStatus, this.r.decodeStatus);
   }
 
-  public Tx(params: requests.TxParams): Promise<responses.TxResponse> {
+  public tx(params: requests.TxParams): Promise<responses.TxResponse> {
     const query: requests.TxRequest = { params, method: Method.TX };
     return this.doCall(query, this.p.encodeTx, this.r.decodeTx);
   }
 
-  public TxSearch(params: requests.TxSearchParams): Promise<responses.TxSearchResponse> {
+  public txSearch(params: requests.TxSearchParams): Promise<responses.TxSearchResponse> {
     const query: requests.TxSearchRequest = { params, method: Method.TX_SEARCH };
     return this.doCall(query, this.p.encodeTxSearch, this.r.decodeTxSearch);
   }

@@ -64,7 +64,7 @@ export class Responses {
   }
 
   public static decodeGenesis(response: JsonRpcSuccess): responses.GenesisResponse {
-    return decodeGenesis(response.result as RpcGenesisResponse);
+    return decodeGenesis(required((response.result as GenesisResult).genesis));
   }
 
   public static decodeHealth(): responses.HealthResponse {
@@ -111,6 +111,7 @@ export interface RpcAbciQueryResponse {
   readonly key: Base64String;
   readonly value: Base64String;
   readonly height?: IntegerString;
+  readonly index?: number;
   readonly code?: number; // only for errors
   readonly log?: string;
 }
@@ -119,6 +120,7 @@ const decodeAbciQuery = (data: RpcAbciQueryResponse): responses.AbciQueryRespons
   value: Base64.decode(optional(data.value, "" as Base64String)),
   height: may(Integer.decode, data.height),
   code: data.code,
+  index: data.index,
   log: data.log,
 });
 
@@ -133,12 +135,28 @@ const decodeBlockResponse = (data: RpcBlockResponse): responses.BlockResponse =>
 
 export interface RpcBlockResultsResponse {
   readonly height: number;
-  readonly results: ReadonlyArray<RpcTxData>;
+  readonly results: {
+    readonly DeliverTx: ReadonlyArray<RpcTxData>;
+    readonly EndBlock: {
+      readonly validator_updates?: ReadonlyArray<RpcValidatorUpdate>;
+      readonly consensus_param_updates?: RpcConsensusParams;
+      // readonly tags?: ReadonlyArray<RpcTags>;
+    };
+  };
 }
-const decodeBlockResults = (data: RpcBlockResultsResponse): responses.BlockResultsResponse => ({
-  height: required(data.height),
-  results: required(data.results).map(decodeTxData),
-});
+const decodeBlockResults = (data: RpcBlockResultsResponse): responses.BlockResultsResponse => {
+  const res = optional(data.results.DeliverTx, [] as ReadonlyArray<RpcTxData>);
+  const end = data.results.EndBlock;
+  const validators = optional(end.validator_updates, [] as ReadonlyArray<RpcValidatorUpdate>);
+  return {
+    height: required(data.height),
+    results: res.map(decodeTxData),
+    endBlock: {
+      validatorUpdates: validators.map(decodeValidatorUpdate),
+      consensusUpdates: may(decodeConsensusParams, end.consensus_param_updates),
+    },
+  };
+};
 
 export interface RpcBlockchainResponse {
   readonly last_height: number;
@@ -248,11 +266,11 @@ const decodeTxSearch = (data: RpcTxSearchResponse): responses.TxSearchResponse =
 
 export interface RpcValidatorsResponse {
   readonly block_height: number;
-  readonly results: ReadonlyArray<RpcValidatorData>;
+  readonly validators: ReadonlyArray<RpcValidatorData>;
 }
 const decodeValidators = (data: RpcValidatorsResponse): responses.ValidatorsResponse => ({
   blockHeight: required(data.block_height),
-  results: required(data.results).map(decodeValidatorData),
+  results: required(data.validators).map(decodeValidatorData),
 });
 
 /**** Helper items used above ******/
@@ -447,6 +465,18 @@ const decodeValidatorGenesis = (data: RpcValidatorGenesis): responses.Validator 
   pubkey: decodePubkey(required(data.pub_key)),
   votingPower: required(data.power),
   name: data.name,
+});
+
+// this is in status
+export interface RpcValidatorUpdate {
+  readonly address: Base64String;
+  readonly pub_key: RpcPubkey;
+  readonly power: number;
+}
+const decodeValidatorUpdate = (data: RpcValidatorUpdate): responses.Validator => ({
+  pubkey: decodePubkey(required(data.pub_key)),
+  votingPower: required(data.power),
+  address: Base64.decode(required(data.address)),
 });
 
 // this is in status

@@ -78,3 +78,23 @@ describe("Simple interaction with kvstore app", () => {
       .catch(err => fail(err));
   });
 });
+
+describe("Verify all endpoints", () => {
+  const client = new Client(new HttpClient(tendermintUrl), v0_20);
+
+  it("Sanity check - calls don't error", () => {
+    pendingWithoutTendermint();
+
+    return client
+      .block()
+      .then(() => client.blockchain(2, 4))
+      .then(() => client.blockResults(3))
+      .then(() => client.commit(4))
+      .then(() => client.genesis())
+      .then(() => client.health())
+      .then(() => client.status())
+      .then(() => client.validators());
+  });
+
+  // TODO: with tx...
+});
