@@ -2,7 +2,7 @@ import { Encoding } from "@iov/crypto";
 
 import { v0_20 } from "./adaptor";
 import { Client } from "./client";
-// import { QueryString } from "./encodings";
+import { QueryString } from "./encodings";
 import * as responses from "./responses";
 import { HttpClient } from "./rpcclient";
 
@@ -119,8 +119,12 @@ describe("Verify all endpoints", () => {
       expect(r.proof).toBeTruthy();
 
       // TODO: txSearch
-      // const query = "app.key='find'" as QueryString;
-      // const s = await client.txSearch({ query });
+      // currently we verify there are no errors,
+      // but get nothing back.
+      const query = "app.key='find'" as QueryString;
+      // const query = "app.creator='jae'" as QueryString;
+      await client.txSearch({ query });
+      // const s = await client.txSearch({ query, page: 1, per_page: 30 });
       // // should find the tx
       // expect(s.totalCount).toEqual(1);
       // expect(s.txs.length).toEqual(1);
