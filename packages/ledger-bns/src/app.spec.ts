@@ -33,7 +33,7 @@ describe("Query ledger app", () => {
     const checkKey = async () => {
       const pubkey = await getPublicKey(transport);
       expect(pubkey).toBeTruthy();
-      expect(pubkey.length).toBe(32);
+      expect(pubkey.length).toEqual(32);
     };
     checkKey()
       .catch(err => fail(err))
@@ -46,16 +46,16 @@ describe("Query ledger app", () => {
     const checkKey = async () => {
       const pubkey = await getPublicKey(transport);
       expect(pubkey).toBeTruthy();
-      expect(pubkey.length).toBe(32);
+      expect(pubkey.length).toEqual(32);
 
       const pubkey0 = await getPublicKeyWithPath(transport, 0);
       expect(pubkey0).toBeTruthy();
-      expect(pubkey0.length).toBe(32);
+      expect(pubkey0.length).toEqual(32);
       expect(pubkey0).toEqual(pubkey);
 
       const pubkey1 = await getPublicKeyWithPath(transport, 267);
       expect(pubkey1).toBeTruthy();
-      expect(pubkey1.length).toBe(32);
+      expect(pubkey1.length).toEqual(32);
       expect(pubkey1).not.toEqual(pubkey0);
     };
     checkKey()
@@ -83,9 +83,9 @@ describe("Sign with ledger app", () => {
 
     const validateSig = async () => {
       const pubkey = await getPublicKey(transport);
-      expect(pubkey.length).toBe(32);
+      expect(pubkey.length).toEqual(32);
       const signature = await signTransaction(transport, message);
-      expect(signature.length).toBe(64);
+      expect(signature.length).toEqual(64);
       const ok = await Ed25519.verifySignature(signature, messageHash, pubkey);
       expect(ok).toEqual(true);
     };
@@ -102,7 +102,7 @@ describe("Sign with ledger app", () => {
 
     const validateSig = async () => {
       const pubkey = await getPublicKey(transport);
-      expect(pubkey.length).toBe(32);
+      expect(pubkey.length).toEqual(32);
 
       const sender: PublicKeyBundle = {
         algo: Algorithm.ED25519,
@@ -127,7 +127,7 @@ describe("Sign with ledger app", () => {
       const messageHash = new Sha512(message).digest();
 
       const signature = await signTransaction(transport, message);
-      expect(signature.length).toBe(64);
+      expect(signature.length).toEqual(64);
       const ok = await Ed25519.verifySignature(signature, messageHash, pubkey);
       expect(ok).toEqual(true);
     };
@@ -144,7 +144,7 @@ describe("Sign with ledger app", () => {
 
     const validateSig = async () => {
       const pubkey = await getPublicKeyWithPath(transport, path);
-      expect(pubkey.length).toBe(32);
+      expect(pubkey.length).toEqual(32);
 
       const sender: PublicKeyBundle = {
         algo: Algorithm.ED25519,
@@ -168,7 +168,7 @@ describe("Sign with ledger app", () => {
       const messageHash = new Sha512(message).digest();
 
       const signature = await signTransactionWithPath(transport, message, path);
-      expect(signature.length).toBe(64);
+      expect(signature.length).toEqual(64);
       const ok = await Ed25519.verifySignature(signature, messageHash, pubkey);
       expect(ok).toEqual(true);
     };

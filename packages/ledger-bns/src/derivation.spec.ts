@@ -32,11 +32,11 @@ describe("Check key derivation", () => {
       const keypair = await Ed25519.makeKeypair(res.privkey);
       const swPubkey = keypair.pubkey;
       expect(swPubkey).toBeTruthy();
-      expect(swPubkey.length).toBe(32);
+      expect(swPubkey.length).toEqual(32);
 
       const hwPubkey = await getPublicKeyWithPath(transport, i);
       expect(hwPubkey).toBeTruthy();
-      expect(hwPubkey.length).toBe(32);
+      expect(hwPubkey.length).toEqual(32);
 
       expect(new Uint8Array(hwPubkey)).toEqual(swPubkey);
     };
