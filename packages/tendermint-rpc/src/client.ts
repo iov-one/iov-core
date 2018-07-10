@@ -1,7 +1,7 @@
+import { Adaptor, Decoder, Encoder, findAdaptor, Params, Responses } from "./adaptor";
 import { default as requests, Method } from "./requests";
 import * as responses from "./responses";
 import { RpcClient } from "./rpcclient";
-import { Adaptor, Decoder, Encoder, findAdaptor, Params, Responses } from "./versions";
 
 export class Client {
   public static async detectVersion(client: RpcClient): Promise<Client> {

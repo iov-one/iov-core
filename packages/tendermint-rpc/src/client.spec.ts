@@ -1,9 +1,9 @@
 import { Encoding } from "@iov/crypto";
 
+import { v0_20 } from "./adaptor";
 import { Client } from "./client";
 import * as responses from "./responses";
 import { HttpClient } from "./rpcclient";
-import * as versions from "./versions";
 
 const skipTests = (): boolean => !process.env.TENDERMINT_ENABLED;
 
@@ -19,7 +19,7 @@ const tendermintUrl = "http://localhost:12345";
 describe("Verify client connects", () => {
   it("Tries to connect with known version to tendermint", done => {
     pendingWithoutTendermint();
-    const client = new Client(new HttpClient(tendermintUrl), versions.v0_20);
+    const client = new Client(new HttpClient(tendermintUrl), v0_20);
     client
       .abciInfo()
       .catch(err => fail(err))
@@ -36,7 +36,7 @@ describe("Verify client connects", () => {
 });
 
 describe("Simple interaction with kvstore app", () => {
-  const client = new Client(new HttpClient(tendermintUrl), versions.v0_20);
+  const client = new Client(new HttpClient(tendermintUrl), v0_20);
 
   it("Posts a transaction", done => {
     pendingWithoutTendermint();
