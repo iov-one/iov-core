@@ -13,10 +13,10 @@ mkdir -p "${DIR}"
 chmod 777 "${DIR}"
 
 docker run -v "${DIR}:/tendermint" \
-  tendermint/tendermint:${VERSION} init
+  "tendermint/tendermint:${VERSION}" init
 
-exec docker run -p ${PORT}:26657 -v "${DIR}:/tendermint" \
-  tendermint/tendermint:${VERSION} node \
+exec docker run -p "${PORT}:26657" -v "${DIR}:/tendermint" \
+  "tendermint/tendermint:${VERSION}" node \
   --proxy_app=kvstore \
   --rpc.laddr=tcp://0.0.0.0:26657 \
   --log_level=state:info,rpc:info,*:error
