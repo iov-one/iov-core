@@ -62,10 +62,8 @@ export interface BroadcastTxCommitResponse {
 }
 
 export interface CommitResponse {
-  readonly signedHeader: {
-    readonly header: Header;
-    readonly commit: Commit;
-  };
+  readonly header: Header;
+  readonly commit: Commit;
   readonly canonical: boolean;
 }
 
@@ -140,7 +138,7 @@ export interface Block {
   readonly header: Header;
   readonly lastCommit: Commit;
   readonly txs: ReadonlyArray<Uint8Array>;
-  readonly evidence: ReadonlyArray<Evidence>;
+  readonly evidence?: ReadonlyArray<Evidence>;
 }
 
 // TODO: what is this???
@@ -205,7 +203,7 @@ export interface SyncInfo {
 
 // this is in status
 export interface Validator {
-  readonly address: Uint8Array;
+  readonly address?: Uint8Array;
   readonly pubkey: PublicKeyBundle;
   readonly votingPower: number;
   readonly accum?: number;

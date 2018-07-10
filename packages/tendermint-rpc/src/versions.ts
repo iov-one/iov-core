@@ -40,9 +40,19 @@ export interface Params {
 export interface Responses {
   readonly decodeAbciInfo: (response: JsonRpcSuccess) => responses.AbciInfoResponse;
   readonly decodeAbciQuery: (response: JsonRpcSuccess) => responses.AbciQueryResponse;
+  readonly decodeBlock: (response: JsonRpcSuccess) => responses.BlockResponse;
+  readonly decodeBlockResults: (response: JsonRpcSuccess) => responses.BlockResultsResponse;
+  readonly decodeBlockchain: (response: JsonRpcSuccess) => responses.BlockchainResponse;
   readonly decodeBroadcastTxSync: (response: JsonRpcSuccess) => responses.BroadcastTxSyncResponse;
-  readonly decodeBroadcastTxAsync: (response: JsonRpcSuccess) => responses.BroadcastTxSyncResponse;
+  readonly decodeBroadcastTxAsync: (response: JsonRpcSuccess) => responses.BroadcastTxAsyncResponse;
   readonly decodeBroadcastTxCommit: (response: JsonRpcSuccess) => responses.BroadcastTxCommitResponse;
+  readonly decodeCommit: (response: JsonRpcSuccess) => responses.CommitResponse;
+  readonly decodeGenesis: (response: JsonRpcSuccess) => responses.GenesisResponse;
+  readonly decodeHealth: (response: JsonRpcSuccess) => responses.HealthResponse;
+  readonly decodeStatus: (response: JsonRpcSuccess) => responses.StatusResponse;
+  readonly decodeTx: (response: JsonRpcSuccess) => responses.TxResponse;
+  readonly decodeTxSearch: (response: JsonRpcSuccess) => responses.TxSearchResponse;
+  readonly decodeValidators: (response: JsonRpcSuccess) => responses.ValidatorsResponse;
 }
 
 // find adapter makes a status call with the client.

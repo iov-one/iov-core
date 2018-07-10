@@ -1,7 +1,17 @@
+import {
+  Algorithm,
+  ChainId,
+  PublicKeyBundle,
+  PublicKeyBytes,
+  SignatureBundle,
+  SignatureBytes,
+} from "@iov/types";
+
 import { JsonRpcSuccess } from "../common";
 import {
   Base64,
   Base64String,
+  DateTime,
   DateTimeString,
   Hex,
   HexString,
@@ -25,16 +35,56 @@ export class Responses {
     return decodeAbciQuery(required((response.result as AbciQueryResult).response));
   }
 
+  public static decodeBlock(response: JsonRpcSuccess): responses.BlockResponse {
+    return decodeBlockResponse(response.result as RpcBlockResponse);
+  }
+
+  public static decodeBlockResults(response: JsonRpcSuccess): responses.BlockResultsResponse {
+    return decodeBlockResults(response.result as RpcBlockResultsResponse);
+  }
+
+  public static decodeBlockchain(response: JsonRpcSuccess): responses.BlockchainResponse {
+    return decodeBlockchain(response.result as RpcBlockchainResponse);
+  }
+
   public static decodeBroadcastTxSync(response: JsonRpcSuccess): responses.BroadcastTxSyncResponse {
     return decodeBroadcastTxSync(response.result as RpcBroadcastTxSyncResponse);
   }
 
-  public static decodeBroadcastTxAsync(response: JsonRpcSuccess): responses.BroadcastTxSyncResponse {
+  public static decodeBroadcastTxAsync(response: JsonRpcSuccess): responses.BroadcastTxAsyncResponse {
     return this.decodeBroadcastTxSync(response);
   }
 
   public static decodeBroadcastTxCommit(response: JsonRpcSuccess): responses.BroadcastTxCommitResponse {
     return decodeBroadcastTxCommit(response.result as RpcBroadcastTxCommitResponse);
+  }
+
+  public static decodeCommit(response: JsonRpcSuccess): responses.CommitResponse {
+    return decodeCommitResponse(response.result as RpcCommitResponse);
+  }
+
+  public static decodeGenesis(response: JsonRpcSuccess): responses.GenesisResponse {
+    return decodeGenesis(response.result as RpcGenesisResponse);
+  }
+
+  public static decodeHealth(): responses.HealthResponse {
+    return null;
+  }
+
+  public static decodeStatus(response: JsonRpcSuccess): responses.StatusResponse {
+    return decodeStatus(response.result as RpcStatusResponse);
+  }
+
+  public static decodeTx(response: JsonRpcSuccess): responses.TxResponse {
+    return decodeTxResponse(response.result as RpcTxResponse);
+  }
+
+  public static decodeTxSearch(response: JsonRpcSuccess): responses.TxSearchResponse {
+    return decodeTxSearch(response.result as RpcTxSearchResponse);
+  }
+
+  public static decodeValidators(response: JsonRpcSuccess): responses.ValidatorsResponse {
+    return decodeValidators(response.result as RpcValidatorsResponse);
   }
 }
 
@@ -76,16 +126,28 @@ export interface RpcBlockResponse {
   readonly block_meta: RpcBlockMeta;
   readonly block: RpcBlock;
 }
+const decodeBlockResponse = (data: RpcBlockResponse): responses.BlockResponse => ({
+  blockMeta: decodeBlockMeta(data.block_meta),
+  block: decodeBlock(data.block),
+});
 
 export interface RpcBlockResultsResponse {
   readonly height: number;
-  readonly results: ReadonlyArray<RpcTxResponse>;
+  readonly results: ReadonlyArray<RpcTxData>;
 }
+const decodeBlockResults = (data: RpcBlockResultsResponse): responses.BlockResultsResponse => ({
+  height: required(data.height),
+  results: required(data.results).map(decodeTxData),
+});
 
 export interface RpcBlockchainResponse {
   readonly last_height: number;
   readonly block_metas: ReadonlyArray<RpcBlockMeta>;
 }
+const decodeBlockchain = (data: RpcBlockchainResponse): responses.BlockchainResponse => ({
+  lastHeight: required(data.last_height),
+  blockMetas: required(data.block_metas).map(decodeBlockMeta),
+});
 
 export type RpcBroadcastTxAsyncResponse = RpcBroadcastTxSyncResponse;
 export interface RpcBroadcastTxSyncResponse extends RpcTxData {
@@ -118,6 +180,11 @@ export interface RpcCommitResponse {
   };
   readonly canonical: boolean;
 }
+const decodeCommitResponse = (data: RpcCommitResponse): responses.CommitResponse => ({
+  canonical: required(data.canonical),
+  header: decodeHeader(data.SignedHeader.header),
+  commit: decodeCommit(data.SignedHeader.commit),
+});
 
 export interface GenesisResult {
   readonly genesis: RpcGenesisResponse;
@@ -125,11 +192,19 @@ export interface GenesisResult {
 export interface RpcGenesisResponse {
   readonly genesis_time: DateTimeString;
   readonly chain_id: string; // ChainId;
-  readonly consensus_params: ConsensusParams;
+  readonly consensus_params: RpcConsensusParams;
   readonly validators: ReadonlyArray<RpcValidatorGenesis>;
-  readonly app_hash: string; // HexString, Base64String??
+  readonly app_hash: HexString; // HexString, Base64String??
   readonly app_state: {};
 }
+const decodeGenesis = (data: RpcGenesisResponse): responses.GenesisResponse => ({
+  genesisTime: DateTime.decode(required(data.genesis_time)),
+  chainId: required(data.chain_id) as ChainId,
+  consensusParams: decodeConsensusParams(data.consensus_params),
+  validators: required(data.validators).map(decodeValidatorGenesis),
+  appHash: Hex.decode(required(data.app_hash)),
+  appState: data.app_state,
+});
 
 export type HealthResponse = null;
 
@@ -139,6 +214,11 @@ export interface RpcStatusResponse {
   readonly sync_info: RpcSyncInfo;
   readonly validator_info: RpcValidatorInfo;
 }
+const decodeStatus = (data: RpcStatusResponse): responses.StatusResponse => ({
+  nodeInfo: decodeNodeInfo(data.node_info),
+  syncInfo: decodeSyncInfo(data.sync_info),
+  validatorInfo: decodeValidatorInfo(data.validator_info),
+});
 
 export interface RpcTxResponse {
   readonly tx: Base64String;
@@ -148,16 +228,32 @@ export interface RpcTxResponse {
   readonly hash: HexString;
   readonly proof?: RpcTxProof;
 }
+const decodeTxResponse = (data: RpcTxResponse): responses.TxResponse => ({
+  tx: Base64.decode(required(data.tx)),
+  txResult: decodeTxData(required(data.tx_result)),
+  height: required(data.height),
+  index: required(data.index),
+  hash: Hex.decode(required(data.hash)),
+  proof: may(decodeTxProof, data.proof),
+});
 
 export interface RpcTxSearchResponse {
   readonly txs: ReadonlyArray<RpcTxResponse>;
   readonly total_count: number;
 }
+const decodeTxSearch = (data: RpcTxSearchResponse): responses.TxSearchResponse => ({
+  totalCount: required(data.total_count),
+  txs: required(data.txs).map(decodeTxResponse),
+});
 
 export interface RpcValidatorsResponse {
   readonly block_height: number;
   readonly results: ReadonlyArray<RpcValidatorData>;
 }
+const decodeValidators = (data: RpcValidatorsResponse): responses.ValidatorsResponse => ({
+  blockHeight: required(data.block_height),
+  results: required(data.results).map(decodeValidatorData),
+});
 
 /**** Helper items used above ******/
 
@@ -181,11 +277,24 @@ export interface RpcTxProof {
     readonly aunts: ReadonlyArray<Base64String>;
   };
 }
+const decodeTxProof = (data: RpcTxProof): responses.TxProof => ({
+  data: Base64.decode(required(data.Data)),
+  rootHash: Hex.decode(required(data.RootHash)),
+  total: required(data.Total),
+  index: required(data.Index),
+  proof: {
+    aunts: required(data.Proof.aunts).map(Base64.decode),
+  },
+});
 
 export interface RpcBlockMeta {
   readonly block_id: RpcBlockId;
   readonly header: RpcHeader;
 }
+const decodeBlockMeta = (data: RpcBlockMeta): responses.BlockMeta => ({
+  blockId: decodeBlockId(data.block_id),
+  header: decodeHeader(data.header),
+});
 
 export interface RpcBlockId {
   readonly hash: HexString;
@@ -194,6 +303,13 @@ export interface RpcBlockId {
     readonly hash: HexString;
   };
 }
+const decodeBlockId = (data: RpcBlockId): responses.BlockId => ({
+  hash: Hex.decode(required(data.hash)),
+  parts: {
+    total: required(data.parts.total),
+    hash: Hex.decode(required(data.parts.hash)),
+  },
+});
 
 export interface RpcBlock {
   readonly header: RpcHeader;
@@ -201,10 +317,16 @@ export interface RpcBlock {
   readonly data: {
     readonly txs: ReadonlyArray<Base64String>; // TODO: HexString?
   };
-  readonly evidence: {
-    readonly evidence: ReadonlyArray<Evidence>;
+  readonly evidence?: {
+    readonly evidence?: ReadonlyArray<Evidence>;
   };
 }
+const decodeBlock = (data: RpcBlock): responses.Block => ({
+  header: decodeHeader(required(data.header)),
+  lastCommit: decodeCommit(required(data.last_commit)),
+  txs: required(data.data.txs).map(Base64.decode),
+  evidence: data.evidence && data.evidence.evidence,
+});
 
 // TODO: what is this???
 export type Evidence = any;
@@ -213,14 +335,13 @@ export interface RpcCommit {
   readonly block_id: RpcBlockId;
   readonly precommits: ReadonlyArray<RpcVote>;
 }
-
-export const enum VoteType {
-  PREVOTE = 1,
-  PRECOMMIT = 2,
-}
+const decodeCommit = (data: RpcCommit): responses.Commit => ({
+  blockId: decodeBlockId(required(data.block_id)),
+  precommits: required(data.precommits).map(decodeVote),
+});
 
 export interface RpcVote {
-  readonly type: VoteType;
+  readonly type: responses.VoteType;
   readonly validator_address: HexString;
   readonly validator_index: number;
   readonly height: number;
@@ -229,6 +350,16 @@ export interface RpcVote {
   readonly block_id: RpcBlockId;
   readonly signature: RpcSignature;
 }
+const decodeVote = (data: RpcVote): responses.Vote => ({
+  type: required(data.type),
+  validatorAddress: Hex.decode(required(data.validator_address)),
+  validatorIndex: required(data.validator_index),
+  height: required(data.height),
+  round: required(data.round),
+  timestamp: DateTime.decode(required(data.timestamp)),
+  blockId: decodeBlockId(required(data.block_id)),
+  signature: decodeSignature(required(data.signature)),
+});
 
 export interface RpcHeader {
   readonly chain_id: string; // ChainId
@@ -247,6 +378,22 @@ export interface RpcHeader {
   readonly last_results_hash: HexString;
   readonly validators_hash: HexString;
 }
+const decodeHeader = (data: RpcHeader): responses.Header => ({
+  chainId: required(data.chain_id) as ChainId,
+  height: required(data.height),
+  time: DateTime.decode(required(data.time)),
+  numTxs: required(data.num_txs),
+  totalTxs: required(data.total_txs),
+  lastBlockId: decodeBlockId(data.last_block_id),
+
+  appHash: Hex.decode(required(data.app_hash)),
+  consensusHash: Hex.decode(required(data.consensus_hash)),
+  dataHash: Hex.decode(required(data.data_hash)),
+  evidenceHash: Hex.decode(required(data.evidence_hash)),
+  lastCommitHash: Hex.decode(required(data.last_commit_hash)),
+  lastResultsHash: Hex.decode(required(data.last_results_hash)),
+  validatorsHash: Hex.decode(required(data.validators_hash)),
+});
 
 export interface RpcNodeInfo {
   readonly id: HexString;
@@ -265,6 +412,15 @@ export interface RpcNodeInfo {
   //   "rpc_addr=tcp://0.0.0.0:46657"
   // ]
 }
+const decodeNodeInfo = (data: RpcNodeInfo): responses.NodeInfo => ({
+  id: Hex.decode(required(data.id)),
+  listenAddr: required(data.listen_addr),
+  network: required(data.network),
+  version: required(data.version),
+  channels: required(data.channels),
+  moniker: required(data.moniker),
+  other: required(data.other),
+});
 
 export interface RpcSyncInfo {
   readonly latest_block_hash: HexString;
@@ -273,57 +429,119 @@ export interface RpcSyncInfo {
   readonly latest_block_time: DateTimeString;
   readonly syncing: boolean;
 }
+const decodeSyncInfo = (data: RpcSyncInfo): responses.SyncInfo => ({
+  latestBlockHash: Hex.decode(required(data.latest_block_hash)),
+  latestAppHash: Hex.decode(required(data.latest_app_hash)),
+  latestBlockTime: DateTime.decode(required(data.latest_block_time)),
+  latestBlockHeight: required(data.latest_block_height),
+  syncing: required(data.syncing),
+});
 
 // this is in genesis
 export interface RpcValidatorGenesis {
-  readonly pub_key: RpcPubKey;
+  readonly pub_key: RpcPubkey;
   readonly power: number;
-  readonly name: string;
+  readonly name?: string;
 }
+const decodeValidatorGenesis = (data: RpcValidatorGenesis): responses.Validator => ({
+  pubkey: decodePubkey(required(data.pub_key)),
+  votingPower: required(data.power),
+  name: data.name,
+});
 
 // this is in status
 export interface RpcValidatorInfo {
   readonly address: HexString;
-  readonly pub_key: RpcPubKey;
+  readonly pub_key: RpcPubkey;
   readonly voting_power: number;
 }
+const decodeValidatorInfo = (data: RpcValidatorInfo): responses.Validator => ({
+  pubkey: decodePubkey(required(data.pub_key)),
+  votingPower: required(data.voting_power),
+  address: Hex.decode(required(data.address)),
+});
 
 export interface RpcValidatorData extends RpcValidatorInfo {
   readonly accum?: number;
 }
+const decodeValidatorData = (data: RpcValidatorData): responses.Validator => ({
+  ...decodeValidatorInfo(data),
+  accum: data.accum,
+});
 
-export interface ConsensusParams {
-  readonly block_size_params: BlockSizeParams;
-  readonly tx_size_params: TxSizeParams;
-  readonly block_gossip_params: BlockGossipParams;
-  readonly evidence_params: EvidenceParams;
+export interface RpcConsensusParams {
+  readonly block_size_params: RpcBlockSizeParams;
+  readonly tx_size_params: RpcTxSizeParams;
+  readonly block_gossip_params: RpcBlockGossipParams;
+  readonly evidence_params: RpcEvidenceParams;
 }
+const decodeConsensusParams = (data: RpcConsensusParams): responses.ConsensusParams => ({
+  blockSizeParams: decodeBlockSizeParams(required(data.block_size_params)),
+  txSizeParams: decodeTxSizeParams(required(data.tx_size_params)),
+  blockGossipParams: decodeBlockGossipParams(required(data.block_gossip_params)),
+  evidenceParams: decodeEvidenceParams(required(data.evidence_params)),
+});
 
-export interface BlockSizeParams {
+export interface RpcBlockSizeParams {
   readonly max_bytes: number;
   readonly max_txs: number;
   readonly max_gas: number;
 }
+const decodeBlockSizeParams = (data: RpcBlockSizeParams): responses.BlockSizeParams => ({
+  maxBytes: required(data.max_bytes),
+  maxTxs: required(data.max_txs),
+  maxGas: required(data.max_gas),
+});
 
-export interface TxSizeParams {
+export interface RpcTxSizeParams {
   readonly max_bytes: number;
   readonly max_gas: number;
 }
+const decodeTxSizeParams = (data: RpcTxSizeParams): responses.TxSizeParams => ({
+  maxBytes: required(data.max_bytes),
+  maxGas: required(data.max_gas),
+});
 
-export interface BlockGossipParams {
+export interface RpcBlockGossipParams {
   readonly block_part_size_bytes: number;
 }
+const decodeBlockGossipParams = (data: RpcBlockGossipParams): responses.BlockGossipParams => ({
+  blockPartSizeBytes: required(data.block_part_size_bytes),
+});
 
-export interface EvidenceParams {
+export interface RpcEvidenceParams {
   readonly max_age: number;
 }
+const decodeEvidenceParams = (data: RpcEvidenceParams): responses.EvidenceParams => ({
+  maxAge: required(data.max_age),
+});
 
-export interface RpcPubKey {
-  readonly type: "AC26791624DE60"; // ed25519 public key
+export interface RpcPubkey {
+  readonly type: string;
   readonly value: Base64String;
 }
+const decodePubkey = (data: RpcPubkey): PublicKeyBundle => {
+  if (data.type === "AC26791624DE60") {
+    // go-amino special code
+    return {
+      algo: Algorithm.ED25519,
+      data: Base64.decode(required(data.value)) as PublicKeyBytes,
+    };
+  }
+  throw new Error(`unknown pubkey type: ${data.type}`);
+};
 
 export interface RpcSignature {
-  readonly type: "6BF5903DA1DB28"; // ed25519 signature
+  readonly type: string;
   readonly value: Base64String;
 }
+const decodeSignature = (data: RpcSignature): SignatureBundle => {
+  if (data.type === "6BF5903DA1DB28") {
+    // go-amino special code
+    return {
+      algo: Algorithm.ED25519,
+      signature: Base64.decode(required(data.value)) as SignatureBytes,
+    };
+  }
+  throw new Error(`unknown signature type: ${data.type}`);
+};
