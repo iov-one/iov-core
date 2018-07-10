@@ -36,8 +36,6 @@ export const appVersion = async (transport: Transport): Promise<number> => {
 };
 
 // tslint:disable:no-bitwise
-const decodeUint32 = (data: Uint8Array): number =>
-  Uint32.fromBigEndianBytes(data).asNumber();
+const decodeUint32 = (data: Uint8Array): number => Uint32.fromBigEndianBytes(data).asNumber();
 
-const encodeUint32 = (num: number): Uint8Array =>
-  new Uint8Array(new Uint32(num).toBytesBigEndian());
+const encodeUint32 = (num: number): Uint8Array => new Uint8Array(new Uint32(num).toBytesBigEndian());

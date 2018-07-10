@@ -13,7 +13,7 @@ describe("Check key derivation", () => {
   const phrase = "tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral";
 
   const mneumonic = new EnglishMnemonic(phrase);
-  const prefix = Slip0010RawIndex.hardened(4804438); // from ed25519simpleaddress
+  const purpose = Slip0010RawIndex.hardened(4804438); // from ed25519simpleaddress
 
   beforeAll(() => {
     if (!skipSeededTests()) {
@@ -24,8 +24,8 @@ describe("Check key derivation", () => {
   it("compare public keys", done => {
     pendingWithoutSeededLedger();
 
-    const checkKey = async (path: number) => {
-      const hdPath: ReadonlyArray<Slip0010RawIndex> = [prefix, Slip0010RawIndex.hardened(path)];
+    const checkKey = async (i: number) => {
+      const hdPath: ReadonlyArray<Slip0010RawIndex> = [purpose, Slip0010RawIndex.hardened(i)];
       const seed = await Bip39.mnemonicToSeed(mneumonic);
       const res = Slip0010.derivePath(Slip0010Curve.Ed25519, seed, hdPath);
 
@@ -34,7 +34,7 @@ describe("Check key derivation", () => {
       expect(swPubkey).toBeTruthy();
       expect(swPubkey.length).toBe(32);
 
-      const hwPubkey = await getPublicKeyWithPath(transport, path);
+      const hwPubkey = await getPublicKeyWithPath(transport, i);
       expect(hwPubkey).toBeTruthy();
       expect(hwPubkey.length).toBe(32);
 
