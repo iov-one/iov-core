@@ -46,7 +46,7 @@ export interface BlockResultsResponse {
   readonly endBlock: {
     readonly validatorUpdates: ReadonlyArray<Validator>;
     readonly consensusUpdates?: ConsensusParams;
-    // TODO: tags (also TxData)
+    readonly tags?: ReadonlyArray<Tag>;
   };
 }
 
@@ -111,10 +111,16 @@ export interface ValidatorsResponse {
 
 /**** Helper items used above ******/
 
+export interface Tag {
+  readonly key: Uint8Array;
+  readonly value: Uint8Array;
+}
+
 export interface TxData {
   readonly code?: number;
   readonly log?: string;
   readonly data?: Uint8Array;
+  readonly tags?: ReadonlyArray<Tag>;
 }
 
 export interface TxProof {

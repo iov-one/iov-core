@@ -140,7 +140,7 @@ export interface RpcBlockResultsResponse {
     readonly EndBlock: {
       readonly validator_updates?: ReadonlyArray<RpcValidatorUpdate>;
       readonly consensus_param_updates?: RpcConsensusParams;
-      // readonly tags?: ReadonlyArray<RpcTags>;
+      readonly tags?: ReadonlyArray<RpcTag>;
     };
   };
 }
@@ -154,6 +154,7 @@ const decodeBlockResults = (data: RpcBlockResultsResponse): responses.BlockResul
     endBlock: {
       validatorUpdates: validators.map(decodeValidatorUpdate),
       consensusUpdates: may(decodeConsensusParams, end.consensus_param_updates),
+      tags: may(decodeTags, end.tags),
     },
   };
 };
@@ -275,15 +276,27 @@ const decodeValidators = (data: RpcValidatorsResponse): responses.ValidatorsResp
 
 /**** Helper items used above ******/
 
+export interface RpcTag {
+  readonly key: Base64String;
+  readonly value: Base64String;
+}
+const decodeTag = (data: RpcTag): responses.Tag => ({
+  key: Base64.decode(required(data.key)),
+  value: Base64.decode(required(data.value)),
+});
+const decodeTags = (tags: ReadonlyArray<RpcTag>) => tags.map(decodeTag);
+
 export interface RpcTxData {
   readonly code?: number;
   readonly log?: string;
   readonly data?: Base64String;
+  readonly tags?: ReadonlyArray<RpcTag>;
 }
 const decodeTxData = (data: RpcTxData): responses.TxData => ({
   data: may(Base64.decode, data.data),
   log: data.log,
   code: data.code,
+  tags: may(decodeTags, data.tags),
 });
 
 export interface RpcTxProof {
