@@ -17,30 +17,23 @@ const pendingWithoutTendermint = () => {
 // TODO: make flexible, support multiple versions, etc...
 const tendermintUrl = "http://localhost:12345";
 
-describe("Verify client connects", () => {
-  it("Tries to connect with known version to tendermint", done => {
+describe("Verify client calls on tendermint w/ kvstore app", () => {
+  it("Tries to connect with known version to tendermint", () => {
     pendingWithoutTendermint();
     const client = new Client(new HttpClient(tendermintUrl), v0_20);
-    client
-      .abciInfo()
-      .catch(err => fail(err))
-      .then(done);
+    return client.abciInfo().catch(err => fail(err));
   });
 
-  it("Tries to auto-discover tendermint", done => {
+  it("Tries to auto-discover tendermint", () => {
     pendingWithoutTendermint();
-    Client.detectVersion(new HttpClient(tendermintUrl))
+    return Client.detectVersion(new HttpClient(tendermintUrl))
       .then(client => client.abciInfo())
-      .catch(err => fail(err))
-      .then(done);
+      .catch(err => fail(err));
   });
-});
 
-describe("Simple interaction with kvstore app", () => {
-  const client = new Client(new HttpClient(tendermintUrl), v0_20);
-
-  it("Posts a transaction", done => {
+  it("Posts a transaction", () => {
     pendingWithoutTendermint();
+    const client = new Client(new HttpClient(tendermintUrl), v0_20);
     const tx = Encoding.asAscii("hello=byte");
 
     const verifyResponse = (res: responses.BroadcastTxCommitResponse) => {
@@ -54,15 +47,16 @@ describe("Simple interaction with kvstore app", () => {
       }
     };
 
-    client
+    return client
       .broadcastTxCommit({ tx: tx })
       .then(verifyResponse)
-      .then(done)
       .catch(err => fail(err));
   });
 
   it("Queries the state", () => {
     pendingWithoutTendermint();
+    const client = new Client(new HttpClient(tendermintUrl), v0_20);
+
     const key = Encoding.asAscii("hello");
     const value = Encoding.asAscii("byte");
     const queryParams = { path: "/key", data: key };
@@ -78,13 +72,10 @@ describe("Simple interaction with kvstore app", () => {
       .then(verifyQuery)
       .catch(err => fail(err));
   });
-});
-
-describe("Verify all endpoints", () => {
-  const client = new Client(new HttpClient(tendermintUrl), v0_20);
 
   it("Sanity check - calls don't error", () => {
     pendingWithoutTendermint();
+    const client = new Client(new HttpClient(tendermintUrl), v0_20);
 
     return client
       .block()
@@ -99,6 +90,7 @@ describe("Verify all endpoints", () => {
 
   it("Can query a tx properly", () => {
     pendingWithoutTendermint();
+    const client = new Client(new HttpClient(tendermintUrl), v0_20);
 
     const verifyTxResponses = async () => {
       const tx = Encoding.asAscii("find=me");

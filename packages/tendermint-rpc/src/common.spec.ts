@@ -1,6 +1,6 @@
 import { jsonRpc, jsonRpcWith, randomChar, randomId } from "./common";
 
-describe("Generates random ids", () => {
+describe("Generates json rpc requests", () => {
   it("Generates random chars", () => {
     const char = randomChar();
     expect(char.length).toEqual(1);
@@ -25,9 +25,7 @@ describe("Generates random ids", () => {
     expect(id.length).toEqual(12);
     expect(id2).not.toEqual(id);
   });
-});
 
-describe("Creates good requests", () => {
   it("Generates proper jsonrpc objects with distinct ids", () => {
     const rpc = jsonRpc();
     expect(rpc.jsonrpc).toEqual("2.0");
@@ -50,8 +48,4 @@ describe("Creates good requests", () => {
     expect(rpc.method).toEqual(method);
     expect(rpc.params).toEqual(params);
   });
-
-  // it("Tries to auto-discover tendermint", () => {
-
-  // });
 });
