@@ -83,7 +83,7 @@ export class DateTime {
 // Integer is used for go-amino string-encoded number support
 export class Integer {
   public static encode(data: number): IntegerString {
-    return data.toString() as IntegerString;
+    return Math.floor(data).toString() as IntegerString;
   }
 
   public static decode(intstring: IntegerString): number {

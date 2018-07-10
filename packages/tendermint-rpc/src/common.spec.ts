@@ -18,17 +18,17 @@ describe("Generates random ids", () => {
   it("Generates random id", () => {
     const id = randomId();
     expect(id).toBeTruthy();
-    expect(id.length).toBe(12);
+    expect(id.length).toEqual(12);
 
     const id2 = randomId();
     expect(id2).toBeTruthy();
-    expect(id.length).toBe(12);
+    expect(id.length).toEqual(12);
     expect(id2).not.toEqual(id);
   });
 });
 
 describe("Creates good requests", () => {
-  it("Generates random ids", () => {
+  it("Generates proper jsonrpc objects with distinct ids", () => {
     const rpc = jsonRpc();
     expect(rpc.jsonrpc).toEqual("2.0");
     expect(rpc.id).toBeTruthy();

@@ -49,4 +49,6 @@ const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 // generate a random alphanumeric character
 export const randomChar = (): string => chars[Math.floor(Math.random() * chars.length)];
 export const randomId = (): RpcId =>
-  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(() => randomChar()).join("") as RpcId;
+  Array.from({ length: 12 })
+    .map(() => randomChar())
+    .join("") as RpcId;
