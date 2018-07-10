@@ -349,18 +349,28 @@ export interface RpcBlock {
     readonly txs: ReadonlyArray<Base64String>; // TODO: HexString?
   };
   readonly evidence?: {
-    readonly evidence?: ReadonlyArray<Evidence>;
+    readonly evidence?: ReadonlyArray<RpcEvidence>;
   };
 }
 const decodeBlock = (data: RpcBlock): responses.Block => ({
   header: decodeHeader(required(data.header)),
   lastCommit: decodeCommit(required(data.last_commit)),
   txs: required(data.data.txs).map(Base64.decode),
-  evidence: data.evidence && data.evidence.evidence,
+  evidence: data.evidence && may(decodeEvidences, data.evidence.evidence),
 });
 
-// TODO: what is this???
-export type Evidence = any;
+export interface RpcEvidence {
+  readonly type: string;
+  readonly validator: RpcValidatorUpdate;
+  readonly height: number;
+  readonly time: number;
+  readonly totalVotingPower: number;
+}
+const decodeEvidence = (data: RpcEvidence): responses.Evidence => ({
+  ...data,
+  validator: decodeValidatorUpdate(data.validator),
+});
+const decodeEvidences = (ev: ReadonlyArray<RpcEvidence>) => ev.map(decodeEvidence);
 
 export interface RpcCommit {
   readonly block_id: RpcBlockId;

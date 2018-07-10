@@ -66,6 +66,8 @@ export interface BroadcastTxCommitResponse {
   readonly checkTx: TxData;
   readonly deliverTx?: TxData;
 }
+export const txCommitSuccess = (res: BroadcastTxCommitResponse): boolean =>
+  !!res.deliverTx && !res.deliverTx.code;
 
 export interface CommitResponse {
   readonly header: Header;
@@ -153,8 +155,13 @@ export interface Block {
   readonly evidence?: ReadonlyArray<Evidence>;
 }
 
-// TODO: what is this???
-export type Evidence = any;
+export interface Evidence {
+  readonly type: string;
+  readonly validator: Validator;
+  readonly height: number;
+  readonly time: number;
+  readonly totalVotingPower: number;
+}
 
 export interface Commit {
   readonly blockId: BlockId;

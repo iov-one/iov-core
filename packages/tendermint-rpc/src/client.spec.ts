@@ -2,6 +2,7 @@ import { Encoding } from "@iov/crypto";
 
 import { v0_20 } from "./adaptor";
 import { Client } from "./client";
+// import { QueryString } from "./encodings";
 import * as responses from "./responses";
 import { HttpClient } from "./rpcclient";
 
@@ -96,5 +97,37 @@ describe("Verify all endpoints", () => {
       .then(() => client.validators());
   });
 
-  // TODO: with tx...
+  it("Can query a tx properly", () => {
+    pendingWithoutTendermint();
+
+    const verifyTxResponses = async () => {
+      const tx = Encoding.asAscii("find=me");
+      const txRes = await client.broadcastTxCommit({ tx });
+      expect(responses.txCommitSuccess(txRes)).toBeTruthy();
+      expect(txRes.height).toBeTruthy();
+      const height: number = txRes.height || 0; // || 0 for type system
+      expect(txRes.hash.length).not.toEqual(0);
+      const hash = txRes.hash;
+
+      // find by hash - does it match?
+      const r = await client.tx({ hash, prove: true });
+      // both values come from rpc, so same type (Buffer/Uint8Array)
+      expect(r.hash).toEqual(hash);
+      // force the type when comparing to locally generated value
+      expect(new Uint8Array(r.tx)).toEqual(tx);
+      expect(r.height).toEqual(height);
+      expect(r.proof).toBeTruthy();
+
+      // TODO: txSearch
+      // const query = "app.key='find'" as QueryString;
+      // const s = await client.txSearch({ query });
+      // // should find the tx
+      // expect(s.totalCount).toEqual(1);
+      // expect(s.txs.length).toEqual(1);
+      // // should return same info as querying directly
+      // expect(s.txs[0]).toEqual(r);
+    };
+
+    return verifyTxResponses().catch(err => fail(err));
+  });
 });

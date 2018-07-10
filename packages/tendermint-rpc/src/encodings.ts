@@ -43,8 +43,8 @@ export function optional<T>(value: T | null | undefined, fallback: T): T {
 }
 
 // may will run the transform if value is defined, otherwise returns undefined
-export function may<T, U>(transform: (val: T) => U, value: T | undefined): U | undefined {
-  return value === undefined ? value : transform(value);
+export function may<T, U>(transform: (val: T) => U, value: T | null | undefined): U | undefined {
+  return value === undefined || value === null ? undefined : transform(value);
 }
 
 export class Hex {
