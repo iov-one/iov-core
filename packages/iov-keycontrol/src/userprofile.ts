@@ -11,6 +11,11 @@ import { DefaultValueProducer, ValueAndUpdates } from "./valueandupdates";
 const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
 
+export interface UserProfileOptions {
+  readonly createdAt: ReadonlyDate;
+  readonly keyring: Keyring;
+}
+
 /**
  * All calls must go though the UserProfile. A newly created UserProfile
  * is unlocked until lock() is called, which removes access to private key
@@ -21,8 +26,10 @@ const storageKeyKeyring = "keyring";
 export class UserProfile {
   public static async loadFrom(db: LevelUp<AbstractLevelDOWN<string, string>>): Promise<UserProfile> {
     const createdAt = new ReadonlyDate(await db.get(storageKeyCreatedAt, { asBuffer: false })); // TODO: add strict RFC 3339 parser
-    const keyring = (await db.get(storageKeyKeyring, { asBuffer: false })) as KeyringSerializationString;
-    return new UserProfile(createdAt, new Keyring(keyring));
+    const keyring = new Keyring((await db.get(storageKeyKeyring, {
+      asBuffer: false,
+    })) as KeyringSerializationString);
+    return new UserProfile({ createdAt, keyring });
   }
 
   public readonly createdAt: ReadonlyDate;
@@ -36,9 +43,15 @@ export class UserProfile {
   private readonly entriesCountProducer: DefaultValueProducer<number>;
 
   // Stores a copy of keyring
-  constructor(createdAt: ReadonlyDate, keyring: Keyring) {
-    this.createdAt = createdAt;
-    this.keyring = keyring.clone();
+  constructor(options?: UserProfileOptions) {
+    if (options) {
+      this.createdAt = options.createdAt;
+      this.keyring = options.keyring.clone();
+    } else {
+      this.createdAt = new ReadonlyDate(ReadonlyDate.now());
+      this.keyring = new Keyring();
+    }
+
     this.lockedProducer = new DefaultValueProducer(false);
     this.locked = new ValueAndUpdates(this.lockedProducer);
     this.entriesCountProducer = new DefaultValueProducer(this.keyring.getEntries().length);
