@@ -1,3 +1,5 @@
+import { Uint32 } from "@iov/crypto";
+
 import { sendChunks, Transport } from "./exchange";
 
 const appCode = 128;
@@ -35,12 +37,7 @@ export const appVersion = async (transport: Transport): Promise<number> => {
 
 // tslint:disable:no-bitwise
 const decodeUint32 = (data: Uint8Array): number =>
-  (data[0] << 24) + (data[1] << 16) + (data[2] << 8) + data[3];
+  Uint32.fromBigEndianBytes(data).asNumber();
 
 const encodeUint32 = (num: number): Uint8Array =>
-  new Uint8Array([
-    Math.floor(num / 2 ** 24) & 0xff,
-    Math.floor(num / 2 ** 16) & 0xff,
-    Math.floor(num / 2 ** 8) & 0xff,
-    Math.floor(num / 2 ** 0) & 0xff,
-  ]);
+  new Uint8Array(new Uint32(num).toBytesBigEndian());
