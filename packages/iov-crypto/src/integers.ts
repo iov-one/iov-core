@@ -1,6 +1,23 @@
 /* tslint:disable:no-bitwise */
 
 export class Uint32 {
+  public static fromBigEndianBytes(bytes: ArrayLike<number>): Uint32 {
+    if (bytes.length !== 4) {
+      throw new Error("Invalid input length. Expected 4 bytes.");
+    }
+
+    // tslint:disable-next-line:prefer-for-of no-let
+    for (let i = 0; i < bytes.length; ++i) {
+      if (bytes[i] > 255 || bytes[i] < 0 || Number.isNaN(bytes[i])) {
+        throw new Error("Invalid value in byte. Found: " + bytes[i]);
+      }
+    }
+
+    // Use mulitiplication instead of shifting since bitwise operators are defined
+    // on SIGNED int32 in JavaScript and we don't want to risk surprises
+    return new Uint32(bytes[0] * 2 ** 24 + bytes[1] * 2 ** 16 + bytes[2] * 2 ** 8 + bytes[3]);
+  }
+
   protected readonly data: number;
 
   constructor(input: number) {
