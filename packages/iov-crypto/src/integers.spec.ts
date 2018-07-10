@@ -14,24 +14,12 @@ describe("Uint32", () => {
   it("throws for values out of range", () => {
     // tslint:disable:no-unused-expression
 
-    expect(() => {
-      new Uint32(-1);
-    }).toThrowError(/not in uint32 range/);
-    expect(() => {
-      new Uint32(4294967296);
-    }).toThrowError(/not in uint32 range/);
-    expect(() => {
-      new Uint32(Number.MIN_SAFE_INTEGER);
-    }).toThrowError(/not in uint32 range/);
-    expect(() => {
-      new Uint32(Number.MAX_SAFE_INTEGER);
-    }).toThrowError(/not in uint32 range/);
-    expect(() => {
-      new Uint32(Number.NEGATIVE_INFINITY);
-    }).toThrowError(/not in uint32 range/);
-    expect(() => {
-      new Uint32(Number.POSITIVE_INFINITY);
-    }).toThrowError(/not in uint32 range/);
+    expect(() => new Uint32(-1)).toThrowError(/not in uint32 range/);
+    expect(() => new Uint32(4294967296)).toThrowError(/not in uint32 range/);
+    expect(() => new Uint32(Number.MIN_SAFE_INTEGER)).toThrowError(/not in uint32 range/);
+    expect(() => new Uint32(Number.MAX_SAFE_INTEGER)).toThrowError(/not in uint32 range/);
+    expect(() => new Uint32(Number.NEGATIVE_INFINITY)).toThrowError(/not in uint32 range/);
+    expect(() => new Uint32(Number.POSITIVE_INFINITY)).toThrowError(/not in uint32 range/);
 
     // tslint:enable:no-unused-expression
   });
@@ -39,9 +27,7 @@ describe("Uint32", () => {
   it("throws for invald numbers", () => {
     // tslint:disable:no-unused-expression
 
-    expect(() => {
-      new Uint32(NaN);
-    }).toThrowError(/not a number/);
+    expect(() => new Uint32(NaN)).toThrowError(/not a number/);
 
     // tslint:enable:no-unused-expression
   });
