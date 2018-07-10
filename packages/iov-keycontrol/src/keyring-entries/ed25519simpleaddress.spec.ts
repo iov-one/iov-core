@@ -39,4 +39,12 @@ describe("Ed25519SimpleAddressKeyringEntry", () => {
       });
     });
   });
+
+  it("can be cloned", () => {
+    const original = Ed25519SimpleAddressKeyringEntry.fromEntropy(Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"));
+    const clone = original.clone();
+    expect(clone).not.toBe(original);
+    expect(clone.serialize()).toEqual(original.serialize());
+    expect(clone.implementationId).toEqual("ed25519simpleaddress");
+  });
 });

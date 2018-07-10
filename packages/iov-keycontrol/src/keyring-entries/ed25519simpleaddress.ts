@@ -24,4 +24,8 @@ export class Ed25519SimpleAddressKeyringEntry extends Ed25519HdKeyringEntry {
     ];
     return super.createIdentityWithPath(path);
   }
+
+  public clone(): Ed25519SimpleAddressKeyringEntry {
+    return new Ed25519SimpleAddressKeyringEntry(this.serialize());
+  }
 }
