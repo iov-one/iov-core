@@ -118,18 +118,16 @@ describe("Verify all endpoints", () => {
       expect(r.height).toEqual(height);
       expect(r.proof).toBeTruthy();
 
-      // TODO: txSearch
-      // currently we verify there are no errors,
-      // but get nothing back.
+      // txSearch - you must enable the indexer when running
+      // tendermint, else you get empty results
       const query = "app.key='find'" as QueryString;
-      // const query = "app.creator='jae'" as QueryString;
-      await client.txSearch({ query });
-      // const s = await client.txSearch({ query, page: 1, per_page: 30 });
-      // // should find the tx
-      // expect(s.totalCount).toEqual(1);
-      // expect(s.txs.length).toEqual(1);
-      // // should return same info as querying directly
-      // expect(s.txs[0]).toEqual(r);
+      const s = await client.txSearch({ query, page: 1, per_page: 30 });
+      // should find the tx
+      expect(s.totalCount).toEqual(1);
+      expect(s.txs.length).toEqual(1);
+      // should return same info as querying directly,
+      // except without the proof
+      expect(s.txs[0]).toEqual({ ...r, proof: undefined });
     };
 
     return verifyTxResponses().catch(err => fail(err));
