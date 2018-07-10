@@ -29,6 +29,21 @@ export class Client {
     return this.doCall(query, this.p.encodeAbciQuery, this.r.decodeAbciQuery);
   }
 
+  public block(height?: number): Promise<responses.BlockResponse> {
+    const query: requests.BlockRequest = { method: Method.BLOCK, params: { height } };
+    return this.doCall(query, this.p.encodeBlock, this.r.decodeBlock);
+  }
+
+  public blockResults(height?: number): Promise<responses.BlockResultsResponse> {
+    const query: requests.BlockResultsRequest = { method: Method.BLOCK_RESULTS, params: { height } };
+    return this.doCall(query, this.p.encodeBlockResults, this.r.decodeBlockResults);
+  }
+
+  public blockchain(minHeight?: number, maxHeight?: number): Promise<responses.BlockchainResponse> {
+    const query: requests.BlockchainRequest = { method: Method.BLOCKCHAIN, params: { minHeight, maxHeight } };
+    return this.doCall(query, this.p.encodeBlockchain, this.r.decodeBlockchain);
+  }
+
   public broadcastTxSync(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxSyncResponse> {
     const query: requests.BroadcastTxRequest = { params, method: Method.BROADCAST_TX_SYNC };
     return this.doCall(query, this.p.encodeBroadcastTx, this.r.decodeBroadcastTxSync);
@@ -42,6 +57,41 @@ export class Client {
   public broadcastTxCommit(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxCommitResponse> {
     const query: requests.BroadcastTxRequest = { params, method: Method.BROADCAST_TX_COMMIT };
     return this.doCall(query, this.p.encodeBroadcastTx, this.r.decodeBroadcastTxCommit);
+  }
+
+  public commit(height?: number): Promise<responses.CommitResponse> {
+    const query: requests.CommitRequest = { method: Method.COMMIT, params: { height } };
+    return this.doCall(query, this.p.encodeCommit, this.r.decodeCommit);
+  }
+
+  public genesis(): Promise<responses.GenesisResponse> {
+    const query: requests.GenesisRequest = { method: Method.GENESIS };
+    return this.doCall(query, this.p.encodeGenesis, this.r.decodeGenesis);
+  }
+
+  public health(): Promise<responses.HealthResponse> {
+    const query: requests.HealthRequest = { method: Method.HEALTH };
+    return this.doCall(query, this.p.encodeHealth, this.r.decodeHealth);
+  }
+
+  public status(): Promise<responses.StatusResponse> {
+    const query: requests.StatusRequest = { method: Method.STATUS };
+    return this.doCall(query, this.p.encodeStatus, this.r.decodeStatus);
+  }
+
+  public Tx(params: requests.TxParams): Promise<responses.TxResponse> {
+    const query: requests.TxRequest = { params, method: Method.TX };
+    return this.doCall(query, this.p.encodeTx, this.r.decodeTx);
+  }
+
+  public TxSearch(params: requests.TxSearchParams): Promise<responses.TxSearchResponse> {
+    const query: requests.TxSearchRequest = { params, method: Method.TX_SEARCH };
+    return this.doCall(query, this.p.encodeTxSearch, this.r.decodeTxSearch);
+  }
+
+  public validators(height?: number): Promise<responses.ValidatorsResponse> {
+    const query: requests.ValidatorsRequest = { method: Method.VALIDATORS, params: { height } };
+    return this.doCall(query, this.p.encodeValidators, this.r.decodeValidators);
   }
 
   // doCall is a helper to handle the encode/call/decode logic
