@@ -51,7 +51,7 @@ export class Client {
     decode: Decoder<U>,
   ): Promise<U> {
     const req = encode(request);
-    const result = await this.client.rpc(req);
+    const result = await this.client.execute(req);
     return decode(result);
   }
 }
