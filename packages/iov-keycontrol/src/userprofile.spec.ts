@@ -3,17 +3,14 @@ import Long from "long";
 import MemDownConstructor from "memdown";
 import { ReadonlyDate } from "readonly-date";
 
-import { Chacha20poly1305IetfKey, Encoding } from "@iov/crypto";
 import { AddressBytes, Algorithm, ChainId, Nonce, PostableBytes, PublicKeyBytes, SendTx, SignableBytes, SignatureBytes, SignedTransaction, TokenTicker, TransactionIDBytes, TransactionKind, TxCodec } from "@iov/types";
 
 import { Keyring } from "./keyring";
 import { Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
 import { UserProfile } from "./userprofile";
 
-const { fromHex } = Encoding;
-
 describe("UserProfile", () => {
-  const defaultEncryptionKey = fromHex("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") as Chacha20poly1305IetfKey;
+  const defaultEncryptionPassword = "my super str0ng and super long password";
 
   it("can be constructed without arguments", () => {
     const profile = new UserProfile();
@@ -172,7 +169,7 @@ describe("UserProfile", () => {
       const keyring = new Keyring();
       const profile = new UserProfile({ createdAt, keyring });
 
-      await profile.storeIn(db, defaultEncryptionKey);
+      await profile.storeIn(db, defaultEncryptionPassword);
       expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
       expect(await db.get("keyring", { asBuffer: false })).toMatch(/[0-9a-f]+/);
 
@@ -193,7 +190,7 @@ describe("UserProfile", () => {
       await db.put("foo", "bar");
 
       const profile = new UserProfile();
-      await profile.storeIn(db, defaultEncryptionKey);
+      await profile.storeIn(db, defaultEncryptionPassword);
 
       await db
         .get("foo")
@@ -219,9 +216,9 @@ describe("UserProfile", () => {
     const keyring = new Keyring();
     const original = new UserProfile({ createdAt, keyring });
 
-    await original.storeIn(db, defaultEncryptionKey);
+    await original.storeIn(db, defaultEncryptionPassword);
 
-    const restored = await UserProfile.loadFrom(db, defaultEncryptionKey);
+    const restored = await UserProfile.loadFrom(db, defaultEncryptionPassword);
 
     expect(restored.createdAt).toEqual(original.createdAt);
 
@@ -235,10 +232,10 @@ describe("UserProfile", () => {
     const keyring = new Keyring();
     const original = new UserProfile({ createdAt, keyring });
 
-    await original.storeIn(db, defaultEncryptionKey);
+    await original.storeIn(db, defaultEncryptionPassword);
 
-    const otherEncryptionKey = fromHex("bbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") as Chacha20poly1305IetfKey;
-    await UserProfile.loadFrom(db, otherEncryptionKey)
+    const otherEncryptionPassword = "something wrong";
+    await UserProfile.loadFrom(db, otherEncryptionPassword)
       .then(() => fail("loading must not succeed"))
       .catch(error => expect(error).toMatch(/invalid usage/));
 

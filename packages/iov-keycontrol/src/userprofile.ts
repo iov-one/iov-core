@@ -3,6 +3,8 @@ import { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
 
 import {
+  Argon2id,
+  Argon2idOptions,
   Chacha20poly1305Ietf,
   Chacha20poly1305IetfCiphertext,
   Chacha20poly1305IetfKey,
@@ -22,6 +24,14 @@ const { asAscii, fromAscii, fromHex, toHex } = Encoding;
 const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
 
+// not great but can be used on the main thread
+const weakPasswordHashingOptions: Argon2idOptions = {
+  outputLength: 32,
+  opsLimit: 10,
+  memLimitKib: 8 * 1024,
+};
+const userProfileSalt = asAscii("web4-userprofile"); // must be 16 bytes
+
 export interface UserProfileOptions {
   readonly createdAt: ReadonlyDate;
   readonly keyring: Keyring;
@@ -37,13 +47,18 @@ export interface UserProfileOptions {
 export class UserProfile {
   public static async loadFrom(
     db: LevelUp<AbstractLevelDOWN<string, string>>,
-    encryptionKey: Chacha20poly1305IetfKey,
+    password: string,
   ): Promise<UserProfile> {
     // get from storage (raw strings)
     const createdAtFromStorage = await db.get(storageKeyCreatedAt, { asBuffer: false });
     const keyringFromStorage = await db.get(storageKeyKeyring, { asBuffer: false });
 
     // process
+    const encryptionKey = (await Argon2id.execute(
+      password,
+      userProfileSalt,
+      weakPasswordHashingOptions,
+    )) as Chacha20poly1305IetfKey;
     const keyringBundle = fromHex(keyringFromStorage);
     const keyringNonce = keyringBundle.slice(0, 12) as Chacha20poly1305IetfNonce;
     const keyringCiphertext = keyringBundle.slice(12) as Chacha20poly1305IetfCiphertext;
@@ -100,10 +115,7 @@ export class UserProfile {
   }
 
   // this will clear everything in the database and store the user profile
-  public async storeIn(
-    db: LevelUp<AbstractLevelDOWN<string, string>>,
-    encryptionKey: Chacha20poly1305IetfKey,
-  ): Promise<void> {
+  public async storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<void> {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
@@ -111,6 +123,11 @@ export class UserProfile {
     await DatabaseUtils.clear(db);
 
     // process
+    const encryptionKey = (await Argon2id.execute(
+      password,
+      userProfileSalt,
+      weakPasswordHashingOptions,
+    )) as Chacha20poly1305IetfKey;
     const keyringPlaintext = asAscii(this.keyring.serialize()) as Chacha20poly1305IetfMessage;
     const keyringNonce = await UserProfile.makeNonce();
     const keyringCiphertext = await Chacha20poly1305Ietf.encrypt(
