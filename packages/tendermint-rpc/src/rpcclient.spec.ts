@@ -1,11 +1,11 @@
 import { jsonRpcWith } from "./common";
 import { Method } from "./requests";
-import { getWindow, HttpClient, HttpUriClient, RpcClient } from "./rpcclient";
+import { HttpClient, HttpUriClient, RpcClient } from "./rpcclient";
 
-// TODO: process.env is always false in browser....
-// a better way to check this???
-// for now, always enable these tests in browser
-const skipTests = (): boolean => !process.env.TENDERMINT_ENABLED && !getWindow();
+// process.env is undefined in browser....
+// but we can shim it in with webpack for the tests.
+// good for browser tests, not so good for configuring production
+const skipTests = (): boolean => !process.env.TENDERMINT_ENABLED;
 
 const pendingWithoutTendermint = () => {
   if (skipTests()) {
