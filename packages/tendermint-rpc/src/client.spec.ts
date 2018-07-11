@@ -8,6 +8,7 @@ import * as responses from "./responses";
 import { HttpClient } from "./rpcclient";
 
 const skipTests = (): boolean => !process.env.TENDERMINT_ENABLED;
+// const skipTests = (): boolean => false;
 
 const pendingWithoutTendermint = () => {
   if (skipTests()) {
@@ -24,10 +25,16 @@ const value = randomId();
 const buildKvTx = (k: string, v: string): Uint8Array => Encoding.asAscii(`${k}=${v}`);
 
 describe("Verify client calls on tendermint w/ kvstore app", () => {
+  const logfail = (x: any) => {
+    // tslint:disable:no-console
+    console.log(x);
+    fail(x);
+  };
+
   it("Tries to connect with known version to tendermint", () => {
     pendingWithoutTendermint();
     const client = new Client(new HttpClient(tendermintUrl), v0_20);
-    return client.abciInfo().catch(err => fail(err));
+    return client.abciInfo().catch(err => logfail(err));
   });
 
   it("Tries to auto-discover tendermint", () => {
