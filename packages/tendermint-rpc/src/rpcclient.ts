@@ -11,11 +11,12 @@ export const inBrowser = (): boolean => getWindow() !== undefined;
 
 // post uses fetch in browser and axios in node,
 // was having weird issues with axios in brower
-const post = (url: string, request: any): Promise<any> => {
+const http = (method: string, url: string, request?: any): Promise<any> => {
   if (inBrowser()) {
-    return fetch(url, { method: "POST", body: JSON.stringify(request) }).then(res => res.json());
+    const body = request ? JSON.stringify(request) : undefined;
+    return fetch(url, { method, body }).then(res => res.json());
   } else {
-    return axios.post(url, request).then(res => res.data);
+    return axios.request({ url, method, data: request }).then(res => res.data);
   }
 };
 
@@ -36,7 +37,7 @@ export class HttpClient implements RpcClient {
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
     // make sure we set the origin header properly, seems not to be set
     // in karma tests....
-    const response = await post(this.url, request);
+    const response = await http("POST", this.url, request);
     return throwIfError(response);
   }
 }
@@ -55,8 +56,8 @@ export class HttpUriClient implements RpcClient {
       throw new Error(`HttpUriClient doesn't support passing params: ${request.params}`);
     }
     const method = `${this.url}/${request.method}`;
-    const response = await axios.get(method, getOriginConfig());
-    return throwIfError(response.data);
+    const response = await http("GET", method);
+    return throwIfError(response);
   }
 }
 
