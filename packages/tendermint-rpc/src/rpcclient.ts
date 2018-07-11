@@ -30,6 +30,8 @@ export class HttpClient implements RpcClient {
   }
 }
 
+// HttpUriClient just makes calls without any parameters
+// This is only meant for testing or quick status/health checks
 export class HttpUriClient implements RpcClient {
   protected readonly url: string;
 
@@ -38,6 +40,9 @@ export class HttpUriClient implements RpcClient {
   }
 
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
+    if (request.params && Object.keys(request.params).length !== 0) {
+      throw new Error(`HttpUriClient doesn't support passing params: ${request.params}`);
+    }
     const method = `${this.url}/${request.method}`;
     const response = await axios.get(method, getOriginConfig());
     return throwIfError(response.data);

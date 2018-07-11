@@ -25,23 +25,17 @@ const value = randomId();
 const buildKvTx = (k: string, v: string): Uint8Array => Encoding.asAscii(`${k}=${v}`);
 
 describe("Verify client calls on tendermint w/ kvstore app", () => {
-  const logfail = (x: any) => {
-    // tslint:disable:no-console
-    console.log(x);
-    fail(x);
-  };
-
   it("Tries to connect with known version to tendermint", () => {
     pendingWithoutTendermint();
     const client = new Client(new HttpClient(tendermintUrl), v0_20);
-    return client.abciInfo().catch(err => logfail(err));
+    return client.abciInfo().catch(fail);
   });
 
   it("Tries to auto-discover tendermint", () => {
     pendingWithoutTendermint();
     return Client.detectVersion(new HttpClient(tendermintUrl))
       .then(client => client.abciInfo())
-      .catch(err => fail(err));
+      .catch(fail);
   });
 
   it("Posts a transaction", () => {
@@ -63,7 +57,7 @@ describe("Verify client calls on tendermint w/ kvstore app", () => {
     return client
       .broadcastTxCommit({ tx: tx })
       .then(verifyResponse)
-      .catch(err => fail(err));
+      .catch(fail);
   });
 
   it("Queries the state", () => {
@@ -83,7 +77,7 @@ describe("Verify client calls on tendermint w/ kvstore app", () => {
     return client
       .abciQuery(queryParams)
       .then(verifyQuery)
-      .catch(err => fail(err));
+      .catch(fail);
   });
 
   it("Sanity check - calls don't error", () => {
@@ -98,7 +92,8 @@ describe("Verify client calls on tendermint w/ kvstore app", () => {
       .then(() => client.genesis())
       .then(() => client.health())
       .then(() => client.status())
-      .then(() => client.validators());
+      .then(() => client.validators())
+      .catch(fail);
   });
 
   it("Can query a tx properly", () => {
@@ -137,6 +132,6 @@ describe("Verify client calls on tendermint w/ kvstore app", () => {
       expect(s.txs[0]).toEqual({ ...r, proof: undefined });
     };
 
-    return verifyTxResponses().catch(err => fail(err));
+    return verifyTxResponses().catch(fail);
   });
 });
