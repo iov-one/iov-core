@@ -1,4 +1,4 @@
-import { As, ChainId, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
+import { As, ChainId, Prehash, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
 
 import { Ed25519KeyringEntry, Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
 import { ValueAndUpdates } from "./valueandupdates";
@@ -139,6 +139,7 @@ export interface KeyringEntry {
   readonly createTransactionSignature: (
     identity: PublicIdentity,
     tx: SignableBytes,
+    prehash: Prehash,
     chainID: ChainId,
   ) => Promise<SignatureBytes>;
 
