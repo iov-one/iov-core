@@ -62,6 +62,15 @@
 
 > profile.getIdentities(1)
 []
+
+> profile.entryLabels.value
+[ undefined, undefined ]
+
+> profile.setEntryLabel(0, "main")
+> profile.setEntryLabel(1, "second")
+
+> profile.entryLabels.value
+[ 'main', 'second' ]
 ```
 
 6. Now store to disk

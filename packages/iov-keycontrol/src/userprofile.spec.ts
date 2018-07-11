@@ -59,18 +59,82 @@ describe("UserProfile", () => {
     }
   });
 
+  it("initial entry labels work", () => {
+    {
+      const profile = new UserProfile();
+      expect(profile.entryLabels.value).toEqual([]);
+    }
+
+    {
+      const entry = Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+      entry.setLabel("label 1");
+
+      const keyring = new Keyring();
+      keyring.add(entry);
+      const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
+      expect(profile.entryLabels.value).toEqual(["label 1"]);
+    }
+
+    {
+      const entry1 = Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+      entry1.setLabel("label 1");
+      const entry2 = Ed25519SimpleAddressKeyringEntry.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
+      entry2.setLabel("");
+      const entry3 = Ed25519SimpleAddressKeyringEntry.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
+      entry3.setLabel(undefined);
+
+      const keyring = new Keyring();
+      keyring.add(entry1);
+      keyring.add(entry2);
+      keyring.add(entry3);
+      const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
+      expect(profile.entryLabels.value).toEqual(["label 1", "", undefined]);
+    }
+  });
+
   it("can add entries", () => {
     const profile = new UserProfile();
     expect(profile.entriesCount.value).toEqual(0);
+    expect(profile.entryLabels.value).toEqual([]);
     profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
     expect(profile.entriesCount.value).toEqual(1);
+    expect(profile.entryLabels.value).toEqual([undefined]);
     expect(profile.getIdentities(0)).toBeTruthy();
     profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil"));
     profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
     expect(profile.entriesCount.value).toEqual(3);
+    expect(profile.entryLabels.value).toEqual([undefined, undefined, undefined]);
     expect(profile.getIdentities(0)).toBeTruthy();
     expect(profile.getIdentities(1)).toBeTruthy();
     expect(profile.getIdentities(2)).toBeTruthy();
+  });
+
+  it("can update entry labels", () => {
+    const keyring = new Keyring();
+    keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+    keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+    const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
+    expect(profile.entryLabels.value).toEqual([undefined, undefined]);
+
+    profile.setEntryLabel(0, "foo1");
+    expect(profile.entryLabels.value).toEqual(["foo1", undefined]);
+
+    profile.setEntryLabel(1, "foo2");
+    expect(profile.entryLabels.value).toEqual(["foo1", "foo2"]);
+
+    profile.setEntryLabel(0, "bar1");
+    profile.setEntryLabel(1, "bar2");
+    expect(profile.entryLabels.value).toEqual(["bar1", "bar2"]);
+
+    profile.setEntryLabel(1, "");
+    expect(profile.entryLabels.value).toEqual(["bar1", ""]);
+
+    profile.setEntryLabel(0, "");
+    expect(profile.entryLabels.value).toEqual(["", ""]);
+
+    profile.setEntryLabel(0, undefined);
+    profile.setEntryLabel(1, undefined);
+    expect(profile.entryLabels.value).toEqual([undefined, undefined]);
   });
 
   it("added entry can not be manipulated from outside", done => {
@@ -205,6 +269,7 @@ describe("UserProfile", () => {
 
       // keyring entry of index 0 does not exist
 
+      expect(() => profile.setEntryLabel(0, "foo")).toThrowError(/Entry of index 0 does not exist in keyring/);
       expect(() => profile.getIdentities(0)).toThrowError(/Entry of index 0 does not exist in keyring/);
       expect(() => profile.setIdentityLabel(0, fakeIdentity, "foo")).toThrowError(/Entry of index 0 does not exist in keyring/);
       await profile

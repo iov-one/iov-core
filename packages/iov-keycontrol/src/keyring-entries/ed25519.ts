@@ -10,30 +10,71 @@ import {
 } from "../keyring";
 import { DefaultValueProducer, ValueAndUpdates } from "../valueandupdates";
 
+interface PubkeySerialization {
+  readonly algo: string;
+  readonly data: string;
+}
+
+interface LocalIdentitySerialization {
+  readonly pubkey: PubkeySerialization;
+  readonly label?: string;
+}
+
+interface IdentitySerialization {
+  readonly localIdentity: LocalIdentitySerialization;
+  readonly privkey: string;
+}
+
+interface Ed25519KeyringEntrySerialization {
+  readonly label: string | undefined;
+  readonly identities: ReadonlyArray<IdentitySerialization>;
+}
+
 export class Ed25519KeyringEntry implements KeyringEntry {
   private static identityId(identity: PublicIdentity): string {
     return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
   }
 
+  private static algorithmFromString(input: string): Algorithm {
+    switch (input) {
+      case "ed25519":
+        return Algorithm.ED25519;
+      case "secp256k1":
+        return Algorithm.SECP256K1;
+      default:
+        throw new Error("Unknown alogorithm string found");
+    }
+  }
+
+  public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
   public readonly implementationId = "ed25519" as KeyringEntryImplementationIdString;
 
   private readonly identities: LocalIdentity[];
   private readonly privkeys: Map<string, Ed25519Keypair>;
+  private readonly labelProducer: DefaultValueProducer<string | undefined>;
 
   constructor(data?: KeyringEntrySerializationString) {
+    // tslint:disable-next-line:no-let
+    let label: string | undefined;
     const identities: LocalIdentity[] = [];
     const privkeys = new Map<string, Ed25519Keypair>();
+
     if (data) {
-      const decodedData = JSON.parse(data);
-      for (const record of decodedData) {
+      const decodedData: Ed25519KeyringEntrySerialization = JSON.parse(data);
+
+      // label
+      label = decodedData.label;
+
+      // identities
+      for (const record of decodedData.identities) {
         const keypair = new Ed25519Keypair(
           Encoding.fromHex(record.privkey),
           Encoding.fromHex(record.localIdentity.pubkey.data),
         );
         const identity: LocalIdentity = {
           pubkey: {
-            algo: record.localIdentity.pubkey.algo,
+            algo: Ed25519KeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo),
             data: keypair.pubkey as PublicKeyBytes,
           },
           label: record.localIdentity.label,
@@ -46,6 +87,12 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
     this.identities = identities;
     this.privkeys = privkeys;
+    this.labelProducer = new DefaultValueProducer<string | undefined>(label);
+    this.label = new ValueAndUpdates(this.labelProducer);
+  }
+
+  public setLabel(label: string | undefined): void {
+    this.labelProducer.update(label);
   }
 
   public async createIdentity(): Promise<LocalIdentity> {
@@ -94,19 +141,22 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   }
 
   public serialize(): KeyringEntrySerializationString {
-    const out = this.identities.map(identity => {
-      const keypair = this.privateKeyForIdentity(identity);
-      return {
-        localIdentity: {
-          pubkey: {
-            algo: identity.pubkey.algo,
-            data: Encoding.toHex(identity.pubkey.data),
+    const out: Ed25519KeyringEntrySerialization = {
+      label: this.label.value,
+      identities: this.identities.map(identity => {
+        const keypair = this.privateKeyForIdentity(identity);
+        return {
+          localIdentity: {
+            pubkey: {
+              algo: identity.pubkey.algo,
+              data: Encoding.toHex(identity.pubkey.data),
+            },
+            label: identity.label,
           },
-          label: identity.label,
-        },
-        privkey: Encoding.toHex(keypair.privkey),
-      };
-    });
+          privkey: Encoding.toHex(keypair.privkey),
+        };
+      }),
+    };
     return JSON.stringify(out) as KeyringEntrySerializationString;
   }
 

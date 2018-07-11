@@ -110,6 +110,12 @@ It is inspired by metamask's design:
 https://github.com/MetaMask/KeyringController/blob/master/docs/keyring.md
 */
 export interface KeyringEntry {
+  readonly label: ValueAndUpdates<string | undefined>;
+
+  // Sets a label associated with the keyring entry to be displayed in the UI.
+  // To clear the label, set it to undefined.
+  readonly setLabel: (label: string | undefined) => void;
+
   // createIdentity will create one new identity
   readonly createIdentity: () => Promise<LocalIdentity>;
 
