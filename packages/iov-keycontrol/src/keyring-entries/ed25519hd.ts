@@ -19,24 +19,22 @@ import {
 } from "../keyring";
 import { DefaultValueProducer, ValueAndUpdates } from "../valueandupdates";
 
-export interface PubkeySerialization {
+interface PubkeySerialization {
   readonly algo: string;
   readonly data: string;
 }
 
-export interface LocalIdentitySerialization {
+interface LocalIdentitySerialization {
   readonly pubkey: PubkeySerialization;
   readonly label?: string;
 }
 
-export interface IdentitySerialization {
+interface IdentitySerialization {
   readonly localIdentity: LocalIdentitySerialization;
   readonly privkeyPath: ReadonlyArray<number>;
 }
 
-// Only exported to be used in tests. This is implementation detail
-// for applications and must not be exported outside of the package.
-export interface Ed25519HdKeyringEntrySerialization {
+interface Ed25519HdKeyringEntrySerialization {
   readonly secret: string;
   readonly label: string | undefined;
   readonly identities: ReadonlyArray<IdentitySerialization>;

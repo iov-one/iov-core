@@ -2,7 +2,7 @@ import { Encoding, Slip0010RawIndex } from "@iov/crypto";
 import { Algorithm, ChainId, SignableBytes } from "@iov/types";
 
 import { KeyringEntrySerializationString } from "../keyring";
-import { Ed25519HdKeyringEntry, Ed25519HdKeyringEntrySerialization } from "./ed25519hd";
+import { Ed25519HdKeyringEntry } from "./ed25519hd";
 
 describe("Ed25519HdKeyringEntry", () => {
   const emptyEntry = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [] }' as KeyringEntrySerializationString;
@@ -131,7 +131,7 @@ describe("Ed25519HdKeyringEntry", () => {
       expect(serialized).toBeTruthy();
       expect(serialized.length).toBeGreaterThan(100);
 
-      const decodedJson: Ed25519HdKeyringEntrySerialization = JSON.parse(serialized);
+      const decodedJson = JSON.parse(serialized);
       expect(decodedJson).toBeTruthy();
       expect(decodedJson.label).toEqual("entry with 3 identities");
       expect(decodedJson.secret).toMatch(/^[a-z]+( [a-z]+)*$/);
