@@ -3,13 +3,18 @@ import Long from "long";
 import MemDownConstructor from "memdown";
 import { ReadonlyDate } from "readonly-date";
 
+import { Chacha20poly1305IetfKey, Encoding } from "@iov/crypto";
 import { AddressBytes, Algorithm, ChainId, Nonce, PostableBytes, PublicKeyBytes, SendTx, SignableBytes, SignatureBytes, SignedTransaction, TokenTicker, TransactionIDBytes, TransactionKind, TxCodec } from "@iov/types";
 
 import { Keyring } from "./keyring";
 import { Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
 import { UserProfile } from "./userprofile";
 
+const { fromHex } = Encoding;
+
 describe("UserProfile", () => {
+  const defaultEncryptionKey = fromHex("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") as Chacha20poly1305IetfKey;
+
   it("can be constructed without arguments", () => {
     const profile = new UserProfile();
     expect(profile).toBeTruthy();
@@ -167,9 +172,9 @@ describe("UserProfile", () => {
       const keyring = new Keyring();
       const profile = new UserProfile({ createdAt, keyring });
 
-      await profile.storeIn(db);
+      await profile.storeIn(db, defaultEncryptionKey);
       expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
-      expect(await db.get("keyring", { asBuffer: false })).toEqual('{"entries":[]}');
+      expect(await db.get("keyring", { asBuffer: false })).toMatch(/[0-9a-f]+/);
 
       await db.close();
 
@@ -188,7 +193,7 @@ describe("UserProfile", () => {
       await db.put("foo", "bar");
 
       const profile = new UserProfile();
-      await profile.storeIn(db);
+      await profile.storeIn(db, defaultEncryptionKey);
 
       await db
         .get("foo")
@@ -207,23 +212,37 @@ describe("UserProfile", () => {
     });
   });
 
-  it("can be loaded from storage", done => {
-    (async () => {
-      const db = levelup(MemDownConstructor<string, string>());
-      await db.put("created_at", "1985-04-12T23:20:50.521Z");
-      await db.put("keyring", '{"entries":[]}');
+  it("stored in and loaded from storage", async () => {
+    const db = levelup(MemDownConstructor<string, string>());
 
-      const profile = await UserProfile.loadFrom(db);
-      expect(profile.createdAt).toEqual(new ReadonlyDate("1985-04-12T23:20:50.521Z"));
+    const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+    const keyring = new Keyring();
+    const original = new UserProfile({ createdAt, keyring });
 
-      await db.close();
+    await original.storeIn(db, defaultEncryptionKey);
 
-      done();
-    })().catch(error => {
-      setTimeout(() => {
-        throw error;
-      });
-    });
+    const restored = await UserProfile.loadFrom(db, defaultEncryptionKey);
+
+    expect(restored.createdAt).toEqual(original.createdAt);
+
+    await db.close();
+  });
+
+  it("fails when loading with wrong key", async () => {
+    const db = levelup(MemDownConstructor<string, string>());
+
+    const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+    const keyring = new Keyring();
+    const original = new UserProfile({ createdAt, keyring });
+
+    await original.storeIn(db, defaultEncryptionKey);
+
+    const otherEncryptionKey = fromHex("bbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") as Chacha20poly1305IetfKey;
+    await UserProfile.loadFrom(db, otherEncryptionKey)
+      .then(() => fail("loading must not succeed"))
+      .catch(error => expect(error).toMatch(/invalid usage/));
+
+    await db.close();
   });
 
   it("throws for non-existing entry index", done => {

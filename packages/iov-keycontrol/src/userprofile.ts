@@ -2,14 +2,26 @@ import { AbstractLevelDOWN } from "abstract-leveldown";
 import { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
 
+import {
+  Chacha20poly1305Ietf,
+  Chacha20poly1305IetfCiphertext,
+  Chacha20poly1305IetfKey,
+  Chacha20poly1305IetfMessage,
+  Chacha20poly1305IetfNonce,
+  Encoding,
+} from "@iov/crypto";
 import { FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/types";
 
 import { Keyring, KeyringEntry, KeyringSerializationString, LocalIdentity, PublicIdentity } from "./keyring";
 import { DatabaseUtils } from "./utils";
 import { DefaultValueProducer, ValueAndUpdates } from "./valueandupdates";
 
+const { asAscii, fromAscii, fromHex, toHex } = Encoding;
+
 const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
+
+const dummyNonce = fromHex("001122334455667788990011") as Chacha20poly1305IetfNonce; // TODO: remove
 
 export interface UserProfileOptions {
   readonly createdAt: ReadonlyDate;
@@ -24,13 +36,18 @@ export interface UserProfileOptions {
  * UserProfile via the UserProfileController to get an unlocked UserProfile.
  */
 export class UserProfile {
-  public static async loadFrom(db: LevelUp<AbstractLevelDOWN<string, string>>): Promise<UserProfile> {
+  public static async loadFrom(
+    db: LevelUp<AbstractLevelDOWN<string, string>>,
+    encryptionKey: Chacha20poly1305IetfKey,
+  ): Promise<UserProfile> {
     // get from storage (raw strings)
     const createdAtFromStorage = await db.get(storageKeyCreatedAt, { asBuffer: false });
     const keyringFromStorage = await db.get(storageKeyKeyring, { asBuffer: false });
 
     // process
-    const keyringSerialization = keyringFromStorage as KeyringSerializationString;
+    const encryptedKeyring = fromHex(keyringFromStorage) as Chacha20poly1305IetfCiphertext;
+    const decrypted = await Chacha20poly1305Ietf.decrypt(encryptedKeyring, encryptionKey, dummyNonce);
+    const keyringSerialization = fromAscii(decrypted) as KeyringSerializationString;
 
     // create objects
     const createdAt = new ReadonlyDate(createdAtFromStorage); // TODO: add strict RFC 3339 parser
@@ -73,16 +90,23 @@ export class UserProfile {
   }
 
   // this will clear everything in the database and store the user profile
-  public async storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>): Promise<void> {
+  public async storeIn(
+    db: LevelUp<AbstractLevelDOWN<string, string>>,
+    encryptionKey: Chacha20poly1305IetfKey,
+  ): Promise<void> {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
 
     await DatabaseUtils.clear(db);
 
+    // process
+    const keyringPlaintext = asAscii(this.keyring.serialize()) as Chacha20poly1305IetfMessage;
+    const keyringEncrypted = await Chacha20poly1305Ietf.encrypt(keyringPlaintext, encryptionKey, dummyNonce);
+
     // create storage values (raw strings)
     const createdAtForStorage = this.createdAt.toISOString();
-    const keyringForStorage = this.keyring.serialize();
+    const keyringForStorage = toHex(keyringEncrypted);
 
     // store
     await db.put(storageKeyCreatedAt, createdAtForStorage);
