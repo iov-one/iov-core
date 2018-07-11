@@ -41,4 +41,22 @@ export class Encoding {
       });
     return Uint8Array.from(toNums(input));
   }
+
+  public static fromAscii(data: Uint8Array): string {
+    const fromNums = (listOfNumbers: ReadonlyArray<number>) =>
+      listOfNumbers.map(
+        (x: number): string => {
+          // 0x00–0x1F control characters
+          // 0x20–0x7E printable characters
+          // 0x7F delete character
+          // 0x80–0xFF out of 7 bit ascii range
+          if (x < 0x20 || x > 0x7e) {
+            throw new Error("Cannot decode character that is out of printable ASCII range: " + x);
+          }
+          return String.fromCharCode(x);
+        },
+      );
+
+    return fromNums(Array.from(data)).join("");
+  }
 }
