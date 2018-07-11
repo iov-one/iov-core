@@ -98,59 +98,31 @@ export class UserProfile {
 
   // sets the label of the n-th keyring entry of the primary keyring
   public setEntryLabel(n: number, label: string | undefined): void {
+    const entry = this.entryInPrimaryKeyring(n);
+    entry.setLabel(label);
+
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
-
-    const entry = this.keyring.getEntries().find((_, index) => index === n);
-    if (!entry) {
-      throw new Error("Entry of index " + n + " does not exist in keyring");
-    }
-
-    entry.setLabel(label);
     this.entryLabelsProducer.update(UserProfile.labels(this.keyring.getEntries()));
   }
 
   // creates an identitiy in the n-th keyring entry of the primary keyring
   public async createIdentity(n: number): Promise<LocalIdentity> {
-    if (!this.keyring) {
-      throw new Error("UserProfile is currently locked");
-    }
-
-    const entry = this.keyring.getEntries().find((_, index) => index === n);
-    if (!entry) {
-      throw new Error("Entry of index " + n + " does not exist in keyring");
-    }
-
+    const entry = this.entryInPrimaryKeyring(n);
     return entry.createIdentity();
   }
 
   // assigns a new label to one of the identities
   // in the n-th keyring entry of the primary keyring
   public setIdentityLabel(n: number, identity: PublicIdentity, label: string | undefined): void {
-    if (!this.keyring) {
-      throw new Error("UserProfile is currently locked");
-    }
-
-    const entry = this.keyring.getEntries().find((_, index) => index === n);
-    if (!entry) {
-      throw new Error("Entry of index " + n + " does not exist in keyring");
-    }
-
+    const entry = this.entryInPrimaryKeyring(n);
     entry.setIdentityLabel(identity, label);
   }
 
   // get identities of the n-th keyring entry of the primary keyring
   public getIdentities(n: number): ReadonlyArray<LocalIdentity> {
-    if (!this.keyring) {
-      throw new Error("UserProfile is currently locked");
-    }
-
-    const entry = this.keyring.getEntries().find((_, index) => index === n);
-    if (!entry) {
-      throw new Error("Entry of index " + n + " does not exist in keyring");
-    }
-
+    const entry = this.entryInPrimaryKeyring(n);
     return entry.getIdentities();
   }
 
@@ -161,14 +133,7 @@ export class UserProfile {
     codec: TxCodec,
     nonce: Nonce,
   ): Promise<SignedTransaction> {
-    if (!this.keyring) {
-      throw new Error("UserProfile is currently locked");
-    }
-
-    const entry = this.keyring.getEntries().find((_, index) => index === n);
-    if (!entry) {
-      throw new Error("Entry of index " + n + " does not exist in keyring");
-    }
+    const entry = this.entryInPrimaryKeyring(n);
 
     const bytes = codec.bytesToSign(transaction, nonce);
     const signature: FullSignature = {
@@ -191,14 +156,7 @@ export class UserProfile {
     codec: TxCodec,
     nonce: Nonce,
   ): Promise<SignedTransaction> {
-    if (!this.keyring) {
-      throw new Error("UserProfile is currently locked");
-    }
-
-    const entry = this.keyring.getEntries().find((_, index) => index === n);
-    if (!entry) {
-      throw new Error("Entry of index " + n + " does not exist in keyring");
-    }
+    const entry = this.entryInPrimaryKeyring(n);
 
     const bytes = codec.bytesToSign(originalTransaction.transaction, nonce);
     const newSignature: FullSignature = {
@@ -215,5 +173,18 @@ export class UserProfile {
       ...originalTransaction,
       otherSignatures: [...originalTransaction.otherSignatures, newSignature],
     };
+  }
+
+  private entryInPrimaryKeyring(n: number): KeyringEntry {
+    if (!this.keyring) {
+      throw new Error("UserProfile is currently locked");
+    }
+
+    const entry = this.keyring.getEntries().find((_, index) => index === n);
+    if (!entry) {
+      throw new Error("Entry of index " + n + " does not exist in keyring");
+    }
+
+    return entry;
   }
 }
