@@ -7,6 +7,17 @@ export interface RpcClient {
 }
 
 export const getWindow = (): any | undefined => (typeof window === "object" ? (window as any) : undefined);
+export const inBrowser = (): boolean => getWindow() !== undefined;
+
+// post uses fetch in browser and axios in node,
+// was having weird issues with axios in brower
+const post = (url: string, request: any): Promise<any> => {
+  if (inBrowser()) {
+    return fetch(url, { method: "POST", body: JSON.stringify(request) }).then(res => res.json());
+  } else {
+    return axios.post(url, request).then(res => res.data);
+  }
+};
 
 // make sure we set the origin header properly, seems not to be set
 // in karma tests....
@@ -25,8 +36,8 @@ export class HttpClient implements RpcClient {
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
     // make sure we set the origin header properly, seems not to be set
     // in karma tests....
-    const response = await axios.post(this.url, request, getOriginConfig());
-    return throwIfError(response.data);
+    const response = await post(this.url, request);
+    return throwIfError(response);
   }
 }
 
