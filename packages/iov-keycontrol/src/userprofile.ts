@@ -25,10 +25,16 @@ export interface UserProfileOptions {
  */
 export class UserProfile {
   public static async loadFrom(db: LevelUp<AbstractLevelDOWN<string, string>>): Promise<UserProfile> {
-    const createdAt = new ReadonlyDate(await db.get(storageKeyCreatedAt, { asBuffer: false })); // TODO: add strict RFC 3339 parser
-    const keyring = new Keyring((await db.get(storageKeyKeyring, {
-      asBuffer: false,
-    })) as KeyringSerializationString);
+    // get from storage (raw strings)
+    const createdAtFromStorage = await db.get(storageKeyCreatedAt, { asBuffer: false });
+    const keyringFromStorage = await db.get(storageKeyKeyring, { asBuffer: false });
+
+    // process
+    const keyringSerialization = keyringFromStorage as KeyringSerializationString;
+
+    // create objects
+    const createdAt = new ReadonlyDate(createdAtFromStorage); // TODO: add strict RFC 3339 parser
+    const keyring = new Keyring(keyringSerialization);
     return new UserProfile({ createdAt, keyring });
   }
 
@@ -74,8 +80,13 @@ export class UserProfile {
 
     await DatabaseUtils.clear(db);
 
-    await db.put(storageKeyCreatedAt, this.createdAt.toISOString());
-    await db.put(storageKeyKeyring, this.keyring.serialize());
+    // create storage values (raw strings)
+    const createdAtForStorage = this.createdAt.toISOString();
+    const keyringForStorage = this.keyring.serialize();
+
+    // store
+    await db.put(storageKeyCreatedAt, createdAtForStorage);
+    await db.put(storageKeyKeyring, keyringForStorage);
   }
 
   public lock(): void {
