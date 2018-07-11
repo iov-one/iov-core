@@ -5,6 +5,9 @@ export declare type Chacha20poly1305IetfKey = Uint8Array & As<"chacha20poly1305i
 export declare type Chacha20poly1305IetfMessage = Uint8Array & As<"chacha20poly1305ietf-message">;
 export declare type Chacha20poly1305IetfNonce = Uint8Array & As<"chacha20poly1305ietf-nonce">;
 export declare type Chacha20poly1305IetfCiphertext = Uint8Array & As<"chacha20poly1305ietf-ciphertext">;
+export declare class Argon2id {
+    static defaultHash(password: string, salt: Uint8Array): Promise<Uint8Array>;
+}
 export declare class Random {
     static getBytes(count: number): Promise<Uint8Array>;
 }

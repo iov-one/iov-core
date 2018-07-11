@@ -1,10 +1,19 @@
 /* tslint:disable:no-bitwise */
 import { Encoding } from "./encoding";
-import { Chacha20poly1305Ietf, Chacha20poly1305IetfCiphertext, Chacha20poly1305IetfKey, Chacha20poly1305IetfMessage, Chacha20poly1305IetfNonce, Ed25519, Ed25519Keypair, Random } from "./libsodium";
+import { Argon2id, Chacha20poly1305Ietf, Chacha20poly1305IetfCiphertext, Chacha20poly1305IetfKey, Chacha20poly1305IetfMessage, Chacha20poly1305IetfNonce, Ed25519, Ed25519Keypair, Random } from "./libsodium";
 
-const fromHex = Encoding.fromHex;
+const { asAscii, fromHex } = Encoding;
 
 describe("Libsodium", () => {
+  describe("Argon2id", () => {
+    it("works for default parameters", () => {
+      // echo -n "123" | ./argon2 ABCDEFGHIJKLMNOP -id -v 13 -k 8192 -t 10
+      return Argon2id.defaultHash("123", asAscii("ABCDEFGHIJKLMNOP")).then(result => {
+        expect(result).toEqual(fromHex("d827d9a67adc51c98d458c3f6b96cf8548e6adb97e6ec0fa66f2031a9df0b95a"));
+      });
+    });
+  });
+
   describe("Random", () => {
     it("creates random bytes", done => {
       (async () => {

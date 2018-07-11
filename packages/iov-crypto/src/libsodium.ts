@@ -17,6 +17,23 @@ export type Chacha20poly1305IetfMessage = Uint8Array & As<"chacha20poly1305ietf-
 export type Chacha20poly1305IetfNonce = Uint8Array & As<"chacha20poly1305ietf-nonce">;
 export type Chacha20poly1305IetfCiphertext = Uint8Array & As<"chacha20poly1305ietf-ciphertext">;
 
+export class Argon2id {
+  public static async defaultHash(password: string, salt: Uint8Array): Promise<Uint8Array> {
+    await sodium.ready;
+    const opsLimit = 10; // 1 to 4294967295
+    // only ~ 16 MiB of memory are available using the non-sumo version of libsodium
+    const memLimitBytes = 8 * (1024 * 1024);
+    return sodium.crypto_pwhash(
+      32,
+      password,
+      salt, // libsodium only supports 16 byte salts
+      opsLimit,
+      memLimitBytes,
+      sodium.crypto_pwhash_ALG_ARGON2ID13,
+    );
+  }
+}
+
 export class Random {
   // Get `count` bytes of cryptographically secure random bytes
   public static async getBytes(count: number): Promise<Uint8Array> {
