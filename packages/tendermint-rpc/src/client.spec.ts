@@ -2,6 +2,7 @@ import { Encoding } from "@iov/crypto";
 
 import { v0_20 } from "./adaptor";
 import { Client } from "./client";
+import { randomId } from "./common";
 import { QueryString } from "./encodings";
 import * as responses from "./responses";
 import { HttpClient } from "./rpcclient";
@@ -16,6 +17,11 @@ const pendingWithoutTendermint = () => {
 
 // TODO: make flexible, support multiple versions, etc...
 const tendermintUrl = "http://localhost:12345";
+
+const key = randomId();
+const value = randomId();
+
+const buildKvTx = (k: string, v: string): Uint8Array => Encoding.asAscii(`${k}=${v}`);
 
 describe("Verify client calls on tendermint w/ kvstore app", () => {
   it("Tries to connect with known version to tendermint", () => {
@@ -34,7 +40,7 @@ describe("Verify client calls on tendermint w/ kvstore app", () => {
   it("Posts a transaction", () => {
     pendingWithoutTendermint();
     const client = new Client(new HttpClient(tendermintUrl), v0_20);
-    const tx = Encoding.asAscii("hello=byte");
+    const tx = buildKvTx(key, value);
 
     const verifyResponse = (res: responses.BroadcastTxCommitResponse) => {
       expect(res.height).toBeGreaterThan(2);
@@ -57,13 +63,13 @@ describe("Verify client calls on tendermint w/ kvstore app", () => {
     pendingWithoutTendermint();
     const client = new Client(new HttpClient(tendermintUrl), v0_20);
 
-    const key = Encoding.asAscii("hello");
-    const value = Encoding.asAscii("byte");
-    const queryParams = { path: "/key", data: key };
+    const binKey = Encoding.asAscii(key);
+    const binValue = Encoding.asAscii(value);
+    const queryParams = { path: "/key", data: binKey };
 
     const verifyQuery = (res: responses.AbciQueryResponse) => {
-      expect(new Uint8Array(res.key)).toEqual(key);
-      expect(new Uint8Array(res.value)).toEqual(value);
+      expect(new Uint8Array(res.key)).toEqual(binKey);
+      expect(new Uint8Array(res.value)).toEqual(binValue);
       expect(res.code).toBeFalsy();
     };
 
@@ -93,7 +99,10 @@ describe("Verify client calls on tendermint w/ kvstore app", () => {
     const client = new Client(new HttpClient(tendermintUrl), v0_20);
 
     const verifyTxResponses = async () => {
-      const tx = Encoding.asAscii("find=me");
+      const find = randomId();
+      const me = randomId();
+      const tx = buildKvTx(find, me);
+
       const txRes = await client.broadcastTxCommit({ tx });
       expect(responses.txCommitSuccess(txRes)).toBeTruthy();
       expect(txRes.height).toBeTruthy();
@@ -112,11 +121,10 @@ describe("Verify client calls on tendermint w/ kvstore app", () => {
 
       // txSearch - you must enable the indexer when running
       // tendermint, else you get empty results
-      const query = "app.key='find'" as QueryString;
+      const query = `app.key='${find}'` as QueryString;
       const s = await client.txSearch({ query, page: 1, per_page: 30 });
       // should find the tx
       expect(s.totalCount).toEqual(1);
-      expect(s.txs.length).toEqual(1);
       // should return same info as querying directly,
       // except without the proof
       expect(s.txs[0]).toEqual({ ...r, proof: undefined });
