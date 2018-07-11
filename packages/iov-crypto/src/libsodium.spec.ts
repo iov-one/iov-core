@@ -306,6 +306,41 @@ describe("Libsodium", () => {
       });
     });
 
+    it("throws when encrypting with wrong key length", async () => {
+      const nonce = fromHex("7dfcbef658b1fe6edaf258be") as Chacha20poly1305IetfNonce;
+      const message = new Uint8Array([]) as Chacha20poly1305IetfMessage;
+
+      {
+        // empty
+        const key = fromHex("") as Chacha20poly1305IetfKey;
+        await Chacha20poly1305Ietf.encrypt(message, key, nonce)
+          .then(() => fail("encryption must not succeed"))
+          .catch(error => expect(error).toMatch(/invalid key length/));
+      }
+
+      {
+        // 31 bytes
+        const key = fromHex("1324cdddc4b94e625bbabcac862c9429ba011e2184a1ccad60e7c3f6ff4916") as Chacha20poly1305IetfKey;
+        await Chacha20poly1305Ietf.encrypt(message, key, nonce)
+          .then(() => fail("encryption must not succeed"))
+          .catch(error => expect(error).toMatch(/invalid key length/));
+      }
+      {
+        // 33 bytes
+        const key = fromHex("1324cdddc4b94e625bbabcac862c9429ba011e2184a1ccad60e7c3f6ff4916d8aa") as Chacha20poly1305IetfKey;
+        await Chacha20poly1305Ietf.encrypt(message, key, nonce)
+          .then(() => fail("encryption must not succeed"))
+          .catch(error => expect(error).toMatch(/invalid key length/));
+      }
+      {
+        // 64 bytes
+        const key = fromHex("1324cdddc4b94e625bbabcac862c9429ba011e2184a1ccad60e7c3f6ff4916d81324cdddc4b94e625bbabcac862c9429ba011e2184a1ccad60e7c3f6ff4916d8") as Chacha20poly1305IetfKey;
+        await Chacha20poly1305Ietf.encrypt(message, key, nonce)
+          .then(() => fail("encryption must not succeed"))
+          .catch(error => expect(error).toMatch(/invalid key length/));
+      }
+    });
+
     it("decryption fails with wrong ciphertext/key/nonce", done => {
       (async () => {
         const key = fromHex("1324cdddc4b94e625bbabcac862c9429ba011e2184a1ccad60e7c3f6ff4916d8") as Chacha20poly1305IetfKey;
