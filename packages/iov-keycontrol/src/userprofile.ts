@@ -9,6 +9,7 @@ import {
   Chacha20poly1305IetfMessage,
   Chacha20poly1305IetfNonce,
   Encoding,
+  Random,
 } from "@iov/crypto";
 import { FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/types";
 
@@ -20,8 +21,6 @@ const { asAscii, fromAscii, fromHex, toHex } = Encoding;
 
 const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
-
-const dummyNonce = fromHex("001122334455667788990011") as Chacha20poly1305IetfNonce; // TODO: remove
 
 export interface UserProfileOptions {
   readonly createdAt: ReadonlyDate;
@@ -45,14 +44,25 @@ export class UserProfile {
     const keyringFromStorage = await db.get(storageKeyKeyring, { asBuffer: false });
 
     // process
-    const encryptedKeyring = fromHex(keyringFromStorage) as Chacha20poly1305IetfCiphertext;
-    const decrypted = await Chacha20poly1305Ietf.decrypt(encryptedKeyring, encryptionKey, dummyNonce);
+    const keyringBundle = fromHex(keyringFromStorage);
+    const keyringNonce = keyringBundle.slice(0, 12) as Chacha20poly1305IetfNonce;
+    const keyringCiphertext = keyringBundle.slice(12) as Chacha20poly1305IetfCiphertext;
+    const decrypted = await Chacha20poly1305Ietf.decrypt(keyringCiphertext, encryptionKey, keyringNonce);
     const keyringSerialization = fromAscii(decrypted) as KeyringSerializationString;
 
     // create objects
     const createdAt = new ReadonlyDate(createdAtFromStorage); // TODO: add strict RFC 3339 parser
     const keyring = new Keyring(keyringSerialization);
     return new UserProfile({ createdAt, keyring });
+  }
+
+  private static async makeNonce(): Promise<Chacha20poly1305IetfNonce> {
+    // With 96 bit random nonces, we can produce N = 250,000,000 nonces
+    // while keeping the probability of a collision below one in a trillion
+    // https://crypto.stackexchange.com/a/60339
+    // This is less likely than winning the German lottery for a given and the following week.
+    // We consider this safer as implementing a counter that can be manipulated.
+    return (await Random.getBytes(12)) as Chacha20poly1305IetfNonce;
   }
 
   private static labels(entries: ReadonlyArray<KeyringEntry>): ReadonlyArray<string | undefined> {
@@ -102,11 +112,16 @@ export class UserProfile {
 
     // process
     const keyringPlaintext = asAscii(this.keyring.serialize()) as Chacha20poly1305IetfMessage;
-    const keyringEncrypted = await Chacha20poly1305Ietf.encrypt(keyringPlaintext, encryptionKey, dummyNonce);
+    const keyringNonce = await UserProfile.makeNonce();
+    const keyringCiphertext = await Chacha20poly1305Ietf.encrypt(
+      keyringPlaintext,
+      encryptionKey,
+      keyringNonce,
+    );
 
     // create storage values (raw strings)
     const createdAtForStorage = this.createdAt.toISOString();
-    const keyringForStorage = toHex(keyringEncrypted);
+    const keyringForStorage = toHex(keyringNonce) + toHex(keyringCiphertext);
 
     // store
     await db.put(storageKeyCreatedAt, createdAtForStorage);
