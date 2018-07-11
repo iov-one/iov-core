@@ -61,8 +61,7 @@ describe("UserProfile", () => {
 
   it("initial entry labels work", () => {
     {
-      const keyring = new Keyring();
-      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring);
+      const profile = new UserProfile();
       expect(profile.entryLabels.value).toEqual([]);
     }
 
@@ -72,7 +71,7 @@ describe("UserProfile", () => {
 
       const keyring = new Keyring();
       keyring.add(entry);
-      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring);
+      const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
       expect(profile.entryLabels.value).toEqual(["label 1"]);
     }
 
@@ -88,7 +87,7 @@ describe("UserProfile", () => {
       keyring.add(entry1);
       keyring.add(entry2);
       keyring.add(entry3);
-      const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring);
+      const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
       expect(profile.entryLabels.value).toEqual(["label 1", "", undefined]);
     }
   });
@@ -114,7 +113,7 @@ describe("UserProfile", () => {
     const keyring = new Keyring();
     keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
     keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
-    const profile = new UserProfile(new ReadonlyDate(ReadonlyDate.now()), keyring);
+    const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
     expect(profile.entryLabels.value).toEqual([undefined, undefined]);
 
     profile.setEntryLabel(0, "foo1");
