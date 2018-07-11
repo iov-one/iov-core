@@ -1,3 +1,10 @@
+declare class As<Tag extends string> {
+    private readonly "_ _ _";
+}
+export declare type Chacha20poly1305IetfKey = Uint8Array & As<"chacha20poly1305ietf-key">;
+export declare type Chacha20poly1305IetfMessage = Uint8Array & As<"chacha20poly1305ietf-message">;
+export declare type Chacha20poly1305IetfNonce = Uint8Array & As<"chacha20poly1305ietf-nonce">;
+export declare type Chacha20poly1305IetfCiphertext = Uint8Array & As<"chacha20poly1305ietf-ciphertext">;
 export declare class Random {
     static getBytes(count: number): Promise<Uint8Array>;
 }
@@ -14,6 +21,7 @@ export declare class Ed25519 {
     static verifySignature(signature: Uint8Array, message: Uint8Array, pubkey: Uint8Array): Promise<boolean>;
 }
 export declare class Chacha20poly1305Ietf {
-    static encrypt(message: Uint8Array, key: Uint8Array, nonce: Uint8Array): Promise<Uint8Array>;
-    static decrypt(ciphertext: Uint8Array, key: Uint8Array, nonce: Uint8Array): Promise<Uint8Array>;
+    static encrypt(message: Chacha20poly1305IetfMessage, key: Chacha20poly1305IetfKey, nonce: Chacha20poly1305IetfNonce): Promise<Chacha20poly1305IetfCiphertext>;
+    static decrypt(ciphertext: Chacha20poly1305IetfCiphertext, key: Chacha20poly1305IetfKey, nonce: Chacha20poly1305IetfNonce): Promise<Chacha20poly1305IetfMessage>;
 }
+export {};

@@ -7,6 +7,16 @@
 // https://github.com/jedisct1/libsodium.js/issues/148
 import sodium = require("libsodium-wrappers");
 
+// type tagging from https://github.com/Microsoft/TypeScript/issues/4895#issuecomment-399098397
+declare class As<Tag extends string> {
+  private readonly "_ _ _": Tag;
+}
+
+export type Chacha20poly1305IetfKey = Uint8Array & As<"chacha20poly1305ietf-key">;
+export type Chacha20poly1305IetfMessage = Uint8Array & As<"chacha20poly1305ietf-message">;
+export type Chacha20poly1305IetfNonce = Uint8Array & As<"chacha20poly1305ietf-nonce">;
+export type Chacha20poly1305IetfCiphertext = Uint8Array & As<"chacha20poly1305ietf-ciphertext">;
+
 export class Random {
   // Get `count` bytes of cryptographically secure random bytes
   public static async getBytes(count: number): Promise<Uint8Array> {
@@ -60,7 +70,11 @@ export class Ed25519 {
 }
 
 export class Chacha20poly1305Ietf {
-  public static async encrypt(message: Uint8Array, key: Uint8Array, nonce: Uint8Array): Promise<Uint8Array> {
+  public static async encrypt(
+    message: Chacha20poly1305IetfMessage,
+    key: Chacha20poly1305IetfKey,
+    nonce: Chacha20poly1305IetfNonce,
+  ): Promise<Chacha20poly1305IetfCiphertext> {
     await sodium.ready;
 
     const additionalData = undefined;
@@ -71,14 +85,14 @@ export class Chacha20poly1305Ietf {
       null, // secret nonce: unused and should be null (https://download.libsodium.org/doc/secret-key_cryptography/ietf_chacha20-poly1305_construction.html)
       nonce,
       key,
-    );
+    ) as Chacha20poly1305IetfCiphertext;
   }
 
   public static async decrypt(
-    ciphertext: Uint8Array,
-    key: Uint8Array,
-    nonce: Uint8Array,
-  ): Promise<Uint8Array> {
+    ciphertext: Chacha20poly1305IetfCiphertext,
+    key: Chacha20poly1305IetfKey,
+    nonce: Chacha20poly1305IetfNonce,
+  ): Promise<Chacha20poly1305IetfMessage> {
     await sodium.ready;
 
     const additionalData = undefined;
@@ -89,6 +103,6 @@ export class Chacha20poly1305Ietf {
       additionalData,
       nonce,
       key,
-    );
+    ) as Chacha20poly1305IetfMessage;
   }
 }
