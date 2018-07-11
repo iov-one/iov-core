@@ -17,18 +17,29 @@ export type Chacha20poly1305IetfMessage = Uint8Array & As<"chacha20poly1305ietf-
 export type Chacha20poly1305IetfNonce = Uint8Array & As<"chacha20poly1305ietf-nonce">;
 export type Chacha20poly1305IetfCiphertext = Uint8Array & As<"chacha20poly1305ietf-ciphertext">;
 
+export interface Argon2idOptions {
+  // in bytes
+  readonly outputLength: number;
+  // integer between 1 and 4294967295
+  readonly opsLimit: number;
+  // memory limit measured in KiB (like argon2 command line tool)
+  // Note: only ~ 16 MiB of memory are available using the non-sumo version of libsodium
+  readonly memLimitKib: number;
+}
+
 export class Argon2id {
-  public static async defaultHash(password: string, salt: Uint8Array): Promise<Uint8Array> {
+  public static async execute(
+    password: string,
+    salt: Uint8Array,
+    options: Argon2idOptions,
+  ): Promise<Uint8Array> {
     await sodium.ready;
-    const opsLimit = 10; // 1 to 4294967295
-    // only ~ 16 MiB of memory are available using the non-sumo version of libsodium
-    const memLimitBytes = 8 * (1024 * 1024);
     return sodium.crypto_pwhash(
-      32,
+      options.outputLength,
       password,
       salt, // libsodium only supports 16 byte salts
-      opsLimit,
-      memLimitBytes,
+      options.opsLimit,
+      options.memLimitKib * 1024,
       sodium.crypto_pwhash_ALG_ARGON2ID13,
     );
   }
