@@ -1,7 +1,6 @@
 import { Encoding } from "@iov/crypto";
 
 import { KeyringEntrySerializationString } from "../keyring";
-import { Ed25519HdKeyringEntrySerialization } from "./ed25519hd";
 import { Ed25519SimpleAddressKeyringEntry } from "./ed25519simpleaddress";
 
 describe("Ed25519SimpleAddressKeyringEntry", () => {
@@ -27,7 +26,7 @@ describe("Ed25519SimpleAddressKeyringEntry", () => {
       await entry.createIdentity();
       await entry.createIdentity();
 
-      const decodedJson: Ed25519HdKeyringEntrySerialization = JSON.parse(entry.serialize());
+      const decodedJson = JSON.parse(entry.serialize());
       expect(decodedJson.identities[0].privkeyPath).toEqual([0x80000000 + 4804438, 0x80000000 + 0]);
       expect(decodedJson.identities[1].privkeyPath).toEqual([0x80000000 + 4804438, 0x80000000 + 1]);
       expect(decodedJson.identities[2].privkeyPath).toEqual([0x80000000 + 4804438, 0x80000000 + 2]);
