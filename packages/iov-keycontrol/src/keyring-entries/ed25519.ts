@@ -86,8 +86,13 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   public async createTransactionSignature(
     identity: PublicIdentity,
     tx: SignableBytes,
-    _: ChainId,
+    prehash: Prehash,
+    chainId: ChainId,
   ): Promise<SignatureBytes> {
+    // TODO Prehash for Ledger
+    if (prehash !== Prehash.NONE) {
+      const chainId2 = chainId; // TODO: use these parameters correctly
+    }
     const privkey = this.privateKeyForIdentity(identity);
     const signature = await Ed25519.createSignature(tx, privkey);
     return signature as SignatureBytes;

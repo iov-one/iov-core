@@ -1,4 +1,4 @@
-import { ChainId, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
+import { ChainId, Prehash, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
 
 import { Ed25519KeyringEntry, Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
 import { ValueAndUpdates } from "./valueandupdates";
@@ -109,6 +109,7 @@ a bridge to a hardware wallet.
 It is inspired by metamask's design:
 https://github.com/MetaMask/KeyringController/blob/master/docs/keyring.md
 */
+
 export interface KeyringEntry {
   // createIdentity will create one new identity
   readonly createIdentity: () => Promise<LocalIdentity>;
@@ -138,6 +139,7 @@ export interface KeyringEntry {
   readonly createTransactionSignature: (
     identity: PublicIdentity,
     tx: SignableBytes,
+    prehash: Prehash,
     chainID: ChainId,
   ) => Promise<SignatureBytes>;
 
