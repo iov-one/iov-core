@@ -3,9 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "types"
   },
   "include": [
-    "src/**/*"
+    "types/**/*"
   ]
 }
