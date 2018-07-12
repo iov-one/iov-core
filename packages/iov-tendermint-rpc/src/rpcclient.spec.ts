@@ -6,6 +6,7 @@ import { HttpClient, HttpUriClient, RpcClient, WebsocketClient } from "./rpcclie
 // but we can shim it in with webpack for the tests.
 // good for browser tests, not so good for configuring production
 const skipTests = (): boolean => !process.env.TENDERMINT_ENABLED;
+// const skipTests = (): boolean => false;
 
 describe("Ensure RpcClients work", () => {
   // TODO: make flexible, support multiple versions, etc...

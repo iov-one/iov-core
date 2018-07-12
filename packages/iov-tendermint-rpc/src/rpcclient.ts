@@ -23,7 +23,6 @@ const filterBadStatus = (res: Response) => {
 const http = (method: string, url: string, request?: any): Promise<any> => {
   if (inBrowser()) {
     const body = request ? JSON.stringify(request) : undefined;
-    // TODO: handle non 4xx and 5xx with throwing error
     return fetch(url, { method, body })
       .then(filterBadStatus)
       .then(res => res.json());
@@ -96,7 +95,8 @@ export class WebsocketClient implements RpcClient {
     this.switch = new EventEmitter();
     this.ws = this.connect();
     this.connected = new Promise(resolve => {
-      this.ws.once("open", () => resolve(true));
+      // tslint:disable-next-line:no-object-mutation
+      this.ws.onopen = () => resolve(true);
     });
     this.switch.on("error", console.log);
   }
@@ -114,12 +114,19 @@ export class WebsocketClient implements RpcClient {
 
   protected connect(): WebSocket {
     const ws = new WebSocket(this.url);
-    ws.on("error", err => this.switch.emit("error", err));
-    ws.on("close", () => this.switch.emit("error", "Websocket closed"));
-    ws.on("message", msg => {
-      const data = JSON.parse(msg.toString());
+    // tslint:disable-next-line:no-object-mutation
+    ws.onerror = err => this.switch.emit("error", err);
+    // tslint:disable-next-line:no-object-mutation
+    ws.onclose = () => this.switch.emit("error", "Websocket closed");
+    // tslint:disable-next-line:no-object-mutation
+    ws.onmessage = msg => {
+      // this should never happen, but I want an alert if it does
+      if (msg.type !== "message") {
+        throw new Error(`Unexcepted message type on websocket: ${msg.type}`);
+      }
+      const data = JSON.parse(msg.data.toString());
       this.switch.emit(data.id, data);
-    });
+    };
     return ws;
   }
 
