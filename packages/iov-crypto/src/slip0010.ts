@@ -46,7 +46,7 @@ export class Slip0010 {
   }
 
   private static master(curve: Slip0010Curve, seed: Uint8Array): Slip0010Result {
-    const i = new Hmac(Sha512, Encoding.asAscii(curve)).update(seed).digest();
+    const i = new Hmac(Sha512, Encoding.toAscii(curve)).update(seed).digest();
     const il = i.slice(0, 32);
     const ir = i.slice(32, 64);
 

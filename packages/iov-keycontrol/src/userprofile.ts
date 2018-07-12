@@ -19,7 +19,7 @@ import { Keyring, KeyringEntry, KeyringSerializationString, LocalIdentity, Publi
 import { DatabaseUtils } from "./utils";
 import { DefaultValueProducer, ValueAndUpdates } from "./valueandupdates";
 
-const { asAscii, fromAscii, fromHex, toHex } = Encoding;
+const { toAscii, fromAscii, fromHex, toHex } = Encoding;
 
 const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
@@ -33,7 +33,7 @@ const weakPasswordHashingOptions: Argon2idOptions = {
 // A fixed salt is choosen to archive a deterministic password to key derivation.
 // This reduces the scope of a potential rainbow attack to all web4 users.
 // Must be 16 bytes due to implementation limitations.
-const userProfileSalt = asAscii("web4-userprofile");
+const userProfileSalt = toAscii("web4-userprofile");
 
 export interface UserProfileOptions {
   readonly createdAt: ReadonlyDate;
@@ -131,7 +131,7 @@ export class UserProfile {
       userProfileSalt,
       weakPasswordHashingOptions,
     )) as Chacha20poly1305IetfKey;
-    const keyringPlaintext = asAscii(this.keyring.serialize()) as Chacha20poly1305IetfMessage;
+    const keyringPlaintext = toAscii(this.keyring.serialize()) as Chacha20poly1305IetfMessage;
     const keyringNonce = await UserProfile.makeNonce();
     const keyringCiphertext = await Chacha20poly1305Ietf.encrypt(
       keyringPlaintext,
