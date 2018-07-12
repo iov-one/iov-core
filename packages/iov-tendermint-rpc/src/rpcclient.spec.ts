@@ -70,7 +70,6 @@ describe("Ensure RpcClients work", () => {
   });
 
   it("WebsocketClient can listen to events", done => {
-    // tslint:disable:no-console
     const ws = new WebsocketClient(tendermintUrl);
 
     const req = jsonRpcWith("subscribe", { query: "tm.event='NewBlockHeader'" });
@@ -79,17 +78,22 @@ describe("Ensure RpcClients work", () => {
     // tslint:disable-next-line:readonly-array
     const events: JsonRpcSuccess[] = [];
 
-    headers.subscribe({
+    const sub = headers.subscribe({
       error: fail,
       complete: () => fail("subscription should not complete"),
       next: (res: JsonRpcSuccess) => {
         events.push(res);
-        console.log(res);
+        // tslint:disable-next-line:no-console
+        console.log(res.result);
 
         if (events.length === 3) {
-          // not sure how to define success here
-          expect(true).toBeTruthy();
-          done();
+          // make sure we get 3, then we can unsubscribe
+          // (also check they are proper...)
+          sub.unsubscribe();
+          // wait 2.5s for finish
+          setTimeout(done, 2500);
+        } else if (events.length === 4) {
+          fail("unsubscribe didn't work");
         }
       },
     });

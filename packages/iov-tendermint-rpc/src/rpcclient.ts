@@ -93,6 +93,7 @@ export class WebsocketClient implements RpcEmitter {
   // TODO: use MemoryStream and support reconnects
   protected readonly connected: Promise<boolean>;
 
+  // tslint:disable-next-line:no-console
   constructor(url: string = "ws://localhost:46657", onError: (err: any) => void = console.log) {
     // accept host.name:port and assume ws protocol
     const path = "/websocket";
@@ -183,37 +184,50 @@ class Subscription implements Producer<JsonRpcSuccess> {
   }
 
   public stop(): void {
+    // tell the server we are done
     const endRequest: JsonRpcRequest = { ...this.request, method: "unsubscribe" };
     this.client.send(endRequest);
-    // TODO: unsubscribe events as well, complete!
+    // turn off listeners
+    this.client.switch.emit(this.request.id + "#done", {});
   }
 
-  // tslint:disable:no-console
   protected subscribeEvents(id: string, listener: Listener<JsonRpcSuccess>): void {
+    // this should unsubscribe itself, so doesn't need to be removed explicitly
     this.client.switch.once(id, data => {
       const err = ifError(data);
       if (err) {
-        console.log("Subscribe error: ", err);
+        closeSubscriptions();
         listener.error(err);
-      } else {
-        console.log("Subscribe success: ", data);
       }
     });
 
     // this will fire on a response (success or error)
-    this.client.switch.on(id + "#event", data => {
-      console.log("Got event: ", data);
-      listener.next(data);
-      // const err = ifError(data);
-      // if (err) {
-      //   listener.error(err);
-      // } else {
-      //   listener.next(data as JsonRpcSuccess);
-      // }
+    const evtMessages = this.client.switch.on(id + "#event", data => {
+      const err = ifError(data);
+      if (err) {
+        closeSubscriptions();
+        listener.error(err);
+      } else {
+        listener.next(data as JsonRpcSuccess);
+      }
     });
+
     // this will fire in case the websocket errors/disconnects
-    this.client.switch.once("error", err => {
+    const evtError = this.client.switch.once("error", err => {
+      closeSubscriptions();
       listener.error(err);
     });
+
+    // this will fire in case the websocket errors/disconnects
+    const evtDone = this.client.switch.once(id + "#done", () => {
+      closeSubscriptions();
+      listener.complete();
+    });
+
+    const closeSubscriptions = () => {
+      evtMessages.removeAllListeners();
+      evtError.removeAllListeners();
+      evtDone.removeAllListeners();
+    };
   }
 }
