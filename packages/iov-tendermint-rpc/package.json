@@ -25,6 +25,7 @@
   "dependencies": {
     "@iov/types": "^0.0.0",
     "@types/node": "^10.3.2",
+    "@types/ws": "^5.1.2",
     "axios": "^0.18.0",
     "events": "^3.0.0",
     "isomorphic-ws": "^4.0.1",
