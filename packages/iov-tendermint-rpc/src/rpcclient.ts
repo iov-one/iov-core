@@ -124,24 +124,19 @@ export class WebsocketClient implements RpcClient {
   }
 
   protected subscribe(id: string): Promise<JsonRpcResponse> {
-    // tslint:disable-next-line:no-let
-    let resolved = false;
     return new Promise((resolve, reject) => {
-      // FIXME-optimization: can we disable the other listener when one fires?
+      // only one of the two listeners should fire, and it will
+      // deregister the other so as not to cause a leak.
 
-      // this will wait for a response (success or error)
-      this.switch.once(id, data => {
-        if (!resolved) {
-          resolved = true;
-          resolve(data);
-        }
+      // this will fire on a response (success or error)
+      const good = this.switch.once(id, data => {
+        bad.removeAllListeners();
+        resolve(data);
       });
-      // this waits in case the websocket errors/disconnects
-      this.switch.once("error", err => {
-        if (!resolved) {
-          resolved = true;
-          reject(err);
-        }
+      // this will fire in case the websocket errors/disconnects
+      const bad = this.switch.once("error", err => {
+        good.removeAllListeners();
+        reject(err);
       });
     });
   }
