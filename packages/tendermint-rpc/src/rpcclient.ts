@@ -6,15 +6,25 @@ export interface RpcClient {
   readonly execute: (request: JsonRpcRequest) => Promise<JsonRpcSuccess>;
 }
 
-export const getWindow = (): any | undefined => (typeof window === "object" ? (window as any) : undefined);
-export const inBrowser = (): boolean => getWindow() !== undefined;
+export const getWindow = (): any | undefined => (inBrowser() ? (window as any) : undefined);
+export const inBrowser = (): boolean => typeof window === "object";
+
+const filterBadStatus = (res: Response) => {
+  if (res.status >= 400) {
+    throw new Error(`Bad status on response: ${res.status}`);
+  }
+  return res;
+};
 
 // post uses fetch in browser and axios in node,
 // was having weird issues with axios in brower
 const http = (method: string, url: string, request?: any): Promise<any> => {
   if (inBrowser()) {
     const body = request ? JSON.stringify(request) : undefined;
-    return fetch(url, { method, body }).then(res => res.json());
+    // TODO: handle non 4xx and 5xx with throwing error
+    return fetch(url, { method, body })
+      .then(filterBadStatus)
+      .then(res => res.json());
   } else {
     return axios.request({ url, method, data: request }).then(res => res.data);
   }
