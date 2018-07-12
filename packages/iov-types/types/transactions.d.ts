@@ -7,7 +7,7 @@ declare const NonceSymbol: unique symbol;
 export type Nonce = typeof NonceSymbol & Long;
 
 // TODO: can't we just make this a number (block height?)
-export type TTLBytes = Uint8Array & As<"ttl">;
+export type TtlBytes = Uint8Array & As<"ttl">;
 
 // TokenTicker should be 3-4 letters, uppercase
 declare const TokenTickerSymbol: unique symbol;
@@ -47,7 +47,7 @@ export interface BaseTx {
   readonly fee?: FungibleToken;
   // signer needs to be a PublicKey as we use that to as an identifier to the Keyring for lookup
   readonly signer: PublicKeyBundle;
-  readonly ttl?: TTLBytes;
+  readonly ttl?: TtlBytes;
 }
 
 export interface SendTx extends BaseTx {

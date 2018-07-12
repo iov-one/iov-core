@@ -6,7 +6,7 @@ import {
   PrivateKeyString,
   PublicKeyString,
   SeedString,
-  TTLBytes,
+  TtlBytes,
   UnsignedTransaction,
   UsernameString,
 } from "@iov/types";
@@ -65,7 +65,7 @@ export interface SignTransaction {
   readonly type: PrivateActionType.SIGN_TRANSACTION;
   readonly publicKey: PublicKeyString;
   readonly transaction: UnsignedTransaction;
-  readonly ttl: TTLBytes | null;
+  readonly ttl: TtlBytes | null;
 }
 
 export interface SetActiveKey {
