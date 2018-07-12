@@ -1,6 +1,4 @@
-declare class As<Tag extends string> {
-  private readonly "_ _ _": Tag;
-}
+import { As } from "@iov/types";
 
 export type RpcId = string & As<"rpcid">;
 

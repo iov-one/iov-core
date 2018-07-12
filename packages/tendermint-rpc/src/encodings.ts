@@ -2,9 +2,7 @@ import { Buffer } from "buffer";
 import { ReadonlyDate } from "readonly-date";
 import { isNumber } from "util";
 
-declare class As<Tag extends string> {
-  private readonly "_ _ _": Tag;
-}
+import { As } from "@iov/types";
 
 export type Base64String = string & As<"base64">;
 export type HexString = string & As<"hex">;
