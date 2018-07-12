@@ -37,7 +37,7 @@ install:
 before_script:
 - |
   if [[ $TENDERMINT_ENABLED ]]; then
-    ./packages/tendermint-rpc/tendermint.sh > /tmp/foo.log &
+    ./packages/iov-tendermint-rpc/tendermint.sh > /tmp/foo.log &
     export TM_PID=$!
     echo "Started tendermint" $TM_PID
     sleep 2
