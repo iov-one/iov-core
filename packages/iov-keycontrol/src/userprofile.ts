@@ -2,14 +2,38 @@ import { AbstractLevelDOWN } from "abstract-leveldown";
 import { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
 
+import {
+  Argon2id,
+  Argon2idOptions,
+  Chacha20poly1305Ietf,
+  Chacha20poly1305IetfCiphertext,
+  Chacha20poly1305IetfKey,
+  Chacha20poly1305IetfMessage,
+  Chacha20poly1305IetfNonce,
+  Encoding,
+  Random,
+} from "@iov/crypto";
 import { FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/types";
 
 import { Keyring, KeyringEntry, KeyringSerializationString, LocalIdentity, PublicIdentity } from "./keyring";
 import { DatabaseUtils } from "./utils";
 import { DefaultValueProducer, ValueAndUpdates } from "./valueandupdates";
 
+const { asAscii, fromAscii, fromHex, toHex } = Encoding;
+
 const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
+
+// not great but can be used on the main thread
+const weakPasswordHashingOptions: Argon2idOptions = {
+  outputLength: 32,
+  opsLimit: 10,
+  memLimitKib: 8 * 1024,
+};
+// A fixed salt is choosen to archive a deterministic password to key derivation.
+// This reduces the scope of a potential rainbow attack to all web4 users.
+// Must be 16 bytes due to implementation limitations.
+const userProfileSalt = asAscii("web4-userprofile");
 
 export interface UserProfileOptions {
   readonly createdAt: ReadonlyDate;
@@ -24,12 +48,39 @@ export interface UserProfileOptions {
  * UserProfile via the UserProfileController to get an unlocked UserProfile.
  */
 export class UserProfile {
-  public static async loadFrom(db: LevelUp<AbstractLevelDOWN<string, string>>): Promise<UserProfile> {
-    const createdAt = new ReadonlyDate(await db.get(storageKeyCreatedAt, { asBuffer: false })); // TODO: add strict RFC 3339 parser
-    const keyring = new Keyring((await db.get(storageKeyKeyring, {
-      asBuffer: false,
-    })) as KeyringSerializationString);
+  public static async loadFrom(
+    db: LevelUp<AbstractLevelDOWN<string, string>>,
+    password: string,
+  ): Promise<UserProfile> {
+    // get from storage (raw strings)
+    const createdAtFromStorage = await db.get(storageKeyCreatedAt, { asBuffer: false });
+    const keyringFromStorage = await db.get(storageKeyKeyring, { asBuffer: false });
+
+    // process
+    const encryptionKey = (await Argon2id.execute(
+      password,
+      userProfileSalt,
+      weakPasswordHashingOptions,
+    )) as Chacha20poly1305IetfKey;
+    const keyringBundle = fromHex(keyringFromStorage);
+    const keyringNonce = keyringBundle.slice(0, 12) as Chacha20poly1305IetfNonce;
+    const keyringCiphertext = keyringBundle.slice(12) as Chacha20poly1305IetfCiphertext;
+    const decrypted = await Chacha20poly1305Ietf.decrypt(keyringCiphertext, encryptionKey, keyringNonce);
+    const keyringSerialization = fromAscii(decrypted) as KeyringSerializationString;
+
+    // create objects
+    const createdAt = new ReadonlyDate(createdAtFromStorage); // TODO: add strict RFC 3339 parser
+    const keyring = new Keyring(keyringSerialization);
     return new UserProfile({ createdAt, keyring });
+  }
+
+  private static async makeNonce(): Promise<Chacha20poly1305IetfNonce> {
+    // With 96 bit random nonces, we can produce N = 250,000,000 nonces
+    // while keeping the probability of a collision below one in a trillion
+    // https://crypto.stackexchange.com/a/60339
+    // This is less likely than winning the German lottery twice in two tries.
+    // We consider this safer as implementing a counter that can be manipulated.
+    return (await Random.getBytes(12)) as Chacha20poly1305IetfNonce;
   }
 
   private static labels(entries: ReadonlyArray<KeyringEntry>): ReadonlyArray<string | undefined> {
@@ -67,15 +118,34 @@ export class UserProfile {
   }
 
   // this will clear everything in the database and store the user profile
-  public async storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>): Promise<void> {
+  public async storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<void> {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
 
     await DatabaseUtils.clear(db);
 
-    await db.put(storageKeyCreatedAt, this.createdAt.toISOString());
-    await db.put(storageKeyKeyring, this.keyring.serialize());
+    // process
+    const encryptionKey = (await Argon2id.execute(
+      password,
+      userProfileSalt,
+      weakPasswordHashingOptions,
+    )) as Chacha20poly1305IetfKey;
+    const keyringPlaintext = asAscii(this.keyring.serialize()) as Chacha20poly1305IetfMessage;
+    const keyringNonce = await UserProfile.makeNonce();
+    const keyringCiphertext = await Chacha20poly1305Ietf.encrypt(
+      keyringPlaintext,
+      encryptionKey,
+      keyringNonce,
+    );
+
+    // create storage values (raw strings)
+    const createdAtForStorage = this.createdAt.toISOString();
+    const keyringForStorage = toHex(keyringNonce) + toHex(keyringCiphertext);
+
+    // store
+    await db.put(storageKeyCreatedAt, createdAtForStorage);
+    await db.put(storageKeyKeyring, keyringForStorage);
   }
 
   public lock(): void {

@@ -10,6 +10,8 @@ import { Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
 import { UserProfile } from "./userprofile";
 
 describe("UserProfile", () => {
+  const defaultEncryptionPassword = "my super str0ng and super long password";
+
   it("can be constructed without arguments", () => {
     const profile = new UserProfile();
     expect(profile).toBeTruthy();
@@ -167,9 +169,9 @@ describe("UserProfile", () => {
       const keyring = new Keyring();
       const profile = new UserProfile({ createdAt, keyring });
 
-      await profile.storeIn(db);
+      await profile.storeIn(db, defaultEncryptionPassword);
       expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
-      expect(await db.get("keyring", { asBuffer: false })).toEqual('{"entries":[]}');
+      expect(await db.get("keyring", { asBuffer: false })).toMatch(/[0-9a-f]+/);
 
       await db.close();
 
@@ -188,7 +190,7 @@ describe("UserProfile", () => {
       await db.put("foo", "bar");
 
       const profile = new UserProfile();
-      await profile.storeIn(db);
+      await profile.storeIn(db, defaultEncryptionPassword);
 
       await db
         .get("foo")
@@ -207,23 +209,37 @@ describe("UserProfile", () => {
     });
   });
 
-  it("can be loaded from storage", done => {
-    (async () => {
-      const db = levelup(MemDownConstructor<string, string>());
-      await db.put("created_at", "1985-04-12T23:20:50.521Z");
-      await db.put("keyring", '{"entries":[]}');
+  it("stored in and loaded from storage", async () => {
+    const db = levelup(MemDownConstructor<string, string>());
 
-      const profile = await UserProfile.loadFrom(db);
-      expect(profile.createdAt).toEqual(new ReadonlyDate("1985-04-12T23:20:50.521Z"));
+    const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+    const keyring = new Keyring();
+    const original = new UserProfile({ createdAt, keyring });
 
-      await db.close();
+    await original.storeIn(db, defaultEncryptionPassword);
 
-      done();
-    })().catch(error => {
-      setTimeout(() => {
-        throw error;
-      });
-    });
+    const restored = await UserProfile.loadFrom(db, defaultEncryptionPassword);
+
+    expect(restored.createdAt).toEqual(original.createdAt);
+
+    await db.close();
+  });
+
+  it("fails when loading with wrong key", async () => {
+    const db = levelup(MemDownConstructor<string, string>());
+
+    const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+    const keyring = new Keyring();
+    const original = new UserProfile({ createdAt, keyring });
+
+    await original.storeIn(db, defaultEncryptionPassword);
+
+    const otherEncryptionPassword = "something wrong";
+    await UserProfile.loadFrom(db, otherEncryptionPassword)
+      .then(() => fail("loading must not succeed"))
+      .catch(error => expect(error).toMatch(/invalid usage/));
+
+    await db.close();
   });
 
   it("throws for non-existing entry index", done => {

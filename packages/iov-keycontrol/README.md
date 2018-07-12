@@ -79,13 +79,13 @@
 > const leveldown = require('leveldown')
 > const levelup = require('levelup')
 > const db = levelup(leveldown('./my_userprofile_db'))
-> profile.storeIn(db)
+> profile.storeIn(db, "secret passwd")
 ```
 
 7. and restore
 
 ```
-> var profileFromDb; UserProfile.loadFrom(db).then(p => { profileFromDb = p })
+> var profileFromDb; UserProfile.loadFrom(db, "secret passwd").then(p => { profileFromDb = p })
 > profileFromDb
 UserProfile {
   createdAt: 2018-07-04T16:07:14.583Z,

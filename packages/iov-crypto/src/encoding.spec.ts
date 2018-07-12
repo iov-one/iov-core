@@ -57,11 +57,17 @@ describe("Encoding", () => {
     expect(Encoding.asAscii("abc")).toEqual(new Uint8Array([0x61, 0x62, 0x63]));
     expect(Encoding.asAscii(" ?=-n|~+-*/\\")).toEqual(new Uint8Array([0x20, 0x3f, 0x3d, 0x2d, 0x6e, 0x7c, 0x7e, 0x2b, 0x2d, 0x2a, 0x2f, 0x5c]));
 
-    expect(() => {
-      Encoding.asAscii("ö");
-    }).toThrow();
-    expect(() => {
-      Encoding.asAscii("ß");
-    }).toThrow();
+    expect(() => Encoding.asAscii("ö")).toThrow();
+    expect(() => Encoding.asAscii("ß")).toThrow();
+  });
+
+  it("decodes from ascii", () => {
+    expect(Encoding.fromAscii(new Uint8Array([]))).toEqual("");
+    expect(Encoding.fromAscii(new Uint8Array([0x61, 0x62, 0x63]))).toEqual("abc");
+    expect(Encoding.fromAscii(new Uint8Array([0x20, 0x3f, 0x3d, 0x2d, 0x6e, 0x7c, 0x7e, 0x2b, 0x2d, 0x2a, 0x2f, 0x5c]))).toEqual(" ?=-n|~+-*/\\");
+
+    expect(() => Encoding.fromAscii(new Uint8Array([0x00]))).toThrow();
+    expect(() => Encoding.fromAscii(new Uint8Array([0x7f]))).toThrow();
+    expect(() => Encoding.fromAscii(new Uint8Array([0xff]))).toThrow();
   });
 });
