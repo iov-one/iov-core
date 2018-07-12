@@ -1,20 +1,15 @@
+import { As } from "./as";
 import { PublicKeyBundle, SignatureBytes } from "./keys";
 import { Nonce, UnsignedTransaction } from "./transactions";
 
-declare const TransactionIDSymbol: unique symbol;
-type TransactionID = typeof TransactionIDSymbol;
-export type TransactionIDBytes = TransactionID & Uint8Array;
-export type TransactionIDString = TransactionID & string;
+export type TransactionIDBytes = Uint8Array & As<"transaction-id">;
+export type TransactionIDString = string & As<"transaction-id">;
 
-declare const SignableSymbol: unique symbol;
-type Signable = typeof SignableSymbol;
-export type SignableBytes = Signable & Uint8Array;
-export type SignableString = Signable & string;
+export type SignableBytes = Uint8Array & As<"signable">;
+export type SignableString = string & As<"signable">;
 
-declare const PostableSymbol: unique symbol;
-type Postable = typeof PostableSymbol;
-export type PostableBytes = Postable & Uint8Array;
-export type PostableString = Postable & string;
+export type PostableBytes = Uint8Array & As<"postable">;
+export type PostableString = string & As<"postable">;
 
 // NB: use Buffer or String, we should be consistent....
 // I figure string if this will be json dumped, but maybe less efficient

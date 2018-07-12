@@ -1,36 +1,29 @@
-declare const AddressSymbol: unique symbol;
-type Address = typeof AddressSymbol;
-export type AddressString = Address & string;
-export type AddressBytes = Address & Uint8Array;
+import { As } from "./as";
+
+export type AddressString = string & As<"address">;
+export type AddressBytes = Uint8Array & As<"address">;
 
 export const enum Algorithm {
   ED25519 = "ed25519",
   SECP256K1 = "secp256k1",
 }
 
-declare const PrivateKeySymbol: unique symbol;
-type PrivateKeyType = typeof PrivateKeySymbol;
-export type PrivateKeyBytes = PrivateKeyType & Uint8Array;
-export type PrivateKeyString = PrivateKeyType & string;
+export type PrivateKeyBytes = Uint8Array & As<"private-key">;
+export type PrivateKeyString = string & As<"private-key">;
 export interface PrivateKeyBundle {
   readonly algo: Algorithm;
   readonly data: PrivateKeyBytes;
 }
 
-declare const PublicKeySymbol: unique symbol;
-type PublicKeyType = typeof PublicKeySymbol;
-export type PublicKeyBytes = PublicKeyType & Uint8Array;
-export type PublicKeyString = PublicKeyType & string;
+export type PublicKeyBytes = Uint8Array & As<"public-key">;
+export type PublicKeyString = string & As<"public-key">;
 export interface PublicKeyBundle {
   readonly algo: Algorithm;
   readonly data: PublicKeyBytes;
 }
 
-declare const SignatureSymbol: unique symbol;
-type Signature = typeof SignatureSymbol;
-export type SignatureBytes = Signature & Uint8Array;
-export type SignatureString = Signature & string;
-
+export type SignatureBytes = Uint8Array & As<"signature">;
+export type SignatureString = string & As<"signature">;
 export interface SignatureBundle {
   readonly algo: Algorithm;
   readonly signature: SignatureBytes;
@@ -48,7 +41,5 @@ export interface KeypairString {
   readonly public: PublicKeyString;
 }
 
-declare const SeedSymbol: unique symbol;
-type Seed = typeof SeedSymbol;
-export type SeedBytes = Seed & Uint8Array;
-export type SeedString = Seed & string;
+export type SeedBytes = Uint8Array & As<"seed">;
+export type SeedString = string & As<"seed">;

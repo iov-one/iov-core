@@ -1,7 +1,4 @@
-declare const ClientNameSymbol: unique symbol;
-type ClientName = typeof ClientNameSymbol;
-export type ClientNameString = ClientName & string;
+import { As } from "./as";
 
-declare const ClientTokenSymbol: unique symbol;
-type ClientToken = typeof ClientTokenSymbol;
-export type ClientTokenString = ClientToken & string;
+export type ClientNameString = string & As<"client-name">;
+export type ClientTokenString = string & As<"client-token">;

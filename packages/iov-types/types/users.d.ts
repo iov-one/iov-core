@@ -1,7 +1,4 @@
-declare const UsernameSymbol: unique symbol;
-type Username = typeof UsernameSymbol;
-export type UsernameString = Username & string;
+import { As } from "./as";
 
-declare const PasswordSymbol: unique symbol;
-type Password = typeof PasswordSymbol;
-export type PasswordString = Password & string;
+export type UsernameString = string & As<"username">;
+export type PasswordString = string & As<"password">;
