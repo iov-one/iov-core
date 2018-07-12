@@ -30,7 +30,10 @@ const weakPasswordHashingOptions: Argon2idOptions = {
   opsLimit: 10,
   memLimitKib: 8 * 1024,
 };
-const userProfileSalt = asAscii("web4-userprofile"); // must be 16 bytes
+// A fixed salt is choosen to archive a deterministic password to key derivation.
+// This reduces the scope of a potential rainbow attack to all web4 users.
+// Must be 16 bytes due to implementation limitations.
+const userProfileSalt = asAscii("web4-userprofile");
 
 export interface UserProfileOptions {
   readonly createdAt: ReadonlyDate;
@@ -75,7 +78,7 @@ export class UserProfile {
     // With 96 bit random nonces, we can produce N = 250,000,000 nonces
     // while keeping the probability of a collision below one in a trillion
     // https://crypto.stackexchange.com/a/60339
-    // This is less likely than winning the German lottery for a given and the following week.
+    // This is less likely than winning the German lottery twice in two tries.
     // We consider this safer as implementing a counter that can be manipulated.
     return (await Random.getBytes(12)) as Chacha20poly1305IetfNonce;
   }
