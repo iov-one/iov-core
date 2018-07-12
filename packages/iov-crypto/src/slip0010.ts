@@ -1,9 +1,8 @@
 import BN = require("bn.js");
 
-import { Encoding } from "@iov/encoding";
+import { Encoding, Uint32 } from "@iov/encoding";
 
 import { Hmac } from "./hmac";
-import { Uint32 } from "./integers";
 import { Sha512 } from "./sha";
 
 export interface Slip0010Result {
