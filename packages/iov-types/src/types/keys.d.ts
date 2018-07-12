@@ -35,6 +35,11 @@ type Signature = typeof SignatureSymbol;
 export type SignatureBytes = Signature & Uint8Array;
 export type SignatureString = Signature & string;
 
+export interface SignatureBundle {
+  readonly algo: Algorithm;
+  readonly signature: SignatureBytes;
+}
+
 export interface KeypairBytes {
   readonly algo: Algorithm;
   readonly private: PrivateKeyBytes;
