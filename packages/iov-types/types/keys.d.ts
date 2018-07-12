@@ -3,10 +3,6 @@ type Address = typeof AddressSymbol;
 export type AddressString = Address & string;
 export type AddressBytes = Address & Uint8Array;
 
-declare const MnemonicSymbol: unique symbol;
-type Mnemonic = typeof MnemonicSymbol;
-export type MnemonicString = Mnemonic & string;
-
 export const enum Algorithm {
   ED25519 = "ed25519",
   SECP256K1 = "secp256k1",
