@@ -8,7 +8,6 @@ export type Nonce = typeof NonceSymbol & Long;
 
 // TODO: can't we just make this a number (block height?)
 export type TTLBytes = Uint8Array & As<"ttl">;
-export type TTLString = string & As<"ttl">;
 
 // TokenTicker should be 3-4 letters, uppercase
 declare const TokenTickerSymbol: unique symbol;
