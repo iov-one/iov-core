@@ -1,12 +1,7 @@
-import { ChainId, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
+import { As, ChainId, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
 
 import { Ed25519KeyringEntry, Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
 import { ValueAndUpdates } from "./valueandupdates";
-
-// type tagging from https://github.com/Microsoft/TypeScript/issues/4895#issuecomment-399098397
-declare class As<Tag extends string> {
-  private readonly "_ _ _": Tag;
-}
 
 export type KeyringEntrySerializationString = string & As<"keyring-entry-serialization">;
 export type KeyringSerializationString = string & As<"keyring-serialization">;

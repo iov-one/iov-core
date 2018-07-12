@@ -1,5 +1,7 @@
 // import { Transaction } from "@iov/types";
 import { Stream } from "xstream";
+
+import { As } from "./as";
 import { AddressBytes, PublicKeyBundle } from "./keys";
 import { SignedTransaction } from "./signables";
 import { FungibleToken, Nonce, TokenTicker } from "./transactions";
@@ -122,10 +124,8 @@ export interface Ticker {
 // ------------------------------------------------------------------------
 // Block types
 
-declare const BlockHashSymbol: unique symbol;
-type BlockHash = typeof BlockHashSymbol;
-export type BlockHashBytes = Uint8Array & BlockHash;
-export type BlockHashString = string & BlockHash;
+export type BlockHashBytes = Uint8Array & As<"block-hash">;
+export type BlockHashString = string & As<"block-hash">;
 
 // Header is an abstraction
 export interface Header {
