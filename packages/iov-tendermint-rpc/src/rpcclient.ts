@@ -1,11 +1,16 @@
 import axios from "axios";
 import EventEmitter from "events";
 import WebSocket from "isomorphic-ws";
+import { Listener, Producer, Stream } from "xstream";
 
-import { JsonRpcRequest, JsonRpcResponse, JsonRpcSuccess, throwIfError } from "./common";
+import { ifError, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccess, throwIfError } from "./common";
 
 export interface RpcClient {
   readonly execute: (request: JsonRpcRequest) => Promise<JsonRpcSuccess>;
+}
+
+export interface RpcEmitter extends RpcClient {
+  readonly listen: (request: JsonRpcRequest) => Stream<JsonRpcSuccess>;
 }
 
 export const getWindow = (): any | undefined => (inBrowser() ? (window as any) : undefined);
@@ -78,7 +83,7 @@ export class HttpUriClient implements RpcClient {
 // WebsocketClient makes calls over websocket
 // TODO: support event subscriptions as well
 // TODO: error handling on disconnect
-export class WebsocketClient implements RpcClient {
+export class WebsocketClient implements RpcEmitter {
   protected readonly url: string;
   protected readonly ws: WebSocket;
   protected readonly switch: EventEmitter;
@@ -111,6 +116,25 @@ export class WebsocketClient implements RpcClient {
       // So this just kills the execute promise, not anything else?
       .catch(err => this.switch.emit("errror", err));
     return promise;
+  }
+
+  public listen(request: JsonRpcRequest): Stream<JsonRpcSuccess> {
+    // prepare a stream of all events tied to this
+    const producer: Producer<JsonRpcSuccess> = {
+      start: (listener: Listener<JsonRpcSuccess>) => {
+        this.subscribeEvents(request.id, listener);
+      },
+      // TODO: implement
+      stop: () => undefined,
+    };
+    const stream = Stream.create(producer);
+
+    // send the subscribe call
+    this.connected
+      .then(() => this.ws.send(JSON.stringify(request)))
+      .catch(err => this.switch.emit("errror", err));
+
+    return stream;
   }
 
   protected connect(): WebSocket {
@@ -146,6 +170,23 @@ export class WebsocketClient implements RpcClient {
         good.removeAllListeners();
         reject(err);
       });
+    });
+  }
+
+  // TODO: support unsubscribe, complete, etc...
+  protected subscribeEvents(id: string, listener: Listener<JsonRpcSuccess>): void {
+    // this will fire on a response (success or error)
+    this.switch.on(id + "#event", data => {
+      const err = ifError(data);
+      if (err) {
+        listener.error(err);
+      } else {
+        listener.next(data as JsonRpcSuccess);
+      }
+    });
+    // this will fire in case the websocket errors/disconnects
+    this.switch.once("error", err => {
+      listener.error(err);
     });
   }
 }
