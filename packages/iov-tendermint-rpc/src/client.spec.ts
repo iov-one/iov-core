@@ -25,16 +25,17 @@ const value = randomId();
 const buildKvTx = (k: string, v: string): Uint8Array => Encoding.asAscii(`${k}=${v}`);
 
 describe("Verify client calls on tendermint w/ kvstore app", () => {
-  it("Tries to connect with known version to tendermint", () => {
+  it("Tries to connect with known version to tendermint", async () => {
     pendingWithoutTendermint();
     const client = new Client(new HttpClient(tendermintUrl), v0_20);
-    return client.abciInfo().catch(fail);
+    expect(await client.abciInfo().catch(fail)).toBeTruthy();
   });
 
-  it("Tries to auto-discover tendermint", () => {
+  it("Tries to auto-discover tendermint", async () => {
     pendingWithoutTendermint();
-    return Client.detectVersion(new HttpClient(tendermintUrl))
+    await Client.detectVersion(new HttpClient(tendermintUrl))
       .then(client => client.abciInfo())
+      .then(info => expect(info).toBeTruthy())
       .catch(fail);
   });
 
@@ -80,20 +81,18 @@ describe("Verify client calls on tendermint w/ kvstore app", () => {
       .catch(fail);
   });
 
-  it("Sanity check - calls don't error", () => {
+  it("Sanity check - calls don't error", async () => {
     pendingWithoutTendermint();
     const client = new Client(new HttpClient(tendermintUrl), v0_20);
 
-    return client
-      .block()
-      .then(() => client.blockchain(2, 4))
-      .then(() => client.blockResults(3))
-      .then(() => client.commit(4))
-      .then(() => client.genesis())
-      .then(() => client.health())
-      .then(() => client.status())
-      .then(() => client.validators())
-      .catch(fail);
+    expect(await client.block().catch(fail)).toBeTruthy();
+    expect(await client.blockchain(2, 4).catch(fail)).toBeTruthy();
+    expect(await client.blockResults(3).catch(fail)).toBeTruthy();
+    expect(await client.commit(4).catch(fail)).toBeTruthy();
+    expect(await client.genesis().catch(fail)).toBeTruthy();
+    expect(await client.health().catch(fail)).toBeTruthy();
+    expect(await client.status().catch(fail)).toBeTruthy();
+    expect(await client.validators().catch(fail)).toBeTruthy();
   });
 
   it("Can query a tx properly", () => {
