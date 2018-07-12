@@ -115,16 +115,6 @@ const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
       // should return same info as querying directly,
       // except without the proof
       expect(s.txs[0]).toEqual({ ...r, proof: undefined });
-<<<<<<< f31e6827640b3b73e7db0b2693e20587ab0c93df
-=======
-
-      // and let's query the block itself to see this transaction
-      const block = await client.block(height);
-      expect(block.blockMeta.header.numTxs).toEqual(1);
-      expect(block.block.txs.length).toEqual(1);
-      expect(block.block.txs[0]).toEqual(tx);
-    };
->>>>>>> Add extra check for querying block
 
       // and let's query the block itself to see this transaction
       const block = await client.block(height);

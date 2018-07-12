@@ -14,7 +14,6 @@ const pendingWithoutTendermint = () => {
 };
 
 describe("Ensure RpcClients work", () => {
-  // TODO: make flexible, support multiple versions, etc...
   const tendermintUrl = "localhost:12345";
 
   const shouldPass = async (client: RpcClient) => {
