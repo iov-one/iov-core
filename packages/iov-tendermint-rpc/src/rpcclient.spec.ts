@@ -9,7 +9,7 @@ const skipTests = (): boolean => !process.env.TENDERMINT_ENABLED;
 
 const pendingWithoutTendermint = () => {
   if (skipTests()) {
-    pending("Set TENDERMINT_ENABLED to enable tendermint-based tests");
+    pending("Set TENDERMINT_ENABLED to enable tendermint rpc tests");
   }
 };
 
