@@ -45,18 +45,6 @@ export function may<T, U>(transform: (val: T) => U, value: T | null | undefined)
   return value === undefined || value === null ? undefined : transform(value);
 }
 
-export class Hex {
-  // encode hex-encodes whatever data was provided
-  public static encode(data: Uint8Array): HexString {
-    const buf = Buffer.from(data);
-    return buf.toString("hex") as HexString;
-  }
-
-  public static decode(hexstring: HexString): Uint8Array {
-    return Uint8Array.from(Buffer.from(hexstring, "hex"));
-  }
-}
-
 export class Base64 {
   public static encode(data: Uint8Array): Base64String {
     const buf = Buffer.from(data);
