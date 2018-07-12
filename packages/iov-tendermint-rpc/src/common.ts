@@ -36,11 +36,19 @@ export const jsonRpcWith = (method: string, params?: {}): JsonRpcRequest => ({
 });
 
 export const throwIfError = (resp: JsonRpcResponse): JsonRpcSuccess => {
-  const asError = resp as JsonRpcError;
-  if (asError.error !== undefined) {
-    throw new Error(JSON.stringify(asError.error));
+  const asError = ifError(resp);
+  if (asError) {
+    throw asError;
   }
   return resp as JsonRpcSuccess;
+};
+
+export const ifError = (resp: JsonRpcResponse): Error | undefined => {
+  const asError = resp as JsonRpcError;
+  if (asError.error !== undefined) {
+    return new Error(JSON.stringify(asError.error));
+  }
+  return undefined;
 };
 
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

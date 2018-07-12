@@ -1,11 +1,12 @@
 import { jsonRpcWith } from "./common";
 import { Method } from "./requests";
-import { HttpClient, HttpUriClient, RpcClient } from "./rpcclient";
+import { HttpClient, HttpUriClient, RpcClient, WebsocketClient } from "./rpcclient";
 
 // process.env is undefined in browser....
 // but we can shim it in with webpack for the tests.
 // good for browser tests, not so good for configuring production
-const skipTests = (): boolean => !process.env.TENDERMINT_ENABLED;
+const skipTests = (): boolean => false;
+// const skipTests = (): boolean => !process.env.TENDERMINT_ENABLED;
 
 const pendingWithoutTendermint = () => {
   if (skipTests()) {
@@ -16,6 +17,7 @@ const pendingWithoutTendermint = () => {
 describe("Ensure RpcClients work", () => {
   // TODO: make flexible, support multiple versions, etc...
   const tendermintUrl = "http://localhost:12345";
+  const wsTendermintUrl = "ws://localhost:12345";
 
   const shouldPass = async (client: RpcClient) => {
     const req = jsonRpcWith(Method.HEALTH);
@@ -55,5 +57,15 @@ describe("Ensure RpcClients work", () => {
       .then(() => shouldFail(uri))
       .then(fail)
       .catch(() => 0);
+  });
+
+  it("WebsocketClient can make a simple call", () => {
+    pendingWithoutTendermint();
+    const ws = new WebsocketClient(wsTendermintUrl);
+
+    return shouldPass(ws).catch(err => fail(err));
+    // .then(() => shouldFail(ws))
+    // .then(fail)
+    // .catch(() => 0);
   });
 });

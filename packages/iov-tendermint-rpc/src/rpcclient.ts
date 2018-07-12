@@ -1,6 +1,8 @@
 import axios from "axios";
+import EventEmitter from "events";
+import WebSocket from "isomorphic-ws";
 
-import { JsonRpcRequest, JsonRpcSuccess, throwIfError } from "./common";
+import { JsonRpcRequest, JsonRpcResponse, JsonRpcSuccess, throwIfError } from "./common";
 
 export interface RpcClient {
   readonly execute: (request: JsonRpcRequest) => Promise<JsonRpcSuccess>;
@@ -71,4 +73,80 @@ export class HttpUriClient implements RpcClient {
   }
 }
 
-// TODO: websocket implementation
+// WebsocketClient makes calls over websocket
+// TODO: support event subscriptions as well
+// TODO: error handling on disconnect
+export class WebsocketClient implements RpcClient {
+  protected readonly url: string;
+  protected readonly ws: WebSocket;
+  protected readonly switch: EventEmitter;
+  // connected is resolved as soon as the websocket is connected
+  protected readonly connected: Promise<boolean>;
+
+  constructor(url: string = "ws://localhost:46657", path: string = "/websocket") {
+    this.url = url + path;
+    this.switch = new EventEmitter();
+    this.ws = this.connect();
+    this.connected = new Promise(resolve => {
+      this.ws.once("open", () => {
+        // tslint:disable:no-console
+        console.log("open");
+        resolve(true);
+      });
+    });
+    this.switch.on("error", console.log);
+  }
+
+  public execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
+    const promise = this.subscribe(request.id).then(throwIfError);
+    // send as soon as connected
+    this.connected
+      .then(() => {
+        console.log("send");
+        this.ws.send(JSON.stringify(request));
+      })
+      .catch(console.log); // hmm.. when this errors?
+    return promise;
+  }
+
+  protected connect(): WebSocket {
+    const ws = new WebSocket(this.url);
+    //  {
+    //   origin: "https://websocket.org",
+    // });
+    ws.on("error", err => this.switch.emit("error", err));
+    ws.on("close", () => this.switch.emit("error", "Websocket closed"));
+    ws.on("message", msg => {
+      // TODO: fix this up
+      const data = JSON.parse(msg.toString());
+      console.log("data ", data.id);
+      this.switch.emit(data.id, data);
+    });
+    // TODO: pull this out?
+    return ws;
+  }
+
+  protected subscribe(id: string): Promise<JsonRpcResponse> {
+    // tslint:disable-next-line:no-let
+    let resolved = false;
+    console.log("subscribe ", id);
+    return new Promise((resolve, reject) => {
+      // FIXME-optimization: can we disable the other listener when one fires?
+
+      // this will wait for a response (success or error)
+      this.switch.once(id, data => {
+        if (!resolved) {
+          resolved = true;
+          resolve(data);
+        }
+      });
+      // this waits in case the websocket errors/disconnects
+      this.switch.once("error", err => {
+        if (!resolved) {
+          resolved = true;
+          reject(err);
+        }
+      });
+    });
+  }
+}
