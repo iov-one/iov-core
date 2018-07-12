@@ -1,4 +1,5 @@
-import { Encoding } from "./encoding";
+import { Encoding } from "@iov/encoding";
+
 import { Sha256 } from "./sha";
 
 const toHex = Encoding.toHex;

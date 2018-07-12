@@ -1,4 +1,4 @@
-import { Encoding } from "@iov/crypto";
+import { Encoding } from "@iov/encoding";
 
 import { v0_20 } from "./adaptor";
 import { Client } from "./client";

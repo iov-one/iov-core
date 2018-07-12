@@ -1,7 +1,8 @@
 /* tslint:disable:no-bitwise */
 import since = require("jasmine2-custom-message");
 
-import { Encoding } from "./encoding";
+import { Encoding } from "@iov/encoding";
+
 import { Secp256k1 } from "./secp256k1";
 
 const toHex = Encoding.toHex;

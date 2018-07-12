@@ -1,4 +1,5 @@
-import { Encoding, Sha256 } from "@iov/crypto";
+import { Sha256 } from "@iov/crypto";
+import { Encoding } from "@iov/encoding";
 import { AddressBytes, Algorithm, ChainId, Nonce, PublicKeyBundle, SignableBytes } from "@iov/types";
 
 export const keyToAddress = (key: PublicKeyBundle) =>

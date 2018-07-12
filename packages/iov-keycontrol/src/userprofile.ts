@@ -10,9 +10,9 @@ import {
   Chacha20poly1305IetfKey,
   Chacha20poly1305IetfMessage,
   Chacha20poly1305IetfNonce,
-  Encoding,
   Random,
 } from "@iov/crypto";
+import { Encoding } from "@iov/encoding";
 import { FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/types";
 
 import { Keyring, KeyringEntry, KeyringSerializationString, LocalIdentity, PublicIdentity } from "./keyring";

@@ -1,4 +1,5 @@
-import { Encoding } from "./encoding";
+import { Encoding } from "@iov/encoding";
+
 import { Hmac } from "./hmac";
 import { Sha1, Sha256, Sha512 } from "./sha";
 

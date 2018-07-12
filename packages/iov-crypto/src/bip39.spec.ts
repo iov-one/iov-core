@@ -1,5 +1,6 @@
+import { Encoding } from "@iov/encoding";
+
 import { Bip39, EnglishMnemonic } from "./bip39";
-import { Encoding } from "./encoding";
 
 const fromHex = Encoding.fromHex;
 

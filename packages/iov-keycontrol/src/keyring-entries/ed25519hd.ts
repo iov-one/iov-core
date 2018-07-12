@@ -2,12 +2,12 @@ import {
   Bip39,
   Ed25519,
   Ed25519Keypair,
-  Encoding,
   EnglishMnemonic,
   Slip0010,
   Slip0010Curve,
   Slip0010RawIndex,
 } from "@iov/crypto";
+import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
 
 import {

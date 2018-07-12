@@ -1,5 +1,6 @@
 /* tslint:disable:no-bitwise */
-import { Encoding } from "./encoding";
+import { Encoding } from "@iov/encoding";
+
 import { Argon2id, Argon2idOptions, Chacha20poly1305Ietf, Chacha20poly1305IetfCiphertext, Chacha20poly1305IetfKey, Chacha20poly1305IetfMessage, Chacha20poly1305IetfNonce, Ed25519, Ed25519Keypair, Random } from "./libsodium";
 
 const { toAscii, fromHex } = Encoding;

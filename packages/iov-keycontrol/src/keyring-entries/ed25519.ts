@@ -1,4 +1,5 @@
-import { Ed25519, Ed25519Keypair, Encoding, Random } from "@iov/crypto";
+import { Ed25519, Ed25519Keypair, Random } from "@iov/crypto";
+import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
 
 import {

@@ -1,6 +1,7 @@
 import BN = require("bn.js");
 
-import { Encoding } from "./encoding";
+import { Encoding } from "@iov/encoding";
+
 import { Hmac } from "./hmac";
 import { Uint32 } from "./integers";
 import { Sha512 } from "./sha";

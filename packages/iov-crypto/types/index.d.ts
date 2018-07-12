@@ -1,5 +1,4 @@
 export * from "./bip39";
-export * from "./encoding";
 export * from "./hmac";
 export * from "./integers";
 export * from "./libsodium";

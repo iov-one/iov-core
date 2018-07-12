@@ -4,7 +4,7 @@ import bip39_wordlist_english from "bip39/wordlists/english.json";
 import { pbkdf2 } from "pbkdf2";
 import * as unorm from "unorm";
 
-import { Encoding } from "./encoding";
+import { Encoding } from "@iov/encoding";
 
 export class EnglishMnemonic {
   // list of space separated lower case words (1 or more)

@@ -1,4 +1,4 @@
-import { Encoding } from "@iov/crypto";
+import { Encoding } from "@iov/encoding";
 
 import { hashCode } from "./testdata";
 import { arraysEqual, isHashIdentifier } from "./util";

@@ -1,4 +1,5 @@
-import { Encoding, Slip0010RawIndex } from "@iov/crypto";
+import { Slip0010RawIndex } from "@iov/crypto";
+import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, SignableBytes } from "@iov/types";
 
 import { KeyringEntrySerializationString } from "../keyring";
