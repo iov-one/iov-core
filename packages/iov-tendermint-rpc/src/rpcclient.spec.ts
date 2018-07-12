@@ -1,5 +1,4 @@
-import { JsonRpcSuccess, jsonRpcWith } from "./common";
-// import { jsonRpcWith } from "./common";
+import { JsonRpcEvent, jsonRpcWith } from "./common";
 import { Method } from "./requests";
 import { HttpClient, HttpUriClient, RpcClient, WebsocketClient } from "./rpcclient";
 
@@ -69,33 +68,43 @@ describe("Ensure RpcClients work", () => {
     await shouldPass(ws);
   });
 
-  it("WebsocketClient can listen to events", done => {
-    const ws = new WebsocketClient(tendermintUrl);
+  it(
+    "WebsocketClient can listen to events",
+    done => {
+      pendingWithoutTendermint();
 
-    const req = jsonRpcWith("subscribe", { query: "tm.event='NewBlockHeader'" });
-    const headers = ws.listen(req);
+      const ws = new WebsocketClient(tendermintUrl);
 
-    // tslint:disable-next-line:readonly-array
-    const events: JsonRpcSuccess[] = [];
+      const query = "tm.event='NewBlockHeader'";
+      const req = jsonRpcWith("subscribe", { query });
+      const headers = ws.listen(req);
 
-    const sub = headers.subscribe({
-      error: fail,
-      complete: () => fail("subscription should not complete"),
-      next: (res: JsonRpcSuccess) => {
-        events.push(res);
-        // tslint:disable-next-line:no-console
-        console.log(res.result);
+      // tslint:disable-next-line:readonly-array
+      const events: JsonRpcEvent[] = [];
 
-        if (events.length === 3) {
-          // make sure we get 3, then we can unsubscribe
-          // (also check they are proper...)
-          sub.unsubscribe();
-          // wait 2.5s for finish
-          setTimeout(done, 2500);
-        } else if (events.length === 4) {
-          fail("unsubscribe didn't work");
-        }
-      },
-    });
-  });
+      const sub = headers.subscribe({
+        error: fail,
+        complete: () => fail("subscription should not complete"),
+        next: (evt: JsonRpcEvent) => {
+          events.push(evt);
+          expect(evt.query).toEqual(query);
+
+          if (events.length === 3) {
+            // make sure they are consequtive heights
+            const height = (i: number) => (events[i].data.value as any).header.height as number;
+            expect(height(1)).toEqual(height(0) + 1);
+            expect(height(2)).toEqual(height(1) + 1);
+
+            // now unsubscribe and error if another one arrives
+            sub.unsubscribe();
+            // wait 2.5s for finish
+            setTimeout(done, 2500);
+          } else if (events.length === 4) {
+            fail("unsubscribe didn't work");
+          }
+        },
+      });
+    },
+    10000,
+  ); // give 10s to finish
 });

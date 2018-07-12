@@ -3,14 +3,21 @@ import EventEmitter from "events";
 import WebSocket from "isomorphic-ws";
 import { Listener, Producer, Stream } from "xstream";
 
-import { ifError, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccess, throwIfError } from "./common";
+import {
+  ifError,
+  JsonRpcEvent,
+  JsonRpcRequest,
+  JsonRpcResponse,
+  JsonRpcSuccess,
+  throwIfError,
+} from "./common";
 
 export interface RpcClient {
   readonly execute: (request: JsonRpcRequest) => Promise<JsonRpcSuccess>;
 }
 
 export interface RpcEmitter extends RpcClient {
-  readonly listen: (request: JsonRpcRequest) => Stream<JsonRpcSuccess>;
+  readonly listen: (request: JsonRpcRequest) => Stream<JsonRpcEvent>;
 }
 
 export const getWindow = (): any | undefined => (inBrowser() ? (window as any) : undefined);
@@ -169,7 +176,7 @@ export class WebsocketClient implements RpcEmitter {
   }
 }
 
-class Subscription implements Producer<JsonRpcSuccess> {
+class Subscription implements Producer<JsonRpcEvent> {
   protected readonly request: JsonRpcRequest;
   protected readonly client: WebsocketClient;
 
@@ -178,7 +185,7 @@ class Subscription implements Producer<JsonRpcSuccess> {
     this.client = client;
   }
 
-  public start(listener: Listener<JsonRpcSuccess>): void {
+  public start(listener: Listener<JsonRpcEvent>): void {
     this.client.send(this.request);
     this.subscribeEvents(this.request.id, listener);
   }
@@ -191,7 +198,7 @@ class Subscription implements Producer<JsonRpcSuccess> {
     this.client.switch.emit(this.request.id + "#done", {});
   }
 
-  protected subscribeEvents(id: string, listener: Listener<JsonRpcSuccess>): void {
+  protected subscribeEvents(id: string, listener: Listener<JsonRpcEvent>): void {
     // this should unsubscribe itself, so doesn't need to be removed explicitly
     this.client.switch.once(id, data => {
       const err = ifError(data);
@@ -208,7 +215,8 @@ class Subscription implements Producer<JsonRpcSuccess> {
         closeSubscriptions();
         listener.error(err);
       } else {
-        listener.next(data as JsonRpcSuccess);
+        const result = (data as JsonRpcSuccess).result;
+        listener.next(result as JsonRpcEvent);
       }
     });
 
