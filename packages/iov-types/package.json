@@ -16,7 +16,7 @@
     "lint-fix": "yarn lint --fix",
     "test": "echo 'Info: no test specified'",
     "prebuild": "yarn format && yarn lint",
-    "build": "tsc"
+    "build": "echo 'Info: nothing to be built'"
   },
   "dependencies": {
     "@types/long": "^4.0.0",
