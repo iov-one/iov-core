@@ -7,16 +7,17 @@ import { HttpClient, HttpUriClient, RpcClient, WebsocketClient } from "./rpcclie
 // good for browser tests, not so good for configuring production
 const skipTests = (): boolean => !process.env.TENDERMINT_ENABLED;
 
-const pendingWithoutTendermint = () => {
-  if (skipTests()) {
-    pending("Set TENDERMINT_ENABLED to run tendermint rpc tests");
-  }
-};
-
 describe("Ensure RpcClients work", () => {
   // TODO: make flexible, support multiple versions, etc...
   const tendermintUrl = "http://localhost:12345";
   const wsTendermintUrl = "ws://localhost:12345";
+
+  if (skipTests()) {
+    it("Tests need flag to enable", () => {
+      pending("Set TENDERMINT_ENABLED to run tendermint rpc tests");
+    });
+    return;
+  }
 
   const shouldPass = async (client: RpcClient) => {
     const req = jsonRpcWith(Method.HEALTH);
@@ -37,7 +38,6 @@ describe("Ensure RpcClients work", () => {
   };
 
   it("HttpClient can make a simple call", () => {
-    pendingWithoutTendermint();
     const poster = new HttpClient(tendermintUrl);
 
     return shouldPass(poster)
@@ -48,7 +48,6 @@ describe("Ensure RpcClients work", () => {
   });
 
   it("HttpUriClient can make a simple call", () => {
-    pendingWithoutTendermint();
     const uri = new HttpUriClient(tendermintUrl);
 
     return shouldPass(uri)
@@ -59,7 +58,6 @@ describe("Ensure RpcClients work", () => {
   });
 
   it("WebsocketClient can make a simple call", () => {
-    pendingWithoutTendermint();
     const ws = new WebsocketClient(wsTendermintUrl);
 
     return (

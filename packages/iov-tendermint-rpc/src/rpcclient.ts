@@ -28,7 +28,7 @@ const http = (method: string, url: string, request?: any): Promise<any> => {
       .then(filterBadStatus)
       .then(res => res.json());
   } else {
-    return axios.request({ url, method, data: request }).then(res => res.data);
+    return axios.request({ url, method, data: request }).then(res => res.data) as Promise<any>;
   }
 };
 
