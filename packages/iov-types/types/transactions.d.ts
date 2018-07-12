@@ -1,28 +1,22 @@
 import Long from "long";
+
+import { As } from "./as";
 import { AddressBytes, PublicKeyBundle } from "./keys";
 
-declare const NonceSymbol: unique symbol;
-export type Nonce = typeof NonceSymbol & Long;
+export type Nonce = Long & As<"nonce">;
 
 // TODO: can't we just make this a number (block height?)
-declare const TTLSymbol: unique symbol;
-type TTL = typeof TTLSymbol;
-export type TTLBytes = TTL & Uint8Array;
-export type TTLString = TTL & string;
+export type TtlBytes = Uint8Array & As<"ttl">;
 
 // TokenTicker should be 3-4 letters, uppercase
-declare const TokenTickerSymbol: unique symbol;
-export type TokenTicker = typeof TokenTickerSymbol & string;
+export type TokenTicker = string & As<"token-ticker">;
 
 // ChainId is used to differentiate a blockchain
 // should be alphanumeric or -_/ and unique
-declare const ChainIdSymbol: unique symbol;
-export type ChainId = typeof ChainIdSymbol & string;
+export type ChainId = string & As<"chain-id">;
 
-declare const SwapIdSymbol: unique symbol;
-type SwapId = typeof SwapIdSymbol;
-export type SwapIdBytes = SwapId & Uint8Array;
-export type SwapIdString = SwapId & string;
+export type SwapIdBytes = Uint8Array & As<"swap-id">;
+export type SwapIdString = string & As<"swap-id">;
 
 // TODO: we may want to make this a union type BNSName | PublicKey | Address
 // but waiting on clarity on BNS spec, for now simplest working solution...
@@ -48,7 +42,7 @@ export interface BaseTx {
   readonly fee?: FungibleToken;
   // signer needs to be a PublicKey as we use that to as an identifier to the Keyring for lookup
   readonly signer: PublicKeyBundle;
-  readonly ttl?: TTLBytes;
+  readonly ttl?: TtlBytes;
 }
 
 export interface SendTx extends BaseTx {
