@@ -53,7 +53,7 @@ export class Hex {
   }
 
   public static decode(hexstring: HexString): Uint8Array {
-    return new Buffer(hexstring, "hex");
+    return Uint8Array.from(new Buffer(hexstring, "hex"));
   }
 }
 
@@ -64,7 +64,7 @@ export class Base64 {
   }
 
   public static decode(base64String: Base64String): Uint8Array {
-    return new Buffer(base64String, "base64");
+    return Uint8Array.from(new Buffer(base64String, "base64"));
   }
 }
 
