@@ -1,4 +1,5 @@
-import { jsonRpcWith } from "./common";
+import { JsonRpcSuccess, jsonRpcWith } from "./common";
+// import { jsonRpcWith } from "./common";
 import { Method } from "./requests";
 import { HttpClient, HttpUriClient, RpcClient, WebsocketClient } from "./rpcclient";
 
@@ -66,5 +67,31 @@ describe("Ensure RpcClients work", () => {
     await shouldPass(ws);
     await shouldFail(ws);
     await shouldPass(ws);
+  });
+
+  it("WebsocketClient can listen to events", done => {
+    // tslint:disable:no-console
+    const ws = new WebsocketClient(tendermintUrl);
+
+    const req = jsonRpcWith("subscribe", { query: "tm.event='NewBlockHeader'" });
+    const headers = ws.listen(req);
+
+    // tslint:disable-next-line:readonly-array
+    const events: JsonRpcSuccess[] = [];
+
+    headers.subscribe({
+      error: fail,
+      complete: () => fail("subscription should not complete"),
+      next: (res: JsonRpcSuccess) => {
+        events.push(res);
+        console.log(res);
+
+        if (events.length === 3) {
+          // not sure how to define success here
+          expect(true).toBeTruthy();
+          done();
+        }
+      },
+    });
   });
 });

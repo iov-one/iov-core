@@ -1,7 +1,8 @@
 import axios from "axios";
 import EventEmitter from "events";
 import WebSocket from "isomorphic-ws";
-import { Listener, Producer, Stream } from "xstream";
+// import { Listener, Producer, Stream } from "xstream";
+import { Listener, MemoryStream, Producer, Stream } from "xstream";
 
 import { ifError, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccess, throwIfError } from "./common";
 
@@ -118,16 +119,18 @@ export class WebsocketClient implements RpcEmitter {
     return promise;
   }
 
-  public listen(request: JsonRpcRequest): Stream<JsonRpcSuccess> {
+  // public listen(request: JsonRpcRequest): Stream<JsonRpcSuccess> {
+  public listen(request: JsonRpcRequest): Stream<any> {
     // prepare a stream of all events tied to this
-    const producer: Producer<JsonRpcSuccess> = {
-      start: (listener: Listener<JsonRpcSuccess>) => {
+    const producer: Producer<any> = {
+      start: (listener: Listener<any>) => {
         this.subscribeEvents(request.id, listener);
       },
       // TODO: implement
       stop: () => undefined,
     };
-    const stream = Stream.create(producer);
+    // const stream = Stream.create(producer);
+    const stream = MemoryStream.create(producer);
 
     // send the subscribe call
     this.connected
@@ -174,15 +177,29 @@ export class WebsocketClient implements RpcEmitter {
   }
 
   // TODO: support unsubscribe, complete, etc...
-  protected subscribeEvents(id: string, listener: Listener<JsonRpcSuccess>): void {
-    // this will fire on a response (success or error)
-    this.switch.on(id + "#event", data => {
+  // tslint:disable:no-console
+  // protected subscribeEvents(id: string, listener: Listener<JsonRpcSuccess>): void {
+  protected subscribeEvents(id: string, listener: Listener<any>): void {
+    this.switch.once(id, data => {
       const err = ifError(data);
       if (err) {
+        console.log("Subscribe error: ", err);
         listener.error(err);
       } else {
-        listener.next(data as JsonRpcSuccess);
+        console.log("Subscribe success: ", data);
       }
+    });
+
+    // this will fire on a response (success or error)
+    this.switch.on(id + "#event", data => {
+      console.log("Got event: ", data);
+      listener.next(data);
+      // const err = ifError(data);
+      // if (err) {
+      //   listener.error(err);
+      // } else {
+      //   listener.next(data as JsonRpcSuccess);
+      // }
     });
     // this will fire in case the websocket errors/disconnects
     this.switch.once("error", err => {
