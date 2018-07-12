@@ -5,8 +5,7 @@ import { HttpClient, HttpUriClient, RpcClient, WebsocketClient } from "./rpcclie
 // process.env is undefined in browser....
 // but we can shim it in with webpack for the tests.
 // good for browser tests, not so good for configuring production
-const skipTests = (): boolean => false;
-// const skipTests = (): boolean => !process.env.TENDERMINT_ENABLED;
+const skipTests = (): boolean => !process.env.TENDERMINT_ENABLED;
 
 const pendingWithoutTendermint = () => {
   if (skipTests()) {
@@ -42,7 +41,7 @@ describe("Ensure RpcClients work", () => {
     const poster = new HttpClient(tendermintUrl);
 
     return shouldPass(poster)
-      .catch(err => fail(err))
+      .catch(fail)
       .then(() => shouldFail(poster))
       .then(fail)
       .catch(() => 0);
@@ -53,7 +52,7 @@ describe("Ensure RpcClients work", () => {
     const uri = new HttpUriClient(tendermintUrl);
 
     return shouldPass(uri)
-      .catch(err => fail(err))
+      .catch(fail)
       .then(() => shouldFail(uri))
       .then(fail)
       .catch(() => 0);
@@ -63,9 +62,15 @@ describe("Ensure RpcClients work", () => {
     pendingWithoutTendermint();
     const ws = new WebsocketClient(wsTendermintUrl);
 
-    return shouldPass(ws).catch(err => fail(err));
-    // .then(() => shouldFail(ws))
-    // .then(fail)
-    // .catch(() => 0);
+    return (
+      shouldPass(ws)
+        .catch(fail)
+        .then(() => shouldFail(ws))
+        .then(fail)
+        .catch(() => 0)
+        // should be able to handle a good response after a failure
+        .then(() => shouldPass(ws))
+        .catch(fail)
+    );
   });
 });

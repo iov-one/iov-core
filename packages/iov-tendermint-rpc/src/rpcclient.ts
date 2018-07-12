@@ -80,7 +80,9 @@ export class WebsocketClient implements RpcClient {
   protected readonly url: string;
   protected readonly ws: WebSocket;
   protected readonly switch: EventEmitter;
+
   // connected is resolved as soon as the websocket is connected
+  // TODO: use MemoryStream and support reconnects
   protected readonly connected: Promise<boolean>;
 
   constructor(url: string = "ws://localhost:46657", path: string = "/websocket") {
@@ -88,11 +90,7 @@ export class WebsocketClient implements RpcClient {
     this.switch = new EventEmitter();
     this.ws = this.connect();
     this.connected = new Promise(resolve => {
-      this.ws.once("open", () => {
-        // tslint:disable:no-console
-        console.log("open");
-        resolve(true);
-      });
+      this.ws.once("open", () => resolve(true));
     });
     this.switch.on("error", console.log);
   }
@@ -101,35 +99,27 @@ export class WebsocketClient implements RpcClient {
     const promise = this.subscribe(request.id).then(throwIfError);
     // send as soon as connected
     this.connected
-      .then(() => {
-        console.log("send");
-        this.ws.send(JSON.stringify(request));
-      })
-      .catch(console.log); // hmm.. when this errors?
+      .then(() => this.ws.send(JSON.stringify(request)))
+      // Is there a way to be more targetted with errors?
+      // So this just kills the execute promise, not anything else?
+      .catch(err => this.switch.emit("errror", err));
     return promise;
   }
 
   protected connect(): WebSocket {
     const ws = new WebSocket(this.url);
-    //  {
-    //   origin: "https://websocket.org",
-    // });
     ws.on("error", err => this.switch.emit("error", err));
     ws.on("close", () => this.switch.emit("error", "Websocket closed"));
     ws.on("message", msg => {
-      // TODO: fix this up
       const data = JSON.parse(msg.toString());
-      console.log("data ", data.id);
       this.switch.emit(data.id, data);
     });
-    // TODO: pull this out?
     return ws;
   }
 
   protected subscribe(id: string): Promise<JsonRpcResponse> {
     // tslint:disable-next-line:no-let
     let resolved = false;
-    console.log("subscribe ", id);
     return new Promise((resolve, reject) => {
       // FIXME-optimization: can we disable the other listener when one fires?
 
