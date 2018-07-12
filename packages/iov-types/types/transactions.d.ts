@@ -1,14 +1,14 @@
 import Long from "long";
+
+import { As } from "./as";
 import { AddressBytes, PublicKeyBundle } from "./keys";
 
 declare const NonceSymbol: unique symbol;
 export type Nonce = typeof NonceSymbol & Long;
 
 // TODO: can't we just make this a number (block height?)
-declare const TTLSymbol: unique symbol;
-type TTL = typeof TTLSymbol;
-export type TTLBytes = TTL & Uint8Array;
-export type TTLString = TTL & string;
+export type TTLBytes = Uint8Array & As<"ttl">;
+export type TTLString = string & As<"ttl">;
 
 // TokenTicker should be 3-4 letters, uppercase
 declare const TokenTickerSymbol: unique symbol;
