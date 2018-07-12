@@ -16,8 +16,7 @@ const pendingWithoutTendermint = () => {
 };
 
 // TODO: make flexible, support multiple versions, etc...
-const tendermintUrl = "http://localhost:12345";
-const wsTendermintUrl = "http://localhost:12345";
+const tendermintUrl = "localhost:12345";
 
 const buildKvTx = (k: string, v: string): Uint8Array => Encoding.asAscii(`${k}=${v}`);
 
@@ -128,5 +127,5 @@ const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
 
 describe("Verify client calls on tendermint w/ kvstore app", () => {
   kvTestSuite("With HttpClient", () => new HttpClient(tendermintUrl));
-  kvTestSuite("With WebsocketClient", () => new WebsocketClient(wsTendermintUrl));
+  kvTestSuite("With WebsocketClient", () => new WebsocketClient(tendermintUrl));
 });

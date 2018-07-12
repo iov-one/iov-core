@@ -39,11 +39,14 @@ export const getOriginConfig = () => {
   return w ? { headers: { Origin: w.origin, Referer: `${w.origin}/` } } : undefined;
 };
 
+export const hasProtocol = (url: string) => url.search("://") !== -1;
+
 export class HttpClient implements RpcClient {
   protected readonly url: string;
 
   constructor(url: string = "http://localhost:46657") {
-    this.url = url;
+    // accept host.name:port and assume http protocol
+    this.url = hasProtocol(url) ? url : "http://" + url;
   }
 
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
@@ -60,7 +63,7 @@ export class HttpUriClient implements RpcClient {
   protected readonly url: string;
 
   constructor(url: string = "http://localhost:46657") {
-    this.url = url;
+    this.url = hasProtocol(url) ? url : "http://" + url;
   }
 
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
@@ -86,7 +89,10 @@ export class WebsocketClient implements RpcClient {
   protected readonly connected: Promise<boolean>;
 
   constructor(url: string = "ws://localhost:46657", path: string = "/websocket") {
-    this.url = url + path;
+    // accept host.name:port and assume ws protocol
+    const cleanUrl = hasProtocol(url) ? url : "ws://" + url;
+    this.url = cleanUrl + path;
+
     this.switch = new EventEmitter();
     this.ws = this.connect();
     this.connected = new Promise(resolve => {

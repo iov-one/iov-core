@@ -9,8 +9,7 @@ const skipTests = (): boolean => !process.env.TENDERMINT_ENABLED;
 
 describe("Ensure RpcClients work", () => {
   // TODO: make flexible, support multiple versions, etc...
-  const tendermintUrl = "http://localhost:12345";
-  const wsTendermintUrl = "ws://localhost:12345";
+  const tendermintUrl = "localhost:12345";
 
   if (skipTests()) {
     it("Tests need flag to enable", () => {
@@ -58,7 +57,7 @@ describe("Ensure RpcClients work", () => {
   });
 
   it("WebsocketClient can make a simple call", () => {
-    const ws = new WebsocketClient(wsTendermintUrl);
+    const ws = new WebsocketClient(tendermintUrl);
 
     return (
       shouldPass(ws)
