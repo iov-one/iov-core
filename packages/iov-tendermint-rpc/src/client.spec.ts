@@ -90,7 +90,7 @@ describe("Verify client calls on tendermint w/ kvstore app", () => {
     expect(await client.blockResults(3).catch(fail)).toBeTruthy();
     expect(await client.commit(4).catch(fail)).toBeTruthy();
     expect(await client.genesis().catch(fail)).toBeTruthy();
-    expect(await client.health().catch(fail)).toBeTruthy();
+    expect(await client.health().catch(fail)).toBeNull();
     expect(await client.status().catch(fail)).toBeTruthy();
     expect(await client.validators().catch(fail)).toBeTruthy();
   });
