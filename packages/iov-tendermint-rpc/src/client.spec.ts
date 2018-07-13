@@ -25,42 +25,36 @@ const value = randomId();
 const buildKvTx = (k: string, v: string): Uint8Array => Encoding.asAscii(`${k}=${v}`);
 
 describe("Verify client calls on tendermint w/ kvstore app", () => {
-  it("Tries to connect with known version to tendermint", () => {
+  it("Tries to connect with known version to tendermint", async () => {
     pendingWithoutTendermint();
     const client = new Client(new HttpClient(tendermintUrl), v0_20);
-    return client.abciInfo().catch(fail);
+    expect(await client.abciInfo()).toBeTruthy();
   });
 
-  it("Tries to auto-discover tendermint", () => {
+  it("Tries to auto-discover tendermint", async () => {
     pendingWithoutTendermint();
-    return Client.detectVersion(new HttpClient(tendermintUrl))
-      .then(client => client.abciInfo())
-      .catch(fail);
+    const client = await Client.detectVersion(new HttpClient(tendermintUrl));
+    const info = await client.abciInfo();
+    expect(info).toBeTruthy();
   });
 
-  it("Posts a transaction", () => {
+  it("Posts a transaction", async () => {
     pendingWithoutTendermint();
     const client = new Client(new HttpClient(tendermintUrl), v0_20);
     const tx = buildKvTx(key, value);
 
-    const verifyResponse = (res: responses.BroadcastTxCommitResponse) => {
-      expect(res.height).toBeGreaterThan(2);
-      expect(res.hash.length).toEqual(20);
-      // verify success
-      expect(res.checkTx.code).toBeFalsy();
-      expect(res.deliverTx).toBeTruthy();
-      if (res.deliverTx) {
-        expect(res.deliverTx.code).toBeFalsy();
-      }
-    };
-
-    return client
-      .broadcastTxCommit({ tx: tx })
-      .then(verifyResponse)
-      .catch(fail);
+    const response = await client.broadcastTxCommit({ tx: tx });
+    expect(response.height).toBeGreaterThan(2);
+    expect(response.hash.length).toEqual(20);
+    // verify success
+    expect(response.checkTx.code).toBeFalsy();
+    expect(response.deliverTx).toBeTruthy();
+    if (response.deliverTx) {
+      expect(response.deliverTx.code).toBeFalsy();
+    }
   });
 
-  it("Queries the state", () => {
+  it("Queries the state", async () => {
     pendingWithoutTendermint();
     const client = new Client(new HttpClient(tendermintUrl), v0_20);
 
@@ -68,70 +62,58 @@ describe("Verify client calls on tendermint w/ kvstore app", () => {
     const binValue = Encoding.asAscii(value);
     const queryParams = { path: "/key", data: binKey };
 
-    const verifyQuery = (res: responses.AbciQueryResponse) => {
-      expect(new Uint8Array(res.key)).toEqual(binKey);
-      expect(new Uint8Array(res.value)).toEqual(binValue);
-      expect(res.code).toBeFalsy();
-    };
-
-    return client
-      .abciQuery(queryParams)
-      .then(verifyQuery)
-      .catch(fail);
+    const response = await client.abciQuery(queryParams);
+    expect(new Uint8Array(response.key)).toEqual(binKey);
+    expect(new Uint8Array(response.value)).toEqual(binValue);
+    expect(response.code).toBeFalsy();
   });
 
-  it("Sanity check - calls don't error", () => {
+  it("Sanity check - calls don't error", async () => {
     pendingWithoutTendermint();
     const client = new Client(new HttpClient(tendermintUrl), v0_20);
 
-    return client
-      .block()
-      .then(() => client.blockchain(2, 4))
-      .then(() => client.blockResults(3))
-      .then(() => client.commit(4))
-      .then(() => client.genesis())
-      .then(() => client.health())
-      .then(() => client.status())
-      .then(() => client.validators())
-      .catch(fail);
+    expect(await client.block()).toBeTruthy();
+    expect(await client.blockchain(2, 4)).toBeTruthy();
+    expect(await client.blockResults(3)).toBeTruthy();
+    expect(await client.commit(4)).toBeTruthy();
+    expect(await client.genesis()).toBeTruthy();
+    expect(await client.health()).toBeNull();
+    expect(await client.status()).toBeTruthy();
+    expect(await client.validators()).toBeTruthy();
   });
 
-  it("Can query a tx properly", () => {
+  it("Can query a tx properly", async () => {
     pendingWithoutTendermint();
     const client = new Client(new HttpClient(tendermintUrl), v0_20);
 
-    const verifyTxResponses = async () => {
-      const find = randomId();
-      const me = randomId();
-      const tx = buildKvTx(find, me);
+    const find = randomId();
+    const me = randomId();
+    const tx = buildKvTx(find, me);
 
-      const txRes = await client.broadcastTxCommit({ tx });
-      expect(responses.txCommitSuccess(txRes)).toBeTruthy();
-      expect(txRes.height).toBeTruthy();
-      const height: number = txRes.height || 0; // || 0 for type system
-      expect(txRes.hash.length).not.toEqual(0);
-      const hash = txRes.hash;
+    const txRes = await client.broadcastTxCommit({ tx });
+    expect(responses.txCommitSuccess(txRes)).toBeTruthy();
+    expect(txRes.height).toBeTruthy();
+    const height: number = txRes.height || 0; // || 0 for type system
+    expect(txRes.hash.length).not.toEqual(0);
+    const hash = txRes.hash;
 
-      // find by hash - does it match?
-      const r = await client.tx({ hash, prove: true });
-      // both values come from rpc, so same type (Buffer/Uint8Array)
-      expect(r.hash).toEqual(hash);
-      // force the type when comparing to locally generated value
-      expect(new Uint8Array(r.tx)).toEqual(tx);
-      expect(r.height).toEqual(height);
-      expect(r.proof).toBeTruthy();
+    // find by hash - does it match?
+    const r = await client.tx({ hash, prove: true });
+    // both values come from rpc, so same type (Buffer/Uint8Array)
+    expect(r.hash).toEqual(hash);
+    // force the type when comparing to locally generated value
+    expect(new Uint8Array(r.tx)).toEqual(tx);
+    expect(r.height).toEqual(height);
+    expect(r.proof).toBeTruthy();
 
-      // txSearch - you must enable the indexer when running
-      // tendermint, else you get empty results
-      const query = `app.key='${find}'` as QueryString;
-      const s = await client.txSearch({ query, page: 1, per_page: 30 });
-      // should find the tx
-      expect(s.totalCount).toEqual(1);
-      // should return same info as querying directly,
-      // except without the proof
-      expect(s.txs[0]).toEqual({ ...r, proof: undefined });
-    };
-
-    return verifyTxResponses().catch(fail);
+    // txSearch - you must enable the indexer when running
+    // tendermint, else you get empty results
+    const query = `app.key='${find}'` as QueryString;
+    const s = await client.txSearch({ query, page: 1, per_page: 30 });
+    // should find the tx
+    expect(s.totalCount).toEqual(1);
+    // should return same info as querying directly,
+    // except without the proof
+    expect(s.txs[0]).toEqual({ ...r, proof: undefined });
   });
 });
