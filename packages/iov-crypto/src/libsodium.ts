@@ -37,7 +37,7 @@ export class Argon2id {
     return sodium.crypto_pwhash(
       options.outputLength,
       password,
-      salt, // libsodium only supports 16 byte salts
+      salt, // libsodium only supports 16 byte salts and will throw when you don't respect that
       options.opsLimit,
       options.memLimitKib * 1024,
       sodium.crypto_pwhash_ALG_ARGON2ID13,

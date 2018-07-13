@@ -77,6 +77,32 @@ describe("Libsodium", () => {
         await Argon2id.execute("123", salt, options).then(result => expect(result).toEqual(fromHex(data.get(length)!)));
       }
     });
+
+    it("throw for invalid salt lengths", async () => {
+      const password = "123";
+      const options: Argon2idOptions = {
+        outputLength: 32,
+        opsLimit: 1,
+        memLimitKib: 10 * 1024,
+      };
+
+      // 8 bytes
+      await Argon2id.execute(password, fromHex("aabbccddeeff0011"), options)
+        .then(() => fail("Argon2id with invalid salt length must not resolve"))
+        .catch(e => expect(e).toMatch(/invalid salt length/));
+      // 15 bytes
+      await Argon2id.execute(password, fromHex("aabbccddeeff001122334455667788"), options)
+        .then(() => fail("Argon2id with invalid salt length must not resolve"))
+        .catch(e => expect(e).toMatch(/invalid salt length/));
+      // 17 bytes
+      await Argon2id.execute(password, fromHex("aabbccddeeff00112233445566778899aa"), options)
+        .then(() => fail("Argon2id with invalid salt length must not resolve"))
+        .catch(e => expect(e).toMatch(/invalid salt length/));
+      // 32 bytes
+      await Argon2id.execute(password, fromHex("aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899"), options)
+        .then(() => fail("Argon2id with invalid salt length must not resolve"))
+        .catch(e => expect(e).toMatch(/invalid salt length/));
+    });
   });
 
   describe("Random", () => {
