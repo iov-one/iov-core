@@ -6,7 +6,7 @@ const { asAscii, fromHex } = Encoding;
 
 describe("Libsodium", () => {
   describe("Argon2id", () => {
-    // we use relatively week values here to avoid sloing down test execution
+    // we use relatively week values here to avoid slowing down test execution
 
     it("works for 1 MiB memory and opsLimit = 5", async () => {
       const options: Argon2idOptions = {
