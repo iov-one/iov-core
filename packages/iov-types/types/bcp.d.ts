@@ -1,21 +1,70 @@
-// import { Transaction } from "@iov/types";
-import { Stream } from "xstream";
+// import { Stream } from "xstream";
 
-import { As } from "./as";
 import { AddressBytes, PublicKeyBundle } from "./keys";
-import { SignedTransaction } from "./signables";
-import { FungibleToken, Nonce, TokenTicker } from "./transactions";
+import { PostableBytes } from "./signables";
+import { Nonce, TokenTicker } from "./transactions";
 
-// import { RPC, Websocket } from "./rpc";
-// import { Block, Header } from "./blocks";
-// import { ParsedStateObject, StateKey, StateBytes } from "./state";
-// import {
-//   TransactionBytes,
-//   TransactionState,
-//   TransactionStateProcessed,
-//   TxQueryString,
-//   TransactionIDString
-// } from "./transactions";
+/*
+Types defined to match 
+https://app.swaggerhub.com/apis/IOV.one/BOV/0.0.4#/basic/getAccounts
+
+Only a subset currently implemented.
+*/
+
+export interface BcpQueryEnvelope<T extends BcpData> {
+  readonly metadata: BcpQueryMetadata;
+  readonly data: ReadonlyArray<T>;
+}
+
+export interface BcpQueryMetadata {
+  readonly offset: number;
+  readonly limit: number;
+}
+
+export type BcpData = BcpAccount | BcpNonce | BcpTicker;
+
+export interface BcpAccount {
+  readonly address: AddressBytes;
+  readonly name?: string;
+  readonly balance: ReadonlyArray<BcpCoin>;
+}
+
+export interface BcpCoin extends BcpTicker {
+  readonly whole: number;
+  readonly fractional: number;
+}
+
+export interface BcpNonce {
+  readonly address: AddressBytes;
+  readonly publicKey: PublicKeyBundle;
+  readonly nonce: Nonce;
+}
+
+export interface BcpTicker {
+  readonly tokenTicker: TokenTicker;
+  readonly sigFigs: number;
+  readonly tokenName?: string;
+}
+
+export interface BcpTransactionResponse {
+  readonly metadata: {
+    // status says if it succeeds
+    readonly status: boolean;
+  };
+  readonly data: {
+    readonly message: string;
+  };
+}
+
+export interface BcpAddressQuery {
+  address: AddressBytes;
+}
+
+export interface BcpValueNameQuery {
+  name: string;
+}
+
+export type BcpAccountQuery = BcpAddressQuery | BcpValueNameQuery;
 
 // Node is a high-level interface to a blockchain node,
 // abstracted over all blockchain types and communication channel.
@@ -27,116 +76,38 @@ import { FungibleToken, Nonce, TokenTicker } from "./transactions";
 // the connection, subscription, and such. (sorry will, but even
 // a Haskell guru recommended mutable state for this case).
 export interface Node {
-  // headers returns all headers in that range.
-  // If max is underfined, subscribe to all new headers
-  // If max is defined, but higher than current height,
-  // subscribe to all new headers until max.
-  readonly headers: (min?: number, max?: number) => Stream<Header>;
+  // // headers returns all headers in that range.
+  // // If max is underfined, subscribe to all new headers
+  // // If max is defined, but higher than current height,
+  // // subscribe to all new headers until max.
+  // readonly headers: (min?: number, max?: number) => Stream<Header>;
 
-  // block will query for one block if height is provider,
-  // returning it immediately if available, or as soon as it
-  // is produced, if in the future.
-  // If not height is provided, it will get most recent block
-  readonly block: (height?: number) => Promise<Block>;
-  // streamBlocks starts sending a stream of blocks from now on
-  readonly streamBlocks: () => Stream<Block>;
+  // // block will query for one block if height is provider,
+  // // returning it immediately if available, or as soon as it
+  // // is produced, if in the future.
+  // // If not height is provided, it will get most recent block
+  // readonly block: (height?: number) => Promise<Block>;
+  // // streamBlocks starts sending a stream of blocks from now on
+  // readonly streamBlocks: () => Stream<Block>;
 
-  // postTx submits a signed tx as is notified on every state change
-  readonly postTx: (tx: SignedTransaction) => Stream<TransactionState>;
+  // submitTx submits a signed tx as is notified on every state change
+  readonly postTx: (tx: PostableBytes) => Promise<BcpTransactionResponse>;
+
+  readonly getTicker: (ticker: TokenTicker) => Promise<BcpQueryEnvelope<BcpTicker>>;
+  readonly getAllTickers: () => Promise<BcpQueryEnvelope<BcpTicker>>;
+
+  readonly getAccount: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpAccount>>;
+  readonly getNonce: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpNonce>>;
 
   // TODO----
+  // various types of queries to get a stream of accounts...
+  // streams current data and all changes
+  // readonly watchAccount: (query: AccountQuery) => Stream<Account>;
+  // readonly watchNonce: (query: AccountQuery) => Stream<AccountNonce>;
 
   // // searchTx searches for all tx that match these tags and subscribes to new ones
   // // watchTx is a subset, searching by TxID, not tags
   // searchTx(
   //       query: TxQueryString
   // ): Stream<TransactionStateProcessed>;
-
-  // various types of queries to get a stream of accounts...
-  // streams current data and all changes
-  readonly watchAccount: (query: AccountQuery) => Stream<Account>;
-  readonly watchNonce: (query: AccountQuery) => Stream<AccountNonce>;
-
-  readonly getTicker: (ticker: TokenTicker) => Promise<Ticker>;
-  readonly watchAllTickers: () => Stream<Ticker>;
-}
-
-// TODO: expand on this
-export const enum TransactionState {
-  PENDING = "PENDING",
-  UNCONFIRMED = "UNCONFIRMED",
-  CONFIRMED = "CONFIRMED",
-  REJECTED = "REJECTED",
-}
-
-// ------------------------------------------------------------------------
-// State types
-
-export const enum AccountQueryType {
-  ADDRESS = "ADDRESS",
-  NAME = "NAME",
-  PUBLIC_KEY = "PUBLIC_KEY",
-}
-
-export interface AccountQueryByAddress {
-  readonly type: AccountQueryType.ADDRESS;
-  readonly address: AddressBytes;
-}
-
-export interface AccountQueryByPublicKeyBundle {
-  readonly type: AccountQueryType.PUBLIC_KEY;
-  readonly PublicKeyBundle: PublicKeyBundle;
-}
-
-export interface AccountQueryByName {
-  readonly type: AccountQueryType.NAME;
-  readonly name: string;
-}
-
-export type AccountQuery = AccountQueryByAddress | AccountQueryByName | AccountQueryByPublicKeyBundle;
-
-// Nonce is a minimal subset of Account for efficiency
-export interface AccountNonce {
-  readonly PublicKeyBundle?: PublicKeyBundle;
-  readonly address: AddressBytes;
-  readonly nonce: Nonce;
-}
-
-export interface Account extends AccountNonce {
-  readonly name?: string;
-  readonly balances: ReadonlyArray<Balance>;
-  readonly extended: any;
-}
-
-export interface Balance extends FungibleToken {
-  readonly tokenName?: string;
-  readonly sigFigs: number;
-}
-
-// ----
-
-export interface Ticker {
-  readonly tokenTicker: TokenTicker;
-  readonly tokenName?: string;
-  readonly sigFigs: number;
-}
-
-// ------------------------------------------------------------------------
-// Block types
-
-export type BlockHashBytes = Uint8Array & As<"block-hash">;
-export type BlockHashString = string & As<"block-hash">;
-
-// Header is an abstraction
-export interface Header {
-  readonly height: number;
-  readonly hash: BlockHashBytes;
-  // TODO: much more...
-}
-
-// Block is a generic abstraction of a block, including all transactions
-export interface Block {
-  readonly header: Header;
-  readonly transactions: ReadonlyArray<SignedTransaction>;
-  // TODO: more?
 }

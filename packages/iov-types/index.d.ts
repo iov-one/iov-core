@@ -1,4 +1,5 @@
 export * from "./types/as";
+export * from "./types/bcp";
 export * from "./types/clients";
 export * from "./types/keys";
 export * from "./types/signables";
