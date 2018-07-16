@@ -23,20 +23,12 @@ import * as codec from "./codec";
 import { Codec as BNSCodec } from "./txcodec";
 import { asLong, decodePubKey, decodeToken, ensure } from "./types";
 
-export interface Result {
-  readonly key: Uint8Array;
-  readonly value: Uint8Array;
-}
-
-export interface QueryResponse {
-  readonly height?: number;
-  readonly results: ReadonlyArray<Result>;
-}
-
-// this is a type guard to use in the account-based queries
+// queryByAddress is a type guard to use in the account-based queries
 const queryByAddress = (query: BcpAccountQuery): query is BcpAddressQuery =>
   (query as BcpAddressQuery).address !== undefined;
 
+// InitData is all the queries we do on initialization to be
+// reused by later calls
 interface InitData {
   readonly chainId: ChainId;
   readonly tickers: Map<string, BcpTicker>;
@@ -196,11 +188,23 @@ export class Client implements BcpClient {
   }
 }
 
+/* Various helpers for parsing the results of querying abci */
+
+export interface QueryResponse {
+  readonly height?: number;
+  readonly results: ReadonlyArray<Result>;
+}
+
+export interface Result {
+  readonly key: Uint8Array;
+  readonly value: Uint8Array;
+}
+
 interface Keyed {
   readonly _id: Uint8Array;
 }
 
-interface Decoder<T extends object> {
+interface Decoder<T extends {}> {
   readonly decode: (data: Uint8Array) => T;
 }
 
@@ -215,6 +219,7 @@ function parseMap<T extends {}>(decoder: Decoder<T>, sliceKey: number): (res: Re
   return mapper;
 }
 
+// dummyEnvelope just adds some plausible metadata to make bcp happy
 function dummyEnvelope<T extends BcpData>(data: ReadonlyArray<T>): BcpQueryEnvelope<T> {
   return {
     metadata: {
