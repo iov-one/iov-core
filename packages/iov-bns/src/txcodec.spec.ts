@@ -1,7 +1,6 @@
 import { Ed25519 } from "@iov/crypto";
 import { PostableBytes, SignedTransaction } from "@iov/types";
 
-import { Codec } from ".";
 import {
   chainId,
   randomTxJson,
@@ -15,6 +14,7 @@ import {
   swapCounterTxJson,
   swapTimeoutTxJson,
 } from "./testdata";
+import { Codec } from "./txcodec";
 
 describe("Check codec", () => {
   it("properly encodes transactions", () => {
