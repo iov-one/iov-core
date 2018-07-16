@@ -1,15 +1,11 @@
 import { Encoding } from "@iov/crypto";
-import {
-  BroadcastTxCommitResponse,
-  Client as TendermintClient,
-  StatusResponse,
-  txCommitSuccess,
-} from "@iov/tendermint-rpc";
+import { Client as TendermintClient, StatusResponse, txCommitSuccess } from "@iov/tendermint-rpc";
 import {
   AddressBytes,
   BcpAccount,
   BcpAccountQuery,
   BcpAddressQuery,
+  BcpClient,
   BcpCoin,
   BcpData,
   BcpNonce,
@@ -37,17 +33,14 @@ export interface QueryResponse {
   readonly results: ReadonlyArray<Result>;
 }
 
-/* TODOS */
-export type TxResponse = BroadcastTxCommitResponse;
-
+// this is a type guard to use in the account-based queries
 const queryByAddress = (query: BcpAccountQuery): query is BcpAddressQuery =>
   (query as BcpAddressQuery).address !== undefined;
 
 // Client talks directly to the BNS blockchain and exposes the
 // same interface we have with the BCP protocol.
 // We can embed in web4 process or use this in a BCP-relay
-export class Client {
-  // export class Client implements BcpClient {
+export class Client implements BcpClient {
   protected readonly tmClient: TendermintClient;
   protected readonly codec: TxCodec;
   protected readonly myChain: ChainId;
