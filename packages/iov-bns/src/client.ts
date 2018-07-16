@@ -7,19 +7,23 @@ import {
 } from "@iov/tendermint-rpc";
 import {
   AddressBytes,
+  BcpAccount,
   BcpAccountQuery,
   BcpAddressQuery,
   BcpCoin,
+  BcpData,
+  BcpNonce,
   BcpQueryEnvelope,
   BcpTransactionResponse,
   ChainId,
+  Nonce,
   PostableBytes,
   TxCodec,
 } from "@iov/types";
 
 import * as codec from "./codec";
 import { Codec as BNSCodec } from "./txcodec";
-import { decodeToken, ensure } from "./types";
+import { asLong, decodePubKey, decodeToken, ensure } from "./types";
 
 export interface Result {
   readonly key: Uint8Array;
@@ -33,8 +37,6 @@ export interface QueryResponse {
 
 /* TODOS */
 export type TxResponse = BroadcastTxCommitResponse;
-export type BcpAccount = any;
-export type BcpNonce = any;
 
 const queryByAddress = (query: BcpAccountQuery): query is BcpAddressQuery =>
   (query as BcpAddressQuery).address !== undefined;
@@ -91,16 +93,32 @@ export class Client {
       : this.query("/wallets/name", Encoding.asAscii(account.name));
     const parser = parseMap(codec.namecoin.Wallet, 5);
     const data = (await res).results.map(parser).map(this.normalizeAccount);
-    return {
-      metadata: {
-        offset: 0,
-        limit: 100,
-      },
-      data: data,
-    };
+    return dummyEnvelope(data);
   }
 
-  // readonly getNonce: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpNonce>>;
+  public async getNonce(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>> {
+    // getAddress will do a lookup from name -> address if needed
+    // make this an async function so easier to switch on return value
+    const getAddress = async (): Promise<Uint8Array | undefined> => {
+      if (queryByAddress(account)) {
+        return account.address;
+      }
+      const addrRes = await this.getAccount(account);
+      if (addrRes.data.length === 0) {
+        return undefined;
+      }
+      return addrRes.data[0].address;
+    };
+
+    const addr = await getAddress();
+    if (!addr) {
+      return dummyEnvelope([]);
+    }
+    const res = this.query("/sigs", addr);
+    const parser = parseMap(codec.sigs.UserData, 5);
+    const data = (await res).results.map(parser).map(this.normalizeNonce);
+    return dummyEnvelope(data);
+  }
 
   public async chainID(): Promise<ChainId> {
     const status = await this.status();
@@ -125,6 +143,15 @@ export class Client {
     const values = codec.app.ResultSet.decode(q.value).results;
     const results: ReadonlyArray<Result> = zip(keys, values);
     return { height: q.height, results };
+  }
+
+  protected normalizeNonce(acct: codec.sigs.IUserData & Keyed): BcpNonce {
+    // append the chainID to the name to universalize it
+    return {
+      address: acct._id as AddressBytes,
+      nonce: asLong(acct.sequence) as Nonce,
+      publicKey: decodePubKey(ensure(acct.pubKey)),
+    };
   }
 
   protected normalizeAccount(acct: codec.namecoin.IWallet & Keyed): BcpAccount {
@@ -165,6 +192,16 @@ function parseMap<T extends {}>(decoder: Decoder<T>, sliceKey: number): (res: Re
     return Object.assign({}, val, { _id: res.key.slice(sliceKey) });
   };
   return mapper;
+}
+
+function dummyEnvelope<T extends BcpData>(data: ReadonlyArray<T>): BcpQueryEnvelope<T> {
+  return {
+    metadata: {
+      offset: 0,
+      limit: 100,
+    },
+    data: data,
+  };
 }
 
 /* maybe a bit abstract, but maybe we can reuse... */
