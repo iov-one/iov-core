@@ -87,8 +87,9 @@ export class WebsocketClient implements RpcClient {
   // TODO: use MemoryStream and support reconnects
   protected readonly connected: Promise<boolean>;
 
-  constructor(url: string = "ws://localhost:46657", path: string = "/websocket") {
+  constructor(url: string = "ws://localhost:46657", onError: (err: any) => void = console.log) {
     // accept host.name:port and assume ws protocol
+    const path = "/websocket";
     const cleanUrl = hasProtocol(url) ? url : "ws://" + url;
     this.url = cleanUrl + path;
 
@@ -98,7 +99,7 @@ export class WebsocketClient implements RpcClient {
       // tslint:disable-next-line:no-object-mutation
       this.ws.onopen = () => resolve(true);
     });
-    this.switch.on("error", console.log);
+    this.switch.on("error", onError);
   }
 
   public execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {

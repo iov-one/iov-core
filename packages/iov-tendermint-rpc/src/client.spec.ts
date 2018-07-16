@@ -122,6 +122,9 @@ const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
 };
 
 describe("Verify client calls on tendermint w/ kvstore app", () => {
+  // don't print out WebSocket errors if marked pending
+  const onError = skipTests() ? () => 0 : console.log;
+
   kvTestSuite("With HttpClient", () => new HttpClient(tendermintUrl));
-  kvTestSuite("With WebsocketClient", () => new WebsocketClient(tendermintUrl));
+  kvTestSuite("With WebsocketClient", () => new WebsocketClient(tendermintUrl, onError));
 });

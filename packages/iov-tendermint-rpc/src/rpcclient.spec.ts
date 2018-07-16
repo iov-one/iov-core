@@ -59,7 +59,9 @@ describe("Ensure RpcClients work", () => {
   });
 
   it("WebsocketClient can make a simple call", async () => {
-    const ws = new WebsocketClient(tendermintUrl);
+    // don't print out WebSocket errors if marked pending
+    const onError = skipTests() ? () => 0 : console.log;
+    const ws = new WebsocketClient(tendermintUrl, onError);
 
     await shouldPass(ws);
     await shouldFail(ws);
