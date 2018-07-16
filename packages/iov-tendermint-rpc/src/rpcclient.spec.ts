@@ -6,18 +6,18 @@ import { HttpClient, HttpUriClient, RpcClient, WebsocketClient } from "./rpcclie
 // but we can shim it in with webpack for the tests.
 // good for browser tests, not so good for configuring production
 const skipTests = (): boolean => !process.env.TENDERMINT_ENABLED;
-// const skipTests = (): boolean => false;
+
+const pendingWithoutTendermint = () => {
+  if (skipTests()) {
+    pending("Set TENDERMINT_ENABLED to enable tendermint-based tests");
+  }
+};
 
 describe("Ensure RpcClients work", () => {
   // TODO: make flexible, support multiple versions, etc...
   const tendermintUrl = "localhost:12345";
 
-  if (skipTests()) {
-    it("Tests need flag to enable", () => {
-      pending("Set TENDERMINT_ENABLED to run tendermint rpc tests");
-    });
-    return;
-  }
+  beforeEach(pendingWithoutTendermint);
 
   const shouldPass = async (client: RpcClient) => {
     const req = jsonRpcWith(Method.HEALTH);
