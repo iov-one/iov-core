@@ -346,7 +346,7 @@ export interface RpcBlock {
   readonly header: RpcHeader;
   readonly last_commit: RpcCommit;
   readonly data: {
-    readonly txs: ReadonlyArray<Base64String>; // TODO: HexString?
+    readonly txs: ReadonlyArray<Base64String>;
   };
   readonly evidence?: {
     readonly evidence?: ReadonlyArray<RpcEvidence>;

@@ -1,6 +1,6 @@
 import { jsonRpcWith } from "./common";
 import { Method } from "./requests";
-import { HttpClient, HttpUriClient, RpcClient } from "./rpcclient";
+import { HttpClient, HttpUriClient, RpcClient, WebsocketClient } from "./rpcclient";
 
 // process.env is undefined in browser....
 // but we can shim it in with webpack for the tests.
@@ -9,13 +9,13 @@ const skipTests = (): boolean => !process.env.TENDERMINT_ENABLED;
 
 const pendingWithoutTendermint = () => {
   if (skipTests()) {
-    pending("Set TENDERMINT_ENABLED to run tendermint rpc tests");
+    pending("Set TENDERMINT_ENABLED to enable tendermint-based tests");
   }
 };
 
 describe("Ensure RpcClients work", () => {
   // TODO: make flexible, support multiple versions, etc...
-  const tendermintUrl = "http://localhost:12345";
+  const tendermintUrl = "localhost:12345";
 
   const shouldPass = async (client: RpcClient) => {
     const req = jsonRpcWith(Method.HEALTH);
@@ -31,29 +31,41 @@ describe("Ensure RpcClients work", () => {
   };
 
   const shouldFail = async (client: RpcClient) => {
-    const req = jsonRpcWith("no-such-method");
-    await client.execute(req);
+    try {
+      const req = jsonRpcWith("no-such-method");
+      await client.execute(req);
+      // this must never succeed
+      fail();
+    } catch (err) {
+      // we want a real error here
+      expect(err).toBeTruthy();
+    }
   };
 
-  it("HttpClient can make a simple call", () => {
+  it("HttpClient can make a simple call", async () => {
     pendingWithoutTendermint();
     const poster = new HttpClient(tendermintUrl);
 
-    return shouldPass(poster)
-      .catch(err => fail(err))
-      .then(() => shouldFail(poster))
-      .then(fail)
-      .catch(() => 0);
+    await shouldPass(poster);
+    await shouldFail(poster);
   });
 
-  it("HttpUriClient can make a simple call", () => {
+  it("HttpUriClient can make a simple call", async () => {
     pendingWithoutTendermint();
     const uri = new HttpUriClient(tendermintUrl);
 
-    return shouldPass(uri)
-      .catch(err => fail(err))
-      .then(() => shouldFail(uri))
-      .then(fail)
-      .catch(() => 0);
+    await shouldPass(uri);
+    await shouldFail(uri);
+  });
+
+  it("WebsocketClient can make a simple call", async () => {
+    pendingWithoutTendermint();
+    // don't print out WebSocket errors if marked pending
+    const onError = skipTests() ? () => 0 : console.log;
+    const ws = new WebsocketClient(tendermintUrl, onError);
+
+    await shouldPass(ws);
+    await shouldFail(ws);
+    await shouldPass(ws);
   });
 });

@@ -1,6 +1,8 @@
 import axios from "axios";
+import EventEmitter from "events";
+import WebSocket from "isomorphic-ws";
 
-import { JsonRpcRequest, JsonRpcSuccess, throwIfError } from "./common";
+import { JsonRpcRequest, JsonRpcResponse, JsonRpcSuccess, throwIfError } from "./common";
 
 export interface RpcClient {
   readonly execute: (request: JsonRpcRequest) => Promise<JsonRpcSuccess>;
@@ -21,12 +23,11 @@ const filterBadStatus = (res: Response) => {
 const http = (method: string, url: string, request?: any): Promise<any> => {
   if (inBrowser()) {
     const body = request ? JSON.stringify(request) : undefined;
-    // TODO: handle non 4xx and 5xx with throwing error
     return fetch(url, { method, body })
       .then(filterBadStatus)
       .then(res => res.json());
   } else {
-    return axios.request({ url, method, data: request }).then(res => res.data);
+    return axios.request({ url, method, data: request }).then(res => res.data) as Promise<any>;
   }
 };
 
@@ -37,11 +38,14 @@ export const getOriginConfig = () => {
   return w ? { headers: { Origin: w.origin, Referer: `${w.origin}/` } } : undefined;
 };
 
+export const hasProtocol = (url: string) => url.search("://") !== -1;
+
 export class HttpClient implements RpcClient {
   protected readonly url: string;
 
   constructor(url: string = "http://localhost:46657") {
-    this.url = url;
+    // accept host.name:port and assume http protocol
+    this.url = hasProtocol(url) ? url : "http://" + url;
   }
 
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
@@ -58,7 +62,7 @@ export class HttpUriClient implements RpcClient {
   protected readonly url: string;
 
   constructor(url: string = "http://localhost:46657") {
-    this.url = url;
+    this.url = hasProtocol(url) ? url : "http://" + url;
   }
 
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
@@ -71,4 +75,77 @@ export class HttpUriClient implements RpcClient {
   }
 }
 
-// TODO: websocket implementation
+// WebsocketClient makes calls over websocket
+// TODO: support event subscriptions as well
+// TODO: error handling on disconnect
+export class WebsocketClient implements RpcClient {
+  protected readonly url: string;
+  protected readonly ws: WebSocket;
+  protected readonly switch: EventEmitter;
+
+  // connected is resolved as soon as the websocket is connected
+  // TODO: use MemoryStream and support reconnects
+  protected readonly connected: Promise<boolean>;
+
+  constructor(url: string = "ws://localhost:46657", onError: (err: any) => void = console.log) {
+    // accept host.name:port and assume ws protocol
+    const path = "/websocket";
+    const cleanUrl = hasProtocol(url) ? url : "ws://" + url;
+    this.url = cleanUrl + path;
+
+    this.switch = new EventEmitter();
+    this.ws = this.connect();
+    this.connected = new Promise(resolve => {
+      // tslint:disable-next-line:no-object-mutation
+      this.ws.onopen = () => resolve(true);
+    });
+    this.switch.on("error", onError);
+  }
+
+  public execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
+    const promise = this.subscribe(request.id).then(throwIfError);
+    // send as soon as connected
+    this.connected
+      .then(() => this.ws.send(JSON.stringify(request)))
+      // Is there a way to be more targetted with errors?
+      // So this just kills the execute promise, not anything else?
+      .catch(err => this.switch.emit("errror", err));
+    return promise;
+  }
+
+  protected connect(): WebSocket {
+    const ws = new WebSocket(this.url);
+    // tslint:disable-next-line:no-object-mutation
+    ws.onerror = err => this.switch.emit("error", err);
+    // tslint:disable-next-line:no-object-mutation
+    ws.onclose = () => this.switch.emit("error", "Websocket closed");
+    // tslint:disable-next-line:no-object-mutation
+    ws.onmessage = msg => {
+      // this should never happen, but I want an alert if it does
+      if (msg.type !== "message") {
+        throw new Error(`Unexcepted message type on websocket: ${msg.type}`);
+      }
+      const data = JSON.parse(msg.data.toString());
+      this.switch.emit(data.id, data);
+    };
+    return ws;
+  }
+
+  protected subscribe(id: string): Promise<JsonRpcResponse> {
+    return new Promise((resolve, reject) => {
+      // only one of the two listeners should fire, and it will
+      // deregister the other so as not to cause a leak.
+
+      // this will fire on a response (success or error)
+      const good = this.switch.once(id, data => {
+        bad.removeAllListeners();
+        resolve(data);
+      });
+      // this will fire in case the websocket errors/disconnects
+      const bad = this.switch.once("error", err => {
+        good.removeAllListeners();
+        reject(err);
+      });
+    });
+  }
+}

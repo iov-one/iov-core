@@ -48,23 +48,23 @@ export function may<T, U>(transform: (val: T) => U, value: T | null | undefined)
 export class Hex {
   // encode hex-encodes whatever data was provided
   public static encode(data: Uint8Array): HexString {
-    const buf = new Buffer(data);
+    const buf = Buffer.from(data);
     return buf.toString("hex") as HexString;
   }
 
   public static decode(hexstring: HexString): Uint8Array {
-    return new Buffer(hexstring, "hex");
+    return Uint8Array.from(Buffer.from(hexstring, "hex"));
   }
 }
 
 export class Base64 {
   public static encode(data: Uint8Array): Base64String {
-    const buf = new Buffer(data);
+    const buf = Buffer.from(data);
     return buf.toString("base64") as Base64String;
   }
 
   public static decode(base64String: Base64String): Uint8Array {
-    return new Buffer(base64String, "base64");
+    return Uint8Array.from(Buffer.from(base64String, "base64"));
   }
 }
 
