@@ -37,21 +37,25 @@ export interface QueryResponse {
 const queryByAddress = (query: BcpAccountQuery): query is BcpAddressQuery =>
   (query as BcpAddressQuery).address !== undefined;
 
+interface InitData {
+  readonly chainId: ChainId;
+  readonly tickers: Map<string, BcpTicker>;
+}
+
 // Client talks directly to the BNS blockchain and exposes the
 // same interface we have with the BCP protocol.
 // We can embed in web4 process or use this in a BCP-relay
 export class Client implements BcpClient {
   protected readonly tmClient: TendermintClient;
   protected readonly codec: TxCodec;
-  protected readonly myChain: ChainId;
+  protected readonly initData: Promise<InitData>;
 
   constructor(tmClient: TendermintClient) {
     this.tmClient = tmClient;
     this.codec = BNSCodec;
-
-    // TODO: proper initialization
-    // this.myChain = this.chainID();
-    this.myChain = "best-chain" as ChainId;
+    // Note: this just requests the data and doesn't wait for the result
+    // the response is preloaded the first time we query an account
+    this.initData = this.initialize();
   }
 
   public async postTx(tx: PostableBytes): Promise<BcpTransactionResponse> {
@@ -86,7 +90,9 @@ export class Client implements BcpClient {
       ? this.query("/wallets", account.address)
       : this.query("/wallets/name", Encoding.asAscii(account.name));
     const parser = parseMap(codec.namecoin.Wallet, 5);
-    const data = (await res).results.map(parser).map(this.normalizeAccount);
+    const parsed = (await res).results.map(parser);
+    const initData = await this.initData;
+    const data = parsed.map(this.normalizeAccount(initData));
     return dummyEnvelope(data);
   }
 
@@ -128,6 +134,14 @@ export class Client implements BcpClient {
     return this.tmClient.status();
   }
 
+  protected async initialize(): Promise<InitData> {
+    const chainId = await this.chainID();
+    const all = await this.getAllTickers();
+    const toKeyValue = (t: BcpTicker): [string, BcpTicker] => [t.tokenTicker, t];
+    const tickers = new Map(all.data.map(toKeyValue));
+    return { chainId, tickers };
+  }
+
   protected async query(path: string, data: Uint8Array): Promise<QueryResponse> {
     const q = await this.tmClient.abciQuery({ path, data });
     if (!q.key) {
@@ -148,23 +162,28 @@ export class Client implements BcpClient {
     };
   }
 
-  protected normalizeAccount(acct: codec.namecoin.IWallet & Keyed): BcpAccount {
-    // append the chainID to the name to universalize it
-    const name = acct.name ? `${acct.name}*${this.myChain}` : undefined;
-    return {
-      name,
-      address: acct._id as AddressBytes,
-      balance: ensure(acct.coins).map(this.normalizeCoin),
+  protected normalizeAccount(initData: InitData): (a: codec.namecoin.IWallet & Keyed) => BcpAccount {
+    return (acct: codec.namecoin.IWallet & Keyed): BcpAccount => {
+      // append the chainID to the name to universalize it
+      const name = acct.name ? `${acct.name}*${initData.chainId}` : undefined;
+      return {
+        name,
+        address: acct._id as AddressBytes,
+        balance: ensure(acct.coins).map(this.normalizeCoin(initData)),
+      };
     };
   }
 
-  protected normalizeCoin(coin: codec.x.ICoin): BcpCoin {
-    const token = decodeToken(coin);
-    return {
-      ...token,
-      // TODO: look these up dynamically
-      tokenName: "BCP Token",
-      sigFigs: 9,
+  protected normalizeCoin(initData: InitData): (c: codec.x.ICoin) => BcpCoin {
+    return (coin: codec.x.ICoin): BcpCoin => {
+      const token = decodeToken(coin);
+      const tickerInfo = initData.tickers.get(token.tokenTicker);
+      return {
+        ...token,
+        // Better defaults?
+        tokenName: tickerInfo ? tickerInfo.tokenName : "<Unknown token>",
+        sigFigs: tickerInfo ? tickerInfo.sigFigs : 9,
+      };
     };
   }
 
