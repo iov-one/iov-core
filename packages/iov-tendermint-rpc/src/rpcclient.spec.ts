@@ -17,8 +17,6 @@ describe("Ensure RpcClients work", () => {
   // TODO: make flexible, support multiple versions, etc...
   const tendermintUrl = "localhost:12345";
 
-  beforeEach(pendingWithoutTendermint);
-
   const shouldPass = async (client: RpcClient) => {
     const req = jsonRpcWith(Method.HEALTH);
     const res = await client.execute(req);
@@ -45,6 +43,7 @@ describe("Ensure RpcClients work", () => {
   };
 
   it("HttpClient can make a simple call", async () => {
+    pendingWithoutTendermint();
     const poster = new HttpClient(tendermintUrl);
 
     await shouldPass(poster);
@@ -52,6 +51,7 @@ describe("Ensure RpcClients work", () => {
   });
 
   it("HttpUriClient can make a simple call", async () => {
+    pendingWithoutTendermint();
     const uri = new HttpUriClient(tendermintUrl);
 
     await shouldPass(uri);
@@ -59,6 +59,7 @@ describe("Ensure RpcClients work", () => {
   });
 
   it("WebsocketClient can make a simple call", async () => {
+    pendingWithoutTendermint();
     // don't print out WebSocket errors if marked pending
     const onError = skipTests() ? () => 0 : console.log;
     const ws = new WebsocketClient(tendermintUrl, onError);

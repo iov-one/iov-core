@@ -25,20 +25,21 @@ const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
   const value = randomId();
 
   describe(msg, () => {
-    beforeEach(pendingWithoutTendermint);
-
     it("Tries to connect with known version to tendermint", async () => {
+      pendingWithoutTendermint();
       const client = new Client(rpcFactory(), v0_20);
       expect(await client.abciInfo()).toBeTruthy();
     });
 
     it("Tries to auto-discover tendermint", async () => {
+      pendingWithoutTendermint();
       const client = await Client.detectVersion(rpcFactory());
       const info = await client.abciInfo();
       expect(info).toBeTruthy();
     });
 
     it("Posts a transaction", async () => {
+      pendingWithoutTendermint();
       const client = new Client(rpcFactory(), v0_20);
       const tx = buildKvTx(key, value);
 
@@ -54,6 +55,7 @@ const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
     });
 
     it("Queries the state", async () => {
+      pendingWithoutTendermint();
       const client = new Client(rpcFactory(), v0_20);
 
       const binKey = Encoding.asAscii(key);
@@ -67,6 +69,7 @@ const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
     });
 
     it("Sanity check - calls don't error", async () => {
+      pendingWithoutTendermint();
       const client = new Client(rpcFactory(), v0_20);
 
       expect(await client.block()).toBeTruthy();
@@ -80,6 +83,7 @@ const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
     });
 
     it("Can query a tx properly", async () => {
+      pendingWithoutTendermint();
       const client = new Client(rpcFactory(), v0_20);
 
       const find = randomId();
