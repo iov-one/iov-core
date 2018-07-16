@@ -5,6 +5,7 @@ import {
   SignableBytes,
   SignedTransaction,
   TransactionIDBytes,
+  TxCodec,
   UnsignedTransaction,
 } from "@iov/types";
 import * as codec from "./codec";
@@ -42,5 +43,6 @@ export class Codec {
   }
 }
 
-// we need to create a const to properly type-check the export...
-// export const BNSCodec: TxCodec = Codec;
+// we need to create a const to properly type-check the static methods
+// and we need to export it to satisfy tsc (but never exported in index.ts)
+export const _: TxCodec = Codec;

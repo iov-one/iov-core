@@ -1,6 +1,6 @@
 import { As } from "./as";
 import { PublicKeyBundle, SignatureBytes } from "./keys";
-import { Nonce, UnsignedTransaction } from "./transactions";
+import { Nonce, UnsignedTransaction, ChainId } from "./transactions";
 
 export type TransactionIDBytes = Uint8Array & As<"transaction-id">;
 export type TransactionIDString = string & As<"transaction-id">;
@@ -54,5 +54,5 @@ export interface TxCodec {
   // identifier is usually some sort of hash of bytesToPost, chain-dependent
   readonly identifier: (tx: SignedTransaction) => TransactionIDBytes;
   // parseBytes will recover bytes from the blockchain into a format we can use
-  readonly parseBytes: (bytes: PostableBytes) => SignedTransaction;
+  readonly parseBytes: (bytes: PostableBytes, chainID: ChainId) => SignedTransaction;
 }
