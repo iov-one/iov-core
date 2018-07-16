@@ -24,9 +24,9 @@ const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
   const key = randomId();
   const value = randomId();
 
-  beforeEach(pendingWithoutTendermint);
-
   describe(msg, () => {
+    beforeEach(pendingWithoutTendermint);
+
     it("Tries to connect with known version to tendermint", async () => {
       const client = new Client(rpcFactory(), v0_20);
       expect(await client.abciInfo()).toBeTruthy();
