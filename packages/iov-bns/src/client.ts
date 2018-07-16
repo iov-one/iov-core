@@ -14,10 +14,12 @@ import {
   BcpData,
   BcpNonce,
   BcpQueryEnvelope,
+  BcpTicker,
   BcpTransactionResponse,
   ChainId,
   Nonce,
   PostableBytes,
+  TokenTicker,
   TxCodec,
 } from "@iov/types";
 
@@ -40,10 +42,6 @@ export type TxResponse = BroadcastTxCommitResponse;
 
 const queryByAddress = (query: BcpAccountQuery): query is BcpAddressQuery =>
   (query as BcpAddressQuery).address !== undefined;
-
-// const getAddr = key => ({address: key.slice(5).toString('hex')});
-// const queryAccount = (client, acct) => client.queryParseOne(acct, "/wallets", weave.weave.cash.Set, getAddr);
-// const querySigs = (client, acct) => client.queryParseOne(acct, "/auth", weave.weave.sigs.UserData, getAddr);
 
 // Client talks directly to the BNS blockchain and exposes the
 // same interface we have with the BCP protocol.
@@ -76,16 +74,19 @@ export class Client {
     };
   }
 
-  // const getAddr = key => ({address: key.slice(5).toString('hex')});
-  // const queryAccount = (client, acct) => client.queryParseOne(acct, "/wallets", bov.namecoin.Wallet, getAddr);
-  // const queryAccountByName = (client, name) => client.queryParseOne(Buffer.from(name), "/wallets/name", bov.namecoin.Wallet, getAddr);
-  // const querySigs = (client, acct) => client.queryParseOne(acct, "/auth", bov.sigs.UserData, getAddr);
+  public async getTicker(ticker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {
+    const res = await this.query("/tokens", Encoding.asAscii(ticker));
+    const parser = parseMap(codec.namecoin.Token, 4);
+    const data = res.results.map(parser).map(this.normalizeToken);
+    return dummyEnvelope(data);
+  }
 
-  // public getTicker(ticker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {
-  //   throw new Error("not yet implemented");
-  // }
-
-  // readonly getAllTickers: () => Promise<BcpQueryEnvelope<BcpTicker>>;
+  public async getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>> {
+    const res = await this.query("/tokens?prefix", Uint8Array.from([]));
+    const parser = parseMap(codec.namecoin.Token, 4);
+    const data = res.results.map(parser).map(this.normalizeToken);
+    return dummyEnvelope(data);
+  }
 
   public async getAccount(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>> {
     const res = queryByAddress(account)
@@ -171,6 +172,14 @@ export class Client {
       // TODO: look these up dynamically
       tokenName: "BCP Token",
       sigFigs: 9,
+    };
+  }
+
+  protected normalizeToken(data: codec.namecoin.IToken & Keyed): BcpTicker {
+    return {
+      tokenTicker: Encoding.fromAscii(data._id) as TokenTicker,
+      tokenName: ensure(data.name),
+      sigFigs: ensure(data.sigFigs),
     };
   }
 }
