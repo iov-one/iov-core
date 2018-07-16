@@ -21,7 +21,7 @@
     "checkApp": "node ./build/scripts/checkapp.js | grep -v '^dev'"
   },
   "dependencies": {
-    "@iov/bns-codec": "^0.0.0",
+    "@iov/bns": "^0.0.0",
     "@iov/crypto": "^0.0.0",
     "@iov/types": "^0.0.0",
     "@ledgerhq/hw-transport-node-hid": "^4.16.0",

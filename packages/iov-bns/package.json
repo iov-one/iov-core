@@ -1,14 +1,14 @@
 {
-  "name": "@iov/bns-codec",
+  "name": "@iov/bns",
   "version": "0.0.0",
-  "description": "Codec to encode/decode bns transactions and state objects",
+  "description": "Transction Codec and BCP Client to communicate with BNS blockchain",
   "author": "Ethan Frey <ethanfrey@users.noreply.github.com>",
   "license": "AGPL-3.0",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iov-one/web4/tree/master/packages/iov-crypto"
+    "url": "https://github.com/iov-one/web4/tree/master/packages/iov-bns"
   },
   "scripts": {
     "lint": "tslint -t verbose --project .",
