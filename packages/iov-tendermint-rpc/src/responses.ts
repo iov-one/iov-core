@@ -205,7 +205,7 @@ export interface Header {
 export interface NodeInfo {
   readonly id: Uint8Array;
   readonly listenAddr: IpPortString;
-  readonly network: string;
+  readonly network: ChainId;
   readonly version: string;
   readonly channels: string; // ???
   readonly moniker: string;

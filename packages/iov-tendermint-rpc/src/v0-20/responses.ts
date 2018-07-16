@@ -456,7 +456,7 @@ export interface RpcNodeInfo {
 const decodeNodeInfo = (data: RpcNodeInfo): responses.NodeInfo => ({
   id: Encoding.fromHex(required(data.id)),
   listenAddr: required(data.listen_addr),
-  network: required(data.network),
+  network: required(data.network) as ChainId,
   version: required(data.version),
   channels: required(data.channels),
   moniker: required(data.moniker),
