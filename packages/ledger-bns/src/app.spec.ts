@@ -1,6 +1,6 @@
 import Long from "long";
 
-import { Codec } from "@iov/bns-codec";
+import { Codec } from "@iov/bns";
 import { Ed25519, Encoding, Sha512 } from "@iov/crypto";
 import { Algorithm, ChainId, Nonce, PublicKeyBundle, PublicKeyBytes, RecipientId, SendTx, TokenTicker, TransactionKind } from "@iov/types";
 
