@@ -33,42 +33,36 @@ describe("Ensure RpcClients work", () => {
   };
 
   const shouldFail = async (client: RpcClient) => {
-    const req = jsonRpcWith("no-such-method");
-    await client.execute(req);
+    try {
+      const req = jsonRpcWith("no-such-method");
+      await client.execute(req);
+      // this must never succeed
+      fail();
+    } catch (err) {
+      // we want a real error here
+      expect(err).toBeTruthy();
+    }
   };
 
-  it("HttpClient can make a simple call", () => {
+  it("HttpClient can make a simple call", async () => {
     const poster = new HttpClient(tendermintUrl);
 
-    return shouldPass(poster)
-      .catch(fail)
-      .then(() => shouldFail(poster))
-      .then(fail)
-      .catch(() => 0);
+    await shouldPass(poster);
+    await shouldFail(poster);
   });
 
-  it("HttpUriClient can make a simple call", () => {
+  it("HttpUriClient can make a simple call", async () => {
     const uri = new HttpUriClient(tendermintUrl);
 
-    return shouldPass(uri)
-      .catch(fail)
-      .then(() => shouldFail(uri))
-      .then(fail)
-      .catch(() => 0);
+    await shouldPass(uri);
+    await shouldFail(uri);
   });
 
-  it("WebsocketClient can make a simple call", () => {
+  it("WebsocketClient can make a simple call", async () => {
     const ws = new WebsocketClient(tendermintUrl);
 
-    return (
-      shouldPass(ws)
-        .catch(fail)
-        .then(() => shouldFail(ws))
-        .then(fail)
-        .catch(() => 0)
-        // should be able to handle a good response after a failure
-        .then(() => shouldPass(ws))
-        .catch(fail)
-    );
+    await shouldPass(ws);
+    await shouldFail(ws);
+    await shouldPass(ws);
   });
 });
