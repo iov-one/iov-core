@@ -28,7 +28,7 @@ describe("Check codec", () => {
   });
 
   it("properly generates signbytes", async done => {
-    const toSign = Codec.bytesToSign(sendTxJson, sig.nonce);
+    const { bytes: toSign } = Codec.bytesToSign(sendTxJson, sig.nonce);
     // it should match the canonical sign bytes
     expect(toSign).toEqual(signBytes);
 

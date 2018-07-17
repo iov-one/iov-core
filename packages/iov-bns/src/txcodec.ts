@@ -2,8 +2,9 @@ import {
   ChainId,
   Nonce,
   PostableBytes,
-  SignableBytes,
+  PrehashType,
   SignedTransaction,
+  SigningJob,
   TransactionIDBytes,
   TxCodec,
   UnsignedTransaction,
@@ -16,12 +17,13 @@ import { appendSignBytes, tendermintHash } from "./util";
 export class Codec {
   // these are the bytes we create to add a signature
   // they often include nonce and chainID, but not other signatures
-  public static bytesToSign(tx: UnsignedTransaction, nonce: Nonce): SignableBytes {
+  public static bytesToSign(tx: UnsignedTransaction, nonce: Nonce): SigningJob {
     // we encode it without any signatures
     const built = buildUnsignedTx(tx);
     const bz = codec.app.Tx.encode(built).finish();
     // now we want to append the nonce and chainID
-    return appendSignBytes(bz, tx.chainId, nonce);
+    const bytes = appendSignBytes(bz, tx.chainId, nonce);
+    return { bytes, prehashType: PrehashType.Sha512 };
   }
 
   // bytesToPost includes the raw transaction appended with the various signatures
