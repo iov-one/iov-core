@@ -11,6 +11,14 @@ export type SignableString = string & As<"signable">;
 export type PostableBytes = Uint8Array & As<"postable">;
 export type PostableString = string & As<"postable">;
 
+// Specifies which hash function to apply before signing.
+// The identity function is indicated using None.
+export const enum PrehashType {
+  None,
+  Sha512,
+  Sha256,
+}
+
 // NB: use Buffer or String, we should be consistent....
 // I figure string if this will be json dumped, but maybe less efficient
 export interface FullSignature {
