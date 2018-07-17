@@ -3,7 +3,7 @@ import Long from "long";
 import { Codec } from "@iov/bns";
 import { Ed25519, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { Algorithm, ChainId, Nonce, PrehashType, PublicKeyBundle, PublicKeyBytes, RecipientId, SendTx, TokenTicker, TransactionKind } from "@iov/types";
+import { Algorithm, ChainId, Nonce, PublicKeyBundle, PublicKeyBytes, RecipientId, SendTx, TokenTicker, TransactionKind } from "@iov/types";
 
 import { appVersion, getPublicKey, getPublicKeyWithPath, signTransaction, signTransactionWithPath } from "./app";
 import { hardened, pendingWithoutInteractiveLedger, pendingWithoutLedger, skipInteractiveTests, skipTests } from "./common.spec";
@@ -129,8 +129,7 @@ describe("Sign with ledger app", () => {
         memo: "Hi Mom!",
       };
       const nonce = Long.fromNumber(123) as Nonce;
-      const { bytes: message, prehashType } = Codec.bytesToSign(tx, nonce);
-      // expect(prehashType).toEqual(PrehashType.Sha512);
+      const { bytes: message } = Codec.bytesToSign(tx, nonce);
       const messageHash = new Sha512(message).digest();
 
       const signature = await signTransaction(transport, message);
@@ -171,8 +170,7 @@ describe("Sign with ledger app", () => {
         signer: sender,
       };
       const nonce = Long.fromNumber(5) as Nonce;
-      const { bytes: message, prehashType } = Codec.bytesToSign(tx, nonce);
-      // expect(prehashType).toEqual(PrehashType.Sha512);
+      const { bytes: message } = Codec.bytesToSign(tx, nonce);
       const messageHash = new Sha512(message).digest();
 
       const signature = await signTransactionWithPath(transport, message, path);
