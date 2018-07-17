@@ -117,6 +117,25 @@ describe("Ed25519HdKeyringEntry", () => {
     });
   });
 
+  it("can sign with different prehash types", async () => {
+    const entry = new Ed25519HdKeyringEntry(emptyEntry);
+    const mainIdentity = await entry.createIdentityWithPath([Slip0010RawIndex.hardened(0)]);
+
+    const transactionBytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
+    const chainId = "some-chain" as ChainId;
+
+    const signaturePrehashNone = await entry.createTransactionSignature(mainIdentity, transactionBytes, PrehashType.None, chainId);
+    const signaturePrehashSha256 = await entry.createTransactionSignature(mainIdentity, transactionBytes, PrehashType.Sha256, chainId);
+    const signaturePrehashSha512 = await entry.createTransactionSignature(mainIdentity, transactionBytes, PrehashType.Sha512, chainId);
+    expect(signaturePrehashNone.length).toEqual(64);
+    expect(signaturePrehashSha256.length).toEqual(64);
+    expect(signaturePrehashSha512.length).toEqual(64);
+
+    expect(signaturePrehashNone).not.toEqual(signaturePrehashSha256);
+    expect(signaturePrehashSha256).not.toEqual(signaturePrehashSha512);
+    expect(signaturePrehashSha512).not.toEqual(signaturePrehashNone);
+  });
+
   it("can serialize multiple identities", done => {
     (async () => {
       const entry = new Ed25519HdKeyringEntry(emptyEntry);
