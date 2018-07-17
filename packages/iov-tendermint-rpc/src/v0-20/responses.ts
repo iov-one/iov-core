@@ -1,4 +1,4 @@
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding } from "@iov/encoding";
 import {
   Algorithm,
   ChainId,
@@ -19,6 +19,7 @@ import {
   IpPortString,
   may,
   optional,
+  parseInteger,
   required,
 } from "../encodings";
 import * as responses from "../responses";
@@ -117,7 +118,7 @@ export interface RpcAbciQueryResponse {
 const decodeAbciQuery = (data: RpcAbciQueryResponse): responses.AbciQueryResponse => ({
   key: Base64.decode(optional(data.key, "" as Base64String)),
   value: Base64.decode(optional(data.value, "" as Base64String)),
-  height: may(s => Int53.fromString(s).asNumber(), data.height),
+  height: may(parseInteger, data.height),
   code: data.code,
   index: data.index,
   log: data.log,

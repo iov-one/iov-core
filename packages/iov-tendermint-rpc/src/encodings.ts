@@ -2,6 +2,7 @@ import { Buffer } from "buffer";
 import { ReadonlyDate } from "readonly-date";
 import { isNumber } from "util";
 
+import { Int53 } from "@iov/encoding";
 import { As } from "@iov/types";
 
 export type Base64String = string & As<"base64">;
@@ -43,6 +44,10 @@ export function optional<T>(value: T | null | undefined, fallback: T): T {
 // may will run the transform if value is defined, otherwise returns undefined
 export function may<T, U>(transform: (val: T) => U, value: T | null | undefined): U | undefined {
   return value === undefined || value === null ? undefined : transform(value);
+}
+
+export function parseInteger(str: IntegerString): number {
+  return Int53.fromString(str).asNumber();
 }
 
 export class Base64 {
