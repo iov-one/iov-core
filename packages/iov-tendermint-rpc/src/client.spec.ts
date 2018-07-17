@@ -3,7 +3,7 @@ import { Encoding } from "@iov/encoding";
 import { v0_20 } from "./adaptor";
 import { Client } from "./client";
 import { randomId } from "./common";
-import { QueryString } from "./encodings";
+import { buildTxQuery } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, RpcClient, WebsocketClient } from "./rpcclient";
 
@@ -127,7 +127,9 @@ const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
 
       // txSearch - you must enable the indexer when running
       // tendermint, else you get empty results
-      const query = `app.key='${find}'` as QueryString;
+      const query = buildTxQuery({ tags: [{ key: "app.key", value: find }] });
+      expect(query).toEqual(`app.key='${find}'`);
+
       const s = await client.txSearch({ query, page: 1, per_page: 30 });
       // should find the tx
       expect(s.totalCount).toEqual(1);
