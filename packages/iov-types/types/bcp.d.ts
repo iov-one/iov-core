@@ -1,7 +1,7 @@
 // import { Stream } from "xstream";
 
 import { AddressBytes, PublicKeyBundle } from "./keys";
-import { PostableBytes } from "./signables";
+import { PostableBytes, SignedTransaction } from "./signables";
 import { Nonce, TokenTicker } from "./transactions";
 
 /*
@@ -105,9 +105,29 @@ export interface BcpClient {
   // readonly watchAccount: (query: AccountQuery) => Stream<Account>;
   // readonly watchNonce: (query: AccountQuery) => Stream<AccountNonce>;
 
-  // // searchTx searches for all tx that match these tags and subscribes to new ones
-  // // watchTx is a subset, searching by TxID, not tags
-  // searchTx(
-  //       query: TxQueryString
-  // ): Stream<TransactionStateProcessed>;
+  // searchTx searches for all tx that match these tags and subscribes to new ones
+  // watchTx is a subset, searching by TxID, not tags
+  searchTx(query: TxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
+}
+
+export interface ConfirmedTransaction extends SignedTransaction {
+  readonly height: number; // the block it was write on
+  // TODO: TxData (result, code, tags...)
+  // readonly tags: ReadonlyArray<Tag>;
+  // readonly result?: Uint8Array;
+  // readonly log?: string;
+}
+
+export interface TxQuery {
+  readonly tags: ReadonlyArray<Tag>;
+  readonly height?: number;
+  readonly minHeight?: number;
+  readonly maxHeight?: number;
+}
+
+export interface Tag {
+  readonly key: string;
+  readonly value: string;
+  // TODO: be more general here, but how do we handle other types?
+  // readonly value: string | number;
 }
