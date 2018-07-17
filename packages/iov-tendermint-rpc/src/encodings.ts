@@ -2,6 +2,7 @@ import { Buffer } from "buffer";
 import { ReadonlyDate } from "readonly-date";
 import { isNumber } from "util";
 
+import { Int53 } from "@iov/encoding";
 import { As } from "@iov/types";
 
 export type Base64String = string & As<"base64">;
@@ -45,6 +46,10 @@ export function may<T, U>(transform: (val: T) => U, value: T | null | undefined)
   return value === undefined || value === null ? undefined : transform(value);
 }
 
+export function parseInteger(str: IntegerString): number {
+  return Int53.fromString(str).asNumber();
+}
+
 export class Base64 {
   public static encode(data: Uint8Array): Base64String {
     const buf = Buffer.from(data);
@@ -63,20 +68,5 @@ export class DateTime {
 
   public static decode(dateTimeString: DateTimeString): ReadonlyDate {
     return new ReadonlyDate(dateTimeString);
-  }
-}
-
-// Integer is used for go-amino string-encoded number support
-export class Integer {
-  public static encode(data: number): IntegerString {
-    return Math.floor(data).toString() as IntegerString;
-  }
-
-  public static decode(intstring: IntegerString): number {
-    const parsed = parseInt(intstring, 10);
-    if (isNaN(parsed)) {
-      throw Error("Not an integer: " + intstring);
-    }
-    return parsed;
   }
 }

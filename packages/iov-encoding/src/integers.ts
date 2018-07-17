@@ -47,3 +47,35 @@ export class Uint32 {
     return this.data;
   }
 }
+
+export class Int53 {
+  public static fromString(str: string): Int53 {
+    if (!str.match(/^\-?[0-9]+$/)) {
+      throw new Error("Invalid string format");
+    }
+
+    return new Int53(Number.parseInt(str, 10));
+  }
+
+  protected readonly data: number;
+
+  constructor(input: number) {
+    if (Number.isNaN(input)) {
+      throw new Error("input is not a number");
+    }
+
+    if (input < Number.MIN_SAFE_INTEGER || input > Number.MAX_SAFE_INTEGER) {
+      throw new Error("input not in int53 range: " + input.toString());
+    }
+
+    this.data = input;
+  }
+
+  public asNumber(): number {
+    return this.data;
+  }
+
+  public asString(): string {
+    return this.data.toString();
+  }
+}
