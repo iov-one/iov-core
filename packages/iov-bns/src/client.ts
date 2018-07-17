@@ -1,5 +1,11 @@
 import { Encoding } from "@iov/encoding";
-import { Client as TendermintClient, StatusResponse, txCommitSuccess } from "@iov/tendermint-rpc";
+import {
+  buildTxQuery,
+  Client as TendermintClient,
+  StatusResponse,
+  txCommitSuccess,
+  TxResponse,
+} from "@iov/tendermint-rpc";
 import {
   BcpAccount,
   BcpAccountQuery,
@@ -11,8 +17,10 @@ import {
   BcpTicker,
   BcpTransactionResponse,
   ChainId,
+  ConfirmedTransaction,
   PostableBytes,
   TokenTicker,
+  TxQuery,
   TxReadCodec,
 } from "@iov/types";
 
@@ -44,6 +52,21 @@ export class Client implements BcpClient {
     // Note: this just requests the data and doesn't wait for the result
     // the response is preloaded the first time we query an account
     this.initData = this.initialize();
+  }
+
+  // we store this info from the initialization, no need to query every time
+  public async chainId(): Promise<ChainId> {
+    const data = await this.initData;
+    return data.chainId;
+  }
+
+  public async height(): Promise<number> {
+    const status = await this.status();
+    return status.syncInfo.latestBlockHeight;
+  }
+
+  public status(): Promise<StatusResponse> {
+    return this.tmClient.status();
   }
 
   public async postTx(tx: PostableBytes): Promise<BcpTransactionResponse> {
@@ -108,19 +131,15 @@ export class Client implements BcpClient {
     return dummyEnvelope(data);
   }
 
-  // we store this info from the initialization, no need to query every time
-  public async chainId(): Promise<ChainId> {
-    const data = await this.initData;
-    return data.chainId;
-  }
-
-  public async height(): Promise<number> {
-    const status = await this.status();
-    return status.syncInfo.latestBlockHeight;
-  }
-
-  public status(): Promise<StatusResponse> {
-    return this.tmClient.status();
+  public async searchTx(txQuery: TxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    const query = buildTxQuery(txQuery);
+    const res = await this.tmClient.txSearch({ query });
+    const chainId = await this.chainId();
+    const mapper = ({ tx, height }: TxResponse): ConfirmedTransaction => ({
+      height,
+      ...this.codec.parseBytes(tx, chainId),
+    });
+    return res.txs.map(mapper);
   }
 
   protected async initialize(): Promise<InitData> {
