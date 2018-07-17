@@ -23,7 +23,8 @@ export class Codec {
     const bz = codec.app.Tx.encode(built).finish();
     // now we want to append the nonce and chainID
     const bytes = appendSignBytes(bz, tx.chainId, nonce);
-    return { bytes, prehashType: PrehashType.Sha512 };
+    // TODO: migrate to Sha512 when the backend is ready
+    return { bytes, prehashType: PrehashType.None };
   }
 
   // bytesToPost includes the raw transaction appended with the various signatures
