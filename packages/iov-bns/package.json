@@ -37,6 +37,6 @@
     "protobufjs": "^6.8.6"
   },
   "devDependencies": {
-    "@iov/keycontrol": "^0.0.0"    
+    "@iov/keycontrol": "^0.0.0"
   }
 }

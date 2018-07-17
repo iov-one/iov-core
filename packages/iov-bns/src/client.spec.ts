@@ -1,6 +1,8 @@
+import Long from "long";
+
 import { Encoding } from "@iov/encoding";
 import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@iov/keycontrol";
-import { AddressBytes } from "@iov/types";
+import { AddressBytes, BcpNonce, Nonce } from "@iov/types";
 
 import { Client } from "./client";
 import { keyToAddress } from "./util";
@@ -37,6 +39,9 @@ describe("Integration tests with bov+tendermint", () => {
     expect(ids.length).toBeGreaterThanOrEqual(1);
     return ids[0];
   };
+
+  const getNonce = (data: ReadonlyArray<BcpNonce>): Nonce =>
+    data.length === 0 ? (Long.fromInt(0) as Nonce) : data[0].nonce;
 
   // recipient will make accounts if needed, returns path n
   // n must be >= 1
@@ -117,4 +122,23 @@ describe("Integration tests with bov+tendermint", () => {
     expect(empty).toBeTruthy();
     expect(empty.data.length).toEqual(0);
   });
+
+  it("Can query empty nonce", async () => {
+    pendingWithoutBov();
+    const client = await Client.connect(tendermintUrl);
+
+    const profile = await userProfile();
+    const rcpt = await recipient(profile, 1);
+    const rcptAddr = keyToAddress(rcpt.pubkey);
+
+    // can get the faucet by address (there is money)
+    const source = await client.getNonce({ address: rcptAddr });
+    expect(source.data.length).toEqual(0);
+    const nonce = getNonce(source.data);
+    expect(nonce.toInt()).toEqual(0);
+  });
+
+  // it("Can send transaction", async () => {
+
+  // });
 });
