@@ -13,6 +13,19 @@ import {
 import Long from "long";
 import * as codec from "./codec";
 
+export interface Result {
+  readonly key: Uint8Array;
+  readonly value: Uint8Array;
+}
+
+export interface Keyed {
+  readonly _id: Uint8Array;
+}
+
+export interface Decoder<T extends {}> {
+  readonly decode: (data: Uint8Array) => T;
+}
+
 export const encodeToken = (token: FungibleToken) =>
   codec.x.Coin.create({
     // use null instead of 0 to not encode zero fields

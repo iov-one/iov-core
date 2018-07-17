@@ -1,38 +1,29 @@
 import { Encoding } from "@iov/encoding";
 import { Client as TendermintClient, StatusResponse, txCommitSuccess } from "@iov/tendermint-rpc";
 import {
-  AddressBytes,
   BcpAccount,
   BcpAccountQuery,
   BcpAddressQuery,
   BcpClient,
-  BcpCoin,
   BcpData,
   BcpNonce,
   BcpQueryEnvelope,
   BcpTicker,
   BcpTransactionResponse,
   ChainId,
-  Nonce,
   PostableBytes,
   TokenTicker,
   TxReadCodec,
 } from "@iov/types";
 
 import * as models from "./codec";
+import { InitData, Normalize } from "./normalize";
 import { Codec as BNSCodec } from "./txcodec";
-import { asLong, decodePubKey, decodeToken, ensure } from "./types";
+import { Decoder, Keyed, Result } from "./types";
 
 // queryByAddress is a type guard to use in the account-based queries
 const queryByAddress = (query: BcpAccountQuery): query is BcpAddressQuery =>
   (query as BcpAddressQuery).address !== undefined;
-
-// InitData is all the queries we do on initialization to be
-// reused by later calls
-interface InitData {
-  readonly chainId: ChainId;
-  readonly tickers: Map<string, BcpTicker>;
-}
 
 // Client talks directly to the BNS blockchain and exposes the
 // same interface we have with the BCP protocol.
@@ -71,14 +62,14 @@ export class Client implements BcpClient {
   public async getTicker(ticker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {
     const res = await this.query("/tokens", Encoding.toAscii(ticker));
     const parser = parseMap(models.namecoin.Token, 4);
-    const data = res.results.map(parser).map(this.normalizeToken);
+    const data = res.results.map(parser).map(Normalize.token);
     return dummyEnvelope(data);
   }
 
   public async getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>> {
     const res = await this.query("/tokens?prefix", Uint8Array.from([]));
     const parser = parseMap(models.namecoin.Token, 4);
-    const data = res.results.map(parser).map(this.normalizeToken);
+    const data = res.results.map(parser).map(Normalize.token);
     return dummyEnvelope(data);
   }
 
@@ -89,7 +80,7 @@ export class Client implements BcpClient {
     const parser = parseMap(models.namecoin.Wallet, 5);
     const parsed = (await res).results.map(parser);
     const initData = await this.initData;
-    const data = parsed.map(this.normalizeAccount(initData));
+    const data = parsed.map(Normalize.account(initData));
     return dummyEnvelope(data);
   }
 
@@ -113,7 +104,7 @@ export class Client implements BcpClient {
     }
     const res = this.query("/sigs", addr);
     const parser = parseMap(models.sigs.UserData, 5);
-    const data = (await res).results.map(parser).map(this.normalizeNonce);
+    const data = (await res).results.map(parser).map(Normalize.nonce);
     return dummyEnvelope(data);
   }
 
@@ -151,48 +142,6 @@ export class Client implements BcpClient {
     const results: ReadonlyArray<Result> = zip(keys, values);
     return { height: q.height, results };
   }
-
-  protected normalizeNonce(acct: models.sigs.IUserData & Keyed): BcpNonce {
-    // append the chainID to the name to universalize it
-    return {
-      address: acct._id as AddressBytes,
-      nonce: asLong(acct.sequence) as Nonce,
-      publicKey: decodePubKey(ensure(acct.pubKey)),
-    };
-  }
-
-  protected normalizeAccount(initData: InitData): (a: models.namecoin.IWallet & Keyed) => BcpAccount {
-    return (acct: models.namecoin.IWallet & Keyed): BcpAccount => {
-      // append the chainID to the name to universalize it
-      const name = acct.name ? `${acct.name}*${initData.chainId}` : undefined;
-      return {
-        name,
-        address: acct._id as AddressBytes,
-        balance: ensure(acct.coins).map(this.normalizeCoin(initData)),
-      };
-    };
-  }
-
-  protected normalizeCoin(initData: InitData): (c: models.x.ICoin) => BcpCoin {
-    return (coin: models.x.ICoin): BcpCoin => {
-      const token = decodeToken(coin);
-      const tickerInfo = initData.tickers.get(token.tokenTicker);
-      return {
-        ...token,
-        // Better defaults?
-        tokenName: tickerInfo ? tickerInfo.tokenName : "<Unknown token>",
-        sigFigs: tickerInfo ? tickerInfo.sigFigs : 9,
-      };
-    };
-  }
-
-  protected normalizeToken(data: models.namecoin.IToken & Keyed): BcpTicker {
-    return {
-      tokenTicker: Encoding.fromAscii(data._id) as TokenTicker,
-      tokenName: ensure(data.name),
-      sigFigs: ensure(data.sigFigs),
-    };
-  }
 }
 
 /* Various helpers for parsing the results of querying abci */
@@ -200,19 +149,6 @@ export class Client implements BcpClient {
 export interface QueryResponse {
   readonly height?: number;
   readonly results: ReadonlyArray<Result>;
-}
-
-export interface Result {
-  readonly key: Uint8Array;
-  readonly value: Uint8Array;
-}
-
-interface Keyed {
-  readonly _id: Uint8Array;
-}
-
-interface Decoder<T extends {}> {
-  readonly decode: (data: Uint8Array) => T;
 }
 
 function parseMap<T extends {}>(decoder: Decoder<T>, sliceKey: number): (res: Result) => T & Keyed {
