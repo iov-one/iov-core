@@ -13,14 +13,7 @@ import {
   Random,
 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import {
-  FullSignature,
-  Nonce,
-  PrehashType,
-  SignedTransaction,
-  TxCodec,
-  UnsignedTransaction,
-} from "@iov/types";
+import { FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/types";
 
 import { Keyring, KeyringEntry, KeyringSerializationString, LocalIdentity, PublicIdentity } from "./keyring";
 import { DatabaseUtils } from "./utils";
@@ -212,16 +205,11 @@ export class UserProfile {
   ): Promise<SignedTransaction> {
     const entry = this.entryInPrimaryKeyring(n);
 
-    const bytes = codec.bytesToSign(transaction, nonce);
+    const { bytes, prehashType } = codec.bytesToSign(transaction, nonce);
     const signature: FullSignature = {
       publicKey: identity.pubkey,
       nonce: nonce,
-      signature: await entry.createTransactionSignature(
-        identity,
-        bytes,
-        PrehashType.Sha512,
-        transaction.chainId,
-      ),
+      signature: await entry.createTransactionSignature(identity, bytes, prehashType, transaction.chainId),
     };
 
     return {
@@ -240,14 +228,14 @@ export class UserProfile {
   ): Promise<SignedTransaction> {
     const entry = this.entryInPrimaryKeyring(n);
 
-    const bytes = codec.bytesToSign(originalTransaction.transaction, nonce);
+    const { bytes, prehashType } = codec.bytesToSign(originalTransaction.transaction, nonce);
     const newSignature: FullSignature = {
       publicKey: identity.pubkey,
       nonce: nonce,
       signature: await entry.createTransactionSignature(
         identity,
         bytes,
-        PrehashType.Sha512,
+        prehashType,
         originalTransaction.transaction.chainId,
       ),
     };
