@@ -16,7 +16,7 @@
     "test-node": "./jasmine-testrunner.js",
     "test": "yarn build && yarn test-node",
     "prebuild": "yarn format && yarn lint",
-    "build": "tsc --declaration && rm ./types/* && mv build/*.d.ts ./types",
+    "build": "tsc && rm ./types/* && mv build/*.d.ts ./types",
     "listen": "node ./build/scripts/listen.js | grep -v '^dev'",
     "checkApp": "node ./build/scripts/checkapp.js | grep -v '^dev'"
   },
