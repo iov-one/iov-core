@@ -296,7 +296,7 @@ export interface RpcTxData {
 const decodeTxData = (data: RpcTxData): responses.TxData => ({
   data: may(Base64.decode, data.data),
   log: data.log,
-  code: data.code,
+  code: optional<number>(data.code, 0),
   tags: may(decodeTags, data.tags),
 });
 

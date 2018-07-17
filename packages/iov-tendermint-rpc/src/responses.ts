@@ -66,8 +66,11 @@ export interface BroadcastTxCommitResponse {
   readonly checkTx: TxData;
   readonly deliverTx?: TxData;
 }
+
+// note that deliverTx may be present but empty on failure
+// code must be 0 on success
 export const txCommitSuccess = (res: BroadcastTxCommitResponse): boolean =>
-  !!res.deliverTx && !res.deliverTx.code;
+  res.checkTx.code === 0 && !!res.deliverTx && res.deliverTx.code === 0;
 
 export interface CommitResponse {
   readonly header: Header;
@@ -119,7 +122,7 @@ export interface Tag {
 }
 
 export interface TxData {
-  readonly code?: number;
+  readonly code: number;
   readonly log?: string;
   readonly data?: Uint8Array;
   readonly tags?: ReadonlyArray<Tag>;
