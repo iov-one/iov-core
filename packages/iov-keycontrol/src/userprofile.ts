@@ -219,7 +219,7 @@ export class UserProfile {
       signature: await entry.createTransactionSignature(
         identity,
         bytes,
-        PrehashType.None,
+        PrehashType.Sha512,
         transaction.chainId,
       ),
     };
@@ -247,7 +247,7 @@ export class UserProfile {
       signature: await entry.createTransactionSignature(
         identity,
         bytes,
-        PrehashType.None,
+        PrehashType.Sha512,
         originalTransaction.transaction.chainId,
       ),
     };
