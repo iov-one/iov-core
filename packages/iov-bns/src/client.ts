@@ -1,4 +1,4 @@
-import { Encoding } from "@iov/crypto";
+import { Encoding } from "@iov/encoding";
 import { Client as TendermintClient, StatusResponse, txCommitSuccess } from "@iov/tendermint-rpc";
 import {
   AddressBytes,
@@ -64,7 +64,7 @@ export class Client implements BcpClient {
   }
 
   public async getTicker(ticker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {
-    const res = await this.query("/tokens", Encoding.asAscii(ticker));
+    const res = await this.query("/tokens", Encoding.toAscii(ticker));
     const parser = parseMap(codec.namecoin.Token, 4);
     const data = res.results.map(parser).map(this.normalizeToken);
     return dummyEnvelope(data);
@@ -80,7 +80,7 @@ export class Client implements BcpClient {
   public async getAccount(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>> {
     const res = queryByAddress(account)
       ? this.query("/wallets", account.address)
-      : this.query("/wallets/name", Encoding.asAscii(account.name));
+      : this.query("/wallets/name", Encoding.toAscii(account.name));
     const parser = parseMap(codec.namecoin.Wallet, 5);
     const parsed = (await res).results.map(parser);
     const initData = await this.initData;
