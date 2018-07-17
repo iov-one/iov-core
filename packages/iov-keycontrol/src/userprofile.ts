@@ -13,7 +13,14 @@ import {
   Random,
 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { FullSignature, Nonce, Prehash, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/types";
+import {
+  FullSignature,
+  Nonce,
+  PrehashType,
+  SignedTransaction,
+  TxCodec,
+  UnsignedTransaction,
+} from "@iov/types";
 
 import { Keyring, KeyringEntry, KeyringSerializationString, LocalIdentity, PublicIdentity } from "./keyring";
 import { DatabaseUtils } from "./utils";
@@ -212,7 +219,7 @@ export class UserProfile {
       signature: await entry.createTransactionSignature(
         identity,
         bytes,
-        Prehash.PH_NONE,
+        PrehashType.None,
         transaction.chainId,
       ),
     };
@@ -240,7 +247,7 @@ export class UserProfile {
       signature: await entry.createTransactionSignature(
         identity,
         bytes,
-        Prehash.PH_NONE,
+        PrehashType.None,
         originalTransaction.transaction.chainId,
       ),
     };

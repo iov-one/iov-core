@@ -1,5 +1,5 @@
 import { Encoding } from "@iov/encoding";
-import { ChainId, Prehash, SignableBytes } from "@iov/types";
+import { ChainId, PrehashType, SignableBytes } from "@iov/types";
 
 import { KeyringEntrySerializationString } from "../keyring";
 import { Ed25519KeyringEntry } from "./ed25519";
@@ -106,7 +106,7 @@ describe("Ed25519KeyringEntry", () => {
 
       const tx = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
       const chainId = "some-chain" as ChainId;
-      const prehash = Prehash.PH_NONE;
+      const prehash = PrehashType.None;
       const signature = await keyringEntry.createTransactionSignature(newIdentity, tx, prehash, chainId);
       expect(signature).toBeTruthy();
       expect(signature.length).toEqual(64);
@@ -222,9 +222,9 @@ describe("Ed25519KeyringEntry", () => {
       // privkeys match
       const tx = new Uint8Array([]) as SignableBytes;
       const chainId = "" as ChainId;
-      expect(await original.createTransactionSignature(identity1, tx, Prehash.PH_NONE, chainId)).toEqual(await restored.createTransactionSignature(identity1, tx, Prehash.PH_NONE, chainId));
-      expect(await original.createTransactionSignature(identity2, tx, Prehash.PH_NONE, chainId)).toEqual(await restored.createTransactionSignature(identity2, tx, Prehash.PH_NONE, chainId));
-      expect(await original.createTransactionSignature(identity3, tx, Prehash.PH_NONE, chainId)).toEqual(await restored.createTransactionSignature(identity3, tx, Prehash.PH_NONE, chainId));
+      expect(await original.createTransactionSignature(identity1, tx, PrehashType.None, chainId)).toEqual(await restored.createTransactionSignature(identity1, tx, PrehashType.None, chainId));
+      expect(await original.createTransactionSignature(identity2, tx, PrehashType.None, chainId)).toEqual(await restored.createTransactionSignature(identity2, tx, PrehashType.None, chainId));
+      expect(await original.createTransactionSignature(identity3, tx, PrehashType.None, chainId)).toEqual(await restored.createTransactionSignature(identity3, tx, PrehashType.None, chainId));
 
       done();
     })().catch(error => {

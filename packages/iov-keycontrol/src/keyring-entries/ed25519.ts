@@ -1,6 +1,6 @@
 import { Ed25519, Ed25519Keypair, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { Algorithm, ChainId, Prehash, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
+import { Algorithm, ChainId, PrehashType, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
 
 import {
   KeyringEntry,
@@ -134,7 +134,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   public async createTransactionSignature(
     identity: PublicIdentity,
     tx: SignableBytes,
-    prehash: Prehash,
+    prehash: PrehashType,
     _: ChainId,
   ): Promise<SignatureBytes> {
     // TODO: use
