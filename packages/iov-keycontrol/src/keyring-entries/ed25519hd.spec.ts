@@ -1,6 +1,6 @@
 import { Slip0010RawIndex } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { Algorithm, ChainId, SignableBytes } from "@iov/types";
+import { Algorithm, ChainId, Prehash, SignableBytes } from "@iov/types";
 
 import { KeyringEntrySerializationString } from "../keyring";
 import { Ed25519HdKeyringEntry } from "./ed25519hd";
@@ -105,7 +105,7 @@ describe("Ed25519HdKeyringEntry", () => {
 
       const tx = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
       const chainId = "some-chain" as ChainId;
-      const signature = await entry.createTransactionSignature(newIdentity, tx, chainId);
+      const signature = await entry.createTransactionSignature(newIdentity, tx, Prehash.PH_NONE, chainId);
       expect(signature).toBeTruthy();
       expect(signature.length).toEqual(64);
 
@@ -221,9 +221,9 @@ describe("Ed25519HdKeyringEntry", () => {
       // privkeys match
       const tx = new Uint8Array([]) as SignableBytes;
       const chainId = "" as ChainId;
-      expect(await original.createTransactionSignature(identity1, tx, chainId)).toEqual(await restored.createTransactionSignature(identity1, tx, chainId));
-      expect(await original.createTransactionSignature(identity2, tx, chainId)).toEqual(await restored.createTransactionSignature(identity2, tx, chainId));
-      expect(await original.createTransactionSignature(identity3, tx, chainId)).toEqual(await restored.createTransactionSignature(identity3, tx, chainId));
+      expect(await original.createTransactionSignature(identity1, tx, Prehash.PH_NONE, chainId)).toEqual(await restored.createTransactionSignature(identity1, tx, Prehash.PH_NONE, chainId));
+      expect(await original.createTransactionSignature(identity2, tx, Prehash.PH_NONE, chainId)).toEqual(await restored.createTransactionSignature(identity2, tx, Prehash.PH_NONE, chainId));
+      expect(await original.createTransactionSignature(identity3, tx, Prehash.PH_NONE, chainId)).toEqual(await restored.createTransactionSignature(identity3, tx, Prehash.PH_NONE, chainId));
 
       done();
     })().catch(error => {
