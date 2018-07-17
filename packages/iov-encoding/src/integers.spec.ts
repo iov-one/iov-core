@@ -127,6 +127,20 @@ describe("Integers", () => {
       // tslint:enable:no-unused-expression
     });
 
+    it("can convert to number", () => {
+      expect(new Int53(0).asNumber()).toEqual(0);
+      expect(new Int53(1).asNumber()).toEqual(1);
+      expect(new Int53(42).asNumber()).toEqual(42);
+      expect(new Int53(1000000000).asNumber()).toEqual(1000000000);
+      expect(new Int53(2147483647).asNumber()).toEqual(2147483647);
+      expect(new Int53(2147483648).asNumber()).toEqual(2147483648);
+      expect(new Int53(4294967295).asNumber()).toEqual(4294967295);
+      expect(new Int53(9007199254740991).asNumber()).toEqual(9007199254740991);
+
+      expect(new Int53(-1).asNumber()).toEqual(-1);
+      expect(new Int53(-9007199254740991).asNumber()).toEqual(-9007199254740991);
+    });
+
     it("can convert to string", () => {
       expect(new Int53(0).asString()).toEqual("0");
       expect(new Int53(1).asString()).toEqual("1");

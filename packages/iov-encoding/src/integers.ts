@@ -71,6 +71,10 @@ export class Int53 {
     this.data = input;
   }
 
+  public asNumber(): number {
+    return this.data;
+  }
+
   public asString(): string {
     return this.data.toString();
   }

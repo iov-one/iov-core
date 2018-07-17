@@ -9,5 +9,6 @@ export declare class Int53 {
     static fromString(str: string): Int53;
     protected readonly data: number;
     constructor(input: number);
+    asNumber(): number;
     asString(): string;
 }
