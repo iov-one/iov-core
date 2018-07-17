@@ -17,7 +17,8 @@ addons:
   chrome: stable
 
 before_install:
-- export TM_VERSION=0.20.0
+- export TM_VERSION=0.21.0
+- export BOV_VERSION=v0.5.1
 # yarn is outdated on Linux images
 - |
   if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
@@ -30,6 +31,7 @@ before_install:
 # detect whether we can use docker, but don't fail if impossible
 # this currently passes on linux, fails on osx
 - docker pull tendermint/tendermint:${TM_VERSION} && export TENDERMINT_ENABLED=1 || true
+- docker pull iov1/tendermint:${TM_VERSION} && docker pull iov1/bov:${BOV_VERSION} && export BOV_ENABLED=1 || true
 
 install:
 - yarn install
@@ -41,12 +43,22 @@ before_script:
     export TM_PID=$!
     echo "Started tendermint" $TM_PID
     sleep 2
+  fi
+- |
+  if [[ $TENDERMINT_ENABLED ]]; then
+    ./packages/iov-bns/bov_tm.sh > /tmp/bov_tm.log &
+    export BOV_TM_PID=$!
+    sleep 1
+    ./packages/iov-bns/bov_app.sh > /tmp/bov_app.log &
+    export BOV_APP_PID=$!
+    sleep 3
     # for debug output
-    cat /tmp/foo.log
+    cat /tmp/bov_tm.log
+    cat /tmp/bov_app.log
   fi
 
 script:
-- echo "use tendermint?" ${TENDERMINT_ENABLED}
+- echo "use tendermint?" ${TENDERMINT_ENABLED} "use bov?" ${BOV_ENABLED}
 - ./travis.sh
 
 after_script:
@@ -54,6 +66,12 @@ after_script:
   if [[ $TM_PID ]]; then
     echo "Stopping tendermint" $TM_PID
     kill ${TM_PID}
+  fi
+- |
+  if [[ $BOV_APP_PID ]]; then
+    echo "Stopping bov"
+    kill ${BOV_APP_PID}
+    kill ${BOV_TM_PID}
   fi
 
 # whitelist long living branches to avoid testing feature branches twice (as branch and as pull request)

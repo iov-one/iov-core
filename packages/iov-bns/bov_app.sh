@@ -1,0 +1,18 @@
+#!/bin/bash
+set -o errexit -o nounset -o pipefail
+which shellcheck > /dev/null && shellcheck "$0"
+
+TM_VERSION=${TM_VERSION:-0.21.0}
+VERSION=${BOV_VERSION:-v0.5.1}
+
+# this assumes it was run after bov_tm.sh and this exists
+DIR="${HOME}/bovtest/${TM_VERSION}"
+if [ ! -d "${DIR}" ]; then
+  echo "Error: directory not created for bov";
+  exit 1;
+fi
+
+docker run -v "${DIR}:/data" "iov1/bov:${VERSION}" -home "/data" init
+
+# exec docker run -v "${DIR}:/data" "iov1/bov:${VERSION}" -home "/data" \
+#   start -bind="unix:///data/app.sock"

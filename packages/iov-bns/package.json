@@ -35,5 +35,8 @@
     "@types/node": "^10.3.2",
     "long": "^4.0.0",
     "protobufjs": "^6.8.6"
+  },
+  "devDependencies": {
+    "@iov/keycontrol": "^0.0.0"    
   }
 }
