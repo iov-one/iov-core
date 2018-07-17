@@ -2,7 +2,7 @@ import Long from "long";
 
 import { Encoding } from "@iov/encoding";
 import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@iov/keycontrol";
-import { AddressBytes, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/types";
+import { AddressBytes, Nonce, SendTx, Tag, TokenTicker, TransactionKind } from "@iov/types";
 
 import { Client } from "./client";
 import { Codec as BnsCodec } from "./txcodec";
@@ -57,6 +57,13 @@ describe("Integration tests with bov+tendermint", () => {
       await profile.createIdentity(0);
     }
     return profile.getIdentities(0)[n];
+  };
+
+  // accountTag should be exposed, ugly way to generate tx search strings....
+  const accountTag = (addr: AddressBytes, bucket: string = "wllt", value: string = "s"): Tag => {
+    const id = Uint8Array.from([...Encoding.toAscii(bucket + ":"), ...addr]);
+    const key = Encoding.toHex(id).toUpperCase();
+    return { key, value };
   };
 
   it("Generate proper faucet address", async () => {
@@ -144,7 +151,9 @@ describe("Integration tests with bov+tendermint", () => {
     pendingWithoutBov();
     const client = await Client.connect(tendermintUrl);
     const chainId = await client.chainId();
-    // const minHeight = await client.height();
+    // store minHeight before sending the tx, so we can filter out
+    // if we re-run the test, still only find one tx in search
+    // const minHeight = (await client.height()) - 1;
 
     const profile = await userProfile();
 
@@ -190,5 +199,19 @@ describe("Integration tests with bov+tendermint", () => {
     // (worrying about replay issues)
     const fNonce = await getNonce(client, faucetAddr);
     expect(fNonce.toInt()).toBeGreaterThanOrEqual(1);
+
+    // now verify we can query the same tx back
+    // FIXME: make this cleaner somehow....
+    const txQuery = { tags: [accountTag(faucetAddr)] };
+    const search = await client.searchTx(txQuery);
+    expect(search.length).toBeGreaterThanOrEqual(1);
+    // make sure we get a valid signature
+    const mine = search[search.length - 1];
+    expect(mine.primarySignature.nonce).toEqual(nonce);
+    expect(mine.primarySignature.signature.length).toBeTruthy();
+    expect(mine.otherSignatures.length).toEqual(0);
+    const tx = mine.transaction;
+    expect(tx.kind).toEqual(sendTx.kind);
+    expect(tx).toEqual(sendTx);
   });
 });
