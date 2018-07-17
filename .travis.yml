@@ -45,10 +45,10 @@ before_script:
     sleep 2
   fi
 - |
-  if [[ $TENDERMINT_ENABLED ]]; then
+  if [[ $BOV_ENABLED ]]; then
+    ./packages/iov-bns/bov_init.sh
     ./packages/iov-bns/bov_tm.sh > /tmp/bov_tm.log &
     export BOV_TM_PID=$!
-    sleep 1
     ./packages/iov-bns/bov_app.sh > /tmp/bov_app.log &
     export BOV_APP_PID=$!
     sleep 3
@@ -72,6 +72,8 @@ after_script:
     echo "Stopping bov"
     kill ${BOV_APP_PID}
     kill ${BOV_TM_PID}
+    # for debug output
+    cat /tmp/bov_app.log
   fi
 
 # whitelist long living branches to avoid testing feature branches twice (as branch and as pull request)
