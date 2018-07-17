@@ -1,11 +1,23 @@
 import axios from "axios";
 import EventEmitter from "events";
 import WebSocket from "isomorphic-ws";
+import { Listener, Producer, Stream } from "xstream";
 
-import { JsonRpcRequest, JsonRpcResponse, JsonRpcSuccess, throwIfError } from "./common";
+import {
+  ifError,
+  JsonRpcEvent,
+  JsonRpcRequest,
+  JsonRpcResponse,
+  JsonRpcSuccess,
+  throwIfError,
+} from "./common";
 
 export interface RpcClient {
   readonly execute: (request: JsonRpcRequest) => Promise<JsonRpcSuccess>;
+}
+
+export interface RpcStreamingClient extends RpcClient {
+  readonly listen: (request: JsonRpcRequest) => Stream<JsonRpcEvent>;
 }
 
 export const getWindow = (): any | undefined => (inBrowser() ? (window as any) : undefined);
@@ -78,15 +90,17 @@ export class HttpUriClient implements RpcClient {
 // WebsocketClient makes calls over websocket
 // TODO: support event subscriptions as well
 // TODO: error handling on disconnect
-export class WebsocketClient implements RpcClient {
+export class WebsocketClient implements RpcStreamingClient {
+  public readonly switch: EventEmitter;
+
   protected readonly url: string;
   protected readonly ws: WebSocket;
-  protected readonly switch: EventEmitter;
 
   // connected is resolved as soon as the websocket is connected
   // TODO: use MemoryStream and support reconnects
   protected readonly connected: Promise<boolean>;
 
+  // tslint:disable-next-line:no-console
   constructor(url: string = "ws://localhost:46657", onError: (err: any) => void = console.log) {
     // accept host.name:port and assume ws protocol
     const path = "/websocket";
@@ -111,6 +125,17 @@ export class WebsocketClient implements RpcClient {
       // So this just kills the execute promise, not anything else?
       .catch(err => this.switch.emit("errror", err));
     return promise;
+  }
+
+  public listen(request: JsonRpcRequest): Stream<JsonRpcEvent> {
+    const subscription = new Subscription(request, this);
+    return Stream.create(subscription);
+  }
+
+  public send(request: JsonRpcRequest): void {
+    this.connected
+      .then(() => this.ws.send(JSON.stringify(request)))
+      .catch(err => this.switch.emit("errror", err));
   }
 
   protected connect(): WebSocket {
@@ -147,5 +172,69 @@ export class WebsocketClient implements RpcClient {
         reject(err);
       });
     });
+  }
+}
+
+class Subscription implements Producer<JsonRpcEvent> {
+  private readonly request: JsonRpcRequest;
+  private readonly client: WebsocketClient;
+
+  constructor(request: JsonRpcRequest, client: WebsocketClient) {
+    this.request = request;
+    this.client = client;
+  }
+
+  public start(listener: Listener<JsonRpcEvent>): void {
+    this.client.send(this.request);
+    this.subscribeEvents(this.request.id, listener);
+  }
+
+  public stop(): void {
+    // tell the server we are done
+    const endRequest: JsonRpcRequest = { ...this.request, method: "unsubscribe" };
+    this.client.send(endRequest);
+    // turn off listeners
+    this.client.switch.emit(this.request.id + "#done", {});
+  }
+
+  protected subscribeEvents(id: string, listener: Listener<JsonRpcEvent>): void {
+    // this should unsubscribe itself, so doesn't need to be removed explicitly
+    this.client.switch.once(id, data => {
+      const err = ifError(data);
+      if (err) {
+        closeSubscriptions();
+        listener.error(err);
+      }
+    });
+
+    // this will fire on a response (success or error)
+    const evtMessages = this.client.switch.on(id + "#event", data => {
+      const err = ifError(data);
+      if (err) {
+        closeSubscriptions();
+        listener.error(err);
+      } else {
+        const result = (data as JsonRpcSuccess).result;
+        listener.next(result as JsonRpcEvent);
+      }
+    });
+
+    // this will fire in case the websocket errors/disconnects
+    const evtError = this.client.switch.once("error", err => {
+      closeSubscriptions();
+      listener.error(err);
+    });
+
+    // this will fire in case the websocket errors/disconnects
+    const evtDone = this.client.switch.once(id + "#done", () => {
+      closeSubscriptions();
+      listener.complete();
+    });
+
+    const closeSubscriptions = () => {
+      evtMessages.removeAllListeners();
+      evtError.removeAllListeners();
+      evtDone.removeAllListeners();
+    };
   }
 }

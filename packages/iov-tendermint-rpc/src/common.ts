@@ -28,6 +28,15 @@ export interface JsonRpcError extends JsonRpc {
   };
 }
 
+// JsonRpcEvent is event info stored in result of JsonRpcSuccess
+export interface JsonRpcEvent {
+  readonly query: string;
+  readonly data: {
+    readonly type: string;
+    readonly value: {};
+  };
+}
+
 export const jsonRpc = (): JsonRpc => ({ jsonrpc: "2.0", id: randomId() });
 export const jsonRpcWith = (method: string, params?: {}): JsonRpcRequest => ({
   ...jsonRpc(),

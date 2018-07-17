@@ -1,4 +1,4 @@
-import { jsonRpcWith } from "./common";
+import { JsonRpcEvent, jsonRpcWith } from "./common";
 import { Method } from "./requests";
 import { HttpClient, HttpUriClient, RpcClient, WebsocketClient } from "./rpcclient";
 
@@ -9,12 +9,11 @@ const skipTests = (): boolean => !process.env.TENDERMINT_ENABLED;
 
 const pendingWithoutTendermint = () => {
   if (skipTests()) {
-    pending("Set TENDERMINT_ENABLED to enable tendermint-based tests");
+    pending("Set TENDERMINT_ENABLED to enable tendermint rpc tests");
   }
 };
 
 describe("Ensure RpcClients work", () => {
-  // TODO: make flexible, support multiple versions, etc...
   const tendermintUrl = "localhost:12345";
 
   const shouldPass = async (client: RpcClient) => {
@@ -68,4 +67,44 @@ describe("Ensure RpcClients work", () => {
     await shouldFail(ws);
     await shouldPass(ws);
   });
+
+  it(
+    "WebsocketClient can listen to events",
+    done => {
+      pendingWithoutTendermint();
+
+      const ws = new WebsocketClient(tendermintUrl);
+
+      const query = "tm.event='NewBlockHeader'";
+      const req = jsonRpcWith("subscribe", { query });
+      const headers = ws.listen(req);
+
+      // tslint:disable-next-line:readonly-array
+      const events: JsonRpcEvent[] = [];
+
+      const sub = headers.subscribe({
+        error: fail,
+        complete: () => fail("subscription should not complete"),
+        next: (evt: JsonRpcEvent) => {
+          events.push(evt);
+          expect(evt.query).toEqual(query);
+
+          if (events.length === 3) {
+            // make sure they are consequtive heights
+            const height = (i: number) => (events[i].data.value as any).header.height as number;
+            expect(height(1)).toEqual(height(0) + 1);
+            expect(height(2)).toEqual(height(1) + 1);
+
+            // now unsubscribe and error if another one arrives
+            sub.unsubscribe();
+            // wait 2.5s for finish
+            setTimeout(done, 2500);
+          } else if (events.length === 4) {
+            fail("unsubscribe didn't work");
+          }
+        },
+      });
+    },
+    10000,
+  ); // give 10s to finish
 });
