@@ -2,9 +2,10 @@ import Long from "long";
 
 import { Encoding } from "@iov/encoding";
 import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@iov/keycontrol";
-import { AddressBytes, BcpNonce, Nonce } from "@iov/types";
+import { AddressBytes, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/types";
 
 import { Client } from "./client";
+import { Codec as BnsCodec } from "./txcodec";
 import { keyToAddress } from "./util";
 
 const skipTests = (): boolean => !process.env.BOV_ENABLED;
@@ -22,6 +23,7 @@ describe("Integration tests with bov+tendermint", () => {
   // this account has money in the genesis file (setup in docker)
   const mnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
   const address = Encoding.fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282") as AddressBytes;
+  const cash = "CASH" as TokenTicker;
 
   // TODO: had issues with websockets? check again later, maybe they need to close at end?
   // max open connections??? (but 900 by default)
@@ -40,8 +42,10 @@ describe("Integration tests with bov+tendermint", () => {
     return ids[0];
   };
 
-  const getNonce = (data: ReadonlyArray<BcpNonce>): Nonce =>
-    data.length === 0 ? (Long.fromInt(0) as Nonce) : data[0].nonce;
+  const getNonce = async (client: Client, addr: AddressBytes): Promise<Nonce> => {
+    const data = (await client.getNonce({ address: addr })).data;
+    return data.length === 0 ? (Long.fromInt(0) as Nonce) : data[0].nonce;
+  };
 
   // recipient will make accounts if needed, returns path n
   // n must be >= 1
@@ -84,7 +88,7 @@ describe("Integration tests with bov+tendermint", () => {
     const tickers = await client.getAllTickers();
     expect(tickers.data.length).toEqual(1);
     const ticker = tickers.data[0];
-    expect(ticker.tokenTicker).toEqual("CASH");
+    expect(ticker.tokenTicker).toEqual(cash);
     expect(ticker.tokenName).toEqual("Main token of this chain");
     expect(ticker.sigFigs).toEqual(6);
   });
@@ -108,7 +112,7 @@ describe("Integration tests with bov+tendermint", () => {
     expect(addrAcct.address).toEqual(faucetAddr);
     expect(addrAcct.name).toEqual(`admin*${chainId}`);
     expect(addrAcct.balance.length).toEqual(1);
-    expect(addrAcct.balance[0].tokenTicker).toEqual("CASH");
+    expect(addrAcct.balance[0].tokenTicker).toEqual(cash);
     expect(addrAcct.balance[0].whole).toBeGreaterThan(1000000);
 
     // can get the faucet by name, same result
@@ -132,13 +136,59 @@ describe("Integration tests with bov+tendermint", () => {
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // can get the faucet by address (there is money)
-    const source = await client.getNonce({ address: rcptAddr });
-    expect(source.data.length).toEqual(0);
-    const nonce = getNonce(source.data);
+    const nonce = await getNonce(client, rcptAddr);
     expect(nonce.toInt()).toEqual(0);
   });
 
-  // it("Can send transaction", async () => {
+  it("Can send transaction", async () => {
+    pendingWithoutBov();
+    const client = await Client.connect(tendermintUrl);
+    const chainId = await client.chainId();
+    // const minHeight = await client.height();
 
-  // });
+    const profile = await userProfile();
+
+    const faucet = faucetId(profile);
+    const faucetAddr = keyToAddress(faucet.pubkey);
+    const rcpt = await recipient(profile, 2);
+    const rcptAddr = keyToAddress(rcpt.pubkey);
+
+    // check current nonce (should be 0, but don't fail if used by other)
+    const nonce = await getNonce(client, faucetAddr);
+
+    // construct a sendtx, this should be in the web4wrtie api
+    const sendTx: SendTx = {
+      kind: TransactionKind.SEND,
+      chainId,
+      signer: faucet.pubkey,
+      recipient: rcptAddr,
+      memo: "My first payment",
+      amount: {
+        whole: 500,
+        fractional: 75000,
+        tokenTicker: cash,
+      },
+    };
+    const signed = await profile.signTransaction(0, faucet, sendTx, BnsCodec, nonce);
+    const txBytes = BnsCodec.bytesToPost(signed);
+    const post = await client.postTx(txBytes);
+    // FIXME: we really should add more info here, but this is in the spec
+    expect(post.metadata.status).toBe(true);
+
+    // we should be a little bit richer
+    const gotMoney = await client.getAccount({ address: rcptAddr });
+    expect(gotMoney).toBeTruthy();
+    expect(gotMoney.data.length).toEqual(1);
+    const paid = gotMoney.data[0];
+    expect(paid.balance.length).toEqual(1);
+    // we may post multiple times if we have multiple tests,
+    // so just ensure at least one got in
+    expect(paid.balance[0].whole).toBeGreaterThanOrEqual(500);
+    expect(paid.balance[0].fractional).toBeGreaterThanOrEqual(75000);
+
+    // and the nonce should go up, to be at least one
+    // (worrying about replay issues)
+    const fNonce = await getNonce(client, faucetAddr);
+    expect(fNonce.toInt()).toBeGreaterThanOrEqual(1);
+  });
 });

@@ -71,6 +71,11 @@ export class Client implements Web4Read {
 
   public async postTx(tx: PostableBytes): Promise<BcpTransactionResponse> {
     const txresp = await this.tmClient.broadcastTxCommit({ tx });
+    if (!txCommitSuccess(txresp)) {
+      const { checkTx, deliverTx } = txresp;
+      throw new Error(JSON.stringify({ checkTx, deliverTx }, null, 2));
+    }
+
     const message = txresp.deliverTx ? txresp.deliverTx.log : txresp.checkTx.log;
     return {
       metadata: {
@@ -125,9 +130,10 @@ export class Client implements Web4Read {
     if (!addr) {
       return dummyEnvelope([]);
     }
-    const res = this.query("/sigs", addr);
+    const res = await this.query("/auth", addr);
+
     const parser = parseMap(models.sigs.UserData, 5);
-    const data = (await res).results.map(parser).map(Normalize.nonce);
+    const data = res.results.map(parser).map(Normalize.nonce);
     return dummyEnvelope(data);
   }
 
