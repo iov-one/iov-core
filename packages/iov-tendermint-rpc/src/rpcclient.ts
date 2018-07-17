@@ -16,7 +16,7 @@ export interface RpcClient {
   readonly execute: (request: JsonRpcRequest) => Promise<JsonRpcSuccess>;
 }
 
-export interface RpcEmitter extends RpcClient {
+export interface RpcStreamingClient extends RpcClient {
   readonly listen: (request: JsonRpcRequest) => Stream<JsonRpcEvent>;
 }
 
@@ -90,7 +90,7 @@ export class HttpUriClient implements RpcClient {
 // WebsocketClient makes calls over websocket
 // TODO: support event subscriptions as well
 // TODO: error handling on disconnect
-export class WebsocketClient implements RpcEmitter {
+export class WebsocketClient implements RpcStreamingClient {
   public readonly switch: EventEmitter;
 
   protected readonly url: string;
@@ -127,8 +127,7 @@ export class WebsocketClient implements RpcEmitter {
     return promise;
   }
 
-  // public listen(request: JsonRpcRequest): Stream<JsonRpcSuccess> {
-  public listen(request: JsonRpcRequest): Stream<any> {
+  public listen(request: JsonRpcRequest): Stream<JsonRpcEvent> {
     const subscription = new Subscription(request, this);
     return Stream.create(subscription);
   }
@@ -177,8 +176,8 @@ export class WebsocketClient implements RpcEmitter {
 }
 
 class Subscription implements Producer<JsonRpcEvent> {
-  protected readonly request: JsonRpcRequest;
-  protected readonly client: WebsocketClient;
+  private readonly request: JsonRpcRequest;
+  private readonly client: WebsocketClient;
 
   constructor(request: JsonRpcRequest, client: WebsocketClient) {
     this.request = request;
