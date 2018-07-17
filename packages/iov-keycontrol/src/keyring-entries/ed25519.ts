@@ -1,4 +1,4 @@
-import { Ed25519, Ed25519Keypair, Random, Sha256, Sha512 } from "@iov/crypto";
+import { Ed25519, Ed25519Keypair, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PrehashType, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
 
@@ -9,6 +9,7 @@ import {
   LocalIdentity,
   PublicIdentity,
 } from "../keyring";
+import { prehash } from "../prehashing";
 import { DefaultValueProducer, ValueAndUpdates } from "../valueandupdates";
 
 interface PubkeySerialization {
@@ -137,19 +138,6 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     prehashType: PrehashType,
     _: ChainId,
   ): Promise<SignatureBytes> {
-    const prehash = (bytes: SignableBytes, type: PrehashType): SignableBytes => {
-      switch (type) {
-        case PrehashType.None:
-          return new Uint8Array([...bytes]) as SignableBytes;
-        case PrehashType.Sha256:
-          return new Sha256(bytes).digest() as SignableBytes;
-        case PrehashType.Sha512:
-          return new Sha512(bytes).digest() as SignableBytes;
-        default:
-          throw new Error("Unknown prehash type");
-      }
-    };
-
     const privkey = this.privateKeyForIdentity(identity);
     const signature = await Ed25519.createSignature(prehash(transactionBytes, prehashType), privkey);
     return signature as SignatureBytes;

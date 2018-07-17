@@ -3,8 +3,6 @@ import {
   Ed25519,
   Ed25519Keypair,
   EnglishMnemonic,
-  Sha256,
-  Sha512,
   Slip0010,
   Slip0010Curve,
   Slip0010RawIndex,
@@ -19,6 +17,7 @@ import {
   LocalIdentity,
   PublicIdentity,
 } from "../keyring";
+import { prehash } from "../prehashing";
 import { DefaultValueProducer, ValueAndUpdates } from "../valueandupdates";
 
 interface PubkeySerialization {
@@ -166,19 +165,6 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     prehashType: PrehashType,
     _: ChainId,
   ): Promise<SignatureBytes> {
-    const prehash = (bytes: SignableBytes, type: PrehashType): SignableBytes => {
-      switch (type) {
-        case PrehashType.None:
-          return new Uint8Array([...bytes]) as SignableBytes;
-        case PrehashType.Sha256:
-          return new Sha256(bytes).digest() as SignableBytes;
-        case PrehashType.Sha512:
-          return new Sha512(bytes).digest() as SignableBytes;
-        default:
-          throw new Error("Unknown prehash type");
-      }
-    };
-
     const keypair = await this.privkeyForIdentity(identity);
     const signature = await Ed25519.createSignature(prehash(transactionBytes, prehashType), keypair);
     return signature as SignatureBytes;
