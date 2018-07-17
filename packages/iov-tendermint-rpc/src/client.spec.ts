@@ -38,6 +38,25 @@ const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
       expect(info).toBeTruthy();
     });
 
+    it("Can connect to a given url", async () => {
+      pendingWithoutTendermint();
+
+      // default connection
+      const client = await Client.connect(tendermintUrl);
+      const info = await client.abciInfo();
+      expect(info).toBeTruthy();
+
+      // http connection
+      const client2 = await Client.connect("http://" + tendermintUrl);
+      const info2 = await client2.abciInfo();
+      expect(info2).toBeTruthy();
+
+      // ws connection
+      const client3 = await Client.connect("ws://" + tendermintUrl);
+      const info3 = await client3.abciInfo();
+      expect(info3).toBeTruthy();
+    });
+
     it("Posts a transaction", async () => {
       pendingWithoutTendermint();
       const client = new Client(rpcFactory(), v0_20);
