@@ -12,7 +12,7 @@
   },
   "scripts": {
     "lint": "tslint -t verbose --project .",
-    "format": "prettier --write './src/**/*.ts'",
+    "format": "prettier --write './src/**/*.ts' > /dev/null",
     "test-node": "./jasmine-testrunner.js",
     "test": "yarn build && yarn test-node",
     "prebuild": "yarn format && yarn lint",
