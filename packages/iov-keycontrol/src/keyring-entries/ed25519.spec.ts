@@ -106,8 +106,7 @@ describe("Ed25519KeyringEntry", () => {
 
       const tx = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
       const chainId = "some-chain" as ChainId;
-      const prehash = PrehashType.None;
-      const signature = await keyringEntry.createTransactionSignature(newIdentity, tx, prehash, chainId);
+      const signature = await keyringEntry.createTransactionSignature(newIdentity, tx, PrehashType.None, chainId);
       expect(signature).toBeTruthy();
       expect(signature.length).toEqual(64);
 
