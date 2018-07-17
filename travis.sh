@@ -2,8 +2,11 @@
 set -o errexit -o nounset -o pipefail
 which shellcheck > /dev/null && shellcheck "$0"
 
+echo "travis_fold:start:yarn-build"
 yarn build
+echo "travis_fold:end:yarn-build"
 
+echo "travis_fold:start:check-dirty"
 # Ensure build step didn't modify source files to avoid unprettified repository state
 SOURCE_CHANGES=$(git status --porcelain)
 if [[ -n "$SOURCE_CHANGES" ]]; then
@@ -13,11 +16,15 @@ if [[ -n "$SOURCE_CHANGES" ]]; then
   git diff
   exit 1
 fi
+echo "travis_fold:end:check-dirty"
 
+echo "travis_fold:start:commandline-tests"
 yarn test
+echo "travis_fold:end:commandline-tests"
 
 # Test browser
 for PACKAGE in iov-bns iov-crypto iov-keycontrol iov-tendermint-rpc; do
+  echo "travis_fold:start:browser-tests-$PACKAGE"
   (
     cd "packages/$PACKAGE"
 
@@ -30,4 +37,5 @@ for PACKAGE in iov-bns iov-crypto iov-keycontrol iov-tendermint-rpc; do
       yarn test-firefox
     fi
   )
+  echo "travis_fold:end:browser-tests-$PACKAGE"
 done
