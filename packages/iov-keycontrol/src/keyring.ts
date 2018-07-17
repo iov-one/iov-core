@@ -138,9 +138,9 @@ export interface KeyringEntry {
   // an implementation to do checks (such as ledger to switch apps)
   readonly createTransactionSignature: (
     identity: PublicIdentity,
-    tx: SignableBytes,
+    transactionBytes: SignableBytes,
     prehash: PrehashType,
-    chainID: ChainId,
+    chainId: ChainId,
   ) => Promise<SignatureBytes>;
 
   // serialize will produce a representation that can be writen to disk.

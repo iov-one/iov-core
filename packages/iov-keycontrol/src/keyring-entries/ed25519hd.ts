@@ -160,7 +160,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
 
   public async createTransactionSignature(
     identity: PublicIdentity,
-    tx: SignableBytes,
+    transactionBytes: SignableBytes,
     prehash: PrehashType,
     _: ChainId,
   ): Promise<SignatureBytes> {
@@ -169,7 +169,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     prehash as any;
 
     const keypair = await this.privkeyForIdentity(identity);
-    const signature = await Ed25519.createSignature(tx, keypair);
+    const signature = await Ed25519.createSignature(transactionBytes, keypair);
     return signature as SignatureBytes;
   }
 
