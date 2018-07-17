@@ -10,7 +10,6 @@ import {
   BcpAccount,
   BcpAccountQuery,
   BcpAddressQuery,
-  BcpClient,
   BcpData,
   BcpNonce,
   BcpQueryEnvelope,
@@ -22,6 +21,7 @@ import {
   TokenTicker,
   TxQuery,
   TxReadCodec,
+  Web4Read,
 } from "@iov/types";
 
 import * as models from "./codec";
@@ -36,7 +36,7 @@ const queryByAddress = (query: BcpAccountQuery): query is BcpAddressQuery =>
 // Client talks directly to the BNS blockchain and exposes the
 // same interface we have with the BCP protocol.
 // We can embed in web4 process or use this in a BCP-relay
-export class Client implements BcpClient {
+export class Client implements Web4Read {
   public static async connect(url: string): Promise<Client> {
     const tm = await TendermintClient.connect(url);
     return new Client(tm, BNSCodec);
