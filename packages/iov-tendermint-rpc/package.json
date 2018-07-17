@@ -12,7 +12,7 @@
   },
   "scripts": {
     "lint": "tslint -t verbose --project .",
-    "format": "prettier --write './src/**/*.ts' > /dev/null",
+    "format": "prettier --write --loglevel warn './src/**/*.ts'",
     "test-node": "./jasmine-testrunner.js",
     "test-firefox": "yarn build-browser && karma start --single-run --browsers Firefox",
     "test-chrome": "yarn build-browser && karma start --single-run --browsers ChromeHeadless",
