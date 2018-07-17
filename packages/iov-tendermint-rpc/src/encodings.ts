@@ -65,18 +65,3 @@ export class DateTime {
     return new ReadonlyDate(dateTimeString);
   }
 }
-
-// Integer is used for go-amino string-encoded number support
-export class Integer {
-  public static encode(data: number): IntegerString {
-    return Math.floor(data).toString() as IntegerString;
-  }
-
-  public static decode(intstring: IntegerString): number {
-    const parsed = parseInt(intstring, 10);
-    if (isNaN(parsed)) {
-      throw Error("Not an integer: " + intstring);
-    }
-    return parsed;
-  }
-}
