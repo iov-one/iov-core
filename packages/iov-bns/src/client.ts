@@ -16,10 +16,10 @@ import {
   Nonce,
   PostableBytes,
   TokenTicker,
-  TxCodec,
+  TxReadCodec,
 } from "@iov/types";
 
-import * as codec from "./codec";
+import * as models from "./codec";
 import { Codec as BNSCodec } from "./txcodec";
 import { asLong, decodePubKey, decodeToken, ensure } from "./types";
 
@@ -38,13 +38,18 @@ interface InitData {
 // same interface we have with the BCP protocol.
 // We can embed in web4 process or use this in a BCP-relay
 export class Client implements BcpClient {
+  public static async connect(url: string): Promise<Client> {
+    const tm = await TendermintClient.connect(url);
+    return new Client(tm, BNSCodec);
+  }
+
   protected readonly tmClient: TendermintClient;
-  protected readonly codec: TxCodec;
+  protected readonly codec: TxReadCodec;
   protected readonly initData: Promise<InitData>;
 
-  constructor(tmClient: TendermintClient) {
+  constructor(tmClient: TendermintClient, codec: TxReadCodec) {
     this.tmClient = tmClient;
-    this.codec = BNSCodec;
+    this.codec = codec;
     // Note: this just requests the data and doesn't wait for the result
     // the response is preloaded the first time we query an account
     this.initData = this.initialize();
@@ -65,14 +70,14 @@ export class Client implements BcpClient {
 
   public async getTicker(ticker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {
     const res = await this.query("/tokens", Encoding.toAscii(ticker));
-    const parser = parseMap(codec.namecoin.Token, 4);
+    const parser = parseMap(models.namecoin.Token, 4);
     const data = res.results.map(parser).map(this.normalizeToken);
     return dummyEnvelope(data);
   }
 
   public async getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>> {
     const res = await this.query("/tokens?prefix", Uint8Array.from([]));
-    const parser = parseMap(codec.namecoin.Token, 4);
+    const parser = parseMap(models.namecoin.Token, 4);
     const data = res.results.map(parser).map(this.normalizeToken);
     return dummyEnvelope(data);
   }
@@ -81,7 +86,7 @@ export class Client implements BcpClient {
     const res = queryByAddress(account)
       ? this.query("/wallets", account.address)
       : this.query("/wallets/name", Encoding.toAscii(account.name));
-    const parser = parseMap(codec.namecoin.Wallet, 5);
+    const parser = parseMap(models.namecoin.Wallet, 5);
     const parsed = (await res).results.map(parser);
     const initData = await this.initData;
     const data = parsed.map(this.normalizeAccount(initData));
@@ -107,7 +112,7 @@ export class Client implements BcpClient {
       return dummyEnvelope([]);
     }
     const res = this.query("/sigs", addr);
-    const parser = parseMap(codec.sigs.UserData, 5);
+    const parser = parseMap(models.sigs.UserData, 5);
     const data = (await res).results.map(parser).map(this.normalizeNonce);
     return dummyEnvelope(data);
   }
@@ -139,13 +144,13 @@ export class Client implements BcpClient {
     if (!q.key) {
       return { height: q.height, results: [] };
     }
-    const keys = codec.app.ResultSet.decode(q.key).results;
-    const values = codec.app.ResultSet.decode(q.value).results;
+    const keys = models.app.ResultSet.decode(q.key).results;
+    const values = models.app.ResultSet.decode(q.value).results;
     const results: ReadonlyArray<Result> = zip(keys, values);
     return { height: q.height, results };
   }
 
-  protected normalizeNonce(acct: codec.sigs.IUserData & Keyed): BcpNonce {
+  protected normalizeNonce(acct: models.sigs.IUserData & Keyed): BcpNonce {
     // append the chainID to the name to universalize it
     return {
       address: acct._id as AddressBytes,
@@ -154,8 +159,8 @@ export class Client implements BcpClient {
     };
   }
 
-  protected normalizeAccount(initData: InitData): (a: codec.namecoin.IWallet & Keyed) => BcpAccount {
-    return (acct: codec.namecoin.IWallet & Keyed): BcpAccount => {
+  protected normalizeAccount(initData: InitData): (a: models.namecoin.IWallet & Keyed) => BcpAccount {
+    return (acct: models.namecoin.IWallet & Keyed): BcpAccount => {
       // append the chainID to the name to universalize it
       const name = acct.name ? `${acct.name}*${initData.chainId}` : undefined;
       return {
@@ -166,8 +171,8 @@ export class Client implements BcpClient {
     };
   }
 
-  protected normalizeCoin(initData: InitData): (c: codec.x.ICoin) => BcpCoin {
-    return (coin: codec.x.ICoin): BcpCoin => {
+  protected normalizeCoin(initData: InitData): (c: models.x.ICoin) => BcpCoin {
+    return (coin: models.x.ICoin): BcpCoin => {
       const token = decodeToken(coin);
       const tickerInfo = initData.tickers.get(token.tokenTicker);
       return {
@@ -179,7 +184,7 @@ export class Client implements BcpClient {
     };
   }
 
-  protected normalizeToken(data: codec.namecoin.IToken & Keyed): BcpTicker {
+  protected normalizeToken(data: models.namecoin.IToken & Keyed): BcpTicker {
     return {
       tokenTicker: Encoding.fromAscii(data._id) as TokenTicker,
       tokenName: ensure(data.name),
