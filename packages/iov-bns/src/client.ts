@@ -117,9 +117,10 @@ export class Client implements BcpClient {
     return dummyEnvelope(data);
   }
 
-  public async chainID(): Promise<ChainId> {
-    const status = await this.status();
-    return status.nodeInfo.network;
+  // we store this info from the initialization, no need to query every time
+  public async chainId(): Promise<ChainId> {
+    const data = await this.initData;
+    return data.chainId;
   }
 
   public async height(): Promise<number> {
@@ -132,7 +133,8 @@ export class Client implements BcpClient {
   }
 
   protected async initialize(): Promise<InitData> {
-    const chainId = await this.chainID();
+    const status = await this.status();
+    const chainId = status.nodeInfo.network;
     const all = await this.getAllTickers();
     const toKeyValue = (t: BcpTicker): [string, BcpTicker] => [t.tokenTicker, t];
     const tickers = new Map(all.data.map(toKeyValue));
