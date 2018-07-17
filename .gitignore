@@ -64,4 +64,5 @@ typings/
 package-lock.json
 
 # IDE-specific and temporary directories
+.vscode/
 tmp/

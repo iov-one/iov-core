@@ -23,6 +23,7 @@
     "build-browser": "yarn build && webpack --mode development"
   },
   "dependencies": {
+    "@iov/encoding": "^0.0.0",
     "@iov/types": "^0.0.0",
     "@types/node": "^10.3.2",
     "@types/ws": "^5.1.2",

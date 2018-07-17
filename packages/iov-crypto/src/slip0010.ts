@@ -1,8 +1,8 @@
 import BN = require("bn.js");
 
-import { Encoding } from "./encoding";
+import { Encoding, Uint32 } from "@iov/encoding";
+
 import { Hmac } from "./hmac";
-import { Uint32 } from "./integers";
 import { Sha512 } from "./sha";
 
 export interface Slip0010Result {
@@ -46,7 +46,7 @@ export class Slip0010 {
   }
 
   private static master(curve: Slip0010Curve, seed: Uint8Array): Slip0010Result {
-    const i = new Hmac(Sha512, Encoding.asAscii(curve)).update(seed).digest();
+    const i = new Hmac(Sha512, Encoding.toAscii(curve)).update(seed).digest();
     const il = i.slice(0, 32);
     const ir = i.slice(32, 64);
 

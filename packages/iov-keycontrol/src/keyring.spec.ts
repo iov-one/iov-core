@@ -1,4 +1,4 @@
-import { Encoding } from "@iov/crypto";
+import { Encoding } from "@iov/encoding";
 
 import { Keyring, KeyringSerializationString } from "./keyring";
 import { Ed25519KeyringEntry, Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";

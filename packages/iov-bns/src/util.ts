@@ -1,4 +1,5 @@
-import { Encoding, Sha256 } from "@iov/crypto";
+import { Sha256 } from "@iov/crypto";
+import { Encoding } from "@iov/encoding";
 import { AddressBytes, Algorithm, ChainId, Nonce, PublicKeyBundle, SignableBytes } from "@iov/types";
 
 export const keyToAddress = (key: PublicKeyBundle) =>
@@ -10,9 +11,9 @@ export const keyToIdentifier = (key: PublicKeyBundle) =>
 const algoToPrefix = (algo: Algorithm) => {
   switch (algo) {
     case Algorithm.ED25519:
-      return Encoding.asAscii("sigs/ed25519/");
+      return Encoding.toAscii("sigs/ed25519/");
     case Algorithm.SECP256K1:
-      return Encoding.asAscii("sigs/secp256k1/");
+      return Encoding.toAscii("sigs/secp256k1/");
     default:
       throw new Error("Unsupported algorithm: " + algo);
   }
@@ -28,7 +29,7 @@ export const appendSignBytes = (bz: Uint8Array, chainId: ChainId, nonce: Nonce) 
   return Uint8Array.from([
     ...signCodev1,
     chainId.length,
-    ...Encoding.asAscii(chainId),
+    ...Encoding.toAscii(chainId),
     ...nonce.toBytesBE(),
     ...bz,
   ]) as SignableBytes;
@@ -38,7 +39,7 @@ export const appendSignBytes = (bz: Uint8Array, chainId: ChainId, nonce: Nonce) 
 // probably only works after 0.21, but no need to import ripemd160 now
 export const tendermintHash = (data: Uint8Array) => new Sha256(data).digest().slice(0, 20);
 
-export const hashId = Encoding.asAscii("hash/sha256/");
+export const hashId = Encoding.toAscii("hash/sha256/");
 export const hashIdentifier = (data: Uint8Array) =>
   Uint8Array.from([...hashId, ...new Sha256(data).digest()]);
 

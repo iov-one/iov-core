@@ -1,5 +1,7 @@
+import { Encoding } from "@iov/encoding";
+
 import { JsonRpcRequest, jsonRpcWith } from "../common";
-import { Base64, Base64String, Hex, HexString, notEmpty } from "../encodings";
+import { Base64, Base64String, HexString, notEmpty } from "../encodings";
 import * as requests from "../requests";
 
 /***** queries *****/
@@ -51,7 +53,7 @@ interface RpcAbciQueryParams {
 }
 const encodeAbciQueryParams = (params: requests.AbciQueryParams): RpcAbciQueryParams => ({
   path: notEmpty(params.path),
-  data: Hex.encode(notEmpty(params.data)),
+  data: Encoding.toHex(notEmpty(params.data)) as HexString,
   height: params.height,
   trusted: params.trusted,
 });

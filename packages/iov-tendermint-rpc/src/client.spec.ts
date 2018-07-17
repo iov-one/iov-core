@@ -1,4 +1,4 @@
-import { Encoding } from "@iov/crypto";
+import { Encoding } from "@iov/encoding";
 
 import { v0_20 } from "./adaptor";
 import { Client } from "./client";
@@ -18,7 +18,7 @@ const pendingWithoutTendermint = () => {
 // TODO: make flexible, support multiple versions, etc...
 const tendermintUrl = "localhost:12345";
 
-const buildKvTx = (k: string, v: string): Uint8Array => Encoding.asAscii(`${k}=${v}`);
+const buildKvTx = (k: string, v: string): Uint8Array => Encoding.toAscii(`${k}=${v}`);
 
 const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
   const key = randomId();
@@ -58,8 +58,8 @@ const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
       pendingWithoutTendermint();
       const client = new Client(rpcFactory(), v0_20);
 
-      const binKey = Encoding.asAscii(key);
-      const binValue = Encoding.asAscii(value);
+      const binKey = Encoding.toAscii(key);
+      const binValue = Encoding.toAscii(value);
       const queryParams = { path: "/key", data: binKey };
 
       const response = await client.abciQuery(queryParams);

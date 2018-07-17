@@ -1,3 +1,4 @@
+import { Encoding } from "@iov/encoding";
 import {
   Algorithm,
   ChainId,
@@ -13,7 +14,6 @@ import {
   Base64String,
   DateTime,
   DateTimeString,
-  Hex,
   HexString,
   Integer,
   IntegerString,
@@ -174,7 +174,7 @@ export interface RpcBroadcastTxSyncResponse extends RpcTxData {
 }
 const decodeBroadcastTxSync = (data: RpcBroadcastTxSyncResponse): responses.BroadcastTxSyncResponse => ({
   ...decodeTxData(data),
-  hash: Hex.decode(required(data.hash)),
+  hash: Encoding.fromHex(required(data.hash)),
 });
 
 export interface RpcBroadcastTxCommitResponse {
@@ -187,7 +187,7 @@ const decodeBroadcastTxCommit = (
   data: RpcBroadcastTxCommitResponse,
 ): responses.BroadcastTxCommitResponse => ({
   height: data.height,
-  hash: Hex.decode(required(data.hash)),
+  hash: Encoding.fromHex(required(data.hash)),
   checkTx: decodeTxData(required(data.check_tx)),
   deliverTx: may(decodeTxData, data.deliver_tx),
 });
@@ -221,7 +221,7 @@ const decodeGenesis = (data: RpcGenesisResponse): responses.GenesisResponse => (
   chainId: required(data.chain_id) as ChainId,
   consensusParams: decodeConsensusParams(data.consensus_params),
   validators: required(data.validators).map(decodeValidatorGenesis),
-  appHash: Hex.decode(required(data.app_hash)),
+  appHash: Encoding.fromHex(required(data.app_hash)),
   appState: data.app_state,
 });
 
@@ -252,7 +252,7 @@ const decodeTxResponse = (data: RpcTxResponse): responses.TxResponse => ({
   txResult: decodeTxData(required(data.tx_result)),
   height: required(data.height),
   index: required(data.index),
-  hash: Hex.decode(required(data.hash)),
+  hash: Encoding.fromHex(required(data.hash)),
   proof: may(decodeTxProof, data.proof),
 });
 
@@ -310,7 +310,7 @@ export interface RpcTxProof {
 }
 const decodeTxProof = (data: RpcTxProof): responses.TxProof => ({
   data: Base64.decode(required(data.Data)),
-  rootHash: Hex.decode(required(data.RootHash)),
+  rootHash: Encoding.fromHex(required(data.RootHash)),
   total: required(data.Total),
   index: required(data.Index),
   proof: {
@@ -335,10 +335,10 @@ export interface RpcBlockId {
   };
 }
 const decodeBlockId = (data: RpcBlockId): responses.BlockId => ({
-  hash: Hex.decode(required(data.hash)),
+  hash: Encoding.fromHex(required(data.hash)),
   parts: {
     total: required(data.parts.total),
-    hash: Hex.decode(required(data.parts.hash)),
+    hash: Encoding.fromHex(required(data.parts.hash)),
   },
 });
 
@@ -393,7 +393,7 @@ export interface RpcVote {
 }
 const decodeVote = (data: RpcVote): responses.Vote => ({
   type: required(data.type),
-  validatorAddress: Hex.decode(required(data.validator_address)),
+  validatorAddress: Encoding.fromHex(required(data.validator_address)),
   validatorIndex: required(data.validator_index),
   height: required(data.height),
   round: required(data.round),
@@ -427,13 +427,13 @@ const decodeHeader = (data: RpcHeader): responses.Header => ({
   totalTxs: required(data.total_txs),
   lastBlockId: decodeBlockId(data.last_block_id),
 
-  appHash: Hex.decode(required(data.app_hash)),
-  consensusHash: Hex.decode(required(data.consensus_hash)),
-  dataHash: Hex.decode(required(data.data_hash)),
-  evidenceHash: Hex.decode(required(data.evidence_hash)),
-  lastCommitHash: Hex.decode(required(data.last_commit_hash)),
-  lastResultsHash: Hex.decode(required(data.last_results_hash)),
-  validatorsHash: Hex.decode(required(data.validators_hash)),
+  appHash: Encoding.fromHex(required(data.app_hash)),
+  consensusHash: Encoding.fromHex(required(data.consensus_hash)),
+  dataHash: Encoding.fromHex(required(data.data_hash)),
+  evidenceHash: Encoding.fromHex(required(data.evidence_hash)),
+  lastCommitHash: Encoding.fromHex(required(data.last_commit_hash)),
+  lastResultsHash: Encoding.fromHex(required(data.last_results_hash)),
+  validatorsHash: Encoding.fromHex(required(data.validators_hash)),
 });
 
 export interface RpcNodeInfo {
@@ -454,7 +454,7 @@ export interface RpcNodeInfo {
   // ]
 }
 const decodeNodeInfo = (data: RpcNodeInfo): responses.NodeInfo => ({
-  id: Hex.decode(required(data.id)),
+  id: Encoding.fromHex(required(data.id)),
   listenAddr: required(data.listen_addr),
   network: required(data.network),
   version: required(data.version),
@@ -471,8 +471,8 @@ export interface RpcSyncInfo {
   readonly syncing: boolean;
 }
 const decodeSyncInfo = (data: RpcSyncInfo): responses.SyncInfo => ({
-  latestBlockHash: Hex.decode(required(data.latest_block_hash)),
-  latestAppHash: Hex.decode(required(data.latest_app_hash)),
+  latestBlockHash: Encoding.fromHex(required(data.latest_block_hash)),
+  latestAppHash: Encoding.fromHex(required(data.latest_app_hash)),
   latestBlockTime: DateTime.decode(required(data.latest_block_time)),
   latestBlockHeight: required(data.latest_block_height),
   syncing: required(data.syncing),
@@ -511,7 +511,7 @@ export interface RpcValidatorInfo {
 const decodeValidatorInfo = (data: RpcValidatorInfo): responses.Validator => ({
   pubkey: decodePubkey(required(data.pub_key)),
   votingPower: required(data.voting_power),
-  address: Hex.decode(required(data.address)),
+  address: Encoding.fromHex(required(data.address)),
 });
 
 export interface RpcValidatorData extends RpcValidatorInfo {

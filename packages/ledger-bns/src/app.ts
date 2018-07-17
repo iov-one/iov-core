@@ -1,4 +1,4 @@
-import { Uint32 } from "@iov/crypto";
+import { Uint32 } from "@iov/encoding";
 
 import { sendChunks, Transport } from "./exchange";
 

@@ -1,8 +1,9 @@
 /* tslint:disable:no-bitwise */
-import { Encoding } from "./encoding";
+import { Encoding } from "@iov/encoding";
+
 import { Argon2id, Argon2idOptions, Chacha20poly1305Ietf, Chacha20poly1305IetfCiphertext, Chacha20poly1305IetfKey, Chacha20poly1305IetfMessage, Chacha20poly1305IetfNonce, Ed25519, Ed25519Keypair, Random } from "./libsodium";
 
-const { asAscii, fromHex } = Encoding;
+const { toAscii, fromHex } = Encoding;
 
 describe("Libsodium", () => {
   describe("Argon2id", () => {
@@ -14,7 +15,7 @@ describe("Libsodium", () => {
         opsLimit: 5,
         memLimitKib: 1024,
       };
-      const salt = asAscii("ABCDEFGHIJKLMNOP");
+      const salt = toAscii("ABCDEFGHIJKLMNOP");
 
       // echo -n "123" | ./argon2 ABCDEFGHIJKLMNOP -id -v 13 -k 1024 -t 5
       await Argon2id.execute("123", salt, options).then(result => expect(result).toEqual(fromHex("3c5d010180ba0cf5b6b858cba23b318e42d33088983c404598599c3b029ecac6")));
@@ -29,7 +30,7 @@ describe("Libsodium", () => {
         opsLimit: 2,
         memLimitKib: 8 * 1024,
       };
-      const salt = asAscii("ABCDEFGHIJKLMNOP");
+      const salt = toAscii("ABCDEFGHIJKLMNOP");
 
       // echo -n "123" | ./argon2 ABCDEFGHIJKLMNOP -id -v 13 -k 8192 -t 2
       await Argon2id.execute("123", salt, options).then(result => expect(result).toEqual(fromHex("3ee950488d26ce691657b1d753f562139857b61a58f234d6cb0ce84c4cc27328")));
@@ -44,7 +45,7 @@ describe("Libsodium", () => {
         opsLimit: 1,
         memLimitKib: 10 * 1024,
       };
-      const salt = asAscii("ABCDEFGHIJKLMNOP");
+      const salt = toAscii("ABCDEFGHIJKLMNOP");
 
       // echo -n "123" | ./argon2 ABCDEFGHIJKLMNOP -id -v 13 -k 10240 -t 1
       await Argon2id.execute("123", salt, options).then(result => expect(result).toEqual(fromHex("f1832edbd41c209546eafd01f3aae28390de39bc13ff38981c4fc0c1ceaa05e3")));
@@ -55,7 +56,7 @@ describe("Libsodium", () => {
 
     it("works for different output lengths", async () => {
       // echo -n "123" | ./argon2 ABCDEFGHIJKLMNOP -id -v 13 -k 1024 -t 5 -l 16
-      const salt = asAscii("ABCDEFGHIJKLMNOP");
+      const salt = toAscii("ABCDEFGHIJKLMNOP");
 
       // libsodium does not support output length < 16
       const data = new Map<number, string>();

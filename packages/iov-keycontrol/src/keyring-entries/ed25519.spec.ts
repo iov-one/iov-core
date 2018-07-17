@@ -1,4 +1,4 @@
-import { Encoding } from "@iov/crypto";
+import { Encoding } from "@iov/encoding";
 import { ChainId, SignableBytes } from "@iov/types";
 
 import { KeyringEntrySerializationString } from "../keyring";

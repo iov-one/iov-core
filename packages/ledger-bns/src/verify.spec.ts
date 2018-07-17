@@ -1,4 +1,5 @@
-import { Ed25519, Encoding, Sha512 } from "@iov/crypto";
+import { Ed25519, Sha512 } from "@iov/crypto";
+import { Encoding } from "@iov/encoding";
 
 describe("Verifies sample signature from ledger", () => {
   const message = Encoding.fromHex("0a440a148a59e1dac0b8c5b59a9b2cfabe0be3fa6c2279f8121422feea060e235b06ffeef19015a50cdcb97d4f011a0808fa011a03455448220c466c61742032353020455448");
