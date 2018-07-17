@@ -8,7 +8,7 @@ import {
   Slip0010RawIndex,
 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { Algorithm, ChainId, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
+import { Algorithm, ChainId, PrehashType, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
 
 import {
   KeyringEntry,
@@ -17,6 +17,7 @@ import {
   LocalIdentity,
   PublicIdentity,
 } from "../keyring";
+import { prehash } from "../prehashing";
 import { DefaultValueProducer, ValueAndUpdates } from "../valueandupdates";
 
 interface PubkeySerialization {
@@ -160,11 +161,12 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
 
   public async createTransactionSignature(
     identity: PublicIdentity,
-    tx: SignableBytes,
+    transactionBytes: SignableBytes,
+    prehashType: PrehashType,
     _: ChainId,
   ): Promise<SignatureBytes> {
     const keypair = await this.privkeyForIdentity(identity);
-    const signature = await Ed25519.createSignature(tx, keypair);
+    const signature = await Ed25519.createSignature(prehash(transactionBytes, prehashType), keypair);
     return signature as SignatureBytes;
   }
 

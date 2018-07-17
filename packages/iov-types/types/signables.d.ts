@@ -11,6 +11,19 @@ export type SignableString = string & As<"signable">;
 export type PostableBytes = Uint8Array & As<"postable">;
 export type PostableString = string & As<"postable">;
 
+// Specifies which hash function to apply before signing.
+// The identity function is indicated using None.
+export const enum PrehashType {
+  None,
+  Sha512,
+  Sha256,
+}
+
+export interface SigningJob {
+  readonly bytes: SignableBytes;
+  readonly prehashType: PrehashType;
+}
+
 // NB: use Buffer or String, we should be consistent....
 // I figure string if this will be json dumped, but maybe less efficient
 export interface FullSignature {
@@ -35,7 +48,7 @@ export interface SignedTransaction {
 export interface TxCodec {
   // these are the bytes we create to add a signature
   // they often include nonce and chainID, but not other signatures
-  readonly bytesToSign: (tx: UnsignedTransaction, nonce: Nonce) => SignableBytes;
+  readonly bytesToSign: (tx: UnsignedTransaction, nonce: Nonce) => SigningJob;
   // bytesToPost includes the raw transaction appended with the various signatures
   readonly bytesToPost: (tx: SignedTransaction) => PostableBytes;
   // identifier is usually some sort of hash of bytesToPost, chain-dependent

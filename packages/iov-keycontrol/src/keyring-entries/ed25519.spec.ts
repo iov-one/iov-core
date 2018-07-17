@@ -1,5 +1,6 @@
+import { Sha256, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { ChainId, SignableBytes } from "@iov/types";
+import { ChainId, PrehashType, SignableBytes } from "@iov/types";
 
 import { KeyringEntrySerializationString } from "../keyring";
 import { Ed25519KeyringEntry } from "./ed25519";
@@ -106,7 +107,7 @@ describe("Ed25519KeyringEntry", () => {
 
       const tx = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
       const chainId = "some-chain" as ChainId;
-      const signature = await keyringEntry.createTransactionSignature(newIdentity, tx, chainId);
+      const signature = await keyringEntry.createTransactionSignature(newIdentity, tx, PrehashType.None, chainId);
       expect(signature).toBeTruthy();
       expect(signature.length).toEqual(64);
 
@@ -116,6 +117,41 @@ describe("Ed25519KeyringEntry", () => {
         throw error;
       });
     });
+  });
+
+  it("can sign with different prehash types", async () => {
+    const entry = new Ed25519KeyringEntry();
+    const mainIdentity = await entry.createIdentity();
+
+    const transactionBytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
+    const chainId = "some-chain" as ChainId;
+
+    const signaturePrehashNone = await entry.createTransactionSignature(mainIdentity, transactionBytes, PrehashType.None, chainId);
+    const signaturePrehashSha256 = await entry.createTransactionSignature(mainIdentity, transactionBytes, PrehashType.Sha256, chainId);
+    const signaturePrehashSha512 = await entry.createTransactionSignature(mainIdentity, transactionBytes, PrehashType.Sha512, chainId);
+    expect(signaturePrehashNone.length).toEqual(64);
+    expect(signaturePrehashSha256.length).toEqual(64);
+    expect(signaturePrehashSha512.length).toEqual(64);
+
+    expect(signaturePrehashNone).not.toEqual(signaturePrehashSha256);
+    expect(signaturePrehashSha256).not.toEqual(signaturePrehashSha512);
+    expect(signaturePrehashSha512).not.toEqual(signaturePrehashNone);
+  });
+
+  it("produces correct data for prehash signatures", async () => {
+    const entry = new Ed25519KeyringEntry();
+    const mainIdentity = await entry.createIdentity();
+    const chainId = "some-chain" as ChainId;
+
+    const bytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
+    const bytesSha256 = new Sha256(bytes).digest();
+    const bytesSha512 = new Sha512(bytes).digest();
+
+    const expectedSha256 = await entry.createTransactionSignature(mainIdentity, bytesSha256 as SignableBytes, PrehashType.None, chainId);
+    const expectedSha512 = await entry.createTransactionSignature(mainIdentity, bytesSha512 as SignableBytes, PrehashType.None, chainId);
+
+    expect(await entry.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha256, chainId)).toEqual(expectedSha256);
+    expect(await entry.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha512, chainId)).toEqual(expectedSha512);
   });
 
   it("can serialize multiple identities", done => {
@@ -221,9 +257,9 @@ describe("Ed25519KeyringEntry", () => {
       // privkeys match
       const tx = new Uint8Array([]) as SignableBytes;
       const chainId = "" as ChainId;
-      expect(await original.createTransactionSignature(identity1, tx, chainId)).toEqual(await restored.createTransactionSignature(identity1, tx, chainId));
-      expect(await original.createTransactionSignature(identity2, tx, chainId)).toEqual(await restored.createTransactionSignature(identity2, tx, chainId));
-      expect(await original.createTransactionSignature(identity3, tx, chainId)).toEqual(await restored.createTransactionSignature(identity3, tx, chainId));
+      expect(await original.createTransactionSignature(identity1, tx, PrehashType.None, chainId)).toEqual(await restored.createTransactionSignature(identity1, tx, PrehashType.None, chainId));
+      expect(await original.createTransactionSignature(identity2, tx, PrehashType.None, chainId)).toEqual(await restored.createTransactionSignature(identity2, tx, PrehashType.None, chainId));
+      expect(await original.createTransactionSignature(identity3, tx, PrehashType.None, chainId)).toEqual(await restored.createTransactionSignature(identity3, tx, PrehashType.None, chainId));
 
       done();
     })().catch(error => {

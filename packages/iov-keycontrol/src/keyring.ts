@@ -1,4 +1,4 @@
-import { As, ChainId, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
+import { As, ChainId, PrehashType, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
 
 import { Ed25519KeyringEntry, Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
 import { ValueAndUpdates } from "./valueandupdates";
@@ -138,8 +138,9 @@ export interface KeyringEntry {
   // an implementation to do checks (such as ledger to switch apps)
   readonly createTransactionSignature: (
     identity: PublicIdentity,
-    tx: SignableBytes,
-    chainID: ChainId,
+    transactionBytes: SignableBytes,
+    prehash: PrehashType,
+    chainId: ChainId,
   ) => Promise<SignatureBytes>;
 
   // serialize will produce a representation that can be writen to disk.

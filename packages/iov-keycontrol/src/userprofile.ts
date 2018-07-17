@@ -205,11 +205,11 @@ export class UserProfile {
   ): Promise<SignedTransaction> {
     const entry = this.entryInPrimaryKeyring(n);
 
-    const bytes = codec.bytesToSign(transaction, nonce);
+    const { bytes, prehashType } = codec.bytesToSign(transaction, nonce);
     const signature: FullSignature = {
       publicKey: identity.pubkey,
       nonce: nonce,
-      signature: await entry.createTransactionSignature(identity, bytes, transaction.chainId),
+      signature: await entry.createTransactionSignature(identity, bytes, prehashType, transaction.chainId),
     };
 
     return {
@@ -228,13 +228,14 @@ export class UserProfile {
   ): Promise<SignedTransaction> {
     const entry = this.entryInPrimaryKeyring(n);
 
-    const bytes = codec.bytesToSign(originalTransaction.transaction, nonce);
+    const { bytes, prehashType } = codec.bytesToSign(originalTransaction.transaction, nonce);
     const newSignature: FullSignature = {
       publicKey: identity.pubkey,
       nonce: nonce,
       signature: await entry.createTransactionSignature(
         identity,
         bytes,
+        prehashType,
         originalTransaction.transaction.chainId,
       ),
     };

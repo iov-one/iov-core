@@ -3,7 +3,7 @@ import Long from "long";
 import MemDownConstructor from "memdown";
 import { ReadonlyDate } from "readonly-date";
 
-import { AddressBytes, Algorithm, ChainId, Nonce, PostableBytes, PublicKeyBytes, SendTx, SignableBytes, SignatureBytes, SignedTransaction, TokenTicker, TransactionIDBytes, TransactionKind, TxCodec } from "@iov/types";
+import { AddressBytes, Algorithm, ChainId, Nonce, PostableBytes, PrehashType, PublicKeyBytes, SendTx, SignableBytes, SignatureBytes, SignedTransaction, SigningJob, TokenTicker, TransactionIDBytes, TransactionKind, TxCodec } from "@iov/types";
 
 import { Keyring } from "./keyring";
 import { Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
@@ -269,7 +269,7 @@ describe("UserProfile", () => {
       };
 
       const fakeCodec: TxCodec = {
-        bytesToSign: (): SignableBytes => {
+        bytesToSign: (): SigningJob => {
           throw new Error("not implemented");
         },
         bytesToPost: (): PostableBytes => {
@@ -330,7 +330,12 @@ describe("UserProfile", () => {
       };
 
       const fakeCodec: TxCodec = {
-        bytesToSign: (): SignableBytes => new Uint8Array([0xaa, 0xbb, 0xcc]) as SignableBytes,
+        bytesToSign: (): SigningJob => {
+          return {
+            bytes: new Uint8Array([0xaa, 0xbb, 0xcc]) as SignableBytes,
+            prehashType: PrehashType.Sha512,
+          };
+        },
         bytesToPost: (): PostableBytes => {
           throw new Error("not implemented");
         },
