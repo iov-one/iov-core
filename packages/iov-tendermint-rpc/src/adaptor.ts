@@ -71,6 +71,8 @@ export const findAdaptor = async (client: RpcClient): Promise<Adaptor> => {
   const version: string = result.node_info.version;
   if (version.startsWith("0.20.")) {
     return v0_20;
+  } else if (version.startsWith("0.21.")) {
+    return v0_20;
   }
   throw new Error(`Unsupported tendermint version: ${version}`);
 };
