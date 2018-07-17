@@ -2,6 +2,7 @@ import { Encoding } from "@iov/encoding";
 import {
   Algorithm,
   ChainId,
+  PostableBytes,
   PublicKeyBundle,
   PublicKeyBytes,
   SignatureBundle,
@@ -248,7 +249,7 @@ export interface RpcTxResponse {
   readonly proof?: RpcTxProof;
 }
 const decodeTxResponse = (data: RpcTxResponse): responses.TxResponse => ({
-  tx: Base64.decode(required(data.tx)),
+  tx: Base64.decode(required(data.tx)) as PostableBytes,
   txResult: decodeTxData(required(data.tx_result)),
   height: required(data.height),
   index: required(data.index),

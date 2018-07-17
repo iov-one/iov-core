@@ -1,4 +1,4 @@
-import { ChainId, PublicKeyBundle, SignatureBundle } from "@iov/types";
+import { ChainId, PostableBytes, PublicKeyBundle, SignatureBundle } from "@iov/types";
 import { ReadonlyDate } from "readonly-date";
 
 import { IpPortString } from "./encodings";
@@ -93,7 +93,7 @@ export interface StatusResponse {
 }
 
 export interface TxResponse {
-  readonly tx: Uint8Array;
+  readonly tx: PostableBytes;
   readonly txResult: TxData;
   readonly height: number;
   readonly index: number;
