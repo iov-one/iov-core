@@ -44,8 +44,13 @@ export interface SignedTransaction {
   readonly otherSignatures: ReadonlyArray<FullSignature>;
 }
 
+export interface TxReadCodec {
+  // parseBytes will recover bytes from the blockchain into a format we can use
+  readonly parseBytes: (bytes: PostableBytes, chainID: ChainId) => SignedTransaction;
+}
+
 // TxCodec knows how to convert Transactions to bytes for a given blockchain
-export interface TxCodec {
+export interface TxCodec extends TxReadCodec {
   // these are the bytes we create to add a signature
   // they often include nonce and chainID, but not other signatures
   readonly bytesToSign: (tx: UnsignedTransaction, nonce: Nonce) => SigningJob;
@@ -53,6 +58,4 @@ export interface TxCodec {
   readonly bytesToPost: (tx: SignedTransaction) => PostableBytes;
   // identifier is usually some sort of hash of bytesToPost, chain-dependent
   readonly identifier: (tx: SignedTransaction) => TransactionIDBytes;
-  // parseBytes will recover bytes from the blockchain into a format we can use
-  readonly parseBytes: (bytes: PostableBytes, chainID: ChainId) => SignedTransaction;
 }
