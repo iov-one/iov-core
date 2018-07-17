@@ -1,3 +1,4 @@
+import { Sha256, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { ChainId, PrehashType, SignableBytes } from "@iov/types";
 
@@ -135,6 +136,22 @@ describe("Ed25519KeyringEntry", () => {
     expect(signaturePrehashNone).not.toEqual(signaturePrehashSha256);
     expect(signaturePrehashSha256).not.toEqual(signaturePrehashSha512);
     expect(signaturePrehashSha512).not.toEqual(signaturePrehashNone);
+  });
+
+  it("produces correct data for prehash signatures", async () => {
+    const entry = new Ed25519KeyringEntry();
+    const mainIdentity = await entry.createIdentity();
+    const chainId = "some-chain" as ChainId;
+
+    const bytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
+    const bytesSha256 = new Sha256(bytes).digest();
+    const bytesSha512 = new Sha512(bytes).digest();
+
+    const expectedSha256 = await entry.createTransactionSignature(mainIdentity, bytesSha256 as SignableBytes, PrehashType.None, chainId);
+    const expectedSha512 = await entry.createTransactionSignature(mainIdentity, bytesSha512 as SignableBytes, PrehashType.None, chainId);
+
+    expect(await entry.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha256, chainId)).toEqual(expectedSha256);
+    expect(await entry.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha512, chainId)).toEqual(expectedSha512);
   });
 
   it("can serialize multiple identities", done => {
