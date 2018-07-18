@@ -28,8 +28,10 @@
     "@iov/crypto": "^0.0.0",
     "@iov/encoding": "^0.0.0",
     "@iov/keycontrol": "^0.0.0",
+    "@iov/ledger-bns": "^0.0.0",
     "@iov/tendermint-rpc": "^0.0.0",
     "@iov/types": "^0.0.0",
-    "@iov/ledger-bns": "^0.0.0"
+    "@types/long": "^4.0.0",
+    "long": "^4.0.0"
   }
 }
