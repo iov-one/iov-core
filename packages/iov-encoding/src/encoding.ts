@@ -33,7 +33,7 @@ export class Encoding {
   }
 
   public static fromBase64(base64String: string): Uint8Array {
-    if (!base64String.match(/^[a-zA-Z0-9+/]*=*$/)) {
+    if (!base64String.match(/^[a-zA-Z0-9+/]*={0,2}$/)) {
       throw new Error("Invalid base64 string format");
     }
     return base64js.toByteArray(base64String);
