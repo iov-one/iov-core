@@ -26,30 +26,14 @@ describe("Encoding", () => {
     expect(Encoding.fromHex("aAbBcCdDeEfF")).toEqual(new Uint8Array([0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff]));
 
     // error
-    expect(() => {
-      Encoding.fromHex("a");
-    }).toThrow();
-    expect(() => {
-      Encoding.fromHex("aaa");
-    }).toThrow();
-    expect(() => {
-      Encoding.fromHex("a!");
-    }).toThrow();
-    expect(() => {
-      Encoding.fromHex("a ");
-    }).toThrow();
-    expect(() => {
-      Encoding.fromHex("aa ");
-    }).toThrow();
-    expect(() => {
-      Encoding.fromHex(" aa");
-    }).toThrow();
-    expect(() => {
-      Encoding.fromHex("a a");
-    }).toThrow();
-    expect(() => {
-      Encoding.fromHex("gg");
-    }).toThrow();
+    expect(() => Encoding.fromHex("a")).toThrow();
+    expect(() => Encoding.fromHex("aaa")).toThrow();
+    expect(() => Encoding.fromHex("a!")).toThrow();
+    expect(() => Encoding.fromHex("a ")).toThrow();
+    expect(() => Encoding.fromHex("aa ")).toThrow();
+    expect(() => Encoding.fromHex(" aa")).toThrow();
+    expect(() => Encoding.fromHex("a a")).toThrow();
+    expect(() => Encoding.fromHex("gg")).toThrow();
   });
 
   it("encodes to ascii", () => {
