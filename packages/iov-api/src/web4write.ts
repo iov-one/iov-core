@@ -5,6 +5,7 @@ import { PublicIdentity, UserProfile } from "@iov/keycontrol";
 import {
   AddressBytes,
   BcpTransactionResponse,
+  ChainId,
   Nonce,
   PublicKeyBundle,
   TxCodec,
@@ -16,25 +17,35 @@ import {
 // TODO: We can expand this later to multichain
 export class Web4Write {
   public readonly profile: UserProfile;
-  private readonly client: Web4Read;
-  private readonly codec: TxCodec;
+  private readonly knownChains: Map<string, ChainConnector>;
 
-  constructor(profile: UserProfile, client: Web4Read, codec: TxCodec) {
+  // initialize a write with a userProfile with secret info,
+  // and a set of known chains to connect to
+  // knownChains can be a map or an array of pair,
+  // the key is chainId
+  constructor(profile: UserProfile, knownChains: Iterable<[string, ChainConnector]>) {
     this.profile = profile;
-    this.client = client;
-    this.codec = codec;
+    // shallow copy input
+    this.knownChains = new Map(knownChains);
   }
 
-  // keyToAddress is a helper to get the key
-  public keyToAddress(key: PublicKeyBundle): AddressBytes {
-    return this.codec.keyToAddress(key);
+  public chainIds(): ReadonlyArray<ChainId> {
+    return Array.from(this.knownChains).map(([x, _]: [string, ChainConnector]) => x as ChainId);
+  }
+
+  public reader(chainId: ChainId): Web4Read {
+    return this.mustGet(chainId).client;
+  }
+
+  public keyToAddress(chainId: ChainId, key: PublicKeyBundle): AddressBytes {
+    return this.mustGet(chainId).codec.keyToAddress(key);
   }
 
   // getNonce will return one value for the address, 0 if not found
   // not the ful bcp info.
-  public async getNonce(addr: AddressBytes): Promise<Nonce> {
-    const data = (await this.client.getNonce({ address: addr })).data;
-    return data.length === 0 ? (Long.fromInt(0) as Nonce) : data[0].nonce;
+  public async getNonce(chainId: ChainId, addr: AddressBytes): Promise<Nonce> {
+    const nonce = await this.mustGet(chainId).client.getNonce({ address: addr });
+    return nonce.data.length === 0 ? (Long.fromInt(0) as Nonce) : nonce.data[0].nonce;
   }
 
   // signAndCommit will sign the transaction given the signer specified in
@@ -42,22 +53,29 @@ export class Web4Write {
   // in the given keyring.
   // It finds the nonce, signs properly, and posts the tx to the blockchain.
   public async signAndCommit(tx: UnsignedTransaction, keyring: number): Promise<BcpTransactionResponse> {
-    const chainId = await this.client.chainId();
-    if (chainId !== tx.chainId) {
-      // TODO: we can switch between implementations here
-      throw new Error("Trying to write on a different chain");
-    }
+    const chainId = tx.chainId;
+    const { client, codec } = this.mustGet(chainId);
+
     const signer = tx.signer;
-    const nonce = await this.getNonce(this.keyToAddress(signer));
+    const signerAddr = this.keyToAddress(chainId, signer);
+    const nonce = await this.getNonce(chainId, signerAddr);
 
     // We have the publickey bundle from the transaction, but need
     // a PublicIdentity to sign. Same information content, so I fake it.
     // TODO: Simon, a cleaner solution would be nicer. How?
     const fakeId: PublicIdentity = { pubkey: signer };
-    const signed = await this.profile.signTransaction(keyring, fakeId, tx, this.codec, nonce);
-    const txBytes = this.codec.bytesToPost(signed);
-    const post = await this.client.postTx(txBytes);
+    const signed = await this.profile.signTransaction(keyring, fakeId, tx, codec, nonce);
+    const txBytes = codec.bytesToPost(signed);
+    const post = await client.postTx(txBytes);
     return post;
+  }
+
+  private mustGet(chainId: ChainId): ChainConnector {
+    const connector = this.knownChains.get(chainId);
+    if (connector === undefined) {
+      throw new Error(`No such chain: ${chainId}`);
+    }
+    return connector;
   }
 }
 
@@ -71,3 +89,15 @@ export const bnsConnector = async (url: string): Promise<ChainConnector> => ({
   client: await BnsClient.connect(url),
   codec: bnsCodec,
 });
+
+export const withConnectors = (
+  // tsc demands a normal array to use the spread operator, tslint complains
+  // tslint:disable-next-line:readonly-array
+  ...connectors: ChainConnector[]
+): Promise<ReadonlyArray<[string, ChainConnector]>> => {
+  const mapper = async (x: ChainConnector): Promise<[string, ChainConnector]> => [
+    await x.client.chainId(),
+    x,
+  ];
+  return Promise.all(connectors.map(mapper));
+};

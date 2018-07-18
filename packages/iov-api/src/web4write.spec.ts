@@ -1,6 +1,7 @@
 import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@iov/keycontrol";
 import { SendTx, TokenTicker, TransactionKind } from "@iov/types";
-import { bnsConnector, Web4Write } from "./web4write";
+
+import { bnsConnector, Web4Write, withConnectors } from "./web4write";
 
 // We assume the same BOV context from iov-bns to run some simple tests
 // against that backend.
@@ -61,14 +62,15 @@ describe("Test Web4Write", () => {
     it("Can send transaction", async () => {
       pendingWithoutBov();
 
-      const { client, codec } = await bnsConnector(tendermintUrl);
+      const knownChains = await withConnectors(await bnsConnector(tendermintUrl));
       const profile = await userProfile();
-      const writer = new Web4Write(profile, client, codec);
-      const chainId = await client.chainId();
+      const writer = new Web4Write(profile, knownChains);
+      expect(writer.chainIds().length).toEqual(1);
+      const chainId = writer.chainIds()[0];
 
       const faucet = faucetId(profile);
       const rcpt = await recipient(profile, 4);
-      const rcptAddr = writer.keyToAddress(rcpt.pubkey);
+      const rcptAddr = writer.keyToAddress(chainId, rcpt.pubkey);
 
       // construct a sendtx, this should be in the web4wrtie api
       const sendTx: SendTx = {
@@ -87,8 +89,9 @@ describe("Test Web4Write", () => {
       expect(res.metadata.status).toBe(true);
 
       // we should be a little bit richer
-      // clarify read/write combination
-      const gotMoney = await client.getAccount({ address: rcptAddr });
+      const reader = writer.reader(chainId);
+
+      const gotMoney = await reader.getAccount({ address: rcptAddr });
       expect(gotMoney).toBeTruthy();
       expect(gotMoney.data.length).toEqual(1);
       const paid = gotMoney.data[0];
