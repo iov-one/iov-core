@@ -1,3 +1,5 @@
+import * as base64js from "base64-js";
+
 export class Encoding {
   public static toHex(data: Uint8Array): string {
     // tslint:disable-next-line:no-let
@@ -24,6 +26,17 @@ export class Encoding {
       listOfInts.push(parseInt(hexByteAsString, 16));
     }
     return new Uint8Array(listOfInts);
+  }
+
+  public static toBase64(data: Uint8Array): string {
+    return base64js.fromByteArray(data);
+  }
+
+  public static fromBase64(base64String: string): Uint8Array {
+    if (!base64String.match(/^[a-zA-Z0-9+/]*={0,2}$/)) {
+      throw new Error("Invalid base64 string format");
+    }
+    return base64js.toByteArray(base64String);
   }
 
   public static toAscii(input: string): Uint8Array {

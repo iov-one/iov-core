@@ -1,8 +1,7 @@
-import { Buffer } from "buffer";
 import { ReadonlyDate } from "readonly-date";
 import { isNumber } from "util";
 
-import { Int53 } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 import { As } from "@iov/types";
 
 export type Base64String = string & As<"base64">;
@@ -52,12 +51,11 @@ export function parseInteger(str: IntegerString): number {
 
 export class Base64 {
   public static encode(data: Uint8Array): Base64String {
-    const buf = Buffer.from(data);
-    return buf.toString("base64") as Base64String;
+    return Encoding.toBase64(data) as Base64String;
   }
 
   public static decode(base64String: Base64String): Uint8Array {
-    return Uint8Array.from(Buffer.from(base64String, "base64"));
+    return Encoding.fromBase64(base64String);
   }
 }
 
