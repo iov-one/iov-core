@@ -1,21 +1,26 @@
-const a = 100;
+// I tried to add these but they just broke tsc
+// so it seems we can add globals defined in the same module,
+// but if we import anything it breaks???
 
-const bigger = (x: number) => x * 5;
-
-// tslint:disable:no-console
-console.log(`loaded up ${a}`);
+// import * as code from './api';
+// import {Foo} from './globals';
 
 declare module NodeJS {
   interface Global {
-    cli: number;
+    value: number;
+    fx: (x: number) => number;
   }
 }
 
-declare const cli: number;
+declare const value: number;
+declare const fx: (x: number) => number;
 
+const a = 100;
+const bigger = (x: number) => x * 5;
+global.value = a;
+global.fx = bigger;
 
-global.cli = a;
-
-console.log(`set global ${global.cli}`);
-
+// tslint:disable:no-console
+console.log(`set global ${global.value}`);
+console.log('Type fx(value)');
 
