@@ -1,4 +1,4 @@
-import { Codec as BnsCodec } from "@iov/bns";
+import { bnsCodec } from "@iov/bns";
 import { Ed25519, Random, Sha512 } from "@iov/crypto";
 // import { Encoding } from "@iov/encoding";
 import { Ed25519SimpleAddressKeyringEntry, UserProfile } from "@iov/keycontrol";
@@ -9,7 +9,7 @@ describe("Make sure we can build all other packages", () => {
   it("Can import codec", () => {
     const foo = new Uint8Array([1, 2, 3, 4]) as PostableBytes;
     const chainId = "test-chain" as ChainId;
-    expect(() => BnsCodec.parseBytes(foo, chainId)).toThrowError();
+    expect(() => bnsCodec.parseBytes(foo, chainId)).toThrowError();
   });
 
   it("Can import crypto", async () => {

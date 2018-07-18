@@ -2,6 +2,7 @@ import { Encoding } from "@iov/encoding";
 import {
   Algorithm,
   ChainId,
+  PostableBytes,
   PublicKeyBundle,
   PublicKeyBytes,
   SignatureBundle,
@@ -248,7 +249,7 @@ export interface RpcTxResponse {
   readonly proof?: RpcTxProof;
 }
 const decodeTxResponse = (data: RpcTxResponse): responses.TxResponse => ({
-  tx: Base64.decode(required(data.tx)),
+  tx: Base64.decode(required(data.tx)) as PostableBytes,
   txResult: decodeTxData(required(data.tx_result)),
   height: required(data.height),
   index: required(data.index),
@@ -295,7 +296,7 @@ export interface RpcTxData {
 const decodeTxData = (data: RpcTxData): responses.TxData => ({
   data: may(Base64.decode, data.data),
   log: data.log,
-  code: data.code,
+  code: optional<number>(data.code, 0),
   tags: may(decodeTags, data.tags),
 });
 
@@ -456,7 +457,7 @@ export interface RpcNodeInfo {
 const decodeNodeInfo = (data: RpcNodeInfo): responses.NodeInfo => ({
   id: Encoding.fromHex(required(data.id)),
   listenAddr: required(data.listen_addr),
-  network: required(data.network),
+  network: required(data.network) as ChainId,
   version: required(data.version),
   channels: required(data.channels),
   moniker: required(data.moniker),

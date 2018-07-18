@@ -1,4 +1,4 @@
-import { ChainId, PublicKeyBundle, SignatureBundle } from "@iov/types";
+import { ChainId, PostableBytes, PublicKeyBundle, SignatureBundle } from "@iov/types";
 import { ReadonlyDate } from "readonly-date";
 
 import { IpPortString } from "./encodings";
@@ -66,8 +66,11 @@ export interface BroadcastTxCommitResponse {
   readonly checkTx: TxData;
   readonly deliverTx?: TxData;
 }
+
+// note that deliverTx may be present but empty on failure
+// code must be 0 on success
 export const txCommitSuccess = (res: BroadcastTxCommitResponse): boolean =>
-  !!res.deliverTx && !res.deliverTx.code;
+  res.checkTx.code === 0 && !!res.deliverTx && res.deliverTx.code === 0;
 
 export interface CommitResponse {
   readonly header: Header;
@@ -93,7 +96,7 @@ export interface StatusResponse {
 }
 
 export interface TxResponse {
-  readonly tx: Uint8Array;
+  readonly tx: PostableBytes;
   readonly txResult: TxData;
   readonly height: number;
   readonly index: number;
@@ -119,7 +122,7 @@ export interface Tag {
 }
 
 export interface TxData {
-  readonly code?: number;
+  readonly code: number;
   readonly log?: string;
   readonly data?: Uint8Array;
   readonly tags?: ReadonlyArray<Tag>;
@@ -205,7 +208,7 @@ export interface Header {
 export interface NodeInfo {
   readonly id: Uint8Array;
   readonly listenAddr: IpPortString;
-  readonly network: string;
+  readonly network: ChainId;
   readonly version: string;
   readonly channels: string; // ???
   readonly moniker: string;

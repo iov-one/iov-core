@@ -53,7 +53,7 @@ interface RpcAbciQueryParams {
 }
 const encodeAbciQueryParams = (params: requests.AbciQueryParams): RpcAbciQueryParams => ({
   path: notEmpty(params.path),
-  data: Encoding.toHex(notEmpty(params.data)) as HexString,
+  data: Encoding.toHex(params.data) as HexString,
   height: params.height,
   trusted: params.trusted,
 });

@@ -3,7 +3,7 @@ import { Encoding } from "@iov/encoding";
 import { v0_20 } from "./adaptor";
 import { Client } from "./client";
 import { randomId } from "./common";
-import { QueryString } from "./encodings";
+import { buildTxQuery } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, RpcClient, WebsocketClient } from "./rpcclient";
 
@@ -36,6 +36,25 @@ const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
       const client = await Client.detectVersion(rpcFactory());
       const info = await client.abciInfo();
       expect(info).toBeTruthy();
+    });
+
+    it("Can connect to a given url", async () => {
+      pendingWithoutTendermint();
+
+      // default connection
+      const client = await Client.connect(tendermintUrl);
+      const info = await client.abciInfo();
+      expect(info).toBeTruthy();
+
+      // http connection
+      const client2 = await Client.connect("http://" + tendermintUrl);
+      const info2 = await client2.abciInfo();
+      expect(info2).toBeTruthy();
+
+      // ws connection
+      const client3 = await Client.connect("ws://" + tendermintUrl);
+      const info3 = await client3.abciInfo();
+      expect(info3).toBeTruthy();
     });
 
     it("Posts a transaction", async () => {
@@ -108,7 +127,9 @@ const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
 
       // txSearch - you must enable the indexer when running
       // tendermint, else you get empty results
-      const query = `app.key='${find}'` as QueryString;
+      const query = buildTxQuery({ tags: [{ key: "app.key", value: find }] });
+      expect(query).toEqual(`app.key='${find}'`);
+
       const s = await client.txSearch({ query, page: 1, per_page: 30 });
       // should find the tx
       expect(s.totalCount).toEqual(1);

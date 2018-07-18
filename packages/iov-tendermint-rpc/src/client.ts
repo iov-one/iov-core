@@ -1,9 +1,15 @@
 import { Adaptor, Decoder, Encoder, findAdaptor, Params, Responses } from "./adaptor";
 import { default as requests, Method } from "./requests";
 import * as responses from "./responses";
-import { RpcClient } from "./rpcclient";
+import { HttpClient, RpcClient, WebsocketClient } from "./rpcclient";
 
 export class Client {
+  public static connect(url: string): Promise<Client> {
+    const useHttp = url.startsWith("http://") || url.startsWith("https://");
+    const client = useHttp ? new HttpClient(url) : new WebsocketClient(url);
+    return this.detectVersion(client);
+  }
+
   public static async detectVersion(client: RpcClient): Promise<Client> {
     const adaptor = await findAdaptor(client);
     return new Client(client, adaptor);

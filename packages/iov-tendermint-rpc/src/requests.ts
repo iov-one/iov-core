@@ -1,3 +1,5 @@
+import { Tag, TxQuery } from "@iov/types";
+
 import { JsonRpcRequest, jsonRpcWith } from "./common";
 import { QueryString } from "./encodings";
 
@@ -146,3 +148,16 @@ export class DefaultParams {
     return jsonRpcWith(req.method);
   }
 }
+
+export const buildTxQuery = (query: TxQuery): QueryString => {
+  const tags: ReadonlyArray<string> = query.tags.map(buildTagQuery);
+  const opts: ReadonlyArray<string | false> = [
+    !!query.height && `tx.height=${query.height}`,
+    !!query.minHeight && `tx.height>${query.minHeight}`,
+    !!query.maxHeight && `tx.height<${query.maxHeight}`,
+  ];
+  const result: string = [...tags, ...opts.filter(x => !!x)].join(" AND ");
+  return result as QueryString;
+};
+
+export const buildTagQuery = (tag: Tag): string => `${tag.key}='${tag.value}'`;
