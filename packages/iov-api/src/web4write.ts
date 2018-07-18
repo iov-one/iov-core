@@ -37,6 +37,14 @@ export class Web4Write {
     return this.mustGet(chainId).client;
   }
 
+  public async addChain(connector: ChainConnector): Promise<void> {
+    const chainId = await connector.client.chainId();
+    if (this.knownChains.get(chainId) !== undefined) {
+      throw new Error(`Chain ${chainId} is already registered`);
+    }
+    this.knownChains.set(chainId, connector);
+  }
+
   public keyToAddress(chainId: ChainId, key: PublicKeyBundle): AddressBytes {
     return this.mustGet(chainId).codec.keyToAddress(key);
   }
@@ -90,14 +98,15 @@ export const bnsConnector = async (url: string): Promise<ChainConnector> => ({
   codec: bnsCodec,
 });
 
+const withChainId = async (x: ChainConnector): Promise<[string, ChainConnector]> => [
+  await x.client.chainId(),
+  x,
+];
+
 export const withConnectors = (
   // tsc demands a normal array to use the spread operator, tslint complains
   // tslint:disable-next-line:readonly-array
   ...connectors: ChainConnector[]
 ): Promise<ReadonlyArray<[string, ChainConnector]>> => {
-  const mapper = async (x: ChainConnector): Promise<[string, ChainConnector]> => [
-    await x.client.chainId(),
-    x,
-  ];
-  return Promise.all(connectors.map(mapper));
+  return Promise.all(connectors.map(withChainId));
 };
