@@ -14,7 +14,7 @@ import { parseTx } from "./decode";
 import { buildSignedTx, buildUnsignedTx } from "./encode";
 import { appendSignBytes, tendermintHash } from "./util";
 
-export const codec: TxCodec = {
+export const bnsCodec: TxCodec = {
   // these are the bytes we create to add a signature
   // they often include nonce and chainID, but not other signatures
   bytesToSign: (tx: UnsignedTransaction, nonce: Nonce): SigningJob => {
@@ -35,7 +35,7 @@ export const codec: TxCodec = {
 
   // identifier is usually some sort of hash of bytesToPost, chain-dependent
   identifier: (tx: SignedTransaction): TransactionIDBytes => {
-    const post = codec.bytesToPost(tx);
+    const post = bnsCodec.bytesToPost(tx);
     return tendermintHash(post) as TransactionIDBytes;
   },
 

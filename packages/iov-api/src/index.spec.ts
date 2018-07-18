@@ -1,4 +1,4 @@
-import { codec as bnsCodec } from "@iov/bns";
+import { bnsCodec } from "@iov/bns";
 import { Ed25519, Random, Sha512 } from "@iov/crypto";
 // import { Encoding } from "@iov/encoding";
 import { Ed25519SimpleAddressKeyringEntry, UserProfile } from "@iov/keycontrol";

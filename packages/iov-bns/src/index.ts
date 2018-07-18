@@ -1,2 +1,2 @@
 export { Client } from "./client";
-export { codec } from "./txcodec";
+export { bnsCodec } from "./txcodec";

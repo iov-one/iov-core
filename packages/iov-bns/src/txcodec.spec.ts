@@ -14,21 +14,21 @@ import {
   swapCounterTxJson,
   swapTimeoutTxJson,
 } from "./testdata";
-import { codec } from "./txcodec";
+import { bnsCodec } from "./txcodec";
 
 describe("Check codec", () => {
   it("properly encodes transactions", () => {
-    const encoded = codec.bytesToPost(signedTxJson);
+    const encoded = bnsCodec.bytesToPost(signedTxJson);
     expect(Uint8Array.from(encoded)).toEqual(signedTxBin);
   });
 
   it("properly decodes transactions", () => {
-    const decoded = codec.parseBytes(signedTxBin as PostableBytes, chainId);
+    const decoded = bnsCodec.parseBytes(signedTxBin as PostableBytes, chainId);
     expect(decoded).toEqual(signedTxJson);
   });
 
   it("properly generates signbytes", async done => {
-    const { bytes: toSign } = codec.bytesToSign(sendTxJson, sig.nonce);
+    const { bytes: toSign } = bnsCodec.bytesToSign(sendTxJson, sig.nonce);
     // it should match the canonical sign bytes
     expect(toSign).toEqual(signBytes);
 
@@ -40,7 +40,7 @@ describe("Check codec", () => {
   });
 
   it("generates transaction id", () => {
-    const id = codec.identifier(signedTxJson);
+    const id = bnsCodec.identifier(signedTxJson);
     expect(id).toBeTruthy();
     expect(id.length).toBe(20);
   });
@@ -56,12 +56,12 @@ describe("Check codec", () => {
     ];
 
     for (const trial of transactionsToBeVerified) {
-      const encoded = codec.bytesToPost(trial);
+      const encoded = bnsCodec.bytesToPost(trial);
       // Note: odd work-around.
       // If we don't do this, we get the same data back, but stored
       // as Buffer in node, rather than Uint8Array, so toEqual fails
       const noBuffer = Uint8Array.from(encoded) as PostableBytes;
-      const decoded = codec.parseBytes(noBuffer, trial.transaction.chainId);
+      const decoded = bnsCodec.parseBytes(noBuffer, trial.transaction.chainId);
       expect(decoded).toEqual(trial);
     }
   });

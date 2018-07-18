@@ -5,7 +5,7 @@ import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@i
 import { AddressBytes, Nonce, SendTx, Tag, TokenTicker, TransactionKind } from "@iov/types";
 
 import { Client } from "./client";
-import { codec as bnsCodec } from "./txcodec";
+import { bnsCodec } from "./txcodec";
 import { keyToAddress } from "./util";
 
 const skipTests = (): boolean => !process.env.BOV_ENABLED;
