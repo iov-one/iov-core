@@ -16,8 +16,6 @@ const pendingWithoutBov = () => {
   }
 };
 
-// tslint:disable:no-console
-
 describe("Integration tests with bov+tendermint", () => {
   // the first key generated from this mneumonic produces the given address
   // this account has money in the genesis file (setup in docker)

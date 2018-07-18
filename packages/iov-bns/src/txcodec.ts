@@ -12,7 +12,7 @@ import {
 import * as codecImpl from "./codec";
 import { parseTx } from "./decode";
 import { buildSignedTx, buildUnsignedTx } from "./encode";
-import { appendSignBytes, tendermintHash } from "./util";
+import { appendSignBytes, keyToAddress, tendermintHash } from "./util";
 
 export const bnsCodec: TxCodec = {
   // these are the bytes we create to add a signature
@@ -44,4 +44,6 @@ export const bnsCodec: TxCodec = {
     const parsed = codecImpl.app.Tx.decode(bz);
     return parseTx(parsed, chainId);
   },
+
+  keyToAddress: keyToAddress,
 };
