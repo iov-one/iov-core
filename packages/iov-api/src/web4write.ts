@@ -1,5 +1,6 @@
 import Long from "long";
 
+import { bnsCodec, Client as BnsClient } from "@iov/bns";
 import { PublicIdentity, UserProfile } from "@iov/keycontrol";
 import {
   AddressBytes,
@@ -24,6 +25,11 @@ export class Web4Write {
     this.codec = codec;
   }
 
+  // keyToAddress is a helper to get the key
+  public keyToAddress(key: PublicKeyBundle): AddressBytes {
+    return this.codec.keyToAddress(key);
+  }
+
   // getNonce will return one value for the address, 0 if not found
   // not the ful bcp info.
   public async getNonce(addr: AddressBytes): Promise<Nonce> {
@@ -31,11 +37,11 @@ export class Web4Write {
     return data.length === 0 ? (Long.fromInt(0) as Nonce) : data[0].nonce;
   }
 
-  public keyToAddress(key: PublicKeyBundle): AddressBytes {
-    return this.codec.keyToAddress(key);
-  }
-
-  public async sendTx(tx: UnsignedTransaction, keyring: number): Promise<BcpTransactionResponse> {
+  // signAndCommit will sign the transaction given the signer specified in
+  // the transaction and look up the private key for this public key
+  // in the given keyring.
+  // It finds the nonce, signs properly, and posts the tx to the blockchain.
+  public async signAndCommit(tx: UnsignedTransaction, keyring: number): Promise<BcpTransactionResponse> {
     const chainId = await this.client.chainId();
     if (chainId !== tx.chainId) {
       // TODO: we can switch between implementations here
@@ -54,3 +60,14 @@ export class Web4Write {
     return post;
   }
 }
+
+export interface ChainConnector {
+  readonly client: Web4Read;
+  readonly codec: TxCodec;
+}
+
+// bnsConnector is a helper to connect to a bns-based chain at a given url
+export const bnsConnector = async (url: string): Promise<ChainConnector> => ({
+  client: await BnsClient.connect(url),
+  codec: bnsCodec,
+});
