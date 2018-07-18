@@ -281,6 +281,9 @@ describe("UserProfile", () => {
         parseBytes: (): SignedTransaction => {
           throw new Error("not implemented");
         },
+        keyToAddress: (): AddressBytes => {
+          throw new Error("not implemented");
+        },
       };
 
       // keyring entry of index 0 does not exist
@@ -343,6 +346,9 @@ describe("UserProfile", () => {
           throw new Error("not implemented");
         },
         parseBytes: (): SignedTransaction => {
+          throw new Error("not implemented");
+        },
+        keyToAddress: (): AddressBytes => {
           throw new Error("not implemented");
         },
       };
