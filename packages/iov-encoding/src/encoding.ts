@@ -33,11 +33,9 @@ export class Encoding {
   }
 
   public static fromBase64(base64String: string): Uint8Array {
-    // Check needed because of https://github.com/beatgammit/base64-js/issues/47
-    if (!base64String.match(/^[a-zA-Z0-9+/=]*$/)) {
+    if (!base64String.match(/^[a-zA-Z0-9+/]*=*$/)) {
       throw new Error("Invalid base64 string format");
     }
-
     return base64js.toByteArray(base64String);
   }
 

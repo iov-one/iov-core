@@ -89,6 +89,10 @@ describe("Encoding", () => {
     // position of =
     expect(() => Encoding.fromBase64("=aaa")).toThrow();
     expect(() => Encoding.fromBase64("==aa")).toThrow();
+
+    // concatenated base64 strings should not be supported
+    // see https://github.com/beatgammit/base64-js/issues/42
+    expect(() => Encoding.fromBase64("AAA=AAA=")).toThrow();
   });
 
   it("encodes to ascii", () => {
