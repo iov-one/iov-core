@@ -5,7 +5,7 @@ import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@i
 import { AddressBytes, Nonce, SendTx, Tag, TokenTicker, TransactionKind } from "@iov/types";
 
 import { Client } from "./client";
-import { Codec as BnsCodec } from "./txcodec";
+import { codec as bnsCodec } from "./txcodec";
 import { keyToAddress } from "./util";
 
 const skipTests = (): boolean => !process.env.BOV_ENABLED;
@@ -178,8 +178,8 @@ describe("Integration tests with bov+tendermint", () => {
         tokenTicker: cash,
       },
     };
-    const signed = await profile.signTransaction(0, faucet, sendTx, BnsCodec, nonce);
-    const txBytes = BnsCodec.bytesToPost(signed);
+    const signed = await profile.signTransaction(0, faucet, sendTx, bnsCodec, nonce);
+    const txBytes = bnsCodec.bytesToPost(signed);
     const post = await client.postTx(txBytes);
     // FIXME: we really should add more info here, but this is in the spec
     expect(post.metadata.status).toBe(true);

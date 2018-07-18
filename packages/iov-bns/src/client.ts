@@ -26,7 +26,7 @@ import {
 
 import * as models from "./codec";
 import { InitData, Normalize } from "./normalize";
-import { Codec as BNSCodec } from "./txcodec";
+import { codec as bnsCodes } from "./txcodec";
 import { Decoder, Keyed, Result } from "./types";
 
 // queryByAddress is a type guard to use in the account-based queries
@@ -39,7 +39,7 @@ const queryByAddress = (query: BcpAccountQuery): query is BcpAddressQuery =>
 export class Client implements Web4Read {
   public static async connect(url: string): Promise<Client> {
     const tm = await TendermintClient.connect(url);
-    return new Client(tm, BNSCodec);
+    return new Client(tm, bnsCodes);
   }
 
   protected readonly tmClient: TendermintClient;
