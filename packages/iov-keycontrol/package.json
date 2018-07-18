@@ -11,7 +11,7 @@
   },
   "scripts": {
     "run-dev": "ts-node",
-    "format": "prettier --write './src/**/*.ts'",
+    "format": "prettier --write --loglevel warn './src/**/*.ts'",
     "lint": "tslint -t verbose --project .",
     "lint-fix": "yarn lint --fix",
     "test-node": "./jasmine-testrunner.js",
