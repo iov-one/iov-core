@@ -1,5 +1,10 @@
 {
-  "include": [
-    "src/**/*"
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "build",
+    "rootDir": "src"
+  },
+  "includes": [
+    "src/*.ts"
   ]
 }
