@@ -17,10 +17,11 @@
     "test-firefox": "yarn build-browser && karma start --single-run --browsers Firefox",
     "test-chrome": "yarn build-browser && karma start --single-run --browsers ChromeHeadless",
     "test-safari": "yarn build-browser && karma start --single-run --browsers Safari",
-    "test": "yarn build && yarn test-node",
+    "test": "yarn build-or-skip && yarn test-node",
     "prebuild": "yarn format && yarn lint",
     "build": "tsc && rm ./types/* && mv build/*.d.ts ./types",
-    "build-browser": "yarn build && webpack --mode development"
+    "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
+    "build-browser": "yarn build-or-skip && webpack --mode development"
   },
   "dependencies": {
     "@iov/encoding": "^0.0.0",

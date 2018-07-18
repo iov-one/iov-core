@@ -6,6 +6,8 @@ echo "travis_fold:start:yarn-build"
 yarn build
 echo "travis_fold:end:yarn-build"
 
+export SKIP_BUILD=1
+
 echo "travis_fold:start:check-dirty"
 # Ensure build step didn't modify source files to avoid unprettified repository state
 SOURCE_CHANGES=$(git status --porcelain)

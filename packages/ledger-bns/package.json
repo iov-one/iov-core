@@ -14,9 +14,10 @@
     "lint": "tslint -t verbose --project .",
     "format": "prettier --write --loglevel warn './src/**/*.ts'",
     "test-node": "./jasmine-testrunner.js",
-    "test": "yarn build && yarn test-node",
+    "test": "yarn build-or-skip && yarn test-node",
     "prebuild": "yarn format && yarn lint",
     "build": "tsc && rm ./types/* && mv build/*.d.ts ./types",
+    "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
     "listen": "node ./build/scripts/listen.js | grep -v '^dev'",
     "checkApp": "node ./build/scripts/checkapp.js | grep -v '^dev'"
   },
