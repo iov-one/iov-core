@@ -1,5 +1,5 @@
 import { As } from "./as";
-import { PublicKeyBundle, SignatureBytes } from "./keys";
+import { PublicKeyBundle, SignatureBytes, AddressBytes } from "./keys";
 import { Nonce, UnsignedTransaction, ChainId } from "./transactions";
 
 export type TransactionIDBytes = Uint8Array & As<"transaction-id">;
@@ -47,6 +47,8 @@ export interface SignedTransaction {
 export interface TxReadCodec {
   // parseBytes will recover bytes from the blockchain into a format we can use
   readonly parseBytes: (bytes: PostableBytes, chainID: ChainId) => SignedTransaction;
+  // chain-dependent way to calculate address from key
+  readonly keyToAddress: (key: PublicKeyBundle) => AddressBytes;
 }
 
 // TxCodec knows how to convert Transactions to bytes for a given blockchain

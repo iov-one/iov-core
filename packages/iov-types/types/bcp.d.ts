@@ -2,10 +2,10 @@
 
 import { AddressBytes, PublicKeyBundle } from "./keys";
 import { PostableBytes, SignedTransaction } from "./signables";
-import { Nonce, TokenTicker } from "./transactions";
+import { Nonce, TokenTicker, ChainId } from "./transactions";
 
 /*
-Types defined to match 
+Types defined to match
 https://app.swaggerhub.com/apis/IOV.one/BOV/0.0.4#/basic/getAccounts
 
 Only a subset currently implemented.
@@ -99,6 +99,8 @@ export interface Web4Read {
   readonly getAccount: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpAccount>>;
   readonly getNonce: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpNonce>>;
 
+  readonly chainId: () => Promise<ChainId>;
+  readonly height: () => Promise<number>;
   // TODO----
   // various types of queries to get a stream of accounts...
   // streams current data and all changes
