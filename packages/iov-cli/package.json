@@ -1,0 +1,17 @@
+{
+  "name": "@iov/cli",
+  "version": "0.0.0",
+  "description": "Command line interface for web4",
+  "author": "simon <webmaster128@users.noreply.github.com>",
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iov-one/web4/tree/master/packages/iov-cli"
+  },
+  "scripts": {
+    "cli": "echo '\\nTo get started type: .load init\\n' && ts-node"
+  },
+  "dependencies": {
+    "ts-node": "^7.0.0"
+  }
+}

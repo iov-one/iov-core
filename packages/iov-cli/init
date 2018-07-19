@@ -1,0 +1,6 @@
+import colors = require('colors/safe');
+import { Encoding } from '@iov/encoding'; Encoding as any;
+console.log(colors.green('Done initializing session for you. Have fun!'));
+console.log(colors.yellow('Available imports:'));
+console.log(colors.yellow('  from @iov/encoding'));
+console.log(colors.yellow('  - Encoding'));

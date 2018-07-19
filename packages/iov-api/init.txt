@@ -1,4 +1,0 @@
-import colors = require('colors/safe');
-import { Encoding } from '@iov/encoding';
-console.log(Encoding.toHex(new Uint8Array([0x00])));
-console.log(colors.green('Done initializing session for you. Have fun!'));
