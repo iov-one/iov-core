@@ -8,7 +8,6 @@ How to use the web4 cli
 3. Play around like in the following example code:
 
 ```
-> const { Ed25519SimpleAddressKeyringEntry, Keyring, UserProfile } = require("@iov/keycontrol")
 > const profile = new UserProfile();
 > profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"))
 
@@ -36,12 +35,7 @@ How to use the web4 cli
 [ { pubkey: { algo: 'ed25519', data: [Object] },
     label: 'the first one' } ]
 
-> import { Nonce } from "@iov/types";
-> import Long = require("long")
-> const nonce = new Long(0x11223344, 0x55667788) as Nonce;
-
 > .editor
-import { AddressBytes, ChainId, SendTx, TokenTicker, TransactionKind } from "@iov/types";
 const sendTx: SendTx = {
   kind: TransactionKind.SEND,
   chainId: "aabb" as ChainId,
@@ -55,8 +49,7 @@ const sendTx: SendTx = {
   },
 };
 ^D
-
-> import { bnsCodec } from "@iov/bns";
+> const nonce = new Long(0x11223344, 0x55667788) as Nonce;
 > profile.signTransaction(0, mainIdentity, sendTx, bnsCodec, nonce).then(signed => console.log(signed))
 ```
 
@@ -92,8 +85,6 @@ const sendTx: SendTx = {
 6. Now store to disk
 
 ```
-> const leveldown = require('leveldown')
-> const levelup = require('levelup')
 > const db = levelup(leveldown('./my_userprofile_db'))
 > profile.storeIn(db, "secret passwd")
 ```
