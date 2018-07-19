@@ -10,7 +10,6 @@
     "url": "https://github.com/iov-one/web4/tree/master/packages/iov-types"
   },
   "scripts": {
-    "run-dev": "ts-node",
     "format": "prettier --write --loglevel warn './types/**/*.ts'",
     "lint": "tslint -t verbose --project .",
     "lint-fix": "yarn lint --fix",
