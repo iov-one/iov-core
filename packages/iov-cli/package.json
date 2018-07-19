@@ -12,6 +12,7 @@
     "cli": "echo '\\nTo get started type: .load init\\n' && ts-node"
   },
   "dependencies": {
+    "colors": "^1.3.0",
     "ts-node": "^7.0.0"
   }
 }
