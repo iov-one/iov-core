@@ -1,9 +1,10 @@
 import colors = require('colors/safe');
 import { Encoding } from '@iov/encoding';
-import { Ed25519SimpleAddressKeyringEntry } from '@iov/keycontrol';
+import { Ed25519SimpleAddressKeyringEntry, UserProfile } from '@iov/keycontrol';
 console.log(colors.green('Done initializing session for you. Have fun!'));
 console.log(colors.yellow('Available imports:'));
 console.log(colors.yellow('  from @iov/encoding'));
 console.log(colors.yellow('  - Encoding'));
 console.log(colors.yellow('  from @iov/keycontrol'));
 console.log(colors.yellow('  - Ed25519SimpleAddressKeyringEntry'));
+console.log(colors.yellow('  - UserProfile'));
