@@ -1,11 +1,10 @@
-@iov/keycontrol
-===============
+How to use the web4 cli
+=======================
 
 ## Example usage
 
-1. Navigate into a directory where @iov/keycontrol is installed
-   (e.g `cd web4 && yarn install && yarn build`)
-2. Run `node` in interactive mode
+1. Build all dependencies: `cd web4 && yarn install && yarn build`
+2. Go to `packages/iov-cli`, run `yarn web4` and follow on-screen instructions
 3. Play around like in the following example code:
 
 ```
@@ -37,11 +36,28 @@
 [ { pubkey: { algo: 'ed25519', data: [Object] },
     label: 'the first one' } ]
 
-> const Long = require("long")
-> const fakeTransaction = { }
-> const fakeCodec = { bytesToSign: () => { return new Uint8Array([0x00, 0x11, 0x22]); }, }
-> const nonce = new Long(0x11223344, 0x55667788)
-> profile.signTransaction(0, mainIdentity, fakeTransaction, fakeCodec, nonce).then(signed => console.log(signed))
+> import { Nonce } from "@iov/types";
+> import Long = require("long")
+> const nonce = new Long(0x11223344, 0x55667788) as Nonce;
+
+> .editor
+import { AddressBytes, ChainId, SendTx, TokenTicker, TransactionKind } from "@iov/types";
+const sendTx: SendTx = {
+  kind: TransactionKind.SEND,
+  chainId: "aabb" as ChainId,
+  signer: mainIdentity.pubkey,
+  recipient: new Uint8Array([0x11]) as AddressBytes,
+  memo: "Web4 write style",
+  amount: {
+    whole: 11000,
+    fractional: 777,
+    tokenTicker: "CASH" as TokenTicker,
+  },
+};
+^D
+
+> import { bnsCodec } from "@iov/bns";
+> profile.signTransaction(0, mainIdentity, sendTx, bnsCodec, nonce).then(signed => console.log(signed))
 ```
 
 4. Congratulations, you created the first signed transaction!
