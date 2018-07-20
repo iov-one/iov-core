@@ -31,10 +31,15 @@ before_install:
     sudo apt-get install -y libudev-dev libusb-1.0-0 libusb-1.0-0-dev
     yarn global add node-gyp
   fi
-# detect whether we can use docker, but don't fail if impossible
-# this currently passes on linux, fails on osx
-- docker pull tendermint/tendermint:${TM_VERSION} && export TENDERMINT_ENABLED=1 || true
-- docker pull iov1/tendermint:${TM_VERSION} && docker pull iov1/bov:${BOV_VERSION} && export BOV_ENABLED=1 || true
+# Use Docker if available (currently Linux only)
+- |
+  if which docker > /dev/null ; then
+    docker pull tendermint/tendermint:${TM_VERSION}
+    docker pull iov1/tendermint:${TM_VERSION}
+    docker pull iov1/bov:${BOV_VERSION}
+    export TENDERMINT_ENABLED=1
+    export BOV_ENABLED=1
+  fi
 
 install:
 - yarn install
