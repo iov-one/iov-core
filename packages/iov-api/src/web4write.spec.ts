@@ -35,25 +35,16 @@ describe("Web4Write", () => {
     const userProfile = async (): Promise<UserProfile> => {
       const profile = new UserProfile();
       profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic(mnemonic));
-      await profile.createIdentity(0);
       return profile;
     };
 
-    const faucetId = (profile: UserProfile): LocalIdentity => {
-      const ids = profile.getIdentities(0);
-      expect(ids.length).toBeGreaterThanOrEqual(1);
-      return ids[0];
-    };
-
-    // will make identities if needed. n must be >= 1
-    const getOrCreateIdentity = async (profile: UserProfile, n: number): Promise<LocalIdentity> => {
-      if (n < 1) {
-        throw new Error("Recipient count starts at 1");
-      }
-      while (profile.getIdentities(0).length < n + 1) {
+    // will make identities if needed.
+    // index `i` is the same as in https://github.com/iov-one/web4/blob/392234e/docs/KeyBase.md#simple-addresses
+    const getOrCreateIdentity = async (profile: UserProfile, i: number): Promise<LocalIdentity> => {
+      while (profile.getIdentities(0).length < i + 1) {
         await profile.createIdentity(0);
       }
-      return profile.getIdentities(0)[n];
+      return profile.getIdentities(0)[i];
     };
 
     // // accountTag should be exposed, ugly way to generate tx search strings....
@@ -72,7 +63,7 @@ describe("Web4Write", () => {
       expect(writer.chainIds().length).toEqual(1);
       const chainId = writer.chainIds()[0];
 
-      const faucet = faucetId(profile);
+      const faucet = await getOrCreateIdentity(profile, 0);
       const recipient = await getOrCreateIdentity(profile, 4);
       const recipientAddress = writer.keyToAddress(chainId, recipient.pubkey);
 
@@ -141,7 +132,8 @@ describe("Web4Write", () => {
       expect(writer.chainIds().length).toEqual(2);
 
       // make sure we can query with multiple registered chains
-      const faucetAddr = writer.keyToAddress(bovId, faucetId(profile).pubkey);
+      const faucet = await getOrCreateIdentity(profile, 0);
+      const faucetAddr = writer.keyToAddress(bovId, faucet.pubkey);
       const reader = writer.reader(bovId);
       const acct = await reader.getAccount({ address: faucetAddr });
       expect(acct).toBeTruthy();
