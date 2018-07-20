@@ -137,8 +137,8 @@ describe("Web4Write", () => {
       const bovId = writer.chainIds()[0];
 
       // add a raw tendermint chain (don't query, it will fail)
-      const tm = await bnsConnector(kvstoreUrl);
-      await writer.addChain(tm);
+      const tendermint = await bnsConnector(kvstoreUrl);
+      await writer.addChain(tendermint);
       expect(writer.chainIds().length).toEqual(2);
 
       // make sure we can query with multiple registered chains
