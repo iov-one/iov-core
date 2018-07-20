@@ -45,9 +45,8 @@ describe("Web4Write", () => {
       return ids[0];
     };
 
-    // recipient will make accounts if needed, returns path n
-    // n must be >= 1
-    const recipient = async (profile: UserProfile, n: number): Promise<LocalIdentity> => {
+    // will make identities if needed. n must be >= 1
+    const getOrCreateIdentity = async (profile: UserProfile, n: number): Promise<LocalIdentity> => {
       if (n < 1) {
         throw new Error("Recipient count starts at 1");
       }
@@ -74,15 +73,15 @@ describe("Web4Write", () => {
       const chainId = writer.chainIds()[0];
 
       const faucet = faucetId(profile);
-      const rcpt = await recipient(profile, 4);
-      const rcptAddr = writer.keyToAddress(chainId, rcpt.pubkey);
+      const recipient = await getOrCreateIdentity(profile, 4);
+      const recipientAddr = writer.keyToAddress(chainId, recipient.pubkey);
 
       // construct a sendtx, this should be in the web4wrtie api
       const sendTx: SendTx = {
         kind: TransactionKind.SEND,
         chainId,
         signer: faucet.pubkey,
-        recipient: rcptAddr,
+        recipient: recipientAddr,
         memo: "Web4 write style",
         amount: {
           whole: 11000,
@@ -96,7 +95,7 @@ describe("Web4Write", () => {
       // we should be a little bit richer
       const reader = writer.reader(chainId);
 
-      const gotMoney = await reader.getAccount({ address: rcptAddr });
+      const gotMoney = await reader.getAccount({ address: recipientAddr });
       expect(gotMoney).toBeTruthy();
       expect(gotMoney.data.length).toEqual(1);
       const paid = gotMoney.data[0];
