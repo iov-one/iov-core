@@ -18,10 +18,10 @@ const pendingWithoutTendermint = () => {
   }
 };
 
-describe("Test Web4Write", () => {
+describe("Web4Write", () => {
   // This uses setup from iov-bns...
   // Same secrets and assume the same blockchain scripts are running
-  describe("Verify bns compatibility", () => {
+  describe("BNS compatibility", () => {
     // the first key generated from this mneumonic produces the given address
     // this account has money in the genesis file (setup in docker)
     const mnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
@@ -64,7 +64,7 @@ describe("Test Web4Write", () => {
     //   return { key, value };
     // };
 
-    it("Can send transaction", async () => {
+    it("can send transaction", async () => {
       pendingWithoutBov();
 
       const knownChains = await withConnectors(await bnsConnector(bovUrl));
@@ -121,7 +121,7 @@ describe("Test Web4Write", () => {
       // expect(tx).toEqual(sendTx);
     });
 
-    it("Can add chains", async () => {
+    it("can add chains", async () => {
       // this requires both chains to check
       pendingWithoutBov();
       pendingWithoutTendermint();
