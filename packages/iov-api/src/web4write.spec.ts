@@ -74,14 +74,14 @@ describe("Web4Write", () => {
 
       const faucet = faucetId(profile);
       const recipient = await getOrCreateIdentity(profile, 4);
-      const recipientAddr = writer.keyToAddress(chainId, recipient.pubkey);
+      const recipientAddress = writer.keyToAddress(chainId, recipient.pubkey);
 
       // construct a sendtx, this should be in the web4wrtie api
       const sendTx: SendTx = {
         kind: TransactionKind.SEND,
         chainId,
         signer: faucet.pubkey,
-        recipient: recipientAddr,
+        recipient: recipientAddress,
         memo: "Web4 write style",
         amount: {
           whole: 11000,
@@ -95,7 +95,7 @@ describe("Web4Write", () => {
       // we should be a little bit richer
       const reader = writer.reader(chainId);
 
-      const gotMoney = await reader.getAccount({ address: recipientAddr });
+      const gotMoney = await reader.getAccount({ address: recipientAddress });
       expect(gotMoney).toBeTruthy();
       expect(gotMoney.data.length).toEqual(1);
       const paid = gotMoney.data[0];
