@@ -9,7 +9,7 @@
     "url": "https://github.com/iov-one/web4/tree/master/packages/iov-cli"
   },
   "scripts": {
-    "web4": "echo '\\nTo get started type: .load init\\n' && ts-node"
+    "web4": "echo '\\nTo get started type: .load init\\n' && NODE_NO_WARNINGS=1 ts-node"
   },
   "dependencies": {
     "colors": "^1.3.0",

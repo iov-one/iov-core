@@ -6,6 +6,7 @@ import { bnsCodec } from "@iov/bns";
 import { Encoding } from '@iov/encoding';
 import { Ed25519SimpleAddressKeyringEntry, UserProfile } from '@iov/keycontrol';
 import { AddressBytes, ChainId, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/types";
+function wait<T>(promise: Promise<T>): T { return require('deasync2').await(promise); }
 console.log(colors.green('Done initializing session for you. Have fun!'));
 console.log(colors.yellow('Available imports:'));
 console.log(colors.yellow('  * leveldown'));
@@ -26,3 +27,5 @@ console.log(colors.yellow('    - Nonce'));
 console.log(colors.yellow('    - SendTx'));
 console.log(colors.yellow('    - TokenTicker'));
 console.log(colors.yellow('    - TransactionKind'));
+console.log(colors.yellow('  * helper functions'));
+console.log(colors.yellow('    - wait'));

@@ -14,13 +14,7 @@ How to use the web4 cli
 > profile.getIdentities(0)
 []
 
-> profile.createIdentity(0)
-
-> profile.getIdentities(0)
-[ { pubkey: { algo: 'ed25519', data: [Object] },
-    label: undefined } ]
-
-> const mainIdentity = profile.getIdentities(0)[0]
+> const mainIdentity = wait(profile.createIdentity(0))
 
 > mainIdentity.pubkey
 { algo: 'ed25519',
@@ -92,7 +86,7 @@ const sendTx: SendTx = {
 7. and restore
 
 ```
-> var profileFromDb; UserProfile.loadFrom(db, "secret passwd").then(p => { profileFromDb = p })
+> const profileFromDb = wait(UserProfile.loadFrom(db, "secret passwd"));
 > profileFromDb
 UserProfile {
   createdAt: 2018-07-04T16:07:14.583Z,
