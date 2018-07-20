@@ -24,14 +24,22 @@ before_install:
   if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
     curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.7.0
     export PATH=$HOME/.yarn/bin:$PATH
-    # add dependencies to compile node-hid (no prebuilt available)
-    sudo apt-get install -y libudev-dev libusb-1.0-0 libusb-1.0-0-dev
-    npm install -g node-gyp
   fi
-# detect whether we can use docker, but don't fail if impossible
-# this currently passes on linux, fails on osx
-- docker pull tendermint/tendermint:${TM_VERSION} && export TENDERMINT_ENABLED=1 || true
-- docker pull iov1/tendermint:${TM_VERSION} && docker pull iov1/bov:${BOV_VERSION} && export BOV_ENABLED=1 || true
+# add dependencies to compile node-hid (no prebuilt available)
+- |
+  if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+    sudo apt-get install -y libudev-dev libusb-1.0-0 libusb-1.0-0-dev
+    yarn global add node-gyp
+  fi
+# Use Docker if available (currently Linux only)
+- |
+  if which docker > /dev/null ; then
+    docker pull tendermint/tendermint:${TM_VERSION}
+    docker pull iov1/tendermint:${TM_VERSION}
+    docker pull iov1/bov:${BOV_VERSION}
+    export TENDERMINT_ENABLED=1
+    export BOV_ENABLED=1
+  fi
 
 install:
 - yarn install
