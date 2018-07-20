@@ -1,0 +1,28 @@
+import colors = require('colors/safe');
+const leveldown = require('leveldown')
+const levelup = require('levelup')
+import Long from "long";
+import { bnsCodec } from "@iov/bns";
+import { Encoding } from '@iov/encoding';
+import { Ed25519SimpleAddressKeyringEntry, UserProfile } from '@iov/keycontrol';
+import { AddressBytes, ChainId, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/types";
+console.log(colors.green('Done initializing session for you. Have fun!'));
+console.log(colors.yellow('Available imports:'));
+console.log(colors.yellow('  * leveldown'));
+console.log(colors.yellow('  * levelup'));
+console.log(colors.yellow('  * from long'));
+console.log(colors.yellow('    - Long'));
+console.log(colors.yellow('  * from @iov/bns'));
+console.log(colors.yellow('    - bnsCodec'));
+console.log(colors.yellow('  * from @iov/encoding'));
+console.log(colors.yellow('    - Encoding'));
+console.log(colors.yellow('  * from @iov/keycontrol'));
+console.log(colors.yellow('    - Ed25519SimpleAddressKeyringEntry'));
+console.log(colors.yellow('    - UserProfile'));
+console.log(colors.yellow('  * from @iov/types'));
+console.log(colors.yellow('    - AddressBytes'));
+console.log(colors.yellow('    - ChainId'));
+console.log(colors.yellow('    - Nonce'));
+console.log(colors.yellow('    - SendTx'));
+console.log(colors.yellow('    - TokenTicker'));
+console.log(colors.yellow('    - TransactionKind'));
