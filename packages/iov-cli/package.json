@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "colors": "^1.3.0",
+    "deasync2": "https://github.com/bluelovers/deasync.git#43ace7b11",
     "ts-node": "^7.0.0"
   }
 }
