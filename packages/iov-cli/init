@@ -2,6 +2,7 @@ import colors = require('colors/safe');
 const leveldown = require('leveldown')
 const levelup = require('levelup')
 import Long from "long";
+import { bnsConnector, Web4Write, withConnectors } from "@iov/api";
 import { bnsCodec } from "@iov/bns";
 import { Encoding } from '@iov/encoding';
 import { Ed25519SimpleAddressKeyringEntry, UserProfile } from '@iov/keycontrol';
@@ -13,6 +14,10 @@ console.log(colors.yellow('  * leveldown'));
 console.log(colors.yellow('  * levelup'));
 console.log(colors.yellow('  * from long'));
 console.log(colors.yellow('    - Long'));
+console.log(colors.yellow('  * from @iov/api'));
+console.log(colors.yellow('    - bnsConnector'));
+console.log(colors.yellow('    - Web4Write'));
+console.log(colors.yellow('    - withConnectors'));
 console.log(colors.yellow('  * from @iov/bns'));
 console.log(colors.yellow('    - bnsCodec'));
 console.log(colors.yellow('  * from @iov/encoding'));

@@ -9,32 +9,39 @@ How to use the web4 cli
 
 ```
 > const profile = new UserProfile();
-> profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"))
+> profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"))
 
 > profile.getIdentities(0)
 []
 
-> const mainIdentity = wait(profile.createIdentity(0))
+> const faucet = wait(profile.createIdentity(0))
 
-> mainIdentity.pubkey
+> faucet.pubkey
 { algo: 'ed25519',
   data:
    Uint8Array [
      224,
      42, ...
 
-> profile.setIdentityLabel(0, mainIdentity, "the first one")
+> profile.setIdentityLabel(0, faucet, "blockchain of value faucet")
 
 > profile.getIdentities(0)
-[ { pubkey: { algo: 'ed25519', data: [Object] },
-    label: 'the first one' } ]
+[ { pubkey: { algo: 'ed25519', data: [Uint8Array] },
+    label: 'blockchain of value faucet' } ]
+
+> const knownChains = wait(withConnectors(wait(bnsConnector("http://localhost:22345"))));
+> const writer = new Web4Write(profile, knownChains);
+> const chainId = writer.chainIds()[0];
+
+> const recipient = wait(profile.createIdentity(0));
+> const recipientAddress = writer.keyToAddress(chainId, recipient.pubkey);
 
 > .editor
 const sendTx: SendTx = {
   kind: TransactionKind.SEND,
-  chainId: "aabb" as ChainId,
-  signer: mainIdentity.pubkey,
-  recipient: new Uint8Array([0x11]) as AddressBytes,
+  chainId: chainId,
+  signer: faucet.pubkey,
+  recipient: recipientAddress,
   memo: "Web4 write style",
   amount: {
     whole: 11000,
@@ -43,11 +50,13 @@ const sendTx: SendTx = {
   },
 };
 ^D
-> const nonce = new Long(0x11223344, 0x55667788) as Nonce;
-> profile.signTransaction(0, mainIdentity, sendTx, bnsCodec, nonce).then(signed => console.log(signed))
+> wait(writer.signAndCommit(sendTx, 0));
+> const reader = writer.reader(chainId);
+> const status = wait(reader.getAccount({ address: recipientAddress }));
+> status.data[0].balance
 ```
 
-4. Congratulations, you created the first signed transaction!
+4. Congratulations, you sent your first money!
 5. Add an additional entry
 
 ```

@@ -18,10 +18,10 @@ const pendingWithoutTendermint = () => {
   }
 };
 
-describe("Test Web4Write", () => {
+describe("Web4Write", () => {
   // This uses setup from iov-bns...
   // Same secrets and assume the same blockchain scripts are running
-  describe("Verify bns compatibility", () => {
+  describe("BNS compatibility", () => {
     // the first key generated from this mneumonic produces the given address
     // this account has money in the genesis file (setup in docker)
     const mnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
@@ -35,26 +35,16 @@ describe("Test Web4Write", () => {
     const userProfile = async (): Promise<UserProfile> => {
       const profile = new UserProfile();
       profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic(mnemonic));
-      await profile.createIdentity(0);
       return profile;
     };
 
-    const faucetId = (profile: UserProfile): LocalIdentity => {
-      const ids = profile.getIdentities(0);
-      expect(ids.length).toBeGreaterThanOrEqual(1);
-      return ids[0];
-    };
-
-    // recipient will make accounts if needed, returns path n
-    // n must be >= 1
-    const recipient = async (profile: UserProfile, n: number): Promise<LocalIdentity> => {
-      if (n < 1) {
-        throw new Error("Recipient count starts at 1");
-      }
-      while (profile.getIdentities(0).length < n + 1) {
+    // will make identities if needed.
+    // index `i` is the same as in https://github.com/iov-one/web4/blob/392234e/docs/KeyBase.md#simple-addresses
+    const getOrCreateIdentity = async (profile: UserProfile, i: number): Promise<LocalIdentity> => {
+      while (profile.getIdentities(0).length < i + 1) {
         await profile.createIdentity(0);
       }
-      return profile.getIdentities(0)[n];
+      return profile.getIdentities(0)[i];
     };
 
     // // accountTag should be exposed, ugly way to generate tx search strings....
@@ -64,7 +54,7 @@ describe("Test Web4Write", () => {
     //   return { key, value };
     // };
 
-    it("Can send transaction", async () => {
+    it("can send transaction", async () => {
       pendingWithoutBov();
 
       const knownChains = await withConnectors(await bnsConnector(bovUrl));
@@ -73,16 +63,16 @@ describe("Test Web4Write", () => {
       expect(writer.chainIds().length).toEqual(1);
       const chainId = writer.chainIds()[0];
 
-      const faucet = faucetId(profile);
-      const rcpt = await recipient(profile, 4);
-      const rcptAddr = writer.keyToAddress(chainId, rcpt.pubkey);
+      const faucet = await getOrCreateIdentity(profile, 0);
+      const recipient = await getOrCreateIdentity(profile, 4);
+      const recipientAddress = writer.keyToAddress(chainId, recipient.pubkey);
 
       // construct a sendtx, this should be in the web4wrtie api
       const sendTx: SendTx = {
         kind: TransactionKind.SEND,
         chainId,
         signer: faucet.pubkey,
-        recipient: rcptAddr,
+        recipient: recipientAddress,
         memo: "Web4 write style",
         amount: {
           whole: 11000,
@@ -96,7 +86,7 @@ describe("Test Web4Write", () => {
       // we should be a little bit richer
       const reader = writer.reader(chainId);
 
-      const gotMoney = await reader.getAccount({ address: rcptAddr });
+      const gotMoney = await reader.getAccount({ address: recipientAddress });
       expect(gotMoney).toBeTruthy();
       expect(gotMoney.data.length).toEqual(1);
       const paid = gotMoney.data[0];
@@ -121,7 +111,7 @@ describe("Test Web4Write", () => {
       // expect(tx).toEqual(sendTx);
     });
 
-    it("Can add chains", async () => {
+    it("can add chains", async () => {
       // this requires both chains to check
       pendingWithoutBov();
       pendingWithoutTendermint();
@@ -137,12 +127,13 @@ describe("Test Web4Write", () => {
       const bovId = writer.chainIds()[0];
 
       // add a raw tendermint chain (don't query, it will fail)
-      const tm = await bnsConnector(kvstoreUrl);
-      await writer.addChain(tm);
+      const tendermint = await bnsConnector(kvstoreUrl);
+      await writer.addChain(tendermint);
       expect(writer.chainIds().length).toEqual(2);
 
       // make sure we can query with multiple registered chains
-      const faucetAddr = writer.keyToAddress(bovId, faucetId(profile).pubkey);
+      const faucet = await getOrCreateIdentity(profile, 0);
+      const faucetAddr = writer.keyToAddress(bovId, faucet.pubkey);
       const reader = writer.reader(bovId);
       const acct = await reader.getAccount({ address: faucetAddr });
       expect(acct).toBeTruthy();
