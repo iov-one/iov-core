@@ -1561,9 +1561,9 @@ dateformat@^3.0.0:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
 
-"deasync2@https://github.com/bluelovers/deasync.git#43ace7b11":
-  version "0.1.15"
-  resolved "https://github.com/bluelovers/deasync.git#43ace7b11b96f86a59255c398a48cb53d3f7c0dd"
+deasync2@^0.1.16:
+  version "0.1.16"
+  resolved "https://registry.yarnpkg.com/deasync2/-/deasync2-0.1.16.tgz#c1eaead5beaaabadb065f50924be582d9b323d7e"
   dependencies:
     bindings "~1.2.1"
     nan "^2.0.7"
