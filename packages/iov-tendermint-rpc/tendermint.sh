@@ -5,18 +5,13 @@ which shellcheck > /dev/null && shellcheck "$0"
 PORT=${TM_PORT:-12345}
 VERSION=${TM_VERSION:-0.21.0}
 
-DIR="${HOME}/tmtest/${VERSION}"
+chmod 777 "${TM_DIR}"
 
-# be extra careful a missing variable doens't delete root
-sudo rm -rf "${DIR:-/tmp/foo}"
-mkdir -p "${DIR}"
-chmod 777 "${DIR}"
-
-docker run -v "${DIR}:/tendermint" \
+docker run -v "${TM_DIR}:/tendermint" \
   "tendermint/tendermint:${VERSION}" init
 
 # must enable tx index for search and subscribe
-exec docker run -p "${PORT}:26657" -v "${DIR}:/tendermint" \
+exec docker run -p "${PORT}:26657" -v "${TM_DIR}:/tendermint" \
   -e "TM_TX_INDEX_INDEX_ALL_TAGS=true" \
   "tendermint/tendermint:${VERSION}" node \
   --proxy_app=kvstore \

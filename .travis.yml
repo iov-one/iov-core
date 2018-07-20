@@ -19,6 +19,12 @@ addons:
 before_install:
 - export TM_VERSION=0.21.0
 - export BOV_VERSION=v0.5.1
+# macOS/Linux compatible temp dir deleted on reboot (https://stackoverflow.com/a/31397073)
+- |
+  export TM_DIR=$(mktemp -d "${TMPDIR:-/tmp}/tendermint_${TM_VERSION}.XXXXXXXXX")
+  export BOV_DIR=$(mktemp -d "${TMPDIR:-/tmp}/bov_${BOV_VERSION}.XXXXXXXXX")
+  echo "TM_DIR = $TM_DIR"
+  echo "BOV_DIR = $BOV_DIR"
 # yarn is outdated on Linux images
 - |
   if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
