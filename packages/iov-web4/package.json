@@ -1,5 +1,5 @@
 {
-  "name": "@iov/api",
+  "name": "@iov/web4",
   "version": "0.0.0",
   "description": "Central entry point into web4, pulling together all modules",
   "author": "Ethan <ethanfrey@users.noreply.github.com>",
@@ -8,7 +8,7 @@
   "types": "build/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iov-one/web4/tree/master/packages/iov-api"
+    "url": "https://github.com/iov-one/web4/tree/master/packages/iov-web4"
   },
   "scripts": {
     "lint": "tslint -t verbose --project .",
