@@ -105,3 +105,9 @@ Depends on: BNS implementation on backend completed and deployed
 - [ ] Provide downloadable version of Android (and iOS?) app for download
 - [ ] Experiment with deterministic builds, allowing multiple people to compile and sign the same binary
 - TODO....
+
+## Earlier work
+
+* `iov-keybase` was a start to sketch out a public api that could be used when used out of process
+  as a browser extension.
+  It's available on the git tag `iov-keybase`: https://github.com/iov-one/web4/tree/iov-keybase/packages/iov-keybase
