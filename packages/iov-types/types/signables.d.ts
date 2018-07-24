@@ -3,13 +3,10 @@ import { PublicKeyBundle, SignatureBytes, AddressBytes } from "./keys";
 import { Nonce, UnsignedTransaction, ChainId } from "./transactions";
 
 export type TransactionIDBytes = Uint8Array & As<"transaction-id">;
-export type TransactionIDString = string & As<"transaction-id">;
 
 export type SignableBytes = Uint8Array & As<"signable">;
-export type SignableString = string & As<"signable">;
 
 export type PostableBytes = Uint8Array & As<"postable">;
-export type PostableString = string & As<"postable">;
 
 // Specifies which hash function to apply before signing.
 // The identity function is indicated using None.
