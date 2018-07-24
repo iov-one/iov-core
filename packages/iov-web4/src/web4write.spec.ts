@@ -19,6 +19,12 @@ const pendingWithoutTendermint = () => {
 };
 
 describe("Web4Write", () => {
+  it("can be constructed with no chains", () => {
+    const profile = new UserProfile();
+    const writer = new Web4Write(profile, []);
+    expect(writer).toBeTruthy();
+  });
+
   // This uses setup from iov-bns...
   // Same secrets and assume the same blockchain scripts are running
   describe("BNS compatibility", () => {
