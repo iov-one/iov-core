@@ -4,7 +4,7 @@ How to use the web4 cli
 ## Example usage
 
 1. Build all dependencies: `cd web4 && yarn install && yarn build`
-2. Go to `packages/iov-cli`, run `yarn web4` and follow on-screen instructions
+2. Go to `packages/iov-web4-cli`, run `yarn web4` and follow on-screen instructions
 3. Play around like in the following example code:
 
 ```
