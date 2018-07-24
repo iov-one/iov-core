@@ -8,7 +8,7 @@
   "types": "types/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iov-one/web4/tree/master/packages/ledger-bns"
+    "url": "https://github.com/iov-one/web4/tree/master/packages/iov-ledger-bns"
   },
   "scripts": {
     "lint": "tslint -t verbose --project .",
