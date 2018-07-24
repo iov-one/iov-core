@@ -19,7 +19,9 @@
     "test-safari": "yarn build-browser && karma start --single-run --browsers Safari",
     "test": "yarn build-or-skip && yarn test-node",
     "prebuild": "yarn format && yarn lint",
-    "build": "tsc",
+    "preprocess-types": "rm -r ./types/*",
+    "postprocess-types": "rm ./types/*.spec.d.ts",
+    "build": "yarn preprocess-types && tsc --declarationDir ./types && yarn postprocess-types",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
     "build-browser": "yarn build-or-skip && webpack --mode development"
   },
