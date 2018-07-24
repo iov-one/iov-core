@@ -1,5 +1,3 @@
-// import { Stream } from "xstream";
-
 import { AddressBytes, PublicKeyBundle } from "./keys";
 import { PostableBytes, SignedTransaction } from "./signables";
 import { Nonce, TokenTicker, ChainId } from "./transactions";
