@@ -111,3 +111,6 @@ Depends on: BNS implementation on backend completed and deployed
 * `iov-keybase` was a start to sketch out a public api that could be used when used out of process
   as a browser extension.
   It's available on the git tag `iov-keybase`: https://github.com/iov-one/web4/tree/iov-keybase/packages/iov-keybase
+* The `KeyController` interface was an approach to design the key controller from top to bottom,
+  which has been superceeded by a bottom-to-top approach that resulted in the now active UserProfile.
+  It's available on the git tag `keycontroller-interface`: https://github.com/iov-one/web4/blob/keycontroller-interface/packages/iov-keycontrol/src/keycontroller.d.ts
