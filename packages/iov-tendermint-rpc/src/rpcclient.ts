@@ -43,6 +43,10 @@ const http = (method: string, url: string, request?: any): Promise<any> => {
   }
 };
 
+function defaultErrorHandler(error: any): never {
+  throw error;
+}
+
 // make sure we set the origin header properly, seems not to be set
 // in karma tests....
 export const getOriginConfig = () => {
@@ -100,8 +104,7 @@ export class WebsocketClient implements RpcStreamingClient {
   // TODO: use MemoryStream and support reconnects
   protected readonly connected: Promise<boolean>;
 
-  // tslint:disable-next-line:no-console
-  constructor(url: string = "ws://localhost:46657", onError: (err: any) => void = console.log) {
+  constructor(url: string = "ws://localhost:46657", onError: (err: any) => void = defaultErrorHandler) {
     // accept host.name:port and assume ws protocol
     const path = "/websocket";
     const cleanUrl = hasProtocol(url) ? url : "ws://" + url;
