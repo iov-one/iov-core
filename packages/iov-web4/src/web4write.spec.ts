@@ -87,7 +87,7 @@ describe("Web4Write", () => {
         },
       };
       const res = await writer.signAndCommit(sendTx, 0);
-      expect(res.metadata.status).toBe(true);
+      expect(res.metadata.status).toEqual(true);
 
       // we should be a little bit richer
       const reader = writer.reader(chainId);
