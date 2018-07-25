@@ -2,7 +2,7 @@ import Long from "long";
 
 import { Encoding } from "@iov/encoding";
 import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@iov/keycontrol";
-import { AddressBytes, Nonce, SendTx, Tag, TokenTicker, TransactionKind } from "@iov/types";
+import { AddressBytes, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/types";
 
 import { Client } from "./client";
 import { bnsCodec } from "./txcodec";
@@ -55,13 +55,6 @@ describe("Integration tests with bov+tendermint", () => {
       await profile.createIdentity(0);
     }
     return profile.getIdentities(0)[n];
-  };
-
-  // accountTag should be exposed, ugly way to generate tx search strings....
-  const accountTag = (addr: AddressBytes, bucket: string = "wllt", value: string = "s"): Tag => {
-    const id = Uint8Array.from([...Encoding.toAscii(bucket + ":"), ...addr]);
-    const key = Encoding.toHex(id).toUpperCase();
-    return { key, value };
   };
 
   it("Generate proper faucet address", async () => {
@@ -200,7 +193,7 @@ describe("Integration tests with bov+tendermint", () => {
 
     // now verify we can query the same tx back
     // FIXME: make this cleaner somehow....
-    const txQuery = { tags: [accountTag(faucetAddr)] };
+    const txQuery = { tags: [Client.accountTag(faucetAddr)] };
     const search = await client.searchTx(txQuery);
     expect(search.length).toBeGreaterThanOrEqual(1);
     // make sure we get a valid signature

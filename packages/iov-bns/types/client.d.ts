@@ -1,8 +1,9 @@
 import { Client as TendermintClient, StatusResponse } from "@iov/tendermint-rpc";
-import { BcpAccount, BcpAccountQuery, BcpNonce, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, ChainId, ConfirmedTransaction, PostableBytes, TokenTicker, TxQuery, TxReadCodec, Web4Read } from "@iov/types";
+import { AddressBytes, BcpAccount, BcpAccountQuery, BcpNonce, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, ChainId, ConfirmedTransaction, PostableBytes, Tag, TokenTicker, TxQuery, TxReadCodec, Web4Read } from "@iov/types";
 import { InitData } from "./normalize";
 import { Result } from "./types";
 export declare class Client implements Web4Read {
+    static accountTag(addr: AddressBytes): Tag;
     static connect(url: string): Promise<Client>;
     protected readonly tmClient: TendermintClient;
     protected readonly codec: TxReadCodec;
