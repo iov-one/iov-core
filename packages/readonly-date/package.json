@@ -2,8 +2,8 @@
   "name": "readonly-date",
   "version": "0.0.0",
   "description": "An immutable drop-in replacement for JavaScript's Date type",
-  "author": "simon <webmaster128@users.noreply.github.com>",
-  "license": "AGPL-3.0",
+  "author": "IOV SAS <admin@iov.one>",
+  "license": "Apache-2.0",
   "main": "index.js",
   "types": "index.d.ts",
   "repository": {

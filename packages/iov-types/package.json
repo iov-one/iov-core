@@ -2,8 +2,8 @@
   "name": "@iov/types",
   "version": "0.0.0",
   "description": "General types for IOV projects",
-  "author": "will-iov <will-iov@users.noreply.github.com>",
-  "license": "AGPL-3.0",
+  "author": "IOV SAS <admin@iov.one>",
+  "license": "Apache-2.0",
   "main": "index.js",
   "types": "index.d.ts",
   "repository": {

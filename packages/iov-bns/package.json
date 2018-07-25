@@ -2,8 +2,8 @@
   "name": "@iov/bns",
   "version": "0.0.0",
   "description": "Transction Codec and BCP Client to communicate with BNS blockchain",
-  "author": "Ethan Frey <ethanfrey@users.noreply.github.com>",
-  "license": "AGPL-3.0",
+  "author": "IOV SAS <admin@iov.one>",
+  "license": "Apache-2.0",
   "main": "build/index.js",
   "types": "types/index.d.ts",
   "repository": {
