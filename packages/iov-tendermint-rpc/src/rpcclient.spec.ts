@@ -1,3 +1,4 @@
+// tslint:disable:no-console
 import { JsonRpcEvent, jsonRpcWith } from "./common";
 import { Method } from "./requests";
 import { HttpClient, HttpUriClient, RpcClient, WebsocketClient } from "./rpcclient";

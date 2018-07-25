@@ -1,3 +1,4 @@
+import { Client as BnsClient } from "@iov/bns";
 import { UserProfile } from "@iov/keycontrol";
 import { AddressBytes, BcpTransactionResponse, ChainId, Nonce, PublicKeyBundle, TxCodec, UnsignedTransaction, Web4Read } from "@iov/types";
 export declare class Web4Write {
@@ -16,5 +17,6 @@ export interface ChainConnector {
     readonly client: Web4Read;
     readonly codec: TxCodec;
 }
+export declare const bnsFromOrToTag: typeof BnsClient.fromOrToTag;
 export declare const bnsConnector: (url: string) => Promise<ChainConnector>;
 export declare const withConnectors: (...connectors: ChainConnector[]) => Promise<ReadonlyArray<[string, ChainConnector]>>;

@@ -1,7 +1,7 @@
 import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@iov/keycontrol";
 import { SendTx, TokenTicker, TransactionKind } from "@iov/types";
 
-import { bnsConnector, Web4Write, withConnectors } from "./web4write";
+import { bnsConnector, bnsFromOrToTag, Web4Write, withConnectors } from "./web4write";
 
 // We assume the same BOV context from iov-bns to run some simple tests
 // against that backend.
@@ -53,13 +53,6 @@ describe("Web4Write", () => {
       return profile.getIdentities(0)[i];
     };
 
-    // // accountTag should be exposed, ugly way to generate tx search strings....
-    // const accountTag = (addr: AddressBytes, bucket: string = "wllt", value: string = "s"): Tag => {
-    //   const id = Uint8Array.from([...Encoding.toAscii(bucket + ":"), ...addr]);
-    //   const key = Encoding.toHex(id).toUpperCase();
-    //   return { key, value };
-    // };
-
     it("can send transaction", async () => {
       pendingWithoutBov();
 
@@ -74,12 +67,13 @@ describe("Web4Write", () => {
       const recipientAddress = writer.keyToAddress(chainId, recipient.pubkey);
 
       // construct a sendtx, this should be in the web4wrtie api
+      const memo = `Web4 write style (${Math.random()})`;
       const sendTx: SendTx = {
         kind: TransactionKind.SEND,
         chainId,
         signer: faucet.pubkey,
         recipient: recipientAddress,
-        memo: "Web4 write style",
+        memo: memo,
         amount: {
           whole: 11000,
           fractional: 777,
@@ -87,7 +81,7 @@ describe("Web4Write", () => {
         },
       };
       const res = await writer.signAndCommit(sendTx, 0);
-      expect(res.metadata.status).toBe(true);
+      expect(res.metadata.status).toEqual(true);
 
       // we should be a little bit richer
       const reader = writer.reader(chainId);
@@ -102,19 +96,12 @@ describe("Web4Write", () => {
       expect(paid.balance[0].whole).toBeGreaterThanOrEqual(11000);
       expect(paid.balance[0].fractional).toBeGreaterThanOrEqual(777);
 
-      // // now verify we can query the same tx back
-      // // FIXME: make this cleaner somehow....
-      // const txQuery = { tags: [accountTag(rcptAddr)] };
-      // const search = await client.searchTx(txQuery);
-      // expect(search.length).toBeGreaterThanOrEqual(1);
-      // // make sure we get a valid signature
-      // const mine = search[search.length - 1];
-      // expect(mine.primarySignature.nonce).toEqual(nonce);
-      // expect(mine.primarySignature.signature.length).toBeTruthy();
-      // expect(mine.otherSignatures.length).toEqual(0);
-      // const tx = mine.transaction;
-      // expect(tx.kind).toEqual(sendTx.kind);
-      // expect(tx).toEqual(sendTx);
+      // find the transaction we sent by comparing the memo
+      const results = await reader.searchTx({ tags: [bnsFromOrToTag(recipientAddress)] });
+      expect(results.length).toBeGreaterThanOrEqual(1);
+      const last = results[results.length - 1];
+      expect(last.transaction.kind).toEqual(TransactionKind.SEND);
+      expect((last.transaction as SendTx).memo).toEqual(memo);
     });
 
     it("can add chains", async () => {
