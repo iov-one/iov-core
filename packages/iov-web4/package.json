@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "Central entry point into web4, pulling together all modules",
   "author": "Ethan <ethanfrey@users.noreply.github.com>",
-  "license": "AGPL-3.0",
+  "license": "Apache-2.0",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "repository": {
