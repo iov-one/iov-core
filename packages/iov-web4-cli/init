@@ -3,7 +3,6 @@ const leveldown = require('leveldown')
 const levelup = require('levelup')
 import Long from "long";
 import { bnsConnector, Ed25519SimpleAddressKeyringEntry, UserProfile, Web4Write, withConnectors } from "@iov/web4";
-import { bnsCodec } from "@iov/bns";
 import { Encoding } from '@iov/encoding';
 import { AddressBytes, ChainId, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/types";
 function wait<T>(promise: Promise<T>): T { return require('deasync2').await(promise); }
@@ -19,8 +18,6 @@ console.log(colors.yellow('    - Ed25519SimpleAddressKeyringEntry'));
 console.log(colors.yellow('    - UserProfile'));
 console.log(colors.yellow('    - Web4Write'));
 console.log(colors.yellow('    - withConnectors'));
-console.log(colors.yellow('  * from @iov/bns'));
-console.log(colors.yellow('    - bnsCodec'));
 console.log(colors.yellow('  * from @iov/encoding'));
 console.log(colors.yellow('    - Encoding'));
 console.log(colors.yellow('  * from @iov/types'));
