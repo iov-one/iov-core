@@ -35,20 +35,19 @@ fold_start "commandline-tests"
 yarn test
 fold_end
 
-# Test browser
-for PACKAGE in iov-bns iov-crypto iov-keycontrol iov-tendermint-rpc; do
-  fold_start "browser-tests-$PACKAGE"
-  (
-    cd "packages/$PACKAGE"
+# Test in browsers
 
-    yarn test-chrome
+fold_start "test-chrome"
+yarn run lerna run test-chrome
+fold_end
 
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      yarn test-safari
-
-      # Firefox does not run on Linux VMs because "no DISPLAY environment variable specified"
-      yarn test-firefox
-    fi
-  )
+if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+  fold_start "test-safari"
+  yarn run lerna run test-safari
   fold_end
-done
+
+  # Firefox does not run on Linux VMs because "no DISPLAY environment variable specified"
+  fold_start "test-firefox"
+  yarn run lerna run test-firefox
+  fold_end
+fi
