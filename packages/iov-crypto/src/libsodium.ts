@@ -6,11 +6,7 @@
 // use require instead of import because of this bug
 // https://github.com/jedisct1/libsodium.js/issues/148
 import sodium = require("libsodium-wrappers");
-
-// type tagging from https://github.com/Microsoft/TypeScript/issues/4895#issuecomment-399098397
-declare class As<Tag extends string> {
-  private readonly "_ _ _": Tag;
-}
+import { As } from "type-tagger";
 
 export type Chacha20poly1305IetfKey = Uint8Array & As<"chacha20poly1305ietf-key">;
 export type Chacha20poly1305IetfMessage = Uint8Array & As<"chacha20poly1305ietf-message">;

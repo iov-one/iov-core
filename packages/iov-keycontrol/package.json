@@ -34,6 +34,7 @@
     "levelup": "^3.1.0",
     "long": "^4.0.0",
     "readonly-date": "^0.0.0",
+    "type-tagger": "^0.0.0",
     "xstream": "^11.4.0"
   }
 }

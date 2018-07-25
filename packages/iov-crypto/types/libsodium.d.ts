@@ -1,6 +1,4 @@
-declare class As<Tag extends string> {
-    private readonly "_ _ _";
-}
+import { As } from "type-tagger";
 export declare type Chacha20poly1305IetfKey = Uint8Array & As<"chacha20poly1305ietf-key">;
 export declare type Chacha20poly1305IetfMessage = Uint8Array & As<"chacha20poly1305ietf-message">;
 export declare type Chacha20poly1305IetfNonce = Uint8Array & As<"chacha20poly1305ietf-nonce">;
@@ -32,4 +30,3 @@ export declare class Chacha20poly1305Ietf {
     static encrypt(message: Chacha20poly1305IetfMessage, key: Chacha20poly1305IetfKey, nonce: Chacha20poly1305IetfNonce): Promise<Chacha20poly1305IetfCiphertext>;
     static decrypt(ciphertext: Chacha20poly1305IetfCiphertext, key: Chacha20poly1305IetfKey, nonce: Chacha20poly1305IetfNonce): Promise<Chacha20poly1305IetfMessage>;
 }
-export {};

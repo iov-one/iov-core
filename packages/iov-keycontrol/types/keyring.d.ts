@@ -1,4 +1,5 @@
-import { As, ChainId, PrehashType, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
+import { As } from "type-tagger";
+import { ChainId, PrehashType, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
 import { ValueAndUpdates } from "./valueandupdates";
 export declare type KeyringEntrySerializationString = string & As<"keyring-entry-serialization">;
 export declare type KeyringSerializationString = string & As<"keyring-serialization">;

@@ -1,4 +1,4 @@
-import { As } from "./as";
+import { As } from "type-tagger";
 
 export type AddressBytes = Uint8Array & As<"address">;
 

@@ -1,6 +1,6 @@
 import Long from "long";
+import { As } from "type-tagger";
 
-import { As } from "./as";
 import { AddressBytes, PublicKeyBundle } from "./keys";
 
 export type Nonce = Long & As<"nonce">;

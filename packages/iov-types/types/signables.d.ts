@@ -1,4 +1,5 @@
-import { As } from "./as";
+import { As } from "type-tagger";
+
 import { PublicKeyBundle, SignatureBytes, AddressBytes } from "./keys";
 import { Nonce, UnsignedTransaction, ChainId } from "./transactions";
 
