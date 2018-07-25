@@ -1,3 +1,4 @@
+// tslint:disable:no-console
 import { Encoding } from "@iov/encoding";
 
 import { v0_20 } from "./adaptor";
