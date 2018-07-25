@@ -2,7 +2,7 @@ import { Bip39, Ed25519, EnglishMnemonic, Slip0010, Slip0010Curve, Slip0010RawIn
 
 import { getPublicKeyWithPath } from "./app";
 import { hardened, pendingWithoutSeededLedger, skipSeededTests } from "./common.spec";
-import { connectToFirstLedger } from "./exchange";
+import { connectToFirstLedger, Transport } from "./exchange";
 
 describe("Check key derivation", () => {
   // tslint:disable-next-line:no-let

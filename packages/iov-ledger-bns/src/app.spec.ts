@@ -8,7 +8,7 @@ import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/tender
 
 import { appVersion, getPublicKey, getPublicKeyWithPath, signTransaction, signTransactionWithPath } from "./app";
 import { hardened, pendingWithoutInteractiveLedger, pendingWithoutLedger, skipInteractiveTests, skipTests } from "./common.spec";
-import { connectToFirstLedger } from "./exchange";
+import { connectToFirstLedger, Transport } from "./exchange";
 
 describe("Query ledger app", () => {
   // tslint:disable-next-line:no-let
