@@ -1,7 +1,7 @@
 import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@iov/keycontrol";
 import { SendTx, TokenTicker, TransactionKind } from "@iov/types";
 
-import { bnsAccountTag, bnsConnector, Web4Write, withConnectors } from "./web4write";
+import { bnsConnector, bnsFromOrToTag, Web4Write, withConnectors } from "./web4write";
 
 // We assume the same BOV context from iov-bns to run some simple tests
 // against that backend.
@@ -97,7 +97,7 @@ describe("Web4Write", () => {
       expect(paid.balance[0].fractional).toBeGreaterThanOrEqual(777);
 
       // find the transaction we sent by comparing the memo
-      const results = await reader.searchTx({ tags: [bnsAccountTag(recipientAddress)] });
+      const results = await reader.searchTx({ tags: [bnsFromOrToTag(recipientAddress)] });
       expect(results.length).toBeGreaterThanOrEqual(1);
       const last = results[results.length - 1];
       expect(last.transaction.kind).toEqual(TransactionKind.SEND);

@@ -193,7 +193,7 @@ describe("Integration tests with bov+tendermint", () => {
 
     // now verify we can query the same tx back
     // FIXME: make this cleaner somehow....
-    const txQuery = { tags: [Client.accountTag(faucetAddr)] };
+    const txQuery = { tags: [Client.fromOrToTag(faucetAddr)] };
     const search = await client.searchTx(txQuery);
     expect(search.length).toBeGreaterThanOrEqual(1);
     // make sure we get a valid signature
