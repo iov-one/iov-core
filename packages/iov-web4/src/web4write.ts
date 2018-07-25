@@ -92,6 +92,8 @@ export interface ChainConnector {
   readonly codec: TxCodec;
 }
 
+export const bnsFromOrToTag = BnsClient.fromOrToTag;
+
 // bnsConnector is a helper to connect to a bns-based chain at a given url
 export const bnsConnector = async (url: string): Promise<ChainConnector> => ({
   client: await BnsClient.connect(url),

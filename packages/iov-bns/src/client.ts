@@ -7,6 +7,7 @@ import {
   TxResponse,
 } from "@iov/tendermint-rpc";
 import {
+  AddressBytes,
   BcpAccount,
   BcpAccountQuery,
   BcpAddressQuery,
@@ -18,6 +19,7 @@ import {
   ChainId,
   ConfirmedTransaction,
   PostableBytes,
+  Tag,
   TokenTicker,
   TxQuery,
   TxReadCodec,
@@ -37,6 +39,13 @@ const queryByAddress = (query: BcpAccountQuery): query is BcpAddressQuery =>
 // same interface we have with the BCP protocol.
 // We can embed in web4 process or use this in a BCP-relay
 export class Client implements Web4Read {
+  public static fromOrToTag(addr: AddressBytes): Tag {
+    const id = Uint8Array.from([...Encoding.toAscii("wllt:"), ...addr]);
+    const key = Encoding.toHex(id).toUpperCase();
+    const value = "s"; // "s" for "set"
+    return { key, value };
+  }
+
   public static async connect(url: string): Promise<Client> {
     const tm = await TendermintClient.connect(url);
     return new Client(tm, bnsCodec);
