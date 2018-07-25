@@ -55,8 +55,7 @@ const sendTx: SendTx = {
 };
 ^D
 > wait(writer.signAndCommit(sendTx, 0));
-> const status = wait(reader.getAccount({ address: recipientAddress }));
-> status.data[0].balance
+> wait(reader.getAccount({ address: recipientAddress })).data[0].balance;
 ```
 
 4. Congratulations, you sent your first money!
