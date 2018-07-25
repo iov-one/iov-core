@@ -2,7 +2,7 @@
   "name": "@iov/tendermint-rpc",
   "version": "0.0.0",
   "description": "Codec to encode/decode bns transactions and state objects",
-  "author": "Ethan Frey <ethanfrey@users.noreply.github.com>",
+  "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
   "main": "build/index.js",
   "types": "build/index.d.ts",

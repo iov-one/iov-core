@@ -2,7 +2,7 @@
   "name": "@iov/keycontrol",
   "version": "0.0.0",
   "description": "Keyrings and Keycontroller for safe cryptography",
-  "author": "ethanfrey <ethanfrey@users.noreply.github.com>",
+  "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
   "main": "build/index.js",
   "types": "types/index.d.ts",

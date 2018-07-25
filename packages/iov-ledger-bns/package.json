@@ -2,7 +2,7 @@
   "name": "@iov/ledger-bns",
   "version": "0.0.0",
   "description": "Integration of ledger-bns application",
-  "author": "Ethan Frey <ethanfrey@users.noreply.github.com>",
+  "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
   "main": "build/index.js",
   "types": "types/index.d.ts",

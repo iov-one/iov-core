@@ -2,7 +2,7 @@
   "name": "@iov/encoding",
   "version": "0.0.0",
   "description": "Encoding helpers for IOV projects",
-  "author": "simon <webmaster128@users.noreply.github.com>",
+  "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
   "main": "build/index.js",
   "types": "types/index.d.ts",

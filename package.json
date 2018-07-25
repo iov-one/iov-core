@@ -2,7 +2,7 @@
   "name": "web4-monorepo-root",
   "description": "IOV JavaScript packages",
   "private": true,
-  "author": "will-iov <will-iov@users.noreply.github.com>",
+  "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
   "homepage": "https://github.com/iov-one/web4",
   "repository": {

@@ -2,7 +2,7 @@
   "name": "@iov/web4-cli",
   "version": "0.0.0",
   "description": "Command line interface for web4",
-  "author": "simon <webmaster128@users.noreply.github.com>",
+  "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
