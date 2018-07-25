@@ -32,6 +32,10 @@ How to use the web4 cli
 > const knownChains = wait(withConnectors(wait(bnsConnector("http://localhost:22345"))));
 > const writer = new Web4Write(profile, knownChains);
 > const chainId = writer.chainIds()[0];
+> const reader = writer.reader(chainId);
+
+> const faucetAddress = writer.keyToAddress(chainId, faucet.pubkey);
+> wait(reader.getAccount({ address: faucetAddress })).data[0].balance
 
 > const recipient = wait(profile.createIdentity(0));
 > const recipientAddress = writer.keyToAddress(chainId, recipient.pubkey);
@@ -51,7 +55,6 @@ const sendTx: SendTx = {
 };
 ^D
 > wait(writer.signAndCommit(sendTx, 0));
-> const reader = writer.reader(chainId);
 > const status = wait(reader.getAccount({ address: recipientAddress }));
 > status.data[0].balance
 ```
