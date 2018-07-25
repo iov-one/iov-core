@@ -56,6 +56,8 @@ const sendTx: SendTx = {
 ^D
 > wait(writer.signAndCommit(sendTx, 0));
 > wait(reader.getAccount({ address: recipientAddress })).data[0].balance;
+
+> wait(reader.searchTx({ tags: [{key: (toHex(toAscii("wllt:")) + toHex(faucetAddress)).toUpperCase(), value: "s"}] }));
 ```
 
 4. Congratulations, you sent your first money!
