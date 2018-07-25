@@ -1,8 +1,8 @@
 import { pendingWithoutLedger } from "./common.spec";
 import { connectToFirstLedger, getFirstLedgerNanoS } from "./exchange";
 
-describe("Find Device", () => {
-  it("can find ledger", () => {
+describe("Exchange", () => {
+  it("can find Ledger", () => {
     pendingWithoutLedger();
 
     const ledger = getFirstLedgerNanoS();
@@ -12,7 +12,7 @@ describe("Find Device", () => {
     }
   });
 
-  it("can connect to ledger", () => {
+  it("can connect to Ledger", () => {
     pendingWithoutLedger();
 
     const transport = connectToFirstLedger();
