@@ -1,0 +1,28 @@
+{
+  "name": "@iov/bcp-types",
+  "version": "0.0.0",
+  "description": "General types for IOV projects",
+  "author": "IOV SAS <admin@iov.one>",
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iov-one/web4/tree/master/packages/iov-bcp-types"
+  },
+  "scripts": {
+    "format": "prettier --write --loglevel warn './types/**/*.ts'",
+    "lint": "tslint -t verbose --project .",
+    "lint-fix": "yarn lint --fix",
+    "test": "echo 'Info: no test specified'",
+    "prebuild": "yarn format && yarn lint",
+    "build": "echo 'Info: nothing to be built'",
+    "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build"
+  },
+  "dependencies": {
+    "@iov/tendermint-types": "^0.0.0",
+    "@types/long": "^4.0.0",
+    "long": "^4.0.0",
+    "type-tagger": "^0.0.0"
+  }
+}

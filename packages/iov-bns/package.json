@@ -29,10 +29,11 @@
     "protoc": "yarn pack-proto `yarn run -s find-proto` && yarn define-proto && yarn format"
   },
   "dependencies": {
+    "@iov/bcp-types": "^0.0.0",
     "@iov/crypto": "^0.0.0",
     "@iov/encoding": "^0.0.0",
     "@iov/tendermint-rpc": "^0.0.0",
-    "@iov/types": "^0.0.0",
+    "@iov/tendermint-types": "^0.0.0",
     "@types/long": "^4.0.0",
     "@types/node": "^10.3.2",
     "long": "^4.0.0",

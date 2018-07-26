@@ -25,13 +25,14 @@
   },
   "dependencies": {
     "@iov/encoding": "^0.0.0",
-    "@iov/types": "^0.0.0",
+    "@iov/tendermint-types": "^0.0.0",
     "@types/node": "^10.3.2",
     "@types/ws": "^5.1.2",
     "axios": "^0.18.0",
     "events": "^3.0.0",
     "isomorphic-ws": "^4.0.1",
     "readonly-date": "0.0.0",
+    "type-tagger": "^0.0.0",
     "ws": "^5.2.2"
   }
 }

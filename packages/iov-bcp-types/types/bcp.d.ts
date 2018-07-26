@@ -1,6 +1,7 @@
-import { AddressBytes, PublicKeyBundle } from "./keys";
-import { PostableBytes, SignedTransaction } from "./signables";
-import { Nonce, TokenTicker, ChainId } from "./transactions";
+import { ChainId, PostableBytes, PublicKeyBundle, TxQuery } from "@iov/tendermint-types";
+
+import { Address, SignedTransaction } from "./signables";
+import { Nonce, TokenTicker } from "./transactions";
 
 /*
 Types defined to match
@@ -22,7 +23,7 @@ export interface BcpQueryMetadata {
 export type BcpData = BcpAccount | BcpNonce | BcpTicker;
 
 export interface BcpAccount {
-  readonly address: AddressBytes;
+  readonly address: Address;
   readonly name?: string;
   readonly balance: ReadonlyArray<BcpCoin>;
 }
@@ -33,7 +34,7 @@ export interface BcpCoin extends BcpTicker {
 }
 
 export interface BcpNonce {
-  readonly address: AddressBytes;
+  readonly address: Address;
   readonly publicKey: PublicKeyBundle;
   readonly nonce: Nonce;
 }
@@ -55,7 +56,7 @@ export interface BcpTransactionResponse {
 }
 
 export interface BcpAddressQuery {
-  address: AddressBytes;
+  address: Address;
 }
 
 export interface BcpValueNameQuery {
@@ -116,18 +117,4 @@ export interface ConfirmedTransaction extends SignedTransaction {
   // readonly tags: ReadonlyArray<Tag>;
   // readonly result?: Uint8Array;
   // readonly log?: string;
-}
-
-export interface TxQuery {
-  readonly tags: ReadonlyArray<Tag>;
-  readonly height?: number;
-  readonly minHeight?: number;
-  readonly maxHeight?: number;
-}
-
-export interface Tag {
-  readonly key: string;
-  readonly value: string;
-  // TODO: be more general here, but how do we handle other types?
-  // readonly value: string | number;
 }

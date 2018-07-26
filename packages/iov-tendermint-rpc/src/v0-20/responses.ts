@@ -7,7 +7,7 @@ import {
   PublicKeyBytes,
   SignatureBundle,
   SignatureBytes,
-} from "@iov/types";
+} from "@iov/tendermint-types";
 
 import { JsonRpcSuccess } from "../common";
 import {

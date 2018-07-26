@@ -1,7 +1,9 @@
 import Long from "long";
+import { As } from "type-tagger";
 
-import { As } from "./as";
-import { AddressBytes, PublicKeyBundle } from "./keys";
+import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
+
+import { Address } from "./signables";
 
 export type Nonce = Long & As<"nonce">;
 
@@ -11,16 +13,12 @@ export type TtlBytes = Uint8Array & As<"ttl">;
 // TokenTicker should be 3-4 letters, uppercase
 export type TokenTicker = string & As<"token-ticker">;
 
-// ChainId is used to differentiate a blockchain
-// should be alphanumeric or -_/ and unique
-export type ChainId = string & As<"chain-id">;
-
 export type SwapIdBytes = Uint8Array & As<"swap-id">;
 export type SwapIdString = string & As<"swap-id">;
 
 // TODO: we may want to make this a union type BNSName | PublicKey | Address
 // but waiting on clarity on BNS spec, for now simplest working solution...
-export type RecipientId = AddressBytes;
+export type RecipientId = Address;
 
 export interface FungibleToken {
   readonly whole: number;

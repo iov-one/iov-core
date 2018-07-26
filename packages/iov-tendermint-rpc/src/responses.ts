@@ -1,5 +1,6 @@
-import { ChainId, PostableBytes, PublicKeyBundle, SignatureBundle } from "@iov/types";
 import { ReadonlyDate } from "readonly-date";
+
+import { ChainId, PostableBytes, PublicKeyBundle, SignatureBundle } from "@iov/tendermint-types";
 
 import { IpPortString } from "./encodings";
 

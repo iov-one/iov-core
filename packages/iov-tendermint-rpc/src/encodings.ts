@@ -1,8 +1,8 @@
 import { ReadonlyDate } from "readonly-date";
+import { As } from "type-tagger";
 import { isNumber } from "util";
 
 import { Encoding, Int53 } from "@iov/encoding";
-import { As } from "@iov/types";
 
 export type Base64String = string & As<"base64">;
 export type HexString = string & As<"hex">;

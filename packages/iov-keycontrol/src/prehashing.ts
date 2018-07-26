@@ -1,5 +1,5 @@
+import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Sha256, Sha512 } from "@iov/crypto";
-import { PrehashType, SignableBytes } from "@iov/types";
 
 export function prehash(bytes: SignableBytes, type: PrehashType): SignableBytes {
   switch (type) {

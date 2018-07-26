@@ -1,7 +1,6 @@
 import {
-  AddressBytes,
+  Address,
   BaseTx,
-  ChainId,
   FullSignature,
   SendTx,
   SetNameTx,
@@ -12,7 +11,9 @@ import {
   SwapTimeoutTx,
   TransactionKind,
   UnsignedTransaction,
-} from "@iov/types";
+} from "@iov/bcp-types";
+import { ChainId } from "@iov/tendermint-types";
+
 import * as codec from "./codec";
 import { asNumber, decodeFullSig, decodeToken, ensure } from "./types";
 import { isHashIdentifier } from "./util";
@@ -57,7 +58,7 @@ const parseSendTx = (base: BaseTx, msg: codec.cash.ISendMsg): SendTx => ({
   // TODO: would we want to ensure these match?
   //    src: await keyToAddress(tx.signer),
   kind: TransactionKind.SEND,
-  recipient: ensure(msg.dest, "recipient") as AddressBytes,
+  recipient: ensure(msg.dest, "recipient") as Address,
   amount: decodeToken(ensure(msg.amount)),
   memo: msg.memo || undefined,
   ...base,
@@ -77,7 +78,7 @@ const parseSwapCounterTx = (base: BaseTx, msg: codec.escrow.ICreateEscrowMsg): S
   return {
     kind: TransactionKind.SWAP_COUNTER,
     hashCode,
-    recipient: ensure(msg.recipient, "recipient") as AddressBytes,
+    recipient: ensure(msg.recipient, "recipient") as Address,
     timeout: asNumber(msg.timeout),
     amount: (msg.amount || []).map(decodeToken),
     ...base,

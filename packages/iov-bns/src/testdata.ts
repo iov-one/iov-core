@@ -1,18 +1,12 @@
-import { Encoding } from "@iov/encoding";
+import Long from "long";
+
 import {
-  AddressBytes,
-  Algorithm,
-  ChainId,
+  Address,
   FullSignature,
   FungibleToken,
   Nonce,
-  PrivateKeyBundle,
-  PrivateKeyBytes,
-  PublicKeyBundle,
-  PublicKeyBytes,
   SendTx,
   SetNameTx,
-  SignatureBytes,
   SignedTransaction,
   SwapClaimTx,
   SwapCounterTx,
@@ -20,8 +14,17 @@ import {
   SwapTimeoutTx,
   TokenTicker,
   TransactionKind,
-} from "@iov/types";
-import Long from "long";
+} from "@iov/bcp-types";
+import { Encoding } from "@iov/encoding";
+import {
+  Algorithm,
+  ChainId,
+  PrivateKeyBundle,
+  PrivateKeyBytes,
+  PublicKeyBundle,
+  PublicKeyBytes,
+  SignatureBytes,
+} from "@iov/tendermint-types";
 
 import { hashId } from "./util";
 
@@ -52,7 +55,7 @@ export const privBin = fromHex(
 );
 
 // address is calculated by bov for the public key
-export const address = fromHex("acc00b8f2e26fd093894c5b1d87e03afab71cf99") as AddressBytes;
+export const address = fromHex("acc00b8f2e26fd093894c5b1d87e03afab71cf99") as Address;
 
 export const coinJson: FungibleToken = {
   whole: 878,
@@ -72,7 +75,7 @@ export const sendTxJson: SendTx = {
   chainId,
   signer: pubJson,
   kind: TransactionKind.SEND,
-  recipient: fromHex("6f0a3e37845b6a3c8ccbe6219199abc3ae0b26d9") as AddressBytes,
+  recipient: fromHex("6f0a3e37845b6a3c8ccbe6219199abc3ae0b26d9") as Address,
   memo: "Test payment",
   amount,
 };
@@ -118,7 +121,7 @@ const randomMsg: SendTx = {
   chainId: "foo-bar-baz" as ChainId,
   signer: pubJson,
   kind: TransactionKind.SEND,
-  recipient: fromHex("009985cb38847474fe9febfd56ab67e14bcd56f3") as AddressBytes,
+  recipient: fromHex("009985cb38847474fe9febfd56ab67e14bcd56f3") as Address,
   memo: "One more fix!",
   amount: {
     whole: 128,
@@ -154,7 +157,7 @@ const swapCounterMsg: SwapCounterTx = {
   chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
   kind: TransactionKind.SWAP_COUNTER,
-  recipient: fromHex("123485cb38847474fe9febfd56ab67e14bcd56f3") as AddressBytes,
+  recipient: fromHex("123485cb38847474fe9febfd56ab67e14bcd56f3") as Address,
   timeout: 7890,
   amount: [
     {

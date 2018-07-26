@@ -1,6 +1,7 @@
+import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Sha256, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { ChainId, PrehashType, SignableBytes } from "@iov/types";
+import { ChainId } from "@iov/tendermint-types";
 
 import { KeyringEntrySerializationString } from "../keyring";
 import { Ed25519KeyringEntry } from "./ed25519";

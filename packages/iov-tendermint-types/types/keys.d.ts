@@ -1,6 +1,4 @@
-import { As } from "./as";
-
-export type AddressBytes = Uint8Array & As<"address">;
+import { As } from "type-tagger";
 
 export const enum Algorithm {
   ED25519 = "ed25519",
@@ -17,10 +15,4 @@ export type PublicKeyBytes = Uint8Array & As<"public-key">;
 export interface PublicKeyBundle {
   readonly algo: Algorithm;
   readonly data: PublicKeyBytes;
-}
-
-export type SignatureBytes = Uint8Array & As<"signature">;
-export interface SignatureBundle {
-  readonly algo: Algorithm;
-  readonly signature: SignatureBytes;
 }

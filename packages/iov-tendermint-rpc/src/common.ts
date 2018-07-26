@@ -1,4 +1,4 @@
-import { As } from "@iov/types";
+import { As } from "type-tagger";
 
 export type RpcId = string & As<"rpcid">;
 

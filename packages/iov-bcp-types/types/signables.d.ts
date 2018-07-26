@@ -1,12 +1,12 @@
-import { As } from "./as";
-import { PublicKeyBundle, SignatureBytes, AddressBytes } from "./keys";
-import { Nonce, UnsignedTransaction, ChainId } from "./transactions";
+import { As } from "type-tagger";
 
-export type TransactionIDBytes = Uint8Array & As<"transaction-id">;
+import { ChainId, PublicKeyBundle, SignatureBytes, PostableBytes } from "@iov/tendermint-types";
+
+import { Nonce, UnsignedTransaction } from "./transactions";
+
+export type TransactionIdBytes = Uint8Array & As<"transaction-id">;
 
 export type SignableBytes = Uint8Array & As<"signable">;
-
-export type PostableBytes = Uint8Array & As<"postable">;
 
 // Specifies which hash function to apply before signing.
 // The identity function is indicated using None.
@@ -41,11 +41,14 @@ export interface SignedTransaction {
   readonly otherSignatures: ReadonlyArray<FullSignature>;
 }
 
+// A codec specific address
+export type Address = Uint8Array & As<"address">;
+
 export interface TxReadCodec {
   // parseBytes will recover bytes from the blockchain into a format we can use
-  readonly parseBytes: (bytes: PostableBytes, chainID: ChainId) => SignedTransaction;
+  readonly parseBytes: (bytes: PostableBytes, chainId: ChainId) => SignedTransaction;
   // chain-dependent way to calculate address from key
-  readonly keyToAddress: (key: PublicKeyBundle) => AddressBytes;
+  readonly keyToAddress: (key: PublicKeyBundle) => Address;
 }
 
 // TxCodec knows how to convert Transactions to bytes for a given blockchain
@@ -56,5 +59,5 @@ export interface TxCodec extends TxReadCodec {
   // bytesToPost includes the raw transaction appended with the various signatures
   readonly bytesToPost: (tx: SignedTransaction) => PostableBytes;
   // identifier is usually some sort of hash of bytesToPost, chain-dependent
-  readonly identifier: (tx: SignedTransaction) => TransactionIDBytes;
+  readonly identifier: (tx: SignedTransaction) => TransactionIdBytes;
 }

@@ -9,7 +9,8 @@ import {
   SwapTimeoutTx,
   TransactionKind,
   UnsignedTransaction,
-} from "@iov/types";
+} from "@iov/bcp-types";
+
 import * as codec from "./codec";
 import { encodeFullSig, encodeToken } from "./types";
 import { hashIdentifier, keyToAddress } from "./util";
