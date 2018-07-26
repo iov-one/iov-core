@@ -14,16 +14,17 @@
     "lint": "tslint -t verbose --project .",
     "format": "prettier --write --loglevel warn './src/**/*.ts'",
     "test-node": "./jasmine-testrunner.js",
-    "test-firefox": "yarn build-browser && karma start --single-run --browsers Firefox",
-    "test-chrome": "yarn build-browser && karma start --single-run --browsers ChromeHeadless",
-    "test-safari": "yarn build-browser && karma start --single-run --browsers Safari",
+    "test-firefox": "yarn pack-web && karma start --single-run --browsers Firefox",
+    "test-chrome": "yarn pack-web && karma start --single-run --browsers ChromeHeadless",
+    "test-safari": "yarn pack-web && karma start --single-run --browsers Safari",
     "test": "yarn build-or-skip && yarn test-node",
     "prebuild": "yarn format && yarn lint",
     "preprocess-types": "rm -r ./types/*",
     "postprocess-types": "rm ./types/*.spec.d.ts",
     "build": "yarn preprocess-types && tsc --declarationDir ./types && yarn postprocess-types",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
-    "build-browser": "yarn build-or-skip && webpack --mode development"
+    "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js",
+    "pack-node": "yarn build-or-skip && webpack --mode development --config webpack.node.config.js"
   },
   "dependencies": {
     "@iov/bns": "^0.0.0",
