@@ -53,17 +53,34 @@ MVP just shows we can generate HD keys, save/load them, and use them to sign tra
 - [ ] Define interfaces (BcpMinimal, BcpNFTs, BcpSwap, etc....)
 - [ ] Write integration tests of NFT transfer with bcp-demo
 
-## Enhancement: Ethereum Proxy
+## Ethereum Proxy
 
 - [ ] Add secp256k1 HD support to `keybase` (same hd path as ed25519simpleaddress for now)
 - [ ] Add `bcp-proxy` support to provide `bcp-basic` queries for account balance
 - [ ] Add support for sendtx with ETH (encode simple transaction and submit to blockchain)
+- [ ] Enable querying all transactions per account
 - [ ] Add support for 1 testnet, mainnet, and poanetwork
 - [ ] Extend sendtx and queries to handle erc20 tokens, by hardcoding a lookup of token name to contract address and sigfigs
+- [ ] Transaction history shows ERC20 amounts as well as ETH amounts
 - [ ] Implement atomic swap contract in solidity
 - [ ] Add swap transactions and queries that interact with our uploaded swap contract (using hardcoded contract address)
 - [ ] Sign Ethereum tx with same HD path as metamask. Importing mnemonic enables use in web4 and metamask
 - [ ] Verify we can use Ethereum chains just like Lisk or `bcp-demo` chain with same webapp, and switch between chains
+
+## Value name support
+
+- [ ] Add transactions to buy, transfer, swap values names (building on NFTs)
+- [ ] Improve queries to show proper names for account lookups (bns surely and bcp-proxy maybe?)
+- [ ] Expose API for integration in web wallet (using observables as above)
+
+------------------- Goal for sometime in October ----------------------
+
+Questions:
+ * Is above goal reasonable at all?
+ * What positions do we need to hire to fulfil this goal?
+  * Current plan is solidity/web4 dev and backend js/typescript dev (one each)
+
+------------------ Rough ideas for Q4 and beyond ------------------------
 
 ## Web4-write Extension MVP (chrome and firefox?)
 
@@ -102,6 +119,15 @@ Depends on: BNS implementation on backend completed and deployed
 - [ ] Add management of value name (registration/transfer) to Chrome extension
 - [ ] Add lookup of chains via chrome extension and webapp (extend "chain selector")
 - [ ] Add queries and browsing of names/chains via webapp (not extension)
+
+## Enhancement: Other chains
+
+- [ ] Stellar
+- [ ] Ripple?
+- [ ] Cosmos Hub
+- [ ] NEO
+- [ ] Tezos
+- [ ] Various Lisk/Ethereum compatible forks (since we have the code already)
 
 ## Enhancement Dynamic Codecs
 
