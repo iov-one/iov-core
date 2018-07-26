@@ -1,3 +1,5 @@
+import Long from "long";
+
 import { Encoding } from "@iov/encoding";
 import {
   AddressBytes,
@@ -23,7 +25,6 @@ import {
   TokenTicker,
   TransactionKind,
 } from "@iov/types";
-import Long from "long";
 
 import { hashId } from "./util";
 
