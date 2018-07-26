@@ -1,7 +1,6 @@
+import { ChainId, PostableBytes } from "@iov/tendermint-types";
 import {
-  ChainId,
   Nonce,
-  PostableBytes,
   PrehashType,
   SignedTransaction,
   SigningJob,
@@ -9,6 +8,7 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/types";
+
 import * as codecImpl from "./codec";
 import { parseTx } from "./decode";
 import { buildSignedTx, buildUnsignedTx } from "./encode";

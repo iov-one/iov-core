@@ -1,13 +1,12 @@
 import { As } from "type-tagger";
 
-import { PublicKeyBundle, SignatureBytes, AddressBytes } from "./keys";
-import { Nonce, UnsignedTransaction, ChainId } from "./transactions";
+import { AddressBytes, ChainId, PublicKeyBundle, SignatureBytes, PostableBytes } from "@iov/tendermint-types";
+
+import { Nonce, UnsignedTransaction } from "./transactions";
 
 export type TransactionIDBytes = Uint8Array & As<"transaction-id">;
 
 export type SignableBytes = Uint8Array & As<"signable">;
-
-export type PostableBytes = Uint8Array & As<"postable">;
 
 // Specifies which hash function to apply before signing.
 // The identity function is indicated using None.

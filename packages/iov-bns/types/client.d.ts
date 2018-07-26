@@ -1,5 +1,6 @@
 import { Client as TendermintClient, StatusResponse } from "@iov/tendermint-rpc";
-import { AddressBytes, BcpAccount, BcpAccountQuery, BcpNonce, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, ChainId, ConfirmedTransaction, PostableBytes, Tag, TokenTicker, TxQuery, TxReadCodec, Web4Read } from "@iov/types";
+import { AddressBytes, ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
+import { BcpAccount, BcpAccountQuery, BcpNonce, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, ConfirmedTransaction, TokenTicker, TxReadCodec, Web4Read } from "@iov/types";
 import { InitData } from "./normalize";
 import { Result } from "./types";
 export declare class Client implements Web4Read {

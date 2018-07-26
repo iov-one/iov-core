@@ -1,4 +1,5 @@
-import { BcpAccount, BcpCoin, BcpNonce, BcpTicker, ChainId } from "@iov/types";
+import { ChainId } from "@iov/tendermint-types";
+import { BcpAccount, BcpCoin, BcpNonce, BcpTicker } from "@iov/types";
 import * as models from "./codec";
 import { Keyed } from "./types";
 export interface InitData {

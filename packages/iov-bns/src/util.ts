@@ -1,6 +1,7 @@
 import { Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { AddressBytes, Algorithm, ChainId, Nonce, PublicKeyBundle, SignableBytes } from "@iov/types";
+import { AddressBytes, Algorithm, ChainId, PublicKeyBundle } from "@iov/tendermint-types";
+import { Nonce, SignableBytes } from "@iov/types";
 
 export const keyToAddress = (key: PublicKeyBundle) =>
   new Sha256(keyToIdentifier(key)).digest().slice(0, 20) as AddressBytes;

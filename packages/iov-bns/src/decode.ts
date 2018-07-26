@@ -1,7 +1,6 @@
+import { AddressBytes, ChainId } from "@iov/tendermint-types";
 import {
-  AddressBytes,
   BaseTx,
-  ChainId,
   FullSignature,
   SendTx,
   SetNameTx,

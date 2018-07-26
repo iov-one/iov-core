@@ -1,7 +1,7 @@
 import Long from "long";
 import { As } from "type-tagger";
 
-import { AddressBytes, PublicKeyBundle } from "./keys";
+import { AddressBytes, ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 
 export type Nonce = Long & As<"nonce">;
 
@@ -10,10 +10,6 @@ export type TtlBytes = Uint8Array & As<"ttl">;
 
 // TokenTicker should be 3-4 letters, uppercase
 export type TokenTicker = string & As<"token-ticker">;
-
-// ChainId is used to differentiate a blockchain
-// should be alphanumeric or -_/ and unique
-export type ChainId = string & As<"chain-id">;
 
 export type SwapIdBytes = Uint8Array & As<"swap-id">;
 export type SwapIdString = string & As<"swap-id">;

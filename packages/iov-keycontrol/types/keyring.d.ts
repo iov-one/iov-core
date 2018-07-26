@@ -1,5 +1,6 @@
 import { As } from "type-tagger";
-import { ChainId, PrehashType, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/types";
+import { ChainId, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types";
+import { PrehashType, SignableBytes } from "@iov/types";
 import { ValueAndUpdates } from "./valueandupdates";
 export declare type KeyringEntrySerializationString = string & As<"keyring-entry-serialization">;
 export declare type KeyringSerializationString = string & As<"keyring-serialization">;

@@ -1,6 +1,7 @@
 import { Ed25519, Ed25519Keypair, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { Algorithm, ChainId, PrehashType, PublicKeyBytes, SignableBytes, SignatureBytes } from "@iov/types";
+import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
+import { PrehashType, SignableBytes } from "@iov/types";
 
 import {
   KeyringEntry,

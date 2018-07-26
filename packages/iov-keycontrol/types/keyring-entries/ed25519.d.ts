@@ -1,4 +1,5 @@
-import { ChainId, PrehashType, SignableBytes, SignatureBytes } from "@iov/types";
+import { ChainId, SignatureBytes } from "@iov/tendermint-types";
+import { PrehashType, SignableBytes } from "@iov/types";
 import { KeyringEntry, KeyringEntryImplementationIdString, KeyringEntrySerializationString, LocalIdentity, PublicIdentity } from "../keyring";
 import { ValueAndUpdates } from "../valueandupdates";
 export declare class Ed25519KeyringEntry implements KeyringEntry {

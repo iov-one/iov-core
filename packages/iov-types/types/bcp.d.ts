@@ -1,6 +1,7 @@
-import { AddressBytes, PublicKeyBundle } from "./keys";
-import { PostableBytes, SignedTransaction } from "./signables";
-import { Nonce, TokenTicker, ChainId } from "./transactions";
+import { AddressBytes, ChainId, PostableBytes, PublicKeyBundle, TxQuery } from "@iov/tendermint-types";
+
+import { SignedTransaction } from "./signables";
+import { Nonce, TokenTicker } from "./transactions";
 
 /*
 Types defined to match
@@ -116,18 +117,4 @@ export interface ConfirmedTransaction extends SignedTransaction {
   // readonly tags: ReadonlyArray<Tag>;
   // readonly result?: Uint8Array;
   // readonly log?: string;
-}
-
-export interface TxQuery {
-  readonly tags: ReadonlyArray<Tag>;
-  readonly height?: number;
-  readonly minHeight?: number;
-  readonly maxHeight?: number;
-}
-
-export interface Tag {
-  readonly key: string;
-  readonly value: string;
-  // TODO: be more general here, but how do we handle other types?
-  // readonly value: string | number;
 }

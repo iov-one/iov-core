@@ -1,4 +1,4 @@
-import { Tag, TxQuery } from "@iov/types";
+import { Tag, TxQuery } from "@iov/tendermint-types";
 
 import { JsonRpcRequest, jsonRpcWith } from "./common";
 import { QueryString } from "./encodings";
