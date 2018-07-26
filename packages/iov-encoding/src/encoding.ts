@@ -74,34 +74,33 @@ export class Encoding {
   }
 
   public static toUtf8(str: string): Uint8Array {
-    return Encoding.textEncoder.encode(str);
+    // Browser and future nodejs (https://github.com/nodejs/node/issues/20365)
+    if (typeof TextEncoder !== "undefined") {
+      return new TextEncoder().encode(str);
+    }
+
+    // Use Buffer hack instead of nodejs util.TextEncoder to ensure
+    // webpack does not bundle the util module for browsers.
+    return new Uint8Array(Buffer.from(str, "utf8"));
   }
 
   public static fromUtf8(data: Uint8Array): string {
-    return Encoding.textDecoder.decode(data);
+    // Browser and future nodejs (https://github.com/nodejs/node/issues/20365)
+    if (typeof TextDecoder !== "undefined") {
+      return new TextDecoder("utf-8", { fatal: true }).decode(data);
+    }
+
+    // Use Buffer hack instead of nodejs util.TextDecoder to ensure
+    // webpack does not bundle the util module for browsers.
+    // Buffer.toString has no fatal option
+    if (!Encoding.isValidUtf8(data)) {
+      throw new Error("Invalid UTF8 data");
+    }
+    return Buffer.from(data).toString("utf8");
   }
 
-  private static readonly textEncoder = (() => {
-    if (typeof window !== "undefined") {
-      const w: any = window;
-      if (w.TextEncoder && w.TextEncoder.prototype) {
-        return new w.TextEncoder();
-      }
-    }
-
-    const util = require("util");
-    return new util.TextEncoder();
-  })();
-
-  private static readonly textDecoder = (() => {
-    if (typeof window !== "undefined") {
-      const w: any = window;
-      if (w.TextDecoder && w.TextDecoder.prototype) {
-        return new w.TextDecoder("utf-8", { fatal: true });
-      }
-    }
-
-    const util = require("util");
-    return new util.TextDecoder("utf-8", { fatal: true });
-  })();
+  private static isValidUtf8(data: Uint8Array): boolean {
+    const toStringAndBack = Buffer.from(Buffer.from(data).toString("utf8"), "utf8");
+    return Buffer.compare(data, toStringAndBack) === 0;
+  }
 }

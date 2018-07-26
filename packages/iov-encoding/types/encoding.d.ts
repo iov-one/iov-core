@@ -7,6 +7,5 @@ export declare class Encoding {
     static fromAscii(data: Uint8Array): string;
     static toUtf8(str: string): Uint8Array;
     static fromUtf8(data: Uint8Array): string;
-    private static readonly textEncoder;
-    private static readonly textDecoder;
+    private static isValidUtf8;
 }
