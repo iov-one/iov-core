@@ -72,4 +72,36 @@ export class Encoding {
 
     return fromNums(Array.from(data)).join("");
   }
+
+  public static toUtf8(str: string): Uint8Array {
+    return this.textEncoder.encode(str);
+  }
+
+  public static fromUtf8(data: Uint8Array): string {
+    return this.textDecoder.decode(data);
+  }
+
+  private static readonly textEncoder = (() => {
+    if (typeof window !== "undefined") {
+      const w: any = window;
+      if (w.TextEncoder && w.TextEncoder.prototype) {
+        return new w.TextEncoder();
+      }
+    }
+
+    const util = require("util");
+    return new util.TextEncoder();
+  })();
+
+  private static readonly textDecoder = (() => {
+    if (typeof window !== "undefined") {
+      const w: any = window;
+      if (w.TextDecoder && w.TextDecoder.prototype) {
+        return new w.TextDecoder("utf-8", { fatal: true });
+      }
+    }
+
+    const util = require("util");
+    return new util.TextDecoder("utf-8", { fatal: true });
+  })();
 }

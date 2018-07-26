@@ -5,4 +5,8 @@ export declare class Encoding {
     static fromBase64(base64String: string): Uint8Array;
     static toAscii(input: string): Uint8Array;
     static fromAscii(data: Uint8Array): string;
+    static toUtf8(str: string): Uint8Array;
+    static fromUtf8(data: Uint8Array): string;
+    private static readonly textEncoder;
+    private static readonly textDecoder;
 }
