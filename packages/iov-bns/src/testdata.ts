@@ -1,15 +1,5 @@
 import Long from "long";
 
-import { Encoding } from "@iov/encoding";
-import {
-  Algorithm,
-  ChainId,
-  PrivateKeyBundle,
-  PrivateKeyBytes,
-  PublicKeyBundle,
-  PublicKeyBytes,
-  SignatureBytes,
-} from "@iov/tendermint-types";
 import {
   Address,
   FullSignature,
@@ -24,7 +14,17 @@ import {
   SwapTimeoutTx,
   TokenTicker,
   TransactionKind,
-} from "@iov/types";
+} from "@iov/bcp-types";
+import { Encoding } from "@iov/encoding";
+import {
+  Algorithm,
+  ChainId,
+  PrivateKeyBundle,
+  PrivateKeyBytes,
+  PublicKeyBundle,
+  PublicKeyBytes,
+  SignatureBytes,
+} from "@iov/tendermint-types";
 
 import { hashId } from "./util";
 

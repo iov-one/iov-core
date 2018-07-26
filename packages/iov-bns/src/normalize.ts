@@ -1,6 +1,6 @@
+import { Address, BcpAccount, BcpCoin, BcpNonce, BcpTicker, Nonce, TokenTicker } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import { ChainId } from "@iov/tendermint-types";
-import { Address, BcpAccount, BcpCoin, BcpNonce, BcpTicker, Nonce, TokenTicker } from "@iov/types";
 
 import * as models from "./codec";
 import { asLong, decodePubKey, decodeToken, ensure, Keyed } from "./types";

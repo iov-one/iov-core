@@ -1,5 +1,6 @@
 import Long from "long";
 
+import { FullSignature, FungibleToken, Nonce, TokenTicker } from "@iov/bcp-types";
 import {
   Algorithm,
   PrivateKeyBundle,
@@ -8,7 +9,6 @@ import {
   PublicKeyBytes,
   SignatureBytes,
 } from "@iov/tendermint-types";
-import { FullSignature, FungibleToken, Nonce, TokenTicker } from "@iov/types";
 
 import * as codec from "./codec";
 

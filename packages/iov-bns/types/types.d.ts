@@ -1,6 +1,6 @@
 import Long from "long";
+import { FullSignature, FungibleToken } from "@iov/bcp-types";
 import { Algorithm, PrivateKeyBundle, PrivateKeyBytes, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
-import { FullSignature, FungibleToken } from "@iov/types";
 import * as codec from "./codec";
 export interface Result {
     readonly key: Uint8Array;

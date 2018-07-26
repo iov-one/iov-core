@@ -1,3 +1,4 @@
+import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import {
   Bip39,
   Ed25519,
@@ -9,7 +10,6 @@ import {
 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
-import { PrehashType, SignableBytes } from "@iov/types";
 
 import {
   KeyringEntry,

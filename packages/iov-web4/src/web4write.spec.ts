@@ -1,5 +1,5 @@
+import { SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@iov/keycontrol";
-import { SendTx, TokenTicker, TransactionKind } from "@iov/types";
 
 import { bnsConnector, bnsFromOrToTag, Web4Write, withConnectors } from "./web4write";
 

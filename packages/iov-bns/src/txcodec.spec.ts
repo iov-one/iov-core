@@ -1,6 +1,6 @@
+import { SignedTransaction } from "@iov/bcp-types";
 import { Ed25519 } from "@iov/crypto";
 import { PostableBytes } from "@iov/tendermint-types";
-import { SignedTransaction } from "@iov/types";
 
 import {
   chainId,

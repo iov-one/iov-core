@@ -2,6 +2,7 @@ import { AbstractLevelDOWN } from "abstract-leveldown";
 import { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
 
+import { FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
 import {
   Argon2id,
   Argon2idOptions,
@@ -13,7 +14,6 @@ import {
   Random,
 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/types";
 
 import { Keyring, KeyringEntry, KeyringSerializationString, LocalIdentity, PublicIdentity } from "./keyring";
 import { DatabaseUtils } from "./utils";

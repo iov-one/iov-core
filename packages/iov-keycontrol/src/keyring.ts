@@ -1,7 +1,7 @@
 import { As } from "type-tagger";
 
+import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { ChainId, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types";
-import { PrehashType, SignableBytes } from "@iov/types";
 
 import { Ed25519KeyringEntry, Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
 import { ValueAndUpdates } from "./valueandupdates";

@@ -1,8 +1,8 @@
 import Long from "long";
 
+import { Address, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@iov/keycontrol";
-import { Address, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/types";
 
 import { Client } from "./client";
 import { bnsCodec } from "./txcodec";

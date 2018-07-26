@@ -1,2 +1,2 @@
-import { TxCodec } from "@iov/types";
+import { TxCodec } from "@iov/bcp-types";
 export declare const bnsCodec: TxCodec;

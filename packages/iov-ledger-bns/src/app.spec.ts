@@ -1,10 +1,10 @@
 import Long from "long";
 
+import { Nonce, RecipientId, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { bnsCodec } from "@iov/bns";
 import { Ed25519, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/tendermint-types";
-import { Nonce, RecipientId, SendTx, TokenTicker, TransactionKind } from "@iov/types";
 
 import { appVersion, getPublicKey, getPublicKeyWithPath, signTransaction, signTransactionWithPath } from "./app";
 import { hardened, pendingWithoutInteractiveLedger, pendingWithoutLedger, skipInteractiveTests, skipTests } from "./common.spec";

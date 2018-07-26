@@ -1,7 +1,7 @@
+import { Address, BcpTransactionResponse, Nonce, TxCodec, UnsignedTransaction, Web4Read } from "@iov/bcp-types";
 import { Client as BnsClient } from "@iov/bns";
 import { UserProfile } from "@iov/keycontrol";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
-import { Address, BcpTransactionResponse, Nonce, TxCodec, UnsignedTransaction, Web4Read } from "@iov/types";
 export declare class Web4Write {
     readonly profile: UserProfile;
     private readonly knownChains;

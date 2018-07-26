@@ -3,8 +3,8 @@ import Long from "long";
 import MemDownConstructor from "memdown";
 import { ReadonlyDate } from "readonly-date";
 
+import { Address, Nonce, PrehashType, SendTx, SignableBytes, SignedTransaction, SigningJob, TokenTicker, TransactionIdBytes, TransactionKind, TxCodec } from "@iov/bcp-types";
 import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
-import { Address, Nonce, PrehashType, SendTx, SignableBytes, SignedTransaction, SigningJob, TokenTicker, TransactionIdBytes, TransactionKind, TxCodec } from "@iov/types";
 
 import { Keyring } from "./keyring";
 import { Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";

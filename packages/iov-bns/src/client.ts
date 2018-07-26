@@ -1,12 +1,3 @@
-import { Encoding } from "@iov/encoding";
-import {
-  buildTxQuery,
-  Client as TendermintClient,
-  StatusResponse,
-  txCommitSuccess,
-  TxResponse,
-} from "@iov/tendermint-rpc";
-import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 import {
   Address,
   BcpAccount,
@@ -21,7 +12,16 @@ import {
   TokenTicker,
   TxReadCodec,
   Web4Read,
-} from "@iov/types";
+} from "@iov/bcp-types";
+import { Encoding } from "@iov/encoding";
+import {
+  buildTxQuery,
+  Client as TendermintClient,
+  StatusResponse,
+  txCommitSuccess,
+  TxResponse,
+} from "@iov/tendermint-rpc";
+import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 
 import * as models from "./codec";
 import { InitData, Normalize } from "./normalize";

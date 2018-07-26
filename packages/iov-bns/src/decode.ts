@@ -1,4 +1,3 @@
-import { ChainId } from "@iov/tendermint-types";
 import {
   Address,
   BaseTx,
@@ -12,7 +11,9 @@ import {
   SwapTimeoutTx,
   TransactionKind,
   UnsignedTransaction,
-} from "@iov/types";
+} from "@iov/bcp-types";
+import { ChainId } from "@iov/tendermint-types";
+
 import * as codec from "./codec";
 import { asNumber, decodeFullSig, decodeToken, ensure } from "./types";
 import { isHashIdentifier } from "./util";
