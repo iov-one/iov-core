@@ -1,6 +1,6 @@
 import { Encoding } from "@iov/encoding";
 import { ChainId } from "@iov/tendermint-types";
-import { AddressBytes, BcpAccount, BcpCoin, BcpNonce, BcpTicker, Nonce, TokenTicker } from "@iov/types";
+import { Address, BcpAccount, BcpCoin, BcpNonce, BcpTicker, Nonce, TokenTicker } from "@iov/types";
 
 import * as models from "./codec";
 import { asLong, decodePubKey, decodeToken, ensure, Keyed } from "./types";
@@ -24,7 +24,7 @@ export class Normalize {
   public static nonce(acct: models.sigs.IUserData & Keyed): BcpNonce {
     // append the chainID to the name to universalize it
     return {
-      address: acct._id as AddressBytes,
+      address: acct._id as Address,
       nonce: asLong(acct.sequence) as Nonce,
       publicKey: decodePubKey(ensure(acct.pubKey)),
     };
@@ -36,7 +36,7 @@ export class Normalize {
       const name = acct.name ? `${acct.name}*${initData.chainId}` : undefined;
       return {
         name,
-        address: acct._id as AddressBytes,
+        address: acct._id as Address,
         balance: ensure(acct.coins).map(this.coin(initData)),
       };
     };

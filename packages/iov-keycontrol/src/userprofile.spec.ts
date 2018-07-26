@@ -4,7 +4,7 @@ import MemDownConstructor from "memdown";
 import { ReadonlyDate } from "readonly-date";
 
 import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
-import { AddressBytes, Nonce, PrehashType, SendTx, SignableBytes, SignedTransaction, SigningJob, TokenTicker, TransactionIDBytes, TransactionKind, TxCodec } from "@iov/types";
+import { Address, Nonce, PrehashType, SendTx, SignableBytes, SignedTransaction, SigningJob, TokenTicker, TransactionIDBytes, TransactionKind, TxCodec } from "@iov/types";
 
 import { Keyring } from "./keyring";
 import { Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
@@ -257,7 +257,7 @@ describe("UserProfile", () => {
           fractional: 12,
           tokenTicker: "ETH" as TokenTicker,
         },
-        recipient: new Uint8Array([0x00, 0x11, 0x22]) as AddressBytes,
+        recipient: new Uint8Array([0x00, 0x11, 0x22]) as Address,
       };
       const fakeSignedTransaction: SignedTransaction = {
         transaction: fakeTransaction,
@@ -282,7 +282,7 @@ describe("UserProfile", () => {
         parseBytes: (): SignedTransaction => {
           throw new Error("not implemented");
         },
-        keyToAddress: (): AddressBytes => {
+        keyToAddress: (): Address => {
           throw new Error("not implemented");
         },
       };
@@ -330,7 +330,7 @@ describe("UserProfile", () => {
           fractional: 12,
           tokenTicker: "ETH" as TokenTicker,
         },
-        recipient: new Uint8Array([0x00, 0x11, 0x22]) as AddressBytes,
+        recipient: new Uint8Array([0x00, 0x11, 0x22]) as Address,
       };
 
       const fakeCodec: TxCodec = {
@@ -349,7 +349,7 @@ describe("UserProfile", () => {
         parseBytes: (): SignedTransaction => {
           throw new Error("not implemented");
         },
-        keyToAddress: (): AddressBytes => {
+        keyToAddress: (): Address => {
           throw new Error("not implemented");
         },
       };

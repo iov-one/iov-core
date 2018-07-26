@@ -1,6 +1,6 @@
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
-import { AddressBytes, Nonce, SignableBytes } from "@iov/types";
-export declare const keyToAddress: (key: PublicKeyBundle) => AddressBytes;
+import { Address, Nonce, SignableBytes } from "@iov/types";
+export declare const keyToAddress: (key: PublicKeyBundle) => Address;
 export declare const keyToIdentifier: (key: PublicKeyBundle) => Uint8Array;
 export declare const appendSignBytes: (bz: Uint8Array, chainId: ChainId, nonce: Nonce) => SignableBytes;
 export declare const tendermintHash: (data: Uint8Array) => Uint8Array;

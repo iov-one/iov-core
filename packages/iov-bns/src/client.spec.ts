@@ -2,7 +2,7 @@ import Long from "long";
 
 import { Encoding } from "@iov/encoding";
 import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@iov/keycontrol";
-import { AddressBytes, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/types";
+import { Address, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/types";
 
 import { Client } from "./client";
 import { bnsCodec } from "./txcodec";
@@ -20,7 +20,7 @@ describe("Integration tests with bov+tendermint", () => {
   // the first key generated from this mneumonic produces the given address
   // this account has money in the genesis file (setup in docker)
   const mnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
-  const expectedFaucetAddress = Encoding.fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282") as AddressBytes;
+  const expectedFaucetAddress = Encoding.fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282") as Address;
   const cash = "CASH" as TokenTicker;
 
   // TODO: had issues with websockets? check again later, maybe they need to close at end?
@@ -40,7 +40,7 @@ describe("Integration tests with bov+tendermint", () => {
     return ids[0];
   };
 
-  const getNonce = async (client: Client, addr: AddressBytes): Promise<Nonce> => {
+  const getNonce = async (client: Client, addr: Address): Promise<Nonce> => {
     const data = (await client.getNonce({ address: addr })).data;
     return data.length === 0 ? (Long.fromInt(0) as Nonce) : data[0].nonce;
   };

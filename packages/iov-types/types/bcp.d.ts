@@ -1,6 +1,6 @@
 import { ChainId, PostableBytes, PublicKeyBundle, TxQuery } from "@iov/tendermint-types";
 
-import { AddressBytes, SignedTransaction } from "./signables";
+import { Address, SignedTransaction } from "./signables";
 import { Nonce, TokenTicker } from "./transactions";
 
 /*
@@ -23,7 +23,7 @@ export interface BcpQueryMetadata {
 export type BcpData = BcpAccount | BcpNonce | BcpTicker;
 
 export interface BcpAccount {
-  readonly address: AddressBytes;
+  readonly address: Address;
   readonly name?: string;
   readonly balance: ReadonlyArray<BcpCoin>;
 }
@@ -34,7 +34,7 @@ export interface BcpCoin extends BcpTicker {
 }
 
 export interface BcpNonce {
-  readonly address: AddressBytes;
+  readonly address: Address;
   readonly publicKey: PublicKeyBundle;
   readonly nonce: Nonce;
 }
@@ -56,7 +56,7 @@ export interface BcpTransactionResponse {
 }
 
 export interface BcpAddressQuery {
-  address: AddressBytes;
+  address: Address;
 }
 
 export interface BcpValueNameQuery {

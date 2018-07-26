@@ -3,14 +3,7 @@ import Long from "long";
 import { bnsCodec, Client as BnsClient } from "@iov/bns";
 import { PublicIdentity, UserProfile } from "@iov/keycontrol";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
-import {
-  AddressBytes,
-  BcpTransactionResponse,
-  Nonce,
-  TxCodec,
-  UnsignedTransaction,
-  Web4Read,
-} from "@iov/types";
+import { Address, BcpTransactionResponse, Nonce, TxCodec, UnsignedTransaction, Web4Read } from "@iov/types";
 
 // Web4Write is currently bound to one chain.
 // TODO: We can expand this later to multichain
@@ -44,13 +37,13 @@ export class Web4Write {
     this.knownChains.set(chainId, connector);
   }
 
-  public keyToAddress(chainId: ChainId, key: PublicKeyBundle): AddressBytes {
+  public keyToAddress(chainId: ChainId, key: PublicKeyBundle): Address {
     return this.mustGet(chainId).codec.keyToAddress(key);
   }
 
   // getNonce will return one value for the address, 0 if not found
   // not the ful bcp info.
-  public async getNonce(chainId: ChainId, addr: AddressBytes): Promise<Nonce> {
+  public async getNonce(chainId: ChainId, addr: Address): Promise<Nonce> {
     const nonce = await this.mustGet(chainId).client.getNonce({ address: addr });
     return nonce.data.length === 0 ? (Long.fromInt(0) as Nonce) : nonce.data[0].nonce;
   }

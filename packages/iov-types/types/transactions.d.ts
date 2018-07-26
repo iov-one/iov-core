@@ -3,7 +3,7 @@ import { As } from "type-tagger";
 
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 
-import { AddressBytes } from "./signables";
+import { Address } from "./signables";
 
 export type Nonce = Long & As<"nonce">;
 
@@ -18,7 +18,7 @@ export type SwapIdString = string & As<"swap-id">;
 
 // TODO: we may want to make this a union type BNSName | PublicKey | Address
 // but waiting on clarity on BNS spec, for now simplest working solution...
-export type RecipientId = AddressBytes;
+export type RecipientId = Address;
 
 export interface FungibleToken {
   readonly whole: number;

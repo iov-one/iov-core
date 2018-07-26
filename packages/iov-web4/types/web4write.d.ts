@@ -1,7 +1,7 @@
 import { Client as BnsClient } from "@iov/bns";
 import { UserProfile } from "@iov/keycontrol";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
-import { AddressBytes, BcpTransactionResponse, Nonce, TxCodec, UnsignedTransaction, Web4Read } from "@iov/types";
+import { Address, BcpTransactionResponse, Nonce, TxCodec, UnsignedTransaction, Web4Read } from "@iov/types";
 export declare class Web4Write {
     readonly profile: UserProfile;
     private readonly knownChains;
@@ -9,8 +9,8 @@ export declare class Web4Write {
     chainIds(): ReadonlyArray<ChainId>;
     reader(chainId: ChainId): Web4Read;
     addChain(connector: ChainConnector): Promise<void>;
-    keyToAddress(chainId: ChainId, key: PublicKeyBundle): AddressBytes;
-    getNonce(chainId: ChainId, addr: AddressBytes): Promise<Nonce>;
+    keyToAddress(chainId: ChainId, key: PublicKeyBundle): Address;
+    getNonce(chainId: ChainId, addr: Address): Promise<Nonce>;
     signAndCommit(tx: UnsignedTransaction, keyring: number): Promise<BcpTransactionResponse>;
     private mustGet;
 }
