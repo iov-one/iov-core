@@ -5,39 +5,75 @@ some milestones
 
 The Roadmap is a work-in-progress, so please add comments to help clarify and point out missing items
 
-## Web4-write proof of concept
+## Web4-read/write MVP
 
 MVP just shows we can generate HD keys, save/load them, and use them to sign transactions and send tokens on the network.
 
 - [x] HD Keyring works (with fixed path)
-- [ ] KeyringController handles persistence
+- [x] KeyringController handles persistence
 - [x] We can encode the sendtx transaction for bcp-demo (`bns-codec`)
-- [ ] Tendermint RPC client
-- [ ] Client wrapper to parse data as defined in [bcp-minimal](https://github.com/iov-one/bcp-spec/blob/master/library/web4/rpc/README.md#bcp-minimal)
-- [ ] Simple cli (using repl) tool that will use `web4` codebase to sign and send transactions. Queries proper nonce from the chain
+- [x] Tendermint RPC client
+- [x] Client wrapper to parse data as defined in [bcp-minimal](https://github.com/iov-one/bcp-spec/blob/master/library/web4/rpc/README.md#bcp-minimal)
+- [x] Simple cli (using repl) tool that will use `web4` codebase to sign and send transactions. Queries proper nonce from the chain
 
-## Web4-read proof of concept
+## Wallet integration
 
-- [ ] Clarify interface for blockchain client, including subscriptions (observable) and [bcp-basic](https://github.com/iov-one/bcp-spec/blob/master/library/web4/rpc/README.md#bcp-basic)
-- [ ] Enhance Tendermint RPC wrapper to fulfill interface
-- [ ] Produce a webapp that can show account balances using this interface
+- [ ] Cleanup, open source, and publish web4 to npm
+- [ ] Produce a webapp that can show account balances using above interface
 - [ ] Enhance webapp to show tx history
 
-## BCP-Proxy proof of concept (Web4-read MVP)
+## Ledger integration
+
+- [x] Implement ledger app that can sign BNS transactions with ed25519
+- [x] Call into ledger app from Typescript repo (iov-ledger-bns)
+- [ ] Wrap ledger into KeyringEntry interface (like Ed25519SimpleAddress)
+- [ ] Update all bcp-demo code and client code to always prehash sha512
+- [ ] Demo usage in CLI
+- [ ] Investigate possibilities and integrate into web wallet (if possible???) 
+
+## BCP-Proxy MVP for one chain
 
 - [ ] Add `bcp-client` that talks to `bcp-proxy` and fulfills bcp-basic blockchain interface (as above)
 - [ ] Add `bcp-proxy` implementation that communicates with a tendermint chain (demo: combing client and server)
 - [ ] Add `bcp-proxy` implementation that communicates with Lisk 1.0.0 chains
 - [ ] Update above webapp to query over both Lisk and Tendermint chains with a chain selector
 
-## Web4-write Extension MVP
+## Streaming interface
 
+- [ ] Clarify interface for blockchain client, including subscriptions (observable)
+- [ ] Enhance Tendermint RPC wrapper to fulfill interface
+- [ ] Enhance BCP Proxy client and server to fulfil interface
+- [ ] Update wallet to use new realtime/reactive interface
+
+## Add support for NFTs (bns only)
+
+- [ ] DEPENDENCY: implement NFTs in bcp-demo
+- [ ] Update bns protobuf definitions from new bcp protobuf files 
+- [ ] Add more transaction types and codec support
+- [ ] Define interfaces (BcpMinimal, BcpNFTs, BcpSwap, etc....)
+- [ ] Write integration tests of NFT transfer with bcp-demo
+
+## Enhancement: Ethereum Proxy
+
+- [ ] Add secp256k1 HD support to `keybase` (same hd path as ed25519simpleaddress for now)
+- [ ] Add `bcp-proxy` support to provide `bcp-basic` queries for account balance
+- [ ] Add support for sendtx with ETH (encode simple transaction and submit to blockchain)
+- [ ] Add support for 1 testnet, mainnet, and poanetwork
+- [ ] Extend sendtx and queries to handle erc20 tokens, by hardcoding a lookup of token name to contract address and sigfigs
+- [ ] Implement atomic swap contract in solidity
+- [ ] Add swap transactions and queries that interact with our uploaded swap contract (using hardcoded contract address)
+- [ ] Sign Ethereum tx with same HD path as metamask. Importing mnemonic enables use in web4 and metamask
+- [ ] Verify we can use Ethereum chains just like Lisk or `bcp-demo` chain with same webapp, and switch between chains
+
+## Web4-write Extension MVP (chrome and firefox?)
+
+- This is to create the equivalent of the metamask plugin using web4 library under the hood... one approach to securely handle keys in Blockchain UIs, but not the only
 - [ ] Define public API to call `web4-write` from webapp
 - [ ] Design simple chrome extension that displays data from `web4-write`, creates accounts, requests confirmations on signing transactions
 - [ ] Update webapp to talk to web4-write to query current account and show that balance
 - [ ] Update webapp to send "sendtx" requests to web4-write based on user input in webapp
 - [ ] MVP should show balances and allow sending in normal webapp, all keys and transactions confirmation in chrome extension
-- [ ] Support both `bcp-demo` and Lisk chains (via `bcp-proxy`)
+- [ ] Support both `bcp-demo` and Lisk (and Ethereum, if implemented already) chains (via `bcp-proxy`)
 
 ## Enhancement: Flexible Web4-Read
 Depends on: Backend implementation and deployment of "bcp-plus" chain as `bcp-demo` extended
@@ -79,16 +115,6 @@ Depends on: BNS implementation on backend completed and deployed
 - [ ] Integrate this with tendermint rpc to produce secure query
 - [ ] Use Secure Queries to query BNS chain, provide a "root of trust" header in the app
 - TODO....
-
-## Enhancement: Ethereum Proxy
-
-- [ ] Create example contract to provide support for swap and name service on Ethereum
-- [ ] Add `meta-codec` to create Ethereum transactions for the contract
-- [ ] Add definition files for 2 testnets and mainnet
-- [ ] Add `bcp-proxy` support to provide `bcp-basic` functionality using the chosen contracts
-- [ ] Add secp256k1 HD support to `keybase`
-- [ ] Sign Ethereum tx with same HD path as metamask. Importing mnemonic enables use in web4 and metamask
-- [ ] Verify we can use Ethereum chains just like Lisk or `bcp-demo` chain with same webapp, and switch between chains
 
 ## Enhancement: Electron App
 
