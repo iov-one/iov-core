@@ -2,7 +2,6 @@ import Long from "long";
 
 import { Encoding } from "@iov/encoding";
 import {
-  AddressBytes,
   Algorithm,
   ChainId,
   PrivateKeyBundle,
@@ -12,6 +11,7 @@ import {
   SignatureBytes,
 } from "@iov/tendermint-types";
 import {
+  AddressBytes,
   FullSignature,
   FungibleToken,
   Nonce,

@@ -1,6 +1,6 @@
-import { AddressBytes, ChainId, PostableBytes, PublicKeyBundle, TxQuery } from "@iov/tendermint-types";
+import { ChainId, PostableBytes, PublicKeyBundle, TxQuery } from "@iov/tendermint-types";
 
-import { SignedTransaction } from "./signables";
+import { AddressBytes, SignedTransaction } from "./signables";
 import { Nonce, TokenTicker } from "./transactions";
 
 /*

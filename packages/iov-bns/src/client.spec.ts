@@ -2,8 +2,7 @@ import Long from "long";
 
 import { Encoding } from "@iov/encoding";
 import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@iov/keycontrol";
-import { AddressBytes } from "@iov/tendermint-types";
-import { Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/types";
+import { AddressBytes, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/types";
 
 import { Client } from "./client";
 import { bnsCodec } from "./txcodec";

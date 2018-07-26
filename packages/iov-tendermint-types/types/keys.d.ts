@@ -16,5 +16,3 @@ export interface PublicKeyBundle {
   readonly algo: Algorithm;
   readonly data: PublicKeyBytes;
 }
-
-export type AddressBytes = Uint8Array & As<"address">;

@@ -6,8 +6,9 @@ import {
   txCommitSuccess,
   TxResponse,
 } from "@iov/tendermint-rpc";
-import { AddressBytes, ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
+import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 import {
+  AddressBytes,
   BcpAccount,
   BcpAccountQuery,
   BcpAddressQuery,

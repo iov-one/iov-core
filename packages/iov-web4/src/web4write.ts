@@ -2,8 +2,15 @@ import Long from "long";
 
 import { bnsCodec, Client as BnsClient } from "@iov/bns";
 import { PublicIdentity, UserProfile } from "@iov/keycontrol";
-import { AddressBytes, ChainId, PublicKeyBundle } from "@iov/tendermint-types";
-import { BcpTransactionResponse, Nonce, TxCodec, UnsignedTransaction, Web4Read } from "@iov/types";
+import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
+import {
+  AddressBytes,
+  BcpTransactionResponse,
+  Nonce,
+  TxCodec,
+  UnsignedTransaction,
+  Web4Read,
+} from "@iov/types";
 
 // Web4Write is currently bound to one chain.
 // TODO: We can expand this later to multichain

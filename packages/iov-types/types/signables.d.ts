@@ -1,6 +1,6 @@
 import { As } from "type-tagger";
 
-import { AddressBytes, ChainId, PublicKeyBundle, SignatureBytes, PostableBytes } from "@iov/tendermint-types";
+import { ChainId, PublicKeyBundle, SignatureBytes, PostableBytes } from "@iov/tendermint-types";
 
 import { Nonce, UnsignedTransaction } from "./transactions";
 
@@ -40,6 +40,9 @@ export interface SignedTransaction {
   // signatures can be appended as this is signed
   readonly otherSignatures: ReadonlyArray<FullSignature>;
 }
+
+// A codec specific address
+export type AddressBytes = Uint8Array & As<"address">;
 
 export interface TxReadCodec {
   // parseBytes will recover bytes from the blockchain into a format we can use

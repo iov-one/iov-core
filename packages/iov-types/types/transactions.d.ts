@@ -1,7 +1,9 @@
 import Long from "long";
 import { As } from "type-tagger";
 
-import { AddressBytes, ChainId, PublicKeyBundle } from "@iov/tendermint-types";
+import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
+
+import { AddressBytes } from "./signables";
 
 export type Nonce = Long & As<"nonce">;
 
