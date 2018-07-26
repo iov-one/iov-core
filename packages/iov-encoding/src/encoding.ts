@@ -74,11 +74,11 @@ export class Encoding {
   }
 
   public static toUtf8(str: string): Uint8Array {
-    return this.textEncoder.encode(str);
+    return Encoding.textEncoder.encode(str);
   }
 
   public static fromUtf8(data: Uint8Array): string {
-    return this.textDecoder.decode(data);
+    return Encoding.textDecoder.decode(data);
   }
 
   private static readonly textEncoder = (() => {
