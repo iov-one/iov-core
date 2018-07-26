@@ -4,7 +4,7 @@ import { ChainId, PublicKeyBundle, SignatureBytes, PostableBytes } from "@iov/te
 
 import { Nonce, UnsignedTransaction } from "./transactions";
 
-export type TransactionIDBytes = Uint8Array & As<"transaction-id">;
+export type TransactionIdBytes = Uint8Array & As<"transaction-id">;
 
 export type SignableBytes = Uint8Array & As<"signable">;
 
@@ -59,5 +59,5 @@ export interface TxCodec extends TxReadCodec {
   // bytesToPost includes the raw transaction appended with the various signatures
   readonly bytesToPost: (tx: SignedTransaction) => PostableBytes;
   // identifier is usually some sort of hash of bytesToPost, chain-dependent
-  readonly identifier: (tx: SignedTransaction) => TransactionIDBytes;
+  readonly identifier: (tx: SignedTransaction) => TransactionIdBytes;
 }

@@ -4,7 +4,7 @@ import {
   PrehashType,
   SignedTransaction,
   SigningJob,
-  TransactionIDBytes,
+  TransactionIdBytes,
   TxCodec,
   UnsignedTransaction,
 } from "@iov/types";
@@ -34,9 +34,9 @@ export const bnsCodec: TxCodec = {
   },
 
   // identifier is usually some sort of hash of bytesToPost, chain-dependent
-  identifier: (tx: SignedTransaction): TransactionIDBytes => {
+  identifier: (tx: SignedTransaction): TransactionIdBytes => {
     const post = bnsCodec.bytesToPost(tx);
-    return tendermintHash(post) as TransactionIDBytes;
+    return tendermintHash(post) as TransactionIdBytes;
   },
 
   // parseBytes will recover bytes from the blockchain into a format we can use
