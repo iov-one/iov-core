@@ -211,5 +211,12 @@ describe("Encoding", () => {
       expect(Encoding.fromRfc3339("2002-10-02T11:12:13.123Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 123)));
       expect(Encoding.fromRfc3339("2002-10-02T11:12:13.999Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 999)));
     });
+
+    it("accepts space separators", () => {
+      // https://tools.ietf.org/html/rfc3339#section-5.6
+      // Applications using this syntax may choose, for the sake of readability,
+      // to specify a full-date and full-time separated by (say) a space character.
+      expect(Encoding.fromRfc3339("2002-10-02 11:12:13Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13)));
+    });
   });
 });
