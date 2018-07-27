@@ -61,6 +61,6 @@ export class Base64 {
 
 export class DateTime {
   public static decode(dateTimeString: DateTimeString): ReadonlyDate {
-    return new ReadonlyDate(dateTimeString);
+    return Encoding.fromRfc3339(dateTimeString);
   }
 }
