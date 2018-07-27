@@ -141,6 +141,23 @@ export class Encoding {
     );
   }
 
+  public static toRfc3339(date: Date | ReadonlyDate): string {
+    function padded(integer: number, length: number = 2): string {
+      const filled = "00000" + integer.toString();
+      return filled.substring(filled.length - length);
+    }
+
+    const year = date.getUTCFullYear();
+    const month = padded(date.getUTCMonth() + 1);
+    const day = padded(date.getUTCDate());
+    const hour = padded(date.getUTCHours());
+    const minute = padded(date.getUTCMinutes());
+    const second = padded(date.getUTCSeconds());
+    const ms = padded(date.getUTCMilliseconds(), 3);
+
+    return `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}Z`;
+  }
+
   private static isValidUtf8(data: Uint8Array): boolean {
     const toStringAndBack = Buffer.from(Buffer.from(data).toString("utf8"), "utf8");
     return Buffer.compare(data, toStringAndBack) === 0;

@@ -9,5 +9,6 @@ export declare class Encoding {
     static toUtf8(str: string): Uint8Array;
     static fromUtf8(data: Uint8Array): string;
     static fromRfc3339(str: string): ReadonlyDate;
+    static toRfc3339(date: Date | ReadonlyDate): string;
     private static isValidUtf8;
 }

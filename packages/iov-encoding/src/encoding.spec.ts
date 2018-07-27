@@ -255,5 +255,10 @@ describe("Encoding", () => {
       expect(() => Encoding.fromRfc3339("2002-10-02T11:12:13.12345Z")).toThrow();
       expect(() => Encoding.fromRfc3339("2002-10-02T11:12:13.123456Z")).toThrow();
     });
+
+    it("encodes dates", () => {
+      expect(Encoding.toRfc3339(new Date(Date.UTC(0, 0, 1, 0, 0, 0)))).toEqual("1900-01-01T00:00:00.000Z");
+      expect(Encoding.toRfc3339(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 456)))).toEqual("2002-10-02T11:12:13.456Z");
+    });
   });
 });
