@@ -218,5 +218,42 @@ describe("Encoding", () => {
       // to specify a full-date and full-time separated by (say) a space character.
       expect(Encoding.fromRfc3339("2002-10-02 11:12:13Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13)));
     });
+
+    it("throws for invalid format", () => {
+      // extra whitespace
+      expect(() => Encoding.fromRfc3339(" 2002-10-02T11:12:13Z")).toThrow();
+      expect(() => Encoding.fromRfc3339("2002-10-02T11:12:13Z ")).toThrow();
+      expect(() => Encoding.fromRfc3339("2002-10-02T11:12:13 Z")).toThrow();
+
+      // wrong date separators
+      expect(() => Encoding.fromRfc3339("2002:10-02T11:12:13Z")).toThrow();
+      expect(() => Encoding.fromRfc3339("2002-10:02T11:12:13Z")).toThrow();
+
+      // wrong time separators
+      expect(() => Encoding.fromRfc3339("2002-10-02T11-12:13Z")).toThrow();
+      expect(() => Encoding.fromRfc3339("2002-10-02T11:12-13Z")).toThrow();
+
+      // wrong separator
+      expect(() => Encoding.fromRfc3339("2002-10-02TT11:12:13Z")).toThrow();
+      expect(() => Encoding.fromRfc3339("2002-10-02 T11:12:13Z")).toThrow();
+      expect(() => Encoding.fromRfc3339("2002-10-02T 11:12:13Z")).toThrow();
+      expect(() => Encoding.fromRfc3339("2002-10-02t11:12:13Z")).toThrow();
+      expect(() => Encoding.fromRfc3339("2002-10-02x11:12:13Z")).toThrow();
+      expect(() => Encoding.fromRfc3339("2002-10-02311:12:13Z")).toThrow();
+      expect(() => Encoding.fromRfc3339("2002-10-02.11:12:13Z")).toThrow();
+
+      // wrong time zone
+      expect(() => Encoding.fromRfc3339("2002-10-02T11:12:13")).toThrow();
+      expect(() => Encoding.fromRfc3339("2002-10-02T11:12:13z")).toThrow();
+      expect(() => Encoding.fromRfc3339("2002-10-02T11:12:13 00:00")).toThrow();
+      expect(() => Encoding.fromRfc3339("2002-10-02T11:12:13+0000")).toThrow();
+
+      // unsupported second fraction digits
+      expect(() => Encoding.fromRfc3339("2002-10-02T11:12:13.1Z")).toThrow();
+      expect(() => Encoding.fromRfc3339("2002-10-02T11:12:13.12Z")).toThrow();
+      expect(() => Encoding.fromRfc3339("2002-10-02T11:12:13.1234Z")).toThrow();
+      expect(() => Encoding.fromRfc3339("2002-10-02T11:12:13.12345Z")).toThrow();
+      expect(() => Encoding.fromRfc3339("2002-10-02T11:12:13.123456Z")).toThrow();
+    });
   });
 });
