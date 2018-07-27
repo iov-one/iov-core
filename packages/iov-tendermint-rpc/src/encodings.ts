@@ -60,10 +60,6 @@ export class Base64 {
 }
 
 export class DateTime {
-  public static encode(date: ReadonlyDate): DateTimeString {
-    return date.toISOString() as DateTimeString;
-  }
-
   public static decode(dateTimeString: DateTimeString): ReadonlyDate {
     return new ReadonlyDate(dateTimeString);
   }
