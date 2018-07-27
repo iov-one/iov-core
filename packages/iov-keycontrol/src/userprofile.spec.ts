@@ -226,6 +226,21 @@ describe("UserProfile", () => {
     await db.close();
   });
 
+  it("stored in and loaded from storage when containing special chars", async () => {
+    const db = levelup(MemDownConstructor<string, string>());
+
+    const original = new UserProfile();
+    original.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
+    original.setEntryLabel(0, "My secret 😛");
+
+    await original.storeIn(db, defaultEncryptionPassword);
+    const restored = await UserProfile.loadFrom(db, defaultEncryptionPassword);
+
+    expect(restored.entryLabels.value).toEqual(original.entryLabels.value);
+
+    await db.close();
+  });
+
   it("fails when loading with wrong key", async () => {
     const db = levelup(MemDownConstructor<string, string>());
 

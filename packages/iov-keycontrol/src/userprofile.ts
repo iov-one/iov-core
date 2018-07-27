@@ -19,7 +19,7 @@ import { Keyring, KeyringEntry, KeyringSerializationString, LocalIdentity, Publi
 import { DatabaseUtils } from "./utils";
 import { DefaultValueProducer, ValueAndUpdates } from "./valueandupdates";
 
-const { toAscii, fromAscii, fromHex, toHex } = Encoding;
+const { toAscii, fromHex, toHex, fromUtf8, toUtf8 } = Encoding;
 
 const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
@@ -66,7 +66,7 @@ export class UserProfile {
     const keyringNonce = keyringBundle.slice(0, 12) as Chacha20poly1305IetfNonce;
     const keyringCiphertext = keyringBundle.slice(12) as Chacha20poly1305IetfCiphertext;
     const decrypted = await Chacha20poly1305Ietf.decrypt(keyringCiphertext, encryptionKey, keyringNonce);
-    const keyringSerialization = fromAscii(decrypted) as KeyringSerializationString;
+    const keyringSerialization = fromUtf8(decrypted) as KeyringSerializationString;
 
     // create objects
     const createdAt = new ReadonlyDate(createdAtFromStorage); // TODO: add strict RFC 3339 parser
@@ -131,7 +131,7 @@ export class UserProfile {
       userProfileSalt,
       weakPasswordHashingOptions,
     )) as Chacha20poly1305IetfKey;
-    const keyringPlaintext = toAscii(this.keyring.serialize()) as Chacha20poly1305IetfMessage;
+    const keyringPlaintext = toUtf8(this.keyring.serialize()) as Chacha20poly1305IetfMessage;
     const keyringNonce = await UserProfile.makeNonce();
     const keyringCiphertext = await Chacha20poly1305Ietf.encrypt(
       keyringPlaintext,

@@ -72,4 +72,35 @@ export class Encoding {
 
     return fromNums(Array.from(data)).join("");
   }
+
+  public static toUtf8(str: string): Uint8Array {
+    // Browser and future nodejs (https://github.com/nodejs/node/issues/20365)
+    if (typeof TextEncoder !== "undefined") {
+      return new TextEncoder().encode(str);
+    }
+
+    // Use Buffer hack instead of nodejs util.TextEncoder to ensure
+    // webpack does not bundle the util module for browsers.
+    return new Uint8Array(Buffer.from(str, "utf8"));
+  }
+
+  public static fromUtf8(data: Uint8Array): string {
+    // Browser and future nodejs (https://github.com/nodejs/node/issues/20365)
+    if (typeof TextDecoder !== "undefined") {
+      return new TextDecoder("utf-8", { fatal: true }).decode(data);
+    }
+
+    // Use Buffer hack instead of nodejs util.TextDecoder to ensure
+    // webpack does not bundle the util module for browsers.
+    // Buffer.toString has no fatal option
+    if (!Encoding.isValidUtf8(data)) {
+      throw new Error("Invalid UTF8 data");
+    }
+    return Buffer.from(data).toString("utf8");
+  }
+
+  private static isValidUtf8(data: Uint8Array): boolean {
+    const toStringAndBack = Buffer.from(Buffer.from(data).toString("utf8"), "utf8");
+    return Buffer.compare(data, toStringAndBack) === 0;
+  }
 }
