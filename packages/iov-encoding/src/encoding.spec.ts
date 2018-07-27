@@ -165,4 +165,51 @@ describe("Encoding", () => {
       expect(() => Encoding.fromUtf8(new Uint8Array([0xf0, 0x80, 0x80]))).toThrow();
     });
   });
+
+  describe("RFC3339", () => {
+    it("parses dates with different time zones", () => {
+      // time zone +/- 0
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+00:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-00:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13)));
+
+      // time zone positive (full hours)
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+01:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 - 1, 12, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+02:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 - 2, 12, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+03:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 - 3, 12, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+11:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 - 11, 12, 13)));
+
+      // time zone negative (full hours)
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-01:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 + 1, 12, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-02:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 + 2, 12, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-03:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 + 3, 12, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-11:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 + 11, 12, 13)));
+
+      // time zone positive (minutes only)
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+00:01")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12 - 1, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+00:30")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12 - 30, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+00:45")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12 - 45, 13)));
+
+      // time zone negative (minutes only)
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-00:01")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12 + 1, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-00:30")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12 + 30, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-00:45")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12 + 45, 13)));
+
+      // time zone positive (hours and minutes)
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+01:01")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 - 1, 12 - 1, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+04:30")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 - 4, 12 - 30, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+10:20")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 - 10, 12 - 20, 13)));
+
+      // time zone negative (hours and minutes)
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-01:01")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 + 1, 12 + 1, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-04:30")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 + 4, 12 + 30, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-10:20")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 + 10, 12 + 20, 13)));
+    });
+
+    it("parses dates with milliseconds", () => {
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.000Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.123Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 123)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.999Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 999)));
+    });
+  });
 });
