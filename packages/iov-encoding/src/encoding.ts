@@ -134,10 +134,10 @@ export class Encoding {
       tzOffsetMinutes = +matches[8].substring(4, 6);
     }
 
-    const tzOffset = tzOffsetSign * (tzOffsetHours * 60 + tzOffsetMinutes);
+    const tzOffset = tzOffsetSign * (tzOffsetHours * 60 + tzOffsetMinutes) * 60; // seconds
 
     return new ReadonlyDate(
-      ReadonlyDate.UTC(year, month - 1, day, hour, minute - tzOffset, second, milliSeconds),
+      ReadonlyDate.UTC(year, month - 1, day, hour, minute, second, milliSeconds) - tzOffset * 1000,
     );
   }
 
