@@ -19,7 +19,7 @@ import { Keyring, KeyringEntry, KeyringSerializationString, LocalIdentity, Publi
 import { DatabaseUtils } from "./utils";
 import { DefaultValueProducer, ValueAndUpdates } from "./valueandupdates";
 
-const { toAscii, fromHex, toHex, fromUtf8, toUtf8 } = Encoding;
+const { toAscii, fromHex, toHex, fromUtf8, toUtf8, toRfc3339, fromRfc3339 } = Encoding;
 
 const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
@@ -69,7 +69,7 @@ export class UserProfile {
     const keyringSerialization = fromUtf8(decrypted) as KeyringSerializationString;
 
     // create objects
-    const createdAt = new ReadonlyDate(createdAtFromStorage); // TODO: add strict RFC 3339 parser
+    const createdAt = fromRfc3339(createdAtFromStorage);
     const keyring = new Keyring(keyringSerialization);
     return new UserProfile({ createdAt, keyring });
   }
@@ -140,7 +140,7 @@ export class UserProfile {
     );
 
     // create storage values (raw strings)
-    const createdAtForStorage = this.createdAt.toISOString();
+    const createdAtForStorage = toRfc3339(this.createdAt);
     const keyringForStorage = toHex(keyringNonce) + toHex(keyringCiphertext);
 
     // store
