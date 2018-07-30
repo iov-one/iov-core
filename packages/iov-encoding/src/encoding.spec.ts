@@ -293,6 +293,10 @@ describe("Encoding", () => {
       expect(() => Encoding.fromRfc3339("2002-10-02T11:12:13z")).toThrow();
       expect(() => Encoding.fromRfc3339("2002-10-02T11:12:13 00:00")).toThrow();
       expect(() => Encoding.fromRfc3339("2002-10-02T11:12:13+0000")).toThrow();
+
+      // wrong fractional seconds
+      expect(() => Encoding.fromRfc3339("2018-07-30T19:21:12345Z")).toThrow();
+      expect(() => Encoding.fromRfc3339("2018-07-30T19:21:12.Z")).toThrow();
     });
 
     it("encodes dates", () => {

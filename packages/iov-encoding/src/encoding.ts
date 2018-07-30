@@ -101,7 +101,7 @@ export class Encoding {
   }
 
   public static fromRfc3339(str: string): ReadonlyDate {
-    const rfc3339Matcher = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2}):(\d{2})\.?(\d{1,9})?((?:[+-]\d{2}:\d{2})|Z)$/;
+    const rfc3339Matcher = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2}):(\d{2})(\.\d{1,9})?((?:[+-]\d{2}:\d{2})|Z)$/;
 
     const matches = rfc3339Matcher.exec(str);
     if (!matches) {
@@ -114,7 +114,9 @@ export class Encoding {
     const hour = +matches[4];
     const minute = +matches[5];
     const second = +matches[6];
-    const milliSeconds = matches[7] ? Math.floor(+matches[7] * 10 ** (3 - matches[7].length)) : 0;
+
+    // fractional seconds match either undefined or a string like ".1", ".123456789"
+    const milliSeconds = matches[7] ? Math.floor(+matches[7] * 1000) : 0;
 
     // tslint:disable-next-line:no-let
     let tzOffsetSign: number;
