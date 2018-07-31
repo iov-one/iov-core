@@ -24,6 +24,6 @@ module.exports = [
     output: {
       path: distdir,
       filename: "tests.js",
-    }
+    },
   },
 ];
