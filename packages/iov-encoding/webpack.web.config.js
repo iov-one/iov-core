@@ -1,13 +1,17 @@
 const glob = require('glob');
 const path = require('path');
 
-module.exports = {
-  entry: {
-    "index.js": "./build/index.js",
-    "tests.js": glob.sync("./build/**/*.spec.js"),
+const target = "web";
+const distdir = path.join(__dirname, "dist", "web");
+
+module.exports = [
+  {
+    // bundle used for Karma tests
+    target: target,
+    entry: glob.sync("./build/**/*.spec.js"),
+    output: {
+      path: distdir,
+      filename: "tests.js",
+    },
   },
-  output: {
-    path: path.join(__dirname, "dist"),
-    filename: "[name]", // [name] is replaces by filename of the entry key
-  }
-};
+];
