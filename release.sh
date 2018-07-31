@@ -94,4 +94,6 @@ curl -sS \
   -H "Authorization: token $GITHUB_API_TOKEN" \
   -H "Content-Type: application/x-gzip" \
   --upload-file "$TMP_DIR/$BUNDLE_NAME" \
-  "$UPLOAD_URL?name=$BUNDLE_NAME"
+  "$UPLOAD_URL?name=$BUNDLE_NAME" && echo
+
+echo "Done :)"
