@@ -39,7 +39,7 @@ export SKIP_BUILD=1
 
 TMP_DIR="tmp"
 RELEASE_DIR="$TMP_DIR/web4"
-BUNDLE_NAME="web4-bundle.$TAG.tgz"
+BUNDLE_NAME="web4-bundle.$TAG.tar.gz"
 mkdir -p "$RELEASE_DIR"
 rm -rf "${RELEASE_DIR:?}"/*
 cp "packages/$PACKAGE_DIR/dist/node/index.js" "$RELEASE_DIR"
