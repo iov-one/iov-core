@@ -31,8 +31,8 @@
     "axios": "^0.18.0",
     "events": "^3.0.0",
     "isomorphic-ws": "^4.0.1",
-    "readonly-date": "0.0.0",
-    "type-tagger": "^0.0.0",
+    "readonly-date": "^1.0.0",
+    "type-tagger": "^1.0.0",
     "ws": "^5.2.2"
   }
 }

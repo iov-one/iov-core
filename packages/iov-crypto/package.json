@@ -31,7 +31,7 @@
     "libsodium-wrappers": "^0.7.3",
     "pbkdf2": "^3.0.16",
     "sha.js": "^2.4.11",
-    "type-tagger": "^0.0.0",
+    "type-tagger": "^1.0.0",
     "unorm": "^1.4.1"
   }
 }
