@@ -39,7 +39,7 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-typescript": "^3.0.12",
     "karma-webpack": "^3.0.0",
-    "lerna": "^2.10.2",
+    "lerna": "^3.0.0-rc.0",
     "memdown": "^3.0.0",
     "prettier": "^1.12.1",
     "tslint": "^5.10.0",
