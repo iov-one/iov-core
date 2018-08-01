@@ -2,16 +2,16 @@
 # yarn lockfile v1
 
 
-"@ledgerhq/hw-transport-node-hid@^4.16.0":
-  version "4.19.1"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-node-hid/-/hw-transport-node-hid-4.19.1.tgz#bc2cda4db0b4e8a3e26682bf5b81011f8eb53d82"
+"@ledgerhq/hw-transport-node-hid@~4.21.0":
+  version "4.21.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-node-hid/-/hw-transport-node-hid-4.21.0.tgz#fffdae5314bb969473a763e59fe1dfdde3fd7aed"
   dependencies:
-    "@ledgerhq/hw-transport" "^4.19.0"
+    "@ledgerhq/hw-transport" "^4.21.0"
     node-hid "^0.7.2"
 
-"@ledgerhq/hw-transport@^4.19.0":
-  version "4.19.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-4.19.0.tgz#19a804aee1bfc4abac1dc9a2a7a582e79273f991"
+"@ledgerhq/hw-transport@^4.21.0":
+  version "4.21.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-4.21.0.tgz#50f85cfe115ba3f9d5bf94755c701e927175794f"
   dependencies:
     events "^2.0.0"
 
