@@ -10,7 +10,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'dist/tests.js',
+      'dist/web/tests.js',
     ],
 
     client: {
