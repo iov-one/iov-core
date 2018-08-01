@@ -1,3 +1,5 @@
+import { Algorithm } from "@iov/tendermint-types";
+
 import { LedgerKeyringEntry } from "./ledgerkeyringentry";
 
 describe("LedgerKeyringEntry", () => {
@@ -21,5 +23,13 @@ describe("LedgerKeyringEntry", () => {
 
     entry.setLabel(undefined);
     expect(entry.label.value).toBeUndefined();
+  });
+
+  it("can create an identity", async () => {
+    const keyringEntry = new LedgerKeyringEntry();
+    const newIdentity = await keyringEntry.createIdentity();
+    expect(newIdentity).toBeTruthy();
+    expect(newIdentity.pubkey.algo).toEqual(Algorithm.ED25519);
+    expect(newIdentity.pubkey.data.length).toEqual(32);
   });
 });

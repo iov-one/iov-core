@@ -8,6 +8,7 @@ import {
   PublicIdentity,
   ValueAndUpdates,
 } from "@iov/keycontrol";
+import { connectToFirstLedger, getPublicKeyWithIndex, Transport } from "@iov/ledger-bns";
 import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 export class LedgerKeyringEntry implements KeyringEntry {
@@ -27,10 +28,13 @@ export class LedgerKeyringEntry implements KeyringEntry {
   }
 
   public async createIdentity(): Promise<LocalIdentity> {
+    const transport: Transport = connectToFirstLedger();
+
+    const pubkey0 = await getPublicKeyWithIndex(transport, 0);
     const newIdentity: LocalIdentity = {
       pubkey: {
         algo: Algorithm.ED25519,
-        data: new Uint8Array([]) as PublicKeyBytes,
+        data: pubkey0 as PublicKeyBytes,
       },
       label: "Yet another address",
     };
