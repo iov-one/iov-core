@@ -6,8 +6,8 @@ import { Ed25519, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/tendermint-types";
 
-import { appVersion, getPublicKey, getPublicKeyWithPath, signTransaction, signTransactionWithPath } from "./app";
-import { hardened, pendingWithoutInteractiveLedger, pendingWithoutLedger, skipInteractiveTests, skipTests } from "./common.spec";
+import { appVersion, getPublicKey, getPublicKeyWithIndex, signTransaction, signTransactionWithPath } from "./app";
+import { pendingWithoutInteractiveLedger, pendingWithoutLedger, skipInteractiveTests, skipTests } from "./common.spec";
 import { connectToFirstLedger, Transport } from "./exchange";
 
 describe("Query ledger app", () => {
@@ -50,17 +50,12 @@ describe("Query ledger app", () => {
       expect(pubkey).toBeTruthy();
       expect(pubkey.length).toEqual(32);
 
-      const pubkey0 = await getPublicKeyWithPath(transport, 0);
+      const pubkey0 = await getPublicKeyWithIndex(transport, 0);
       expect(pubkey0).toBeTruthy();
       expect(pubkey0.length).toEqual(32);
       expect(pubkey0).toEqual(pubkey);
 
-      const pubkeyZero = await getPublicKeyWithPath(transport, hardened(0));
-      expect(pubkeyZero).toBeTruthy();
-      expect(pubkeyZero.length).toEqual(32);
-      expect(pubkeyZero).toEqual(pubkey);
-
-      const pubkey1 = await getPublicKeyWithPath(transport, hardened(267));
+      const pubkey1 = await getPublicKeyWithIndex(transport, 267);
       expect(pubkey1).toBeTruthy();
       expect(pubkey1.length).toEqual(32);
       expect(pubkey1).not.toEqual(pubkey0);
@@ -150,7 +145,7 @@ describe("Sign with ledger app", () => {
     const path = 0x787;
 
     const validateSig = async () => {
-      const pubkey = await getPublicKeyWithPath(transport, path);
+      const pubkey = await getPublicKeyWithIndex(transport, path);
       expect(pubkey.length).toEqual(32);
 
       const sender: PublicKeyBundle = {

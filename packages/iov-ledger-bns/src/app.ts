@@ -1,3 +1,4 @@
+import { Slip0010RawIndex } from "@iov/crypto";
 import { Uint32 } from "@iov/encoding";
 
 import { sendChunks, Transport } from "./exchange";
@@ -12,8 +13,10 @@ const cmdAppVersion = 0xca;
 export const getPublicKey = (transport: Transport): Promise<Uint8Array> =>
   sendChunks(transport, appCode, cmdPubkey, new Uint8Array([]));
 
-export const getPublicKeyWithPath = (transport: Transport, path: number): Promise<Uint8Array> =>
-  sendChunks(transport, appCode, cmdPubkeyWithPath, encodeUint32(path));
+export const getPublicKeyWithIndex = (transport: Transport, i: number): Promise<Uint8Array> => {
+  const pathComponent = Slip0010RawIndex.hardened(i).asNumber();
+  return sendChunks(transport, appCode, cmdPubkeyWithPath, encodeUint32(pathComponent));
+};
 
 export const signTransaction = (transport: Transport, transaction: Uint8Array): Promise<Uint8Array> =>
   sendChunks(transport, appCode, cmdSign, transaction);
