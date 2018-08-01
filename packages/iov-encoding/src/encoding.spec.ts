@@ -160,7 +160,7 @@ describe("Encoding", () => {
       expect(Encoding.fromUtf8(new Uint8Array([0xf0, 0x90, 0x8d, 0x8a]))).toEqual("𐍊");
     });
 
-    it("throws in invalid utf8 bytes", () => {
+    it("throws on invalid utf8 bytes", () => {
       // Broken UTF8 example from https://github.com/nodejs/node/issues/16894
       expect(() => Encoding.fromUtf8(new Uint8Array([0xf0, 0x80, 0x80]))).toThrow();
     });
