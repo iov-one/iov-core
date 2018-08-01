@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+require('source-map-support').install();
+
 // setup Jasmine
 const Jasmine = require('jasmine');
 const jasmine = new Jasmine();
@@ -15,7 +17,7 @@ jasmine.jasmine.DEFAULT_TIMEOUT_INTERVAL = 15*1000;
 
 // setup console reporter
 const JasmineConsoleReporter = require('jasmine-console-reporter');
-const reporter = new JasmineConsoleReporter({
+const consoleReporter = new JasmineConsoleReporter({
   colors: 1,           // (0|false)|(1|true)|2
   cleanStack: 1,       // (0|false)|(1|true)|2|3
   verbosity: 4,        // (0|false)|1|2|(3|true)|4
@@ -26,5 +28,5 @@ const reporter = new JasmineConsoleReporter({
 
 // initialize and execute
 jasmine.env.clearReporters();
-jasmine.addReporter(reporter);
+jasmine.addReporter(consoleReporter);
 jasmine.execute();
