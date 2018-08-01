@@ -1,8 +1,8 @@
 import { Bip39, Ed25519, EnglishMnemonic, Slip0010, Slip0010Curve, Slip0010RawIndex } from "@iov/crypto";
 
-import { getPublicKeyWithPath } from "./app";
-import { hardened, pendingWithoutSeededLedger, skipSeededTests } from "./common.spec";
-import { connectToFirstLedger } from "./exchange";
+import { getPublicKeyWithIndex } from "./app";
+import { pendingWithoutSeededLedger, skipSeededTests } from "./common.spec";
+import { connectToFirstLedger, Transport } from "./exchange";
 
 describe("Check key derivation", () => {
   // tslint:disable-next-line:no-let
@@ -34,7 +34,7 @@ describe("Check key derivation", () => {
       expect(swPubkey).toBeTruthy();
       expect(swPubkey.length).toEqual(32);
 
-      const hwPubkey = await getPublicKeyWithPath(transport, hardened(i));
+      const hwPubkey = await getPublicKeyWithIndex(transport, i);
       expect(hwPubkey).toBeTruthy();
       expect(hwPubkey.length).toEqual(32);
 
