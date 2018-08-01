@@ -13,7 +13,9 @@ module.exports = [
       path: distdir,
       filename: "index.js",
       libraryTarget: "commonjs",
-    }
+      pathinfo: false, // avoid adding developer's absolute paths as comments
+    },
+    devtool: false, // disable source maps to avoid adding developer's absolute paths
   },
   {
     // bundle unused for now

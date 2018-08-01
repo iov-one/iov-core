@@ -65,4 +65,6 @@ package-lock.json
 
 # IDE-specific and temporary directories
 .vscode/
+
+# Release dir
 tmp/
