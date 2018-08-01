@@ -32,4 +32,16 @@ describe("LedgerKeyringEntry", () => {
     expect(newIdentity.pubkey.algo).toEqual(Algorithm.ED25519);
     expect(newIdentity.pubkey.data.length).toEqual(32);
   });
+
+  it("can load a newly created identity", async () => {
+    const keyringEntry = new LedgerKeyringEntry();
+    const newIdentity = await keyringEntry.createIdentity();
+
+    expect(keyringEntry.getIdentities().length).toEqual(1);
+
+    const firstIdentity = keyringEntry.getIdentities()[0];
+    expect(newIdentity.pubkey.algo).toEqual(firstIdentity.pubkey.algo);
+    expect(newIdentity.pubkey.data).toEqual(firstIdentity.pubkey.data);
+    expect(newIdentity.label).toEqual(firstIdentity.label);
+  });
 });

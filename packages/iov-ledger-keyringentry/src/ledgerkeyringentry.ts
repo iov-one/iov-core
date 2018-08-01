@@ -1,4 +1,5 @@
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
+import { Encoding } from "@iov/encoding";
 import {
   DefaultValueProducer,
   KeyringEntry,
@@ -12,15 +13,26 @@ import { connectToFirstLedger, getPublicKeyWithIndex, Transport } from "@iov/led
 import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 export class LedgerKeyringEntry implements KeyringEntry {
+  private static identityId(identity: PublicIdentity): string {
+    return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
+  }
+
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
   public readonly implementationId = "ledger" as KeyringEntryImplementationIdString;
 
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
+  // tslint:disable-next-line:readonly-array
+  private readonly identities: LocalIdentity[];
+
+  // the `i` from https://github.com/iov-one/web4/blob/master/docs/KeyBase.md#simple-addresses
+  private readonly simpleAddressIndices: Map<string, number>;
 
   constructor() {
     this.labelProducer = new DefaultValueProducer<string | undefined>(undefined);
     this.label = new ValueAndUpdates(this.labelProducer);
+    this.identities = [];
+    this.simpleAddressIndices = new Map();
   }
 
   public setLabel(label: string | undefined): void {
@@ -28,16 +40,23 @@ export class LedgerKeyringEntry implements KeyringEntry {
   }
 
   public async createIdentity(): Promise<LocalIdentity> {
+    const nextIndex = this.identities.length;
     const transport: Transport = connectToFirstLedger();
 
-    const pubkey0 = await getPublicKeyWithIndex(transport, 0);
+    const pubkey = await getPublicKeyWithIndex(transport, nextIndex);
     const newIdentity: LocalIdentity = {
       pubkey: {
         algo: Algorithm.ED25519,
-        data: pubkey0 as PublicKeyBytes,
+        data: pubkey as PublicKeyBytes,
       },
-      label: "Yet another address",
+      label: undefined,
     };
+
+    this.identities.push(newIdentity);
+
+    const newIdentityId = LedgerKeyringEntry.identityId(newIdentity);
+    this.simpleAddressIndices.set(newIdentityId, nextIndex);
+
     return newIdentity;
   }
 
@@ -46,8 +65,7 @@ export class LedgerKeyringEntry implements KeyringEntry {
   }
 
   public getIdentities(): ReadonlyArray<LocalIdentity> {
-    // TODO: implement
-    return [];
+    return this.identities;
   }
 
   public async createTransactionSignature(
