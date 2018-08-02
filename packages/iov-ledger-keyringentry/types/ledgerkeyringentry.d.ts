@@ -17,4 +17,5 @@ export declare class LedgerKeyringEntry implements KeyringEntry {
     createTransactionSignature(identity: PublicIdentity, transactionBytes: SignableBytes, prehashType: PrehashType, _: ChainId): Promise<SignatureBytes>;
     serialize(): KeyringEntrySerializationString;
     clone(): KeyringEntry;
+    private simpleAddressIndex;
 }

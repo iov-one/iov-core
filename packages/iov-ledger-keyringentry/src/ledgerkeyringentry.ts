@@ -93,12 +93,7 @@ export class LedgerKeyringEntry implements KeyringEntry {
       throw new Error("Only prehash typer sha512 is supported on the Ledger");
     }
 
-    const identityId = LedgerKeyringEntry.identityId(identity);
-    const simpleAddressIndex = this.simpleAddressIndices.get(identityId);
-    if (simpleAddressIndex === undefined) {
-      throw new Error("No address index found for identity '" + identityId + "'");
-    }
-
+    const simpleAddressIndex = this.simpleAddressIndex(identity);
     const transport: Transport = connectToFirstLedger();
     const signature = await signTransactionWithIndex(transport, transactionBytes, simpleAddressIndex);
     expect(signature.length).toEqual(64);
@@ -114,5 +109,15 @@ export class LedgerKeyringEntry implements KeyringEntry {
   public clone(): KeyringEntry {
     // TODO: implement
     return new LedgerKeyringEntry();
+  }
+
+  // This throws an exception when private key is missing
+  private simpleAddressIndex(identity: PublicIdentity): number {
+    const identityId = LedgerKeyringEntry.identityId(identity);
+    const out = this.simpleAddressIndices.get(identityId);
+    if (out === undefined) {
+      throw new Error("No address index found for identity '" + identityId + "'");
+    }
+    return out;
   }
 }
