@@ -242,7 +242,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
 
   describe("Keyring integration", () => {
     it("entry type can be registered", () => {
-      const implementationId = new LedgerSimpleAddressKeyringEntry().implementationId;
+      const implementationId = LedgerSimpleAddressKeyringEntry.implementationId;
       Keyring.registerEntryType(implementationId, (data: KeyringEntrySerializationString) => new LedgerSimpleAddressKeyringEntry(data));
     });
   });

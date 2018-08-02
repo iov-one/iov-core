@@ -2,6 +2,7 @@ import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { KeyringEntry, KeyringEntryImplementationIdString, KeyringEntrySerializationString, LocalIdentity, PublicIdentity, ValueAndUpdates } from "@iov/keycontrol";
 import { ChainId, SignatureBytes } from "@iov/tendermint-types";
 export declare class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
+    static readonly implementationId: KeyringEntryImplementationIdString;
     private static identityId;
     private static algorithmFromString;
     readonly label: ValueAndUpdates<string | undefined>;

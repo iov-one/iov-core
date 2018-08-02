@@ -36,6 +36,8 @@ interface LedgerKeyringEntrySerialization {
 }
 
 export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
+  public static readonly implementationId = "ledger-simpleaddress" as KeyringEntryImplementationIdString;
+
   private static identityId(identity: PublicIdentity): string {
     return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
   }
@@ -53,7 +55,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
 
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
-  public readonly implementationId = "ledger-simpleaddress" as KeyringEntryImplementationIdString;
+  public readonly implementationId = LedgerSimpleAddressKeyringEntry.implementationId;
 
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
   private readonly identities: LocalIdentity[];
