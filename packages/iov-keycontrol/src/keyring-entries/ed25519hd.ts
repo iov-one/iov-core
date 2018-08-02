@@ -67,7 +67,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
       case "secp256k1":
         return Algorithm.SECP256K1;
       default:
-        throw new Error("Unknown alogorithm string found");
+        throw new Error("Unknown algorithm string found");
     }
   }
 
