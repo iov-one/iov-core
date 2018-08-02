@@ -2,7 +2,7 @@ import colors = require('colors/safe');
 const leveldown = require('leveldown')
 const levelup = require('levelup')
 import Long from "long";
-import { Address, bnsConnector, bnsFromOrToTag, ChainId, Ed25519SimpleAddressKeyringEntry, Nonce, SendTx, TokenTicker, TransactionKind, UserProfile, Web4Write, withConnectors } from "@iov/web4";
+import { Address, bnsConnector, bnsFromOrToTag, ChainId, Ed25519SimpleAddressKeyringEntry, Keyring, KeyringEntry, KeyringEntryImplementationIdString, KeyringEntrySerializationString, Nonce, SendTx, TokenTicker, TransactionKind, UserProfile, Web4Write, withConnectors } from "@iov/web4";
 import { Encoding } from '@iov/encoding';
 const { toAscii, fromHex, toHex } = Encoding;
 function wait<T>(promise: Promise<T>): T { return require('deasync2').await(promise); }
@@ -18,6 +18,10 @@ console.log(colors.yellow('    - bnsConnector'));
 console.log(colors.yellow('    - bnsFromOrToTag'));
 console.log(colors.yellow('    - ChainId'));
 console.log(colors.yellow('    - Ed25519SimpleAddressKeyringEntry'));
+console.log(colors.yellow('    - Keyring'));
+console.log(colors.yellow('    - KeyringEntry'));
+console.log(colors.yellow('    - KeyringEntryImplementationIdString'));
+console.log(colors.yellow('    - KeyringEntrySerializationString'));
 console.log(colors.yellow('    - Nonce'));
 console.log(colors.yellow('    - UserProfile'));
 console.log(colors.yellow('    - SendTx'));
