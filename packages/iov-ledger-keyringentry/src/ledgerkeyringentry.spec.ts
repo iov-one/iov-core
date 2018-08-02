@@ -244,4 +244,12 @@ describe("LedgerKeyringEntry", () => {
     // simpleAddressIndices are not exposed and cannot be compared
     // without interactively creating Ledger signatures.
   });
+
+  it("can be cloned", () => {
+    const oneIdentitySerialization = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}] }' as KeyringEntrySerializationString;
+    const original = new LedgerKeyringEntry(oneIdentitySerialization);
+    const clone = original.clone();
+    expect(clone).not.toBe(original);
+    expect(clone.serialize()).toEqual(original.serialize());
+  });
 });

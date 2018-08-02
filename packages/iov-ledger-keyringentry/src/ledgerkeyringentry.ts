@@ -178,8 +178,7 @@ export class LedgerKeyringEntry implements KeyringEntry {
   }
 
   public clone(): KeyringEntry {
-    // TODO: implement
-    return new LedgerKeyringEntry();
+    return new LedgerKeyringEntry(this.serialize());
   }
 
   // This throws an exception when private key is missing
