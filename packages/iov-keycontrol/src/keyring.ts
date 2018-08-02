@@ -38,6 +38,16 @@ export type KeyringEntryDeserializer = (data: KeyringEntrySerializationString) =
 A Keyring a collection of KeyringEntrys
 */
 export class Keyring {
+  public static registerEntryType(
+    implementationId: KeyringEntryImplementationIdString,
+    deserializer: KeyringEntryDeserializer,
+  ): void {
+    if (Keyring.deserializationRegistry.has(implementationId)) {
+      throw new Error(`Entry type "${implementationId}" already registered.`);
+    }
+    Keyring.deserializationRegistry.set(implementationId, deserializer);
+  }
+
   private static readonly deserializationRegistry = new Map([
     ["ed25519", (data: KeyringEntrySerializationString) => new Ed25519KeyringEntry(data)],
     [
