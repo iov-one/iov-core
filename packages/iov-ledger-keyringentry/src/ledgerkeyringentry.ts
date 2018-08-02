@@ -17,6 +17,26 @@ import {
 } from "@iov/ledger-bns";
 import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
+interface PubkeySerialization {
+  readonly algo: string;
+  readonly data: string;
+}
+
+interface LocalIdentitySerialization {
+  readonly pubkey: PubkeySerialization;
+  readonly label?: string;
+}
+
+interface IdentitySerialization {
+  readonly localIdentity: LocalIdentitySerialization;
+  readonly simpleAddressIndex: number;
+}
+
+interface LedgerKeyringEntrySerialization {
+  readonly label: string | undefined;
+  readonly identities: ReadonlyArray<IdentitySerialization>;
+}
+
 export class LedgerKeyringEntry implements KeyringEntry {
   private static identityId(identity: PublicIdentity): string {
     return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
@@ -101,8 +121,23 @@ export class LedgerKeyringEntry implements KeyringEntry {
   }
 
   public serialize(): KeyringEntrySerializationString {
-    // TODO: implement
-    return "" as KeyringEntrySerializationString;
+    const out: LedgerKeyringEntrySerialization = {
+      label: this.label.value,
+      identities: this.identities.map(identity => {
+        const simpleAddressIndex = this.simpleAddressIndex(identity);
+        return {
+          localIdentity: {
+            pubkey: {
+              algo: identity.pubkey.algo,
+              data: Encoding.toHex(identity.pubkey.data),
+            },
+            label: identity.label,
+          },
+          simpleAddressIndex: simpleAddressIndex,
+        };
+      }),
+    };
+    return JSON.stringify(out) as KeyringEntrySerializationString;
   }
 
   public clone(): KeyringEntry {

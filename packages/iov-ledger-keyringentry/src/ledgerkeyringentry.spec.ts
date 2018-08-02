@@ -146,4 +146,47 @@ describe("LedgerKeyringEntry", () => {
     const ok = await Ed25519.verifySignature(signature, prehash, newIdentity.pubkey.data);
     expect(ok).toEqual(true);
   });
+
+  it("can serialize multiple identities", async () => {
+    pendingWithoutLedger();
+
+    const entry = new LedgerKeyringEntry();
+    entry.setLabel("entry with 3 identities");
+    const identity1 = await entry.createIdentity();
+    const identity2 = await entry.createIdentity();
+    const identity3 = await entry.createIdentity();
+    entry.setIdentityLabel(identity1, undefined);
+    entry.setIdentityLabel(identity2, "");
+    entry.setIdentityLabel(identity3, "foo");
+
+    const serialized = entry.serialize();
+    expect(serialized).toBeTruthy();
+    expect(serialized.length).toBeGreaterThan(100);
+
+    const decodedJson = JSON.parse(serialized);
+    expect(decodedJson).toBeTruthy();
+    expect(decodedJson.label).toEqual("entry with 3 identities");
+    expect(decodedJson.secret).toMatch(/^[a-z]+( [a-z]+)*$/);
+    expect(decodedJson.identities.length).toEqual(3);
+    expect(decodedJson.identities[0].localIdentity).toBeTruthy();
+    expect(decodedJson.identities[0].localIdentity.pubkey.algo).toEqual("ed25519");
+    expect(decodedJson.identities[0].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
+    expect(decodedJson.identities[0].localIdentity.label).toBeUndefined();
+    expect(decodedJson.identities[0].simpleAddressIndex).toEqual(0);
+    expect(decodedJson.identities[1].localIdentity).toBeTruthy();
+    expect(decodedJson.identities[1].localIdentity.pubkey.algo).toEqual("ed25519");
+    expect(decodedJson.identities[1].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
+    expect(decodedJson.identities[1].localIdentity.label).toEqual("");
+    expect(decodedJson.identities[1].simpleAddressIndex).toEqual(1);
+    expect(decodedJson.identities[2].localIdentity).toBeTruthy();
+    expect(decodedJson.identities[2].localIdentity.pubkey.algo).toEqual("ed25519");
+    expect(decodedJson.identities[2].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
+    expect(decodedJson.identities[2].localIdentity.label).toEqual("foo");
+    expect(decodedJson.identities[2].simpleAddressIndex).toEqual(2);
+
+    // keys are different
+    expect(decodedJson.identities[0].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[1].localIdentity.pubkey.data);
+    expect(decodedJson.identities[1].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[2].localIdentity.pubkey.data);
+    expect(decodedJson.identities[2].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[0].localIdentity.pubkey.data);
+  });
 });
