@@ -106,3 +106,37 @@ UserProfile {
   createdAt: 2018-07-04T16:07:14.583Z,
   keyring: Keyring { entries: [ [Object] ] } }
 ```
+
+## Ledger usage
+
+Do 1. and 2. like above
+
+```
+> import { LedgerSimpleAddressKeyringEntry } from "@iov/ledger-bns";
+> const profile = new UserProfile();
+> profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral"))
+> profile.addEntry(new LedgerSimpleAddressKeyringEntry())
+
+> profile.getIdentities(0)
+[]
+
+> profile.getIdentities(1)
+[]
+
+> const softwareIdentity = wait(profile.createIdentity(0))
+> const hardwareIdentity = wait(profile.createIdentity(1))
+
+> softwareIdentity.pubkey
+{ algo: 'ed25519',
+  data:
+   Uint8Array [
+     84,
+     114, ...
+
+> hardwareIdentity.pubkey
+{ algo: 'ed25519',
+  data:
+   Uint8Array [
+     84,
+     114, ...
+```
