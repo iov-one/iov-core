@@ -95,9 +95,8 @@ export class LedgerKeyringEntry implements KeyringEntry {
 
     const simpleAddressIndex = this.simpleAddressIndex(identity);
     const transport: Transport = connectToFirstLedger();
-    const signature = await signTransactionWithIndex(transport, transactionBytes, simpleAddressIndex);
-    expect(signature.length).toEqual(64);
 
+    const signature = await signTransactionWithIndex(transport, transactionBytes, simpleAddressIndex);
     return signature as SignatureBytes;
   }
 
