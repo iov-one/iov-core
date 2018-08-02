@@ -2,6 +2,13 @@ import { Algorithm } from "@iov/tendermint-types";
 
 import { LedgerKeyringEntry } from "./ledgerkeyringentry";
 
+const skipTests = (): boolean => !process.env.LEDGER_ENABLED && !process.env.LEDGER_ALL;
+const pendingWithoutLedger = (): void => {
+  if (skipTests()) {
+    pending("Set LEDGER_ENABLED to run ledger tests");
+  }
+};
+
 describe("LedgerKeyringEntry", () => {
   it("can be constructed", () => {
     const keyringEntry = new LedgerKeyringEntry();
@@ -26,6 +33,8 @@ describe("LedgerKeyringEntry", () => {
   });
 
   it("can create an identity", async () => {
+    pendingWithoutLedger();
+
     const keyringEntry = new LedgerKeyringEntry();
     const newIdentity = await keyringEntry.createIdentity();
     expect(newIdentity).toBeTruthy();
@@ -34,6 +43,8 @@ describe("LedgerKeyringEntry", () => {
   });
 
   it("can load a newly created identity", async () => {
+    pendingWithoutLedger();
+
     const keyringEntry = new LedgerKeyringEntry();
     const newIdentity = await keyringEntry.createIdentity();
 
