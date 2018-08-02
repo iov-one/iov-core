@@ -7,23 +7,10 @@ import { Encoding } from "@iov/encoding";
 import { KeyringEntrySerializationString } from "@iov/keycontrol";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
+import { pendingWithoutInteractiveLedger, pendingWithoutLedger } from "./common.spec";
 import { LedgerSimpleAddressKeyringEntry } from "./ledgersimpleaddresskeyringentry";
 
 const { toHex } = Encoding;
-
-const skipTests = (): boolean => !process.env.LEDGER_ENABLED && !process.env.LEDGER_ALL;
-const pendingWithoutLedger = (): void => {
-  if (skipTests()) {
-    pending("Set LEDGER_ENABLED to run ledger tests");
-  }
-};
-
-const skipInteractiveTests = (): boolean => !process.env.LEDGER_INTERACTIVE && !process.env.LEDGER_ALL;
-const pendingWithoutInteractiveLedger = (): void => {
-  if (skipInteractiveTests()) {
-    pending("Set LEDGER_INTERACTIVE to run ledger tests");
-  }
-};
 
 describe("LedgerSimpleAddressKeyringEntry", () => {
   it("can be constructed", () => {

@@ -10,13 +10,10 @@ import {
   PublicIdentity,
   ValueAndUpdates,
 } from "@iov/keycontrol";
-import {
-  connectToFirstLedger,
-  getPublicKeyWithIndex,
-  signTransactionWithIndex,
-  Transport,
-} from "@iov/ledger-bns";
 import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
+
+import { getPublicKeyWithIndex, signTransactionWithIndex } from "./app";
+import { connectToFirstLedger, Transport } from "./exchange";
 
 interface PubkeySerialization {
   readonly algo: string;

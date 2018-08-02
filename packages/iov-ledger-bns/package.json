@@ -26,6 +26,7 @@
     "@iov/bns": "^0.0.0",
     "@iov/crypto": "^0.0.0",
     "@iov/encoding": "^0.0.0",
+    "@iov/keycontrol": "^0.0.0",
     "@ledgerhq/hw-transport-node-hid": "~4.21.0",
     "@types/node-hid": "^0.7.0",
     "node-hid": "^0.7.3"
