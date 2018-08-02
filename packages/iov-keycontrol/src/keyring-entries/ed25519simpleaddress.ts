@@ -13,7 +13,7 @@ export class Ed25519SimpleAddressKeyringEntry extends Ed25519HdKeyringEntry {
     return super.fromMnemonic(mnemonicString) as Ed25519SimpleAddressKeyringEntry;
   }
 
-  public readonly implementationId = "ed25519simpleaddress" as KeyringEntryImplementationIdString;
+  public readonly implementationId = "ed25519-simpleaddress" as KeyringEntryImplementationIdString;
 
   public createIdentity(): Promise<LocalIdentity> {
     const nextIndex = super.getIdentities().length;

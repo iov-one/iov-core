@@ -9,13 +9,13 @@ describe("Ed25519SimpleAddressKeyringEntry", () => {
   it("returns the concrete type when creating from entropy", () => {
     const entry = Ed25519SimpleAddressKeyringEntry.fromEntropy(Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"));
     expect(entry).toEqual(jasmine.any(Ed25519SimpleAddressKeyringEntry));
-    expect(entry.implementationId).toEqual("ed25519simpleaddress");
+    expect(entry.implementationId).toEqual("ed25519-simpleaddress");
   });
 
   it("returns the concrete type when creating from mnemonic", () => {
     const entry = Ed25519SimpleAddressKeyringEntry.fromMnemonic("execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard");
     expect(entry).toEqual(jasmine.any(Ed25519SimpleAddressKeyringEntry));
-    expect(entry.implementationId).toEqual("ed25519simpleaddress");
+    expect(entry.implementationId).toEqual("ed25519-simpleaddress");
   });
 
   it("creates correct paths", done => {
@@ -44,6 +44,6 @@ describe("Ed25519SimpleAddressKeyringEntry", () => {
     const clone = original.clone();
     expect(clone).not.toBe(original);
     expect(clone.serialize()).toEqual(original.serialize());
-    expect(clone.implementationId).toEqual("ed25519simpleaddress");
+    expect(clone.implementationId).toEqual("ed25519-simpleaddress");
   });
 });

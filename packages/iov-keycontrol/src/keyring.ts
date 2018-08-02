@@ -44,7 +44,7 @@ export class Keyring {
         } catch (e) {
           throw new Error("Error creating Ed25519KeyringEntry: " + e.message);
         }
-      case "ed25519simpleaddress":
+      case "ed25519-simpleaddress":
         try {
           return new Ed25519SimpleAddressKeyringEntry(serializedEntry.data);
         } catch (e) {
