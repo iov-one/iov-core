@@ -60,8 +60,18 @@ export class LedgerKeyringEntry implements KeyringEntry {
     return newIdentity;
   }
 
-  public setIdentityLabel(_1: PublicIdentity, _2: string | undefined): void {
-    // TODO: implement
+  public setIdentityLabel(identity: PublicIdentity, label: string | undefined): void {
+    const identityId = LedgerKeyringEntry.identityId(identity);
+    const index = this.identities.findIndex(i => LedgerKeyringEntry.identityId(i) === identityId);
+    if (index === -1) {
+      throw new Error("identity with id '" + identityId + "' not found");
+    }
+
+    // tslint:disable-next-line:no-object-mutation
+    this.identities[index] = {
+      ...this.identities[index],
+      label: label,
+    };
   }
 
   public getIdentities(): ReadonlyArray<LocalIdentity> {

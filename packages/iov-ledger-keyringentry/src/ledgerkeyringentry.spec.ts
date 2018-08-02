@@ -85,4 +85,21 @@ describe("LedgerKeyringEntry", () => {
     expect(newIdentity5.pubkey.data).toEqual(lastIdentity.pubkey.data);
     expect(newIdentity5.label).toEqual(lastIdentity.label);
   });
+
+  it("can set, change and unset an identity label", async () => {
+    pendingWithoutLedger();
+
+    const keyringEntry = new LedgerKeyringEntry();
+    const newIdentity = await keyringEntry.createIdentity();
+    expect(keyringEntry.getIdentities()[0].label).toBeUndefined();
+
+    keyringEntry.setIdentityLabel(newIdentity, "foo");
+    expect(keyringEntry.getIdentities()[0].label).toEqual("foo");
+
+    keyringEntry.setIdentityLabel(newIdentity, "bar");
+    expect(keyringEntry.getIdentities()[0].label).toEqual("bar");
+
+    keyringEntry.setIdentityLabel(newIdentity, undefined);
+    expect(keyringEntry.getIdentities()[0].label).toBeUndefined();
+  });
 });
