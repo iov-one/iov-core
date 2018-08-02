@@ -1,5 +1,10 @@
+import Long from "long";
+
+import { Nonce, PrehashType, RecipientId, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { bnsCodec } from "@iov/bns";
+import { Ed25519, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { Algorithm } from "@iov/tendermint-types";
+import { Algorithm, ChainId } from "@iov/tendermint-types";
 
 import { LedgerKeyringEntry } from "./ledgerkeyringentry";
 
@@ -9,6 +14,13 @@ const skipTests = (): boolean => !process.env.LEDGER_ENABLED && !process.env.LED
 const pendingWithoutLedger = (): void => {
   if (skipTests()) {
     pending("Set LEDGER_ENABLED to run ledger tests");
+  }
+};
+
+const skipInteractiveTests = (): boolean => !process.env.LEDGER_INTERACTIVE && !process.env.LEDGER_ALL;
+const pendingWithoutInteractiveLedger = (): void => {
+  if (skipInteractiveTests()) {
+    pending("Set LEDGER_INTERACTIVE to run ledger tests");
   }
 };
 
@@ -101,5 +113,37 @@ describe("LedgerKeyringEntry", () => {
 
     keyringEntry.setIdentityLabel(newIdentity, undefined);
     expect(keyringEntry.getIdentities()[0].label).toBeUndefined();
+  });
+
+  it("can sign", async () => {
+    pendingWithoutInteractiveLedger();
+
+    const keyringEntry = new LedgerKeyringEntry();
+    const newIdentity = await keyringEntry.createIdentity();
+
+    expect(keyringEntry.canSign.value).toEqual(true);
+
+    const tx: SendTx = {
+      kind: TransactionKind.SEND,
+      chainId: "test-ledger-paths" as ChainId,
+      recipient: Encoding.fromHex("1234ABCD0000AA0000FFFF0000AA00001234ABCD") as RecipientId,
+      amount: {
+        // 77.01001 PATH
+        whole: 77,
+        fractional: 10010000,
+        tokenTicker: "PATH" as TokenTicker,
+      },
+      signer: newIdentity.pubkey,
+    };
+    const nonce = Long.fromNumber(5) as Nonce;
+    const message = bnsCodec.bytesToSign(tx, nonce).bytes;
+
+    const signature = await keyringEntry.createTransactionSignature(newIdentity, message, PrehashType.Sha512, tx.chainId);
+    expect(signature).toBeTruthy();
+    expect(signature.length).toEqual(64);
+
+    const prehash = new Sha512(message).digest();
+    const ok = await Ed25519.verifySignature(signature, prehash, newIdentity.pubkey.data);
+    expect(ok).toEqual(true);
   });
 });

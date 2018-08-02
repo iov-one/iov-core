@@ -9,7 +9,12 @@ import {
   PublicIdentity,
   ValueAndUpdates,
 } from "@iov/keycontrol";
-import { connectToFirstLedger, getPublicKeyWithIndex, Transport } from "@iov/ledger-bns";
+import {
+  connectToFirstLedger,
+  getPublicKeyWithIndex,
+  signTransactionWithIndex,
+  Transport,
+} from "@iov/ledger-bns";
 import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 export class LedgerKeyringEntry implements KeyringEntry {
@@ -79,13 +84,26 @@ export class LedgerKeyringEntry implements KeyringEntry {
   }
 
   public async createTransactionSignature(
-    _1: PublicIdentity,
-    _2: SignableBytes,
-    _3: PrehashType,
-    _4: ChainId,
+    identity: PublicIdentity,
+    transactionBytes: SignableBytes,
+    prehashType: PrehashType,
+    _: ChainId,
   ): Promise<SignatureBytes> {
-    // TODO: implement
-    return new Uint8Array([0x11]) as SignatureBytes;
+    if (prehashType !== PrehashType.Sha512) {
+      throw new Error("Only prehash typer sha512 is supported on the Ledger");
+    }
+
+    const identityId = LedgerKeyringEntry.identityId(identity);
+    const simpleAddressIndex = this.simpleAddressIndices.get(identityId);
+    if (simpleAddressIndex === undefined) {
+      throw new Error("No address index found for identity '" + identityId + "'");
+    }
+
+    const transport: Transport = connectToFirstLedger();
+    const signature = await signTransactionWithIndex(transport, transactionBytes, simpleAddressIndex);
+    expect(signature.length).toEqual(64);
+
+    return signature as SignatureBytes;
   }
 
   public serialize(): KeyringEntrySerializationString {

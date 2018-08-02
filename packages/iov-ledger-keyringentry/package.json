@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@iov/bcp-types": "^0.0.0",
+    "@iov/bns": "^0.0.0",
     "@iov/encoding": "^0.0.0",
     "@iov/keycontrol": "^0.0.0",
     "@iov/ledger-bns": "^0.0.0",
