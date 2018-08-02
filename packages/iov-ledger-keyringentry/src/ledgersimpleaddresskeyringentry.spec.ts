@@ -7,7 +7,7 @@ import { Encoding } from "@iov/encoding";
 import { KeyringEntrySerializationString } from "@iov/keycontrol";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
-import { LedgerKeyringEntry } from "./ledgerkeyringentry";
+import { LedgerSimpleAddressKeyringEntry } from "./ledgersimpleaddresskeyringentry";
 
 const { toHex } = Encoding;
 
@@ -25,20 +25,20 @@ const pendingWithoutInteractiveLedger = (): void => {
   }
 };
 
-describe("LedgerKeyringEntry", () => {
+describe("LedgerSimpleAddressKeyringEntry", () => {
   it("can be constructed", () => {
-    const keyringEntry = new LedgerKeyringEntry();
+    const keyringEntry = new LedgerSimpleAddressKeyringEntry();
     expect(keyringEntry).toBeTruthy();
   });
 
   it("is empty after construction", () => {
-    const keyringEntry = new LedgerKeyringEntry();
+    const keyringEntry = new LedgerSimpleAddressKeyringEntry();
     expect(keyringEntry.label.value).toBeUndefined();
     expect(keyringEntry.getIdentities().length).toEqual(0);
   });
 
   it("can have a label", () => {
-    const entry = new LedgerKeyringEntry();
+    const entry = new LedgerSimpleAddressKeyringEntry();
     expect(entry.label.value).toBeUndefined();
 
     entry.setLabel("foo");
@@ -51,7 +51,7 @@ describe("LedgerKeyringEntry", () => {
   it("can create an identity", async () => {
     pendingWithoutLedger();
 
-    const keyringEntry = new LedgerKeyringEntry();
+    const keyringEntry = new LedgerSimpleAddressKeyringEntry();
     const newIdentity = await keyringEntry.createIdentity();
     expect(newIdentity).toBeTruthy();
     expect(newIdentity.pubkey.algo).toEqual(Algorithm.ED25519);
@@ -61,7 +61,7 @@ describe("LedgerKeyringEntry", () => {
   it("can load a newly created identity", async () => {
     pendingWithoutLedger();
 
-    const keyringEntry = new LedgerKeyringEntry();
+    const keyringEntry = new LedgerSimpleAddressKeyringEntry();
     const newIdentity = await keyringEntry.createIdentity();
 
     expect(keyringEntry.getIdentities().length).toEqual(1);
@@ -75,7 +75,7 @@ describe("LedgerKeyringEntry", () => {
   it("can create multiple identities", async () => {
     pendingWithoutLedger();
 
-    const keyringEntry = new LedgerKeyringEntry();
+    const keyringEntry = new LedgerSimpleAddressKeyringEntry();
     const newIdentity1 = await keyringEntry.createIdentity();
     const newIdentity2 = await keyringEntry.createIdentity();
     const newIdentity3 = await keyringEntry.createIdentity();
@@ -102,7 +102,7 @@ describe("LedgerKeyringEntry", () => {
   it("can set, change and unset an identity label", async () => {
     pendingWithoutLedger();
 
-    const keyringEntry = new LedgerKeyringEntry();
+    const keyringEntry = new LedgerSimpleAddressKeyringEntry();
     const newIdentity = await keyringEntry.createIdentity();
     expect(keyringEntry.getIdentities()[0].label).toBeUndefined();
 
@@ -119,7 +119,7 @@ describe("LedgerKeyringEntry", () => {
   it("can sign", async () => {
     pendingWithoutInteractiveLedger();
 
-    const keyringEntry = new LedgerKeyringEntry();
+    const keyringEntry = new LedgerSimpleAddressKeyringEntry();
     const newIdentity = await keyringEntry.createIdentity();
 
     expect(keyringEntry.canSign.value).toEqual(true);
@@ -151,7 +151,7 @@ describe("LedgerKeyringEntry", () => {
   it("can serialize multiple identities", async () => {
     pendingWithoutLedger();
 
-    const entry = new LedgerKeyringEntry();
+    const entry = new LedgerSimpleAddressKeyringEntry();
     entry.setLabel("entry with 3 identities");
     const identity1 = await entry.createIdentity();
     const identity2 = await entry.createIdentity();
@@ -194,7 +194,7 @@ describe("LedgerKeyringEntry", () => {
   it("can deserialize", () => {
     {
       // empty
-      const entry = new LedgerKeyringEntry('{ "identities": [] }' as KeyringEntrySerializationString);
+      const entry = new LedgerSimpleAddressKeyringEntry('{ "identities": [] }' as KeyringEntrySerializationString);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(0);
     }
@@ -202,7 +202,7 @@ describe("LedgerKeyringEntry", () => {
     {
       // one element
       const serialized = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}] }' as KeyringEntrySerializationString;
-      const entry = new LedgerKeyringEntry(serialized);
+      const entry = new LedgerSimpleAddressKeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(1);
       expect(entry.getIdentities()[0].pubkey.algo).toEqual("ed25519");
@@ -213,7 +213,7 @@ describe("LedgerKeyringEntry", () => {
     {
       // two elements
       const serialized = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "simpleAddressIndex": 23}] }' as KeyringEntrySerializationString;
-      const entry = new LedgerKeyringEntry(serialized);
+      const entry = new LedgerSimpleAddressKeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(2);
       expect(entry.getIdentities()[0].pubkey.algo).toEqual("ed25519");
@@ -228,7 +228,7 @@ describe("LedgerKeyringEntry", () => {
   it("can serialize and restore a full keyring entry", async () => {
     pendingWithoutLedger();
 
-    const original = new LedgerKeyringEntry();
+    const original = new LedgerSimpleAddressKeyringEntry();
     const identity1 = await original.createIdentity();
     const identity2 = await original.createIdentity();
     const identity3 = await original.createIdentity();
@@ -236,7 +236,7 @@ describe("LedgerKeyringEntry", () => {
     original.setIdentityLabel(identity2, "");
     original.setIdentityLabel(identity3, "foo");
 
-    const restored = new LedgerKeyringEntry(original.serialize());
+    const restored = new LedgerSimpleAddressKeyringEntry(original.serialize());
 
     // pubkeys and labels match
     expect(original.getIdentities()).toEqual(restored.getIdentities());
@@ -247,7 +247,7 @@ describe("LedgerKeyringEntry", () => {
 
   it("can be cloned", () => {
     const oneIdentitySerialization = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}] }' as KeyringEntrySerializationString;
-    const original = new LedgerKeyringEntry(oneIdentitySerialization);
+    const original = new LedgerSimpleAddressKeyringEntry(oneIdentitySerialization);
     const clone = original.clone();
     expect(clone).not.toBe(original);
     expect(clone.serialize()).toEqual(original.serialize());

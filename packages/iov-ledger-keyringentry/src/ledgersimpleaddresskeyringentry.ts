@@ -38,7 +38,7 @@ interface LedgerKeyringEntrySerialization {
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
 
-export class LedgerKeyringEntry implements KeyringEntry {
+export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   private static identityId(identity: PublicIdentity): string {
     return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
   }
@@ -56,7 +56,7 @@ export class LedgerKeyringEntry implements KeyringEntry {
 
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
-  public readonly implementationId = "ledger" as KeyringEntryImplementationIdString;
+  public readonly implementationId = "ledger-simpleaddress" as KeyringEntryImplementationIdString;
 
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
   private readonly identities: LocalIdentity[];
@@ -80,12 +80,12 @@ export class LedgerKeyringEntry implements KeyringEntry {
       for (const record of decodedData.identities) {
         const identity: LocalIdentity = {
           pubkey: {
-            algo: LedgerKeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo),
+            algo: LedgerSimpleAddressKeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo),
             data: Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
           },
           label: record.localIdentity.label,
         };
-        const identityId = LedgerKeyringEntry.identityId(identity);
+        const identityId = LedgerSimpleAddressKeyringEntry.identityId(identity);
         identities.push(identity);
         simpleAddressIndices.set(identityId, record.simpleAddressIndex);
       }
@@ -116,15 +116,17 @@ export class LedgerKeyringEntry implements KeyringEntry {
 
     this.identities.push(newIdentity);
 
-    const newIdentityId = LedgerKeyringEntry.identityId(newIdentity);
+    const newIdentityId = LedgerSimpleAddressKeyringEntry.identityId(newIdentity);
     this.simpleAddressIndices.set(newIdentityId, nextIndex);
 
     return newIdentity;
   }
 
   public setIdentityLabel(identity: PublicIdentity, label: string | undefined): void {
-    const identityId = LedgerKeyringEntry.identityId(identity);
-    const index = this.identities.findIndex(i => LedgerKeyringEntry.identityId(i) === identityId);
+    const identityId = LedgerSimpleAddressKeyringEntry.identityId(identity);
+    const index = this.identities.findIndex(
+      i => LedgerSimpleAddressKeyringEntry.identityId(i) === identityId,
+    );
     if (index === -1) {
       throw new Error("identity with id '" + identityId + "' not found");
     }
@@ -178,12 +180,12 @@ export class LedgerKeyringEntry implements KeyringEntry {
   }
 
   public clone(): KeyringEntry {
-    return new LedgerKeyringEntry(this.serialize());
+    return new LedgerSimpleAddressKeyringEntry(this.serialize());
   }
 
   // This throws an exception when private key is missing
   private simpleAddressIndex(identity: PublicIdentity): number {
-    const identityId = LedgerKeyringEntry.identityId(identity);
+    const identityId = LedgerSimpleAddressKeyringEntry.identityId(identity);
     const out = this.simpleAddressIndices.get(identityId);
     if (out === undefined) {
       throw new Error("No address index found for identity '" + identityId + "'");

@@ -1,1 +1,1 @@
-export { LedgerKeyringEntry } from "./ledgerkeyringentry";
+export { LedgerSimpleAddressKeyringEntry } from "./ledgersimpleaddresskeyringentry";
