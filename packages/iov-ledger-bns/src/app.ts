@@ -21,12 +21,13 @@ export const getPublicKeyWithIndex = (transport: Transport, i: number): Promise<
 export const signTransaction = (transport: Transport, transaction: Uint8Array): Promise<Uint8Array> =>
   sendChunks(transport, appCode, cmdSign, transaction);
 
-export const signTransactionWithPath = (
+export const signTransactionWithIndex = (
   transport: Transport,
   transaction: Uint8Array,
-  path: number,
+  i: number,
 ): Promise<Uint8Array> => {
-  const data = new Uint8Array([...encodeUint32(path), ...transaction]);
+  const pathComponent = Slip0010RawIndex.hardened(i).asNumber();
+  const data = new Uint8Array([...encodeUint32(pathComponent), ...transaction]);
   return sendChunks(transport, appCode, cmdSignWithPath, data);
 };
 

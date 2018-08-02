@@ -6,7 +6,7 @@ import { Ed25519, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/tendermint-types";
 
-import { appVersion, getPublicKey, getPublicKeyWithIndex, signTransaction, signTransactionWithPath } from "./app";
+import { appVersion, getPublicKey, getPublicKeyWithIndex, signTransaction, signTransactionWithIndex } from "./app";
 import { pendingWithoutInteractiveLedger, pendingWithoutLedger, skipInteractiveTests, skipTests } from "./common.spec";
 import { connectToFirstLedger, Transport } from "./exchange";
 
@@ -169,7 +169,7 @@ describe("Sign with ledger app", () => {
       const { bytes: message } = bnsCodec.bytesToSign(tx, nonce);
       const messageHash = new Sha512(message).digest();
 
-      const signature = await signTransactionWithPath(transport, message, path);
+      const signature = await signTransactionWithIndex(transport, message, path);
       expect(signature.length).toEqual(64);
       const ok = await Ed25519.verifySignature(signature, messageHash, pubkey);
       expect(ok).toEqual(true);
