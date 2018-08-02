@@ -6,6 +6,8 @@ import { ChainId } from "@iov/tendermint-types";
 import { KeyringEntrySerializationString } from "../keyring";
 import { Ed25519KeyringEntry } from "./ed25519";
 
+const { toHex } = Encoding;
+
 describe("Ed25519KeyringEntry", () => {
   it("can be constructed", () => {
     const keyringEntry = new Ed25519KeyringEntry();
@@ -42,11 +44,16 @@ describe("Ed25519KeyringEntry", () => {
 
   it("can create multiple identities", async () => {
     const keyringEntry = new Ed25519KeyringEntry();
-    const newIdentity1 = await keyringEntry.createIdentity(); // 1
-    await keyringEntry.createIdentity(); // 2
-    await keyringEntry.createIdentity(); // 3
-    await keyringEntry.createIdentity(); // 4
-    const newIdentity5 = await keyringEntry.createIdentity(); // 5
+    const newIdentity1 = await keyringEntry.createIdentity();
+    const newIdentity2 = await keyringEntry.createIdentity();
+    const newIdentity3 = await keyringEntry.createIdentity();
+    const newIdentity4 = await keyringEntry.createIdentity();
+    const newIdentity5 = await keyringEntry.createIdentity();
+
+    // all pubkeys must be different
+    const pubkeySet = new Set([newIdentity1, newIdentity2, newIdentity3, newIdentity4, newIdentity5].map(i => toHex(i.pubkey.data)));
+    expect(pubkeySet.size).toEqual(5);
+
     expect(keyringEntry.getIdentities().length).toEqual(5);
 
     const firstIdentity = keyringEntry.getIdentities()[0];
