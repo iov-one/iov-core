@@ -4,6 +4,7 @@ import { Nonce, PrehashType, RecipientId, SendTx, TokenTicker, TransactionKind }
 import { bnsCodec } from "@iov/bns";
 import { Ed25519, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
+import { KeyringEntrySerializationString } from "@iov/keycontrol";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
 import { LedgerKeyringEntry } from "./ledgerkeyringentry";
@@ -188,5 +189,59 @@ describe("LedgerKeyringEntry", () => {
     expect(decodedJson.identities[0].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[1].localIdentity.pubkey.data);
     expect(decodedJson.identities[1].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[2].localIdentity.pubkey.data);
     expect(decodedJson.identities[2].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[0].localIdentity.pubkey.data);
+  });
+
+  it("can deserialize", () => {
+    {
+      // empty
+      const entry = new LedgerKeyringEntry('{ "identities": [] }' as KeyringEntrySerializationString);
+      expect(entry).toBeTruthy();
+      expect(entry.getIdentities().length).toEqual(0);
+    }
+
+    {
+      // one element
+      const serialized = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}] }' as KeyringEntrySerializationString;
+      const entry = new LedgerKeyringEntry(serialized);
+      expect(entry).toBeTruthy();
+      expect(entry.getIdentities().length).toEqual(1);
+      expect(entry.getIdentities()[0].pubkey.algo).toEqual("ed25519");
+      expect(entry.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
+      expect(entry.getIdentities()[0].label).toEqual("foo");
+    }
+
+    {
+      // two elements
+      const serialized = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "simpleAddressIndex": 23}] }' as KeyringEntrySerializationString;
+      const entry = new LedgerKeyringEntry(serialized);
+      expect(entry).toBeTruthy();
+      expect(entry.getIdentities().length).toEqual(2);
+      expect(entry.getIdentities()[0].pubkey.algo).toEqual("ed25519");
+      expect(entry.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
+      expect(entry.getIdentities()[0].label).toEqual("foo");
+      expect(entry.getIdentities()[1].pubkey.algo).toEqual("ed25519");
+      expect(entry.getIdentities()[1].pubkey.data).toEqual(Encoding.fromHex("ddccbbaa"));
+      expect(entry.getIdentities()[1].label).toEqual("bar");
+    }
+  });
+
+  it("can serialize and restore a full keyring entry", async () => {
+    pendingWithoutLedger();
+
+    const original = new LedgerKeyringEntry();
+    const identity1 = await original.createIdentity();
+    const identity2 = await original.createIdentity();
+    const identity3 = await original.createIdentity();
+    original.setIdentityLabel(identity1, undefined);
+    original.setIdentityLabel(identity2, "");
+    original.setIdentityLabel(identity3, "foo");
+
+    const restored = new LedgerKeyringEntry(original.serialize());
+
+    // pubkeys and labels match
+    expect(original.getIdentities()).toEqual(restored.getIdentities());
+
+    // simpleAddressIndices are not exposed and cannot be compared
+    // without interactively creating Ledger signatures.
   });
 });

@@ -1,3 +1,4 @@
+// tslint:disable:readonly-array
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import {
@@ -42,22 +43,58 @@ export class LedgerKeyringEntry implements KeyringEntry {
     return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
   }
 
+  private static algorithmFromString(input: string): Algorithm {
+    switch (input) {
+      case "ed25519":
+        return Algorithm.ED25519;
+      case "secp256k1":
+        return Algorithm.SECP256K1;
+      default:
+        throw new Error("Unknown algorithm string found");
+    }
+  }
+
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
   public readonly implementationId = "ledger" as KeyringEntryImplementationIdString;
 
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
-  // tslint:disable-next-line:readonly-array
   private readonly identities: LocalIdentity[];
 
   // the `i` from https://github.com/iov-one/web4/blob/master/docs/KeyBase.md#simple-addresses
   private readonly simpleAddressIndices: Map<string, number>;
 
-  constructor() {
-    this.labelProducer = new DefaultValueProducer<string | undefined>(undefined);
+  constructor(data?: KeyringEntrySerializationString) {
+    // tslint:disable-next-line:no-let
+    let label: string | undefined;
+    const identities: LocalIdentity[] = [];
+    const simpleAddressIndices = new Map<string, number>();
+
+    if (data) {
+      const decodedData: LedgerKeyringEntrySerialization = JSON.parse(data);
+
+      // label
+      label = decodedData.label;
+
+      // identities
+      for (const record of decodedData.identities) {
+        const identity: LocalIdentity = {
+          pubkey: {
+            algo: LedgerKeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo),
+            data: Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
+          },
+          label: record.localIdentity.label,
+        };
+        const identityId = LedgerKeyringEntry.identityId(identity);
+        identities.push(identity);
+        simpleAddressIndices.set(identityId, record.simpleAddressIndex);
+      }
+    }
+
+    this.labelProducer = new DefaultValueProducer<string | undefined>(label);
     this.label = new ValueAndUpdates(this.labelProducer);
-    this.identities = [];
-    this.simpleAddressIndices = new Map();
+    this.identities = identities;
+    this.simpleAddressIndices = simpleAddressIndices;
   }
 
   public setLabel(label: string | undefined): void {
