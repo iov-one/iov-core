@@ -124,7 +124,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
     // tslint:disable-next-line:no-object-mutation
     this.identities[index] = {
-      pubkey: this.identities[index].pubkey,
+      ...this.identities[index],
       label: label,
     };
   }
