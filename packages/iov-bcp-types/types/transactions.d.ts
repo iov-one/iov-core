@@ -13,7 +13,7 @@ export interface FungibleToken {
     readonly fractional: number;
     readonly tokenTicker: TokenTicker;
 }
-export declare const enum TransactionKind {
+export declare enum TransactionKind {
     SEND = "send",
     SET_NAME = "set_name",
     SWAP_OFFER = "swap_offer",

@@ -3,7 +3,7 @@ import { ChainId, PostableBytes, PublicKeyBundle, SignatureBytes } from "@iov/te
 import { Nonce, UnsignedTransaction } from "./transactions";
 export declare type TransactionIdBytes = Uint8Array & As<"transaction-id">;
 export declare type SignableBytes = Uint8Array & As<"signable">;
-export declare const enum PrehashType {
+export declare enum PrehashType {
     None = 0,
     Sha512 = 1,
     Sha256 = 2

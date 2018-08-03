@@ -10,7 +10,7 @@ export type SignableBytes = Uint8Array & As<"signable">;
 
 // Specifies which hash function to apply before signing.
 // The identity function is indicated using None.
-export const enum PrehashType {
+export enum PrehashType {
   None,
   Sha512,
   Sha256,

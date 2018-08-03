@@ -26,7 +26,7 @@ export interface FungibleToken {
   readonly tokenTicker: TokenTicker;
 }
 
-export const enum TransactionKind {
+export enum TransactionKind {
   SEND = "send",
   SET_NAME = "set_name",
   SWAP_OFFER = "swap_offer",
