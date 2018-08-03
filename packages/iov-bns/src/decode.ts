@@ -14,7 +14,7 @@ import {
 } from "@iov/bcp-types";
 import { ChainId } from "@iov/tendermint-types";
 
-import * as codec from "./codecimpl";
+import * as codecImpl from "./codecimpl";
 import { asNumber, decodeFullSig, decodeToken, ensure } from "./types";
 import { isHashIdentifier } from "./util";
 
@@ -30,7 +30,7 @@ import { isHashIdentifier } from "./util";
 //   });
 // };
 
-export const parseTx = (tx: codec.app.ITx, chainId: ChainId): SignedTransaction => {
+export const parseTx = (tx: codecImpl.app.ITx, chainId: ChainId): SignedTransaction => {
   const sigs = ensure(tx.signatures, "signatures").map(decodeFullSig);
   const sig = ensure(sigs[0], "first signature");
   return {
@@ -39,7 +39,7 @@ export const parseTx = (tx: codec.app.ITx, chainId: ChainId): SignedTransaction 
     otherSignatures: sigs.slice(1),
   };
 };
-export const parseMsg = (base: BaseTx, tx: codec.app.ITx): UnsignedTransaction => {
+export const parseMsg = (base: BaseTx, tx: codecImpl.app.ITx): UnsignedTransaction => {
   if (tx.sendMsg) {
     return parseSendTx(base, tx.sendMsg);
   } else if (tx.setNameMsg) {
@@ -54,7 +54,7 @@ export const parseMsg = (base: BaseTx, tx: codec.app.ITx): UnsignedTransaction =
   throw new Error("unknown message type in transaction");
 };
 
-const parseSendTx = (base: BaseTx, msg: codec.cash.ISendMsg): SendTx => ({
+const parseSendTx = (base: BaseTx, msg: codecImpl.cash.ISendMsg): SendTx => ({
   // TODO: would we want to ensure these match?
   //    src: await keyToAddress(tx.signer),
   kind: TransactionKind.Send,
@@ -64,13 +64,13 @@ const parseSendTx = (base: BaseTx, msg: codec.cash.ISendMsg): SendTx => ({
   ...base,
 });
 
-const parseSetNameTx = (base: BaseTx, msg: codec.namecoin.ISetWalletNameMsg): SetNameTx => ({
+const parseSetNameTx = (base: BaseTx, msg: codecImpl.namecoin.ISetWalletNameMsg): SetNameTx => ({
   kind: TransactionKind.SetName,
   name: ensure(msg.name, "name"),
   ...base,
 });
 
-const parseSwapCounterTx = (base: BaseTx, msg: codec.escrow.ICreateEscrowMsg): SwapCounterTx => {
+const parseSwapCounterTx = (base: BaseTx, msg: codecImpl.escrow.ICreateEscrowMsg): SwapCounterTx => {
   const hashCode = ensure(msg.arbiter, "arbiter");
   if (!isHashIdentifier(hashCode)) {
     throw new Error("escrow not controlled by hashlock");
@@ -87,8 +87,8 @@ const parseSwapCounterTx = (base: BaseTx, msg: codec.escrow.ICreateEscrowMsg): S
 
 const parseSwapClaimTx = (
   base: BaseTx,
-  msg: codec.escrow.IReturnEscrowMsg,
-  tx: codec.app.ITx,
+  msg: codecImpl.escrow.IReturnEscrowMsg,
+  tx: codecImpl.app.ITx,
 ): SwapClaimTx => ({
   kind: TransactionKind.SwapClaim,
   swapId: ensure(msg.escrowId) as SwapIdBytes,
@@ -96,13 +96,13 @@ const parseSwapClaimTx = (
   ...base,
 });
 
-const parseSwapTimeoutTx = (base: BaseTx, msg: codec.escrow.IReturnEscrowMsg): SwapTimeoutTx => ({
+const parseSwapTimeoutTx = (base: BaseTx, msg: codecImpl.escrow.IReturnEscrowMsg): SwapTimeoutTx => ({
   kind: TransactionKind.SwapTimeout,
   swapId: ensure(msg.escrowId) as SwapIdBytes,
   ...base,
 });
 
-const parseBaseTx = (tx: codec.app.ITx, sig: FullSignature, chainId: ChainId): BaseTx => {
+const parseBaseTx = (tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId): BaseTx => {
   const base: BaseTx = {
     chainId,
     signer: sig.publicKey,

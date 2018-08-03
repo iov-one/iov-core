@@ -10,7 +10,7 @@ import {
   SignatureBytes,
 } from "@iov/tendermint-types";
 
-import * as codec from "./codecimpl";
+import * as codecImpl from "./codecimpl";
 
 export interface Result {
   readonly key: Uint8Array;
@@ -26,7 +26,7 @@ export interface Decoder<T extends {}> {
 }
 
 export const encodeToken = (token: FungibleToken) =>
-  codec.x.Coin.create({
+  codecImpl.x.Coin.create({
     // use null instead of 0 to not encode zero fields
     // for compatibility with golang encoder
     whole: token.whole || null,
@@ -35,7 +35,7 @@ export const encodeToken = (token: FungibleToken) =>
   });
 
 export const encodeFullSig = (sig: FullSignature) =>
-  codec.sigs.StdSignature.create({
+  codecImpl.sigs.StdSignature.create({
     sequence: sig.nonce,
     pubKey: encodePubKey(sig.publicKey),
     signature: encodeSignature(sig.publicKey.algo, sig.signature),
@@ -69,13 +69,13 @@ export const encodeSignature = (algo: Algorithm, sigs: SignatureBytes) => {
   }
 };
 
-export const decodeToken = (token: codec.x.ICoin): FungibleToken => ({
+export const decodeToken = (token: codecImpl.x.ICoin): FungibleToken => ({
   whole: asNumber(token.whole),
   fractional: asNumber(token.fractional),
   tokenTicker: (token.ticker || "") as TokenTicker,
 });
 
-export const decodePubKey = (publicKey: codec.crypto.IPublicKey): PublicKeyBundle => {
+export const decodePubKey = (publicKey: codecImpl.crypto.IPublicKey): PublicKeyBundle => {
   if (publicKey.ed25519) {
     return {
       algo: Algorithm.ED25519,
@@ -86,7 +86,7 @@ export const decodePubKey = (publicKey: codec.crypto.IPublicKey): PublicKeyBundl
   }
 };
 
-export const decodePrivKey = (privateKey: codec.crypto.IPrivateKey): PrivateKeyBundle => {
+export const decodePrivKey = (privateKey: codecImpl.crypto.IPrivateKey): PrivateKeyBundle => {
   if (privateKey.ed25519) {
     return {
       algo: Algorithm.ED25519,
@@ -97,7 +97,7 @@ export const decodePrivKey = (privateKey: codec.crypto.IPrivateKey): PrivateKeyB
   }
 };
 
-export const decodeSignature = (signature: codec.crypto.ISignature): SignatureBytes => {
+export const decodeSignature = (signature: codecImpl.crypto.ISignature): SignatureBytes => {
   if (signature.ed25519) {
     return signature.ed25519 as SignatureBytes;
   } else {
@@ -105,7 +105,7 @@ export const decodeSignature = (signature: codec.crypto.ISignature): SignatureBy
   }
 };
 
-export const decodeFullSig = (sig: codec.sigs.IStdSignature): FullSignature => ({
+export const decodeFullSig = (sig: codecImpl.sigs.IStdSignature): FullSignature => ({
   nonce: asLong(sig.sequence) as Nonce,
   publicKey: decodePubKey(ensure(sig.pubKey)),
   signature: decodeSignature(ensure(sig.signature)),

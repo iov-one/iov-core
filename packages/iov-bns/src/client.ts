@@ -23,7 +23,7 @@ import {
 } from "@iov/tendermint-rpc";
 import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 
-import * as models from "./codecimpl";
+import * as codecImpl from "./codecimpl";
 import { InitData, Normalize } from "./normalize";
 import { bnsCodec } from "./txcodec";
 import { Decoder, Keyed, Result } from "./types";
@@ -95,14 +95,14 @@ export class Client implements Web4Read {
 
   public async getTicker(ticker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {
     const res = await this.query("/tokens", Encoding.toAscii(ticker));
-    const parser = parseMap(models.namecoin.Token, 4);
+    const parser = parseMap(codecImpl.namecoin.Token, 4);
     const data = res.results.map(parser).map(Normalize.token);
     return dummyEnvelope(data);
   }
 
   public async getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>> {
     const res = await this.query("/tokens?prefix", Uint8Array.from([]));
-    const parser = parseMap(models.namecoin.Token, 4);
+    const parser = parseMap(codecImpl.namecoin.Token, 4);
     const data = res.results.map(parser).map(Normalize.token);
     return dummyEnvelope(data);
   }
@@ -111,7 +111,7 @@ export class Client implements Web4Read {
     const res = queryByAddress(account)
       ? this.query("/wallets", account.address)
       : this.query("/wallets/name", Encoding.toAscii(account.name));
-    const parser = parseMap(models.namecoin.Wallet, 5);
+    const parser = parseMap(codecImpl.namecoin.Wallet, 5);
     const parsed = (await res).results.map(parser);
     const initData = await this.initData;
     const data = parsed.map(Normalize.account(initData));
@@ -138,7 +138,7 @@ export class Client implements Web4Read {
     }
     const res = await this.query("/auth", addr);
 
-    const parser = parseMap(models.sigs.UserData, 5);
+    const parser = parseMap(codecImpl.sigs.UserData, 5);
     const data = res.results.map(parser).map(Normalize.nonce);
     return dummyEnvelope(data);
   }
@@ -168,8 +168,8 @@ export class Client implements Web4Read {
     if (!q.key) {
       return { height: q.height, results: [] };
     }
-    const keys = models.app.ResultSet.decode(q.key).results;
-    const values = models.app.ResultSet.decode(q.value).results;
+    const keys = codecImpl.app.ResultSet.decode(q.key).results;
+    const values = codecImpl.app.ResultSet.decode(q.value).results;
     const results: ReadonlyArray<Result> = zip(keys, values);
     return { height: q.height, results };
   }
