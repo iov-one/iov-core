@@ -57,7 +57,7 @@ describe("Keyring", () => {
     const entry = Ed25519SimpleAddressKeyringEntry.fromEntropy(fromHex("c7f74844892fd7b707e74fc9b6c8ef917c13ddbb380cadbc"));
     keyring.add(entry);
 
-    expect(keyring.serialize()).toMatch(/^{\"entries\":\[{\"implementationId\":\"ed25519simpleaddress\",\"data\":\"{.*}\"}\]}$/);
+    expect(keyring.serialize()).toMatch(/^{\"entries\":\[{\"implementationId\":\"ed25519-simpleaddress\",\"data\":\"{.*}\"}\]}$/);
   });
 
   it("can serialize many entries", () => {
@@ -75,7 +75,7 @@ describe("Keyring", () => {
     keyring.add(entry5);
     keyring.add(entry6);
 
-    expect(keyring.serialize()).toMatch(/^{\"entries\":\[{\"implementationId\":\"ed25519simpleaddress\",\"data\":\"{.*}\"}(,{\"implementationId\":\"ed25519simpleaddress\",\"data\":\"{.*}\"})+\]}$/);
+    expect(keyring.serialize()).toMatch(/^{\"entries\":\[{\"implementationId\":\"ed25519-simpleaddress\",\"data\":\"{.*}\"}(,{\"implementationId\":\"ed25519-simpleaddress\",\"data\":\"{.*}\"})+\]}$/);
   });
 
   it("can deserialize empty", () => {
@@ -85,7 +85,7 @@ describe("Keyring", () => {
   });
 
   it("can deserialize one ed25519simpleaddress entry", () => {
-    const keyring = new Keyring('{"entries":[{"implementationId":"ed25519simpleaddress","data":"{\\"secret\\":\\"side ripple bachelor banner word swear buzz try situate rent desk carry scorpion uphold undo account pumpkin throw\\",\\"identities\\":[]}"}]}' as KeyringSerializationString);
+    const keyring = new Keyring('{"entries":[{"implementationId":"ed25519-simpleaddress","data":"{\\"secret\\":\\"side ripple bachelor banner word swear buzz try situate rent desk carry scorpion uphold undo account pumpkin throw\\",\\"identities\\":[]}"}]}' as KeyringSerializationString);
 
     expect(keyring.getEntries().length).toEqual(1);
     expect(keyring.getEntries()[0]).toEqual(jasmine.any(Ed25519SimpleAddressKeyringEntry));

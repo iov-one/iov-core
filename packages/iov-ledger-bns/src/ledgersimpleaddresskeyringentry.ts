@@ -1,17 +1,19 @@
+// tslint:disable:readonly-array
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
-import { Ed25519, Ed25519Keypair, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
-
 import {
+  DefaultValueProducer,
   KeyringEntry,
   KeyringEntryImplementationIdString,
   KeyringEntrySerializationString,
   LocalIdentity,
   PublicIdentity,
-} from "../keyring";
-import { prehash } from "../prehashing";
-import { DefaultValueProducer, ValueAndUpdates } from "../valueandupdates";
+  ValueAndUpdates,
+} from "@iov/keycontrol";
+import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
+
+import { getPublicKeyWithIndex, signTransactionWithIndex } from "./app";
+import { connectToFirstLedger, Transport } from "./exchange";
 
 interface PubkeySerialization {
   readonly algo: string;
@@ -25,15 +27,15 @@ interface LocalIdentitySerialization {
 
 interface IdentitySerialization {
   readonly localIdentity: LocalIdentitySerialization;
-  readonly privkey: string;
+  readonly simpleAddressIndex: number;
 }
 
-interface Ed25519KeyringEntrySerialization {
+interface LedgerKeyringEntrySerialization {
   readonly label: string | undefined;
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
 
-export class Ed25519KeyringEntry implements KeyringEntry {
+export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   private static identityId(identity: PublicIdentity): string {
     return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
   }
@@ -51,47 +53,45 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
-  public readonly implementationId = "ed25519" as KeyringEntryImplementationIdString;
+  public readonly implementationId = "ledger-simpleaddress" as KeyringEntryImplementationIdString;
 
-  private readonly identities: LocalIdentity[];
-  private readonly privkeys: Map<string, Ed25519Keypair>;
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
+  private readonly identities: LocalIdentity[];
+
+  // the `i` from https://github.com/iov-one/web4/blob/master/docs/KeyBase.md#simple-addresses
+  private readonly simpleAddressIndices: Map<string, number>;
 
   constructor(data?: KeyringEntrySerializationString) {
     // tslint:disable-next-line:no-let
     let label: string | undefined;
     const identities: LocalIdentity[] = [];
-    const privkeys = new Map<string, Ed25519Keypair>();
+    const simpleAddressIndices = new Map<string, number>();
 
     if (data) {
-      const decodedData: Ed25519KeyringEntrySerialization = JSON.parse(data);
+      const decodedData: LedgerKeyringEntrySerialization = JSON.parse(data);
 
       // label
       label = decodedData.label;
 
       // identities
       for (const record of decodedData.identities) {
-        const keypair = new Ed25519Keypair(
-          Encoding.fromHex(record.privkey),
-          Encoding.fromHex(record.localIdentity.pubkey.data),
-        );
         const identity: LocalIdentity = {
           pubkey: {
-            algo: Ed25519KeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo),
-            data: keypair.pubkey as PublicKeyBytes,
+            algo: LedgerSimpleAddressKeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo),
+            data: Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
           },
           label: record.localIdentity.label,
         };
-        const identityId = Ed25519KeyringEntry.identityId(identity);
+        const identityId = LedgerSimpleAddressKeyringEntry.identityId(identity);
         identities.push(identity);
-        privkeys.set(identityId, keypair);
+        simpleAddressIndices.set(identityId, record.simpleAddressIndex);
       }
     }
 
-    this.identities = identities;
-    this.privkeys = privkeys;
     this.labelProducer = new DefaultValueProducer<string | undefined>(label);
     this.label = new ValueAndUpdates(this.labelProducer);
+    this.identities = identities;
+    this.simpleAddressIndices = simpleAddressIndices;
   }
 
   public setLabel(label: string | undefined): void {
@@ -99,25 +99,31 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   }
 
   public async createIdentity(): Promise<LocalIdentity> {
-    const seed = await Random.getBytes(32);
-    const keypair = await Ed25519.makeKeypair(seed);
+    const nextIndex = this.identities.length;
+    const transport: Transport = connectToFirstLedger();
 
+    const pubkey = await getPublicKeyWithIndex(transport, nextIndex);
     const newIdentity: LocalIdentity = {
       pubkey: {
         algo: Algorithm.ED25519,
-        data: keypair.pubkey as PublicKeyBytes,
+        data: pubkey as PublicKeyBytes,
       },
       label: undefined,
     };
-    const identityId = Ed25519KeyringEntry.identityId(newIdentity);
-    this.privkeys.set(identityId, keypair);
+
     this.identities.push(newIdentity);
+
+    const newIdentityId = LedgerSimpleAddressKeyringEntry.identityId(newIdentity);
+    this.simpleAddressIndices.set(newIdentityId, nextIndex);
+
     return newIdentity;
   }
 
   public setIdentityLabel(identity: PublicIdentity, label: string | undefined): void {
-    const identityId = Ed25519KeyringEntry.identityId(identity);
-    const index = this.identities.findIndex(i => Ed25519KeyringEntry.identityId(i) === identityId);
+    const identityId = LedgerSimpleAddressKeyringEntry.identityId(identity);
+    const index = this.identities.findIndex(
+      i => LedgerSimpleAddressKeyringEntry.identityId(i) === identityId,
+    );
     if (index === -1) {
       throw new Error("identity with id '" + identityId + "' not found");
     }
@@ -139,16 +145,22 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     prehashType: PrehashType,
     _: ChainId,
   ): Promise<SignatureBytes> {
-    const privkey = this.privateKeyForIdentity(identity);
-    const signature = await Ed25519.createSignature(prehash(transactionBytes, prehashType), privkey);
+    if (prehashType !== PrehashType.Sha512) {
+      throw new Error("Only prehash typer sha512 is supported on the Ledger");
+    }
+
+    const simpleAddressIndex = this.simpleAddressIndex(identity);
+    const transport: Transport = connectToFirstLedger();
+
+    const signature = await signTransactionWithIndex(transport, transactionBytes, simpleAddressIndex);
     return signature as SignatureBytes;
   }
 
   public serialize(): KeyringEntrySerializationString {
-    const out: Ed25519KeyringEntrySerialization = {
+    const out: LedgerKeyringEntrySerialization = {
       label: this.label.value,
       identities: this.identities.map(identity => {
-        const keypair = this.privateKeyForIdentity(identity);
+        const simpleAddressIndex = this.simpleAddressIndex(identity);
         return {
           localIdentity: {
             pubkey: {
@@ -157,24 +169,24 @@ export class Ed25519KeyringEntry implements KeyringEntry {
             },
             label: identity.label,
           },
-          privkey: Encoding.toHex(keypair.privkey),
+          simpleAddressIndex: simpleAddressIndex,
         };
       }),
     };
     return JSON.stringify(out) as KeyringEntrySerializationString;
   }
 
-  public clone(): Ed25519KeyringEntry {
-    return new Ed25519KeyringEntry(this.serialize());
+  public clone(): KeyringEntry {
+    return new LedgerSimpleAddressKeyringEntry(this.serialize());
   }
 
-  // This throws an exception when private key is missing
-  private privateKeyForIdentity(identity: PublicIdentity): Ed25519Keypair {
-    const identityId = Ed25519KeyringEntry.identityId(identity);
-    const privkey = this.privkeys.get(identityId);
-    if (!privkey) {
-      throw new Error("No private key found for identity '" + identityId + "'");
+  // This throws an exception when address index is missing
+  private simpleAddressIndex(identity: PublicIdentity): number {
+    const identityId = LedgerSimpleAddressKeyringEntry.identityId(identity);
+    const out = this.simpleAddressIndices.get(identityId);
+    if (out === undefined) {
+      throw new Error("No address index found for identity '" + identityId + "'");
     }
-    return privkey;
+    return out;
   }
 }

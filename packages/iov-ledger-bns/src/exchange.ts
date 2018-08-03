@@ -71,6 +71,9 @@ export const sendChunks = async (
   const last = payload.slice(offset, offset + 255);
   // flag 0x00 specifies "more", 0x80 "last chunk"
   const msg = Buffer.concat([Buffer.from([appCode, cmd, 0x80, 0, last.length]), last]);
-  const response = await transport.exchange(msg);
+
+  // transport.exchange() returns Buffer
+  const response = new Uint8Array(await transport.exchange(msg));
+
   return checkAndRemoveStatus(response);
 };
