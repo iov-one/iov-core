@@ -11,6 +11,7 @@
     "url": "https://github.com/iov-one/web4/tree/master/packages/iov-bcp-types"
   },
   "scripts": {
+    "docs": "rm -rf docs && typedoc --options typedoc.js",
     "format": "prettier --write --loglevel warn './src/**/*.ts'",
     "lint": "tslint -t verbose --project .",
     "lint-fix": "yarn lint --fix",
