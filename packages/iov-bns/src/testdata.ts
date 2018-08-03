@@ -74,7 +74,7 @@ export const chainId = "test-123" as ChainId;
 export const sendTxJson: SendTx = {
   chainId,
   signer: pubJson,
-  kind: TransactionKind.SEND,
+  kind: TransactionKind.Send,
   recipient: fromHex("6f0a3e37845b6a3c8ccbe6219199abc3ae0b26d9") as Address,
   memo: "Test payment",
   amount,
@@ -120,7 +120,7 @@ const sig2: FullSignature = {
 const randomMsg: SendTx = {
   chainId: "foo-bar-baz" as ChainId,
   signer: pubJson,
-  kind: TransactionKind.SEND,
+  kind: TransactionKind.Send,
   recipient: fromHex("009985cb38847474fe9febfd56ab67e14bcd56f3") as Address,
   memo: "One more fix!",
   amount: {
@@ -143,7 +143,7 @@ export const randomTxJson: SignedTransaction = {
 const setNameMsg: SetNameTx = {
   chainId: "bns-mainnet" as ChainId,
   signer: pubJson,
-  kind: TransactionKind.SET_NAME,
+  kind: TransactionKind.SetName,
   name: "king*iov.one",
 };
 export const setNameTxJson: SignedTransaction = {
@@ -156,7 +156,7 @@ export const hashCode = Uint8Array.from([...hashId, ...fromHex("1122334455aabbcc
 const swapCounterMsg: SwapCounterTx = {
   chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
-  kind: TransactionKind.SWAP_COUNTER,
+  kind: TransactionKind.SwapCounter,
   recipient: fromHex("123485cb38847474fe9febfd56ab67e14bcd56f3") as Address,
   timeout: 7890,
   amount: [
@@ -177,7 +177,7 @@ export const swapCounterTxJson: SignedTransaction = {
 const swapClaimMsg: SwapClaimTx = {
   chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
-  kind: TransactionKind.SWAP_CLAIM,
+  kind: TransactionKind.SwapClaim,
   preimage: fromHex("00000000fffffffffff000000000"),
   swapId: fromHex("1234") as SwapIdBytes,
 };
@@ -190,7 +190,7 @@ export const swapClaimTxJson: SignedTransaction = {
 const swapTimeoutMsg: SwapTimeoutTx = {
   chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
-  kind: TransactionKind.SWAP_TIMEOUT,
+  kind: TransactionKind.SwapTimeout,
   swapId: fromHex("1234") as SwapIdBytes,
 };
 export const swapTimeoutTxJson: SignedTransaction = {

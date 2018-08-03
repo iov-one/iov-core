@@ -69,7 +69,7 @@ describe("Web4Write", () => {
       // construct a sendtx, this should be in the web4wrtie api
       const memo = `Web4 write style (${Math.random()})`;
       const sendTx: SendTx = {
-        kind: TransactionKind.SEND,
+        kind: TransactionKind.Send,
         chainId,
         signer: faucet.pubkey,
         recipient: recipientAddress,
@@ -100,7 +100,7 @@ describe("Web4Write", () => {
       const results = await reader.searchTx({ tags: [bnsFromOrToTag(recipientAddress)] });
       expect(results.length).toBeGreaterThanOrEqual(1);
       const last = results[results.length - 1];
-      expect(last.transaction.kind).toEqual(TransactionKind.SEND);
+      expect(last.transaction.kind).toEqual(TransactionKind.Send);
       expect((last.transaction as SendTx).memo).toEqual(memo);
     });
 

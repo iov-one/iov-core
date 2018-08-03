@@ -266,7 +266,7 @@ describe("UserProfile", () => {
       const fakeTransaction: SendTx = {
         chainId: "ethereum" as ChainId,
         signer: fakeIdentity.pubkey,
-        kind: TransactionKind.SEND,
+        kind: TransactionKind.Send,
         amount: {
           whole: 1,
           fractional: 12,
@@ -339,7 +339,7 @@ describe("UserProfile", () => {
       const fakeTransaction: SendTx = {
         chainId: "ethereum" as ChainId,
         signer: mainIdentity.pubkey,
-        kind: TransactionKind.SEND,
+        kind: TransactionKind.Send,
         amount: {
           whole: 1,
           fractional: 12,

@@ -107,7 +107,7 @@ describe("Sign with ledger app", () => {
     };
 
     const tx: SendTx = {
-      kind: TransactionKind.SEND,
+      kind: TransactionKind.Send,
       chainId: "test-bns-ledger" as ChainId,
       recipient: Encoding.fromHex("0123456789012345678901234567890123456789") as RecipientId,
       amount: {
@@ -146,7 +146,7 @@ describe("Sign with ledger app", () => {
     };
 
     const tx: SendTx = {
-      kind: TransactionKind.SEND,
+      kind: TransactionKind.Send,
       chainId: "test-ledger-paths" as ChainId,
       recipient: Encoding.fromHex("1234ABCD0000AA0000FFFF0000AA00001234ABCD") as RecipientId,
       amount: {

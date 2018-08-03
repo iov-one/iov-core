@@ -1,6 +1,6 @@
 {
   "name": "@iov/web4",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Central entry point into web4, pulling together all modules",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",

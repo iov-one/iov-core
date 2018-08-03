@@ -158,7 +158,7 @@ describe("Integration tests with bov+tendermint", () => {
 
     // construct a sendtx, this should be in the web4wrtie api
     const sendTx: SendTx = {
-      kind: TransactionKind.SEND,
+      kind: TransactionKind.Send,
       chainId,
       signer: faucet.pubkey,
       recipient: rcptAddr,
