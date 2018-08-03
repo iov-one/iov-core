@@ -124,15 +124,21 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
       signer: newIdentity.pubkey,
     };
     const nonce = Long.fromNumber(5) as Nonce;
-    const message = bnsCodec.bytesToSign(tx, nonce).bytes;
+    const { bytes, prehashType } = bnsCodec.bytesToSign(tx, nonce);
 
-    const signature = await keyringEntry.createTransactionSignature(newIdentity, message, PrehashType.Sha512, tx.chainId);
+    const signature = await keyringEntry.createTransactionSignature(newIdentity, bytes, prehashType, tx.chainId);
     expect(signature).toBeTruthy();
     expect(signature.length).toEqual(64);
 
-    const prehash = new Sha512(message).digest();
-    const ok = await Ed25519.verifySignature(signature, prehash, newIdentity.pubkey.data);
-    expect(ok).toEqual(true);
+    switch (prehashType) {
+      case PrehashType.Sha512:
+        const prehash = new Sha512(bytes).digest();
+        const valid = await Ed25519.verifySignature(signature, prehash, newIdentity.pubkey.data);
+        expect(valid).toEqual(true);
+        break;
+      default:
+        fail("Unexpected prehash type");
+    }
   });
 
   it("can serialize multiple identities", async () => {

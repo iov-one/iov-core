@@ -1,6 +1,6 @@
 import Long from "long";
 
-import { Nonce, RecipientId, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Nonce, PrehashType, RecipientId, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { bnsCodec } from "@iov/bns";
 import { Ed25519, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -120,15 +120,21 @@ describe("Sign with ledger app", () => {
       memo: "Hi Mom!",
     };
     const nonce = Long.fromNumber(123) as Nonce;
-    const message = bnsCodec.bytesToSign(tx, nonce).bytes;
+    const { bytes, prehashType } = bnsCodec.bytesToSign(tx, nonce);
 
-    const signature = await signTransaction(transport, message);
+    const signature = await signTransaction(transport, bytes);
     expect(signature.length).toEqual(64);
 
     // verify signature from Ledger
-    const prehash = new Sha512(message).digest();
-    const ok = await Ed25519.verifySignature(signature, prehash, pubkey);
-    expect(ok).toEqual(true);
+    switch (prehashType) {
+      case PrehashType.Sha512:
+        const prehash = new Sha512(bytes).digest();
+        const valid = await Ed25519.verifySignature(signature, prehash, pubkey);
+        expect(valid).toEqual(true);
+        break;
+      default:
+        fail("Unexpected prehash type");
+    }
   });
 
   // this is as above, but verifying a different path also works
@@ -158,14 +164,20 @@ describe("Sign with ledger app", () => {
       signer: sender,
     };
     const nonce = Long.fromNumber(5) as Nonce;
-    const message = bnsCodec.bytesToSign(tx, nonce).bytes;
+    const { bytes, prehashType } = bnsCodec.bytesToSign(tx, nonce);
 
-    const signature = await signTransactionWithIndex(transport, message, simpleAddressIndex);
+    const signature = await signTransactionWithIndex(transport, bytes, simpleAddressIndex);
     expect(signature.length).toEqual(64);
 
     // verify signature from Ledger
-    const prehash = new Sha512(message).digest();
-    const ok = await Ed25519.verifySignature(signature, prehash, pubkey);
-    expect(ok).toEqual(true);
+    switch (prehashType) {
+      case PrehashType.Sha512:
+        const prehash = new Sha512(bytes).digest();
+        const valid = await Ed25519.verifySignature(signature, prehash, pubkey);
+        expect(valid).toEqual(true);
+        break;
+      default:
+        fail("Unexpected prehash type");
+    }
   });
 });
