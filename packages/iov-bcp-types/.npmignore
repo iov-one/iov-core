@@ -23,6 +23,8 @@ node_modules/
 # Release dir
 tmp/
 
+build/
+
 # .npmignore additions
 !build/
 karma.conf.js

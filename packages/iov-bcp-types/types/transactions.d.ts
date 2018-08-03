@@ -1,91 +1,63 @@
 import Long from "long";
 import { As } from "type-tagger";
-
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
-
 import { Address } from "./signables";
-
-export type Nonce = Long & As<"nonce">;
-
-// TODO: can't we just make this a number (block height?)
-export type TtlBytes = Uint8Array & As<"ttl">;
-
-// TokenTicker should be 3-4 letters, uppercase
-export type TokenTicker = string & As<"token-ticker">;
-
-export type SwapIdBytes = Uint8Array & As<"swap-id">;
-export type SwapIdString = string & As<"swap-id">;
-
-// TODO: we may want to make this a union type BNSName | PublicKey | Address
-// but waiting on clarity on BNS spec, for now simplest working solution...
-export type RecipientId = Address;
-
+export declare type Nonce = Long & As<"nonce">;
+export declare type TtlBytes = Uint8Array & As<"ttl">;
+export declare type TokenTicker = string & As<"token-ticker">;
+export declare type SwapIdBytes = Uint8Array & As<"swap-id">;
+export declare type SwapIdString = string & As<"swap-id">;
+export declare type RecipientId = Address;
 export interface FungibleToken {
-  readonly whole: number;
-  readonly fractional: number;
-  readonly tokenTicker: TokenTicker;
+    readonly whole: number;
+    readonly fractional: number;
+    readonly tokenTicker: TokenTicker;
 }
-
-export const enum TransactionKind {
-  SEND = "send",
-  SET_NAME = "set_name",
-  SWAP_OFFER = "swap_offer",
-  SWAP_COUNTER = "swap_counter",
-  SWAP_CLAIM = "swap_claim",
-  SWAP_TIMEOUT = "swap_timeout",
+export declare const enum TransactionKind {
+    SEND = "send",
+    SET_NAME = "set_name",
+    SWAP_OFFER = "swap_offer",
+    SWAP_COUNTER = "swap_counter",
+    SWAP_CLAIM = "swap_claim",
+    SWAP_TIMEOUT = "swap_timeout"
 }
-
 export interface BaseTx {
-  readonly chainId: ChainId;
-  readonly fee?: FungibleToken;
-  // signer needs to be a PublicKey as we use that to as an identifier to the Keyring for lookup
-  readonly signer: PublicKeyBundle;
-  readonly ttl?: TtlBytes;
+    readonly chainId: ChainId;
+    readonly fee?: FungibleToken;
+    readonly signer: PublicKeyBundle;
+    readonly ttl?: TtlBytes;
 }
-
 export interface SendTx extends BaseTx {
-  readonly kind: TransactionKind.SEND;
-  readonly amount: FungibleToken;
-  readonly recipient: RecipientId;
-  readonly memo?: string;
+    readonly kind: TransactionKind.SEND;
+    readonly amount: FungibleToken;
+    readonly recipient: RecipientId;
+    readonly memo?: string;
 }
-
 export interface SetNameTx extends BaseTx {
-  readonly kind: TransactionKind.SET_NAME;
-  readonly name: string;
+    readonly kind: TransactionKind.SET_NAME;
+    readonly name: string;
 }
-
 export interface SwapOfferTx extends BaseTx {
-  readonly kind: TransactionKind.SWAP_OFFER;
-  readonly amount: ReadonlyArray<FungibleToken>;
-  readonly recipient: RecipientId;
-  readonly timeout: number; // number of blocks in the future
-  readonly preimage: Uint8Array;
+    readonly kind: TransactionKind.SWAP_OFFER;
+    readonly amount: ReadonlyArray<FungibleToken>;
+    readonly recipient: RecipientId;
+    readonly timeout: number;
+    readonly preimage: Uint8Array;
 }
-
 export interface SwapCounterTx extends BaseTx {
-  readonly kind: TransactionKind.SWAP_COUNTER;
-  readonly amount: ReadonlyArray<FungibleToken>;
-  readonly recipient: RecipientId;
-  readonly timeout: number; // number of blocks in the future
-  readonly hashCode: Uint8Array; // pulled from the offer transaction
+    readonly kind: TransactionKind.SWAP_COUNTER;
+    readonly amount: ReadonlyArray<FungibleToken>;
+    readonly recipient: RecipientId;
+    readonly timeout: number;
+    readonly hashCode: Uint8Array;
 }
-
 export interface SwapClaimTx extends BaseTx {
-  readonly kind: TransactionKind.SWAP_CLAIM;
-  readonly preimage: Uint8Array;
-  readonly swapId: SwapIdBytes; // pulled from the offer transaction
+    readonly kind: TransactionKind.SWAP_CLAIM;
+    readonly preimage: Uint8Array;
+    readonly swapId: SwapIdBytes;
 }
-
 export interface SwapTimeoutTx extends BaseTx {
-  readonly kind: TransactionKind.SWAP_TIMEOUT;
-  readonly swapId: SwapIdBytes; // pulled from the offer transaction
+    readonly kind: TransactionKind.SWAP_TIMEOUT;
+    readonly swapId: SwapIdBytes;
 }
-
-export type UnsignedTransaction =
-  | SendTx
-  | SetNameTx
-  | SwapOfferTx
-  | SwapCounterTx
-  | SwapClaimTx
-  | SwapTimeoutTx;
+export declare type UnsignedTransaction = SendTx | SetNameTx | SwapOfferTx | SwapCounterTx | SwapClaimTx | SwapTimeoutTx;
