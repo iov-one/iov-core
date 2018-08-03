@@ -4,8 +4,8 @@ import { Address, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-t
 import { Encoding } from "@iov/encoding";
 import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@iov/keycontrol";
 
+import { bnsCodec } from "./bnscodec";
 import { Client } from "./client";
-import { bnsCodec } from "./txcodec";
 import { keyToAddress } from "./util";
 
 const skipTests = (): boolean => !process.env.BOV_ENABLED;

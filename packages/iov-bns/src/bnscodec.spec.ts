@@ -2,6 +2,7 @@ import { SignedTransaction } from "@iov/bcp-types";
 import { Ed25519 } from "@iov/crypto";
 import { PostableBytes } from "@iov/tendermint-types";
 
+import { bnsCodec } from "./bnscodec";
 import {
   chainId,
   randomTxJson,
@@ -15,7 +16,6 @@ import {
   swapCounterTxJson,
   swapTimeoutTxJson,
 } from "./testdata";
-import { bnsCodec } from "./txcodec";
 
 describe("Check codec", () => {
   it("properly encodes transactions", () => {

@@ -23,9 +23,9 @@ import {
 } from "@iov/tendermint-rpc";
 import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 
+import { bnsCodec } from "./bnscodec";
 import * as codecImpl from "./codecimpl";
 import { InitData, Normalize } from "./normalize";
-import { bnsCodec } from "./txcodec";
 import { Decoder, Keyed, Result } from "./types";
 
 // queryByAddress is a type guard to use in the account-based queries
