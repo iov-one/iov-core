@@ -14,12 +14,12 @@ export interface FungibleToken {
     readonly tokenTicker: TokenTicker;
 }
 export declare enum TransactionKind {
-    SEND = 0,
-    SET_NAME = 1,
-    SWAP_OFFER = 2,
-    SWAP_COUNTER = 3,
-    SWAP_CLAIM = 4,
-    SWAP_TIMEOUT = 5
+    Send = 0,
+    SetName = 1,
+    SwapOffer = 2,
+    SwapCounter = 3,
+    SwapClaim = 4,
+    SwapTimeout = 5
 }
 export interface BaseTx {
     readonly chainId: ChainId;
@@ -28,36 +28,36 @@ export interface BaseTx {
     readonly ttl?: TtlBytes;
 }
 export interface SendTx extends BaseTx {
-    readonly kind: TransactionKind.SEND;
+    readonly kind: TransactionKind.Send;
     readonly amount: FungibleToken;
     readonly recipient: RecipientId;
     readonly memo?: string;
 }
 export interface SetNameTx extends BaseTx {
-    readonly kind: TransactionKind.SET_NAME;
+    readonly kind: TransactionKind.SetName;
     readonly name: string;
 }
 export interface SwapOfferTx extends BaseTx {
-    readonly kind: TransactionKind.SWAP_OFFER;
+    readonly kind: TransactionKind.SwapOffer;
     readonly amount: ReadonlyArray<FungibleToken>;
     readonly recipient: RecipientId;
     readonly timeout: number;
     readonly preimage: Uint8Array;
 }
 export interface SwapCounterTx extends BaseTx {
-    readonly kind: TransactionKind.SWAP_COUNTER;
+    readonly kind: TransactionKind.SwapCounter;
     readonly amount: ReadonlyArray<FungibleToken>;
     readonly recipient: RecipientId;
     readonly timeout: number;
     readonly hashCode: Uint8Array;
 }
 export interface SwapClaimTx extends BaseTx {
-    readonly kind: TransactionKind.SWAP_CLAIM;
+    readonly kind: TransactionKind.SwapClaim;
     readonly preimage: Uint8Array;
     readonly swapId: SwapIdBytes;
 }
 export interface SwapTimeoutTx extends BaseTx {
-    readonly kind: TransactionKind.SWAP_TIMEOUT;
+    readonly kind: TransactionKind.SwapTimeout;
     readonly swapId: SwapIdBytes;
 }
 export declare type UnsignedTransaction = SendTx | SetNameTx | SwapOfferTx | SwapCounterTx | SwapClaimTx | SwapTimeoutTx;

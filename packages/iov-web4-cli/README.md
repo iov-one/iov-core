@@ -42,7 +42,7 @@ How to use the web4 cli
 
 > .editor
 const sendTx: SendTx = {
-  kind: TransactionKind.SEND,
+  kind: TransactionKind.Send,
   chainId: chainId,
   signer: faucet.pubkey,
   recipient: recipientAddress,

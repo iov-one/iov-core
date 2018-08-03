@@ -112,7 +112,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     expect(keyringEntry.canSign.value).toEqual(true);
 
     const tx: SendTx = {
-      kind: TransactionKind.SEND,
+      kind: TransactionKind.Send,
       chainId: "test-ledger-paths" as ChainId,
       recipient: Encoding.fromHex("1234ABCD0000AA0000FFFF0000AA00001234ABCD") as RecipientId,
       amount: {

@@ -57,7 +57,7 @@ export const parseMsg = (base: BaseTx, tx: codec.app.ITx): UnsignedTransaction =
 const parseSendTx = (base: BaseTx, msg: codec.cash.ISendMsg): SendTx => ({
   // TODO: would we want to ensure these match?
   //    src: await keyToAddress(tx.signer),
-  kind: TransactionKind.SEND,
+  kind: TransactionKind.Send,
   recipient: ensure(msg.dest, "recipient") as Address,
   amount: decodeToken(ensure(msg.amount)),
   memo: msg.memo || undefined,
@@ -65,7 +65,7 @@ const parseSendTx = (base: BaseTx, msg: codec.cash.ISendMsg): SendTx => ({
 });
 
 const parseSetNameTx = (base: BaseTx, msg: codec.namecoin.ISetWalletNameMsg): SetNameTx => ({
-  kind: TransactionKind.SET_NAME,
+  kind: TransactionKind.SetName,
   name: ensure(msg.name, "name"),
   ...base,
 });
@@ -76,7 +76,7 @@ const parseSwapCounterTx = (base: BaseTx, msg: codec.escrow.ICreateEscrowMsg): S
     throw new Error("escrow not controlled by hashlock");
   }
   return {
-    kind: TransactionKind.SWAP_COUNTER,
+    kind: TransactionKind.SwapCounter,
     hashCode,
     recipient: ensure(msg.recipient, "recipient") as Address,
     timeout: asNumber(msg.timeout),
@@ -90,14 +90,14 @@ const parseSwapClaimTx = (
   msg: codec.escrow.IReturnEscrowMsg,
   tx: codec.app.ITx,
 ): SwapClaimTx => ({
-  kind: TransactionKind.SWAP_CLAIM,
+  kind: TransactionKind.SwapClaim,
   swapId: ensure(msg.escrowId) as SwapIdBytes,
   preimage: ensure(tx.preimage),
   ...base,
 });
 
 const parseSwapTimeoutTx = (base: BaseTx, msg: codec.escrow.IReturnEscrowMsg): SwapTimeoutTx => ({
-  kind: TransactionKind.SWAP_TIMEOUT,
+  kind: TransactionKind.SwapTimeout,
   swapId: ensure(msg.escrowId) as SwapIdBytes,
   ...base,
 });

@@ -31,17 +31,17 @@ export const buildUnsignedTx = (tx: UnsignedTransaction): codec.app.ITx => {
 
 export const buildMsg = (tx: UnsignedTransaction): codec.app.ITx => {
   switch (tx.kind) {
-    case TransactionKind.SEND:
+    case TransactionKind.Send:
       return buildSendTx(tx);
-    case TransactionKind.SET_NAME:
+    case TransactionKind.SetName:
       return buildSetNameTx(tx);
-    case TransactionKind.SWAP_OFFER:
+    case TransactionKind.SwapOffer:
       return buildSwapOfferTx(tx);
-    case TransactionKind.SWAP_COUNTER:
+    case TransactionKind.SwapCounter:
       return buildSwapCounterTx(tx);
-    case TransactionKind.SWAP_CLAIM:
+    case TransactionKind.SwapClaim:
       return buildSwapClaimTx(tx);
-    case TransactionKind.SWAP_TIMEOUT:
+    case TransactionKind.SwapTimeout:
       return buildSwapTimeoutTx(tx);
   }
 };
@@ -63,7 +63,11 @@ const buildSetNameTx = (tx: SetNameTx): codec.app.ITx => ({
 });
 
 const buildSwapOfferTx = (tx: SwapOfferTx): codec.app.ITx => {
-  const hashed = { ...tx, hashCode: hashIdentifier(tx.preimage), kind: TransactionKind.SWAP_COUNTER };
+  const hashed = {
+    ...tx,
+    hashCode: hashIdentifier(tx.preimage),
+    kind: TransactionKind.SwapCounter,
+  };
   return buildSwapCounterTx(hashed as SwapCounterTx);
 };
 
