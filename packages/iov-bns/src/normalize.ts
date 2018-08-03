@@ -2,7 +2,7 @@ import { Address, BcpAccount, BcpCoin, BcpNonce, BcpTicker, Nonce, TokenTicker }
 import { Encoding } from "@iov/encoding";
 import { ChainId } from "@iov/tendermint-types";
 
-import * as models from "./codec";
+import * as models from "./codecimpl";
 import { asLong, decodePubKey, decodeToken, ensure, Keyed } from "./types";
 
 // InitData is all the queries we do on initialization to be

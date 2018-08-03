@@ -23,7 +23,7 @@ import {
 } from "@iov/tendermint-rpc";
 import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 
-import * as models from "./codec";
+import * as models from "./codecimpl";
 import { InitData, Normalize } from "./normalize";
 import { bnsCodec } from "./txcodec";
 import { Decoder, Keyed, Result } from "./types";

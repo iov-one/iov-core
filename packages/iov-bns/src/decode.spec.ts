@@ -1,4 +1,4 @@
-import * as codec from "./codec";
+import * as codec from "./codecimpl";
 import { parseTx } from "./decode";
 import { decodePrivKey, decodePubKey, decodeToken } from "./types";
 

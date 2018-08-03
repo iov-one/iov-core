@@ -9,7 +9,7 @@ import {
 } from "@iov/bcp-types";
 import { ChainId, PostableBytes } from "@iov/tendermint-types";
 
-import * as codecImpl from "./codec";
+import * as codecImpl from "./codecimpl";
 import { parseTx } from "./decode";
 import { buildSignedTx, buildUnsignedTx } from "./encode";
 import { appendSignBytes, keyToAddress, tendermintHash } from "./util";

@@ -10,7 +10,7 @@ import {
   SignatureBytes,
 } from "@iov/tendermint-types";
 
-import * as codec from "./codec";
+import * as codec from "./codecimpl";
 
 export interface Result {
   readonly key: Uint8Array;

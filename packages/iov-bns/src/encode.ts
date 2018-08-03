@@ -11,7 +11,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp-types";
 
-import * as codec from "./codec";
+import * as codec from "./codecimpl";
 import { encodeFullSig, encodeToken } from "./types";
 import { hashIdentifier, keyToAddress } from "./util";
 
