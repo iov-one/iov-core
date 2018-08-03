@@ -27,12 +27,12 @@ export interface FungibleToken {
 }
 
 export enum TransactionKind {
-  SEND = "send",
-  SET_NAME = "set_name",
-  SWAP_OFFER = "swap_offer",
-  SWAP_COUNTER = "swap_counter",
-  SWAP_CLAIM = "swap_claim",
-  SWAP_TIMEOUT = "swap_timeout",
+  SEND,
+  SET_NAME,
+  SWAP_OFFER,
+  SWAP_COUNTER,
+  SWAP_CLAIM,
+  SWAP_TIMEOUT,
 }
 
 export interface BaseTx {

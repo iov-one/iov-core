@@ -14,12 +14,12 @@ export interface FungibleToken {
     readonly tokenTicker: TokenTicker;
 }
 export declare enum TransactionKind {
-    SEND = "send",
-    SET_NAME = "set_name",
-    SWAP_OFFER = "swap_offer",
-    SWAP_COUNTER = "swap_counter",
-    SWAP_CLAIM = "swap_claim",
-    SWAP_TIMEOUT = "swap_timeout"
+    SEND = 0,
+    SET_NAME = 1,
+    SWAP_OFFER = 2,
+    SWAP_COUNTER = 3,
+    SWAP_CLAIM = 4,
+    SWAP_TIMEOUT = 5
 }
 export interface BaseTx {
     readonly chainId: ChainId;
