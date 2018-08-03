@@ -20,7 +20,7 @@ import { bnsCodec } from "./txcodec";
 describe("Check codec", () => {
   it("properly encodes transactions", () => {
     const encoded = bnsCodec.bytesToPost(signedTxJson);
-    expect(Uint8Array.from(encoded)).toEqual(signedTxBin);
+    expect(encoded).toEqual(signedTxBin);
   });
 
   it("properly decodes transactions", () => {
@@ -57,11 +57,7 @@ describe("Check codec", () => {
 
     for (const trial of transactionsToBeVerified) {
       const encoded = bnsCodec.bytesToPost(trial);
-      // Note: odd work-around.
-      // If we don't do this, we get the same data back, but stored
-      // as Buffer in node, rather than Uint8Array, so toEqual fails
-      const noBuffer = Uint8Array.from(encoded) as PostableBytes;
-      const decoded = bnsCodec.parseBytes(noBuffer, trial.transaction.chainId);
+      const decoded = bnsCodec.parseBytes(encoded, trial.transaction.chainId);
       expect(decoded).toEqual(trial);
     }
   });

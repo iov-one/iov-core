@@ -30,7 +30,8 @@ export const bnsCodec: TxCodec = {
   // bytesToPost includes the raw transaction appended with the various signatures
   bytesToPost: (tx: SignedTransaction): PostableBytes => {
     const built = buildSignedTx(tx);
-    return codecImpl.app.Tx.encode(built).finish() as PostableBytes;
+    const outBuffer = codecImpl.app.Tx.encode(built).finish();
+    return new Uint8Array(outBuffer) as PostableBytes;
   },
 
   // identifier is usually some sort of hash of bytesToPost, chain-dependent
