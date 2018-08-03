@@ -28,7 +28,7 @@ describe("Check codec", () => {
     expect(decoded).toEqual(signedTxJson);
   });
 
-  it("properly generates signbytes", async done => {
+  it("properly generates signbytes", async () => {
     const { bytes: toSign } = bnsCodec.bytesToSign(sendTxJson, sig.nonce);
     // it should match the canonical sign bytes
     expect(toSign).toEqual(signBytes);
@@ -37,7 +37,6 @@ describe("Check codec", () => {
     const pubKey = sig.publicKey.data;
     const valid = await Ed25519.verifySignature(sig.signature, toSign, pubKey);
     expect(valid).toBeTruthy();
-    done();
   });
 
   it("generates transaction id", () => {

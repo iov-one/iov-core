@@ -69,17 +69,16 @@ describe("Encode transactions", () => {
 });
 
 describe("Ensure crypto", () => {
-  it("private key and public key match", async done => {
+  it("private key and public key match", async () => {
     const keypair = Ed25519Keypair.fromLibsodiumPrivkey(privJson.data);
     const pubKey = pubJson.data;
     const msg = Uint8Array.from([12, 54, 98, 243, 11]);
     const signature = await Ed25519.createSignature(msg, keypair);
     const value = await Ed25519.verifySignature(signature, msg, pubKey);
     expect(value).toBeTruthy();
-    done();
   });
 
-  it("sign bytes match", async done => {
+  it("sign bytes match", async () => {
     const keypair = Ed25519Keypair.fromLibsodiumPrivkey(privJson.data);
     const pubKey = pubJson.data;
 
@@ -96,6 +95,5 @@ describe("Ensure crypto", () => {
     // make sure we can generate a compatible signature
     const mySig = await Ed25519.createSignature(toSign, keypair);
     expect(mySig).toEqual(signature);
-    done();
   });
 });

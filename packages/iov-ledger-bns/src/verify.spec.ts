@@ -12,12 +12,11 @@ describe("Verifies sample signature from ledger", () => {
     expect(messageHash).toEqual(hash);
   });
 
-  it("Produces valid signature", async done => {
+  it("Produces valid signature", async () => {
     const unhashed = await Ed25519.verifySignature(signature, message, pubkey);
     expect(unhashed).toEqual(false);
     const ok = await Ed25519.verifySignature(signature, messageHash, pubkey);
     expect(ok).toEqual(true);
-    done();
   });
 });
 
@@ -37,11 +36,10 @@ describe("Verifies sample signature from ledger part two", () => {
     expect(messageHash).toEqual(hash);
   });
 
-  it("Produces valid signature still", async done => {
+  it("Produces valid signature still", async () => {
     const unhashed = await Ed25519.verifySignature(signature, message, pubkey);
     expect(unhashed).toEqual(false);
     const ok = await Ed25519.verifySignature(signature, messageHash, pubkey);
     expect(ok).toEqual(true);
-    done();
   });
 });
