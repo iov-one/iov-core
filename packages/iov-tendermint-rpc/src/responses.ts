@@ -172,6 +172,9 @@ export interface Commit {
   readonly precommits: ReadonlyArray<Vote>;
 }
 
+/**
+ * raw values from https://github.com/tendermint/tendermint/blob/dfa9a9a30a666132425b29454e90a472aa579a48/types/vote.go#L44
+ */
 export const enum VoteType {
   PREVOTE = 1,
   PRECOMMIT = 2,
