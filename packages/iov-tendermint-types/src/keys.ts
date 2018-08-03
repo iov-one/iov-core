@@ -1,6 +1,6 @@
 import { As } from "type-tagger";
 
-export const enum Algorithm {
+export enum Algorithm {
   ED25519 = "ed25519",
   SECP256K1 = "secp256k1",
 }
