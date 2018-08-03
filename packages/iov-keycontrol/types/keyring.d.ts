@@ -18,7 +18,10 @@ export interface KeyringEntrySerialization {
 export interface KeyringSerialization {
     readonly entries: KeyringEntrySerialization[];
 }
+export declare type KeyringEntryDeserializer = (data: KeyringEntrySerializationString) => KeyringEntry;
 export declare class Keyring {
+    static registerEntryType(implementationId: KeyringEntryImplementationIdString, deserializer: KeyringEntryDeserializer): void;
+    private static readonly deserializationRegistry;
     private static deserializeKeyringEntry;
     private readonly entries;
     constructor(data?: KeyringSerializationString);

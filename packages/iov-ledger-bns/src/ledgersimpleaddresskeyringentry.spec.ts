@@ -239,4 +239,10 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     expect(clone).not.toBe(original);
     expect(clone.serialize()).toEqual(original.serialize());
   });
+
+  describe("Keyring integration", () => {
+    it("entry type can be registered", () => {
+      LedgerSimpleAddressKeyringEntry.registerWithKeyring();
+    });
+  });
 });

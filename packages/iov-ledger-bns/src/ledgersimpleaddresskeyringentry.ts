@@ -3,6 +3,7 @@ import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import {
   DefaultValueProducer,
+  Keyring,
   KeyringEntry,
   KeyringEntryImplementationIdString,
   KeyringEntrySerializationString,
@@ -36,6 +37,18 @@ interface LedgerKeyringEntrySerialization {
 }
 
 export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
+  public static readonly implementationId = "ledger-simpleaddress" as KeyringEntryImplementationIdString;
+
+  /**
+   * A convenience function to register this entry type with the global Keyring class
+   */
+  public static registerWithKeyring(): void {
+    const implId = LedgerSimpleAddressKeyringEntry.implementationId;
+    Keyring.registerEntryType(implId, (data: KeyringEntrySerializationString) => {
+      return new LedgerSimpleAddressKeyringEntry(data);
+    });
+  }
+
   private static identityId(identity: PublicIdentity): string {
     return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
   }
@@ -53,7 +66,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
 
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
-  public readonly implementationId = "ledger-simpleaddress" as KeyringEntryImplementationIdString;
+  public readonly implementationId = LedgerSimpleAddressKeyringEntry.implementationId;
 
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
   private readonly identities: LocalIdentity[];

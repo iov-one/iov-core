@@ -32,26 +32,42 @@ export interface KeyringSerialization {
   readonly entries: KeyringEntrySerialization[];
 }
 
+export type KeyringEntryDeserializer = (data: KeyringEntrySerializationString) => KeyringEntry;
+
 /*
 A Keyring a collection of KeyringEntrys
 */
 export class Keyring {
+  public static registerEntryType(
+    implementationId: KeyringEntryImplementationIdString,
+    deserializer: KeyringEntryDeserializer,
+  ): void {
+    if (Keyring.deserializationRegistry.has(implementationId)) {
+      throw new Error(`Entry type "${implementationId}" already registered.`);
+    }
+    Keyring.deserializationRegistry.set(implementationId, deserializer);
+  }
+
+  private static readonly deserializationRegistry = new Map([
+    ["ed25519", (data: KeyringEntrySerializationString) => new Ed25519KeyringEntry(data)],
+    [
+      "ed25519-simpleaddress",
+      (data: KeyringEntrySerializationString) => new Ed25519SimpleAddressKeyringEntry(data),
+    ],
+  ] as ReadonlyArray<[string, KeyringEntryDeserializer]>);
+
   private static deserializeKeyringEntry(serializedEntry: KeyringEntrySerialization): KeyringEntry {
-    switch (serializedEntry.implementationId) {
-      case "ed25519":
-        try {
-          return new Ed25519KeyringEntry(serializedEntry.data);
-        } catch (e) {
-          throw new Error("Error creating Ed25519KeyringEntry: " + e.message);
-        }
-      case "ed25519-simpleaddress":
-        try {
-          return new Ed25519SimpleAddressKeyringEntry(serializedEntry.data);
-        } catch (e) {
-          throw new Error("Error creating Ed25519SimpleAddressKeyringEntry: " + e.message);
-        }
-      default:
-        throw new Error("Unknown implementationId found");
+    const implId = serializedEntry.implementationId;
+
+    const deserializer = Keyring.deserializationRegistry.get(implId);
+    if (!deserializer) {
+      throw new Error(`No deserializer registered for keyring entry of type "${implId}".`);
+    }
+
+    try {
+      return deserializer(serializedEntry.data);
+    } catch (e) {
+      throw new Error(`Error creating keyring entry of type ${implId}: ${e.message}`);
     }
   }
 

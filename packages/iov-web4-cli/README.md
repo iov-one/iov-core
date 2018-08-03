@@ -139,4 +139,13 @@ Do 1. and 2. like above
    Uint8Array [
      84,
      114, ...
+
+> LedgerSimpleAddressKeyringEntry.registerWithKeyring()
+> const db = levelup(leveldown('./my_userprofile_db'))
+> profile.storeIn(db, "secret passwd")
+> const profileFromDb = wait(UserProfile.loadFrom(db, "secret passwd"));
+> profileFromDb
+UserProfile {
+  createdAt: 2018-08-02T16:25:38.274Z,
+  keyring: Keyring { entries: [ [Object], [Object] ] }, ...
 ```
