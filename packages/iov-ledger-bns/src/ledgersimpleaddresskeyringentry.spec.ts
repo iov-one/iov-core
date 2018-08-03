@@ -4,7 +4,7 @@ import { Nonce, PrehashType, RecipientId, SendTx, TokenTicker, TransactionKind }
 import { bnsCodec } from "@iov/bns";
 import { Ed25519, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { Keyring, KeyringEntrySerializationString } from "@iov/keycontrol";
+import { KeyringEntrySerializationString } from "@iov/keycontrol";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
 import { pendingWithoutInteractiveLedger, pendingWithoutLedger } from "./common.spec";
@@ -242,8 +242,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
 
   describe("Keyring integration", () => {
     it("entry type can be registered", () => {
-      const implementationId = LedgerSimpleAddressKeyringEntry.implementationId;
-      Keyring.registerEntryType(implementationId, (data: KeyringEntrySerializationString) => new LedgerSimpleAddressKeyringEntry(data));
+      LedgerSimpleAddressKeyringEntry.registerWithKeyring();
     });
   });
 });

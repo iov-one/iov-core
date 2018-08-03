@@ -3,6 +3,7 @@ import { KeyringEntry, KeyringEntryImplementationIdString, KeyringEntrySerializa
 import { ChainId, SignatureBytes } from "@iov/tendermint-types";
 export declare class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     static readonly implementationId: KeyringEntryImplementationIdString;
+    static registerWithKeyring(): void;
     private static identityId;
     private static algorithmFromString;
     readonly label: ValueAndUpdates<string | undefined>;

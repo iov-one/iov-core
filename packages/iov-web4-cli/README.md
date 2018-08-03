@@ -140,7 +140,7 @@ Do 1. and 2. like above
      84,
      114, ...
 
-> Keyring.registerEntryType(LedgerSimpleAddressKeyringEntry.implementationId, (data: KeyringEntrySerializationString) => new LedgerSimpleAddressKeyringEntry(data));
+> LedgerSimpleAddressKeyringEntry.registerWithKeyring()
 > const db = levelup(leveldown('./my_userprofile_db'))
 > profile.storeIn(db, "secret passwd")
 > const profileFromDb = wait(UserProfile.loadFrom(db, "secret passwd"));
