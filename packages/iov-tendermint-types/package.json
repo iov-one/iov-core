@@ -4,20 +4,20 @@
   "description": "Types for the communication with tendermint",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "build/index.js",
+  "types": "types/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/iov-one/web4/tree/master/packages/iov-tendermint-types"
   },
   "scripts": {
-    "format": "prettier --write --loglevel warn './index.d.ts'",
+    "format": "prettier --write --loglevel warn './src/**/*.ts'",
     "lint": "tslint -t verbose --project .",
     "lint-fix": "yarn lint --fix",
-    "test": "echo 'Info: no test specified'",
     "prebuild": "yarn format && yarn lint",
-    "build": "echo 'Info: nothing to be built'",
-    "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build"
+    "build": "tsc && rm ./types/* && mv build/*.d.ts ./types",
+    "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
+    "test": "echo 'Info: no test specified'"
   },
   "dependencies": {
     "@types/long": "^4.0.0",
