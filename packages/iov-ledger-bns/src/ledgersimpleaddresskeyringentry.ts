@@ -180,7 +180,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     return new LedgerSimpleAddressKeyringEntry(this.serialize());
   }
 
-  // This throws an exception when private key is missing
+  // This throws an exception when address index is missing
   private simpleAddressIndex(identity: PublicIdentity): number {
     const identityId = LedgerSimpleAddressKeyringEntry.identityId(identity);
     const out = this.simpleAddressIndices.get(identityId);
