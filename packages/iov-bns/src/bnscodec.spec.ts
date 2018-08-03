@@ -1,5 +1,5 @@
-import { SignedTransaction } from "@iov/bcp-types";
-import { Ed25519 } from "@iov/crypto";
+import { PrehashType, SignedTransaction } from "@iov/bcp-types";
+import { Ed25519, Sha512 } from "@iov/crypto";
 import { PostableBytes } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
@@ -29,14 +29,21 @@ describe("Check codec", () => {
   });
 
   it("properly generates signbytes", async () => {
-    const { bytes: toSign } = bnsCodec.bytesToSign(sendTxJson, sig.nonce);
+    const { bytes, prehashType } = bnsCodec.bytesToSign(sendTxJson, sig.nonce);
     // it should match the canonical sign bytes
-    expect(toSign).toEqual(signBytes);
+    expect(bytes).toEqual(signBytes);
 
     // it should validate
-    const pubKey = sig.publicKey.data;
-    const valid = await Ed25519.verifySignature(sig.signature, toSign, pubKey);
-    expect(valid).toBeTruthy();
+    switch (prehashType) {
+      case PrehashType.Sha512:
+        const pubKey = sig.publicKey.data;
+        const prehash = new Sha512(bytes).digest();
+        const valid = await Ed25519.verifySignature(sig.signature, prehash, pubKey);
+        expect(valid).toEqual(true);
+        break;
+      default:
+        fail("Unexpected prehash type");
+    }
   });
 
   it("generates transaction id", () => {
