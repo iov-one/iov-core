@@ -3,6 +3,7 @@ const leveldown = require('leveldown')
 const levelup = require('levelup')
 import Long from "long";
 import { Address, bnsConnector, bnsFromOrToTag, ChainId, Ed25519SimpleAddressKeyringEntry, Keyring, KeyringEntry, KeyringEntryImplementationIdString, KeyringEntrySerializationString, Nonce, SendTx, TokenTicker, TransactionKind, UserProfile, Web4Write, withConnectors } from "@iov/web4";
+import { Ed25519, Ed25519Keypair, Sha256, Sha512 } from '@iov/crypto';
 import { Encoding } from '@iov/encoding';
 const { toAscii, fromHex, toHex } = Encoding;
 function wait<T>(promise: Promise<T>): T { return require('deasync2').await(promise); }
@@ -29,6 +30,11 @@ console.log(colors.yellow('    - TokenTicker'));
 console.log(colors.yellow('    - TransactionKind'));
 console.log(colors.yellow('    - Web4Write'));
 console.log(colors.yellow('    - withConnectors'));
+console.log(colors.yellow('  * from @iov/crypto'));
+console.log(colors.yellow('    - Ed25519'));
+console.log(colors.yellow('    - Ed25519Keypair'));
+console.log(colors.yellow('    - Sha256'));
+console.log(colors.yellow('    - Sha512'));
 console.log(colors.yellow('  * from @iov/encoding'));
 console.log(colors.yellow('    - Encoding'));
 console.log(colors.yellow('  * helper functions'));
