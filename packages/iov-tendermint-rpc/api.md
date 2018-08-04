@@ -9,7 +9,7 @@ In fact, the simplest possible user of the module is to assume it does everythin
 automatically, and call:
 
 ```
-const client = await Client.connect('wss://bov.xerxusnet.iov.one');
+const client = await Client.connect('wss://bov.wolfnet.iov.one');
 ```
 
 ## Code Overview

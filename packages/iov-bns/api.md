@@ -11,7 +11,7 @@ Simplest usage, to use auto-detecting tendermint client and standard
 bns transaction parser:
 
 ```
-const client = await Client.connect('wss://bov.xerxusnet.iov.one');
+const client = await Client.connect('wss://bov.wolfnet.iov.one');
 ```
 
 ## Api Internal
