@@ -2,7 +2,7 @@ import { Address, BcpAccount, BcpCoin, BcpNonce, BcpTicker, Nonce, TokenTicker }
 import { Encoding } from "@iov/encoding";
 import { ChainId } from "@iov/tendermint-types";
 
-import * as models from "./codec";
+import * as codecImpl from "./codecimpl";
 import { asLong, decodePubKey, decodeToken, ensure, Keyed } from "./types";
 
 // InitData is all the queries we do on initialization to be
@@ -13,7 +13,7 @@ export interface InitData {
 }
 
 export class Normalize {
-  public static token(data: models.namecoin.IToken & Keyed): BcpTicker {
+  public static token(data: codecImpl.namecoin.IToken & Keyed): BcpTicker {
     return {
       tokenTicker: Encoding.fromAscii(data._id) as TokenTicker,
       tokenName: ensure(data.name),
@@ -21,7 +21,7 @@ export class Normalize {
     };
   }
 
-  public static nonce(acct: models.sigs.IUserData & Keyed): BcpNonce {
+  public static nonce(acct: codecImpl.sigs.IUserData & Keyed): BcpNonce {
     // append the chainID to the name to universalize it
     return {
       address: acct._id as Address,
@@ -30,8 +30,8 @@ export class Normalize {
     };
   }
 
-  public static account(initData: InitData): (a: models.namecoin.IWallet & Keyed) => BcpAccount {
-    return (acct: models.namecoin.IWallet & Keyed): BcpAccount => {
+  public static account(initData: InitData): (a: codecImpl.namecoin.IWallet & Keyed) => BcpAccount {
+    return (acct: codecImpl.namecoin.IWallet & Keyed): BcpAccount => {
       // append the chainID to the name to universalize it
       const name = acct.name ? `${acct.name}*${initData.chainId}` : undefined;
       return {
@@ -42,8 +42,8 @@ export class Normalize {
     };
   }
 
-  public static coin(initData: InitData): (c: models.x.ICoin) => BcpCoin {
-    return (coin: models.x.ICoin): BcpCoin => {
+  public static coin(initData: InitData): (c: codecImpl.x.ICoin) => BcpCoin {
+    return (coin: codecImpl.x.ICoin): BcpCoin => {
       const token = decodeToken(coin);
       const tickerInfo = initData.tickers.get(token.tokenTicker);
       return {

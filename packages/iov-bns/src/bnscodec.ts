@@ -9,7 +9,7 @@ import {
 } from "@iov/bcp-types";
 import { ChainId, PostableBytes } from "@iov/tendermint-types";
 
-import * as codecImpl from "./codec";
+import * as codecImpl from "./codecimpl";
 import { parseTx } from "./decode";
 import { buildSignedTx, buildUnsignedTx } from "./encode";
 import { appendSignBytes, keyToAddress, tendermintHash } from "./util";
@@ -30,7 +30,8 @@ export const bnsCodec: TxCodec = {
   // bytesToPost includes the raw transaction appended with the various signatures
   bytesToPost: (tx: SignedTransaction): PostableBytes => {
     const built = buildSignedTx(tx);
-    return codecImpl.app.Tx.encode(built).finish() as PostableBytes;
+    const outBuffer = codecImpl.app.Tx.encode(built).finish();
+    return new Uint8Array(outBuffer) as PostableBytes;
   },
 
   // identifier is usually some sort of hash of bytesToPost, chain-dependent

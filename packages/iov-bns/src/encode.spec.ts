@@ -1,6 +1,6 @@
 import { Ed25519, Ed25519Keypair } from "@iov/crypto";
 
-import * as codec from "./codec";
+import * as codecImpl from "./codecimpl";
 import { buildMsg, buildSignedTx, buildUnsignedTx } from "./encode";
 import { encodePrivKey, encodePubKey, encodeToken } from "./types";
 import { appendSignBytes, keyToAddress } from "./util";
@@ -23,8 +23,8 @@ import {
 
 describe("Encode helpers", () => {
   it("encode pubkey", () => {
-    const pubkey: codec.crypto.IPublicKey = encodePubKey(pubJson);
-    const encoded = codec.crypto.PublicKey.encode(pubkey).finish();
+    const pubkey: codecImpl.crypto.IPublicKey = encodePubKey(pubJson);
+    const encoded = codecImpl.crypto.PublicKey.encode(pubkey).finish();
     // force result into Uint8Array for tests so it passes
     // if buffer of correct type as well
     expect(Uint8Array.from(encoded)).toEqual(pubBin);
@@ -37,13 +37,13 @@ describe("Encode helpers", () => {
 
   it("encode private key", () => {
     const privkey = encodePrivKey(privJson);
-    const encoded = codec.crypto.PublicKey.encode(privkey).finish();
+    const encoded = codecImpl.crypto.PublicKey.encode(privkey).finish();
     expect(Uint8Array.from(encoded)).toEqual(privBin);
   });
 
   it("encode coin", () => {
     const token = encodeToken(coinJson);
-    const encoded = codec.x.Coin.encode(token).finish();
+    const encoded = codecImpl.x.Coin.encode(token).finish();
     expect(Uint8Array.from(encoded)).toEqual(coinBin);
   });
 });
@@ -51,19 +51,19 @@ describe("Encode helpers", () => {
 describe("Encode transactions", () => {
   it("encodes unsigned message", () => {
     const tx = buildMsg(sendTxJson);
-    const encoded = codec.app.Tx.encode(tx).finish();
+    const encoded = codecImpl.app.Tx.encode(tx).finish();
     expect(Uint8Array.from(encoded)).toEqual(sendTxBin);
   });
 
   it("encodes unsigned transaction", () => {
     const tx = buildUnsignedTx(sendTxJson);
-    const encoded = codec.app.Tx.encode(tx).finish();
+    const encoded = codecImpl.app.Tx.encode(tx).finish();
     expect(Uint8Array.from(encoded)).toEqual(sendTxBin);
   });
 
   it("encodes signed transaction", () => {
     const tx = buildSignedTx(signedTxJson);
-    const encoded = codec.app.Tx.encode(tx).finish();
+    const encoded = codecImpl.app.Tx.encode(tx).finish();
     expect(Uint8Array.from(encoded)).toEqual(signedTxBin);
   });
 });
@@ -83,7 +83,7 @@ describe("Ensure crypto", () => {
     const pubKey = pubJson.data;
 
     const tx = buildUnsignedTx(sendTxJson);
-    const encoded = codec.app.Tx.encode(tx).finish();
+    const encoded = codecImpl.app.Tx.encode(tx).finish();
     const toSign = appendSignBytes(encoded, sendTxJson.chainId, sig.nonce);
     expect(toSign).toEqual(signBytes);
 
