@@ -19,6 +19,10 @@ fold_end
 
 export SKIP_BUILD=1
 
+fold_start "yarn-docs"
+yarn docs
+fold_end
+
 fold_start "check-dirty"
 # Ensure build step didn't modify source files to avoid unprettified repository state
 SOURCE_CHANGES=$(git status --porcelain)
