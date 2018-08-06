@@ -1,7 +1,7 @@
 import { SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@iov/keycontrol";
 
-import { bnsConnector, bnsFromOrToTag, Web4Write, withConnectors } from "./web4write";
+import { bnsConnector, bnsFromOrToTag, IovWriter, withConnectors } from "./writer";
 
 // We assume the same BOV context from iov-bns to run some simple tests
 // against that backend.
@@ -18,10 +18,10 @@ const pendingWithoutTendermint = () => {
   }
 };
 
-describe("Web4Write", () => {
+describe("IovWriter", () => {
   it("can be constructed with no chains", () => {
     const profile = new UserProfile();
-    const writer = new Web4Write(profile, []);
+    const writer = new IovWriter(profile, []);
     expect(writer).toBeTruthy();
   });
 
@@ -45,7 +45,7 @@ describe("Web4Write", () => {
     };
 
     // will make identities if needed.
-    // index `i` is the same as in https://github.com/iov-one/web4/blob/392234e/docs/KeyBase.md#simple-addresses
+    // index `i` is the same as in https://github.com/iov-one/iov-core/blob/392234e/docs/KeyBase.md#simple-addresses
     const getOrCreateIdentity = async (profile: UserProfile, i: number): Promise<LocalIdentity> => {
       while (profile.getIdentities(0).length < i + 1) {
         await profile.createIdentity(0);
@@ -58,7 +58,7 @@ describe("Web4Write", () => {
 
       const knownChains = await withConnectors(await bnsConnector(bovUrl));
       const profile = await userProfile();
-      const writer = new Web4Write(profile, knownChains);
+      const writer = new IovWriter(profile, knownChains);
       expect(writer.chainIds().length).toEqual(1);
       const chainId = writer.chainIds()[0];
 
@@ -66,8 +66,8 @@ describe("Web4Write", () => {
       const recipient = await getOrCreateIdentity(profile, 4);
       const recipientAddress = writer.keyToAddress(chainId, recipient.pubkey);
 
-      // construct a sendtx, this should be in the web4wrtie api
-      const memo = `Web4 write style (${Math.random()})`;
+      // construct a sendtx, this mirrors the IovWriter api
+      const memo = `IovWriter style (${Math.random()})`;
       const sendTx: SendTx = {
         kind: TransactionKind.Send,
         chainId,
@@ -110,7 +110,7 @@ describe("Web4Write", () => {
       pendingWithoutTendermint();
 
       const profile = await userProfile();
-      const writer = new Web4Write(profile, []);
+      const writer = new IovWriter(profile, []);
       expect(writer.chainIds().length).toEqual(0);
 
       // add the bov chain

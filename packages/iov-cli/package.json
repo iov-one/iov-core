@@ -1,18 +1,18 @@
 {
-  "name": "@iov/web4-cli",
+  "name": "@iov/cli",
   "version": "0.0.0",
-  "description": "Command line interface for web4",
+  "description": "Command line interface for iov core",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iov-one/web4/tree/master/packages/iov-web4-cli"
+    "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-cli"
   },
   "scripts": {
-    "web4": "echo '\\nTo get started type: .load init\\n' && NODE_NO_WARNINGS=1 ts-node"
+    "cli": "echo '\\nTo get started type: .load init\\n' && NODE_NO_WARNINGS=1 ts-node"
   },
   "dependencies": {
-    "@iov/web4": "^0.1.0",
+    "@iov/core": "^0.1.0",
     "colors": "^1.3.0",
     "deasync2": "^1.0.1",
     "leveldown": "^4.0.1",

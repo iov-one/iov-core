@@ -2,7 +2,7 @@
 set -o errexit -o nounset -o pipefail
 which shellcheck > /dev/null && shellcheck "$0"
 
-PACKAGE_DIR="iov-web4"
+PACKAGE_DIR="iov-core"
 
 PREV_VERSION=$(jq -r .version < "packages/$PACKAGE_DIR/package.json")
 VERSION="$1"
@@ -38,8 +38,8 @@ export SKIP_BUILD=1
 )
 
 TMP_DIR="tmp"
-RELEASE_DIR="$TMP_DIR/web4"
-BUNDLE_NAME="web4-bundle.$TAG.tar.gz"
+RELEASE_DIR="$TMP_DIR/iov-core"
+BUNDLE_NAME="iov-core-bundle.$TAG.tar.gz"
 mkdir -p "$RELEASE_DIR"
 rm -rf "${RELEASE_DIR:?}"/*
 cp "packages/$PACKAGE_DIR/dist/node/index.js" "$RELEASE_DIR"
@@ -47,7 +47,7 @@ cp -R "packages/$PACKAGE_DIR/types" "$RELEASE_DIR"
 
 #shellcheck disable=SC2016
 TEMPLATE='{
-  "name": "web4-local",
+  "name": "iov-core-local",
   "version": "\($version)",
   "private": true,
   "license": "Internal only!",
@@ -58,7 +58,7 @@ jq -n --arg version "$VERSION" "$TEMPLATE" > "$RELEASE_DIR"/package.json
 
 (
   cd "$TMP_DIR"
-  tar -cvzf "$BUNDLE_NAME" web4
+  tar -cvzf "$BUNDLE_NAME" iov-core
 )
 
 OLD_CHANGELOG=$(tail -n +3 CHANGELOG.md)
@@ -84,7 +84,7 @@ UPLOAD_URL=$(curl -sS \
   -H "Authorization: token $GITHUB_API_TOKEN" \
   -X POST \
   -d "{ \"tag_name\": \"$TAG\", \"name\": \"$TAG\", \"body\": \"$CHANGELOG\", \"draft\": false }" \
-  https://api.github.com/repos/iov-one/web4/releases | jq -r .upload_url)
+  https://api.github.com/repos/iov-one/iov-core/releases | jq -r .upload_url)
 # Remove trailing {?name,label}
 UPLOAD_URL="${UPLOAD_URL%\{*}"
 echo "Asset upload URL: $UPLOAD_URL"

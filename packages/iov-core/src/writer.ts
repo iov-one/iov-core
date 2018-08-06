@@ -3,18 +3,22 @@ import Long from "long";
 import {
   Address,
   BcpTransactionResponse,
+  IovReader,
   Nonce,
   TxCodec,
   UnsignedTransaction,
-  Web4Read,
 } from "@iov/bcp-types";
 import { bnsCodec, Client as BnsClient } from "@iov/bns";
 import { PublicIdentity, UserProfile } from "@iov/keycontrol";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 
-// Web4Write is currently bound to one chain.
-// TODO: We can expand this later to multichain
-export class Web4Write {
+/*
+IovWriter handles all private key material, as well as connections to multiple chains.
+It must have a codec along with each chain to properly encode the transactions,
+and calculate chain-specific addresses from public keys,
+even if bcp-proxy will handle translating all reads.
+*/
+export class IovWriter {
   public readonly profile: UserProfile;
   private readonly knownChains: Map<string, ChainConnector>;
 
@@ -32,7 +36,7 @@ export class Web4Write {
     return Array.from(this.knownChains).map(([x, _]: [string, ChainConnector]) => x as ChainId);
   }
 
-  public reader(chainId: ChainId): Web4Read {
+  public reader(chainId: ChainId): IovReader {
     return this.mustGet(chainId).client;
   }
 
@@ -87,7 +91,7 @@ export class Web4Write {
 }
 
 export interface ChainConnector {
-  readonly client: Web4Read;
+  readonly client: IovReader;
   readonly codec: TxCodec;
 }
 

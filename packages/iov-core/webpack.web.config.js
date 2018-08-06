@@ -12,7 +12,7 @@ module.exports = [
     output: {
       path: distdir,
       filename: "index.js",
-      library: "Web4",
+      library: "IovCore",
       libraryTarget: "var",
     }
   },

@@ -5,7 +5,7 @@ some milestones
 
 The Roadmap is a work-in-progress, so please add comments to help clarify and point out missing items
 
-## Web4-read/write MVP
+## iov-reader/writer MVP
 
 MVP just shows we can generate HD keys, save/load them, and use them to sign transactions and send tokens on the network.
 
@@ -13,12 +13,12 @@ MVP just shows we can generate HD keys, save/load them, and use them to sign tra
 - [x] KeyringController handles persistence
 - [x] We can encode the sendtx transaction for bcp-demo (`bns-codec`)
 - [x] Tendermint RPC client
-- [x] Client wrapper to parse data as defined in [bcp-minimal](https://github.com/iov-one/bcp-spec/blob/master/library/web4/rpc/README.md#bcp-minimal)
-- [x] Simple cli (using repl) tool that will use `web4` codebase to sign and send transactions. Queries proper nonce from the chain
+- [x] Client wrapper to parse data as defined in [bcp-minimal](https://github.com/iov-one/bcp-spec/blob/master/library/iov-core/rpc/README.md#bcp-minimal)
+- [x] Simple cli (using repl) tool that will use `IOV Core` codebase to sign and send transactions. Queries proper nonce from the chain
 
 ## Wallet integration
 
-- [ ] Cleanup, open source, and publish web4 to npm
+- [ ] Cleanup, open source, and publish iov-core to npm
 - [ ] Produce a webapp that can show account balances using above interface
 - [ ] Enhance webapp to show tx history
 
@@ -26,8 +26,8 @@ MVP just shows we can generate HD keys, save/load them, and use them to sign tra
 
 - [x] Implement ledger app that can sign BNS transactions with ed25519
 - [x] Call into ledger app from Typescript repo (iov-ledger-bns)
-- [ ] Wrap ledger into KeyringEntry interface (like Ed25519SimpleAddress)
-- [ ] Update all bcp-demo code and client code to always prehash sha512
+- [x] Wrap ledger into KeyringEntry interface (like Ed25519SimpleAddress)
+- [x] Update all bcp-demo code and client code to always prehash sha512
 - [ ] Demo usage in CLI
 - [ ] Investigate possibilities and integrate into web wallet (if possible???) 
 
@@ -64,7 +64,7 @@ MVP just shows we can generate HD keys, save/load them, and use them to sign tra
 - [ ] Transaction history shows ERC20 amounts as well as ETH amounts
 - [ ] Implement atomic swap contract in solidity
 - [ ] Add swap transactions and queries that interact with our uploaded swap contract (using hardcoded contract address)
-- [ ] Sign Ethereum tx with same HD path as metamask. Importing mnemonic enables use in web4 and metamask
+- [ ] Sign Ethereum tx with same HD path as metamask. Importing mnemonic enables use in iov-core and metamask
 - [ ] Verify we can use Ethereum chains just like Lisk or `bcp-demo` chain with same webapp, and switch between chains
 
 ## Value name support
@@ -73,34 +73,27 @@ MVP just shows we can generate HD keys, save/load them, and use them to sign tra
 - [ ] Improve queries to show proper names for account lookups (bns surely and bcp-proxy maybe?)
 - [ ] Expose API for integration in web wallet (using observables as above)
 
-------------------- Goal for sometime in October ----------------------
+------------------ Rough ideas not quite ready for backlog ------------------------
 
-Questions:
- * Is above goal reasonable at all?
- * What positions do we need to hire to fulfil this goal?
-  * Current plan is solidity/web4 dev and backend js/typescript dev (one each)
+## Core-Writer Extension MVP (chrome and firefox?)
 
------------------- Rough ideas for Q4 and beyond ------------------------
-
-## Web4-write Extension MVP (chrome and firefox?)
-
-- This is to create the equivalent of the metamask plugin using web4 library under the hood... one approach to securely handle keys in Blockchain UIs, but not the only
-- [ ] Define public API to call `web4-write` from webapp
-- [ ] Design simple chrome extension that displays data from `web4-write`, creates accounts, requests confirmations on signing transactions
-- [ ] Update webapp to talk to web4-write to query current account and show that balance
-- [ ] Update webapp to send "sendtx" requests to web4-write based on user input in webapp
+- This is to create the equivalent of the metamask plugin using iov-core library under the hood... one approach to securely handle keys in Blockchain UIs, but not the only
+- [ ] Define public API to call `iov-writer` from webapp
+- [ ] Design simple chrome extension that displays data from `iov-writer`, creates accounts, requests confirmations on signing transactions
+- [ ] Update webapp to talk to iov-writer to query current account and show that balance
+- [ ] Update webapp to send "sendtx" requests to iov-writer based on user input in webapp
 - [ ] MVP should show balances and allow sending in normal webapp, all keys and transactions confirmation in chrome extension
 - [ ] Support both `bcp-demo` and Lisk (and Ethereum, if implemented already) chains (via `bcp-proxy`)
 
-## Enhancement: Flexible Web4-Read
+## Enhancement: Flexible Core-Reader
 Depends on: Backend implementation and deployment of "bcp-plus" chain as `bcp-demo` extended
 
-- [ ] Design extensible query endpoints from `web4-read` -> `bcp-proxy` -> `blockchain`
+- [ ] Design extensible query endpoints from `iov-reader` -> `bcp-proxy` -> `blockchain`
 - [ ] Define some `query templates` to explain possible queries
 - [ ] Add `codec definition format` for protobuf parsing and transformation, use this with `tendermint-rpc` to talk to a `bcp-plus` chain
 - [ ] Provide documentation for adding a query over `bcp-proxy` (using in turn the expanded tendermint-rpc client to talk to the blockchain).
 
-## Enhancement: Flexible Web4-Write
+## Enhancement: Flexible Core-Writer
 
 - [ ] Design `meta-codec` format that can generate chain-specific tx-codec for a "blockchain family" given a definition file...
   - all weave-based systems could share a meta-codec that allows adding individual tx,
@@ -144,7 +137,7 @@ Depends on: BNS implementation on backend completed and deployed
 
 ## Enhancement: Electron App
 
-- [ ] Package webapp containing `web4-read` and `web4-write` into an  electron binary
+- [ ] Package webapp containing `iov-reader` and `iov-writer` into an  electron binary
 - [ ] Provide streamlined integration of confirmation steps, as the binary should trust itself
 - [ ] Provide packaged version of electron app for download
 - [ ] Experiment with deterministic builds, allowing multiple people to compile and sign the same binary
@@ -152,7 +145,7 @@ Depends on: BNS implementation on backend completed and deployed
 
 ## Enhancement: React-Native App
 
-- [ ] Package webapp containing `web4-read` and `web4-write` into a react-native binary
+- [ ] Package webapp containing `iov-reader` and `iov-writer` into a react-native binary
 - [ ] Provide simple tx sending workflow (as per electron app)
 - [ ] Provide downloadable version of Android (and iOS?) app for download
 - [ ] Experiment with deterministic builds, allowing multiple people to compile and sign the same binary
@@ -162,7 +155,7 @@ Depends on: BNS implementation on backend completed and deployed
 
 * `iov-keybase` was a start to sketch out a public api that could be used when used out of process
   as a browser extension.
-  It's available on the git tag `iov-keybase`: https://github.com/iov-one/web4/tree/iov-keybase/packages/iov-keybase
+  It's available on the git tag `iov-keybase`: https://github.com/iov-one/iov-core/tree/iov-keybase/packages/iov-keybase
 * The `KeyController` interface was an approach to design the key controller from top to bottom,
   which has been superceeded by a bottom-to-top approach that resulted in the now active UserProfile.
-  It's available on the git tag `keycontroller-interface`: https://github.com/iov-one/web4/blob/keycontroller-interface/packages/iov-keycontrol/src/keycontroller.d.ts
+  It's available on the git tag `keycontroller-interface`: https://github.com/iov-one/iov-core/blob/keycontroller-interface/packages/iov-keycontrol/src/keycontroller.d.ts

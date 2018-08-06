@@ -1,14 +1,14 @@
 {
-  "name": "@iov/web4",
+  "name": "@iov/core",
   "version": "0.1.1",
-  "description": "Central entry point into web4, pulling together all modules",
+  "description": "Central entry point into iov core monorepo, pulling together all modules",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
   "main": "build/index.js",
   "types": "types/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iov-one/web4/tree/master/packages/iov-web4"
+    "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-core"
   },
   "scripts": {
     "docs": "rm -rf docs && typedoc --options typedoc.js",

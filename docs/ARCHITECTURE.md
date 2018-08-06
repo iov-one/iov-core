@@ -214,7 +214,7 @@ in my swap-bot (in the wallet UI).
 While I am waiting for the counter-party to respond, I deside to move
 1000 IOV off the ledger to my day-trader account. I initiate a transaction
 to send this from the wallet UI and a transaction is sent to the ledger.
-In the meantime, web4 receives a notification from the second chain in
+In the meantime, CoreReader receives a notification from the second chain in
 the swap that an escrow is proposed. The counter is compared to the original
 agreement, and as it matches, the trusted swap-bot creates a claim tx
 and initiates it for signing (this may happen automatically or pop
@@ -225,7 +225,7 @@ are being resolved, and all account balances get updated.
 This is a lot of data moving around at once. How do we model such a case
 without going crazy?
 
-This may seem a bit far-fetched, but once we provide this web4 API, and
+This may seem a bit far-fetched, but once we provide the iov core API, and
 some nice tools, we can allow all kinds of actions, like receiving state
 channel payments and auto-claiming part every eg. 50 IOV tokens. Or
 passing along multi-sig transactions to the next signatory on the message

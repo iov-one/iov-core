@@ -71,7 +71,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
   private readonly identities: LocalIdentity[];
 
-  // the `i` from https://github.com/iov-one/web4/blob/master/docs/KeyBase.md#simple-addresses
+  // the `i` from https://github.com/iov-one/iov-core/blob/master/docs/KeyBase.md#simple-addresses
   private readonly simpleAddressIndices: Map<string, number>;
 
   constructor(data?: KeyringEntrySerializationString) {

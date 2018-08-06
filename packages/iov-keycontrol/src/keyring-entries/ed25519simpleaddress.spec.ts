@@ -19,7 +19,7 @@ describe("Ed25519SimpleAddressKeyringEntry", () => {
   });
 
   it("creates correct paths", done => {
-    // https://github.com/iov-one/web4/blob/392234e/docs/KeyBase.md#simple-addresses
+    // https://github.com/iov-one/iov-core/blob/392234e/docs/KeyBase.md#simple-addresses
     (async () => {
       const entry = new Ed25519SimpleAddressKeyringEntry(emptyEntry);
       await entry.createIdentity();
