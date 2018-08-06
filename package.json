@@ -22,7 +22,8 @@
     "lint-fix": "lerna run lint-fix",
     "test": "lerna run test",
     "build": "lerna run build",
-    "docs": "lerna run docs"
+    "docs": "lerna run docs",
+    "clean": "rm -rf ./packages/*/docs/"
   },
   "devDependencies": {
     "@types/jasmine": "^2.8.8",
