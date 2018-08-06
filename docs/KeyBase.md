@@ -21,14 +21,14 @@ a Hardware Wallet, and various cryptographic algorithms.
 
 ### Generation of HD Seeds
 
-The Web4 Keybase will require the ability to generate new seeds from entropy for
+The iov-core Keybase will require the ability to generate new seeds from entropy for
 a user, when needed. This can occur when a UserProfile is made, or later on
 demand by the User.
 
 ### Import/Export of HD Seeds
 
 Users will also need the ability to Import seeds from other software, and Export
-Seeds from Web4 for reuse in other software.
+Seeds from iov-core for reuse in other software.
 
 ### Creation of Public Keys, and Addresses
 
@@ -168,7 +168,7 @@ Contains a list of addresses a user has interacted with, or added for frequent u
 - AddContact: Adds a contact to a `AddressBook` with the specified information.
 - DeleteContact: Deletes a contact from a `AddressBook`
 - GetContact: Returns the `chain:address:humanName` for use in the application.
-- ExportContact: Returns a `contact` in plain text for import in another Web4 system.
+- ExportContact: Returns a `contact` in plain text for import in another iov-core system.
 - ImportContact: Adds a `contact` from a predefined plain text entry.
 
 ### Object Definition:
@@ -393,7 +393,7 @@ Users MAY use these individual chain specific addresses.
 
 This feature set provides compatibility with other wallets (eg. metamask),
 allowing the user  to use the same seed in other wallets for any features or
-integrations that are not present in web4 at launch (although we will work over
+integrations that are not present in iov-core at launch (although we will work over
 time to provide most of these features).
 
 This is support is also critical for users who are importing HD seeds from other
