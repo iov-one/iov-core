@@ -55,7 +55,7 @@ export interface Responses {
   readonly decodeValidators: (response: JsonRpcSuccess) => responses.ValidatorsResponse;
 }
 
-// find adapter makes a status call with the client.
+// findAdaptor makes a status call with the client.
 // if we cannot talk to the server or make sense of the response, throw an error
 // otherwise, grab the tendermint version from the response and
 // provide a compatible adaptor if available.

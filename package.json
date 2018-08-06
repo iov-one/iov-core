@@ -21,7 +21,9 @@
     "lint": "lerna run lint",
     "lint-fix": "lerna run lint-fix",
     "test": "lerna run test",
-    "build": "lerna run build"
+    "build": "lerna run build",
+    "docs": "lerna run docs",
+    "clean": "rm -rf ./packages/*/docs/"
   },
   "devDependencies": {
     "@types/jasmine": "^2.8.8",
@@ -45,6 +47,7 @@
     "tslint": "^5.10.0",
     "tslint-config-prettier": "^1.13.0",
     "tslint-immutable": "^4.5.4",
+    "typedoc": "^0.11.1",
     "typescript": "^2.9",
     "webpack": "^4.12.0",
     "webpack-command": "^0.2.1"

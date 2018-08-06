@@ -11,6 +11,7 @@
     "url": "https://github.com/iov-one/web4/tree/master/packages/iov-tendermint-rpc"
   },
   "scripts": {
+    "docs": "rm -rf docs && typedoc --options typedoc.js",
     "lint": "tslint -t verbose --project .",
     "format": "prettier --write --loglevel warn './src/**/*.ts'",
     "test-node": "./jasmine-testrunner.js",
