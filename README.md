@@ -43,7 +43,15 @@ CI Tests:
 **Windows note:** The development tools *definitely* work under windows in "Linux subsystem for windows"
 bash shell. They most likely work under cygwin as well. But they do rely on minor shell scripting.
 
-# Api Docs
+# Documentatipn
+
+The best way to learn about code is to use it.
+You can read some [examples in @iov/core](./packages/iov-core/README.md).
+And you can use a REPL to [interactively try the code](./packages/iov-cli/README.md).
+
+Once you understand the basics, you can dig in deeper with the API documentation. 
+
+## Api Docs
 
 Please run `yarn docs` (after installing yarn and running `yarn install`) in the top level directory
 to generate local api docs. This will generate a `./docs` directory in each package that you
