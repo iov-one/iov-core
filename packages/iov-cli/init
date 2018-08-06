@@ -3,6 +3,7 @@ const leveldown = require('leveldown')
 const levelup = require('levelup')
 import Long from "long";
 import { Address, bnsConnector, bnsFromOrToTag, ChainId, Ed25519SimpleAddressKeyringEntry, Keyring, KeyringEntry, KeyringEntryImplementationIdString, KeyringEntrySerializationString, Nonce, SendTx, TokenTicker, TransactionKind, UserProfile, IovWriter, withConnectors } from "@iov/core";
+import { bnsCodec } from '@iov/bns';
 import { Bip39, Ed25519, Ed25519Keypair, Random, Sha256, Sha512 } from '@iov/crypto';
 import { Encoding } from '@iov/encoding';
 const { toAscii, fromHex, toHex } = Encoding;
