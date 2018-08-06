@@ -56,7 +56,7 @@ export class IovWriter {
   // not the ful bcp info.
   public async getNonce(chainId: ChainId, addr: Address): Promise<Nonce> {
     const nonce = await this.mustGet(chainId).client.getNonce({ address: addr });
-    return nonce.data.length === 0 ? (Long.fromInt(0) as Nonce) : nonce.data[0].nonce;
+    return nonce.data.length > 0 ? nonce.data[0].nonce : (Long.fromInt(0) as Nonce);
   }
 
   // signAndCommit will sign the transaction given the signer specified in
