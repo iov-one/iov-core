@@ -5,7 +5,7 @@ some milestones
 
 The Roadmap is a work-in-progress, so please add comments to help clarify and point out missing items
 
-## core-reader/writer MVP
+## iov-reader/writer MVP
 
 MVP just shows we can generate HD keys, save/load them, and use them to sign transactions and send tokens on the network.
 
@@ -78,17 +78,17 @@ MVP just shows we can generate HD keys, save/load them, and use them to sign tra
 ## Core-Writer Extension MVP (chrome and firefox?)
 
 - This is to create the equivalent of the metamask plugin using iov-core library under the hood... one approach to securely handle keys in Blockchain UIs, but not the only
-- [ ] Define public API to call `core-writer` from webapp
-- [ ] Design simple chrome extension that displays data from `core-writer`, creates accounts, requests confirmations on signing transactions
-- [ ] Update webapp to talk to core-writer to query current account and show that balance
-- [ ] Update webapp to send "sendtx" requests to core-writer based on user input in webapp
+- [ ] Define public API to call `iov-writer` from webapp
+- [ ] Design simple chrome extension that displays data from `iov-writer`, creates accounts, requests confirmations on signing transactions
+- [ ] Update webapp to talk to iov-writer to query current account and show that balance
+- [ ] Update webapp to send "sendtx" requests to iov-writer based on user input in webapp
 - [ ] MVP should show balances and allow sending in normal webapp, all keys and transactions confirmation in chrome extension
 - [ ] Support both `bcp-demo` and Lisk (and Ethereum, if implemented already) chains (via `bcp-proxy`)
 
 ## Enhancement: Flexible Core-Reader
 Depends on: Backend implementation and deployment of "bcp-plus" chain as `bcp-demo` extended
 
-- [ ] Design extensible query endpoints from `core-reader` -> `bcp-proxy` -> `blockchain`
+- [ ] Design extensible query endpoints from `iov-reader` -> `bcp-proxy` -> `blockchain`
 - [ ] Define some `query templates` to explain possible queries
 - [ ] Add `codec definition format` for protobuf parsing and transformation, use this with `tendermint-rpc` to talk to a `bcp-plus` chain
 - [ ] Provide documentation for adding a query over `bcp-proxy` (using in turn the expanded tendermint-rpc client to talk to the blockchain).
@@ -137,7 +137,7 @@ Depends on: BNS implementation on backend completed and deployed
 
 ## Enhancement: Electron App
 
-- [ ] Package webapp containing `core-reader` and `core-writer` into an  electron binary
+- [ ] Package webapp containing `iov-reader` and `iov-writer` into an  electron binary
 - [ ] Provide streamlined integration of confirmation steps, as the binary should trust itself
 - [ ] Provide packaged version of electron app for download
 - [ ] Experiment with deterministic builds, allowing multiple people to compile and sign the same binary
@@ -145,7 +145,7 @@ Depends on: BNS implementation on backend completed and deployed
 
 ## Enhancement: React-Native App
 
-- [ ] Package webapp containing `core-reader` and `core-writer` into a react-native binary
+- [ ] Package webapp containing `iov-reader` and `iov-writer` into a react-native binary
 - [ ] Provide simple tx sending workflow (as per electron app)
 - [ ] Provide downloadable version of Android (and iOS?) app for download
 - [ ] Experiment with deterministic builds, allowing multiple people to compile and sign the same binary
