@@ -1,6 +1,29 @@
-# web4
+# IOV Core Library 
 
-[![Build Status](https://travis-ci.com/iov-one/web4.svg?token=evC2AgcwxuvHjXeBP3jq&branch=master)](https://travis-ci.com/iov-one/web4)
+[![Build Status](https://travis-ci.com/iov-one/iov-core.svg?token=evC2AgcwxuvHjXeBP3jq&branch=master)](https://travis-ci.com/iov-one/iov-core)
+
+This repo is provides core functionality to all clients in a cross-platform typescript library.
+This can be used to build cli/gui clients, automated scripts, or help build bcp-proxy apps.
+
+Main functionality provided:
+
+* Solid crypto library with HD support for ed25519 (following slip0010, ledger compatible)
+* Secure private key management, including encrypted local storage for both browser and node
+* Generic, type-safe adaptor to read/write on tendermint rpc server (with http/s and ws/s support)
+* Adaptor to query / create transactions for IOV's testnet of the BNS blockchain
+* Adaptor for key management using IOV's BNS ledger app
+* High level controller for managing multiple user profiles and various key material
+* High level controller for managing read/write connections to multiple blockchains (CoreWriter)
+* Integration with REPL environment for quick prototyping for developers
+
+This is still in pre-alpha state and will evolve quickly as we add support for multiple blockchains,
+more transactions types, and better extensibility. However, all attempts have been made that the
+foundational code is quite solid. A security audit and stable release will occur along with the
+timeline of IOV's mainnet launch, but developers looking for client-side libraries can do initial
+prototypes with the current state.
+
+We are actively building out multiple clients on top of this library and shaking out usability
+issues in the API.
 
 # Compatibility
 

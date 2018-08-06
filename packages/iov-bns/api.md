@@ -1,6 +1,6 @@
 # IOV BNS
 
-This module is an implementation of the web4read
+This module is an implementation of the CoreReader
 interface for the BNS blockchain 
 (currently just as [bcp-demo](https://github.com/iov-one/bcp-demo) prototype). 
 It should be able to adapt this code
@@ -19,5 +19,5 @@ const client = await Client.connect('wss://bov.wolfnet.iov.one');
 The main entry point is the [Client](./classes/client.html), which
 takes a tendermint client (from `iov-tendermint-rpc`) and a codec
 to parse transactions. BnsCodec for reading and writing transactions
-(also useful for web4write) is exported as top-level
+(also useful for CoreWriter) is exported as top-level
 [bnsCodec](./globals.html#bnscodec)
