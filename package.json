@@ -1,16 +1,16 @@
 {
-  "name": "web4-monorepo-root",
+  "name": "iov-monorepo-root",
   "description": "IOV JavaScript packages",
   "private": true,
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/iov-one/web4",
+  "homepage": "https://github.com/iov-one/iov-core",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iov-one/web4.git"
+    "url": "https://github.com/iov-one/iov-core.git"
   },
   "bugs": {
-    "url": "https://github.com/iov-one/web4/issues"
+    "url": "https://github.com/iov-one/iov-core/issues"
   },
   "workspaces": [
     "packages/*"
