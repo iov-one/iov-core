@@ -9,9 +9,9 @@ import {
   BcpTicker,
   BcpTransactionResponse,
   ConfirmedTransaction,
+  CoreReader,
   TokenTicker,
   TxReadCodec,
-  Web4Read,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import {
@@ -34,8 +34,8 @@ const queryByAddress = (query: BcpAccountQuery): query is BcpAddressQuery =>
 
 // Client talks directly to the BNS blockchain and exposes the
 // same interface we have with the BCP protocol.
-// We can embed in web4 process or use this in a BCP-relay
-export class Client implements Web4Read {
+// We can embed in iov-core process or use this in a BCP-relay
+export class Client implements CoreReader {
   public static fromOrToTag(addr: Address): Tag {
     const id = Uint8Array.from([...Encoding.toAscii("wllt:"), ...addr]);
     const key = Encoding.toHex(id).toUpperCase();

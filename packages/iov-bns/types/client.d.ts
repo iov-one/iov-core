@@ -1,9 +1,9 @@
-import { Address, BcpAccount, BcpAccountQuery, BcpNonce, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, ConfirmedTransaction, TokenTicker, TxReadCodec, Web4Read } from "@iov/bcp-types";
+import { Address, BcpAccount, BcpAccountQuery, BcpNonce, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, ConfirmedTransaction, CoreReader, TokenTicker, TxReadCodec } from "@iov/bcp-types";
 import { Client as TendermintClient, StatusResponse } from "@iov/tendermint-rpc";
 import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 import { InitData } from "./normalize";
 import { Result } from "./types";
-export declare class Client implements Web4Read {
+export declare class Client implements CoreReader {
     static fromOrToTag(addr: Address): Tag;
     static connect(url: string): Promise<Client>;
     protected readonly tmClient: TendermintClient;

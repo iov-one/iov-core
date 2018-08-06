@@ -65,16 +65,15 @@ export interface BcpValueNameQuery {
 
 export type BcpAccountQuery = BcpAddressQuery | BcpValueNameQuery;
 
-// Node is a high-level interface to a blockchain node,
+// CoreReader is a high-level interface to a blockchain node,
 // abstracted over all blockchain types and communication channel.
 // A direct connection or a proxy server should implement this.
 // The implementation takes care to convert our internal types into
 // the proper format for the blockchain.
 //
-// The Node will most likely contain some private state to maintain
-// the connection, subscription, and such. (sorry will, but even
-// a Haskell guru recommended mutable state for this case).
-export interface Web4Read {
+// The CoreReader will most likely contain some private state to maintain
+// the connection, subscription, and such.
+export interface CoreReader {
   // // headers returns all headers in that range.
   // // If max is underfined, subscribe to all new headers
   // // If max is defined, but higher than current height,

@@ -8,7 +8,7 @@
   "types": "types/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iov-one/web4/tree/master/packages/iov-bns"
+    "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-bns"
   },
   "scripts": {
     "docs": "rm -rf docs && typedoc --options typedoc.js",

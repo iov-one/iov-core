@@ -44,7 +44,7 @@ export interface BcpValueNameQuery {
     readonly name: string;
 }
 export declare type BcpAccountQuery = BcpAddressQuery | BcpValueNameQuery;
-export interface Web4Read {
+export interface CoreReader {
     readonly postTx: (tx: PostableBytes) => Promise<BcpTransactionResponse>;
     readonly getTicker: (ticker: TokenTicker) => Promise<BcpQueryEnvelope<BcpTicker>>;
     readonly getAllTickers: () => Promise<BcpQueryEnvelope<BcpTicker>>;

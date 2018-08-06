@@ -1,10 +1,10 @@
-How to use the web4 cli
-=======================
+How to use the iov-core command line
+====================================
 
 ## Example usage
 
-1. Build all dependencies: `cd web4 && yarn install && yarn build`
-2. Go to `packages/iov-web4-cli`, run `yarn web4` and follow on-screen instructions
+1. Build all dependencies: `yarn install && yarn build` from root of the mono-repo
+2. Go to `packages/iov-cli`, run `yarn cli` and follow on-screen instructions
 3. Play around like in the following example code:
 
 ```
@@ -30,7 +30,7 @@ How to use the web4 cli
     label: 'blockchain of value faucet' } ]
 
 > const knownChains = wait(withConnectors(wait(bnsConnector("http://localhost:22345"))));
-> const writer = new Web4Write(profile, knownChains);
+> const writer = new CoreWriter(profile, knownChains);
 > const chainId = writer.chainIds()[0];
 > const reader = writer.reader(chainId);
 
@@ -46,7 +46,7 @@ const sendTx: SendTx = {
   chainId: chainId,
   signer: faucet.pubkey,
   recipient: recipientAddress,
-  memo: "Web4 write style",
+  memo: "My first transaction",
   amount: {
     whole: 11000,
     fractional: 777,
