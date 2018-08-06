@@ -8,8 +8,12 @@ Simplest usage:
 
 ```
 const profile = new UserProfile();
-const twelveWords = "degree tackle suggest window test behind mesh extra cover prepare oak script";
-profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic(twelveWords));
+
+// use 32 bytes if you want more security, 24 word phrase
+const seed = await Random.getBytes(16);
+const mnemonic = Bip39.encode(seed).asString();
+console.log(mnemonic);
+profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic(mneumonic));
 
 // the "0" in the next two lines refers to the keyring entry.
 // we only added one, but you could add multiple with different mneumonics,
