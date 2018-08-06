@@ -1,4 +1,4 @@
-# Tendermint RPC adaptor
+# Tendermint RPC Adaptor
 
 This package provides a type-safe wrapper around tendermint rpc. Notably, all binary data is passed 
 in and out as Uint8Array/Buffer, and this module is reponsible for the hex/base64 encoding/decoding

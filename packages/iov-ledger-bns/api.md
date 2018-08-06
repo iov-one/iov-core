@@ -1,6 +1,6 @@
 # BNS Ledger Controller
 
-This provides an adapter to use the bns ledger app as a keyring entry.
+This provides an adaptor to use the bns ledger app as a keyring entry.
 The app is still in dev mode and not available in the ledger store, so
 this is really for cutting edge devs now.
 
