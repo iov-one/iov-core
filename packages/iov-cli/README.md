@@ -30,7 +30,7 @@ How to use the iov-core command line
     label: 'blockchain of value faucet' } ]
 
 > const knownChains = wait(withConnectors(wait(bnsConnector("http://localhost:22345"))));
-> const writer = new CoreWriter(profile, knownChains);
+> const writer = new IovWriter(profile, knownChains);
 > const chainId = writer.chainIds()[0];
 > const reader = writer.reader(chainId);
 

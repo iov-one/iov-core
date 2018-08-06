@@ -2,7 +2,7 @@
 
 Below is a general image of interactivity between components of the BCP/Iov-Core system proposed by IOV.
 
-![IOV Core Overview](./iov-core-overview.png)
+![IOV Core Overview](./iov-read-write.svg)
 
 This document deals specifically with the IOV Core components. However, in the interest of explaining the diagram completely, there are some non IOV Core components described.
 
@@ -14,7 +14,7 @@ The above diagram provides the connectivity flow which a IOV Core based applicat
 - core-writer: Queries BCP Proxies or the BNS for data that must be verified before being used for write activity
 
 The various feature set of BCP (`BCP-Minimal`, `BCP-Basic`, ...) are covered in more detail in the 
-[BCP Specification](https://github.com/iov-one/bcp-spec/blob/master/library/web4/rpc/README.md#bcp-basic)
+[BCP Specification](https://github.com/iov-one/bcp-spec/blob/master/library/iov-core/rpc/README.md#bcp-basic)
 
 ## core-reader
 

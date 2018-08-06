@@ -13,7 +13,7 @@ MVP just shows we can generate HD keys, save/load them, and use them to sign tra
 - [x] KeyringController handles persistence
 - [x] We can encode the sendtx transaction for bcp-demo (`bns-codec`)
 - [x] Tendermint RPC client
-- [x] Client wrapper to parse data as defined in [bcp-minimal](https://github.com/iov-one/bcp-spec/blob/master/library/web4/rpc/README.md#bcp-minimal)
+- [x] Client wrapper to parse data as defined in [bcp-minimal](https://github.com/iov-one/bcp-spec/blob/master/library/iov-core/rpc/README.md#bcp-minimal)
 - [x] Simple cli (using repl) tool that will use `IOV Core` codebase to sign and send transactions. Queries proper nonce from the chain
 
 ## Wallet integration

@@ -3,7 +3,7 @@ import Long from "long";
 import {
   Address,
   BcpTransactionResponse,
-  CoreReader,
+  IovReader,
   Nonce,
   TxCodec,
   UnsignedTransaction,
@@ -13,12 +13,12 @@ import { PublicIdentity, UserProfile } from "@iov/keycontrol";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 
 /*
-CoreWriter handles all private key material, as well as connections to multiple chains.
+IovWriter handles all private key material, as well as connections to multiple chains.
 It must have a codec along with each chain to properly encode the transactions,
 and calculate chain-specific addresses from public keys,
 even if bcp-proxy will handle translating all reads.
 */
-export class CoreWriter {
+export class IovWriter {
   public readonly profile: UserProfile;
   private readonly knownChains: Map<string, ChainConnector>;
 
@@ -36,7 +36,7 @@ export class CoreWriter {
     return Array.from(this.knownChains).map(([x, _]: [string, ChainConnector]) => x as ChainId);
   }
 
-  public reader(chainId: ChainId): CoreReader {
+  public reader(chainId: ChainId): IovReader {
     return this.mustGet(chainId).client;
   }
 
@@ -91,7 +91,7 @@ export class CoreWriter {
 }
 
 export interface ChainConnector {
-  readonly client: CoreReader;
+  readonly client: IovReader;
   readonly codec: TxCodec;
 }
 

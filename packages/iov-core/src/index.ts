@@ -14,4 +14,4 @@ export {
 } from "@iov/keycontrol";
 export { ChainId } from "@iov/tendermint-types";
 
-export { bnsConnector, bnsFromOrToTag, CoreWriter, withConnectors } from "./writer";
+export { bnsConnector, bnsFromOrToTag, IovWriter, withConnectors } from "./writer";

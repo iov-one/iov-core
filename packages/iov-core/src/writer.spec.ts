@@ -1,7 +1,7 @@
 import { SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@iov/keycontrol";
 
-import { bnsConnector, bnsFromOrToTag, CoreWriter, withConnectors } from "./writer";
+import { bnsConnector, bnsFromOrToTag, IovWriter, withConnectors } from "./writer";
 
 // We assume the same BOV context from iov-bns to run some simple tests
 // against that backend.
@@ -18,10 +18,10 @@ const pendingWithoutTendermint = () => {
   }
 };
 
-describe("CoreWriter", () => {
+describe("IovWriter", () => {
   it("can be constructed with no chains", () => {
     const profile = new UserProfile();
-    const writer = new CoreWriter(profile, []);
+    const writer = new IovWriter(profile, []);
     expect(writer).toBeTruthy();
   });
 
@@ -58,7 +58,7 @@ describe("CoreWriter", () => {
 
       const knownChains = await withConnectors(await bnsConnector(bovUrl));
       const profile = await userProfile();
-      const writer = new CoreWriter(profile, knownChains);
+      const writer = new IovWriter(profile, knownChains);
       expect(writer.chainIds().length).toEqual(1);
       const chainId = writer.chainIds()[0];
 
@@ -66,8 +66,8 @@ describe("CoreWriter", () => {
       const recipient = await getOrCreateIdentity(profile, 4);
       const recipientAddress = writer.keyToAddress(chainId, recipient.pubkey);
 
-      // construct a sendtx, this mirrors the CoreWriter api
-      const memo = `CoreWriter style (${Math.random()})`;
+      // construct a sendtx, this mirrors the IovWriter api
+      const memo = `IovWriter style (${Math.random()})`;
       const sendTx: SendTx = {
         kind: TransactionKind.Send,
         chainId,
@@ -110,7 +110,7 @@ describe("CoreWriter", () => {
       pendingWithoutTendermint();
 
       const profile = await userProfile();
-      const writer = new CoreWriter(profile, []);
+      const writer = new IovWriter(profile, []);
       expect(writer.chainIds().length).toEqual(0);
 
       // add the bov chain

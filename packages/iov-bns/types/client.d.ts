@@ -1,9 +1,9 @@
-import { Address, BcpAccount, BcpAccountQuery, BcpNonce, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, ConfirmedTransaction, CoreReader, TokenTicker, TxReadCodec } from "@iov/bcp-types";
+import { Address, BcpAccount, BcpAccountQuery, BcpNonce, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, ConfirmedTransaction, IovReader, TokenTicker, TxReadCodec } from "@iov/bcp-types";
 import { Client as TendermintClient, StatusResponse } from "@iov/tendermint-rpc";
 import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 import { InitData } from "./normalize";
 import { Result } from "./types";
-export declare class Client implements CoreReader {
+export declare class Client implements IovReader {
     static fromOrToTag(addr: Address): Tag;
     static connect(url: string): Promise<Client>;
     protected readonly tmClient: TendermintClient;

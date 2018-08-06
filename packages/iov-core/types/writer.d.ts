@@ -1,13 +1,13 @@
-import { Address, BcpTransactionResponse, CoreReader, Nonce, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
+import { Address, BcpTransactionResponse, IovReader, Nonce, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
 import { Client as BnsClient } from "@iov/bns";
 import { UserProfile } from "@iov/keycontrol";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
-export declare class CoreWriter {
+export declare class IovWriter {
     readonly profile: UserProfile;
     private readonly knownChains;
     constructor(profile: UserProfile, knownChains: Iterable<[string, ChainConnector]>);
     chainIds(): ReadonlyArray<ChainId>;
-    reader(chainId: ChainId): CoreReader;
+    reader(chainId: ChainId): IovReader;
     addChain(connector: ChainConnector): Promise<void>;
     keyToAddress(chainId: ChainId, key: PublicKeyBundle): Address;
     getNonce(chainId: ChainId, addr: Address): Promise<Nonce>;
@@ -15,7 +15,7 @@ export declare class CoreWriter {
     private mustGet;
 }
 export interface ChainConnector {
-    readonly client: CoreReader;
+    readonly client: IovReader;
     readonly codec: TxCodec;
 }
 export declare const bnsFromOrToTag: typeof BnsClient.fromOrToTag;

@@ -156,7 +156,7 @@ describe("Integration tests with bov+tendermint", () => {
     // check current nonce (should be 0, but don't fail if used by other)
     const nonce = await getNonce(client, faucetAddr);
 
-    // construct a sendtx, this is normally used in the CoreWriter api
+    // construct a sendtx, this is normally used in the IovWriter api
     const sendTx: SendTx = {
       kind: TransactionKind.Send,
       chainId,
