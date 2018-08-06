@@ -2,7 +2,7 @@
 
 Keycontrol manages all private keys and keeps them safe.
 
-TODO: Isbella, add your diagram of Keyring and Entries and such...
+![KeyBase Diagram](../../../docs/KeyBaseDiagram.svg)
 
 Simplest usage:
 
