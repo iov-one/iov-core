@@ -12,8 +12,9 @@ These docs will be hosted in the near future.
 
 Here are some example use cases. They all build on each other and assume
 all imports from above. I also use `await` syntax here, which will not work
-in the [@iov/cli](../iov-cli/README.md) REPL, if you wish to experiment in
-the REPL, please replace all `await foo(bar, ...)` with `wait(foo(bar, ...))`.
+in the [@iov/cli](https://github.com/iov-one/iov-core/blob/master/packages/iov-cli/README.md) REPL.
+If you wish to experiment in the REPL, please replace all `await foo(bar, ...)`
+with `wait(foo(bar, ...))`.
 (All imports are done for you in the REPL as well, so you can skip the import
 statements. They are provided for guidance when integrating into your own codebase).
 
@@ -162,6 +163,8 @@ console.log(chainId); // is this what you got yourself?
 List the tickers on the network:
 
 ```ts
+const reader = writer.reader(chainId);
+
 const tickers = await reader.getAllTickers();
 console.log(tickers.data);
 ```
@@ -169,8 +172,6 @@ console.log(tickers.data);
 Query the testnet for some existing genesis accounts:
 
 ```ts
-const reader = writer.reader(chainId);
-
 // this is pulled from the genesis account
 import { Address } from "@iov/bcp-types"
 const bert = fromHex("e28ae9a6eb94fc88b73eb7cbd6b87bf93eb9bef0") as Address;
@@ -183,15 +184,38 @@ const byName = await reader.getAccount({ name: "bert" });
 console.log(byName.data[0])
 ```
 
-If you are running the testnet faucet, just ask for some free money:
+If you are running the testnet faucet, just ask for some free money.
 
-```shell
-curl --header "Content-Type: application/json" --request POST \
-  --data '{"address": "7377fef334376215c87576b527042a3adc02c277"}' \
-  https://faucet.xerusnet.iov.one/faucet
+(type `> .editor` in the cli to copy/paste this; wait until some response text is printed)
+
+```ts
+const postData = `{"address": "${toHex(addr)}"}`;
+const faucetRequest = https.request({
+  protocol: "https:",
+  host: "faucet.xerusnet.iov.one",
+  path: "/faucet",
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Content-Length": Buffer.byteLength(postData)
+  }
+}, (res) => {
+  console.log(`STATUS: ${res.statusCode}`);
+  // console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+  res.setEncoding('utf8');
+  res.on('data', (chunk) => {
+    console.log(`BODY: ${chunk}`);
+  });
+  res.on('end', () => {
+    console.log('No more data in response.');
+  });
+});
+faucetRequest.on('error', (e) => {
+  console.error(`problem with request: ${e.message}`);
+});
+faucetRequest.write(postData);
+faucetRequest.end();
 ```
-(TODO: add ts helper method to do this)
-(TODO: faucet seems broken right now....)
 
 Then query your account:
 
