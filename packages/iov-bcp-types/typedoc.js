@@ -7,5 +7,7 @@ module.exports = {
   name: `${packageJson.name} Documentation`,
   readme: "none",
   mode: "file",
-  includeDefinitions: true
+  excludePrivate: true,
+  excludeNotExported: true,
+  includeDefinitions: true,
 }
