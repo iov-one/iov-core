@@ -9,5 +9,6 @@ module.exports = {
   readme: "none",
   mode: "file",
   excludePrivate: true,
+  excludeNotExported: true,
   ignoreCompilerErrors: true,
 }

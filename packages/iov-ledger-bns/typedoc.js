@@ -9,4 +9,5 @@ module.exports = {
   readme: "api.md",
   mode: "file",
   excludePrivate: true,
+  excludeNotExported: true,
 }
