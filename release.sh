@@ -35,6 +35,7 @@ export SKIP_BUILD=1
 (
   cd "packages/$PACKAGE_DIR"
   yarn pack-node
+  yarn docs
 )
 
 TMP_DIR="tmp"
@@ -44,6 +45,7 @@ mkdir -p "$RELEASE_DIR"
 rm -rf "${RELEASE_DIR:?}"/*
 cp "packages/$PACKAGE_DIR/dist/node/index.js" "$RELEASE_DIR"
 cp -R "packages/$PACKAGE_DIR/types" "$RELEASE_DIR"
+cp -R "packages/$PACKAGE_DIR/docs" "$RELEASE_DIR"
 
 #shellcheck disable=SC2016
 TEMPLATE='{
