@@ -20,4 +20,4 @@ export interface ChainConnector {
 }
 export declare const bnsFromOrToTag: typeof BnsClient.fromOrToTag;
 export declare const bnsConnector: (url: string) => Promise<ChainConnector>;
-export declare const withConnectors: (...connectors: ChainConnector[]) => Promise<ReadonlyArray<[string, ChainConnector]>>;
+export declare const withConnectors: (connectors: ReadonlyArray<ChainConnector>) => Promise<ReadonlyArray<[string, ChainConnector]>>;

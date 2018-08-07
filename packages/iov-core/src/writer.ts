@@ -109,9 +109,7 @@ const withChainId = async (x: ChainConnector): Promise<[string, ChainConnector]>
 ];
 
 export const withConnectors = (
-  // tsc demands a normal array to use the spread operator, tslint complains
-  // tslint:disable-next-line:readonly-array
-  ...connectors: ChainConnector[]
+  connectors: ReadonlyArray<ChainConnector>,
 ): Promise<ReadonlyArray<[string, ChainConnector]>> => {
   return Promise.all(connectors.map(withChainId));
 };

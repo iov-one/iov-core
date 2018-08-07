@@ -1,4 +1,4 @@
-# IOV Core Library 
+# IOV Core Library
 
 [![Build Status](https://travis-ci.com/iov-one/iov-core.svg?token=evC2AgcwxuvHjXeBP3jq&branch=master)](https://travis-ci.com/iov-one/iov-core)
 
@@ -25,7 +25,7 @@ prototypes with the current state.
 We are actively building out multiple clients on top of this library and shaking out usability
 issues in the API.
 
-# Compatibility
+## Compatibility
 
 The compiled code from this package, which is published on npm, should work on any modern (2018)
 browser, and node 8+. The development environment has been tested on node 8.7.0 LTS and node 10.x.
@@ -43,7 +43,15 @@ CI Tests:
 **Windows note:** The development tools *definitely* work under windows in "Linux subsystem for windows"
 bash shell. They most likely work under cygwin as well. But they do rely on minor shell scripting.
 
-# Api Docs
+## Gettting Started
+
+The best way to learn about code is to use it.
+You can read some [examples in @iov/core](./packages/iov-core/README.md).
+And you can use a REPL to [interactively try the code](./packages/iov-cli/README.md).
+
+Once you understand the basics, you can dig in deeper with the API documentation.
+
+## Api Docs
 
 Please run `yarn docs` (after installing yarn and running `yarn install`) in the top level directory
 to generate local api docs. This will generate a `./docs` directory in each package that you
@@ -52,6 +60,5 @@ can browse locally to see API docs on the various packages.
 TODO: we want to set up a build process and publish this somewhere,
 but for now, you can run it locally (also good to see changes on dev branches)
 
-
-# License
+## License
 This repository is licensed under the Apache License 2.0 (see NOTICE and LICENSE).
