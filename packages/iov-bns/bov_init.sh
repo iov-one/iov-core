@@ -12,3 +12,9 @@ docker run -v "${BOV_DIR}:/tendermint" \
 
 docker run -v "${BOV_DIR}:/data" "iov1/bov:${BOV_VERSION}" -home "/data" \
   init CASH b1ca7e78f74423ae01da3b51e676934d9105f282
+
+echo "Tendermint Version"
+docker run "iov1/tendermint:${TM_VERSION}" version
+
+echo "Bov Version"
+docker run "iov1/bov:${BOV_VERSION}" version
