@@ -23,7 +23,7 @@ export const bnsCodec: TxCodec = {
     const bz = codecImpl.app.Tx.encode(built).finish();
     // now we want to append the nonce and chainID
     const bytes = appendSignBytes(bz, tx.chainId, nonce);
-    return { bytes, prehashType: PrehashType.Sha512 };
+    return { bytes, prehashType: PrehashType.None };
   },
 
   // bytesToPost includes the raw transaction appended with the various signatures
