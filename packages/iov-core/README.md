@@ -163,6 +163,8 @@ console.log(chainId); // is this what you got yourself?
 List the tickers on the network:
 
 ```ts
+const reader = writer.reader(chainId);
+
 const tickers = await reader.getAllTickers();
 console.log(tickers.data);
 ```
@@ -170,8 +172,6 @@ console.log(tickers.data);
 Query the testnet for some existing genesis accounts:
 
 ```ts
-const reader = writer.reader(chainId);
-
 // this is pulled from the genesis account
 import { Address } from "@iov/bcp-types"
 const bert = fromHex("e28ae9a6eb94fc88b73eb7cbd6b87bf93eb9bef0") as Address;
