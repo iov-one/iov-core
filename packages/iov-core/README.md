@@ -12,8 +12,9 @@ These docs will be hosted in the near future.
 
 Here are some example use cases. They all build on each other and assume
 all imports from above. I also use `await` syntax here, which will not work
-in the [@iov/cli](../iov-cli/README.md) REPL, if you wish to experiment in
-the REPL, please replace all `await foo(bar, ...)` with `wait(foo(bar, ...))`.
+in the [@iov/cli](https://github.com/iov-one/iov-core/blob/master/packages/iov-cli/README.md) REPL.
+If you wish to experiment in the REPL, please replace all `await foo(bar, ...)`
+with `wait(foo(bar, ...))`.
 (All imports are done for you in the REPL as well, so you can skip the import
 statements. They are provided for guidance when integrating into your own codebase).
 
