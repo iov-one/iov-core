@@ -1,6 +1,8 @@
 import colors = require('colors/safe');
 const leveldown = require('leveldown')
 const levelup = require('levelup')
+import * as http from 'http';
+import * as https from 'https';
 import Long from "long";
 import { Address, bnsConnector, bnsFromOrToTag, ChainId, Ed25519SimpleAddressKeyringEntry, Keyring, KeyringEntry, KeyringEntryImplementationIdString, KeyringEntrySerializationString, Nonce, SendTx, TokenTicker, TransactionKind, UserProfile, IovWriter, withConnectors } from "@iov/core";
 import { bnsCodec } from '@iov/bns';
@@ -10,6 +12,8 @@ const { toAscii, fromHex, toHex } = Encoding;
 function wait<T>(promise: Promise<T>): T { return require('deasync2').await(promise); }
 console.log(colors.green('Done initializing session for you. Have fun!'));
 console.log(colors.yellow('Available imports:'));
+console.log(colors.yellow('  * http'));
+console.log(colors.yellow('  * https'));
 console.log(colors.yellow('  * leveldown'));
 console.log(colors.yellow('  * levelup'));
 console.log(colors.yellow('  * from long'));

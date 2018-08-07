@@ -184,15 +184,38 @@ const byName = await reader.getAccount({ name: "bert" });
 console.log(byName.data[0])
 ```
 
-If you are running the testnet faucet, just ask for some free money:
+If you are running the testnet faucet, just ask for some free money.
 
-```shell
-curl --header "Content-Type: application/json" --request POST \
-  --data '{"address": "7377fef334376215c87576b527042a3adc02c277"}' \
-  https://faucet.xerusnet.iov.one/faucet
+(type `> .editor` in the cli to copy/paste this; wait until some response text is printed)
+
+```ts
+const postData = `{"address": "${toHex(addr)}"}`;
+const faucetRequest = https.request({
+  protocol: "https:",
+  host: "faucet.xerusnet.iov.one",
+  path: "/faucet",
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Content-Length": Buffer.byteLength(postData)
+  }
+}, (res) => {
+  console.log(`STATUS: ${res.statusCode}`);
+  // console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+  res.setEncoding('utf8');
+  res.on('data', (chunk) => {
+    console.log(`BODY: ${chunk}`);
+  });
+  res.on('end', () => {
+    console.log('No more data in response.');
+  });
+});
+faucetRequest.on('error', (e) => {
+  console.error(`problem with request: ${e.message}`);
+});
+faucetRequest.write(postData);
+faucetRequest.end();
 ```
-(TODO: add ts helper method to do this)
-(TODO: faucet seems broken right now....)
 
 Then query your account:
 
