@@ -45,7 +45,7 @@ before_script:
 - |
   if which docker > /dev/null ; then
     export TM_VERSION=0.21.0
-    export BOV_VERSION=v0.5.1
+    export BOV_VERSION=v0.6.0
     docker pull tendermint/tendermint:${TM_VERSION}
     docker pull iov1/tendermint:${TM_VERSION}
     docker pull iov1/bov:${BOV_VERSION}
