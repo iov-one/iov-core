@@ -152,7 +152,7 @@ Now, connect to the network:
 import { bnsConnector, IovWriter, withConnectors } from '@iov/core';
 
 const testnet = await bnsConnector('https://bov.xerusnet.iov.one');
-const chains = await withConnectors(testnet); // you can pass in any number of networks here
+const chains = await withConnectors([testnet]);
 const writer = new IovWriter(profile, chains);
 
 const chainId = writer.chainIds()[0];

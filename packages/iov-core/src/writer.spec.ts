@@ -56,7 +56,7 @@ describe("IovWriter", () => {
     it("can send transaction", async () => {
       pendingWithoutBov();
 
-      const knownChains = await withConnectors(await bnsConnector(bovUrl));
+      const knownChains = await withConnectors([await bnsConnector(bovUrl)]);
       const profile = await userProfile();
       const writer = new IovWriter(profile, knownChains);
       expect(writer.chainIds().length).toEqual(1);
