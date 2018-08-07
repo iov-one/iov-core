@@ -164,14 +164,14 @@ export class Client implements IovReader {
   }
 
   protected async query(path: string, data: Uint8Array): Promise<QueryResponse> {
-    const q = await this.tmClient.abciQuery({ path, data });
-    if (!q.key) {
-      return { height: q.height, results: [] };
+    const response = await this.tmClient.abciQuery({ path, data });
+    if (!response.key) {
+      return { height: response.height, results: [] };
     }
-    const keys = codecImpl.app.ResultSet.decode(q.key).results;
-    const values = codecImpl.app.ResultSet.decode(q.value).results;
+    const keys = codecImpl.app.ResultSet.decode(response.key).results;
+    const values = codecImpl.app.ResultSet.decode(response.value).results;
     const results: ReadonlyArray<Result> = zip(keys, values);
-    return { height: q.height, results };
+    return { height: response.height, results };
   }
 }
 
