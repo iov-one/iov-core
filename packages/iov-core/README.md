@@ -25,13 +25,13 @@ Create a random mnemonic:
 import { Bip39, Random } from '@iov/crypto';
 
 // 16 bytes -> 12 word phrase
-const seed = await Random.getBytes(16);
-const mnemonic = Bip39.encode(seed).asString();
-console.log(mnemonic);
+const entropy16 = await Random.getBytes(16);
+const mnemonic12 = Bip39.encode(entropy16).asString();
+console.log(mnemonic12);
 
 // 32 bytes -> 24 word phrase
-const seed24 = await Random.getBytes(32);
-const mnemonic24 = Bip39.encode(seed24).asString();
+const entropy32 = await Random.getBytes(32);
+const mnemonic24 = Bip39.encode(entropy32).asString();
 console.log(mnemonic24);
 ```
 
@@ -41,7 +41,7 @@ Create a new profile with two entries:
 import { Ed25519SimpleAddressKeyringEntry, UserProfile} from '@iov/keycontrol';
 
 const profile = new UserProfile();
-profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic(mnemonic));
+profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic(mnemonic12));
 profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic(mnemonic24));
 ```
 
@@ -62,7 +62,7 @@ Create identies on the two keyring entries (argument is index of the entry):
 
 ```ts
 import { Encoding } from '@iov/encoding';
-const { fromHex, toHex } = Encoding; 
+const { fromHex, toHex } = Encoding;
 
 // this creates two different public key identities, generated from the
 // first mnemonic using two different Slip0010 paths
@@ -120,7 +120,7 @@ the `bov` and `tendermint` binaries, construct your genesis file and run
 the client against your one-node "dev net"...
 
 But, if you just want to see how the client works, let's run against iov's testnet
-and use the faucet to get some tokens. As of August 6, 2018, the current testnet 
+and use the faucet to get some tokens. As of August 6, 2018, the current testnet
 is located at https://bov.xerusnet.iov.one/ (we are currently roating it in 2-3
 week cycles to improve the setup based on loadtests and internal feedback).
 
