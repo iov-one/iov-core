@@ -17,6 +17,3 @@ node_modules/
 
 # Release dir
 tmp/
-
-# API docs
-packages/*/docs/

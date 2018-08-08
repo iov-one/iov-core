@@ -23,10 +23,8 @@ node_modules/
 # Release dir
 tmp/
 
-# API docs
-packages/*/docs/
-
 build/
+docs/
 
 # .npmignore additions
 !build/
