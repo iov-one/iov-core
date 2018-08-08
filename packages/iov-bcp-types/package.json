@@ -1,6 +1,6 @@
 {
   "name": "@iov/bcp-types",
-  "version": "0.2.0-4",
+  "version": "0.2.0-5",
   "description": "General types for IOV projects",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -21,10 +21,10 @@
     "test": "echo 'Info: no test specified'"
   },
   "dependencies": {
-    "@iov/tendermint-types": "^0.2.0-4",
+    "@iov/tendermint-types": "^0.2.0-5",
     "@types/long": "^4.0.0",
     "long": "^4.0.0",
     "type-tagger": "^1.0.0"
   },
-  "gitHead": "4b30923f59fbbd812f125d6fe0b9de93175adb28"
+  "gitHead": "39379b38f0ac128a48aa7174692c4c932ed326f7"
 }
