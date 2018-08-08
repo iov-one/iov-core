@@ -1,4 +1,4 @@
-import { Ed25519, Ed25519Keypair } from "@iov/crypto";
+import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
 
 import * as codecImpl from "./codecimpl";
 import { buildMsg, buildSignedTx, buildUnsignedTx } from "./encode";
@@ -89,11 +89,12 @@ describe("Ensure crypto", () => {
 
     // make sure we can validate this signature (our signBytes are correct)
     const signature = sig.signature;
-    const valid = await Ed25519.verifySignature(signature, toSign, pubKey);
-    expect(valid).toBeTruthy();
+    const prehash = new Sha512(toSign).digest();
+    const valid = await Ed25519.verifySignature(signature, prehash, pubKey);
+    expect(valid).toEqual(true);
 
     // make sure we can generate a compatible signature
-    const mySig = await Ed25519.createSignature(toSign, keypair);
+    const mySig = await Ed25519.createSignature(prehash, keypair);
     expect(mySig).toEqual(signature);
   });
 });

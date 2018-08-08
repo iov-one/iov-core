@@ -23,7 +23,6 @@ export const bnsCodec: TxCodec = {
     const bz = codecImpl.app.Tx.encode(built).finish();
     // now we want to append the nonce and chainID
     const bytes = appendSignBytes(bz, tx.chainId, nonce);
-    // TODO: migrate to Sha512 when the backend is ready
     return { bytes, prehashType: PrehashType.None };
   },
 
