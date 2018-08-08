@@ -1,6 +1,6 @@
 # @iov/encoding
 
-This package is an extension to the JavaScript standrad library that is not
+This package is an extension to the JavaScript standard library that is not
 bound to IOV products.
 
 ## API Documentation
