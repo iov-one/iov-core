@@ -6,5 +6,5 @@ mkdir -p ../iov-core-docs/latest
 
 for name in $(find ./packages -maxdepth 2 -name docs -type d | cut -c 12- | cut -d"/" -f1); do
   echo "$name"
-  rsync -a "./packages/$name/docs/" "../iov-core-docs/latest/$name"
+  rsync -a --delete "./packages/$name/docs/" "../iov-core-docs/latest/$name"
 done
