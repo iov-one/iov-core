@@ -1,6 +1,6 @@
 {
   "name": "@iov/tendermint-types",
-  "version": "0.2.0-3",
+  "version": "0.2.0-4",
   "description": "Types for the communication with tendermint",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -25,5 +25,5 @@
     "long": "^4.0.0",
     "type-tagger": "^1.0.0"
   },
-  "gitHead": "90d0354350540729df6b19a34c14222450dbf076"
+  "gitHead": "4b30923f59fbbd812f125d6fe0b9de93175adb28"
 }
