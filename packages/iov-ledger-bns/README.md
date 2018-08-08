@@ -14,9 +14,9 @@ profile.addEntry(new LedgerSimpleAddressKeyringEntry());
 Main entry is [].
 
 If you want to call the ledger directly, you will need to
-[connectToFirstLedger](./globals.html#connecttofirstledger) to get a transport,
-which you can [getPublicKeyWithIndex](./globals.html#getpublickeywithindex)
-or [signTransactionWithIndex](./globals.html#signtransactionwithindex).
+[connectToFirstLedger](https://iov-one.github.io/iov-core-docs/latest/iov-ledger-bns/globals.html#connecttofirstledger) to get a transport,
+which you can [getPublicKeyWithIndex](https://iov-one.github.io/iov-core-docs/latest/iov-ledger-bns/globals.html#getpublickeywithindex)
+or [signTransactionWithIndex](https://iov-one.github.io/iov-core-docs/latest/iov-ledger-bns/globals.html#signtransactionwithindex).
 
 You can also try `yarn checkApp` to see events as you change apps on the ledger,
 which should detect when the proper app is opened and when you leave the app.
