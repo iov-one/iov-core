@@ -14,20 +14,20 @@ const client = await Client.connect('wss://bov.wolfnet.iov.one');
 
 ## Code Overview
 
-The main entry point is the [Client](./classes/_client_.client.html).
+The main entry point is the [Client](https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-rpc/classes/_client_.client.html).
 
-The connection to the blockchain is defned by a flexible [RpcClient](./modules/_rpcclient_.html)
+The connection to the blockchain is defned by a flexible [RpcClient](https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-rpc/modules/_rpcclient_.html)
 interface, with implmentations for Http (POST) and Websockets. You can add your own connection type
 or just wrap one with custom retry rules, error handling, etc. This client is just responsible for
 sending JsonRpc requests and returning the responses.
 
-The actual domain knowledge is embeded in the [Adaptor](./modules/_adaptor_.html),
-which defines a class for encoding [Params](./interfaces/_adaptor_.params.html)
-and another for decoding [Responses](./interfaces/_adaptor_.responses.html).
-There is currently an [implementation for v0.20](./modules/_v0_20_index_.html),
+The actual domain knowledge is embeded in the [Adaptor](https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-rpc/modules/_adaptor_.html),
+which defines a class for encoding [Params](https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-rpc/interfaces/_adaptor_.params.html)
+and another for decoding [Responses](https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-rpc/interfaces/_adaptor_.responses.html).
+There is currently an [implementation for v0.20](https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-rpc/modules/_v0_20_index_.html),
 which is compatible with `v0.21` as well. This knowledge is mainly for those who
 want to add support for new versions, which should be added to the
-[auto-detect method](./classes/_client_.client.html#detectversion).
+[auto-detect method](https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-rpc/classes/_client_.client.html#detectversion).
 
 ## API Documentation
 
