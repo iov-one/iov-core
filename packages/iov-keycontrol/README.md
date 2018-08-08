@@ -1,4 +1,4 @@
-# IOV Keycontrol
+# @iov/keycontrol
 
 Keycontrol manages all private keys and keeps them safe.
 
@@ -26,6 +26,15 @@ profile.getIdentities(0);
 
 As you see above, everything goes through the [UserProfile](./classes/userprofile.html),
 which is the main entry point into this project. The main entries you can add is
-[Ed25519SimpleAddress](./classes/ed25519simpleaddresskeyringentry.html), 
+[Ed25519SimpleAddress](./classes/ed25519simpleaddresskeyringentry.html),
 which generates HD keys ala slip0010 (bip44), with a fixed path (not chain-dependent).
-You can also use the `LedgerKeyringEntry` from `iov-ledger-bns`. 
+You can also use the `LedgerKeyringEntry` from `iov-ledger-bns`.
+
+## API Documentation
+
+[https://iov-one.github.io/iov-core-docs/latest/iov-keycontrol/](https://iov-one.github.io/iov-core-docs/latest/iov-keycontrol/)
+
+## License
+
+This package is part of the IOV-Core repository, licensed under the Apache License 2.0
+(see [NOTICE](https://github.com/iov-one/iov-core/blob/master/NOTICE) and [LICENSE](https://github.com/iov-one/iov-core/blob/master/LICENSE)).
