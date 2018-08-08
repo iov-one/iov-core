@@ -1,4 +1,4 @@
-# IOV Core Library
+# IOV-Core
 
 [![Build Status](https://travis-ci.com/iov-one/iov-core.svg?token=evC2AgcwxuvHjXeBP3jq&branch=master)](https://travis-ci.com/iov-one/iov-core)
 
