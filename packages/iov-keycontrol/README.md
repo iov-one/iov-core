@@ -22,17 +22,15 @@ const identity = await profile.createIdentity(0);
 profile.getIdentities(0);
 ```
 
-## Internal API
-
-As you see above, everything goes through the [UserProfile](./classes/userprofile.html),
-which is the main entry point into this project. The main entries you can add is
-[Ed25519SimpleAddress](./classes/ed25519simpleaddresskeyringentry.html),
-which generates HD keys ala slip0010 (bip44), with a fixed path (not chain-dependent).
-You can also use the `LedgerKeyringEntry` from `iov-ledger-bns`.
-
 ## API Documentation
 
 [https://iov-one.github.io/iov-core-docs/latest/iov-keycontrol/](https://iov-one.github.io/iov-core-docs/latest/iov-keycontrol/)
+
+As you see above, everything goes through the [UserProfile](https://iov-one.github.io/iov-core-docs/latest/iov-keycontrol/classes/userprofile.html),
+which is the main entry point into this package. The main entries you can add is
+[Ed25519SimpleAddress](https://iov-one.github.io/iov-core-docs/latest/iov-keycontrol/classes/ed25519simpleaddresskeyringentry.html),
+which generates HD keys ala SLIP-0010 (BIP-0032), with a fixed path (not chain-dependent).
+You can also use the `LedgerSimpleAddressKeyringEntry` from `@iov/ledger-bns`.
 
 ## License
 
