@@ -53,12 +53,11 @@ Once you understand the basics, you can dig in deeper with the API documentation
 
 ## Api Docs
 
-Please run `yarn docs` (after installing yarn and running `yarn install`) in the top level directory
-to generate local api docs. This will generate a `./docs` directory in each package that you
-can browse locally to see API docs on the various packages.
+Documentation is published at [https://iov-one.github.io/iov-core-docs/](https://iov-one.github.io/iov-core-docs/).
 
-TODO: we want to set up a build process and publish this somewhere,
-but for now, you can run it locally (also good to see changes on dev branches)
+To build the documentation locally, run `yarn install && yarn build && yarn docs`
+in this repository. This will generate a `./docs` directory in each package that you
+can browse locally to see API docs on the various packages.
 
 ## License
 This repository is licensed under the Apache License 2.0 (see NOTICE and LICENSE).
