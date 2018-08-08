@@ -10,6 +10,9 @@
     "type": "git",
     "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-core"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "docs": "rm -rf docs && typedoc --options typedoc.js",
     "lint": "tslint -t verbose --project .",

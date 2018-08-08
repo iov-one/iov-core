@@ -8,6 +8,9 @@
     "type": "git",
     "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-cli"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "cli": "echo '\\nTo get started type: .load init\\n' && NODE_NO_WARNINGS=1 ts-node"
   },
