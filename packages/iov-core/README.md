@@ -1,4 +1,4 @@
-# IOV Core documentation
+# @iov/core
 
 ## Full Api Docs
 
@@ -277,3 +277,8 @@ console.log(toHex(first.signer.data));
 const sender = bnsCodec.keyToAddress(first.signer);
 console.log(toHex(sender));
 ```
+
+## License
+
+This package is part of the IOV-Core repository, licensed under the Apache License 2.0
+(see [NOTICE](https://github.com/iov-one/iov-core/blob/master/NOTICE) and [LICENSE](https://github.com/iov-one/iov-core/blob/master/LICENSE)).

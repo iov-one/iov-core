@@ -1,7 +1,6 @@
-How to use the iov-core command line
-====================================
+# @iov/cli
 
-## Example usage
+## How to use the IOV-Core command line interface
 
 1. Build all dependencies: `yarn install && yarn build` from root of the mono-repo
 2. Go to `packages/iov-cli`, run `yarn cli` and follow on-screen instructions
@@ -149,3 +148,8 @@ UserProfile {
   createdAt: 2018-08-02T16:25:38.274Z,
   keyring: Keyring { entries: [ [Object], [Object] ] }, ...
 ```
+
+## License
+
+This package is part of the IOV-Core repository, licensed under the Apache License 2.0
+(see [NOTICE](https://github.com/iov-one/iov-core/blob/master/NOTICE) and [LICENSE](https://github.com/iov-one/iov-core/blob/master/LICENSE)).
