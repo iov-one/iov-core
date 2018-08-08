@@ -1,6 +1,6 @@
-# Tendermint RPC Adaptor
+# @iov/tendermint-rpc
 
-This package provides a type-safe wrapper around tendermint rpc. Notably, all binary data is passed 
+This package provides a type-safe wrapper around tendermint rpc. Notably, all binary data is passed
 in and out as Uint8Array/Buffer, and this module is reponsible for the hex/base64 encoding/decoding
 depending on the field and version of tendermint. Also handles converting numbers to and from strings
 for tendermint v0.22+ (not yet implemented).
@@ -16,7 +16,7 @@ const client = await Client.connect('wss://bov.wolfnet.iov.one');
 
 The main entry point is the [Client](./classes/_client_.client.html).
 
-The connection to the blockchain is defned by a flexible [RpcClient](./modules/_rpcclient_.html) 
+The connection to the blockchain is defned by a flexible [RpcClient](./modules/_rpcclient_.html)
 interface, with implmentations for Http (POST) and Websockets. You can add your own connection type
 or just wrap one with custom retry rules, error handling, etc. This client is just responsible for
 sending JsonRpc requests and returning the responses.
@@ -29,3 +29,11 @@ which is compatible with `v0.21` as well. This knowledge is mainly for those who
 want to add support for new versions, which should be added to the
 [auto-detect method](./classes/_client_.client.html#detectversion).
 
+## API Documentation
+
+[https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-rpc/](https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-rpc/)
+
+## License
+
+This package is part of the IOV-Core repository, licensed under the Apache License 2.0
+(see [NOTICE](https://github.com/iov-one/iov-core/blob/master/NOTICE) and [LICENSE](https://github.com/iov-one/iov-core/blob/master/LICENSE)).
