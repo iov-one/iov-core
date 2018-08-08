@@ -6,7 +6,7 @@ module.exports = {
   exclude: "**/*.spec.ts",
   target: "es6",
   name: `${packageJson.name} Documentation`,
-  readme: "none",
+  readme: "README.md",
   mode: "file",
   excludeExternals: true,
   excludePrivate: true,
