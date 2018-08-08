@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0
+
+Finalize library name, add documentation and open source
+
 ## 0.1.1
 
 Expose type TransactionKind
