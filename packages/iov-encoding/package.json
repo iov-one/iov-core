@@ -1,6 +1,6 @@
 {
   "name": "@iov/encoding",
-  "version": "0.2.0-2",
+  "version": "0.2.0-3",
   "description": "Encoding helpers for IOV projects",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -30,5 +30,6 @@
   },
   "devDependencies": {
     "@types/base64-js": "^1.2.5"
-  }
+  },
+  "gitHead": "90d0354350540729df6b19a34c14222450dbf076"
 }
