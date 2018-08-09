@@ -5,7 +5,7 @@ bound to IOV products.
 
 ## API Documentation
 
-[https://iov-one.github.io/iov-core-docs/latest/encoding/](https://iov-one.github.io/iov-core-docs/latest/encoding/)
+[https://iov-one.github.io/iov-core-docs/latest/iov-encoding/](https://iov-one.github.io/iov-core-docs/latest/iov-encoding/)
 
 ## License
 

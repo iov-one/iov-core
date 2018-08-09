@@ -2,7 +2,7 @@
 
 Keycontrol manages all private keys and keeps them safe.
 
-![KeyBase Diagram](../../../docs/KeyBaseDiagram.svg)
+![KeyBase Diagram](https://raw.githubusercontent.com/iov-one/iov-core/master/docs/KeyBaseDiagram.png)
 
 Simplest usage:
 
