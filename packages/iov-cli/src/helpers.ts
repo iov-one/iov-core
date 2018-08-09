@@ -1,9 +1,32 @@
 import { TSError } from "ts-node";
 import { Script, Context } from "vm";
 
+import { splitCode } from "./codeanalyzer";
+
 export function executeJavaScript(code: string, filename: string, context: Context) {
   const script = new Script(code, { filename: filename });
   return script.runInContext(context);
+}
+
+export function executeJavaScriptAsync(code: string, filename: string, context: Context): Promise<any> {
+  const { other, last } = splitCode(code);
+
+  // console.log(other);
+  // console.log(last);
+
+  const codeWrapper = `
+    (done) => {
+      (async () => {
+        ${other};
+        const lastResult = ${last};
+        done(lastResult);
+      })();
+    }
+  `;
+  return new Promise((resolve, _reject) => {
+    const script = new Script(codeWrapper, { filename: filename });
+    script.runInContext(context)(resolve);
+  });
 }
 
 export function isRecoverable(error: TSError) {

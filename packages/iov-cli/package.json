@@ -30,6 +30,7 @@
     "deasync2": "^1.0.1",
     "diff": "^3.5.0",
     "leveldown": "^4.0.1",
+    "recast": "^0.15.3",
     "ts-node": "^7.0.0",
     "typescript": "~2.9"
   },

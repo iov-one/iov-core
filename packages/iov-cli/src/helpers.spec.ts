@@ -1,6 +1,6 @@
 import { createContext } from "vm";
 
-import { executeJavaScript } from "./helpers";
+import { executeJavaScript, executeJavaScriptAsync } from "./helpers";
 
 describe("Helpers", () => {
   describe("executeJavaScript", () => {
@@ -60,6 +60,30 @@ describe("Helpers", () => {
       expect(executeJavaScript("exports.fooTest", "myfile.js", context)).toBeUndefined();
       expect(executeJavaScript("exports.fooTest = 'bar'", "myfile.js", context)).toEqual("bar");
       expect(executeJavaScript("exports.fooTest", "myfile.js", context)).toEqual("bar");
+    });
+  });
+
+  describe("executeJavaScriptAsync", () => {
+    it("can execute basic async code", async () => {
+      const context = createContext({});
+      expect(await executeJavaScriptAsync("await (1)", "myfile.js", context)).toEqual(1);
+    });
+
+    it("can execute timeout promise code", async () => {
+      const context = createContext({ setTimeout: setTimeout });
+      const code = "await (new Promise(resolve => setTimeout(() => resolve('job done'), 5)))";
+      expect(await executeJavaScriptAsync(code, "myfile.js", context)).toEqual("job done");
+    });
+
+    it("can execute timeout code in multiple statements", async () => {
+      const context = createContext({ setTimeout: setTimeout });
+      const code = `
+        const promise = new Promise(resolve => {
+          setTimeout(() => resolve('job done'), 5);
+        });
+        await (promise);
+      `;
+      expect(await executeJavaScriptAsync(code, "myfile.js", context)).toEqual("job done");
     });
   });
 });
