@@ -9,7 +9,7 @@ If you don't have one yet, just `mkdir iov-cli-installation && cd iov-cli-instal
 ### locally with yarn
 
 ```
-$ yarn add @ioc/cli --dev
+$ yarn add @iov/cli --dev
 $ ./node_modules/.bin/iov-cli
 ```
 
@@ -23,14 +23,14 @@ $ ./node_modules/.bin/iov-cli
 ### globally with yarn
 
 ```
-$ yarn global add @ioc/cli
+$ yarn global add @iov/cli
 $ iov-cli
 ```
 
 ### globally with npm
 
 ```
-$ npm install -g @ioc/cli
+$ npm install -g @iov/cli
 $ iov-cli
 ```
 
