@@ -3,7 +3,7 @@ import { join } from "path";
 import { Recoverable, REPLServer, start } from "repl";
 import { register, Register, TSError } from "ts-node";
 
-import { executeJavaScript, isRecoverable, lineCount, sleep } from "./helpers";
+import { executeJavaScript, isRecoverable, lineCount } from "./helpers";
 
 interface ReplEvalResult {
   readonly result: any;
@@ -124,9 +124,6 @@ export class TsRepl {
   }
 
   private async replEval(code: string): Promise<ReplEvalResult | undefined> {
-    // Delay eval execution – because we can
-    await sleep(3);
-
     // TODO: Figure out how to handle completion here.
     if (code === ".scope") {
       return undefined;

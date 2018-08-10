@@ -6,10 +6,6 @@ export function executeJavaScript(code: string, filename: string) {
   return script.runInThisContext();
 }
 
-export function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 export function lineCount(sourceCode: string) {
   // Expect POSIX lines (https://stackoverflow.com/a/729795)
   if (sourceCode.length > 0 && !sourceCode.endsWith("\n")) {
