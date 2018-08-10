@@ -15,7 +15,10 @@
     "format": "prettier --write --loglevel warn './src/**/*.ts'",
     "prebuild": "yarn format",
     "build": "tsc",
-    "test-bin": "yarn build && ./bin/iov-cli"
+    "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
+    "test-node": "./jasmine-testrunner.js",
+    "test-bin": "yarn build && ./bin/iov-cli",
+    "test": "yarn build-or-skip && yarn test-node"
   },
   "bin": {
     "iov-cli": "bin/iov-cli"
