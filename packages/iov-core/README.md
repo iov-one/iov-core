@@ -240,6 +240,8 @@ console.log(yours); // should show empty array for data
 Send a transaction to second id:
 
 ```ts
+import { SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types"
+
 const sendTx: SendTx = {
   kind: TransactionKind.Send,
   chainId: chainId,
