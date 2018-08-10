@@ -15,16 +15,7 @@ export function lineCount(sourceCode: string) {
   if (sourceCode.length > 0 && !sourceCode.endsWith("\n")) {
     throw new Error("final newline missing");
   }
-
-  let count = 0;
-
-  for (const char of sourceCode) {
-    if (char === "\n") {
-      count++;
-    }
-  }
-
-  return count;
+  return sourceCode.split("\n").length - 1;
 }
 
 export function isRecoverable(error: TSError) {
