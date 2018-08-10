@@ -10,10 +10,15 @@ export function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export function lineCount(value: string) {
+export function lineCount(sourceCode: string) {
+  // Expect POSIX lines (https://stackoverflow.com/a/729795)
+  if (sourceCode.length > 0 && !sourceCode.endsWith("\n")) {
+    throw new Error("final newline missing");
+  }
+
   let count = 0;
 
-  for (const char of value) {
+  for (const char of sourceCode) {
     if (char === "\n") {
       count++;
     }
