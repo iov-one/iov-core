@@ -66,3 +66,28 @@ fold_start "test-cli-installation"
   "$(yarn bin)/iov-cli" --selftest
 )
 fold_end
+
+if [[ "$TRAVIS_OS_NAME" == "linux" ]] && [[ "$TRAVIS_NODE_VERSION" == "8" ]] && [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_PULL_REQUEST_BRANCH" == "" ]]; then
+  (
+    cd "$HOME"
+    git config --global user.email "travis@iov.invalid"
+    git config --global user.name "Travis Job"
+  )
+
+  (
+    cd ".."
+    git clone "https://webmaster128:$GITHUB_API_KEY@github.com/iov-one/iov-core-docs.git"
+    cd "iov-core-docs"
+    git checkout gh-pages
+    git reset master
+  )
+
+  ./copy_docs.sh
+
+  (
+    cd "../iov-core-docs"
+    git add ./latest
+    git commit -m "Update docs"
+    git push -f
+  )
+fi
