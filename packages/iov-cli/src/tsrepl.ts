@@ -55,6 +55,7 @@ export class TsRepl {
 
     // Bookmark the point where we should reset the REPL state.
     const resetEval = this.appendEval("");
+    +"\n";
 
     const reset = (): void => {
       resetEval();
@@ -77,11 +78,13 @@ export class TsRepl {
           return;
         }
 
-        const undo = this.appendEval(identifier);
+        // Had to add one return so appendEval (lineCount) wouldn't panic
+        const undo = this.appendEval(identifier + "\n");
         const { name, comment } = this.typeScriptService.getTypeInfo(
           this.evalData.input,
           this.evalPath,
-          this.evalData.input.length,
+          // Have to subtract one due to the empty return above
+          this.evalData.input.length - 1,
         );
 
         undo();
