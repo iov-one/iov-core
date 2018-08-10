@@ -67,8 +67,7 @@ fold_start "test-cli-installation"
 )
 fold_end
 
-# TODO: do that for master builds only
-if [[ "$TRAVIS_OS_NAME" == "linux" ]] && [[ "$TRAVIS_NODE_VERSION" == "8" ]]; then
+if [[ "$TRAVIS_OS_NAME" == "linux" ]] && [[ "$TRAVIS_NODE_VERSION" == "8" ]] && [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_PULL_REQUEST_BRANCH" == "" ]]; then
   (
     cd "$HOME"
     git config --global user.email "travis@iov.invalid"
