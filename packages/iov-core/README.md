@@ -1,12 +1,19 @@
 # @iov/core
 
+@iov/core is the main entrypoint into the monorepo, exposing high-level functionality
+to easily build blockchain clients. It uses the keymanagement functionality of `UserProfile`,
+and the generic blockchain connection of `IovReader`, and pulls them together into one
+`IovWriter`, which can query state and sign transactions on multiple blockchains.
+The examples below show a basic usage of the core library. You may also want to experiment
+with [@iov/cli](https://github.com/iov-one/iov-core/blob/master/packages/iov-cli/README.md)
+as a developer tool to familiarize yourself with this functionality.
+
 ## Full Api Docs
 
-If you run `yarn docs` in this directory, it will generate typedoc for the entire iov-core project.
-Just go into `./docs/index.html` and browse through the various classes. This is intended mainly as
-a reference when coding. If you use typescript, your IDE should also provide a lot of helpful type info.
+Full API Docs from the latest release are hosted at: https://iov-one.github.io/iov-core-docs/
 
-These docs will be hosted in the near future.
+If you want to generate documentation for a development branch, please run `yarn docs` in the
+current directory and go to [docs/index.html](./docs/index.html).
 
 ## Examples
 
