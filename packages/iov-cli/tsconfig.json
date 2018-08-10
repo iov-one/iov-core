@@ -1,7 +1,11 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "noUnusedLocals": false,
-    "noImplicitAny": false,
-  }
+    "baseUrl": ".",
+    "outDir": "build",
+    "rootDir": "src"
+  },
+  "include": [
+    "src/**/*"
+  ]
 }

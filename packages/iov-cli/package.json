@@ -12,14 +12,30 @@
     "access": "public"
   },
   "scripts": {
-    "cli": "echo '\\nTo get started type: .load init\\n' && NODE_NO_WARNINGS=1 ts-node"
+    "format": "prettier --write --loglevel warn './src/**/*.ts'",
+    "prebuild": "yarn format",
+    "build": "tsc",
+    "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
+    "test-node": "./jasmine-testrunner.js",
+    "test-bin": "yarn build && ./bin/iov-cli",
+    "test": "yarn build-or-skip && yarn test-node"
+  },
+  "bin": {
+    "iov-cli": "bin/iov-cli"
   },
   "dependencies": {
     "@iov/core": "^0.2.0-7",
+    "argparse": "^1.0.10",
     "colors": "^1.3.0",
     "deasync2": "^1.0.1",
+    "diff": "^3.5.0",
     "leveldown": "^4.0.1",
-    "ts-node": "^7.0.0"
+    "ts-node": "^7.0.0",
+    "typescript": "~2.9"
+  },
+  "devDependencies": {
+    "@types/argparse": "^1.0.34",
+    "@types/diff": "^3.5.1"
   },
   "gitHead": "39379b38f0ac128a48aa7174692c4c932ed326f7"
 }

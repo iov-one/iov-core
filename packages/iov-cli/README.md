@@ -1,10 +1,43 @@
 # @iov/cli
 
+## Installation and first run
+
+The `iov-cli` executable is available via npm.
+We recomment local installations to your demo project.
+If you don't have one yet, just `mkdir iov-cli-installation && cd iov-cli-installation && yarn init -y`.
+
+### locally with yarn
+
+```
+$ yarn add @iov/cli --dev
+$ ./node_modules/.bin/iov-cli
+```
+
+### locally with npm
+
+```
+$ npm install @iov/cli --save-dev
+$ ./node_modules/.bin/iov-cli
+```
+
+### globally with yarn
+
+```
+$ yarn global add @iov/cli
+$ iov-cli
+```
+
+### globally with npm
+
+```
+$ npm install -g @iov/cli
+$ iov-cli
+```
+
 ## How to use the IOV-Core command line interface
 
-1. Build all dependencies: `yarn install && yarn build` from root of the mono-repo
-2. Go to `packages/iov-cli`, run `yarn cli` and follow on-screen instructions
-3. Play around like in the following example code:
+1. Install @iov/cli and run `iov-cli` as shown above
+2. Play around like in the following example code:
 
 ```
 > const profile = new UserProfile();
@@ -28,7 +61,8 @@
 [ { pubkey: { algo: 'ed25519', data: [Uint8Array] },
     label: 'blockchain of value faucet' } ]
 
-> const knownChains = wait(withConnectors(wait(bnsConnector("http://localhost:22345"))));
+> const connector = wait(bnsConnector("http://localhost:22345"));
+> const knownChains = wait(withConnectors([connector]));
 > const writer = new IovWriter(profile, knownChains);
 > const chainId = writer.chainIds()[0];
 > const reader = writer.reader(chainId);
@@ -60,8 +94,8 @@ const sendTx: SendTx = {
 > wait(reader.searchTx({ tags: [bnsFromOrToTag(recipientAddress)] }));
 ```
 
-4. Congratulations, you sent your first money!
-5. Add an additional entry
+3. Congratulations, you sent your first money!
+4. Add an additional entry
 
 ```
 > profile.entriesCount.value
@@ -89,14 +123,14 @@ const sendTx: SendTx = {
 [ 'main', 'second' ]
 ```
 
-6. Now store to disk
+5. Now store to disk
 
 ```
 > const db = levelup(leveldown('./my_userprofile_db'))
 > profile.storeIn(db, "secret passwd")
 ```
 
-7. and restore
+6. and restore
 
 ```
 > const profileFromDb = wait(UserProfile.loadFrom(db, "secret passwd"));

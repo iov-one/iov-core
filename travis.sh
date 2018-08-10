@@ -55,3 +55,14 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
   yarn run lerna run test-firefox
   fold_end
 fi
+
+fold_start "test-cli-installation"
+(
+  WORKSPACE=$(pwd)
+  DEMO_PROJECT_DIR=$(mktemp -d "${TMPDIR:-/tmp}/iov-cli-installation.XXXXXXXXX")
+  cd "$DEMO_PROJECT_DIR"
+  yarn init -y
+  yarn add "$WORKSPACE/packages/iov-cli" --dev
+  "$(yarn bin)/iov-cli" --selftest
+)
+fold_end
