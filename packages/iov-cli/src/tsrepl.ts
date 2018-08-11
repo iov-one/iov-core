@@ -97,13 +97,13 @@ export class TsRepl {
   }
 
   private compileAndExecute(tsInput: string): any {
-    const lines = this.evalData.lines;
     const isCompletion = !/\n$/.test(tsInput);
     const undo = this.appendEval(tsInput);
     let output: string;
 
     try {
-      output = this.typeScriptService.compile(this.evalData.input, this.evalPath, -lines);
+      // lineOffset unused at the moment (https://github.com/TypeStrong/ts-node/issues/661)
+      output = this.typeScriptService.compile(this.evalData.input, this.evalPath);
     } catch (err) {
       undo();
       throw err;
