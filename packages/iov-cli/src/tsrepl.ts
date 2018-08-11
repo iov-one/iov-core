@@ -77,11 +77,13 @@ export class TsRepl {
           return;
         }
 
-        const undo = this.appendEval(identifier);
+        const identifierTypeScriptCode = `${identifier}\n`;
+        const undo = this.appendEval(identifierTypeScriptCode);
+        const identifierFirstPosition = this.evalData.input.length - identifierTypeScriptCode.length;
         const { name, comment } = this.typeScriptService.getTypeInfo(
           this.evalData.input,
           this.evalPath,
-          this.evalData.input.length,
+          identifierFirstPosition,
         );
 
         undo();
