@@ -77,11 +77,13 @@ export class TsRepl {
           return;
         }
 
-        const undo = this.appendEval(identifier);
+        const identifierTypeScriptCode = `${identifier}\n`;
+        const undo = this.appendEval(identifierTypeScriptCode);
+        const identifierFirstPosition = this.evalData.input.length - identifierTypeScriptCode.length;
         const { name, comment } = this.typeScriptService.getTypeInfo(
           this.evalData.input,
           this.evalPath,
-          this.evalData.input.length,
+          identifierFirstPosition,
         );
 
         undo();
@@ -176,8 +178,15 @@ export class TsRepl {
       this.evalData.input = `${this.evalData.input.slice(0, -1)};\n`;
     }
 
+    try {
+      this.evalData.lines += lineCount(input);
+    } catch (error) {
+      if (this.debuggingEnabled) {
+        console.log(`Error counting lines in TypeScript program: """${input}"""`);
+      }
+      throw error;
+    }
     this.evalData.input += input;
-    this.evalData.lines += lineCount(input);
     this.evalData.version++;
 
     const undoFunction = () => {
