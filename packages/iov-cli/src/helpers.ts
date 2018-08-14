@@ -6,14 +6,6 @@ export function executeJavaScript(code: string, filename: string) {
   return script.runInThisContext();
 }
 
-export function lineCount(sourceCode: string) {
-  // Expect POSIX lines (https://stackoverflow.com/a/729795)
-  if (sourceCode.length > 0 && !sourceCode.endsWith("\n")) {
-    throw new Error("final newline missing");
-  }
-  return sourceCode.split("\n").length - 1;
-}
-
 export function isRecoverable(error: TSError) {
   const recoveryCodes: Set<number> = new Set([
     1003, // "Identifier expected."

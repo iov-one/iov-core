@@ -97,6 +97,13 @@ export class TsRepl {
   }
 
   private compileAndExecute(tsInput: string, isAutocompletionRequest: boolean): any {
+    if (!isAutocompletionRequest) {
+      // Expect POSIX lines (https://stackoverflow.com/a/729795)
+      if (tsInput.length > 0 && !tsInput.endsWith("\n")) {
+        throw new Error("final newline missing");
+      }
+    }
+
     const undo = this.appendTypeScriptInput(tsInput);
     let output: string;
 
