@@ -20,5 +20,25 @@ export function wrapInAsyncFunction(code: string): string {
     }
   }
 
+  // Remove var, let, const from variable declarations to make them available in context
+  ast.program.body[0].expression.callee.body.body = body.map((node: any) => {
+    if (node.type == "VariableDeclaration") {
+      return {
+        type: "ExpressionStatement",
+        expression: {
+          type: "SequenceExpression",
+          expressions: node.declarations.map((declaration: any) => ({
+            type: "AssignmentExpression",
+            operator: "=",
+            left: declaration.id,
+            right: declaration.init,
+          })),
+        },
+      };
+    } else {
+      return node;
+    }
+  });
+
   return recast.print(ast).code;
 }

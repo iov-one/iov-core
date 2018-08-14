@@ -8,11 +8,12 @@ export function executeJavaScript(code: string, filename: string, context: Conte
   return script.runInContext(context);
 }
 
-export function executeJavaScriptAsync(code: string, filename: string, context: Context): Promise<any> {
+export async function executeJavaScriptAsync(code: string, filename: string, context: Context): Promise<any> {
   // wrapped code returns a promise when executed
   const wrappedCode = wrapInAsyncFunction(code);
   const script = new Script(wrappedCode, { filename: filename });
-  return script.runInContext(context);
+  const out = await script.runInContext(context);
+  return out;
 }
 
 export function isRecoverable(error: TSError) {

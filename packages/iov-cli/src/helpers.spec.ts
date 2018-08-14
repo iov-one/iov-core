@@ -74,13 +74,36 @@ describe("Helpers", () => {
       expect(await executeJavaScriptAsync("await 1", "myfile.js", context)).toEqual(1);
     });
 
+    it("errors for local declaration without assignment", async () => {
+      // `var a` cannot be converted into an assignment because it must not override an
+      // existing value. Thus we cannot execute it
+      const context = createContext({});
+      await executeJavaScriptAsync("var a", "myfile.js", context)
+        .then(() => fail("must not resolve"))
+        .catch(e => expect(e).toMatch(/SyntaxError:/));
+      await executeJavaScriptAsync("let b", "myfile.js", context)
+        .then(() => fail("must not resolve"))
+        .catch(e => expect(e).toMatch(/SyntaxError:/));
+      await executeJavaScriptAsync("const c", "myfile.js", context)
+        .then(() => fail("must not resolve"))
+        .catch(e => expect(e).toMatch(/SyntaxError:/));
+    });
+
     it("can execute multiple commands in one context", async () => {
       const context = createContext({});
-      expect(await executeJavaScriptAsync("let a", "myfile.js", context)).toBeUndefined();
-      expect(await executeJavaScriptAsync("a = 2", "myfile.js", context)).toEqual(2);
+      expect(await executeJavaScriptAsync("let a = 2", "myfile.js", context)).toBeUndefined();
+      expect(await executeJavaScriptAsync("a", "myfile.js", context)).toEqual(2);
       expect(await executeJavaScriptAsync("a += 1", "myfile.js", context)).toEqual(3);
       expect(await executeJavaScriptAsync("a += 7", "myfile.js", context)).toEqual(10);
       expect(await executeJavaScriptAsync("a", "myfile.js", context)).toEqual(10);
+      expect((context as any).a).toEqual(10);
+    });
+
+    it("local variables are available across multiple calls in one context", async () => {
+      const context = createContext({});
+      expect(await executeJavaScriptAsync("let a = 3", "myfile.js", context)).toBeUndefined();
+      expect(await executeJavaScriptAsync("a", "myfile.js", context)).toEqual(3);
+      expect((context as any).a).toEqual(3);
     });
 
     it("can execute timeout promise code", async () => {
