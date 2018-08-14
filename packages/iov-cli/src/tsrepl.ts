@@ -18,7 +18,7 @@ export class TsRepl {
   private readonly evalPath = join(process.cwd(), this.evalFilename);
   private readonly evalData = { input: "", output: "" };
 
-  constructor(tsconfigPath: string, initialTypeScript: string, debuggingEnabled: boolean) {
+  constructor(tsconfigPath: string, initialTypeScript: string, debuggingEnabled: boolean = false) {
     this.typeScriptService = register({ project: tsconfigPath });
     this.initialTypeScript = initialTypeScript;
     this.debuggingEnabled = debuggingEnabled;
