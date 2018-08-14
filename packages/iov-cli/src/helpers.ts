@@ -14,19 +14,16 @@ export function executeJavaScriptAsync(code: string, filename: string, context: 
   // console.log(other);
   // console.log(last);
 
+  // wrapped code returns a promise
   const codeWrapper = `
-    (done) => {
-      (async () => {
-        ${other};
-        const lastResult = ${last};
-        done(lastResult);
-      })();
-    }
+    (async () => {
+      ${other};
+      return ${last};
+    })();
   `;
-  return new Promise((resolve, _reject) => {
-    const script = new Script(codeWrapper, { filename: filename });
-    script.runInContext(context)(resolve);
-  });
+
+  const script = new Script(codeWrapper, { filename: filename });
+  return script.runInContext(context);
 }
 
 export function isRecoverable(error: TSError) {
