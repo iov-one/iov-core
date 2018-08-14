@@ -65,7 +65,7 @@ export class TsRepl {
       this.resetToZero();
 
       // Ensure code ends with "\n" due to implementation of replEval
-      await this.replEval(this.initialTypeScript + "\n");
+      await this.compileAndExecute(this.initialTypeScript + "\n", false);
     };
 
     await reset();
@@ -98,7 +98,7 @@ export class TsRepl {
     return repl;
   }
 
-  private compileAndExecute(tsInput: string, isAutocompletionRequest: boolean): any {
+  private async compileAndExecute(tsInput: string, isAutocompletionRequest: boolean): Promise<any> {
     if (!isAutocompletionRequest) {
       // Expect POSIX lines (https://stackoverflow.com/a/729795)
       if (tsInput.length > 0 && !tsInput.endsWith("\n")) {
@@ -136,6 +136,9 @@ export class TsRepl {
     return lastResult;
   }
 
+  /**
+   * Add user-friendly error handling around compileAndExecute
+   */
   private async replEval(code: string): Promise<ReplEvalResult> {
     // TODO: Figure out how to handle completion here.
     if (code === ".scope") {
