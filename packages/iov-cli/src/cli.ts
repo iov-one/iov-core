@@ -93,6 +93,7 @@ export const main = (originalArgs: string[]): void => {
     init += `
       const hash = new Sha512(new Uint8Array([])).digest();
       const hexHash = toHex(hash);
+      export class NewDummyClass {};
       console.log("Done testing, will exit now.");
       process.exit(0);
     `;
