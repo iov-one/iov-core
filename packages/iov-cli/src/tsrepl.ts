@@ -41,11 +41,7 @@ export class TsRepl {
       callback: (err?: Error, result?: any) => any,
     ) => {
       const result = await this.replEval(code);
-      if (result === undefined) {
-        callback();
-      } else {
-        callback(result.error, result.result);
-      }
+      callback(result.error, result.result);
     };
 
     const repl = start({
@@ -140,10 +136,13 @@ export class TsRepl {
     return lastResult;
   }
 
-  private async replEval(code: string): Promise<ReplEvalResult | undefined> {
+  private async replEval(code: string): Promise<ReplEvalResult> {
     // TODO: Figure out how to handle completion here.
     if (code === ".scope") {
-      return undefined;
+      return {
+        result: undefined,
+        error: undefined,
+      };
     }
 
     const isAutocompletionRequest = !/\n$/.test(code);
