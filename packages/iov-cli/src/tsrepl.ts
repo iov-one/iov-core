@@ -26,7 +26,7 @@ export class TsRepl {
     this.initialTypeScript = initialTypeScript;
   }
 
-  public start(): REPLServer {
+  public async start(): Promise<REPLServer> {
     /**
      * A wrapper around replEval used to match the method signature
      * for "Custom Evaluation Functions"
@@ -55,17 +55,17 @@ export class TsRepl {
       useGlobal: true,
     });
 
-    const reset = (): void => {
+    const reset = async (): Promise<void> => {
       this.resetToZero();
 
       // Hard fix for TypeScript forcing `Object.defineProperty(exports, ...)`.
       executeJavaScript("exports = module.exports", this.evalFilename);
 
       // Ensure code ends with "\n" due to implementation of replEval
-      this.replEval(this.initialTypeScript + "\n");
+      await this.replEval(this.initialTypeScript + "\n");
     };
 
-    reset();
+    await reset();
     repl.on("reset", reset);
 
     repl.defineCommand("type", {
