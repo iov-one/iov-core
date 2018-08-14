@@ -151,7 +151,7 @@ export class TsRepl {
     const isAutocompletionRequest = !/\n$/.test(code);
 
     try {
-      const result = this.compileAndExecute(code, isAutocompletionRequest);
+      const result = await this.compileAndExecute(code, isAutocompletionRequest);
       return {
         result: result,
         error: undefined,
