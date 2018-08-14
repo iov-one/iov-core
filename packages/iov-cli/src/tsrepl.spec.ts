@@ -15,4 +15,15 @@ describe("TsRepl", () => {
     const tsCode = new TsRepl(tsConfigPath, "const a: string = 'foo'");
     expect(tsCode).toBeTruthy();
   });
+
+  it("can be started", () => {
+    const noCode = new TsRepl(tsConfigPath, "").start();
+    expect(noCode).toBeTruthy();
+
+    const jsCode = new TsRepl(tsConfigPath, "const a = 'foo'").start();
+    expect(jsCode).toBeTruthy();
+
+    const tsCode = new TsRepl(tsConfigPath, "const a: string = 'foo'").start();
+    expect(tsCode).toBeTruthy();
+  });
 });
