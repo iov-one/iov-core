@@ -34,12 +34,12 @@ describe("TsRepl", () => {
   it("errors when starting with broken TypeScript", async () => {
     await new TsRepl(tsConfigPath, "const a: string = 123;")
       .start()
-      .then(_ => fail("must not resolve"))
+      .then(() => fail("must not resolve"))
       .catch(e => expect(e).toMatch(/is not assignable to type 'string'/));
 
     await new TsRepl(tsConfigPath, "const const const;")
       .start()
-      .then(_ => fail("must not resolve"))
+      .then(() => fail("must not resolve"))
       .catch(e => expect(e).toMatch(/Variable declaration expected./));
   });
 });
