@@ -54,7 +54,7 @@ export class TsRepl {
     });
 
     // Bookmark the point where we should reset the REPL state.
-    const resetEval = this.appendEval("");
+    const resetEval = this.appendTypeScriptInput("");
 
     const reset = (): void => {
       resetEval();
@@ -78,7 +78,7 @@ export class TsRepl {
         }
 
         const identifierTypeScriptCode = `${identifier}\n`;
-        const undo = this.appendEval(identifierTypeScriptCode);
+        const undo = this.appendTypeScriptInput(identifierTypeScriptCode);
         const identifierFirstPosition = this.evalData.input.length - identifierTypeScriptCode.length;
         const { name, comment } = this.typeScriptService.getTypeInfo(
           this.evalData.input,
@@ -98,7 +98,7 @@ export class TsRepl {
 
   private compileAndExecute(tsInput: string): any {
     const isCompletion = !/\n$/.test(tsInput);
-    const undo = this.appendEval(tsInput);
+    const undo = this.appendTypeScriptInput(tsInput);
     let output: string;
 
     try {
@@ -163,7 +163,7 @@ export class TsRepl {
     }
   }
 
-  private appendEval(input: string): () => void {
+  private appendTypeScriptInput(input: string): () => void {
     const oldInput = this.evalData.input;
     const oldOutput = this.evalData.output;
 
