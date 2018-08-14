@@ -117,10 +117,13 @@ export class TsRepl {
       this.evalData.output = output;
     }
 
-    const lastResult = changes.reduce((result, change) => {
-      return change.added ? executeJavaScript(change.value, this.evalFilename) : result;
-    }, undefined);
-
+    // Execute new JavaScript. This may not necessarily be at the end only because e.g. an import
+    // statement in TypeScript is compiled to no JavaScript until the imported symbol is used
+    // somewhere. This btw. leads to a different execution order of imports than in the TS source.
+    let lastResult: any = undefined;
+    for (const added of changes.filter(change => change.added)) {
+      lastResult = executeJavaScript(added.value, this.evalFilename);
+    }
     return lastResult;
   }
 
