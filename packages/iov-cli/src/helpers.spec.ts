@@ -1,4 +1,4 @@
-import { lineCount } from "./helpers";
+import { lineCount, executeJavaScript } from "./helpers";
 
 describe("Helpers", () => {
   it("has working line count", () => {
@@ -12,5 +12,10 @@ describe("Helpers", () => {
     expect(() => lineCount(" ")).toThrowError(/final newline missing/);
     expect(() => lineCount("123\nabc")).toThrowError(/final newline missing/);
     expect(() => lineCount("123\n ")).toThrowError(/final newline missing/);
+  });
+
+  it("can execute JavaScript", () => {
+    expect(executeJavaScript("123", "myfile.js")).toEqual(123);
+    expect(executeJavaScript("1+1", "myfile.js")).toEqual(2);
   });
 });
