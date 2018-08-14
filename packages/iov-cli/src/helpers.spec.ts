@@ -74,6 +74,11 @@ describe("Helpers", () => {
       expect(await executeJavaScriptAsync("await 1", "myfile.js", context)).toEqual(1);
     });
 
+    it("can handle multiple awaits", async () => {
+      const context = createContext({});
+      expect(await executeJavaScriptAsync("await 1 + await 2", "myfile.js", context)).toEqual(3);
+    });
+
     it("errors for local declaration without assignment", async () => {
       // `var a` cannot be converted into an assignment because it must not override an
       // existing value. Thus we cannot execute it
