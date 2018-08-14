@@ -2,7 +2,11 @@ import recast = require("recast");
 import babylon = require("babylon");
 
 export function wrapInAsyncFunction(code: string): string {
-  var ast = recast.parse(`(async () => { ${code} })()`, { parser: babylon });
+  const codeInAsyncFunction = `(async () => {
+    ${code}
+  })()`;
+
+  const ast = recast.parse(codeInAsyncFunction, { parser: babylon });
   // console.log(recast.print(ast));
   // console.log(ast.program.body);
 

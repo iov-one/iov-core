@@ -26,5 +26,9 @@ describe("async", () => {
       /\(async \(\) => {\s+a = 1;\s+b = 2;\s+}\)\(\)/,
     );
     expect(wrapInAsyncFunction("var a = 1; a")).toMatch(/\(async \(\) => {\s+a = 1;\s+return a;\s+}\)\(\)/);
+
+    // comments
+    expect(wrapInAsyncFunction("/* abcd */")).toMatch(/\(async \(\) => {\s+\/\* abcd \*\/\s+}\)\(\)/);
+    expect(wrapInAsyncFunction("// abcd")).toMatch(/\(async \(\) => {\s+\/\/ abcd\s+}\)\(\)/);
   });
 });
