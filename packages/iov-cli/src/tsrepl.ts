@@ -96,8 +96,7 @@ export class TsRepl {
     return repl;
   }
 
-  private compileAndExecute(tsInput: string): any {
-    const isCompletion = !/\n$/.test(tsInput);
+  private compileAndExecute(tsInput: string, isAutocompletionRequest: boolean): any {
     const undo = this.appendTypeScriptInput(tsInput);
     let output: string;
 
@@ -112,7 +111,7 @@ export class TsRepl {
     // Use `diff` to check for new JavaScript to execute.
     const changes = diffLines(this.evalData.output, output);
 
-    if (isCompletion) {
+    if (isAutocompletionRequest) {
       undo();
     } else {
       this.evalData.output = output;
@@ -131,8 +130,10 @@ export class TsRepl {
       return undefined;
     }
 
+    const isAutocompletionRequest = !/\n$/.test(code);
+
     try {
-      const result = this.compileAndExecute(code);
+      const result = this.compileAndExecute(code, isAutocompletionRequest);
       return {
         result: result,
         error: undefined,
