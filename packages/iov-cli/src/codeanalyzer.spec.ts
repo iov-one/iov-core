@@ -20,6 +20,12 @@ describe("codeanalyzer", () => {
       expect(last).toEqual("a = 1");
     });
 
+    it("can split empty", () => {
+      const { other, last } = splitCode("");
+      expect(other).toEqual("");
+      expect(last).toEqual("");
+    });
+
     it("can split await with brackets", () => {
       const { other, last } = splitCode("await (Promise.resolve(1))");
       expect(other).toEqual("");
