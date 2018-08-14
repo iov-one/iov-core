@@ -16,14 +16,18 @@ describe("TsRepl", () => {
     expect(tsCode).toBeTruthy();
   });
 
-  it("can be started", () => {
-    const noCode = new TsRepl(tsConfigPath, "").start();
-    expect(noCode).toBeTruthy();
-
-    const jsCode = new TsRepl(tsConfigPath, "const a = 'foo'").start();
-    expect(jsCode).toBeTruthy();
-
-    const tsCode = new TsRepl(tsConfigPath, "const a: string = 'foo'").start();
-    expect(tsCode).toBeTruthy();
+  it("can be started", async () => {
+    {
+      const server = await new TsRepl(tsConfigPath, "").start();
+      expect(server).toBeTruthy();
+    }
+    {
+      const server = await new TsRepl(tsConfigPath, "const a = 'foo'").start();
+      expect(server).toBeTruthy();
+    }
+    {
+      const server = await new TsRepl(tsConfigPath, "const a: string = 'foo'").start();
+      expect(server).toBeTruthy();
+    }
   });
 });
