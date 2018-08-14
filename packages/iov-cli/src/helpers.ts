@@ -1,7 +1,7 @@
 import { TSError } from "ts-node";
 import { Script, Context } from "vm";
 
-import { splitCode } from "./codeanalyzer";
+import { convertCodeToFunctionBody } from "./codeanalyzer";
 
 export function executeJavaScript(code: string, filename: string, context: Context) {
   const script = new Script(code, { filename: filename });
@@ -9,7 +9,7 @@ export function executeJavaScript(code: string, filename: string, context: Conte
 }
 
 export function executeJavaScriptAsync(code: string, filename: string, context: Context): Promise<any> {
-  const { other, last } = splitCode(code);
+  const functionBody = convertCodeToFunctionBody(code);
 
   // console.log(other);
   // console.log(last);
@@ -17,8 +17,7 @@ export function executeJavaScriptAsync(code: string, filename: string, context: 
   // wrapped code returns a promise
   const codeWrapper = `
     (async () => {
-      ${other};
-      return ${last};
+      ${functionBody}
     })();
   `;
 
