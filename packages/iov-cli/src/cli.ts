@@ -75,8 +75,8 @@ export const main = (originalArgs: string[]): void => {
   console.log(colors.yellow("    - toHex"));
 
   let init = `
-    const leveldown = require('leveldown')
-    const levelup = require('levelup')
+    import leveldown = require('leveldown');
+    import levelup = require('levelup');
     import * as http from 'http';
     import * as https from 'https';
     import Long from "long";
