@@ -1,7 +1,7 @@
-import { wrapInAsyncFunction } from "./codeanalyzer";
+import { wrapInAsyncFunction } from "./async";
 
-describe("codeanalyzer", () => {
-  it("can convert code to function body", () => {
+describe("async", () => {
+  it("can convert wrap code in async function", () => {
     expect(wrapInAsyncFunction("")).toMatch(/\(async \(\) => {\s+}\)\(\)/);
     expect(wrapInAsyncFunction("  ")).toMatch(/\(async \(\) => {\s+}\)\(\)/);
     expect(wrapInAsyncFunction("\n")).toMatch(/\(async \(\) => {\s+}\)\(\)/);

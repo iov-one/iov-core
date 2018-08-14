@@ -1,7 +1,7 @@
 import { TSError } from "ts-node";
 import { Script, Context } from "vm";
 
-import { wrapInAsyncFunction } from "./codeanalyzer";
+import { wrapInAsyncFunction } from "./async";
 
 export function executeJavaScript(code: string, filename: string, context: Context) {
   const script = new Script(code, { filename: filename });
