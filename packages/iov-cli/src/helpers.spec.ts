@@ -69,6 +69,15 @@ describe("Helpers", () => {
       expect(await executeJavaScriptAsync("await (1)", "myfile.js", context)).toEqual(1);
     });
 
+    it("can execute multiple commands in one context", async () => {
+      const context = createContext({});
+      expect(await executeJavaScriptAsync("let a", "myfile.js", context)).toBeUndefined();
+      expect(await executeJavaScriptAsync("a = 2", "myfile.js", context)).toEqual(2);
+      expect(await executeJavaScriptAsync("a += 1", "myfile.js", context)).toEqual(3);
+      expect(await executeJavaScriptAsync("a += 7", "myfile.js", context)).toEqual(10);
+      expect(await executeJavaScriptAsync("a", "myfile.js", context)).toEqual(10);
+    });
+
     it("can execute timeout promise code", async () => {
       const context = createContext({ setTimeout: setTimeout });
       const code = "await (new Promise(resolve => setTimeout(() => resolve('job done'), 5)))";
