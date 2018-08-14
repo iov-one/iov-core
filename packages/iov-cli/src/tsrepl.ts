@@ -3,7 +3,7 @@ import { join } from "path";
 import { Recoverable, REPLServer, start } from "repl";
 import { register, Register, TSError } from "ts-node";
 
-import { executeJavaScript, isRecoverable, lineCount } from "./helpers";
+import { executeJavaScript, isRecoverable } from "./helpers";
 
 interface ReplEvalResult {
   readonly result: any;
@@ -16,7 +16,7 @@ export class TsRepl {
   private readonly debuggingEnabled: boolean;
   private readonly evalFilename = `[eval].ts`;
   private readonly evalPath = join(process.cwd(), this.evalFilename);
-  private readonly evalData = { input: "", output: "", version: 0, lines: 0 };
+  private readonly evalData = { input: "", output: "" };
 
   constructor(tsconfigPath: string, initialTypeScript: string, debuggingEnabled: boolean) {
     this.typeScriptService = register({ project: tsconfigPath });
@@ -165,9 +165,7 @@ export class TsRepl {
 
   private appendEval(input: string): () => void {
     const oldInput = this.evalData.input;
-    const oldVersion = this.evalData.version;
     const oldOutput = this.evalData.output;
-    const oldLines = this.evalData.lines;
 
     // Handle ASI issues with TypeScript re-evaluation.
     if (
@@ -178,22 +176,11 @@ export class TsRepl {
       this.evalData.input = `${this.evalData.input.slice(0, -1)};\n`;
     }
 
-    try {
-      this.evalData.lines += lineCount(input);
-    } catch (error) {
-      if (this.debuggingEnabled) {
-        console.log(`Error counting lines in TypeScript program: """${input}"""`);
-      }
-      throw error;
-    }
     this.evalData.input += input;
-    this.evalData.version++;
 
     const undoFunction = () => {
       this.evalData.input = oldInput;
       this.evalData.output = oldOutput;
-      this.evalData.version = oldVersion;
-      this.evalData.lines = oldLines;
     };
 
     return undoFunction;
