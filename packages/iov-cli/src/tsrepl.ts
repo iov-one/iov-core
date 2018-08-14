@@ -12,16 +12,18 @@ interface ReplEvalResult {
 
 export class TsRepl {
   private readonly typeScriptService: Register;
-  private readonly initialTypeScript: string;
   private readonly debuggingEnabled: boolean;
   private readonly evalFilename = `[eval].ts`;
   private readonly evalPath = join(process.cwd(), this.evalFilename);
   private readonly evalData = { input: "", output: "" };
+  private readonly resetToZero: () => void; // Bookmark to empty TS input
+  private readonly initialTypeScript: string;
 
   constructor(tsconfigPath: string, initialTypeScript: string, debuggingEnabled: boolean = false) {
     this.typeScriptService = register({ project: tsconfigPath });
-    this.initialTypeScript = initialTypeScript;
     this.debuggingEnabled = debuggingEnabled;
+    this.resetToZero = this.appendTypeScriptInput("");
+    this.initialTypeScript = initialTypeScript;
   }
 
   public start(): REPLServer {
@@ -53,11 +55,8 @@ export class TsRepl {
       useGlobal: true,
     });
 
-    // Bookmark the point where we should reset the REPL state.
-    const resetEval = this.appendTypeScriptInput("");
-
     const reset = (): void => {
-      resetEval();
+      this.resetToZero();
 
       // Hard fix for TypeScript forcing `Object.defineProperty(exports, ...)`.
       executeJavaScript("exports = module.exports", this.evalFilename);
