@@ -56,13 +56,17 @@ export class TsRepl {
       eval: replEvalWrapper,
       useGlobal: true,
     });
+
+    // Prepare context for TypeScript: TypeScript compiler expects the exports shortcut
+    // to exist in `Object.defineProperty(exports, "__esModule", { value: true });`
+    if (!repl.context.exports) {
+      repl.context.exports = repl.context.module.exports;
+    }
+
     this.context = createContext(repl.context);
 
     const reset = async (): Promise<void> => {
       this.resetToZero();
-
-      // Hard fix for TypeScript forcing `Object.defineProperty(exports, ...)`.
-      executeJavaScript("exports = module.exports", this.evalFilename, this.context!);
 
       // Ensure code ends with "\n" due to implementation of replEval
       await this.replEval(this.initialTypeScript + "\n");
