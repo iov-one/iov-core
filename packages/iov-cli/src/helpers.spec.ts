@@ -106,6 +106,15 @@ describe("Helpers", () => {
       expect((context as any).a).toEqual(3);
     });
 
+    it("can reassign const", async () => {
+      // a side-effect of local variable assignment manipulation
+      const context = createContext({});
+      expect(await executeJavaScriptAsync("const a = 3", "myfile.js", context)).toBeUndefined();
+      expect((context as any).a).toEqual(3);
+      expect(await executeJavaScriptAsync("const a = 4", "myfile.js", context)).toBeUndefined();
+      expect((context as any).a).toEqual(4);
+    });
+
     it("can execute timeout promise code", async () => {
       const context = createContext({ setTimeout: setTimeout });
       const code = "await (new Promise(resolve => setTimeout(() => resolve('job done'), 5)))";
