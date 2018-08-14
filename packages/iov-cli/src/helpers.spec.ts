@@ -64,9 +64,14 @@ describe("Helpers", () => {
   });
 
   describe("executeJavaScriptAsync", () => {
-    it("can execute basic async code", async () => {
+    it("can execute top level await with brackets", async () => {
       const context = createContext({});
       expect(await executeJavaScriptAsync("await (1)", "myfile.js", context)).toEqual(1);
+    });
+
+    it("can execute top level await without brackets", async () => {
+      const context = createContext({});
+      expect(await executeJavaScriptAsync("await 1", "myfile.js", context)).toEqual(1);
     });
 
     it("can execute multiple commands in one context", async () => {

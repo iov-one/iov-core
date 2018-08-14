@@ -1,25 +1,33 @@
-import { convertCodeToFunctionBody } from "./codeanalyzer";
+import { wrapInAsyncFunction } from "./codeanalyzer";
 
 describe("codeanalyzer", () => {
   it("can convert code to function body", () => {
-    expect(convertCodeToFunctionBody("")).toEqual("");
-    expect(convertCodeToFunctionBody("  ")).toEqual("");
-    expect(convertCodeToFunctionBody("\n")).toEqual("");
-    expect(convertCodeToFunctionBody(" \n ")).toEqual("");
+    expect(wrapInAsyncFunction("")).toMatch(/\(async \(\) => {\s+}\)\(\)/);
+    expect(wrapInAsyncFunction("  ")).toMatch(/\(async \(\) => {\s+}\)\(\)/);
+    expect(wrapInAsyncFunction("\n")).toMatch(/\(async \(\) => {\s+}\)\(\)/);
+    expect(wrapInAsyncFunction(" \n ")).toMatch(/\(async \(\) => {\s+}\)\(\)/);
 
-    expect(convertCodeToFunctionBody("var a = 1;")).toEqual("var a = 1;");
-    expect(convertCodeToFunctionBody("const a = Date.now()")).toEqual("const a = Date.now()");
+    expect(wrapInAsyncFunction("var a = 1;")).toMatch(/\(async \(\) => {\s+var a = 1;\s+}\)\(\)/);
+    expect(wrapInAsyncFunction("const a = Date.now();")).toMatch(
+      /\(async \(\) => {\s+const a = Date.now\(\);\s+}\)\(\)/,
+    );
 
     // expressions
-    expect(convertCodeToFunctionBody("1")).toEqual("return 1;");
-    expect(convertCodeToFunctionBody("1;")).toEqual("return 1;");
-    expect(convertCodeToFunctionBody("a+b")).toEqual("return a+b;");
-    expect(convertCodeToFunctionBody("a++;")).toEqual("return a++;");
-    expect(convertCodeToFunctionBody("Date.now();")).toEqual("return Date.now();");
-    expect(convertCodeToFunctionBody("(1)")).toEqual("return (1);");
+    expect(wrapInAsyncFunction("1")).toMatch(/\(async \(\) => {\s+return 1;\s+}\)\(\)/);
+    expect(wrapInAsyncFunction("1;")).toMatch(/\(async \(\) => {\s+return 1;;\s+}\)\(\)/);
+    expect(wrapInAsyncFunction("a+b")).toMatch(/\(async \(\) => {\s+return a\+b;\s+}\)\(\)/);
+    expect(wrapInAsyncFunction("a++")).toMatch(/\(async \(\) => {\s+return a\+\+;\s+}\)\(\)/);
+    expect(wrapInAsyncFunction("Date.now()")).toMatch(
+      /\(async \(\) => {\s+return Date.now\(\);\s+}\)\(\)/,
+    );
+    expect(wrapInAsyncFunction("(1)")).toMatch(/\(async \(\) => {\s+return \(1\);\s+}\)\(\)/);
 
     // multiple statements
-    expect(convertCodeToFunctionBody("var a = 1; var b = 2;")).toEqual("var a = 1; var b = 2;");
-    expect(convertCodeToFunctionBody("var a = 1; a")).toEqual("var a = 1;\nreturn a;");
+    expect(wrapInAsyncFunction("var a = 1; var b = 2;")).toMatch(
+      /\(async \(\) => {\s+var a = 1; var b = 2;\s+}\)\(\)/,
+    );
+    expect(wrapInAsyncFunction("var a = 1; a")).toMatch(
+      /\(async \(\) => {\s+var a = 1;\s+return a;\s+}\)\(\)/,
+    );
   });
 });

@@ -1,39 +1,24 @@
 import recast = require("recast");
+import babylon = require("babylon");
 
-interface SplitResult {
-  readonly rest: any;
-  readonly last: any;
-}
-
-function splitCode(code: string): SplitResult {
-  var ast = recast.parse(code);
+export function wrapInAsyncFunction(code: string): string {
+  var ast = recast.parse(`(async () => { ${code} })()`, { parser: babylon });
   // console.log(recast.print(ast));
   // console.log(ast.program.body);
-  const lastStatement = ast.program.body.pop();
 
-  return {
-    rest: ast,
-    last: lastStatement,
-  };
-}
+  const body = ast.program.body[0].expression.callee.body.body;
 
-export function convertCodeToFunctionBody(code: string): string {
-  let lastOut;
-
-  const { rest, last } = splitCode(code);
-  if (!last) return "";
-
-  if (last.type === "ExpressionStatement") {
-    lastOut = {
-      type: "ReturnStatement",
-      argument: last,
-    };
-  } else {
-    lastOut = last;
+  if (body.length !== 0) {
+    const last = body.pop();
+    if (last.type === "ExpressionStatement") {
+      body.push({
+        type: "ReturnStatement",
+        argument: last,
+      });
+    } else {
+      body.push(last);
+    }
   }
 
-  rest.program.body.push(lastOut);
-
-  const recastPrintedCode: string = recast.print(rest).code;
-  return recastPrintedCode.replace(/;;$/, ";");
+  return recast.print(ast).code;
 }

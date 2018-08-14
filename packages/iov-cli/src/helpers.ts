@@ -1,7 +1,7 @@
 import { TSError } from "ts-node";
 import { Script, Context } from "vm";
 
-import { convertCodeToFunctionBody } from "./codeanalyzer";
+import { wrapInAsyncFunction } from "./codeanalyzer";
 
 export function executeJavaScript(code: string, filename: string, context: Context) {
   const script = new Script(code, { filename: filename });
@@ -9,19 +9,9 @@ export function executeJavaScript(code: string, filename: string, context: Conte
 }
 
 export function executeJavaScriptAsync(code: string, filename: string, context: Context): Promise<any> {
-  const functionBody = convertCodeToFunctionBody(code);
-
-  // console.log(other);
-  // console.log(last);
-
-  // wrapped code returns a promise
-  const codeWrapper = `
-    (async () => {
-      ${functionBody}
-    })();
-  `;
-
-  const script = new Script(codeWrapper, { filename: filename });
+  // wrapped code returns a promise when executed
+  const wrappedCode = wrapInAsyncFunction(code);
+  const script = new Script(wrappedCode, { filename: filename });
   return script.runInContext(context);
 }
 
