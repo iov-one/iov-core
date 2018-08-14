@@ -54,7 +54,7 @@ export class TsRepl {
       output: process.stdout,
       terminal: process.stdout.isTTY,
       eval: replEvalWrapper,
-      useGlobal: true,
+      useGlobal: false,
     });
 
     // Prepare context for TypeScript: TypeScript compiler expects the exports shortcut
