@@ -1,11 +1,11 @@
 import recast = require("recast");
 
-export interface SplitResult {
+interface SplitResult {
   readonly rest: any;
   readonly last: any;
 }
 
-export function splitCode(code: string): SplitResult {
+function splitCode(code: string): SplitResult {
   var ast = recast.parse(code);
   // console.log(recast.print(ast));
   // console.log(ast.program.body);
