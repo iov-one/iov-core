@@ -1,9 +1,9 @@
 import { TSError } from "ts-node";
-import { Script } from "vm";
+import { Script, Context } from "vm";
 
-export function executeJavaScript(code: string, filename: string) {
+export function executeJavaScript(code: string, filename: string, context: Context) {
   const script = new Script(code, { filename: filename });
-  return script.runInThisContext();
+  return script.runInContext(context);
 }
 
 export function isRecoverable(error: TSError) {

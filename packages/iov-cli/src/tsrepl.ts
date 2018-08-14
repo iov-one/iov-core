@@ -2,6 +2,7 @@ import { diffLines } from "diff";
 import { join } from "path";
 import { Recoverable, REPLServer, start } from "repl";
 import { register, Register, TSError } from "ts-node";
+import { createContext, Context } from "vm";
 
 import { executeJavaScript, isRecoverable } from "./helpers";
 
@@ -18,6 +19,7 @@ export class TsRepl {
   private readonly evalData = { input: "", output: "" };
   private readonly resetToZero: () => void; // Bookmark to empty TS input
   private readonly initialTypeScript: string;
+  private context: Context | undefined;
 
   constructor(tsconfigPath: string, initialTypeScript: string, debuggingEnabled: boolean = false) {
     this.typeScriptService = register({ project: tsconfigPath });
@@ -54,12 +56,13 @@ export class TsRepl {
       eval: replEvalWrapper,
       useGlobal: true,
     });
+    this.context = createContext(repl.context);
 
     const reset = async (): Promise<void> => {
       this.resetToZero();
 
       // Hard fix for TypeScript forcing `Object.defineProperty(exports, ...)`.
-      executeJavaScript("exports = module.exports", this.evalFilename);
+      executeJavaScript("exports = module.exports", this.evalFilename, this.context!);
 
       // Ensure code ends with "\n" due to implementation of replEval
       await this.replEval(this.initialTypeScript + "\n");
@@ -128,7 +131,7 @@ export class TsRepl {
     // somewhere. This btw. leads to a different execution order of imports than in the TS source.
     let lastResult: any = undefined;
     for (const added of changes.filter(change => change.added)) {
-      lastResult = executeJavaScript(added.value, this.evalFilename);
+      lastResult = executeJavaScript(added.value, this.evalFilename, this.context!);
     }
     return lastResult;
   }
