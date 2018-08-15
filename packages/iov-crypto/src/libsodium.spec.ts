@@ -1,7 +1,7 @@
 /* tslint:disable:no-bitwise */
 import { Encoding } from "@iov/encoding";
 
-import { Argon2id, Argon2idOptions, Chacha20poly1305Ietf, Chacha20poly1305IetfCiphertext, Chacha20poly1305IetfKey, Chacha20poly1305IetfMessage, Chacha20poly1305IetfNonce, Ed25519, Ed25519Keypair, Random } from "./libsodium";
+import { Argon2id, Argon2idOptions, Chacha20poly1305Ietf, Chacha20poly1305IetfCiphertext, Chacha20poly1305IetfKey, Chacha20poly1305IetfMessage, Chacha20poly1305IetfNonce, Ed25519, Ed25519Keypair, Random, Xchacha20poly1305Ietf, Xchacha20poly1305IetfCiphertext, Xchacha20poly1305IetfKey, Xchacha20poly1305IetfMessage, Xchacha20poly1305IetfNonce } from "./libsodium";
 
 const { toAscii, fromHex } = Encoding;
 
@@ -619,6 +619,92 @@ describe("Libsodium", () => {
           throw error;
         });
       });
+    });
+  });
+
+  describe("Xchacha20poly1305Ietf", () => {
+    it("can encrypt and decypt simple data", async () => {
+      const key = fromHex("1324cdddc4b94e625bbabcac862c9429ba011e2184a1ccad60e7c3f6ff4916d8") as Xchacha20poly1305IetfKey;
+      const nonce = fromHex("000000000000000000000000000000000000000000000000") as Xchacha20poly1305IetfNonce;
+
+      const originalMessage = new Uint8Array([0x11, 0x22, 0x33, 0x44]) as Xchacha20poly1305IetfMessage;
+      const ciphertext = await Xchacha20poly1305Ietf.encrypt(originalMessage, key, nonce);
+      expect(ciphertext).toBeTruthy();
+      expect(ciphertext.length).toBeTruthy(4 /* message length */ + 32 /* tag length*/);
+
+      const decrypted = await Xchacha20poly1305Ietf.decrypt(ciphertext, key, nonce);
+      expect(decrypted).toBeTruthy();
+      expect(decrypted).toEqual(originalMessage);
+    });
+
+    it("throws when encrypting with wrong key length", async () => {
+      const nonce = fromHex("000000000000000000000000000000000000000000000000") as Xchacha20poly1305IetfNonce;
+      const message = new Uint8Array([]) as Xchacha20poly1305IetfMessage;
+
+      {
+        // empty
+        const key = fromHex("") as Xchacha20poly1305IetfKey;
+        await Xchacha20poly1305Ietf.encrypt(message, key, nonce)
+          .then(() => fail("encryption must not succeed"))
+          .catch(error => expect(error).toMatch(/invalid key length/));
+      }
+      {
+        // 31 bytes
+        const key = fromHex("1324cdddc4b94e625bbabcac862c9429ba011e2184a1ccad60e7c3f6ff4916") as Xchacha20poly1305IetfKey;
+        await Xchacha20poly1305Ietf.encrypt(message, key, nonce)
+          .then(() => fail("encryption must not succeed"))
+          .catch(error => expect(error).toMatch(/invalid key length/));
+      }
+      {
+        // 33 bytes
+        const key = fromHex("1324cdddc4b94e625bbabcac862c9429ba011e2184a1ccad60e7c3f6ff4916d8aa") as Xchacha20poly1305IetfKey;
+        await Xchacha20poly1305Ietf.encrypt(message, key, nonce)
+          .then(() => fail("encryption must not succeed"))
+          .catch(error => expect(error).toMatch(/invalid key length/));
+      }
+      {
+        // 64 bytes
+        const key = fromHex("1324cdddc4b94e625bbabcac862c9429ba011e2184a1ccad60e7c3f6ff4916d81324cdddc4b94e625bbabcac862c9429ba011e2184a1ccad60e7c3f6ff4916d8") as Xchacha20poly1305IetfKey;
+        await Xchacha20poly1305Ietf.encrypt(message, key, nonce)
+          .then(() => fail("encryption must not succeed"))
+          .catch(error => expect(error).toMatch(/invalid key length/));
+      }
+    });
+
+    it("decryption fails with wrong ciphertext/key/nonce", async () => {
+      const key = fromHex("1324cdddc4b94e625bbabcac862c9429ba011e2184a1ccad60e7c3f6ff4916d8") as Xchacha20poly1305IetfKey;
+      const nonce = fromHex("000000000000000000000000000000000000000000000000") as Xchacha20poly1305IetfNonce;
+
+      const originalMessage = new Uint8Array([0x11, 0x22, 0x33, 0x44]) as Xchacha20poly1305IetfMessage;
+      const ciphertext = await Xchacha20poly1305Ietf.encrypt(originalMessage, key, nonce);
+      expect(ciphertext).toBeTruthy();
+      expect(ciphertext.length).toBeTruthy(4 /* message length */ + 32 /* tag length*/);
+
+      {
+        // baseline
+        expect(await Xchacha20poly1305Ietf.decrypt(ciphertext, key, nonce)).toEqual(originalMessage);
+      }
+      {
+        // corrupted ciphertext
+        const corruptedCiphertext = ciphertext.map((x, i) => (i === 0 ? x ^ 0x01 : x)) as Xchacha20poly1305IetfCiphertext;
+        await Xchacha20poly1305Ietf.decrypt(corruptedCiphertext, key, nonce)
+          .then(() => fail("promise must not resolve"))
+          .catch(error => expect(error.message).toContain("invalid usage"));
+      }
+      {
+        // corrupted key
+        const corruptedKey = key.map((x, i) => (i === 0 ? x ^ 0x01 : x)) as Xchacha20poly1305IetfKey;
+        await Xchacha20poly1305Ietf.decrypt(ciphertext, corruptedKey, nonce)
+          .then(() => fail("promise must not resolve"))
+          .catch(error => expect(error.message).toContain("invalid usage"));
+      }
+      {
+        // corrupted nonce
+        const corruptedNonce = nonce.map((x, i) => (i === 0 ? x ^ 0x01 : x)) as Xchacha20poly1305IetfNonce;
+        await Xchacha20poly1305Ietf.decrypt(ciphertext, key, corruptedNonce)
+          .then(() => fail("promise must not resolve"))
+          .catch(error => expect(error.message).toContain("invalid usage"));
+      }
     });
   });
 });

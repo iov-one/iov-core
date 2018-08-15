@@ -13,6 +13,11 @@ export type Chacha20poly1305IetfMessage = Uint8Array & As<"chacha20poly1305ietf-
 export type Chacha20poly1305IetfNonce = Uint8Array & As<"chacha20poly1305ietf-nonce">;
 export type Chacha20poly1305IetfCiphertext = Uint8Array & As<"chacha20poly1305ietf-ciphertext">;
 
+export type Xchacha20poly1305IetfKey = Uint8Array & As<"xchacha20poly1305ietf-key">;
+export type Xchacha20poly1305IetfMessage = Uint8Array & As<"xchacha20poly1305ietf-message">;
+export type Xchacha20poly1305IetfNonce = Uint8Array & As<"xchacha20poly1305ietf-nonce">;
+export type Xchacha20poly1305IetfCiphertext = Uint8Array & As<"xchacha20poly1305ietf-ciphertext">;
+
 export interface Argon2idOptions {
   // in bytes
   readonly outputLength: number;
@@ -128,5 +133,43 @@ export class Chacha20poly1305Ietf {
       nonce,
       key,
     ) as Chacha20poly1305IetfMessage;
+  }
+}
+
+export class Xchacha20poly1305Ietf {
+  public static async encrypt(
+    message: Xchacha20poly1305IetfMessage,
+    key: Xchacha20poly1305IetfKey,
+    nonce: Xchacha20poly1305IetfNonce,
+  ): Promise<Xchacha20poly1305IetfCiphertext> {
+    await sodium.ready;
+
+    const additionalData = undefined;
+
+    return sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(
+      message,
+      additionalData,
+      null, // secret nonce: unused and should be null (https://download.libsodium.org/doc/secret-key_cryptography/xchacha20-poly1305_construction.html)
+      nonce,
+      key,
+    ) as Xchacha20poly1305IetfCiphertext;
+  }
+
+  public static async decrypt(
+    ciphertext: Xchacha20poly1305IetfCiphertext,
+    key: Xchacha20poly1305IetfKey,
+    nonce: Xchacha20poly1305IetfNonce,
+  ): Promise<Xchacha20poly1305IetfMessage> {
+    await sodium.ready;
+
+    const additionalData = undefined;
+
+    return sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
+      null, // secret nonce: unused and should be null (https://download.libsodium.org/doc/secret-key_cryptography/ietf_chacha20-poly1305_construction.html)
+      ciphertext,
+      additionalData,
+      nonce,
+      key,
+    ) as Xchacha20poly1305IetfMessage;
   }
 }
