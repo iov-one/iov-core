@@ -42,4 +42,15 @@ describe("TsRepl", () => {
       .then(() => fail("must not resolve"))
       .catch(e => expect(e).toMatch(/Variable declaration expected./));
   });
+
+  it("can be started with top level await", async () => {
+    {
+      const server = await new TsRepl(tsConfigPath, "await 1").start();
+      expect(server).toBeTruthy();
+    }
+    {
+      const server = await new TsRepl(tsConfigPath, "await 1 + await 2").start();
+      expect(server).toBeTruthy();
+    }
+  });
 });

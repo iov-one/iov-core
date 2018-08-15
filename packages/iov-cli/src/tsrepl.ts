@@ -4,7 +4,7 @@ import { Recoverable, REPLServer, start } from "repl";
 import { register, Register, TSError } from "ts-node";
 import { createContext, Context } from "vm";
 
-import { executeJavaScript, isRecoverable } from "./helpers";
+import { isRecoverable, executeJavaScriptAsync } from "./helpers";
 
 interface ReplEvalResult {
   readonly result: any;
@@ -22,7 +22,12 @@ export class TsRepl {
   private context: Context | undefined;
 
   constructor(tsconfigPath: string, initialTypeScript: string, debuggingEnabled: boolean = false) {
-    this.typeScriptService = register({ project: tsconfigPath });
+    this.typeScriptService = register({
+      project: tsconfigPath,
+      ignoreDiagnostics: [
+        "1308", // TS1308: 'await' expression is only allowed within an async function.
+      ],
+    });
     this.debuggingEnabled = debuggingEnabled;
     this.resetToZero = this.appendTypeScriptInput("");
     this.initialTypeScript = initialTypeScript;
@@ -131,7 +136,7 @@ export class TsRepl {
     // somewhere. This btw. leads to a different execution order of imports than in the TS source.
     let lastResult: any = undefined;
     for (const added of changes.filter(change => change.added)) {
-      lastResult = executeJavaScript(added.value, this.evalFilename, this.context!);
+      lastResult = await executeJavaScriptAsync(added.value, this.evalFilename, this.context!);
     }
     return lastResult;
   }
