@@ -111,6 +111,13 @@ describe("Helpers", () => {
       expect((context as any).a).toEqual(3);
     });
 
+    it("works with strict mode", async () => {
+      const context = createContext({});
+      expect(await executeJavaScriptAsync('"use strict"; let a = 3', "myfile.js", context)).toBeUndefined();
+      expect(await executeJavaScriptAsync('"use strict"; a', "myfile.js", context)).toEqual(3);
+      expect((context as any).a).toEqual(3);
+    });
+
     it("can reassign const", async () => {
       // a side-effect of local variable assignment manipulation
       const context = createContext({});
