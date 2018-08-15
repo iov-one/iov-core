@@ -1,5 +1,7 @@
 # @iov/tendermint-rpc
 
+[![npm version](https://img.shields.io/npm/v/@iov/tendermint-rpc.svg)](https://www.npmjs.com/package/@iov/tendermint-rpc)
+
 This package provides a type-safe wrapper around tendermint rpc. Notably, all binary data is passed
 in and out as Uint8Array/Buffer, and this module is reponsible for the hex/base64 encoding/decoding
 depending on the field and version of tendermint. Also handles converting numbers to and from strings

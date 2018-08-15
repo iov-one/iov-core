@@ -1,5 +1,7 @@
 # @iov/encoding
 
+[![npm version](https://img.shields.io/npm/v/@iov/encoding.svg)](https://www.npmjs.com/package/@iov/encoding)
+
 This package is an extension to the JavaScript standard library that is not
 bound to IOV products.
 

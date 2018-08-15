@@ -1,5 +1,7 @@
 # @iov/cli
 
+[![npm version](https://img.shields.io/npm/v/@iov/cli.svg)](https://www.npmjs.com/package/@iov/cli)
+
 ## Installation and first run
 
 The `iov-cli` executable is available via npm.
