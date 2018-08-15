@@ -31,7 +31,7 @@
     "diff": "^3.5.0",
     "leveldown": "^4.0.1",
     "ts-node": "^7.0.0",
-    "typescript": "~2.9"
+    "typescript": "~3.0"
   },
   "devDependencies": {
     "@types/argparse": "^1.0.34",
