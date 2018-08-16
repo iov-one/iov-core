@@ -75,8 +75,8 @@ export const main = (originalArgs: string[]): void => {
   console.log(colors.yellow("    - toHex"));
 
   let init = `
-    const leveldown = require('leveldown')
-    const levelup = require('levelup')
+    import leveldown = require('leveldown');
+    import levelup = require('levelup');
     import * as http from 'http';
     import * as https from 'https';
     import Long from "long";
@@ -93,6 +93,7 @@ export const main = (originalArgs: string[]): void => {
     init += `
       const hash = new Sha512(new Uint8Array([])).digest();
       const hexHash = toHex(hash);
+      export class NewDummyClass {};
       console.log("Done testing, will exit now.");
       process.exit(0);
     `;

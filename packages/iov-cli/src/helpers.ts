@@ -1,9 +1,21 @@
 import { TSError } from "ts-node";
-import { Script } from "vm";
+import { Script, Context } from "vm";
 
-export function executeJavaScript(code: string, filename: string) {
+import { wrapInAsyncFunction } from "./async";
+
+export function executeJavaScript(code: string, filename: string, context: Context) {
   const script = new Script(code, { filename: filename });
-  return script.runInThisContext();
+  return script.runInContext(context);
+}
+
+export async function executeJavaScriptAsync(code: string, filename: string, context: Context): Promise<any> {
+  code = code.replace(/^\s*"use strict";/, "");
+
+  // wrapped code returns a promise when executed
+  const wrappedCode = wrapInAsyncFunction(code);
+  const script = new Script(wrappedCode, { filename: filename });
+  const out = await script.runInContext(context);
+  return out;
 }
 
 export function isRecoverable(error: TSError) {

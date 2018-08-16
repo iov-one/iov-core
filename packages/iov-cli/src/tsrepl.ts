@@ -2,8 +2,9 @@ import { diffLines } from "diff";
 import { join } from "path";
 import { Recoverable, REPLServer, start } from "repl";
 import { register, Register, TSError } from "ts-node";
+import { createContext, Context } from "vm";
 
-import { executeJavaScript, isRecoverable } from "./helpers";
+import { isRecoverable, executeJavaScriptAsync } from "./helpers";
 
 interface ReplEvalResult {
   readonly result: any;
@@ -12,19 +13,27 @@ interface ReplEvalResult {
 
 export class TsRepl {
   private readonly typeScriptService: Register;
-  private readonly initialTypeScript: string;
   private readonly debuggingEnabled: boolean;
   private readonly evalFilename = `[eval].ts`;
   private readonly evalPath = join(process.cwd(), this.evalFilename);
   private readonly evalData = { input: "", output: "" };
+  private readonly resetToZero: () => void; // Bookmark to empty TS input
+  private readonly initialTypeScript: string;
+  private context: Context | undefined;
 
-  constructor(tsconfigPath: string, initialTypeScript: string, debuggingEnabled: boolean) {
-    this.typeScriptService = register({ project: tsconfigPath });
-    this.initialTypeScript = initialTypeScript;
+  constructor(tsconfigPath: string, initialTypeScript: string, debuggingEnabled: boolean = false) {
+    this.typeScriptService = register({
+      project: tsconfigPath,
+      ignoreDiagnostics: [
+        "1308", // TS1308: 'await' expression is only allowed within an async function.
+      ],
+    });
     this.debuggingEnabled = debuggingEnabled;
+    this.resetToZero = this.appendTypeScriptInput("");
+    this.initialTypeScript = initialTypeScript;
   }
 
-  public start(): REPLServer {
+  public async start(): Promise<REPLServer> {
     /**
      * A wrapper around replEval used to match the method signature
      * for "Custom Evaluation Functions"
@@ -37,11 +46,7 @@ export class TsRepl {
       callback: (err?: Error, result?: any) => any,
     ) => {
       const result = await this.replEval(code);
-      if (result === undefined) {
-        callback();
-      } else {
-        callback(result.error, result.result);
-      }
+      callback(result.error, result.result);
     };
 
     const repl = start({
@@ -50,23 +55,25 @@ export class TsRepl {
       output: process.stdout,
       terminal: process.stdout.isTTY,
       eval: replEvalWrapper,
-      useGlobal: true,
+      useGlobal: false,
     });
 
-    // Bookmark the point where we should reset the REPL state.
-    const resetEval = this.appendTypeScriptInput("");
+    // Prepare context for TypeScript: TypeScript compiler expects the exports shortcut
+    // to exist in `Object.defineProperty(exports, "__esModule", { value: true });`
+    if (!repl.context.exports) {
+      repl.context.exports = repl.context.module.exports;
+    }
 
-    const reset = (): void => {
-      resetEval();
+    this.context = createContext(repl.context);
 
-      // Hard fix for TypeScript forcing `Object.defineProperty(exports, ...)`.
-      executeJavaScript("exports = module.exports", this.evalFilename);
+    const reset = async (): Promise<void> => {
+      this.resetToZero();
 
       // Ensure code ends with "\n" due to implementation of replEval
-      this.replEval(this.initialTypeScript + "\n");
+      await this.compileAndExecute(this.initialTypeScript + "\n", false);
     };
 
-    reset();
+    await reset();
     repl.on("reset", reset);
 
     repl.defineCommand("type", {
@@ -96,7 +103,7 @@ export class TsRepl {
     return repl;
   }
 
-  private compileAndExecute(tsInput: string, isAutocompletionRequest: boolean): any {
+  private async compileAndExecute(tsInput: string, isAutocompletionRequest: boolean): Promise<any> {
     if (!isAutocompletionRequest) {
       // Expect POSIX lines (https://stackoverflow.com/a/729795)
       if (tsInput.length > 0 && !tsInput.endsWith("\n")) {
@@ -129,21 +136,27 @@ export class TsRepl {
     // somewhere. This btw. leads to a different execution order of imports than in the TS source.
     let lastResult: any = undefined;
     for (const added of changes.filter(change => change.added)) {
-      lastResult = executeJavaScript(added.value, this.evalFilename);
+      lastResult = await executeJavaScriptAsync(added.value, this.evalFilename, this.context!);
     }
     return lastResult;
   }
 
-  private async replEval(code: string): Promise<ReplEvalResult | undefined> {
+  /**
+   * Add user-friendly error handling around compileAndExecute
+   */
+  private async replEval(code: string): Promise<ReplEvalResult> {
     // TODO: Figure out how to handle completion here.
     if (code === ".scope") {
-      return undefined;
+      return {
+        result: undefined,
+        error: undefined,
+      };
     }
 
     const isAutocompletionRequest = !/\n$/.test(code);
 
     try {
-      const result = this.compileAndExecute(code, isAutocompletionRequest);
+      const result = await this.compileAndExecute(code, isAutocompletionRequest);
       return {
         result: result,
         error: undefined,
