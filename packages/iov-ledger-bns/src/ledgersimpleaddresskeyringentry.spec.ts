@@ -9,6 +9,7 @@ import { Algorithm, ChainId } from "@iov/tendermint-types";
 
 import { pendingWithoutInteractiveLedger, pendingWithoutLedger } from "./common.spec";
 import { LedgerSimpleAddressKeyringEntry } from "./ledgersimpleaddresskeyringentry";
+import { LedgerState } from "./statetracker";
 
 const { toHex } = Encoding;
 
@@ -103,13 +104,47 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     expect(keyringEntry.getIdentities()[0].label).toBeUndefined();
   });
 
+  it("has disconnected device state when created", () => {
+    pendingWithoutInteractiveLedger();
+
+    const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    expect(keyringEntry.deviceState.value).toEqual(LedgerState.Disconnected);
+  });
+
+  it("changed device state to app open after some time", async () => {
+    pendingWithoutInteractiveLedger();
+
+    const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    expect(keyringEntry.deviceState.value).toEqual(LedgerState.Disconnected);
+
+    await keyringEntry.deviceState.waitFor(LedgerState.IovAppOpen);
+    expect(keyringEntry.deviceState.value).toEqual(LedgerState.IovAppOpen);
+  });
+
+  it("cannot sign when created", () => {
+    pendingWithoutInteractiveLedger();
+
+    const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    expect(keyringEntry.canSign.value).toEqual(false);
+  });
+
+  it("can sign after some time", async () => {
+    pendingWithoutInteractiveLedger();
+
+    const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    expect(keyringEntry.canSign.value).toEqual(false);
+
+    await keyringEntry.canSign.waitFor(true);
+    expect(keyringEntry.canSign.value).toEqual(true);
+  });
+
   it("can sign", async () => {
     pendingWithoutInteractiveLedger();
 
     const keyringEntry = new LedgerSimpleAddressKeyringEntry();
     const newIdentity = await keyringEntry.createIdentity();
 
-    expect(keyringEntry.canSign.value).toEqual(true);
+    await keyringEntry.canSign.waitFor(true);
 
     const tx: SendTx = {
       kind: TransactionKind.Send,

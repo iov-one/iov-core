@@ -14,7 +14,8 @@ import {
 import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { getPublicKeyWithIndex, signTransactionWithIndex } from "./app";
-import { connectToFirstLedger, Transport } from "./exchange";
+import { connectToFirstLedger } from "./exchange";
+import { LedgerState, StateTracker } from "./statetracker";
 
 interface PubkeySerialization {
   readonly algo: string;
@@ -65,16 +66,29 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   }
 
   public readonly label: ValueAndUpdates<string | undefined>;
-  public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
+  public readonly canSign: ValueAndUpdates<boolean>;
   public readonly implementationId = LedgerSimpleAddressKeyringEntry.implementationId;
+  public readonly deviceState: ValueAndUpdates<LedgerState>;
 
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
+  private readonly canSignProducer: DefaultValueProducer<boolean>;
   private readonly identities: LocalIdentity[];
 
   // the `i` from https://github.com/iov-one/iov-core/blob/master/docs/KeyBase.md#simple-addresses
   private readonly simpleAddressIndices: Map<string, number>;
 
   constructor(data?: KeyringEntrySerializationString) {
+    this.canSignProducer = new DefaultValueProducer(false);
+    this.canSign = new ValueAndUpdates(this.canSignProducer);
+    const deviceTracker = new StateTracker();
+    deviceTracker.state.updates.subscribe({
+      next: value => {
+        this.canSignProducer.update(value === LedgerState.IovAppOpen);
+      },
+    });
+    deviceTracker.start();
+    this.deviceState = deviceTracker.state;
+
     // tslint:disable-next-line:no-let
     let label: string | undefined;
     const identities: LocalIdentity[] = [];
@@ -113,7 +127,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
 
   public async createIdentity(): Promise<LocalIdentity> {
     const nextIndex = this.identities.length;
-    const transport: Transport = connectToFirstLedger();
+    const transport = await connectToFirstLedger();
 
     const pubkey = await getPublicKeyWithIndex(transport, nextIndex);
     const newIdentity: LocalIdentity = {
@@ -163,7 +177,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     }
 
     const simpleAddressIndex = this.simpleAddressIndex(identity);
-    const transport: Transport = connectToFirstLedger();
+    const transport = await connectToFirstLedger();
 
     const signature = await signTransactionWithIndex(transport, transactionBytes, simpleAddressIndex);
     return signature as SignatureBytes;

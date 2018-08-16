@@ -148,4 +148,19 @@ describe("ValueAndUpdates", () => {
     setTimeout(() => producer.update(33), 20);
     setTimeout(() => producer.update(44), 30);
   });
+
+  it("can wait for value", async () => {
+    const producer = new DefaultValueProducer(11);
+    const vau = new ValueAndUpdates(producer);
+
+    setTimeout(() => producer.update(22), 10);
+    setTimeout(() => producer.update(33), 20);
+    setTimeout(() => producer.update(44), 30);
+
+    await vau.waitFor(33);
+    expect(vau.value).toEqual(33);
+
+    await vau.waitFor(44);
+    expect(vau.value).toEqual(44);
+  });
 });

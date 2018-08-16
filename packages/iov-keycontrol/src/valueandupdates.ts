@@ -18,6 +18,23 @@ export class ValueAndUpdates<T> {
     this.producer = producer;
     this.updates = MemoryStream.createWithMemory(this.producer);
   }
+
+  public waitFor(value: T): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const subscription = this.updates.subscribe({
+        next: newValue => {
+          if (newValue === value) {
+            subscription.unsubscribe();
+            resolve();
+          }
+        },
+        complete: () => {
+          subscription.unsubscribe();
+          reject("Update stream completed without expected value");
+        },
+      });
+    });
+  }
 }
 
 // allows pre-producing values before anyone is listening

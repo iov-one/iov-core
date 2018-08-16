@@ -12,10 +12,10 @@ describe("Exchange", () => {
     }
   });
 
-  it("can connect to Ledger", () => {
+  it("can connect to Ledger", async () => {
     pendingWithoutLedger();
 
-    const transport = connectToFirstLedger();
+    const transport = await connectToFirstLedger();
     expect(transport).toBeTruthy();
   });
 });

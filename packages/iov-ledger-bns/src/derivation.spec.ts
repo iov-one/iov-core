@@ -1,12 +1,14 @@
+import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
+
 import { Bip39, Ed25519, EnglishMnemonic, Slip0010, Slip0010Curve, Slip0010RawIndex } from "@iov/crypto";
 
 import { getPublicKeyWithIndex } from "./app";
 import { pendingWithoutSeededLedger, skipSeededTests } from "./common.spec";
-import { connectToFirstLedger, Transport } from "./exchange";
+import { connectToFirstLedger } from "./exchange";
 
 describe("Check key derivation", () => {
   // tslint:disable-next-line:no-let
-  let transport: Transport | undefined;
+  let transport: TransportNodeHid | undefined;
 
   // try 12 word seed phrase to enter in ledger for these tests
   // you have to reinit the ledger for this to work
@@ -15,9 +17,9 @@ describe("Check key derivation", () => {
   const mneumonic = new EnglishMnemonic(phrase);
   const purpose = Slip0010RawIndex.hardened(4804438); // from ed25519simpleaddress
 
-  beforeAll(() => {
+  beforeAll(async () => {
     if (!skipSeededTests()) {
-      transport = connectToFirstLedger();
+      transport = await connectToFirstLedger();
     }
   });
 
@@ -34,7 +36,7 @@ describe("Check key derivation", () => {
       expect(swPubkey).toBeTruthy();
       expect(swPubkey.length).toEqual(32);
 
-      const hwPubkey = await getPublicKeyWithIndex(transport, i);
+      const hwPubkey = await getPublicKeyWithIndex(transport!, i);
       expect(hwPubkey).toBeTruthy();
       expect(hwPubkey.length).toEqual(32);
 
