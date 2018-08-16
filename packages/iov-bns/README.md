@@ -1,5 +1,7 @@
 # @iov/bns
 
+[![npm version](https://img.shields.io/npm/v/@iov/bns.svg)](https://www.npmjs.com/package/@iov/bns)
+
 This package is an implementation of the IovReader
 interface for the BNS blockchain
 (currently just as [bcp-demo](https://github.com/iov-one/bcp-demo) prototype).

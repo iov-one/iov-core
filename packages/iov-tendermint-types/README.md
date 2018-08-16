@@ -1,5 +1,7 @@
 # @iov/tendermint-types
 
+[![npm version](https://img.shields.io/npm/v/@iov/tendermint-types.svg)](https://www.npmjs.com/package/@iov/tendermint-types)
+
 ## API Documentation
 
 [https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-types/](https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-types/)

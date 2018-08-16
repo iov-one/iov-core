@@ -1,5 +1,7 @@
 # @iov/core
 
+[![npm version](https://img.shields.io/npm/v/@iov/core.svg)](https://www.npmjs.com/package/@iov/core)
+
 @iov/core is the main entrypoint into the monorepo, exposing high-level functionality
 to easily build blockchain clients. It uses the keymanagement functionality of `UserProfile`,
 and the generic blockchain connection of `IovReader`, and pulls them together into one

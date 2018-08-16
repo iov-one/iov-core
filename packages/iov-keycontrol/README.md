@@ -1,5 +1,7 @@
 # @iov/keycontrol
 
+[![npm version](https://img.shields.io/npm/v/@iov/keycontrol.svg)](https://www.npmjs.com/package/@iov/keycontrol)
+
 Keycontrol manages all private keys and keeps them safe.
 
 ![KeyBase Diagram](https://raw.githubusercontent.com/iov-one/iov-core/master/docs/KeyBaseDiagram.png)

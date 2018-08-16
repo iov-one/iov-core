@@ -1,5 +1,7 @@
 # @iov/bcp-types
 
+[![npm version](https://img.shields.io/npm/v/@iov/bcp-types.svg)](https://www.npmjs.com/package/@iov/bcp-types)
+
 ## API Documentation
 
 [https://iov-one.github.io/iov-core-docs/latest/iov-bcp-types/](https://iov-one.github.io/iov-core-docs/latest/iov-bcp-types/)
