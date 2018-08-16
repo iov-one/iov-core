@@ -7,14 +7,17 @@ const ledgerTimeout = 0;
 export type Transport = any;
 
 // there are more automatic ways to detect the right device also
-const isDeviceLedgerNanoS = (dev: Device) => dev.manufacturer === "Ledger" && dev.product === "Nano S";
+function isDeviceLedgerNanoS(dev: Device): boolean {
+  return dev.manufacturer === "Ledger" && dev.product === "Nano S";
+}
 
-export const getFirstLedgerNanoS = (): Device | undefined =>
-  devices()
+export function getFirstLedgerNanoS(): Device | undefined {
+  return devices()
     .filter(d => isDeviceLedgerNanoS(d) && d.path)
     .find(() => true);
+}
 
-export const connectToFirstLedger = (): Transport => {
+export function connectToFirstLedger(): Transport {
   const ledger = getFirstLedgerNanoS();
   if (!ledger || !ledger.path) {
     throw new Error("No ledger connected");
@@ -22,18 +25,18 @@ export const connectToFirstLedger = (): Transport => {
   const hid = new HID(ledger.path);
   const transport = new TransportNodeHid(hid, true, ledgerTimeout);
   return transport as Transport;
-};
+}
 
 // checkAndRemoveStatus ensures the last two bytes are 0x9000
 // and returns the response with status code removed,
 // or throws an error if not the case
-export const checkAndRemoveStatus = (resp: Uint8Array): Uint8Array => {
+export function checkAndRemoveStatus(resp: Uint8Array): Uint8Array {
   checkStatus(resp);
   return resp.slice(0, resp.length - 2);
-};
+}
 
 // checkStatus will verify the buffer ends with 0x9000 or throw an error
-const checkStatus = (resp: Uint8Array): void => {
+function checkStatus(resp: Uint8Array): void {
   const cut = resp.length - 2;
   if (cut < 0) {
     throw new Error("response less than 2 bytes");
@@ -42,7 +45,7 @@ const checkStatus = (resp: Uint8Array): void => {
   if (status !== 0x9000) {
     throw new Error("response with error code: 0x" + status.toString(16));
   }
-};
+}
 
 // sendChunks will break the message into multiple chunks as needed
 // to fit into the 255 byte packet limit. It will send one chunk if
@@ -51,12 +54,12 @@ const checkStatus = (resp: Uint8Array): void => {
 // It will fail on the first error status response.
 // If there all messages are status 0x9000, it returns the
 // response to the last chunk.
-export const sendChunks = async (
+export async function sendChunks(
   transport: Transport,
   appCode: number,
   cmd: number,
   payload: Uint8Array,
-): Promise<Uint8Array> => {
+): Promise<Uint8Array> {
   // tslint:disable-next-line:no-let
   let offset = 0;
   // loop over the non-end chunks
@@ -76,4 +79,4 @@ export const sendChunks = async (
   const response = new Uint8Array(await transport.exchange(msg));
 
   return checkAndRemoveStatus(response);
-};
+}

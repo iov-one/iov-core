@@ -24,7 +24,7 @@ const listener = {
 let inApp = false;
 
 // checkEvent will write out when we enter and leave the app
-const checkEvent = (e: Event) => {
+function checkEvent(e: Event): void {
   // on remove mark that we left the app when we did
   if (e.type !== "add") {
     if (inApp) {
@@ -50,7 +50,7 @@ const checkEvent = (e: Event) => {
       console.log("Error connecting to ledger: " + err);
     }
   });
-};
+}
 
 // listen for all changed
 TransportNodeHid.listen(listener);
