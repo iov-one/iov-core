@@ -5,11 +5,10 @@ export declare enum LedgerState {
     IovAppOpen = 2
 }
 export declare class StateTracker {
+    private static checkConectedAndAppOpen;
     readonly state: ValueAndUpdates<LedgerState>;
     private readonly stateProducer;
     constructor();
     start(): void;
     private handleEvent;
-    private isConnected;
-    private checkConectedAndAppOpen;
 }
