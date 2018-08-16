@@ -6,11 +6,19 @@ import { appVersion } from "../app";
 import { connectToFirstLedger } from "../exchange";
 
 /**
+ * "A Descriptor is a parametric type that is up to be determined for the
+ * implementation. it can be for instance an ID, an file path, a URL,..."
+ *
+ * @see http://ledgerhq.github.io/ledgerjs/docs/#transport
+ */
+type Descriptor = any;
+
+/**
  * @see http://ledgerhq.github.io/ledgerjs/docs/#descriptorevent
  */
 interface DescriptorEvent {
   readonly type: "add" | "remove";
-  readonly descriptor: string;
+  readonly descriptor: Descriptor;
   readonly device: Device;
 }
 
