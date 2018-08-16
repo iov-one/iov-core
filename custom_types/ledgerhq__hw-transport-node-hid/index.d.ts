@@ -3,7 +3,7 @@ declare module "@ledgerhq/hw-transport-node-hid" {
 
   /**
    * "A Descriptor is a parametric type that is up to be determined for the
-   * implementation. it can be for instance an ID, an file path, a URL,..."
+   * implementation. it can be for instance an ID, a file path, a URL,..."
    *
    * @see http://ledgerhq.github.io/ledgerjs/docs/#transport
    * @see http://ledgerhq.github.io/ledgerjs/docs/#descriptorevent
