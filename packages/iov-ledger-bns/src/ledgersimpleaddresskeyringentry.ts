@@ -68,10 +68,10 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign: ValueAndUpdates<boolean>;
   public readonly implementationId = LedgerSimpleAddressKeyringEntry.implementationId;
+  public readonly deviceState: ValueAndUpdates<LedgerState>;
 
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
   private readonly canSignProducer: DefaultValueProducer<boolean>;
-  private readonly deviceTracker = new StateTracker();
   private readonly identities: LocalIdentity[];
 
   // the `i` from https://github.com/iov-one/iov-core/blob/master/docs/KeyBase.md#simple-addresses
@@ -80,12 +80,14 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   constructor(data?: KeyringEntrySerializationString) {
     this.canSignProducer = new DefaultValueProducer(false);
     this.canSign = new ValueAndUpdates(this.canSignProducer);
-    this.deviceTracker.state.updates.subscribe({
+    const deviceTracker = new StateTracker();
+    deviceTracker.state.updates.subscribe({
       next: value => {
         this.canSignProducer.update(value === LedgerState.IovAppOpen);
       },
     });
-    this.deviceTracker.start();
+    deviceTracker.start();
+    this.deviceState = deviceTracker.state;
 
     // tslint:disable-next-line:no-let
     let label: string | undefined;

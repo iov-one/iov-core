@@ -9,6 +9,7 @@ import { Algorithm, ChainId } from "@iov/tendermint-types";
 
 import { pendingWithoutInteractiveLedger, pendingWithoutLedger } from "./common.spec";
 import { LedgerSimpleAddressKeyringEntry } from "./ledgersimpleaddresskeyringentry";
+import { LedgerState } from "./statetracker";
 
 const { toHex } = Encoding;
 
@@ -101,6 +102,23 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
 
     keyringEntry.setIdentityLabel(newIdentity, undefined);
     expect(keyringEntry.getIdentities()[0].label).toBeUndefined();
+  });
+
+  it("has disconnected device state when created", () => {
+    pendingWithoutInteractiveLedger();
+
+    const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    expect(keyringEntry.deviceState.value).toEqual(LedgerState.Disconnected);
+  });
+
+  it("changed device state to app open after some time", async () => {
+    pendingWithoutInteractiveLedger();
+
+    const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    expect(keyringEntry.deviceState.value).toEqual(LedgerState.Disconnected);
+
+    await keyringEntry.deviceState.waitFor(LedgerState.IovAppOpen);
+    expect(keyringEntry.deviceState.value).toEqual(LedgerState.IovAppOpen);
   });
 
   it("cannot sign when created", () => {
