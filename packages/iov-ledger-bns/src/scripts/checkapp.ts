@@ -64,7 +64,4 @@ TransportNodeHid.listen({
   },
 });
 
-console.log("Press any key to exit");
-(process.stdin.setRawMode as any)(true);
-process.stdin.resume();
-process.stdin.on("data", () => process.exit(0));
+console.log("Press ^C to exit");
