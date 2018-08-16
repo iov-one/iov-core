@@ -22,8 +22,14 @@ interface DescriptorEvent {
   readonly device: Device;
 }
 
+enum LedgerState {
+  Disconnected,
+  Connected,
+  IovAppOpen,
+}
+
 // tslint:disable:no-let
-let inApp = false;
+let state: LedgerState | undefined;
 
 function checkAppVersion(): void {
   try {
@@ -32,12 +38,17 @@ function checkAppVersion(): void {
     // otherwise no
     appVersion(transport)
       .then((version: number) => {
-        inApp = true;
-        console.log(`>>> Entered app (version ${version})`);
+        state = LedgerState.IovAppOpen;
+        console.log(`>>> Entered app (version ${version})`, state);
       })
-      .catch(() => 0);
+      .catch(() => {
+        // not in app
+        state = LedgerState.Connected;
+        console.log(state);
+      });
   } catch (err) {
-    console.log("Error connecting to ledger: " + err);
+    state = LedgerState.Disconnected;
+    console.log("Error connecting to ledger: " + err, state);
   }
 }
 
@@ -53,10 +64,8 @@ function handleEvent(e: DescriptorEvent): void {
       checkAppVersion();
       break;
     case "remove":
-      if (inApp) {
-        inApp = false;
-        console.log("<<< Left app");
-      }
+      state = LedgerState.Connected;
+      console.log("<<< Left app", state);
       break;
   }
 }
