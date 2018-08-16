@@ -22,8 +22,8 @@
     "prebuild": "yarn format && yarn lint",
     "build": "tsc && rm ./types/* && mv build/*.d.ts ./types",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
-    "listen": "node ./build/scripts/listen.js | grep -v '^dev'",
-    "checkApp": "node ./build/scripts/checkapp.js | grep -v '^dev'"
+    "listen": "ts-node ./src/scripts/listen.ts | grep -v '^dev'",
+    "checkApp": "ts-node ./src/scripts/checkapp.ts | grep -v '^dev'"
   },
   "dependencies": {
     "@iov/bcp-types": "^0.2.0",
@@ -34,6 +34,9 @@
     "@ledgerhq/hw-transport-node-hid": "~4.21.0",
     "@types/node-hid": "^0.7.0",
     "node-hid": "^0.7.3"
+  },
+  "devDependencies": {
+    "ts-node": "^7.0.0"
   },
   "gitHead": "39379b38f0ac128a48aa7174692c4c932ed326f7"
 }
