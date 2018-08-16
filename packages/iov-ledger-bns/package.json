@@ -23,7 +23,7 @@
     "build": "tsc && rm ./types/* && mv build/*.d.ts ./types",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
     "listen": "ts-node ./src/scripts/listen.ts | grep -v '^dev'",
-    "checkApp": "ts-node ./src/scripts/checkapp.ts | grep -v '^dev'"
+    "checkapp": "ts-node ./src/scripts/checkapp.ts | grep -v '^dev'"
   },
   "dependencies": {
     "@iov/bcp-types": "^0.2.0",
