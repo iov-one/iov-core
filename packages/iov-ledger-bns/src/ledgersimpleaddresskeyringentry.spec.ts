@@ -128,21 +128,14 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     expect(keyringEntry.canSign.value).toEqual(false);
   });
 
-  it("can sign after some time", done => {
+  it("can sign after some time", async () => {
     pendingWithoutInteractiveLedger();
 
     const keyringEntry = new LedgerSimpleAddressKeyringEntry();
     expect(keyringEntry.canSign.value).toEqual(false);
 
-    keyringEntry.canSign.updates.subscribe({
-      next: value => {
-        if (value === true) {
-          done();
-        }
-      },
-      error: fail,
-      complete: fail,
-    });
+    await keyringEntry.canSign.waitFor(true);
+    expect(keyringEntry.canSign.value).toEqual(true);
   });
 
   it("can sign", async () => {
