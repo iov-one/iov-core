@@ -1,6 +1,6 @@
 {
   "name": "@iov/bns",
-  "version": "0.2.0",
+  "version": "0.3.0-alpha.0",
   "description": "Transction Codec and BCP Client to communicate with BNS blockchain",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -33,18 +33,18 @@
     "protoc": "yarn pack-proto `yarn run -s find-proto` && yarn define-proto && yarn format"
   },
   "dependencies": {
-    "@iov/bcp-types": "^0.2.0",
-    "@iov/crypto": "^0.2.0",
-    "@iov/encoding": "^0.2.0",
-    "@iov/tendermint-rpc": "^0.2.0",
-    "@iov/tendermint-types": "^0.2.0",
+    "@iov/bcp-types": "^0.3.0-alpha.0",
+    "@iov/crypto": "^0.3.0-alpha.0",
+    "@iov/encoding": "^0.3.0-alpha.0",
+    "@iov/tendermint-rpc": "^0.3.0-alpha.0",
+    "@iov/tendermint-types": "^0.3.0-alpha.0",
     "@types/long": "^4.0.0",
     "@types/node": "^10.3.2",
     "long": "^4.0.0",
     "protobufjs": "^6.8.6"
   },
   "devDependencies": {
-    "@iov/keycontrol": "^0.2.0"
+    "@iov/keycontrol": "^0.3.0-alpha.0"
   },
   "gitHead": "39379b38f0ac128a48aa7174692c4c932ed326f7"
 }
