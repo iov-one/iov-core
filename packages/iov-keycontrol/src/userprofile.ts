@@ -19,7 +19,7 @@ import { Keyring, KeyringEntry, KeyringSerializationString, LocalIdentity, Publi
 import { DatabaseUtils } from "./utils";
 import { DefaultValueProducer, ValueAndUpdates } from "./valueandupdates";
 
-const { toAscii, fromHex, toHex, fromUtf8, toUtf8, toRfc3339, fromRfc3339 } = Encoding;
+const { toAscii, fromBase64, toBase64, fromUtf8, toUtf8, toRfc3339, fromRfc3339 } = Encoding;
 
 const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
@@ -62,7 +62,7 @@ export class UserProfile {
       userProfileSalt,
       weakPasswordHashingOptions,
     )) as Xchacha20poly1305IetfKey;
-    const keyringBundle = fromHex(keyringFromStorage);
+    const keyringBundle = fromBase64(keyringFromStorage);
     const keyringNonce = keyringBundle.slice(0, 24) as Xchacha20poly1305IetfNonce;
     const keyringCiphertext = keyringBundle.slice(24) as Xchacha20poly1305IetfCiphertext;
     const decrypted = await Xchacha20poly1305Ietf.decrypt(keyringCiphertext, encryptionKey, keyringNonce);
@@ -136,7 +136,7 @@ export class UserProfile {
 
     // create storage values (raw strings)
     const createdAtForStorage = toRfc3339(this.createdAt);
-    const keyringForStorage = toHex(keyringNonce) + toHex(keyringCiphertext);
+    const keyringForStorage = toBase64(new Uint8Array([...keyringNonce, ...keyringCiphertext]));
 
     // store
     await db.put(storageKeyCreatedAt, createdAtForStorage);
