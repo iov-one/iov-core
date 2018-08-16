@@ -49,6 +49,16 @@ async function checkAppVersion(): Promise<LedgerState> {
   }
 }
 
+async function isConnected(): Promise<boolean> {
+  try {
+    connectToFirstLedger();
+    return true;
+  } catch (e) {
+    console.log("Error connecting to ledger: " + e);
+    return false;
+  }
+}
+
 console.log("Press ^C to exit");
 
 const stateProducer = new DefaultValueProducer(LedgerState.Disconnected);
@@ -82,7 +92,7 @@ async function handleEvent(e: DescriptorEvent): Promise<void> {
       stateProducer.update(await checkAppVersion());
       break;
     case "remove":
-      stateProducer.update(LedgerState.Connected);
+      stateProducer.update((await isConnected()) ? LedgerState.Connected : LedgerState.Disconnected);
       break;
   }
 }
