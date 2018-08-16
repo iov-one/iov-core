@@ -8,11 +8,6 @@
 import sodium = require("libsodium-wrappers");
 import { As } from "type-tagger";
 
-export type Chacha20poly1305IetfKey = Uint8Array & As<"chacha20poly1305ietf-key">;
-export type Chacha20poly1305IetfMessage = Uint8Array & As<"chacha20poly1305ietf-message">;
-export type Chacha20poly1305IetfNonce = Uint8Array & As<"chacha20poly1305ietf-nonce">;
-export type Chacha20poly1305IetfCiphertext = Uint8Array & As<"chacha20poly1305ietf-ciphertext">;
-
 export type Xchacha20poly1305IetfKey = Uint8Array & As<"xchacha20poly1305ietf-key">;
 export type Xchacha20poly1305IetfMessage = Uint8Array & As<"xchacha20poly1305ietf-message">;
 export type Xchacha20poly1305IetfNonce = Uint8Array & As<"xchacha20poly1305ietf-nonce">;
@@ -95,44 +90,6 @@ export class Ed25519 {
   ): Promise<boolean> {
     await sodium.ready;
     return sodium.crypto_sign_verify_detached(signature, message, pubkey);
-  }
-}
-
-export class Chacha20poly1305Ietf {
-  public static async encrypt(
-    message: Chacha20poly1305IetfMessage,
-    key: Chacha20poly1305IetfKey,
-    nonce: Chacha20poly1305IetfNonce,
-  ): Promise<Chacha20poly1305IetfCiphertext> {
-    await sodium.ready;
-
-    const additionalData = undefined;
-
-    return sodium.crypto_aead_chacha20poly1305_ietf_encrypt(
-      message,
-      additionalData,
-      null, // secret nonce: unused and should be null (https://download.libsodium.org/doc/secret-key_cryptography/ietf_chacha20-poly1305_construction.html)
-      nonce,
-      key,
-    ) as Chacha20poly1305IetfCiphertext;
-  }
-
-  public static async decrypt(
-    ciphertext: Chacha20poly1305IetfCiphertext,
-    key: Chacha20poly1305IetfKey,
-    nonce: Chacha20poly1305IetfNonce,
-  ): Promise<Chacha20poly1305IetfMessage> {
-    await sodium.ready;
-
-    const additionalData = undefined;
-
-    return sodium.crypto_aead_chacha20poly1305_ietf_decrypt(
-      null, // secret nonce: unused and should be null (https://download.libsodium.org/doc/secret-key_cryptography/ietf_chacha20-poly1305_construction.html)
-      ciphertext,
-      additionalData,
-      nonce,
-      key,
-    ) as Chacha20poly1305IetfMessage;
   }
 }
 

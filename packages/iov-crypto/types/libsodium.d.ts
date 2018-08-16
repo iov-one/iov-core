@@ -1,8 +1,4 @@
 import { As } from "type-tagger";
-export declare type Chacha20poly1305IetfKey = Uint8Array & As<"chacha20poly1305ietf-key">;
-export declare type Chacha20poly1305IetfMessage = Uint8Array & As<"chacha20poly1305ietf-message">;
-export declare type Chacha20poly1305IetfNonce = Uint8Array & As<"chacha20poly1305ietf-nonce">;
-export declare type Chacha20poly1305IetfCiphertext = Uint8Array & As<"chacha20poly1305ietf-ciphertext">;
 export declare type Xchacha20poly1305IetfKey = Uint8Array & As<"xchacha20poly1305ietf-key">;
 export declare type Xchacha20poly1305IetfMessage = Uint8Array & As<"xchacha20poly1305ietf-message">;
 export declare type Xchacha20poly1305IetfNonce = Uint8Array & As<"xchacha20poly1305ietf-nonce">;
@@ -29,10 +25,6 @@ export declare class Ed25519 {
     static makeKeypair(seed: Uint8Array): Promise<Ed25519Keypair>;
     static createSignature(message: Uint8Array, keyPair: Ed25519Keypair): Promise<Uint8Array>;
     static verifySignature(signature: Uint8Array, message: Uint8Array, pubkey: Uint8Array): Promise<boolean>;
-}
-export declare class Chacha20poly1305Ietf {
-    static encrypt(message: Chacha20poly1305IetfMessage, key: Chacha20poly1305IetfKey, nonce: Chacha20poly1305IetfNonce): Promise<Chacha20poly1305IetfCiphertext>;
-    static decrypt(ciphertext: Chacha20poly1305IetfCiphertext, key: Chacha20poly1305IetfKey, nonce: Chacha20poly1305IetfNonce): Promise<Chacha20poly1305IetfMessage>;
 }
 export declare class Xchacha20poly1305Ietf {
     static encrypt(message: Xchacha20poly1305IetfMessage, key: Xchacha20poly1305IetfKey, nonce: Xchacha20poly1305IetfNonce): Promise<Xchacha20poly1305IetfCiphertext>;
