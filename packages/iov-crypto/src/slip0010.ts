@@ -1,4 +1,5 @@
 import BN = require("bn.js");
+import elliptic = require("elliptic");
 
 import { Encoding, Uint32 } from "@iov/encoding";
 
@@ -28,6 +29,8 @@ export class Slip0010RawIndex extends Uint32 {
     return this.data >= 2 ** 31;
   }
 }
+
+const secp256k1 = new elliptic.ec("secp256k1");
 
 // Universal private key derivation accoring to
 // https://github.com/satoshilabs/slips/blob/master/slip-0010.md
@@ -78,11 +81,29 @@ export class Slip0010 {
         // Step 1 of https://github.com/satoshilabs/slips/blob/master/slip-0010.md#private-parent-key--private-child-key
         // Calculate I = HMAC-SHA512(Key = c_par, Data = ser_P(point(k_par)) || ser_32(i)).
         // where the functions point() and ser_p() are defined in BIP-0032
-        throw new Error("Non-ed25519 normal key derivation not yet implemented");
+        const data = new Uint8Array([
+          ...Slip0010.serializedPoint(curve, new BN(parentPrivkey)),
+          ...rawIndex.toBytesBigEndian(),
+        ]);
+        i = new Hmac(Sha512, parentChainCode).update(data).digest();
       }
     }
 
     return this.childImpl(curve, parentPrivkey, parentChainCode, rawIndex, i);
+  }
+
+  /**
+   * Implementation of ser_P(point(k_par)) from BIP-0032
+   *
+   * @see https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
+   */
+  private static serializedPoint(curve: Slip0010Curve, p: BN): Uint8Array {
+    switch (curve) {
+      case Slip0010Curve.Secp256k1:
+        return Encoding.fromHex(secp256k1.g.mul(p).encodeCompressed("hex"));
+      default:
+        throw new Error("curve not supported");
+    }
   }
 
   private static childImpl(

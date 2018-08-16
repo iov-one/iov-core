@@ -16,6 +16,7 @@ export declare class Slip0010 {
     static derivePath(curve: Slip0010Curve, seed: Uint8Array, path: ReadonlyArray<Slip0010RawIndex>): Slip0010Result;
     private static master;
     private static child;
+    private static serializedPoint;
     private static childImpl;
     private static isZero;
     private static isGteN;
