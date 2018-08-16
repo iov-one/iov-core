@@ -3,7 +3,7 @@ import { join } from "path";
 import { Recoverable, REPLServer, start } from "repl";
 import { register, Register, TSError } from "ts-node";
 
-import { executeJavaScript, isRecoverable, lineCount } from "./helpers";
+import { executeJavaScript, isRecoverable } from "./helpers";
 
 interface ReplEvalResult {
   readonly result: any;
@@ -16,7 +16,7 @@ export class TsRepl {
   private readonly debuggingEnabled: boolean;
   private readonly evalFilename = `[eval].ts`;
   private readonly evalPath = join(process.cwd(), this.evalFilename);
-  private readonly evalData = { input: "", output: "", version: 0, lines: 0 };
+  private readonly evalData = { input: "", output: "" };
 
   constructor(tsconfigPath: string, initialTypeScript: string, debuggingEnabled: boolean) {
     this.typeScriptService = register({ project: tsconfigPath });
@@ -54,7 +54,7 @@ export class TsRepl {
     });
 
     // Bookmark the point where we should reset the REPL state.
-    const resetEval = this.appendEval("");
+    const resetEval = this.appendTypeScriptInput("");
 
     const reset = (): void => {
       resetEval();
@@ -78,7 +78,7 @@ export class TsRepl {
         }
 
         const identifierTypeScriptCode = `${identifier}\n`;
-        const undo = this.appendEval(identifierTypeScriptCode);
+        const undo = this.appendTypeScriptInput(identifierTypeScriptCode);
         const identifierFirstPosition = this.evalData.input.length - identifierTypeScriptCode.length;
         const { name, comment } = this.typeScriptService.getTypeInfo(
           this.evalData.input,
@@ -96,14 +96,20 @@ export class TsRepl {
     return repl;
   }
 
-  private compileAndExecute(tsInput: string): any {
-    const lines = this.evalData.lines;
-    const isCompletion = !/\n$/.test(tsInput);
-    const undo = this.appendEval(tsInput);
+  private compileAndExecute(tsInput: string, isAutocompletionRequest: boolean): any {
+    if (!isAutocompletionRequest) {
+      // Expect POSIX lines (https://stackoverflow.com/a/729795)
+      if (tsInput.length > 0 && !tsInput.endsWith("\n")) {
+        throw new Error("final newline missing");
+      }
+    }
+
+    const undo = this.appendTypeScriptInput(tsInput);
     let output: string;
 
     try {
-      output = this.typeScriptService.compile(this.evalData.input, this.evalPath, -lines);
+      // lineOffset unused at the moment (https://github.com/TypeStrong/ts-node/issues/661)
+      output = this.typeScriptService.compile(this.evalData.input, this.evalPath);
     } catch (err) {
       undo();
       throw err;
@@ -112,16 +118,19 @@ export class TsRepl {
     // Use `diff` to check for new JavaScript to execute.
     const changes = diffLines(this.evalData.output, output);
 
-    if (isCompletion) {
+    if (isAutocompletionRequest) {
       undo();
     } else {
       this.evalData.output = output;
     }
 
-    const lastResult = changes.reduce((result, change) => {
-      return change.added ? executeJavaScript(change.value, this.evalFilename) : result;
-    }, undefined);
-
+    // Execute new JavaScript. This may not necessarily be at the end only because e.g. an import
+    // statement in TypeScript is compiled to no JavaScript until the imported symbol is used
+    // somewhere. This btw. leads to a different execution order of imports than in the TS source.
+    let lastResult: any = undefined;
+    for (const added of changes.filter(change => change.added)) {
+      lastResult = executeJavaScript(added.value, this.evalFilename);
+    }
     return lastResult;
   }
 
@@ -131,8 +140,10 @@ export class TsRepl {
       return undefined;
     }
 
+    const isAutocompletionRequest = !/\n$/.test(code);
+
     try {
-      const result = this.compileAndExecute(code);
+      const result = this.compileAndExecute(code, isAutocompletionRequest);
       return {
         result: result,
         error: undefined,
@@ -163,11 +174,9 @@ export class TsRepl {
     }
   }
 
-  private appendEval(input: string): () => void {
+  private appendTypeScriptInput(input: string): () => void {
     const oldInput = this.evalData.input;
-    const oldVersion = this.evalData.version;
     const oldOutput = this.evalData.output;
-    const oldLines = this.evalData.lines;
 
     // Handle ASI issues with TypeScript re-evaluation.
     if (
@@ -178,22 +187,11 @@ export class TsRepl {
       this.evalData.input = `${this.evalData.input.slice(0, -1)};\n`;
     }
 
-    try {
-      this.evalData.lines += lineCount(input);
-    } catch (error) {
-      if (this.debuggingEnabled) {
-        console.log(`Error counting lines in TypeScript program: """${input}"""`);
-      }
-      throw error;
-    }
     this.evalData.input += input;
-    this.evalData.version++;
 
     const undoFunction = () => {
       this.evalData.input = oldInput;
       this.evalData.output = oldOutput;
-      this.evalData.version = oldVersion;
-      this.evalData.lines = oldLines;
     };
 
     return undoFunction;
