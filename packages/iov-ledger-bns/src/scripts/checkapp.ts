@@ -6,6 +6,10 @@ import { DefaultValueProducer, ValueAndUpdates } from "@iov/keycontrol";
 import { appVersion } from "../app";
 import { connectToFirstLedger } from "../exchange";
 
+function timestampedLog(data: any): void {
+  console.log(`[${new Date(Date.now()).toISOString()}] ${data}`);
+}
+
 enum LedgerState {
   Disconnected,
   Connected,
@@ -36,7 +40,7 @@ async function isConnected(): Promise<boolean> {
     await connectToFirstLedger();
     return true;
   } catch (e) {
-    console.log("Error connecting to ledger: " + e);
+    timestampedLog(`Error connecting to ledger: ${e}`);
     return false;
   }
 }
@@ -49,13 +53,13 @@ state.updates.subscribe({
   next: value => {
     switch (value) {
       case LedgerState.Disconnected:
-        console.log("Ledger disconnected");
+        timestampedLog(`Ledger disconnected`);
         break;
       case LedgerState.Connected:
-        console.log("Ledger connected");
+        timestampedLog(`Ledger connected`);
         break;
       case LedgerState.IovAppOpen:
-        console.log("IOV app open");
+        timestampedLog(`IOV app open`);
         break;
     }
   },
@@ -66,7 +70,7 @@ state.updates.subscribe({
  * write out when we enter and leave the app
  */
 async function handleEvent(e: DescriptorEvent<string>): Promise<void> {
-  // console.log(e);
+  timestampedLog(`Received event: ${e.type}`);
 
   switch (e.type) {
     case "add":
