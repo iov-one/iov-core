@@ -6,12 +6,12 @@ import { FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction }
 import {
   Argon2id,
   Argon2idOptions,
-  Chacha20poly1305Ietf,
-  Chacha20poly1305IetfCiphertext,
-  Chacha20poly1305IetfKey,
-  Chacha20poly1305IetfMessage,
-  Chacha20poly1305IetfNonce,
   Random,
+  Xchacha20poly1305Ietf,
+  Xchacha20poly1305IetfCiphertext,
+  Xchacha20poly1305IetfKey,
+  Xchacha20poly1305IetfMessage,
+  Xchacha20poly1305IetfNonce,
 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
@@ -61,11 +61,11 @@ export class UserProfile {
       password,
       userProfileSalt,
       weakPasswordHashingOptions,
-    )) as Chacha20poly1305IetfKey;
+    )) as Xchacha20poly1305IetfKey;
     const keyringBundle = fromHex(keyringFromStorage);
-    const keyringNonce = keyringBundle.slice(0, 12) as Chacha20poly1305IetfNonce;
-    const keyringCiphertext = keyringBundle.slice(12) as Chacha20poly1305IetfCiphertext;
-    const decrypted = await Chacha20poly1305Ietf.decrypt(keyringCiphertext, encryptionKey, keyringNonce);
+    const keyringNonce = keyringBundle.slice(0, 24) as Xchacha20poly1305IetfNonce;
+    const keyringCiphertext = keyringBundle.slice(24) as Xchacha20poly1305IetfCiphertext;
+    const decrypted = await Xchacha20poly1305Ietf.decrypt(keyringCiphertext, encryptionKey, keyringNonce);
     const keyringSerialization = fromUtf8(decrypted) as KeyringSerializationString;
 
     // create objects
@@ -74,13 +74,8 @@ export class UserProfile {
     return new UserProfile({ createdAt, keyring });
   }
 
-  private static async makeNonce(): Promise<Chacha20poly1305IetfNonce> {
-    // With 96 bit random nonces, we can produce N = 250,000,000 nonces
-    // while keeping the probability of a collision below one in a trillion
-    // https://crypto.stackexchange.com/a/60339
-    // This is less likely than winning the German lottery twice in two tries.
-    // We consider this safer as implementing a counter that can be manipulated.
-    return (await Random.getBytes(12)) as Chacha20poly1305IetfNonce;
+  private static async makeNonce(): Promise<Xchacha20poly1305IetfNonce> {
+    return (await Random.getBytes(24)) as Xchacha20poly1305IetfNonce;
   }
 
   private static labels(entries: ReadonlyArray<KeyringEntry>): ReadonlyArray<string | undefined> {
@@ -130,10 +125,10 @@ export class UserProfile {
       password,
       userProfileSalt,
       weakPasswordHashingOptions,
-    )) as Chacha20poly1305IetfKey;
-    const keyringPlaintext = toUtf8(this.keyring.serialize()) as Chacha20poly1305IetfMessage;
+    )) as Xchacha20poly1305IetfKey;
+    const keyringPlaintext = toUtf8(this.keyring.serialize()) as Xchacha20poly1305IetfMessage;
     const keyringNonce = await UserProfile.makeNonce();
-    const keyringCiphertext = await Chacha20poly1305Ietf.encrypt(
+    const keyringCiphertext = await Xchacha20poly1305Ietf.encrypt(
       keyringPlaintext,
       encryptionKey,
       keyringNonce,
