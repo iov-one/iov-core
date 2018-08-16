@@ -1,28 +1,10 @@
 // tslint:disable:no-console
-import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
-import { Device } from "node-hid";
+import TransportNodeHid, { DescriptorEvent } from "@ledgerhq/hw-transport-node-hid";
 
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/keycontrol";
 
 import { appVersion } from "../app";
 import { connectToFirstLedger } from "../exchange";
-
-/**
- * "A Descriptor is a parametric type that is up to be determined for the
- * implementation. it can be for instance an ID, an file path, a URL,..."
- *
- * @see http://ledgerhq.github.io/ledgerjs/docs/#transport
- */
-type Descriptor = any;
-
-/**
- * @see http://ledgerhq.github.io/ledgerjs/docs/#descriptorevent
- */
-interface DescriptorEvent {
-  readonly type: "add" | "remove";
-  readonly descriptor: Descriptor;
-  readonly device: Device;
-}
 
 enum LedgerState {
   Disconnected,
@@ -83,7 +65,7 @@ state.updates.subscribe({
 /**
  * write out when we enter and leave the app
  */
-async function handleEvent(e: DescriptorEvent): Promise<void> {
+async function handleEvent(e: DescriptorEvent<string>): Promise<void> {
   // console.log(e);
 
   switch (e.type) {

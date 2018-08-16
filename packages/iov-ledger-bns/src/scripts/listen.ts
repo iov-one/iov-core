@@ -1,23 +1,16 @@
 // tslint:disable:no-console
-import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
+import TransportNodeHid, { DescriptorEvent } from "@ledgerhq/hw-transport-node-hid";
 import { Device } from "node-hid";
 
-interface Event {
-  readonly type: "add" | "remove";
-  readonly descriptor: string;
-  readonly device: Device;
-}
-
 // tslint:disable-next-line:readonly-array
-const events: any[] = [];
+const events: Array<DescriptorEvent<string>> = [];
 
 const listener = {
-  next: (e: any) => events.push(e),
+  next: (e: DescriptorEvent<string>) => events.push(e),
   error: console.log,
-  complete: console.log("Listener finished"),
+  complete: () => console.log("Listener finished"),
 };
 
-console.log(TransportNodeHid);
 TransportNodeHid.listen(listener);
 
 // const pprint = (e: any) => console.log(JSON.stringify(e, null, 2));
@@ -32,9 +25,9 @@ process.stdin.on("data", e => {
   }
 });
 
-const showAll = (evts: ReadonlyArray<Event>) => console.log(evts.map(desc));
+const showAll = (evts: ReadonlyArray<DescriptorEvent<string>>) => console.log(evts.map(desc));
 
-const format = (e: Event): string => prefix(e.type) + genericDev(e.device);
+const format = (e: DescriptorEvent<string>): string => prefix(e.type) + genericDev(e.device);
 
 const prefix = (typ: string): string => (typ === "add" ? ">> Enter " : "<< Exit ");
 
@@ -45,7 +38,7 @@ const genericDev = (d: Device): string =>
     usage_page: d.usagePage,
   });
 
-const desc = (e: Event): string => {
+const desc = (e: DescriptorEvent<string>): string => {
   // const dev = e.device;
   // if (!dev.usagePage) {
   //   return "** Connect **";

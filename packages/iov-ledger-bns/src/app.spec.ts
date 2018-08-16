@@ -1,3 +1,4 @@
+import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
 import Long from "long";
 
 import { Nonce, PrehashType, RecipientId, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
@@ -8,11 +9,11 @@ import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/tender
 
 import { appVersion, getPublicKey, getPublicKeyWithIndex, signTransaction, signTransactionWithIndex } from "./app";
 import { pendingWithoutInteractiveLedger, pendingWithoutLedger, skipInteractiveTests, skipTests } from "./common.spec";
-import { connectToFirstLedger, Transport } from "./exchange";
+import { connectToFirstLedger } from "./exchange";
 
 describe("Query ledger app", () => {
   // tslint:disable-next-line:no-let
-  let transport: Transport | undefined;
+  let transport: TransportNodeHid | undefined;
 
   beforeAll(() => {
     if (!skipTests()) {
@@ -23,7 +24,7 @@ describe("Query ledger app", () => {
   it("get proper version", done => {
     pendingWithoutLedger();
 
-    appVersion(transport)
+    appVersion(transport!)
       .catch(err => fail(err))
       .then(num => expect(num).toEqual(0x0100))
       .then(done);
@@ -33,7 +34,7 @@ describe("Query ledger app", () => {
     pendingWithoutLedger();
 
     const checkKey = async () => {
-      const pubkey = await getPublicKey(transport);
+      const pubkey = await getPublicKey(transport!);
       expect(pubkey).toBeTruthy();
       expect(pubkey.length).toEqual(32);
     };
@@ -46,16 +47,16 @@ describe("Query ledger app", () => {
     pendingWithoutLedger();
 
     const checkKey = async () => {
-      const pubkey = await getPublicKey(transport);
+      const pubkey = await getPublicKey(transport!);
       expect(pubkey).toBeTruthy();
       expect(pubkey.length).toEqual(32);
 
-      const pubkey0 = await getPublicKeyWithIndex(transport, 0);
+      const pubkey0 = await getPublicKeyWithIndex(transport!, 0);
       expect(pubkey0).toBeTruthy();
       expect(pubkey0.length).toEqual(32);
       expect(pubkey0).toEqual(pubkey);
 
-      const pubkey1 = await getPublicKeyWithIndex(transport, 267);
+      const pubkey1 = await getPublicKeyWithIndex(transport!, 267);
       expect(pubkey1).toBeTruthy();
       expect(pubkey1.length).toEqual(32);
       expect(pubkey1).not.toEqual(pubkey0);
@@ -68,7 +69,7 @@ describe("Query ledger app", () => {
 
 describe("Sign with ledger app", () => {
   // tslint:disable-next-line:no-let
-  let transport: Transport | undefined;
+  let transport: TransportNodeHid | undefined;
 
   beforeAll(() => {
     if (!skipInteractiveTests()) {
@@ -82,10 +83,10 @@ describe("Sign with ledger app", () => {
     // this is pre-generated signbytes
     const message = Encoding.fromHex("00cafe0008746573742d31323300000000000000110a440a1403694b56200b605a3a726304b6dfaa6e916458ee12146bc29ffe4fc6a4b2395c3f47b5ca9dfa377295f91a0808fa011a03455448220c54657374207061796d656e74");
 
-    const pubkey = await getPublicKey(transport);
+    const pubkey = await getPublicKey(transport!);
     expect(pubkey.length).toEqual(32);
 
-    const signature = await signTransaction(transport, message);
+    const signature = await signTransaction(transport!, message);
     expect(signature.length).toEqual(64);
 
     const prehash = new Sha512(message).digest();
@@ -98,7 +99,7 @@ describe("Sign with ledger app", () => {
   it("is compatible with our codecs", async () => {
     pendingWithoutInteractiveLedger();
 
-    const pubkey = await getPublicKey(transport);
+    const pubkey = await getPublicKey(transport!);
     expect(pubkey.length).toEqual(32);
 
     const sender: PublicKeyBundle = {
@@ -122,7 +123,7 @@ describe("Sign with ledger app", () => {
     const nonce = Long.fromNumber(123) as Nonce;
     const { bytes, prehashType } = bnsCodec.bytesToSign(tx, nonce);
 
-    const signature = await signTransaction(transport, bytes);
+    const signature = await signTransaction(transport!, bytes);
     expect(signature.length).toEqual(64);
 
     // verify signature from Ledger
@@ -143,7 +144,7 @@ describe("Sign with ledger app", () => {
 
     const simpleAddressIndex = 0x787;
 
-    const pubkey = await getPublicKeyWithIndex(transport, simpleAddressIndex);
+    const pubkey = await getPublicKeyWithIndex(transport!, simpleAddressIndex);
     expect(pubkey.length).toEqual(32);
 
     const sender: PublicKeyBundle = {
@@ -166,7 +167,7 @@ describe("Sign with ledger app", () => {
     const nonce = Long.fromNumber(5) as Nonce;
     const { bytes, prehashType } = bnsCodec.bytesToSign(tx, nonce);
 
-    const signature = await signTransactionWithIndex(transport, bytes, simpleAddressIndex);
+    const signature = await signTransactionWithIndex(transport!, bytes, simpleAddressIndex);
     expect(signature.length).toEqual(64);
 
     // verify signature from Ledger

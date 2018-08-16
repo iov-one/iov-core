@@ -14,7 +14,7 @@ import {
 import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { getPublicKeyWithIndex, signTransactionWithIndex } from "./app";
-import { connectToFirstLedger, Transport } from "./exchange";
+import { connectToFirstLedger } from "./exchange";
 
 interface PubkeySerialization {
   readonly algo: string;
@@ -113,7 +113,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
 
   public async createIdentity(): Promise<LocalIdentity> {
     const nextIndex = this.identities.length;
-    const transport: Transport = connectToFirstLedger();
+    const transport = connectToFirstLedger();
 
     const pubkey = await getPublicKeyWithIndex(transport, nextIndex);
     const newIdentity: LocalIdentity = {
@@ -163,7 +163,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     }
 
     const simpleAddressIndex = this.simpleAddressIndex(identity);
-    const transport: Transport = connectToFirstLedger();
+    const transport = connectToFirstLedger();
 
     const signature = await signTransactionWithIndex(transport, transactionBytes, simpleAddressIndex);
     return signature as SignatureBytes;

@@ -3,9 +3,6 @@ import { Device, devices, HID } from "node-hid";
 
 const ledgerTimeout = 0;
 
-// Transport is an alias for TransportNodeHid until we have some types....
-export type Transport = any;
-
 // there are more automatic ways to detect the right device also
 function isDeviceLedgerNanoS(dev: Device): boolean {
   return dev.manufacturer === "Ledger" && dev.product === "Nano S";
@@ -17,14 +14,14 @@ export function getFirstLedgerNanoS(): Device | undefined {
     .find(() => true);
 }
 
-export function connectToFirstLedger(): Transport {
+export function connectToFirstLedger(): TransportNodeHid {
   const ledger = getFirstLedgerNanoS();
   if (!ledger || !ledger.path) {
     throw new Error("No ledger connected");
   }
   const hid = new HID(ledger.path);
   const transport = new TransportNodeHid(hid, true, ledgerTimeout);
-  return transport as Transport;
+  return transport;
 }
 
 // checkAndRemoveStatus ensures the last two bytes are 0x9000
@@ -55,7 +52,7 @@ function checkStatus(resp: Uint8Array): void {
 // If there all messages are status 0x9000, it returns the
 // response to the last chunk.
 export async function sendChunks(
-  transport: Transport,
+  transport: TransportNodeHid,
   appCode: number,
   cmd: number,
   payload: Uint8Array,
@@ -75,7 +72,6 @@ export async function sendChunks(
   // flag 0x00 specifies "more", 0x80 "last chunk"
   const msg = Buffer.concat([Buffer.from([appCode, cmd, 0x80, 0, last.length]), last]);
 
-  // transport.exchange() returns Buffer
   const response = new Uint8Array(await transport.exchange(msg));
 
   return checkAndRemoveStatus(response);
