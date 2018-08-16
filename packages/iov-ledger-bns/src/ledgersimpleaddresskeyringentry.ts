@@ -65,16 +65,20 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   }
 
   public readonly label: ValueAndUpdates<string | undefined>;
-  public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
+  public readonly canSign: ValueAndUpdates<boolean>;
   public readonly implementationId = LedgerSimpleAddressKeyringEntry.implementationId;
 
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
+  private readonly canSignProducer: DefaultValueProducer<boolean>;
   private readonly identities: LocalIdentity[];
 
   // the `i` from https://github.com/iov-one/iov-core/blob/master/docs/KeyBase.md#simple-addresses
   private readonly simpleAddressIndices: Map<string, number>;
 
   constructor(data?: KeyringEntrySerializationString) {
+    this.canSignProducer = new DefaultValueProducer(true);
+    this.canSign = new ValueAndUpdates(this.canSignProducer);
+
     // tslint:disable-next-line:no-let
     let label: string | undefined;
     const identities: LocalIdentity[] = [];
