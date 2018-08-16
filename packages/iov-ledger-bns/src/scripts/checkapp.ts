@@ -2,6 +2,8 @@
 import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
 import { Device } from "node-hid";
 
+import { DefaultValueProducer, ValueAndUpdates } from "@iov/keycontrol";
+
 import { appVersion } from "../app";
 import { connectToFirstLedger } from "../exchange";
 
@@ -34,21 +36,39 @@ async function checkAppVersion(): Promise<LedgerState> {
     // use the function as a status check... if it works, we are in the app
     // otherwise no
     try {
-      const version = await appVersion(transport);
-      console.log(`>>> Entered app (version ${version})`);
+      await appVersion(transport);
+      // console.log(`>>> Entered app (version ${version})`);
       return LedgerState.IovAppOpen;
     } catch (_) {
       // not in app
       return LedgerState.Connected;
     }
-  } catch (err) {
-    console.log("Error connecting to ledger: " + err);
+  } catch (_) {
+    // console.log("Error connecting to ledger: " + err);
     return LedgerState.Disconnected;
   }
 }
 
-// tslint:disable:no-let
-let state: LedgerState | undefined;
+console.log("Press ^C to exit");
+
+const stateProducer = new DefaultValueProducer(LedgerState.Disconnected);
+const state = new ValueAndUpdates(stateProducer);
+state.updates.subscribe({
+  next: value => {
+    switch (value) {
+      case LedgerState.Disconnected:
+        console.log("Ledger disconnected");
+        break;
+      case LedgerState.Connected:
+        console.log("Ledger connected");
+        break;
+      case LedgerState.IovAppOpen:
+        console.log("IOV app open");
+        break;
+    }
+  },
+  error: console.error,
+});
 
 /**
  * write out when we enter and leave the app
@@ -59,11 +79,10 @@ async function handleEvent(e: DescriptorEvent): Promise<void> {
   switch (e.type) {
     case "add":
       // on add, check to see if we entered the app
-      state = await checkAppVersion();
+      stateProducer.update(await checkAppVersion());
       break;
     case "remove":
-      state = LedgerState.Connected;
-      console.log("<<< Left app", state);
+      stateProducer.update(LedgerState.Connected);
       break;
   }
 }
@@ -77,5 +96,3 @@ TransportNodeHid.listen({
     process.exit(0);
   },
 });
-
-console.log("Press ^C to exit");
