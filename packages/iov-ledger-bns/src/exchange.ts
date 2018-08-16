@@ -1,6 +1,33 @@
 import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
 import { Device, devices } from "node-hid";
 
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function retry<ResultType>(
+  subject: () => ResultType | undefined | Promise<ResultType | undefined>,
+  retriesLeft: number,
+  retryNumber: number = 1,
+): Promise<ResultType | undefined> {
+  if (retriesLeft <= 0) {
+    return undefined;
+  }
+
+  const result = await subject();
+  if (result !== undefined) {
+    return result;
+  } else {
+    if (retriesLeft === 1) {
+      // this was the last chance. Break early to avoid extra sleep
+      return result;
+    }
+
+    await sleep(retryNumber * 10); // 10ms, 20ms, 30ms, 40ms, ...
+    return retry(subject, retriesLeft - 1, retryNumber + 1);
+  }
+}
+
 // there are more automatic ways to detect the right device also
 function isDeviceLedgerNanoS(dev: Device): boolean {
   return dev.manufacturer === "Ledger" && dev.product === "Nano S";
@@ -12,12 +39,36 @@ export function getFirstLedgerNanoS(): Device | undefined {
     .find(() => true);
 }
 
+/**
+ * Tries to find a Ledger Nano S and connects to it.
+ *
+ * Each step is retried up to 14 times and the max sleep time per step is
+ * (10+20+30+...+120+130)ms. I.e. the worst case runtime of this function is
+ * about 2 seconds.
+ */
 export async function connectToFirstLedger(): Promise<TransportNodeHid> {
-  const ledger = getFirstLedgerNanoS();
+  const ledger = await retry(getFirstLedgerNanoS, 14);
   if (!ledger || !ledger.path) {
-    throw new Error("No ledger connected");
+    throw new Error("No Ledger Nano S found in devices list");
   }
-  const transport = await TransportNodeHid.open(ledger.path);
+
+  const devicePath = ledger.path;
+  // tslint:disable-next-line:no-let
+  let lastTransportOpenError: any;
+
+  const transport = await retry(async (): Promise<TransportNodeHid | undefined> => {
+    try {
+      return await TransportNodeHid.open(devicePath);
+    } catch (e) {
+      lastTransportOpenError = e;
+      return undefined;
+    }
+  }, 14);
+
+  if (transport === undefined) {
+    throw lastTransportOpenError;
+  }
+
   return transport;
 }
 
