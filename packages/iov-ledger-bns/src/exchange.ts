@@ -1,7 +1,5 @@
 import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
-import { Device, devices, HID } from "node-hid";
-
-const ledgerTimeout = 0;
+import { Device, devices } from "node-hid";
 
 // there are more automatic ways to detect the right device also
 function isDeviceLedgerNanoS(dev: Device): boolean {
@@ -14,13 +12,12 @@ export function getFirstLedgerNanoS(): Device | undefined {
     .find(() => true);
 }
 
-export function connectToFirstLedger(): TransportNodeHid {
+export async function connectToFirstLedger(): Promise<TransportNodeHid> {
   const ledger = getFirstLedgerNanoS();
   if (!ledger || !ledger.path) {
     throw new Error("No ledger connected");
   }
-  const hid = new HID(ledger.path);
-  const transport = new TransportNodeHid(hid, true, ledgerTimeout);
+  const transport = await TransportNodeHid.open(ledger.path);
   return transport;
 }
 

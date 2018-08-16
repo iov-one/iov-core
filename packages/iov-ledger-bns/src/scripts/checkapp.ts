@@ -14,7 +14,7 @@ enum LedgerState {
 
 async function checkAppVersion(): Promise<LedgerState> {
   try {
-    const transport = connectToFirstLedger();
+    const transport = await connectToFirstLedger();
     // use the function as a status check... if it works, we are in the app
     // otherwise no
     try {
@@ -33,7 +33,7 @@ async function checkAppVersion(): Promise<LedgerState> {
 
 async function isConnected(): Promise<boolean> {
   try {
-    connectToFirstLedger();
+    await connectToFirstLedger();
     return true;
   } catch (e) {
     console.log("Error connecting to ledger: " + e);

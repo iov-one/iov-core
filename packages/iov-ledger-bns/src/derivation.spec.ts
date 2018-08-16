@@ -17,9 +17,9 @@ describe("Check key derivation", () => {
   const mneumonic = new EnglishMnemonic(phrase);
   const purpose = Slip0010RawIndex.hardened(4804438); // from ed25519simpleaddress
 
-  beforeAll(() => {
+  beforeAll(async () => {
     if (!skipSeededTests()) {
-      transport = connectToFirstLedger();
+      transport = await connectToFirstLedger();
     }
   });
 

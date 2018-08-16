@@ -113,7 +113,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
 
   public async createIdentity(): Promise<LocalIdentity> {
     const nextIndex = this.identities.length;
-    const transport = connectToFirstLedger();
+    const transport = await connectToFirstLedger();
 
     const pubkey = await getPublicKeyWithIndex(transport, nextIndex);
     const newIdentity: LocalIdentity = {
@@ -163,7 +163,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     }
 
     const simpleAddressIndex = this.simpleAddressIndex(identity);
-    const transport = connectToFirstLedger();
+    const transport = await connectToFirstLedger();
 
     const signature = await signTransactionWithIndex(transport, transactionBytes, simpleAddressIndex);
     return signature as SignatureBytes;

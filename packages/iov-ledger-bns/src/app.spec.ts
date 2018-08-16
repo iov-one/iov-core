@@ -15,9 +15,9 @@ describe("Query ledger app", () => {
   // tslint:disable-next-line:no-let
   let transport: TransportNodeHid | undefined;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     if (!skipTests()) {
-      transport = connectToFirstLedger();
+      transport = await connectToFirstLedger();
     }
   });
 
@@ -71,9 +71,9 @@ describe("Sign with ledger app", () => {
   // tslint:disable-next-line:no-let
   let transport: TransportNodeHid | undefined;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     if (!skipInteractiveTests()) {
-      transport = connectToFirstLedger();
+      transport = await connectToFirstLedger();
     }
   });
 

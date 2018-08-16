@@ -22,6 +22,7 @@ declare module "@ledgerhq/hw-transport-node-hid" {
 
   class TransportNodeHid {
     static listen(observer: Observer<DescriptorEvent<string>>): void;
+    static open(path: string): Promise<TransportNodeHid>;
 
     /**
      *
