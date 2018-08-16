@@ -11,15 +11,6 @@ interface Event {
   readonly device: Device;
 }
 
-const listener = {
-  next: (e: Event) => checkEvent(e),
-  error: console.log,
-  complete: () => {
-    console.log("Listener finished");
-    process.exit(0);
-  },
-};
-
 // tslint:disable:no-let
 let inApp = false;
 
@@ -53,7 +44,14 @@ function checkEvent(e: Event): void {
 }
 
 // listen for all changed
-TransportNodeHid.listen(listener);
+TransportNodeHid.listen({
+  next: (e: Event) => checkEvent(e),
+  error: console.log,
+  complete: () => {
+    console.log("Listener finished");
+    process.exit(0);
+  },
+});
 
 console.log("Press any key to exit");
 (process.stdin.setRawMode as any)(true);
