@@ -5,7 +5,10 @@ import { Device } from "node-hid";
 import { appVersion } from "../app";
 import { connectToFirstLedger } from "../exchange";
 
-interface Event {
+/**
+ * @see http://ledgerhq.github.io/ledgerjs/docs/#descriptorevent
+ */
+interface DescriptorEvent {
   readonly type: "add" | "remove";
   readonly descriptor: string;
   readonly device: Device;
@@ -15,7 +18,7 @@ interface Event {
 let inApp = false;
 
 // checkEvent will write out when we enter and leave the app
-function checkEvent(e: Event): void {
+function checkEvent(e: DescriptorEvent): void {
   // on remove mark that we left the app when we did
   if (e.type !== "add") {
     if (inApp) {
@@ -45,7 +48,7 @@ function checkEvent(e: Event): void {
 
 // listen for all changed
 TransportNodeHid.listen({
-  next: (e: Event) => checkEvent(e),
+  next: (e: DescriptorEvent) => checkEvent(e),
   error: console.log,
   complete: () => {
     console.log("Listener finished");
