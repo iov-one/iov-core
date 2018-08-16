@@ -28,40 +28,38 @@ enum LedgerState {
   IovAppOpen,
 }
 
-// tslint:disable:no-let
-let state: LedgerState | undefined;
-
-function checkAppVersion(): void {
+async function checkAppVersion(): Promise<LedgerState> {
   try {
     const transport = connectToFirstLedger();
     // use the function as a status check... if it works, we are in the app
     // otherwise no
-    appVersion(transport)
-      .then((version: number) => {
-        state = LedgerState.IovAppOpen;
-        console.log(`>>> Entered app (version ${version})`, state);
-      })
-      .catch(() => {
-        // not in app
-        state = LedgerState.Connected;
-        console.log(state);
-      });
+    try {
+      const version = await appVersion(transport);
+      console.log(`>>> Entered app (version ${version})`);
+      return LedgerState.IovAppOpen;
+    } catch (_) {
+      // not in app
+      return LedgerState.Connected;
+    }
   } catch (err) {
-    state = LedgerState.Disconnected;
-    console.log("Error connecting to ledger: " + err, state);
+    console.log("Error connecting to ledger: " + err);
+    return LedgerState.Disconnected;
   }
 }
+
+// tslint:disable:no-let
+let state: LedgerState | undefined;
 
 /**
  * write out when we enter and leave the app
  */
-function handleEvent(e: DescriptorEvent): void {
+async function handleEvent(e: DescriptorEvent): Promise<void> {
   // console.log(e);
 
   switch (e.type) {
     case "add":
       // on add, check to see if we entered the app
-      checkAppVersion();
+      state = await checkAppVersion();
       break;
     case "remove":
       state = LedgerState.Connected;
