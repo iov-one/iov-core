@@ -56,7 +56,7 @@ function checkEvent(e: DescriptorEvent): void {
 
 // listen for all changed
 TransportNodeHid.listen({
-  next: (e: DescriptorEvent) => checkEvent(e),
+  next: checkEvent,
   error: console.log,
   complete: () => {
     console.log("Listener finished");
