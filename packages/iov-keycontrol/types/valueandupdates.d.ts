@@ -4,6 +4,7 @@ export declare class ValueAndUpdates<T> {
     readonly value: T;
     private readonly producer;
     constructor(producer: DefaultValueProducer<T>);
+    waitFor(value: T): Promise<void>;
 }
 export declare class DefaultValueProducer<T> implements Producer<T> {
     readonly value: T;
