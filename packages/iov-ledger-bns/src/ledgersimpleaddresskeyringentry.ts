@@ -15,6 +15,7 @@ import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tenderm
 
 import { getPublicKeyWithIndex, signTransactionWithIndex } from "./app";
 import { connectToFirstLedger } from "./exchange";
+import { LedgerState, StateTracker } from "./statetracker";
 
 interface PubkeySerialization {
   readonly algo: string;
@@ -70,14 +71,21 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
 
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
   private readonly canSignProducer: DefaultValueProducer<boolean>;
+  private readonly deviceTracker = new StateTracker();
   private readonly identities: LocalIdentity[];
 
   // the `i` from https://github.com/iov-one/iov-core/blob/master/docs/KeyBase.md#simple-addresses
   private readonly simpleAddressIndices: Map<string, number>;
 
   constructor(data?: KeyringEntrySerializationString) {
-    this.canSignProducer = new DefaultValueProducer(true);
+    this.canSignProducer = new DefaultValueProducer(false);
     this.canSign = new ValueAndUpdates(this.canSignProducer);
+    this.deviceTracker.state.updates.subscribe({
+      next: value => {
+        this.canSignProducer.update(value === LedgerState.IovAppOpen);
+      },
+    });
+    this.deviceTracker.start();
 
     // tslint:disable-next-line:no-let
     let label: string | undefined;

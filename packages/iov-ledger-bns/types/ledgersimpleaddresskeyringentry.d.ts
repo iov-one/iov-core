@@ -11,6 +11,7 @@ export declare class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     readonly implementationId: KeyringEntryImplementationIdString;
     private readonly labelProducer;
     private readonly canSignProducer;
+    private readonly deviceTracker;
     private readonly identities;
     private readonly simpleAddressIndices;
     constructor(data?: KeyringEntrySerializationString);

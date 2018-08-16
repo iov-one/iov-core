@@ -103,13 +103,37 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     expect(keyringEntry.getIdentities()[0].label).toBeUndefined();
   });
 
+  it("cannot sign when created", () => {
+    pendingWithoutInteractiveLedger();
+
+    const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    expect(keyringEntry.canSign.value).toEqual(false);
+  });
+
+  it("can sign after some time", done => {
+    pendingWithoutInteractiveLedger();
+
+    const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    expect(keyringEntry.canSign.value).toEqual(false);
+
+    keyringEntry.canSign.updates.subscribe({
+      next: value => {
+        if (value === true) {
+          done();
+        }
+      },
+      error: fail,
+      complete: fail,
+    });
+  });
+
   it("can sign", async () => {
     pendingWithoutInteractiveLedger();
 
     const keyringEntry = new LedgerSimpleAddressKeyringEntry();
     const newIdentity = await keyringEntry.createIdentity();
 
-    expect(keyringEntry.canSign.value).toEqual(true);
+    await keyringEntry.canSign.waitFor(true);
 
     const tx: SendTx = {
       kind: TransactionKind.Send,
