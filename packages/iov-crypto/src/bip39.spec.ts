@@ -226,7 +226,7 @@ describe("Bip39", () => {
     expect(await Bip39.mnemonicToSeed(new EnglishMnemonic("vessel ladder alter error federal sibling chat ability sun glass valve picture"), "TREZOR")).toEqual(fromHex("2aaa9242daafcee6aa9d7269f17d4efe271e1b9a529178d7dc139cd18747090bf9d60295d0ce74309a78852a9caadf0af48aae1c6253839624076224374bc63f"));
     expect(await Bip39.mnemonicToSeed(new EnglishMnemonic("scissors invite lock maple supreme raw rapid void congress muscle digital elegant little brisk hair mango congress clump"), "TREZOR")).toEqual(fromHex("7b4a10be9d98e6cba265566db7f136718e1398c71cb581e1b2f464cac1ceedf4f3e274dc270003c670ad8d02c4558b2f8e39edea2775c9e232c7cb798b069e88"));
     expect(await Bip39.mnemonicToSeed(new EnglishMnemonic("void come effort suffer camp survey warrior heavy shoot primary clutch crush open amazing screen patrol group space point ten exist slush involve unfold"), "TREZOR")).toEqual(fromHex("01f5bced59dec48e362f2c45b5de68b9fd6c92c6634f44d6d40aab69056506f0e35524a518034ddc1192e1dacd32c1ed3eaa3c3b131c88ed8e7e54c49a5d0998"));
-  });
+  }, 30*1000);
 
   it("can calculate seed from mnemonic (no password)", async () => {
     // custom test vectors using
@@ -247,5 +247,5 @@ describe("Bip39", () => {
     expect(await Bip39.mnemonicToSeed(new EnglishMnemonic("robust pipe raise illness symptom crowd trip will slow assault recipe oven"))).toEqual(fromHex("5539eed11e1096e9d52f69f15ad3d7c6547a40a3865b9517dbcbb03c31f231900622f58616d64d2d1cc0440f31d67fb0b2699a5fc885f796c746e0f844477093"));
     expect(await Bip39.mnemonicToSeed(new EnglishMnemonic("pair ethics august street tornado spare present under capital raise cross current main craft stone clutch tray all"))).toEqual(fromHex("1272467e954cec4e0ad720002d037a3aaf795a57ffbeea6aaa0c242d410eb52050292447aa2c68470a07ecc80171edfa9e027793265047be3128d94e867a4f99"));
     expect(await Bip39.mnemonicToSeed(new EnglishMnemonic("allow finger front connect strategy purchase journey distance trouble guitar honey alpha giraffe canal junk vintage chronic blade gate custom soap flip first mix"))).toEqual(fromHex("476a41ac016b5bdf9f114456929975a036ae326e2efdca441ac5a0949ef89ab9246dc9e49a5d2d64d1926eb9dbe17576cb010471c2a821b216202acdf3d7a27b"));
-  });
+  }, 30*1000);
 });
