@@ -1,6 +1,6 @@
 {
   "name": "@iov/core",
-  "version": "0.3.0-alpha.0",
+  "version": "0.3.0",
   "description": "Central entry point into iov core monorepo, pulling together all modules",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -31,11 +31,11 @@
     "pack-node": "yarn build-or-skip && webpack --mode development --config webpack.node.config.js"
   },
   "dependencies": {
-    "@iov/bcp-types": "^0.3.0-alpha.0",
-    "@iov/bns": "^0.3.0-alpha.0",
-    "@iov/encoding": "^0.3.0-alpha.0",
-    "@iov/keycontrol": "^0.3.0-alpha.0",
-    "@iov/tendermint-types": "^0.3.0-alpha.0",
+    "@iov/bcp-types": "^0.3.0",
+    "@iov/bns": "^0.3.0",
+    "@iov/encoding": "^0.3.0",
+    "@iov/keycontrol": "^0.3.0",
+    "@iov/tendermint-types": "^0.3.0",
     "@types/long": "^4.0.0",
     "long": "^4.0.0"
   },

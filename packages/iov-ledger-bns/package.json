@@ -1,6 +1,6 @@
 {
   "name": "@iov/ledger-bns",
-  "version": "0.3.0-alpha.0",
+  "version": "0.3.0",
   "description": "Integration of ledger-bns application",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -26,11 +26,11 @@
     "checkapp": "ts-node ./src/scripts/checkapp.ts | grep -v '^dev'"
   },
   "dependencies": {
-    "@iov/bcp-types": "^0.3.0-alpha.0",
-    "@iov/bns": "^0.3.0-alpha.0",
-    "@iov/crypto": "^0.3.0-alpha.0",
-    "@iov/encoding": "^0.3.0-alpha.0",
-    "@iov/keycontrol": "^0.3.0-alpha.0",
+    "@iov/bcp-types": "^0.3.0",
+    "@iov/bns": "^0.3.0",
+    "@iov/crypto": "^0.3.0",
+    "@iov/encoding": "^0.3.0",
+    "@iov/keycontrol": "^0.3.0",
     "@ledgerhq/hw-transport-node-hid": "~4.21.0",
     "@types/node-hid": "^0.7.0",
     "node-hid": "^0.7.3"
