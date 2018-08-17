@@ -16,8 +16,9 @@
   "scripts": {
     "docs": "rm -rf docs && typedoc --options typedoc.js",
     "lint": "tslint -t verbose --project .",
-    "format": "prettier --write --loglevel warn './src/**/*.ts'",
-    "test-node": "./jasmine-testrunner.js",
+    "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
+    "test-node": "node jasmine-testrunner.js",
+    "test-edge": "yarn pack-web && karma start --single-run --browsers Edge",
     "test-firefox": "yarn pack-web && karma start --single-run --browsers Firefox",
     "test-chrome": "yarn pack-web && karma start --single-run --browsers ChromeHeadless",
     "test-safari": "yarn pack-web && karma start --single-run --browsers Safari",

@@ -162,6 +162,6 @@ export class Encoding {
 
   private static isValidUtf8(data: Uint8Array): boolean {
     const toStringAndBack = Buffer.from(Buffer.from(data).toString("utf8"), "utf8");
-    return Buffer.compare(data, toStringAndBack) === 0;
+    return Buffer.compare(Buffer.from(data), toStringAndBack) === 0;
   }
 }
