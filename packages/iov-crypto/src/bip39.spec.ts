@@ -7,7 +7,7 @@ const fromHex = Encoding.fromHex;
 // Set here for Browsers until this can be configured in Karma
 // https://github.com/karma-runner/karma-jasmine/pull/211
 // tslint:disable-next-line:no-object-mutation
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 30*1000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 30 * 1000;
 
 describe("Bip39", () => {
   it("can encode to mnemonic", () => {
