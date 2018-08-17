@@ -1,0 +1,17 @@
+# whitelist long living branches
+branches:
+  only:
+    - master
+
+install:
+  - node --version
+  - npm --version
+  - yarn --version
+  - yarn install
+
+build_script:
+  - yarn build
+
+test_script:
+  - yarn test
+  - yarn run lerna run test-edge
