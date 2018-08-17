@@ -18,7 +18,7 @@
     "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
     "lint": "tslint -t verbose --project .",
     "lint-fix": "yarn lint --fix",
-    "test-node": "./jasmine-testrunner.js",
+    "test-node": "node jasmine-testrunner.js",
     "test-firefox": "yarn pack-web && karma start --single-run --browsers Firefox",
     "test-chrome": "yarn pack-web && karma start --single-run --browsers ChromeHeadless",
     "test-safari": "yarn pack-web && karma start --single-run --browsers Safari",

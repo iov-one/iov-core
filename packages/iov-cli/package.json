@@ -16,7 +16,7 @@
     "prebuild": "yarn format",
     "build": "tsc",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
-    "test-node": "./jasmine-testrunner.js",
+    "test-node": "node jasmine-testrunner.js",
     "test-bin": "yarn build && ./bin/iov-cli",
     "test": "yarn build-or-skip && yarn test-node"
   },
