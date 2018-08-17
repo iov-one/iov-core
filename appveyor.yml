@@ -1,3 +1,6 @@
+# image with Edge available
+image: Visual Studio 2017
+
 # whitelist long living branches
 branches:
   only:
