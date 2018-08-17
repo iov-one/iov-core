@@ -12,7 +12,7 @@
     "access": "public"
   },
   "scripts": {
-    "format": "prettier --write --loglevel warn './src/**/*.ts'",
+    "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
     "prebuild": "yarn format",
     "build": "tsc",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",

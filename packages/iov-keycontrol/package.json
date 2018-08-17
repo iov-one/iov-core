@@ -15,7 +15,7 @@
   },
   "scripts": {
     "docs": "rm -rf docs && typedoc --options typedoc.js",
-    "format": "prettier --write --loglevel warn './src/**/*.ts'",
+    "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
     "lint": "tslint -t verbose --project .",
     "lint-fix": "yarn lint --fix",
     "test-node": "./jasmine-testrunner.js",

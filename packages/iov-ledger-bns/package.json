@@ -16,7 +16,7 @@
   "scripts": {
     "docs": "rm -rf docs && typedoc --options typedoc.js",
     "lint": "tslint -t verbose --project .",
-    "format": "prettier --write --loglevel warn './src/**/*.ts'",
+    "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
     "test-node": "./jasmine-testrunner.js",
     "test": "yarn build-or-skip && yarn test-node",
     "prebuild": "yarn format && yarn lint",

@@ -15,13 +15,13 @@
   },
   "scripts": {
     "docs": "rm -rf docs && typedoc --options typedoc.js",
-    "format": "prettier --write --loglevel warn './src/**/*.ts'",
+    "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
     "lint": "tslint -t verbose --project .",
     "lint-fix": "yarn lint --fix",
     "prebuild": "yarn format && yarn lint",
     "build": "tsc && rm ./types/* && mv build/*.d.ts ./types",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
-    "test": "echo 'Info: no test specified'"
+    "test": "echo \"Info: no test specified\""
   },
   "dependencies": {
     "@iov/tendermint-types": "^0.3.0",
