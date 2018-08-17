@@ -8,6 +8,7 @@ import { Ed25519HdKeyringEntry } from "./ed25519hd";
 
 // Set here for Browsers until this can be configured in Karma
 // https://github.com/karma-runner/karma-jasmine/pull/211
+// tslint:disable-next-line:no-object-mutation
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 30*1000;
 
 describe("Ed25519HdKeyringEntry", () => {
