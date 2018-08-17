@@ -33,6 +33,7 @@
     "jasmine2-custom-message": "^0.9.1",
     "karma": "^3",
     "karma-chrome-launcher": "^2.2.0",
+    "karma-edge-launcher": "^0.4.2",
     "karma-firefox-launcher": "^1.1.0",
     "karma-jasmine": "^1.1.2",
     "karma-jasmine-html-reporter": "^1.1.0",
