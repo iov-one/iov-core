@@ -158,13 +158,21 @@ export class WebsocketClient implements RpcStreamingClient {
     this.ws.send(JSON.stringify(request));
   }
 
+  public disconnect(): void {
+    this.ws.close();
+  }
+
   protected connect(): void {
     // tslint:disable-next-line:no-object-mutation
     this.ws.onerror = err => this.switch.emit("error", err);
     // tslint:disable-next-line:no-object-mutation
     this.ws.onclose = event => {
-      const debug = `clean: ${event.wasClean}, code: ${event.code}, reason: "${event.reason}"`;
-      this.switch.emit("error", `Websocket closed (${debug})`);
+      if (event.wasClean) {
+        this.switch.emit("close");
+      } else {
+        const debug = `clean: ${event.wasClean}, code: ${event.code}, reason: "${event.reason}"`;
+        this.switch.emit("error", `Websocket closed (${debug})`);
+      }
     };
     // tslint:disable-next-line:no-object-mutation
     this.ws.onmessage = msg => {
@@ -223,10 +231,11 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
 
   /**
    * Implementation of Producer.stop
+   *
+   * Called by the stream when the stream's last listener stopped listening
+   * or when the producer completed.
    */
   public stop(): void {
-    this.closeSubscriptions();
-    this.listener!.complete();
     this.listener = undefined;
 
     // Tell the server we are done in order to save resources. We cannot wait for the result.
@@ -259,13 +268,19 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
       }
     });
 
+    // this will fire in case the websocket disconnects cleanly
+    const closeSubscription = this.client.switch.once("close", () => {
+      this.closeSubscriptions();
+      this.listener!.complete();
+    });
+
     // this will fire in case the websocket errors/disconnects
     const errorSubscription = this.client.switch.once("error", err => {
       this.closeSubscriptions();
       this.listener!.error(err);
     });
 
-    this.subscriptions.push(idSubscription, idEventSubscription, errorSubscription);
+    this.subscriptions.push(idSubscription, idEventSubscription, closeSubscription, errorSubscription);
   }
 
   protected closeSubscriptions(): void {

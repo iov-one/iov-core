@@ -116,6 +116,30 @@ describe("RpcClient", () => {
       10000,
     );
 
+    it("can end event listening by disconnecting", done => {
+      pendingWithoutTendermint();
+
+      const ws = new WebsocketClient(tendermintUrl);
+
+      const query = "tm.event='NewBlockHeader'";
+      const req = jsonRpcWith("subscribe", { query });
+      const headers = ws.listen(req);
+
+      // tslint:disable-next-line:readonly-array
+      const receivedEvents: JsonRpcEvent[] = [];
+
+      setTimeout(() => ws.disconnect(), 2500);
+
+      headers.subscribe({
+        error: fail,
+        next: (event: JsonRpcEvent) => receivedEvents.push(event),
+        complete: () => {
+          expect(receivedEvents.length).toEqual(2);
+          done();
+        },
+      });
+    });
+
     it("cannot listen to simple requests", () => {
       pendingWithoutTendermint();
 
