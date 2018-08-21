@@ -163,7 +163,10 @@ export class WebsocketClient implements RpcStreamingClient {
     // tslint:disable-next-line:no-object-mutation
     this.ws.onerror = err => this.switch.emit("error", err);
     // tslint:disable-next-line:no-object-mutation
-    this.ws.onclose = () => this.switch.emit("error", "Websocket closed");
+    this.ws.onclose = event => {
+      const debug = `clean: ${event.wasClean}, code: ${event.code}, reason: "${event.reason}"`;
+      this.switch.emit("error", `Websocket closed (${debug})`);
+    };
     // tslint:disable-next-line:no-object-mutation
     this.ws.onmessage = msg => {
       // this should never happen, but I want an alert if it does
