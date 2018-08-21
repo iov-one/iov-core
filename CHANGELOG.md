@@ -4,6 +4,7 @@
 
 Breaking changes
 
+* @iov/cli: wait() helper function removed
 * The name field from the `getAccount` result data does not contain
   the chain ID anymore. Before
 
