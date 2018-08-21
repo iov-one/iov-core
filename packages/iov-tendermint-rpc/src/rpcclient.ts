@@ -145,8 +145,8 @@ export class WebsocketClient implements RpcStreamingClient {
   }
 
   public listen(request: JsonRpcRequest): Stream<JsonRpcEvent> {
-    const subscription = new Subscription(request, this);
-    return Stream.create(subscription);
+    const producer = new RpcEventProducer(request, this);
+    return Stream.create(producer);
   }
 
   public send(request: JsonRpcRequest): void {
@@ -190,7 +190,7 @@ export class WebsocketClient implements RpcStreamingClient {
   }
 }
 
-class Subscription implements Producer<JsonRpcEvent> {
+class RpcEventProducer implements Producer<JsonRpcEvent> {
   private readonly request: JsonRpcRequest;
   private readonly client: WebsocketClient;
 
@@ -199,16 +199,22 @@ class Subscription implements Producer<JsonRpcEvent> {
     this.client = client;
   }
 
+  /**
+   * Implementation of Producer.start
+   */
   public start(listener: Listener<JsonRpcEvent>): void {
     this.client.send(this.request);
     this.subscribeEvents(this.request.id, listener);
   }
 
+  /**
+   * Implementation of Producer.stop
+   */
   public stop(): void {
     // tell the server we are done
     const endRequest: JsonRpcRequest = { ...this.request, method: "unsubscribe" };
     this.client.send(endRequest);
-    // turn off listeners
+    // turn off listener
     this.client.switch.emit(this.request.id + "#done", {});
   }
 
