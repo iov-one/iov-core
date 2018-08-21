@@ -140,6 +140,19 @@ describe("RpcClient", () => {
       });
     });
 
+    it("fails when executing on a disconnected client", async () => {
+      pendingWithoutTendermint();
+
+      const client = new WebsocketClient(tendermintUrl);
+      await client.disconnect();
+
+      const req = jsonRpcWith(Method.HEALTH);
+      await client
+        .execute(req)
+        .then(fail)
+        .catch(error => expect(error).toMatch(/is not open/i));
+    });
+
     it("fails when listening to a disconnected client", async done => {
       pendingWithoutTendermint();
 
