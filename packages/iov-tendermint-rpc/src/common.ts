@@ -17,7 +17,7 @@ export interface JsonRpcRequest extends JsonRpc {
 export type JsonRpcResponse = JsonRpcSuccess | JsonRpcError;
 
 export interface JsonRpcSuccess extends JsonRpc {
-  readonly result: {};
+  readonly result: any;
 }
 
 export interface JsonRpcError extends JsonRpc {

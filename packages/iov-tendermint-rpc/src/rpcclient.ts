@@ -134,15 +134,15 @@ export class WebsocketClient implements RpcStreamingClient {
     this.switch.on("error", onError);
   }
 
-  public execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
-    const promise = this.subscribe(request.id).then(throwIfError);
+  public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
+    const responsePromise = this.subscribe(request.id).then(throwIfError);
+
     // send as soon as connected
-    this.connected
-      .then(() => this.ws.send(JSON.stringify(request)))
-      // Is there a way to be more targetted with errors?
-      // So this just kills the execute promise, not anything else?
-      .catch(err => this.switch.emit("error", err));
-    return promise;
+    await this.connected;
+    this.ws.send(JSON.stringify(request));
+
+    const response = await responsePromise;
+    return response;
   }
 
   public listen(request: JsonRpcRequest): Stream<JsonRpcEvent> {
