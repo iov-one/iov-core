@@ -27,18 +27,18 @@ declare module "levelup" {
     ((key: K, options?: O) => Promise<void>);
 
   type InferDBPut<DB> =
-    // DB extends { put: (key: infer K, value: infer V, options: infer O, cb: any) => void } ?
-    // LevelUpPut<K, V, O> :
+    DB extends { put: (key: infer K, value: infer V, options: infer O, cb: any) => void } ?
+    LevelUpPut<K, V, O> :
     LevelUpPut<any, any, AbstractPutOptions>;
 
   type InferDBGet<DB> =
-    // DB extends { get: (key: infer K, options: infer O, callback: ErrorValueCallback<infer V>) => void } ?
-    // LevelUpGet<K, V, O> :
+    DB extends { get: (key: infer K, options: infer O, callback: ErrorValueCallback<infer V>) => void } ?
+    LevelUpGet<K, V, O> :
     LevelUpGet<any, any, AbstractGetOptions>;
 
   type InferDBDel<DB> =
-    // DB extends { del: (key: infer K, options: infer O, callback: ErrorCallback) => void } ?
-    // LevelUpDel<K, O> :
+    DB extends { del: (key: infer K, options: infer O, callback: ErrorCallback) => void } ?
+    LevelUpDel<K, O> :
     LevelUpDel<any, AbstractDelOptions>;
 
   export interface LevelUp<DB = AbstractLevelDOWN> extends EventEmitter {
