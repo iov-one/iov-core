@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1
+
+* @iov/core: Export SetNameTx
+* Improve Windows compatibility of build system and add Edge tests
+
 ## 0.3.0
 
 * @iov/ledger-bns: Implement LedgerSimpleAddressKeyringEntry.canSign
