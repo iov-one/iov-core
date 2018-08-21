@@ -76,45 +76,41 @@ describe("RpcClient", () => {
       await shouldPass(ws);
     });
 
-    it(
-      "can listen to events",
-      done => {
-        pendingWithoutTendermint();
+    it("can listen to events", done => {
+      pendingWithoutTendermint();
 
-        const ws = new WebsocketClient(tendermintUrl);
+      const ws = new WebsocketClient(tendermintUrl);
 
-        const query = "tm.event='NewBlockHeader'";
-        const req = jsonRpcWith("subscribe", { query });
-        const headers = ws.listen(req);
+      const query = "tm.event='NewBlockHeader'";
+      const req = jsonRpcWith("subscribe", { query });
+      const headers = ws.listen(req);
 
-        // tslint:disable-next-line:readonly-array
-        const events: JsonRpcEvent[] = [];
+      // tslint:disable-next-line:readonly-array
+      const events: JsonRpcEvent[] = [];
 
-        const sub = headers.subscribe({
-          error: fail,
-          complete: () => fail("subscription should not complete"),
-          next: (evt: JsonRpcEvent) => {
-            events.push(evt);
-            expect(evt.query).toEqual(query);
+      const sub = headers.subscribe({
+        error: fail,
+        complete: () => fail("subscription should not complete"),
+        next: (evt: JsonRpcEvent) => {
+          events.push(evt);
+          expect(evt.query).toEqual(query);
 
-            if (events.length === 3) {
-              // make sure they are consequtive heights
-              const height = (i: number) => (events[i].data.value as any).header.height as number;
-              expect(height(1)).toEqual(height(0) + 1);
-              expect(height(2)).toEqual(height(1) + 1);
+          if (events.length === 2) {
+            // make sure they are consequtive heights
+            const height = (i: number) => (events[i].data.value as any).header.height as number;
+            expect(height(1)).toEqual(height(0) + 1);
 
-              // now unsubscribe and error if another one arrives
-              sub.unsubscribe();
-              // wait 2.5s for finish
-              setTimeout(done, 2500);
-            } else if (events.length === 4) {
-              fail("unsubscribe didn't work");
-            }
-          },
-        });
-      },
-      10000,
-    );
+            sub.unsubscribe();
+
+            // wait 1.5s and check we did not get more events
+            setTimeout(() => {
+              expect(events.length).toEqual(2);
+              done();
+            }, 1500);
+          }
+        },
+      });
+    });
 
     it("can end event listening by disconnecting", done => {
       pendingWithoutTendermint();
@@ -128,13 +124,13 @@ describe("RpcClient", () => {
       // tslint:disable-next-line:readonly-array
       const receivedEvents: JsonRpcEvent[] = [];
 
-      setTimeout(() => ws.disconnect(), 2500);
+      setTimeout(() => ws.disconnect(), 1500);
 
       headers.subscribe({
         error: fail,
         next: (event: JsonRpcEvent) => receivedEvents.push(event),
         complete: () => {
-          expect(receivedEvents.length).toEqual(2);
+          expect(receivedEvents.length).toEqual(1);
           done();
         },
       });
