@@ -115,5 +115,13 @@ describe("RpcClient", () => {
       },
       10000,
     );
+
+    it("cannot listen to simple requests", () => {
+      pendingWithoutTendermint();
+
+      const ws = new WebsocketClient(tendermintUrl);
+      const req = jsonRpcWith(Method.HEALTH);
+      expect(() => ws.listen(req)).toThrowError(/request method must be "subscribe"/i);
+    });
   });
 });

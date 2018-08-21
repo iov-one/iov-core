@@ -146,6 +146,9 @@ export class WebsocketClient implements RpcStreamingClient {
   }
 
   public listen(request: JsonRpcRequest): Stream<JsonRpcEvent> {
+    if (request.method !== "subscribe") {
+      throw new Error(`Request method must be "subscribe" to start event listening`);
+    }
     const producer = new RpcEventProducer(request, this);
     return Stream.create(producer);
   }
