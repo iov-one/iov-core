@@ -170,7 +170,7 @@ export class WebsocketClient implements RpcStreamingClient {
     this.ws.onmessage = msg => {
       // this should never happen, but I want an alert if it does
       if (msg.type !== "message") {
-        throw new Error(`Unexcepted message type on websocket: ${msg.type}`);
+        this.switch.emit("error", `Unexcepted message type on websocket: ${msg.type}`);
       }
       const data = JSON.parse(msg.data.toString());
       this.switch.emit(data.id, data);
