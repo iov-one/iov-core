@@ -230,8 +230,9 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
     this.listener = undefined;
 
     // Tell the server we are done in order to save resources. We cannot wait for the result.
+    // This may be called when socket connection is already closed, to ignore errors in send
     const endRequest: JsonRpcRequest = { ...this.request, method: "unsubscribe" };
-    this.client.send(endRequest);
+    this.client.send(endRequest).catch(_ => 0);
   }
 
   protected subscribeEvents(): void {
