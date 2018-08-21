@@ -94,7 +94,6 @@ describe("Integration tests with bov+tendermint", () => {
   it("Can query accounts", async () => {
     pendingWithoutBov();
     const client = await Client.connect(tendermintUrl);
-    const chainId = await client.chainId();
 
     const profile = await userProfile();
     const faucet = faucetId(profile);
@@ -108,7 +107,7 @@ describe("Integration tests with bov+tendermint", () => {
     expect(source.data.length).toEqual(1);
     const addrAcct = source.data[0];
     expect(addrAcct.address).toEqual(faucetAddr);
-    expect(addrAcct.name).toEqual(`admin*${chainId}`);
+    expect(addrAcct.name).toEqual("admin");
     expect(addrAcct.balance.length).toEqual(1);
     expect(addrAcct.balance[0].tokenTicker).toEqual(cash);
     expect(addrAcct.balance[0].whole).toBeGreaterThan(1000000);

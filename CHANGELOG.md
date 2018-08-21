@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.4.0
+
+Breaking changes
+
+* The name field from the `getAccount` result data does not contain
+  the chain ID anymore. Before
+
+      [ { name: 'admin*test-chain-HexTMJ',
+      address:
+       Uint8Array [
+         177,
+         202, ...
+
+  Now:
+
+      [ { name: 'admin',
+      address:
+       Uint8Array [
+         177,
+         202, ...
+
 ## 0.3.1
 
 * @iov/core: Export SetNameTx
