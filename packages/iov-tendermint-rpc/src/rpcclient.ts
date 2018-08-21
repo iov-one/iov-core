@@ -208,7 +208,7 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
   private readonly request: JsonRpcRequest;
   private readonly client: WebsocketClient;
 
-  private listener: Listener<JsonRpcEvent> | undefined;
+  private running: boolean = false;
   private subscriptions: EventEmitter[] = [];
 
   constructor(request: JsonRpcRequest, client: WebsocketClient) {
@@ -220,11 +220,12 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
    * Implementation of Producer.start
    */
   public start(listener: Listener<JsonRpcEvent>): void {
-    if (this.listener) {
+    if (this.running) {
       throw Error("Already started. Please stop first before restarting.");
     }
-    this.listener = listener;
-    this.subscribeEvents();
+    this.running = true;
+
+    this.connectToClient(listener);
 
     this.client.send(this.request);
   }
@@ -236,21 +237,20 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
    * or when the producer completed.
    */
   public stop(): void {
-    this.listener = undefined;
-
+    this.running = false;
     // Tell the server we are done in order to save resources. We cannot wait for the result.
     // This may be called when socket connection is already closed, to ignore errors in send
     const endRequest: JsonRpcRequest = { ...this.request, method: "unsubscribe" };
     this.client.send(endRequest).catch(_ => 0);
   }
 
-  protected subscribeEvents(): void {
+  protected connectToClient(listener: Listener<JsonRpcEvent>): void {
     // this should unsubscribe itself, so doesn't need to be removed explicitly
     const idSubscription = this.client.switch.once(this.request.id, data => {
       const err = ifError(data);
       if (err) {
         this.closeSubscriptions();
-        this.listener!.error(err);
+        listener.error(err);
       }
     });
 
@@ -261,23 +261,23 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
       const err = ifError(data);
       if (err) {
         this.closeSubscriptions();
-        this.listener!.error(err);
+        listener.error(err);
       } else {
         const result = (data as JsonRpcSuccess).result;
-        this.listener!.next(result as JsonRpcEvent);
+        listener.next(result as JsonRpcEvent);
       }
     });
 
     // this will fire in case the websocket disconnects cleanly
     const closeSubscription = this.client.switch.once("close", () => {
       this.closeSubscriptions();
-      this.listener!.complete();
+      listener.complete();
     });
 
     // this will fire in case the websocket errors/disconnects
     const errorSubscription = this.client.switch.once("error", err => {
       this.closeSubscriptions();
-      this.listener!.error(err);
+      listener.error(err);
     });
 
     this.subscriptions.push(idSubscription, idEventSubscription, closeSubscription, errorSubscription);
