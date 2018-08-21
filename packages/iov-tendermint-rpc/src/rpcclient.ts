@@ -116,7 +116,7 @@ export class WebsocketClient implements RpcStreamingClient {
 
   // connected is resolved as soon as the websocket is connected
   // TODO: use MemoryStream and support reconnects
-  protected readonly connected: Promise<boolean>;
+  protected readonly connected: Promise<void>;
 
   constructor(baseUrl: string = "ws://localhost:46657", onError: (err: any) => void = defaultErrorHandler) {
     // accept host.name:port and assume ws protocol
@@ -128,7 +128,7 @@ export class WebsocketClient implements RpcStreamingClient {
     this.ws = new WebSocket(this.url);
     this.connected = new Promise(resolve => {
       // tslint:disable-next-line:no-object-mutation
-      this.ws.onopen = () => resolve(true);
+      this.ws.onopen = () => resolve();
     });
     this.connect();
     this.switch.on("error", onError);
