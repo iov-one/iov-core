@@ -141,7 +141,7 @@ export class WebsocketClient implements RpcStreamingClient {
       .then(() => this.ws.send(JSON.stringify(request)))
       // Is there a way to be more targetted with errors?
       // So this just kills the execute promise, not anything else?
-      .catch(err => this.switch.emit("errror", err));
+      .catch(err => this.switch.emit("error", err));
     return promise;
   }
 
@@ -153,7 +153,7 @@ export class WebsocketClient implements RpcStreamingClient {
   public send(request: JsonRpcRequest): void {
     this.connected
       .then(() => this.ws.send(JSON.stringify(request)))
-      .catch(err => this.switch.emit("errror", err));
+      .catch(err => this.switch.emit("error", err));
   }
 
   protected connect(): void {
