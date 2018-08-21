@@ -32,10 +32,8 @@ export class Normalize {
 
   public static account(initData: InitData): (a: codecImpl.namecoin.IWallet & Keyed) => BcpAccount {
     return (acct: codecImpl.namecoin.IWallet & Keyed): BcpAccount => {
-      // append the chainID to the name to universalize it
-      const name = acct.name ? `${acct.name}*${initData.chainId}` : undefined;
       return {
-        name,
+        name: typeof acct.name === "string" ? acct.name : undefined,
         address: acct._id as Address,
         balance: ensure(acct.coins).map(this.coin(initData)),
       };
