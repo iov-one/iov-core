@@ -135,7 +135,7 @@ export class WebsocketClient implements RpcStreamingClient {
   }
 
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
-    const responsePromise = this.subscribe(request.id).then(throwIfError);
+    const responsePromise = this.responseForRequestId(request.id).then(throwIfError);
 
     // send as soon as connected
     await this.connected;
@@ -177,7 +177,7 @@ export class WebsocketClient implements RpcStreamingClient {
     };
   }
 
-  protected subscribe(id: string): Promise<JsonRpcResponse> {
+  protected responseForRequestId(id: string): Promise<JsonRpcResponse> {
     return new Promise((resolve, reject) => {
       // only one of the two listeners should fire, and it will
       // deregister the other so as not to cause a leak.
