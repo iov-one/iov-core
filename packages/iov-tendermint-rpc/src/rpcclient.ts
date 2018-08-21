@@ -1,3 +1,4 @@
+/* tslint:disable:readonly-keyword readonly-array no-object-mutation */
 import axios from "axios";
 import EventEmitter from "events";
 import WebSocket from "isomorphic-ws";
@@ -194,6 +195,9 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
   private readonly request: JsonRpcRequest;
   private readonly client: WebsocketClient;
 
+  private listener: Listener<JsonRpcEvent> | undefined;
+  private subscriptions: EventEmitter[] = [];
+
   constructor(request: JsonRpcRequest, client: WebsocketClient) {
     this.request = request;
     this.client = client;
@@ -203,59 +207,70 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
    * Implementation of Producer.start
    */
   public start(listener: Listener<JsonRpcEvent>): void {
+    if (this.listener) {
+      throw Error("Already started. Please stop first before restarting.");
+    }
+    this.listener = listener;
+    this.subscribeEvents();
+
     this.client.send(this.request);
-    this.subscribeEvents(this.request.id, listener);
   }
 
   /**
    * Implementation of Producer.stop
    */
   public stop(): void {
-    // tell the server we are done
+    this.closeSubscriptions();
+    this.listener!.complete();
+    this.listener = undefined;
+
+    // Tell the server we are done in order to save resources. We cannot wait for the result.
     const endRequest: JsonRpcRequest = { ...this.request, method: "unsubscribe" };
     this.client.send(endRequest);
-    // turn off listener
-    this.client.switch.emit(this.request.id + "#done", {});
   }
 
-  protected subscribeEvents(id: string, listener: Listener<JsonRpcEvent>): void {
+  protected subscribeEvents(): void {
     // this should unsubscribe itself, so doesn't need to be removed explicitly
-    this.client.switch.once(id, data => {
+    const idSubscription = this.client.switch.once(this.request.id, data => {
       const err = ifError(data);
       if (err) {
-        closeSubscriptions();
-        listener.error(err);
+        this.closeSubscriptions();
+        this.listener!.error(err);
       }
     });
 
     // this will fire on a response (success or error)
-    const evtMessages = this.client.switch.on(id + "#event", data => {
+    const idEventSubscription = this.client.switch.on(this.request.id + "#event", data => {
       const err = ifError(data);
       if (err) {
-        closeSubscriptions();
-        listener.error(err);
+        this.closeSubscriptions();
+        this.listener!.error(err);
       } else {
         const result = (data as JsonRpcSuccess).result;
-        listener.next(result as JsonRpcEvent);
+        this.listener!.next(result as JsonRpcEvent);
       }
     });
 
     // this will fire in case the websocket errors/disconnects
-    const evtError = this.client.switch.once("error", err => {
-      closeSubscriptions();
-      listener.error(err);
+    const idDoneSubscription = this.client.switch.once(this.request.id + "#done", () => {
+      this.closeSubscriptions();
+      this.listener!.complete();
     });
 
     // this will fire in case the websocket errors/disconnects
-    const evtDone = this.client.switch.once(id + "#done", () => {
-      closeSubscriptions();
-      listener.complete();
+    const errorSubscription = this.client.switch.once("error", err => {
+      this.closeSubscriptions();
+      this.listener!.error(err);
     });
 
-    const closeSubscriptions = () => {
-      evtMessages.removeAllListeners();
-      evtError.removeAllListeners();
-      evtDone.removeAllListeners();
-    };
+    this.subscriptions.push(idSubscription, idEventSubscription, idDoneSubscription, errorSubscription);
+  }
+
+  protected closeSubscriptions(): void {
+    for (const subscription of this.subscriptions) {
+      subscription.removeAllListeners();
+    }
+    // clear unused subscriptions
+    this.subscriptions = [];
   }
 }
