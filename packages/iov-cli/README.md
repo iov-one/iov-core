@@ -144,15 +144,15 @@ UserProfile {
 
 ### Register a BNS name
 
-Assuming you have a `profile`, a faucet identity and a `writer` available as above
+Assuming you have a `profile`, a `writer` and a `recipient` identity with
+transactions associated from above
 
 ```
-> const hans = await profile.createIdentity(0);
 > .editor
 const setNameTx: SetNameTx = {
   kind: TransactionKind.SetName,
   chainId: chainId,
-  signer: hans.pubkey,
+  signer: recipient.pubkey,
   name: "hans",
 };
 ^D
