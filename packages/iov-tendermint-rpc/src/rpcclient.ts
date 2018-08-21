@@ -124,11 +124,12 @@ export class WebsocketClient implements RpcStreamingClient {
     this.url = cleanBaseUrl + path;
 
     this.switch = new EventEmitter();
-    this.ws = this.connect();
+    this.ws = new WebSocket(this.url);
     this.connected = new Promise(resolve => {
       // tslint:disable-next-line:no-object-mutation
       this.ws.onopen = () => resolve(true);
     });
+    this.connect();
     this.switch.on("error", onError);
   }
 
@@ -154,14 +155,13 @@ export class WebsocketClient implements RpcStreamingClient {
       .catch(err => this.switch.emit("errror", err));
   }
 
-  protected connect(): WebSocket {
-    const ws = new WebSocket(this.url);
+  protected connect(): void {
     // tslint:disable-next-line:no-object-mutation
-    ws.onerror = err => this.switch.emit("error", err);
+    this.ws.onerror = err => this.switch.emit("error", err);
     // tslint:disable-next-line:no-object-mutation
-    ws.onclose = () => this.switch.emit("error", "Websocket closed");
+    this.ws.onclose = () => this.switch.emit("error", "Websocket closed");
     // tslint:disable-next-line:no-object-mutation
-    ws.onmessage = msg => {
+    this.ws.onmessage = msg => {
       // this should never happen, but I want an alert if it does
       if (msg.type !== "message") {
         throw new Error(`Unexcepted message type on websocket: ${msg.type}`);
@@ -169,7 +169,6 @@ export class WebsocketClient implements RpcStreamingClient {
       const data = JSON.parse(msg.data.toString());
       this.switch.emit(data.id, data);
     };
-    return ws;
   }
 
   protected subscribe(id: string): Promise<JsonRpcResponse> {
