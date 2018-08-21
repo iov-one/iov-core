@@ -158,7 +158,7 @@ const setNameTx: SetNameTx = {
 ^D
 > await writer.signAndCommit(setNameTx, 0);
 > (await reader.getAccount({ name: "hans" })).data[0]
-{ name: 'hans*test-chain-HexTMJ',
+{ name: 'hans',
   address:
    Uint8Array [
      174,
