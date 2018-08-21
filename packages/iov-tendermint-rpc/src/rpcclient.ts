@@ -240,6 +240,8 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
     });
 
     // this will fire on a response (success or error)
+    // Tendermint adds an "#event" suffix for events that follow a previous subscription
+    // https://github.com/tendermint/tendermint/blob/v0.23.0/rpc/core/events.go#L107
     const idEventSubscription = this.client.switch.on(this.request.id + "#event", data => {
       const err = ifError(data);
       if (err) {
@@ -252,18 +254,12 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
     });
 
     // this will fire in case the websocket errors/disconnects
-    const idDoneSubscription = this.client.switch.once(this.request.id + "#done", () => {
-      this.closeSubscriptions();
-      this.listener!.complete();
-    });
-
-    // this will fire in case the websocket errors/disconnects
     const errorSubscription = this.client.switch.once("error", err => {
       this.closeSubscriptions();
       this.listener!.error(err);
     });
 
-    this.subscriptions.push(idSubscription, idEventSubscription, idDoneSubscription, errorSubscription);
+    this.subscriptions.push(idSubscription, idEventSubscription, errorSubscription);
   }
 
   protected closeSubscriptions(): void {
