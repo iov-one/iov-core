@@ -70,7 +70,6 @@ export const main = (originalArgs: string[]): void => {
   console.log(colors.yellow("  * from @iov/encoding"));
   console.log(colors.yellow("    - Encoding"));
   console.log(colors.yellow("  * helper functions"));
-  console.log(colors.yellow("    - wait"));
   console.log(colors.yellow("    - toAscii"));
   console.log(colors.yellow("    - fromHex"));
   console.log(colors.yellow("    - toHex"));
@@ -104,7 +103,6 @@ export const main = (originalArgs: string[]): void => {
     import { Bip39, Ed25519, Ed25519Keypair, Random, Sha256, Sha512 } from '@iov/crypto';
     import { Encoding } from '@iov/encoding';
     const { toAscii, fromHex, toHex } = Encoding;
-    function wait<T>(promise: Promise<T>): T { return require('deasync2').await(promise); }
   `;
 
   if (args.selftest) {
