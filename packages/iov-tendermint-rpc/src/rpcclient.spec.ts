@@ -140,6 +140,24 @@ describe("RpcClient", () => {
       });
     });
 
+    it("fails when listening to a disconnected client", async done => {
+      pendingWithoutTendermint();
+
+      const ws = new WebsocketClient(tendermintUrl);
+      await ws.disconnect();
+
+      const query = "tm.event='NewBlockHeader'";
+      const req = jsonRpcWith("subscribe", { query });
+      ws.listen(req).subscribe({
+        error: error => {
+          expect(error.toString()).toMatch(/is not open/);
+          done();
+        },
+        next: () => fail("No event expected"),
+        complete: () => fail("Must not complete"),
+      });
+    });
+
     it("cannot listen to simple requests", () => {
       pendingWithoutTendermint();
 

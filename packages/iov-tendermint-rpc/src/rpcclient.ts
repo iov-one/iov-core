@@ -158,7 +158,8 @@ export class WebsocketClient implements RpcStreamingClient {
     this.ws.send(JSON.stringify(request));
   }
 
-  public disconnect(): void {
+  public async disconnect(): Promise<void> {
+    await this.connected;
     this.ws.close();
   }
 
@@ -227,7 +228,9 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
 
     this.connectToClient(listener);
 
-    this.client.send(this.request);
+    this.client.send(this.request).catch(error => {
+      listener.error(error);
+    });
   }
 
   /**
