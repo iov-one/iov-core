@@ -142,6 +142,31 @@ UserProfile {
   ...
 ```
 
+### Register a BNS name
+
+Assuming you have a `profile`, a faucet identity and a `writer` available as above
+
+```
+> const hans = await profile.createIdentity(0);
+> .editor
+const setNameTx: SetNameTx = {
+  kind: TransactionKind.SetName,
+  chainId: chainId,
+  signer: hans.pubkey,
+  name: "hans",
+};
+^D
+> await writer.signAndCommit(setNameTx, 0);
+> (await reader.getAccount({ name: "hans" })).data[0]
+{ name: 'hans*test-chain-HexTMJ',
+  address:
+   Uint8Array [
+     174,
+     38,
+     125,
+     211, ...
+```
+
 ## Ledger usage
 
 Do 1. and 2. like above

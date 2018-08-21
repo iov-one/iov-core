@@ -55,6 +55,7 @@ export const main = (originalArgs: string[]): void => {
   console.log(colors.yellow("    - Nonce"));
   console.log(colors.yellow("    - UserProfile"));
   console.log(colors.yellow("    - SendTx"));
+  console.log(colors.yellow("    - SetNameTx"));
   console.log(colors.yellow("    - TokenTicker"));
   console.log(colors.yellow("    - TransactionKind"));
   console.log(colors.yellow("    - IovWriter"));
@@ -80,7 +81,25 @@ export const main = (originalArgs: string[]): void => {
     import * as http from 'http';
     import * as https from 'https';
     import Long from "long";
-    import { Address, bnsConnector, bnsFromOrToTag, ChainId, Ed25519SimpleAddressKeyringEntry, Keyring, KeyringEntry, KeyringEntryImplementationIdString, KeyringEntrySerializationString, Nonce, SendTx, TokenTicker, TransactionKind, UserProfile, IovWriter, withConnectors } from "@iov/core";
+    import {
+      Address,
+      bnsConnector,
+      bnsFromOrToTag,
+      ChainId,
+      Ed25519SimpleAddressKeyringEntry,
+      Keyring,
+      KeyringEntry,
+      KeyringEntryImplementationIdString,
+      KeyringEntrySerializationString,
+      Nonce,
+      SendTx,
+      SetNameTx,
+      TokenTicker,
+      TransactionKind,
+      UserProfile,
+      IovWriter,
+      withConnectors
+    } from "@iov/core";
     import { bnsCodec } from '@iov/bns';
     import { Bip39, Ed25519, Ed25519Keypair, Random, Sha256, Sha512 } from '@iov/crypto';
     import { Encoding } from '@iov/encoding';
