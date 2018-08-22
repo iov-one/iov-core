@@ -140,6 +140,8 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   }
 
   public async createIdentity(): Promise<LocalIdentity> {
+    await this.deviceState.waitFor(LedgerState.IovAppOpen);
+
     const nextIndex = this.identities.length;
     const transport = await connectToFirstLedger();
 
@@ -189,6 +191,8 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     if (prehashType !== PrehashType.Sha512) {
       throw new Error("Only prehash typer sha512 is supported on the Ledger");
     }
+
+    await this.deviceState.waitFor(LedgerState.IovAppOpen);
 
     const simpleAddressIndex = this.simpleAddressIndex(identity);
     const transport = await connectToFirstLedger();
