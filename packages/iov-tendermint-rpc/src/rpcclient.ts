@@ -139,6 +139,12 @@ export class WebsocketClient implements RpcStreamingClient {
 
     // send as soon as connected
     await this.connected;
+
+    // this exception should be thrown by send() automatically according to
+    // https://developer.mozilla.org/de/docs/Web/API/WebSocket#send() but it does not work in browsers
+    if (this.ws.readyState !== WebSocket.OPEN) {
+      throw new Error("Websocket is not open");
+    }
     this.ws.send(JSON.stringify(request));
 
     const response = await responsePromise;
@@ -155,6 +161,11 @@ export class WebsocketClient implements RpcStreamingClient {
 
   public async send(request: JsonRpcRequest): Promise<void> {
     await this.connected;
+    // this exception should be thrown by send() automatically according to
+    // https://developer.mozilla.org/de/docs/Web/API/WebSocket#send() but it does not work in browsers
+    if (this.ws.readyState !== WebSocket.OPEN) {
+      throw new Error("Websocket is not open");
+    }
     this.ws.send(JSON.stringify(request));
   }
 
