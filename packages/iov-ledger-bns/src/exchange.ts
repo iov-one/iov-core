@@ -80,6 +80,12 @@ export function checkAndRemoveStatus(resp: Uint8Array): Uint8Array {
   return resp.slice(0, resp.length - 2);
 }
 
+export class LedgerErrorResponse extends Error {
+  constructor(public readonly code: number) {
+    super("response with error code: 0x" + code.toString(16));
+  }
+}
+
 // checkStatus will verify the buffer ends with 0x9000 or throw an error
 function checkStatus(resp: Uint8Array): void {
   const cut = resp.length - 2;
@@ -88,7 +94,7 @@ function checkStatus(resp: Uint8Array): void {
   }
   const status = resp[cut] * 256 + resp[cut + 1];
   if (status !== 0x9000) {
-    throw new Error("response with error code: 0x" + status.toString(16));
+    throw new LedgerErrorResponse(status);
   }
 }
 

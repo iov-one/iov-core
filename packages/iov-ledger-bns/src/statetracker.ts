@@ -2,7 +2,7 @@ import { DefaultValueProducer, ValueAndUpdates } from "@iov/keycontrol";
 import TransportNodeHid, { DescriptorEvent, Subscription } from "@ledgerhq/hw-transport-node-hid";
 
 import { appVersion } from "./app";
-import { connectToFirstLedger } from "./exchange";
+import { connectToFirstLedger, LedgerErrorResponse } from "./exchange";
 
 export enum LedgerState {
   Disconnected,
@@ -12,21 +12,27 @@ export enum LedgerState {
 
 export class StateTracker {
   private static async checkConectedAndAppOpen(): Promise<LedgerState> {
+    // tslint:disable-next-line:no-let
+    let transport: TransportNodeHid | undefined;
     try {
-      const transport = await connectToFirstLedger();
-      try {
-        // use appVersion() as a status check: if it works, we are in the app
-        // otherwise no
-        await appVersion(transport);
-        // console.log(`>>> Entered app (version ${version})`);
-        return LedgerState.IovAppOpen;
-      } catch (_) {
-        // not in app
-        return LedgerState.Connected;
-      }
+      transport = await connectToFirstLedger();
     } catch (_) {
       // console.log("Error connecting to ledger: " + err);
       return LedgerState.Disconnected;
+    }
+
+    try {
+      // use appVersion() as a status check: if it works, we are in the app
+      // otherwise no
+      await appVersion(transport);
+      return LedgerState.IovAppOpen;
+    } catch (error) {
+      if (error instanceof LedgerErrorResponse && error.code === 0x6e00) {
+        // not in app
+        return LedgerState.Connected;
+      } else {
+        throw error;
+      }
     }
   }
 
