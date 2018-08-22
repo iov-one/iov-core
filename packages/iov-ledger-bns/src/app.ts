@@ -34,11 +34,14 @@ export const signTransactionWithIndex = (
 };
 
 export const appVersion = async (transport: TransportNodeHid): Promise<number> => {
-  const res = await sendChunks(transport, appCode, cmdAppVersion, new Uint8Array([]));
-  if (res[0] !== 0 || res[1] !== 0xca || res[2] !== 0xfe || res[3] !== 0) {
-    throw new Error("Expected 0x00CAFE00 prefix for status");
+  const response = await sendChunks(transport, appCode, cmdAppVersion, new Uint8Array([]));
+  const prefix = response.slice(0, 4);
+  if (prefix[0] !== 0 || prefix[1] !== 0xca || prefix[2] !== 0xfe || prefix[3] !== 0) {
+    throw new Error(
+      `Expected 0x00CAFE00 response prefix but got ${response.length} bytes response with different prefix`,
+    );
   }
-  return decodeUint32(res.slice(4, 8));
+  return decodeUint32(response.slice(4, 8));
 };
 
 const decodeUint32 = (data: Uint8Array): number => Uint32.fromBigEndianBytes(data).asNumber();
