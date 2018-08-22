@@ -8,7 +8,9 @@ export declare class StateTracker {
     private static checkConectedAndAppOpen;
     readonly state: ValueAndUpdates<LedgerState>;
     private readonly stateProducer;
+    private listeningSubscription;
     constructor();
     start(): void;
+    stop(): void;
     private handleEvent;
 }

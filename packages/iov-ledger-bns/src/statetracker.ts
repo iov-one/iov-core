@@ -1,5 +1,5 @@
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/keycontrol";
-import TransportNodeHid, { DescriptorEvent } from "@ledgerhq/hw-transport-node-hid";
+import TransportNodeHid, { DescriptorEvent, Subscription } from "@ledgerhq/hw-transport-node-hid";
 
 import { appVersion } from "./app";
 import { connectToFirstLedger } from "./exchange";
@@ -33,6 +33,8 @@ export class StateTracker {
   public readonly state: ValueAndUpdates<LedgerState>;
 
   private readonly stateProducer: DefaultValueProducer<LedgerState>;
+  // tslint:disable-next-line:readonly-keyword
+  private listeningSubscription: Subscription | undefined;
 
   constructor() {
     this.stateProducer = new DefaultValueProducer(LedgerState.Disconnected);
@@ -40,7 +42,8 @@ export class StateTracker {
   }
 
   public start(): void {
-    TransportNodeHid.listen({
+    // tslint:disable-next-line:no-object-mutation
+    this.listeningSubscription = TransportNodeHid.listen({
       next: e => this.handleEvent(e),
       error: e => {
         throw e;
@@ -49,6 +52,14 @@ export class StateTracker {
         throw new Error("TransportNodeHid.listen completed. What does that mean?");
       },
     });
+  }
+
+  public stop(): void {
+    if (this.listeningSubscription) {
+      this.listeningSubscription.unsubscribe();
+      // tslint:disable-next-line:no-object-mutation
+      this.listeningSubscription = undefined;
+    }
   }
 
   /**

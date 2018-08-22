@@ -20,6 +20,7 @@ describe("StateTracker", () => {
     tracker.state.updates.subscribe({
       next: value => {
         if (value === LedgerState.IovAppOpen) {
+          tracker.stop();
           done();
         }
       },

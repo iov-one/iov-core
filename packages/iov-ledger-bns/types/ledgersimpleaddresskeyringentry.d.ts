@@ -11,11 +11,14 @@ export declare class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     readonly canSign: ValueAndUpdates<boolean>;
     readonly implementationId: KeyringEntryImplementationIdString;
     readonly deviceState: ValueAndUpdates<LedgerState>;
+    private readonly deviceTracker;
     private readonly labelProducer;
     private readonly canSignProducer;
     private readonly identities;
     private readonly simpleAddressIndices;
     constructor(data?: KeyringEntrySerializationString);
+    startDeviceTracking(): void;
+    stopDeviceTracking(): void;
     setLabel(label: string | undefined): void;
     createIdentity(): Promise<LocalIdentity>;
     setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;

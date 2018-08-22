@@ -70,6 +70,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   public readonly implementationId = LedgerSimpleAddressKeyringEntry.implementationId;
   public readonly deviceState: ValueAndUpdates<LedgerState>;
 
+  private readonly deviceTracker = new StateTracker();
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
   private readonly canSignProducer: DefaultValueProducer<boolean>;
   private readonly identities: LocalIdentity[];
@@ -80,14 +81,13 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   constructor(data?: KeyringEntrySerializationString) {
     this.canSignProducer = new DefaultValueProducer(false);
     this.canSign = new ValueAndUpdates(this.canSignProducer);
-    const deviceTracker = new StateTracker();
-    deviceTracker.state.updates.subscribe({
+
+    this.deviceTracker.state.updates.subscribe({
       next: value => {
         this.canSignProducer.update(value === LedgerState.IovAppOpen);
       },
     });
-    deviceTracker.start();
-    this.deviceState = deviceTracker.state;
+    this.deviceState = this.deviceTracker.state;
 
     // tslint:disable-next-line:no-let
     let label: string | undefined;
@@ -119,6 +119,20 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     this.label = new ValueAndUpdates(this.labelProducer);
     this.identities = identities;
     this.simpleAddressIndices = simpleAddressIndices;
+  }
+
+  /**
+   * Turn on tracking USB devices. This is required for every hardware interaction.
+   */
+  public startDeviceTracking(): void {
+    this.deviceTracker.start();
+  }
+
+  /**
+   * Turn off tracking USB devices.
+   */
+  public stopDeviceTracking(): void {
+    this.deviceTracker.stop();
   }
 
   public setLabel(label: string | undefined): void {
