@@ -109,8 +109,14 @@ export class HttpUriClient implements RpcClient {
 // TODO: support event subscriptions as well
 // TODO: error handling on disconnect
 export class WebsocketClient implements RpcStreamingClient {
-  private readonly url: string;
+  // Used to distribute socket events to interested listeners. Event types:
+  // "<id>"        response messages to the request with <id>
+  // "<id>#event"  events following the subscription request with <id>
+  // "close"       when the socket has been closed in a more or less clean way
+  // "error"       when an error occured
   private readonly bridge: EventEmitter;
+
+  private readonly url: string;
   private readonly socket: QueueingWebSocket;
 
   constructor(baseUrl: string = "ws://localhost:46657", onError: (err: any) => void = defaultErrorHandler) {
