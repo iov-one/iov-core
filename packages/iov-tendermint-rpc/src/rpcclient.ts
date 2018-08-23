@@ -72,21 +72,27 @@ export class HttpClient implements RpcClient {
   }
 }
 
-// HttpUriClient just makes calls without any parameters
-// This is only meant for testing or quick status/health checks
+/**
+ * HttpUriClient encodes the whole request as an URI to be submitted
+ * as a HTTP GET request.
+ *
+ * This is only meant for testing or quick status/health checks
+ *
+ * @see https://tendermint.github.io/slate/#uri-http
+ */
 export class HttpUriClient implements RpcClient {
-  protected readonly url: string;
+  protected readonly baseUrl: string;
 
-  constructor(url: string = "http://localhost:46657") {
-    this.url = hasProtocol(url) ? url : "http://" + url;
+  constructor(baseUrl: string = "http://localhost:46657") {
+    this.baseUrl = hasProtocol(baseUrl) ? baseUrl : "http://" + baseUrl;
   }
 
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
     if (request.params && Object.keys(request.params).length !== 0) {
       throw new Error(`HttpUriClient doesn't support passing params: ${request.params}`);
     }
-    const method = `${this.url}/${request.method}`;
-    const response = await http("GET", method);
+    const url = `${this.baseUrl}/${request.method}`;
+    const response = await http("GET", url);
     return throwIfError(response);
   }
 }
@@ -104,11 +110,11 @@ export class WebsocketClient implements RpcStreamingClient {
   // TODO: use MemoryStream and support reconnects
   protected readonly connected: Promise<boolean>;
 
-  constructor(url: string = "ws://localhost:46657", onError: (err: any) => void = defaultErrorHandler) {
+  constructor(baseUrl: string = "ws://localhost:46657", onError: (err: any) => void = defaultErrorHandler) {
     // accept host.name:port and assume ws protocol
     const path = "/websocket";
-    const cleanUrl = hasProtocol(url) ? url : "ws://" + url;
-    this.url = cleanUrl + path;
+    const cleanBaseUrl = hasProtocol(baseUrl) ? baseUrl : "ws://" + baseUrl;
+    this.url = cleanBaseUrl + path;
 
     this.switch = new EventEmitter();
     this.ws = this.connect();
