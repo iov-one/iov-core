@@ -2,6 +2,7 @@
 
 ## 0.4.0
 
+* @iov/tendermint-rpc: Add disconnect method to WebsocketClient
 * @iov/ledger-bns: Improved USB connectivity due to hw-transport-node-hid upgrade
 
 Breaking changes
