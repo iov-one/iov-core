@@ -1,6 +1,6 @@
 import WebSocket from "isomorphic-ws";
 
-import { QueueingWebSocket } from "./queueingwebsocket";
+import { SocketWrapper } from "./socketwrapper";
 
 function skipTests(): boolean {
   // process.env is undefined in browser....
@@ -15,18 +15,18 @@ function pendingWithoutTendermint(): void {
   }
 }
 
-describe("QueueingWebSocket", () => {
+describe("SocketWrapper", () => {
   const tendermintSocketUrl = "ws://localhost:12345/websocket";
 
   it("can be constructed", () => {
-    const socket = new QueueingWebSocket(tendermintSocketUrl, fail, fail);
+    const socket = new SocketWrapper(tendermintSocketUrl, fail, fail);
     expect(socket).toBeTruthy();
   });
 
   it("can connect", done => {
     pendingWithoutTendermint();
 
-    const socket = new QueueingWebSocket(tendermintSocketUrl, fail, fail, done, fail);
+    const socket = new SocketWrapper(tendermintSocketUrl, fail, fail, done, fail);
     expect(socket).toBeTruthy();
     socket.connect();
   });
@@ -37,7 +37,7 @@ describe("QueueingWebSocket", () => {
     // tslint:disable-next-line:no-let
     let opened = 0;
 
-    const socket = new QueueingWebSocket(
+    const socket = new SocketWrapper(
       tendermintSocketUrl,
       fail,
       fail,
@@ -59,7 +59,7 @@ describe("QueueingWebSocket", () => {
   it("can disconnect before waiting for open", done => {
     pendingWithoutTendermint();
 
-    const socket = new QueueingWebSocket(tendermintSocketUrl, fail, fail, fail, closeEvent => {
+    const socket = new SocketWrapper(tendermintSocketUrl, fail, fail, fail, closeEvent => {
       expect(closeEvent.wasClean).toEqual(false);
       expect(closeEvent.code).toEqual(4001);
       done();
@@ -73,7 +73,7 @@ describe("QueueingWebSocket", () => {
 
     const responses = new Array<WebSocket.Data>();
 
-    const socket = new QueueingWebSocket(
+    const socket = new SocketWrapper(
       tendermintSocketUrl,
       response => {
         expect(response.type).toEqual("message");
@@ -100,7 +100,7 @@ describe("QueueingWebSocket", () => {
   it("cannot send on a disconnect socket (it will never come back)", done => {
     pendingWithoutTendermint();
 
-    const socket = new QueueingWebSocket(
+    const socket = new SocketWrapper(
       tendermintSocketUrl,
       fail,
       fail,

@@ -11,7 +11,7 @@ import {
   JsonRpcSuccess,
   throwIfError,
 } from "./common";
-import { QueueingWebSocket } from "./queueingwebsocket";
+import { SocketWrapper } from "./socketwrapper";
 
 export interface RpcClient {
   readonly execute: (request: JsonRpcRequest) => Promise<JsonRpcSuccess>;
@@ -114,7 +114,7 @@ export class WebsocketClient implements RpcStreamingClient {
   private readonly bridge: EventEmitter;
 
   private readonly url: string;
-  private readonly socket: QueueingWebSocket;
+  private readonly socket: SocketWrapper;
 
   constructor(baseUrl: string = "ws://localhost:46657", onError: (err: any) => void = defaultErrorHandler) {
     // accept host.name:port and assume ws protocol
@@ -125,7 +125,7 @@ export class WebsocketClient implements RpcStreamingClient {
     this.bridge = new EventEmitter();
     this.bridge.on("error", onError);
 
-    this.socket = new QueueingWebSocket(
+    this.socket = new SocketWrapper(
       this.url,
       message => {
         // this should never happen, but I want an alert if it does
@@ -192,13 +192,13 @@ export class WebsocketClient implements RpcStreamingClient {
 
 class RpcEventProducer implements Producer<JsonRpcEvent> {
   private readonly request: JsonRpcRequest;
-  private readonly socket: QueueingWebSocket;
+  private readonly socket: SocketWrapper;
   private readonly bridge: EventEmitter;
 
   private running: boolean = false;
   private subscriptions: EventEmitter[] = [];
 
-  constructor(request: JsonRpcRequest, socket: QueueingWebSocket, bridge: EventEmitter) {
+  constructor(request: JsonRpcRequest, socket: SocketWrapper, bridge: EventEmitter) {
     this.request = request;
     this.socket = socket;
     this.bridge = bridge;

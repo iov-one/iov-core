@@ -1,12 +1,12 @@
 // tslint:disable:readonly-keyword no-object-mutation
 import WebSocket from "isomorphic-ws";
 
-export interface QueueingWebSocketCloseEvent {
+export interface SocketWrapperCloseEvent {
   readonly wasClean: boolean;
   readonly code: number;
 }
 
-export interface QueueingWebSocketErrorEvent {
+export interface SocketWrapperErrorEvent {
   // fields available in browsers
   readonly isTrusted?: boolean;
 
@@ -15,12 +15,12 @@ export interface QueueingWebSocketErrorEvent {
   readonly message?: string;
 }
 
-export interface QueueingWebSocketMessageEvent {
+export interface SocketWrapperMessageEvent {
   readonly data: string;
   readonly type: string;
 }
 
-export class QueueingWebSocket {
+export class SocketWrapper {
   public readonly connected: Promise<void>;
 
   private connectedResolver: (() => void) | undefined;
@@ -29,10 +29,10 @@ export class QueueingWebSocket {
 
   constructor(
     private readonly url: string,
-    private readonly messageHandler: (event: QueueingWebSocketMessageEvent) => void,
-    private readonly errorHandler: (event: QueueingWebSocketErrorEvent) => void,
+    private readonly messageHandler: (event: SocketWrapperMessageEvent) => void,
+    private readonly errorHandler: (event: SocketWrapperErrorEvent) => void,
     private readonly openHandler?: () => void,
-    private readonly closeHandler?: (event: QueueingWebSocketCloseEvent) => void,
+    private readonly closeHandler?: (event: SocketWrapperCloseEvent) => void,
   ) {
     this.connected = new Promise((resolve, _) => {
       this.connectedResolver = resolve;
