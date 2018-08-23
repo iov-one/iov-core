@@ -10,6 +10,7 @@ export declare class Client implements IovReader {
     protected readonly codec: TxReadCodec;
     protected readonly initData: Promise<InitData>;
     constructor(tmClient: TendermintClient, codec: TxReadCodec);
+    disconnect(): void;
     chainId(): Promise<ChainId>;
     height(): Promise<number>;
     status(): Promise<StatusResponse>;

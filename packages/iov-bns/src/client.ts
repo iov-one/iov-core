@@ -60,6 +60,10 @@ export class Client implements IovReader {
     this.initData = this.initialize();
   }
 
+  public disconnect(): void {
+    this.tmClient.disconnect();
+  }
+
   // we store this info from the initialization, no need to query every time
   public async chainId(): Promise<ChainId> {
     const data = await this.initData;

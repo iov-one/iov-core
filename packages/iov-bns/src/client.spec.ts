@@ -79,6 +79,14 @@ describe("Integration tests with bov+tendermint", () => {
     expect(height).toBeGreaterThan(1);
   });
 
+  it("can disconnect from tendermint", async () => {
+    pendingWithoutBov();
+    const client = await Client.connect(tendermintUrl);
+    const chainId = await client.chainId();
+    expect(chainId).toBeTruthy();
+    client.disconnect();
+  });
+
   it("Can query all tickers", async () => {
     pendingWithoutBov();
     const client = await Client.connect(tendermintUrl);
