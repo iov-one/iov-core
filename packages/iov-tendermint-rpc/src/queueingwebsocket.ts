@@ -69,11 +69,38 @@ export class QueueingWebSocket {
     this.socket = socket;
   }
 
+  /**
+   * Closes an established connection and aborts other connection states
+   */
   public disconnect(): void {
     if (!this.socket) {
       throw new Error("Socket undefined. This must be called after connecting.");
     }
-    this.socket.close(1000 /* Normal Closure */);
+
+    switch (this.socket.readyState) {
+      case WebSocket.OPEN:
+        this.socket.close(1000 /* Normal Closure */);
+        break;
+      case WebSocket.CLOSED:
+        // nothing to be done
+        break;
+      case WebSocket.CONNECTING:
+        // imitate missing abort API
+        this.socket.onopen = () => 0;
+        this.socket.onclose = () => 0;
+        this.socket.onerror = () => 0;
+        this.socket.onmessage = () => 0;
+        this.socket = undefined;
+        if (this.closeHandler) {
+          this.closeHandler({ wasClean: false, code: 4001 });
+        }
+        break;
+      case WebSocket.CLOSING:
+        // already closing. Let it proceed
+        break;
+      default:
+        throw new Error(`Unknown readyState: ${this.socket.readyState}`);
+    }
   }
 
   public async sendNow(data: string): Promise<void> {

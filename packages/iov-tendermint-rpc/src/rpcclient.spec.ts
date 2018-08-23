@@ -140,7 +140,10 @@ describe("RpcClient", () => {
       pendingWithoutTendermint();
 
       const client = new WebsocketClient(tendermintUrl);
-      await client.disconnect();
+      // dummy command to ensure client is connected
+      await client.execute(jsonRpcWith(Method.HEALTH));
+
+      client.disconnect();
 
       const req = jsonRpcWith(Method.HEALTH);
       await client
@@ -153,7 +156,10 @@ describe("RpcClient", () => {
       pendingWithoutTendermint();
 
       const client = new WebsocketClient(tendermintUrl);
-      await client.disconnect();
+      // dummy command to ensure client is connected
+      await client.execute(jsonRpcWith(Method.HEALTH));
+
+      client.disconnect();
 
       const query = "tm.event='NewBlockHeader'";
       const req = jsonRpcWith("subscribe", { query });

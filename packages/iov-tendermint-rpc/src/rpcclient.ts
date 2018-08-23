@@ -170,8 +170,7 @@ export class WebsocketClient implements RpcStreamingClient {
     return Stream.create(producer);
   }
 
-  public async disconnect(): Promise<void> {
-    await this.socket.connected;
+  public disconnect(): void {
     this.socket.disconnect();
   }
 

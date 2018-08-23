@@ -56,25 +56,14 @@ describe("QueueingWebSocket", () => {
     socket.connect();
   });
 
-  // Websockets do not support aborting the conecting process
-  it("cannot disconnect before waiting for open", done => {
+  it("can disconnect before waiting for open", done => {
     pendingWithoutTendermint();
 
-    const socket = new QueueingWebSocket(
-      tendermintSocketUrl,
-      fail,
-      errorEvent => {
-        if (typeof errorEvent.isTrusted === "boolean") {
-          // We're in a browser and don't get error details. Why?
-          expect(errorEvent.isTrusted).toEqual(true);
-        } else {
-          expect(errorEvent.message).toMatch(/was closed before the connection was established/);
-        }
-        done();
-      },
-      fail,
-      undefined,
-    );
+    const socket = new QueueingWebSocket(tendermintSocketUrl, fail, fail, fail, closeEvent => {
+      expect(closeEvent.wasClean).toEqual(false);
+      expect(closeEvent.code).toEqual(4001);
+      done();
+    });
     socket.connect();
     socket.disconnect();
   });
