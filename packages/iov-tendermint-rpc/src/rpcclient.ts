@@ -149,7 +149,8 @@ export class WebsocketClient implements RpcStreamingClient {
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
     const responsePromise = this.responseForRequestId(request.id).then(throwIfError);
 
-    this.socket.sendQueued(JSON.stringify(request));
+    await this.socket.connected;
+    await this.socket.sendNow(JSON.stringify(request));
 
     const response = await responsePromise;
     return response;
