@@ -1,7 +1,6 @@
 /* tslint:disable:readonly-keyword readonly-array no-object-mutation */
 import axios from "axios";
 import EventEmitter from "events";
-import WebSocket from "isomorphic-ws";
 import { Listener, Producer, Stream } from "xstream";
 
 import {
@@ -12,6 +11,7 @@ import {
   JsonRpcSuccess,
   throwIfError,
 } from "./common";
+import { QueueingWebSocket } from "./queueingwebsocket";
 
 export interface RpcClient {
   readonly execute: (request: JsonRpcRequest) => Promise<JsonRpcSuccess>;
@@ -112,7 +112,7 @@ export class WebsocketClient implements RpcStreamingClient {
   public readonly switch: EventEmitter;
 
   protected readonly url: string;
-  protected readonly ws: WebSocket;
+  protected readonly socket: QueueingWebSocket;
 
   // connected is resolved as soon as the websocket is connected
   // TODO: use MemoryStream and support reconnects
@@ -125,27 +125,35 @@ export class WebsocketClient implements RpcStreamingClient {
     this.url = cleanBaseUrl + path;
 
     this.switch = new EventEmitter();
-    this.ws = new WebSocket(this.url);
-    this.connected = new Promise(resolve => {
-      // tslint:disable-next-line:no-object-mutation
-      this.ws.onopen = () => resolve();
-    });
-    this.connect();
+    this.socket = new QueueingWebSocket(
+      this.url,
+      message => {
+        // this should never happen, but I want an alert if it does
+        if (message.type !== "message") {
+          this.switch.emit("error", `Unexcepted message type on websocket: ${message.type}`);
+        }
+        const data = JSON.parse(message.data.toString());
+        this.switch.emit(data.id, data);
+      },
+      error => this.switch.emit("error", error),
+      () => 0,
+      closeEvent => {
+        if (closeEvent.wasClean) {
+          this.switch.emit("close");
+        } else {
+          const debug = `clean: ${closeEvent.wasClean}, code: ${closeEvent.code}`;
+          this.switch.emit("error", `Websocket closed (${debug})`);
+        }
+      },
+    );
+    this.connected = this.socket.connect();
     this.switch.on("error", onError);
   }
 
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
     const responsePromise = this.responseForRequestId(request.id).then(throwIfError);
 
-    // send as soon as connected
-    await this.connected;
-
-    // this exception should be thrown by send() automatically according to
-    // https://developer.mozilla.org/de/docs/Web/API/WebSocket#send() but it does not work in browsers
-    if (this.ws.readyState !== WebSocket.OPEN) {
-      throw new Error("Websocket is not open");
-    }
-    this.ws.send(JSON.stringify(request));
+    this.socket.sendQueued(JSON.stringify(request));
 
     const response = await responsePromise;
     return response;
@@ -161,40 +169,12 @@ export class WebsocketClient implements RpcStreamingClient {
 
   public async send(request: JsonRpcRequest): Promise<void> {
     await this.connected;
-    // this exception should be thrown by send() automatically according to
-    // https://developer.mozilla.org/de/docs/Web/API/WebSocket#send() but it does not work in browsers
-    if (this.ws.readyState !== WebSocket.OPEN) {
-      throw new Error("Websocket is not open");
-    }
-    this.ws.send(JSON.stringify(request));
+    this.socket.sendNow(JSON.stringify(request));
   }
 
   public async disconnect(): Promise<void> {
     await this.connected;
-    this.ws.close();
-  }
-
-  protected connect(): void {
-    // tslint:disable-next-line:no-object-mutation
-    this.ws.onerror = err => this.switch.emit("error", err);
-    // tslint:disable-next-line:no-object-mutation
-    this.ws.onclose = event => {
-      if (event.wasClean) {
-        this.switch.emit("close");
-      } else {
-        const debug = `clean: ${event.wasClean}, code: ${event.code}, reason: "${event.reason}"`;
-        this.switch.emit("error", `Websocket closed (${debug})`);
-      }
-    };
-    // tslint:disable-next-line:no-object-mutation
-    this.ws.onmessage = msg => {
-      // this should never happen, but I want an alert if it does
-      if (msg.type !== "message") {
-        this.switch.emit("error", `Unexcepted message type on websocket: ${msg.type}`);
-      }
-      const data = JSON.parse(msg.data.toString());
-      this.switch.emit(data.id, data);
-    };
+    this.socket.disconnect();
   }
 
   protected responseForRequestId(id: string): Promise<JsonRpcResponse> {
