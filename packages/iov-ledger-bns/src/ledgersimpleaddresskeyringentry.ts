@@ -147,6 +147,10 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   }
 
   public async createIdentity(): Promise<LocalIdentity> {
+    if (!this.deviceTracker.running) {
+      throw new Error("Device tracking off. Did you call startDeviceTracking()?");
+    }
+
     await this.deviceState.waitFor(LedgerState.IovAppOpen);
 
     const nextIndex = this.identities.length;
@@ -197,6 +201,10 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   ): Promise<SignatureBytes> {
     if (prehashType !== PrehashType.Sha512) {
       throw new Error("Only prehash typer sha512 is supported on the Ledger");
+    }
+
+    if (!this.deviceTracker.running) {
+      throw new Error("Device tracking off. Did you call startDeviceTracking()?");
     }
 
     await this.deviceState.waitFor(LedgerState.IovAppOpen);
