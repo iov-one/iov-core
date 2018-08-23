@@ -74,6 +74,8 @@ export type BcpAccountQuery = BcpAddressQuery | BcpValueNameQuery;
 // The IovReader will most likely contain some private state to maintain
 // the connection, subscription, and such.
 export interface IovReader {
+  readonly disconnect: () => void;
+
   // // headers returns all headers in that range.
   // // If max is underfined, subscribe to all new headers
   // // If max is defined, but higher than current height,

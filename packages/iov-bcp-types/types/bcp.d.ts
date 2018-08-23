@@ -45,6 +45,7 @@ export interface BcpValueNameQuery {
 }
 export declare type BcpAccountQuery = BcpAddressQuery | BcpValueNameQuery;
 export interface IovReader {
+    readonly disconnect: () => void;
     readonly postTx: (tx: PostableBytes) => Promise<BcpTransactionResponse>;
     readonly getTicker: (ticker: TokenTicker) => Promise<BcpQueryEnvelope<BcpTicker>>;
     readonly getAllTickers: () => Promise<BcpQueryEnvelope<BcpTicker>>;
