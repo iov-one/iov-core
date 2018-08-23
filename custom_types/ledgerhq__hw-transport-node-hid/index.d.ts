@@ -14,6 +14,10 @@ declare module "@ledgerhq/hw-transport-node-hid" {
     readonly device: Device;
   }
 
+  export interface Subscription {
+    readonly unsubscribe: () => void;
+  }
+
   interface Observer<T> {
     readonly next: (value: T) => void,
     readonly error: (error: any) => void,
@@ -21,7 +25,7 @@ declare module "@ledgerhq/hw-transport-node-hid" {
   }
 
   class TransportNodeHid {
-    static listen(observer: Observer<DescriptorEvent<string>>): void;
+    static listen(observer: Observer<DescriptorEvent<string>>): Subscription;
     static open(path: string): Promise<TransportNodeHid>;
 
     /**

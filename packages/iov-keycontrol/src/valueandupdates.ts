@@ -24,8 +24,11 @@ export class ValueAndUpdates<T> {
       const subscription = this.updates.subscribe({
         next: newValue => {
           if (newValue === value) {
-            subscription.unsubscribe();
             resolve();
+
+            // MemoryStream.subscribe() calls next with the last value.
+            // Make async to ensure the subscription exists
+            setTimeout(() => subscription.unsubscribe(), 0);
           }
         },
         complete: () => {

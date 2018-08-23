@@ -40,16 +40,19 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     pendingWithoutLedger();
 
     const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    keyringEntry.startDeviceTracking();
     const newIdentity = await keyringEntry.createIdentity();
     expect(newIdentity).toBeTruthy();
     expect(newIdentity.pubkey.algo).toEqual(Algorithm.ED25519);
     expect(newIdentity.pubkey.data.length).toEqual(32);
+    keyringEntry.stopDeviceTracking();
   });
 
   it("can load a newly created identity", async () => {
     pendingWithoutLedger();
 
     const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    keyringEntry.startDeviceTracking();
     const newIdentity = await keyringEntry.createIdentity();
 
     expect(keyringEntry.getIdentities().length).toEqual(1);
@@ -58,12 +61,14 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     expect(newIdentity.pubkey.algo).toEqual(firstIdentity.pubkey.algo);
     expect(newIdentity.pubkey.data).toEqual(firstIdentity.pubkey.data);
     expect(newIdentity.label).toEqual(firstIdentity.label);
+    keyringEntry.stopDeviceTracking();
   });
 
   it("can create multiple identities", async () => {
     pendingWithoutLedger();
 
     const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    keyringEntry.startDeviceTracking();
     const newIdentity1 = await keyringEntry.createIdentity();
     const newIdentity2 = await keyringEntry.createIdentity();
     const newIdentity3 = await keyringEntry.createIdentity();
@@ -85,12 +90,14 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     expect(newIdentity5.pubkey.algo).toEqual(lastIdentity.pubkey.algo);
     expect(newIdentity5.pubkey.data).toEqual(lastIdentity.pubkey.data);
     expect(newIdentity5.label).toEqual(lastIdentity.label);
+    keyringEntry.stopDeviceTracking();
   });
 
   it("can set, change and unset an identity label", async () => {
     pendingWithoutLedger();
 
     const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    keyringEntry.startDeviceTracking();
     const newIdentity = await keyringEntry.createIdentity();
     expect(keyringEntry.getIdentities()[0].label).toBeUndefined();
 
@@ -102,23 +109,28 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
 
     keyringEntry.setIdentityLabel(newIdentity, undefined);
     expect(keyringEntry.getIdentities()[0].label).toBeUndefined();
+    keyringEntry.stopDeviceTracking();
   });
 
   it("has disconnected device state when created", () => {
     pendingWithoutInteractiveLedger();
 
     const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    keyringEntry.startDeviceTracking();
     expect(keyringEntry.deviceState.value).toEqual(LedgerState.Disconnected);
+    keyringEntry.stopDeviceTracking();
   });
 
   it("changed device state to app open after some time", async () => {
     pendingWithoutInteractiveLedger();
 
     const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    keyringEntry.startDeviceTracking();
     expect(keyringEntry.deviceState.value).toEqual(LedgerState.Disconnected);
 
     await keyringEntry.deviceState.waitFor(LedgerState.IovAppOpen);
     expect(keyringEntry.deviceState.value).toEqual(LedgerState.IovAppOpen);
+    keyringEntry.stopDeviceTracking();
   });
 
   it("cannot sign when created", () => {
@@ -132,16 +144,33 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     pendingWithoutInteractiveLedger();
 
     const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    keyringEntry.startDeviceTracking();
     expect(keyringEntry.canSign.value).toEqual(false);
 
     await keyringEntry.canSign.waitFor(true);
     expect(keyringEntry.canSign.value).toEqual(true);
+    keyringEntry.stopDeviceTracking();
+  });
+
+  it("cannot sign when device tracking is off", async () => {
+    pendingWithoutInteractiveLedger();
+
+    const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    expect(keyringEntry.canSign.value).toEqual(false);
+
+    keyringEntry.startDeviceTracking();
+    await keyringEntry.canSign.waitFor(true);
+    expect(keyringEntry.canSign.value).toEqual(true);
+
+    keyringEntry.stopDeviceTracking();
+    expect(keyringEntry.canSign.value).toEqual(false);
   });
 
   it("can sign", async () => {
     pendingWithoutInteractiveLedger();
 
     const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    keyringEntry.startDeviceTracking();
     const newIdentity = await keyringEntry.createIdentity();
 
     await keyringEntry.canSign.waitFor(true);
@@ -174,12 +203,15 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
       default:
         fail("Unexpected prehash type");
     }
+
+    keyringEntry.stopDeviceTracking();
   });
 
   it("can serialize multiple identities", async () => {
     pendingWithoutLedger();
 
     const entry = new LedgerSimpleAddressKeyringEntry();
+    entry.startDeviceTracking();
     entry.setLabel("entry with 3 identities");
     const identity1 = await entry.createIdentity();
     const identity2 = await entry.createIdentity();
@@ -217,6 +249,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     expect(decodedJson.identities[0].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[1].localIdentity.pubkey.data);
     expect(decodedJson.identities[1].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[2].localIdentity.pubkey.data);
     expect(decodedJson.identities[2].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[0].localIdentity.pubkey.data);
+    entry.stopDeviceTracking();
   });
 
   it("can deserialize", () => {
@@ -257,9 +290,11 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     pendingWithoutLedger();
 
     const original = new LedgerSimpleAddressKeyringEntry();
+    original.startDeviceTracking();
     const identity1 = await original.createIdentity();
     const identity2 = await original.createIdentity();
     const identity3 = await original.createIdentity();
+    original.stopDeviceTracking();
     original.setIdentityLabel(identity1, undefined);
     original.setIdentityLabel(identity2, "");
     original.setIdentityLabel(identity3, "foo");

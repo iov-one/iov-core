@@ -70,6 +70,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   public readonly implementationId = LedgerSimpleAddressKeyringEntry.implementationId;
   public readonly deviceState: ValueAndUpdates<LedgerState>;
 
+  private readonly deviceTracker = new StateTracker();
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
   private readonly canSignProducer: DefaultValueProducer<boolean>;
   private readonly identities: LocalIdentity[];
@@ -80,14 +81,13 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   constructor(data?: KeyringEntrySerializationString) {
     this.canSignProducer = new DefaultValueProducer(false);
     this.canSign = new ValueAndUpdates(this.canSignProducer);
-    const deviceTracker = new StateTracker();
-    deviceTracker.state.updates.subscribe({
+
+    this.deviceTracker.state.updates.subscribe({
       next: value => {
         this.canSignProducer.update(value === LedgerState.IovAppOpen);
       },
     });
-    deviceTracker.start();
-    this.deviceState = deviceTracker.state;
+    this.deviceState = this.deviceTracker.state;
 
     // tslint:disable-next-line:no-let
     let label: string | undefined;
@@ -121,11 +121,38 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     this.simpleAddressIndices = simpleAddressIndices;
   }
 
+  /**
+   * Turn on tracking USB devices.
+   *
+   * This is must be called before every hardware interaction,
+   * i.e. createIdentity() and createTransactionSignature() and to
+   * use the canSign and deviceState properties.
+   */
+  public startDeviceTracking(): void {
+    this.deviceTracker.start();
+  }
+
+  /**
+   * Turn off tracking USB devices.
+   *
+   * Use this to save resources when LedgerSimpleAddressKeyringEntry is not used anymore.
+   * With device tracking turned off, canSign and deviceState are not updated anymore.
+   */
+  public stopDeviceTracking(): void {
+    this.deviceTracker.stop();
+  }
+
   public setLabel(label: string | undefined): void {
     this.labelProducer.update(label);
   }
 
   public async createIdentity(): Promise<LocalIdentity> {
+    if (!this.deviceTracker.running) {
+      throw new Error("Device tracking off. Did you call startDeviceTracking()?");
+    }
+
+    await this.deviceState.waitFor(LedgerState.IovAppOpen);
+
     const nextIndex = this.identities.length;
     const transport = await connectToFirstLedger();
 
@@ -175,6 +202,12 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     if (prehashType !== PrehashType.Sha512) {
       throw new Error("Only prehash typer sha512 is supported on the Ledger");
     }
+
+    if (!this.deviceTracker.running) {
+      throw new Error("Device tracking off. Did you call startDeviceTracking()?");
+    }
+
+    await this.deviceState.waitFor(LedgerState.IovAppOpen);
 
     const simpleAddressIndex = this.simpleAddressIndex(identity);
     const transport = await connectToFirstLedger();

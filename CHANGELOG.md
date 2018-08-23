@@ -2,9 +2,13 @@
 
 ## 0.4.0
 
+* @iov/ledger-bns: Improved USB connectivity due to hw-transport-node-hid upgrade
+
 Breaking changes
 
 * @iov/cli: wait() helper function removed
+* @iov/ledger-bns: LedgerSimpleAddressKeyringEntry.startDeviceTracking() must be called
+  before getting device state or calling createIdentity()/createTransactionSignature()
 * The name field from the `getAccount` result data does not contain
   the chain ID anymore. Before
 
