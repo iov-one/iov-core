@@ -25,6 +25,10 @@ export class Client {
     this.r = adaptor.responses;
   }
 
+  public disconnect(): void {
+    this.client.disconnect();
+  }
+
   public abciInfo(): Promise<responses.AbciInfoResponse> {
     const query: requests.AbciInfoRequest = { method: Method.ABCI_INFO };
     return this.doCall(query, this.p.encodeAbciInfo, this.r.decodeAbciInfo);
