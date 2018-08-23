@@ -17,14 +17,7 @@ describe("StateTracker", () => {
     expect(tracker.running).toEqual(false);
   });
 
-  it("has running state true when started", () => {
-    const tracker = new StateTracker();
-    expect(tracker.running).toEqual(false);
-    tracker.start();
-    expect(tracker.running).toEqual(true);
-  });
-
-  it("has running state false when stopped", () => {
+  it("has running state true when started and false when stopped", () => {
     const tracker = new StateTracker();
     expect(tracker.running).toEqual(false);
     tracker.start();
