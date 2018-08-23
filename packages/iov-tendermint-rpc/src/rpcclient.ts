@@ -109,7 +109,7 @@ export class HttpUriClient implements RpcClient {
 // TODO: support event subscriptions as well
 // TODO: error handling on disconnect
 export class WebsocketClient implements RpcStreamingClient {
-  public readonly switch: EventEmitter;
+  public readonly bridge: EventEmitter;
 
   protected readonly url: string;
   protected readonly socket: QueueingWebSocket;
@@ -120,30 +120,30 @@ export class WebsocketClient implements RpcStreamingClient {
     const cleanBaseUrl = hasProtocol(baseUrl) ? baseUrl : "ws://" + baseUrl;
     this.url = cleanBaseUrl + path;
 
-    this.switch = new EventEmitter();
+    this.bridge = new EventEmitter();
     this.socket = new QueueingWebSocket(
       this.url,
       message => {
         // this should never happen, but I want an alert if it does
         if (message.type !== "message") {
-          this.switch.emit("error", `Unexcepted message type on websocket: ${message.type}`);
+          this.bridge.emit("error", `Unexcepted message type on websocket: ${message.type}`);
         }
         const data = JSON.parse(message.data.toString());
-        this.switch.emit(data.id, data);
+        this.bridge.emit(data.id, data);
       },
-      error => this.switch.emit("error", error),
+      error => this.bridge.emit("error", error),
       () => 0,
       closeEvent => {
         if (closeEvent.wasClean) {
-          this.switch.emit("close");
+          this.bridge.emit("close");
         } else {
           const debug = `clean: ${closeEvent.wasClean}, code: ${closeEvent.code}`;
-          this.switch.emit("error", `Websocket closed (${debug})`);
+          this.bridge.emit("error", `Websocket closed (${debug})`);
         }
       },
     );
     this.socket.connect();
-    this.switch.on("error", onError);
+    this.bridge.on("error", onError);
   }
 
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
@@ -159,7 +159,7 @@ export class WebsocketClient implements RpcStreamingClient {
     if (request.method !== "subscribe") {
       throw new Error(`Request method must be "subscribe" to start event listening`);
     }
-    const producer = new RpcEventProducer(request, this);
+    const producer = new RpcEventProducer(request, this.socket, this.bridge);
     return Stream.create(producer);
   }
 
@@ -179,12 +179,12 @@ export class WebsocketClient implements RpcStreamingClient {
       // deregister the other so as not to cause a leak.
 
       // this will fire on a response (success or error)
-      const good = this.switch.once(id, data => {
+      const good = this.bridge.once(id, data => {
         bad.removeAllListeners();
         resolve(data);
       });
       // this will fire in case the websocket errors/disconnects
-      const bad = this.switch.once("error", err => {
+      const bad = this.bridge.once("error", err => {
         good.removeAllListeners();
         reject(err);
       });
@@ -194,14 +194,16 @@ export class WebsocketClient implements RpcStreamingClient {
 
 class RpcEventProducer implements Producer<JsonRpcEvent> {
   private readonly request: JsonRpcRequest;
-  private readonly client: WebsocketClient;
+  private readonly socket: QueueingWebSocket;
+  private readonly bridge: EventEmitter;
 
   private running: boolean = false;
   private subscriptions: EventEmitter[] = [];
 
-  constructor(request: JsonRpcRequest, client: WebsocketClient) {
+  constructor(request: JsonRpcRequest, socket: QueueingWebSocket, bridge: EventEmitter) {
     this.request = request;
-    this.client = client;
+    this.socket = socket;
+    this.bridge = bridge;
   }
 
   /**
@@ -215,8 +217,10 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
 
     this.connectToClient(listener);
 
-    this.client.send(this.request).catch(error => {
-      listener.error(error);
+    this.socket.connected.then(() => {
+      this.socket.sendNow(JSON.stringify(this.request)).catch(error => {
+        listener.error(error);
+      });
     });
   }
 
@@ -231,12 +235,12 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
     // Tell the server we are done in order to save resources. We cannot wait for the result.
     // This may be called when socket connection is already closed, to ignore errors in send
     const endRequest: JsonRpcRequest = { ...this.request, method: "unsubscribe" };
-    this.client.send(endRequest).catch(_ => 0);
+    this.socket.sendNow(JSON.stringify(endRequest)).catch(_ => 0);
   }
 
   protected connectToClient(listener: Listener<JsonRpcEvent>): void {
     // this should unsubscribe itself, so doesn't need to be removed explicitly
-    const idSubscription = this.client.switch.once(this.request.id, data => {
+    const idSubscription = this.bridge.once(this.request.id, data => {
       const err = ifError(data);
       if (err) {
         this.closeSubscriptions();
@@ -247,7 +251,7 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
     // this will fire on a response (success or error)
     // Tendermint adds an "#event" suffix for events that follow a previous subscription
     // https://github.com/tendermint/tendermint/blob/v0.23.0/rpc/core/events.go#L107
-    const idEventSubscription = this.client.switch.on(this.request.id + "#event", data => {
+    const idEventSubscription = this.bridge.on(this.request.id + "#event", data => {
       const err = ifError(data);
       if (err) {
         this.closeSubscriptions();
@@ -259,13 +263,13 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
     });
 
     // this will fire in case the websocket disconnects cleanly
-    const closeSubscription = this.client.switch.once("close", () => {
+    const closeSubscription = this.bridge.once("close", () => {
       this.closeSubscriptions();
       listener.complete();
     });
 
     // this will fire in case the websocket errors/disconnects
-    const errorSubscription = this.client.switch.once("error", err => {
+    const errorSubscription = this.bridge.once("error", err => {
       this.closeSubscriptions();
       listener.error(err);
     });

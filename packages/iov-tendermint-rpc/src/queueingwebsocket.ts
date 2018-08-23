@@ -126,6 +126,11 @@ export class QueueingWebSocket {
     let element: string | undefined;
     // tslint:disable-next-line:no-conditional-assignment
     while ((element = this.queue.pop()) !== undefined) {
+      // this exception should be thrown by send() automatically according to
+      // https://developer.mozilla.org/de/docs/Web/API/WebSocket#send() but it does not work in browsers
+      if (this.socket.readyState !== WebSocket.OPEN) {
+        throw new Error("Websocket is not open");
+      }
       this.socket.send(element);
     }
   }
