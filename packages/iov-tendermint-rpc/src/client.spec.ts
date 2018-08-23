@@ -8,20 +8,24 @@ import { buildTxQuery } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, RpcClient, WebsocketClient } from "./rpcclient";
 
-const skipTests = (): boolean => !process.env.TENDERMINT_ENABLED;
+function skipTests(): boolean {
+  return !process.env.TENDERMINT_ENABLED;
+}
 
-const pendingWithoutTendermint = () => {
+function pendingWithoutTendermint(): void {
   if (skipTests()) {
     pending("Set TENDERMINT_ENABLED to enable tendermint-based tests");
   }
-};
+}
 
 // TODO: make flexible, support multiple versions, etc...
 const tendermintUrl = "localhost:12345";
 
-const buildKvTx = (k: string, v: string): Uint8Array => Encoding.toAscii(`${k}=${v}`);
+function buildKvTx(k: string, v: string): Uint8Array {
+  return Encoding.toAscii(`${k}=${v}`);
+}
 
-const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
+function kvTestSuite(msg: string, rpcFactory: () => RpcClient): void {
   const key = randomId();
   const value = randomId();
 
@@ -145,7 +149,7 @@ const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
       expect(block.block.txs[0]).toEqual(tx);
     });
   });
-};
+}
 
 describe("Verify client calls on tendermint w/ kvstore app", () => {
   // don't print out WebSocket errors if marked pending
