@@ -25,9 +25,7 @@ export class QueueingWebSocket {
 
   private connectedResolver: (() => void) | undefined;
   private socket: WebSocket | undefined;
-  private opened = false;
   private closed = false;
-  private readonly queue = new Array<string>();
 
   constructor(
     private readonly url: string,
@@ -55,15 +53,11 @@ export class QueueingWebSocket {
       });
     };
     socket.onopen = _ => {
-      this.opened = true;
-
       this.connectedResolver!();
 
       if (this.openHandler) {
         this.openHandler();
       }
-
-      this.processQueue();
     };
     socket.onclose = closeEvent => {
       this.closed = true;
@@ -82,27 +76,13 @@ export class QueueingWebSocket {
     this.socket.close(1000 /* Normal Closure */);
   }
 
-  /**
-   * Sends data as soon as connection is established.
-   *
-   * Data may never be sent in case of disconnection.
-   *
-   * @param data data to be sent in the socket connection
-   */
-  public sendQueued(data: string): void {
-    if (this.closed) {
-      throw new Error("Socket was closed, so no data can be queued anymore.");
-    }
-
-    this.queue.push(data);
-    if (this.opened) {
-      this.processQueue();
-    }
-  }
-
   public async sendNow(data: string): Promise<void> {
     if (!this.socket) {
       throw new Error("Socket undefined. This must be called after connecting.");
+    }
+
+    if (this.closed) {
+      throw new Error("Socket was closed, so no data can be sent anymore.");
     }
 
     // this exception should be thrown by send() automatically according to
@@ -111,27 +91,5 @@ export class QueueingWebSocket {
       throw new Error("Websocket is not open");
     }
     this.socket.send(data);
-  }
-
-  private processQueue(): void {
-    if (!this.socket) {
-      throw new Error("Socket undefined. This must be called after connecting.");
-    }
-
-    if (!this.opened) {
-      throw new Error("Socket was not yet opened.");
-    }
-
-    // tslint:disable-next-line:no-let
-    let element: string | undefined;
-    // tslint:disable-next-line:no-conditional-assignment
-    while ((element = this.queue.pop()) !== undefined) {
-      // this exception should be thrown by send() automatically according to
-      // https://developer.mozilla.org/de/docs/Web/API/WebSocket#send() but it does not work in browsers
-      if (this.socket.readyState !== WebSocket.OPEN) {
-        throw new Error("Websocket is not open");
-      }
-      this.socket.send(element);
-    }
   }
 }

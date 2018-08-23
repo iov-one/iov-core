@@ -96,45 +96,15 @@ describe("QueueingWebSocket", () => {
       },
       fail,
       () => {
-        socket.sendQueued("aabbccdd");
-        socket.sendQueued("whatever");
-        socket.sendQueued("lalala");
+        socket.sendNow("aabbccdd");
+        socket.sendNow("whatever");
+        socket.sendNow("lalala");
       },
       () => {
         expect(responses.length).toEqual(3);
         done();
       },
     );
-    socket.connect();
-  });
-
-  it("can send events before connecting", done => {
-    pendingWithoutTendermint();
-
-    const responses = new Array<WebSocket.Data>();
-
-    const socket = new QueueingWebSocket(
-      tendermintSocketUrl,
-      response => {
-        expect(response.type).toEqual("message");
-        responses.push(response.data);
-
-        if (responses.length === 3) {
-          socket.disconnect();
-        }
-      },
-      fail,
-      undefined,
-      () => {
-        expect(responses.length).toEqual(3);
-        done();
-      },
-    );
-
-    socket.sendQueued("aabbccdd");
-    socket.sendQueued("whatever");
-    socket.sendQueued("lalala");
-
     socket.connect();
   });
 
@@ -149,8 +119,13 @@ describe("QueueingWebSocket", () => {
         socket.disconnect();
       },
       () => {
-        expect(() => socket.sendQueued("la li lu")).toThrowError(/was closed/);
-        done();
+        socket
+          .sendNow("la li lu")
+          .then(() => fail("must not resolve"))
+          .catch(error => {
+            expect(error).toMatch(/socket was closed/i);
+            done();
+          });
       },
     );
     socket.connect();
