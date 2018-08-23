@@ -109,10 +109,9 @@ export class HttpUriClient implements RpcClient {
 // TODO: support event subscriptions as well
 // TODO: error handling on disconnect
 export class WebsocketClient implements RpcStreamingClient {
-  public readonly bridge: EventEmitter;
-
-  protected readonly url: string;
-  protected readonly socket: QueueingWebSocket;
+  private readonly url: string;
+  private readonly bridge: EventEmitter;
+  private readonly socket: QueueingWebSocket;
 
   constructor(baseUrl: string = "ws://localhost:46657", onError: (err: any) => void = defaultErrorHandler) {
     // accept host.name:port and assume ws protocol
@@ -121,6 +120,8 @@ export class WebsocketClient implements RpcStreamingClient {
     this.url = cleanBaseUrl + path;
 
     this.bridge = new EventEmitter();
+    this.bridge.on("error", onError);
+
     this.socket = new QueueingWebSocket(
       this.url,
       message => {
@@ -143,7 +144,6 @@ export class WebsocketClient implements RpcStreamingClient {
       },
     );
     this.socket.connect();
-    this.bridge.on("error", onError);
   }
 
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
