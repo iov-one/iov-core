@@ -23,14 +23,13 @@ export class ValueAndUpdates<T> {
     return new Promise((resolve, reject) => {
       const subscription = this.updates.subscribe({
         next: newValue => {
-          // MemoryStream.subscribe() calls next with the last value.
-          // Make async to ensure the subscription exists
-          setTimeout(() => {
-            if (newValue === value) {
-              subscription.unsubscribe();
-              resolve();
-            }
-          }, 0);
+          if (newValue === value) {
+            resolve();
+
+            // MemoryStream.subscribe() calls next with the last value.
+            // Make async to ensure the subscription exists
+            setTimeout(() => subscription.unsubscribe(), 0);
+          }
         },
         complete: () => {
           subscription.unsubscribe();
