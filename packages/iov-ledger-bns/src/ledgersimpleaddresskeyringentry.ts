@@ -122,7 +122,11 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   }
 
   /**
-   * Turn on tracking USB devices. This is required for every hardware interaction.
+   * Turn on tracking USB devices.
+   *
+   * This is must be called before every hardware interaction,
+   * i.e. createIdentity() and createTransactionSignature() and to
+   * use the canSign and deviceState properties.
    */
   public startDeviceTracking(): void {
     this.deviceTracker.start();
@@ -130,6 +134,9 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
 
   /**
    * Turn off tracking USB devices.
+   *
+   * Use this to save resources when LedgerSimpleAddressKeyringEntry is not used anymore.
+   * With device tracking turned off, canSign and deviceState are not updated anymore.
    */
   public stopDeviceTracking(): void {
     this.deviceTracker.stop();

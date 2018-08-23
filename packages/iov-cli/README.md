@@ -175,7 +175,9 @@ Do 1. and 2. like above
 > import { LedgerSimpleAddressKeyringEntry } from "@iov/ledger-bns";
 > const profile = new UserProfile();
 > profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral"))
-> profile.addEntry(new LedgerSimpleAddressKeyringEntry())
+> const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
+> ledgerEntry.startDeviceTracking();
+> profile.addEntry(ledgerEntry);
 
 > profile.getIdentities(0)
 []

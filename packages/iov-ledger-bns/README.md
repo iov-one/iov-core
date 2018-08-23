@@ -31,6 +31,8 @@ are two interfaces to do so: `readonly canSign: ValueAndUpdates<boolean>` and `r
 
 ```ts
 const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
+ledgerEntry.startDeviceTracking();
+
 const canSign1 = ledgerEntry.canSign.value; // false
 
 // connect Ledger and open app
@@ -42,6 +44,8 @@ You can subscribe for updates
 
 ```ts
 const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
+ledgerEntry.startDeviceTracking();
+
 ledgerEntry.canSign.updates.subscribe({
   next: value => {
     console.log("canSign is now", value);
@@ -52,6 +56,9 @@ ledgerEntry.canSign.updates.subscribe({
 or wait until a specific value is reached
 
 ```ts
+const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
+ledgerEntry.startDeviceTracking();
+
 async function signWhenReady() {
   await ledgerEntry.canSign.waitFor(true);
   // canSign is now true. Proceed.
@@ -67,6 +74,8 @@ Check the current state:
 
 ```ts
 const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
+ledgerEntry.startDeviceTracking();
+
 const state1 = ledgerEntry.deviceState.value; // LedgerState.Disconnected
 
 // connect and wait some time
@@ -82,6 +91,8 @@ Subscribe for updates:
 import { LedgerSimpleAddressKeyringEntry, LedgerState } from "@iov/ledger-bns";
 
 const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
+ledgerEntry.startDeviceTracking();
+
 ledgerEntry.deviceState.updates.subscribe({
   next: value => {
     switch (value) {
@@ -103,6 +114,7 @@ Wait until a specific value is reached:
 
 ```ts
 const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
+ledgerEntry.startDeviceTracking();
 
 async function signWhenReady() {
   await ledgerEntry.deviceState.waitFor(LedgerState.IovAppOpen);
