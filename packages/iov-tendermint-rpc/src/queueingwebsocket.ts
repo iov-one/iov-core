@@ -94,6 +94,19 @@ export class QueueingWebSocket {
     }
   }
 
+  public async sendNow(data: string): Promise<void> {
+    if (!this.socket) {
+      throw new Error("Socket undefined. This must be called after connecting.");
+    }
+
+    // this exception should be thrown by send() automatically according to
+    // https://developer.mozilla.org/de/docs/Web/API/WebSocket#send() but it does not work in browsers
+    if (this.socket.readyState !== WebSocket.OPEN) {
+      throw new Error("Websocket is not open");
+    }
+    this.socket.send(data);
+  }
+
   private processQueue(): void {
     if (!this.socket) {
       throw new Error("Socket undefined. This must be called after connecting.");
