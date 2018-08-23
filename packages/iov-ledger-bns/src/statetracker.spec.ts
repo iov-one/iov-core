@@ -50,4 +50,18 @@ describe("StateTracker", () => {
     });
     tracker.start();
   });
+
+  it("changes to disconnected when tracking is stopped", async () => {
+    pendingWithoutLedger();
+
+    const tracker = new StateTracker();
+    expect(tracker.state.value).toEqual(LedgerState.Disconnected);
+
+    tracker.start();
+    await tracker.state.waitFor(LedgerState.IovAppOpen);
+    expect(tracker.state.value).toEqual(LedgerState.IovAppOpen);
+
+    tracker.stop();
+    expect(tracker.state.value).toEqual(LedgerState.Disconnected);
+  });
 });

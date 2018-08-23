@@ -152,6 +152,20 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     keyringEntry.stopDeviceTracking();
   });
 
+  it("cannot sign when device tracking is off", async () => {
+    pendingWithoutInteractiveLedger();
+
+    const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    expect(keyringEntry.canSign.value).toEqual(false);
+
+    keyringEntry.startDeviceTracking();
+    await keyringEntry.canSign.waitFor(true);
+    expect(keyringEntry.canSign.value).toEqual(true);
+
+    keyringEntry.stopDeviceTracking();
+    expect(keyringEntry.canSign.value).toEqual(false);
+  });
+
   it("can sign", async () => {
     pendingWithoutInteractiveLedger();
 

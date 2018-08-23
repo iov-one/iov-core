@@ -70,6 +70,7 @@ export class StateTracker {
       // tslint:disable-next-line:no-object-mutation
       this.listeningSubscription = undefined;
     }
+    this.stateProducer.update(LedgerState.Disconnected);
   }
 
   /**
