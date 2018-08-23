@@ -151,9 +151,7 @@ describe("Client", () => {
     const info3 = await client3.abciInfo();
     expect(info3).toBeTruthy();
   });
-});
 
-describe("Verify client calls on tendermint w/ kvstore app", () => {
   // don't print out WebSocket errors if marked pending
   const onError = skipTests() ? () => 0 : console.log;
 
