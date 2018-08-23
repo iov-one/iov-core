@@ -38,6 +38,10 @@ export class StateTracker {
 
   public readonly state: ValueAndUpdates<LedgerState>;
 
+  public get running(): boolean {
+    return this.listeningSubscription !== undefined;
+  }
+
   private readonly stateProducer: DefaultValueProducer<LedgerState>;
   // tslint:disable-next-line:readonly-keyword
   private listeningSubscription: Subscription | undefined;

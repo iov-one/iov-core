@@ -12,6 +12,27 @@ describe("StateTracker", () => {
     expect(tracker.state.value).toEqual(LedgerState.Disconnected);
   });
 
+  it("has running state false when created", () => {
+    const tracker = new StateTracker();
+    expect(tracker.running).toEqual(false);
+  });
+
+  it("has running state true when started", () => {
+    const tracker = new StateTracker();
+    expect(tracker.running).toEqual(false);
+    tracker.start();
+    expect(tracker.running).toEqual(true);
+  });
+
+  it("has running state false when stopped", () => {
+    const tracker = new StateTracker();
+    expect(tracker.running).toEqual(false);
+    tracker.start();
+    expect(tracker.running).toEqual(true);
+    tracker.stop();
+    expect(tracker.running).toEqual(false);
+  });
+
   it("changes state to app open", done => {
     pendingWithoutLedger();
 

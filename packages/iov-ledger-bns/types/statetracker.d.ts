@@ -7,6 +7,7 @@ export declare enum LedgerState {
 export declare class StateTracker {
     private static checkConectedAndAppOpen;
     readonly state: ValueAndUpdates<LedgerState>;
+    readonly running: boolean;
     private readonly stateProducer;
     private listeningSubscription;
     constructor();
