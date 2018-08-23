@@ -85,9 +85,9 @@ describe("SocketWrapper", () => {
       },
       fail,
       () => {
-        socket.sendNow("aabbccdd");
-        socket.sendNow("whatever");
-        socket.sendNow("lalala");
+        socket.send("aabbccdd");
+        socket.send("whatever");
+        socket.send("lalala");
       },
       () => {
         expect(responses.length).toEqual(3);
@@ -109,7 +109,7 @@ describe("SocketWrapper", () => {
       },
       () => {
         socket
-          .sendNow("la li lu")
+          .send("la li lu")
           .then(() => fail("must not resolve"))
           .catch(error => {
             expect(error).toMatch(/socket was closed/i);

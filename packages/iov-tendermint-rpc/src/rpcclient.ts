@@ -153,7 +153,7 @@ export class WebsocketClient implements RpcStreamingClient {
     const responsePromise = this.responseForRequestId(request.id).then(throwIfError);
 
     await this.socket.connected;
-    await this.socket.sendNow(JSON.stringify(request));
+    await this.socket.send(JSON.stringify(request));
 
     const response = await responsePromise;
     return response;
@@ -216,7 +216,7 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
     this.connectToClient(listener);
 
     this.socket.connected.then(() => {
-      this.socket.sendNow(JSON.stringify(this.request)).catch(error => {
+      this.socket.send(JSON.stringify(this.request)).catch(error => {
         listener.error(error);
       });
     });
@@ -233,7 +233,7 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
     // Tell the server we are done in order to save resources. We cannot wait for the result.
     // This may fail when socket connection is not open, thus ignore errors in send
     const endRequest: JsonRpcRequest = { ...this.request, method: "unsubscribe" };
-    this.socket.sendNow(JSON.stringify(endRequest)).catch(_ => 0);
+    this.socket.send(JSON.stringify(endRequest)).catch(_ => 0);
   }
 
   protected connectToClient(listener: Listener<JsonRpcEvent>): void {
