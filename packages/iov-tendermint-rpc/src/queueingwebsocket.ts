@@ -21,6 +21,9 @@ export interface QueueingWebSocketMessageEvent {
 }
 
 export class QueueingWebSocket {
+  public readonly connected: Promise<void>;
+
+  private connectedResolver: (() => void) | undefined;
   private socket: WebSocket | undefined;
   private opened = false;
   private closed = false;
@@ -32,41 +35,44 @@ export class QueueingWebSocket {
     private readonly errorHandler: (event: QueueingWebSocketErrorEvent) => void,
     private readonly openHandler?: () => void,
     private readonly closeHandler?: (event: QueueingWebSocketCloseEvent) => void,
-  ) {}
+  ) {
+    this.connected = new Promise((resolve, _) => {
+      this.connectedResolver = resolve;
+    });
+  }
 
   /**
    * returns a promise that resolves when connection is open
    */
-  public connect(): Promise<void> {
+  public connect(): void {
     const socket = new WebSocket(this.url);
+
+    socket.onerror = this.errorHandler;
+    socket.onmessage = messageEvent => {
+      this.messageHandler({
+        type: messageEvent.type,
+        data: messageEvent.data as string,
+      });
+    };
+    socket.onopen = _ => {
+      this.opened = true;
+
+      this.connectedResolver!();
+
+      if (this.openHandler) {
+        this.openHandler();
+      }
+
+      this.processQueue();
+    };
+    socket.onclose = closeEvent => {
+      this.closed = true;
+      if (this.closeHandler) {
+        this.closeHandler(closeEvent);
+      }
+    };
+
     this.socket = socket;
-
-    return new Promise(resolve => {
-      socket.onerror = this.errorHandler;
-      socket.onmessage = messageEvent => {
-        this.messageHandler({
-          type: messageEvent.type,
-          data: messageEvent.data as string,
-        });
-      };
-      socket.onopen = _ => {
-        this.opened = true;
-
-        resolve();
-
-        if (this.openHandler) {
-          this.openHandler();
-        }
-
-        this.processQueue();
-      };
-      socket.onclose = closeEvent => {
-        this.closed = true;
-        if (this.closeHandler) {
-          this.closeHandler(closeEvent);
-        }
-      };
-    });
   }
 
   public disconnect(): void {

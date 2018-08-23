@@ -114,10 +114,6 @@ export class WebsocketClient implements RpcStreamingClient {
   protected readonly url: string;
   protected readonly socket: QueueingWebSocket;
 
-  // connected is resolved as soon as the websocket is connected
-  // TODO: use MemoryStream and support reconnects
-  protected readonly connected: Promise<void>;
-
   constructor(baseUrl: string = "ws://localhost:46657", onError: (err: any) => void = defaultErrorHandler) {
     // accept host.name:port and assume ws protocol
     const path = "/websocket";
@@ -146,7 +142,7 @@ export class WebsocketClient implements RpcStreamingClient {
         }
       },
     );
-    this.connected = this.socket.connect();
+    this.socket.connect();
     this.switch.on("error", onError);
   }
 
@@ -168,12 +164,12 @@ export class WebsocketClient implements RpcStreamingClient {
   }
 
   public async send(request: JsonRpcRequest): Promise<void> {
-    await this.connected;
+    await this.socket.connected;
     this.socket.sendNow(JSON.stringify(request));
   }
 
   public async disconnect(): Promise<void> {
-    await this.connected;
+    await this.socket.connected;
     this.socket.disconnect();
   }
 
