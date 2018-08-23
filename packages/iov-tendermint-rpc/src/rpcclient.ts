@@ -105,9 +105,6 @@ export class HttpUriClient implements RpcClient {
   }
 }
 
-// WebsocketClient makes calls over websocket
-// TODO: support event subscriptions as well
-// TODO: error handling on disconnect
 export class WebsocketClient implements RpcStreamingClient {
   // Used to distribute socket events to interested listeners. Event types:
   // "<id>"        response messages to the request with <id>
