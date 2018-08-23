@@ -79,11 +79,11 @@ describe("RpcClient", () => {
     it("can listen to events", done => {
       pendingWithoutTendermint();
 
-      const ws = new WebsocketClient(tendermintUrl);
+      const client = new WebsocketClient(tendermintUrl);
 
       const query = "tm.event='NewBlockHeader'";
       const req = jsonRpcWith("subscribe", { query });
-      const headers = ws.listen(req);
+      const headers = client.listen(req);
 
       // tslint:disable-next-line:readonly-array
       const events: JsonRpcEvent[] = [];
@@ -152,12 +152,12 @@ describe("RpcClient", () => {
     it("fails when listening to a disconnected client", async done => {
       pendingWithoutTendermint();
 
-      const ws = new WebsocketClient(tendermintUrl);
-      await ws.disconnect();
+      const client = new WebsocketClient(tendermintUrl);
+      await client.disconnect();
 
       const query = "tm.event='NewBlockHeader'";
       const req = jsonRpcWith("subscribe", { query });
-      ws.listen(req).subscribe({
+      client.listen(req).subscribe({
         error: error => {
           expect(error.toString()).toMatch(/is not open/);
           done();
