@@ -8,20 +8,24 @@ import { buildTxQuery } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, RpcClient, WebsocketClient } from "./rpcclient";
 
-const skipTests = (): boolean => !process.env.TENDERMINT_ENABLED;
+function skipTests(): boolean {
+  return !process.env.TENDERMINT_ENABLED;
+}
 
-const pendingWithoutTendermint = () => {
+function pendingWithoutTendermint(): void {
   if (skipTests()) {
     pending("Set TENDERMINT_ENABLED to enable tendermint-based tests");
   }
-};
+}
 
 // TODO: make flexible, support multiple versions, etc...
 const tendermintUrl = "localhost:12345";
 
-const buildKvTx = (k: string, v: string): Uint8Array => Encoding.toAscii(`${k}=${v}`);
+function buildKvTx(k: string, v: string): Uint8Array {
+  return Encoding.toAscii(`${k}=${v}`);
+}
 
-const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
+function kvTestSuite(msg: string, rpcFactory: () => RpcClient): void {
   const key = randomId();
   const value = randomId();
 
@@ -37,25 +41,6 @@ const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
       const client = await Client.detectVersion(rpcFactory());
       const info = await client.abciInfo();
       expect(info).toBeTruthy();
-    });
-
-    it("Can connect to a given url", async () => {
-      pendingWithoutTendermint();
-
-      // default connection
-      const client = await Client.connect(tendermintUrl);
-      const info = await client.abciInfo();
-      expect(info).toBeTruthy();
-
-      // http connection
-      const client2 = await Client.connect("http://" + tendermintUrl);
-      const info2 = await client2.abciInfo();
-      expect(info2).toBeTruthy();
-
-      // ws connection
-      const client3 = await Client.connect("ws://" + tendermintUrl);
-      const info3 = await client3.abciInfo();
-      expect(info3).toBeTruthy();
     });
 
     it("Posts a transaction", async () => {
@@ -145,9 +130,28 @@ const kvTestSuite = (msg: string, rpcFactory: () => RpcClient) => {
       expect(block.block.txs[0]).toEqual(tx);
     });
   });
-};
+}
 
-describe("Verify client calls on tendermint w/ kvstore app", () => {
+describe("Client", () => {
+  it("can connect to a given url", async () => {
+    pendingWithoutTendermint();
+
+    // default connection
+    const client = await Client.connect(tendermintUrl);
+    const info = await client.abciInfo();
+    expect(info).toBeTruthy();
+
+    // http connection
+    const client2 = await Client.connect("http://" + tendermintUrl);
+    const info2 = await client2.abciInfo();
+    expect(info2).toBeTruthy();
+
+    // ws connection
+    const client3 = await Client.connect("ws://" + tendermintUrl);
+    const info3 = await client3.abciInfo();
+    expect(info3).toBeTruthy();
+  });
+
   // don't print out WebSocket errors if marked pending
   const onError = skipTests() ? () => 0 : console.log;
 
