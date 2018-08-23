@@ -20,19 +20,24 @@ export interface RpcStreamingClient extends RpcClient {
   readonly listen: (request: JsonRpcRequest) => Stream<JsonRpcEvent>;
 }
 
-export const getWindow = (): any | undefined => (inBrowser() ? (window as any) : undefined);
-export const inBrowser = (): boolean => typeof window === "object";
+export function getWindow(): any | undefined {
+  return inBrowser() ? (window as any) : undefined;
+}
 
-const filterBadStatus = (res: Response) => {
+export function inBrowser(): boolean {
+  return typeof window === "object";
+}
+
+function filterBadStatus(res: Response): Response {
   if (res.status >= 400) {
     throw new Error(`Bad status on response: ${res.status}`);
   }
   return res;
-};
+}
 
 // post uses fetch in browser and axios in node,
 // was having weird issues with axios in brower
-const http = (method: string, url: string, request?: any): Promise<any> => {
+function http(method: string, url: string, request?: any): Promise<any> {
   if (inBrowser()) {
     const body = request ? JSON.stringify(request) : undefined;
     return fetch(url, { method, body })
@@ -41,7 +46,7 @@ const http = (method: string, url: string, request?: any): Promise<any> => {
   } else {
     return axios.request({ url, method, data: request }).then(res => res.data) as Promise<any>;
   }
-};
+}
 
 function defaultErrorHandler(error: any): never {
   throw error;
@@ -49,12 +54,14 @@ function defaultErrorHandler(error: any): never {
 
 // make sure we set the origin header properly, seems not to be set
 // in karma tests....
-export const getOriginConfig = () => {
+export function getOriginConfig(): any {
   const w = getWindow();
   return w ? { headers: { Origin: w.origin, Referer: `${w.origin}/` } } : undefined;
-};
+}
 
-export const hasProtocol = (url: string) => url.search("://") !== -1;
+export function hasProtocol(url: string): boolean {
+  return url.search("://") !== -1;
+}
 
 export class HttpClient implements RpcClient {
   protected readonly url: string;
