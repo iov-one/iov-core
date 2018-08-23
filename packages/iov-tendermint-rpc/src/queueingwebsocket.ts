@@ -34,31 +34,39 @@ export class QueueingWebSocket {
     private readonly closeHandler?: (event: QueueingWebSocketCloseEvent) => void,
   ) {}
 
-  public connect(): void {
+  /**
+   * returns a promise that resolves when connection is open
+   */
+  public connect(): Promise<void> {
     const socket = new WebSocket(this.url);
-    socket.onerror = this.errorHandler;
-    socket.onmessage = messageEvent => {
-      this.messageHandler({
-        type: messageEvent.type,
-        data: messageEvent.data as string,
-      });
-    };
-    socket.onopen = _ => {
-      this.opened = true;
-
-      if (this.openHandler) {
-        this.openHandler();
-      }
-
-      this.processQueue();
-    };
-    socket.onclose = closeEvent => {
-      this.closed = true;
-      if (this.closeHandler) {
-        this.closeHandler(closeEvent);
-      }
-    };
     this.socket = socket;
+
+    return new Promise(resolve => {
+      socket.onerror = this.errorHandler;
+      socket.onmessage = messageEvent => {
+        this.messageHandler({
+          type: messageEvent.type,
+          data: messageEvent.data as string,
+        });
+      };
+      socket.onopen = _ => {
+        this.opened = true;
+
+        resolve();
+
+        if (this.openHandler) {
+          this.openHandler();
+        }
+
+        this.processQueue();
+      };
+      socket.onclose = closeEvent => {
+        this.closed = true;
+        if (this.closeHandler) {
+          this.closeHandler(closeEvent);
+        }
+      };
+    });
   }
 
   public disconnect(): void {
