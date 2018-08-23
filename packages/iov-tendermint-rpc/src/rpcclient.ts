@@ -163,11 +163,6 @@ export class WebsocketClient implements RpcStreamingClient {
     return Stream.create(producer);
   }
 
-  public async send(request: JsonRpcRequest): Promise<void> {
-    await this.socket.connected;
-    this.socket.sendNow(JSON.stringify(request));
-  }
-
   public async disconnect(): Promise<void> {
     await this.socket.connected;
     this.socket.disconnect();
