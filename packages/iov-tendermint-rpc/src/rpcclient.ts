@@ -72,8 +72,14 @@ export class HttpClient implements RpcClient {
   }
 }
 
-// HttpUriClient just makes calls without any parameters
-// This is only meant for testing or quick status/health checks
+/**
+ * HttpUriClient encodes the whole request as an URI to be submitted
+ * as a HTTP GET request.
+ *
+ * This is only meant for testing or quick status/health checks
+ *
+ * @see https://tendermint.github.io/slate/#uri-http
+ */
 export class HttpUriClient implements RpcClient {
   protected readonly url: string;
 
