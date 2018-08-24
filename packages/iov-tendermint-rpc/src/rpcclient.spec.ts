@@ -152,25 +152,28 @@ describe("RpcClient", () => {
         .catch(error => expect(error).toMatch(/is not open/i));
     });
 
-    it("fails when listening to a disconnected client", async done => {
+    it("fails when listening to a disconnected client", done => {
       pendingWithoutTendermint();
 
-      const client = new WebsocketClient(tendermintUrl);
-      // dummy command to ensure client is connected
-      await client.execute(jsonRpcWith(Method.HEALTH));
+      // async and done does not work together with pending() in Jasmine 2.8
+      (async () => {
+        const client = new WebsocketClient(tendermintUrl);
+        // dummy command to ensure client is connected
+        await client.execute(jsonRpcWith(Method.HEALTH));
 
-      client.disconnect();
+        client.disconnect();
 
-      const query = "tm.event='NewBlockHeader'";
-      const req = jsonRpcWith("subscribe", { query });
-      client.listen(req).subscribe({
-        error: error => {
-          expect(error.toString()).toMatch(/is not open/);
-          done();
-        },
-        next: () => fail("No event expected"),
-        complete: () => fail("Must not complete"),
-      });
+        const query = "tm.event='NewBlockHeader'";
+        const req = jsonRpcWith("subscribe", { query });
+        client.listen(req).subscribe({
+          error: error => {
+            expect(error.toString()).toMatch(/is not open/);
+            done();
+          },
+          next: () => fail("No event expected"),
+          complete: () => fail("Must not complete"),
+        });
+      })();
     });
 
     it("cannot listen to simple requests", () => {
