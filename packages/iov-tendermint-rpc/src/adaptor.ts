@@ -1,7 +1,7 @@
 // This module exposes translators for multiple tendermint versions
 // Pick a version that matches the server to properly encode the data types
 
-import { JsonRpcRequest, JsonRpcSuccess, jsonRpcWith, throwIfError } from "./common";
+import { JsonRpcRequest, JsonRpcSuccess, jsonRpcWith } from "./common";
 import * as requests from "./requests";
 import * as responses from "./responses";
 import { RpcClient } from "./rpcclient";
@@ -63,7 +63,7 @@ export interface Responses {
 export const findAdaptor = async (client: RpcClient): Promise<Adaptor> => {
   const req = jsonRpcWith(requests.Method.STATUS);
   const response = await client.execute(req);
-  const result: any = throwIfError(response).result;
+  const result = response.result;
 
   if (!result || !result.node_info) {
     throw new Error("Unrecognized format for status response");
