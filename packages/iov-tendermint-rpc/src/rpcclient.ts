@@ -15,6 +15,7 @@ import { SocketWrapper } from "./socketwrapper";
 
 export interface RpcClient {
   readonly execute: (request: JsonRpcRequest) => Promise<JsonRpcSuccess>;
+  readonly disconnect: () => void;
 }
 
 export interface RpcStreamingClient extends RpcClient {
@@ -72,6 +73,10 @@ export class HttpClient implements RpcClient {
     this.url = hasProtocol(url) ? url : "http://" + url;
   }
 
+  public disconnect(): void {
+    // nothing to be done
+  }
+
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
     // make sure we set the origin header properly, seems not to be set
     // in karma tests....
@@ -93,6 +98,10 @@ export class HttpUriClient implements RpcClient {
 
   constructor(baseUrl: string = "http://localhost:46657") {
     this.baseUrl = hasProtocol(baseUrl) ? baseUrl : "http://" + baseUrl;
+  }
+
+  public disconnect(): void {
+    // nothing to be done
   }
 
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {

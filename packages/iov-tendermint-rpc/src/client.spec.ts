@@ -43,6 +43,13 @@ function kvTestSuite(msg: string, rpcFactory: () => RpcClient): void {
       expect(info).toBeTruthy();
     });
 
+    it("can disconnect", async () => {
+      pendingWithoutTendermint();
+      const client = await Client.detectVersion(rpcFactory());
+      await client.abciInfo();
+      client.disconnect();
+    });
+
     it("Posts a transaction", async () => {
       pendingWithoutTendermint();
       const client = new Client(rpcFactory(), v0_20);

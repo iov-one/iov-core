@@ -37,7 +37,7 @@ export class IovWriter {
   }
 
   public reader(chainId: ChainId): IovReader {
-    return this.mustGet(chainId).client;
+    return this.getChain(chainId).client;
   }
 
   public async addChain(connector: ChainConnector): Promise<void> {
@@ -49,13 +49,13 @@ export class IovWriter {
   }
 
   public keyToAddress(chainId: ChainId, key: PublicKeyBundle): Address {
-    return this.mustGet(chainId).codec.keyToAddress(key);
+    return this.getChain(chainId).codec.keyToAddress(key);
   }
 
   // getNonce will return one value for the address, 0 if not found
   // not the ful bcp info.
   public async getNonce(chainId: ChainId, addr: Address): Promise<Nonce> {
-    const nonce = await this.mustGet(chainId).client.getNonce({ address: addr });
+    const nonce = await this.getChain(chainId).client.getNonce({ address: addr });
     return nonce.data.length === 0 ? (Long.fromInt(0) as Nonce) : nonce.data[0].nonce;
   }
 
@@ -65,7 +65,7 @@ export class IovWriter {
   // It finds the nonce, signs properly, and posts the tx to the blockchain.
   public async signAndCommit(tx: UnsignedTransaction, keyring: number): Promise<BcpTransactionResponse> {
     const chainId = tx.chainId;
-    const { client, codec } = this.mustGet(chainId);
+    const { client, codec } = this.getChain(chainId);
 
     const signer = tx.signer;
     const signerAddr = this.keyToAddress(chainId, signer);
@@ -81,7 +81,10 @@ export class IovWriter {
     return post;
   }
 
-  private mustGet(chainId: ChainId): ChainConnector {
+  /**
+   * Throws for unknown chain ID
+   */
+  private getChain(chainId: ChainId): ChainConnector {
     const connector = this.knownChains.get(chainId);
     if (connector === undefined) {
       throw new Error(`No such chain: ${chainId}`);

@@ -63,7 +63,7 @@ $ iov-cli
 [ { pubkey: { algo: 'ed25519', data: [Uint8Array] },
     label: 'blockchain of value faucet' } ]
 
-> const knownChains = await withConnectors([await bnsConnector("http://localhost:22345")]);
+> const knownChains = await withConnectors([await bnsConnector("ws://localhost:22345")]);
 > const writer = new IovWriter(profile, knownChains);
 > const chainId = writer.chainIds()[0];
 > const reader = writer.reader(chainId);
@@ -165,6 +165,24 @@ const setNameTx: SetNameTx = {
      38,
      125,
      211, ...
+```
+
+### Disconnecting
+
+When you are done using a WebSocket connection, disconnect the reader
+
+```
+> (await reader.getAccount({ address: faucetAddress })).data[0].balance
+[ { whole: 123456789,
+    fractional: 0,
+    tokenTicker: 'CASH',
+    tokenName: 'Main token of this chain',
+    sigFigs: 6 } ]
+> reader.disconnect()
+undefined
+> (await reader.getAccount({ address: faucetAddress })).data[0].balance
+Error: Socket was closed, so no data can be sent anymore.
+    at ...
 ```
 
 ## Ledger usage
