@@ -38,7 +38,8 @@
     "isomorphic-ws": "^4.0.1",
     "readonly-date": "^1.0.0",
     "type-tagger": "^1.0.0",
-    "ws": "^5.2.2"
+    "ws": "^5.2.2",
+    "xstream": "^11.7.0"
   },
   "gitHead": "39379b38f0ac128a48aa7174692c4c932ed326f7"
 }

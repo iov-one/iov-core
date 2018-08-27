@@ -33,7 +33,7 @@ export interface JsonRpcEvent {
   readonly query: string;
   readonly data: {
     readonly type: string;
-    readonly value: {};
+    readonly value: any;
   };
 }
 

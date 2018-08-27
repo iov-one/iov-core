@@ -96,6 +96,10 @@ export interface StatusResponse {
   readonly validatorInfo: Validator;
 }
 
+export interface SubscriptionEvent {
+  readonly blockHeight: number;
+}
+
 export interface TxResponse {
   readonly tx: PostableBytes;
   readonly txResult: TxData;

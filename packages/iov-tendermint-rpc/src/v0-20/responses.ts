@@ -9,7 +9,7 @@ import {
   SignatureBytes,
 } from "@iov/tendermint-types";
 
-import { JsonRpcSuccess } from "../common";
+import { JsonRpcEvent, JsonRpcSuccess } from "../common";
 import {
   Base64,
   Base64String,
@@ -74,6 +74,12 @@ export class Responses {
 
   public static decodeStatus(response: JsonRpcSuccess): responses.StatusResponse {
     return decodeStatus(response.result as RpcStatusResponse);
+  }
+
+  public static decodeSubscriptionEvent(event: JsonRpcEvent): responses.SubscriptionEvent {
+    return decodeSubscriptionEvent({
+      blockHeight: event.data.value.header.height,
+    });
   }
 
   public static decodeTx(response: JsonRpcSuccess): responses.TxResponse {
@@ -239,6 +245,16 @@ const decodeStatus = (data: RpcStatusResponse): responses.StatusResponse => ({
   syncInfo: decodeSyncInfo(data.sync_info),
   validatorInfo: decodeValidatorInfo(data.validator_info),
 });
+
+export interface RpcSubscriptionEvent {
+  readonly blockHeight: number;
+}
+
+function decodeSubscriptionEvent(event: RpcSubscriptionEvent): responses.SubscriptionEvent {
+  return {
+    blockHeight: event.blockHeight,
+  };
+}
 
 export interface RpcTxResponse {
   readonly tx: Base64String;

@@ -1,7 +1,9 @@
+import { Stream } from "xstream";
+
 import { Adaptor, Decoder, Encoder, findAdaptor, Params, Responses } from "./adaptor";
-import { default as requests, Method } from "./requests";
+import { default as requests, Method, SubscriptionEventType } from "./requests";
 import * as responses from "./responses";
-import { HttpClient, RpcClient, WebsocketClient } from "./rpcclient";
+import { HttpClient, instanceOfRpcStreamingClient, RpcClient, WebsocketClient } from "./rpcclient";
 
 export class Client {
   public static connect(url: string): Promise<Client> {
@@ -87,6 +89,21 @@ export class Client {
   public status(): Promise<responses.StatusResponse> {
     const query: requests.StatusRequest = { method: Method.STATUS };
     return this.doCall(query, this.p.encodeStatus, this.r.decodeStatus);
+  }
+
+  public subscribe(eventType: SubscriptionEventType): Stream<responses.SubscriptionEvent> {
+    if (!instanceOfRpcStreamingClient(this.client)) {
+      throw new Error("This RPC client type cannot subscribe to events");
+    }
+
+    const request: requests.SubscribeRequest = { method: Method.SUBSCRIBE, type: eventType };
+    const req = this.p.encodeSubscribe(request);
+    const eventStream = this.client.listen(req);
+    return eventStream.map<responses.SubscriptionEvent>(event => {
+      // tslint:disable-next-line:no-console
+      // console.log(JSON.stringify(event));
+      return this.r.decodeSubscriptionEvent(event);
+    });
   }
 
   public tx(params: requests.TxParams): Promise<responses.TxResponse> {

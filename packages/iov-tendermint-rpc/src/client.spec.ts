@@ -1,10 +1,10 @@
-// tslint:disable:no-console
+// tslint:disable:no-console readonly-array
 import { Encoding } from "@iov/encoding";
 
 import { v0_20 } from "./adaptor";
 import { Client } from "./client";
 import { randomId } from "./common";
-import { buildTxQuery } from "./requests";
+import { buildTxQuery, SubscriptionEventType } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, RpcClient, WebsocketClient } from "./rpcclient";
 
@@ -165,5 +165,31 @@ describe("Client", () => {
     // don't print out WebSocket errors if marked pending
     const onError = skipTests() ? () => 0 : console.log;
     kvTestSuite(() => new WebsocketClient(tendermintUrl, onError));
+
+    it("can subscribe to events", done => {
+      pendingWithoutTendermint();
+
+      (async () => {
+        const events: responses.SubscriptionEvent[] = [];
+        const client = await Client.connect("ws://" + tendermintUrl);
+        const stream = client.subscribe(SubscriptionEventType.NewBlockHeader);
+        expect(stream).toBeTruthy();
+        const subscription = stream.subscribe({
+          next: event => {
+            events.push(event);
+
+            if (events.length === 3) {
+              subscription.unsubscribe();
+              expect(events.length).toEqual(3);
+              expect(events[1].blockHeight).toEqual(events[0].blockHeight + 1);
+              expect(events[2].blockHeight).toEqual(events[1].blockHeight + 1);
+              done();
+            }
+          },
+          error: fail,
+          complete: () => fail("Stream must not close just because we don't listen anymore"),
+        });
+      })();
+    });
   });
 });

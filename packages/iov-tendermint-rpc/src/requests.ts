@@ -17,10 +17,11 @@ export const enum Method {
   GENESIS = "genesis",
   HEALTH = "health",
   STATUS = "status",
+  SUBSCRIBE = "subscribe",
   TX = "tx",
   TX_SEARCH = "tx_search",
   VALIDATORS = "validators",
-  // TODO: subscribe, unsubscribe, random commands
+  UNSUBSCRIBE = "unsubscribe",
 }
 
 export type Request =
@@ -37,6 +38,15 @@ export type Request =
   | TxRequest
   | TxSearchRequest
   | ValidatorsRequest;
+
+/**
+ * Raw values must match the tendermint event name
+ */
+export enum SubscriptionEventType {
+  NewBlock = "NewBlock",
+  NewBlockHeader = "NewBlockHeader",
+  Tx = "Tx",
+}
 
 export interface AbciInfoRequest {
   readonly method: Method.ABCI_INFO;
@@ -100,6 +110,11 @@ export interface HealthRequest {
 
 export interface StatusRequest {
   readonly method: Method.STATUS;
+}
+
+export interface SubscribeRequest {
+  readonly method: Method.SUBSCRIBE;
+  readonly type: SubscriptionEventType;
 }
 
 export interface TxRequest {

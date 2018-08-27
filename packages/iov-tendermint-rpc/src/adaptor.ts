@@ -1,7 +1,7 @@
 // This module exposes translators for multiple tendermint versions
 // Pick a version that matches the server to properly encode the data types
 
-import { JsonRpcRequest, JsonRpcSuccess, jsonRpcWith } from "./common";
+import { JsonRpcEvent, JsonRpcRequest, JsonRpcSuccess, jsonRpcWith } from "./common";
 import * as requests from "./requests";
 import * as responses from "./responses";
 import { RpcClient } from "./rpcclient";
@@ -32,6 +32,7 @@ export interface Params {
   readonly encodeGenesis: (req: requests.GenesisRequest) => JsonRpcRequest;
   readonly encodeHealth: (req: requests.HealthRequest) => JsonRpcRequest;
   readonly encodeStatus: (req: requests.StatusRequest) => JsonRpcRequest;
+  readonly encodeSubscribe: (req: requests.SubscribeRequest) => JsonRpcRequest;
   readonly encodeTx: (req: requests.TxRequest) => JsonRpcRequest;
   readonly encodeTxSearch: (req: requests.TxSearchRequest) => JsonRpcRequest;
   readonly encodeValidators: (req: requests.ValidatorsRequest) => JsonRpcRequest;
@@ -50,6 +51,7 @@ export interface Responses {
   readonly decodeGenesis: (response: JsonRpcSuccess) => responses.GenesisResponse;
   readonly decodeHealth: (response: JsonRpcSuccess) => responses.HealthResponse;
   readonly decodeStatus: (response: JsonRpcSuccess) => responses.StatusResponse;
+  readonly decodeSubscriptionEvent: (response: JsonRpcEvent) => responses.SubscriptionEvent;
   readonly decodeTx: (response: JsonRpcSuccess) => responses.TxResponse;
   readonly decodeTxSearch: (response: JsonRpcSuccess) => responses.TxSearchResponse;
   readonly decodeValidators: (response: JsonRpcSuccess) => responses.ValidatorsResponse;

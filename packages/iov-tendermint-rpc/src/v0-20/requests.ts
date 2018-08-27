@@ -31,6 +31,10 @@ export class Params extends requests.DefaultParams {
     return jsonRpcWith(req.method, req.params);
   }
 
+  public static encodeSubscribe(req: requests.SubscribeRequest): JsonRpcRequest {
+    return jsonRpcWith("subscribe", { query: `tm.event='${req.type}'` });
+  }
+
   public static encodeTx(req: requests.TxRequest): JsonRpcRequest {
     return jsonRpcWith(req.method, encodeTxParams(req.params));
   }
