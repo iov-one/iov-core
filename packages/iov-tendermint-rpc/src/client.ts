@@ -3,6 +3,7 @@ import { Stream } from "xstream";
 import { Tag } from "@iov/tendermint-types";
 
 import { Adaptor, Decoder, Encoder, findAdaptor, Params, Responses } from "./adaptor";
+import { JsonRpcEvent } from "./common";
 import * as requests from "./requests";
 import * as responses from "./responses";
 import { HttpClient, instanceOfRpcStreamingClient, RpcClient, WebsocketClient } from "./rpcclient";
@@ -96,23 +97,23 @@ export class Client {
     return this.doCall(query, this.p.encodeStatus, this.r.decodeStatus);
   }
 
-  public subscribeNewBlock(): Stream<responses.SubscriptionEvent> {
+  public subscribeNewBlock(): Stream<responses.NewBlockEvent> {
     const request: requests.SubscribeRequest = {
       method: requests.Method.SUBSCRIBE,
       query: { type: requests.SubscriptionEventType.NewBlock },
     };
-    return this.subscribe(request);
+    return this.subscribe(request, this.r.decodeNewBlockEvent);
   }
 
-  public subscribeNewBlockHeader(): Stream<responses.SubscriptionEvent> {
+  public subscribeNewBlockHeader(): Stream<responses.NewBlockHeaderEvent> {
     const request: requests.SubscribeRequest = {
       method: requests.Method.SUBSCRIBE,
       query: { type: requests.SubscriptionEventType.NewBlockHeader },
     };
-    return this.subscribe(request);
+    return this.subscribe(request, this.r.decodeNewBlockHeaderEvent);
   }
 
-  public subscribeTx(tags?: ReadonlyArray<Tag>): Stream<responses.SubscriptionEvent> {
+  public subscribeTx(tags?: ReadonlyArray<Tag>): Stream<responses.TxEvent> {
     const request: requests.SubscribeRequest = {
       method: requests.Method.SUBSCRIBE,
       query: {
@@ -120,7 +121,7 @@ export class Client {
         tags: tags,
       },
     };
-    return this.subscribe(request);
+    return this.subscribe(request, this.r.decodeTxEvent);
   }
 
   public tx(params: requests.TxParams): Promise<responses.TxResponse> {
@@ -149,17 +150,17 @@ export class Client {
     return decode(result);
   }
 
-  private subscribe(request: requests.SubscribeRequest): Stream<responses.SubscriptionEvent> {
+  private subscribe<T>(request: requests.SubscribeRequest, decode: (e: JsonRpcEvent) => T): Stream<T> {
     if (!instanceOfRpcStreamingClient(this.client)) {
       throw new Error("This RPC client type cannot subscribe to events");
     }
 
     const req = this.p.encodeSubscribe(request);
     const eventStream = this.client.listen(req);
-    return eventStream.map<responses.SubscriptionEvent>(event => {
+    return eventStream.map<T>(event => {
       // tslint:disable-next-line:no-console
       // console.log(JSON.stringify(event));
-      return this.r.decodeSubscriptionEvent(event);
+      return decode(event);
     });
   }
 }

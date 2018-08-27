@@ -1,4 +1,6 @@
 // tslint:disable:no-console readonly-array
+import { ReadonlyDate } from "readonly-date";
+
 import { Encoding } from "@iov/encoding";
 import { Tag } from "@iov/tendermint-types";
 
@@ -170,20 +172,48 @@ describe("Client", () => {
     it("can subscribe to block header events", done => {
       pendingWithoutTendermint();
 
+      const testStart = ReadonlyDate.now();
+
       (async () => {
-        const events: responses.SubscriptionEvent[] = [];
+        const events: responses.NewBlockHeaderEvent[] = [];
         const client = await Client.connect("ws://" + tendermintUrl);
         const stream = client.subscribeNewBlockHeader();
         expect(stream).toBeTruthy();
         const subscription = stream.subscribe({
           next: event => {
+            expect(event.chainId).toMatch(/[-a-z0-9]{3,30}/);
+            expect(event.height).toBeGreaterThan(0);
+            expect(event.time.getTime()).toBeGreaterThan(testStart);
+            expect(event.numTxs).toEqual(0);
+            expect(event.lastBlockId).toBeTruthy();
+            expect(event.totalTxs).toBeGreaterThan(0);
+
+            // merkle roots for proofs
+            expect(event.appHash).toBeTruthy();
+            expect(event.consensusHash).toBeTruthy();
+            expect(event.dataHash).toBeTruthy();
+            expect(event.evidenceHash).toBeTruthy();
+            expect(event.lastCommitHash).toBeTruthy();
+            expect(event.lastResultsHash).toBeTruthy();
+            expect(event.validatorsHash).toBeTruthy();
+
             events.push(event);
 
-            if (events.length === 3) {
+            if (events.length === 2) {
               subscription.unsubscribe();
-              expect(events.length).toEqual(3);
+              expect(events.length).toEqual(2);
+              expect(events[1].chainId).toEqual(events[0].chainId);
               expect(events[1].height).toEqual(events[0].height + 1);
-              expect(events[2].height).toEqual(events[1].height + 1);
+              expect(events[1].time.getTime()).toBeGreaterThan(events[0].time.getTime());
+              expect(events[1].totalTxs).toEqual(events[0].totalTxs);
+
+              expect(events[1].appHash).toEqual(events[0].appHash);
+              expect(events[1].consensusHash).toEqual(events[0].consensusHash);
+              expect(events[1].dataHash).toEqual(events[0].dataHash);
+              expect(events[1].evidenceHash).toEqual(events[0].evidenceHash);
+              expect(events[1].lastCommitHash).not.toEqual(events[0].lastCommitHash);
+              expect(events[1].lastResultsHash).not.toEqual(events[0].lastResultsHash);
+              expect(events[1].validatorsHash).toEqual(events[0].validatorsHash);
               done();
             }
           },
@@ -196,19 +226,43 @@ describe("Client", () => {
     it("can subscribe to block events", done => {
       pendingWithoutTendermint();
 
+      const testStart = ReadonlyDate.now();
+
       (async () => {
-        const events: responses.SubscriptionEvent[] = [];
+        const events: responses.NewBlockEvent[] = [];
         const client = await Client.connect("ws://" + tendermintUrl);
         const stream = client.subscribeNewBlock();
         expect(stream).toBeTruthy();
         const subscription = stream.subscribe({
           next: event => {
+            expect(event.header.chainId).toMatch(/[-a-z0-9]{3,30}/);
+            expect(event.header.height).toBeGreaterThan(0);
+            expect(event.header.time.getTime()).toBeGreaterThan(testStart);
+            expect(event.header.numTxs).toEqual(1);
+            expect(event.header.lastBlockId).toBeTruthy();
+            expect(event.header.totalTxs).toBeGreaterThan(0);
+
+            // merkle roots for proofs
+            expect(event.header.appHash).toBeTruthy();
+            expect(event.header.consensusHash).toBeTruthy();
+            expect(event.header.dataHash).toBeTruthy();
+            expect(event.header.evidenceHash).toBeTruthy();
+            expect(event.header.lastCommitHash).toBeTruthy();
+            expect(event.header.lastResultsHash).toBeTruthy();
+            expect(event.header.validatorsHash).toBeTruthy();
+
             events.push(event);
 
             if (events.length === 2) {
               subscription.unsubscribe();
               expect(events.length).toEqual(2);
-              expect(events[1].height).toEqual(events[0].height + 1);
+              expect(events[1].header.height).toEqual(events[0].header.height + 1);
+              expect(events[1].header.chainId).toEqual(events[0].header.chainId);
+              expect(events[1].header.time.getTime()).toBeGreaterThan(events[0].header.time.getTime());
+              expect(events[1].header.totalTxs).toEqual(events[0].header.totalTxs + 1);
+
+              expect(events[1].header.appHash).not.toEqual(events[0].header.appHash);
+              expect(events[1].header.validatorsHash).toEqual(events[0].header.validatorsHash);
               done();
             }
           },
@@ -228,18 +282,24 @@ describe("Client", () => {
       pendingWithoutTendermint();
 
       (async () => {
-        const events: responses.SubscriptionEvent[] = [];
+        const events: responses.TxEvent[] = [];
         const client = await Client.connect("ws://" + tendermintUrl);
         const stream = client.subscribeTx();
         expect(stream).toBeTruthy();
         const subscription = stream.subscribe({
           next: event => {
+            expect(event.height).toBeGreaterThan(0);
+            expect(event.index).toEqual(0);
+            expect(event.result).toBeTruthy();
+            expect(event.tx.length).toBeGreaterThan(10);
+
             events.push(event);
 
             if (events.length === 2) {
               subscription.unsubscribe();
               expect(events.length).toEqual(2);
               expect(events[1].height).toEqual(events[0].height + 1);
+              expect(events[1].result.tags).not.toEqual(events[0].result.tags);
               done();
             }
           },
@@ -259,19 +319,25 @@ describe("Client", () => {
       pendingWithoutTendermint();
 
       (async () => {
-        const events: responses.SubscriptionEvent[] = [];
+        const events: responses.TxEvent[] = [];
         const client = await Client.connect("ws://" + tendermintUrl);
         const tags: ReadonlyArray<Tag> = [{ key: "app.creator", value: "jae" }];
         const stream = client.subscribeTx(tags);
         expect(stream).toBeTruthy();
         const subscription = stream.subscribe({
           next: event => {
+            expect(event.height).toBeGreaterThan(0);
+            expect(event.index).toEqual(0);
+            expect(event.result).toBeTruthy();
+            expect(event.tx.length).toBeGreaterThan(10);
+
             events.push(event);
 
             if (events.length === 2) {
               subscription.unsubscribe();
               expect(events.length).toEqual(2);
               expect(events[1].height).toEqual(events[0].height + 1);
+              expect(events[1].result.tags).not.toEqual(events[0].result.tags);
               done();
             }
           },

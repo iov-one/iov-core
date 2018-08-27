@@ -76,26 +76,16 @@ export class Responses {
     return decodeStatus(response.result as RpcStatusResponse);
   }
 
-  public static decodeSubscriptionEvent(event: JsonRpcEvent): responses.SubscriptionEvent {
-    // tslint:disable-next-line:no-let
-    let height: number;
+  public static decodeNewBlockEvent(event: JsonRpcEvent): responses.NewBlockEvent {
+    return decodeBlock(event.data.value.block as RpcBlock);
+  }
 
-    if (event.data.value.block) {
-      // block
-      height = event.data.value.block.header.height;
-    } else if (event.data.value.header) {
-      // block header
-      height = event.data.value.header.height;
-    } else if (event.data.value.TxResult) {
-      // transaction
-      height = event.data.value.TxResult.height;
-    } else {
-      throw new Error("Unknown rpc event:" + JSON.stringify(event));
-    }
+  public static decodeNewBlockHeaderEvent(event: JsonRpcEvent): responses.NewBlockHeaderEvent {
+    return decodeHeader(event.data.value.header as RpcHeader);
+  }
 
-    return decodeSubscriptionEvent({
-      height: height,
-    });
+  public static decodeTxEvent(event: JsonRpcEvent): responses.TxEvent {
+    return decodeTxEvent(event.data.value.TxResult as RpcTxEvent);
   }
 
   public static decodeTx(response: JsonRpcSuccess): responses.TxResponse {
@@ -262,16 +252,6 @@ const decodeStatus = (data: RpcStatusResponse): responses.StatusResponse => ({
   validatorInfo: decodeValidatorInfo(data.validator_info),
 });
 
-export interface RpcSubscriptionEvent {
-  readonly height: number;
-}
-
-function decodeSubscriptionEvent(event: RpcSubscriptionEvent): responses.SubscriptionEvent {
-  return {
-    height: event.height,
-  };
-}
-
 export interface RpcTxResponse {
   readonly tx: Base64String;
   readonly tx_result: RpcTxData;
@@ -297,6 +277,28 @@ const decodeTxSearch = (data: RpcTxSearchResponse): responses.TxSearchResponse =
   totalCount: required(data.total_count),
   txs: required(data.txs).map(decodeTxResponse),
 });
+
+export interface RpcTxEvent {
+  readonly tx: Base64String;
+  readonly result: {
+    readonly tags: ReadonlyArray<RpcTag>;
+    readonly fee: any;
+  };
+  readonly height: number;
+  readonly index: number;
+}
+
+function decodeTxEvent(data: RpcTxEvent): responses.TxEvent {
+  return {
+    tx: Base64.decode(required(data.tx)) as PostableBytes,
+    result: {
+      tags: decodeTags(data.result.tags),
+      fee: data.result.fee,
+    },
+    height: required(data.height),
+    index: required(data.index),
+  };
+}
 
 export interface RpcValidatorsResponse {
   readonly block_height: number;
@@ -379,7 +381,7 @@ export interface RpcBlock {
   readonly header: RpcHeader;
   readonly last_commit: RpcCommit;
   readonly data: {
-    readonly txs: ReadonlyArray<Base64String>;
+    readonly txs?: ReadonlyArray<Base64String>;
   };
   readonly evidence?: {
     readonly evidence?: ReadonlyArray<RpcEvidence>;
@@ -388,7 +390,7 @@ export interface RpcBlock {
 const decodeBlock = (data: RpcBlock): responses.Block => ({
   header: decodeHeader(required(data.header)),
   lastCommit: decodeCommit(required(data.last_commit)),
-  txs: required(data.data.txs).map(Base64.decode),
+  txs: data.data.txs ? data.data.txs.map(Base64.decode) : [],
   evidence: data.evidence && may(decodeEvidences, data.evidence.evidence),
 });
 

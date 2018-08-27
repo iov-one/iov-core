@@ -51,10 +51,14 @@ export interface Responses {
   readonly decodeGenesis: (response: JsonRpcSuccess) => responses.GenesisResponse;
   readonly decodeHealth: (response: JsonRpcSuccess) => responses.HealthResponse;
   readonly decodeStatus: (response: JsonRpcSuccess) => responses.StatusResponse;
-  readonly decodeSubscriptionEvent: (response: JsonRpcEvent) => responses.SubscriptionEvent;
   readonly decodeTx: (response: JsonRpcSuccess) => responses.TxResponse;
   readonly decodeTxSearch: (response: JsonRpcSuccess) => responses.TxSearchResponse;
   readonly decodeValidators: (response: JsonRpcSuccess) => responses.ValidatorsResponse;
+
+  // events
+  readonly decodeNewBlockEvent: (response: JsonRpcEvent) => responses.NewBlockEvent;
+  readonly decodeNewBlockHeaderEvent: (response: JsonRpcEvent) => responses.NewBlockHeaderEvent;
+  readonly decodeTxEvent: (response: JsonRpcEvent) => responses.TxEvent;
 }
 
 // findAdaptor makes a status call with the client.
