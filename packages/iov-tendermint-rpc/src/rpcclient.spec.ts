@@ -216,7 +216,7 @@ describe("RpcClient", () => {
           next: () => fail("No event expected"),
           complete: () => fail("Must not complete"),
         });
-      })();
+      })().catch(fail);
     });
 
     it("cannot listen to simple requests", () => {

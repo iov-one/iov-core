@@ -189,7 +189,7 @@ describe("Client", () => {
           error: fail,
           complete: () => fail("Stream must not close just because we don't listen anymore"),
         });
-      })();
+      })().catch(fail);
     });
   });
 });
