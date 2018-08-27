@@ -1,7 +1,7 @@
 // tslint:disable:no-console
 import { JsonRpcEvent, jsonRpcWith } from "./common";
 import { Method } from "./requests";
-import { HttpClient, HttpUriClient, RpcClient, WebsocketClient } from "./rpcclient";
+import { HttpClient, HttpUriClient, instanceOfRpcStreamingClient, RpcClient, WebsocketClient } from "./rpcclient";
 
 function skipTests(): boolean {
   // process.env is undefined in browser....
@@ -43,6 +43,14 @@ async function shouldFail(client: RpcClient): Promise<void> {
 
 describe("RpcClient", () => {
   const tendermintUrl = "localhost:12345";
+
+  it("has working instanceOfRpcStreamingClient()", () => {
+    pendingWithoutTendermint();
+
+    expect(instanceOfRpcStreamingClient(new HttpClient(tendermintUrl))).toEqual(false);
+    expect(instanceOfRpcStreamingClient(new HttpUriClient(tendermintUrl))).toEqual(false);
+    expect(instanceOfRpcStreamingClient(new WebsocketClient(tendermintUrl))).toEqual(true);
+  });
 
   describe("HttpClient", () => {
     it("can make a simple call", async () => {
