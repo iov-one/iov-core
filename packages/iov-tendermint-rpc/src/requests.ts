@@ -119,6 +119,10 @@ export interface SubscribeRequest {
   readonly type: SubscriptionEventType;
 }
 
+export interface SubscribeRequestQuery {
+  readonly tags: ReadonlyArray<Tag>;
+}
+
 export interface TxRequest {
   readonly method: Method.TX;
   readonly params: TxParams;

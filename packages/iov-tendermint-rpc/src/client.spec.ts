@@ -4,7 +4,7 @@ import { Encoding } from "@iov/encoding";
 import { v0_20 } from "./adaptor";
 import { Client } from "./client";
 import { randomId } from "./common";
-import { buildTxQuery, SubscriptionEventType } from "./requests";
+import { buildTxQuery, SubscribeRequestQuery, SubscriptionEventType } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, RpcClient, WebsocketClient } from "./rpcclient";
 
@@ -220,6 +220,40 @@ describe("Client", () => {
 
         await client.broadcastTxCommit({ tx: tx1 });
         await client.broadcastTxCommit({ tx: tx2 });
+      })().catch(fail);
+    });
+
+    it("can subscribe to transaction events filtered by creator", done => {
+      pendingWithoutTendermint();
+
+      (async () => {
+        const events: responses.SubscriptionEvent[] = [];
+        const client = await Client.connect("ws://" + tendermintUrl);
+        const query: SubscribeRequestQuery = {
+          tags: [{ key: "app.creator", value: "jae" }],
+        };
+        const stream = client.subscribe(SubscriptionEventType.Tx, query);
+        expect(stream).toBeTruthy();
+        const subscription = stream.subscribe({
+          next: event => {
+            events.push(event);
+
+            if (events.length === 2) {
+              subscription.unsubscribe();
+              expect(events.length).toEqual(2);
+              expect(events[1].height).toEqual(events[0].height);
+              done();
+            }
+          },
+          error: fail,
+          complete: () => fail("Stream must not close just because we don't listen anymore"),
+        });
+
+        const transaction1 = buildKvTx(randomId(), randomId());
+        const transaction2 = buildKvTx(randomId(), randomId());
+
+        await client.broadcastTxCommit({ tx: transaction1 });
+        await client.broadcastTxCommit({ tx: transaction2 });
       })().catch(fail);
     });
   });

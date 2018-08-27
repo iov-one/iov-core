@@ -32,7 +32,10 @@ export interface Params {
   readonly encodeGenesis: (req: requests.GenesisRequest) => JsonRpcRequest;
   readonly encodeHealth: (req: requests.HealthRequest) => JsonRpcRequest;
   readonly encodeStatus: (req: requests.StatusRequest) => JsonRpcRequest;
-  readonly encodeSubscribe: (req: requests.SubscribeRequest) => JsonRpcRequest;
+  readonly encodeSubscribe: (
+    req: requests.SubscribeRequest,
+    query: requests.SubscribeRequestQuery | undefined,
+  ) => JsonRpcRequest;
   readonly encodeTx: (req: requests.TxRequest) => JsonRpcRequest;
   readonly encodeTxSearch: (req: requests.TxSearchRequest) => JsonRpcRequest;
   readonly encodeValidators: (req: requests.ValidatorsRequest) => JsonRpcRequest;

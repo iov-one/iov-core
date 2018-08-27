@@ -1,4 +1,5 @@
 import { Encoding } from "@iov/encoding";
+import { Tag } from "@iov/tendermint-types";
 
 import { JsonRpcRequest, jsonRpcWith } from "../common";
 import { Base64, Base64String, HexString, notEmpty } from "../encodings";
@@ -31,8 +32,14 @@ export class Params extends requests.DefaultParams {
     return jsonRpcWith(req.method, req.params);
   }
 
-  public static encodeSubscribe(req: requests.SubscribeRequest): JsonRpcRequest {
-    return jsonRpcWith("subscribe", { query: `tm.event='${req.type}'` });
+  public static encodeSubscribe(
+    req: requests.SubscribeRequest,
+    query: requests.SubscribeRequestQuery | undefined,
+  ): JsonRpcRequest {
+    const allTags: ReadonlyArray<Tag> = [{ key: "tm.event", value: req.type }, ...(query ? query.tags : [])];
+
+    const queryString = requests.buildTxQuery({ tags: allTags });
+    return jsonRpcWith("subscribe", { query: queryString });
   }
 
   public static encodeTx(req: requests.TxRequest): JsonRpcRequest {
