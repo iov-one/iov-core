@@ -140,74 +140,50 @@ describe("UserProfile", () => {
     expect(profile.entryLabels.value).toEqual([undefined, undefined]);
   });
 
-  it("added entry can not be manipulated from outside", done => {
-    (async () => {
-      const profile = new UserProfile();
-      const newEntry = Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
-      profile.addEntry(newEntry);
-      expect(profile.getIdentities(0).length).toEqual(0);
+  it("added entry can not be manipulated from outside", async () => {
+    const profile = new UserProfile();
+    const newEntry = Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+    profile.addEntry(newEntry);
+    expect(profile.getIdentities(0).length).toEqual(0);
 
-      // manipulate entry reference that has been added before
-      await newEntry.createIdentity();
-      expect(newEntry.getIdentities().length).toEqual(1);
+    // manipulate entry reference that has been added before
+    await newEntry.createIdentity();
+    expect(newEntry.getIdentities().length).toEqual(1);
 
-      // nothing hapenned to the profile
-      expect(profile.getIdentities(0).length).toEqual(0);
-
-      done();
-    })().catch(error => {
-      setTimeout(() => {
-        throw error;
-      });
-    });
+    // nothing hapenned to the profile
+    expect(profile.getIdentities(0).length).toEqual(0);
   });
 
-  it("can be stored", done => {
-    (async () => {
-      const db = levelup(MemDownConstructor<string, string>());
+  it("can be stored", async () => {
+    const db = levelup(MemDownConstructor<string, string>());
 
-      const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
-      const keyring = new Keyring();
-      const profile = new UserProfile({ createdAt, keyring });
+    const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+    const keyring = new Keyring();
+    const profile = new UserProfile({ createdAt, keyring });
 
-      await profile.storeIn(db, defaultEncryptionPassword);
-      expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
-      expect(await db.get("keyring", { asBuffer: false })).toMatch(/[0-9a-f]+/);
+    await profile.storeIn(db, defaultEncryptionPassword);
+    expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
+    expect(await db.get("keyring", { asBuffer: false })).toMatch(/[0-9a-f]+/);
 
-      await db.close();
-
-      done();
-    })().catch(error => {
-      setTimeout(() => {
-        throw error;
-      });
-    });
+    await db.close();
   });
 
-  it("clears database when storing", done => {
-    (async () => {
-      const db = levelup(MemDownConstructor<string, string>());
+  it("clears database when storing", async () => {
+    const db = levelup(MemDownConstructor<string, string>());
 
-      await db.put("foo", "bar");
+    await db.put("foo", "bar");
 
-      const profile = new UserProfile();
-      await profile.storeIn(db, defaultEncryptionPassword);
+    const profile = new UserProfile();
+    await profile.storeIn(db, defaultEncryptionPassword);
 
-      await db
-        .get("foo")
-        .then(() => fail("get 'foo' promise must not reslve"))
-        .catch(error => {
-          expect(error.notFound).toBeTruthy();
-        });
-
-      await db.close();
-
-      done();
-    })().catch(error => {
-      setTimeout(() => {
-        throw error;
+    await db
+      .get("foo")
+      .then(() => fail("get 'foo' promise must not reslve"))
+      .catch(error => {
+        expect(error.notFound).toBeTruthy();
       });
-    });
+
+    await db.close();
   });
 
   it("stored in and loaded from storage", async () => {
@@ -258,142 +234,126 @@ describe("UserProfile", () => {
     await db.close();
   });
 
-  it("throws for non-existing entry index", done => {
-    (async () => {
-      const profile = new UserProfile();
+  it("throws for non-existing entry index", async () => {
+    const profile = new UserProfile();
 
-      const fakeIdentity = { pubkey: { algo: Algorithm.ED25519, data: new Uint8Array([0xaa]) as PublicKeyBytes } };
-      const fakeTransaction: SendTx = {
-        chainId: "ethereum" as ChainId,
-        signer: fakeIdentity.pubkey,
-        kind: TransactionKind.Send,
-        amount: {
-          whole: 1,
-          fractional: 12,
-          tokenTicker: "ETH" as TokenTicker,
-        },
-        recipient: new Uint8Array([0x00, 0x11, 0x22]) as Address,
-      };
-      const fakeSignedTransaction: SignedTransaction = {
-        transaction: fakeTransaction,
-        primarySignature: {
-          nonce: new Long(0, 11) as Nonce,
-          publicKey: fakeIdentity.pubkey,
-          signature: new Uint8Array([]) as SignatureBytes,
-        },
-        otherSignatures: [],
-      };
+    const fakeIdentity = { pubkey: { algo: Algorithm.ED25519, data: new Uint8Array([0xaa]) as PublicKeyBytes } };
+    const fakeTransaction: SendTx = {
+      chainId: "ethereum" as ChainId,
+      signer: fakeIdentity.pubkey,
+      kind: TransactionKind.Send,
+      amount: {
+        whole: 1,
+        fractional: 12,
+        tokenTicker: "ETH" as TokenTicker,
+      },
+      recipient: new Uint8Array([0x00, 0x11, 0x22]) as Address,
+    };
+    const fakeSignedTransaction: SignedTransaction = {
+      transaction: fakeTransaction,
+      primarySignature: {
+        nonce: new Long(0, 11) as Nonce,
+        publicKey: fakeIdentity.pubkey,
+        signature: new Uint8Array([]) as SignatureBytes,
+      },
+      otherSignatures: [],
+    };
 
-      const fakeCodec: TxCodec = {
-        bytesToSign: (): SigningJob => {
-          throw new Error("not implemented");
-        },
-        bytesToPost: (): PostableBytes => {
-          throw new Error("not implemented");
-        },
-        identifier: (): TransactionIdBytes => {
-          throw new Error("not implemented");
-        },
-        parseBytes: (): SignedTransaction => {
-          throw new Error("not implemented");
-        },
-        keyToAddress: (): Address => {
-          throw new Error("not implemented");
-        },
-      };
+    const fakeCodec: TxCodec = {
+      bytesToSign: (): SigningJob => {
+        throw new Error("not implemented");
+      },
+      bytesToPost: (): PostableBytes => {
+        throw new Error("not implemented");
+      },
+      identifier: (): TransactionIdBytes => {
+        throw new Error("not implemented");
+      },
+      parseBytes: (): SignedTransaction => {
+        throw new Error("not implemented");
+      },
+      keyToAddress: (): Address => {
+        throw new Error("not implemented");
+      },
+    };
 
-      // keyring entry of index 0 does not exist
+    // keyring entry of index 0 does not exist
 
-      expect(() => profile.setEntryLabel(0, "foo")).toThrowError(/Entry of index 0 does not exist in keyring/);
-      expect(() => profile.getIdentities(0)).toThrowError(/Entry of index 0 does not exist in keyring/);
-      expect(() => profile.setIdentityLabel(0, fakeIdentity, "foo")).toThrowError(/Entry of index 0 does not exist in keyring/);
-      await profile
-        .createIdentity(0)
-        .then(() => fail("Promise must not resolve"))
-        .catch(error => expect(error).toMatch(/Entry of index 0 does not exist in keyring/));
-      await profile
-        .signTransaction(0, fakeIdentity, fakeTransaction, fakeCodec, new Long(1, 2) as Nonce)
-        .then(() => fail("Promise must not resolve"))
-        .catch(error => expect(error).toMatch(/Entry of index 0 does not exist in keyring/));
-      await profile
-        .appendSignature(0, fakeIdentity, fakeSignedTransaction, fakeCodec, new Long(1, 2) as Nonce)
-        .then(() => fail("Promise must not resolve"))
-        .catch(error => expect(error).toMatch(/Entry of index 0 does not exist in keyring/));
-
-      done();
-    })().catch(error => {
-      setTimeout(() => {
-        throw error;
-      });
-    });
+    expect(() => profile.setEntryLabel(0, "foo")).toThrowError(/Entry of index 0 does not exist in keyring/);
+    expect(() => profile.getIdentities(0)).toThrowError(/Entry of index 0 does not exist in keyring/);
+    expect(() => profile.setIdentityLabel(0, fakeIdentity, "foo")).toThrowError(/Entry of index 0 does not exist in keyring/);
+    await profile
+      .createIdentity(0)
+      .then(() => fail("Promise must not resolve"))
+      .catch(error => expect(error).toMatch(/Entry of index 0 does not exist in keyring/));
+    await profile
+      .signTransaction(0, fakeIdentity, fakeTransaction, fakeCodec, new Long(1, 2) as Nonce)
+      .then(() => fail("Promise must not resolve"))
+      .catch(error => expect(error).toMatch(/Entry of index 0 does not exist in keyring/));
+    await profile
+      .appendSignature(0, fakeIdentity, fakeSignedTransaction, fakeCodec, new Long(1, 2) as Nonce)
+      .then(() => fail("Promise must not resolve"))
+      .catch(error => expect(error).toMatch(/Entry of index 0 does not exist in keyring/));
   });
 
-  it("can sign and append signature", done => {
-    (async () => {
-      const createdAt = new ReadonlyDate(ReadonlyDate.now());
-      const keyring = new Keyring();
-      keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
-      const mainIdentity = await keyring.getEntries()[0].createIdentity();
-      const profile = new UserProfile({ createdAt, keyring });
+  it("can sign and append signature", async () => {
+    const createdAt = new ReadonlyDate(ReadonlyDate.now());
+    const keyring = new Keyring();
+    keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+    const mainIdentity = await keyring.getEntries()[0].createIdentity();
+    const profile = new UserProfile({ createdAt, keyring });
 
-      const fakeTransaction: SendTx = {
-        chainId: "ethereum" as ChainId,
-        signer: mainIdentity.pubkey,
-        kind: TransactionKind.Send,
-        amount: {
-          whole: 1,
-          fractional: 12,
-          tokenTicker: "ETH" as TokenTicker,
-        },
-        recipient: new Uint8Array([0x00, 0x11, 0x22]) as Address,
-      };
+    const fakeTransaction: SendTx = {
+      chainId: "ethereum" as ChainId,
+      signer: mainIdentity.pubkey,
+      kind: TransactionKind.Send,
+      amount: {
+        whole: 1,
+        fractional: 12,
+        tokenTicker: "ETH" as TokenTicker,
+      },
+      recipient: new Uint8Array([0x00, 0x11, 0x22]) as Address,
+    };
 
-      const fakeCodec: TxCodec = {
-        bytesToSign: (): SigningJob => {
-          return {
-            bytes: new Uint8Array([0xaa, 0xbb, 0xcc]) as SignableBytes,
-            prehashType: PrehashType.Sha512,
-          };
-        },
-        bytesToPost: (): PostableBytes => {
-          throw new Error("not implemented");
-        },
-        identifier: (): TransactionIdBytes => {
-          throw new Error("not implemented");
-        },
-        parseBytes: (): SignedTransaction => {
-          throw new Error("not implemented");
-        },
-        keyToAddress: (): Address => {
-          throw new Error("not implemented");
-        },
-      };
-      const nonce = new Long(0x11223344, 0x55667788) as Nonce;
+    const fakeCodec: TxCodec = {
+      bytesToSign: (): SigningJob => {
+        return {
+          bytes: new Uint8Array([0xaa, 0xbb, 0xcc]) as SignableBytes,
+          prehashType: PrehashType.Sha512,
+        };
+      },
+      bytesToPost: (): PostableBytes => {
+        throw new Error("not implemented");
+      },
+      identifier: (): TransactionIdBytes => {
+        throw new Error("not implemented");
+      },
+      parseBytes: (): SignedTransaction => {
+        throw new Error("not implemented");
+      },
+      keyToAddress: (): Address => {
+        throw new Error("not implemented");
+      },
+    };
+    const nonce = new Long(0x11223344, 0x55667788) as Nonce;
 
-      const signedTransaction = await profile.signTransaction(0, mainIdentity, fakeTransaction, fakeCodec, nonce);
-      expect(signedTransaction.transaction).toEqual(fakeTransaction);
-      expect(signedTransaction.primarySignature).toBeTruthy();
-      expect(signedTransaction.primarySignature.nonce).toEqual(nonce);
-      expect(signedTransaction.primarySignature.publicKey).toEqual(mainIdentity.pubkey);
-      expect(signedTransaction.primarySignature.signature.length).toBeGreaterThan(0);
-      expect(signedTransaction.otherSignatures).toEqual([]);
+    const signedTransaction = await profile.signTransaction(0, mainIdentity, fakeTransaction, fakeCodec, nonce);
+    expect(signedTransaction.transaction).toEqual(fakeTransaction);
+    expect(signedTransaction.primarySignature).toBeTruthy();
+    expect(signedTransaction.primarySignature.nonce).toEqual(nonce);
+    expect(signedTransaction.primarySignature.publicKey).toEqual(mainIdentity.pubkey);
+    expect(signedTransaction.primarySignature.signature.length).toBeGreaterThan(0);
+    expect(signedTransaction.otherSignatures).toEqual([]);
 
-      const doubleSignedTransaction = await profile.appendSignature(0, mainIdentity, signedTransaction, fakeCodec, nonce);
-      expect(doubleSignedTransaction.transaction).toEqual(fakeTransaction);
-      expect(doubleSignedTransaction.primarySignature).toBeTruthy();
-      expect(doubleSignedTransaction.primarySignature.nonce).toEqual(nonce);
-      expect(doubleSignedTransaction.primarySignature.publicKey).toEqual(mainIdentity.pubkey);
-      expect(doubleSignedTransaction.primarySignature.signature.length).toBeGreaterThan(0);
-      expect(doubleSignedTransaction.otherSignatures.length).toEqual(1);
-      expect(doubleSignedTransaction.otherSignatures[0].nonce).toEqual(nonce);
-      expect(doubleSignedTransaction.otherSignatures[0].publicKey).toEqual(mainIdentity.pubkey);
-      expect(doubleSignedTransaction.otherSignatures[0].signature.length).toBeGreaterThan(0);
-
-      done();
-    })().catch(error => {
-      setTimeout(() => {
-        throw error;
-      });
-    });
+    const doubleSignedTransaction = await profile.appendSignature(0, mainIdentity, signedTransaction, fakeCodec, nonce);
+    expect(doubleSignedTransaction.transaction).toEqual(fakeTransaction);
+    expect(doubleSignedTransaction.primarySignature).toBeTruthy();
+    expect(doubleSignedTransaction.primarySignature.nonce).toEqual(nonce);
+    expect(doubleSignedTransaction.primarySignature.publicKey).toEqual(mainIdentity.pubkey);
+    expect(doubleSignedTransaction.primarySignature.signature.length).toBeGreaterThan(0);
+    expect(doubleSignedTransaction.otherSignatures.length).toEqual(1);
+    expect(doubleSignedTransaction.otherSignatures[0].nonce).toEqual(nonce);
+    expect(doubleSignedTransaction.otherSignatures[0].publicKey).toEqual(mainIdentity.pubkey);
+    expect(doubleSignedTransaction.otherSignatures[0].signature.length).toBeGreaterThan(0);
   });
 });
