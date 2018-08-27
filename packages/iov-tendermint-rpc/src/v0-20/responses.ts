@@ -80,7 +80,10 @@ export class Responses {
     // tslint:disable-next-line:no-let
     let height: number;
 
-    if (event.data.value.header) {
+    if (event.data.value.block) {
+      // block
+      height = event.data.value.block.header.height;
+    } else if (event.data.value.header) {
       // block header
       height = event.data.value.header.height;
     } else if (event.data.value.TxResult) {
