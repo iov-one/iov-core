@@ -18,25 +18,17 @@ describe("Ed25519SimpleAddressKeyringEntry", () => {
     expect(entry.implementationId).toEqual("ed25519-simpleaddress");
   });
 
-  it("creates correct paths", done => {
+  it("creates correct paths", async () => {
     // https://github.com/iov-one/iov-core/blob/392234e/docs/KeyBase.md#simple-addresses
-    (async () => {
-      const entry = new Ed25519SimpleAddressKeyringEntry(emptyEntry);
-      await entry.createIdentity();
-      await entry.createIdentity();
-      await entry.createIdentity();
+    const entry = new Ed25519SimpleAddressKeyringEntry(emptyEntry);
+    await entry.createIdentity();
+    await entry.createIdentity();
+    await entry.createIdentity();
 
-      const decodedJson = JSON.parse(entry.serialize());
-      expect(decodedJson.identities[0].privkeyPath).toEqual([0x80000000 + 4804438, 0x80000000 + 0]);
-      expect(decodedJson.identities[1].privkeyPath).toEqual([0x80000000 + 4804438, 0x80000000 + 1]);
-      expect(decodedJson.identities[2].privkeyPath).toEqual([0x80000000 + 4804438, 0x80000000 + 2]);
-
-      done();
-    })().catch(error => {
-      setTimeout(() => {
-        throw error;
-      });
-    });
+    const decodedJson = JSON.parse(entry.serialize());
+    expect(decodedJson.identities[0].privkeyPath).toEqual([0x80000000 + 4804438, 0x80000000 + 0]);
+    expect(decodedJson.identities[1].privkeyPath).toEqual([0x80000000 + 4804438, 0x80000000 + 1]);
+    expect(decodedJson.identities[2].privkeyPath).toEqual([0x80000000 + 4804438, 0x80000000 + 2]);
   });
 
   it("can be cloned", () => {
