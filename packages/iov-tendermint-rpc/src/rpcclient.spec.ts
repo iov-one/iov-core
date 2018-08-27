@@ -112,6 +112,41 @@ describe("RpcClient", () => {
       });
     });
 
+    it("can execute commands while listening to events", done => {
+      pendingWithoutTendermint();
+
+      const client = new WebsocketClient(tendermintUrl);
+
+      const query = "tm.event='NewBlockHeader'";
+      const req = jsonRpcWith("subscribe", { query });
+      const headers = client.listen(req);
+
+      // tslint:disable-next-line:readonly-array
+      const events: JsonRpcEvent[] = [];
+
+      const sub = headers.subscribe({
+        error: fail,
+        complete: () => fail("subscription should not complete"),
+        next: (evt: JsonRpcEvent) => {
+          events.push(evt);
+          expect(evt.query).toEqual(query);
+
+          if (events.length === 2) {
+            sub.unsubscribe();
+
+            // wait 1.5s and check we did not get more events
+            setTimeout(() => {
+              expect(events.length).toEqual(2);
+              done();
+            }, 1500);
+          }
+        },
+      });
+
+      const startusResponse = client.execute(jsonRpcWith(Method.STATUS));
+      expect(startusResponse).toBeTruthy();
+    });
+
     it("can end event listening by disconnecting", done => {
       pendingWithoutTendermint();
 
