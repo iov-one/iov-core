@@ -3,7 +3,7 @@ import { Stream } from "xstream";
 import { Tag } from "@iov/tendermint-types";
 
 import { Adaptor, Decoder, Encoder, findAdaptor, Params, Responses } from "./adaptor";
-import { default as requests, Method, SubscriptionEventType } from "./requests";
+import { default as requests, Method } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, instanceOfRpcStreamingClient, RpcClient, WebsocketClient } from "./rpcclient";
 
@@ -94,7 +94,7 @@ export class Client {
   }
 
   public subscribe(
-    eventType: SubscriptionEventType,
+    eventType: requests.SubscriptionEventType,
     tags?: ReadonlyArray<Tag>,
   ): Stream<responses.SubscriptionEvent> {
     if (!instanceOfRpcStreamingClient(this.client)) {
