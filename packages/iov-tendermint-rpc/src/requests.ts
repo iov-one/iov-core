@@ -41,6 +41,8 @@ export type Request =
 
 /**
  * Raw values must match the tendermint event name
+ *
+ * @see https://godoc.org/github.com/tendermint/tendermint/types#pkg-constants
  */
 export enum SubscriptionEventType {
   NewBlock = "NewBlock",
