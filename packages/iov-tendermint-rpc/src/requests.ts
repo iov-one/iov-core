@@ -116,11 +116,10 @@ export interface StatusRequest {
 
 export interface SubscribeRequest {
   readonly method: Method.SUBSCRIBE;
-  readonly type: SubscriptionEventType;
-}
-
-export interface SubscribeRequestQuery {
-  readonly tags: ReadonlyArray<Tag>;
+  readonly query: {
+    readonly type: SubscriptionEventType;
+    readonly tags?: ReadonlyArray<Tag>;
+  };
 }
 
 export interface TxRequest {

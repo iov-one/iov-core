@@ -1,10 +1,11 @@
 // tslint:disable:no-console readonly-array
 import { Encoding } from "@iov/encoding";
+import { Tag } from "@iov/tendermint-types";
 
 import { v0_20 } from "./adaptor";
 import { Client } from "./client";
 import { randomId } from "./common";
-import { buildTxQuery, SubscribeRequestQuery, SubscriptionEventType } from "./requests";
+import { buildTxQuery, SubscriptionEventType } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, RpcClient, WebsocketClient } from "./rpcclient";
 
@@ -229,10 +230,8 @@ describe("Client", () => {
       (async () => {
         const events: responses.SubscriptionEvent[] = [];
         const client = await Client.connect("ws://" + tendermintUrl);
-        const query: SubscribeRequestQuery = {
-          tags: [{ key: "app.creator", value: "jae" }],
-        };
-        const stream = client.subscribe(SubscriptionEventType.Tx, query);
+        const tags: ReadonlyArray<Tag> = [{ key: "app.creator", value: "jae" }];
+        const stream = client.subscribe(SubscriptionEventType.Tx, tags);
         expect(stream).toBeTruthy();
         const subscription = stream.subscribe({
           next: event => {

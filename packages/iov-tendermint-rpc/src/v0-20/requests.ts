@@ -32,11 +32,11 @@ export class Params extends requests.DefaultParams {
     return jsonRpcWith(req.method, req.params);
   }
 
-  public static encodeSubscribe(
-    req: requests.SubscribeRequest,
-    query: requests.SubscribeRequestQuery | undefined,
-  ): JsonRpcRequest {
-    const allTags: ReadonlyArray<Tag> = [{ key: "tm.event", value: req.type }, ...(query ? query.tags : [])];
+  public static encodeSubscribe(req: requests.SubscribeRequest): JsonRpcRequest {
+    const allTags: ReadonlyArray<Tag> = [
+      { key: "tm.event", value: req.query.type },
+      ...(req.query.tags ? req.query.tags : []),
+    ];
 
     const queryString = requests.buildTxQuery({ tags: allTags });
     return jsonRpcWith("subscribe", { query: queryString });

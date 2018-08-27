@@ -1,7 +1,9 @@
 import { Stream } from "xstream";
 
+import { Tag } from "@iov/tendermint-types";
+
 import { Adaptor, Decoder, Encoder, findAdaptor, Params, Responses } from "./adaptor";
-import { default as requests, Method, SubscribeRequestQuery, SubscriptionEventType } from "./requests";
+import { default as requests, Method, SubscriptionEventType } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, instanceOfRpcStreamingClient, RpcClient, WebsocketClient } from "./rpcclient";
 
@@ -93,14 +95,20 @@ export class Client {
 
   public subscribe(
     eventType: SubscriptionEventType,
-    query?: SubscribeRequestQuery,
+    tags?: ReadonlyArray<Tag>,
   ): Stream<responses.SubscriptionEvent> {
     if (!instanceOfRpcStreamingClient(this.client)) {
       throw new Error("This RPC client type cannot subscribe to events");
     }
 
-    const request: requests.SubscribeRequest = { method: Method.SUBSCRIBE, type: eventType };
-    const req = this.p.encodeSubscribe(request, query || undefined);
+    const request: requests.SubscribeRequest = {
+      method: Method.SUBSCRIBE,
+      query: {
+        type: eventType,
+        tags: tags,
+      },
+    };
+    const req = this.p.encodeSubscribe(request);
     const eventStream = this.client.listen(req);
     return eventStream.map<responses.SubscriptionEvent>(event => {
       // tslint:disable-next-line:no-console
