@@ -207,7 +207,7 @@ describe("Client", () => {
             if (events.length === 2) {
               subscription.unsubscribe();
               expect(events.length).toEqual(2);
-              expect(events[1].height).toEqual(events[0].height);
+              expect(events[1].height).toEqual(events[0].height + 1);
               done();
             }
           },
@@ -241,7 +241,7 @@ describe("Client", () => {
             if (events.length === 2) {
               subscription.unsubscribe();
               expect(events.length).toEqual(2);
-              expect(events[1].height).toEqual(events[0].height);
+              expect(events[1].height).toEqual(events[0].height + 1);
               done();
             }
           },
