@@ -5,7 +5,7 @@ import { Tag } from "@iov/tendermint-types";
 import { v0_20 } from "./adaptor";
 import { Client } from "./client";
 import { randomId } from "./common";
-import { buildTxQuery, SubscriptionEventType } from "./requests";
+import { buildTxQuery } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, RpcClient, WebsocketClient } from "./rpcclient";
 
@@ -173,7 +173,7 @@ describe("Client", () => {
       (async () => {
         const events: responses.SubscriptionEvent[] = [];
         const client = await Client.connect("ws://" + tendermintUrl);
-        const stream = client.subscribe(SubscriptionEventType.NewBlockHeader);
+        const stream = client.subscribeNewBlockHeader();
         expect(stream).toBeTruthy();
         const subscription = stream.subscribe({
           next: event => {
@@ -199,7 +199,7 @@ describe("Client", () => {
       (async () => {
         const events: responses.SubscriptionEvent[] = [];
         const client = await Client.connect("ws://" + tendermintUrl);
-        const stream = client.subscribe(SubscriptionEventType.NewBlock);
+        const stream = client.subscribeNewBlock();
         expect(stream).toBeTruthy();
         const subscription = stream.subscribe({
           next: event => {
@@ -230,7 +230,7 @@ describe("Client", () => {
       (async () => {
         const events: responses.SubscriptionEvent[] = [];
         const client = await Client.connect("ws://" + tendermintUrl);
-        const stream = client.subscribe(SubscriptionEventType.Tx);
+        const stream = client.subscribeTx();
         expect(stream).toBeTruthy();
         const subscription = stream.subscribe({
           next: event => {
@@ -262,7 +262,7 @@ describe("Client", () => {
         const events: responses.SubscriptionEvent[] = [];
         const client = await Client.connect("ws://" + tendermintUrl);
         const tags: ReadonlyArray<Tag> = [{ key: "app.creator", value: "jae" }];
-        const stream = client.subscribe(SubscriptionEventType.Tx, tags);
+        const stream = client.subscribeTx(tags);
         expect(stream).toBeTruthy();
         const subscription = stream.subscribe({
           next: event => {

@@ -3,7 +3,7 @@ import { Stream } from "xstream";
 import { Tag } from "@iov/tendermint-types";
 
 import { Adaptor, Decoder, Encoder, findAdaptor, Params, Responses } from "./adaptor";
-import { default as requests, Method } from "./requests";
+import { default as requests, Method, SubscriptionEventType } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, instanceOfRpcStreamingClient, RpcClient, WebsocketClient } from "./rpcclient";
 
@@ -93,28 +93,31 @@ export class Client {
     return this.doCall(query, this.p.encodeStatus, this.r.decodeStatus);
   }
 
-  public subscribe(
-    eventType: requests.SubscriptionEventType,
-    tags?: ReadonlyArray<Tag>,
-  ): Stream<responses.SubscriptionEvent> {
-    if (!instanceOfRpcStreamingClient(this.client)) {
-      throw new Error("This RPC client type cannot subscribe to events");
-    }
+  public subscribeNewBlock(): Stream<responses.SubscriptionEvent> {
+    const request: requests.SubscribeRequest = {
+      method: Method.SUBSCRIBE,
+      query: { type: SubscriptionEventType.NewBlock },
+    };
+    return this.subscribe(request);
+  }
 
+  public subscribeNewBlockHeader(): Stream<responses.SubscriptionEvent> {
+    const request: requests.SubscribeRequest = {
+      method: Method.SUBSCRIBE,
+      query: { type: SubscriptionEventType.NewBlockHeader },
+    };
+    return this.subscribe(request);
+  }
+
+  public subscribeTx(tags?: ReadonlyArray<Tag>): Stream<responses.SubscriptionEvent> {
     const request: requests.SubscribeRequest = {
       method: Method.SUBSCRIBE,
       query: {
-        type: eventType,
+        type: SubscriptionEventType.Tx,
         tags: tags,
       },
     };
-    const req = this.p.encodeSubscribe(request);
-    const eventStream = this.client.listen(req);
-    return eventStream.map<responses.SubscriptionEvent>(event => {
-      // tslint:disable-next-line:no-console
-      // console.log(JSON.stringify(event));
-      return this.r.decodeSubscriptionEvent(event);
-    });
+    return this.subscribe(request);
   }
 
   public tx(params: requests.TxParams): Promise<responses.TxResponse> {
@@ -141,5 +144,19 @@ export class Client {
     const req = encode(request);
     const result = await this.client.execute(req);
     return decode(result);
+  }
+
+  private subscribe(request: requests.SubscribeRequest): Stream<responses.SubscriptionEvent> {
+    if (!instanceOfRpcStreamingClient(this.client)) {
+      throw new Error("This RPC client type cannot subscribe to events");
+    }
+
+    const req = this.p.encodeSubscribe(request);
+    const eventStream = this.client.listen(req);
+    return eventStream.map<responses.SubscriptionEvent>(event => {
+      // tslint:disable-next-line:no-console
+      // console.log(JSON.stringify(event));
+      return this.r.decodeSubscriptionEvent(event);
+    });
   }
 }
