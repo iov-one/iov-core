@@ -215,11 +215,11 @@ describe("Client", () => {
           complete: () => fail("Stream must not close just because we don't listen anymore"),
         });
 
-        const tx1 = buildKvTx(randomId(), randomId());
-        const tx2 = buildKvTx(randomId(), randomId());
+        const transaction1 = buildKvTx(randomId(), randomId());
+        const transaction2 = buildKvTx(randomId(), randomId());
 
-        await client.broadcastTxCommit({ tx: tx1 });
-        await client.broadcastTxCommit({ tx: tx2 });
+        await client.broadcastTxCommit({ tx: transaction1 });
+        await client.broadcastTxCommit({ tx: transaction2 });
       })().catch(fail);
     });
 
