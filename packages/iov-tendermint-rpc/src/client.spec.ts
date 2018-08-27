@@ -166,7 +166,7 @@ describe("Client", () => {
     const onError = skipTests() ? () => 0 : console.log;
     kvTestSuite(() => new WebsocketClient(tendermintUrl, onError));
 
-    it("can subscribe to events", done => {
+    it("can subscribe to block header events", done => {
       pendingWithoutTendermint();
 
       (async () => {
@@ -181,14 +181,45 @@ describe("Client", () => {
             if (events.length === 3) {
               subscription.unsubscribe();
               expect(events.length).toEqual(3);
-              expect(events[1].blockHeight).toEqual(events[0].blockHeight + 1);
-              expect(events[2].blockHeight).toEqual(events[1].blockHeight + 1);
+              expect(events[1].height).toEqual(events[0].height + 1);
+              expect(events[2].height).toEqual(events[1].height + 1);
               done();
             }
           },
           error: fail,
           complete: () => fail("Stream must not close just because we don't listen anymore"),
         });
+      })().catch(fail);
+    });
+
+    it("can subscribe to transaction events", done => {
+      pendingWithoutTendermint();
+
+      (async () => {
+        const events: responses.SubscriptionEvent[] = [];
+        const client = await Client.connect("ws://" + tendermintUrl);
+        const stream = client.subscribe(SubscriptionEventType.Tx);
+        expect(stream).toBeTruthy();
+        const subscription = stream.subscribe({
+          next: event => {
+            events.push(event);
+
+            if (events.length === 2) {
+              subscription.unsubscribe();
+              expect(events.length).toEqual(2);
+              expect(events[1].height).toEqual(events[0].height);
+              done();
+            }
+          },
+          error: fail,
+          complete: () => fail("Stream must not close just because we don't listen anymore"),
+        });
+
+        const tx1 = buildKvTx(randomId(), randomId());
+        const tx2 = buildKvTx(randomId(), randomId());
+
+        await client.broadcastTxCommit({ tx: tx1 });
+        await client.broadcastTxCommit({ tx: tx2 });
       })().catch(fail);
     });
   });

@@ -97,7 +97,7 @@ export interface StatusResponse {
 }
 
 export interface SubscriptionEvent {
-  readonly blockHeight: number;
+  readonly height: number;
 }
 
 export interface TxResponse {

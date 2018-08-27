@@ -77,8 +77,21 @@ export class Responses {
   }
 
   public static decodeSubscriptionEvent(event: JsonRpcEvent): responses.SubscriptionEvent {
+    // tslint:disable-next-line:no-let
+    let height: number;
+
+    if (event.data.value.header) {
+      // block header
+      height = event.data.value.header.height;
+    } else if (event.data.value.TxResult) {
+      // transaction
+      height = event.data.value.TxResult.height;
+    } else {
+      throw new Error("Unknown rpc event:" + JSON.stringify(event));
+    }
+
     return decodeSubscriptionEvent({
-      blockHeight: event.data.value.header.height,
+      height: height,
     });
   }
 
@@ -247,12 +260,12 @@ const decodeStatus = (data: RpcStatusResponse): responses.StatusResponse => ({
 });
 
 export interface RpcSubscriptionEvent {
-  readonly blockHeight: number;
+  readonly height: number;
 }
 
 function decodeSubscriptionEvent(event: RpcSubscriptionEvent): responses.SubscriptionEvent {
   return {
-    blockHeight: event.blockHeight,
+    height: event.height,
   };
 }
 
