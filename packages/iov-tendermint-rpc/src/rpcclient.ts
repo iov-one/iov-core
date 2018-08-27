@@ -185,16 +185,31 @@ export class WebsocketClient implements RpcStreamingClient {
       // only one of the two listeners should fire, and it will
       // deregister the other so as not to cause a leak.
 
+      const good = {
+        eventName: id,
+        listener: (data: JsonRpcResponse) => {
+          unregisterGoodAndBad();
+          resolve(data);
+        },
+      };
+
+      const bad = {
+        eventName: "error",
+        listener: (error: any) => {
+          unregisterGoodAndBad();
+          reject(error);
+        },
+      };
+
+      const unregisterGoodAndBad = () => {
+        this.bridge.removeListener(good.eventName, good.listener);
+        this.bridge.removeListener(bad.eventName, bad.listener);
+      };
+
       // this will fire on a response (success or error)
-      const good = this.bridge.once(id, data => {
-        bad.removeAllListeners();
-        resolve(data);
-      });
+      this.bridge.once(good.eventName, good.listener);
       // this will fire in case the websocket errors/disconnects
-      const bad = this.bridge.once("error", err => {
-        good.removeAllListeners();
-        reject(err);
-      });
+      this.bridge.once(bad.eventName, bad.listener);
     });
   }
 }
