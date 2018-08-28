@@ -13,13 +13,12 @@ export class BovFaucet {
     this.url = url;
   }
 
-  public open(address: Address, ticker: TokenTicker = "IOV" as TokenTicker): Promise<any> {
+  public async open(address: Address, ticker: TokenTicker = "IOV" as TokenTicker): Promise<void> {
     const body = {
       address: Encoding.toHex(address),
       tokens: [{ ticker: ticker }],
     };
 
-    // const postData = JSON.stringify(body);
-    return axios.post(this.url, body);
+    await axios.post(this.url, body);
   }
 }
