@@ -205,7 +205,7 @@ When using a Testnet, you can use the BovFaucet to receive tokens:
 
 > const bovFaucet = new BovFaucet("https://faucet.friendnet-slow.iov.one/faucet");
 
-> await bovFaucet.open(meAddress)
+> await bovFaucet.credit(meAddress)
 > (await reader.getAccount({ address: meAddress })).data[0].balance
 [ { whole: 10,
     fractional: 0,
@@ -213,7 +213,7 @@ When using a Testnet, you can use the BovFaucet to receive tokens:
     tokenName: 'Main token of this chain',
     sigFigs: 6 } ]
 
-> await bovFaucet.open(meAddress, "PAJA" as TokenTicker)
+> await bovFaucet.credit(meAddress, "PAJA" as TokenTicker)
 > (await reader.getAccount({ address: meAddress })).data[0].balance
 [ { whole: 10,
     fractional: 0,

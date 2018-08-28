@@ -13,7 +13,7 @@ export class BovFaucet {
     this.url = url;
   }
 
-  public async open(address: Address, ticker: TokenTicker = "IOV" as TokenTicker): Promise<void> {
+  public async credit(address: Address, ticker: TokenTicker = "IOV" as TokenTicker): Promise<void> {
     const body = {
       address: Encoding.toHex(address),
       tokens: [{ ticker: ticker }],

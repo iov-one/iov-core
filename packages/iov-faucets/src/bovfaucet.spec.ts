@@ -11,20 +11,20 @@ describe("BovFaucet", () => {
     expect(faucet).toBeTruthy();
   });
 
-  it("can be opened", async () => {
+  it("can be used to credit a wallet", async () => {
     const faucet = new BovFaucet(faucetUrl);
     const address = (await Random.getBytes(20)) as Address;
-    await faucet.open(address).catch(error => {
+    await faucet.credit(address).catch(error => {
       // append response body to error message
       throw new Error(`${error}; response body: ${JSON.stringify(error.response.data)}`);
     });
   });
 
-  it("can be opened for other token", async () => {
+  it("can be used to credit a wallet with a different token", async () => {
     const faucet = new BovFaucet(faucetUrl);
     const address = (await Random.getBytes(20)) as Address;
     const ticker = "PAJA" as TokenTicker;
-    await faucet.open(address, ticker).catch(error => {
+    await faucet.credit(address, ticker).catch(error => {
       // append response body to error message
       throw new Error(`${error}; response body: ${JSON.stringify(error.response.data)}`);
     });
