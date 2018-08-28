@@ -25,9 +25,11 @@ export declare enum KeyringType {
 }
 export interface SlipKeyringEntry extends KeyringEntry<LocalHDIdentity> {
     readonly kind: KeyringType.Slip0010Compatible;
-    readonly createBip44Identity: (algo: Algorithm, coinType: Slip0010RawIndex, account: Slip0010RawIndex, change: Slip0010RawIndex, addressIndex?: Slip0010RawIndex) => Promise<LocalHDIdentity>;
+    readonly incrementBip32Address: (algo: Algorithm, path: ReadonlyArray<Slip0010RawIndex>) => Promise<ReadonlyArray<Slip0010RawIndex>>;
     readonly createBip32Identity: (algo: Algorithm, path: ReadonlyArray<Slip0010RawIndex>) => Promise<LocalHDIdentity>;
 }
+export declare const bip44: (keyring: SlipKeyringEntry) => (algo: Algorithm, coinType: Slip0010RawIndex, account: Slip0010RawIndex, change: Slip0010RawIndex, addressIndex: Slip0010RawIndex) => Promise<LocalHDIdentity>;
+export declare const bip44Auto: (keyring: SlipKeyringEntry) => (algo: Algorithm, coinType: Slip0010RawIndex, account: Slip0010RawIndex, change: Slip0010RawIndex) => Promise<LocalHDIdentity>;
 export interface Keypair {
     readonly algo: Algorithm;
     readonly public: PublicKeyBytes;

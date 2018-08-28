@@ -70,29 +70,54 @@ export enum KeyringType {
 export interface SlipKeyringEntry extends KeyringEntry<LocalHDIdentity> {
   readonly kind: KeyringType.Slip0010Compatible;
 
+  // this takes a desired path as input and keeps incrementing
+  // the last step in the path (addressIndex) as long as there
+  // is a matching path already in the Keyring. It will return
+  // the first path that would create a new address (possibly the input)
+  readonly incrementBip32Address: (
+    algo: Algorithm,
+    path: ReadonlyArray<Slip0010RawIndex>,
+  ) => Promise<ReadonlyArray<Slip0010RawIndex>>;
+
+  // here you can add anything you want, for just bip44 compliant coins.
+  // to make it more useful, we add many helpers below.
+  //
   // generate a new HD keyring identity with a given path
   // a keyring entry may support many possible paths, or only one.
   // if path or algorithm is not supported by the implementation,
   // it will throw an error
-  // purpose will be hardcoded 44' in this case
-  readonly createBip44Identity: (
-    algo: Algorithm,
-    coinType: Slip0010RawIndex,
-    account: Slip0010RawIndex,
-    change: Slip0010RawIndex,
-    // if undefined, auto-generate...
-    // this is a bit problematic... simpler to always auto-generate
-    // or always accept from the caller.
-    // TODO: clarify requirements on this point
-    addressIndex?: Slip0010RawIndex,
-  ) => Promise<LocalHDIdentity>;
-
-  // here you can add anything you want, for not bip44 compliant coins
   readonly createBip32Identity: (
     algo: Algorithm,
     path: ReadonlyArray<Slip0010RawIndex>,
   ) => Promise<LocalHDIdentity>;
 }
+
+const purpose44 = Slip0010RawIndex.hardened(44);
+
+// purpose will be hardcoded 44' in this case
+// exactly 5 sections in the path
+export const bip44 = (keyring: SlipKeyringEntry) => (
+  algo: Algorithm,
+  coinType: Slip0010RawIndex,
+  account: Slip0010RawIndex,
+  change: Slip0010RawIndex,
+  addressIndex: Slip0010RawIndex,
+): Promise<LocalHDIdentity> =>
+  keyring.createBip32Identity(algo, [purpose44, coinType, account, change, addressIndex]);
+
+// bip44Auto will auto-generate an appropriate addressIndex
+export const bip44Auto = (keyring: SlipKeyringEntry) => async (
+  algo: Algorithm,
+  coinType: Slip0010RawIndex,
+  account: Slip0010RawIndex,
+  change: Slip0010RawIndex,
+): Promise<LocalHDIdentity> => {
+  const zero = algo === Algorithm.SECP256K1 ? Slip0010RawIndex.normal(0) : Slip0010RawIndex.hardened(0);
+  const path = [purpose44, coinType, account, change, zero];
+  const available = await keyring.incrementBip32Address(algo, path);
+  const ident = await keyring.createBip32Identity(algo, available);
+  return ident;
+};
 
 // Keypair is a private and public key for the given algorithm
 export interface Keypair {
@@ -141,6 +166,7 @@ export interface UserProfile {
     codec: TxCodec,
     nonce: Nonce,
   ) => Promise<SignedTransaction>;
+
   readonly appendSignature: (
     identity: PublicIdentity,
     originalTransaction: SignedTransaction,
