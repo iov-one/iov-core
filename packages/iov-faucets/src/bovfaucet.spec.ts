@@ -15,8 +15,12 @@ describe("BovFaucet", () => {
     const faucet = new BovFaucet(faucetUrl);
     const address = (await Random.getBytes(20)) as Address;
     await faucet.credit(address).catch(error => {
-      // append response body to error message
-      throw new Error(`${error}; response body: ${JSON.stringify(error.response.data)}`);
+      if (error.response) {
+        // append response body to error message
+        throw new Error(`${error}; response body: ${JSON.stringify(error.response.data)}`);
+      } else {
+        throw error;
+      }
     });
   });
 
@@ -25,8 +29,12 @@ describe("BovFaucet", () => {
     const address = (await Random.getBytes(20)) as Address;
     const ticker = "PAJA" as TokenTicker;
     await faucet.credit(address, ticker).catch(error => {
-      // append response body to error message
-      throw new Error(`${error}; response body: ${JSON.stringify(error.response.data)}`);
+      if (error.response) {
+        // append response body to error message
+        throw new Error(`${error}; response body: ${JSON.stringify(error.response.data)}`);
+      } else {
+        throw error;
+      }
     });
   });
 });
