@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1
+
+* @iov/faucets: package added to provide easy access to a BovFaucet
+
 ## 0.4.0
 
 * @iov/core: Add disconnect method to IovReader
