@@ -61,14 +61,14 @@ export interface KeyringEntry<T extends PublicIdentity = LocalIdentity> {
 }
 
 export const enum KeyringType {
-  HD = "HD",
+  Bip44Compatible = "Bip44",
   // Need a better name here, for a bunch of keys with no relation...
   // either randomly generated, imported, etc....
   Mixed = "Mixed",
 }
 
 export interface HDKeyringEntry extends KeyringEntry<LocalHDIdentity> {
-  readonly kind: KeyringType.HD;
+  readonly kind: KeyringType.Bip44Compatible;
 
   // generate a new HD keyring identity with a given path
   // a keyring entry may support many possible paths, or only one.
