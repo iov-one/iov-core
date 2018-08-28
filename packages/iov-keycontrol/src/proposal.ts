@@ -74,15 +74,14 @@ export interface HDKeyringEntry extends KeyringEntry<LocalHDIdentity> {
   // a keyring entry may support many possible paths, or only one.
   // if path or algorithm is not supported by the implementation,
   // it will throw an error
-  //
-  // if autoincrement is true, it will append an auto-incrementing counter
-  // to the path as first unused space.
-  // eg. if path is 44'/13'/0'/0 and auto-increment is true, it will look
-  // see 44'/13'/0'/0/{0,1,2,3} all exist and create with path 44'/13'/0'/0/4
   readonly createIdentityWithPathPrefix: (
     algo: Algorithm,
-    path: ReadonlyArray<Slip0010RawIndex>,
-    autoincrement: boolean,
+    // purpose should be hard-coded as 44' ?
+    purpose: Slip0010RawIndex,
+    coinType: Slip0010RawIndex,
+    account: Slip0010RawIndex,
+    change: Slip0010RawIndex,
+    addressIndex: Slip0010RawIndex,
   ) => Promise<LocalHDIdentity>;
 }
 
