@@ -60,7 +60,7 @@ export interface KeyringEntry<T extends PublicIdentity = LocalIdentity> {
   ) => Promise<SignatureBytes>;
 }
 
-export const enum KeyringType {
+export enum KeyringType {
   Slip0010Compatible = "Slip0010",
   // Need a better name here, for a bunch of keys with no relation...
   // either randomly generated, imported, etc....

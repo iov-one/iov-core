@@ -19,7 +19,7 @@ export interface KeyringEntry<T extends PublicIdentity = LocalIdentity> {
     readonly supportedAlgorithms: ReadonlyArray<Algorithm>;
     readonly createTransactionSignature: (identity: PublicIdentity, transactionBytes: SignableBytes, prehash: PrehashType, chainId: ChainId) => Promise<SignatureBytes>;
 }
-export declare const enum KeyringType {
+export declare enum KeyringType {
     Slip0010Compatible = "Slip0010",
     Mixed = "Mixed"
 }
