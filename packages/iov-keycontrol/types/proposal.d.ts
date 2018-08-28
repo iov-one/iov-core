@@ -1,4 +1,4 @@
-import { PrehashType, SignableBytes } from "@iov/bcp-types";
+import { Nonce, PrehashType, SignableBytes, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
 import { Slip0010RawIndex } from "@iov/crypto";
 import { Algorithm, ChainId, PrivateKeyBytes, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 import { KeyringEntryImplementationIdString, PublicIdentity } from "./keyring";
@@ -12,6 +12,7 @@ export interface LocalHDIdentity extends LocalIdentity {
 export interface KeyringEntry<T extends PublicIdentity = LocalIdentity> {
     readonly setLabel: (label: string | undefined) => void;
     readonly setIdentityLabel: (identity: PublicIdentity, label: string | undefined) => void;
+    readonly getLabel: () => ValueAndUpdates<string | undefined>;
     readonly getIdentities: () => ValueAndUpdates<ReadonlyArray<T>>;
     readonly canSign: ValueAndUpdates<boolean>;
     readonly implementationId: KeyringEntryImplementationIdString;
@@ -35,4 +36,10 @@ export interface MixedKeyringEntry extends KeyringEntry<LocalIdentity> {
     readonly kind: KeyringType.Mixed;
     readonly createRandomIdentity: (algo: Algorithm) => Promise<LocalIdentity>;
     readonly importIdentity: (keypair: Keypair) => Promise<LocalIdentity>;
+}
+export interface UserProfile {
+    readonly addEntry: (entry: KeyringEntry) => void;
+    readonly getEntries: () => ValueAndUpdates<ReadonlyArray<KeyringEntry>>;
+    readonly signTransaction: (identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
+    readonly appendSignature: (identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
 }

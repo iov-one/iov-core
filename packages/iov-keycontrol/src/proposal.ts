@@ -9,7 +9,14 @@ Once approved, this should be a template to update the other files in
 this package.
 */
 
-import { PrehashType, SignableBytes } from "@iov/bcp-types";
+import {
+  Nonce,
+  PrehashType,
+  SignableBytes,
+  SignedTransaction,
+  TxCodec,
+  UnsignedTransaction,
+} from "@iov/bcp-types";
 import { Slip0010RawIndex } from "@iov/crypto";
 import { Algorithm, ChainId, PrivateKeyBytes, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
@@ -35,11 +42,13 @@ export interface KeyringEntry<T extends PublicIdentity = LocalIdentity> {
   readonly setIdentityLabel: (identity: PublicIdentity, label: string | undefined) => void;
 
   // all state observation should be based on streams (ValueAndUpdates)
+  readonly getLabel: () => ValueAndUpdates<string | undefined>;
   readonly getIdentities: () => ValueAndUpdates<ReadonlyArray<T>>;
   readonly canSign: ValueAndUpdates<boolean>;
 
   readonly implementationId: KeyringEntryImplementationIdString;
   // it may support ed25519, secp256k1 or both (constant from compile time)
+  // ideally most KeyringEntries support both (breaking change)
   readonly supportedAlgorithms: ReadonlyArray<Algorithm>;
 
   // the actual usage of the keys
@@ -96,12 +105,38 @@ export interface MixedKeyringEntry extends KeyringEntry<LocalIdentity> {
 
 // skipping defining load/store/lock or listeners, as they would
 // remain as is.
-// export interface UserProfile {
-//   addEntry(entry: KeyringEntry): void;
-//   setEntryLabel(n: number, label: string | undefined): void;
-//   createIdentity(n: number): Promise<LocalIdentity>;
-//   setIdentityLabel(n: number, identity: PublicIdentity, label: string | undefined): void;
-//   getIdentities(n: number): ReadonlyArray<LocalIdentity>;
-//   // signTransaction(n: number, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
-//   // appendSignature(n: number, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
-// }
+export interface UserProfile {
+  // actually, can we make this `addKeyring(entry: Keyring)`
+  // I don't think the Entry word adds clarity....
+  readonly addEntry: (entry: KeyringEntry) => void;
+
+  // this changes upon addEntry, watch the individual entries
+  // for changes on their state.
+  //
+  // Note that this assumes the caller is trusted as we expose the
+  // full entries (including ability to create identities).
+  //
+  // Also, it will not work well over proxies as it stands (which
+  // should be fixed shortly).
+  readonly getEntries: () => ValueAndUpdates<ReadonlyArray<KeyringEntry>>;
+
+  // setEntryLabel should be called on the Entry itself
+  // as should specific 'createIdentity' replacement and 'setIdentityLabel'
+
+  // UserProfile should be smart enough to dispatch to proper KeyringEntry
+  // based on PublicIdentity. It has updates from all entries and
+  // can keep an internal mapping. There is some overhead here, but
+  // it greatly simplifies the API
+  readonly signTransaction: (
+    identity: PublicIdentity,
+    transaction: UnsignedTransaction,
+    codec: TxCodec,
+    nonce: Nonce,
+  ) => Promise<SignedTransaction>;
+  readonly appendSignature: (
+    identity: PublicIdentity,
+    originalTransaction: SignedTransaction,
+    codec: TxCodec,
+    nonce: Nonce,
+  ) => Promise<SignedTransaction>;
+}
