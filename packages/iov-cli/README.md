@@ -185,6 +185,48 @@ Error: Socket was closed, so no data can be sent anymore.
     at ...
 ```
 
+## Faucet usage
+
+When using a Testnet, you can use the BovFaucet to receive tokens:
+
+```
+> const mnemonic = Bip39.encode(await Random.getBytes(16)).asString();
+> mnemonic
+'helmet album grow detail apology thank wire chef fame core private cargo'
+> const profile = new UserProfile();
+> profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic(mnemonic));
+> const me = await profile.createIdentity(0);
+
+> const knownChains = await withConnectors([await bnsConnector("https://bov.friendnet-slow.iov.one")]);
+> const writer = new IovWriter(profile, knownChains);
+> const chainId = writer.chainIds()[0];
+> const reader = writer.reader(chainId);
+> const meAddress = writer.keyToAddress(chainId, me.pubkey);
+
+> const bovFaucet = new BovFaucet("https://faucet.friendnet-slow.iov.one/faucet");
+
+> await bovFaucet.open(meAddress)
+> (await reader.getAccount({ address: meAddress })).data[0].balance
+[ { whole: 10,
+    fractional: 0,
+    tokenTicker: 'IOV',
+    tokenName: 'Main token of this chain',
+    sigFigs: 6 } ]
+
+> await bovFaucet.open(meAddress, "PAJA" as TokenTicker)
+> (await reader.getAccount({ address: meAddress })).data[0].balance
+[ { whole: 10,
+    fractional: 0,
+    tokenTicker: 'IOV',
+    tokenName: 'Main token of this chain',
+    sigFigs: 6 },
+  { whole: 10,
+    fractional: 0,
+    tokenTicker: 'PAJA',
+    tokenName: 'Mightiest token of this chain',
+    sigFigs: 9 } ]
+```
+
 ## Ledger usage
 
 Do 1. and 2. like above
