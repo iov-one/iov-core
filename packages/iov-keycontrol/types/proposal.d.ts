@@ -20,12 +20,13 @@ export interface KeyringEntry<T extends PublicIdentity = LocalIdentity> {
     readonly createTransactionSignature: (identity: PublicIdentity, transactionBytes: SignableBytes, prehash: PrehashType, chainId: ChainId) => Promise<SignatureBytes>;
 }
 export declare const enum KeyringType {
-    Bip44Compatible = "Bip44",
+    Slip0010Compatible = "Slip0010",
     Mixed = "Mixed"
 }
-export interface HDKeyringEntry extends KeyringEntry<LocalHDIdentity> {
-    readonly kind: KeyringType.Bip44Compatible;
-    readonly createIdentityWithPathPrefix: (algo: Algorithm, purpose: Slip0010RawIndex, coinType: Slip0010RawIndex, account: Slip0010RawIndex, change: Slip0010RawIndex, addressIndex: Slip0010RawIndex) => Promise<LocalHDIdentity>;
+export interface SlipKeyringEntry extends KeyringEntry<LocalHDIdentity> {
+    readonly kind: KeyringType.Slip0010Compatible;
+    readonly createBip44Identity: (algo: Algorithm, coinType: Slip0010RawIndex, account: Slip0010RawIndex, change: Slip0010RawIndex, addressIndex?: Slip0010RawIndex) => Promise<LocalHDIdentity>;
+    readonly createBip32Identity: (algo: Algorithm, path: ReadonlyArray<Slip0010RawIndex>) => Promise<LocalHDIdentity>;
 }
 export interface Keypair {
     readonly algo: Algorithm;

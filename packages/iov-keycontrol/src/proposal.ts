@@ -61,27 +61,36 @@ export interface KeyringEntry<T extends PublicIdentity = LocalIdentity> {
 }
 
 export const enum KeyringType {
-  Bip44Compatible = "Bip44",
+  Slip0010Compatible = "Slip0010",
   // Need a better name here, for a bunch of keys with no relation...
   // either randomly generated, imported, etc....
   Mixed = "Mixed",
 }
 
-export interface HDKeyringEntry extends KeyringEntry<LocalHDIdentity> {
-  readonly kind: KeyringType.Bip44Compatible;
+export interface SlipKeyringEntry extends KeyringEntry<LocalHDIdentity> {
+  readonly kind: KeyringType.Slip0010Compatible;
 
   // generate a new HD keyring identity with a given path
   // a keyring entry may support many possible paths, or only one.
   // if path or algorithm is not supported by the implementation,
   // it will throw an error
-  readonly createIdentityWithPathPrefix: (
+  // purpose will be hardcoded 44' in this case
+  readonly createBip44Identity: (
     algo: Algorithm,
-    // purpose should be hard-coded as 44' ?
-    purpose: Slip0010RawIndex,
     coinType: Slip0010RawIndex,
     account: Slip0010RawIndex,
     change: Slip0010RawIndex,
-    addressIndex: Slip0010RawIndex,
+    // if undefined, auto-generate...
+    // this is a bit problematic... simpler to always auto-generate
+    // or always accept from the caller.
+    // TODO: clarify requirements on this point
+    addressIndex?: Slip0010RawIndex,
+  ) => Promise<LocalHDIdentity>;
+
+  // here you can add anything you want, for not bip44 compliant coins
+  readonly createBip32Identity: (
+    algo: Algorithm,
+    path: ReadonlyArray<Slip0010RawIndex>,
   ) => Promise<LocalHDIdentity>;
 }
 
