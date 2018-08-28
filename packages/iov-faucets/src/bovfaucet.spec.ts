@@ -4,7 +4,7 @@ import { Random } from "@iov/crypto";
 import { BovFaucet } from "./bovfaucet";
 
 describe("BovFaucet", () => {
-  const faucetUrl = "https://faucet.xerusnet.iov.one/faucet";
+  const faucetUrl = "https://faucet.friendnet-slow.iov.one/faucet";
 
   it("can be constructed", () => {
     const faucet = new BovFaucet(faucetUrl);
