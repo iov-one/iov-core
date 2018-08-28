@@ -4,10 +4,6 @@ import { Address } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
 export class BovFaucet {
-  public static forXerusnet(): BovFaucet {
-    return new BovFaucet("https://faucet.xerusnet.iov.one/faucet");
-  }
-
   private readonly url: string;
 
   constructor(url: string) {
