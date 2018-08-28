@@ -1,7 +1,12 @@
+import { Stream } from "xstream";
+
+import { Tag } from "@iov/tendermint-types";
+
 import { Adaptor, Decoder, Encoder, findAdaptor, Params, Responses } from "./adaptor";
-import { default as requests, Method } from "./requests";
+import { JsonRpcEvent } from "./common";
+import * as requests from "./requests";
 import * as responses from "./responses";
-import { HttpClient, RpcClient, WebsocketClient } from "./rpcclient";
+import { HttpClient, instanceOfRpcStreamingClient, RpcClient, WebsocketClient } from "./rpcclient";
 
 export class Client {
   public static connect(url: string): Promise<Client> {
@@ -30,77 +35,107 @@ export class Client {
   }
 
   public abciInfo(): Promise<responses.AbciInfoResponse> {
-    const query: requests.AbciInfoRequest = { method: Method.ABCI_INFO };
+    const query: requests.AbciInfoRequest = { method: requests.Method.ABCI_INFO };
     return this.doCall(query, this.p.encodeAbciInfo, this.r.decodeAbciInfo);
   }
 
   public abciQuery(params: requests.AbciQueryParams): Promise<responses.AbciQueryResponse> {
-    const query: requests.AbciQueryRequest = { params, method: Method.ABCI_QUERY };
+    const query: requests.AbciQueryRequest = { params, method: requests.Method.ABCI_QUERY };
     return this.doCall(query, this.p.encodeAbciQuery, this.r.decodeAbciQuery);
   }
 
   public block(height?: number): Promise<responses.BlockResponse> {
-    const query: requests.BlockRequest = { method: Method.BLOCK, params: { height } };
+    const query: requests.BlockRequest = { method: requests.Method.BLOCK, params: { height } };
     return this.doCall(query, this.p.encodeBlock, this.r.decodeBlock);
   }
 
   public blockResults(height?: number): Promise<responses.BlockResultsResponse> {
-    const query: requests.BlockResultsRequest = { method: Method.BLOCK_RESULTS, params: { height } };
+    const query: requests.BlockResultsRequest = { method: requests.Method.BLOCK_RESULTS, params: { height } };
     return this.doCall(query, this.p.encodeBlockResults, this.r.decodeBlockResults);
   }
 
   public blockchain(minHeight?: number, maxHeight?: number): Promise<responses.BlockchainResponse> {
-    const query: requests.BlockchainRequest = { method: Method.BLOCKCHAIN, params: { minHeight, maxHeight } };
+    const query: requests.BlockchainRequest = {
+      method: requests.Method.BLOCKCHAIN,
+      params: { minHeight, maxHeight },
+    };
     return this.doCall(query, this.p.encodeBlockchain, this.r.decodeBlockchain);
   }
 
   public broadcastTxSync(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxSyncResponse> {
-    const query: requests.BroadcastTxRequest = { params, method: Method.BROADCAST_TX_SYNC };
+    const query: requests.BroadcastTxRequest = { params, method: requests.Method.BROADCAST_TX_SYNC };
     return this.doCall(query, this.p.encodeBroadcastTx, this.r.decodeBroadcastTxSync);
   }
 
   public broadcastTxAsync(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxAsyncResponse> {
-    const query: requests.BroadcastTxRequest = { params, method: Method.BROADCAST_TX_ASYNC };
+    const query: requests.BroadcastTxRequest = { params, method: requests.Method.BROADCAST_TX_ASYNC };
     return this.doCall(query, this.p.encodeBroadcastTx, this.r.decodeBroadcastTxAsync);
   }
 
   public broadcastTxCommit(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxCommitResponse> {
-    const query: requests.BroadcastTxRequest = { params, method: Method.BROADCAST_TX_COMMIT };
+    const query: requests.BroadcastTxRequest = { params, method: requests.Method.BROADCAST_TX_COMMIT };
     return this.doCall(query, this.p.encodeBroadcastTx, this.r.decodeBroadcastTxCommit);
   }
 
   public commit(height?: number): Promise<responses.CommitResponse> {
-    const query: requests.CommitRequest = { method: Method.COMMIT, params: { height } };
+    const query: requests.CommitRequest = { method: requests.Method.COMMIT, params: { height } };
     return this.doCall(query, this.p.encodeCommit, this.r.decodeCommit);
   }
 
   public genesis(): Promise<responses.GenesisResponse> {
-    const query: requests.GenesisRequest = { method: Method.GENESIS };
+    const query: requests.GenesisRequest = { method: requests.Method.GENESIS };
     return this.doCall(query, this.p.encodeGenesis, this.r.decodeGenesis);
   }
 
   public health(): Promise<responses.HealthResponse> {
-    const query: requests.HealthRequest = { method: Method.HEALTH };
+    const query: requests.HealthRequest = { method: requests.Method.HEALTH };
     return this.doCall(query, this.p.encodeHealth, this.r.decodeHealth);
   }
 
   public status(): Promise<responses.StatusResponse> {
-    const query: requests.StatusRequest = { method: Method.STATUS };
+    const query: requests.StatusRequest = { method: requests.Method.STATUS };
     return this.doCall(query, this.p.encodeStatus, this.r.decodeStatus);
   }
 
+  public subscribeNewBlock(): Stream<responses.NewBlockEvent> {
+    const request: requests.SubscribeRequest = {
+      method: requests.Method.SUBSCRIBE,
+      query: { type: requests.SubscriptionEventType.NewBlock },
+    };
+    return this.subscribe(request, this.r.decodeNewBlockEvent);
+  }
+
+  public subscribeNewBlockHeader(): Stream<responses.NewBlockHeaderEvent> {
+    const request: requests.SubscribeRequest = {
+      method: requests.Method.SUBSCRIBE,
+      query: { type: requests.SubscriptionEventType.NewBlockHeader },
+    };
+    return this.subscribe(request, this.r.decodeNewBlockHeaderEvent);
+  }
+
+  public subscribeTx(tags?: ReadonlyArray<Tag>): Stream<responses.TxEvent> {
+    const request: requests.SubscribeRequest = {
+      method: requests.Method.SUBSCRIBE,
+      query: {
+        type: requests.SubscriptionEventType.Tx,
+        tags: tags,
+      },
+    };
+    return this.subscribe(request, this.r.decodeTxEvent);
+  }
+
   public tx(params: requests.TxParams): Promise<responses.TxResponse> {
-    const query: requests.TxRequest = { params, method: Method.TX };
+    const query: requests.TxRequest = { params, method: requests.Method.TX };
     return this.doCall(query, this.p.encodeTx, this.r.decodeTx);
   }
 
   public txSearch(params: requests.TxSearchParams): Promise<responses.TxSearchResponse> {
-    const query: requests.TxSearchRequest = { params, method: Method.TX_SEARCH };
+    const query: requests.TxSearchRequest = { params, method: requests.Method.TX_SEARCH };
     return this.doCall(query, this.p.encodeTxSearch, this.r.decodeTxSearch);
   }
 
   public validators(height?: number): Promise<responses.ValidatorsResponse> {
-    const query: requests.ValidatorsRequest = { method: Method.VALIDATORS, params: { height } };
+    const query: requests.ValidatorsRequest = { method: requests.Method.VALIDATORS, params: { height } };
     return this.doCall(query, this.p.encodeValidators, this.r.decodeValidators);
   }
 
@@ -113,5 +148,19 @@ export class Client {
     const req = encode(request);
     const result = await this.client.execute(req);
     return decode(result);
+  }
+
+  private subscribe<T>(request: requests.SubscribeRequest, decode: (e: JsonRpcEvent) => T): Stream<T> {
+    if (!instanceOfRpcStreamingClient(this.client)) {
+      throw new Error("This RPC client type cannot subscribe to events");
+    }
+
+    const req = this.p.encodeSubscribe(request);
+    const eventStream = this.client.listen(req);
+    return eventStream.map<T>(event => {
+      // tslint:disable-next-line:no-console
+      // console.log(JSON.stringify(event));
+      return decode(event);
+    });
   }
 }

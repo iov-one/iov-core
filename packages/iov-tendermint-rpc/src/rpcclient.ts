@@ -22,6 +22,10 @@ export interface RpcStreamingClient extends RpcClient {
   readonly listen: (request: JsonRpcRequest) => Stream<JsonRpcEvent>;
 }
 
+export function instanceOfRpcStreamingClient(client: RpcClient): client is RpcStreamingClient {
+  return typeof (client as any).listen === "function";
+}
+
 export function getWindow(): any | undefined {
   return inBrowser() ? (window as any) : undefined;
 }

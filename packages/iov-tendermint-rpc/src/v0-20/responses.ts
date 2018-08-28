@@ -9,7 +9,7 @@ import {
   SignatureBytes,
 } from "@iov/tendermint-types";
 
-import { JsonRpcSuccess } from "../common";
+import { JsonRpcEvent, JsonRpcSuccess } from "../common";
 import {
   Base64,
   Base64String,
@@ -74,6 +74,18 @@ export class Responses {
 
   public static decodeStatus(response: JsonRpcSuccess): responses.StatusResponse {
     return decodeStatus(response.result as RpcStatusResponse);
+  }
+
+  public static decodeNewBlockEvent(event: JsonRpcEvent): responses.NewBlockEvent {
+    return decodeBlock(event.data.value.block as RpcBlock);
+  }
+
+  public static decodeNewBlockHeaderEvent(event: JsonRpcEvent): responses.NewBlockHeaderEvent {
+    return decodeHeader(event.data.value.header as RpcHeader);
+  }
+
+  public static decodeTxEvent(event: JsonRpcEvent): responses.TxEvent {
+    return decodeTxEvent(event.data.value.TxResult as RpcTxEvent);
   }
 
   public static decodeTx(response: JsonRpcSuccess): responses.TxResponse {
@@ -266,6 +278,28 @@ const decodeTxSearch = (data: RpcTxSearchResponse): responses.TxSearchResponse =
   txs: required(data.txs).map(decodeTxResponse),
 });
 
+export interface RpcTxEvent {
+  readonly tx: Base64String;
+  readonly result: {
+    readonly tags: ReadonlyArray<RpcTag>;
+    readonly fee: any;
+  };
+  readonly height: number;
+  readonly index: number;
+}
+
+function decodeTxEvent(data: RpcTxEvent): responses.TxEvent {
+  return {
+    tx: Base64.decode(required(data.tx)) as PostableBytes,
+    result: {
+      tags: decodeTags(data.result.tags),
+      fee: data.result.fee,
+    },
+    height: required(data.height),
+    index: required(data.index),
+  };
+}
+
 export interface RpcValidatorsResponse {
   readonly block_height: number;
   readonly validators: ReadonlyArray<RpcValidatorData>;
@@ -347,7 +381,7 @@ export interface RpcBlock {
   readonly header: RpcHeader;
   readonly last_commit: RpcCommit;
   readonly data: {
-    readonly txs: ReadonlyArray<Base64String>;
+    readonly txs?: ReadonlyArray<Base64String>;
   };
   readonly evidence?: {
     readonly evidence?: ReadonlyArray<RpcEvidence>;
@@ -356,7 +390,7 @@ export interface RpcBlock {
 const decodeBlock = (data: RpcBlock): responses.Block => ({
   header: decodeHeader(required(data.header)),
   lastCommit: decodeCommit(required(data.last_commit)),
-  txs: required(data.data.txs).map(Base64.decode),
+  txs: data.data.txs ? data.data.txs.map(Base64.decode) : [],
   evidence: data.evidence && may(decodeEvidences, data.evidence.evidence),
 });
 

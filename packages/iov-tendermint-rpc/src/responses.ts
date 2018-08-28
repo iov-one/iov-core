@@ -1,3 +1,4 @@
+// tslint:disable:no-empty-interface
 import { ReadonlyDate } from "readonly-date";
 
 import { ChainId, PostableBytes, PublicKeyBundle, SignatureBundle } from "@iov/tendermint-types";
@@ -113,6 +114,22 @@ export interface TxSearchResponse {
 export interface ValidatorsResponse {
   readonly blockHeight: number;
   readonly results: ReadonlyArray<Validator>;
+}
+
+// Events
+
+export interface NewBlockEvent extends Block {}
+
+export interface NewBlockHeaderEvent extends Header {}
+
+export interface TxEvent {
+  readonly tx: PostableBytes;
+  readonly height: number;
+  readonly index: number;
+  readonly result: {
+    readonly tags: ReadonlyArray<Tag>;
+    readonly fee: any;
+  };
 }
 
 /**** Helper items used above ******/
