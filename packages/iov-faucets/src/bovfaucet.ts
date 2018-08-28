@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { Address } from "@iov/bcp-types";
+import { Address, TokenTicker } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
 export class BovFaucet {
@@ -13,10 +13,10 @@ export class BovFaucet {
     this.url = url;
   }
 
-  public open(address: Address): Promise<any> {
+  public open(address: Address, ticker: TokenTicker = "IOV" as TokenTicker): Promise<any> {
     const body = {
       address: Encoding.toHex(address),
-      tokens: [{ ticker: "IOV" }],
+      tokens: [{ ticker: ticker }],
     };
 
     // const postData = JSON.stringify(body);
