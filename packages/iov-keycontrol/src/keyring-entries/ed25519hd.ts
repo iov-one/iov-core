@@ -5,7 +5,7 @@ import {
   Ed25519Keypair,
   EnglishMnemonic,
   Slip0010,
-  Slip0010Curve,
+  Slip10Curve,
   Slip10RawIndex,
 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -122,7 +122,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
 
   public async createIdentityWithPath(path: ReadonlyArray<Slip10RawIndex>): Promise<LocalIdentity> {
     const seed = await Bip39.mnemonicToSeed(this.secret);
-    const derivationResult = Slip0010.derivePath(Slip0010Curve.Ed25519, seed, path);
+    const derivationResult = Slip0010.derivePath(Slip10Curve.Ed25519, seed, path);
     const keypair = await Ed25519.makeKeypair(derivationResult.privkey);
 
     const newIdentity = {
@@ -212,7 +212,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   private async privkeyForIdentity(identity: PublicIdentity): Promise<Ed25519Keypair> {
     const privkeyPath = this.privkeyPathForIdentity(identity);
     const seed = await Bip39.mnemonicToSeed(this.secret);
-    const derivationResult = Slip0010.derivePath(Slip0010Curve.Ed25519, seed, privkeyPath);
+    const derivationResult = Slip0010.derivePath(Slip10Curve.Ed25519, seed, privkeyPath);
     const keypair = await Ed25519.makeKeypair(derivationResult.privkey);
     return keypair;
   }

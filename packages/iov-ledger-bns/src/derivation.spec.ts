@@ -1,6 +1,6 @@
 import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
 
-import { Bip39, Ed25519, EnglishMnemonic, Slip0010, Slip0010Curve, Slip10RawIndex } from "@iov/crypto";
+import { Bip39, Ed25519, EnglishMnemonic, Slip0010, Slip10Curve, Slip10RawIndex } from "@iov/crypto";
 
 import { getPublicKeyWithIndex } from "./app";
 import { pendingWithoutSeededLedger, skipSeededTests } from "./common.spec";
@@ -29,7 +29,7 @@ describe("Check key derivation", () => {
     const checkKey = async (i: number) => {
       const hdPath: ReadonlyArray<Slip10RawIndex> = [purpose, Slip10RawIndex.hardened(i)];
       const seed = await Bip39.mnemonicToSeed(mneumonic);
-      const res = Slip0010.derivePath(Slip0010Curve.Ed25519, seed, hdPath);
+      const res = Slip0010.derivePath(Slip10Curve.Ed25519, seed, hdPath);
 
       const keypair = await Ed25519.makeKeypair(res.privkey);
       const swPubkey = keypair.pubkey;

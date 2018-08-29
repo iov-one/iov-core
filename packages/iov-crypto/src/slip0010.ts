@@ -16,7 +16,7 @@ export interface Slip10Result {
  *
  * @see https://github.com/satoshilabs/slips/blob/master/slip-0010.md#master-key-generation
  */
-export enum Slip0010Curve {
+export enum Slip10Curve {
   Secp256k1 = "Bitcoin seed",
   Ed25519 = "ed25519 seed",
 }
@@ -41,7 +41,7 @@ const secp256k1 = new elliptic.ec("secp256k1");
 // https://github.com/satoshilabs/slips/blob/master/slip-0010.md
 export class Slip0010 {
   public static derivePath(
-    curve: Slip0010Curve,
+    curve: Slip10Curve,
     seed: Uint8Array,
     path: ReadonlyArray<Slip10RawIndex>,
   ): Slip10Result {
@@ -53,12 +53,12 @@ export class Slip0010 {
     return result;
   }
 
-  private static master(curve: Slip0010Curve, seed: Uint8Array): Slip10Result {
+  private static master(curve: Slip10Curve, seed: Uint8Array): Slip10Result {
     const i = new Hmac(Sha512, Encoding.toAscii(curve)).update(seed).digest();
     const il = i.slice(0, 32);
     const ir = i.slice(32, 64);
 
-    if (curve !== Slip0010Curve.Ed25519 && (this.isZero(il) || this.isGteN(curve, il))) {
+    if (curve !== Slip10Curve.Ed25519 && (this.isZero(il) || this.isGteN(curve, il))) {
       return this.master(curve, i);
     }
 
@@ -69,7 +69,7 @@ export class Slip0010 {
   }
 
   private static child(
-    curve: Slip0010Curve,
+    curve: Slip10Curve,
     parentPrivkey: Uint8Array,
     parentChainCode: Uint8Array,
     rawIndex: Slip10RawIndex,
@@ -80,7 +80,7 @@ export class Slip0010 {
       const payload = new Uint8Array([0x00, ...parentPrivkey, ...rawIndex.toBytesBigEndian()]);
       i = new Hmac(Sha512, parentChainCode).update(payload).digest();
     } else {
-      if (curve === Slip0010Curve.Ed25519) {
+      if (curve === Slip10Curve.Ed25519) {
         throw new Error("Normal keys are not allowed with ed25519");
       } else {
         // Step 1 of https://github.com/satoshilabs/slips/blob/master/slip-0010.md#private-parent-key--private-child-key
@@ -102,9 +102,9 @@ export class Slip0010 {
    *
    * @see https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
    */
-  private static serializedPoint(curve: Slip0010Curve, p: BN): Uint8Array {
+  private static serializedPoint(curve: Slip10Curve, p: BN): Uint8Array {
     switch (curve) {
-      case Slip0010Curve.Secp256k1:
+      case Slip10Curve.Secp256k1:
         return Encoding.fromHex(secp256k1.g.mul(p).encodeCompressed("hex"));
       default:
         throw new Error("curve not supported");
@@ -112,7 +112,7 @@ export class Slip0010 {
   }
 
   private static childImpl(
-    curve: Slip0010Curve,
+    curve: Slip10Curve,
     parentPrivkey: Uint8Array,
     parentChainCode: Uint8Array,
     rawIndex: Slip10RawIndex,
@@ -127,7 +127,7 @@ export class Slip0010 {
     const returnChainCode = ir;
 
     // step 4
-    if (curve === Slip0010Curve.Ed25519) {
+    if (curve === Slip10Curve.Ed25519) {
       return {
         chainCode: returnChainCode,
         privkey: il,
@@ -158,14 +158,14 @@ export class Slip0010 {
     return privkey.every(byte => byte === 0);
   }
 
-  private static isGteN(curve: Slip0010Curve, privkey: Uint8Array): boolean {
+  private static isGteN(curve: Slip10Curve, privkey: Uint8Array): boolean {
     const keyAsNumber = new BN(privkey);
     return keyAsNumber.gte(this.n(curve));
   }
 
-  private static n(curve: Slip0010Curve): BN {
+  private static n(curve: Slip10Curve): BN {
     switch (curve) {
-      case Slip0010Curve.Secp256k1:
+      case Slip10Curve.Secp256k1:
         return new BN("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141", 16);
       default:
         throw new Error("curve not supported");

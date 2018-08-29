@@ -3,7 +3,7 @@ export interface Slip10Result {
     readonly chainCode: Uint8Array;
     readonly privkey: Uint8Array;
 }
-export declare enum Slip0010Curve {
+export declare enum Slip10Curve {
     Secp256k1 = "Bitcoin seed",
     Ed25519 = "ed25519 seed"
 }
@@ -13,7 +13,7 @@ export declare class Slip10RawIndex extends Uint32 {
     isHardened(): boolean;
 }
 export declare class Slip0010 {
-    static derivePath(curve: Slip0010Curve, seed: Uint8Array, path: ReadonlyArray<Slip10RawIndex>): Slip10Result;
+    static derivePath(curve: Slip10Curve, seed: Uint8Array, path: ReadonlyArray<Slip10RawIndex>): Slip10Result;
     private static master;
     private static child;
     private static serializedPoint;
