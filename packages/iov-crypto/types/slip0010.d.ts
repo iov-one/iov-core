@@ -1,5 +1,5 @@
 import { Uint32 } from "@iov/encoding";
-export interface Slip0010Result {
+export interface Slip10Result {
     readonly chainCode: Uint8Array;
     readonly privkey: Uint8Array;
 }
@@ -13,7 +13,7 @@ export declare class Slip0010RawIndex extends Uint32 {
     isHardened(): boolean;
 }
 export declare class Slip0010 {
-    static derivePath(curve: Slip0010Curve, seed: Uint8Array, path: ReadonlyArray<Slip0010RawIndex>): Slip0010Result;
+    static derivePath(curve: Slip0010Curve, seed: Uint8Array, path: ReadonlyArray<Slip0010RawIndex>): Slip10Result;
     private static master;
     private static child;
     private static serializedPoint;

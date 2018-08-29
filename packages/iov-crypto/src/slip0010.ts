@@ -6,7 +6,7 @@ import { Encoding, Uint32 } from "@iov/encoding";
 import { Hmac } from "./hmac";
 import { Sha512 } from "./sha";
 
-export interface Slip0010Result {
+export interface Slip10Result {
   readonly chainCode: Uint8Array;
   readonly privkey: Uint8Array;
 }
@@ -44,7 +44,7 @@ export class Slip0010 {
     curve: Slip0010Curve,
     seed: Uint8Array,
     path: ReadonlyArray<Slip0010RawIndex>,
-  ): Slip0010Result {
+  ): Slip10Result {
     // tslint:disable-next-line:no-let
     let result = this.master(curve, seed);
     for (const rawIndex of path) {
@@ -53,7 +53,7 @@ export class Slip0010 {
     return result;
   }
 
-  private static master(curve: Slip0010Curve, seed: Uint8Array): Slip0010Result {
+  private static master(curve: Slip0010Curve, seed: Uint8Array): Slip10Result {
     const i = new Hmac(Sha512, Encoding.toAscii(curve)).update(seed).digest();
     const il = i.slice(0, 32);
     const ir = i.slice(32, 64);
@@ -73,7 +73,7 @@ export class Slip0010 {
     parentPrivkey: Uint8Array,
     parentChainCode: Uint8Array,
     rawIndex: Slip0010RawIndex,
-  ): Slip0010Result {
+  ): Slip10Result {
     // tslint:disable-next-line:no-let
     let i: Uint8Array;
     if (rawIndex.isHardened()) {
@@ -117,7 +117,7 @@ export class Slip0010 {
     parentChainCode: Uint8Array,
     rawIndex: Slip0010RawIndex,
     i: Uint8Array,
-  ): Slip0010Result {
+  ): Slip10Result {
     // step 2 (of the Private parent key → private child key algorithm)
 
     const il = i.slice(0, 32);
