@@ -4,7 +4,7 @@ import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
 import { KeyringEntrySerializationString } from "../keyring";
-import { Slip10KeyringEntry } from "./ed25519hd";
+import { Slip10KeyringEntry } from "./slip10";
 
 // Set here for Browsers until this can be configured in Karma
 // https://github.com/karma-runner/karma-jasmine/pull/211

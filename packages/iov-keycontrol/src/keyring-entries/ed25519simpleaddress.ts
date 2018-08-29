@@ -1,7 +1,7 @@
 import { Slip10Curve, Slip10RawIndex } from "@iov/crypto";
 
 import { KeyringEntryImplementationIdString, LocalIdentity } from "../keyring";
-import { Slip10KeyringEntry } from "./ed25519hd";
+import { Slip10KeyringEntry } from "./slip10";
 
 export class Ed25519SimpleAddressKeyringEntry extends Slip10KeyringEntry {
   // simple wrappers to cast return type
