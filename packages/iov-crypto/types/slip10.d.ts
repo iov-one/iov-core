@@ -7,6 +7,7 @@ export declare enum Slip10Curve {
     Secp256k1 = "Bitcoin seed",
     Ed25519 = "ed25519 seed"
 }
+export declare function slip10CurveFromString(curveString: string): Slip10Curve;
 export declare class Slip10RawIndex extends Uint32 {
     static hardened(hardenedIndex: number): Slip10RawIndex;
     static normal(normalIndex: number): Slip10RawIndex;

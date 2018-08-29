@@ -21,6 +21,20 @@ export enum Slip10Curve {
   Ed25519 = "ed25519 seed",
 }
 
+/**
+ * Reverse mapping of Slip10Curve
+ */
+export function slip10CurveFromString(curveString: string): Slip10Curve {
+  switch (curveString) {
+    case Slip10Curve.Ed25519:
+      return Slip10Curve.Ed25519;
+    case Slip10Curve.Secp256k1:
+      return Slip10Curve.Secp256k1;
+    default:
+      throw new Error(`Unknown curve string: '${curveString}'`);
+  }
+}
+
 export class Slip10RawIndex extends Uint32 {
   public static hardened(hardenedIndex: number): Slip10RawIndex {
     return new Slip10RawIndex(hardenedIndex + 2 ** 31);

@@ -1,10 +1,17 @@
 import { Encoding } from "@iov/encoding";
 
-import { Slip10, Slip10Curve, Slip10RawIndex } from "./slip10";
+import { Slip10, Slip10Curve, slip10CurveFromString, Slip10RawIndex } from "./slip10";
 
 const fromHex = Encoding.fromHex;
 
 describe("Slip10", () => {
+  it("has working slip10CurveFromString()", () => {
+    expect(slip10CurveFromString("Bitcoin seed")).toEqual(Slip10Curve.Secp256k1);
+    expect(slip10CurveFromString("ed25519 seed")).toEqual(Slip10Curve.Ed25519);
+    expect(() => slip10CurveFromString("something else")).toThrowError(/unknown curve/i);
+    expect(() => slip10CurveFromString("")).toThrowError(/unknown curve/i);
+  });
+
   describe("Test vector 1 for secp256k1", () => {
     // https://github.com/satoshilabs/slips/blob/master/slip-0010.md#test-vector-1-for-secp256k1
     const seed = fromHex("000102030405060708090a0b0c0d0e0f");
