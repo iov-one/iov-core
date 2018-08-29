@@ -73,7 +73,7 @@ import { Encoding } from '@iov/encoding';
 const { fromHex, toHex } = Encoding;
 
 // this creates two different public key identities, generated from the
-// first mnemonic using two different Slip0010 paths
+// first mnemonic using two different SLIP-0010 paths
 const id1a = await profile.createIdentity(0);
 const id1b = await profile.createIdentity(0);
 console.log(id1a);

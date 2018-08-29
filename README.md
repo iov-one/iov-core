@@ -7,7 +7,7 @@ This can be used to build cli/gui clients, automated scripts, or help build bcp-
 
 Main functionality provided:
 
-* Solid crypto library with HD support for ed25519 (following slip0010, ledger compatible)
+* Solid crypto library with HD support for ed25519 (following SLIP-0010, ledger compatible)
 * Secure private key management, including encrypted local storage for both browser and node
 * Generic, type-safe adaptor to read/write on tendermint rpc server (with http/s and ws/s support)
 * Adaptor to query / create transactions for IOV's testnet of the BNS blockchain
