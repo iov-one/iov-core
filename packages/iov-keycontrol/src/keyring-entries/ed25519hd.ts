@@ -6,6 +6,7 @@ import {
   EnglishMnemonic,
   Slip10,
   Slip10Curve,
+  slip10CurveFromString,
   Slip10RawIndex,
 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -38,18 +39,20 @@ interface IdentitySerialization {
 
 interface Ed25519HdKeyringEntrySerialization {
   readonly secret: string;
+  readonly curve: string;
   readonly label: string | undefined;
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
 
 export class Ed25519HdKeyringEntry implements KeyringEntry {
-  public static fromEntropy(bip39Entropy: Uint8Array): Ed25519HdKeyringEntry {
-    return this.fromMnemonic(Bip39.encode(bip39Entropy).asString());
+  public static fromEntropyWithCurve(curve: Slip10Curve, bip39Entropy: Uint8Array): Ed25519HdKeyringEntry {
+    return this.fromMnemonicWithCurve(curve, Bip39.encode(bip39Entropy).asString());
   }
 
-  public static fromMnemonic(mnemonicString: string): Ed25519HdKeyringEntry {
+  public static fromMnemonicWithCurve(curve: Slip10Curve, mnemonicString: string): Ed25519HdKeyringEntry {
     const data: Ed25519HdKeyringEntrySerialization = {
       secret: mnemonicString,
+      curve: curve,
       label: undefined,
       identities: [],
     };
@@ -76,6 +79,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   public readonly implementationId = "override me!" as KeyringEntryImplementationIdString;
 
   private readonly secret: EnglishMnemonic;
+  private readonly curve: Slip10Curve;
   private readonly identities: LocalIdentity[];
   private readonly privkeyPaths: Map<string, ReadonlyArray<Slip10RawIndex>>;
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
@@ -85,6 +89,9 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
 
     // secret
     this.secret = new EnglishMnemonic(decodedData.secret);
+
+    // curve
+    this.curve = slip10CurveFromString(decodedData.curve);
 
     // label
     this.labelProducer = new DefaultValueProducer<string | undefined>(decodedData.label);
@@ -188,6 +195,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
 
     const out: Ed25519HdKeyringEntrySerialization = {
       secret: this.secret.asString(),
+      curve: this.curve,
       label: this.label.value,
       identities: serializedIdentities,
     };

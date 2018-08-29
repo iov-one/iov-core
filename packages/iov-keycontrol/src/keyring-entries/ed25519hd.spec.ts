@@ -1,5 +1,5 @@
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
-import { Sha256, Sha512, Slip10RawIndex } from "@iov/crypto";
+import { Sha256, Sha512, Slip10Curve, Slip10RawIndex } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
@@ -12,7 +12,13 @@ import { Ed25519HdKeyringEntry } from "./ed25519hd";
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 30 * 1000;
 
 describe("Ed25519HdKeyringEntry", () => {
-  const emptyEntry = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [] }' as KeyringEntrySerializationString;
+  const emptyEntry = `
+    {
+      "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
+      "curve": "ed25519 seed",
+      "identities": []
+    }
+    ` as KeyringEntrySerializationString;
 
   it("can be deserialized", () => {
     const entry = new Ed25519HdKeyringEntry(emptyEntry);
@@ -21,19 +27,19 @@ describe("Ed25519HdKeyringEntry", () => {
   });
 
   it("can be created from entropy", () => {
-    const entry = Ed25519HdKeyringEntry.fromEntropy(Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"));
+    const entry = Ed25519HdKeyringEntry.fromEntropyWithCurve(Slip10Curve.Ed25519, Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"));
     expect(entry).toBeTruthy();
     expect(entry.getIdentities().length).toEqual(0);
   });
 
   it("can be created from mnemonic", () => {
-    const entry = Ed25519HdKeyringEntry.fromMnemonic("execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard");
+    const entry = Ed25519HdKeyringEntry.fromMnemonicWithCurve(Slip10Curve.Ed25519, "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard");
     expect(entry).toBeTruthy();
     expect(entry.getIdentities().length).toEqual(0);
   });
 
   it("can have a label", () => {
-    const entry = Ed25519HdKeyringEntry.fromMnemonic("execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard");
+    const entry = Ed25519HdKeyringEntry.fromMnemonicWithCurve(Slip10Curve.Ed25519, "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard");
     expect(entry.label.value).toBeUndefined();
 
     entry.setLabel("foo");
@@ -47,8 +53,8 @@ describe("Ed25519HdKeyringEntry", () => {
     const emptyEntries = [
       // all possible ways to construct an Ed25519HdKeyringEntry
       new Ed25519HdKeyringEntry(emptyEntry),
-      Ed25519HdKeyringEntry.fromEntropy(Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad")),
-      Ed25519HdKeyringEntry.fromMnemonic("execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard"),
+      Ed25519HdKeyringEntry.fromEntropyWithCurve(Slip10Curve.Ed25519, Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad")),
+      Ed25519HdKeyringEntry.fromMnemonicWithCurve(Slip10Curve.Ed25519, "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard"),
     ];
 
     for (const entry of emptyEntries) {
@@ -181,14 +187,37 @@ describe("Ed25519HdKeyringEntry", () => {
   it("can deserialize", () => {
     {
       // empty
-      const entry = new Ed25519HdKeyringEntry('{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [] }' as KeyringEntrySerializationString);
+      const entry = new Ed25519HdKeyringEntry(`
+        {
+          "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
+          "curve": "ed25519 seed",
+          "identities": []
+        }
+        ` as KeyringEntrySerializationString);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(0);
     }
 
     {
       // one element
-      const serialized = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkeyPath": [2147483649]}] }' as KeyringEntrySerializationString;
+      const serialized = `
+        {
+          "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
+          "curve": "ed25519 seed",
+          "identities": [
+            {
+              "localIdentity": {
+                "pubkey": {
+                  "algo": "ed25519",
+                  "data": "aabbccdd"
+                },
+                "label": "foo"
+              },
+              "privkeyPath": [2147483649]
+            }
+          ]
+        }
+        ` as KeyringEntrySerializationString;
       const entry = new Ed25519HdKeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(1);
@@ -199,7 +228,33 @@ describe("Ed25519HdKeyringEntry", () => {
 
     {
       // two elements
-      const serialized = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkeyPath": [2147483649]}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "privkeyPath": [2147483650]}] }' as KeyringEntrySerializationString;
+      const serialized = `
+        {
+          "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
+          "curve": "ed25519 seed",
+          "identities": [
+            {
+              "localIdentity": {
+                "pubkey": {
+                  "algo": "ed25519",
+                  "data": "aabbccdd"
+                },
+                "label": "foo"
+              },
+              "privkeyPath": [2147483649]
+            },
+            {
+              "localIdentity": {
+                "pubkey": {
+                  "algo": "ed25519",
+                  "data": "ddccbbaa"
+                },
+                "label": "bar"
+              },
+              "privkeyPath": [2147483650]
+            }
+          ]
+        }` as KeyringEntrySerializationString;
       const entry = new Ed25519HdKeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(2);

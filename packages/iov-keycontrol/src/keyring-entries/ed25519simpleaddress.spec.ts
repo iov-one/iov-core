@@ -4,7 +4,13 @@ import { KeyringEntrySerializationString } from "../keyring";
 import { Ed25519SimpleAddressKeyringEntry } from "./ed25519simpleaddress";
 
 describe("Ed25519SimpleAddressKeyringEntry", () => {
-  const emptyEntry = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [] }' as KeyringEntrySerializationString;
+  const emptyEntry = `
+    {
+      "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
+      "curve": "ed25519 seed",
+      "identities": []
+    }
+    ` as KeyringEntrySerializationString;
 
   it("returns the concrete type when creating from entropy", () => {
     const entry = Ed25519SimpleAddressKeyringEntry.fromEntropy(Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"));

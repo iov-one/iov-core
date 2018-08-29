@@ -1,17 +1,18 @@
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
-import { Slip10RawIndex } from "@iov/crypto";
+import { Slip10Curve, Slip10RawIndex } from "@iov/crypto";
 import { ChainId, SignatureBytes } from "@iov/tendermint-types";
 import { KeyringEntry, KeyringEntryImplementationIdString, KeyringEntrySerializationString, LocalIdentity, PublicIdentity } from "../keyring";
 import { ValueAndUpdates } from "../valueandupdates";
 export declare class Ed25519HdKeyringEntry implements KeyringEntry {
-    static fromEntropy(bip39Entropy: Uint8Array): Ed25519HdKeyringEntry;
-    static fromMnemonic(mnemonicString: string): Ed25519HdKeyringEntry;
+    static fromEntropyWithCurve(curve: Slip10Curve, bip39Entropy: Uint8Array): Ed25519HdKeyringEntry;
+    static fromMnemonicWithCurve(curve: Slip10Curve, mnemonicString: string): Ed25519HdKeyringEntry;
     private static identityId;
     private static algorithmFromString;
     readonly label: ValueAndUpdates<string | undefined>;
     readonly canSign: ValueAndUpdates<boolean>;
     readonly implementationId: KeyringEntryImplementationIdString;
     private readonly secret;
+    private readonly curve;
     private readonly identities;
     private readonly privkeyPaths;
     private readonly labelProducer;
