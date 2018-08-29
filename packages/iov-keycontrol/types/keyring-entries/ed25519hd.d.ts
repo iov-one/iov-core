@@ -3,9 +3,9 @@ import { Slip10Curve, Slip10RawIndex } from "@iov/crypto";
 import { ChainId, SignatureBytes } from "@iov/tendermint-types";
 import { KeyringEntry, KeyringEntryImplementationIdString, KeyringEntrySerializationString, LocalIdentity, PublicIdentity } from "../keyring";
 import { ValueAndUpdates } from "../valueandupdates";
-export declare class Ed25519HdKeyringEntry implements KeyringEntry {
-    static fromEntropyWithCurve(curve: Slip10Curve, bip39Entropy: Uint8Array): Ed25519HdKeyringEntry;
-    static fromMnemonicWithCurve(curve: Slip10Curve, mnemonicString: string): Ed25519HdKeyringEntry;
+export declare class Slip10KeyringEntry implements KeyringEntry {
+    static fromEntropyWithCurve(curve: Slip10Curve, bip39Entropy: Uint8Array): Slip10KeyringEntry;
+    static fromMnemonicWithCurve(curve: Slip10Curve, mnemonicString: string): Slip10KeyringEntry;
     private static identityId;
     private static algorithmFromString;
     readonly label: ValueAndUpdates<string | undefined>;
@@ -24,7 +24,7 @@ export declare class Ed25519HdKeyringEntry implements KeyringEntry {
     getIdentities(): ReadonlyArray<LocalIdentity>;
     createTransactionSignature(identity: PublicIdentity, transactionBytes: SignableBytes, prehashType: PrehashType, _: ChainId): Promise<SignatureBytes>;
     serialize(): KeyringEntrySerializationString;
-    clone(): Ed25519HdKeyringEntry;
+    clone(): Slip10KeyringEntry;
     private privkeyPathForIdentity;
     private privkeyForIdentity;
 }

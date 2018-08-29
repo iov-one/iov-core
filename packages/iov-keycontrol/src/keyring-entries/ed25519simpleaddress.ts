@@ -1,9 +1,9 @@
 import { Slip10Curve, Slip10RawIndex } from "@iov/crypto";
 
 import { KeyringEntryImplementationIdString, LocalIdentity } from "../keyring";
-import { Ed25519HdKeyringEntry } from "./ed25519hd";
+import { Slip10KeyringEntry } from "./ed25519hd";
 
-export class Ed25519SimpleAddressKeyringEntry extends Ed25519HdKeyringEntry {
+export class Ed25519SimpleAddressKeyringEntry extends Slip10KeyringEntry {
   // simple wrappers to cast return type
   public static fromEntropy(bip39Entropy: Uint8Array): Ed25519SimpleAddressKeyringEntry {
     return super.fromEntropyWithCurve(Slip10Curve.Ed25519, bip39Entropy) as Ed25519SimpleAddressKeyringEntry;
