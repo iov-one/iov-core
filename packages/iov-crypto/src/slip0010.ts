@@ -39,7 +39,7 @@ const secp256k1 = new elliptic.ec("secp256k1");
 
 // Universal private key derivation accoring to
 // https://github.com/satoshilabs/slips/blob/master/slip-0010.md
-export class Slip0010 {
+export class Slip10 {
   public static derivePath(
     curve: Slip10Curve,
     seed: Uint8Array,
@@ -87,7 +87,7 @@ export class Slip0010 {
         // Calculate I = HMAC-SHA512(Key = c_par, Data = ser_P(point(k_par)) || ser_32(i)).
         // where the functions point() and ser_p() are defined in BIP-0032
         const data = new Uint8Array([
-          ...Slip0010.serializedPoint(curve, new BN(parentPrivkey)),
+          ...Slip10.serializedPoint(curve, new BN(parentPrivkey)),
           ...rawIndex.toBytesBigEndian(),
         ]);
         i = new Hmac(Sha512, parentChainCode).update(data).digest();

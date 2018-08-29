@@ -12,7 +12,7 @@ export declare class Slip10RawIndex extends Uint32 {
     static normal(normalIndex: number): Slip10RawIndex;
     isHardened(): boolean;
 }
-export declare class Slip0010 {
+export declare class Slip10 {
     static derivePath(curve: Slip10Curve, seed: Uint8Array, path: ReadonlyArray<Slip10RawIndex>): Slip10Result;
     private static master;
     private static child;
