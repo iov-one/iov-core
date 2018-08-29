@@ -1,3 +1,5 @@
+import { Encoding } from "@iov/encoding";
+
 import BN = require("bn.js");
 import elliptic = require("elliptic");
 
@@ -34,8 +36,8 @@ export class Secp256k1 {
 
     // tslint:disable-next-line:no-object-literal-type-assertion
     return {
-      privkey: keypair.getPrivate(),
-      pubkey: keypair.getPublic(),
+      privkey: Encoding.fromHex(keypair.getPrivate("hex")),
+      pubkey: Encoding.fromHex(keypair.getPublic().encode("hex")),
     } as Secp256k1Keypair;
   }
 
