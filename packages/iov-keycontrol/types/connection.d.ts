@@ -9,6 +9,7 @@ export interface Connection {
 export declare class Client {
     private readonly connection;
     private readonly resolvers;
+    private readonly streams;
     constructor(connection: Connection);
     request(method: string, params: any): Promise<any>;
     subscribe(query: string): Stream<Event>;

@@ -8,7 +8,7 @@ styles.
 This can run over many transport layers.
 */
 
-import { Stream } from "xstream";
+import { Listener, Producer, Stream } from "xstream";
 
 // import { ErrorMessage, Event, EventMessage, Message, ResponseMessage } from "./messages";
 import {
@@ -46,10 +46,12 @@ interface Promiser {
 export class Client {
   private readonly connection: Connection;
   private readonly resolvers: Map<string, Promiser>;
+  private readonly streams: Map<string, EventProducer>;
 
   constructor(connection: Connection) {
-    this.resolvers = new Map<string, Promiser>();
     this.connection = connection;
+    this.resolvers = new Map<string, Promiser>();
+    this.streams = new Map<string, EventProducer>();
     this.listen();
   }
 
@@ -68,18 +70,23 @@ export class Client {
   }
 
   public subscribe(query: string): Stream<Event> {
+    const subscriptionId = randomId();
+
     const sub: SubscribeMessage = {
       ...envelope(),
       kind: MessageKind.REQUEST,
       method: "subscribe",
       params: {
         query,
-        subscriptionId: randomId(),
+        subscriptionId,
       },
     };
     this.connection.send(sub);
-    // TODO: get listener + stream
-    throw new Error("stream not implemented");
+    const producer = new EventProducer();
+    // TODO: somehow store this to unsubscribe if subscription request
+    // above returns an error
+    this.streams.set(subscriptionId, producer);
+    return Stream.create(producer);
   }
 
   private listen(): void {
@@ -108,7 +115,35 @@ export class Client {
           this.resolvers.delete(msg.id);
         }
         break;
-      // TODO: EVENT
+      case MessageKind.EVENT:
+        const prod = this.streams.get(msg.id);
+        if (!prod) {
+          throw new Error(`Unknown event ${msg.id}`);
+        } else {
+          prod.send(msg.event);
+        }
+    }
+  }
+}
+
+// EventProducer allows us to send events to a listener
+class EventProducer implements Producer<Event> {
+  // tslint:disable-next-line:readonly-keyword
+  private listener: Listener<Event> | undefined;
+
+  public start(listener: Listener<Event>): void {
+    // tslint:disable-next-line:no-object-mutation
+    this.listener = listener;
+  }
+
+  public stop(): void {
+    // tslint:disable-next-line:no-object-mutation
+    this.listener = undefined;
+  }
+
+  public send(event: Event): void {
+    if (this.listener) {
+      this.listener.next(event);
     }
   }
 }
