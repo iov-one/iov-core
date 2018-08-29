@@ -20,6 +20,14 @@ describe("Slip10KeyringEntry", () => {
     }
     ` as KeyringEntrySerializationString;
 
+  const emptySecp256k1Entry = `
+    {
+      "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
+      "curve": "Bitcoin seed",
+      "identities": []
+    }
+    ` as KeyringEntrySerializationString;
+
   it("can be deserialized", () => {
     const entry = new Slip10KeyringEntry(emptyEntry);
     expect(entry).toBeTruthy();
@@ -73,6 +81,34 @@ describe("Slip10KeyringEntry", () => {
       expect(identities[1].pubkey.algo).toEqual(Algorithm.ED25519);
       expect(identities[1].pubkey.data).toEqual(newIdentity2.pubkey.data);
       expect(identities[2].pubkey.algo).toEqual(Algorithm.ED25519);
+      expect(identities[2].pubkey.data).toEqual(newIdentity3.pubkey.data);
+    }
+  });
+
+  it("can create Secp256k1 identities", async () => {
+    const emptyEntries = [
+      // all possible ways to construct a Slip10KeyringEntry for Secp256k1
+      new Slip10KeyringEntry(emptySecp256k1Entry),
+      Slip10KeyringEntry.fromEntropyWithCurve(Slip10Curve.Secp256k1, Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad")),
+      Slip10KeyringEntry.fromMnemonicWithCurve(Slip10Curve.Secp256k1, "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard"),
+    ];
+
+    for (const entry of emptyEntries) {
+      const newIdentity1 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
+      const newIdentity2 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(1)]);
+      const newIdentity3 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(1), Slip10RawIndex.hardened(0)]);
+
+      expect(newIdentity1.pubkey.data).not.toEqual(newIdentity2.pubkey.data);
+      expect(newIdentity2.pubkey.data).not.toEqual(newIdentity3.pubkey.data);
+      expect(newIdentity3.pubkey.data).not.toEqual(newIdentity1.pubkey.data);
+
+      const identities = entry.getIdentities();
+      expect(identities.length).toEqual(3);
+      expect(identities[0].pubkey.algo).toEqual(Algorithm.SECP256K1);
+      expect(identities[0].pubkey.data).toEqual(newIdentity1.pubkey.data);
+      expect(identities[1].pubkey.algo).toEqual(Algorithm.SECP256K1);
+      expect(identities[1].pubkey.data).toEqual(newIdentity2.pubkey.data);
+      expect(identities[2].pubkey.algo).toEqual(Algorithm.SECP256K1);
       expect(identities[2].pubkey.data).toEqual(newIdentity3.pubkey.data);
     }
   });
