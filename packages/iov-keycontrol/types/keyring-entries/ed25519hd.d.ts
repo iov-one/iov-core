@@ -7,6 +7,7 @@ export declare class Slip10KeyringEntry implements KeyringEntry {
     static fromEntropyWithCurve(curve: Slip10Curve, bip39Entropy: Uint8Array): Slip10KeyringEntry;
     static fromMnemonicWithCurve(curve: Slip10Curve, mnemonicString: string): Slip10KeyringEntry;
     private static identityId;
+    private static algorithmFromCurve;
     private static algorithmFromString;
     readonly label: ValueAndUpdates<string | undefined>;
     readonly canSign: ValueAndUpdates<boolean>;

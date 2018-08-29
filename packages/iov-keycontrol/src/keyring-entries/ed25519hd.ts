@@ -4,6 +4,7 @@ import {
   Ed25519,
   Ed25519Keypair,
   EnglishMnemonic,
+  Secp256k1,
   Slip10,
   Slip10Curve,
   slip10CurveFromString,
@@ -61,6 +62,17 @@ export class Slip10KeyringEntry implements KeyringEntry {
 
   private static identityId(identity: PublicIdentity): string {
     return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
+  }
+
+  private static algorithmFromCurve(curve: Slip10Curve): Algorithm {
+    switch (curve) {
+      case Slip10Curve.Ed25519:
+        return Algorithm.ED25519;
+      case Slip10Curve.Secp256k1:
+        return Algorithm.SECP256K1;
+      default:
+        throw new Error("Unknown curve input");
+    }
   }
 
   private static algorithmFromString(input: string): Algorithm {
@@ -129,13 +141,31 @@ export class Slip10KeyringEntry implements KeyringEntry {
 
   public async createIdentityWithPath(path: ReadonlyArray<Slip10RawIndex>): Promise<LocalIdentity> {
     const seed = await Bip39.mnemonicToSeed(this.secret);
-    const derivationResult = Slip10.derivePath(Slip10Curve.Ed25519, seed, path);
-    const keypair = await Ed25519.makeKeypair(derivationResult.privkey);
+    const derivationResult = Slip10.derivePath(this.curve, seed, path);
+
+    // tslint:disable-next-line:no-let
+    let pubkeyBytes: PublicKeyBytes;
+    switch (this.curve) {
+      case Slip10Curve.Ed25519:
+        {
+          const keypair = await Ed25519.makeKeypair(derivationResult.privkey);
+          pubkeyBytes = keypair.pubkey as PublicKeyBytes;
+        }
+        break;
+      case Slip10Curve.Secp256k1:
+        {
+          const keypair = await Secp256k1.makeKeypair(derivationResult.privkey);
+          pubkeyBytes = keypair.pubkey as PublicKeyBytes;
+        }
+        break;
+      default:
+        throw new Error("Unknown curve");
+    }
 
     const newIdentity = {
       pubkey: {
-        algo: Algorithm.ED25519,
-        data: keypair.pubkey as PublicKeyBytes,
+        algo: Slip10KeyringEntry.algorithmFromCurve(this.curve),
+        data: pubkeyBytes,
       },
       label: undefined,
     };
