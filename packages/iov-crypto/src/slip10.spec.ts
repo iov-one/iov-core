@@ -1,6 +1,6 @@
 import { Encoding } from "@iov/encoding";
 
-import { Slip10, Slip10Curve, Slip10RawIndex } from "./slip0010";
+import { Slip10, Slip10Curve, Slip10RawIndex } from "./slip10";
 
 const fromHex = Encoding.fromHex;
 
