@@ -6,16 +6,14 @@ export interface Connection {
     readonly receive: Stream<Message>;
     readonly disconnect: () => void;
 }
-export interface ClientInterface {
-    readonly request: (method: string, params: any) => Promise<any>;
-    readonly subscribe: (query: string) => Stream<Event>;
-}
-export declare class Client implements ClientInterface {
+export declare class Client {
     private readonly connection;
+    private readonly resolvers;
     constructor(connection: Connection);
     request(method: string, params: any): Promise<any>;
     subscribe(query: string): Stream<Event>;
-    private receiver;
+    private listen;
+    private handleMessage;
 }
 export interface Handler {
     readonly handleRequest: (method: string, params: any) => Promise<any>;

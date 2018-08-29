@@ -8,7 +8,7 @@ styles.
 This can run over many transport layers.
 */
 
-import { Listener, Stream } from "xstream";
+import { Stream } from "xstream";
 
 // import { ErrorMessage, Event, EventMessage, Message, ResponseMessage } from "./messages";
 import {
@@ -27,24 +27,30 @@ import {
 export type Connector = () => Connection;
 
 // A connection has a read/write message interface
+// TODO: simple implementations as local stream, websocket, etc...
 export interface Connection {
   readonly send: (msg: Message) => void;
   readonly receive: Stream<Message>;
   readonly disconnect: () => void;
 }
 
-// ClientInterface is the generic client interface
-export interface ClientInterface {
-  readonly request: (method: string, params: any) => Promise<any>;
-  readonly subscribe: (query: string) => Stream<Event>;
+// Promiser holds the callbacks to later resolve Promise from different
+// control flow
+interface Promiser {
+  readonly resolve: (value: any) => void;
+  readonly reject: (err: any) => void;
 }
 
-export class Client implements ClientInterface {
+// Client sends requests to a connection and gets responses,
+// possibly out of order
+export class Client {
   private readonly connection: Connection;
+  private readonly resolvers: Map<string, Promiser>;
 
   constructor(connection: Connection) {
+    this.resolvers = new Map<string, Promiser>();
     this.connection = connection;
-    this.connection.receive.subscribe(this.receiver());
+    this.listen();
   }
 
   public request(method: string, params: any): Promise<any> {
@@ -55,8 +61,10 @@ export class Client implements ClientInterface {
       params,
     };
     this.connection.send(req);
-    // TODO
-    throw new Error("response not implemented");
+    return new Promise<any>((resolve, reject) => {
+      // TODO: make sure nothing already registered
+      this.resolvers.set(req.id, { resolve, reject });
+    });
   }
 
   public subscribe(query: string): Stream<Event> {
@@ -74,8 +82,34 @@ export class Client implements ClientInterface {
     throw new Error("stream not implemented");
   }
 
-  private receiver(): Listener<Message> {
-    throw new Error("receiver not implemented");
+  private listen(): void {
+    const subscription = this.connection.receive.subscribe({
+      next: (msg: Message) => this.handleMessage(msg),
+      error: x => {
+        throw x;
+      },
+      complete: () => {
+        subscription.unsubscribe();
+        this.connection.disconnect();
+      },
+    });
+  }
+
+  private handleMessage(msg: Message): void {
+    // TODO: enforce proper format
+    switch (msg.kind) {
+      case MessageKind.RESPONSE:
+      case MessageKind.ERROR:
+        const res = this.resolvers.get(msg.id);
+        if (!res) {
+          throw new Error(`Unknown response ${msg.id}`);
+        } else {
+          msg.kind === MessageKind.RESPONSE ? res.resolve(msg.result) : res.reject(msg.error);
+          this.resolvers.delete(msg.id);
+        }
+        break;
+      // TODO: EVENT
+    }
   }
 }
 
@@ -101,17 +135,22 @@ export class Server {
   }
 
   private listen(): void {
-    this.connection.receive.subscribe({
+    const subscription = this.connection.receive.subscribe({
       next: (msg: Message) => this.handleMessage(msg),
       error: x => {
         throw x;
       },
-      complete: () => this.connection.disconnect(),
+      complete: () => {
+        subscription.unsubscribe();
+        this.connection.disconnect();
+      },
     });
   }
 
   private async handleMessage(msg: Message): Promise<void> {
-    // only handle this, ignore others
+    // TODO: enforce proper format
+
+    // only handle requests, ignore others
     if (msg.kind === MessageKind.REQUEST) {
       // TODO: handle subscriptions specially
       const result = await this.handler.handleRequest(msg.method, msg.params);
