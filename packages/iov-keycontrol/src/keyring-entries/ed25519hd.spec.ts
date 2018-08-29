@@ -1,5 +1,5 @@
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
-import { Sha256, Sha512, Slip0010RawIndex } from "@iov/crypto";
+import { Sha256, Sha512, Slip10RawIndex } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
@@ -52,9 +52,9 @@ describe("Ed25519HdKeyringEntry", () => {
     ];
 
     for (const entry of emptyEntries) {
-      const newIdentity1 = await entry.createIdentityWithPath([Slip0010RawIndex.hardened(0)]);
-      const newIdentity2 = await entry.createIdentityWithPath([Slip0010RawIndex.hardened(1)]);
-      const newIdentity3 = await entry.createIdentityWithPath([Slip0010RawIndex.hardened(1), Slip0010RawIndex.hardened(0)]);
+      const newIdentity1 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
+      const newIdentity2 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(1)]);
+      const newIdentity3 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(1), Slip10RawIndex.hardened(0)]);
 
       expect(newIdentity1.pubkey.data).not.toEqual(newIdentity2.pubkey.data);
       expect(newIdentity2.pubkey.data).not.toEqual(newIdentity3.pubkey.data);
@@ -73,7 +73,7 @@ describe("Ed25519HdKeyringEntry", () => {
 
   it("can set, change and unset an identity label", async () => {
     const entry = new Ed25519HdKeyringEntry(emptyEntry);
-    const newIdentity = await entry.createIdentityWithPath([Slip0010RawIndex.hardened(0)]);
+    const newIdentity = await entry.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
     expect(entry.getIdentities()[0].label).toBeUndefined();
 
     entry.setIdentityLabel(newIdentity, "foo");
@@ -88,7 +88,7 @@ describe("Ed25519HdKeyringEntry", () => {
 
   it("can sign", async () => {
     const entry = new Ed25519HdKeyringEntry(emptyEntry);
-    const newIdentity = await entry.createIdentityWithPath([Slip0010RawIndex.hardened(0)]);
+    const newIdentity = await entry.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
 
     expect(entry.canSign.value).toEqual(true);
 
@@ -101,7 +101,7 @@ describe("Ed25519HdKeyringEntry", () => {
 
   it("can sign with different prehash types", async () => {
     const entry = new Ed25519HdKeyringEntry(emptyEntry);
-    const mainIdentity = await entry.createIdentityWithPath([Slip0010RawIndex.hardened(0)]);
+    const mainIdentity = await entry.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
 
     const transactionBytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
     const chainId = "some-chain" as ChainId;
@@ -120,7 +120,7 @@ describe("Ed25519HdKeyringEntry", () => {
 
   it("produces correct data for prehash signatures", async () => {
     const entry = new Ed25519HdKeyringEntry(emptyEntry);
-    const mainIdentity = await entry.createIdentityWithPath([Slip0010RawIndex.hardened(0)]);
+    const mainIdentity = await entry.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
     const chainId = "some-chain" as ChainId;
 
     const bytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
@@ -137,9 +137,9 @@ describe("Ed25519HdKeyringEntry", () => {
   it("can serialize multiple identities", async () => {
     const entry = new Ed25519HdKeyringEntry(emptyEntry);
     entry.setLabel("entry with 3 identities");
-    const identity1 = await entry.createIdentityWithPath([Slip0010RawIndex.hardened(0)]);
-    const identity2 = await entry.createIdentityWithPath([Slip0010RawIndex.hardened(1)]);
-    const identity3 = await entry.createIdentityWithPath([Slip0010RawIndex.hardened(2), Slip0010RawIndex.hardened(0)]);
+    const identity1 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
+    const identity2 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(1)]);
+    const identity3 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(2), Slip10RawIndex.hardened(0)]);
     entry.setIdentityLabel(identity1, undefined);
     entry.setIdentityLabel(identity2, "");
     entry.setIdentityLabel(identity3, "foo");
@@ -214,9 +214,9 @@ describe("Ed25519HdKeyringEntry", () => {
 
   it("can serialize and restore a full keyring entry", async () => {
     const original = new Ed25519HdKeyringEntry(emptyEntry);
-    const identity1 = await original.createIdentityWithPath([Slip0010RawIndex.hardened(0)]);
-    const identity2 = await original.createIdentityWithPath([Slip0010RawIndex.hardened(1)]);
-    const identity3 = await original.createIdentityWithPath([Slip0010RawIndex.hardened(2)]);
+    const identity1 = await original.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
+    const identity2 = await original.createIdentityWithPath([Slip10RawIndex.hardened(1)]);
+    const identity3 = await original.createIdentityWithPath([Slip10RawIndex.hardened(2)]);
     original.setIdentityLabel(identity1, undefined);
     original.setIdentityLabel(identity2, "");
     original.setIdentityLabel(identity3, "foo");

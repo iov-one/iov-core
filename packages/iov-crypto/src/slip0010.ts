@@ -21,13 +21,13 @@ export enum Slip0010Curve {
   Ed25519 = "ed25519 seed",
 }
 
-export class Slip0010RawIndex extends Uint32 {
-  public static hardened(hardenedIndex: number): Slip0010RawIndex {
-    return new Slip0010RawIndex(hardenedIndex + 2 ** 31);
+export class Slip10RawIndex extends Uint32 {
+  public static hardened(hardenedIndex: number): Slip10RawIndex {
+    return new Slip10RawIndex(hardenedIndex + 2 ** 31);
   }
 
-  public static normal(normalIndex: number): Slip0010RawIndex {
-    return new Slip0010RawIndex(normalIndex);
+  public static normal(normalIndex: number): Slip10RawIndex {
+    return new Slip10RawIndex(normalIndex);
   }
 
   public isHardened(): boolean {
@@ -43,7 +43,7 @@ export class Slip0010 {
   public static derivePath(
     curve: Slip0010Curve,
     seed: Uint8Array,
-    path: ReadonlyArray<Slip0010RawIndex>,
+    path: ReadonlyArray<Slip10RawIndex>,
   ): Slip10Result {
     // tslint:disable-next-line:no-let
     let result = this.master(curve, seed);
@@ -72,7 +72,7 @@ export class Slip0010 {
     curve: Slip0010Curve,
     parentPrivkey: Uint8Array,
     parentChainCode: Uint8Array,
-    rawIndex: Slip0010RawIndex,
+    rawIndex: Slip10RawIndex,
   ): Slip10Result {
     // tslint:disable-next-line:no-let
     let i: Uint8Array;
@@ -115,7 +115,7 @@ export class Slip0010 {
     curve: Slip0010Curve,
     parentPrivkey: Uint8Array,
     parentChainCode: Uint8Array,
-    rawIndex: Slip0010RawIndex,
+    rawIndex: Slip10RawIndex,
     i: Uint8Array,
   ): Slip10Result {
     // step 2 (of the Private parent key → private child key algorithm)
