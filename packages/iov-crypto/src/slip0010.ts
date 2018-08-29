@@ -11,6 +11,11 @@ export interface Slip0010Result {
   readonly privkey: Uint8Array;
 }
 
+/**
+ * Raw values must match the curve string in SLIP-0010 master key generation
+ *
+ * @see https://github.com/satoshilabs/slips/blob/master/slip-0010.md#master-key-generation
+ */
 export enum Slip0010Curve {
   Secp256k1 = "Bitcoin seed",
   Ed25519 = "ed25519 seed",
