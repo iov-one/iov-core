@@ -11,6 +11,8 @@ export declare enum MessageKind {
     ERROR = "error",
     EVENT = "event"
 }
+export declare const subscribe = "subscribe";
+export declare const unsubscribe = "unsubscribe";
 export declare type Message = RequestMessage | ResponseMessage | ErrorMessage | EventMessage;
 export interface RequestMessage extends Envelope {
     readonly kind: MessageKind.REQUEST;
@@ -28,10 +30,26 @@ export interface ErrorMessage extends Envelope {
         readonly message: string;
     };
 }
+export interface SubscribeMessage extends RequestMessage {
+    readonly method: "subscribe";
+    readonly params: {
+        readonly query: string;
+        readonly subscriptionId: MsgId;
+    };
+}
+export interface UnsubscribeMessage extends RequestMessage {
+    readonly method: "unsubscribe";
+    readonly params: {
+        readonly subscriptionId: MsgId;
+    };
+}
 export interface EventMessage extends Envelope {
     readonly kind: MessageKind.EVENT;
-    readonly eventType: string;
-    readonly event: any;
+    readonly event: Event;
+}
+export interface Event {
+    readonly type: string;
+    readonly data: any;
 }
 export declare const envelope: () => Envelope;
 export declare const randomChar: () => string;

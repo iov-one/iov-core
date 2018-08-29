@@ -26,6 +26,11 @@ export enum MessageKind {
   EVENT = "event",
 }
 
+export const subscribe = "subscribe";
+export const unsubscribe = "unsubscribe";
+
+// TODO: some sort of HandshakeMessage??
+
 export type Message = RequestMessage | ResponseMessage | ErrorMessage | EventMessage;
 
 export interface RequestMessage extends Envelope {
@@ -51,12 +56,33 @@ export interface ErrorMessage extends Envelope {
   };
 }
 
+// RequestMessage used for controlling event streams
+export interface SubscribeMessage extends RequestMessage {
+  readonly method: "subscribe";
+  readonly params: {
+    readonly query: string;
+    readonly subscriptionId: MsgId;
+  };
+}
+
+// RequestMessage used for controlling event streams
+export interface UnsubscribeMessage extends RequestMessage {
+  readonly method: "unsubscribe";
+  readonly params: {
+    readonly subscriptionId: MsgId;
+  };
+}
+
 // EventMessage may have id equal to subscriptionId if it was requested,
 // Or another id for a general, unsolicited event
 export interface EventMessage extends Envelope {
   readonly kind: MessageKind.EVENT;
-  readonly eventType: string;
-  readonly event: any;
+  readonly event: Event;
+}
+
+export interface Event {
+  readonly type: string;
+  readonly data: any;
 }
 
 export const envelope = (): Envelope => ({ format, id: randomId() });
