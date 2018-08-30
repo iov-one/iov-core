@@ -36,9 +36,11 @@ and enjoy `yarn`.
 
 CI Tests:
 
-* Linux: node 8, chrome
-* OSX: node 8, chrome, firefox, safari
-* Windows: node 8 (Hope to add edge ci tests in the future)
+* Linux: node 8, chrome, (electron manually)
+* OSX: node 8, chrome, firefox, safari, (electron manually)
+* Windows: node 8, (edge, electron manually)
+
+(Node 10 tested on many dev machines)
 
 **Windows note:** The development tools *definitely* work under windows in "Linux subsystem for windows"
 bash shell. They most likely work under cygwin as well. But they do rely on minor shell scripting.
