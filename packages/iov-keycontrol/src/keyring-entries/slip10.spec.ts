@@ -1,39 +1,55 @@
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
-import { Sha256, Sha512, Slip10RawIndex } from "@iov/crypto";
+import { Sha256, Sha512, Slip10Curve, Slip10RawIndex } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
 import { KeyringEntrySerializationString } from "../keyring";
-import { Ed25519HdKeyringEntry } from "./ed25519hd";
+import { Slip10KeyringEntry } from "./slip10";
+
+const { fromHex } = Encoding;
 
 // Set here for Browsers until this can be configured in Karma
 // https://github.com/karma-runner/karma-jasmine/pull/211
 // tslint:disable-next-line:no-object-mutation
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 30 * 1000;
 
-describe("Ed25519HdKeyringEntry", () => {
-  const emptyEntry = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [] }' as KeyringEntrySerializationString;
+describe("Slip10KeyringEntry", () => {
+  const emptyEntry = `
+    {
+      "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
+      "curve": "ed25519 seed",
+      "identities": []
+    }
+    ` as KeyringEntrySerializationString;
+
+  const emptySecp256k1Entry = `
+    {
+      "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
+      "curve": "Bitcoin seed",
+      "identities": []
+    }
+    ` as KeyringEntrySerializationString;
 
   it("can be deserialized", () => {
-    const entry = new Ed25519HdKeyringEntry(emptyEntry);
+    const entry = new Slip10KeyringEntry(emptyEntry);
     expect(entry).toBeTruthy();
     expect(entry.getIdentities().length).toEqual(0);
   });
 
   it("can be created from entropy", () => {
-    const entry = Ed25519HdKeyringEntry.fromEntropy(Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"));
+    const entry = Slip10KeyringEntry.fromEntropyWithCurve(Slip10Curve.Ed25519, Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"));
     expect(entry).toBeTruthy();
     expect(entry.getIdentities().length).toEqual(0);
   });
 
   it("can be created from mnemonic", () => {
-    const entry = Ed25519HdKeyringEntry.fromMnemonic("execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard");
+    const entry = Slip10KeyringEntry.fromMnemonicWithCurve(Slip10Curve.Ed25519, "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard");
     expect(entry).toBeTruthy();
     expect(entry.getIdentities().length).toEqual(0);
   });
 
   it("can have a label", () => {
-    const entry = Ed25519HdKeyringEntry.fromMnemonic("execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard");
+    const entry = Slip10KeyringEntry.fromMnemonicWithCurve(Slip10Curve.Ed25519, "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard");
     expect(entry.label.value).toBeUndefined();
 
     entry.setLabel("foo");
@@ -45,10 +61,10 @@ describe("Ed25519HdKeyringEntry", () => {
 
   it("can create identities", async () => {
     const emptyEntries = [
-      // all possible ways to construct an Ed25519HdKeyringEntry
-      new Ed25519HdKeyringEntry(emptyEntry),
-      Ed25519HdKeyringEntry.fromEntropy(Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad")),
-      Ed25519HdKeyringEntry.fromMnemonic("execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard"),
+      // all possible ways to construct a Slip10KeyringEntry
+      new Slip10KeyringEntry(emptyEntry),
+      Slip10KeyringEntry.fromEntropyWithCurve(Slip10Curve.Ed25519, Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad")),
+      Slip10KeyringEntry.fromMnemonicWithCurve(Slip10Curve.Ed25519, "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard"),
     ];
 
     for (const entry of emptyEntries) {
@@ -71,8 +87,77 @@ describe("Ed25519HdKeyringEntry", () => {
     }
   });
 
+  it("can create Secp256k1 identities", async () => {
+    const emptyEntries = [
+      // all possible ways to construct a Slip10KeyringEntry for Secp256k1
+      new Slip10KeyringEntry(emptySecp256k1Entry),
+      Slip10KeyringEntry.fromEntropyWithCurve(Slip10Curve.Secp256k1, Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad")),
+      Slip10KeyringEntry.fromMnemonicWithCurve(Slip10Curve.Secp256k1, "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard"),
+    ];
+
+    for (const entry of emptyEntries) {
+      const newIdentity1 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
+      const newIdentity2 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(1)]);
+      const newIdentity3 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(1), Slip10RawIndex.hardened(0)]);
+
+      expect(newIdentity1.pubkey.data).not.toEqual(newIdentity2.pubkey.data);
+      expect(newIdentity2.pubkey.data).not.toEqual(newIdentity3.pubkey.data);
+      expect(newIdentity3.pubkey.data).not.toEqual(newIdentity1.pubkey.data);
+
+      const identities = entry.getIdentities();
+      expect(identities.length).toEqual(3);
+      expect(identities[0].pubkey.algo).toEqual(Algorithm.SECP256K1);
+      expect(identities[0].pubkey.data).toEqual(newIdentity1.pubkey.data);
+      expect(identities[1].pubkey.algo).toEqual(Algorithm.SECP256K1);
+      expect(identities[1].pubkey.data).toEqual(newIdentity2.pubkey.data);
+      expect(identities[2].pubkey.algo).toEqual(Algorithm.SECP256K1);
+      expect(identities[2].pubkey.data).toEqual(newIdentity3.pubkey.data);
+    }
+  });
+
+  it("generates secp256k1 keys compatible to other tools", async () => {
+    // Test data generated by the BIP44 tool of
+    // https://iancoleman.io/bip39/#english
+
+    const entry = Slip10KeyringEntry.fromMnemonicWithCurve(Slip10Curve.Secp256k1, "mushroom faint dumb venture million true skull grab pitch mesh share tortoise");
+
+    // m/44'/0'/7'/1/0
+    const address0 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(0), Slip10RawIndex.hardened(7), Slip10RawIndex.normal(1), Slip10RawIndex.normal(0)]);
+    expect(address0.pubkey.data).toEqual(fromHex("0388557bc34cf8229fc40cffe464344e946bf5c46257e820ea1632f3acbeaa723b"));
+
+    // m/44'/0'/7'/1/1
+    const address1 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(0), Slip10RawIndex.hardened(7), Slip10RawIndex.normal(1), Slip10RawIndex.normal(1)]);
+    expect(address1.pubkey.data).toEqual(fromHex("03cf16066cbcb077cac488ad03995db1a6ad97c3f1088b59a9d5ae4ca449d7e4ad"));
+
+    // m/44'/0'/7'/1/2
+    const address2 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(0), Slip10RawIndex.hardened(7), Slip10RawIndex.normal(1), Slip10RawIndex.normal(2)]);
+    expect(address2.pubkey.data).toEqual(fromHex("02f4a71480c4f6928ad10002ab17815ea4db2a56e545e5ef74d71d7b490171db93"));
+  });
+
+  it("generates ed25519 keys compatible to Stellar", async () => {
+    // Test 1 from https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md#test-cases
+    //
+    // Stellar public keys can be converted to raw ed25519 pubkeys as follows
+    // $ yarn add stellar-sdk
+    // $ node
+    // > Keypair.fromPublicKey("GDRXE2BQUC3AZNPVFSCEZ76NJ3WWL25FYFK6RGZGIEKWE4SOOHSUJUJ6").rawPublicKey().toString("hex")
+    const entry = Slip10KeyringEntry.fromMnemonicWithCurve(Slip10Curve.Ed25519, "illness spike retreat truth genius clock brain pass fit cave bargain toe");
+
+    // m/44'/148'/0'
+    const address0 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(148), Slip10RawIndex.hardened(0)]);
+    expect(address0.pubkey.data).toEqual(fromHex("e3726830a0b60cb5f52c844cffcd4eed65eba5c155e89b26411562724e71e544"));
+
+    // m/44'/148'/1'
+    const address1 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(148), Slip10RawIndex.hardened(1)]);
+    expect(address1.pubkey.data).toEqual(fromHex("416edcd6746d5293579a7039ac67bcf1a8698efecf81183bbb0ac877da86ada3"));
+
+    // m/44'/148'/2'
+    const address2 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(148), Slip10RawIndex.hardened(2)]);
+    expect(address2.pubkey.data).toEqual(fromHex("31d7c4074e8e8c07025e6f33a07e93ea45b9d83e96179f6b1f23465e96d8dd89"));
+  });
+
   it("can set, change and unset an identity label", async () => {
-    const entry = new Ed25519HdKeyringEntry(emptyEntry);
+    const entry = new Slip10KeyringEntry(emptyEntry);
     const newIdentity = await entry.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
     expect(entry.getIdentities()[0].label).toBeUndefined();
 
@@ -87,7 +172,7 @@ describe("Ed25519HdKeyringEntry", () => {
   });
 
   it("can sign", async () => {
-    const entry = new Ed25519HdKeyringEntry(emptyEntry);
+    const entry = new Slip10KeyringEntry(emptyEntry);
     const newIdentity = await entry.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
 
     expect(entry.canSign.value).toEqual(true);
@@ -100,7 +185,7 @@ describe("Ed25519HdKeyringEntry", () => {
   });
 
   it("can sign with different prehash types", async () => {
-    const entry = new Ed25519HdKeyringEntry(emptyEntry);
+    const entry = new Slip10KeyringEntry(emptyEntry);
     const mainIdentity = await entry.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
 
     const transactionBytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
@@ -119,7 +204,7 @@ describe("Ed25519HdKeyringEntry", () => {
   });
 
   it("produces correct data for prehash signatures", async () => {
-    const entry = new Ed25519HdKeyringEntry(emptyEntry);
+    const entry = new Slip10KeyringEntry(emptyEntry);
     const mainIdentity = await entry.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
     const chainId = "some-chain" as ChainId;
 
@@ -135,7 +220,7 @@ describe("Ed25519HdKeyringEntry", () => {
   });
 
   it("can serialize multiple identities", async () => {
-    const entry = new Ed25519HdKeyringEntry(emptyEntry);
+    const entry = new Slip10KeyringEntry(emptyEntry);
     entry.setLabel("entry with 3 identities");
     const identity1 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
     const identity2 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(1)]);
@@ -181,15 +266,38 @@ describe("Ed25519HdKeyringEntry", () => {
   it("can deserialize", () => {
     {
       // empty
-      const entry = new Ed25519HdKeyringEntry('{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [] }' as KeyringEntrySerializationString);
+      const entry = new Slip10KeyringEntry(`
+        {
+          "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
+          "curve": "ed25519 seed",
+          "identities": []
+        }
+        ` as KeyringEntrySerializationString);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(0);
     }
 
     {
       // one element
-      const serialized = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkeyPath": [2147483649]}] }' as KeyringEntrySerializationString;
-      const entry = new Ed25519HdKeyringEntry(serialized);
+      const serialized = `
+        {
+          "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
+          "curve": "ed25519 seed",
+          "identities": [
+            {
+              "localIdentity": {
+                "pubkey": {
+                  "algo": "ed25519",
+                  "data": "aabbccdd"
+                },
+                "label": "foo"
+              },
+              "privkeyPath": [2147483649]
+            }
+          ]
+        }
+        ` as KeyringEntrySerializationString;
+      const entry = new Slip10KeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(1);
       expect(entry.getIdentities()[0].pubkey.algo).toEqual("ed25519");
@@ -199,8 +307,34 @@ describe("Ed25519HdKeyringEntry", () => {
 
     {
       // two elements
-      const serialized = '{ "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkeyPath": [2147483649]}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "privkeyPath": [2147483650]}] }' as KeyringEntrySerializationString;
-      const entry = new Ed25519HdKeyringEntry(serialized);
+      const serialized = `
+        {
+          "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
+          "curve": "ed25519 seed",
+          "identities": [
+            {
+              "localIdentity": {
+                "pubkey": {
+                  "algo": "ed25519",
+                  "data": "aabbccdd"
+                },
+                "label": "foo"
+              },
+              "privkeyPath": [2147483649]
+            },
+            {
+              "localIdentity": {
+                "pubkey": {
+                  "algo": "ed25519",
+                  "data": "ddccbbaa"
+                },
+                "label": "bar"
+              },
+              "privkeyPath": [2147483650]
+            }
+          ]
+        }` as KeyringEntrySerializationString;
+      const entry = new Slip10KeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(2);
       expect(entry.getIdentities()[0].pubkey.algo).toEqual("ed25519");
@@ -213,7 +347,7 @@ describe("Ed25519HdKeyringEntry", () => {
   });
 
   it("can serialize and restore a full keyring entry", async () => {
-    const original = new Ed25519HdKeyringEntry(emptyEntry);
+    const original = new Slip10KeyringEntry(emptyEntry);
     const identity1 = await original.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
     const identity2 = await original.createIdentityWithPath([Slip10RawIndex.hardened(1)]);
     const identity3 = await original.createIdentityWithPath([Slip10RawIndex.hardened(2)]);
@@ -221,7 +355,7 @@ describe("Ed25519HdKeyringEntry", () => {
     original.setIdentityLabel(identity2, "");
     original.setIdentityLabel(identity3, "foo");
 
-    const restored = new Ed25519HdKeyringEntry(original.serialize());
+    const restored = new Slip10KeyringEntry(original.serialize());
 
     // pubkeys and labels match
     expect(original.getIdentities()).toEqual(restored.getIdentities());
@@ -235,7 +369,7 @@ describe("Ed25519HdKeyringEntry", () => {
   });
 
   it("can be cloned", () => {
-    const original = new Ed25519HdKeyringEntry(emptyEntry);
+    const original = new Slip10KeyringEntry(emptyEntry);
     const clone = original.clone();
     expect(clone).not.toBe(original);
     expect(clone.serialize()).toEqual(original.serialize());

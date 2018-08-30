@@ -85,7 +85,15 @@ describe("Keyring", () => {
   });
 
   it("can deserialize one ed25519simpleaddress entry", () => {
-    const keyring = new Keyring('{"entries":[{"implementationId":"ed25519-simpleaddress","data":"{\\"secret\\":\\"side ripple bachelor banner word swear buzz try situate rent desk carry scorpion uphold undo account pumpkin throw\\",\\"identities\\":[]}"}]}' as KeyringSerializationString);
+    const keyring = new Keyring(`
+      {
+        "entries": [
+          {
+            "implementationId": "ed25519-simpleaddress",
+            "data": "{\\"secret\\":\\"side ripple bachelor banner word swear buzz try situate rent desk carry scorpion uphold undo account pumpkin throw\\",\\"curve\\":\\"ed25519 seed\\",\\"identities\\":[]}"
+          }
+        ]
+      }` as KeyringSerializationString);
 
     expect(keyring.getEntries().length).toEqual(1);
     expect(keyring.getEntries()[0]).toEqual(jasmine.any(Ed25519SimpleAddressKeyringEntry));

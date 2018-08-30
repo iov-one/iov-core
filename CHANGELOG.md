@@ -5,6 +5,13 @@
 * @iov/crypto: Rename all `Slip0010*` symbols to `Slip10*`
 * @iov/crypto: Fix keypair representation of Secp256k1.makeKeypair
 
+Breaking changes
+
+* Due to multi curve support in keyring entries, UserProfiles stored with
+  earlier versions of IOV-Core cannot be opened with 0.5.0. To migrate to
+  the new version, extract the secret data using 0.4.1 and create a new
+  UserProfile in 0.5.0.
+
 ## 0.4.1
 
 * @iov/faucets: package added to provide easy access to a BovFaucet

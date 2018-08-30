@@ -4,8 +4,10 @@ import {
   Ed25519,
   Ed25519Keypair,
   EnglishMnemonic,
+  Secp256k1,
   Slip10,
   Slip10Curve,
+  slip10CurveFromString,
   Slip10RawIndex,
 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -36,20 +38,22 @@ interface IdentitySerialization {
   readonly privkeyPath: ReadonlyArray<number>;
 }
 
-interface Ed25519HdKeyringEntrySerialization {
+interface Slip10KeyringEntrySerialization {
   readonly secret: string;
+  readonly curve: string;
   readonly label: string | undefined;
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
 
-export class Ed25519HdKeyringEntry implements KeyringEntry {
-  public static fromEntropy(bip39Entropy: Uint8Array): Ed25519HdKeyringEntry {
-    return this.fromMnemonic(Bip39.encode(bip39Entropy).asString());
+export class Slip10KeyringEntry implements KeyringEntry {
+  public static fromEntropyWithCurve(curve: Slip10Curve, bip39Entropy: Uint8Array): Slip10KeyringEntry {
+    return this.fromMnemonicWithCurve(curve, Bip39.encode(bip39Entropy).asString());
   }
 
-  public static fromMnemonic(mnemonicString: string): Ed25519HdKeyringEntry {
-    const data: Ed25519HdKeyringEntrySerialization = {
+  public static fromMnemonicWithCurve(curve: Slip10Curve, mnemonicString: string): Slip10KeyringEntry {
+    const data: Slip10KeyringEntrySerialization = {
       secret: mnemonicString,
+      curve: curve,
       label: undefined,
       identities: [],
     };
@@ -58,6 +62,17 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
 
   private static identityId(identity: PublicIdentity): string {
     return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
+  }
+
+  private static algorithmFromCurve(curve: Slip10Curve): Algorithm {
+    switch (curve) {
+      case Slip10Curve.Ed25519:
+        return Algorithm.ED25519;
+      case Slip10Curve.Secp256k1:
+        return Algorithm.SECP256K1;
+      default:
+        throw new Error("Unknown curve input");
+    }
   }
 
   private static algorithmFromString(input: string): Algorithm {
@@ -76,15 +91,19 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   public readonly implementationId = "override me!" as KeyringEntryImplementationIdString;
 
   private readonly secret: EnglishMnemonic;
+  private readonly curve: Slip10Curve;
   private readonly identities: LocalIdentity[];
   private readonly privkeyPaths: Map<string, ReadonlyArray<Slip10RawIndex>>;
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
 
   constructor(data: KeyringEntrySerializationString) {
-    const decodedData: Ed25519HdKeyringEntrySerialization = JSON.parse(data);
+    const decodedData: Slip10KeyringEntrySerialization = JSON.parse(data);
 
     // secret
     this.secret = new EnglishMnemonic(decodedData.secret);
+
+    // curve
+    this.curve = slip10CurveFromString(decodedData.curve);
 
     // label
     this.labelProducer = new DefaultValueProducer<string | undefined>(decodedData.label);
@@ -94,16 +113,23 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     const identities: LocalIdentity[] = [];
     const privkeyPaths = new Map<string, ReadonlyArray<Slip10RawIndex>>();
     for (const record of decodedData.identities) {
+      const algorithm = Slip10KeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo);
+      if (algorithm !== Slip10KeyringEntry.algorithmFromCurve(this.curve)) {
+        throw new Error(
+          "Identity algorithm does not match curve. This must not happen because each Slip10KeyringEntry instance supports only one fixed curve",
+        );
+      }
+
       const identity: LocalIdentity = {
         pubkey: {
-          algo: Ed25519HdKeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo),
+          algo: algorithm,
           data: Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
         },
         label: record.localIdentity.label,
       };
       const privkeyPath: ReadonlyArray<Slip10RawIndex> = record.privkeyPath.map(n => new Slip10RawIndex(n));
 
-      const identityId = Ed25519HdKeyringEntry.identityId(identity);
+      const identityId = Slip10KeyringEntry.identityId(identity);
       identities.push(identity);
       privkeyPaths.set(identityId, privkeyPath);
     }
@@ -117,22 +143,40 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   }
 
   public async createIdentity(): Promise<LocalIdentity> {
-    throw new Error("Ed25519HdKeyringEntry.createIdentity must not be called directly. Use derived type.");
+    throw new Error("Slip10KeyringEntry.createIdentity must not be called directly. Use derived type.");
   }
 
   public async createIdentityWithPath(path: ReadonlyArray<Slip10RawIndex>): Promise<LocalIdentity> {
     const seed = await Bip39.mnemonicToSeed(this.secret);
-    const derivationResult = Slip10.derivePath(Slip10Curve.Ed25519, seed, path);
-    const keypair = await Ed25519.makeKeypair(derivationResult.privkey);
+    const derivationResult = Slip10.derivePath(this.curve, seed, path);
+
+    // tslint:disable-next-line:no-let
+    let pubkeyBytes: PublicKeyBytes;
+    switch (this.curve) {
+      case Slip10Curve.Ed25519:
+        {
+          const keypair = await Ed25519.makeKeypair(derivationResult.privkey);
+          pubkeyBytes = keypair.pubkey as PublicKeyBytes;
+        }
+        break;
+      case Slip10Curve.Secp256k1:
+        {
+          const keypair = await Secp256k1.makeKeypair(derivationResult.privkey);
+          pubkeyBytes = keypair.pubkey as PublicKeyBytes;
+        }
+        break;
+      default:
+        throw new Error("Unknown curve");
+    }
 
     const newIdentity = {
       pubkey: {
-        algo: Algorithm.ED25519,
-        data: keypair.pubkey as PublicKeyBytes,
+        algo: Slip10KeyringEntry.algorithmFromCurve(this.curve),
+        data: pubkeyBytes,
       },
       label: undefined,
     };
-    const newIdentityId = Ed25519HdKeyringEntry.identityId(newIdentity);
+    const newIdentityId = Slip10KeyringEntry.identityId(newIdentity);
 
     this.privkeyPaths.set(newIdentityId, path);
     this.identities.push(newIdentity);
@@ -141,8 +185,8 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   }
 
   public setIdentityLabel(identity: PublicIdentity, label: string | undefined): void {
-    const identityId = Ed25519HdKeyringEntry.identityId(identity);
-    const index = this.identities.findIndex(i => Ed25519HdKeyringEntry.identityId(i) === identityId);
+    const identityId = Slip10KeyringEntry.identityId(identity);
+    const index = this.identities.findIndex(i => Slip10KeyringEntry.identityId(i) === identityId);
     if (index === -1) {
       throw new Error("identity with id '" + identityId + "' not found");
     }
@@ -186,21 +230,22 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
       },
     );
 
-    const out: Ed25519HdKeyringEntrySerialization = {
+    const out: Slip10KeyringEntrySerialization = {
       secret: this.secret.asString(),
+      curve: this.curve,
       label: this.label.value,
       identities: serializedIdentities,
     };
     return JSON.stringify(out) as KeyringEntrySerializationString;
   }
 
-  public clone(): Ed25519HdKeyringEntry {
-    return new Ed25519HdKeyringEntry(this.serialize());
+  public clone(): Slip10KeyringEntry {
+    return new Slip10KeyringEntry(this.serialize());
   }
 
   // This throws an exception when private key is missing
   private privkeyPathForIdentity(identity: PublicIdentity): ReadonlyArray<Slip10RawIndex> {
-    const identityId = Ed25519HdKeyringEntry.identityId(identity);
+    const identityId = Slip10KeyringEntry.identityId(identity);
     const privkeyPath = this.privkeyPaths.get(identityId);
     if (!privkeyPath) {
       throw new Error("No private key path found for identity '" + identityId + "'");

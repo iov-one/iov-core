@@ -1,16 +1,19 @@
-import { Slip10RawIndex } from "@iov/crypto";
+import { Slip10Curve, Slip10RawIndex } from "@iov/crypto";
 
 import { KeyringEntryImplementationIdString, LocalIdentity } from "../keyring";
-import { Ed25519HdKeyringEntry } from "./ed25519hd";
+import { Slip10KeyringEntry } from "./slip10";
 
-export class Ed25519SimpleAddressKeyringEntry extends Ed25519HdKeyringEntry {
+export class Ed25519SimpleAddressKeyringEntry extends Slip10KeyringEntry {
   // simple wrappers to cast return type
   public static fromEntropy(bip39Entropy: Uint8Array): Ed25519SimpleAddressKeyringEntry {
-    return super.fromEntropy(bip39Entropy) as Ed25519SimpleAddressKeyringEntry;
+    return super.fromEntropyWithCurve(Slip10Curve.Ed25519, bip39Entropy) as Ed25519SimpleAddressKeyringEntry;
   }
 
   public static fromMnemonic(mnemonicString: string): Ed25519SimpleAddressKeyringEntry {
-    return super.fromMnemonic(mnemonicString) as Ed25519SimpleAddressKeyringEntry;
+    return super.fromMnemonicWithCurve(
+      Slip10Curve.Ed25519,
+      mnemonicString,
+    ) as Ed25519SimpleAddressKeyringEntry;
   }
 
   public readonly implementationId = "ed25519-simpleaddress" as KeyringEntryImplementationIdString;
