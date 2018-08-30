@@ -4,9 +4,9 @@ import {
   Ed25519,
   Ed25519Keypair,
   EnglishMnemonic,
-  Slip0010,
-  Slip0010Curve,
-  Slip0010RawIndex,
+  Slip10,
+  Slip10Curve,
+  Slip10RawIndex,
 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
@@ -77,7 +77,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
 
   private readonly secret: EnglishMnemonic;
   private readonly identities: LocalIdentity[];
-  private readonly privkeyPaths: Map<string, ReadonlyArray<Slip0010RawIndex>>;
+  private readonly privkeyPaths: Map<string, ReadonlyArray<Slip10RawIndex>>;
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
 
   constructor(data: KeyringEntrySerializationString) {
@@ -92,7 +92,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
 
     // identities
     const identities: LocalIdentity[] = [];
-    const privkeyPaths = new Map<string, ReadonlyArray<Slip0010RawIndex>>();
+    const privkeyPaths = new Map<string, ReadonlyArray<Slip10RawIndex>>();
     for (const record of decodedData.identities) {
       const identity: LocalIdentity = {
         pubkey: {
@@ -101,9 +101,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
         },
         label: record.localIdentity.label,
       };
-      const privkeyPath: ReadonlyArray<Slip0010RawIndex> = record.privkeyPath.map(
-        n => new Slip0010RawIndex(n),
-      );
+      const privkeyPath: ReadonlyArray<Slip10RawIndex> = record.privkeyPath.map(n => new Slip10RawIndex(n));
 
       const identityId = Ed25519HdKeyringEntry.identityId(identity);
       identities.push(identity);
@@ -122,9 +120,9 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
     throw new Error("Ed25519HdKeyringEntry.createIdentity must not be called directly. Use derived type.");
   }
 
-  public async createIdentityWithPath(path: ReadonlyArray<Slip0010RawIndex>): Promise<LocalIdentity> {
+  public async createIdentityWithPath(path: ReadonlyArray<Slip10RawIndex>): Promise<LocalIdentity> {
     const seed = await Bip39.mnemonicToSeed(this.secret);
-    const derivationResult = Slip0010.derivePath(Slip0010Curve.Ed25519, seed, path);
+    const derivationResult = Slip10.derivePath(Slip10Curve.Ed25519, seed, path);
     const keypair = await Ed25519.makeKeypair(derivationResult.privkey);
 
     const newIdentity = {
@@ -201,7 +199,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   }
 
   // This throws an exception when private key is missing
-  private privkeyPathForIdentity(identity: PublicIdentity): ReadonlyArray<Slip0010RawIndex> {
+  private privkeyPathForIdentity(identity: PublicIdentity): ReadonlyArray<Slip10RawIndex> {
     const identityId = Ed25519HdKeyringEntry.identityId(identity);
     const privkeyPath = this.privkeyPaths.get(identityId);
     if (!privkeyPath) {
@@ -214,7 +212,7 @@ export class Ed25519HdKeyringEntry implements KeyringEntry {
   private async privkeyForIdentity(identity: PublicIdentity): Promise<Ed25519Keypair> {
     const privkeyPath = this.privkeyPathForIdentity(identity);
     const seed = await Bip39.mnemonicToSeed(this.secret);
-    const derivationResult = Slip0010.derivePath(Slip0010Curve.Ed25519, seed, privkeyPath);
+    const derivationResult = Slip10.derivePath(Slip10Curve.Ed25519, seed, privkeyPath);
     const keypair = await Ed25519.makeKeypair(derivationResult.privkey);
     return keypair;
   }

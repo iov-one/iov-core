@@ -1,19 +1,19 @@
 import { Uint32 } from "@iov/encoding";
-export interface Slip0010Result {
+export interface Slip10Result {
     readonly chainCode: Uint8Array;
     readonly privkey: Uint8Array;
 }
-export declare enum Slip0010Curve {
+export declare enum Slip10Curve {
     Secp256k1 = "Bitcoin seed",
     Ed25519 = "ed25519 seed"
 }
-export declare class Slip0010RawIndex extends Uint32 {
-    static hardened(hardenedIndex: number): Slip0010RawIndex;
-    static normal(normalIndex: number): Slip0010RawIndex;
+export declare class Slip10RawIndex extends Uint32 {
+    static hardened(hardenedIndex: number): Slip10RawIndex;
+    static normal(normalIndex: number): Slip10RawIndex;
     isHardened(): boolean;
 }
-export declare class Slip0010 {
-    static derivePath(curve: Slip0010Curve, seed: Uint8Array, path: ReadonlyArray<Slip0010RawIndex>): Slip0010Result;
+export declare class Slip10 {
+    static derivePath(curve: Slip10Curve, seed: Uint8Array, path: ReadonlyArray<Slip10RawIndex>): Slip10Result;
     private static master;
     private static child;
     private static serializedPoint;

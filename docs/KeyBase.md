@@ -77,10 +77,10 @@ HD Wallets for chain specific support will be created through the following stan
 - BIP44: https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
 
 #### ed25519
-- SLIP0010: https://github.com/satoshilabs/slips/blob/master/slip-0010.md
+- SLIP-0010: https://github.com/satoshilabs/slips/blob/master/slip-0010.md
 
 #### Both
-- SLIP0044: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+- SLIP-0044: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 
 ### HD Seed Generation:
 Seed generation will be performed through the BIP39 specification for HD seeds

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0
+
+* @iov/crypto: Rename all `Slip0010*` symbols to `Slip10*`
+
 ## 0.4.1
 
 * @iov/faucets: package added to provide easy access to a BovFaucet

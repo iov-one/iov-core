@@ -1,6 +1,6 @@
 import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
 
-import { Slip0010RawIndex } from "@iov/crypto";
+import { Slip10RawIndex } from "@iov/crypto";
 import { Uint32 } from "@iov/encoding";
 
 import { sendChunks } from "./exchange";
@@ -17,7 +17,7 @@ export function getPublicKey(transport: TransportNodeHid): Promise<Uint8Array> {
 }
 
 export function getPublicKeyWithIndex(transport: TransportNodeHid, i: number): Promise<Uint8Array> {
-  const pathComponent = Slip0010RawIndex.hardened(i).asNumber();
+  const pathComponent = Slip10RawIndex.hardened(i).asNumber();
   return sendChunks(transport, appCode, cmdPubkeyWithPath, encodeUint32(pathComponent));
 }
 
@@ -30,7 +30,7 @@ export function signTransactionWithIndex(
   transaction: Uint8Array,
   i: number,
 ): Promise<Uint8Array> {
-  const pathComponent = Slip0010RawIndex.hardened(i).asNumber();
+  const pathComponent = Slip10RawIndex.hardened(i).asNumber();
   const data = new Uint8Array([...encodeUint32(pathComponent), ...transaction]);
   return sendChunks(transport, appCode, cmdSignWithPath, data);
 }

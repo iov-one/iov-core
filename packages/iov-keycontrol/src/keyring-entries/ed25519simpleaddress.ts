@@ -1,4 +1,4 @@
-import { Slip0010RawIndex } from "@iov/crypto";
+import { Slip10RawIndex } from "@iov/crypto";
 
 import { KeyringEntryImplementationIdString, LocalIdentity } from "../keyring";
 import { Ed25519HdKeyringEntry } from "./ed25519hd";
@@ -18,9 +18,9 @@ export class Ed25519SimpleAddressKeyringEntry extends Ed25519HdKeyringEntry {
   public createIdentity(): Promise<LocalIdentity> {
     const nextIndex = super.getIdentities().length;
     const purpose = 4804438;
-    const path: ReadonlyArray<Slip0010RawIndex> = [
-      Slip0010RawIndex.hardened(purpose),
-      Slip0010RawIndex.hardened(nextIndex),
+    const path: ReadonlyArray<Slip10RawIndex> = [
+      Slip10RawIndex.hardened(purpose),
+      Slip10RawIndex.hardened(nextIndex),
     ];
     return super.createIdentityWithPath(path);
   }
