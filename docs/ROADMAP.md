@@ -18,8 +18,8 @@ MVP just shows we can generate HD keys, save/load them, and use them to sign tra
 
 ## Wallet integration
 
-- [ ] Cleanup, open source, and publish iov-core to npm
-- [ ] Produce a webapp that can show account balances using above interface
+- [x] Cleanup, open source, and publish iov-core to npm
+- [x] Produce a [webapp](https://github.com/iov-one/bcp-menu) that can show account balances using above interface
 - [ ] Enhance webapp to show tx history
 
 ## Ledger integration
@@ -28,8 +28,8 @@ MVP just shows we can generate HD keys, save/load them, and use them to sign tra
 - [x] Call into ledger app from Typescript repo (iov-ledger-bns)
 - [x] Wrap ledger into KeyringEntry interface (like Ed25519SimpleAddress)
 - [x] Update all bcp-demo code and client code to always prehash sha512
-- [ ] Demo usage in CLI
-- [ ] Investigate possibilities and integrate into web wallet (if possible???) 
+- [x] Demo usage in CLI
+- [ ] Investigate possibilities and integrate into web wallet (if possible???)
 
 ## BCP-Proxy MVP for one chain
 
@@ -40,22 +40,22 @@ MVP just shows we can generate HD keys, save/load them, and use them to sign tra
 
 ## Streaming interface
 
-- [ ] Clarify interface for blockchain client, including subscriptions (observable)
-- [ ] Enhance Tendermint RPC wrapper to fulfill interface
+- [x] Clarify interface for blockchain client, including subscriptions (observable)
+- [x] Enhance Tendermint RPC wrapper to fulfill interface
 - [ ] Enhance BCP Proxy client and server to fulfil interface
 - [ ] Update wallet to use new realtime/reactive interface
 
 ## Add support for NFTs (bns only)
 
 - [ ] DEPENDENCY: implement NFTs in bcp-demo
-- [ ] Update bns protobuf definitions from new bcp protobuf files 
+- [ ] Update bns protobuf definitions from new bcp protobuf files
 - [ ] Add more transaction types and codec support
 - [ ] Define interfaces (BcpMinimal, BcpNFTs, BcpSwap, etc....)
 - [ ] Write integration tests of NFT transfer with bcp-demo
 
 ## Ethereum Proxy
 
-- [ ] Add secp256k1 HD support to `keybase` (same hd path as ed25519simpleaddress for now)
+- [x] Add secp256k1 HD support to `keybase` (same hd path as ed25519simpleaddress for now)
 - [ ] Add `bcp-proxy` support to provide `bcp-basic` queries for account balance
 - [ ] Add support for sendtx with ETH (encode simple transaction and submit to blockchain)
 - [ ] Enable querying all transactions per account
