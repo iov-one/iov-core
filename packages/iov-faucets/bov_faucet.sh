@@ -23,6 +23,11 @@ fi
   echo "- cors"
 ) > "${FAUCET_DIR}/config.yaml"
 
+(
+  # Note: the content of this file is invalid at the moment
+  echo -n "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"
+) > "${FAUCET_DIR}/pk"
+
 exec docker run \
   -v "${FAUCET_DIR}/config.yaml":/config.yaml \
   -v "${FAUCET_DIR}/pk:/pk" \
