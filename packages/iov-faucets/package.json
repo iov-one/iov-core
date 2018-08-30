@@ -16,7 +16,7 @@
   "scripts": {
     "docs": "rm -rf docs && typedoc --options typedoc.js",
     "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
-    "lint": "tslint -t verbose --project .",
+    "lint": "tslint -t verbose --project . ${TSLINT_FLAGS}",
     "prebuild": "yarn format && yarn lint",
     "build": "tsc",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
