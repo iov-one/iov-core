@@ -6,6 +6,7 @@ export interface Connection {
     readonly receive: Stream<Message>;
     readonly disconnect: () => void;
 }
+export declare const mockConnectionPair: () => [Connection, Connection];
 export declare class Client {
     private readonly connection;
     private readonly resolvers;

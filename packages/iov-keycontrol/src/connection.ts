@@ -34,6 +34,46 @@ export interface Connection {
   readonly disconnect: () => void;
 }
 
+// SendProducer<T> allows us to send events to a listener
+class SendProducer<T> implements Producer<T> {
+  // tslint:disable-next-line:readonly-keyword
+  private listener: Listener<T> | undefined;
+
+  public start(listener: Listener<T>): void {
+    // tslint:disable-next-line:no-object-mutation
+    this.listener = listener;
+  }
+
+  public stop(): void {
+    if (this.listener) {
+      this.listener.complete();
+      // tslint:disable-next-line:no-object-mutation
+      this.listener = undefined;
+    }
+  }
+
+  public send(msg: T): void {
+    if (this.listener) {
+      this.listener.next(msg);
+    }
+  }
+}
+
+type EventProducer = SendProducer<Event>;
+type MessageProducer = SendProducer<Message>;
+
+export const mockConnectionPair = (): [Connection, Connection] => {
+  const a = new SendProducer<Message>();
+  const b = new SendProducer<Message>();
+  return [makeConnection(a, b), makeConnection(b, a)];
+};
+
+const makeConnection = (client: MessageProducer, server: MessageProducer): Connection => ({
+  send: client.send,
+  receive: Stream.create(server),
+  disconnect: () => client.stop(),
+});
+
 // Promiser holds the callbacks to later resolve Promise from different
 // control flow
 interface Promiser {
@@ -82,7 +122,7 @@ export class Client {
       },
     };
     this.connection.send(sub);
-    const producer = new EventProducer();
+    const producer = new SendProducer<Event>();
     // TODO: somehow store this to unsubscribe if subscription request
     // above returns an error
     this.streams.set(subscriptionId, producer);
@@ -122,28 +162,6 @@ export class Client {
         } else {
           prod.send(msg.event);
         }
-    }
-  }
-}
-
-// EventProducer allows us to send events to a listener
-class EventProducer implements Producer<Event> {
-  // tslint:disable-next-line:readonly-keyword
-  private listener: Listener<Event> | undefined;
-
-  public start(listener: Listener<Event>): void {
-    // tslint:disable-next-line:no-object-mutation
-    this.listener = listener;
-  }
-
-  public stop(): void {
-    // tslint:disable-next-line:no-object-mutation
-    this.listener = undefined;
-  }
-
-  public send(event: Event): void {
-    if (this.listener) {
-      this.listener.next(event);
     }
   }
 }
