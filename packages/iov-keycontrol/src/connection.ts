@@ -62,13 +62,18 @@ class SendProducer<T> implements Producer<T> {
 type EventProducer = SendProducer<Event>;
 type MessageProducer = SendProducer<Message>;
 
-export const mockConnectionPair = (): [Connection, Connection] => {
+// localConnectionPair returns a pair of connections that can be
+// pass to Client and Server for them to communicate.
+//
+// Generally thought of for tests, but could also be used
+// to isolate components within one process.
+export const localConnectionPair = (): [Connection, Connection] => {
   const a = new SendProducer<Message>();
   const b = new SendProducer<Message>();
-  return [makeConnection(a, b), makeConnection(b, a)];
+  return [localConnection(a, b), localConnection(b, a)];
 };
 
-const makeConnection = (client: MessageProducer, server: MessageProducer): Connection => ({
+const localConnection = (client: MessageProducer, server: MessageProducer): Connection => ({
   send: client.send,
   receive: Stream.create(server),
   disconnect: () => client.stop(),
@@ -104,8 +109,12 @@ export class Client {
     };
     this.connection.send(req);
     return new Promise<any>((resolve, reject) => {
-      // TODO: make sure nothing already registered
-      this.resolvers.set(req.id, { resolve, reject });
+      // make sure nothing already registered
+      if (this.resolvers.get(req.id)) {
+        reject(`Cannot reuse ${req.id}, request currently pending`);
+      } else {
+        this.resolvers.set(req.id, { resolve, reject });
+      }
     });
   }
 
@@ -125,6 +134,7 @@ export class Client {
     const producer = new SendProducer<Event>();
     // TODO: somehow store this to unsubscribe if subscription request
     // above returns an error
+    // this.resolvers.set(sub.id, ...)
     this.streams.set(subscriptionId, producer);
     return Stream.create(producer);
   }
@@ -143,7 +153,11 @@ export class Client {
   }
 
   private handleMessage(msg: Message): void {
-    // TODO: enforce proper format
+    if (msg.format !== format) {
+      const text = JSON.stringify(msg);
+      throw new Error(`Invalid message: ${text}`);
+    }
+
     switch (msg.kind) {
       case MessageKind.RESPONSE:
       case MessageKind.ERROR:
@@ -174,10 +188,6 @@ export interface Handler {
 }
 
 export class Server {
-  // TODO: implement generic listener? Or are these protocol
-  // specific functions??
-  // public static listen(/* something that spawns connections, handler */)
-
   private readonly connection: Connection;
   private readonly handler: Handler;
 
@@ -201,7 +211,10 @@ export class Server {
   }
 
   private async handleMessage(msg: Message): Promise<void> {
-    // TODO: enforce proper format
+    if (msg.format !== format) {
+      const text = JSON.stringify(msg);
+      throw new Error(`Invalid message: ${text}`);
+    }
 
     // only handle requests, ignore others
     if (msg.kind === MessageKind.REQUEST) {
