@@ -49,13 +49,17 @@ before_script:
     docker pull tendermint/tendermint:${TM_VERSION}
     docker pull iov1/tendermint:${TM_VERSION}
     docker pull iov1/bov:${BOV_VERSION}
+    docker pull iov1/faucet
     export TENDERMINT_ENABLED=1
     export BOV_ENABLED=1
+    export FAUCET_ENABLED=1
 
     export TM_DIR=$(mktemp -d "${TMPDIR:-/tmp}/tendermint_${TM_VERSION}.XXXXXXXXX")
     export BOV_DIR=$(mktemp -d "${TMPDIR:-/tmp}/bov_${BOV_VERSION}.XXXXXXXXX")
+    export FAUCET_DIR=$(mktemp -d "${TMPDIR:-/tmp}/faucet.XXXXXXXXX")
     echo "TM_DIR = $TM_DIR"
     echo "BOV_DIR = $BOV_DIR"
+    echo "FAUCET_DIR = $FAUCET_DIR"
 
     ./packages/iov-tendermint-rpc/tendermint.sh > /tmp/foo.log &
     export TM_PID=$!
@@ -71,13 +75,26 @@ before_script:
     # for debug output
     cat /tmp/bov_tm.log
     cat /tmp/bov_app.log
+
+    ./packages/iov-faucets/bov_faucet.sh > /tmp/faucet.log &
+    export FAUCET_PID=$!
+    sleep 3
+    # for debug output
+    cat /tmp/faucet.log
   fi
 
 script:
-- echo "use tendermint?" ${TENDERMINT_ENABLED} "use bov?" ${BOV_ENABLED}
+- echo "use tendermint?" ${TENDERMINT_ENABLED} "use bov?" ${BOV_ENABLED} "use faucet?" ${FAUCET_ENABLED}
 - ./travis.sh
 
 after_script:
+- |
+  if [[ $FAUCET_PID ]]; then
+    echo "Stopping faucet"
+    kill ${FAUCET_PID}
+    # for debug output
+    cat /tmp/faucet.log
+  fi
 - |
   if [[ $TM_PID ]]; then
     echo "Stopping tendermint" $TM_PID
