@@ -3,6 +3,7 @@
 ## 0.5.0
 
 * @iov/crypto: Rename all `Slip0010*` symbols to `Slip10*`
+* @iov/crypto: Fix keypair representation of Secp256k1.makeKeypair
 
 ## 0.4.1
 
