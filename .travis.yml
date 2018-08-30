@@ -76,7 +76,7 @@ before_script:
 
 script:
 - echo "use tendermint?" ${TENDERMINT_ENABLED} "use bov?" ${BOV_ENABLED}
-- ./travis.sh
+- ./scripts/travis.sh
 
 after_script:
 - |
