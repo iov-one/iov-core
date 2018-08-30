@@ -19,9 +19,11 @@ import { KeyringEntryImplementationIdString, LocalIdentity, PublicIdentity } fro
 */
 
 import { Algorithm } from "@iov/tendermint-types";
-import { EventEmitter } from "events";
+import { Stream } from "xstream";
 
+import { Client, Connection, Handler, Server } from "./connection";
 import { KeyringEntryImplementationIdString } from "./keyring";
+import { Event } from "./messages";
 import { ValueAndUpdates } from "./valueandupdates";
 
 // simplified KeyringEntry to demonstrate....
@@ -51,102 +53,85 @@ export interface KeyringEntry {
 }
 
 export enum Method {
+  Init = "init",
   SetLabel = "setLabel",
   GetLabelUpdate = "getLabelUpdate",
   ImplementationId = "implementationId",
   SupportedAlgorithms = "supportedAlgorithms",
 }
 
-// A connection has a read/write interface,
-// Send messages and listen to return messages.
-// Each one needs a unique ID.
-export interface Connection extends EventEmitter {
-  readonly send: (msg: Message) => void;
-}
-
-// Should we just use JsonRpc standard here?
-export interface Message {
-  readonly id: string;
-  readonly method: Method;
-  readonly params: any;
-}
-
-const randomId = (): string => {
-  // TODO: better
-  return "random";
-};
-
 // LabelParams is one possible params
 export interface LabelParams {
   readonly label: string | undefined;
 }
 
-export type Connector = () => Connection;
+export interface InitResponse {
+  readonly implementationId: KeyringEntryImplementationIdString;
+  readonly supportedAlgorithms: ReadonlyArray<Algorithm>;
+}
 
 export class KeyringProxyClient /*implements KeyringEntry*/ {
-  public static async connect(connector: Connector): Promise<KeyringProxyClient> {
-    const connection = await connector();
-    const { implementationId, supportedAlgorithms } = await this.setupConnection(/*connection*/);
-    return new KeyringProxyClient(connection, implementationId, supportedAlgorithms);
+  public static async connect(connection: Connection): Promise<KeyringProxyClient> {
+    const client = new Client(connection);
+    const { implementationId, supportedAlgorithms } = await this.init(client);
+    return new KeyringProxyClient(client, implementationId, supportedAlgorithms);
   }
 
-  private static async setupConnection(/*connection: Connection*/): Promise<{
-    readonly implementationId: KeyringEntryImplementationIdString;
-    readonly supportedAlgorithms: ReadonlyArray<Algorithm>;
-  }> {
-    // TODO: listen for initial events from the connection
-    return {
-      implementationId: "change-me" as KeyringEntryImplementationIdString,
-      supportedAlgorithms: [Algorithm.ED25519],
-    };
+  private static async init(client: Client): Promise<InitResponse> {
+    const resp = await client.request(Method.Init, {});
+    return resp as InitResponse;
   }
 
   public readonly implementationId: KeyringEntryImplementationIdString;
   public readonly supportedAlgorithms: ReadonlyArray<Algorithm>;
-  private readonly connection: Connection;
+  private readonly client: Client;
 
   constructor(
-    connection: Connection,
+    client: Client,
     implementationId: KeyringEntryImplementationIdString,
     supportedAlgorithms: ReadonlyArray<Algorithm>,
   ) {
-    this.connection = connection;
+    this.client = client;
     this.implementationId = implementationId;
     this.supportedAlgorithms = supportedAlgorithms;
   }
 
-  public async setLabel(label: string | undefined): Promise<void> {
-    const message = { id: randomId(), method: Method.SetLabel, params: { label } };
-    this.connection.send(message);
+  public setLabel(label: string | undefined): Promise<void> {
+    return this.client.request(Method.SetLabel, { label });
   }
 }
 
-export class KeyringProxyServer {
-  // this is like a "listen forever loop",
-  // it spawns individual instances of the server with a real connection
-  public static listen(/* some sort of listener, keyring to proxy to */): void {
-    throw new Error("Not yet implemented");
-  }
-
-  private readonly connection: Connection;
+export class KeyringProxyHandler implements Handler {
   private readonly keyring: KeyringEntry;
 
-  constructor(connection: Connection, keyring: KeyringEntry) {
-    this.connection = connection;
+  constructor(keyring: KeyringEntry) {
     this.keyring = keyring;
-    this.connection.on("message", this.handleMessage.bind(this));
-    // this.sendEvents();
   }
 
-  private handleMessage(message: Message): void {
-    switch (message.method) {
+  public async handleRequest(method: string, params: any): Promise<any> {
+    switch (method) {
+      case Method.Init:
+        return {
+          implementationId: this.keyring.implementationId,
+          supportedAlgorithms: this.keyring.supportedAlgorithms,
+        };
       case Method.SetLabel:
-        const label = (message.params as LabelParams).label;
-        // for now, don't worry that this returns a Promise....
-        this.keyring.setLabel(label);
-        break;
+        return this.keyring.setLabel((params as LabelParams).label);
       default:
-        throw new Error(`Unknown method ${message.method}`);
+        throw new Error("Not yet implemented");
     }
   }
+
+  public handleSubscribe(query: string): Stream<Event> {
+    if (!query) {
+      throw new Error("query required");
+    }
+    throw new Error("Not yet implemented");
+  }
 }
+
+// serveProxy will expose the given keyring entry over a connection
+export const serveProxy = (connection: Connection, keyring: KeyringEntry): Server => {
+  const handler = new KeyringProxyHandler(keyring);
+  return new Server(connection, handler);
+};
