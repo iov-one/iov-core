@@ -31,14 +31,14 @@ The compiled code from this package, which is published on npm, should work on a
 browser, and node 8+. The development environment has been tested on node 8.7.0 LTS and node 10.x.
 
 **Yarn not Npm** Please `npm install -g yarn` and use `yarn install`, `yarn build`, etc.
-Developers you installed with `npm i` have reported problems in compiling, so wipe out `node_modules`
+Developers who installed with `npm i` have reported problems in compiling, so wipe out `node_modules`
 and enjoy `yarn`.
 
 CI Tests:
 
 * Linux: node 8, chrome
 * OSX: node 8, chrome, firefox, safari
-* (Hope to add windows + edge ci tests in the future)
+* Windows: node 8 (Hope to add edge ci tests in the future)
 
 **Windows note:** The development tools *definitely* work under windows in "Linux subsystem for windows"
 bash shell. They most likely work under cygwin as well. But they do rely on minor shell scripting.
