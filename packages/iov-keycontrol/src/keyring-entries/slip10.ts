@@ -113,9 +113,16 @@ export class Slip10KeyringEntry implements KeyringEntry {
     const identities: LocalIdentity[] = [];
     const privkeyPaths = new Map<string, ReadonlyArray<Slip10RawIndex>>();
     for (const record of decodedData.identities) {
+      const algorithm = Slip10KeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo);
+      if (algorithm !== Slip10KeyringEntry.algorithmFromCurve(this.curve)) {
+        throw new Error(
+          "Identity algorithm does not match curve. This must not happen because each Slip10KeyringEntry instance supports only one fixed curve",
+        );
+      }
+
       const identity: LocalIdentity = {
         pubkey: {
-          algo: Slip10KeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo),
+          algo: algorithm,
           data: Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
         },
         label: record.localIdentity.label,
