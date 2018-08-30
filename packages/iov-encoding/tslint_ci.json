@@ -1,6 +1,6 @@
 {
   "extends": [
-    "./tslint.json",
+    "../../tslint.json",
     "../../tslint_ci.json"
   ]
 }
