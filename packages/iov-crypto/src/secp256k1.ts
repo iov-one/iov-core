@@ -37,7 +37,7 @@ export class Secp256k1 {
     // tslint:disable-next-line:no-object-literal-type-assertion
     return {
       privkey: Encoding.fromHex(keypair.getPrivate("hex")),
-      pubkey: Encoding.fromHex(keypair.getPublic().encode("hex")),
+      pubkey: Encoding.fromHex(keypair.getPublic().encodeCompressed("hex")),
     } as Secp256k1Keypair;
   }
 
