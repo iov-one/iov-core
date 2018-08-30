@@ -38,6 +38,7 @@ before_script:
 # See implementation https://github.com/travis-ci/travis-build/blob/4041ba116ddb3bdfd66ab8acbb7094dee28d6797/lib/travis/build/templates/header.sh
 # and http://www.garbers.co.za/2017/11/01/code-folding-and-timing-in-travis-ci/
 - export ANSI_CLEAR
+- export TSLINT_FLAGS='-c ./tslint_ci.json'
 - export -f travis_nanoseconds travis_fold travis_time_start travis_time_finish
 
 # Use Docker if available (currently Linux only)
