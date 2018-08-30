@@ -1,0 +1,6 @@
+{
+  "rules": {
+    "no-console": true,
+    "comment-format": [true, "check-space"]
+  }
+}

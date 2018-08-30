@@ -81,6 +81,8 @@ export class Keyring {
       const parsedData = JSON.parse(data) as KeyringSerialization;
       this.entries = parsedData.entries.map(Keyring.deserializeKeyringEntry);
     } else {
+      //bad comment
+      console.log("construct without data");
       this.entries = [];
     }
   }
