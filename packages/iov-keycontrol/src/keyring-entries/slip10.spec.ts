@@ -134,6 +134,28 @@ describe("Slip10KeyringEntry", () => {
     expect(address2.pubkey.data).toEqual(fromHex("02f4a71480c4f6928ad10002ab17815ea4db2a56e545e5ef74d71d7b490171db93"));
   });
 
+  it("generates ed25519 keys compatible to Stellar", async () => {
+    // Test 1 from https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md#test-cases
+    //
+    // Stellar public keys can be converted to raw ed25519 pubkeys as follows
+    // $ yarn add stellar-sdk
+    // $ node
+    // > Keypair.fromPublicKey("GDRXE2BQUC3AZNPVFSCEZ76NJ3WWL25FYFK6RGZGIEKWE4SOOHSUJUJ6").rawPublicKey().toString("hex")
+    const entry = Slip10KeyringEntry.fromMnemonicWithCurve(Slip10Curve.Ed25519, "illness spike retreat truth genius clock brain pass fit cave bargain toe");
+
+    // m/44'/148'/0'
+    const address0 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(148), Slip10RawIndex.hardened(0)]);
+    expect(address0.pubkey.data).toEqual(fromHex("e3726830a0b60cb5f52c844cffcd4eed65eba5c155e89b26411562724e71e544"));
+
+    // m/44'/148'/1'
+    const address1 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(148), Slip10RawIndex.hardened(1)]);
+    expect(address1.pubkey.data).toEqual(fromHex("416edcd6746d5293579a7039ac67bcf1a8698efecf81183bbb0ac877da86ada3"));
+
+    // m/44'/148'/2'
+    const address2 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(148), Slip10RawIndex.hardened(2)]);
+    expect(address2.pubkey.data).toEqual(fromHex("31d7c4074e8e8c07025e6f33a07e93ea45b9d83e96179f6b1f23465e96d8dd89"));
+  });
+
   it("can set, change and unset an identity label", async () => {
     const entry = new Slip10KeyringEntry(emptyEntry);
     const newIdentity = await entry.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
