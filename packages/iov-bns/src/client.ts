@@ -29,6 +29,7 @@ import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 import { bnsCodec } from "./bnscodec";
 import * as codecImpl from "./codecimpl";
 import { InitData, Normalize } from "./normalize";
+import { streamPromise } from "./stream";
 import { Decoder, Keyed, Result } from "./types";
 
 // queryByAddress is a type guard to use in the account-based queries
@@ -196,6 +197,30 @@ export class Client implements IovReader {
       ...this.codec.parseBytes(tx, chainId),
     });
     return res.txs.map(mapper);
+  }
+
+  // listenTx returns a stream of all transactions that match
+  // the tags from the present moment on
+  public listenTx(tags: ReadonlyArray<Tag>): Stream<ConfirmedTransaction> {
+    const streamId = Stream.fromPromise(this.chainId());
+    const txs = this.tmClient.subscribeTx(tags);
+
+    // destructuring ftw (or is it too confusing?)
+    const mapper = ([{ height, tx }, chainId]: [TxEvent, ChainId]): ConfirmedTransaction => ({
+      height,
+      ...this.codec.parseBytes(tx, chainId),
+    });
+    return Stream.combine(txs, streamId).map(mapper);
+  }
+
+  // liveTx does a search and then subscribes to all future changes.
+  // It returns a stream starting the array of all existing transactions
+  // and then continuing with live feeds
+  public liveTx(txQuery: TxQuery): Stream<ConfirmedTransaction> {
+    // todo: split the array into many events
+    const history = streamPromise(this.searchTx(txQuery));
+    const updates = this.listenTx(txQuery.tags);
+    return Stream.merge(history, updates);
   }
 
   protected async initialize(): Promise<InitData> {

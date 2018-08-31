@@ -22,6 +22,8 @@ export declare class Client implements IovReader {
     watchAccount(account: BcpAccountQuery): Stream<BcpQueryEnvelope<BcpAccount>>;
     getNonce(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>>;
     searchTx(txQuery: TxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
+    listenTx(tags: ReadonlyArray<Tag>): Stream<ConfirmedTransaction>;
+    liveTx(txQuery: TxQuery): Stream<ConfirmedTransaction>;
     protected initialize(): Promise<InitData>;
     protected query(path: string, data: Uint8Array): Promise<QueryResponse>;
 }
