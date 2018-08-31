@@ -281,6 +281,7 @@ describe("Integration tests with bov+tendermint", () => {
 
     // disconnect the client, so all the live streams complete,
     // and promises resolve
+    await sleep(50);
     client.disconnect();
     // this should grab the tx before it started, as well as the one after
     expect(await countLive).toEqual(2);
@@ -314,6 +315,7 @@ describe("Integration tests with bov+tendermint", () => {
 
     // disconnect the client, so all the live streams complete,
     // and promises resolve
+    await sleep(50);
     client.disconnect();
 
     // both should show up on the balance changes
