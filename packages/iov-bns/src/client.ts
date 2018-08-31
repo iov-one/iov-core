@@ -1,3 +1,5 @@
+import { Stream } from "xstream";
+
 import {
   Address,
   BcpAccount,
@@ -15,11 +17,14 @@ import {
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import {
+  buildTagQuery,
   buildTxQuery,
   Client as TendermintClient,
+  jsonRpcWith,
   StatusResponse,
   txCommitSuccess,
   TxResponse,
+  TxEvent,
 } from "@iov/tendermint-rpc";
 import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 
@@ -120,6 +125,27 @@ export class Client implements IovReader {
     const initData = await this.initData;
     const data = parsed.map(Normalize.account(initData));
     return dummyEnvelope(data);
+  }
+
+  public watchAccount(account: BcpAccountQuery): Stream<BcpQueryEnvelope<BcpAccount>> {
+    if (!queryByAddress(account)) {
+      throw new Error("watchAccount requires an address, not name, to watch")
+    }
+
+    const tag = Client.fromOrToTag(account.address)
+    const txs = this.tmClient.subscribeTx([tag]);
+
+    const getTxHeight = (t: TxEvent): number => t.height;
+    // todo filter height, only on change from last
+    const onChange = (height: number): boolean => height > 0;
+    const getAccountStream = (): Stream<BcpQueryEnvelope<BcpAccount>> =>
+      Stream.fromPromise(this.getAccount(account));
+
+    return txs
+      .map(getTxHeight)
+      .filter(onChange)
+      .map(getAccountStream)
+      .flatten();
   }
 
   public async getNonce(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>> {
