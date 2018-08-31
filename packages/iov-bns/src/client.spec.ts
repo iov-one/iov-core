@@ -1,8 +1,9 @@
 import Long from "long";
 
-import { Address, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Address, BcpAccount, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import {
+  DefaultValueProducer,
   Ed25519SimpleAddressKeyringEntry,
   LocalIdentity,
   PublicIdentity,
@@ -22,6 +23,8 @@ const pendingWithoutBov = () => {
     pending("Set BOV_ENABLED to enable bov-based tests");
   }
 };
+
+const sleep = (t: number) => new Promise(resolve => setTimeout(resolve, t));
 
 describe("Integration tests with bov+tendermint", () => {
   // the first key generated from this mneumonic produces the given address
@@ -251,7 +254,7 @@ describe("Integration tests with bov+tendermint", () => {
     const profile = await userProfile();
 
     const faucet = faucetId(profile);
-    const rcpt = await recipient(profile, 95);
+    const rcpt = await recipient(profile, 62);
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // make sure that we have no tx here
@@ -290,7 +293,7 @@ describe("Integration tests with bov+tendermint", () => {
 
     const faucet = faucetId(profile);
     const faucetAddr = keyToAddress(faucet.pubkey);
-    const rcpt = await recipient(profile, 82);
+    const rcpt = await recipient(profile, 87);
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // let's watch for all changes, capture them in arrays
@@ -323,5 +326,60 @@ describe("Integration tests with bov+tendermint", () => {
 
     // make sure proper values
     expect(await balanceFaucet).toEqual([first!, second!]);
+  });
+
+  // DefaultValueProducer
+  it("test watch account", async () => {
+    pendingWithoutBov();
+    const client = await Client.connect("ws://localhost:22345");
+    const profile = await userProfile();
+
+    const faucet = faucetId(profile);
+    const faucetAddr = keyToAddress(faucet.pubkey);
+    const rcpt = await recipient(profile, 57);
+    const rcptAddr = keyToAddress(rcpt.pubkey);
+
+    // let's watch for all changes, capture them in a value sink
+    const faucetAcct = new DefaultValueProducer<BcpAccount | undefined>(undefined);
+    client.watchAccount({ address: faucetAddr }).subscribe({
+      next: val => faucetAcct.update(val),
+    });
+
+    const rcptAcct = new DefaultValueProducer<BcpAccount | undefined>(undefined);
+    client.watchAccount({ address: rcptAddr }).subscribe({
+      next: val => rcptAcct.update(val),
+    });
+
+    // give it a chance to get initial feed before checking and proceeding
+    await sleep(100);
+
+    // make sure there are original values sent on the wire
+    expect(rcptAcct.value).toBeUndefined();
+    expect(faucetAcct.value).toBeDefined();
+    expect(faucetAcct.value!.name).toEqual("admin");
+    expect(faucetAcct.value!.balance.length).toEqual(1);
+    const start = faucetAcct.value!.balance[0];
+
+    // send some cash and see if they update...
+    const post = await sendCash(client, profile, faucet, rcptAddr);
+    expect(post.metadata.status).toBe(true);
+
+    // give it a chance to get updates before checking and proceeding
+    await sleep(100);
+
+    expect(rcptAcct.value).toBeDefined();
+    expect(rcptAcct.value!.name).toBeUndefined();
+    expect(rcptAcct.value!.balance.length).toEqual(1);
+    expect(rcptAcct.value!.balance[0].whole).toEqual(680);
+
+    expect(faucetAcct.value).toBeDefined();
+    expect(faucetAcct.value!.name).toEqual("admin");
+    expect(faucetAcct.value!.balance.length).toEqual(1);
+    const end = faucetAcct.value!.balance[0];
+    expect(end).not.toEqual(start);
+    expect(end.whole + 680).toEqual(start.whole);
+
+    // clean up with disconnect at the end...
+    client.disconnect();
   });
 });

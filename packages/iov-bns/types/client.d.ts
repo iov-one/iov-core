@@ -27,7 +27,7 @@ export declare class Client implements IovReader {
     changeFeed(tags: ReadonlyArray<Tag>): Stream<number>;
     changeBalance(addr: Address): Stream<number>;
     changeNonce(addr: Address): Stream<number>;
-    watchAccount(account: BcpAccountQuery): Stream<BcpQueryEnvelope<BcpAccount>>;
+    watchAccount(account: BcpAccountQuery): Stream<BcpAccount | undefined>;
     protected initialize(): Promise<InitData>;
     protected query(path: string, data: Uint8Array): Promise<QueryResponse>;
 }

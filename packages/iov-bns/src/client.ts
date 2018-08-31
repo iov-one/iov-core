@@ -203,7 +203,6 @@ export class Client implements IovReader {
   // It returns a stream starting the array of all existing transactions
   // and then continuing with live feeds
   public liveTx(txQuery: TxQuery): Stream<ConfirmedTransaction> {
-    // todo: split the array into many events
     const history = streamPromise(this.searchTx(txQuery));
     const updates = this.listenTx(txQuery.tags);
     return Stream.merge(history, updates);
@@ -230,16 +229,21 @@ export class Client implements IovReader {
 
   // watch account gets current balance and emits an update every time
   // it changes
-  public watchAccount(account: BcpAccountQuery): Stream<BcpQueryEnvelope<BcpAccount>> {
+  public watchAccount(account: BcpAccountQuery): Stream<BcpAccount | undefined> {
     if (!queryByAddress(account)) {
       throw new Error("watchAccount requires an address, not name, to watch");
     }
-    const getAccountStream = () => Stream.fromPromise(this.getAccount(account));
+    // oneAccount normalizes the BcpEnvelope to just get the
+    // one account we want, or undefined if nothing there
+    const oneAccount = async (): Promise<BcpAccount | undefined> => {
+      const acct = await this.getAccount(account);
+      return acct.data.length < 1 ? undefined : acct.data[0];
+    };
 
     return Stream.merge(
-      getAccountStream(),
+      Stream.fromPromise(oneAccount()),
       this.changeBalance(account.address)
-        .map(getAccountStream)
+        .map(() => Stream.fromPromise(oneAccount()))
         .flatten(),
     );
   }
