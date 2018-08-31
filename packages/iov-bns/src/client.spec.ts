@@ -275,9 +275,12 @@ describe("Integration tests with bov+tendermint", () => {
     const secondPost = await sendCash(client, profile, faucet, rcptAddr);
     expect(secondPost.metadata.status).toBe(true);
 
+    const thirdPost = await sendCash(client, profile, faucet, rcptAddr);
+    expect(thirdsecondPost.metadata.status).toBe(true);
+
     // now, let's make sure it is picked up in the search
     const afterSearch = await client.searchTx(query);
-    expect(afterSearch.length).toEqual(2);
+    expect(afterSearch.length).toEqual(3);
 
     // disconnect the client, so all the live streams complete,
     // and promises resolve
