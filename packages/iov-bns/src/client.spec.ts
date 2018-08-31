@@ -2,10 +2,17 @@ import Long from "long";
 
 import { Address, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
-import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@iov/keycontrol";
+import {
+  Ed25519SimpleAddressKeyringEntry,
+  LocalIdentity,
+  PublicIdentity,
+  UserProfile,
+} from "@iov/keycontrol";
+import { TxQuery } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
 import { Client } from "./client";
+import { countStream } from "./stream";
 import { keyToAddress } from "./util";
 
 const skipTests = (): boolean => !process.env.BOV_ENABLED;
@@ -199,7 +206,6 @@ describe("Integration tests with bov+tendermint", () => {
     expect(fNonce.toInt()).toBeGreaterThanOrEqual(1);
 
     // now verify we can query the same tx back
-    // FIXME: make this cleaner somehow....
     const txQuery = { tags: [Client.fromOrToTag(faucetAddr)] };
     const search = await client.searchTx(txQuery);
     expect(search.length).toBeGreaterThanOrEqual(1);
@@ -211,5 +217,69 @@ describe("Integration tests with bov+tendermint", () => {
     const tx = mine.transaction;
     expect(tx.kind).toEqual(sendTx.kind);
     expect(tx).toEqual(sendTx);
+  });
+
+  const sendCash = async (
+    client: Client,
+    profile: UserProfile,
+    faucet: PublicIdentity,
+    rcptAddr: Address,
+  ) => {
+    // construct a sendtx, this is normally used in the IovWriter api
+    const chainId = await client.chainId();
+    const faucetAddr = keyToAddress(faucet.pubkey);
+    const nonce = await getNonce(client, faucetAddr);
+    const sendTx: SendTx = {
+      kind: TransactionKind.Send,
+      chainId,
+      signer: faucet.pubkey,
+      recipient: rcptAddr,
+      amount: {
+        whole: 680,
+        fractional: 0,
+        tokenTicker: cash,
+      },
+    };
+    const signed = await profile.signTransaction(0, faucet, sendTx, bnsCodec, nonce);
+    const txBytes = bnsCodec.bytesToPost(signed);
+    return client.postTx(txBytes);
+  };
+
+  it("can get live tx feed", async () => {
+    pendingWithoutBov();
+    const client = await Client.connect("ws://localhost:22345");
+    const profile = await userProfile();
+
+    const faucet = faucetId(profile);
+    const rcpt = await recipient(profile, 71);
+    const rcptAddr = keyToAddress(rcpt.pubkey);
+
+    // make sure that we have no tx here
+    const query: TxQuery = { tags: [Client.fromOrToTag(rcptAddr)] };
+    const origSearch = await client.searchTx(query);
+    expect(origSearch.length).toEqual(0);
+
+    const post = await sendCash(client, profile, faucet, rcptAddr);
+    expect(post.metadata.status).toBe(true);
+
+    const middleSearch = await client.searchTx(query);
+    expect(middleSearch.length).toEqual(1);
+
+    // This is a promise, resolved when we close websocket at end
+    // It should grab one from the history and one from the future
+    const countLive = countStream(client.liveTx(query));
+
+    const secondPost = await sendCash(client, profile, faucet, rcptAddr);
+    expect(secondPost.metadata.status).toBe(true);
+
+    // now, let's make sure it is picked up in the search
+    const afterSearch = await client.searchTx(query);
+    expect(afterSearch.length).toEqual(2);
+
+    // disconnect the client, so all the live streams complete,
+    // and promises resolve
+    client.disconnect();
+    // this should grab the tx before it started, as well as the one after
+    expect(await countLive).toEqual(2);
   });
 });
