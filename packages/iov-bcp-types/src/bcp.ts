@@ -49,6 +49,7 @@ export interface BcpTransactionResponse {
   readonly metadata: {
     // status says if it succeeds
     readonly status: boolean;
+    readonly height?: number;
   };
   readonly data: {
     readonly message: string;

@@ -19,6 +19,7 @@ import { Encoding } from "@iov/encoding";
 import {
   buildTxQuery,
   Client as TendermintClient,
+  getTxEventHeight,
   StatusResponse,
   txCommitSuccess,
   TxEvent,
@@ -56,6 +57,13 @@ function onChange<T>(): (val: T) => boolean {
 export class Client implements IovReader {
   public static fromOrToTag(addr: Address): Tag {
     const id = Uint8Array.from([...Encoding.toAscii("wllt:"), ...addr]);
+    const key = Encoding.toHex(id).toUpperCase();
+    const value = "s"; // "s" for "set"
+    return { key, value };
+  }
+
+  public static nonceTag(addr: Address): Tag {
+    const id = Uint8Array.from([...Encoding.toAscii("sigs:"), ...addr]);
     const key = Encoding.toHex(id).toUpperCase();
     const value = "s"; // "s" for "set"
     return { key, value };
@@ -107,6 +115,7 @@ export class Client implements IovReader {
     const message = txresp.deliverTx ? txresp.deliverTx.log : txresp.checkTx.log;
     return {
       metadata: {
+        height: txresp.height,
         status: txCommitSuccess(txresp),
       },
       data: {
@@ -138,29 +147,6 @@ export class Client implements IovReader {
     const initData = await this.initData;
     const data = parsed.map(Normalize.account(initData));
     return dummyEnvelope(data);
-  }
-
-  public watchAccount(account: BcpAccountQuery): Stream<BcpQueryEnvelope<BcpAccount>> {
-    if (!queryByAddress(account)) {
-      throw new Error("watchAccount requires an address, not name, to watch");
-    }
-
-    const tag = Client.fromOrToTag(account.address);
-    const txs = this.tmClient.subscribeTx([tag]);
-
-    // TODO: pull these out somewhere?
-    const getTxHeight = (t: TxEvent): number => t.height;
-    const getAccountStream = () => Stream.fromPromise(this.getAccount(account));
-
-    return (
-      txs
-        .map(getTxHeight)
-        // we only want to query once per height, even if multiple tx change account
-        .filter(onChange<number>())
-        // TODO: do we need a small delay here for processing time?
-        .map(getAccountStream)
-        .flatten()
-    );
   }
 
   public async getNonce(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>> {
@@ -221,6 +207,41 @@ export class Client implements IovReader {
     const history = streamPromise(this.searchTx(txQuery));
     const updates = this.listenTx(txQuery.tags);
     return Stream.merge(history, updates);
+  }
+
+  // changeFeed emits the blockheight for every block where a
+  // tx matching these tags is emitted
+  public changeFeed(tags: ReadonlyArray<Tag>): Stream<number> {
+    return this.tmClient
+      .subscribeTx(tags)
+      .map(getTxEventHeight)
+      .filter(onChange<number>());
+  }
+
+  // changeBalance is a helper that triggers if the balance ever changes
+  public changeBalance(addr: Address): Stream<number> {
+    return this.changeFeed([Client.fromOrToTag(addr)]);
+  }
+
+  // changeNonce is a helper that triggers if the nonce every changes
+  public changeNonce(addr: Address): Stream<number> {
+    return this.changeFeed([Client.nonceTag(addr)]);
+  }
+
+  // watch account gets current balance and emits an update every time
+  // it changes
+  public watchAccount(account: BcpAccountQuery): Stream<BcpQueryEnvelope<BcpAccount>> {
+    if (!queryByAddress(account)) {
+      throw new Error("watchAccount requires an address, not name, to watch");
+    }
+    const getAccountStream = () => Stream.fromPromise(this.getAccount(account));
+
+    return Stream.merge(
+      getAccountStream(),
+      this.changeBalance(account.address)
+        .map(getAccountStream)
+        .flatten(),
+    );
   }
 
   protected async initialize(): Promise<InitData> {

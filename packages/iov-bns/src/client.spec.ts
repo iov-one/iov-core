@@ -12,7 +12,7 @@ import { TxQuery } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
 import { Client } from "./client";
-import { countStream } from "./stream";
+import { countStream, readIntoArray } from "./stream";
 import { keyToAddress } from "./util";
 
 const skipTests = (): boolean => !process.env.BOV_ENABLED;
@@ -251,7 +251,7 @@ describe("Integration tests with bov+tendermint", () => {
     const profile = await userProfile();
 
     const faucet = faucetId(profile);
-    const rcpt = await recipient(profile, 71);
+    const rcpt = await recipient(profile, 95);
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // make sure that we have no tx here
@@ -281,5 +281,47 @@ describe("Integration tests with bov+tendermint", () => {
     client.disconnect();
     // this should grab the tx before it started, as well as the one after
     expect(await countLive).toEqual(2);
+  });
+
+  it("test change feeds", async () => {
+    pendingWithoutBov();
+    const client = await Client.connect("ws://localhost:22345");
+    const profile = await userProfile();
+
+    const faucet = faucetId(profile);
+    const faucetAddr = keyToAddress(faucet.pubkey);
+    const rcpt = await recipient(profile, 82);
+    const rcptAddr = keyToAddress(rcpt.pubkey);
+
+    // let's watch for all changes, capture them in arrays
+    const balanceFaucet = readIntoArray(client.changeBalance(faucetAddr));
+    const balanceRcpt = readIntoArray(client.changeBalance(rcptAddr));
+    const nonceFaucet = readIntoArray(client.changeNonce(faucetAddr));
+    const nonceRcpt = readIntoArray(client.changeNonce(rcptAddr));
+
+    const post = await sendCash(client, profile, faucet, rcptAddr);
+    expect(post.metadata.status).toBe(true);
+    const first = post.metadata.height;
+    expect(first).toBeDefined();
+
+    const secondPost = await sendCash(client, profile, faucet, rcptAddr);
+    expect(secondPost.metadata.status).toBe(true);
+    const second = secondPost.metadata.height;
+    expect(second).toBeDefined();
+
+    // disconnect the client, so all the live streams complete,
+    // and promises resolve
+    client.disconnect();
+
+    // both should show up on the balance changes
+    expect((await balanceFaucet).length).toEqual(2);
+    expect((await balanceRcpt).length).toEqual(2);
+
+    // only faucet should show up on the nonce changes
+    expect((await nonceFaucet).length).toEqual(2);
+    expect((await nonceRcpt).length).toEqual(0);
+
+    // make sure proper values
+    expect(await balanceFaucet).toEqual([first!, second!]);
   });
 });
