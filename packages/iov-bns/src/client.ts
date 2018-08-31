@@ -17,14 +17,12 @@ import {
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import {
-  buildTagQuery,
   buildTxQuery,
   Client as TendermintClient,
-  jsonRpcWith,
   StatusResponse,
   txCommitSuccess,
-  TxResponse,
   TxEvent,
+  TxResponse,
 } from "@iov/tendermint-rpc";
 import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 
@@ -36,6 +34,20 @@ import { Decoder, Keyed, Result } from "./types";
 // queryByAddress is a type guard to use in the account-based queries
 const queryByAddress = (query: BcpAccountQuery): query is BcpAddressQuery =>
   (query as BcpAddressQuery).address !== undefined;
+
+// onChange returns a filter than only passes when the
+// value is different than the last one
+function onChange<T>(): (val: T) => boolean {
+  // tslint:disable-next-line:no-let
+  let oldVal: T | undefined;
+  return (val: T): boolean => {
+    if (val === oldVal) {
+      return false;
+    }
+    oldVal = val;
+    return true;
+  };
+}
 
 // Client talks directly to the BNS blockchain and exposes the
 // same interface we have with the BCP protocol.
@@ -129,23 +141,25 @@ export class Client implements IovReader {
 
   public watchAccount(account: BcpAccountQuery): Stream<BcpQueryEnvelope<BcpAccount>> {
     if (!queryByAddress(account)) {
-      throw new Error("watchAccount requires an address, not name, to watch")
+      throw new Error("watchAccount requires an address, not name, to watch");
     }
 
-    const tag = Client.fromOrToTag(account.address)
+    const tag = Client.fromOrToTag(account.address);
     const txs = this.tmClient.subscribeTx([tag]);
 
+    // TODO: pull these out somewhere?
     const getTxHeight = (t: TxEvent): number => t.height;
-    // todo filter height, only on change from last
-    const onChange = (height: number): boolean => height > 0;
-    const getAccountStream = (): Stream<BcpQueryEnvelope<BcpAccount>> =>
-      Stream.fromPromise(this.getAccount(account));
+    const getAccountStream = () => Stream.fromPromise(this.getAccount(account));
 
-    return txs
-      .map(getTxHeight)
-      .filter(onChange)
-      .map(getAccountStream)
-      .flatten();
+    return (
+      txs
+        .map(getTxHeight)
+        // we only want to query once per height, even if multiple tx change account
+        .filter(onChange<number>())
+        // TODO: do we need a small delay here for processing time?
+        .map(getAccountStream)
+        .flatten()
+    );
   }
 
   public async getNonce(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>> {

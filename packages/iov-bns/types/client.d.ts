@@ -1,3 +1,4 @@
+import { Stream } from "xstream";
 import { Address, BcpAccount, BcpAccountQuery, BcpNonce, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, ConfirmedTransaction, IovReader, TokenTicker, TxReadCodec } from "@iov/bcp-types";
 import { Client as TendermintClient, StatusResponse } from "@iov/tendermint-rpc";
 import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
@@ -18,6 +19,7 @@ export declare class Client implements IovReader {
     getTicker(ticker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAccount(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>>;
+    watchAccount(account: BcpAccountQuery): Stream<BcpQueryEnvelope<BcpAccount>>;
     getNonce(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>>;
     searchTx(txQuery: TxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
     protected initialize(): Promise<InitData>;
