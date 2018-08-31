@@ -23,7 +23,9 @@
     "build": "tsc && rm ./types/* && mv build/*.d.ts ./types",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
     "listen": "ts-node ./src/scripts/listen.ts | grep -v '^dev'",
-    "checkapp": "ts-node ./src/scripts/checkapp.ts | grep -v '^dev'"
+    "checkapp": "ts-node ./src/scripts/checkapp.ts | grep -v '^dev'",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "@iov/bcp-types": "^0.4.0",
@@ -33,10 +35,12 @@
     "@iov/keycontrol": "^0.4.1",
     "@ledgerhq/hw-transport-node-hid": "^4.22.0",
     "@types/node-hid": "^0.7.0",
-    "node-hid": "^0.7.3"
+    "node-hid": "^0.7.3",
+    "snyk": "^1.94.0"
   },
   "devDependencies": {
     "ts-node": "^7.0.0"
   },
-  "gitHead": "39379b38f0ac128a48aa7174692c4c932ed326f7"
+  "gitHead": "39379b38f0ac128a48aa7174692c4c932ed326f7",
+  "snyk": true
 }
