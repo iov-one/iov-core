@@ -50,5 +50,8 @@
     "typescript": "~3.0",
     "webpack": "^4.12.0",
     "webpack-command": "^0.2.1"
+  },
+  "dependencies": {
+    "readonly-date": "^1.0.0"
   }
 }

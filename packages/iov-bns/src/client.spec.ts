@@ -276,7 +276,7 @@ describe("Integration tests with bov+tendermint", () => {
     expect(secondPost.metadata.status).toBe(true);
 
     const thirdPost = await sendCash(client, profile, faucet, rcptAddr);
-    expect(thirdsecondPost.metadata.status).toBe(true);
+    expect(thirdPost.metadata.status).toBe(true);
 
     // now, let's make sure it is picked up in the search
     const afterSearch = await client.searchTx(query);
