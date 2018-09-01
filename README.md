@@ -61,6 +61,17 @@ To build the documentation locally, run `yarn install && yarn build && yarn docs
 in this repository. This will generate a `./docs` directory in each package that you
 can browse locally to see API docs on the various packages.
 
+## FAQ For Potential Issues
+
+### Libusb fails to build, why?
+
+Currently, Libusb requires node-pre-gyp version `0.10.2` or lower to compile properly. If for some reason
+your dependency is `0.10.3` or higher, you may have issues. Its recommended to use only `0.10.2` until
+the compilation issues are fixed in the `node-pre-gyp` package. This package comes as a dependency of
+`@ledger/hw-transport-node-hid` and is not easily modifiable by our team. Once the issues are resolved,
+the hard requirement of this dependency will be removed to allow it to be synchronized with the packages
+that require it.
+
 ## License
 
 This repository is licensed under the Apache License 2.0 (see NOTICE and LICENSE).
