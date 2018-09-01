@@ -35,7 +35,7 @@ describe("Integration tests with bov+tendermint", () => {
 
   // TODO: had issues with websockets? check again later, maybe they need to close at end?
   // max open connections??? (but 900 by default)
-  const tendermintUrl = "http://localhost:22345";
+  const tendermintUrl = "ws://localhost:22345";
 
   const userProfile = async (): Promise<UserProfile> => {
     const profile = new UserProfile();
@@ -87,6 +87,8 @@ describe("Integration tests with bov+tendermint", () => {
     // we expect some block to have been created
     const height = await client.height();
     expect(height).toBeGreaterThan(1);
+
+    client.disconnect();
   });
 
   it("can disconnect from tendermint", async () => {
@@ -107,6 +109,8 @@ describe("Integration tests with bov+tendermint", () => {
     expect(ticker.tokenTicker).toEqual(cash);
     expect(ticker.tokenName).toEqual("Main token of this chain");
     expect(ticker.sigFigs).toEqual(6);
+
+    client.disconnect();
   });
 
   it("Can query accounts", async () => {
@@ -140,6 +144,8 @@ describe("Integration tests with bov+tendermint", () => {
     const empty = await client.getAccount({ address: rcptAddr });
     expect(empty).toBeTruthy();
     expect(empty.data.length).toEqual(0);
+
+    client.disconnect();
   });
 
   it("Can query empty nonce", async () => {
@@ -153,6 +159,8 @@ describe("Integration tests with bov+tendermint", () => {
     // can get the faucet by address (there is money)
     const nonce = await getNonce(client, rcptAddr);
     expect(nonce.toInt()).toEqual(0);
+
+    client.disconnect();
   });
 
   it("Can send transaction", async () => {
@@ -220,6 +228,8 @@ describe("Integration tests with bov+tendermint", () => {
     const tx = mine.transaction;
     expect(tx.kind).toEqual(sendTx.kind);
     expect(tx).toEqual(sendTx);
+
+    client.disconnect();
   });
 
   const sendCash = async (
