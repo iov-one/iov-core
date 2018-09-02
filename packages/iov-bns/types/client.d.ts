@@ -24,10 +24,12 @@ export declare class Client implements IovReader {
     searchTx(txQuery: TxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
     listenTx(tags: ReadonlyArray<Tag>): Stream<ConfirmedTransaction>;
     liveTx(txQuery: TxQuery): Stream<ConfirmedTransaction>;
-    changeFeed(tags: ReadonlyArray<Tag>): Stream<number>;
+    changeBlock(): Stream<number>;
+    changeTx(tags: ReadonlyArray<Tag>): Stream<number>;
     changeBalance(addr: Address): Stream<number>;
     changeNonce(addr: Address): Stream<number>;
     watchAccount(account: BcpAccountQuery): Stream<BcpAccount | undefined>;
+    watchNonce(account: BcpAccountQuery): Stream<BcpNonce | undefined>;
     protected initialize(): Promise<InitData>;
     protected query(path: string, data: Uint8Array): Promise<QueryResponse>;
 }

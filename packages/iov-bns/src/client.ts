@@ -19,6 +19,7 @@ import { Encoding } from "@iov/encoding";
 import {
   buildTxQuery,
   Client as TendermintClient,
+  getHeaderEventHeight,
   getTxEventHeight,
   StatusResponse,
   txCommitSuccess,
@@ -208,9 +209,13 @@ export class Client implements IovReader {
     return Stream.merge(history, updates);
   }
 
-  // changeFeed emits the blockheight for every block where a
+  public changeBlock(): Stream<number> {
+    return this.tmClient.subscribeNewBlockHeader().map(getHeaderEventHeight);
+  }
+
+  // changeTx emits the blockheight for every block where a
   // tx matching these tags is emitted
-  public changeFeed(tags: ReadonlyArray<Tag>): Stream<number> {
+  public changeTx(tags: ReadonlyArray<Tag>): Stream<number> {
     return this.tmClient
       .subscribeTx(tags)
       .map(getTxEventHeight)
@@ -219,15 +224,15 @@ export class Client implements IovReader {
 
   // changeBalance is a helper that triggers if the balance ever changes
   public changeBalance(addr: Address): Stream<number> {
-    return this.changeFeed([Client.fromOrToTag(addr)]);
+    return this.changeTx([Client.fromOrToTag(addr)]);
   }
 
   // changeNonce is a helper that triggers if the nonce every changes
   public changeNonce(addr: Address): Stream<number> {
-    return this.changeFeed([Client.nonceTag(addr)]);
+    return this.changeTx([Client.nonceTag(addr)]);
   }
 
-  // watch account gets current balance and emits an update every time
+  // watchAccount gets current balance and emits an update every time
   // it changes
   public watchAccount(account: BcpAccountQuery): Stream<BcpAccount | undefined> {
     if (!queryByAddress(account)) {
@@ -244,6 +249,27 @@ export class Client implements IovReader {
       Stream.fromPromise(oneAccount()),
       this.changeBalance(account.address)
         .map(() => Stream.fromPromise(oneAccount()))
+        .flatten(),
+    );
+  }
+
+  // watchNonce gets current nonce and emits an update every time
+  // it changes
+  public watchNonce(account: BcpAccountQuery): Stream<BcpNonce | undefined> {
+    if (!queryByAddress(account)) {
+      throw new Error("watchNonce requires an address, not name, to watch");
+    }
+    // oneNonce normalizes the BcpEnvelope to just get the
+    // one account we want, or undefined if nothing there
+    const oneNonce = async (): Promise<BcpNonce | undefined> => {
+      const acct = await this.getNonce(account);
+      return acct.data.length < 1 ? undefined : acct.data[0];
+    };
+
+    return Stream.merge(
+      Stream.fromPromise(oneNonce()),
+      this.changeNonce(account.address)
+        .map(() => Stream.fromPromise(oneNonce()))
         .flatten(),
     );
   }
