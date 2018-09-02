@@ -1,6 +1,6 @@
 import Long from "long";
 
-import { Address, BcpAccount, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Address, BcpAccount, BcpNonce, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import {
   Ed25519SimpleAddressKeyringEntry,
@@ -231,6 +231,21 @@ describe("Integration tests with bov+tendermint", () => {
     client.disconnect();
   });
 
+  it("can get live block feed", async () => {
+    pendingWithoutBov();
+    const client = await Client.connect(tendermintUrl);
+
+    // get the next three block heights
+    const heights = asArray(client.changeBlock().take(3));
+    await heights.finished();
+
+    const nums = heights.value();
+    // we should get three consequtive numbers
+    expect(nums.length).toEqual(3);
+    expect(nums[1]).toEqual(nums[0] + 1);
+    expect(nums[2]).toEqual(nums[1] + 1);
+  });
+
   const sendCash = async (
     client: Client,
     profile: UserProfile,
@@ -259,7 +274,7 @@ describe("Integration tests with bov+tendermint", () => {
 
   it("can get live tx feed", async () => {
     pendingWithoutBov();
-    const client = await Client.connect("ws://localhost:22345");
+    const client = await Client.connect(tendermintUrl);
     const profile = await userProfile();
 
     const faucet = faucetId(profile);
@@ -297,7 +312,7 @@ describe("Integration tests with bov+tendermint", () => {
 
   it("test change feeds", async () => {
     pendingWithoutBov();
-    const client = await Client.connect("ws://localhost:22345");
+    const client = await Client.connect(tendermintUrl);
     const profile = await userProfile();
 
     const faucet = faucetId(profile);
@@ -338,10 +353,10 @@ describe("Integration tests with bov+tendermint", () => {
     client.disconnect();
   });
 
-  // watch lastValue of account
+  // make sure we can get a reactive account balance (as well as nonce)
   it("test watch account", async () => {
     pendingWithoutBov();
-    const client = await Client.connect("ws://localhost:22345");
+    const client = await Client.connect(tendermintUrl);
     const profile = await userProfile();
 
     const faucet = faucetId(profile);
@@ -353,6 +368,9 @@ describe("Integration tests with bov+tendermint", () => {
     const faucetAcct = lastValue<BcpAccount | undefined>(client.watchAccount({ address: faucetAddr }));
     const rcptAcct = lastValue<BcpAccount | undefined>(client.watchAccount({ address: rcptAddr }));
 
+    const faucetNonce = lastValue<BcpNonce | undefined>(client.watchNonce({ address: faucetAddr }));
+    const rcptNonce = lastValue<BcpNonce | undefined>(client.watchNonce({ address: rcptAddr }));
+
     // give it a chance to get initial feed before checking and proceeding
     await sleep(100);
 
@@ -363,6 +381,13 @@ describe("Integration tests with bov+tendermint", () => {
     expect(faucetAcct.value()!.balance.length).toEqual(1);
     const start = faucetAcct.value()!.balance[0];
 
+    // make sure original nonces make sense
+    expect(rcptNonce.value()).toBeUndefined();
+    expect(faucetNonce.value()).toBeDefined();
+    // store original nonce, this should increase after tx
+    const origNonce = faucetNonce.value()!.nonce;
+    expect(origNonce.toNumber()).toBeGreaterThan(0);
+
     // send some cash and see if they update...
     const post = await sendCash(client, profile, faucet, rcptAddr);
     expect(post.metadata.status).toBe(true);
@@ -370,17 +395,25 @@ describe("Integration tests with bov+tendermint", () => {
     // give it a chance to get updates before checking and proceeding
     await sleep(100);
 
+    // rcptAcct should now have a value
     expect(rcptAcct.value()).toBeDefined();
     expect(rcptAcct.value()!.name).toBeUndefined();
     expect(rcptAcct.value()!.balance.length).toEqual(1);
     expect(rcptAcct.value()!.balance[0].whole).toEqual(680);
+    // but rcptNonce still undefined
+    expect(rcptNonce.value()).toBeUndefined();
 
+    // facuetAcct should have gone down a bit
     expect(faucetAcct.value()).toBeDefined();
     expect(faucetAcct.value()!.name).toEqual("admin");
     expect(faucetAcct.value()!.balance.length).toEqual(1);
     const end = faucetAcct.value()!.balance[0];
     expect(end).not.toEqual(start);
     expect(end.whole + 680).toEqual(start.whole);
+    // and faucetNonce gone up by one
+    expect(faucetNonce.value()).toBeDefined();
+    const finalNonce: Long = faucetNonce.value()!.nonce;
+    expect(finalNonce).toEqual(origNonce.add(1));
 
     // clean up with disconnect at the end...
     client.disconnect();
