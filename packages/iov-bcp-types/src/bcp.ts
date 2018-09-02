@@ -1,4 +1,6 @@
-import { ChainId, PostableBytes, PublicKeyBundle, TxQuery } from "@iov/tendermint-types";
+import { Stream } from "xstream";
+
+import { ChainId, PostableBytes, PublicKeyBundle, Tag, TxQuery } from "@iov/tendermint-types";
 
 import { Address, SignedTransaction } from "./signables";
 import { Nonce, TokenTicker } from "./transactions";
@@ -91,30 +93,42 @@ export interface IovReader {
   // // streamBlocks starts sending a stream of blocks from now on
   // readonly streamBlocks: () => Stream<Block>;
 
+  // chainId, and height return generic info
+  readonly chainId: () => Promise<ChainId>;
+  readonly height: () => Promise<number>;
+
   // submitTx submits a signed tx as is notified on every state change
   readonly postTx: (tx: PostableBytes) => Promise<BcpTransactionResponse>;
 
+  // one-off queries to view current state
   readonly getTicker: (ticker: TokenTicker) => Promise<BcpQueryEnvelope<BcpTicker>>;
   readonly getAllTickers: () => Promise<BcpQueryEnvelope<BcpTicker>>;
-
   readonly getAccount: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpAccount>>;
   readonly getNonce: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpNonce>>;
 
-  readonly chainId: () => Promise<ChainId>;
-  readonly height: () => Promise<number>;
-  // TODO----
-  // various types of queries to get a stream of accounts...
-  // streams current data and all changes
-  // readonly watchAccount: (query: AccountQuery) => Stream<Account>;
-  // readonly watchNonce: (query: AccountQuery) => Stream<AccountNonce>;
+  // these return a blockheight for any change, so you can trigger
+  // a custom response (changeBlock emits on every block)
+  readonly changeBalance: (addr: Address) => Stream<number>;
+  readonly changeNonce: (addr: Address) => Stream<number>;
+  readonly changeBlock: () => Stream<number>;
+
+  // these query the currenct value and update a new value every time it changes
+  readonly watchAccount: (account: BcpAccountQuery) => Stream<BcpAccount | undefined>;
+  readonly watchNonce: (account: BcpAccountQuery) => Stream<BcpNonce | undefined>;
 
   // searchTx searches for all tx that match these tags and subscribes to new ones
-  // watchTx is a subset, searching by TxID, not tags
   readonly searchTx: (query: TxQuery) => Promise<ReadonlyArray<ConfirmedTransaction>>;
+
+  // listenTx subscribes to all newly added transactions with these tags
+  readonly listenTx: (tags: ReadonlyArray<Tag>) => Stream<ConfirmedTransaction>;
+
+  // liveTx returns a stream for all historical transactions that match
+  // the query, along with all new transactions arriving from listenTx
+  readonly liveTx: (txQuery: TxQuery) => Stream<ConfirmedTransaction>;
 }
 
 export interface ConfirmedTransaction extends SignedTransaction {
-  readonly height: number; // the block it was write on
+  readonly height: number; // the block it was writen to
   // TODO: TxData (result, code, tags...)
   // readonly tags: ReadonlyArray<Tag>;
   // readonly result?: Uint8Array;
