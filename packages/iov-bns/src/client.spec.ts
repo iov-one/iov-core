@@ -3,7 +3,6 @@ import Long from "long";
 import { Address, BcpAccount, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import {
-  DefaultValueProducer,
   Ed25519SimpleAddressKeyringEntry,
   LocalIdentity,
   PublicIdentity,
@@ -13,7 +12,7 @@ import { TxQuery } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
 import { Client } from "./client";
-import { countStream, readIntoArray } from "./stream";
+import { asArray, countStream, lastValue } from "./stream";
 import { keyToAddress } from "./util";
 
 const skipTests = (): boolean => !process.env.BOV_ENABLED;
@@ -278,8 +277,7 @@ describe("Integration tests with bov+tendermint", () => {
     const middleSearch = await client.searchTx(query);
     expect(middleSearch.length).toEqual(1);
 
-    // This is a promise, resolved when we close websocket at end
-    // It should grab one from the history and one from the future
+    // countLive.value() maintains the count of events
     const countLive = countStream(client.liveTx(query));
 
     const secondPost = await sendCash(client, profile, faucet, rcptAddr);
@@ -289,12 +287,12 @@ describe("Integration tests with bov+tendermint", () => {
     const afterSearch = await client.searchTx(query);
     expect(afterSearch.length).toEqual(2);
 
-    // disconnect the client, so all the live streams complete,
-    // and promises resolve
+    // give time for all events to be processed
     await sleep(50);
-    client.disconnect();
     // this should grab the tx before it started, as well as the one after
-    expect(await countLive).toEqual(2);
+    expect(await countLive.value()).toEqual(2);
+
+    client.disconnect();
   });
 
   it("test change feeds", async () => {
@@ -308,10 +306,10 @@ describe("Integration tests with bov+tendermint", () => {
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // let's watch for all changes, capture them in arrays
-    const balanceFaucet = readIntoArray(client.changeBalance(faucetAddr));
-    const balanceRcpt = readIntoArray(client.changeBalance(rcptAddr));
-    const nonceFaucet = readIntoArray(client.changeNonce(faucetAddr));
-    const nonceRcpt = readIntoArray(client.changeNonce(rcptAddr));
+    const balanceFaucet = asArray(client.changeBalance(faucetAddr));
+    const balanceRcpt = asArray(client.changeBalance(rcptAddr));
+    const nonceFaucet = asArray(client.changeNonce(faucetAddr));
+    const nonceRcpt = asArray(client.changeNonce(rcptAddr));
 
     const post = await sendCash(client, profile, faucet, rcptAddr);
     expect(post.metadata.status).toBe(true);
@@ -323,24 +321,24 @@ describe("Integration tests with bov+tendermint", () => {
     const second = secondPost.metadata.height;
     expect(second).toBeDefined();
 
-    // disconnect the client, so all the live streams complete,
-    // and promises resolve
+    // give time for all events to be processed
     await sleep(50);
-    client.disconnect();
 
     // both should show up on the balance changes
-    expect((await balanceFaucet).length).toEqual(2);
-    expect((await balanceRcpt).length).toEqual(2);
+    expect(balanceFaucet.value().length).toEqual(2);
+    expect(balanceRcpt.value().length).toEqual(2);
 
     // only faucet should show up on the nonce changes
-    expect((await nonceFaucet).length).toEqual(2);
-    expect((await nonceRcpt).length).toEqual(0);
+    expect(nonceFaucet.value().length).toEqual(2);
+    expect(nonceRcpt.value().length).toEqual(0);
 
     // make sure proper values
-    expect(await balanceFaucet).toEqual([first!, second!]);
+    expect(balanceFaucet.value()).toEqual([first!, second!]);
+
+    client.disconnect();
   });
 
-  // DefaultValueProducer
+  // watch lastValue of account
   it("test watch account", async () => {
     pendingWithoutBov();
     const client = await Client.connect("ws://localhost:22345");
@@ -352,25 +350,18 @@ describe("Integration tests with bov+tendermint", () => {
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // let's watch for all changes, capture them in a value sink
-    const faucetAcct = new DefaultValueProducer<BcpAccount | undefined>(undefined);
-    client.watchAccount({ address: faucetAddr }).subscribe({
-      next: val => faucetAcct.update(val),
-    });
-
-    const rcptAcct = new DefaultValueProducer<BcpAccount | undefined>(undefined);
-    client.watchAccount({ address: rcptAddr }).subscribe({
-      next: val => rcptAcct.update(val),
-    });
+    const faucetAcct = lastValue<BcpAccount | undefined>(client.watchAccount({ address: faucetAddr }));
+    const rcptAcct = lastValue<BcpAccount | undefined>(client.watchAccount({ address: rcptAddr }));
 
     // give it a chance to get initial feed before checking and proceeding
     await sleep(100);
 
     // make sure there are original values sent on the wire
-    expect(rcptAcct.value).toBeUndefined();
-    expect(faucetAcct.value).toBeDefined();
-    expect(faucetAcct.value!.name).toEqual("admin");
-    expect(faucetAcct.value!.balance.length).toEqual(1);
-    const start = faucetAcct.value!.balance[0];
+    expect(rcptAcct.value()).toBeUndefined();
+    expect(faucetAcct.value()).toBeDefined();
+    expect(faucetAcct.value()!.name).toEqual("admin");
+    expect(faucetAcct.value()!.balance.length).toEqual(1);
+    const start = faucetAcct.value()!.balance[0];
 
     // send some cash and see if they update...
     const post = await sendCash(client, profile, faucet, rcptAddr);
@@ -379,15 +370,15 @@ describe("Integration tests with bov+tendermint", () => {
     // give it a chance to get updates before checking and proceeding
     await sleep(100);
 
-    expect(rcptAcct.value).toBeDefined();
-    expect(rcptAcct.value!.name).toBeUndefined();
-    expect(rcptAcct.value!.balance.length).toEqual(1);
-    expect(rcptAcct.value!.balance[0].whole).toEqual(680);
+    expect(rcptAcct.value()).toBeDefined();
+    expect(rcptAcct.value()!.name).toBeUndefined();
+    expect(rcptAcct.value()!.balance.length).toEqual(1);
+    expect(rcptAcct.value()!.balance[0].whole).toEqual(680);
 
-    expect(faucetAcct.value).toBeDefined();
-    expect(faucetAcct.value!.name).toEqual("admin");
-    expect(faucetAcct.value!.balance.length).toEqual(1);
-    const end = faucetAcct.value!.balance[0];
+    expect(faucetAcct.value()).toBeDefined();
+    expect(faucetAcct.value()!.name).toEqual("admin");
+    expect(faucetAcct.value()!.balance.length).toEqual(1);
+    const end = faucetAcct.value()!.balance[0];
     expect(end).not.toEqual(start);
     expect(end.whole + 680).toEqual(start.whole);
 
