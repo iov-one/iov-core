@@ -2,8 +2,11 @@
 
 ## 0.5.0
 
+* @iov/bns: Add support of listening to change events, watching accounts, txs
+* @iov/core: Simplify construction of IovWriter
 * @iov/crypto: Rename all `Slip0010*` symbols to `Slip10*`
 * @iov/crypto: Fix keypair representation of Secp256k1.makeKeypair
+* @iov/tendermint: Add support for subscribing to events
 
 Breaking changes
 
@@ -11,6 +14,8 @@ Breaking changes
   earlier versions of IOV-Core cannot be opened with 0.5.0. To migrate to
   the new version, extract the secret data using 0.4.1 and create a new
   UserProfile in 0.5.0.
+* The IovWriter construction is changed. You can probably save a line there.
+  Please look at @iov/core README to see how to build it.
 
 ## 0.4.1
 
