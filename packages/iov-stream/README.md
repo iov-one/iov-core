@@ -1,4 +1,4 @@
-# @iov/core
+# @iov/stream
 
 [![npm version](https://img.shields.io/npm/v/@iov/stream.svg)](https://www.npmjs.com/package/@iov/stream)
 
