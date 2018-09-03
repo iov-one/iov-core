@@ -5,7 +5,7 @@ import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 export declare class IovWriter {
     readonly profile: UserProfile;
     private readonly knownChains;
-    constructor(profile: UserProfile, knownChains: Iterable<[string, ChainConnector]>);
+    constructor(profile: UserProfile);
     chainIds(): ReadonlyArray<ChainId>;
     reader(chainId: ChainId): IovReader;
     addChain(connector: ChainConnector): Promise<void>;
@@ -15,9 +15,13 @@ export declare class IovWriter {
     private getChain;
 }
 export interface ChainConnector {
+    readonly client: () => Promise<IovReader>;
+    readonly codec: TxCodec;
+}
+export interface ChainConnection {
+    readonly chainId: ChainId;
     readonly client: IovReader;
     readonly codec: TxCodec;
 }
 export declare const bnsFromOrToTag: typeof BnsClient.fromOrToTag;
-export declare const bnsConnector: (url: string) => Promise<ChainConnector>;
-export declare const withConnectors: (connectors: ReadonlyArray<ChainConnector>) => Promise<ReadonlyArray<[string, ChainConnector]>>;
+export declare const bnsConnector: (url: string) => ChainConnector;

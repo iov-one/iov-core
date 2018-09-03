@@ -157,11 +157,10 @@ in the genesis file, by running `bov init IOV $ADDR`.
 Now, connect to the network:
 
 ```ts
-import { bnsConnector, IovWriter, withConnectors } from '@iov/core';
+import { bnsConnector, IovWriter } from '@iov/core';
 
-const testnet = await bnsConnector('wss://bov.friendnet-fast.iov.one/');
-const chains = await withConnectors([testnet]);
 const writer = new IovWriter(profile, chains);
+await writer.addChain(bnsConnector('wss://bov.friendnet-fast.iov.one/'));
 
 const chainId = writer.chainIds()[0];
 console.log(chainId); // is this what you got yourself?

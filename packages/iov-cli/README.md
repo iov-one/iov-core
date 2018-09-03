@@ -63,8 +63,8 @@ $ iov-cli
 [ { pubkey: { algo: 'ed25519', data: [Uint8Array] },
     label: 'blockchain of value faucet' } ]
 
-> const knownChains = await withConnectors([await bnsConnector("ws://localhost:22345")]);
-> const writer = new IovWriter(profile, knownChains);
+> const writer = new IovWriter(profile);
+> await writer.addChain(bnsConnector("ws://localhost:22345"));
 > const chainId = writer.chainIds()[0];
 > const reader = writer.reader(chainId);
 
@@ -197,8 +197,8 @@ When using a Testnet, you can use the BovFaucet to receive tokens:
 > profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic(mnemonic));
 > const me = await profile.createIdentity(0);
 
-> const knownChains = await withConnectors([await bnsConnector("https://bov.friendnet-slow.iov.one")]);
-> const writer = new IovWriter(profile, knownChains);
+> const writer = new IovWriter(profile);
+> await writer.addChain(bnsConnector("https://bov.friendnet-slow.iov.one"));
 > const chainId = writer.chainIds()[0];
 > const reader = writer.reader(chainId);
 > const meAddress = writer.keyToAddress(chainId, me.pubkey);

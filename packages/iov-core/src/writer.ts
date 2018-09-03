@@ -20,20 +20,17 @@ even if bcp-proxy will handle translating all reads.
 */
 export class IovWriter {
   public readonly profile: UserProfile;
-  private readonly knownChains: Map<string, ChainConnector>;
+  private readonly knownChains: Map<string, ChainConnection>;
 
   // initialize a write with a userProfile with secret info,
-  // and a set of known chains to connect to
-  // knownChains can be a map or an array of pair,
-  // the key is chainId
-  constructor(profile: UserProfile, knownChains: Iterable<[string, ChainConnector]>) {
+  // chains we want to connect to added with addChain (to keep async out of constructor)
+  constructor(profile: UserProfile) {
     this.profile = profile;
-    // shallow copy input
-    this.knownChains = new Map(knownChains);
+    this.knownChains = new Map<string, ChainConnection>();
   }
 
   public chainIds(): ReadonlyArray<ChainId> {
-    return Array.from(this.knownChains).map(([x, _]: [string, ChainConnector]) => x as ChainId);
+    return Array.from(this.knownChains).map(([x, _]: [string, ChainConnection]) => x as ChainId);
   }
 
   public reader(chainId: ChainId): IovReader {
@@ -41,11 +38,12 @@ export class IovWriter {
   }
 
   public async addChain(connector: ChainConnector): Promise<void> {
-    const chainId = await connector.client.chainId();
+    const connection = await connectChain(connector);
+    const { chainId } = connection;
     if (this.knownChains.get(chainId) !== undefined) {
       throw new Error(`Chain ${chainId} is already registered`);
     }
-    this.knownChains.set(chainId, connector);
+    this.knownChains.set(chainId, connection);
   }
 
   public keyToAddress(chainId: ChainId, key: PublicKeyBundle): Address {
@@ -84,7 +82,7 @@ export class IovWriter {
   /**
    * Throws for unknown chain ID
    */
-  private getChain(chainId: ChainId): ChainConnector {
+  private getChain(chainId: ChainId): ChainConnection {
     const connector = this.knownChains.get(chainId);
     if (connector === undefined) {
       throw new Error(`No such chain: ${chainId}`);
@@ -94,6 +92,12 @@ export class IovWriter {
 }
 
 export interface ChainConnector {
+  readonly client: () => Promise<IovReader>;
+  readonly codec: TxCodec;
+}
+
+export interface ChainConnection {
+  readonly chainId: ChainId;
   readonly client: IovReader;
   readonly codec: TxCodec;
 }
@@ -101,18 +105,17 @@ export interface ChainConnector {
 export const bnsFromOrToTag = BnsClient.fromOrToTag;
 
 // bnsConnector is a helper to connect to a bns-based chain at a given url
-export const bnsConnector = async (url: string): Promise<ChainConnector> => ({
-  client: await BnsClient.connect(url),
+export const bnsConnector = (url: string): ChainConnector => ({
+  client: () => BnsClient.connect(url),
   codec: bnsCodec,
 });
 
-const withChainId = async (x: ChainConnector): Promise<[string, ChainConnector]> => [
-  await x.client.chainId(),
-  x,
-];
-
-export const withConnectors = (
-  connectors: ReadonlyArray<ChainConnector>,
-): Promise<ReadonlyArray<[string, ChainConnector]>> => {
-  return Promise.all(connectors.map(withChainId));
+const connectChain = async (x: ChainConnector): Promise<ChainConnection> => {
+  const client = await x.client();
+  const chainId = await client.chainId();
+  return {
+    chainId,
+    client,
+    codec: x.codec,
+  };
 };
