@@ -27,7 +27,9 @@
     "@iov/tendermint-types": "^0.4.0",
     "@types/long": "^4.0.0",
     "long": "^4.0.0",
-    "type-tagger": "^1.0.0"
+    "type-tagger": "^1.0.0",
+    "xstream": "^11.7.0"
+
   },
   "gitHead": "39379b38f0ac128a48aa7174692c4c932ed326f7"
 }
