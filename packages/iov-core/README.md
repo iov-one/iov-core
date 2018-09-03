@@ -271,10 +271,10 @@ anyone wishing to generate a reactive application. You can simply
 log these values, or feed them into a reducer to capture their value.
 
 ```ts
-// these are helpers for consuming streams, probably belong elsewhere
+// these are helpers for consuming streams
 // lastValue will always store the last value,
 // asArray will append to an array with list of all tx that were streamed
-import { asArray, lastValue } from '@iov/bns';
+import { asArray, lastValue } from '@iov/stream';
 
 const liveHeight = lastValue(client.changeBlock());
 // if you wait a few seconds, you should see the block-height increase
