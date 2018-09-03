@@ -1,7 +1,7 @@
 import { SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@iov/keycontrol";
 
-import { bnsConnector, bnsFromOrToTag, IovWriter, withConnectors } from "./writer";
+import { bnsConnector, bnsFromOrToTag, IovWriter } from "./writer";
 
 // We assume the same BOV context from iov-bns to run some simple tests
 // against that backend.
@@ -19,10 +19,11 @@ const pendingWithoutTendermint = () => {
 };
 
 describe("IovWriter", () => {
-  it("can be constructed with no chains", () => {
+  it("works with no chains", () => {
     const profile = new UserProfile();
-    const writer = new IovWriter(profile, []);
+    const writer = new IovWriter(profile);
     expect(writer).toBeTruthy();
+    expect(writer.chainIds().length).toEqual(0);
   });
 
   // This uses setup from iov-bns...
@@ -56,9 +57,9 @@ describe("IovWriter", () => {
     it("can send transaction", async () => {
       pendingWithoutBov();
 
-      const knownChains = await withConnectors([await bnsConnector(bovUrl)]);
       const profile = await userProfile();
-      const writer = new IovWriter(profile, knownChains);
+      const writer = new IovWriter(profile);
+      await writer.addChain(bnsConnector(bovUrl));
       expect(writer.chainIds().length).toEqual(1);
       const chainId = writer.chainIds()[0];
 
@@ -104,25 +105,28 @@ describe("IovWriter", () => {
       expect((last.transaction as SendTx).memo).toEqual(memo);
     });
 
-    it("can add chains", async () => {
+    it("can add two chains", async () => {
       // this requires both chains to check
       pendingWithoutBov();
       pendingWithoutTendermint();
 
       const profile = await userProfile();
-      const writer = new IovWriter(profile, []);
+      const writer = new IovWriter(profile);
       expect(writer.chainIds().length).toEqual(0);
 
       // add the bov chain
-      const bov = await bnsConnector(bovUrl);
-      await writer.addChain(bov);
+      await writer.addChain(bnsConnector(bovUrl));
       expect(writer.chainIds().length).toEqual(1);
       const bovId = writer.chainIds()[0];
 
       // add a raw tendermint chain (don't query, it will fail)
-      const tendermint = await bnsConnector(kvstoreUrl);
-      await writer.addChain(tendermint);
-      expect(writer.chainIds().length).toEqual(2);
+      await writer.addChain(bnsConnector(kvstoreUrl));
+      const twoChains = writer.chainIds();
+      // it should store both chains
+      expect(twoChains.length).toEqual(2);
+      expect(twoChains[0]).toBeDefined();
+      expect(twoChains[1]).toBeDefined();
+      expect(twoChains[0]).not.toEqual(twoChains[1]);
 
       // make sure we can query with multiple registered chains
       const faucet = await getOrCreateIdentity(profile, 0);
