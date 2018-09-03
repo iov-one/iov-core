@@ -303,7 +303,7 @@ describe("Integration tests with bov+tendermint", () => {
     expect(afterSearch.length).toEqual(2);
 
     // give time for all events to be processed
-    await sleep(50);
+    await sleep(100);
     // this should grab the tx before it started, as well as the one after
     expect(await countLive.value()).toEqual(2);
 
