@@ -52,6 +52,22 @@ describe("RpcClient", () => {
     expect(instanceOfRpcStreamingClient(new WebsocketClient(tendermintUrl))).toEqual(true);
   });
 
+  it("should also work with trailing slashes", async () => {
+    pendingWithoutTendermint();
+
+    const status = jsonRpcWith(Method.STATUS);
+
+    const http = new HttpClient(tendermintUrl + "/");
+    expect(await http.execute(status)).toBeDefined();
+
+    const uri = new HttpUriClient(tendermintUrl + "/");
+    expect(await uri.execute(status)).toBeDefined();
+
+    const ws = new WebsocketClient(tendermintUrl + "/");
+    expect(await ws.execute(status)).toBeDefined();
+    ws.disconnect();
+  });
+
   describe("HttpClient", () => {
     it("can make a simple call", async () => {
       pendingWithoutTendermint();
