@@ -8,11 +8,11 @@ import {
   PublicIdentity,
   UserProfile,
 } from "@iov/keycontrol";
+import { asArray, countStream, lastValue } from "@iov/stream";
 import { TxQuery } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
 import { Client } from "./client";
-import { asArray, countStream, lastValue } from "./stream";
 import { keyToAddress } from "./util";
 
 const skipTests = (): boolean => !process.env.BOV_ENABLED;
@@ -303,7 +303,7 @@ describe("Integration tests with bov+tendermint", () => {
     expect(afterSearch.length).toEqual(2);
 
     // give time for all events to be processed
-    await sleep(50);
+    await sleep(100);
     // this should grab the tx before it started, as well as the one after
     expect(await countLive.value()).toEqual(2);
 

@@ -1,0 +1,36 @@
+{
+  "name": "@iov/stream",
+  "version": "0.4.1",
+  "description": "Utility functions for producing and consuming Streams",
+  "author": "IOV SAS <admin@iov.one>",
+  "license": "Apache-2.0",
+  "main": "build/index.js",
+  "types": "types/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-stream"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "docs": "rm -rf docs && typedoc --options typedoc.js",
+    "lint": "tslint -t verbose --project .",
+    "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
+    "test-node": "node jasmine-testrunner.js",
+    "test-edge": "yarn pack-web && karma start --single-run --browsers Edge",
+    "test-firefox": "yarn pack-web && karma start --single-run --browsers Firefox",
+    "test-chrome": "yarn pack-web && karma start --single-run --browsers ChromeHeadless",
+    "test-safari": "yarn pack-web && karma start --single-run --browsers Safari",
+    "test": "yarn build-or-skip && yarn test-node",
+    "prebuild": "yarn format && yarn lint",
+    "preprocess-types": "rm -r ./types/*",
+    "postprocess-types": "rm ./types/*.spec.d.ts",
+    "build": "yarn preprocess-types && tsc --declarationDir ./types && yarn postprocess-types",
+    "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
+    "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
+  },
+  "dependencies": {
+    "xstream": "^11.7.0"
+  }
+}

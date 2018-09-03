@@ -16,6 +16,7 @@ import {
   TxReadCodec,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
+import { streamPromise } from "@iov/stream";
 import {
   buildTxQuery,
   Client as TendermintClient,
@@ -31,7 +32,6 @@ import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 import { bnsCodec } from "./bnscodec";
 import * as codecImpl from "./codecimpl";
 import { InitData, Normalize } from "./normalize";
-import { streamPromise } from "./stream";
 import { Decoder, Keyed, Result } from "./types";
 
 // queryByAddress is a type guard to use in the account-based queries
