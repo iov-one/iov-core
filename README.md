@@ -65,6 +65,10 @@ can browse locally to see API docs on the various packages.
 
 ### Libusb fails to build, why?
 
+If you are running on linux, you may not have the proper dependencies installed. For ubuntu, try the
+following: `sudo apt-get install libudev-dev libusb-1.0-0 libusb-1.0-0-dev`. 
+These are needed to compile the usb driver.
+
 Currently, Libusb requires node-pre-gyp version `0.10.2` or lower to compile properly. If for some reason
 your dependency is `0.10.3` or higher, you may have issues. Its recommended to use only `0.10.2` until
 the compilation issues are fixed in the `node-pre-gyp` package. This package comes as a dependency of
