@@ -19,11 +19,10 @@ import { KeyringEntryImplementationIdString, LocalIdentity, PublicIdentity } fro
 */
 
 import { Algorithm } from "@iov/tendermint-types";
+import { Client, Connection, Event, Handler, Server } from "@iov/transport";
 import { Stream } from "xstream";
 
-import { Client, Connection, Handler, Server } from "./connection";
 import { KeyringEntryImplementationIdString } from "./keyring";
-import { Event } from "./messages";
 import { ValueAndUpdates } from "./valueandupdates";
 
 // simplified KeyringEntry to demonstrate....
