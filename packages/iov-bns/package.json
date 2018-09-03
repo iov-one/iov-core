@@ -37,6 +37,7 @@
     "@iov/bcp-types": "^0.4.0",
     "@iov/crypto": "^0.4.0",
     "@iov/encoding": "^0.4.0",
+    "@iov/stream": "^0.4.1",
     "@iov/tendermint-rpc": "^0.4.1",
     "@iov/tendermint-types": "^0.4.0",
     "@types/long": "^4.0.0",

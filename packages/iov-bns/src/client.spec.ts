@@ -8,11 +8,11 @@ import {
   PublicIdentity,
   UserProfile,
 } from "@iov/keycontrol";
+import { asArray, countStream, lastValue } from "@iov/stream";
 import { TxQuery } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
 import { Client } from "./client";
-import { asArray, countStream, lastValue } from "./stream";
 import { keyToAddress } from "./util";
 
 const skipTests = (): boolean => !process.env.BOV_ENABLED;

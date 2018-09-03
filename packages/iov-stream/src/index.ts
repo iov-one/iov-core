@@ -1,1 +1,2 @@
-export const foo = 2;
+export * from "./promise";
+export * from "./reducer";
