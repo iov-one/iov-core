@@ -1,27 +1,8 @@
 // tslint:disable:readonly-array
-import { Stream } from "xstream";
-import { asArray, countStream, streamPromise } from "./stream";
+import { streamPromise } from "./promise";
+import { asArray, countStream } from "./reducer";
 
-describe("Test stream helpers", () => {
-  it("readIntoArray returns input", async () => {
-    const input = [1, 6, 92, 2, 9];
-    const stream = Stream.fromArray(input);
-    const result = asArray<number>(stream);
-    await result.finished();
-    expect(result.value()).toEqual(input);
-  });
-
-  it("Reducer.finished throws error on stream error", async () => {
-    const stream = Stream.throw("error");
-    try {
-      const result = asArray<number>(stream);
-      await result.finished();
-      fail("This should have thrown an error");
-    } catch (err) {
-      expect(err).toEqual("error");
-    }
-  });
-
+describe("Test streamPromise", () => {
   it("streamPromise will send many values on a stream", async () => {
     // create a promise that will resolve to an array of strings
     const input = ["a", "fd", "fvss", "gs"];

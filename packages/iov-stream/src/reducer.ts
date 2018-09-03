@@ -15,17 +15,9 @@ library.
 
 // tslint:disable:readonly-keyword
 // tslint:disable:no-object-mutation
-import { InternalListener, InternalProducer, Stream } from "xstream";
+import { Stream } from "xstream";
 
 export type ReducerFunc<T, U> = (acc: U, evt: T) => U;
-// some sample ReducerFuncs
-export const counter: ReducerFunc<any, number> = (sum: number) => sum + 1;
-export function append<T>(list: ReadonlyArray<T>, evt: T): ReadonlyArray<T> {
-  return [...list, evt];
-}
-export function last<T>(_: any, evt: T): T {
-  return evt;
-}
 
 // Reducer takes a stream of events T and a ReducerFunc, that
 // materializes a state of type U.
@@ -68,63 +60,21 @@ export class Reducer<T, U> {
 export function countStream<T>(stream: Stream<T>): Reducer<T, number> {
   return new Reducer(stream, counter, 0);
 }
+const counter: ReducerFunc<any, number> = (sum: number) => sum + 1;
 
 // asArray maintains an array containing all events that have
 // occurred on the stream
 export function asArray<T>(stream: Stream<T>): Reducer<T, ReadonlyArray<T>> {
   return new Reducer(stream, append, []);
 }
+function append<T>(list: ReadonlyArray<T>, evt: T): ReadonlyArray<T> {
+  return [...list, evt];
+}
 
+// lastValue returns the last value read from the stream, or undefined if no values sent
 export function lastValue<T>(stream: Stream<T>): Reducer<T, T | undefined> {
   return new Reducer(stream, last, undefined);
 }
-
-// streamPromise takes a Promsie that returns an array
-// and emits one event for each element of the array
-export function streamPromise<T>(promise: Promise<ReadonlyArray<T>>): Stream<T> {
-  return new Stream<T>(new StreamPromise<T>(promise));
-}
-// Heavily based on xstream's FromPromise implementation
-// https://github.com/staltz/xstream/blob/master/src/index.ts#L436-L467
-class StreamPromise<T> implements InternalProducer<T> {
-  public readonly type = "streamPromise";
-  public readonly p: PromiseLike<ReadonlyArray<T>>;
-  public on: boolean;
-
-  constructor(p: PromiseLike<ReadonlyArray<T>>) {
-    this.on = false;
-    this.p = p;
-  }
-
-  public _start(out: InternalListener<T>): void {
-    // tslint:disable-next-line:no-this-assignment
-    const that = this;
-    this.on = true;
-    this.p
-      .then(
-        (vs: ReadonlyArray<T>) => {
-          if (that.on) {
-            for (const v of vs) {
-              out._n(v);
-            }
-            out._c();
-          }
-        },
-        (e: any) => {
-          out._e(e);
-        },
-      )
-      .then(
-        () => 0,
-        (err: any) => {
-          setTimeout(() => {
-            throw err;
-          });
-        },
-      );
-  }
-
-  public _stop(): void {
-    this.on = false;
-  }
+function last<T>(_: any, evt: T): T {
+  return evt;
 }
