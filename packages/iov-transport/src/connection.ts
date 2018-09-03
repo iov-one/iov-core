@@ -10,7 +10,6 @@ This can run over many transport layers.
 
 import { Listener, Producer, Stream } from "xstream";
 
-// import { ErrorMessage, Event, EventMessage, Message, ResponseMessage } from "./messages";
 import {
   envelope,
   Event,
@@ -74,7 +73,7 @@ export const localConnectionPair = (): [Connection, Connection] => {
 };
 
 const localConnection = (client: MessageProducer, server: MessageProducer): Connection => ({
-  send: client.send,
+  send: (msg: Message) => client.send(msg),
   receive: Stream.create(server),
   disconnect: () => client.stop(),
 });
