@@ -129,14 +129,14 @@ the client against your one-node "dev net"...
 
 But, if you just want to see how the client works, let's run against iov's testnet
 and use the faucet to get some tokens. As of August 6, 2018, the current testnet
-is located at https://bov.xerusnet.iov.one/ (we are currently roating it in 2-3
+is located at https://bov.friendnet-fast.iov.one/ (we are currently roating it in 2-3
 week cycles to improve the setup based on loadtests and internal feedback).
 
 To connect, you need to know the address of the rpc server (above).
 It is also helpful to know the `chainId` of the chain.
 You can find that quite easily by looking
-at the [genesis file](https://bov.xerusnet.iov.one/genesis) under
-`.result.genesis.chain_id`. In our case this is `chain-B5XXm5`.
+at the [genesis file](https://bov.friendnet-fast.iov.one/genesis) under
+`.result.genesis.chain_id`. In our case this is `chain-friendnet-fast`.
 
 ### Executing the commands
 
@@ -159,7 +159,7 @@ Now, connect to the network:
 ```ts
 import { bnsConnector, IovWriter, withConnectors } from '@iov/core';
 
-const testnet = await bnsConnector('https://bov.xerusnet.iov.one');
+const testnet = await bnsConnector('wss://bov.friendnet-fast.iov.one/');
 const chains = await withConnectors([testnet]);
 const writer = new IovWriter(profile, chains);
 
@@ -193,35 +193,12 @@ console.log(byName.data[0])
 
 If you are running the testnet faucet, just ask for some free money.
 
-(type `> .editor` in the cli to copy/paste this; wait until some response text is printed)
-
 ```ts
-const postData = `{"address": "${toHex(addr)}"}`;
-const faucetRequest = https.request({
-  protocol: "https:",
-  host: "faucet.xerusnet.iov.one",
-  path: "/faucet",
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Content-Length": Buffer.byteLength(postData)
-  }
-}, (res) => {
-  console.log(`STATUS: ${res.statusCode}`);
-  // console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
-  res.setEncoding('utf8');
-  res.on('data', (chunk) => {
-    console.log(`BODY: ${chunk}`);
-  });
-  res.on('end', () => {
-    console.log('No more data in response.');
-  });
-});
-faucetRequest.on('error', (e) => {
-  console.error(`problem with request: ${e.message}`);
-});
-faucetRequest.write(postData);
-faucetRequest.end();
+import { BovFaucet } from "@iov/faucets";
+
+const faucet = new BovFaucet("https://faucet.friendnet-fast.iov.one/");
+// You can request a given token, or omit second argument to get default
+await faucet.credit(addr, "IOV" as TokenTicker);
 ```
 
 Then query your account:
@@ -248,9 +225,9 @@ const sendTx: SendTx = {
   signer: id1a.pubkey,  // this account must have money
   recipient: addr2,
   memo: "My first transaction",
-  amount: { // 10.11 IOV (9 sig figs)
+  amount: { // 10.11 IOV (9 sig figs in tx codec)
     whole: 10,
-    fractional: 11000000,
+    fractional: 110000000,
     tokenTicker: "IOV" as TokenTicker,
   },
 };
@@ -286,6 +263,37 @@ console.log(toHex(first.signer.data));
 const sender = bnsCodec.keyToAddress(first.signer);
 console.log(toHex(sender));
 ```
+
+## Reactive Clients
+
+If you query, the data can get stale, and you may be tempted to start
+polling the blockchain. Don't! Instead we offer event streams for
+anyone wishing to generate a reactive application. You can simply
+log these values, or feed them into a reducer to capture their value.
+
+```ts
+// these are helpers for consuming streams, probably belong elsewhere
+// lastValue will always store the last value,
+// asArray will append to an array with list of all tx that were streamed
+import { asArray, lastValue } from '@iov/bns';
+
+const liveHeight = lastValue(client.changeBlock());
+// if you wait a few seconds, you should see the block-height increase
+console.log(liveHeight.value());
+console.log(liveHeight.value());
+console.log(liveHeight.value());
+
+// you can also watch an account balance
+const liveBalance = lastValue(client.watchAccount({address: addr}));
+console.log(liveBalance.value());
+
+// or a list of all transactions that touch this account
+const liveTx = asArray(client.liveTx({address: addr}));
+console.log(liveTx.value());
+```
+
+Now, go ahead, send some tokens to this account in another window,
+and read the value of the account and tx again, watch them grow.
 
 ## License
 

@@ -1,3 +1,5 @@
+import { Stream } from "xstream";
+
 import {
   Address,
   BcpAccount,
@@ -17,8 +19,11 @@ import { Encoding } from "@iov/encoding";
 import {
   buildTxQuery,
   Client as TendermintClient,
+  getHeaderEventHeight,
+  getTxEventHeight,
   StatusResponse,
   txCommitSuccess,
+  TxEvent,
   TxResponse,
 } from "@iov/tendermint-rpc";
 import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
@@ -26,11 +31,26 @@ import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 import { bnsCodec } from "./bnscodec";
 import * as codecImpl from "./codecimpl";
 import { InitData, Normalize } from "./normalize";
+import { streamPromise } from "./stream";
 import { Decoder, Keyed, Result } from "./types";
 
 // queryByAddress is a type guard to use in the account-based queries
 const queryByAddress = (query: BcpAccountQuery): query is BcpAddressQuery =>
   (query as BcpAddressQuery).address !== undefined;
+
+// onChange returns a filter than only passes when the
+// value is different than the last one
+function onChange<T>(): (val: T) => boolean {
+  // tslint:disable-next-line:no-let
+  let oldVal: T | undefined;
+  return (val: T): boolean => {
+    if (val === oldVal) {
+      return false;
+    }
+    oldVal = val;
+    return true;
+  };
+}
 
 // Client talks directly to the BNS blockchain and exposes the
 // same interface we have with the BCP protocol.
@@ -38,6 +58,13 @@ const queryByAddress = (query: BcpAccountQuery): query is BcpAddressQuery =>
 export class Client implements IovReader {
   public static fromOrToTag(addr: Address): Tag {
     const id = Uint8Array.from([...Encoding.toAscii("wllt:"), ...addr]);
+    const key = Encoding.toHex(id).toUpperCase();
+    const value = "s"; // "s" for "set"
+    return { key, value };
+  }
+
+  public static nonceTag(addr: Address): Tag {
+    const id = Uint8Array.from([...Encoding.toAscii("sigs:"), ...addr]);
     const key = Encoding.toHex(id).toUpperCase();
     const value = "s"; // "s" for "set"
     return { key, value };
@@ -89,6 +116,7 @@ export class Client implements IovReader {
     const message = txresp.deliverTx ? txresp.deliverTx.log : txresp.checkTx.log;
     return {
       metadata: {
+        height: txresp.height,
         status: txCommitSuccess(txresp),
       },
       data: {
@@ -156,6 +184,94 @@ export class Client implements IovReader {
       ...this.codec.parseBytes(tx, chainId),
     });
     return res.txs.map(mapper);
+  }
+
+  // listenTx returns a stream of all transactions that match
+  // the tags from the present moment on
+  public listenTx(tags: ReadonlyArray<Tag>): Stream<ConfirmedTransaction> {
+    const streamId = Stream.fromPromise(this.chainId());
+    const txs = this.tmClient.subscribeTx(tags);
+
+    // destructuring ftw (or is it too confusing?)
+    const mapper = ([{ height, tx }, chainId]: [TxEvent, ChainId]): ConfirmedTransaction => ({
+      height,
+      ...this.codec.parseBytes(tx, chainId),
+    });
+    return Stream.combine(txs, streamId).map(mapper);
+  }
+
+  // liveTx does a search and then subscribes to all future changes.
+  // It returns a stream starting the array of all existing transactions
+  // and then continuing with live feeds
+  public liveTx(txQuery: TxQuery): Stream<ConfirmedTransaction> {
+    const history = streamPromise(this.searchTx(txQuery));
+    const updates = this.listenTx(txQuery.tags);
+    return Stream.merge(history, updates);
+  }
+
+  public changeBlock(): Stream<number> {
+    return this.tmClient.subscribeNewBlockHeader().map(getHeaderEventHeight);
+  }
+
+  // changeTx emits the blockheight for every block where a
+  // tx matching these tags is emitted
+  public changeTx(tags: ReadonlyArray<Tag>): Stream<number> {
+    return this.tmClient
+      .subscribeTx(tags)
+      .map(getTxEventHeight)
+      .filter(onChange<number>());
+  }
+
+  // changeBalance is a helper that triggers if the balance ever changes
+  public changeBalance(addr: Address): Stream<number> {
+    return this.changeTx([Client.fromOrToTag(addr)]);
+  }
+
+  // changeNonce is a helper that triggers if the nonce every changes
+  public changeNonce(addr: Address): Stream<number> {
+    return this.changeTx([Client.nonceTag(addr)]);
+  }
+
+  // watchAccount gets current balance and emits an update every time
+  // it changes
+  public watchAccount(account: BcpAccountQuery): Stream<BcpAccount | undefined> {
+    if (!queryByAddress(account)) {
+      throw new Error("watchAccount requires an address, not name, to watch");
+    }
+    // oneAccount normalizes the BcpEnvelope to just get the
+    // one account we want, or undefined if nothing there
+    const oneAccount = async (): Promise<BcpAccount | undefined> => {
+      const acct = await this.getAccount(account);
+      return acct.data.length < 1 ? undefined : acct.data[0];
+    };
+
+    return Stream.merge(
+      Stream.fromPromise(oneAccount()),
+      this.changeBalance(account.address)
+        .map(() => Stream.fromPromise(oneAccount()))
+        .flatten(),
+    );
+  }
+
+  // watchNonce gets current nonce and emits an update every time
+  // it changes
+  public watchNonce(account: BcpAccountQuery): Stream<BcpNonce | undefined> {
+    if (!queryByAddress(account)) {
+      throw new Error("watchNonce requires an address, not name, to watch");
+    }
+    // oneNonce normalizes the BcpEnvelope to just get the
+    // one account we want, or undefined if nothing there
+    const oneNonce = async (): Promise<BcpNonce | undefined> => {
+      const acct = await this.getNonce(account);
+      return acct.data.length < 1 ? undefined : acct.data[0];
+    };
+
+    return Stream.merge(
+      Stream.fromPromise(oneNonce()),
+      this.changeNonce(account.address)
+        .map(() => Stream.fromPromise(oneNonce()))
+        .flatten(),
+    );
   }
 
   protected async initialize(): Promise<InitData> {
