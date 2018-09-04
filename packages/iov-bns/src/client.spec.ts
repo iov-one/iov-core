@@ -311,7 +311,7 @@ describe("Integration tests with bov+tendermint", () => {
 
     const secondPost = await sendCash(client, profile, faucet, rcptAddr);
     expect(secondPost.metadata.status).toBe(true);
-    const secondId = post.data.txid;
+    const secondId = secondPost.data.txid;
     expect(secondId).toBeDefined();
 
     // now, let's make sure it is picked up in the search
