@@ -55,6 +55,7 @@ export interface BcpTransactionResponse {
   };
   readonly data: {
     readonly message: string;
+    readonly txid: TxId; // a unique identifier (hash of the data)
   };
 }
 

@@ -1,6 +1,15 @@
 import Long from "long";
 
-import { Address, BcpAccount, BcpNonce, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import {
+  Address,
+  BcpAccount,
+  BcpNonce,
+  BcpTransactionResponse,
+  Nonce,
+  SendTx,
+  TokenTicker,
+  TransactionKind,
+} from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import {
   Ed25519SimpleAddressKeyringEntry,
@@ -8,7 +17,7 @@ import {
   PublicIdentity,
   UserProfile,
 } from "@iov/keycontrol";
-import { asArray, countStream, lastValue } from "@iov/stream";
+import { asArray, lastValue } from "@iov/stream";
 import { TxQuery } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
@@ -254,7 +263,7 @@ describe("Integration tests with bov+tendermint", () => {
     profile: UserProfile,
     faucet: PublicIdentity,
     rcptAddr: Address,
-  ) => {
+  ): Promise<BcpTransactionResponse> => {
     // construct a sendtx, this is normally used in the IovWriter api
     const chainId = await client.chainId();
     const faucetAddr = keyToAddress(faucet.pubkey);
@@ -291,6 +300,8 @@ describe("Integration tests with bov+tendermint", () => {
 
     const post = await sendCash(client, profile, faucet, rcptAddr);
     expect(post.metadata.status).toBe(true);
+    const firstId = post.data.txid;
+    expect(firstId).toBeDefined();
 
     const middleSearch = await client.searchTx(query);
     expect(middleSearch.length).toEqual(1);
@@ -300,6 +311,8 @@ describe("Integration tests with bov+tendermint", () => {
 
     const secondPost = await sendCash(client, profile, faucet, rcptAddr);
     expect(secondPost.metadata.status).toBe(true);
+    const secondId = post.data.txid;
+    expect(secondId).toBeDefined();
 
     // now, let's make sure it is picked up in the search
     const afterSearch = await client.searchTx(query);
@@ -307,8 +320,8 @@ describe("Integration tests with bov+tendermint", () => {
     // make sure we have unique, defined txids
     const txIds = afterSearch.map(tx => tx.txid);
     expect(txIds.length).toEqual(2);
-    expect(txIds[0]).toBeDefined();
-    expect(txIds[1]).toBeDefined();
+    expect(txIds[0]).toEqual(firstId);
+    expect(txIds[1]).toEqual(secondId);
     expect(txIds[0]).not.toEqual(txIds[1]);
 
     // give time for all events to be processed

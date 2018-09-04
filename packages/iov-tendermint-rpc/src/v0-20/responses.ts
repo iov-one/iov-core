@@ -7,6 +7,7 @@ import {
   PublicKeyBytes,
   SignatureBundle,
   SignatureBytes,
+  TxId,
 } from "@iov/tendermint-types";
 
 import { JsonRpcEvent, JsonRpcSuccess } from "../common";
@@ -201,7 +202,7 @@ const decodeBroadcastTxCommit = (
   data: RpcBroadcastTxCommitResponse,
 ): responses.BroadcastTxCommitResponse => ({
   height: data.height,
-  hash: Encoding.fromHex(required(data.hash)),
+  hash: Encoding.fromHex(required(data.hash)) as TxId,
   checkTx: decodeTxData(required(data.check_tx)),
   deliverTx: may(decodeTxData, data.deliver_tx),
 });
@@ -266,7 +267,7 @@ const decodeTxResponse = (data: RpcTxResponse): responses.TxResponse => ({
   txResult: decodeTxData(required(data.tx_result)),
   height: required(data.height),
   index: required(data.index),
-  hash: Encoding.fromHex(required(data.hash)),
+  hash: Encoding.fromHex(required(data.hash)) as TxId,
   proof: may(decodeTxProof, data.proof),
 });
 

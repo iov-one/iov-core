@@ -37,6 +37,7 @@ export interface BcpTransactionResponse {
     };
     readonly data: {
         readonly message: string;
+        readonly txid: TxId;
     };
 }
 export interface BcpAddressQuery {

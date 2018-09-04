@@ -64,7 +64,7 @@ export interface BroadcastTxSyncResponse extends TxData {
 
 export interface BroadcastTxCommitResponse {
   readonly height?: number;
-  readonly hash: Uint8Array;
+  readonly hash: TxId;
   readonly checkTx: TxData;
   readonly deliverTx?: TxData;
 }
@@ -102,7 +102,7 @@ export interface TxResponse {
   readonly txResult: TxData;
   readonly height: number;
   readonly index: number;
-  readonly hash: Uint8Array;
+  readonly hash: TxId;
   readonly proof?: TxProof;
 }
 

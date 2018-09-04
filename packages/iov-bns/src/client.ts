@@ -120,6 +120,7 @@ export class Client implements IovReader {
         status: txCommitSuccess(txresp),
       },
       data: {
+        txid: txresp.hash,
         message: message || "",
       },
     };
