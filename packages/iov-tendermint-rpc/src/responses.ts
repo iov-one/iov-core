@@ -1,7 +1,7 @@
 // tslint:disable:no-empty-interface
 import { ReadonlyDate } from "readonly-date";
 
-import { ChainId, PostableBytes, PublicKeyBundle, SignatureBundle } from "@iov/tendermint-types";
+import { ChainId, PostableBytes, PublicKeyBundle, SignatureBundle, TxId } from "@iov/tendermint-types";
 
 import { IpPortString } from "./encodings";
 
@@ -124,6 +124,7 @@ export interface NewBlockHeaderEvent extends Header {}
 
 export interface TxEvent {
   readonly tx: PostableBytes;
+  readonly hash: TxId;
   readonly height: number;
   readonly index: number;
   readonly result: {

@@ -64,3 +64,13 @@ export class DateTime {
     return Encoding.fromRfc3339(dateTimeString);
   }
 }
+
+export class Hex {
+  public static encode(data: Uint8Array): HexString {
+    return Encoding.toHex(data) as HexString;
+  }
+
+  public static decode(hexString: HexString): Uint8Array {
+    return Encoding.fromHex(hexString);
+  }
+}

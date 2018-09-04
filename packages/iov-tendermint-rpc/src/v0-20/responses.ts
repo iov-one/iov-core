@@ -7,6 +7,7 @@ import {
   PublicKeyBytes,
   SignatureBundle,
   SignatureBytes,
+  TxId,
 } from "@iov/tendermint-types";
 
 import { JsonRpcEvent, JsonRpcSuccess } from "../common";
@@ -15,6 +16,7 @@ import {
   Base64String,
   DateTime,
   DateTimeString,
+  Hex,
   HexString,
   IntegerString,
   IpPortString,
@@ -280,6 +282,7 @@ const decodeTxSearch = (data: RpcTxSearchResponse): responses.TxSearchResponse =
 
 export interface RpcTxEvent {
   readonly tx: Base64String;
+  readonly hash: HexString;
   readonly result: {
     readonly tags: ReadonlyArray<RpcTag>;
     readonly fee: any;
@@ -291,6 +294,7 @@ export interface RpcTxEvent {
 function decodeTxEvent(data: RpcTxEvent): responses.TxEvent {
   return {
     tx: Base64.decode(required(data.tx)) as PostableBytes,
+    hash: Hex.decode(required(data.hash)) as TxId,
     result: {
       tags: decodeTags(data.result.tags),
       fee: data.result.fee,
