@@ -27,7 +27,7 @@ import {
   TxEvent,
   TxResponse,
 } from "@iov/tendermint-rpc";
-import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
+import { ChainId, PostableBytes, Tag, TxId, TxQuery } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
 import * as codecImpl from "./codecimpl";
@@ -179,8 +179,9 @@ export class Client implements IovReader {
     const query = buildTxQuery(txQuery);
     const res = await this.tmClient.txSearch({ query });
     const chainId = await this.chainId();
-    const mapper = ({ tx, height }: TxResponse): ConfirmedTransaction => ({
+    const mapper = ({ tx, hash, height }: TxResponse): ConfirmedTransaction => ({
       height,
+      txid: hash as TxId,
       ...this.codec.parseBytes(tx, chainId),
     });
     return res.txs.map(mapper);
@@ -193,8 +194,9 @@ export class Client implements IovReader {
     const txs = this.tmClient.subscribeTx(tags);
 
     // destructuring ftw (or is it too confusing?)
-    const mapper = ([{ height, tx }, chainId]: [TxEvent, ChainId]): ConfirmedTransaction => ({
+    const mapper = ([{ hash, height, tx }, chainId]: [TxEvent, ChainId]): ConfirmedTransaction => ({
       height,
+      txid: hash as TxId,
       ...this.codec.parseBytes(tx, chainId),
     });
     return Stream.combine(txs, streamId).map(mapper);

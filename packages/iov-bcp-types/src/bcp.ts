@@ -1,6 +1,6 @@
 import { Stream } from "xstream";
 
-import { ChainId, PostableBytes, PublicKeyBundle, Tag, TxQuery } from "@iov/tendermint-types";
+import { ChainId, PostableBytes, PublicKeyBundle, Tag, TxId, TxQuery } from "@iov/tendermint-types";
 
 import { Address, SignedTransaction } from "./signables";
 import { Nonce, TokenTicker } from "./transactions";
@@ -129,6 +129,7 @@ export interface IovReader {
 
 export interface ConfirmedTransaction extends SignedTransaction {
   readonly height: number; // the block it was written to
+  readonly txid: TxId; // a unique identifier (hash of the data)
   // TODO: TxData (result, code, tags...)
   // readonly tags: ReadonlyArray<Tag>;
   // readonly result?: Uint8Array;

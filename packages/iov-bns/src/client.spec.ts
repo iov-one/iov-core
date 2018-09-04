@@ -227,6 +227,9 @@ describe("Integration tests with bov+tendermint", () => {
     const tx = mine.transaction;
     expect(tx.kind).toEqual(sendTx.kind);
     expect(tx).toEqual(sendTx);
+    // make sure we have a txid
+    expect(mine.txid).toBeDefined();
+    expect(mine.txid.length).toBeGreaterThan(0);
 
     client.disconnect();
   });
@@ -301,6 +304,12 @@ describe("Integration tests with bov+tendermint", () => {
     // now, let's make sure it is picked up in the search
     const afterSearch = await client.searchTx(query);
     expect(afterSearch.length).toEqual(2);
+    // make sure we have unique, defined txids
+    const txIds = afterSearch.map(tx => tx.txid);
+    expect(txIds.length).toEqual(2);
+    expect(txIds[0]).toBeDefined();
+    expect(txIds[1]).toBeDefined();
+    expect(txIds[0]).not.toEqual(txIds[1]);
 
     // give time for all events to be processed
     await sleep(100);
