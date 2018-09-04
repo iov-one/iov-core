@@ -295,8 +295,8 @@ describe("Integration tests with bov+tendermint", () => {
     const middleSearch = await client.searchTx(query);
     expect(middleSearch.length).toEqual(1);
 
-    // countLive.value() maintains the count of events
-    const countLive = countStream(client.liveTx(query));
+    // live.value() maintains all transactions
+    const live = asArray(client.liveTx(query));
 
     const secondPost = await sendCash(client, profile, faucet, rcptAddr);
     expect(secondPost.metadata.status).toBe(true);
@@ -314,7 +314,10 @@ describe("Integration tests with bov+tendermint", () => {
     // give time for all events to be processed
     await sleep(100);
     // this should grab the tx before it started, as well as the one after
-    expect(await countLive.value()).toEqual(2);
+    expect(live.value().length).toEqual(2);
+    // make sure the txids also match
+    expect(live.value()[0].txid).toEqual(afterSearch[0].txid);
+    expect(live.value()[1].txid).toEqual(afterSearch[1].txid);
 
     client.disconnect();
   });
