@@ -59,7 +59,6 @@ export const main = (originalArgs: string[]): void => {
   console.log(colors.yellow("    - TokenTicker"));
   console.log(colors.yellow("    - TransactionKind"));
   console.log(colors.yellow("    - IovWriter"));
-  console.log(colors.yellow("    - withConnectors"));
   console.log(colors.yellow("  * from @iov/crypto"));
   console.log(colors.yellow("    - Bip39"));
   console.log(colors.yellow("    - Ed25519"));
@@ -99,7 +98,6 @@ export const main = (originalArgs: string[]): void => {
       TransactionKind,
       UserProfile,
       IovWriter,
-      withConnectors
     } from "@iov/core";
     import { bnsCodec } from '@iov/bns';
     import { Bip39, Ed25519, Ed25519Keypair, Random, Sha256, Sha512 } from '@iov/crypto';
