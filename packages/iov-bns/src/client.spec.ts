@@ -1,6 +1,15 @@
 import Long from "long";
 
-import { Address, BcpAccount, BcpNonce, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import {
+  Address,
+  BcpAccount,
+  BcpNonce,
+  BcpTransactionResponse,
+  Nonce,
+  SendTx,
+  TokenTicker,
+  TransactionKind,
+} from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import {
   Ed25519SimpleAddressKeyringEntry,
@@ -8,7 +17,7 @@ import {
   PublicIdentity,
   UserProfile,
 } from "@iov/keycontrol";
-import { asArray, countStream, lastValue } from "@iov/stream";
+import { asArray, lastValue } from "@iov/stream";
 import { TxQuery } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
@@ -227,6 +236,9 @@ describe("Integration tests with bov+tendermint", () => {
     const tx = mine.transaction;
     expect(tx.kind).toEqual(sendTx.kind);
     expect(tx).toEqual(sendTx);
+    // make sure we have a txid
+    expect(mine.txid).toBeDefined();
+    expect(mine.txid.length).toBeGreaterThan(0);
 
     client.disconnect();
   });
@@ -251,7 +263,7 @@ describe("Integration tests with bov+tendermint", () => {
     profile: UserProfile,
     faucet: PublicIdentity,
     rcptAddr: Address,
-  ) => {
+  ): Promise<BcpTransactionResponse> => {
     // construct a sendtx, this is normally used in the IovWriter api
     const chainId = await client.chainId();
     const faucetAddr = keyToAddress(faucet.pubkey);
@@ -288,24 +300,37 @@ describe("Integration tests with bov+tendermint", () => {
 
     const post = await sendCash(client, profile, faucet, rcptAddr);
     expect(post.metadata.status).toBe(true);
+    const firstId = post.data.txid;
+    expect(firstId).toBeDefined();
 
     const middleSearch = await client.searchTx(query);
     expect(middleSearch.length).toEqual(1);
 
-    // countLive.value() maintains the count of events
-    const countLive = countStream(client.liveTx(query));
+    // live.value() maintains all transactions
+    const live = asArray(client.liveTx(query));
 
     const secondPost = await sendCash(client, profile, faucet, rcptAddr);
     expect(secondPost.metadata.status).toBe(true);
+    const secondId = secondPost.data.txid;
+    expect(secondId).toBeDefined();
 
     // now, let's make sure it is picked up in the search
     const afterSearch = await client.searchTx(query);
     expect(afterSearch.length).toEqual(2);
+    // make sure we have unique, defined txids
+    const txIds = afterSearch.map(tx => tx.txid);
+    expect(txIds.length).toEqual(2);
+    expect(txIds[0]).toEqual(firstId);
+    expect(txIds[1]).toEqual(secondId);
+    expect(txIds[0]).not.toEqual(txIds[1]);
 
     // give time for all events to be processed
     await sleep(100);
     // this should grab the tx before it started, as well as the one after
-    expect(await countLive.value()).toEqual(2);
+    expect(live.value().length).toEqual(2);
+    // make sure the txids also match
+    expect(live.value()[0].txid).toEqual(afterSearch[0].txid);
+    expect(live.value()[1].txid).toEqual(afterSearch[1].txid);
 
     client.disconnect();
   });

@@ -6,8 +6,10 @@ export interface SignatureBundle {
     readonly signature: SignatureBytes;
 }
 export declare type PostableBytes = Uint8Array & As<"postable">;
+export declare type TxId = Uint8Array & As<"txid">;
 export interface TxQuery {
     readonly tags: ReadonlyArray<Tag>;
+    readonly hash?: TxId;
     readonly height?: number;
     readonly minHeight?: number;
     readonly maxHeight?: number;

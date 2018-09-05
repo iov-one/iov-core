@@ -1,7 +1,7 @@
 // tslint:disable:no-empty-interface
 import { ReadonlyDate } from "readonly-date";
 
-import { ChainId, PostableBytes, PublicKeyBundle, SignatureBundle } from "@iov/tendermint-types";
+import { ChainId, PostableBytes, PublicKeyBundle, SignatureBundle, TxId } from "@iov/tendermint-types";
 
 import { IpPortString } from "./encodings";
 
@@ -64,7 +64,7 @@ export interface BroadcastTxSyncResponse extends TxData {
 
 export interface BroadcastTxCommitResponse {
   readonly height?: number;
-  readonly hash: Uint8Array;
+  readonly hash: TxId;
   readonly checkTx: TxData;
   readonly deliverTx?: TxData;
 }
@@ -102,7 +102,7 @@ export interface TxResponse {
   readonly txResult: TxData;
   readonly height: number;
   readonly index: number;
-  readonly hash: Uint8Array;
+  readonly hash: TxId;
   readonly proof?: TxProof;
 }
 
@@ -124,6 +124,7 @@ export interface NewBlockHeaderEvent extends Header {}
 
 export interface TxEvent {
   readonly tx: PostableBytes;
+  readonly hash: TxId;
   readonly height: number;
   readonly index: number;
   readonly result: {

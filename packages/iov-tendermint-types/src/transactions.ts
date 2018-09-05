@@ -10,8 +10,11 @@ export interface SignatureBundle {
 
 export type PostableBytes = Uint8Array & As<"postable">;
 
+export type TxId = Uint8Array & As<"txid">;
+
 export interface TxQuery {
   readonly tags: ReadonlyArray<Tag>;
+  readonly hash?: TxId; // TODO: support this in queries
   readonly height?: number;
   readonly minHeight?: number;
   readonly maxHeight?: number;

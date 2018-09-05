@@ -7,6 +7,7 @@ import {
   PublicKeyBytes,
   SignatureBundle,
   SignatureBytes,
+  TxId,
 } from "@iov/tendermint-types";
 
 import { JsonRpcEvent, JsonRpcSuccess } from "../common";
@@ -24,6 +25,7 @@ import {
   required,
 } from "../encodings";
 import * as responses from "../responses";
+import { hashTx } from "./hasher";
 
 /*** adaptor ***/
 
@@ -200,7 +202,7 @@ const decodeBroadcastTxCommit = (
   data: RpcBroadcastTxCommitResponse,
 ): responses.BroadcastTxCommitResponse => ({
   height: data.height,
-  hash: Encoding.fromHex(required(data.hash)),
+  hash: Encoding.fromHex(required(data.hash)) as TxId,
   checkTx: decodeTxData(required(data.check_tx)),
   deliverTx: may(decodeTxData, data.deliver_tx),
 });
@@ -265,7 +267,7 @@ const decodeTxResponse = (data: RpcTxResponse): responses.TxResponse => ({
   txResult: decodeTxData(required(data.tx_result)),
   height: required(data.height),
   index: required(data.index),
-  hash: Encoding.fromHex(required(data.hash)),
+  hash: Encoding.fromHex(required(data.hash)) as TxId,
   proof: may(decodeTxProof, data.proof),
 });
 
@@ -289,8 +291,10 @@ export interface RpcTxEvent {
 }
 
 function decodeTxEvent(data: RpcTxEvent): responses.TxEvent {
+  const tx = Base64.decode(required(data.tx)) as PostableBytes;
   return {
-    tx: Base64.decode(required(data.tx)) as PostableBytes,
+    tx,
+    hash: hashTx(tx),
     result: {
       tags: decodeTags(data.result.tags),
       fee: data.result.fee,

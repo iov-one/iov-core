@@ -37,6 +37,7 @@
     "events": "^3.0.0",
     "isomorphic-ws": "^4.0.1",
     "readonly-date": "^1.0.0",
+    "ripemd160": "^2.0.2",
     "type-tagger": "^1.0.0",
     "ws": "^5.2.2",
     "xstream": "^11.7.0"
