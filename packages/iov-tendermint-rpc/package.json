@@ -1,6 +1,6 @@
 {
   "name": "@iov/tendermint-rpc",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Codec to encode/decode bns transactions and state objects",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@iov/encoding": "^0.5.0",
-    "@iov/tendermint-types": "^0.5.0",
+    "@iov/tendermint-types": "^0.5.1",
     "@types/node": "^10.3.2",
     "@types/ws": "^5.1.2",
     "axios": "^0.18.0",
