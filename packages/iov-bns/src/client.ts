@@ -177,9 +177,9 @@ export class Client implements IovReader {
   }
 
   public async searchTx(txQuery: TxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    const per_page = 100; // how many tx to return in search page, default 30
+    const perPage = 100; // how many tx to return in search page, default 30
     const query = buildTxQuery(txQuery);
-    const res = await this.tmClient.txSearch({ query, per_page });
+    const res = await this.tmClient.txSearch({ query, per_page: perPage });
     const chainId = await this.chainId();
     const mapper = ({ tx, hash, height }: TxResponse): ConfirmedTransaction => ({
       height,
