@@ -132,7 +132,7 @@ export interface KeyringEntry {
   // id is a unique identifier based on the content of the keyring
   // the same implementation with same seed/secret should have same identifier
   // otherwise, they will be different
-  readonly id: string;
+  // readonly id: string;
 
   // Sets a label associated with the keyring entry to be displayed in the UI.
   // To clear the label, set it to undefined.

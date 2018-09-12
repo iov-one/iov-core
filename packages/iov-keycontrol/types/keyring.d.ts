@@ -9,6 +9,7 @@ export interface PublicIdentity {
     readonly pubkey: PublicKeyBundle;
 }
 export interface LocalIdentity extends PublicIdentity {
+    readonly id: string;
     readonly label?: string;
 }
 export interface KeyringEntrySerialization {

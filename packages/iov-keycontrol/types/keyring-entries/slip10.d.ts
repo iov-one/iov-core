@@ -28,4 +28,5 @@ export declare class Slip10KeyringEntry implements KeyringEntry {
     clone(): Slip10KeyringEntry;
     private privkeyPathForIdentity;
     private privkeyForIdentity;
+    private buildLocalIdentity;
 }

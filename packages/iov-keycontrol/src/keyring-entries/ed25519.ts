@@ -1,7 +1,7 @@
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Ed25519, Ed25519Keypair, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import {
   KeyringEntry,
@@ -75,16 +75,15 @@ export class Ed25519KeyringEntry implements KeyringEntry {
           Encoding.fromHex(record.privkey),
           Encoding.fromHex(record.localIdentity.pubkey.data),
         );
-        const identity: LocalIdentity = {
-          pubkey: {
-            algo: Ed25519KeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo),
-            data: keypair.pubkey as PublicKeyBytes,
-          },
-          label: record.localIdentity.label,
-        };
-        const identityId = Ed25519KeyringEntry.identityId(identity);
+        if (Ed25519KeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo) !== Algorithm.ED25519) {
+          throw new Error("This keyring only supports ed25519 private keys");
+        }
+        const identity = this.buildLocalIdentity(
+          keypair.pubkey as PublicKeyBytes,
+          record.localIdentity.label,
+        );
         identities.push(identity);
-        privkeys.set(identityId, keypair);
+        privkeys.set(identity.id, keypair);
       }
     }
 
@@ -102,15 +101,8 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     const seed = await Random.getBytes(32);
     const keypair = await Ed25519.makeKeypair(seed);
 
-    const newIdentity: LocalIdentity = {
-      pubkey: {
-        algo: Algorithm.ED25519,
-        data: keypair.pubkey as PublicKeyBytes,
-      },
-      label: undefined,
-    };
-    const identityId = Ed25519KeyringEntry.identityId(newIdentity);
-    this.privkeys.set(identityId, keypair);
+    const newIdentity = this.buildLocalIdentity(keypair.pubkey as PublicKeyBytes, undefined);
+    this.privkeys.set(newIdentity.id, keypair);
     this.identities.push(newIdentity);
     return newIdentity;
   }
@@ -176,5 +168,17 @@ export class Ed25519KeyringEntry implements KeyringEntry {
       throw new Error("No private key found for identity '" + identityId + "'");
     }
     return privkey;
+  }
+
+  private buildLocalIdentity(bytes: PublicKeyBytes, label: string | undefined): LocalIdentity {
+    const pubkey: PublicKeyBundle = {
+      algo: Algorithm.ED25519,
+      data: bytes,
+    };
+    return {
+      pubkey,
+      label,
+      id: Ed25519KeyringEntry.identityId({ pubkey }),
+    };
   }
 }

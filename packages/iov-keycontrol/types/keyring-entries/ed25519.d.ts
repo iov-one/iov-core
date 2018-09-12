@@ -20,4 +20,5 @@ export declare class Ed25519KeyringEntry implements KeyringEntry {
     serialize(): KeyringEntrySerializationString;
     clone(): Ed25519KeyringEntry;
     private privateKeyForIdentity;
+    private buildLocalIdentity;
 }
