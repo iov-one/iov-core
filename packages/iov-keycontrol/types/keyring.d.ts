@@ -29,6 +29,7 @@ export declare class Keyring {
     add(entry: KeyringEntry): void;
     getEntries(): ReadonlyArray<KeyringEntry>;
     getEntryById(id: string): KeyringEntry | undefined;
+    getEntryByIndex(n: number): KeyringEntry | undefined;
     serialize(): KeyringSerializationString;
     clone(): Keyring;
 }

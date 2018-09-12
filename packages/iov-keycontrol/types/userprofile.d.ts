@@ -24,11 +24,11 @@ export declare class UserProfile {
     storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<void>;
     lock(): void;
     addEntry(entry: KeyringEntry): void;
-    setEntryLabel(n: number, label: string | undefined): void;
-    createIdentity(n: number): Promise<LocalIdentity>;
-    setIdentityLabel(n: number, identity: PublicIdentity, label: string | undefined): void;
-    getIdentities(n: number): ReadonlyArray<LocalIdentity>;
-    signTransaction(n: number, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
-    appendSignature(n: number, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
+    setEntryLabel(id: number | string, label: string | undefined): void;
+    createIdentity(id: number | string): Promise<LocalIdentity>;
+    setIdentityLabel(id: number | string, identity: PublicIdentity, label: string | undefined): void;
+    getIdentities(id: number | string): ReadonlyArray<LocalIdentity>;
+    signTransaction(id: number | string, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
+    appendSignature(id: number | string, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
     private entryInPrimaryKeyring;
 }

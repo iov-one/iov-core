@@ -162,8 +162,8 @@ export class UserProfile {
   }
 
   // sets the label of the n-th keyring entry of the primary keyring
-  public setEntryLabel(n: number, label: string | undefined): void {
-    const entry = this.entryInPrimaryKeyring(n);
+  public setEntryLabel(id: number | string, label: string | undefined): void {
+    const entry = this.entryInPrimaryKeyring(id);
     entry.setLabel(label);
 
     if (!this.keyring) {
@@ -173,32 +173,32 @@ export class UserProfile {
   }
 
   // creates an identitiy in the n-th keyring entry of the primary keyring
-  public async createIdentity(n: number): Promise<LocalIdentity> {
-    const entry = this.entryInPrimaryKeyring(n);
+  public async createIdentity(id: number | string): Promise<LocalIdentity> {
+    const entry = this.entryInPrimaryKeyring(id);
     return entry.createIdentity();
   }
 
   // assigns a new label to one of the identities
   // in the n-th keyring entry of the primary keyring
-  public setIdentityLabel(n: number, identity: PublicIdentity, label: string | undefined): void {
-    const entry = this.entryInPrimaryKeyring(n);
+  public setIdentityLabel(id: number | string, identity: PublicIdentity, label: string | undefined): void {
+    const entry = this.entryInPrimaryKeyring(id);
     entry.setIdentityLabel(identity, label);
   }
 
   // get identities of the n-th keyring entry of the primary keyring
-  public getIdentities(n: number): ReadonlyArray<LocalIdentity> {
-    const entry = this.entryInPrimaryKeyring(n);
+  public getIdentities(id: number | string): ReadonlyArray<LocalIdentity> {
+    const entry = this.entryInPrimaryKeyring(id);
     return entry.getIdentities();
   }
 
   public async signTransaction(
-    n: number,
+    id: number | string,
     identity: PublicIdentity,
     transaction: UnsignedTransaction,
     codec: TxCodec,
     nonce: Nonce,
   ): Promise<SignedTransaction> {
-    const entry = this.entryInPrimaryKeyring(n);
+    const entry = this.entryInPrimaryKeyring(id);
 
     const { bytes, prehashType } = codec.bytesToSign(transaction, nonce);
     const signature: FullSignature = {
@@ -215,13 +215,13 @@ export class UserProfile {
   }
 
   public async appendSignature(
-    n: number,
+    id: number | string,
     identity: PublicIdentity,
     originalTransaction: SignedTransaction,
     codec: TxCodec,
     nonce: Nonce,
   ): Promise<SignedTransaction> {
-    const entry = this.entryInPrimaryKeyring(n);
+    const entry = this.entryInPrimaryKeyring(id);
 
     const { bytes, prehashType } = codec.bytesToSign(originalTransaction.transaction, nonce);
     const newSignature: FullSignature = {
@@ -241,14 +241,16 @@ export class UserProfile {
     };
   }
 
-  private entryInPrimaryKeyring(n: number): KeyringEntry {
+  private entryInPrimaryKeyring(id: number | string): KeyringEntry {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
 
-    const entry = this.keyring.getEntries().find((_, index) => index === n);
+    const entry = typeof id === "number" ? this.keyring.getEntryByIndex(id) : this.keyring.getEntryById(id);
+
     if (!entry) {
-      throw new Error("Entry of index " + n + " does not exist in keyring");
+      const kind = typeof id === "number" ? "index" : "id";
+      throw new Error(`Entry of ${kind} ${id} does not exist in keyring`);
     }
 
     return entry;
