@@ -82,10 +82,15 @@ export class UserProfile {
     return entries.map(e => e.label.value) as ReadonlyArray<string | undefined>;
   }
 
+  private static ids(entries: ReadonlyArray<KeyringEntry>): ReadonlyArray<string> {
+    return entries.map(e => e.id);
+  }
+
   public readonly createdAt: ReadonlyDate;
   public readonly locked: ValueAndUpdates<boolean>;
   public readonly entriesCount: ValueAndUpdates<number>;
   public readonly entryLabels: ValueAndUpdates<ReadonlyArray<string | undefined>>;
+  public readonly entryIds: ValueAndUpdates<ReadonlyArray<string>>;
 
   // Never pass the keyring reference to ensure the keyring is not retained after lock()
   // tslint:disable-next-line:readonly-keyword
@@ -93,6 +98,7 @@ export class UserProfile {
   private readonly lockedProducer: DefaultValueProducer<boolean>;
   private readonly entriesCountProducer: DefaultValueProducer<number>;
   private readonly entryLabelsProducer: DefaultValueProducer<ReadonlyArray<string | undefined>>;
+  private readonly entryIdsProducer: DefaultValueProducer<ReadonlyArray<string>>;
 
   // Stores a copy of keyring
   constructor(options?: UserProfileOptions) {
@@ -106,10 +112,14 @@ export class UserProfile {
 
     this.lockedProducer = new DefaultValueProducer(false);
     this.locked = new ValueAndUpdates(this.lockedProducer);
+    // TODO: we really need to clean this up and rethink what we expose where
+    // but that would be a breaking change... let's aim for 0.6
     this.entriesCountProducer = new DefaultValueProducer(this.keyring.getEntries().length);
     this.entriesCount = new ValueAndUpdates(this.entriesCountProducer);
     this.entryLabelsProducer = new DefaultValueProducer(UserProfile.labels(this.keyring.getEntries()));
     this.entryLabels = new ValueAndUpdates(this.entryLabelsProducer);
+    this.entryIdsProducer = new DefaultValueProducer(UserProfile.ids(this.keyring.getEntries()));
+    this.entryIds = new ValueAndUpdates(this.entryIdsProducer);
   }
 
   // this will clear everything in the database and store the user profile
@@ -159,6 +169,7 @@ export class UserProfile {
     this.keyring.add(copy);
     this.entriesCountProducer.update(this.keyring.getEntries().length);
     this.entryLabelsProducer.update(UserProfile.labels(this.keyring.getEntries()));
+    this.entryIdsProducer.update(UserProfile.ids(this.keyring.getEntries()));
   }
 
   // sets the label of the n-th keyring entry of the primary keyring

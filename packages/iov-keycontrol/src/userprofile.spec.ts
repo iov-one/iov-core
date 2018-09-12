@@ -147,9 +147,15 @@ describe("UserProfile", () => {
     profile.addEntry(entry1);
     const id1 = entry1.id;
 
+    // make sure we can query the ids if we didn't save them from creation
+    expect(profile.entryIds.value).toEqual([id1]);
+
     const entry2 = Ed25519SimpleAddressKeyringEntry.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
     profile.addEntry(entry2);
     const id2 = entry2.id;
+
+    // make sure we can query the ids if we didn't save them from creation
+    expect(profile.entryIds.value).toEqual([id1, id2]);
 
     // set the labels two different ways
     profile.setEntryLabel(0, "first");
