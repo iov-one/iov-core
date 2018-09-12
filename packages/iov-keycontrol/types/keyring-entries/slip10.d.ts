@@ -12,6 +12,7 @@ export declare class Slip10KeyringEntry implements KeyringEntry {
     readonly label: ValueAndUpdates<string | undefined>;
     readonly canSign: ValueAndUpdates<boolean>;
     readonly implementationId: KeyringEntryImplementationIdString;
+    readonly id: string;
     private readonly secret;
     private readonly curve;
     private readonly identities;
@@ -29,4 +30,5 @@ export declare class Slip10KeyringEntry implements KeyringEntry {
     private privkeyPathForIdentity;
     private privkeyForIdentity;
     private buildLocalIdentity;
+    private calculateId;
 }

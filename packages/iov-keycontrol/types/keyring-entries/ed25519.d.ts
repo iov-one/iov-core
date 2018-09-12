@@ -8,6 +8,7 @@ export declare class Ed25519KeyringEntry implements KeyringEntry {
     readonly label: ValueAndUpdates<string | undefined>;
     readonly canSign: ValueAndUpdates<boolean>;
     readonly implementationId: KeyringEntryImplementationIdString;
+    readonly id: string;
     private readonly identities;
     private readonly privkeys;
     private readonly labelProducer;
@@ -21,4 +22,5 @@ export declare class Ed25519KeyringEntry implements KeyringEntry {
     clone(): Ed25519KeyringEntry;
     private privateKeyForIdentity;
     private buildLocalIdentity;
+    private randomId;
 }

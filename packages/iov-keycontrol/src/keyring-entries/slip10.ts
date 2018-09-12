@@ -5,6 +5,7 @@ import {
   Ed25519Keypair,
   EnglishMnemonic,
   Secp256k1,
+  Sha256,
   Slip10,
   Slip10Curve,
   slip10CurveFromString,
@@ -89,6 +90,7 @@ export class Slip10KeyringEntry implements KeyringEntry {
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
   public readonly implementationId = "override me!" as KeyringEntryImplementationIdString;
+  public readonly id: string;
 
   private readonly secret: EnglishMnemonic;
   private readonly curve: Slip10Curve;
@@ -132,6 +134,9 @@ export class Slip10KeyringEntry implements KeyringEntry {
 
     this.identities = identities;
     this.privkeyPaths = privkeyPaths;
+
+    // id depends on the secret and the subclass implementation
+    this.id = this.calculateId();
   }
 
   public setLabel(label: string | undefined): void {
@@ -261,5 +266,17 @@ export class Slip10KeyringEntry implements KeyringEntry {
       label,
       id: Slip10KeyringEntry.identityId({ pubkey }),
     };
+  }
+
+  // calculate id returns the tripple sha256 hash of the bip39 entropy as hex-string
+  // prepended by implementationId of the concrete class (to differentiate eg. secp256k1 and ed25519 keyrings)
+  private calculateId(): string {
+    /* tslint:disable:no-let */
+    let data = Bip39.decode(this.secret);
+    for (let i = 0; i < 3; i++) {
+      data = new Sha256(data).digest();
+    }
+    const hex = Encoding.toHex(data);
+    return `${this.implementationId}:${hex}`;
   }
 }
