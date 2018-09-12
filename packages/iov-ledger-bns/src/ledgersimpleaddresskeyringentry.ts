@@ -79,7 +79,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     this.canSign = new ValueAndUpdates(this.canSignProducer);
 
     this.deviceTracker.state.updates.subscribe({
-      next: value => {
+      next: (value: LedgerState) => {
         this.canSignProducer.update(value === LedgerState.IovAppOpen);
       },
     });
