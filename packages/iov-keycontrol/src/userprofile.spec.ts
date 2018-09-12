@@ -140,6 +140,45 @@ describe("UserProfile", () => {
     expect(profile.entryLabels.value).toEqual([undefined, undefined]);
   });
 
+  it("accessors also work with id instead of number", async () => {
+    const profile = new UserProfile();
+
+    const entry1 = Ed25519SimpleAddressKeyringEntry.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
+    profile.addEntry(entry1);
+    const id1 = entry1.id;
+
+    const entry2 = Ed25519SimpleAddressKeyringEntry.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
+    profile.addEntry(entry2);
+    const id2 = entry2.id;
+
+    // set the labels two different ways
+    profile.setEntryLabel(0, "first");
+    profile.setEntryLabel(id2, "second");
+    expect(profile.entryLabels.value).toEqual(["first", "second"]);
+
+    // make some new ids
+    await profile.createIdentity(id1);
+    const key = await profile.createIdentity(id2);
+    await profile.createIdentity(1);
+    expect(profile.getIdentities(0).length).toEqual(1);
+    expect(profile.getIdentities(id2).length).toEqual(2);
+
+    // set an identity label
+    profile.setIdentityLabel(1, key, "foobar");
+    const labels = profile.getIdentities(id2).map(x => x.label);
+    expect(labels).toEqual(["foobar", undefined]);
+  });
+
+  it("throws for non-existent id or index", () => {
+    const profile = new UserProfile();
+
+    const entry1 = Ed25519SimpleAddressKeyringEntry.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
+    profile.addEntry(entry1);
+
+    expect(() => profile.getIdentities(2)).toThrowError(/Entry of index 2 does not exist in keyring/);
+    expect(() => profile.getIdentities("balloon")).toThrowError(/Entry of id balloon does not exist in keyring/);
+  });
+
   it("added entry can not be manipulated from outside", async () => {
     const profile = new UserProfile();
     const newEntry = Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
