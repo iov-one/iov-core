@@ -61,7 +61,10 @@ export class IovWriter {
   // the transaction and look up the private key for this public key
   // in the given keyring.
   // It finds the nonce, signs properly, and posts the tx to the blockchain.
-  public async signAndCommit(tx: UnsignedTransaction, keyring: number): Promise<BcpTransactionResponse> {
+  public async signAndCommit(
+    tx: UnsignedTransaction,
+    keyring: number | string,
+  ): Promise<BcpTransactionResponse> {
     const chainId = tx.chainId;
     const { client, codec } = this.getChain(chainId);
 
