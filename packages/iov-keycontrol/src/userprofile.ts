@@ -82,10 +82,15 @@ export class UserProfile {
     return entries.map(e => e.label.value) as ReadonlyArray<string | undefined>;
   }
 
+  private static ids(entries: ReadonlyArray<KeyringEntry>): ReadonlyArray<string> {
+    return entries.map(e => e.id);
+  }
+
   public readonly createdAt: ReadonlyDate;
   public readonly locked: ValueAndUpdates<boolean>;
   public readonly entriesCount: ValueAndUpdates<number>;
   public readonly entryLabels: ValueAndUpdates<ReadonlyArray<string | undefined>>;
+  public readonly entryIds: ValueAndUpdates<ReadonlyArray<string>>;
 
   // Never pass the keyring reference to ensure the keyring is not retained after lock()
   // tslint:disable-next-line:readonly-keyword
@@ -93,6 +98,7 @@ export class UserProfile {
   private readonly lockedProducer: DefaultValueProducer<boolean>;
   private readonly entriesCountProducer: DefaultValueProducer<number>;
   private readonly entryLabelsProducer: DefaultValueProducer<ReadonlyArray<string | undefined>>;
+  private readonly entryIdsProducer: DefaultValueProducer<ReadonlyArray<string>>;
 
   // Stores a copy of keyring
   constructor(options?: UserProfileOptions) {
@@ -106,10 +112,14 @@ export class UserProfile {
 
     this.lockedProducer = new DefaultValueProducer(false);
     this.locked = new ValueAndUpdates(this.lockedProducer);
+    // TODO: we really need to clean this up and rethink what we expose where
+    // but that would be a breaking change... let's aim for 0.6
     this.entriesCountProducer = new DefaultValueProducer(this.keyring.getEntries().length);
     this.entriesCount = new ValueAndUpdates(this.entriesCountProducer);
     this.entryLabelsProducer = new DefaultValueProducer(UserProfile.labels(this.keyring.getEntries()));
     this.entryLabels = new ValueAndUpdates(this.entryLabelsProducer);
+    this.entryIdsProducer = new DefaultValueProducer(UserProfile.ids(this.keyring.getEntries()));
+    this.entryIds = new ValueAndUpdates(this.entryIdsProducer);
   }
 
   // this will clear everything in the database and store the user profile
@@ -159,11 +169,12 @@ export class UserProfile {
     this.keyring.add(copy);
     this.entriesCountProducer.update(this.keyring.getEntries().length);
     this.entryLabelsProducer.update(UserProfile.labels(this.keyring.getEntries()));
+    this.entryIdsProducer.update(UserProfile.ids(this.keyring.getEntries()));
   }
 
   // sets the label of the n-th keyring entry of the primary keyring
-  public setEntryLabel(n: number, label: string | undefined): void {
-    const entry = this.entryInPrimaryKeyring(n);
+  public setEntryLabel(id: number | string, label: string | undefined): void {
+    const entry = this.entryInPrimaryKeyring(id);
     entry.setLabel(label);
 
     if (!this.keyring) {
@@ -173,32 +184,32 @@ export class UserProfile {
   }
 
   // creates an identitiy in the n-th keyring entry of the primary keyring
-  public async createIdentity(n: number): Promise<LocalIdentity> {
-    const entry = this.entryInPrimaryKeyring(n);
+  public async createIdentity(id: number | string): Promise<LocalIdentity> {
+    const entry = this.entryInPrimaryKeyring(id);
     return entry.createIdentity();
   }
 
   // assigns a new label to one of the identities
   // in the n-th keyring entry of the primary keyring
-  public setIdentityLabel(n: number, identity: PublicIdentity, label: string | undefined): void {
-    const entry = this.entryInPrimaryKeyring(n);
+  public setIdentityLabel(id: number | string, identity: PublicIdentity, label: string | undefined): void {
+    const entry = this.entryInPrimaryKeyring(id);
     entry.setIdentityLabel(identity, label);
   }
 
   // get identities of the n-th keyring entry of the primary keyring
-  public getIdentities(n: number): ReadonlyArray<LocalIdentity> {
-    const entry = this.entryInPrimaryKeyring(n);
+  public getIdentities(id: number | string): ReadonlyArray<LocalIdentity> {
+    const entry = this.entryInPrimaryKeyring(id);
     return entry.getIdentities();
   }
 
   public async signTransaction(
-    n: number,
+    id: number | string,
     identity: PublicIdentity,
     transaction: UnsignedTransaction,
     codec: TxCodec,
     nonce: Nonce,
   ): Promise<SignedTransaction> {
-    const entry = this.entryInPrimaryKeyring(n);
+    const entry = this.entryInPrimaryKeyring(id);
 
     const { bytes, prehashType } = codec.bytesToSign(transaction, nonce);
     const signature: FullSignature = {
@@ -215,13 +226,13 @@ export class UserProfile {
   }
 
   public async appendSignature(
-    n: number,
+    id: number | string,
     identity: PublicIdentity,
     originalTransaction: SignedTransaction,
     codec: TxCodec,
     nonce: Nonce,
   ): Promise<SignedTransaction> {
-    const entry = this.entryInPrimaryKeyring(n);
+    const entry = this.entryInPrimaryKeyring(id);
 
     const { bytes, prehashType } = codec.bytesToSign(originalTransaction.transaction, nonce);
     const newSignature: FullSignature = {
@@ -241,14 +252,16 @@ export class UserProfile {
     };
   }
 
-  private entryInPrimaryKeyring(n: number): KeyringEntry {
+  private entryInPrimaryKeyring(id: number | string): KeyringEntry {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
 
-    const entry = this.keyring.getEntries().find((_, index) => index === n);
+    const entry = typeof id === "number" ? this.keyring.getEntryByIndex(id) : this.keyring.getEntryById(id);
+
     if (!entry) {
-      throw new Error("Entry of index " + n + " does not exist in keyring");
+      const kind = typeof id === "number" ? "index" : "id";
+      throw new Error(`Entry of ${kind} ${id} does not exist in keyring`);
     }
 
     return entry;

@@ -11,7 +11,7 @@ export declare class IovWriter {
     addChain(connector: ChainConnector): Promise<void>;
     keyToAddress(chainId: ChainId, key: PublicKeyBundle): Address;
     getNonce(chainId: ChainId, addr: Address): Promise<Nonce>;
-    signAndCommit(tx: UnsignedTransaction, keyring: number): Promise<BcpTransactionResponse>;
+    signAndCommit(tx: UnsignedTransaction, keyring: number | string): Promise<BcpTransactionResponse>;
     private getChain;
 }
 export interface ChainConnector {

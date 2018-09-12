@@ -58,6 +58,9 @@ describe("IovWriter", () => {
       pendingWithoutBov();
 
       const profile = await userProfile();
+      const entryId = profile.entryIds.value[0];
+      expect(entryId).toBeTruthy();
+
       const writer = new IovWriter(profile);
       await writer.addChain(bnsConnector(bovUrl));
       expect(writer.chainIds().length).toEqual(1);
@@ -81,7 +84,7 @@ describe("IovWriter", () => {
           tokenTicker: cash,
         },
       };
-      const res = await writer.signAndCommit(sendTx, 0);
+      const res = await writer.signAndCommit(sendTx, entryId);
       expect(res.metadata.status).toEqual(true);
 
       // we should be a little bit richer
