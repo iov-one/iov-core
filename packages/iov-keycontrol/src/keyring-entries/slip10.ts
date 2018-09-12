@@ -46,19 +46,32 @@ interface Slip10KeyringEntrySerialization {
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
 
+interface Slip10KeyringEntryConstructor {
+  new (data: KeyringEntrySerializationString): Slip10KeyringEntry;
+}
+
 export class Slip10KeyringEntry implements KeyringEntry {
-  public static fromEntropyWithCurve(curve: Slip10Curve, bip39Entropy: Uint8Array): Slip10KeyringEntry {
-    return this.fromMnemonicWithCurve(curve, Bip39.encode(bip39Entropy).asString());
+  public static fromEntropyWithCurve(
+    curve: Slip10Curve,
+    bip39Entropy: Uint8Array,
+    cls?: Slip10KeyringEntryConstructor,
+  ): Slip10KeyringEntry {
+    return this.fromMnemonicWithCurve(curve, Bip39.encode(bip39Entropy).asString(), cls);
   }
 
-  public static fromMnemonicWithCurve(curve: Slip10Curve, mnemonicString: string): Slip10KeyringEntry {
+  // pass in proper class, so we have it available in javascript object, not just in the type definitions.
+  public static fromMnemonicWithCurve(
+    curve: Slip10Curve,
+    mnemonicString: string,
+    cls: Slip10KeyringEntryConstructor = Slip10KeyringEntry,
+  ): Slip10KeyringEntry {
     const data: Slip10KeyringEntrySerialization = {
       secret: mnemonicString,
       curve: curve,
       label: undefined,
       identities: [],
     };
-    return new this(JSON.stringify(data) as KeyringEntrySerializationString);
+    return new cls(JSON.stringify(data) as KeyringEntrySerializationString);
   }
 
   private static identityId(identity: PublicIdentity): string {
@@ -98,7 +111,20 @@ export class Slip10KeyringEntry implements KeyringEntry {
   private readonly privkeyPaths: Map<string, ReadonlyArray<Slip10RawIndex>>;
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
 
-  constructor(data: KeyringEntrySerializationString) {
+  constructor(data: KeyringEntrySerializationString, implementationId?: KeyringEntryImplementationIdString) {
+    /*
+      We need to set implementationId here, as we use it to construct the id below.
+      The default auto-generated constructor earlier looked like this:
+        constructor() {
+          super(...arguments);
+          this.implementationId = "ed25519-simpleaddress";
+        }
+      And we always got "override me!" as the beginning of the id.
+    */
+    if (implementationId) {
+      this.implementationId = implementationId;
+    }
+
     const decodedData: Slip10KeyringEntrySerialization = JSON.parse(data);
 
     // secret
