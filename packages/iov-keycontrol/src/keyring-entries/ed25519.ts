@@ -1,3 +1,5 @@
+import PseudoRandom from "random-js";
+
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Ed25519, Ed25519Keypair, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -35,6 +37,8 @@ interface Ed25519KeyringEntrySerialization {
 }
 
 export class Ed25519KeyringEntry implements KeyringEntry {
+  private static readonly prng: PseudoRandom.Engine = PseudoRandom.engines.mt19937().seed(12345678);
+
   private static identityId(identity: PublicIdentity): string {
     return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
   }
@@ -196,8 +200,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
   private randomId(): string {
     // this can be pseudo-random, just used for internal book-keeping
-    const index = Math.random() * 1000000000;
-    // appends random 9-digit number
-    return "ed25519:" + Math.floor(index).toString(10);
+    const code = PseudoRandom.string()(Ed25519KeyringEntry.prng, 10);
+    return "ed25519:" + code;
   }
 }

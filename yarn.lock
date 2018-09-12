@@ -675,6 +675,10 @@
   version "9.6.30"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-9.6.30.tgz#1ecf83eaf7ac2d0dada7a9d61a1e4e7a6183ac06"
 
+"@types/random-js@^1.0.31":
+  version "1.0.31"
+  resolved "https://registry.yarnpkg.com/@types/random-js/-/random-js-1.0.31.tgz#18a8bcc075afa504421e638fcbe021f27e802941"
+
 "@types/shelljs@^0.8.0":
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/@types/shelljs/-/shelljs-0.8.0.tgz#0caa56b68baae4f68f44e0dd666ab30b098e3632"
@@ -4909,6 +4913,10 @@ querystring@0.2.0:
 quick-lru@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-1.1.0.tgz#4360b17c61136ad38078397ff11416e186dcfbb8"
+
+random-js@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/random-js/-/random-js-1.0.8.tgz#968fd689a6f25d6c0aac766283de2f688c9c190a"
 
 randombytes@^2.0.0, randombytes@^2.0.1, randombytes@^2.0.5:
   version "2.0.6"
