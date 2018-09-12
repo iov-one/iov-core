@@ -82,6 +82,21 @@ describe("Ed25519KeyringEntry", () => {
     expect(keyringEntry.getIdentities()[0].label).toBeUndefined();
   });
 
+  it("generates unique ids", async () => {
+    const keyringEntry = new Ed25519KeyringEntry();
+    const originalId = keyringEntry.id;
+    expect(originalId).toBeTruthy();
+
+    const id1 = await keyringEntry.createIdentity();
+    expect(id1).toBeTruthy();
+    expect(keyringEntry.id).toEqual(originalId); // id must not change with use
+
+    // many more keyrings all with unique ids
+    const manyIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(() => new Ed25519KeyringEntry().id);
+    const uniqueVals = new Set(manyIds).size;
+    expect(uniqueVals).toEqual(manyIds.length);
+  });
+
   it("can sign", async () => {
     const keyringEntry = new Ed25519KeyringEntry();
     const newIdentity = await keyringEntry.createIdentity();
@@ -176,16 +191,20 @@ describe("Ed25519KeyringEntry", () => {
   it("can deserialize", () => {
     {
       // empty
-      const entry = new Ed25519KeyringEntry('{ "identities": [] }' as KeyringEntrySerializationString);
+      const entry = new Ed25519KeyringEntry('{ "id": "ed25519:444555666", "identities": [] }' as KeyringEntrySerializationString);
       expect(entry).toBeTruthy();
+      expect(entry.id).toEqual("ed25519:444555666");
+      expect(entry.label.value).toBeUndefined();
       expect(entry.getIdentities().length).toEqual(0);
     }
 
     {
       // one element
-      const serialized = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}] }' as KeyringEntrySerializationString;
+      const serialized = '{ "id": "ed25519:12345678", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}] }' as KeyringEntrySerializationString;
       const entry = new Ed25519KeyringEntry(serialized);
       expect(entry).toBeTruthy();
+      expect(entry.id).toEqual("ed25519:12345678");
+      expect(entry.label.value).toBeUndefined();
       expect(entry.getIdentities().length).toEqual(1);
       expect(entry.getIdentities()[0].pubkey.algo).toEqual("ed25519");
       expect(entry.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
@@ -194,9 +213,11 @@ describe("Ed25519KeyringEntry", () => {
 
     {
       // two elements
-      const serialized = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "privkey": "ddddeeee"}] }' as KeyringEntrySerializationString;
+      const serialized = '{ "id": "ed25519:87654321", "label": "2 keys", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "privkey": "ddddeeee"}] }' as KeyringEntrySerializationString;
       const entry = new Ed25519KeyringEntry(serialized);
       expect(entry).toBeTruthy();
+      expect(entry.id).toEqual("ed25519:87654321");
+      expect(entry.label.value).toEqual("2 keys");
       expect(entry.getIdentities().length).toEqual(2);
       expect(entry.getIdentities()[0].pubkey.algo).toEqual("ed25519");
       expect(entry.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
@@ -215,8 +236,13 @@ describe("Ed25519KeyringEntry", () => {
     original.setIdentityLabel(identity1, undefined);
     original.setIdentityLabel(identity2, "");
     original.setIdentityLabel(identity3, "foo");
+    original.setLabel("clone me");
 
     const restored = new Ed25519KeyringEntry(original.serialize());
+
+    // label and id match
+    expect(restored.id).toEqual(original.id);
+    expect(restored.label.value).toEqual(original.label.value);
 
     // pubkeys and labels match
     expect(original.getIdentities()).toEqual(restored.getIdentities());
