@@ -15,7 +15,7 @@
   },
   "scripts": {
     "docs": "rm -rf docs && typedoc --options typedoc.js",
-    "lint": "tslint -t verbose --project .",
+    "lint": "tslint -t verbose --project . ${TSLINT_FLAGS}",
     "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
     "test-node": "node jasmine-testrunner.js",
     "test-edge": "yarn pack-web && karma start --single-run --browsers Edge",
