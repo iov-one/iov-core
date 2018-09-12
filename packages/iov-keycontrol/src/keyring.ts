@@ -95,6 +95,11 @@ export class Keyring {
     return this.entries;
   }
 
+  // if you stored the immutible keyring entry reference, you can get the object back here
+  public getEntryById(id: string): KeyringEntry | undefined {
+    return this.entries.filter(e => e.id === id)[0];
+  }
+
   // serialize will produce a representation that can be writen to disk.
   // this will contain secret info, so handle securely!
   public serialize(): KeyringSerializationString {
