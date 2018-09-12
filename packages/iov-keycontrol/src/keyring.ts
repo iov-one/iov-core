@@ -18,6 +18,9 @@ export interface PublicIdentity {
 // LocalIdentity is a local version of a PublicIdentity that contains
 // additional local information
 export interface LocalIdentity extends PublicIdentity {
+  // immutible id string based on pubkey
+  readonly id: string;
+
   // An optional, local label.
   // This is not exposed to other people or other devices. Use BNS registration for that.
   readonly label?: string;
@@ -125,6 +128,11 @@ https://github.com/MetaMask/KeyringController/blob/master/docs/keyring.md
 */
 export interface KeyringEntry {
   readonly label: ValueAndUpdates<string | undefined>;
+
+  // id is a unique identifier based on the content of the keyring
+  // the same implementation with same seed/secret should have same identifier
+  // otherwise, they will be different
+  readonly id: string;
 
   // Sets a label associated with the keyring entry to be displayed in the UI.
   // To clear the label, set it to undefined.
