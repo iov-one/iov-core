@@ -1,6 +1,6 @@
 {
   "name": "@iov/keycontrol",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Keyrings and Keycontroller for safe cryptography",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -32,10 +32,10 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
   },
   "dependencies": {
-    "@iov/bcp-types": "^0.5.1",
-    "@iov/crypto": "^0.5.0",
-    "@iov/encoding": "^0.5.0",
-    "@iov/tendermint-types": "^0.5.1",
+    "@iov/bcp-types": "^0.5.2",
+    "@iov/crypto": "^0.5.2",
+    "@iov/encoding": "^0.5.2",
+    "@iov/tendermint-types": "^0.5.2",
     "@types/node": "^9.6.6",
     "@types/random-js": "^1.0.31",
     "levelup": "^3.1.0",
