@@ -54,6 +54,10 @@ describe("Ed25519KeyringEntry", () => {
     const pubkeySet = new Set([newIdentity1, newIdentity2, newIdentity3, newIdentity4, newIdentity5].map(i => toHex(i.pubkey.data)));
     expect(pubkeySet.size).toEqual(5);
 
+    // all localidentity.ids must be different
+    const idSet = new Set([newIdentity1, newIdentity2, newIdentity3, newIdentity4, newIdentity5].map(i => i.id));
+    expect(idSet.size).toEqual(5);
+
     expect(keyringEntry.getIdentities().length).toEqual(5);
 
     const firstIdentity = keyringEntry.getIdentities()[0];
