@@ -6,11 +6,11 @@ export declare class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     static readonly implementationId: KeyringEntryImplementationIdString;
     static registerWithKeyring(): void;
     private static identityId;
-    private static algorithmFromString;
     readonly label: ValueAndUpdates<string | undefined>;
     readonly canSign: ValueAndUpdates<boolean>;
     readonly implementationId: KeyringEntryImplementationIdString;
     readonly deviceState: ValueAndUpdates<LedgerState>;
+    id: string;
     private readonly deviceTracker;
     private readonly labelProducer;
     private readonly canSignProducer;
@@ -27,4 +27,5 @@ export declare class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     serialize(): KeyringEntrySerializationString;
     clone(): KeyringEntry;
     private simpleAddressIndex;
+    private buildLocalIdentity;
 }

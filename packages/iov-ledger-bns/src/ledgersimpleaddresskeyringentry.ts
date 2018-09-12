@@ -11,7 +11,7 @@ import {
   PublicIdentity,
   ValueAndUpdates,
 } from "@iov/keycontrol";
-import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { getPublicKeyWithIndex, signTransactionWithIndex } from "./app";
 import { connectToFirstLedger } from "./exchange";
@@ -34,8 +34,12 @@ interface IdentitySerialization {
 
 interface LedgerKeyringEntrySerialization {
   readonly label: string | undefined;
+  readonly id: string;
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
+
+// this is the id of any LedgerSimpleAddressKeyringEntry until it connects with the app
+const defaultId = "uninitialized";
 
 export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   public static readonly implementationId = "ledger-simpleaddress" as KeyringEntryImplementationIdString;
@@ -54,21 +58,13 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
   }
 
-  private static algorithmFromString(input: string): Algorithm {
-    switch (input) {
-      case "ed25519":
-        return Algorithm.ED25519;
-      case "secp256k1":
-        return Algorithm.SECP256K1;
-      default:
-        throw new Error("Unknown algorithm string found");
-    }
-  }
-
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign: ValueAndUpdates<boolean>;
   public readonly implementationId = LedgerSimpleAddressKeyringEntry.implementationId;
   public readonly deviceState: ValueAndUpdates<LedgerState>;
+  // id will be set the first time the keyring connects to a given device, "uninitialized" until then
+  // tslint:disable-next-line:readonly-keyword
+  public id: string;
 
   private readonly deviceTracker = new StateTracker();
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
@@ -91,6 +87,8 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
 
     // tslint:disable-next-line:no-let
     let label: string | undefined;
+    // tslint:disable-next-line:no-let
+    let id: string = defaultId;
     const identities: LocalIdentity[] = [];
     const simpleAddressIndices = new Map<string, number>();
 
@@ -99,19 +97,16 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
 
       // label
       label = decodedData.label;
+      id = decodedData.id;
 
       // identities
       for (const record of decodedData.identities) {
-        const identity: LocalIdentity = {
-          pubkey: {
-            algo: LedgerSimpleAddressKeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo),
-            data: Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
-          },
-          label: record.localIdentity.label,
-        };
-        const identityId = LedgerSimpleAddressKeyringEntry.identityId(identity);
+        const identity = this.buildLocalIdentity(
+          Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
+          record.localIdentity.label,
+        );
         identities.push(identity);
-        simpleAddressIndices.set(identityId, record.simpleAddressIndex);
+        simpleAddressIndices.set(identity.id, record.simpleAddressIndex);
       }
     }
 
@@ -119,6 +114,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     this.label = new ValueAndUpdates(this.labelProducer);
     this.identities = identities;
     this.simpleAddressIndices = simpleAddressIndices;
+    this.id = id;
   }
 
   /**
@@ -157,18 +153,10 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     const transport = await connectToFirstLedger();
 
     const pubkey = await getPublicKeyWithIndex(transport, nextIndex);
-    const newIdentity: LocalIdentity = {
-      pubkey: {
-        algo: Algorithm.ED25519,
-        data: pubkey as PublicKeyBytes,
-      },
-      label: undefined,
-    };
+    const newIdentity = this.buildLocalIdentity(pubkey as PublicKeyBytes, undefined);
 
     this.identities.push(newIdentity);
-
-    const newIdentityId = LedgerSimpleAddressKeyringEntry.identityId(newIdentity);
-    this.simpleAddressIndices.set(newIdentityId, nextIndex);
+    this.simpleAddressIndices.set(newIdentity.id, nextIndex);
 
     return newIdentity;
   }
@@ -219,6 +207,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   public serialize(): KeyringEntrySerializationString {
     const out: LedgerKeyringEntrySerialization = {
       label: this.label.value,
+      id: this.id,
       identities: this.identities.map(identity => {
         const simpleAddressIndex = this.simpleAddressIndex(identity);
         return {
@@ -248,5 +237,17 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
       throw new Error("No address index found for identity '" + identityId + "'");
     }
     return out;
+  }
+
+  private buildLocalIdentity(bytes: PublicKeyBytes, label: string | undefined): LocalIdentity {
+    const pubkey: PublicKeyBundle = {
+      algo: Algorithm.ED25519, // hardcoded until we support more curves in the ledger app
+      data: bytes,
+    };
+    return {
+      pubkey,
+      label,
+      id: LedgerSimpleAddressKeyringEntry.identityId({ pubkey }),
+    };
   }
 }
