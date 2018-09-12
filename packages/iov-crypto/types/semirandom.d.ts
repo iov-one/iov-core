@@ -1,6 +1,6 @@
 export declare class SemiRandom {
     private seed;
-    constructor(seed?: Uint8Array);
+    constructor(seed?: string);
     nextBytes(): Uint8Array;
     random(): number;
 }

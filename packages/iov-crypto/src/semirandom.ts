@@ -14,8 +14,8 @@ export class SemiRandom {
   // tslint:disable-next-line:readonly-keyword
   private seed: Uint8Array;
 
-  constructor(seed?: Uint8Array) {
-    this.seed = seed || Encoding.toAscii("not random at all");
+  constructor(seed?: string) {
+    this.seed = Encoding.toAscii(seed || "not random at all");
   }
 
   // nextBytes updates the internal counter and returns 16 bytes of "randomness"
@@ -25,11 +25,13 @@ export class SemiRandom {
     return this.seed.slice(16);
   }
 
-  // returns 32 bits of randomness in a float between 0 and 1
+  // returns 31 bits of randomness in a float between 0 and 1
   public random(): number {
     const bytes = this.nextBytes();
     // tslint:disable-next-line:no-bitwise
-    const num: number = ((bytes[0] << (24 + bytes[1])) << (16 + bytes[2])) << (8 + bytes[3]);
-    return num / 2 ** 32;
+    const num: number = (bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3];
+    // tslint:disable-next-line:no-bitwise
+    const pos = num & 0x7fffffff; // unset top bit, as this seems to be interpretted as 32 bit signed int
+    return pos / 2 ** 32;
   }
 }
