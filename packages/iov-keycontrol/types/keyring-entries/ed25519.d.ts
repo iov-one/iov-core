@@ -3,11 +3,13 @@ import { ChainId, SignatureBytes } from "@iov/tendermint-types";
 import { KeyringEntry, KeyringEntryImplementationIdString, KeyringEntrySerializationString, LocalIdentity, PublicIdentity } from "../keyring";
 import { ValueAndUpdates } from "../valueandupdates";
 export declare class Ed25519KeyringEntry implements KeyringEntry {
+    private static readonly prng;
     private static identityId;
     private static algorithmFromString;
     readonly label: ValueAndUpdates<string | undefined>;
     readonly canSign: ValueAndUpdates<boolean>;
     readonly implementationId: KeyringEntryImplementationIdString;
+    readonly id: string;
     private readonly identities;
     private readonly privkeys;
     private readonly labelProducer;
@@ -20,4 +22,6 @@ export declare class Ed25519KeyringEntry implements KeyringEntry {
     serialize(): KeyringEntrySerializationString;
     clone(): Ed25519KeyringEntry;
     private privateKeyForIdentity;
+    private buildLocalIdentity;
+    private randomId;
 }

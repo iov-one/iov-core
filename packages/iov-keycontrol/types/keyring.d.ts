@@ -9,6 +9,7 @@ export interface PublicIdentity {
     readonly pubkey: PublicKeyBundle;
 }
 export interface LocalIdentity extends PublicIdentity {
+    readonly id: string;
     readonly label?: string;
 }
 export interface KeyringEntrySerialization {
@@ -32,6 +33,7 @@ export declare class Keyring {
 }
 export interface KeyringEntry {
     readonly label: ValueAndUpdates<string | undefined>;
+    readonly id: string;
     readonly setLabel: (label: string | undefined) => void;
     readonly createIdentity: () => Promise<LocalIdentity>;
     readonly setIdentityLabel: (identity: PublicIdentity, label: string | undefined) => void;

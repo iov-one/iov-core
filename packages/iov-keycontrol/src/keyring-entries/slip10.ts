@@ -5,13 +5,14 @@ import {
   Ed25519Keypair,
   EnglishMnemonic,
   Secp256k1,
+  Sha256,
   Slip10,
   Slip10Curve,
   slip10CurveFromString,
   Slip10RawIndex,
 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import {
   KeyringEntry,
@@ -45,19 +46,32 @@ interface Slip10KeyringEntrySerialization {
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
 
+interface Slip10KeyringEntryConstructor {
+  new (data: KeyringEntrySerializationString): Slip10KeyringEntry;
+}
+
 export class Slip10KeyringEntry implements KeyringEntry {
-  public static fromEntropyWithCurve(curve: Slip10Curve, bip39Entropy: Uint8Array): Slip10KeyringEntry {
-    return this.fromMnemonicWithCurve(curve, Bip39.encode(bip39Entropy).asString());
+  public static fromEntropyWithCurve(
+    curve: Slip10Curve,
+    bip39Entropy: Uint8Array,
+    cls?: Slip10KeyringEntryConstructor,
+  ): Slip10KeyringEntry {
+    return this.fromMnemonicWithCurve(curve, Bip39.encode(bip39Entropy).asString(), cls);
   }
 
-  public static fromMnemonicWithCurve(curve: Slip10Curve, mnemonicString: string): Slip10KeyringEntry {
+  // pass in proper class, so we have it available in javascript object, not just in the type definitions.
+  public static fromMnemonicWithCurve(
+    curve: Slip10Curve,
+    mnemonicString: string,
+    cls: Slip10KeyringEntryConstructor = Slip10KeyringEntry,
+  ): Slip10KeyringEntry {
     const data: Slip10KeyringEntrySerialization = {
       secret: mnemonicString,
       curve: curve,
       label: undefined,
       identities: [],
     };
-    return new this(JSON.stringify(data) as KeyringEntrySerializationString);
+    return new cls(JSON.stringify(data) as KeyringEntrySerializationString);
   }
 
   private static identityId(identity: PublicIdentity): string {
@@ -89,6 +103,7 @@ export class Slip10KeyringEntry implements KeyringEntry {
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
   public readonly implementationId = "override me!" as KeyringEntryImplementationIdString;
+  public readonly id: string;
 
   private readonly secret: EnglishMnemonic;
   private readonly curve: Slip10Curve;
@@ -96,7 +111,20 @@ export class Slip10KeyringEntry implements KeyringEntry {
   private readonly privkeyPaths: Map<string, ReadonlyArray<Slip10RawIndex>>;
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
 
-  constructor(data: KeyringEntrySerializationString) {
+  constructor(data: KeyringEntrySerializationString, implementationId?: KeyringEntryImplementationIdString) {
+    /*
+      We need to set implementationId here, as we use it to construct the id below.
+      The default auto-generated constructor earlier looked like this:
+        constructor() {
+          super(...arguments);
+          this.implementationId = "ed25519-simpleaddress";
+        }
+      And we always got "override me!" as the beginning of the id.
+    */
+    if (implementationId) {
+      this.implementationId = implementationId;
+    }
+
     const decodedData: Slip10KeyringEntrySerialization = JSON.parse(data);
 
     // secret
@@ -120,22 +148,21 @@ export class Slip10KeyringEntry implements KeyringEntry {
         );
       }
 
-      const identity: LocalIdentity = {
-        pubkey: {
-          algo: algorithm,
-          data: Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
-        },
-        label: record.localIdentity.label,
-      };
+      const identity = this.buildLocalIdentity(
+        Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
+        record.localIdentity.label,
+      );
       const privkeyPath: ReadonlyArray<Slip10RawIndex> = record.privkeyPath.map(n => new Slip10RawIndex(n));
 
-      const identityId = Slip10KeyringEntry.identityId(identity);
       identities.push(identity);
-      privkeyPaths.set(identityId, privkeyPath);
+      privkeyPaths.set(identity.id, privkeyPath);
     }
 
     this.identities = identities;
     this.privkeyPaths = privkeyPaths;
+
+    // id depends on the secret and the subclass implementation
+    this.id = this.calculateId();
   }
 
   public setLabel(label: string | undefined): void {
@@ -169,16 +196,8 @@ export class Slip10KeyringEntry implements KeyringEntry {
         throw new Error("Unknown curve");
     }
 
-    const newIdentity = {
-      pubkey: {
-        algo: Slip10KeyringEntry.algorithmFromCurve(this.curve),
-        data: pubkeyBytes,
-      },
-      label: undefined,
-    };
-    const newIdentityId = Slip10KeyringEntry.identityId(newIdentity);
-
-    this.privkeyPaths.set(newIdentityId, path);
+    const newIdentity = this.buildLocalIdentity(pubkeyBytes, undefined);
+    this.privkeyPaths.set(newIdentity.id, path);
     this.identities.push(newIdentity);
 
     return newIdentity;
@@ -260,5 +279,30 @@ export class Slip10KeyringEntry implements KeyringEntry {
     const derivationResult = Slip10.derivePath(Slip10Curve.Ed25519, seed, privkeyPath);
     const keypair = await Ed25519.makeKeypair(derivationResult.privkey);
     return keypair;
+  }
+
+  private buildLocalIdentity(bytes: PublicKeyBytes, label: string | undefined): LocalIdentity {
+    const algorithm = Slip10KeyringEntry.algorithmFromCurve(this.curve);
+    const pubkey: PublicKeyBundle = {
+      algo: algorithm,
+      data: bytes,
+    };
+    return {
+      pubkey,
+      label,
+      id: Slip10KeyringEntry.identityId({ pubkey }),
+    };
+  }
+
+  // calculate id returns the tripple sha256 hash of the bip39 entropy as hex-string
+  // prepended by implementationId of the concrete class (to differentiate eg. secp256k1 and ed25519 keyrings)
+  private calculateId(): string {
+    /* tslint:disable:no-let */
+    let data = Bip39.decode(this.secret);
+    for (let i = 0; i < 3; i++) {
+      data = new Sha256(data).digest();
+    }
+    const hex = Encoding.toHex(data);
+    return `${this.implementationId}:${hex}`;
   }
 }

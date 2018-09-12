@@ -1,22 +1,33 @@
 import { Slip10Curve, Slip10RawIndex } from "@iov/crypto";
 
-import { KeyringEntryImplementationIdString, LocalIdentity } from "../keyring";
+import {
+  KeyringEntryImplementationIdString,
+  KeyringEntrySerializationString,
+  LocalIdentity,
+} from "../keyring";
 import { Slip10KeyringEntry } from "./slip10";
 
 export class Ed25519SimpleAddressKeyringEntry extends Slip10KeyringEntry {
   // simple wrappers to cast return type
   public static fromEntropy(bip39Entropy: Uint8Array): Ed25519SimpleAddressKeyringEntry {
-    return super.fromEntropyWithCurve(Slip10Curve.Ed25519, bip39Entropy) as Ed25519SimpleAddressKeyringEntry;
+    return super.fromEntropyWithCurve(
+      Slip10Curve.Ed25519,
+      bip39Entropy,
+      Ed25519SimpleAddressKeyringEntry,
+    ) as Ed25519SimpleAddressKeyringEntry;
   }
 
   public static fromMnemonic(mnemonicString: string): Ed25519SimpleAddressKeyringEntry {
     return super.fromMnemonicWithCurve(
       Slip10Curve.Ed25519,
       mnemonicString,
+      Ed25519SimpleAddressKeyringEntry,
     ) as Ed25519SimpleAddressKeyringEntry;
   }
 
-  public readonly implementationId = "ed25519-simpleaddress" as KeyringEntryImplementationIdString;
+  constructor(data: KeyringEntrySerializationString) {
+    super(data, "ed25519-simpleaddress" as KeyringEntryImplementationIdString);
+  }
 
   public createIdentity(): Promise<LocalIdentity> {
     const nextIndex = super.getIdentities().length;

@@ -1,7 +1,9 @@
+import PseudoRandom from "random-js";
+
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Ed25519, Ed25519Keypair, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import {
   KeyringEntry,
@@ -29,11 +31,14 @@ interface IdentitySerialization {
 }
 
 interface Ed25519KeyringEntrySerialization {
+  readonly id: string;
   readonly label: string | undefined;
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
 
 export class Ed25519KeyringEntry implements KeyringEntry {
+  private static readonly prng: PseudoRandom.Engine = PseudoRandom.engines.mt19937().seed(12345678);
+
   private static identityId(identity: PublicIdentity): string {
     return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
   }
@@ -52,6 +57,11 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
   public readonly implementationId = "ed25519" as KeyringEntryImplementationIdString;
+  // id represents the state of the Keyring...
+  // since there is no seed (like slip10), and no default state, we just create
+  // an arbitrary string upon construction, which is persisted through clone and serialization
+  // this doesn't change as keys are added to the KeyringEntry
+  public readonly id: string;
 
   private readonly identities: LocalIdentity[];
   private readonly privkeys: Map<string, Ed25519Keypair>;
@@ -63,11 +73,15 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     const identities: LocalIdentity[] = [];
     const privkeys = new Map<string, Ed25519Keypair>();
 
+    // tslint:disable-next-line:no-let
+    let id: string = this.randomId();
+
     if (data) {
       const decodedData: Ed25519KeyringEntrySerialization = JSON.parse(data);
 
       // label
       label = decodedData.label;
+      id = decodedData.id;
 
       // identities
       for (const record of decodedData.identities) {
@@ -75,16 +89,15 @@ export class Ed25519KeyringEntry implements KeyringEntry {
           Encoding.fromHex(record.privkey),
           Encoding.fromHex(record.localIdentity.pubkey.data),
         );
-        const identity: LocalIdentity = {
-          pubkey: {
-            algo: Ed25519KeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo),
-            data: keypair.pubkey as PublicKeyBytes,
-          },
-          label: record.localIdentity.label,
-        };
-        const identityId = Ed25519KeyringEntry.identityId(identity);
+        if (Ed25519KeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo) !== Algorithm.ED25519) {
+          throw new Error("This keyring only supports ed25519 private keys");
+        }
+        const identity = this.buildLocalIdentity(
+          keypair.pubkey as PublicKeyBytes,
+          record.localIdentity.label,
+        );
         identities.push(identity);
-        privkeys.set(identityId, keypair);
+        privkeys.set(identity.id, keypair);
       }
     }
 
@@ -92,6 +105,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     this.privkeys = privkeys;
     this.labelProducer = new DefaultValueProducer<string | undefined>(label);
     this.label = new ValueAndUpdates(this.labelProducer);
+    this.id = id;
   }
 
   public setLabel(label: string | undefined): void {
@@ -102,15 +116,8 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     const seed = await Random.getBytes(32);
     const keypair = await Ed25519.makeKeypair(seed);
 
-    const newIdentity: LocalIdentity = {
-      pubkey: {
-        algo: Algorithm.ED25519,
-        data: keypair.pubkey as PublicKeyBytes,
-      },
-      label: undefined,
-    };
-    const identityId = Ed25519KeyringEntry.identityId(newIdentity);
-    this.privkeys.set(identityId, keypair);
+    const newIdentity = this.buildLocalIdentity(keypair.pubkey as PublicKeyBytes, undefined);
+    this.privkeys.set(newIdentity.id, keypair);
     this.identities.push(newIdentity);
     return newIdentity;
   }
@@ -146,6 +153,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
   public serialize(): KeyringEntrySerializationString {
     const out: Ed25519KeyringEntrySerialization = {
+      id: this.id,
       label: this.label.value,
       identities: this.identities.map(identity => {
         const keypair = this.privateKeyForIdentity(identity);
@@ -176,5 +184,23 @@ export class Ed25519KeyringEntry implements KeyringEntry {
       throw new Error("No private key found for identity '" + identityId + "'");
     }
     return privkey;
+  }
+
+  private buildLocalIdentity(bytes: PublicKeyBytes, label: string | undefined): LocalIdentity {
+    const pubkey: PublicKeyBundle = {
+      algo: Algorithm.ED25519,
+      data: bytes,
+    };
+    return {
+      pubkey,
+      label,
+      id: Ed25519KeyringEntry.identityId({ pubkey }),
+    };
+  }
+
+  private randomId(): string {
+    // this can be pseudo-random, just used for internal book-keeping
+    const code = PseudoRandom.string()(Ed25519KeyringEntry.prng, 10);
+    return "ed25519:" + code;
   }
 }

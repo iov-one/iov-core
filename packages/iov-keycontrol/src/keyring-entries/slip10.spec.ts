@@ -34,18 +34,21 @@ describe("Slip10KeyringEntry", () => {
     const entry = new Slip10KeyringEntry(emptyEntry);
     expect(entry).toBeTruthy();
     expect(entry.getIdentities().length).toEqual(0);
+    expect(entry.id).toBeTruthy();
   });
 
   it("can be created from entropy", () => {
     const entry = Slip10KeyringEntry.fromEntropyWithCurve(Slip10Curve.Ed25519, Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"));
     expect(entry).toBeTruthy();
     expect(entry.getIdentities().length).toEqual(0);
+    expect(entry.id).toBeTruthy();
   });
 
   it("can be created from mnemonic", () => {
     const entry = Slip10KeyringEntry.fromMnemonicWithCurve(Slip10Curve.Ed25519, "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard");
     expect(entry).toBeTruthy();
     expect(entry.getIdentities().length).toEqual(0);
+    expect(entry.id).toBeTruthy();
   });
 
   it("can have a label", () => {
@@ -71,6 +74,13 @@ describe("Slip10KeyringEntry", () => {
       const newIdentity1 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
       const newIdentity2 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(1)]);
       const newIdentity3 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(1), Slip10RawIndex.hardened(0)]);
+
+      // all pubkeys must be different
+      const pubkeySet = new Set([newIdentity1, newIdentity2, newIdentity3].map(i => Encoding.toHex(i.pubkey.data)));
+      expect(pubkeySet.size).toEqual(3);
+      // all localidentity.ids must be different
+      const idSet = new Set([newIdentity1, newIdentity2, newIdentity3].map(i => i.id));
+      expect(idSet.size).toEqual(3);
 
       expect(newIdentity1.pubkey.data).not.toEqual(newIdentity2.pubkey.data);
       expect(newIdentity2.pubkey.data).not.toEqual(newIdentity3.pubkey.data);
@@ -100,9 +110,12 @@ describe("Slip10KeyringEntry", () => {
       const newIdentity2 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(1)]);
       const newIdentity3 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(1), Slip10RawIndex.hardened(0)]);
 
-      expect(newIdentity1.pubkey.data).not.toEqual(newIdentity2.pubkey.data);
-      expect(newIdentity2.pubkey.data).not.toEqual(newIdentity3.pubkey.data);
-      expect(newIdentity3.pubkey.data).not.toEqual(newIdentity1.pubkey.data);
+      // all pubkeys must be different
+      const pubkeySet = new Set([newIdentity1, newIdentity2, newIdentity3].map(i => Encoding.toHex(i.pubkey.data)));
+      expect(pubkeySet.size).toEqual(3);
+      // all localidentity.ids must be different
+      const idSet = new Set([newIdentity1, newIdentity2, newIdentity3].map(i => i.id));
+      expect(idSet.size).toEqual(3);
 
       const identities = entry.getIdentities();
       expect(identities.length).toEqual(3);
@@ -159,6 +172,7 @@ describe("Slip10KeyringEntry", () => {
   it("can set, change and unset an identity label", async () => {
     const entry = new Slip10KeyringEntry(emptyEntry);
     const newIdentity = await entry.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
+    const originalId = newIdentity.id;
     expect(entry.getIdentities()[0].label).toBeUndefined();
 
     entry.setIdentityLabel(newIdentity, "foo");
@@ -169,6 +183,8 @@ describe("Slip10KeyringEntry", () => {
 
     entry.setIdentityLabel(newIdentity, undefined);
     expect(entry.getIdentities()[0].label).toBeUndefined();
+    const finalId = entry.getIdentities()[0].id;
+    expect(finalId).toEqual(originalId);
   });
 
   it("can sign", async () => {
@@ -222,12 +238,15 @@ describe("Slip10KeyringEntry", () => {
   it("can serialize multiple identities", async () => {
     const entry = new Slip10KeyringEntry(emptyEntry);
     entry.setLabel("entry with 3 identities");
+    const originalId = entry.id;
+    expect(originalId).toBeTruthy();
     const identity1 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(0)]);
     const identity2 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(1)]);
     const identity3 = await entry.createIdentityWithPath([Slip10RawIndex.hardened(2), Slip10RawIndex.hardened(0)]);
     entry.setIdentityLabel(identity1, undefined);
     entry.setIdentityLabel(identity2, "");
     entry.setIdentityLabel(identity3, "foo");
+    expect(entry.id).toEqual(originalId);
 
     const serialized = entry.serialize();
     expect(serialized).toBeTruthy();
@@ -264,6 +283,9 @@ describe("Slip10KeyringEntry", () => {
   });
 
   it("can deserialize", () => {
+    // tslint:disable-next-line:no-let
+    let id: string = "";
+
     {
       // empty
       const entry = new Slip10KeyringEntry(`
@@ -275,6 +297,8 @@ describe("Slip10KeyringEntry", () => {
         ` as KeyringEntrySerializationString);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(0);
+      expect(entry.id).toBeTruthy();
+      id = entry.id;
     }
 
     {
@@ -299,6 +323,7 @@ describe("Slip10KeyringEntry", () => {
         ` as KeyringEntrySerializationString;
       const entry = new Slip10KeyringEntry(serialized);
       expect(entry).toBeTruthy();
+      expect(entry.id).toEqual(id);
       expect(entry.getIdentities().length).toEqual(1);
       expect(entry.getIdentities()[0].pubkey.algo).toEqual("ed25519");
       expect(entry.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
@@ -336,6 +361,7 @@ describe("Slip10KeyringEntry", () => {
         }` as KeyringEntrySerializationString;
       const entry = new Slip10KeyringEntry(serialized);
       expect(entry).toBeTruthy();
+      expect(entry.id).toEqual(id);
       expect(entry.getIdentities().length).toEqual(2);
       expect(entry.getIdentities()[0].pubkey.algo).toEqual("ed25519");
       expect(entry.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
@@ -356,6 +382,8 @@ describe("Slip10KeyringEntry", () => {
     original.setIdentityLabel(identity3, "foo");
 
     const restored = new Slip10KeyringEntry(original.serialize());
+    expect(restored.id).toEqual(original.id);
+    expect(restored.label.value).toEqual(original.label.value);
 
     // pubkeys and labels match
     expect(original.getIdentities()).toEqual(restored.getIdentities());
@@ -373,5 +401,10 @@ describe("Slip10KeyringEntry", () => {
     const clone = original.clone();
     expect(clone).not.toBe(original);
     expect(clone.serialize()).toEqual(original.serialize());
+
+    // should have same characteristics
+    expect(clone.id).toEqual(original.id);
+    expect(clone.label.value).toEqual(original.label.value);
+    expect(clone.getIdentities().length).toEqual(original.getIdentities().length);
   });
 });
