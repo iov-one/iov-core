@@ -14,6 +14,11 @@ automatically, and call:
 const client = await Client.connect('wss://bov.wolfnet.iov.one');
 ```
 
+Supported tendermint versions:
+* v0.20.x
+* v0.21.x
+(help welcome to extend this list)
+
 ## Code Overview
 
 The main entry point is the [Client](https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-rpc/classes/_client_.client.html).

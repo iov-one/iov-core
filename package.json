@@ -23,7 +23,7 @@
     "test": "lerna run test",
     "build": "lerna run build",
     "docs": "lerna run docs",
-    "release": "lerna publish",
+    "release": "lerna run build && lerna publish",
     "clean": "rm -rf ./packages/*/docs/"
   },
   "devDependencies": {

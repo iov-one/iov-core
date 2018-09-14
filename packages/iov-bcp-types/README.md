@@ -2,6 +2,9 @@
 
 [![npm version](https://img.shields.io/npm/v/@iov/bcp-types.svg)](https://www.npmjs.com/package/@iov/bcp-types)
 
+@iov/bcp-types holds all types needed to properly implement the generic BCP interfaces.
+It includes lower-level [@iov/tendermint-types](../iov-tendermint-types) for things such as TransactionId, etc.
+
 ## API Documentation
 
 [https://iov-one.github.io/iov-core-docs/latest/iov-bcp-types/](https://iov-one.github.io/iov-core-docs/latest/iov-bcp-types/)
