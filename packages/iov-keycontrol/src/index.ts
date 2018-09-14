@@ -2,9 +2,11 @@ export { Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
 export {
   Keyring,
   KeyringEntry,
+  KeyringEntryId,
   KeyringEntryImplementationIdString,
   KeyringEntrySerializationString,
   LocalIdentity,
+  LocalIdentityId,
   PublicIdentity,
 } from "./keyring";
 export { UserProfile } from "./userprofile";
