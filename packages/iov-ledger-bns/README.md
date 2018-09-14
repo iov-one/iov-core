@@ -6,6 +6,9 @@ This package provides an adaptor to use the bns ledger app as a keyring entry.
 The app is still in dev mode and not available in the ledger store, so
 this is really for cutting edge devs now.
 
+It should also demonstrate how to implement an additional KeyringEntry outside of @iov/keycontrol
+that can be dynamically loaded by any app in initialization.
+
 ## Getting started
 
 Create a LedgerSimpleAddressKeyringEntry for signing with a Ledger. All

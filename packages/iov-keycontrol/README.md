@@ -6,6 +6,10 @@ Keycontrol manages all private keys and keeps them safe.
 
 ![KeyBase Diagram](https://raw.githubusercontent.com/iov-one/iov-core/master/docs/KeyBaseDiagram.png)
 
+Please stick to using the [public API](https://iov-one.github.io/iov-core-docs/latest/iov-keycontrol/classes/userprofile.html)
+even if you are importing from javascript, where `private` is not enforces. There are plans to wrap
+objects in closures to provide run-time protection of secrets like private keys and mneumonic seeds.
+
 Simplest usage:
 
 ```

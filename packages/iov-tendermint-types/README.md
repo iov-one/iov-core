@@ -2,6 +2,10 @@
 
 [![npm version](https://img.shields.io/npm/v/@iov/tendermint-types.svg)](https://www.npmjs.com/package/@iov/tendermint-types)
 
+@iov/tendermint-types is a set of types needed to define the @iov/tendermint-rpc, and likely many other
+blockchain rpc adapters (so we may need to change it's name). It is relatively low-level, sticking with
+the types on the wire, while [@iov/bcp-types](../iov-bcp-types) deals with higher-level constructs for the bcp api.
+
 ## API Documentation
 
 [https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-types/](https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-types/)
