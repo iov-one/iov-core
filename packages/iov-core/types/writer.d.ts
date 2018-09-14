@@ -1,6 +1,6 @@
 import { Address, BcpTransactionResponse, IovReader, Nonce, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
 import { Client as BnsClient } from "@iov/bns";
-import { UserProfile } from "@iov/keycontrol";
+import { KeyringEntryId, UserProfile } from "@iov/keycontrol";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 export declare class IovWriter {
     readonly profile: UserProfile;
@@ -11,7 +11,7 @@ export declare class IovWriter {
     addChain(connector: ChainConnector): Promise<void>;
     keyToAddress(chainId: ChainId, key: PublicKeyBundle): Address;
     getNonce(chainId: ChainId, addr: Address): Promise<Nonce>;
-    signAndCommit(tx: UnsignedTransaction, keyring: number | string): Promise<BcpTransactionResponse>;
+    signAndCommit(tx: UnsignedTransaction, keyring: number | KeyringEntryId): Promise<BcpTransactionResponse>;
     private getChain;
 }
 export interface ChainConnector {

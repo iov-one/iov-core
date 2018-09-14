@@ -1,5 +1,5 @@
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
-import { KeyringEntry, KeyringEntryImplementationIdString, KeyringEntrySerializationString, LocalIdentity, PublicIdentity, ValueAndUpdates } from "@iov/keycontrol";
+import { KeyringEntry, KeyringEntryId, KeyringEntryImplementationIdString, KeyringEntrySerializationString, LocalIdentity, PublicIdentity, ValueAndUpdates } from "@iov/keycontrol";
 import { ChainId, SignatureBytes } from "@iov/tendermint-types";
 import { LedgerState } from "./statetracker";
 export declare class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
@@ -10,7 +10,7 @@ export declare class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     readonly canSign: ValueAndUpdates<boolean>;
     readonly implementationId: KeyringEntryImplementationIdString;
     readonly deviceState: ValueAndUpdates<LedgerState>;
-    id: string;
+    id: KeyringEntryId;
     private readonly deviceTracker;
     private readonly labelProducer;
     private readonly canSignProducer;

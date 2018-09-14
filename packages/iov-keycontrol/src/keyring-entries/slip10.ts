@@ -16,9 +16,11 @@ import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } f
 
 import {
   KeyringEntry,
+  KeyringEntryId,
   KeyringEntryImplementationIdString,
   KeyringEntrySerializationString,
   LocalIdentity,
+  LocalIdentityId,
   PublicIdentity,
 } from "../keyring";
 import { prehash } from "../prehashing";
@@ -74,8 +76,9 @@ export class Slip10KeyringEntry implements KeyringEntry {
     return new cls(JSON.stringify(data) as KeyringEntrySerializationString);
   }
 
-  private static identityId(identity: PublicIdentity): string {
-    return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
+  private static identityId(identity: PublicIdentity): LocalIdentityId {
+    const id = identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
+    return id as LocalIdentityId;
   }
 
   private static algorithmFromCurve(curve: Slip10Curve): Algorithm {
@@ -103,7 +106,7 @@ export class Slip10KeyringEntry implements KeyringEntry {
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
   public readonly implementationId = "override me!" as KeyringEntryImplementationIdString;
-  public readonly id: string;
+  public readonly id: KeyringEntryId;
 
   private readonly secret: EnglishMnemonic;
   private readonly curve: Slip10Curve;
@@ -296,13 +299,13 @@ export class Slip10KeyringEntry implements KeyringEntry {
 
   // calculate id returns the tripple sha256 hash of the bip39 entropy as hex-string
   // prepended by implementationId of the concrete class (to differentiate eg. secp256k1 and ed25519 keyrings)
-  private calculateId(): string {
+  private calculateId(): KeyringEntryId {
     /* tslint:disable:no-let */
     let data = Bip39.decode(this.secret);
     for (let i = 0; i < 3; i++) {
       data = new Sha256(data).digest();
     }
     const hex = Encoding.toHex(data);
-    return `${this.implementationId}:${hex}`;
+    return `${this.implementationId}:${hex}` as KeyringEntryId;
   }
 }

@@ -7,9 +7,11 @@ import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } f
 
 import {
   KeyringEntry,
+  KeyringEntryId,
   KeyringEntryImplementationIdString,
   KeyringEntrySerializationString,
   LocalIdentity,
+  LocalIdentityId,
   PublicIdentity,
 } from "../keyring";
 import { prehash } from "../prehashing";
@@ -39,8 +41,9 @@ interface Ed25519KeyringEntrySerialization {
 export class Ed25519KeyringEntry implements KeyringEntry {
   private static readonly prng: PseudoRandom.Engine = PseudoRandom.engines.mt19937().seed(12345678);
 
-  private static identityId(identity: PublicIdentity): string {
-    return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
+  private static identityId(identity: PublicIdentity): LocalIdentityId {
+    const id = identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
+    return id as LocalIdentityId;
   }
 
   private static algorithmFromString(input: string): Algorithm {
@@ -61,7 +64,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   // since there is no seed (like slip10), and no default state, we just create
   // an arbitrary string upon construction, which is persisted through clone and serialization
   // this doesn't change as keys are added to the KeyringEntry
-  public readonly id: string;
+  public readonly id: KeyringEntryId;
 
   private readonly identities: LocalIdentity[];
   private readonly privkeys: Map<string, Ed25519Keypair>;
@@ -74,14 +77,14 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     const privkeys = new Map<string, Ed25519Keypair>();
 
     // tslint:disable-next-line:no-let
-    let id: string = this.randomId();
+    let id = this.randomId();
 
     if (data) {
       const decodedData: Ed25519KeyringEntrySerialization = JSON.parse(data);
 
       // label
       label = decodedData.label;
-      id = decodedData.id;
+      id = decodedData.id as KeyringEntryId;
 
       // identities
       for (const record of decodedData.identities) {
@@ -198,9 +201,9 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     };
   }
 
-  private randomId(): string {
+  private randomId(): KeyringEntryId {
     // this can be pseudo-random, just used for internal book-keeping
     const code = PseudoRandom.string()(Ed25519KeyringEntry.prng, 10);
-    return "ed25519:" + code;
+    return `ed25519:${code}` as KeyringEntryId;
   }
 }

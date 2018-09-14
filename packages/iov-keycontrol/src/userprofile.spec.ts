@@ -6,7 +6,7 @@ import { ReadonlyDate } from "readonly-date";
 import { Address, Nonce, PrehashType, SendTx, SignableBytes, SignedTransaction, SigningJob, TokenTicker, TransactionIdBytes, TransactionKind, TxCodec } from "@iov/bcp-types";
 import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
-import { Keyring } from "./keyring";
+import { Keyring, KeyringEntryId } from "./keyring";
 import { Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
 import { UserProfile } from "./userprofile";
 
@@ -182,7 +182,7 @@ describe("UserProfile", () => {
     profile.addEntry(entry1);
 
     expect(() => profile.getIdentities(2)).toThrowError(/Entry of index 2 does not exist in keyring/);
-    expect(() => profile.getIdentities("balloon")).toThrowError(/Entry of id balloon does not exist in keyring/);
+    expect(() => profile.getIdentities("balloon" as KeyringEntryId)).toThrowError(/Entry of id balloon does not exist in keyring/);
   });
 
   it("added entry can not be manipulated from outside", async () => {

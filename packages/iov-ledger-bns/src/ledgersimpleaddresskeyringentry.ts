@@ -5,9 +5,11 @@ import {
   DefaultValueProducer,
   Keyring,
   KeyringEntry,
+  KeyringEntryId,
   KeyringEntryImplementationIdString,
   KeyringEntrySerializationString,
   LocalIdentity,
+  LocalIdentityId,
   PublicIdentity,
   ValueAndUpdates,
 } from "@iov/keycontrol";
@@ -39,7 +41,7 @@ interface LedgerKeyringEntrySerialization {
 }
 
 // this is the id of any LedgerSimpleAddressKeyringEntry until it connects with the app
-const defaultId = "uninitialized";
+const defaultId = "uninitialized" as KeyringEntryId;
 
 export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   public static readonly implementationId = "ledger-simpleaddress" as KeyringEntryImplementationIdString;
@@ -54,8 +56,9 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     });
   }
 
-  private static identityId(identity: PublicIdentity): string {
-    return identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
+  private static identityId(identity: PublicIdentity): LocalIdentityId {
+    const id = identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
+    return id as LocalIdentityId;
   }
 
   public readonly label: ValueAndUpdates<string | undefined>;
@@ -64,7 +67,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   public readonly deviceState: ValueAndUpdates<LedgerState>;
   // id will be set the first time the keyring connects to a given device, "uninitialized" until then
   // tslint:disable-next-line:readonly-keyword
-  public id: string;
+  public id: KeyringEntryId;
 
   private readonly deviceTracker = new StateTracker();
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
@@ -88,7 +91,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     // tslint:disable-next-line:no-let
     let label: string | undefined;
     // tslint:disable-next-line:no-let
-    let id: string = defaultId;
+    let id = defaultId;
     const identities: LocalIdentity[] = [];
     const simpleAddressIndices = new Map<string, number>();
 
@@ -97,7 +100,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
 
       // label
       label = decodedData.label;
-      id = decodedData.id;
+      id = decodedData.id as KeyringEntryId;
 
       // identities
       for (const record of decodedData.identities) {

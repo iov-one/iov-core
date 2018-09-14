@@ -15,7 +15,14 @@ import {
 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
-import { Keyring, KeyringEntry, KeyringSerializationString, LocalIdentity, PublicIdentity } from "./keyring";
+import {
+  Keyring,
+  KeyringEntry,
+  KeyringEntryId,
+  KeyringSerializationString,
+  LocalIdentity,
+  PublicIdentity,
+} from "./keyring";
 import { DatabaseUtils } from "./utils";
 import { DefaultValueProducer, ValueAndUpdates } from "./valueandupdates";
 
@@ -82,7 +89,7 @@ export class UserProfile {
     return entries.map(e => e.label.value) as ReadonlyArray<string | undefined>;
   }
 
-  private static ids(entries: ReadonlyArray<KeyringEntry>): ReadonlyArray<string> {
+  private static ids(entries: ReadonlyArray<KeyringEntry>): ReadonlyArray<KeyringEntryId> {
     return entries.map(e => e.id);
   }
 
@@ -90,7 +97,7 @@ export class UserProfile {
   public readonly locked: ValueAndUpdates<boolean>;
   public readonly entriesCount: ValueAndUpdates<number>;
   public readonly entryLabels: ValueAndUpdates<ReadonlyArray<string | undefined>>;
-  public readonly entryIds: ValueAndUpdates<ReadonlyArray<string>>;
+  public readonly entryIds: ValueAndUpdates<ReadonlyArray<KeyringEntryId>>;
 
   // Never pass the keyring reference to ensure the keyring is not retained after lock()
   // tslint:disable-next-line:readonly-keyword
@@ -98,7 +105,7 @@ export class UserProfile {
   private readonly lockedProducer: DefaultValueProducer<boolean>;
   private readonly entriesCountProducer: DefaultValueProducer<number>;
   private readonly entryLabelsProducer: DefaultValueProducer<ReadonlyArray<string | undefined>>;
-  private readonly entryIdsProducer: DefaultValueProducer<ReadonlyArray<string>>;
+  private readonly entryIdsProducer: DefaultValueProducer<ReadonlyArray<KeyringEntryId>>;
 
   // Stores a copy of keyring
   constructor(options?: UserProfileOptions) {
@@ -173,7 +180,7 @@ export class UserProfile {
   }
 
   // sets the label of the n-th keyring entry of the primary keyring
-  public setEntryLabel(id: number | string, label: string | undefined): void {
+  public setEntryLabel(id: number | KeyringEntryId, label: string | undefined): void {
     const entry = this.entryInPrimaryKeyring(id);
     entry.setLabel(label);
 
@@ -184,26 +191,30 @@ export class UserProfile {
   }
 
   // creates an identitiy in the n-th keyring entry of the primary keyring
-  public async createIdentity(id: number | string): Promise<LocalIdentity> {
+  public async createIdentity(id: number | KeyringEntryId): Promise<LocalIdentity> {
     const entry = this.entryInPrimaryKeyring(id);
     return entry.createIdentity();
   }
 
   // assigns a new label to one of the identities
   // in the n-th keyring entry of the primary keyring
-  public setIdentityLabel(id: number | string, identity: PublicIdentity, label: string | undefined): void {
+  public setIdentityLabel(
+    id: number | KeyringEntryId,
+    identity: PublicIdentity,
+    label: string | undefined,
+  ): void {
     const entry = this.entryInPrimaryKeyring(id);
     entry.setIdentityLabel(identity, label);
   }
 
   // get identities of the n-th keyring entry of the primary keyring
-  public getIdentities(id: number | string): ReadonlyArray<LocalIdentity> {
+  public getIdentities(id: number | KeyringEntryId): ReadonlyArray<LocalIdentity> {
     const entry = this.entryInPrimaryKeyring(id);
     return entry.getIdentities();
   }
 
   public async signTransaction(
-    id: number | string,
+    id: number | KeyringEntryId,
     identity: PublicIdentity,
     transaction: UnsignedTransaction,
     codec: TxCodec,
@@ -226,7 +237,7 @@ export class UserProfile {
   }
 
   public async appendSignature(
-    id: number | string,
+    id: number | KeyringEntryId,
     identity: PublicIdentity,
     originalTransaction: SignedTransaction,
     codec: TxCodec,
@@ -252,7 +263,7 @@ export class UserProfile {
     };
   }
 
-  private entryInPrimaryKeyring(id: number | string): KeyringEntry {
+  private entryInPrimaryKeyring(id: number | KeyringEntryId): KeyringEntry {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }

@@ -1,6 +1,6 @@
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { ChainId, SignatureBytes } from "@iov/tendermint-types";
-import { KeyringEntry, KeyringEntryImplementationIdString, KeyringEntrySerializationString, LocalIdentity, PublicIdentity } from "../keyring";
+import { KeyringEntry, KeyringEntryId, KeyringEntryImplementationIdString, KeyringEntrySerializationString, LocalIdentity, PublicIdentity } from "../keyring";
 import { ValueAndUpdates } from "../valueandupdates";
 export declare class Ed25519KeyringEntry implements KeyringEntry {
     private static readonly prng;
@@ -9,7 +9,7 @@ export declare class Ed25519KeyringEntry implements KeyringEntry {
     readonly label: ValueAndUpdates<string | undefined>;
     readonly canSign: ValueAndUpdates<boolean>;
     readonly implementationId: KeyringEntryImplementationIdString;
-    readonly id: string;
+    readonly id: KeyringEntryId;
     private readonly identities;
     private readonly privkeys;
     private readonly labelProducer;

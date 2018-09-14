@@ -10,6 +10,9 @@ export type KeyringEntrySerializationString = string & As<"keyring-entry-seriali
 export type KeyringSerializationString = string & As<"keyring-serialization">;
 export type KeyringEntryImplementationIdString = string & As<"keyring-entry-implementation-id">;
 
+export type LocalIdentityId = string & As<"local-identity-id">;
+export type KeyringEntryId = string & As<"keyring-entry-id">;
+
 // PublicIdentity is a public key we can identify with on a blockchain
 export interface PublicIdentity {
   readonly pubkey: PublicKeyBundle;
@@ -19,7 +22,7 @@ export interface PublicIdentity {
 // additional local information
 export interface LocalIdentity extends PublicIdentity {
   // immutible id string based on pubkey
-  readonly id: string;
+  readonly id: LocalIdentityId;
 
   // An optional, local label.
   // This is not exposed to other people or other devices. Use BNS registration for that.
@@ -142,7 +145,7 @@ export interface KeyringEntry {
   // id is a unique identifier based on the content of the keyring
   // the same implementation with same seed/secret should have same identifier
   // otherwise, they will be different
-  readonly id: string;
+  readonly id: KeyringEntryId;
 
   // Sets a label associated with the keyring entry to be displayed in the UI.
   // To clear the label, set it to undefined.

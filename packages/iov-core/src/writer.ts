@@ -9,7 +9,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp-types";
 import { bnsCodec, Client as BnsClient } from "@iov/bns";
-import { PublicIdentity, UserProfile } from "@iov/keycontrol";
+import { KeyringEntryId, PublicIdentity, UserProfile } from "@iov/keycontrol";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 
 /*
@@ -63,7 +63,7 @@ export class IovWriter {
   // It finds the nonce, signs properly, and posts the tx to the blockchain.
   public async signAndCommit(
     tx: UnsignedTransaction,
-    keyring: number | string,
+    keyring: number | KeyringEntryId,
   ): Promise<BcpTransactionResponse> {
     const chainId = tx.chainId;
     const { client, codec } = this.getChain(chainId);
