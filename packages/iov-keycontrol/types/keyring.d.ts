@@ -5,11 +5,13 @@ import { ValueAndUpdates } from "./valueandupdates";
 export declare type KeyringEntrySerializationString = string & As<"keyring-entry-serialization">;
 export declare type KeyringSerializationString = string & As<"keyring-serialization">;
 export declare type KeyringEntryImplementationIdString = string & As<"keyring-entry-implementation-id">;
+export declare type LocalIdentityId = string & As<"local-identity-id">;
+export declare type KeyringEntryId = string & As<"keyring-entry-id">;
 export interface PublicIdentity {
     readonly pubkey: PublicKeyBundle;
 }
 export interface LocalIdentity extends PublicIdentity {
-    readonly id: string;
+    readonly id: LocalIdentityId;
     readonly label?: string;
 }
 export interface KeyringEntrySerialization {
@@ -35,7 +37,7 @@ export declare class Keyring {
 }
 export interface KeyringEntry {
     readonly label: ValueAndUpdates<string | undefined>;
-    readonly id: string;
+    readonly id: KeyringEntryId;
     readonly setLabel: (label: string | undefined) => void;
     readonly createIdentity: () => Promise<LocalIdentity>;
     readonly setIdentityLabel: (identity: PublicIdentity, label: string | undefined) => void;
