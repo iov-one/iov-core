@@ -56,7 +56,7 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
   fold_end
 fi
 
-fold_start "test-cli-installation"
+fold_start "test-local-cli-installation"
 (
   WORKSPACE=$(pwd)
   DEMO_PROJECT_DIR=$(mktemp -d "${TMPDIR:-/tmp}/iov-cli-installation.XXXXXXXXX")
@@ -64,6 +64,18 @@ fold_start "test-cli-installation"
   yarn init -y
   yarn add "$WORKSPACE/packages/iov-cli" --dev
   "$(yarn bin)/iov-cli" --selftest
+)
+fold_end
+
+fold_start "test-global-cli-installation"
+(
+  WORKSPACE=$(pwd)
+  # Go to some other place where dependencies are not around
+  OTHER_PLACE=$(mktemp -d "${TMPDIR:-/tmp}/some-lost-place.XXXXXXXXX")
+  cd "$OTHER_PLACE"
+  yarn global add "$WORKSPACE/packages/iov-cli"
+  /usr/bin/which iov-cli
+  iov-cli --selftest
 )
 fold_end
 
