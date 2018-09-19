@@ -1,12 +1,13 @@
-// import Buffer from "buffer";
-import hasher from "ripemd160";
-
+import { Ripemd160 } from "@iov/crypto";
 import { PostableBytes, TxId } from "@iov/tendermint-types";
 
 // a bit ugly as this expects buffer, while the rest of code uint8array
 export const hashTx = (tx: PostableBytes): TxId => {
-  const hash = new hasher().update(Buffer.from(prefix(tx))).update(Buffer.from(tx));
-  return Uint8Array.from(hash.digest()) as TxId;
+  const hash = new Ripemd160()
+    .update(prefix(tx))
+    .update(tx)
+    .digest();
+  return hash as TxId;
 };
 
 // prefix will create a varint prefix for any number < 2^14
