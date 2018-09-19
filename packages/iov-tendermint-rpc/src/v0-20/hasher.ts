@@ -1,7 +1,6 @@
 import { Ripemd160 } from "@iov/crypto";
 import { PostableBytes, TxId } from "@iov/tendermint-types";
 
-// a bit ugly as this expects buffer, while the rest of code uint8array
 export function hashTx(tx: PostableBytes): TxId {
   const hash = new Ripemd160()
     .update(prefix(tx))
