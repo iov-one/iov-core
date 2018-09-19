@@ -21,12 +21,20 @@ export class TsRepl {
   private readonly initialTypeScript: string;
   private context: Context | undefined;
 
-  constructor(tsconfigPath: string, initialTypeScript: string, debuggingEnabled: boolean = false) {
+  constructor(
+    tsconfigPath: string,
+    initialTypeScript: string,
+    debuggingEnabled: boolean = false,
+    baseDir: string | undefined = undefined, // required when the current working directory is not the installation path
+  ) {
     this.typeScriptService = register({
       project: tsconfigPath,
       ignoreDiagnostics: [
         "1308", // TS1308: 'await' expression is only allowed within an async function.
       ],
+      compilerOptions: {
+        baseUrl: baseDir,
+      },
     });
     this.debuggingEnabled = debuggingEnabled;
     this.resetToZero = this.appendTypeScriptInput("");
@@ -63,6 +71,20 @@ export class TsRepl {
     if (!repl.context.exports) {
       repl.context.exports = repl.context.module.exports;
     }
+
+    // REPL context is created with a default set of module resolution paths,
+    // like for example
+    // [ '/home/me/repl/node_modules',
+    //   '/home/me/node_modules',
+    //   '/home/node_modules',
+    //   '/node_modules',
+    //   '/home/me/.node_modules',
+    //   '/home/me/.node_libraries',
+    //   '/usr/lib/nodejs' ]
+    // However, this does not include the installation path of @iov/cli because
+    // REPL does not inherit module paths from the current process. Thus we override
+    // the repl paths with the current process' paths
+    repl.context.module.paths = module.paths;
 
     this.context = createContext(repl.context);
 

@@ -117,7 +117,9 @@ export const main = (originalArgs: string[]): void => {
     `;
   }
 
-  new TsRepl(join(__dirname, "..", "tsconfig_repl.json"), init, !!args.debug).start().catch(error => {
+  const tsconfigPath = join(__dirname, "..", "tsconfig_repl.json");
+  const tsBaseDir = join(__dirname, "..", "node_modules");
+  new TsRepl(tsconfigPath, init, !!args.debug, tsBaseDir).start().catch(error => {
     console.error(error);
     process.exit(1);
   });
