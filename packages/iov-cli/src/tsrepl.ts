@@ -15,7 +15,7 @@ export class TsRepl {
   private readonly typeScriptService: Register;
   private readonly debuggingEnabled: boolean;
   private readonly evalFilename = `[eval].ts`;
-  private readonly evalPath = join(process.cwd(), this.evalFilename);
+  private readonly evalPath: string;
   private readonly evalData = { input: "", output: "" };
   private readonly resetToZero: () => void; // Bookmark to empty TS input
   private readonly initialTypeScript: string;
@@ -25,20 +25,18 @@ export class TsRepl {
     tsconfigPath: string,
     initialTypeScript: string,
     debuggingEnabled: boolean = false,
-    baseDir: string | undefined = undefined, // required when the current working directory is not the installation path
+    installationDir: string | undefined = undefined, // required when the current working directory is not the installation path
   ) {
     this.typeScriptService = register({
       project: tsconfigPath,
       ignoreDiagnostics: [
         "1308", // TS1308: 'await' expression is only allowed within an async function.
       ],
-      compilerOptions: {
-        baseUrl: baseDir,
-      },
     });
     this.debuggingEnabled = debuggingEnabled;
     this.resetToZero = this.appendTypeScriptInput("");
     this.initialTypeScript = initialTypeScript;
+    this.evalPath = join(installationDir || process.cwd(), this.evalFilename);
   }
 
   public async start(): Promise<REPLServer> {
