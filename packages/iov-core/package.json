@@ -1,6 +1,6 @@
 {
   "name": "@iov/core",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Central entry point into iov core monorepo, pulling together all modules",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -33,9 +33,9 @@
   },
   "dependencies": {
     "@iov/bcp-types": "^0.5.3",
-    "@iov/bns": "^0.5.3",
+    "@iov/bns": "^0.5.4",
     "@iov/encoding": "^0.5.3",
-    "@iov/keycontrol": "^0.5.3",
+    "@iov/keycontrol": "^0.5.4",
     "@iov/tendermint-types": "^0.5.3",
     "@types/long": "^4.0.0",
     "long": "^4.0.0"
