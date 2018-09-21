@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.4
+
+* @iov/cli: fix global installation support
+
+## 0.5.3
+
+## 0.5.2
+
+## 0.5.1
+
 ## 0.5.0
 
 * @iov/bns: Add support of listening to change events, watching accounts, txs
