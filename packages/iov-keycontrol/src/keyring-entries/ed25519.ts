@@ -39,7 +39,7 @@ interface Ed25519KeyringEntrySerialization {
 }
 
 export class Ed25519KeyringEntry implements KeyringEntry {
-  private static readonly prng: PseudoRandom.Engine = PseudoRandom.engines.mt19937().seed(12345678);
+  private static readonly prng: PseudoRandom.Engine = PseudoRandom.engines.mt19937().autoSeed();
 
   private static identityId(identity: PublicIdentity): LocalIdentityId {
     const id = identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
