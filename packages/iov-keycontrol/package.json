@@ -36,6 +36,8 @@
     "@iov/crypto": "^0.5.3",
     "@iov/encoding": "^0.5.3",
     "@iov/tendermint-types": "^0.5.3",
+    "@types/abstract-leveldown": "^5.0.1",
+    "@types/levelup": "^3.1.0",
     "@types/node": "^9.6.6",
     "@types/random-js": "^1.0.31",
     "levelup": "^3.1.0",
