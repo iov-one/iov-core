@@ -41,6 +41,12 @@ interface Ed25519KeyringEntrySerialization {
 export class Ed25519KeyringEntry implements KeyringEntry {
   private static readonly idsPrng: PseudoRandom.Engine = PseudoRandom.engines.mt19937().autoSeed();
 
+  private static generateId(): KeyringEntryId {
+    // this can be pseudo-random, just used for internal book-keeping
+    const code = PseudoRandom.string()(Ed25519KeyringEntry.idsPrng, 16);
+    return code as KeyringEntryId;
+  }
+
   private static identityId(identity: PublicIdentity): LocalIdentityId {
     const id = identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
     return id as LocalIdentityId;
@@ -102,7 +108,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
         privkeys.set(identity.id, keypair);
       }
     } else {
-      id = this.randomId();
+      id = Ed25519KeyringEntry.generateId();
     }
 
     this.identities = identities;
@@ -200,11 +206,5 @@ export class Ed25519KeyringEntry implements KeyringEntry {
       label,
       id: Ed25519KeyringEntry.identityId({ pubkey }),
     };
-  }
-
-  private randomId(): KeyringEntryId {
-    // this can be pseudo-random, just used for internal book-keeping
-    const code = PseudoRandom.string()(Ed25519KeyringEntry.idsPrng, 10);
-    return `ed25519:${code}` as KeyringEntryId;
   }
 }

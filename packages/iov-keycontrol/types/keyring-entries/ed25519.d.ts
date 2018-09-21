@@ -4,6 +4,7 @@ import { KeyringEntry, KeyringEntryId, KeyringEntryImplementationIdString, Keyri
 import { ValueAndUpdates } from "../valueandupdates";
 export declare class Ed25519KeyringEntry implements KeyringEntry {
     private static readonly idsPrng;
+    private static generateId;
     private static identityId;
     private static algorithmFromString;
     readonly label: ValueAndUpdates<string | undefined>;
@@ -23,5 +24,4 @@ export declare class Ed25519KeyringEntry implements KeyringEntry {
     clone(): Ed25519KeyringEntry;
     private privateKeyForIdentity;
     private buildLocalIdentity;
-    private randomId;
 }
