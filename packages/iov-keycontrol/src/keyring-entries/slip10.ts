@@ -84,7 +84,7 @@ export class Slip10KeyringEntry implements KeyringEntry {
   private static generateId(): KeyringEntryId {
     // this can be pseudo-random, just used for internal book-keeping
     const code = PseudoRandom.string()(Slip10KeyringEntry.idsPrng, 16);
-    return `${code}` as KeyringEntryId;
+    return code as KeyringEntryId;
   }
 
   private static identityId(identity: PublicIdentity): LocalIdentityId {
