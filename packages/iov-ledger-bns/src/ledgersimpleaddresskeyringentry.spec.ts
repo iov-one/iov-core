@@ -231,17 +231,17 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     expect(decodedJson.identities.length).toEqual(3);
     expect(decodedJson.identities[0].localIdentity).toBeTruthy();
     expect(decodedJson.identities[0].localIdentity.pubkey.algo).toEqual("ed25519");
-    expect(decodedJson.identities[0].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
+    expect(decodedJson.identities[0].localIdentity.pubkey.data).toMatch(/^[0-9a-f]{64}$/);
     expect(decodedJson.identities[0].localIdentity.label).toBeUndefined();
     expect(decodedJson.identities[0].simpleAddressIndex).toEqual(0);
     expect(decodedJson.identities[1].localIdentity).toBeTruthy();
     expect(decodedJson.identities[1].localIdentity.pubkey.algo).toEqual("ed25519");
-    expect(decodedJson.identities[1].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
+    expect(decodedJson.identities[1].localIdentity.pubkey.data).toMatch(/^[0-9a-f]{64}$/);
     expect(decodedJson.identities[1].localIdentity.label).toEqual("");
     expect(decodedJson.identities[1].simpleAddressIndex).toEqual(1);
     expect(decodedJson.identities[2].localIdentity).toBeTruthy();
     expect(decodedJson.identities[2].localIdentity.pubkey.algo).toEqual("ed25519");
-    expect(decodedJson.identities[2].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
+    expect(decodedJson.identities[2].localIdentity.pubkey.data).toMatch(/^[0-9a-f]{64}$/);
     expect(decodedJson.identities[2].localIdentity.label).toEqual("foo");
     expect(decodedJson.identities[2].simpleAddressIndex).toEqual(2);
 
