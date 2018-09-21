@@ -72,12 +72,11 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
   constructor(data?: KeyringEntrySerializationString) {
     // tslint:disable-next-line:no-let
+    let id: KeyringEntryId;
+    // tslint:disable-next-line:no-let
     let label: string | undefined;
     const identities: LocalIdentity[] = [];
     const privkeys = new Map<string, Ed25519Keypair>();
-
-    // tslint:disable-next-line:no-let
-    let id = this.randomId();
 
     if (data) {
       const decodedData: Ed25519KeyringEntrySerialization = JSON.parse(data);
@@ -102,6 +101,8 @@ export class Ed25519KeyringEntry implements KeyringEntry {
         identities.push(identity);
         privkeys.set(identity.id, keypair);
       }
+    } else {
+      id = this.randomId();
     }
 
     this.identities = identities;
