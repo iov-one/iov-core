@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.6.0
+
+* @iov/core: expose Ed25519KeyringEntry
+* @iov/keycontrol: refactor entry ID generation
+
+Breaking changes
+
+* Due to updates in the Keyring serialization, UserProfiles stored with
+  earlier versions of IOV-Core cannot be opened with 0.6.0. To migrate to
+  the new version, extract the secret data using an older version and
+  create a new UserProfile in 0.6.0.
+
 ## 0.5.4
 
 * @iov/cli: fix global installation support
