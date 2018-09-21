@@ -208,7 +208,7 @@ describe("UserProfile", () => {
 
     await profile.storeIn(db, defaultEncryptionPassword);
     expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
-    expect(await db.get("keyring", { asBuffer: false })).toMatch(/^[0-9a-f]+$/);
+    expect(await db.get("keyring", { asBuffer: false })).toMatch(/^[-_/=a-zA-Z0-9+]+$/);
 
     await db.close();
   });
