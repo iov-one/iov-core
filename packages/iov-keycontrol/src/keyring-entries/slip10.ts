@@ -125,20 +125,7 @@ export class Slip10KeyringEntry implements KeyringEntry {
   private readonly privkeyPaths: Map<string, ReadonlyArray<Slip10RawIndex>>;
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
 
-  constructor(data: KeyringEntrySerializationString, implementationId?: KeyringEntryImplementationIdString) {
-    /*
-      We need to set implementationId here, as we use it to construct the id below.
-      The default auto-generated constructor earlier looked like this:
-        constructor() {
-          super(...arguments);
-          this.implementationId = "ed25519-simpleaddress";
-        }
-      And we always got "override me!" as the beginning of the id.
-    */
-    if (implementationId) {
-      this.implementationId = implementationId;
-    }
-
+  constructor(data: KeyringEntrySerializationString) {
     const decodedData: Slip10KeyringEntrySerialization = JSON.parse(data);
 
     // id
@@ -177,8 +164,6 @@ export class Slip10KeyringEntry implements KeyringEntry {
 
     this.identities = identities;
     this.privkeyPaths = privkeyPaths;
-
-    // id depends on the secret and the subclass implementation
   }
 
   public setLabel(label: string | undefined): void {

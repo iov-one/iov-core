@@ -23,7 +23,7 @@ export declare class Slip10KeyringEntry implements KeyringEntry {
     private readonly identities;
     private readonly privkeyPaths;
     private readonly labelProducer;
-    constructor(data: KeyringEntrySerializationString, implementationId?: KeyringEntryImplementationIdString);
+    constructor(data: KeyringEntrySerializationString);
     setLabel(label: string | undefined): void;
     createIdentity(): Promise<LocalIdentity>;
     createIdentityWithPath(path: ReadonlyArray<Slip10RawIndex>): Promise<LocalIdentity>;
