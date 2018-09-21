@@ -1,3 +1,5 @@
+import PseudoRandom from "random-js";
+
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import {
   Bip39,
@@ -5,7 +7,6 @@ import {
   Ed25519Keypair,
   EnglishMnemonic,
   Secp256k1,
-  Sha256,
   Slip10,
   Slip10Curve,
   slip10CurveFromString,
@@ -42,6 +43,7 @@ interface IdentitySerialization {
 }
 
 interface Slip10KeyringEntrySerialization {
+  readonly id: string;
   readonly secret: string;
   readonly curve: string;
   readonly label: string | undefined;
@@ -68,12 +70,21 @@ export class Slip10KeyringEntry implements KeyringEntry {
     cls: Slip10KeyringEntryConstructor = Slip10KeyringEntry,
   ): Slip10KeyringEntry {
     const data: Slip10KeyringEntrySerialization = {
+      id: Slip10KeyringEntry.generateId(),
       secret: mnemonicString,
       curve: curve,
       label: undefined,
       identities: [],
     };
     return new cls(JSON.stringify(data) as KeyringEntrySerializationString);
+  }
+
+  private static readonly idsPrng: PseudoRandom.Engine = PseudoRandom.engines.mt19937().autoSeed();
+
+  private static generateId(): KeyringEntryId {
+    // this can be pseudo-random, just used for internal book-keeping
+    const code = PseudoRandom.string()(Slip10KeyringEntry.idsPrng, 16);
+    return `${code}` as KeyringEntryId;
   }
 
   private static identityId(identity: PublicIdentity): LocalIdentityId {
@@ -130,6 +141,9 @@ export class Slip10KeyringEntry implements KeyringEntry {
 
     const decodedData: Slip10KeyringEntrySerialization = JSON.parse(data);
 
+    // id
+    this.id = decodedData.id as KeyringEntryId;
+
     // secret
     this.secret = new EnglishMnemonic(decodedData.secret);
 
@@ -165,7 +179,6 @@ export class Slip10KeyringEntry implements KeyringEntry {
     this.privkeyPaths = privkeyPaths;
 
     // id depends on the secret and the subclass implementation
-    this.id = this.calculateId();
   }
 
   public setLabel(label: string | undefined): void {
@@ -253,6 +266,7 @@ export class Slip10KeyringEntry implements KeyringEntry {
     );
 
     const out: Slip10KeyringEntrySerialization = {
+      id: this.id,
       secret: this.secret.asString(),
       curve: this.curve,
       label: this.label.value,
@@ -295,17 +309,5 @@ export class Slip10KeyringEntry implements KeyringEntry {
       label,
       id: Slip10KeyringEntry.identityId({ pubkey }),
     };
-  }
-
-  // calculate id returns the tripple sha256 hash of the bip39 entropy as hex-string
-  // prepended by implementationId of the concrete class (to differentiate eg. secp256k1 and ed25519 keyrings)
-  private calculateId(): KeyringEntryId {
-    /* tslint:disable:no-let */
-    let data = Bip39.decode(this.secret);
-    for (let i = 0; i < 3; i++) {
-      data = new Sha256(data).digest();
-    }
-    const hex = Encoding.toHex(data);
-    return `${this.implementationId}:${hex}` as KeyringEntryId;
   }
 }

@@ -9,6 +9,8 @@ interface Slip10KeyringEntryConstructor {
 export declare class Slip10KeyringEntry implements KeyringEntry {
     static fromEntropyWithCurve(curve: Slip10Curve, bip39Entropy: Uint8Array, cls?: Slip10KeyringEntryConstructor): Slip10KeyringEntry;
     static fromMnemonicWithCurve(curve: Slip10Curve, mnemonicString: string, cls?: Slip10KeyringEntryConstructor): Slip10KeyringEntry;
+    private static readonly idsPrng;
+    private static generateId;
     private static identityId;
     private static algorithmFromCurve;
     private static algorithmFromString;
@@ -33,6 +35,5 @@ export declare class Slip10KeyringEntry implements KeyringEntry {
     private privkeyPathForIdentity;
     private privkeyForIdentity;
     private buildLocalIdentity;
-    private calculateId;
 }
 export {};

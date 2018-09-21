@@ -16,6 +16,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 30 * 1000;
 describe("Slip10KeyringEntry", () => {
   const emptyEntry = `
     {
+      "id": "aX-_oHf",
       "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
       "curve": "ed25519 seed",
       "identities": []
@@ -24,6 +25,7 @@ describe("Slip10KeyringEntry", () => {
 
   const emptySecp256k1Entry = `
     {
+      "id": "2h3487-_h",
       "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
       "curve": "Bitcoin seed",
       "identities": []
@@ -283,13 +285,11 @@ describe("Slip10KeyringEntry", () => {
   });
 
   it("can deserialize", () => {
-    // tslint:disable-next-line:no-let
-    let id: string = "";
-
     {
       // empty
       const entry = new Slip10KeyringEntry(`
         {
+          "id": "eMpTy",
           "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
           "curve": "ed25519 seed",
           "identities": []
@@ -297,14 +297,14 @@ describe("Slip10KeyringEntry", () => {
         ` as KeyringEntrySerializationString);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(0);
-      expect(entry.id).toBeTruthy();
-      id = entry.id;
+      expect(entry.id).toEqual("eMpTy");
     }
 
     {
       // one element
       const serialized = `
         {
+          "id": "1elemenT",
           "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
           "curve": "ed25519 seed",
           "identities": [
@@ -323,7 +323,7 @@ describe("Slip10KeyringEntry", () => {
         ` as KeyringEntrySerializationString;
       const entry = new Slip10KeyringEntry(serialized);
       expect(entry).toBeTruthy();
-      expect(entry.id).toEqual(id);
+      expect(entry.id).toEqual("1elemenT");
       expect(entry.getIdentities().length).toEqual(1);
       expect(entry.getIdentities()[0].pubkey.algo).toEqual("ed25519");
       expect(entry.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
@@ -334,6 +334,7 @@ describe("Slip10KeyringEntry", () => {
       // two elements
       const serialized = `
         {
+          "id": "2elemeNT",
           "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
           "curve": "ed25519 seed",
           "identities": [
@@ -361,7 +362,7 @@ describe("Slip10KeyringEntry", () => {
         }` as KeyringEntrySerializationString;
       const entry = new Slip10KeyringEntry(serialized);
       expect(entry).toBeTruthy();
-      expect(entry.id).toEqual(id);
+      expect(entry.id).toEqual("2elemeNT");
       expect(entry.getIdentities().length).toEqual(2);
       expect(entry.getIdentities()[0].pubkey.algo).toEqual("ed25519");
       expect(entry.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
@@ -406,5 +407,11 @@ describe("Slip10KeyringEntry", () => {
     expect(clone.id).toEqual(original.id);
     expect(clone.label.value).toEqual(original.label.value);
     expect(clone.getIdentities().length).toEqual(original.getIdentities().length);
+  });
+
+  it("generates different IDs for the same mnemonic", () => {
+    const entry1 = Slip10KeyringEntry.fromMnemonicWithCurve(Slip10Curve.Ed25519, "accident situate kitten crunch frog lobster horror hen wife gold extra athlete");
+    const entry2 = Slip10KeyringEntry.fromMnemonicWithCurve(Slip10Curve.Ed25519, "accident situate kitten crunch frog lobster horror hen wife gold extra athlete");
+    expect(entry1.id).not.toEqual(entry2.id);
   });
 });
