@@ -88,9 +88,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     });
     this.deviceState = this.deviceTracker.state;
 
-    // tslint:disable-next-line:no-let
     let label: string | undefined;
-    // tslint:disable-next-line:no-let
     let id = defaultId;
     const identities: LocalIdentity[] = [];
     const simpleAddressIndices = new Map<string, number>();

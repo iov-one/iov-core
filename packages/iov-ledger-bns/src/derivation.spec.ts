@@ -7,7 +7,6 @@ import { pendingWithoutSeededLedger, skipSeededTests } from "./common.spec";
 import { connectToFirstLedger } from "./exchange";
 
 describe("Check key derivation", () => {
-  // tslint:disable-next-line:no-let
   let transport: TransportNodeHid | undefined;
 
   // try 12 word seed phrase to enter in ledger for these tests

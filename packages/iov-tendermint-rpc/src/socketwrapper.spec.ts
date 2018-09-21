@@ -34,7 +34,6 @@ describe("SocketWrapper", () => {
   it("can connect and disconnect", done => {
     pendingWithoutTendermint();
 
-    // tslint:disable-next-line:no-let
     let opened = 0;
 
     const socket = new SocketWrapper(

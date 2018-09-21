@@ -59,7 +59,6 @@ export class Slip10 {
     seed: Uint8Array,
     path: ReadonlyArray<Slip10RawIndex>,
   ): Slip10Result {
-    // tslint:disable-next-line:no-let
     let result = this.master(curve, seed);
     for (const rawIndex of path) {
       result = this.child(curve, result.privkey, result.chainCode, rawIndex);
@@ -88,7 +87,6 @@ export class Slip10 {
     parentChainCode: Uint8Array,
     rawIndex: Slip10RawIndex,
   ): Slip10Result {
-    // tslint:disable-next-line:no-let
     let i: Uint8Array;
     if (rawIndex.isHardened()) {
       const payload = new Uint8Array([0x00, ...parentPrivkey, ...rawIndex.toBytesBigEndian()]);

@@ -6,7 +6,7 @@ export class Uint32 {
       throw new Error("Invalid input length. Expected 4 bytes.");
     }
 
-    // tslint:disable-next-line:prefer-for-of no-let
+    // tslint:disable-next-line:prefer-for-of
     for (let i = 0; i < bytes.length; ++i) {
       if (bytes[i] > 255 || bytes[i] < 0 || Number.isNaN(bytes[i])) {
         throw new Error("Invalid value in byte. Found: " + bytes[i]);

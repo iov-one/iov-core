@@ -12,7 +12,6 @@ import { pendingWithoutInteractiveLedger, pendingWithoutLedger, skipInteractiveT
 import { connectToFirstLedger } from "./exchange";
 
 describe("Query ledger app", () => {
-  // tslint:disable-next-line:no-let
   let transport: TransportNodeHid | undefined;
 
   beforeAll(async () => {
@@ -68,7 +67,6 @@ describe("Query ledger app", () => {
 });
 
 describe("Sign with ledger app", () => {
-  // tslint:disable-next-line:no-let
   let transport: TransportNodeHid | undefined;
 
   beforeAll(async () => {
