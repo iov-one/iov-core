@@ -117,5 +117,10 @@ export const main = (originalArgs: string[]): void => {
     `;
   }
 
-  new TsRepl(join(__dirname, "..", "tsconfig_repl.json"), init, !!args.debug).start();
+  const tsconfigPath = join(__dirname, "..", "tsconfig_repl.json");
+  const installationDir = join(__dirname, "..");
+  new TsRepl(tsconfigPath, init, !!args.debug, installationDir).start().catch(error => {
+    console.error(error);
+    process.exit(1);
+  });
 };
