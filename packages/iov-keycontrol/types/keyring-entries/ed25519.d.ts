@@ -3,7 +3,7 @@ import { ChainId, SignatureBytes } from "@iov/tendermint-types";
 import { KeyringEntry, KeyringEntryId, KeyringEntryImplementationIdString, KeyringEntrySerializationString, LocalIdentity, PublicIdentity } from "../keyring";
 import { ValueAndUpdates } from "../valueandupdates";
 export declare class Ed25519KeyringEntry implements KeyringEntry {
-    private static readonly prng;
+    private static readonly idsPrng;
     private static identityId;
     private static algorithmFromString;
     readonly label: ValueAndUpdates<string | undefined>;
