@@ -47,7 +47,6 @@ export const main = (originalArgs: string[]): void => {
   console.log(colors.yellow("    - bnsConnector"));
   console.log(colors.yellow("    - bnsFromOrToTag"));
   console.log(colors.yellow("    - ChainId"));
-  console.log(colors.yellow("    - Ed25519KeyringEntry"));
   console.log(colors.yellow("    - Ed25519SimpleAddressKeyringEntry"));
   console.log(colors.yellow("    - Keyring"));
   console.log(colors.yellow("    - KeyringEntry"));
@@ -87,7 +86,6 @@ export const main = (originalArgs: string[]): void => {
       bnsConnector,
       bnsFromOrToTag,
       ChainId,
-      Ed25519KeyringEntry,
       Ed25519SimpleAddressKeyringEntry,
       Keyring,
       KeyringEntry,
