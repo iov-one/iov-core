@@ -77,9 +77,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
 
   constructor(data?: KeyringEntrySerializationString) {
-    // tslint:disable-next-line:no-let
     let id: KeyringEntryId;
-    // tslint:disable-next-line:no-let
     let label: string | undefined;
     const identities: LocalIdentity[] = [];
     const privkeys = new Map<string, Ed25519Keypair>();

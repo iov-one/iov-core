@@ -3,7 +3,6 @@ import { ReadonlyDate } from "readonly-date";
 
 export class Encoding {
   public static toHex(data: Uint8Array): string {
-    // tslint:disable-next-line:no-let
     let out: string = "";
     for (const byte of data) {
       out += ("0" + byte.toString(16)).slice(-2);
@@ -18,7 +17,6 @@ export class Encoding {
 
     // tslint:disable-next-line:readonly-array
     const listOfInts: number[] = [];
-    // tslint:disable-next-line:no-let
     for (let i = 0; i < hexstring.length; i += 2) {
       const hexByteAsString = hexstring.substr(i, 2);
       if (!hexByteAsString.match(/[0-9a-f]{2}/i)) {
@@ -118,11 +116,8 @@ export class Encoding {
     // fractional seconds match either undefined or a string like ".1", ".123456789"
     const milliSeconds = matches[7] ? Math.floor(+matches[7] * 1000) : 0;
 
-    // tslint:disable-next-line:no-let
     let tzOffsetSign: number;
-    // tslint:disable-next-line:no-let
     let tzOffsetHours: number;
-    // tslint:disable-next-line:no-let
     let tzOffsetMinutes: number;
 
     // if timezone is undefined, it must be Z or nothing (otherwise the group would have captured).

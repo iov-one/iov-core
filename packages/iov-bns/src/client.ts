@@ -41,7 +41,6 @@ const queryByAddress = (query: BcpAccountQuery): query is BcpAddressQuery =>
 // onChange returns a filter than only passes when the
 // value is different than the last one
 function onChange<T>(): (val: T) => boolean {
-  // tslint:disable-next-line:no-let
   let oldVal: T | undefined;
   return (val: T): boolean => {
     if (val === oldVal) {

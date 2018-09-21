@@ -17,7 +17,6 @@ export class Hmac<H extends HashFunction> implements HashFunction {
 
     this.hash = data => new hashFunctionConstructor().update(data).digest();
 
-    // tslint:disable-next-line:no-let
     let key = originalKey;
     if (key.length > blockSize) {
       key = this.hash(key);

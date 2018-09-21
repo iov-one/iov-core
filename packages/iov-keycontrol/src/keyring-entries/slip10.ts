@@ -178,7 +178,6 @@ export class Slip10KeyringEntry implements KeyringEntry {
     const seed = await Bip39.mnemonicToSeed(this.secret);
     const derivationResult = Slip10.derivePath(this.curve, seed, path);
 
-    // tslint:disable-next-line:no-let
     let pubkeyBytes: PublicKeyBytes;
     switch (this.curve) {
       case Slip10Curve.Ed25519:

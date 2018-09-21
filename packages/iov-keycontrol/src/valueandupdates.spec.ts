@@ -126,7 +126,6 @@ describe("ValueAndUpdates", () => {
     const producer = new DefaultValueProducer(11);
     const vau = new ValueAndUpdates(producer);
 
-    // tslint:disable-next-line:no-let
     let eventsCount = 0;
     const emittedValues = new Array<number>();
 

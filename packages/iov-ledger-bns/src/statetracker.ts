@@ -12,7 +12,6 @@ export enum LedgerState {
 
 export class StateTracker {
   private static async checkConectedAndAppOpen(): Promise<LedgerState> {
-    // tslint:disable-next-line:no-let
     let transport: TransportNodeHid | undefined;
     try {
       transport = await connectToFirstLedger();

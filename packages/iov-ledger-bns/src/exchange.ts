@@ -53,7 +53,6 @@ export async function connectToFirstLedger(): Promise<TransportNodeHid> {
   }
 
   const devicePath = ledger.path;
-  // tslint:disable-next-line:no-let
   let lastTransportOpenError: any;
 
   const transport = await retry(async (): Promise<TransportNodeHid | undefined> => {
@@ -111,7 +110,6 @@ export async function sendChunks(
   cmd: number,
   payload: Uint8Array,
 ): Promise<Uint8Array> {
-  // tslint:disable-next-line:no-let
   let offset = 0;
   // loop over the non-end chunks
   while (offset + 255 < payload.length) {
