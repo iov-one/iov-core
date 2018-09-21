@@ -39,7 +39,13 @@ interface Ed25519KeyringEntrySerialization {
 }
 
 export class Ed25519KeyringEntry implements KeyringEntry {
-  private static readonly prng: PseudoRandom.Engine = PseudoRandom.engines.mt19937().seed(12345678);
+  private static readonly idsPrng: PseudoRandom.Engine = PseudoRandom.engines.mt19937().autoSeed();
+
+  private static generateId(): KeyringEntryId {
+    // this can be pseudo-random, just used for internal book-keeping
+    const code = PseudoRandom.string()(Ed25519KeyringEntry.idsPrng, 16);
+    return code as KeyringEntryId;
+  }
 
   private static identityId(identity: PublicIdentity): LocalIdentityId {
     const id = identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
@@ -72,12 +78,11 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
   constructor(data?: KeyringEntrySerializationString) {
     // tslint:disable-next-line:no-let
+    let id: KeyringEntryId;
+    // tslint:disable-next-line:no-let
     let label: string | undefined;
     const identities: LocalIdentity[] = [];
     const privkeys = new Map<string, Ed25519Keypair>();
-
-    // tslint:disable-next-line:no-let
-    let id = this.randomId();
 
     if (data) {
       const decodedData: Ed25519KeyringEntrySerialization = JSON.parse(data);
@@ -102,6 +107,8 @@ export class Ed25519KeyringEntry implements KeyringEntry {
         identities.push(identity);
         privkeys.set(identity.id, keypair);
       }
+    } else {
+      id = Ed25519KeyringEntry.generateId();
     }
 
     this.identities = identities;
@@ -199,11 +206,5 @@ export class Ed25519KeyringEntry implements KeyringEntry {
       label,
       id: Ed25519KeyringEntry.identityId({ pubkey }),
     };
-  }
-
-  private randomId(): KeyringEntryId {
-    // this can be pseudo-random, just used for internal book-keeping
-    const code = PseudoRandom.string()(Ed25519KeyringEntry.prng, 10);
-    return `ed25519:${code}` as KeyringEntryId;
   }
 }

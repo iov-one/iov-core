@@ -1,10 +1,6 @@
 import { Slip10Curve, Slip10RawIndex } from "@iov/crypto";
 
-import {
-  KeyringEntryImplementationIdString,
-  KeyringEntrySerializationString,
-  LocalIdentity,
-} from "../keyring";
+import { KeyringEntryImplementationIdString, LocalIdentity } from "../keyring";
 import { Slip10KeyringEntry } from "./slip10";
 
 export class Ed25519SimpleAddressKeyringEntry extends Slip10KeyringEntry {
@@ -25,9 +21,7 @@ export class Ed25519SimpleAddressKeyringEntry extends Slip10KeyringEntry {
     ) as Ed25519SimpleAddressKeyringEntry;
   }
 
-  constructor(data: KeyringEntrySerializationString) {
-    super(data, "ed25519-simpleaddress" as KeyringEntryImplementationIdString);
-  }
+  public readonly implementationId = "ed25519-simpleaddress" as KeyringEntryImplementationIdString;
 
   public createIdentity(): Promise<LocalIdentity> {
     const nextIndex = super.getIdentities().length;

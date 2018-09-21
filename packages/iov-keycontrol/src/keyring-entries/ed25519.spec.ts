@@ -89,7 +89,7 @@ describe("Ed25519KeyringEntry", () => {
   it("generates unique ids", async () => {
     const keyringEntry = new Ed25519KeyringEntry();
     const originalId = keyringEntry.id;
-    expect(originalId).toBeTruthy();
+    expect(originalId).toMatch(/^[-_:a-zA-Z0-9]+$/);
 
     const id1 = await keyringEntry.createIdentity();
     expect(id1).toBeTruthy();
