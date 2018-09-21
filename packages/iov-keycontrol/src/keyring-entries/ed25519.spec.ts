@@ -169,19 +169,19 @@ describe("Ed25519KeyringEntry", () => {
     expect(decoded.identities.length).toEqual(3);
     expect(decoded.identities[0].localIdentity).toBeTruthy();
     expect(decoded.identities[0].localIdentity.pubkey.algo).toEqual("ed25519");
-    expect(decoded.identities[0].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
+    expect(decoded.identities[0].localIdentity.pubkey.data).toMatch(/^[0-9a-f]{64}$/);
     expect(decoded.identities[0].localIdentity.label).toBeUndefined();
-    expect(decoded.identities[0].privkey).toMatch(/[0-9a-f]{64}/);
+    expect(decoded.identities[0].privkey).toMatch(/^[0-9a-f]{64}$/);
     expect(decoded.identities[1].localIdentity).toBeTruthy();
     expect(decoded.identities[1].localIdentity.pubkey.algo).toEqual("ed25519");
-    expect(decoded.identities[1].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
+    expect(decoded.identities[1].localIdentity.pubkey.data).toMatch(/^[0-9a-f]{64}$/);
     expect(decoded.identities[1].localIdentity.label).toEqual("");
-    expect(decoded.identities[1].privkey).toMatch(/[0-9a-f]{64}/);
+    expect(decoded.identities[1].privkey).toMatch(/^[0-9a-f]{64}$/);
     expect(decoded.identities[2].localIdentity).toBeTruthy();
     expect(decoded.identities[2].localIdentity.pubkey.algo).toEqual("ed25519");
-    expect(decoded.identities[2].localIdentity.pubkey.data).toMatch(/[0-9a-f]{64}/);
+    expect(decoded.identities[2].localIdentity.pubkey.data).toMatch(/^[0-9a-f]{64}$/);
     expect(decoded.identities[2].localIdentity.label).toEqual("foo");
-    expect(decoded.identities[2].privkey).toMatch(/[0-9a-f]{64}/);
+    expect(decoded.identities[2].privkey).toMatch(/^[0-9a-f]{64}$/);
 
     // keys are different
     expect(decoded.identities[0].localIdentity.pubkey.data).not.toEqual(decoded.identities[1].localIdentity.pubkey.data);

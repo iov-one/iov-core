@@ -181,7 +181,7 @@ describe("Client", () => {
         expect(stream).toBeTruthy();
         const subscription = stream.subscribe({
           next: event => {
-            expect(event.chainId).toMatch(/[-a-z0-9]{3,30}/);
+            expect(event.chainId).toMatch(/^[-a-z0-9]{3,30}$/);
             expect(event.height).toBeGreaterThan(0);
             expect(event.time.getTime()).toBeGreaterThan(testStart);
             expect(event.numTxs).toEqual(0);
@@ -235,7 +235,7 @@ describe("Client", () => {
         expect(stream).toBeTruthy();
         const subscription = stream.subscribe({
           next: event => {
-            expect(event.header.chainId).toMatch(/[-a-z0-9]{3,30}/);
+            expect(event.header.chainId).toMatch(/^[-a-z0-9]{3,30}$/);
             expect(event.header.height).toBeGreaterThan(0);
             expect(event.header.time.getTime()).toBeGreaterThan(testStart);
             expect(event.header.numTxs).toEqual(1);
