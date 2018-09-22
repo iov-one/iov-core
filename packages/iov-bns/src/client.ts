@@ -113,6 +113,7 @@ export class Client implements IovReader {
     }
 
     const message = txresp.deliverTx ? txresp.deliverTx.log : txresp.checkTx.log;
+    const result = txresp.deliverTx && txresp.deliverTx.data;
     return {
       metadata: {
         height: txresp.height,
@@ -121,6 +122,7 @@ export class Client implements IovReader {
       data: {
         txid: txresp.hash,
         message: message || "",
+        result: result || new Uint8Array([]),
       },
     };
   }
