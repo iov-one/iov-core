@@ -132,8 +132,8 @@ export interface IovReader {
 export interface ConfirmedTransaction extends SignedTransaction {
   readonly height: number; // the block it was written to
   readonly txid: TxId; // a unique identifier (hash of the data)
-  // TODO: TxData (result, code, tags...)
+  // Data from executing tx (result, code, tags...)
+  readonly result: Uint8Array;
+  readonly log: string;
   // readonly tags: ReadonlyArray<Tag>;
-  // readonly result?: Uint8Array;
-  // readonly log?: string;
 }
