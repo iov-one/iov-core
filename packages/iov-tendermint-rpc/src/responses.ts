@@ -127,10 +127,7 @@ export interface TxEvent {
   readonly hash: TxId;
   readonly height: number;
   readonly index: number;
-  readonly result: {
-    readonly tags: ReadonlyArray<Tag>;
-    readonly fee: any;
-  };
+  readonly result: TxData;
 }
 
 export const getTxEventHeight = (event: TxEvent): number => event.height;
@@ -149,6 +146,7 @@ export interface TxData {
   readonly log?: string;
   readonly data?: Uint8Array;
   readonly tags?: ReadonlyArray<Tag>;
+  // readonly fees?: any;
 }
 
 export interface TxProof {
