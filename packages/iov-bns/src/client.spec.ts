@@ -503,7 +503,9 @@ describe("Integration tests with bov+tendermint", () => {
     // make sure we get he same tx loaded
     const loaded = search[0];
     expect(loaded.txid).toEqual(txid);
-    expect(loaded.transaction.kind).toEqual(swapOfferTx.kind);
+    // we never write the offer (with preimage) to a chain, only convert it to a SwapCounterTx
+    // which only has the hashed data, then commit it (thus the different kind is expected)
+    expect(loaded.transaction.kind).toEqual(TransactionKind.SwapCounter);
     expect((loaded.transaction as SwapOfferTx).recipient).toEqual(swapOfferTx.recipient);
     // make sure it also stored a result
     expect(loaded.result).toEqual(txResult);
