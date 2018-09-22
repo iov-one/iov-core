@@ -163,7 +163,7 @@ Now, connect to the network:
 ```ts
 import { bnsConnector, IovWriter } from '@iov/core';
 
-const writer = new IovWriter(profile, chains);
+const writer = new IovWriter(profile);
 await writer.addChain(bnsConnector('wss://bov.friendnet-fast.iov.one/'));
 
 const chainId = writer.chainIds()[0];
@@ -199,7 +199,7 @@ If you are running the testnet faucet, just ask for some free money.
 ```ts
 import { BovFaucet } from "@iov/faucets";
 
-const faucet = new BovFaucet("https://faucet.friendnet-fast.iov.one/");
+const faucet = new BovFaucet("https://faucet.friendnet-fast.iov.one/faucet");
 // You can request a given token, or omit second argument to get default
 await faucet.credit(addr, "IOV" as TokenTicker);
 ```
