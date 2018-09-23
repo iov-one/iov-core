@@ -7,6 +7,7 @@ import {
   BcpTransactionResponse,
   Nonce,
   SendTx,
+  SwapOfferTx,
   TokenTicker,
   TransactionKind,
 } from "@iov/bcp-types";
@@ -339,7 +340,7 @@ describe("Integration tests with bov+tendermint", () => {
     client.disconnect();
   });
 
-  it("test change feeds", async () => {
+  it("can provide change feeds", async () => {
     pendingWithoutBov();
     const client = await Client.connect(tendermintUrl);
     const profile = await userProfile();
@@ -383,7 +384,7 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   // make sure we can get a reactive account balance (as well as nonce)
-  it("test watch account", async () => {
+  it("can watch accounts", async () => {
     pendingWithoutBov();
     const client = await Client.connect(tendermintUrl);
     const profile = await userProfile();
@@ -446,5 +447,68 @@ describe("Integration tests with bov+tendermint", () => {
 
     // clean up with disconnect at the end...
     client.disconnect();
+  });
+
+  it("Can start atomic swap", async () => {
+    pendingWithoutBov();
+    const client = await Client.connect(tendermintUrl);
+    const chainId = await client.chainId();
+
+    const profile = await userProfile();
+
+    const faucet = faucetId(profile);
+    const faucetAddr = keyToAddress(faucet.pubkey);
+    const rcpt = await recipient(profile, 7);
+    const rcptAddr = keyToAddress(rcpt.pubkey);
+
+    // check current nonce (should be 0, but don't fail if used by other)
+    const nonce = await getNonce(client, faucetAddr);
+
+    const preimage = Encoding.toAscii("my top secret phrase... keep it on the down low ;)");
+
+    // construct a sendtx, this is normally used in the IovWriter api
+    const swapOfferTx: SwapOfferTx = {
+      kind: TransactionKind.SwapOffer,
+      chainId,
+      signer: faucet.pubkey,
+      recipient: rcptAddr,
+      amount: [
+        {
+          whole: 123,
+          fractional: 456000,
+          tokenTicker: cash,
+        },
+      ],
+      timeout: 1000,
+      preimage,
+    };
+
+    const signed = await profile.signTransaction(0, faucet, swapOfferTx, bnsCodec, nonce);
+    const txBytes = bnsCodec.bytesToPost(signed);
+    const post = await client.postTx(txBytes);
+    // FIXME: we really should add more info here, but this is in the spec
+    expect(post.metadata.status).toBe(true);
+    const txHeight = post.metadata.height;
+    expect(txHeight).toBeTruthy();
+    expect(txHeight).toBeGreaterThan(1);
+    const txResult = post.data.result;
+    expect(txResult.length).toBe(8);
+    expect(txResult).toEqual(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1]));
+    const txid = post.data.txid;
+    expect(txid.length).toBe(20);
+
+    // now query by the txid
+    const search = await client.searchTx({ hash: txid, tags: [] });
+    expect(search.length).toEqual(1);
+    // make sure we get he same tx loaded
+    const loaded = search[0];
+    expect(loaded.txid).toEqual(txid);
+    // we never write the offer (with preimage) to a chain, only convert it to a SwapCounterTx
+    // which only has the hashed data, then commit it (thus the different kind is expected)
+    expect(loaded.transaction.kind).toEqual(TransactionKind.SwapCounter);
+    expect((loaded.transaction as SwapOfferTx).recipient).toEqual(swapOfferTx.recipient);
+    // make sure it also stored a result
+    expect(loaded.result).toEqual(txResult);
+    expect(loaded.height).toEqual(txHeight!);
   });
 });

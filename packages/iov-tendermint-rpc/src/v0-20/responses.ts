@@ -282,10 +282,7 @@ const decodeTxSearch = (data: RpcTxSearchResponse): responses.TxSearchResponse =
 
 export interface RpcTxEvent {
   readonly tx: Base64String;
-  readonly result: {
-    readonly tags: ReadonlyArray<RpcTag>;
-    readonly fee: any;
-  };
+  readonly result: RpcTxData;
   readonly height: number;
   readonly index: number;
 }
@@ -295,10 +292,7 @@ function decodeTxEvent(data: RpcTxEvent): responses.TxEvent {
   return {
     tx,
     hash: hashTx(tx),
-    result: {
-      tags: decodeTags(data.result.tags),
-      fee: data.result.fee,
-    },
+    result: decodeTxData(data.result),
     height: required(data.height),
     index: required(data.index),
   };

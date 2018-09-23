@@ -113,6 +113,7 @@ export class Client implements IovReader {
     }
 
     const message = txresp.deliverTx ? txresp.deliverTx.log : txresp.checkTx.log;
+    const result = txresp.deliverTx && txresp.deliverTx.data;
     return {
       metadata: {
         height: txresp.height,
@@ -121,6 +122,7 @@ export class Client implements IovReader {
       data: {
         txid: txresp.hash,
         message: message || "",
+        result: result || new Uint8Array([]),
       },
     };
   }
@@ -180,9 +182,11 @@ export class Client implements IovReader {
     const query = buildTxQuery(txQuery);
     const res = await this.tmClient.txSearch({ query, per_page: perPage });
     const chainId = await this.chainId();
-    const mapper = ({ tx, hash, height }: TxResponse): ConfirmedTransaction => ({
+    const mapper = ({ tx, hash, height, txResult }: TxResponse): ConfirmedTransaction => ({
       height,
       txid: hash as TxId,
+      log: txResult.log || "",
+      result: txResult.data || new Uint8Array([]),
       ...this.codec.parseBytes(tx, chainId),
     });
     return res.txs.map(mapper);
@@ -195,9 +199,11 @@ export class Client implements IovReader {
     const txs = this.tmClient.subscribeTx(tags);
 
     // destructuring ftw (or is it too confusing?)
-    const mapper = ([{ hash, height, tx }, chainId]: [TxEvent, ChainId]): ConfirmedTransaction => ({
+    const mapper = ([{ hash, height, tx, result }, chainId]: [TxEvent, ChainId]): ConfirmedTransaction => ({
       height,
       txid: hash as TxId,
+      log: result.log || "",
+      result: result.data || new Uint8Array([]),
       ...this.codec.parseBytes(tx, chainId),
     });
     return Stream.combine(txs, streamId).map(mapper);

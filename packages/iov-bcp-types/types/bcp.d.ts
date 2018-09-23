@@ -38,6 +38,7 @@ export interface BcpTransactionResponse {
     readonly data: {
         readonly message: string;
         readonly txid: TxId;
+        readonly result: Uint8Array;
     };
 }
 export interface BcpAddressQuery {
@@ -68,4 +69,6 @@ export interface IovReader {
 export interface ConfirmedTransaction extends SignedTransaction {
     readonly height: number;
     readonly txid: TxId;
+    readonly result: Uint8Array;
+    readonly log: string;
 }

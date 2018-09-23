@@ -1,3 +1,4 @@
+import { Encoding } from "@iov/encoding";
 import { Tag, TxQuery } from "@iov/tendermint-types";
 
 import { JsonRpcRequest, jsonRpcWith } from "./common";
@@ -175,6 +176,7 @@ export const buildTxQuery = (query: TxQuery): QueryString => {
     !!query.height && `tx.height=${query.height}`,
     !!query.minHeight && `tx.height>${query.minHeight}`,
     !!query.maxHeight && `tx.height<${query.maxHeight}`,
+    !!query.hash && `tx.hash='${Encoding.toHex(query.hash)}'`,
   ];
   const result: string = [...tags, ...opts.filter(x => !!x)].join(" AND ");
   return result as QueryString;
