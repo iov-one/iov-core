@@ -83,8 +83,11 @@ export const liskCodec: TxCodec = {
    * Transaction ID as implemented in
    * https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/transaction.cpp#L87
    */
-  identifier: (_1: SignedTransaction): TransactionIdBytes => {
-    return new Uint8Array([]) as TransactionIdBytes;
+  identifier: (signed: SignedTransaction): TransactionIdBytes => {
+    const serialized = serializeTransaction(signed.transaction);
+    const hash = new Sha256(serialized).update(signed.primarySignature.signature).digest();
+    const idString = Long.fromBytesLE([...hash.slice(0, 8)], true).toString(10);
+    return Encoding.toAscii(idString) as TransactionIdBytes;
   },
 
   /**
