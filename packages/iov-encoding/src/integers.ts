@@ -1,4 +1,5 @@
 /* tslint:disable:no-bitwise */
+import BN = require("bn.js");
 
 export class Uint32 {
   public static fromBigEndianBytes(bytes: ArrayLike<number>): Uint32 {
@@ -105,6 +106,11 @@ export class Uint64 {
     }
 
     return this.high.asNumber() * 2 ** 32 + this.low.asNumber();
+  }
+
+  public toString(): string {
+    const bigNumber = new BN(new Uint8Array(this.toBytesBigEndian()));
+    return bigNumber.toString(10);
   }
 }
 

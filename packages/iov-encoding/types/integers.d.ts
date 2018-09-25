@@ -16,6 +16,7 @@ export declare class Uint64 {
     constructor(input: number | Uint64Components);
     toBytesBigEndian(): ReadonlyArray<number>;
     asNumber(): number;
+    toString(): string;
 }
 export declare class Int53 {
     static fromString(str: string): Int53;

@@ -171,6 +171,18 @@ describe("Integers", () => {
       expect(new Uint64(4294967295).toBytesBigEndian()).toEqual([0, 0, 0, 0, 0xff, 0xff, 0xff, 0xff]);
     });
 
+    it("can convert to string", () => {
+      expect(new Uint64(0).toString()).toEqual("0");
+      expect(new Uint64(1).toString()).toEqual("1");
+      expect(new Uint64(42).toString()).toEqual("42");
+      expect(new Uint64(1000000000).toString()).toEqual("1000000000");
+      expect(new Uint64(2147483647).toString()).toEqual("2147483647");
+      expect(new Uint64(2147483648).toString()).toEqual("2147483648");
+      expect(new Uint64(4294967295).toString()).toEqual("4294967295");
+      expect(new Uint64(Number.MAX_SAFE_INTEGER).toString()).toEqual("9007199254740991");
+      expect(Uint64.fromBigEndianBytes([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]).toString()).toEqual("18446744073709551615");
+    });
+
     describe("fromBigEndianBytes", () => {
       it("can be constructed from to byte array", () => {
         expect(Uint64.fromBigEndianBytes([0, 0, 0, 0, 0, 0, 0, 0]).asNumber()).toEqual(0);
