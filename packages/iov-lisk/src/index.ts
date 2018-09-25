@@ -1,0 +1,1 @@
+export { liskCodec } from "./liskcodec";
