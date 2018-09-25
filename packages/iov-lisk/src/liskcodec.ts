@@ -66,10 +66,12 @@ export const liskCodec: TxCodec = {
    * Transaction serialization as in
    * https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/transaction.cpp#L36
    */
-  bytesToSign: (unsigned: UnsignedTransaction, _: Nonce): SigningJob => ({
-    bytes: serializeTransaction(unsigned) as SignableBytes,
-    prehashType: PrehashType.None,
-  }),
+  bytesToSign: (unsigned: UnsignedTransaction, _: Nonce): SigningJob => {
+    return {
+      bytes: serializeTransaction(unsigned) as SignableBytes,
+      prehashType: PrehashType.None,
+    };
+  },
 
   /**
    * UTF-8 encoded JSON that can be posted to
