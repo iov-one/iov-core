@@ -3,6 +3,7 @@ import Long from "long";
 
 import {
   Address,
+  FullSignature,
   Nonce,
   PrehashType,
   SignableBytes,
@@ -61,6 +62,13 @@ function serializeTransaction(unsigned: UnsignedTransaction): Uint8Array {
   }
 }
 
+function transactionId(unsigned: UnsignedTransaction, primarySignature: FullSignature): TransactionIdBytes {
+  const serialized = serializeTransaction(unsigned);
+  const hash = new Sha256(serialized).update(primarySignature.signature).digest();
+  const idString = Long.fromBytesLE([...hash.slice(0, 8)], true).toString(10);
+  return Encoding.toAscii(idString) as TransactionIdBytes;
+}
+
 export const liskCodec: TxCodec = {
   /**
    * Transaction serialization as in
@@ -86,10 +94,7 @@ export const liskCodec: TxCodec = {
    * https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/transaction.cpp#L87
    */
   identifier: (signed: SignedTransaction): TransactionIdBytes => {
-    const serialized = serializeTransaction(signed.transaction);
-    const hash = new Sha256(serialized).update(signed.primarySignature.signature).digest();
-    const idString = Long.fromBytesLE([...hash.slice(0, 8)], true).toString(10);
-    return Encoding.toAscii(idString) as TransactionIdBytes;
+    return transactionId(signed.transaction, signed.primarySignature);
   },
 
   /**
