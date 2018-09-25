@@ -85,8 +85,30 @@ export const liskCodec: TxCodec = {
    * UTF-8 encoded JSON that can be posted to
    * https://app.swaggerhub.com/apis/LiskHQ/Lisk/1.0.30#/Transactions/postTransaction
    */
-  bytesToPost: (_1: SignedTransaction): PostableBytes => {
-    return new Uint8Array([]) as PostableBytes;
+  bytesToPost: (signed: SignedTransaction): PostableBytes => {
+    switch (signed.transaction.kind) {
+      case TransactionKind.Send:
+        const amount = Long.fromNumber(
+          signed.transaction.amount.whole * 100000000 + signed.transaction.amount.fractional,
+          true,
+        );
+        const postableObject = {
+          type: 0,
+          amount: amount.toString(10),
+          recipientId: Encoding.fromAscii(signed.transaction.recipient),
+          senderPublicKey: Encoding.toHex(signed.primarySignature.publicKey.data),
+          timestamp: signed.transaction.timestamp!,
+          fee: "10000000", // 0.1 LSK fixed
+          asset: {
+            data: signed.transaction.memo,
+          },
+          signature: Encoding.toHex(signed.primarySignature.signature),
+          id: Encoding.fromAscii(transactionId(signed.transaction, signed.primarySignature)),
+        };
+        return Encoding.toUtf8(JSON.stringify(postableObject)) as PostableBytes;
+      default:
+        throw new Error("Unsupported kind of transaction");
+    }
   },
 
   /**
