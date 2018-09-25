@@ -8,6 +8,9 @@ import { liskCodec } from "./liskcodec";
 
 const { fromHex, toAscii } = Encoding;
 
+// use nethash as chain ID
+const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
+
 describe("liskCodec", () => {
   it("derives addresses properly", () => {
     // https://testnet-explorer.lisk.io/address/6076671634347365051L
@@ -23,7 +26,7 @@ describe("liskCodec", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
       const tx: SendTx = {
-        chainId: "Lisk" as ChainId,
+        chainId: liskTestnet as ChainId,
         fee: {
           whole: 0,
           fractional: 10000000,
@@ -56,7 +59,7 @@ describe("liskCodec", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
       const tx: SendTx = {
-        chainId: "Lisk" as ChainId,
+        chainId: liskTestnet as ChainId,
         fee: {
           whole: 0,
           fractional: 10000000,
