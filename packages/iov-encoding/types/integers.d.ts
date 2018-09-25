@@ -10,6 +10,7 @@ export interface Uint64Components {
     readonly low: Uint32;
 }
 export declare class Uint64 {
+    static fromString(str: string): Uint64;
     static fromBigEndianBytes(bytes: ArrayLike<number>): Uint64;
     protected readonly high: Uint32;
     protected readonly low: Uint32;

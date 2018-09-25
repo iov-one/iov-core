@@ -55,6 +55,20 @@ export interface Uint64Components {
 }
 
 export class Uint64 {
+  public static fromString(str: string): Uint64 {
+    if (!str.match(/^[0-9]+$/)) {
+      throw new Error("Invalid string format");
+    }
+
+    const bigNumber = new BN(str, 10);
+    const maxUint64 = new BN("ffffffffffffffff", "hex");
+    if (bigNumber.gt(maxUint64)) {
+      throw new Error("Value exceeds uint64 range");
+    }
+
+    return Uint64.fromBigEndianBytes(bigNumber.toArray("be", 8));
+  }
+
   public static fromBigEndianBytes(bytes: ArrayLike<number>): Uint64 {
     if (bytes.length !== 8) {
       throw new Error("Invalid input length. Expected 8 bytes.");

@@ -183,6 +183,24 @@ describe("Integers", () => {
       expect(Uint64.fromBigEndianBytes([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]).toString()).toEqual("18446744073709551615");
     });
 
+    it("can be constructed from string", () => {
+      expect(Uint64.fromString("0").asNumber()).toEqual(0);
+      expect(Uint64.fromString("1").asNumber()).toEqual(1);
+      expect(Uint64.fromString("01").asNumber()).toEqual(1);
+      expect(Uint64.fromString("001").asNumber()).toEqual(1);
+      expect(Uint64.fromString("1000000000").asNumber()).toEqual(1000000000);
+      expect(Uint64.fromString("2147483647").asNumber()).toEqual(2147483647);
+      expect(Uint64.fromString("2147483648").asNumber()).toEqual(2147483648);
+      expect(Uint64.fromString("4294967295").asNumber()).toEqual(4294967295);
+      expect(Uint64.fromString("9007199254740991").asNumber()).toEqual(9007199254740991);
+      expect(Uint64.fromString("18446744073709551615").toBytesBigEndian()).toEqual([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]);
+
+      expect(() => Uint64.fromString("-1")).toThrowError(/invalid string format/i);
+      expect(() => Uint64.fromString("1.1")).toThrowError(/invalid string format/i);
+      expect(() => Uint64.fromString("ff")).toThrowError(/invalid string format/i);
+      expect(() => Uint64.fromString("18446744073709551616")).toThrowError(/exceeds uint64 range/i);
+    });
+
     describe("fromBigEndianBytes", () => {
       it("can be constructed from to byte array", () => {
         expect(Uint64.fromBigEndianBytes([0, 0, 0, 0, 0, 0, 0, 0]).asNumber()).toEqual(0);
