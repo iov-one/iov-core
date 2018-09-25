@@ -26,6 +26,7 @@ export interface BaseTx {
     readonly fee?: FungibleToken;
     readonly signer: PublicKeyBundle;
     readonly ttl?: TtlBytes;
+    readonly timestamp?: number;
 }
 export interface SendTx extends BaseTx {
     readonly kind: TransactionKind.Send;

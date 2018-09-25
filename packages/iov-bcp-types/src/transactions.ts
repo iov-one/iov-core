@@ -41,6 +41,9 @@ export interface BaseTx {
   // signer needs to be a PublicKey as we use that to as an identifier to the Keyring for lookup
   readonly signer: PublicKeyBundle;
   readonly ttl?: TtlBytes;
+  // A transaction time set by the author, interpreted in a chain-dependent way.
+  // E.g. Lisk uses seconds since 2016-05-24T17:00:00.000Z, not counting leap seconds as timestamp, allowing negative values.
+  readonly timestamp?: number;
 }
 
 export interface SendTx extends BaseTx {
