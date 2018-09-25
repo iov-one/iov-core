@@ -48,6 +48,66 @@ export class Uint32 {
   }
 }
 
+export interface Uint64Components {
+  readonly high: Uint32;
+  readonly low: Uint32;
+}
+
+export class Uint64 {
+  public static fromBigEndianBytes(bytes: ArrayLike<number>): Uint64 {
+    if (bytes.length !== 8) {
+      throw new Error("Invalid input length. Expected 8 bytes.");
+    }
+
+    return new Uint64({
+      high: Uint32.fromBigEndianBytes([bytes[0], bytes[1], bytes[2], bytes[3]]),
+      low: Uint32.fromBigEndianBytes([bytes[4], bytes[5], bytes[6], bytes[7]]),
+    });
+  }
+
+  protected readonly high: Uint32;
+  protected readonly low: Uint32;
+
+  constructor(input: number | Uint64Components) {
+    if (typeof input === "number") {
+      if (Number.isNaN(input)) {
+        throw new Error("input is not a number");
+      }
+
+      if (input < 0) {
+        throw new Error("input not in uint64 range: " + input.toString());
+      }
+
+      if (input > Number.MAX_SAFE_INTEGER) {
+        throw new Error("input too large for number constructor: " + input.toString());
+      }
+
+      this.high = new Uint32(Math.floor(input / 2 ** 32));
+      this.low = new Uint32(input % 2 ** 32);
+    } else {
+      this.high = input.high;
+      this.low = input.low;
+    }
+  }
+
+  public toBytesBigEndian(): ReadonlyArray<number> {
+    return [...this.high.toBytesBigEndian(), ...this.low.toBytesBigEndian()];
+  }
+
+  public asNumber(): number {
+    // largest integer that can be represented as a number without losses is
+    // 9007199254740991 = 00 1f ff ff ff ff ff ff_16,
+    //                  = 0000 0000 0001 1111 1111 1111 1111 1111_2,
+    // i.e. the first eleven bits must be 0
+    const highBytes = this.high.toBytesBigEndian();
+    if (highBytes[0] !== 0x00 || highBytes[1] > 0x1f) {
+      throw new Error("Value too large to be represented as number");
+    }
+
+    return this.high.asNumber() * 2 ** 32 + this.low.asNumber();
+  }
+}
+
 export class Int53 {
   public static fromString(str: string): Int53 {
     if (!str.match(/^\-?[0-9]+$/)) {
