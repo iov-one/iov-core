@@ -25,49 +25,51 @@ import {
   SignatureBytes,
 } from "@iov/tendermint-types";
 
+function serializeTransaction(unsigned: UnsignedTransaction): Uint8Array {
+  switch (unsigned.kind) {
+    case TransactionKind.Send:
+      const timestampBytes = new Uint8Array([
+        (unsigned.timestamp! >> 0) & 0xff,
+        (unsigned.timestamp! >> 8) & 0xff,
+        (unsigned.timestamp! >> 16) & 0xff,
+        (unsigned.timestamp! >> 24) & 0xff,
+      ]);
+      const amount = new Uint64(unsigned.amount.whole * 100000000 + unsigned.amount.fractional);
+      const recipientString = Encoding.fromAscii(unsigned.recipient);
+      if (!recipientString.match(/^[0-9]{1,20}L$/)) {
+        throw new Error("Recipient does not match expected format");
+      }
+
+      if (recipientString !== "0L" && recipientString[0] === "0") {
+        throw new Error("Recipient must not contain leading zeros");
+      }
+
+      const recipient = Uint64.fromString(recipientString.substring(0, recipientString.length - 1));
+
+      const memoBytes = unsigned.memo !== undefined ? Encoding.toUtf8(unsigned.memo) : new Uint8Array([]);
+
+      return new Uint8Array([
+        0, // transaction type
+        ...timestampBytes,
+        ...unsigned.signer.data,
+        ...recipient.toBytesBigEndian(),
+        ...new Uint8Array(amount.toBytesBigEndian()).reverse(),
+        ...memoBytes,
+      ]);
+    default:
+      throw new Error("Unsupported kind of transaction");
+  }
+}
+
 export const liskCodec: TxCodec = {
   /**
    * Transaction serialization as in
    * https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/transaction.cpp#L36
    */
-  bytesToSign: (unsigned: UnsignedTransaction, _2: Nonce): SigningJob => {
-    switch (unsigned.kind) {
-      case TransactionKind.Send:
-        const timestampBytes = new Uint8Array([
-          (unsigned.timestamp! >> 0) & 0xff,
-          (unsigned.timestamp! >> 8) & 0xff,
-          (unsigned.timestamp! >> 16) & 0xff,
-          (unsigned.timestamp! >> 24) & 0xff,
-        ]);
-        const amount = new Uint64(unsigned.amount.whole * 100000000 + unsigned.amount.fractional);
-        const recipientString = Encoding.fromAscii(unsigned.recipient);
-        if (!recipientString.match(/^[0-9]{1,20}L$/)) {
-          throw new Error("Recipient does not match expected format");
-        }
-
-        if (recipientString !== "0L" && recipientString[0] === "0") {
-          throw new Error("Recipient must not contain leading zeros");
-        }
-
-        const recipient = Uint64.fromString(recipientString.substring(0, recipientString.length - 1));
-
-        const memoBytes = unsigned.memo !== undefined ? Encoding.toUtf8(unsigned.memo) : new Uint8Array([]);
-
-        return {
-          bytes: new Uint8Array([
-            0, // transaction type
-            ...timestampBytes,
-            ...unsigned.signer.data,
-            ...recipient.toBytesBigEndian(),
-            ...new Uint8Array(amount.toBytesBigEndian()).reverse(),
-            ...memoBytes,
-          ]) as SignableBytes,
-          prehashType: PrehashType.None,
-        };
-      default:
-        throw new Error("Unsupported kind of transaction");
-    }
-  },
+  bytesToSign: (unsigned: UnsignedTransaction, _: Nonce): SigningJob => ({
+    bytes: serializeTransaction(unsigned) as SignableBytes,
+    prehashType: PrehashType.None,
+  }),
 
   /**
    * UTF-8 encoded JSON that can be posted to
