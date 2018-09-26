@@ -33,6 +33,7 @@
     "@iov/bcp-types": "^0.5.3",
     "@iov/crypto": "^0.5.3",
     "@iov/encoding": "^0.5.3",
+    "@iov/keycontrol": "^0.5.4",
     "@types/long": "^4.0.0",
     "long": "^4.0.0"
   }
