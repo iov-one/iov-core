@@ -218,13 +218,18 @@ export class LiskKeyringEntry implements KeyringEntry {
     prehashType: PrehashType,
     _: ChainId,
   ): Promise<SignatureBytes> {
-    if (prehashType !== PrehashType.Sha256) {
-      throw new Error("Only prehash type sha256 is supported");
-    }
-
     const passphrase = this.passphraseForIdentity(identity);
     const keypair = await passphraseToKeypair(passphrase);
-    const hash = new Sha256(transactionBytes).digest();
+
+    let hash: Uint8Array;
+    switch (prehashType) {
+      case PrehashType.Sha256:
+        hash = new Sha256(transactionBytes).digest();
+        break;
+      default:
+        throw new Error("Only prehash type sha256 is supported");
+    }
+
     const signature = await Ed25519.createSignature(hash, keypair);
     return signature as SignatureBytes;
   }
