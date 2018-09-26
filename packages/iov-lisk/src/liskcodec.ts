@@ -13,7 +13,7 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 import {
   Algorithm,
   ChainId,
@@ -79,36 +79,41 @@ export const liskCodec: TxCodec = {
   /**
    * Recovers bytes (UTF-8 encoded JSON) from the blockchain into a format we can use
    */
-  parseBytes: (_1: PostableBytes, _2: ChainId): SignedTransaction => {
+  parseBytes: (bytes: PostableBytes, chainId: ChainId): SignedTransaction => {
+    const json = JSON.parse(Encoding.fromUtf8(bytes));
+
+    const fee = Int53.fromString(json.fee).asNumber();
+    const amount = Int53.fromString(json.amount).asNumber();
+
     return {
       transaction: {
-        chainId: "lisk-testnet" as ChainId,
+        chainId: chainId,
         fee: {
-          whole: 0,
-          fractional: 1,
+          whole: Math.floor(fee / 100000000),
+          fractional: fee % 100000000,
           tokenTicker: "LSK" as TokenTicker,
         },
         signer: {
           algo: Algorithm.ED25519,
-          data: new Uint8Array([]) as PublicKeyBytes,
+          data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
         },
         ttl: undefined,
         kind: TransactionKind.Send,
         amount: {
-          whole: 3,
-          fractional: 22,
+          whole: Math.floor(amount / 100000000),
+          fractional: amount % 100000000,
           tokenTicker: "LSK" as TokenTicker,
         },
-        recipient: new Uint8Array([]) as Address,
-        memo: "lalala",
+        recipient: Encoding.toAscii(json.recipientId) as Address,
+        memo: json.asset.data,
       },
       primarySignature: {
         nonce: new Long(0) as Nonce,
         publicKey: {
           algo: Algorithm.ED25519,
-          data: new Uint8Array([]) as PublicKeyBytes,
+          data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
         },
-        signature: new Uint8Array([]) as SignatureBytes,
+        signature: Encoding.fromHex(json.signature) as SignatureBytes,
       },
       otherSignatures: [],
     };
