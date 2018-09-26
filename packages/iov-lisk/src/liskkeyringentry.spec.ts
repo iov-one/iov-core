@@ -75,7 +75,12 @@ describe("LiskKeyringEntry", () => {
     expect(entry.canSign.value).toEqual(true);
 
     const tx = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
-    const signature = await entry.createTransactionSignature(newIdentity, tx, PrehashType.None, liskTestnet);
+    const signature = await entry.createTransactionSignature(
+      newIdentity,
+      tx,
+      PrehashType.Sha256,
+      liskTestnet,
+    );
     expect(signature).toBeTruthy();
     expect(signature.length).toEqual(64);
   });
@@ -87,13 +92,13 @@ describe("LiskKeyringEntry", () => {
     const transactionBytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
 
     await entry
-      .createTransactionSignature(mainIdentity, transactionBytes, PrehashType.Sha256, liskTestnet)
+      .createTransactionSignature(mainIdentity, transactionBytes, PrehashType.None, liskTestnet)
       .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/only prehash type none is supported/i));
+      .catch(error => expect(error).toMatch(/only prehash type sha256 is supported/i));
     await entry
       .createTransactionSignature(mainIdentity, transactionBytes, PrehashType.Sha512, liskTestnet)
       .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/only prehash type none is supported/i));
+      .catch(error => expect(error).toMatch(/only prehash type sha256 is supported/i));
   });
 
   it("can serialize multiple identities", async () => {
@@ -206,14 +211,14 @@ describe("LiskKeyringEntry", () => {
     // privkeys match
     const tx = new Uint8Array([]) as SignableBytes;
     const chainId = "" as ChainId;
-    expect(await original.createTransactionSignature(identity1, tx, PrehashType.None, chainId)).toEqual(
-      await restored.createTransactionSignature(identity1, tx, PrehashType.None, chainId),
+    expect(await original.createTransactionSignature(identity1, tx, PrehashType.Sha256, chainId)).toEqual(
+      await restored.createTransactionSignature(identity1, tx, PrehashType.Sha256, chainId),
     );
-    expect(await original.createTransactionSignature(identity2, tx, PrehashType.None, chainId)).toEqual(
-      await restored.createTransactionSignature(identity2, tx, PrehashType.None, chainId),
+    expect(await original.createTransactionSignature(identity2, tx, PrehashType.Sha256, chainId)).toEqual(
+      await restored.createTransactionSignature(identity2, tx, PrehashType.Sha256, chainId),
     );
-    expect(await original.createTransactionSignature(identity3, tx, PrehashType.None, chainId)).toEqual(
-      await restored.createTransactionSignature(identity3, tx, PrehashType.None, chainId),
+    expect(await original.createTransactionSignature(identity3, tx, PrehashType.Sha256, chainId)).toEqual(
+      await restored.createTransactionSignature(identity3, tx, PrehashType.Sha256, chainId),
     );
   });
 

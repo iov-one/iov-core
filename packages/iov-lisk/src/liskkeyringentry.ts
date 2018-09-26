@@ -2,7 +2,7 @@
 import PseudoRandom from "random-js";
 
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
-import { Ed25519 } from "@iov/crypto";
+import { Ed25519, Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import {
   DefaultValueProducer,
@@ -218,13 +218,14 @@ export class LiskKeyringEntry implements KeyringEntry {
     prehashType: PrehashType,
     _: ChainId,
   ): Promise<SignatureBytes> {
-    if (prehashType !== PrehashType.None) {
-      throw new Error("Only prehash type none is supported");
+    if (prehashType !== PrehashType.Sha256) {
+      throw new Error("Only prehash type sha256 is supported");
     }
 
     const passphrase = this.passphraseForIdentity(identity);
     const keypair = await passphraseToKeypair(passphrase);
-    const signature = await Ed25519.createSignature(transactionBytes, keypair);
+    const hash = new Sha256(transactionBytes).digest();
+    const signature = await Ed25519.createSignature(hash, keypair);
     return signature as SignatureBytes;
   }
 

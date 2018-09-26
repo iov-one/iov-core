@@ -79,7 +79,7 @@ export const liskCodec: TxCodec = {
   bytesToSign: (unsigned: UnsignedTransaction, _: Nonce): SigningJob => {
     return {
       bytes: serializeTransaction(unsigned) as SignableBytes,
-      prehashType: PrehashType.None,
+      prehashType: PrehashType.Sha256,
     };
   },
 
