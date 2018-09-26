@@ -16,7 +16,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp-types";
 import { Sha256 } from "@iov/crypto";
-import { Encoding, Uint64 } from "@iov/encoding";
+import { Encoding } from "@iov/encoding";
 import {
   Algorithm,
   ChainId,
@@ -35,7 +35,7 @@ function serializeTransaction(unsigned: UnsignedTransaction): Uint8Array {
         (unsigned.timestamp! >> 16) & 0xff,
         (unsigned.timestamp! >> 24) & 0xff,
       ]);
-      const amount = new Uint64(unsigned.amount.whole * 100000000 + unsigned.amount.fractional);
+      const amount = Long.fromNumber(unsigned.amount.whole * 100000000 + unsigned.amount.fractional, true);
       const recipientString = Encoding.fromAscii(unsigned.recipient);
       if (!recipientString.match(/^[0-9]{1,20}L$/)) {
         throw new Error("Recipient does not match expected format");
@@ -45,7 +45,7 @@ function serializeTransaction(unsigned: UnsignedTransaction): Uint8Array {
         throw new Error("Recipient must not contain leading zeros");
       }
 
-      const recipient = Uint64.fromString(recipientString.substring(0, recipientString.length - 1));
+      const recipient = Long.fromString(recipientString.substring(0, recipientString.length - 1), true, 10);
 
       const memoBytes = unsigned.memo !== undefined ? Encoding.toUtf8(unsigned.memo) : new Uint8Array([]);
 
@@ -53,8 +53,8 @@ function serializeTransaction(unsigned: UnsignedTransaction): Uint8Array {
         0, // transaction type
         ...timestampBytes,
         ...unsigned.signer.data,
-        ...recipient.toBytesBigEndian(),
-        ...new Uint8Array(amount.toBytesBigEndian()).reverse(),
+        ...recipient.toBytesBE(),
+        ...amount.toBytesLE(),
         ...memoBytes,
       ]);
     default:
@@ -169,8 +169,8 @@ export const liskCodec: TxCodec = {
   keyToAddress: (pubkey: PublicKeyBundle): Address => {
     // https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/lisk.cpp#L26
     const hash = new Sha256(pubkey.data).digest();
-    const firstEightBytesReversed = hash.slice(0, 8).reverse();
-    const addressString = Uint64.fromBigEndianBytes(firstEightBytesReversed).toString() + "L";
+    const firstEightBytesReversed = Array.from(hash.slice(0, 8).reverse());
+    const addressString = Long.fromBytesBE(firstEightBytesReversed).toString(10) + "L";
     return Encoding.toAscii(addressString) as Address;
   },
 };
