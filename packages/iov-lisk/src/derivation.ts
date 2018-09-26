@@ -14,6 +14,6 @@ export function pubkeyToAddress(pubkey: Uint8Array): Uint8Array {
   // https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/lisk.cpp#L26
   const hash = new Sha256(pubkey).digest();
   const firstEightBytes = Array.from(hash.slice(0, 8));
-  const addressString = Long.fromBytesLE(firstEightBytes).toString(10) + "L";
+  const addressString = Long.fromBytesLE(firstEightBytes, true).toString(10) + "L";
   return Encoding.toAscii(addressString);
 }
