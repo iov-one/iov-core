@@ -29,6 +29,10 @@ import {
 import { pubkeyToAddress } from "./derivation";
 
 function serializeTransaction(unsigned: UnsignedTransaction): Uint8Array {
+  if (unsigned.fee !== undefined) {
+    throw new Error("Fee must not be set. It is fixed in Lisk and not included in the signed content.");
+  }
+
   switch (unsigned.kind) {
     case TransactionKind.Send:
       const timestampBytes = new Uint8Array([

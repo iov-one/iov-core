@@ -28,11 +28,6 @@ describe("liskCodec", () => {
 
       const tx: SendTx = {
         chainId: liskTestnet as ChainId,
-        fee: {
-          whole: 0,
-          fractional: 10000000,
-          tokenTicker: "LSK" as TokenTicker,
-        },
         signer: {
           algo: Algorithm.ED25519,
           data: pubkey as PublicKeyBytes,
@@ -61,11 +56,6 @@ describe("liskCodec", () => {
 
       const tx: SendTx = {
         chainId: liskTestnet as ChainId,
-        fee: {
-          whole: 0,
-          fractional: 10000000,
-          tokenTicker: "LSK" as TokenTicker,
-        },
         signer: {
           algo: Algorithm.ED25519,
           data: pubkey as PublicKeyBytes,
@@ -95,11 +85,6 @@ describe("liskCodec", () => {
 
       const tx: SendTx = {
         chainId: liskTestnet as ChainId,
-        fee: {
-          whole: 0,
-          fractional: 10000000,
-          tokenTicker: "LSK" as TokenTicker,
-        },
         signer: {
           algo: Algorithm.ED25519,
           data: pubkey as PublicKeyBytes,
@@ -136,11 +121,6 @@ describe("liskCodec", () => {
 
       const tx: SendTx = {
         chainId: liskTestnet as ChainId,
-        fee: {
-          whole: 0,
-          fractional: 10000000,
-          tokenTicker: "LSK" as TokenTicker,
-        },
         signer: {
           algo: Algorithm.ED25519,
           data: pubkey as PublicKeyBytes,
@@ -182,6 +162,34 @@ describe("liskCodec", () => {
         id: "15806479375328957764",
         asset: {},
       });
+    });
+
+    it("fails to serialize transaction with fee", () => {
+      const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
+
+      const tx: SendTx = {
+        chainId: liskTestnet as ChainId,
+        signer: {
+          algo: Algorithm.ED25519,
+          data: pubkey as PublicKeyBytes,
+        },
+        timestamp: 865708731,
+        kind: TransactionKind.Send,
+        amount: {
+          whole: 1,
+          fractional: 23456789,
+          tokenTicker: "LSK" as TokenTicker,
+        },
+        fee: {
+          whole: 0,
+          fractional: 0,
+          tokenTicker: "LSK" as TokenTicker,
+        },
+        recipient: toAscii("10010344879730196491L") as Address,
+      };
+      const nonce = new Long(0) as Nonce;
+
+      expect(() => liskCodec.bytesToSign(tx, nonce)).toThrowError(/fee must not be set/i);
     });
   });
 });
