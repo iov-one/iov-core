@@ -31,6 +31,9 @@ export function serializeTransaction(unsigned: UnsignedTransaction): Uint8Array 
       const recipient = Long.fromString(recipientString.substring(0, recipientString.length - 1), true, 10);
 
       const memoBytes = unsigned.memo !== undefined ? Encoding.toUtf8(unsigned.memo) : new Uint8Array([]);
+      if (memoBytes.length > 64) {
+        throw new Error("Memo exceeds 64 bytes");
+      }
 
       return new Uint8Array([
         0, // transaction type

@@ -94,6 +94,53 @@ describe("serializeTransaction", () => {
 
     expect(() => serializeTransaction(tx)).toThrowError(/fee must not be set/i);
   });
+
+  it("fails to serialize transaction with memo > 64 chars", () => {
+    const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
+
+    const tx: SendTx = {
+      chainId: liskTestnet as ChainId,
+      signer: {
+        algo: Algorithm.ED25519,
+        data: pubkey as PublicKeyBytes,
+      },
+      timestamp: 865708731,
+      kind: TransactionKind.Send,
+      amount: {
+        whole: 1,
+        fractional: 23456789,
+        tokenTicker: "LSK" as TokenTicker,
+      },
+      memo: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam",
+      recipient: toAscii("10010344879730196491L") as Address,
+    };
+
+    expect(() => serializeTransaction(tx)).toThrowError(/memo exceeds 64 bytes/i);
+  });
+
+  it("fails to serialize transaction with memo > 64 bytes", () => {
+    const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
+
+    const tx: SendTx = {
+      chainId: liskTestnet as ChainId,
+      signer: {
+        algo: Algorithm.ED25519,
+        data: pubkey as PublicKeyBytes,
+      },
+      timestamp: 865708731,
+      kind: TransactionKind.Send,
+      amount: {
+        whole: 1,
+        fractional: 23456789,
+        tokenTicker: "LSK" as TokenTicker,
+      },
+      // ⇉ (Rightwards Paired Arrows, U+21c9) takes 2 bytes in UTF-8
+      memo: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed di⇉",
+      recipient: toAscii("10010344879730196491L") as Address,
+    };
+
+    expect(() => serializeTransaction(tx)).toThrowError(/memo exceeds 64 bytes/i);
+  });
 });
 
 describe("transactionId", () => {
