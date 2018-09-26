@@ -169,8 +169,8 @@ export const liskCodec: TxCodec = {
   keyToAddress: (pubkey: PublicKeyBundle): Address => {
     // https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/lisk.cpp#L26
     const hash = new Sha256(pubkey.data).digest();
-    const firstEightBytesReversed = Array.from(hash.slice(0, 8).reverse());
-    const addressString = Long.fromBytesBE(firstEightBytesReversed).toString(10) + "L";
+    const firstEightBytes = Array.from(hash.slice(0, 8));
+    const addressString = Long.fromBytesLE(firstEightBytes).toString(10) + "L";
     return Encoding.toAscii(addressString) as Address;
   },
 };
