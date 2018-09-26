@@ -26,6 +26,8 @@ import {
   SignatureBytes,
 } from "@iov/tendermint-types";
 
+import { pubkeyToAddress } from "./derivation";
+
 function serializeTransaction(unsigned: UnsignedTransaction): Uint8Array {
   switch (unsigned.kind) {
     case TransactionKind.Send:
@@ -167,10 +169,6 @@ export const liskCodec: TxCodec = {
    * These are bugs we have to deal with.
    */
   keyToAddress: (pubkey: PublicKeyBundle): Address => {
-    // https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/lisk.cpp#L26
-    const hash = new Sha256(pubkey.data).digest();
-    const firstEightBytes = Array.from(hash.slice(0, 8));
-    const addressString = Long.fromBytesLE(firstEightBytes).toString(10) + "L";
-    return Encoding.toAscii(addressString) as Address;
+    return pubkeyToAddress(pubkey.data) as Address;
   },
 };

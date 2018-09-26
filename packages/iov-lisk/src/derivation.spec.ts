@@ -1,8 +1,8 @@
 import { Encoding } from "@iov/encoding";
 
-import { passphraseToKeypair } from "./derivation";
+import { passphraseToKeypair, pubkeyToAddress } from "./derivation";
 
-const { fromHex } = Encoding;
+const { fromHex, toAscii } = Encoding;
 
 describe("Derivation", () => {
   describe("passphraseToKeypair", () => {
@@ -16,6 +16,14 @@ describe("Derivation", () => {
       );
       expect(keypair.privkey).toEqual(jasmine.any(Uint8Array));
       expect(keypair.privkey.length).toEqual(32);
+    });
+  });
+
+  describe("pubkeyToAddress", () => {
+    it("works for address in signed int64 range", () => {
+      // https://testnet-explorer.lisk.io/address/6076671634347365051L
+      const pubkey = fromHex("f4852b270f76dc8b49bfa88de5906e81d3b001d23852f0e74ba60cac7180a184");
+      expect(pubkeyToAddress(pubkey)).toEqual(toAscii("6076671634347365051L"));
     });
   });
 });
