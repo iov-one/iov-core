@@ -65,7 +65,7 @@ function serializeTransaction(unsigned: UnsignedTransaction): Uint8Array {
 function transactionId(unsigned: UnsignedTransaction, primarySignature: FullSignature): TransactionIdBytes {
   const serialized = serializeTransaction(unsigned);
   const hash = new Sha256(serialized).update(primarySignature.signature).digest();
-  const idString = Long.fromBytesLE([...hash.slice(0, 8)], true).toString(10);
+  const idString = Long.fromBytesLE(Array.from(hash.slice(0, 8)), true).toString(10);
   return Encoding.toAscii(idString) as TransactionIdBytes;
 }
 
