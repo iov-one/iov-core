@@ -18,4 +18,11 @@ describe("LiskClient", () => {
     const chainId = await client.chainId();
     expect(chainId).toEqual("da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba");
   });
+
+  it("can get height", async () => {
+    const client = new LiskClient(base);
+    const height = await client.height();
+    expect(height).toBeGreaterThan(6000000);
+    expect(height).toBeLessThan(8000000);
+  });
 });

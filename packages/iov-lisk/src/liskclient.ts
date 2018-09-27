@@ -33,8 +33,11 @@ export class LiskClient implements IovReader {
     return responseBody.data.nethash;
   }
 
-  public height(): Promise<number> {
-    throw new Error("Not implemented");
+  public async height(): Promise<number> {
+    const url = this.baseUrl + "/api/node/status";
+    const result = await axios.get(url);
+    const responseBody = result.data;
+    return responseBody.data.height;
   }
 
   public postTx(_: PostableBytes): Promise<BcpTransactionResponse> {
