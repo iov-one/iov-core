@@ -36,6 +36,7 @@
     "@iov/keycontrol": "^0.5.4",
     "@types/long": "^4.0.0",
     "long": "^4.0.0",
-    "readonly-date": "^1.0.0"
+    "readonly-date": "^1.0.0",
+    "xstream": "^11.7.0"
   }
 }
