@@ -27,7 +27,7 @@ const sendTx: SendTx = {
   recipient: recipientAddress,
   memo: "We ❤️ developers – iov.one",
   amount: {
-    whole: 2,
+    whole: 1,
     fractional: 44550000,
     tokenTicker: "LSK" as TokenTicker,
   }
