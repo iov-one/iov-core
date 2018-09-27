@@ -30,7 +30,7 @@ export class IovWriter {
   }
 
   public chainIds(): ReadonlyArray<ChainId> {
-    return Array.from(this.knownChains).map(([x, _]: [string, ChainConnection]) => x as ChainId);
+    return Array.from(this.knownChains.keys()).map(key => key as ChainId);
   }
 
   public reader(chainId: ChainId): BcpConnection {
