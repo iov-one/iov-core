@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@iov/bcp-types": "^0.5.3",
+    "@iov/core": "^0.5.4",
     "@iov/crypto": "^0.5.3",
     "@iov/encoding": "^0.5.3",
     "@iov/keycontrol": "^0.5.4",
