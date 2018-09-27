@@ -161,14 +161,21 @@ export class LiskKeyringEntry implements KeyringEntry {
       algo: Algorithm.ED25519,
       data: keypair.pubkey as PublicKeyBytes,
     };
+    const identityId = LiskKeyringEntry.identityId({ pubkey });
+
+    if (this.identities.find(i => i.id === identityId)) {
+      throw new Error(
+        "Identity ID collision: this happens when you try to create multiple identities with the same passphrase in the same entry.",
+      );
+    }
 
     const newIdentity: LocalIdentity = {
       pubkey: pubkey,
       label: undefined,
-      id: LiskKeyringEntry.identityId({ pubkey }),
+      id: identityId,
     };
     this.identities.push(newIdentity);
-    this.passphrases.set(LiskKeyringEntry.identityId(newIdentity), passphrase);
+    this.passphrases.set(identityId, passphrase);
 
     return newIdentity;
   }

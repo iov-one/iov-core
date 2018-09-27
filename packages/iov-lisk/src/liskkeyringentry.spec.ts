@@ -41,6 +41,30 @@ describe("LiskKeyringEntry", () => {
     expect(newIdentity.pubkey.data.length).toEqual(32);
   });
 
+  it("can create multiple identities", async () => {
+    const entry = new LiskKeyringEntry();
+    const identity1 = await entry.createIdentity("my passphrase 1");
+    const identity2 = await entry.createIdentity("my passphrase 2");
+
+    expect(identity1.pubkey.data).not.toEqual(identity2.pubkey.data);
+    expect(entry.getIdentities().length).toEqual(2);
+    expect(entry.getIdentities()[0].pubkey.data).toEqual(identity1.pubkey.data);
+    expect(entry.getIdentities()[1].pubkey.data).toEqual(identity2.pubkey.data);
+  });
+
+  it("throws when adding the same passphrase twice", async () => {
+    // Same passphrase leads to the same keypair and thus to the same
+    // identity identifier.
+
+    const entry = new LiskKeyringEntry();
+    await entry.createIdentity("my passphrase");
+
+    await entry
+      .createIdentity("my passphrase")
+      .then(() => fail("must not resolve"))
+      .catch(error => expect(error).toMatch(/ID collision/i));
+  });
+
   it("can load a newly created identity", async () => {
     const entry = new LiskKeyringEntry();
     const newIdentity = await entry.createIdentity("my passphrase 1");
