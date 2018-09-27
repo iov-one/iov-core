@@ -1,9 +1,28 @@
 // tslint:disable:no-bitwise
 import Long from "long";
+import { ReadonlyDate } from "readonly-date";
 
 import { FullSignature, TransactionIdBytes, TransactionKind, UnsignedTransaction } from "@iov/bcp-types";
 import { Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
+
+export function toLiskTimestamp(date: ReadonlyDate): number {
+  const timestamp = Math.floor(date.getTime() / 1000);
+
+  const liskEpoch = Date.UTC(2016, 4, 24, 17, 0, 0, 0) / 1000;
+  const liskTimestamp = timestamp - liskEpoch;
+
+  // Lisk timestamp must be in the signed int32 range (to be stored in a Postgres
+  // integer column and to be serializeable as 4 bytes) but has no further
+  // plausibility restrictions.
+  // https://github.com/LiskHQ/lisk/blob/v1.0.3/logic/transaction.js#L674
+
+  if (liskTimestamp < -2147483648 || liskTimestamp > 2147483647) {
+    throw new Error("Lisk timestemp not in int32 range");
+  }
+
+  return liskTimestamp;
+}
 
 export function serializeTransaction(unsigned: UnsignedTransaction): Uint8Array {
   if (unsigned.fee !== undefined) {

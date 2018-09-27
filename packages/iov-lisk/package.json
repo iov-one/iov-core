@@ -35,6 +35,7 @@
     "@iov/encoding": "^0.5.3",
     "@iov/keycontrol": "^0.5.4",
     "@types/long": "^4.0.0",
-    "long": "^4.0.0"
+    "long": "^4.0.0",
+    "readonly-date": "^1.0.0"
   }
 }
