@@ -28,6 +28,7 @@ import { TxQuery } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
 import { Client } from "./client";
+import { bnsFromOrToTag } from "./tags";
 import { keyToAddress } from "./util";
 
 const skipTests = (): boolean => !process.env.BOV_ENABLED;
@@ -231,7 +232,7 @@ describe("Integration tests with bov+tendermint", () => {
     expect(fNonce.toInt()).toBeGreaterThanOrEqual(1);
 
     // now verify we can query the same tx back
-    const txQuery = { tags: [Client.fromOrToTag(faucetAddr)] };
+    const txQuery = { tags: [bnsFromOrToTag(faucetAddr)] };
     const search = await client.searchTx(txQuery);
     expect(search.length).toBeGreaterThanOrEqual(1);
     // make sure we get a valid signature
@@ -300,7 +301,7 @@ describe("Integration tests with bov+tendermint", () => {
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // make sure that we have no tx here
-    const query: TxQuery = { tags: [Client.fromOrToTag(rcptAddr)] };
+    const query: TxQuery = { tags: [bnsFromOrToTag(rcptAddr)] };
     const origSearch = await client.searchTx(query);
     expect(origSearch.length).toEqual(0);
 

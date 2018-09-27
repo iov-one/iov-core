@@ -5,9 +5,7 @@ import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 import { InitData } from "./normalize";
 import { Result } from "./types";
 export declare class Client implements BcpAtomicSwapConnection {
-    static fromOrToTag(addr: Address): Tag;
     static swapQueryTags(query: BcpSwapQuery, set?: boolean): Tag;
-    static nonceTag(addr: Address): Tag;
     static connect(url: string): Promise<Client>;
     protected static initialize(tmClient: TendermintClient): Promise<InitData>;
     protected readonly tmClient: TendermintClient;

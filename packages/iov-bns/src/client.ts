@@ -41,6 +41,7 @@ import { ChainId, PostableBytes, Tag, TxId, TxQuery } from "@iov/tendermint-type
 import { bnsCodec } from "./bnscodec";
 import * as codecImpl from "./codecimpl";
 import { InitData, Normalize } from "./normalize";
+import { bnsFromOrToTag, bnsNonceTag } from "./tags";
 import { Decoder, Keyed, Result } from "./types";
 import { arraysEqual, bucketKey, hashIdentifier, indexKey, isSwapOffer, isSwapRelease } from "./util";
 
@@ -61,13 +62,6 @@ function onChange<T>(): (val: T) => boolean {
 // same interface we have with the BCP protocol.
 // We can embed in iov-core process or use this in a BCP-relay
 export class Client implements BcpAtomicSwapConnection {
-  public static fromOrToTag(addr: Address): Tag {
-    const id = Uint8Array.from([...bucketKey("wllt"), ...addr]);
-    const key = Encoding.toHex(id).toUpperCase();
-    const value = "s"; // "s" for "set"
-    return { key, value };
-  }
-
   public static swapQueryTags(query: BcpSwapQuery, set = true): Tag {
     let binKey: Uint8Array;
     const bucket = "esc";
@@ -86,13 +80,6 @@ export class Client implements BcpAtomicSwapConnection {
     // "s" for set, "d" for delete.... we need to watch both changes to be clear
     // But if we return two tags here, that would AND not OR
     const value = set ? "s" : "d";
-    return { key, value };
-  }
-
-  public static nonceTag(addr: Address): Tag {
-    const id = Uint8Array.from([...Encoding.toAscii("sigs:"), ...addr]);
-    const key = Encoding.toHex(id).toUpperCase();
-    const value = "s"; // "s" for "set"
     return { key, value };
   }
 
@@ -355,12 +342,12 @@ export class Client implements BcpAtomicSwapConnection {
 
   // changeBalance is a helper that triggers if the balance ever changes
   public changeBalance(addr: Address): Stream<number> {
-    return this.changeTx([Client.fromOrToTag(addr)]);
+    return this.changeTx([bnsFromOrToTag(addr)]);
   }
 
   // changeNonce is a helper that triggers if the nonce every changes
   public changeNonce(addr: Address): Stream<number> {
-    return this.changeTx([Client.nonceTag(addr)]);
+    return this.changeTx([bnsNonceTag(addr)]);
   }
 
   // watchAccount gets current balance and emits an update every time
