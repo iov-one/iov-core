@@ -1,4 +1,5 @@
 import axios from "axios";
+import Long from "long";
 import { Stream } from "xstream";
 
 import {
@@ -12,10 +13,12 @@ import {
   BcpTransactionResponse,
   ConfirmedTransaction,
   IovReader,
+  Nonce,
   TokenTicker,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
-import { ChainId, PostableBytes, Tag, TxId, TxQuery } from "@iov/tendermint-types";
+import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, Tag, TxId, TxQuery } from "@iov/tendermint-types";
+
 import { Parse } from "./parse";
 
 function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery {
@@ -128,8 +131,31 @@ export class LiskClient implements IovReader {
     }
   }
 
-  public getNonce(_: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>> {
-    throw new Error("Not implemented");
+  public getNonce(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>> {
+    if (isAddressQuery(query)) {
+      const address = query.address;
+
+      const nonce: BcpNonce = {
+        address: address,
+        // fake pubkey, we cannot always know this
+        publicKey: {
+          algo: Algorithm.ED25519,
+          data: new Uint8Array([]) as PublicKeyBytes,
+        },
+        nonce: Long.fromNumber(Math.floor(Date.now() / 1000)) as Nonce,
+      };
+
+      const out: BcpQueryEnvelope<BcpNonce> = {
+        metadata: {
+          offset: 0,
+          limit: 0,
+        },
+        data: [nonce],
+      };
+      return Promise.resolve(out);
+    } else {
+      throw new Error("Query type not supported");
+    }
   }
 
   public changeBalance(_: Address): Stream<number> {

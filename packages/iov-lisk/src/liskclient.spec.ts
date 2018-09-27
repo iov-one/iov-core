@@ -47,6 +47,17 @@ describe("LiskClient", () => {
     expect(account.data[0].balance[0].fractional).toEqual(48687542);
   });
 
+  it("can get nonce", async () => {
+    const client = new LiskClient(base);
+    const query: BcpAccountQuery = { address: Encoding.toAscii("15683599531721344316L") as Address };
+    const nonce = await client.getNonce(query);
+
+    expect(nonce.data[0].address).toEqual(Encoding.toAscii("15683599531721344316L"));
+    // nonce is current timestamp +/- one second
+    expect(nonce.data[0].nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
+    expect(nonce.data[0].nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
+  });
+
   it(
     "can post transaction",
     async () => {
