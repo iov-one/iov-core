@@ -8,13 +8,12 @@ import {
   SignableBytes,
   SignedTransaction,
   SigningJob,
-  TokenTicker,
   TransactionIdBytes,
   TransactionKind,
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding } from "@iov/encoding";
 import {
   Algorithm,
   ChainId,
@@ -25,6 +24,7 @@ import {
 } from "@iov/tendermint-types";
 
 import { pubkeyToAddress } from "./derivation";
+import { Parse } from "./parse";
 import { serializeTransaction, transactionId } from "./serialization";
 
 export const liskCodec: TxCodec = {
@@ -95,28 +95,17 @@ export const liskCodec: TxCodec = {
   parseBytes: (bytes: PostableBytes, chainId: ChainId): SignedTransaction => {
     const json = JSON.parse(Encoding.fromUtf8(bytes));
 
-    const fee = Int53.fromString(json.fee).asNumber();
-    const amount = Int53.fromString(json.amount).asNumber();
-
     return {
       transaction: {
         chainId: chainId,
-        fee: {
-          whole: Math.floor(fee / 100000000),
-          fractional: fee % 100000000,
-          tokenTicker: "LSK" as TokenTicker,
-        },
+        fee: Parse.liskAmount(json.fee),
         signer: {
           algo: Algorithm.ED25519,
           data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
         },
         ttl: undefined,
         kind: TransactionKind.Send,
-        amount: {
-          whole: Math.floor(amount / 100000000),
-          fractional: amount % 100000000,
-          tokenTicker: "LSK" as TokenTicker,
-        },
+        amount: Parse.liskAmount(json.amount),
         recipient: Encoding.toAscii(json.recipientId) as Address,
         memo: json.asset.data,
       },
