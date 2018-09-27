@@ -15,7 +15,7 @@ import {
   TokenTicker,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
-import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
+import { ChainId, PostableBytes, Tag, TxId, TxQuery } from "@iov/tendermint-types";
 import { Parse } from "./parse";
 
 function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery {
@@ -47,8 +47,44 @@ export class LiskClient implements IovReader {
     return responseBody.data.height;
   }
 
-  public postTx(_: PostableBytes): Promise<BcpTransactionResponse> {
-    throw new Error("Not implemented");
+  public async postTx(bytes: PostableBytes): Promise<BcpTransactionResponse> {
+    const transactionId = JSON.parse(Encoding.fromUtf8(bytes)).id as string;
+    if (!transactionId.match(/^[0-9]+$/)) {
+      throw new Error("Invalid transaction ID");
+    }
+
+    await axios.post(this.baseUrl + "/api/transactions", bytes, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    // Sleep some seconds to ensure transaction will be found.
+    // Sleep duration determined by trial and error. 15 seconds was not enough.
+    await new Promise(resolve => setTimeout(resolve, 18 * 1000));
+
+    const result = await axios.get(this.baseUrl + `/api/transactions?id=${transactionId}`);
+    const responseBody = result.data;
+
+    let height: number | undefined;
+    let transactionResultBytes: Uint8Array | undefined;
+    if (responseBody.meta.count === 1) {
+      const transactionResult = responseBody.data[0];
+      height = transactionResult.height;
+      transactionResultBytes = Encoding.toUtf8(JSON.stringify(transactionResult));
+    }
+
+    return {
+      metadata: {
+        status: true, // commit failures should throw
+        height: height,
+      },
+      data: {
+        message: "",
+        txid: Encoding.toAscii(transactionId) as TxId,
+        result: transactionResultBytes || new Uint8Array([]),
+      },
+    };
   }
 
   public getTicker(_: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {

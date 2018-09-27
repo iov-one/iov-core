@@ -7,7 +7,7 @@ export declare class LiskClient implements IovReader {
     disconnect(): void;
     chainId(): Promise<ChainId>;
     height(): Promise<number>;
-    postTx(_: PostableBytes): Promise<BcpTransactionResponse>;
+    postTx(bytes: PostableBytes): Promise<BcpTransactionResponse>;
     getTicker(_: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAccount(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>>;
