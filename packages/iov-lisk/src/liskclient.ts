@@ -16,7 +16,7 @@ import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 
 export class LiskClient implements IovReader {
   public disconnect(): void {
-    throw new Error("Not implemented");
+    // no-op
   }
 
   public chainId(): Promise<ChainId> {
