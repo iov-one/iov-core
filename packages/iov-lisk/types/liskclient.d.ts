@@ -2,6 +2,8 @@ import { Stream } from "xstream";
 import { Address, BcpAccount, BcpAccountQuery, BcpNonce, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, ConfirmedTransaction, IovReader, TokenTicker } from "@iov/bcp-types";
 import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 export declare class LiskClient implements IovReader {
+    private readonly baseUrl;
+    constructor(baseUrl: string);
     disconnect(): void;
     chainId(): Promise<ChainId>;
     height(): Promise<number>;

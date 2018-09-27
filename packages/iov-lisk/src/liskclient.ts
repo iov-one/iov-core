@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Stream } from "xstream";
 
 import {
@@ -15,12 +16,21 @@ import {
 import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 
 export class LiskClient implements IovReader {
+  private readonly baseUrl: string;
+
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+  }
+
   public disconnect(): void {
     // no-op
   }
 
-  public chainId(): Promise<ChainId> {
-    throw new Error("Not implemented");
+  public async chainId(): Promise<ChainId> {
+    const url = this.baseUrl + "/api/node/constants";
+    const result = await axios.get(url);
+    const responseBody = result.data;
+    return responseBody.data.nethash;
   }
 
   public height(): Promise<number> {
