@@ -40,7 +40,7 @@ export class IovWriter {
   public async addChain(connector: ChainConnector): Promise<void> {
     const connection = await connectChain(connector);
     const chainId = connection.client.chainId();
-    if (this.knownChains.get(chainId) !== undefined) {
+    if (this.knownChains.has(chainId)) {
       throw new Error(`Chain ${chainId} is already registered`);
     }
     this.knownChains.set(chainId, connection);
