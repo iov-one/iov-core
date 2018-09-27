@@ -5,7 +5,7 @@ import { Address, Nonce, SendTx, SignedTransaction, TokenTicker, TransactionKind
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
-import { serializeTransaction, toLiskTimestamp, transactionId } from "./serialization";
+import { amountFromComponents, serializeTransaction, toLiskTimestamp, transactionId } from "./serialization";
 
 const { fromAscii, fromHex, toAscii } = Encoding;
 
@@ -65,6 +65,30 @@ describe("toLiskTimestamp", () => {
     expect(() =>
       toLiskTimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016 + 70, 4, 24, 17, 0, 0, 0))),
     ).toThrowError(/not in int32 range/i);
+  });
+});
+
+describe("amountFromComponents", () => {
+  it("works for some simple values", () => {
+    expect(amountFromComponents(0, 0)).toEqual(Long.fromNumber(0, true));
+    expect(amountFromComponents(0, 1)).toEqual(Long.fromNumber(1, true));
+    expect(amountFromComponents(0, 123)).toEqual(Long.fromNumber(123, true));
+    expect(amountFromComponents(1, 0)).toEqual(Long.fromNumber(100000000, true));
+    expect(amountFromComponents(123, 0)).toEqual(Long.fromNumber(12300000000, true));
+    expect(amountFromComponents(1, 1)).toEqual(Long.fromNumber(100000001, true));
+    expect(amountFromComponents(1, 23456789)).toEqual(Long.fromNumber(123456789, true));
+  });
+
+  it("works for 10 million lisk", () => {
+    expect(amountFromComponents(10000000, 0)).toEqual(Long.fromString("1000000000000000", true, 10));
+    // set high and low digit to trigger precision bugs in floating point operations
+    expect(amountFromComponents(10000000, 1)).toEqual(Long.fromString("1000000000000001", true, 10));
+  });
+
+  it("works for 100 million lisk", () => {
+    expect(amountFromComponents(100000000, 0)).toEqual(Long.fromString("10000000000000000", true, 10));
+    // set high and low digit to trigger precision bugs in floating point operations
+    expect(amountFromComponents(100000000, 1)).toEqual(Long.fromString("10000000000000001", true, 10));
   });
 });
 

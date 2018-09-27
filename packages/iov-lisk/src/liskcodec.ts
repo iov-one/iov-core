@@ -25,7 +25,7 @@ import {
 
 import { pubkeyToAddress } from "./derivation";
 import { Parse } from "./parse";
-import { serializeTransaction, transactionId } from "./serialization";
+import { amountFromComponents, serializeTransaction, transactionId } from "./serialization";
 
 export const liskCodec: TxCodec = {
   /**
@@ -55,9 +55,9 @@ export const liskCodec: TxCodec = {
           new ReadonlyDate(timestamp * 1000),
           signed.primarySignature,
         );
-        const amount = Long.fromNumber(
-          signed.transaction.amount.whole * 100000000 + signed.transaction.amount.fractional,
-          true,
+        const amount = amountFromComponents(
+          signed.transaction.amount.whole,
+          signed.transaction.amount.fractional,
         );
 
         const postableObject = {

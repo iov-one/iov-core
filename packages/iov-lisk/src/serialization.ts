@@ -24,6 +24,13 @@ export function toLiskTimestamp(date: ReadonlyDate): number {
   return liskTimestamp;
 }
 
+export function amountFromComponents(whole: number, fractional: number): Long {
+  return Long.fromNumber(whole)
+    .multiply(100000000)
+    .add(fractional)
+    .toUnsigned();
+}
+
 export function serializeTransaction(unsigned: UnsignedTransaction, creationTime: ReadonlyDate): Uint8Array {
   if (unsigned.fee !== undefined) {
     throw new Error("Fee must not be set. It is fixed in Lisk and not included in the signed content.");
@@ -38,7 +45,7 @@ export function serializeTransaction(unsigned: UnsignedTransaction, creationTime
         (liskTimestamp >> 16) & 0xff,
         (liskTimestamp >> 24) & 0xff,
       ]);
-      const amount = Long.fromNumber(unsigned.amount.whole * 100000000 + unsigned.amount.fractional, true);
+      const amount = amountFromComponents(unsigned.amount.whole, unsigned.amount.fractional);
       const recipientString = Encoding.fromAscii(unsigned.recipient);
       if (!recipientString.match(/^[0-9]{1,20}L$/)) {
         throw new Error("Recipient does not match expected format");
