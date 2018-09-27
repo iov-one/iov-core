@@ -17,7 +17,8 @@ const { fromHex, toAscii } = Encoding;
 
 // use nethash as chain ID
 const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
-const emptyNonce = new Long(0) as Nonce;
+const liskEpochAsUinxTimestamp = 1464109200;
+const defaultCreationTimestamp = Long.fromNumber(865708731 + liskEpochAsUinxTimestamp);
 
 describe("liskCodec", () => {
   it("derives addresses properly", () => {
@@ -38,7 +39,6 @@ describe("liskCodec", () => {
         algo: Algorithm.ED25519,
         data: pubkey as PublicKeyBytes,
       },
-      timestamp: 865708731,
       kind: TransactionKind.Send,
       amount: {
         whole: 1,
@@ -51,7 +51,7 @@ describe("liskCodec", () => {
     const signed: SignedTransaction = {
       transaction: tx,
       primarySignature: {
-        nonce: emptyNonce,
+        nonce: defaultCreationTimestamp as Nonce,
         publicKey: {
           algo: Algorithm.ED25519,
           data: pubkey as PublicKeyBytes,

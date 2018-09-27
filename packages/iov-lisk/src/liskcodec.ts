@@ -1,4 +1,5 @@
 import Long from "long";
+import { ReadonlyDate } from "readonly-date";
 
 import {
   Address,
@@ -31,9 +32,11 @@ export const liskCodec: TxCodec = {
    * Transaction serialization as in
    * https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/transaction.cpp#L36
    */
-  bytesToSign: (unsigned: UnsignedTransaction, _: Nonce): SigningJob => {
+  bytesToSign: (unsigned: UnsignedTransaction, nonce: Nonce): SigningJob => {
+    const creationTimestamp = nonce.toNumber();
+    const creationDate = new ReadonlyDate(creationTimestamp * 1000);
     return {
-      bytes: serializeTransaction(unsigned) as SignableBytes,
+      bytes: serializeTransaction(unsigned, creationDate) as SignableBytes,
       prehashType: PrehashType.Sha256,
     };
   },
@@ -45,22 +48,30 @@ export const liskCodec: TxCodec = {
   bytesToPost: (signed: SignedTransaction): PostableBytes => {
     switch (signed.transaction.kind) {
       case TransactionKind.Send:
+        const timestamp = signed.primarySignature.nonce.toNumber();
+        const liskTimestamp = timestamp - 1464109200;
+        const id = transactionId(
+          signed.transaction,
+          new ReadonlyDate(timestamp * 1000),
+          signed.primarySignature,
+        );
         const amount = Long.fromNumber(
           signed.transaction.amount.whole * 100000000 + signed.transaction.amount.fractional,
           true,
         );
+
         const postableObject = {
           type: 0,
           amount: amount.toString(10),
           recipientId: Encoding.fromAscii(signed.transaction.recipient),
           senderPublicKey: Encoding.toHex(signed.primarySignature.publicKey.data),
-          timestamp: signed.transaction.timestamp!,
+          timestamp: liskTimestamp,
           fee: "10000000", // 0.1 LSK fixed
           asset: {
             data: signed.transaction.memo,
           },
           signature: Encoding.toHex(signed.primarySignature.signature),
-          id: Encoding.fromAscii(transactionId(signed.transaction, signed.primarySignature)),
+          id: Encoding.fromAscii(id),
         };
         return Encoding.toUtf8(JSON.stringify(postableObject)) as PostableBytes;
       default:
@@ -73,7 +84,9 @@ export const liskCodec: TxCodec = {
    * https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/transaction.cpp#L87
    */
   identifier: (signed: SignedTransaction): TransactionIdBytes => {
-    return transactionId(signed.transaction, signed.primarySignature);
+    const creationTimestamp = signed.primarySignature.nonce.toNumber();
+    const creationDate = new ReadonlyDate(creationTimestamp * 1000);
+    return transactionId(signed.transaction, creationDate, signed.primarySignature);
   },
 
   /**

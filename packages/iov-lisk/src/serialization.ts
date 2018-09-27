@@ -24,18 +24,19 @@ export function toLiskTimestamp(date: ReadonlyDate): number {
   return liskTimestamp;
 }
 
-export function serializeTransaction(unsigned: UnsignedTransaction): Uint8Array {
+export function serializeTransaction(unsigned: UnsignedTransaction, creationTime: ReadonlyDate): Uint8Array {
   if (unsigned.fee !== undefined) {
     throw new Error("Fee must not be set. It is fixed in Lisk and not included in the signed content.");
   }
 
   switch (unsigned.kind) {
     case TransactionKind.Send:
+      const liskTimestamp = toLiskTimestamp(creationTime);
       const timestampBytes = new Uint8Array([
-        (unsigned.timestamp! >> 0) & 0xff,
-        (unsigned.timestamp! >> 8) & 0xff,
-        (unsigned.timestamp! >> 16) & 0xff,
-        (unsigned.timestamp! >> 24) & 0xff,
+        (liskTimestamp >> 0) & 0xff,
+        (liskTimestamp >> 8) & 0xff,
+        (liskTimestamp >> 16) & 0xff,
+        (liskTimestamp >> 24) & 0xff,
       ]);
       const amount = Long.fromNumber(unsigned.amount.whole * 100000000 + unsigned.amount.fractional, true);
       const recipientString = Encoding.fromAscii(unsigned.recipient);
@@ -69,9 +70,10 @@ export function serializeTransaction(unsigned: UnsignedTransaction): Uint8Array 
 
 export function transactionId(
   unsigned: UnsignedTransaction,
+  creationTime: ReadonlyDate,
   primarySignature: FullSignature,
 ): TransactionIdBytes {
-  const serialized = serializeTransaction(unsigned);
+  const serialized = serializeTransaction(unsigned, creationTime);
   const hash = new Sha256(serialized).update(primarySignature.signature).digest();
   const idString = Long.fromBytesLE(Array.from(hash.slice(0, 8)), true).toString(10);
   return Encoding.toAscii(idString) as TransactionIdBytes;

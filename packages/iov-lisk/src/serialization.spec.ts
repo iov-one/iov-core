@@ -69,6 +69,8 @@ describe("toLiskTimestamp", () => {
 });
 
 describe("serializeTransaction", () => {
+  const defaultCreationDate = new ReadonlyDate((865708731 + liskEpochAsUinxTimestamp) * 1000);
+
   it("can serialize type 0 without memo", () => {
     const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
@@ -78,7 +80,6 @@ describe("serializeTransaction", () => {
         algo: Algorithm.ED25519,
         data: pubkey as PublicKeyBytes,
       },
-      timestamp: 865708731,
       kind: TransactionKind.Send,
       amount: {
         whole: 1,
@@ -88,7 +89,7 @@ describe("serializeTransaction", () => {
       recipient: toAscii("10010344879730196491L") as Address,
     };
 
-    const serialized = serializeTransaction(tx);
+    const serialized = serializeTransaction(tx, defaultCreationDate);
     expect(serialized).toEqual(
       fromHex(
         "00bbaa993300112233445566778899aabbccddeeff00112233445566778899aabbccddeeff8aebe3a18b78000b15cd5b0700000000",
@@ -105,7 +106,6 @@ describe("serializeTransaction", () => {
         algo: Algorithm.ED25519,
         data: pubkey as PublicKeyBytes,
       },
-      timestamp: 865708731,
       kind: TransactionKind.Send,
       amount: {
         whole: 1,
@@ -116,7 +116,7 @@ describe("serializeTransaction", () => {
       memo: "The nice memo I attach to that money for the whole world to read",
     };
 
-    const serialized = serializeTransaction(tx);
+    const serialized = serializeTransaction(tx, defaultCreationDate);
     expect(serialized).toEqual(
       fromHex(
         "00bbaa993300112233445566778899aabbccddeeff00112233445566778899aabbccddeeff8aebe3a18b78000b15cd5b0700000000546865206e696365206d656d6f20492061747461636820746f2074686174206d6f6e657920666f72207468652077686f6c6520776f726c6420746f2072656164",
@@ -133,7 +133,6 @@ describe("serializeTransaction", () => {
         algo: Algorithm.ED25519,
         data: pubkey as PublicKeyBytes,
       },
-      timestamp: 865708731,
       kind: TransactionKind.Send,
       amount: {
         whole: 1,
@@ -148,7 +147,7 @@ describe("serializeTransaction", () => {
       recipient: toAscii("10010344879730196491L") as Address,
     };
 
-    expect(() => serializeTransaction(tx)).toThrowError(/fee must not be set/i);
+    expect(() => serializeTransaction(tx, defaultCreationDate)).toThrowError(/fee must not be set/i);
   });
 
   it("fails to serialize transaction with memo > 64 chars", () => {
@@ -160,7 +159,6 @@ describe("serializeTransaction", () => {
         algo: Algorithm.ED25519,
         data: pubkey as PublicKeyBytes,
       },
-      timestamp: 865708731,
       kind: TransactionKind.Send,
       amount: {
         whole: 1,
@@ -171,7 +169,7 @@ describe("serializeTransaction", () => {
       recipient: toAscii("10010344879730196491L") as Address,
     };
 
-    expect(() => serializeTransaction(tx)).toThrowError(/memo exceeds 64 bytes/i);
+    expect(() => serializeTransaction(tx, defaultCreationDate)).toThrowError(/memo exceeds 64 bytes/i);
   });
 
   it("fails to serialize transaction with memo > 64 bytes", () => {
@@ -183,7 +181,6 @@ describe("serializeTransaction", () => {
         algo: Algorithm.ED25519,
         data: pubkey as PublicKeyBytes,
       },
-      timestamp: 865708731,
       kind: TransactionKind.Send,
       amount: {
         whole: 1,
@@ -195,11 +192,13 @@ describe("serializeTransaction", () => {
       recipient: toAscii("10010344879730196491L") as Address,
     };
 
-    expect(() => serializeTransaction(tx)).toThrowError(/memo exceeds 64 bytes/i);
+    expect(() => serializeTransaction(tx, defaultCreationDate)).toThrowError(/memo exceeds 64 bytes/i);
   });
 });
 
 describe("transactionId", () => {
+  const defaultCreationDate = new ReadonlyDate((865708731 + liskEpochAsUinxTimestamp) * 1000);
+
   it("can calculate ID of type 0 without memo", () => {
     const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
@@ -209,7 +208,6 @@ describe("transactionId", () => {
         algo: Algorithm.ED25519,
         data: pubkey as PublicKeyBytes,
       },
-      timestamp: 865708731,
       kind: TransactionKind.Send,
       amount: {
         whole: 1,
@@ -232,7 +230,7 @@ describe("transactionId", () => {
       otherSignatures: [],
     };
 
-    const binaryId = transactionId(signed.transaction, signed.primarySignature);
+    const binaryId = transactionId(signed.transaction, defaultCreationDate, signed.primarySignature);
     expect(fromAscii(binaryId)).toEqual("15806479375328957764");
   });
 });
