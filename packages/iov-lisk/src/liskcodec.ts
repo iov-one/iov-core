@@ -1,4 +1,3 @@
-import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
 import {
@@ -119,7 +118,7 @@ export const liskCodec: TxCodec = {
         memo: json.asset.data,
       },
       primarySignature: {
-        nonce: new Long(0) as Nonce,
+        nonce: Parse.timeToNonce(Parse.fromLiskTimestamp(json.timestamp)),
         publicKey: {
           algo: Algorithm.ED25519,
           data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,

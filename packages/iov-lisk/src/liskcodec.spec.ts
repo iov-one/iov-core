@@ -120,6 +120,9 @@ describe("liskCodec", () => {
     );
     expect(parsed.transaction.recipient).toEqual(toAscii("6076671634347365051L"));
 
+    expect(parsed.primarySignature.nonce).toEqual(Long.fromNumber(
+      73863961 + liskEpochAsUinxTimestamp,
+    ) as Nonce);
     expect(parsed.primarySignature.publicKey.algo).toEqual(Algorithm.ED25519);
     expect(parsed.primarySignature.publicKey.data).toEqual(
       fromHex("06ad4341a609af2de837e1156f81849b05bf3c280940a9f45db76d09a3a3f2fa"),
