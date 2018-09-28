@@ -58,7 +58,7 @@ This is how you use `liskCodec` and `LiskKeyringEntry` to generate send transact
 for Lisk manually, i.e. without the help of @iov/core.
 
 ```ts
-import { liskCodec, LiskKeyringEntry } from "@iov/lisk";
+import { generateNonce, liskCodec, LiskKeyringEntry } from "@iov/lisk";
 
 const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
 
@@ -80,8 +80,7 @@ const sendTx: SendTx = {
   }
 };
 
-// Encode creation timestamp into nonce
-const nonce = Long.fromNumber(Math.floor(Date.now() / 1000)) as Nonce;
+const nonce = generateNonce();
 const signingJob = liskCodec.bytesToSign(sendTx, nonce);
 const signature = await entry.createTransactionSignature(mainIdentity, signingJob.bytes, signingJob.prehashType, liskTestnet);
 

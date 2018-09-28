@@ -1,5 +1,5 @@
 import axios from "axios";
-import Long from "long";
+import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
 import {
@@ -23,6 +23,14 @@ import { Parse } from "./parse";
 
 function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery {
   return (query as BcpAddressQuery).address !== undefined;
+}
+
+/**
+ * Encodes the current date and time as a nonce
+ */
+export function generateNonce(): Nonce {
+  const now = new ReadonlyDate(ReadonlyDate.now());
+  return Parse.timeToNonce(now);
 }
 
 export class LiskClient implements IovReader {
@@ -142,7 +150,7 @@ export class LiskClient implements IovReader {
           algo: Algorithm.ED25519,
           data: new Uint8Array([]) as PublicKeyBytes,
         },
-        nonce: Long.fromNumber(Math.floor(Date.now() / 1000)) as Nonce,
+        nonce: generateNonce(),
       };
 
       const out: BcpQueryEnvelope<BcpNonce> = {

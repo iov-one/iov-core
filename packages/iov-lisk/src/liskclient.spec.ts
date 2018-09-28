@@ -1,10 +1,8 @@
-import Long from "long";
-
-import { Address, BcpAccountQuery, Nonce, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Address, BcpAccountQuery, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import { ChainId } from "@iov/tendermint-types";
 
-import { LiskClient } from "./liskclient";
+import { generateNonce, LiskClient } from "./liskclient";
 import { liskCodec } from "./liskcodec";
 import { LiskKeyringEntry } from "./liskkeyringentry";
 
@@ -84,7 +82,7 @@ describe("LiskClient", () => {
       };
 
       // Encode creation timestamp into nonce
-      const nonce = Long.fromNumber(Math.floor(Date.now() / 1000)) as Nonce;
+      const nonce = generateNonce();
       const signingJob = liskCodec.bytesToSign(sendTx, nonce);
       const signature = await entry.createTransactionSignature(
         mainIdentity,
