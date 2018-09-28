@@ -44,7 +44,7 @@ export class LiskClient implements IovReader {
       );
     }
 
-    this.baseUrl = baseUrl;
+    this.baseUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
   }
 
   public disconnect(): void {
