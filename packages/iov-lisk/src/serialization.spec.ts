@@ -11,7 +11,7 @@ const { fromAscii, fromHex, toAscii } = Encoding;
 
 // use nethash as chain ID
 const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
-const liskEpochAsUinxTimestamp = 1464109200;
+const liskEpochAsUnixTimestamp = 1464109200;
 const emptyNonce = new Long(0) as Nonce;
 
 describe("toLiskTimestamp", () => {
@@ -52,7 +52,7 @@ describe("toLiskTimestamp", () => {
     // $ python3 -c 'import calendar, datetime; print(calendar.timegm(datetime.datetime(2040, 3, 21, 17, 13, 22, 0).utctimetuple()))'
     // 2215962802
     const dateIn2040 = new ReadonlyDate(ReadonlyDate.UTC(2040, 2, 21, 17, 13, 22));
-    expect(toLiskTimestamp(dateIn2040)).toEqual(2215962802 - liskEpochAsUinxTimestamp);
+    expect(toLiskTimestamp(dateIn2040)).toEqual(2215962802 - liskEpochAsUnixTimestamp);
   });
 
   it("throws for time 70 years before Lisk epoch", () => {
@@ -93,7 +93,7 @@ describe("amountFromComponents", () => {
 });
 
 describe("serializeTransaction", () => {
-  const defaultCreationDate = new ReadonlyDate((865708731 + liskEpochAsUinxTimestamp) * 1000);
+  const defaultCreationDate = new ReadonlyDate((865708731 + liskEpochAsUnixTimestamp) * 1000);
 
   it("can serialize type 0 without memo", () => {
     const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
@@ -221,7 +221,7 @@ describe("serializeTransaction", () => {
 });
 
 describe("transactionId", () => {
-  const defaultCreationDate = new ReadonlyDate((865708731 + liskEpochAsUinxTimestamp) * 1000);
+  const defaultCreationDate = new ReadonlyDate((865708731 + liskEpochAsUnixTimestamp) * 1000);
 
   it("can calculate ID of type 0 without memo", () => {
     const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");

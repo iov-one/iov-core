@@ -17,8 +17,8 @@ const { fromHex, toAscii } = Encoding;
 
 // use nethash as chain ID
 const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
-const liskEpochAsUinxTimestamp = 1464109200;
-const defaultCreationTimestamp = Long.fromNumber(865708731 + liskEpochAsUinxTimestamp);
+const liskEpochAsUnixTimestamp = 1464109200;
+const defaultCreationTimestamp = Long.fromNumber(865708731 + liskEpochAsUnixTimestamp);
 
 describe("liskCodec", () => {
   it("derives addresses properly", () => {
@@ -121,7 +121,7 @@ describe("liskCodec", () => {
     expect(parsed.transaction.recipient).toEqual(toAscii("6076671634347365051L"));
 
     expect(parsed.primarySignature.nonce).toEqual(Long.fromNumber(
-      73863961 + liskEpochAsUinxTimestamp,
+      73863961 + liskEpochAsUnixTimestamp,
     ) as Nonce);
     expect(parsed.primarySignature.publicKey.algo).toEqual(Algorithm.ED25519);
     expect(parsed.primarySignature.publicKey.data).toEqual(
