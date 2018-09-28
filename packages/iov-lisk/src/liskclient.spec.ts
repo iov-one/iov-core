@@ -59,7 +59,7 @@ describe("LiskClient", () => {
     expect(() => new LiskClient("http://[2001::0370:7344]/")).toThrowError(/invalid api url/i);
     expect(() => new LiskClient("http://[2001::0370:7344]:8080/")).toThrowError(/invalid api url/i);
 
-    //wrong path
+    // wrong path
     expect(() => new LiskClient("http://localhost/api")).toThrowError(/invalid api url/i);
   });
 
