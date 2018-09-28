@@ -7,5 +7,6 @@ export interface AmountFields {
 }
 export declare class Parse {
     static liskAmount(str: string): AmountFields;
+    static fromLiskTimestamp(liskTimestamp: number): ReadonlyDate;
     static timeToNonce(date: ReadonlyDate): Nonce;
 }

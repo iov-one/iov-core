@@ -40,6 +40,44 @@ describe("Parse", () => {
     expect(Parse.liskAmount("123456789")).toEqual(expected);
   });
 
+  it("parses lisk timestamp 0 as Lisk epoch", () => {
+    expect(Parse.fromLiskTimestamp(0)).toEqual(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 17, 0, 0, 0)));
+  });
+
+  it("can parse positive timestamps", () => {
+    // one second
+    expect(Parse.fromLiskTimestamp(1)).toEqual(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 17, 0, 1, 0)));
+    // one minute
+    expect(Parse.fromLiskTimestamp(60)).toEqual(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 17, 1, 0, 0)));
+    // one hour
+    expect(Parse.fromLiskTimestamp(3600)).toEqual(
+      new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 18, 0, 0, 0)),
+    );
+    // one day
+    expect(Parse.fromLiskTimestamp(86400)).toEqual(
+      new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 25, 17, 0, 0, 0)),
+    );
+  });
+
+  it("can parse negative timestamps", () => {
+    // one second
+    expect(Parse.fromLiskTimestamp(-1)).toEqual(
+      new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 16, 59, 59, 0)),
+    );
+    // one minute
+    expect(Parse.fromLiskTimestamp(-60)).toEqual(
+      new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 16, 59, 0, 0)),
+    );
+    // one hour
+    expect(Parse.fromLiskTimestamp(-3600)).toEqual(
+      new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 16, 0, 0, 0)),
+    );
+    // one day
+    expect(Parse.fromLiskTimestamp(-86400)).toEqual(
+      new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 23, 17, 0, 0, 0)),
+    );
+  });
+
   it("can convert time to nonce", () => {
     // zero, positive, negative
     expect(Parse.timeToNonce(new ReadonlyDate(ReadonlyDate.UTC(1970, 0, 1, 0, 0, 0)))).toEqual(
