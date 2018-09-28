@@ -1,4 +1,5 @@
-import { TokenTicker } from "@iov/bcp-types";
+import { ReadonlyDate } from "readonly-date";
+import { Nonce, TokenTicker } from "@iov/bcp-types";
 export interface AmountFields {
     readonly whole: number;
     readonly fractional: number;
@@ -6,4 +7,5 @@ export interface AmountFields {
 }
 export declare class Parse {
     static liskAmount(str: string): AmountFields;
+    static timeToNonce(date: ReadonlyDate): Nonce;
 }
