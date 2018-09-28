@@ -20,6 +20,49 @@ describe("LiskClient", () => {
     expect(client).toBeTruthy();
   });
 
+  it("takes different kind of API URLs", () => {
+    expect(new LiskClient("http://localhost")).toBeTruthy();
+    expect(new LiskClient("http://localhost/")).toBeTruthy();
+    expect(new LiskClient("https://localhost")).toBeTruthy();
+    expect(new LiskClient("https://localhost/")).toBeTruthy();
+    expect(new LiskClient("http://localhost:456")).toBeTruthy();
+    expect(new LiskClient("http://localhost:456/")).toBeTruthy();
+    expect(new LiskClient("https://localhost:456")).toBeTruthy();
+    expect(new LiskClient("https://localhost:456/")).toBeTruthy();
+
+    expect(new LiskClient("http://my-HOST.tld")).toBeTruthy();
+    expect(new LiskClient("http://my-HOST.tld/")).toBeTruthy();
+    expect(new LiskClient("https://my-HOST.tld")).toBeTruthy();
+    expect(new LiskClient("https://my-HOST.tld/")).toBeTruthy();
+    expect(new LiskClient("http://my-HOST.tld:456")).toBeTruthy();
+    expect(new LiskClient("http://my-HOST.tld:456/")).toBeTruthy();
+    expect(new LiskClient("https://my-HOST.tld:456")).toBeTruthy();
+    expect(new LiskClient("https://my-HOST.tld:456/")).toBeTruthy();
+
+    expect(new LiskClient("http://123.123.123.123")).toBeTruthy();
+    expect(new LiskClient("http://123.123.123.123/")).toBeTruthy();
+    expect(new LiskClient("https://123.123.123.123")).toBeTruthy();
+    expect(new LiskClient("https://123.123.123.123/")).toBeTruthy();
+    expect(new LiskClient("http://123.123.123.123:456")).toBeTruthy();
+    expect(new LiskClient("http://123.123.123.123:456/")).toBeTruthy();
+    expect(new LiskClient("https://123.123.123.123:456")).toBeTruthy();
+    expect(new LiskClient("https://123.123.123.123:456/")).toBeTruthy();
+  });
+
+  it("throws for invalid API URLs", () => {
+    // wrong scheme
+    expect(() => new LiskClient("localhost")).toThrowError(/invalid api url/i);
+    expect(() => new LiskClient("ftp://localhost")).toThrowError(/invalid api url/i);
+    expect(() => new LiskClient("ws://localhost")).toThrowError(/invalid api url/i);
+
+    // unsupported hosts
+    expect(() => new LiskClient("http://[2001::0370:7344]/")).toThrowError(/invalid api url/i);
+    expect(() => new LiskClient("http://[2001::0370:7344]:8080/")).toThrowError(/invalid api url/i);
+
+    //wrong path
+    expect(() => new LiskClient("http://localhost/api")).toThrowError(/invalid api url/i);
+  });
+
   it("can disconnect", () => {
     const client = new LiskClient(base);
     expect(() => client.disconnect()).not.toThrow();

@@ -38,6 +38,12 @@ export class LiskClient implements IovReader {
   private readonly baseUrl: string;
 
   constructor(baseUrl: string) {
+    if (!baseUrl.match(/^https?:\/\/[-\.a-zA-Z0-9]+(:[0-9]+)?\/?$/)) {
+      throw new Error(
+        "Invalid API URL. Expected a base URL like https://testnet.lisk.io or http://123.123.132.132:8000/",
+      );
+    }
+
     this.baseUrl = baseUrl;
   }
 
