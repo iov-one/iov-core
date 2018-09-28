@@ -19,6 +19,7 @@ import {
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, Tag, TxId, TxQuery } from "@iov/tendermint-types";
 
+import { constants } from "./constants";
 import { Parse } from "./parse";
 
 function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery {
@@ -118,8 +119,8 @@ export class LiskClient implements IovReader {
         name: undefined,
         balance: [
           {
-            sigFigs: 8,
-            tokenName: undefined,
+            sigFigs: constants.primaryTokenSigFigs,
+            tokenName: constants.primaryTokenName,
             ...Parse.liskAmount(responseBody.data[0].balance),
           },
         ],

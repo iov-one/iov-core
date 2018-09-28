@@ -3,6 +3,8 @@ import { ReadonlyDate } from "readonly-date";
 
 import { Nonce, TokenTicker } from "@iov/bcp-types";
 
+import { constants } from "./constants";
+
 export interface AmountFields {
   readonly whole: number;
   readonly fractional: number;
@@ -15,7 +17,7 @@ export class Parse {
     return {
       whole: amount.divide(100000000).toNumber(),
       fractional: amount.modulo(100000000).toNumber(),
-      tokenTicker: "LSK" as TokenTicker,
+      tokenTicker: constants.primaryTokenTicker,
     };
   }
 
