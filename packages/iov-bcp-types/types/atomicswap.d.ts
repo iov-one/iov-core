@@ -1,3 +1,4 @@
+import { As } from "type-tagger";
 import { Stream } from "xstream";
 import { BcpCoin, BcpConnection, BcpQueryEnvelope } from "./bcp";
 import { Address } from "./signables";
@@ -7,11 +8,12 @@ export declare enum SwapState {
     Claimed = "claimed",
     Expired = "expired"
 }
+export declare type HashLock = Uint8Array & As<"hashlock">;
 export interface SwapData {
     readonly id: SwapIdBytes;
     readonly sender: Address;
     readonly recipient: Address;
-    readonly hashlock: Uint8Array;
+    readonly hashlock: HashLock;
     readonly amount: ReadonlyArray<BcpCoin>;
     readonly timeout: number;
     readonly memo?: string;

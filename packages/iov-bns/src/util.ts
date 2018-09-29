@@ -1,4 +1,4 @@
-import { Address, Nonce, SignableBytes } from "@iov/bcp-types";
+import { Address, HashLock, Nonce, SignableBytes } from "@iov/bcp-types";
 import { Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBundle } from "@iov/tendermint-types";
@@ -40,12 +40,14 @@ export const appendSignBytes = (bz: Uint8Array, chainId: ChainId, nonce: Nonce) 
 // probably only works after 0.21, but no need to import ripemd160 now
 export const tendermintHash = (data: Uint8Array) => new Sha256(data).digest().slice(0, 20);
 
-export const hashId = Encoding.toAscii("hash/sha256/");
-export const hashIdentifier = (data: Uint8Array) =>
-  Uint8Array.from([...hashId, ...new Sha256(data).digest()]);
-
 export const arraysEqual = (a: Uint8Array, b: Uint8Array): boolean =>
   a.length === b.length && a.every((n: number, i: number): boolean => n === b[i]);
 
-export const isHashIdentifier = (ident: Uint8Array): boolean =>
+export const hashId = Encoding.toAscii("hash/sha256/");
+export const preimageIdentifier = (data: Uint8Array): HashLock => hashIdentifier(new Sha256(data).digest());
+export const hashIdentifier = (hash: Uint8Array): HashLock =>
+  Uint8Array.from([...hashId, ...hash]) as HashLock;
+
+export const isHashIdentifier = (ident: Uint8Array): ident is HashLock =>
   arraysEqual(hashId, ident.slice(0, hashId.length));
+export const hashFromIdentifier = (ident: HashLock): Uint8Array => ident.slice(hashId.length);
