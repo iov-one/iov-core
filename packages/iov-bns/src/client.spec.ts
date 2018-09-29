@@ -699,14 +699,16 @@ describe("Integration tests with bov+tendermint", () => {
 
     // validate liveView is correct
     const vals = liveView.value();
-    expect(vals.length).toEqual(4);
+    expect(vals.length).toEqual(5);
     expect(vals[0].kind).toEqual(SwapState.OPEN);
     expect(vals[0].data.id).toEqual(id1);
-    expect(vals[1].kind).toEqual(SwapState.CLAIMED);
+    expect(vals[1].kind).toEqual(SwapState.OPEN);
     expect(vals[1].data.id).toEqual(id2);
-    expect(vals[2].kind).toEqual(SwapState.OPEN);
-    expect(vals[2].data.id).toEqual(id3);
-    expect(vals[3].kind).toEqual(SwapState.CLAIMED);
-    expect(vals[3].data.id).toEqual(id1);
+    expect(vals[2].kind).toEqual(SwapState.CLAIMED);
+    expect(vals[2].data.id).toEqual(id2);
+    expect(vals[3].kind).toEqual(SwapState.OPEN);
+    expect(vals[3].data.id).toEqual(id3);
+    expect(vals[4].kind).toEqual(SwapState.CLAIMED);
+    expect(vals[4].data.id).toEqual(id1);
   });
 });
