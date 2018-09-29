@@ -257,8 +257,12 @@ export class Client implements BcpAtomicSwapConnection {
 
   // watchSwap emits currentState (getSwap) as a stream, then sends updates for any matching swap
   // this includes an open swap beind claimed/expired as well as a new matching swap being offered
-  public watchSwap(/*swap: BcpSwapQuery*/): Stream<BcpAtomicSwap> {
-    throw new Error("not implemented");
+  public watchSwap(query: BcpSwapQuery): Stream<BcpAtomicSwap> {
+    const stripEnvelope = async () => (await this.getSwap(query)).data;
+    const history = streamPromise(stripEnvelope());
+    // const updates = this.listenTx(txQuery.tags);
+    // return Stream.merge(history, updates);
+    return history;
   }
 
   public async searchTx(txQuery: TxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {

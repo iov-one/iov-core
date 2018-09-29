@@ -24,7 +24,7 @@ export declare class Client implements BcpAtomicSwapConnection {
     getNonce(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>>;
     getSwapFromState(query: BcpSwapQuery): Promise<BcpQueryEnvelope<BcpAtomicSwap>>;
     getSwap(query: BcpSwapQuery): Promise<BcpQueryEnvelope<BcpAtomicSwap>>;
-    watchSwap(): Stream<BcpAtomicSwap>;
+    watchSwap(query: BcpSwapQuery): Stream<BcpAtomicSwap>;
     searchTx(txQuery: TxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
     listenTx(tags: ReadonlyArray<Tag>): Stream<ConfirmedTransaction>;
     liveTx(txQuery: TxQuery): Stream<ConfirmedTransaction>;

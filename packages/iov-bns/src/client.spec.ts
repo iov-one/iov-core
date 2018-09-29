@@ -652,7 +652,8 @@ describe("Integration tests with bov+tendermint", () => {
     // const hash3 = new Sha256(preimage3).digest();
 
     // nothing to start with
-    const initSwaps = await client.getSwap({ recipient: rcptAddr });
+    const rcptQuery = { recipient: rcptAddr };
+    const initSwaps = await client.getSwap(rcptQuery);
     expect(initSwaps.data.length).toEqual(0);
 
     // make two offers
@@ -665,7 +666,7 @@ describe("Integration tests with bov+tendermint", () => {
     expect(id2.length).toEqual(8);
 
     // find two open
-    const midSwaps = await client.getSwap({ recipient: rcptAddr });
+    const midSwaps = await client.getSwap(rcptQuery);
     expect(midSwaps.data.length).toEqual(2);
     const [open1, open2] = midSwaps.data;
     expect(open1.kind).toEqual(SwapState.OPEN);
@@ -675,6 +676,9 @@ describe("Integration tests with bov+tendermint", () => {
 
     // then claim, offer, claim - 2 closed, 1 open
     await claimSwap(client, profile, faucet, id2, preimage1);
+
+    // start to watch
+    const liveView = asArray(client.watchSwap(rcptQuery));
 
     const res3 = await openSwap(client, profile, faucet, rcptAddr, preimage3);
     const id3 = res3.data.result as SwapIdBytes;
@@ -692,5 +696,18 @@ describe("Integration tests with bov+tendermint", () => {
     expect(claim2.data.id).toEqual(id2);
     expect(claim1.kind).toEqual(SwapState.CLAIMED);
     expect(claim1.data.id).toEqual(id1);
+
+    // validate liveView is correct
+    const vals = liveView.value();
+    // expect(vals.length).toEqual(4);
+    expect(vals.length).toEqual(2);
+    expect(vals[0].kind).toEqual(SwapState.OPEN);
+    expect(vals[0].data.id).toEqual(id1);
+    expect(vals[1].kind).toEqual(SwapState.CLAIMED);
+    expect(vals[1].data.id).toEqual(id2);
+    // expect(vals[2].kind).toEqual(SwapState.OPEN);
+    // expect(vals[2].data.id).toEqual(id3);
+    // expect(vals[3].kind).toEqual(SwapState.CLAIMED);
+    // expect(vals[3].data.id).toEqual(id1);
   });
 });
