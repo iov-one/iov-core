@@ -1,6 +1,6 @@
 import { Stream } from "xstream";
 import { BcpCoin, BcpConnection, BcpQueryEnvelope } from "./bcp";
-import { Address, TransactionIdBytes } from "./signables";
+import { Address } from "./signables";
 import { SwapIdBytes } from "./transactions";
 export declare enum SwapState {
     OPEN = "open",
@@ -43,14 +43,8 @@ export declare type BcpSwapQuery = BcpSwapRecipientQuery | BcpSwapSenderQuery | 
 export declare function isQueryBySwapRecipient(query: BcpSwapQuery): query is BcpSwapRecipientQuery;
 export declare function isQueryBySwapSender(query: BcpSwapQuery): query is BcpSwapSenderQuery;
 export declare function isQueryBySwapId(query: BcpSwapQuery): query is BcpSwapIdQuery;
-export interface BcpSwapEvent {
-    readonly height: number;
-    readonly swapid: SwapIdBytes;
-    readonly txid: TransactionIdBytes;
-}
 export interface BcpAtomicSwapConnection extends BcpConnection {
     readonly getSwap: (swap: BcpSwapQuery) => Promise<BcpQueryEnvelope<BcpAtomicSwap>>;
     readonly watchSwap: (swap: BcpSwapQuery) => Stream<BcpAtomicSwap>;
-    readonly changeSwap: (swap: BcpSwapQuery) => Stream<BcpSwapEvent>;
 }
 export declare function isAtomicSwapConnection(conn: BcpConnection): conn is BcpAtomicSwapConnection;

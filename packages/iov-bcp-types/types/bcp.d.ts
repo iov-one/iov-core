@@ -59,14 +59,12 @@ export interface BcpConnection {
     readonly disconnect: () => void;
     readonly chainId: () => Promise<ChainId>;
     readonly height: () => Promise<number>;
+    readonly changeBlock: () => Stream<number>;
     readonly postTx: (tx: PostableBytes) => Promise<BcpTransactionResponse>;
     readonly getTicker: (ticker: TokenTicker) => Promise<BcpQueryEnvelope<BcpTicker>>;
     readonly getAllTickers: () => Promise<BcpQueryEnvelope<BcpTicker>>;
     readonly getAccount: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpAccount>>;
     readonly getNonce: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpNonce>>;
-    readonly changeBalance: (addr: Address) => Stream<number>;
-    readonly changeNonce: (addr: Address) => Stream<number>;
-    readonly changeBlock: () => Stream<number>;
     readonly watchAccount: (account: BcpAccountQuery) => Stream<BcpAccount | undefined>;
     readonly watchNonce: (account: BcpAccountQuery) => Stream<BcpNonce | undefined>;
     readonly searchTx: (query: TxQuery) => Promise<ReadonlyArray<ConfirmedTransaction>>;

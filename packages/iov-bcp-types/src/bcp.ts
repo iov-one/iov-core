@@ -127,6 +127,10 @@ export interface BcpConnection {
   readonly chainId: () => Promise<ChainId>;
   readonly height: () => Promise<number>;
 
+  // these emits the new blockHeight on every block,
+  // so you can trigger a custom response
+  readonly changeBlock: () => Stream<number>;
+
   // submitTx submits a signed tx as is notified on every state change
   readonly postTx: (tx: PostableBytes) => Promise<BcpTransactionResponse>;
 
@@ -135,12 +139,6 @@ export interface BcpConnection {
   readonly getAllTickers: () => Promise<BcpQueryEnvelope<BcpTicker>>;
   readonly getAccount: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpAccount>>;
   readonly getNonce: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpNonce>>;
-
-  // these return a blockheight for any change, so you can trigger
-  // a custom response (changeBlock emits on every block)
-  readonly changeBalance: (addr: Address) => Stream<number>;
-  readonly changeNonce: (addr: Address) => Stream<number>;
-  readonly changeBlock: () => Stream<number>;
 
   // these query the currenct value and update a new value every time it changes
   readonly watchAccount: (account: BcpAccountQuery) => Stream<BcpAccount | undefined>;

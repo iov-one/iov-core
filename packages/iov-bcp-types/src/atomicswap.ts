@@ -1,7 +1,7 @@
 import { Stream } from "xstream";
 
 import { BcpCoin, BcpConnection, BcpQueryEnvelope } from "./bcp";
-import { Address, TransactionIdBytes } from "./signables";
+import { Address } from "./signables";
 import { SwapIdBytes } from "./transactions";
 
 export enum SwapState {
@@ -73,12 +73,6 @@ export function isQueryBySwapId(query: BcpSwapQuery): query is BcpSwapIdQuery {
   return (query as BcpSwapIdQuery).swapid !== undefined;
 }
 
-export interface BcpSwapEvent {
-  readonly height: number;
-  readonly swapid: SwapIdBytes; // the id of the swap that changed
-  readonly txid: TransactionIdBytes; // the id of the transaction that modified it
-}
-
 // BcpAtomicSwapConnection is an optional extension to the base BcpConnection
 // It allows querying and watching atomic swaps
 export interface BcpAtomicSwapConnection extends BcpConnection {
@@ -88,17 +82,9 @@ export interface BcpAtomicSwapConnection extends BcpConnection {
   // watchSwap emits currentState (getSwap) as a stream, then sends updates for any matching swap
   // this includes an open swap beind claimed/expired as well as a new matching swap being offered
   readonly watchSwap: (swap: BcpSwapQuery) => Stream<BcpAtomicSwap>;
-
-  // changeSwap triggers an event when a matching swap event occurs.
-  // it emits the new height as well as the swap that was modified
-  readonly changeSwap: (swap: BcpSwapQuery) => Stream<BcpSwapEvent>;
 }
 
 export function isAtomicSwapConnection(conn: BcpConnection): conn is BcpAtomicSwapConnection {
   const check = conn as BcpAtomicSwapConnection;
-  return (
-    typeof check.getSwap === "function" &&
-    typeof check.watchSwap === "function" &&
-    typeof check.changeSwap === "function"
-  );
+  return typeof check.getSwap === "function" && typeof check.watchSwap === "function";
 }
