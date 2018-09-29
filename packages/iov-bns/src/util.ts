@@ -55,3 +55,7 @@ export const hashIdentifier = (hash: Uint8Array): HashId => Uint8Array.from([...
 export const isHashIdentifier = (ident: Uint8Array): ident is HashId =>
   arraysEqual(hashId, ident.slice(0, hashId.length));
 export const hashFromIdentifier = (ident: HashId): Uint8Array => ident.slice(hashId.length);
+
+// calculate keys for query tags
+export const bucketKey = (bucket: string) => Encoding.toAscii(`${bucket}:`);
+export const indexKey = (bucket: string, index: string) => Encoding.toAscii(`_i.${bucket}_${index}:`);

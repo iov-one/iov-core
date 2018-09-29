@@ -4,6 +4,7 @@ import {
   Address,
   BcpAccount,
   BcpNonce,
+  BcpSwapQuery,
   BcpTransactionResponse,
   Nonce,
   SendTx,
@@ -518,8 +519,35 @@ describe("Integration tests with bov+tendermint", () => {
     expect(loaded.result).toEqual(txResult);
     expect(loaded.height).toEqual(txHeight!);
 
+    //----  prepare queries
+    const querySwapId: BcpSwapQuery = { swapid: txResult as SwapIdBytes };
+    const querySwapSender: BcpSwapQuery = { sender: faucetAddr };
+    const querySwapRecipient: BcpSwapQuery = { recipient: rcptAddr };
+    const querySwapHash: BcpSwapQuery = { hashlock: hash };
+
+    //----- client.searchTx() -----
+    // we should be able to find the transaction through quite a number of tag queries
+
+    const txById = await client.searchTx({ tags: Client.swapQueryTags(querySwapId) });
+    expect(txById.length).toEqual(1);
+    expect(txById[0].txid).toEqual(txid);
+
+    const txBySender = await client.searchTx({ tags: Client.swapQueryTags(querySwapSender) });
+    expect(txBySender.length).toEqual(1);
+    expect(txBySender[0].txid).toEqual(txid);
+
+    const txByRecipient = await client.searchTx({ tags: Client.swapQueryTags(querySwapRecipient) });
+    expect(txByRecipient.length).toEqual(1);
+    expect(txByRecipient[0].txid).toEqual(txid);
+
+    const txByHash = await client.searchTx({ tags: Client.swapQueryTags(querySwapHash) });
+    expect(txByHash.length).toEqual(1);
+    expect(txByHash[0].txid).toEqual(txid);
+
+    //----- client.getSwap() -------
+
     // we can also swap by id (returned by the transaction result)
-    const idSwap = await client.getSwap({ swapid: txResult as SwapIdBytes });
+    const idSwap = await client.getSwap(querySwapId);
     expect(idSwap.data.length).toEqual(1);
 
     const swap = idSwap.data[0];
@@ -538,17 +566,17 @@ describe("Integration tests with bov+tendermint", () => {
     expect(swapData.hashlock).toEqual(hash);
 
     // we can get the swap by the recipient
-    const rcptSwap = await client.getSwap({ recipient: rcptAddr });
+    const rcptSwap = await client.getSwap(querySwapRecipient);
     expect(rcptSwap.data.length).toEqual(1);
     expect(rcptSwap.data[0]).toEqual(swap);
 
     // we can also get it by the sender
-    const sendSwap = await client.getSwap({ sender: faucetAddr });
+    const sendSwap = await client.getSwap(querySwapSender);
     expect(sendSwap.data.length).toEqual(1);
     expect(sendSwap.data[0]).toEqual(swap);
 
     // we can also get it by the hash
-    const hashSwap = await client.getSwap({ hashlock: hash });
+    const hashSwap = await client.getSwap(querySwapHash);
     expect(hashSwap.data.length).toEqual(1);
     expect(hashSwap.data[0]).toEqual(swap);
   });

@@ -12,3 +12,5 @@ export declare const preimageIdentifier: (data: Uint8Array) => HashId;
 export declare const hashIdentifier: (hash: Uint8Array) => HashId;
 export declare const isHashIdentifier: (ident: Uint8Array) => ident is HashId;
 export declare const hashFromIdentifier: (ident: HashId) => Uint8Array;
+export declare const bucketKey: (bucket: string) => Uint8Array;
+export declare const indexKey: (bucket: string, index: string) => Uint8Array;

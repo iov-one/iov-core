@@ -6,6 +6,7 @@ import { InitData } from "./normalize";
 import { Result } from "./types";
 export declare class Client implements BcpAtomicSwapConnection {
     static fromOrToTag(addr: Address): Tag;
+    static swapQueryTags(query: BcpSwapQuery): ReadonlyArray<Tag>;
     static nonceTag(addr: Address): Tag;
     static connect(url: string): Promise<Client>;
     protected readonly tmClient: TendermintClient;

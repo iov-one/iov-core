@@ -38,7 +38,7 @@ import { bnsCodec } from "./bnscodec";
 import * as codecImpl from "./codecimpl";
 import { InitData, Normalize } from "./normalize";
 import { Decoder, Keyed, Result } from "./types";
-import { hashIdentifier } from "./util";
+import { bucketKey, hashIdentifier, indexKey } from "./util";
 
 // onChange returns a filter than only passes when the
 // value is different than the last one
@@ -58,10 +58,31 @@ function onChange<T>(): (val: T) => boolean {
 // We can embed in iov-core process or use this in a BCP-relay
 export class Client implements BcpAtomicSwapConnection {
   public static fromOrToTag(addr: Address): Tag {
-    const id = Uint8Array.from([...Encoding.toAscii("wllt:"), ...addr]);
+    const id = Uint8Array.from([...bucketKey("wllt"), ...addr]);
     const key = Encoding.toHex(id).toUpperCase();
     const value = "s"; // "s" for "set"
     return { key, value };
+  }
+
+  public static swapQueryTags(query: BcpSwapQuery): ReadonlyArray<Tag> {
+    let binKey: Uint8Array;
+    const bucket = "esc";
+    if (isQueryBySwapId(query)) {
+      binKey = Uint8Array.from([...bucketKey(bucket), ...query.swapid]);
+    } else if (isQueryBySwapSender(query)) {
+      binKey = Uint8Array.from([...indexKey(bucket, "sender"), ...query.sender]);
+    } else if (isQueryBySwapRecipient(query)) {
+      binKey = Uint8Array.from([...indexKey(bucket, "recipient"), ...query.recipient]);
+    } else {
+      // if (isQueryBySwapHash(query))
+      binKey = Uint8Array.from([...indexKey(bucket, "arbiter"), ...hashIdentifier(query.hashlock)]);
+    }
+
+    const key = Encoding.toHex(binKey).toUpperCase();
+    // "s" for set, "d" for delete.... we need to watch both changes
+    // but as OR not AND
+    return [{ key, value: "s" }];
+    // return [{ key, value: "s" }, { key, value: "d" }];
   }
 
   public static nonceTag(addr: Address): Tag {
