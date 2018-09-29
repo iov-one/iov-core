@@ -17,6 +17,7 @@ import {
   isQueryBySwapId,
   isQueryBySwapRecipient,
   isQueryBySwapSender,
+  OpenSwap,
   TokenTicker,
   TxReadCodec,
 } from "@iov/bcp-types";
@@ -38,7 +39,7 @@ import { bnsCodec } from "./bnscodec";
 import * as codecImpl from "./codecimpl";
 import { InitData, Normalize } from "./normalize";
 import { Decoder, Keyed, Result } from "./types";
-import { bucketKey, hashIdentifier, indexKey } from "./util";
+import { assertSwapOffer, bucketKey, hashIdentifier, indexKey } from "./util";
 
 // onChange returns a filter than only passes when the
 // value is different than the last one
@@ -64,7 +65,7 @@ export class Client implements BcpAtomicSwapConnection {
     return { key, value };
   }
 
-  public static swapQueryTags(query: BcpSwapQuery): ReadonlyArray<Tag> {
+  public static swapQueryTags(query: BcpSwapQuery, set = true): Tag {
     let binKey: Uint8Array;
     const bucket = "esc";
     if (isQueryBySwapId(query)) {
@@ -79,10 +80,10 @@ export class Client implements BcpAtomicSwapConnection {
     }
 
     const key = Encoding.toHex(binKey).toUpperCase();
-    // "s" for set, "d" for delete.... we need to watch both changes
-    // but as OR not AND
-    return [{ key, value: "s" }];
-    // return [{ key, value: "s" }, { key, value: "d" }];
+    // "s" for set, "d" for delete.... we need to watch both changes to be clear
+    // But if we return two tags here, that would AND not OR
+    const value = set ? "s" : "d";
+    return { key, value };
   }
 
   public static nonceTag(addr: Address): Tag {
@@ -200,9 +201,8 @@ export class Client implements BcpAtomicSwapConnection {
     return dummyEnvelope(data);
   }
 
-  // getSwap returns all matching swaps that are open (in app state)
-  // to get claimed and returned, we need to look at the transactions.... TODO
-  public async getSwap(query: BcpSwapQuery): Promise<BcpQueryEnvelope<BcpAtomicSwap>> {
+  // getSwapFromState returns all matching swaps that are open (from app state)
+  public async getSwapFromState(query: BcpSwapQuery): Promise<BcpQueryEnvelope<BcpAtomicSwap>> {
     const doQuery = (): Promise<QueryResponse> => {
       if (isQueryBySwapId(query)) {
         return this.query("/escrows", query.swapid);
@@ -221,6 +221,25 @@ export class Client implements BcpAtomicSwapConnection {
     const initData = await this.initData;
     const data = res.results.map(parser).map(Normalize.swapOffer(initData));
     return dummyEnvelope(data);
+  }
+
+  // getSwap returns all matching swaps that are open (in app state)
+  // to get claimed and returned, we need to look at the transactions.... TODO
+  public async getSwap(query: BcpSwapQuery): Promise<BcpQueryEnvelope<BcpAtomicSwap>> {
+    // we need to combine them all to see all transactions that affect the query
+    const setTxs: ReadonlyArray<ConfirmedTransaction> = await this.searchTx({
+      tags: [Client.swapQueryTags(query, true)],
+    });
+    const initData = await this.initData;
+
+    const offers: ReadonlyArray<OpenSwap> = setTxs
+      .map(assertSwapOffer)
+      .map(Normalize.swapOfferFromTx(initData));
+
+    // TODO: integrate the claim/timeout transactions
+    // const delTxs = await this.searchTx({ tags: [Client.swapQueryTags(query, false)] });
+
+    return dummyEnvelope(offers);
   }
 
   // watchSwap emits currentState (getSwap) as a stream, then sends updates for any matching swap

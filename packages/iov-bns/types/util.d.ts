@@ -1,5 +1,5 @@
 import { As } from "type-tagger";
-import { Address, Nonce, SignableBytes } from "@iov/bcp-types";
+import { Address, ConfirmedTransaction, Nonce, SignableBytes, SwapClaimTx, SwapCounterTx, SwapTimeoutTx } from "@iov/bcp-types";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 export declare const keyToAddress: (key: PublicKeyBundle) => Address;
 export declare const keyToIdentifier: (key: PublicKeyBundle) => Uint8Array;
@@ -14,3 +14,5 @@ export declare const isHashIdentifier: (ident: Uint8Array) => ident is HashId;
 export declare const hashFromIdentifier: (ident: HashId) => Uint8Array;
 export declare const bucketKey: (bucket: string) => Uint8Array;
 export declare const indexKey: (bucket: string, index: string) => Uint8Array;
+export declare function assertSwapOffer(tx: ConfirmedTransaction): ConfirmedTransaction<SwapCounterTx>;
+export declare function assertSwapRelease(tx: ConfirmedTransaction): ConfirmedTransaction<SwapClaimTx | SwapTimeoutTx>;

@@ -31,9 +31,9 @@ export interface FullSignature {
 
 // A signable transaction knows how to serialize itself
 // and how to store signatures
-export interface SignedTransaction {
+export interface SignedTransaction<T extends UnsignedTransaction = UnsignedTransaction> {
   // transaction is the user request
-  readonly transaction: UnsignedTransaction;
+  readonly transaction: T;
 
   readonly primarySignature: FullSignature;
 

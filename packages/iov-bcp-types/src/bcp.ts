@@ -3,7 +3,7 @@ import { Stream } from "xstream";
 import { ChainId, PostableBytes, PublicKeyBundle, Tag, TxId, TxQuery } from "@iov/tendermint-types";
 
 import { Address, SignedTransaction } from "./signables";
-import { Nonce, TokenTicker } from "./transactions";
+import { Nonce, TokenTicker, UnsignedTransaction } from "./transactions";
 
 /*
 Types defined to match
@@ -68,7 +68,8 @@ export interface BcpTransactionResponse {
   };
 }
 
-export interface ConfirmedTransaction extends SignedTransaction {
+export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTransaction>
+  extends SignedTransaction<T> {
   readonly height: number; // the block it was written to
   readonly txid: TxId; // a unique identifier (hash of the data)
   // Data from executing tx (result, code, tags...)

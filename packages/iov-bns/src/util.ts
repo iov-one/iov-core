@@ -1,6 +1,15 @@
 import { As } from "type-tagger";
 
-import { Address, Nonce, SignableBytes } from "@iov/bcp-types";
+import {
+  Address,
+  ConfirmedTransaction,
+  Nonce,
+  SignableBytes,
+  SwapClaimTx,
+  SwapCounterTx,
+  SwapTimeoutTx,
+  TransactionKind,
+} from "@iov/bcp-types";
 import { Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBundle } from "@iov/tendermint-types";
@@ -59,3 +68,23 @@ export const hashFromIdentifier = (ident: HashId): Uint8Array => ident.slice(has
 // calculate keys for query tags
 export const bucketKey = (bucket: string) => Encoding.toAscii(`${bucket}:`);
 export const indexKey = (bucket: string, index: string) => Encoding.toAscii(`_i.${bucket}_${index}:`);
+
+// useful assertions/map for tx type
+export function assertSwapOffer(tx: ConfirmedTransaction): ConfirmedTransaction<SwapCounterTx> {
+  if (tx.transaction.kind === TransactionKind.SwapCounter) {
+    return tx as ConfirmedTransaction<SwapCounterTx>;
+  }
+  throw new Error(`Unexpected transaction kind encountered: ${tx.transaction.kind}`);
+}
+
+// useful assertions/map for tx type
+export function assertSwapRelease(
+  tx: ConfirmedTransaction,
+): ConfirmedTransaction<SwapClaimTx | SwapTimeoutTx> {
+  if (tx.transaction.kind === TransactionKind.SwapClaim) {
+    return tx as ConfirmedTransaction<SwapClaimTx>;
+  } else if (tx.transaction.kind === TransactionKind.SwapTimeout) {
+    return tx as ConfirmedTransaction<SwapTimeoutTx>;
+  }
+  throw new Error(`Unexpected transaction kind encountered: ${tx.transaction.kind}`);
+}

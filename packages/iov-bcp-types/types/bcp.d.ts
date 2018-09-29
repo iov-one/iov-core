@@ -1,7 +1,7 @@
 import { Stream } from "xstream";
 import { ChainId, PostableBytes, PublicKeyBundle, Tag, TxId, TxQuery } from "@iov/tendermint-types";
 import { Address, SignedTransaction } from "./signables";
-import { Nonce, TokenTicker } from "./transactions";
+import { Nonce, TokenTicker, UnsignedTransaction } from "./transactions";
 export interface BcpQueryEnvelope<T> {
     readonly metadata: BcpQueryMetadata;
     readonly data: ReadonlyArray<T>;
@@ -41,7 +41,7 @@ export interface BcpTransactionResponse {
         readonly result: Uint8Array;
     };
 }
-export interface ConfirmedTransaction extends SignedTransaction {
+export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTransaction> extends SignedTransaction<T> {
     readonly height: number;
     readonly txid: TxId;
     readonly result: Uint8Array;

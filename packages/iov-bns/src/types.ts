@@ -1,6 +1,6 @@
 import Long from "long";
 
-import { FullSignature, FungibleToken, Nonce, TokenTicker } from "@iov/bcp-types";
+import { BcpCoin, FullSignature, FungibleToken, Nonce, TokenTicker } from "@iov/bcp-types";
 import {
   Algorithm,
   PrivateKeyBundle,
@@ -11,6 +11,7 @@ import {
 } from "@iov/tendermint-types";
 
 import * as codecImpl from "./codecimpl";
+import { InitData } from "./normalize";
 
 export interface Result {
   readonly key: Uint8Array;
@@ -74,6 +75,16 @@ export const decodeToken = (token: codecImpl.x.ICoin): FungibleToken => ({
   fractional: asNumber(token.fractional),
   tokenTicker: (token.ticker || "") as TokenTicker,
 });
+
+export const fungibleToBcpCoin = (initData: InitData) => (token: FungibleToken): BcpCoin => {
+  const tickerInfo = initData.tickers.get(token.tokenTicker);
+  return {
+    ...token,
+    // Better defaults?
+    tokenName: tickerInfo ? tickerInfo.tokenName : "<Unknown token>",
+    sigFigs: tickerInfo ? tickerInfo.sigFigs : 9,
+  };
+};
 
 export const decodePubKey = (publicKey: codecImpl.crypto.IPublicKey): PublicKeyBundle => {
   if (publicKey.ed25519) {

@@ -528,19 +528,19 @@ describe("Integration tests with bov+tendermint", () => {
     //----- client.searchTx() -----
     // we should be able to find the transaction through quite a number of tag queries
 
-    const txById = await client.searchTx({ tags: Client.swapQueryTags(querySwapId) });
+    const txById = await client.searchTx({ tags: [Client.swapQueryTags(querySwapId)] });
     expect(txById.length).toEqual(1);
     expect(txById[0].txid).toEqual(txid);
 
-    const txBySender = await client.searchTx({ tags: Client.swapQueryTags(querySwapSender) });
+    const txBySender = await client.searchTx({ tags: [Client.swapQueryTags(querySwapSender)] });
     expect(txBySender.length).toEqual(1);
     expect(txBySender[0].txid).toEqual(txid);
 
-    const txByRecipient = await client.searchTx({ tags: Client.swapQueryTags(querySwapRecipient) });
+    const txByRecipient = await client.searchTx({ tags: [Client.swapQueryTags(querySwapRecipient)] });
     expect(txByRecipient.length).toEqual(1);
     expect(txByRecipient[0].txid).toEqual(txid);
 
-    const txByHash = await client.searchTx({ tags: Client.swapQueryTags(querySwapHash) });
+    const txByHash = await client.searchTx({ tags: [Client.swapQueryTags(querySwapHash)] });
     expect(txByHash.length).toEqual(1);
     expect(txByHash[0].txid).toEqual(txid);
 

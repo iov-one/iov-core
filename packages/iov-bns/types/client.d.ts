@@ -6,7 +6,7 @@ import { InitData } from "./normalize";
 import { Result } from "./types";
 export declare class Client implements BcpAtomicSwapConnection {
     static fromOrToTag(addr: Address): Tag;
-    static swapQueryTags(query: BcpSwapQuery): ReadonlyArray<Tag>;
+    static swapQueryTags(query: BcpSwapQuery, set?: boolean): Tag;
     static nonceTag(addr: Address): Tag;
     static connect(url: string): Promise<Client>;
     protected readonly tmClient: TendermintClient;
@@ -22,6 +22,7 @@ export declare class Client implements BcpAtomicSwapConnection {
     getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAccount(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>>;
     getNonce(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>>;
+    getSwapFromState(query: BcpSwapQuery): Promise<BcpQueryEnvelope<BcpAtomicSwap>>;
     getSwap(query: BcpSwapQuery): Promise<BcpQueryEnvelope<BcpAtomicSwap>>;
     watchSwap(): Stream<BcpAtomicSwap>;
     searchTx(txQuery: TxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
