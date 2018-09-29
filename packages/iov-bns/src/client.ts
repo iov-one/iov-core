@@ -4,14 +4,13 @@ import {
   Address,
   BcpAccount,
   BcpAccountQuery,
-  BcpAddressQuery,
   BcpConnection,
-  BcpData,
   BcpNonce,
   BcpQueryEnvelope,
   BcpTicker,
   BcpTransactionResponse,
   ConfirmedTransaction,
+  dummyEnvelope,
   TokenTicker,
   TxReadCodec,
 } from "@iov/bcp-types";
@@ -318,17 +317,6 @@ function parseMap<T extends {}>(decoder: Decoder<T>, sliceKey: number): (res: Re
     return Object.assign({}, val, { _id: res.key.slice(sliceKey) });
   };
   return mapper;
-}
-
-// dummyEnvelope just adds some plausible metadata to make bcp happy
-function dummyEnvelope<T extends BcpData>(data: ReadonlyArray<T>): BcpQueryEnvelope<T> {
-  return {
-    metadata: {
-      offset: 0,
-      limit: 100,
-    },
-    data: data,
-  };
 }
 
 /* maybe a bit abstract, but maybe we can reuse... */

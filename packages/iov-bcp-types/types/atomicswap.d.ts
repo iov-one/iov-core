@@ -37,9 +37,12 @@ export interface BcpSwapSenderQuery {
     readonly sender: Address;
 }
 export interface BcpSwapIdQuery {
-    readonly id: SwapIdBytes;
+    readonly swapid: SwapIdBytes;
 }
 export declare type BcpSwapQuery = BcpSwapRecipientQuery | BcpSwapSenderQuery | BcpSwapIdQuery;
+export declare function isQueryBySwapRecipient(query: BcpSwapQuery): query is BcpSwapRecipientQuery;
+export declare function isQueryBySwapSender(query: BcpSwapQuery): query is BcpSwapSenderQuery;
+export declare function isQueryBySwapId(query: BcpSwapQuery): query is BcpSwapIdQuery;
 export interface BcpSwapEvent {
     readonly height: number;
     readonly swapid: SwapIdBytes;
@@ -50,3 +53,4 @@ export interface BcpAtomicSwapConnection extends BcpConnection {
     readonly watchSwap: (swap: BcpSwapQuery) => Stream<BcpAtomicSwap>;
     readonly changeSwap: (swap: BcpSwapQuery) => Stream<BcpSwapEvent>;
 }
+export declare function isAtomicSwapConnection(conn: BcpConnection): conn is BcpAtomicSwapConnection;

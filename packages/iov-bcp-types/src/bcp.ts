@@ -17,6 +17,17 @@ export interface BcpQueryEnvelope<T> {
   readonly data: ReadonlyArray<T>;
 }
 
+// dummyEnvelope just adds some plausible metadata to make bcp happy
+export function dummyEnvelope<T>(data: ReadonlyArray<T>): BcpQueryEnvelope<T> {
+  return {
+    metadata: {
+      offset: 0,
+      limit: 100,
+    },
+    data: data,
+  };
+}
+
 export interface BcpQueryMetadata {
   readonly offset: number;
   readonly limit: number;
@@ -76,6 +87,11 @@ export interface BcpValueNameQuery {
 }
 
 export type BcpAccountQuery = BcpAddressQuery | BcpValueNameQuery;
+
+// isQueryByAddress is a type guard to use in the account-based queries
+export function isQueryByAddress(query: BcpAccountQuery): query is BcpAddressQuery {
+  return (query as BcpAddressQuery).address !== undefined;
+}
 
 // BcpConnection is a high-level interface to a blockchain node,
 // abstracted over all blockchain types and communication channel.

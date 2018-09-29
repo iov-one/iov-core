@@ -6,6 +6,7 @@ export interface BcpQueryEnvelope<T> {
     readonly metadata: BcpQueryMetadata;
     readonly data: ReadonlyArray<T>;
 }
+export declare function dummyEnvelope<T>(data: ReadonlyArray<T>): BcpQueryEnvelope<T>;
 export interface BcpQueryMetadata {
     readonly offset: number;
     readonly limit: number;
@@ -53,6 +54,7 @@ export interface BcpValueNameQuery {
     readonly name: string;
 }
 export declare type BcpAccountQuery = BcpAddressQuery | BcpValueNameQuery;
+export declare function isQueryByAddress(query: BcpAccountQuery): query is BcpAddressQuery;
 export interface BcpConnection {
     readonly disconnect: () => void;
     readonly chainId: () => Promise<ChainId>;

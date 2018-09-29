@@ -50,7 +50,7 @@ export interface BcpSwapSenderQuery {
 }
 
 export interface BcpSwapIdQuery {
-  readonly id: SwapIdBytes;
+  readonly swapid: SwapIdBytes;
 }
 
 // can we implement this as well? maybe id should equal swap
@@ -59,6 +59,19 @@ export interface BcpSwapIdQuery {
 // }
 
 export type BcpSwapQuery = BcpSwapRecipientQuery | BcpSwapSenderQuery | BcpSwapIdQuery;
+
+// isQueryBySwapRecipient is a type guard to use in the swap-based queries
+export function isQueryBySwapRecipient(query: BcpSwapQuery): query is BcpSwapRecipientQuery {
+  return (query as BcpSwapRecipientQuery).recipient !== undefined;
+}
+// isQueryBySwapSender is a type guard to use in the swap-based queries
+export function isQueryBySwapSender(query: BcpSwapQuery): query is BcpSwapSenderQuery {
+  return (query as BcpSwapSenderQuery).sender !== undefined;
+}
+// isQueryBySwapId is a type guard to use in the swap-based queries
+export function isQueryBySwapId(query: BcpSwapQuery): query is BcpSwapIdQuery {
+  return (query as BcpSwapIdQuery).swapid !== undefined;
+}
 
 export interface BcpSwapEvent {
   readonly height: number;
@@ -79,4 +92,13 @@ export interface BcpAtomicSwapConnection extends BcpConnection {
   // changeSwap triggers an event when a matching swap event occurs.
   // it emits the new height as well as the swap that was modified
   readonly changeSwap: (swap: BcpSwapQuery) => Stream<BcpSwapEvent>;
+}
+
+export function isAtomicSwapConnection(conn: BcpConnection): conn is BcpAtomicSwapConnection {
+  const check = conn as BcpAtomicSwapConnection;
+  return (
+    typeof check.getSwap === "function" &&
+    typeof check.watchSwap === "function" &&
+    typeof check.changeSwap === "function"
+  );
 }
