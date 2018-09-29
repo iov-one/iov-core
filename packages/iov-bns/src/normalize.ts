@@ -8,11 +8,14 @@ import {
   ConfirmedTransaction,
   Nonce,
   OpenSwap,
+  SwapClaimTx,
   SwapCounterTx,
   SwapData,
   SwapIdBytes,
   SwapState,
+  SwapTimeoutTx,
   TokenTicker,
+  TransactionKind,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import { ChainId } from "@iov/tendermint-types";
@@ -112,6 +115,19 @@ export class Normalize {
     };
   }
 
-  // TODO: map swapoffertx to BcpAtomicSwap
-  // TODO: reducer that takes various swap tx and create an array of BcpAtomicSwap
+  // public static settleAtomicSwap(swap: OpenSwap, tx: ConfirmedTransaction<SwapClaimTx | SwapTimeoutTx>): BcpAtomicSwap {
+  public static settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTx | SwapTimeoutTx): BcpAtomicSwap {
+    if (tx.kind === TransactionKind.SwapClaim) {
+      return {
+        kind: SwapState.CLAIMED,
+        data: swap.data,
+        preimage: tx.preimage,
+      };
+    } else {
+      return {
+        kind: SwapState.EXPIRED,
+        data: swap.data,
+      };
+    }
+  }
 }

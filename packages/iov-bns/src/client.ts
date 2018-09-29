@@ -18,6 +18,8 @@ import {
   isQueryBySwapRecipient,
   isQueryBySwapSender,
   OpenSwap,
+  SwapClaimTx,
+  SwapTimeoutTx,
   TokenTicker,
   TxReadCodec,
 } from "@iov/bcp-types";
@@ -39,7 +41,7 @@ import { bnsCodec } from "./bnscodec";
 import * as codecImpl from "./codecimpl";
 import { InitData, Normalize } from "./normalize";
 import { Decoder, Keyed, Result } from "./types";
-import { assertSwapOffer, bucketKey, hashIdentifier, indexKey } from "./util";
+import { arraysEqual, assertSwapOffer, assertSwapRelease, bucketKey, hashIdentifier, indexKey } from "./util";
 
 // onChange returns a filter than only passes when the
 // value is different than the last one
@@ -232,14 +234,25 @@ export class Client implements BcpAtomicSwapConnection {
     });
     const initData = await this.initData;
 
-    const offers: ReadonlyArray<OpenSwap> = setTxs
-      .map(assertSwapOffer)
-      .map(Normalize.swapOfferFromTx(initData));
+    // tslint:disable-next-line:readonly-array
+    const offers: OpenSwap[] = setTxs.map(assertSwapOffer).map(Normalize.swapOfferFromTx(initData));
 
-    // TODO: integrate the claim/timeout transactions
-    // const delTxs = await this.searchTx({ tags: [Client.swapQueryTags(query, false)] });
+    // integrate the claim/timeout transactions
+    const delTxs = await this.searchTx({ tags: [Client.swapQueryTags(query, false)] });
+    const release: ReadonlyArray<SwapClaimTx | SwapTimeoutTx> = delTxs
+      .map(assertSwapRelease)
+      .map(x => x.transaction);
 
-    return dummyEnvelope(offers);
+    // tslint:disable-next-line:readonly-array
+    const settled: BcpAtomicSwap[] = [];
+    for (const rel of release) {
+      const idx = offers.findIndex(x => arraysEqual(x.data.id, rel.swapId));
+      const done = Normalize.settleAtomicSwap(offers[idx], rel);
+      offers.splice(idx, 1);
+      settled.push(done);
+    }
+
+    return dummyEnvelope([...offers, ...settled]);
   }
 
   // watchSwap emits currentState (getSwap) as a stream, then sends updates for any matching swap
