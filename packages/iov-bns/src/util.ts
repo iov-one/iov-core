@@ -69,22 +69,14 @@ export const hashFromIdentifier = (ident: HashId): Uint8Array => ident.slice(has
 export const bucketKey = (bucket: string) => Encoding.toAscii(`${bucket}:`);
 export const indexKey = (bucket: string, index: string) => Encoding.toAscii(`_i.${bucket}_${index}:`);
 
-// useful assertions/map for tx type
-export function assertSwapOffer(tx: ConfirmedTransaction): ConfirmedTransaction<SwapCounterTx> {
-  if (tx.transaction.kind === TransactionKind.SwapCounter) {
-    return tx as ConfirmedTransaction<SwapCounterTx>;
-  }
-  throw new Error(`Unexpected transaction kind encountered: ${tx.transaction.kind}`);
+export function isSwapOffer(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapCounterTx> {
+  return tx.transaction.kind === TransactionKind.SwapCounter;
 }
 
-// useful assertions/map for tx type
-export function assertSwapRelease(
+export function isSwapRelease(
   tx: ConfirmedTransaction,
-): ConfirmedTransaction<SwapClaimTx | SwapTimeoutTx> {
-  if (tx.transaction.kind === TransactionKind.SwapClaim) {
-    return tx as ConfirmedTransaction<SwapClaimTx>;
-  } else if (tx.transaction.kind === TransactionKind.SwapTimeout) {
-    return tx as ConfirmedTransaction<SwapTimeoutTx>;
-  }
-  throw new Error(`Unexpected transaction kind encountered: ${tx.transaction.kind}`);
+): tx is ConfirmedTransaction<SwapClaimTx | SwapTimeoutTx> {
+  return (
+    tx.transaction.kind === TransactionKind.SwapClaim || tx.transaction.kind === TransactionKind.SwapTimeout
+  );
 }

@@ -41,7 +41,7 @@ import { bnsCodec } from "./bnscodec";
 import * as codecImpl from "./codecimpl";
 import { InitData, Normalize } from "./normalize";
 import { Decoder, Keyed, Result } from "./types";
-import { arraysEqual, assertSwapOffer, assertSwapRelease, bucketKey, hashIdentifier, indexKey } from "./util";
+import { arraysEqual, bucketKey, hashIdentifier, indexKey, isSwapOffer, isSwapRelease } from "./util";
 
 // onChange returns a filter than only passes when the
 // value is different than the last one
@@ -229,18 +229,18 @@ export class Client implements BcpAtomicSwapConnection {
   // to get claimed and returned, we need to look at the transactions.... TODO
   public async getSwap(query: BcpSwapQuery): Promise<BcpQueryEnvelope<BcpAtomicSwap>> {
     // we need to combine them all to see all transactions that affect the query
-    const setTxs: ReadonlyArray<ConfirmedTransaction> = await this.searchTx({
+    const setTxs = await this.searchTx({
       tags: [Client.swapQueryTags(query, true)],
     });
+    const delTxs = await this.searchTx({ tags: [Client.swapQueryTags(query, false)] });
     const initData = await this.initData;
 
     // tslint:disable-next-line:readonly-array
-    const offers: OpenSwap[] = setTxs.map(assertSwapOffer).map(Normalize.swapOfferFromTx(initData));
+    const offers: OpenSwap[] = setTxs.filter(isSwapOffer).map(Normalize.swapOfferFromTx(initData));
 
-    // integrate the claim/timeout transactions
-    const delTxs = await this.searchTx({ tags: [Client.swapQueryTags(query, false)] });
-    const release: ReadonlyArray<SwapClaimTx | SwapTimeoutTx> = delTxs
-      .map(assertSwapRelease)
+    // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout
+    const release: ReadonlyArray<SwapClaimTx | SwapTimeoutTx> = [...setTxs, ...delTxs]
+      .filter(isSwapRelease)
       .map(x => x.transaction);
 
     // tslint:disable-next-line:readonly-array
