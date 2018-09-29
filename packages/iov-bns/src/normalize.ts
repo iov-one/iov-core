@@ -93,15 +93,18 @@ export class Normalize {
   public static swapOfferFromTx(initData: InitData): (tx: ConfirmedTransaction<SwapCounterTx>) => OpenSwap {
     return (tx: ConfirmedTransaction<SwapCounterTx>): OpenSwap => {
       const counter: SwapCounterTx = tx.transaction;
+      // TODO: do we really want errors here, or just filter them out???
+      if (!isHashIdentifier(counter.hashCode)) {
+        throw new Error("swap not controlled by hash lock");
+      }
       const data: SwapData = {
         id: tx.result as SwapIdBytes,
         sender: keyToAddress(counter.signer),
         recipient: counter.recipient,
-        hashlock: counter.hashCode,
+        hashlock: hashFromIdentifier(counter.hashCode),
         amount: counter.amount.map(fungibleToBcpCoin(initData)),
         timeout: counter.timeout,
       };
-
       return {
         kind: SwapState.OPEN,
         data,
