@@ -26,7 +26,7 @@
     "test": "yarn build-or-skip && yarn test-node",
     "prebuild": "yarn format && yarn lint",
     "preprocess-types": "shx rm -r ./types/*",
-    "postprocess-types": "shx rm ./types/*.spec.d.ts ./types/**/*.spec.d.ts",
+    "postprocess-types": "shx rm ./types/*.spec.d.ts && shx rm ./types/**/*.spec.d.ts",
     "build": "yarn preprocess-types && tsc --declarationDir ./types && yarn postprocess-types",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
