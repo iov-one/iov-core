@@ -8,7 +8,6 @@ import { Nonce, TokenTicker } from "./transactions";
 /*
 Types defined to match
 https://app.swaggerhub.com/apis/IOV.one/BOV/0.0.4#/basic/getAccounts
-
 Only a subset currently implemented.
 */
 
