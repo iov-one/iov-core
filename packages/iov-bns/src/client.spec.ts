@@ -519,13 +519,13 @@ describe("Integration tests with bov+tendermint", () => {
     expect(loaded.result).toEqual(txResult);
     expect(loaded.height).toEqual(txHeight!);
 
-    //----  prepare queries
+    // ----  prepare queries
     const querySwapId: BcpSwapQuery = { swapid: txResult as SwapIdBytes };
     const querySwapSender: BcpSwapQuery = { sender: faucetAddr };
     const querySwapRecipient: BcpSwapQuery = { recipient: rcptAddr };
     const querySwapHash: BcpSwapQuery = { hashlock: hash };
 
-    //----- client.searchTx() -----
+    // ----- client.searchTx() -----
     // we should be able to find the transaction through quite a number of tag queries
 
     const txById = await client.searchTx({ tags: [Client.swapQueryTags(querySwapId)] });
@@ -544,7 +544,7 @@ describe("Integration tests with bov+tendermint", () => {
     expect(txByHash.length).toEqual(1);
     expect(txByHash[0].txid).toEqual(txid);
 
-    //----- client.getSwap() -------
+    // ----- client.getSwap() -------
 
     // we can also swap by id (returned by the transaction result)
     const idSwap = await client.getSwap(querySwapId);
