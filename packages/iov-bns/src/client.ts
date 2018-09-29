@@ -97,19 +97,32 @@ export class Client implements BcpAtomicSwapConnection {
 
   public static async connect(url: string): Promise<Client> {
     const tm = await TendermintClient.connect(url);
-    return new Client(tm, bnsCodec);
+    const initData = await this.initialize(tm);
+    return new Client(tm, bnsCodec, initData);
+  }
+
+  protected static async initialize(tmClient: TendermintClient): Promise<InitData> {
+    const status = await tmClient.status();
+    const chainId = status.nodeInfo.network;
+
+    // inlining getAllTickers
+    const res = await performQuery(tmClient, "/tokens?prefix", Uint8Array.from([]));
+    const parser = parseMap(codecImpl.namecoin.Token, 4);
+    const data = res.results.map(parser).map(Normalize.token);
+
+    const toKeyValue = (t: BcpTicker): [string, BcpTicker] => [t.tokenTicker, t];
+    const tickers = new Map(data.map(toKeyValue));
+    return { chainId, tickers };
   }
 
   protected readonly tmClient: TendermintClient;
   protected readonly codec: TxReadCodec;
-  protected readonly initData: Promise<InitData>;
+  protected readonly initData: InitData;
 
-  constructor(tmClient: TendermintClient, codec: TxReadCodec) {
+  constructor(tmClient: TendermintClient, codec: TxReadCodec, initData: InitData) {
     this.tmClient = tmClient;
     this.codec = codec;
-    // Note: this just requests the data and doesn't wait for the result
-    // the response is preloaded the first time we query an account
-    this.initData = this.initialize();
+    this.initData = initData;
   }
 
   public disconnect(): void {
@@ -117,9 +130,8 @@ export class Client implements BcpAtomicSwapConnection {
   }
 
   // we store this info from the initialization, no need to query every time
-  public async chainId(): Promise<ChainId> {
-    const data = await this.initData;
-    return data.chainId;
+  public chainId(): ChainId {
+    return this.initData.chainId;
   }
 
   public async height(): Promise<number> {
@@ -173,8 +185,7 @@ export class Client implements BcpAtomicSwapConnection {
       : this.query("/wallets/name", Encoding.toAscii(account.name));
     const parser = parseMap(codecImpl.namecoin.Wallet, 5);
     const parsed = (await res).results.map(parser);
-    const initData = await this.initData;
-    const data = parsed.map(Normalize.account(initData));
+    const data = parsed.map(Normalize.account(this.initData));
     return dummyEnvelope(data);
   }
 
@@ -220,8 +231,7 @@ export class Client implements BcpAtomicSwapConnection {
 
     const res = await doQuery();
     const parser = parseMap(codecImpl.escrow.Escrow, 4); // prefix: "esc:"
-    const initData = await this.initData;
-    const data = res.results.map(parser).map(Normalize.swapOffer(initData));
+    const data = res.results.map(parser).map(Normalize.swapOffer(this.initData));
     return dummyEnvelope(data);
   }
 
@@ -233,10 +243,9 @@ export class Client implements BcpAtomicSwapConnection {
       tags: [Client.swapQueryTags(query, true)],
     });
     const delTxs = await this.searchTx({ tags: [Client.swapQueryTags(query, false)] });
-    const initData = await this.initData;
 
     // tslint:disable-next-line:readonly-array
-    const offers: OpenSwap[] = setTxs.filter(isSwapOffer).map(Normalize.swapOfferFromTx(initData));
+    const offers: OpenSwap[] = setTxs.filter(isSwapOffer).map(Normalize.swapOfferFromTx(this.initData));
 
     // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout
     const release: ReadonlyArray<SwapClaimTx | SwapTimeoutTx> = [...setTxs, ...delTxs]
@@ -259,10 +268,28 @@ export class Client implements BcpAtomicSwapConnection {
   // this includes an open swap beind claimed/expired as well as a new matching swap being offered
   public watchSwap(query: BcpSwapQuery): Stream<BcpAtomicSwap> {
     const stripEnvelope = async () => (await this.getSwap(query)).data;
-    const history = streamPromise(stripEnvelope());
-    // const updates = this.listenTx(txQuery.tags);
-    // return Stream.merge(history, updates);
-    return history;
+    return streamPromise(stripEnvelope());
+    // // we need to combine them all to see all transactions that affect the query
+    // const setTxs = this.liveTx({tags: [Client.swapQueryTags(query, true)]});
+    // const delTxs = this.liveTx({ tags: [Client.swapQueryTags(query, false)] });
+    // const initData = await this.initData;
+
+    // // tslint:disable-next-line:readonly-array
+    // const offers: OpenSwap[] = setTxs.filter(isSwapOffer).map(Normalize.swapOfferFromTx(initData));
+
+    // // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout
+    // const release: ReadonlyArray<SwapClaimTx | SwapTimeoutTx> = [...setTxs, ...delTxs]
+    //   .filter(isSwapRelease)
+    //   .map(x => x.transaction);
+
+    // // tslint:disable-next-line:readonly-array
+    // const settled: BcpAtomicSwap[] = [];
+    // for (const rel of release) {
+    //   const idx = offers.findIndex(x => arraysEqual(x.data.id, rel.swapId));
+    //   const done = Normalize.settleAtomicSwap(offers[idx], rel);
+    //   offers.splice(idx, 1);
+    //   settled.push(done);
+    // }
   }
 
   public async searchTx(txQuery: TxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
@@ -283,18 +310,18 @@ export class Client implements BcpAtomicSwapConnection {
   // listenTx returns a stream of all transactions that match
   // the tags from the present moment on
   public listenTx(tags: ReadonlyArray<Tag>): Stream<ConfirmedTransaction> {
-    const streamId = Stream.fromPromise(this.chainId());
+    const chainId = this.chainId();
     const txs = this.tmClient.subscribeTx(tags);
 
     // destructuring ftw (or is it too confusing?)
-    const mapper = ([{ hash, height, tx, result }, chainId]: [TxEvent, ChainId]): ConfirmedTransaction => ({
+    const mapper = ({ hash, height, tx, result }: TxEvent): ConfirmedTransaction => ({
       height,
       txid: hash as TxId,
       log: result.log || "",
       result: result.data || new Uint8Array([]),
       ...this.codec.parseBytes(tx, chainId),
     });
-    return Stream.combine(txs, streamId).map(mapper);
+    return txs.map(mapper);
   }
 
   // liveTx does a search and then subscribes to all future changes.
@@ -371,22 +398,22 @@ export class Client implements BcpAtomicSwapConnection {
     );
   }
 
-  protected async initialize(): Promise<InitData> {
-    const status = await this.status();
-    const chainId = status.nodeInfo.network;
-    const all = await this.getAllTickers();
-    const toKeyValue = (t: BcpTicker): [string, BcpTicker] => [t.tokenTicker, t];
-    const tickers = new Map(all.data.map(toKeyValue));
-    return { chainId, tickers };
+  protected query(path: string, data: Uint8Array): Promise<QueryResponse> {
+    return performQuery(this.tmClient, path, data);
   }
+}
 
-  protected async query(path: string, data: Uint8Array): Promise<QueryResponse> {
-    const response = await this.tmClient.abciQuery({ path, data });
-    const keys = codecImpl.app.ResultSet.decode(response.key).results;
-    const values = codecImpl.app.ResultSet.decode(response.value).results;
-    const results: ReadonlyArray<Result> = zip(keys, values);
-    return { height: response.height, results };
-  }
+// this is pulled out to be used in static initialzers as well
+async function performQuery(
+  tmClient: TendermintClient,
+  path: string,
+  data: Uint8Array,
+): Promise<QueryResponse> {
+  const response = await tmClient.abciQuery({ path, data });
+  const keys = codecImpl.app.ResultSet.decode(response.key).results;
+  const values = codecImpl.app.ResultSet.decode(response.value).results;
+  const results: ReadonlyArray<Result> = zip(keys, values);
+  return { height: response.height, results };
 }
 
 /* Various helpers for parsing the results of querying abci */

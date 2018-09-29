@@ -124,7 +124,7 @@ export interface BcpConnection {
   // readonly streamBlocks: () => Stream<Block>;
 
   // chainId, and height return generic info
-  readonly chainId: () => Promise<ChainId>;
+  readonly chainId: () => ChainId;
   readonly height: () => Promise<number>;
 
   // these emits the new blockHeight on every block,

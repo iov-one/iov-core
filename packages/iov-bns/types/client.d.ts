@@ -9,12 +9,13 @@ export declare class Client implements BcpAtomicSwapConnection {
     static swapQueryTags(query: BcpSwapQuery, set?: boolean): Tag;
     static nonceTag(addr: Address): Tag;
     static connect(url: string): Promise<Client>;
+    protected static initialize(tmClient: TendermintClient): Promise<InitData>;
     protected readonly tmClient: TendermintClient;
     protected readonly codec: TxReadCodec;
-    protected readonly initData: Promise<InitData>;
-    constructor(tmClient: TendermintClient, codec: TxReadCodec);
+    protected readonly initData: InitData;
+    constructor(tmClient: TendermintClient, codec: TxReadCodec, initData: InitData);
     disconnect(): void;
-    chainId(): Promise<ChainId>;
+    chainId(): ChainId;
     height(): Promise<number>;
     status(): Promise<StatusResponse>;
     postTx(tx: PostableBytes): Promise<BcpTransactionResponse>;
@@ -34,7 +35,6 @@ export declare class Client implements BcpAtomicSwapConnection {
     changeNonce(addr: Address): Stream<number>;
     watchAccount(account: BcpAccountQuery): Stream<BcpAccount | undefined>;
     watchNonce(account: BcpAccountQuery): Stream<BcpNonce | undefined>;
-    protected initialize(): Promise<InitData>;
     protected query(path: string, data: Uint8Array): Promise<QueryResponse>;
 }
 export interface QueryResponse {
