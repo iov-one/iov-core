@@ -42,9 +42,6 @@ CI Tests:
 
 (Node 10 tested on many dev machines)
 
-**Windows note:** The development tools *definitely* work under windows in "Linux subsystem for windows"
-bash shell. They most likely work under cygwin as well. But they do rely on minor shell scripting.
-
 ## Gettting Started
 
 The best way to learn about code is to use it.
@@ -66,7 +63,7 @@ can browse locally to see API docs on the various packages.
 ### Libusb fails to build, why?
 
 If you are running on linux, you may not have the proper dependencies installed. For ubuntu, try the
-following: `sudo apt-get install libudev-dev libusb-1.0-0 libusb-1.0-0-dev`. 
+following: `sudo apt-get install libudev-dev libusb-1.0-0 libusb-1.0-0-dev`.
 These are needed to compile the usb driver.
 
 Currently, Libusb requires node-pre-gyp version `0.10.2` or lower to compile properly. If for some reason
@@ -75,6 +72,10 @@ the compilation issues are fixed in the `node-pre-gyp` package. This package com
 `@ledger/hw-transport-node-hid` and is not easily modifiable by our team. Once the issues are resolved,
 the hard requirement of this dependency will be removed to allow it to be synchronized with the packages
 that require it.
+
+### Windows issues
+
+
 
 ## License
 
