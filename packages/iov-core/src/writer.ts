@@ -2,8 +2,8 @@ import Long from "long";
 
 import {
   Address,
+  BcpConnection,
   BcpTransactionResponse,
-  IovReader,
   Nonce,
   TxCodec,
   UnsignedTransaction,
@@ -33,7 +33,7 @@ export class IovWriter {
     return Array.from(this.knownChains).map(([x, _]: [string, ChainConnection]) => x as ChainId);
   }
 
-  public reader(chainId: ChainId): IovReader {
+  public reader(chainId: ChainId): BcpConnection {
     return this.getChain(chainId).client;
   }
 
@@ -95,13 +95,13 @@ export class IovWriter {
 }
 
 export interface ChainConnector {
-  readonly client: () => Promise<IovReader>;
+  readonly client: () => Promise<BcpConnection>;
   readonly codec: TxCodec;
 }
 
 export interface ChainConnection {
   readonly chainId: ChainId;
-  readonly client: IovReader;
+  readonly client: BcpConnection;
   readonly codec: TxCodec;
 }
 

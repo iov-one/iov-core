@@ -60,6 +60,15 @@ export interface BcpTransactionResponse {
   };
 }
 
+export interface ConfirmedTransaction extends SignedTransaction {
+  readonly height: number; // the block it was written to
+  readonly txid: TxId; // a unique identifier (hash of the data)
+  // Data from executing tx (result, code, tags...)
+  readonly result: Uint8Array;
+  readonly log: string;
+  // readonly tags: ReadonlyArray<Tag>;
+}
+
 export interface BcpAddressQuery {
   readonly address: Address;
 }
@@ -70,15 +79,20 @@ export interface BcpValueNameQuery {
 
 export type BcpAccountQuery = BcpAddressQuery | BcpValueNameQuery;
 
-// IovReader is a high-level interface to a blockchain node,
+// BcpConnection is a high-level interface to a blockchain node,
 // abstracted over all blockchain types and communication channel.
 // A direct connection or a proxy server should implement this.
 // The implementation takes care to convert our internal types into
 // the proper format for the blockchain.
 //
-// The IovReader will most likely contain some private state to maintain
-// the connection, subscription, and such.
-export interface IovReader {
+// BcpConnection is the minimal interface needed to be supported by any blockchain
+// that is compatible with the bcp spec and iov-core library. This supports
+// getting account balances, sending tokens, and observing the blockchain state.
+//
+// There are other optional interfaces that extend this functionality with
+// features like atomic swap, NFTs, etc which may be implemented by any connector
+// to enable enhanced features in the clients
+export interface BcpConnection {
   readonly disconnect: () => void;
 
   // // headers returns all headers in that range.
@@ -120,20 +134,9 @@ export interface IovReader {
 
   // searchTx searches for all tx that match these tags and subscribes to new ones
   readonly searchTx: (query: TxQuery) => Promise<ReadonlyArray<ConfirmedTransaction>>;
-
   // listenTx subscribes to all newly added transactions with these tags
   readonly listenTx: (tags: ReadonlyArray<Tag>) => Stream<ConfirmedTransaction>;
-
   // liveTx returns a stream for all historical transactions that match
   // the query, along with all new transactions arriving from listenTx
   readonly liveTx: (txQuery: TxQuery) => Stream<ConfirmedTransaction>;
-}
-
-export interface ConfirmedTransaction extends SignedTransaction {
-  readonly height: number; // the block it was written to
-  readonly txid: TxId; // a unique identifier (hash of the data)
-  // Data from executing tx (result, code, tags...)
-  readonly result: Uint8Array;
-  readonly log: string;
-  // readonly tags: ReadonlyArray<Tag>;
 }

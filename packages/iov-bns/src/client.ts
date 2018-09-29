@@ -5,13 +5,13 @@ import {
   BcpAccount,
   BcpAccountQuery,
   BcpAddressQuery,
+  BcpConnection,
   BcpData,
   BcpNonce,
   BcpQueryEnvelope,
   BcpTicker,
   BcpTransactionResponse,
   ConfirmedTransaction,
-  IovReader,
   TokenTicker,
   TxReadCodec,
 } from "@iov/bcp-types";
@@ -55,7 +55,7 @@ function onChange<T>(): (val: T) => boolean {
 // Client talks directly to the BNS blockchain and exposes the
 // same interface we have with the BCP protocol.
 // We can embed in iov-core process or use this in a BCP-relay
-export class Client implements IovReader {
+export class Client implements BcpConnection {
   public static fromOrToTag(addr: Address): Tag {
     const id = Uint8Array.from([...Encoding.toAscii("wllt:"), ...addr]);
     const key = Encoding.toHex(id).toUpperCase();

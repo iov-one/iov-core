@@ -41,6 +41,12 @@ export interface BcpTransactionResponse {
         readonly result: Uint8Array;
     };
 }
+export interface ConfirmedTransaction extends SignedTransaction {
+    readonly height: number;
+    readonly txid: TxId;
+    readonly result: Uint8Array;
+    readonly log: string;
+}
 export interface BcpAddressQuery {
     readonly address: Address;
 }
@@ -48,7 +54,7 @@ export interface BcpValueNameQuery {
     readonly name: string;
 }
 export declare type BcpAccountQuery = BcpAddressQuery | BcpValueNameQuery;
-export interface IovReader {
+export interface BcpConnection {
     readonly disconnect: () => void;
     readonly chainId: () => Promise<ChainId>;
     readonly height: () => Promise<number>;
@@ -65,10 +71,4 @@ export interface IovReader {
     readonly searchTx: (query: TxQuery) => Promise<ReadonlyArray<ConfirmedTransaction>>;
     readonly listenTx: (tags: ReadonlyArray<Tag>) => Stream<ConfirmedTransaction>;
     readonly liveTx: (txQuery: TxQuery) => Stream<ConfirmedTransaction>;
-}
-export interface ConfirmedTransaction extends SignedTransaction {
-    readonly height: number;
-    readonly txid: TxId;
-    readonly result: Uint8Array;
-    readonly log: string;
 }

@@ -1,10 +1,10 @@
 import { Stream } from "xstream";
-import { Address, BcpAccount, BcpAccountQuery, BcpNonce, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, ConfirmedTransaction, IovReader, TokenTicker, TxReadCodec } from "@iov/bcp-types";
+import { Address, BcpAccount, BcpAccountQuery, BcpConnection, BcpNonce, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, ConfirmedTransaction, TokenTicker, TxReadCodec } from "@iov/bcp-types";
 import { Client as TendermintClient, StatusResponse } from "@iov/tendermint-rpc";
 import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 import { InitData } from "./normalize";
 import { Result } from "./types";
-export declare class Client implements IovReader {
+export declare class Client implements BcpConnection {
     static fromOrToTag(addr: Address): Tag;
     static nonceTag(addr: Address): Tag;
     static connect(url: string): Promise<Client>;
