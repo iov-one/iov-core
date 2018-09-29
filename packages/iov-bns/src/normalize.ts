@@ -5,7 +5,6 @@ import {
   BcpCoin,
   BcpNonce,
   BcpTicker,
-  HashLock,
   Nonce,
   SwapData,
   SwapIdBytes,
@@ -17,7 +16,7 @@ import { ChainId } from "@iov/tendermint-types";
 
 import * as codecImpl from "./codecimpl";
 import { asLong, asNumber, decodePubKey, decodeToken, ensure, Keyed } from "./types";
-import { isHashIdentifier } from "./util";
+import { hashFromIdentifier, isHashIdentifier } from "./util";
 
 // InitData is all the queries we do on initialization to be
 // reused by later calls
@@ -70,9 +69,9 @@ export class Normalize {
   public static swapOffer(initData: InitData): (swap: codecImpl.escrow.Escrow & Keyed) => BcpAtomicSwap {
     return (swap: codecImpl.escrow.Escrow & Keyed): BcpAtomicSwap => {
       // TODO: get and check hashlock
-      let hashlock: HashLock;
+      let hashlock: Uint8Array;
       if (isHashIdentifier(swap.arbiter)) {
-        hashlock = swap.arbiter;
+        hashlock = hashFromIdentifier(swap.arbiter);
       } else {
         throw new Error("Escrow not controlled by hashlock");
       }

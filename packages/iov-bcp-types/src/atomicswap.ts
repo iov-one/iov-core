@@ -1,4 +1,3 @@
-import { As } from "type-tagger";
 import { Stream } from "xstream";
 
 import { BcpCoin, BcpConnection, BcpQueryEnvelope } from "./bcp";
@@ -11,13 +10,11 @@ export enum SwapState {
   Expired = "expired",
 }
 
-export type HashLock = Uint8Array & As<"hashlock">;
-
 export interface SwapData {
   readonly id: SwapIdBytes; // this is used as an unique identitier to locate the swap
   readonly sender: Address;
   readonly recipient: Address;
-  readonly hashlock: HashLock; // this is the hash, whose preimage releases the swap
+  readonly hashlock: Uint8Array; // this is the hash, whose preimage releases the swap
   readonly amount: ReadonlyArray<BcpCoin>;
   readonly timeout: number; // blockheight where the swap expires (TODO: alternatively support Date?)
   readonly memo?: string;

@@ -38,6 +38,7 @@ import { bnsCodec } from "./bnscodec";
 import * as codecImpl from "./codecimpl";
 import { InitData, Normalize } from "./normalize";
 import { Decoder, Keyed, Result } from "./types";
+import { hashIdentifier } from "./util";
 
 // onChange returns a filter than only passes when the
 // value is different than the last one
@@ -190,7 +191,7 @@ export class Client implements BcpAtomicSwapConnection {
         return this.query("/escrows/recipient", query.recipient);
       } else {
         // if (isQueryBySwapHash(query))
-        return this.query("/escrows/arbiter", query.hashlock); // TODO: we need to process this first I think
+        return this.query("/escrows/arbiter", hashIdentifier(query.hashlock));
       }
     };
 

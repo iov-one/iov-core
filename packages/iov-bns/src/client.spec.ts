@@ -13,6 +13,7 @@ import {
   TokenTicker,
   TransactionKind,
 } from "@iov/bcp-types";
+import { Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import {
   Ed25519SimpleAddressKeyringEntry,
@@ -25,7 +26,7 @@ import { TxQuery } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
 import { Client } from "./client";
-import { keyToAddress, preimageIdentifier } from "./util";
+import { keyToAddress } from "./util";
 
 const skipTests = (): boolean => !process.env.BOV_ENABLED;
 
@@ -467,6 +468,7 @@ describe("Integration tests with bov+tendermint", () => {
     const nonce = await getNonce(client, faucetAddr);
 
     const preimage = Encoding.toAscii("my top secret phrase... keep it on the down low ;)");
+    const hash = new Sha256(preimage).digest();
 
     const initSwaps = await client.getSwap({ recipient: rcptAddr });
     expect(initSwaps.data.length).toEqual(0);
@@ -533,7 +535,7 @@ describe("Integration tests with bov+tendermint", () => {
     expect(swapData.amount.length).toEqual(1);
     expect(swapData.amount[0].whole).toEqual(123);
     expect(swapData.amount[0].tokenTicker).toEqual(cash);
-    expect(swapData.hashlock).toEqual(preimageIdentifier(preimage));
+    expect(swapData.hashlock).toEqual(hash);
 
     // we can get the swap by the recipient
     const rcptSwap = await client.getSwap({ recipient: rcptAddr });
@@ -544,5 +546,10 @@ describe("Integration tests with bov+tendermint", () => {
     const sendSwap = await client.getSwap({ sender: faucetAddr });
     expect(sendSwap.data.length).toEqual(1);
     expect(sendSwap.data[0]).toEqual(swap);
+
+    // we can also get it by the hash
+    const hashSwap = await client.getSwap({ hashlock: hash });
+    expect(hashSwap.data.length).toEqual(1);
+    expect(hashSwap.data[0]).toEqual(swap);
   });
 });
