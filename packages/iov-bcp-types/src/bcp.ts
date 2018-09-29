@@ -12,7 +12,7 @@ https://app.swaggerhub.com/apis/IOV.one/BOV/0.0.4#/basic/getAccounts
 Only a subset currently implemented.
 */
 
-export interface BcpQueryEnvelope<T extends BcpData> {
+export interface BcpQueryEnvelope<T> {
   readonly metadata: BcpQueryMetadata;
   readonly data: ReadonlyArray<T>;
 }
@@ -21,8 +21,6 @@ export interface BcpQueryMetadata {
   readonly offset: number;
   readonly limit: number;
 }
-
-export type BcpData = BcpAccount | BcpNonce | BcpTicker;
 
 export interface BcpAccount {
   readonly address: Address;

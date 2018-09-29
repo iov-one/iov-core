@@ -2,7 +2,7 @@ import { Stream } from "xstream";
 import { ChainId, PostableBytes, PublicKeyBundle, Tag, TxId, TxQuery } from "@iov/tendermint-types";
 import { Address, SignedTransaction } from "./signables";
 import { Nonce, TokenTicker } from "./transactions";
-export interface BcpQueryEnvelope<T extends BcpData> {
+export interface BcpQueryEnvelope<T> {
     readonly metadata: BcpQueryMetadata;
     readonly data: ReadonlyArray<T>;
 }
@@ -10,7 +10,6 @@ export interface BcpQueryMetadata {
     readonly offset: number;
     readonly limit: number;
 }
-export declare type BcpData = BcpAccount | BcpNonce | BcpTicker;
 export interface BcpAccount {
     readonly address: Address;
     readonly name?: string;
