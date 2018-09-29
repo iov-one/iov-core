@@ -7,7 +7,9 @@ import {
   BcpTransactionResponse,
   Nonce,
   SendTx,
+  SwapIdBytes,
   SwapOfferTx,
+  SwapState,
   TokenTicker,
   TransactionKind,
 } from "@iov/bcp-types";
@@ -466,6 +468,9 @@ describe("Integration tests with bov+tendermint", () => {
 
     const preimage = Encoding.toAscii("my top secret phrase... keep it on the down low ;)");
 
+    const initSwaps = await client.getSwap({ recipient: rcptAddr });
+    expect(initSwaps.data.length).toEqual(0);
+
     // construct a sendtx, this is normally used in the IovWriter api
     const swapOfferTx: SwapOfferTx = {
       kind: TransactionKind.SwapOffer,
@@ -510,5 +515,33 @@ describe("Integration tests with bov+tendermint", () => {
     // make sure it also stored a result
     expect(loaded.result).toEqual(txResult);
     expect(loaded.height).toEqual(txHeight!);
+
+    // we can also swap by id (returned by the transaction result)
+    const idSwap = await client.getSwap({ swapid: txResult as SwapIdBytes });
+    expect(idSwap.data.length).toEqual(1);
+
+    const swap = idSwap.data[0];
+    expect(swap.kind).toEqual(SwapState.OPEN);
+
+    // and it matches expectations
+    const swapData = swap.data;
+    expect(swapData.id).toEqual(txResult);
+    expect(swapData.sender).toEqual(faucetAddr);
+    expect(swapData.recipient).toEqual(rcptAddr);
+    expect(swapData.timeout).toEqual(loaded.height + 1000); // when tx was commited plus timeout
+    expect(swapData.amount.length).toEqual(1);
+    expect(swapData.amount[0].whole).toEqual(123);
+    expect(swapData.amount[0].tokenTicker).toEqual(cash);
+    // todo: hashlock field, memo?
+
+    // we can get the swap by the recipient
+    const rcptSwap = await client.getSwap({ recipient: rcptAddr });
+    expect(rcptSwap.data.length).toEqual(1);
+    expect(rcptSwap.data[0]).toEqual(swap);
+
+    // we can also get it by the sender
+    const sendSwap = await client.getSwap({ sender: faucetAddr });
+    expect(sendSwap.data.length).toEqual(1);
+    expect(sendSwap.data[0]).toEqual(swap);
   });
 });
