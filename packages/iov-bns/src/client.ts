@@ -4,14 +4,19 @@ import {
   Address,
   BcpAccount,
   BcpAccountQuery,
-  BcpConnection,
+  BcpAtomicSwap,
+  BcpAtomicSwapConnection,
   BcpNonce,
   BcpQueryEnvelope,
+  BcpSwapQuery,
   BcpTicker,
   BcpTransactionResponse,
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
+  isQueryBySwapId,
+  isQueryBySwapRecipient,
+  isQueryBySwapSender,
   TokenTicker,
   TxReadCodec,
 } from "@iov/bcp-types";
@@ -50,7 +55,7 @@ function onChange<T>(): (val: T) => boolean {
 // Client talks directly to the BNS blockchain and exposes the
 // same interface we have with the BCP protocol.
 // We can embed in iov-core process or use this in a BCP-relay
-export class Client implements BcpConnection {
+export class Client implements BcpAtomicSwapConnection {
   public static fromOrToTag(addr: Address): Tag {
     const id = Uint8Array.from([...Encoding.toAscii("wllt:"), ...addr]);
     const key = Encoding.toHex(id).toUpperCase();
@@ -171,6 +176,35 @@ export class Client implements BcpConnection {
     const parser = parseMap(codecImpl.sigs.UserData, 5);
     const data = res.results.map(parser).map(Normalize.nonce);
     return dummyEnvelope(data);
+  }
+
+  // getSwap returns all matching swaps that are open (in app state)
+  // to get claimed and returned, we need to look at the transactions.... TODO
+  public async getSwap(query: BcpSwapQuery): Promise<BcpQueryEnvelope<BcpAtomicSwap>> {
+    const doQuery = (): Promise<QueryResponse> => {
+      if (isQueryBySwapId(query)) {
+        return this.query("/escrows", query.swapid);
+      } else if (isQueryBySwapSender(query)) {
+        return this.query("/escrows/sender", query.sender);
+      } else if (isQueryBySwapRecipient(query)) {
+        return this.query("/escrows/recipient", query.recipient);
+      } else {
+        // if (isQueryBySwapHash(query))
+        return this.query("/escrows/arbiter", query.hashlock); // TODO: we need to process this first I think
+      }
+    };
+
+    const res = await doQuery();
+    const parser = parseMap(codecImpl.escrow.Escrow, 4); // prefix: "esc:"
+    const initData = await this.initData;
+    const data = res.results.map(parser).map(Normalize.swapOffer(initData));
+    return dummyEnvelope(data);
+  }
+
+  // watchSwap emits currentState (getSwap) as a stream, then sends updates for any matching swap
+  // this includes an open swap beind claimed/expired as well as a new matching swap being offered
+  public watchSwap(/*swap: BcpSwapQuery*/): Stream<BcpAtomicSwap> {
+    throw new Error("not implemented");
   }
 
   public async searchTx(txQuery: TxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {

@@ -1,9 +1,21 @@
-import { Address, BcpAccount, BcpCoin, BcpNonce, BcpTicker, Nonce, TokenTicker } from "@iov/bcp-types";
+import {
+  Address,
+  BcpAccount,
+  BcpAtomicSwap,
+  BcpCoin,
+  BcpNonce,
+  BcpTicker,
+  Nonce,
+  SwapData,
+  SwapIdBytes,
+  SwapState,
+  TokenTicker,
+} from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import { ChainId } from "@iov/tendermint-types";
 
 import * as codecImpl from "./codecimpl";
-import { asLong, decodePubKey, decodeToken, ensure, Keyed } from "./types";
+import { asLong, asNumber, decodePubKey, decodeToken, ensure, Keyed } from "./types";
 
 // InitData is all the queries we do on initialization to be
 // reused by later calls
@@ -49,6 +61,29 @@ export class Normalize {
         // Better defaults?
         tokenName: tickerInfo ? tickerInfo.tokenName : "<Unknown token>",
         sigFigs: tickerInfo ? tickerInfo.sigFigs : 9,
+      };
+    };
+  }
+
+  public static swapOffer(initData: InitData): (swap: codecImpl.escrow.Escrow & Keyed) => BcpAtomicSwap {
+    return (swap: codecImpl.escrow.Escrow & Keyed): BcpAtomicSwap => {
+      // TODO: get and check hashlock
+      const arb = swap.arbiter;
+      const hashlock: Uint8Array = arb;
+
+      const data: SwapData = {
+        id: swap._id as SwapIdBytes,
+        sender: ensure(swap.sender) as Address,
+        recipient: ensure(swap.recipient) as Address,
+        hashlock,
+        amount: ensure(swap.amount).map(this.coin(initData)),
+        timeout: asNumber(swap.timeout),
+        memo: swap.memo,
+      };
+
+      return {
+        kind: SwapState.Open,
+        data,
       };
     };
   }

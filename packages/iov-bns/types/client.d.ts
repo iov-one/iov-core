@@ -1,10 +1,10 @@
 import { Stream } from "xstream";
-import { Address, BcpAccount, BcpAccountQuery, BcpConnection, BcpNonce, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, ConfirmedTransaction, TokenTicker, TxReadCodec } from "@iov/bcp-types";
+import { Address, BcpAccount, BcpAccountQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpNonce, BcpQueryEnvelope, BcpSwapQuery, BcpTicker, BcpTransactionResponse, ConfirmedTransaction, TokenTicker, TxReadCodec } from "@iov/bcp-types";
 import { Client as TendermintClient, StatusResponse } from "@iov/tendermint-rpc";
 import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 import { InitData } from "./normalize";
 import { Result } from "./types";
-export declare class Client implements BcpConnection {
+export declare class Client implements BcpAtomicSwapConnection {
     static fromOrToTag(addr: Address): Tag;
     static nonceTag(addr: Address): Tag;
     static connect(url: string): Promise<Client>;
@@ -21,6 +21,8 @@ export declare class Client implements BcpConnection {
     getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAccount(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>>;
     getNonce(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>>;
+    getSwap(query: BcpSwapQuery): Promise<BcpQueryEnvelope<BcpAtomicSwap>>;
+    watchSwap(): Stream<BcpAtomicSwap>;
     searchTx(txQuery: TxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
     listenTx(tags: ReadonlyArray<Tag>): Stream<ConfirmedTransaction>;
     liveTx(txQuery: TxQuery): Stream<ConfirmedTransaction>;
