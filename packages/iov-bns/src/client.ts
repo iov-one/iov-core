@@ -179,9 +179,9 @@ export class Client implements IovReader {
   }
 
   public async searchTx(txQuery: TxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    const perPage = 100; // how many tx to return in search page, default 30
-    const query = buildTxQuery(txQuery);
-    const res = await this.tmClient.txSearch({ query, per_page: perPage });
+    // this will paginate over all transactions, even if multiple pages.
+    // FIXME: consider making a streaming interface here, but that will break clients
+    const res = await this.tmClient.txSearchAll({ query: buildTxQuery(txQuery) });
     const chainId = await this.chainId();
     const mapper = ({ tx, hash, height, txResult }: TxResponse): ConfirmedTransaction => ({
       height,
