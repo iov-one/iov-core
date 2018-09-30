@@ -132,6 +132,14 @@ function kvTestSuite(rpcFactory: () => RpcClient): void {
     // except without the proof
     expect(s.txs[0]).toEqual({ ...r, proof: undefined });
 
+    // ensure txSearchAll works as well
+    const sall = await client.txSearchAll({ query });
+    // should find the tx
+    expect(sall.totalCount).toEqual(1);
+    // should return same info as querying directly,
+    // except without the proof
+    expect(sall.txs[0]).toEqual({ ...r, proof: undefined });
+
     // and let's query the block itself to see this transaction
     const block = await client.block(height);
     expect(block.blockMeta.header.numTxs).toEqual(1);

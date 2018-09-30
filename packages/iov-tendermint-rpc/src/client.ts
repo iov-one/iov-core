@@ -134,6 +134,29 @@ export class Client {
     return this.doCall(query, this.p.encodeTxSearch, this.r.decodeTxSearch);
   }
 
+  // this should paginate through all txSearch options to ensure it returns all results.
+  // starts with page 1 or whatever was provided (eg. to start on page 7)
+  public async txSearchAll(params: requests.TxSearchParams): Promise<responses.TxSearchResponse> {
+    let page = params.page || 1;
+    let txs: ReadonlyArray<responses.TxResponse> = [];
+    let done = false;
+
+    while (!done) {
+      const resp = await this.txSearch({ ...params, page });
+      txs = [...txs, ...resp.txs];
+      if (txs.length < resp.totalCount) {
+        page++;
+      } else {
+        done = true;
+      }
+    }
+
+    return {
+      totalCount: txs.length,
+      txs,
+    };
+  }
+
   public validators(height?: number): Promise<responses.ValidatorsResponse> {
     const query: requests.ValidatorsRequest = { method: requests.Method.VALIDATORS, params: { height } };
     return this.doCall(query, this.p.encodeValidators, this.r.decodeValidators);
