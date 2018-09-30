@@ -31,11 +31,14 @@
   },
   "dependencies": {
     "@iov/bcp-types": "^0.5.3",
+    "@iov/core": "^0.5.4",
     "@iov/crypto": "^0.5.3",
     "@iov/encoding": "^0.5.3",
     "@iov/keycontrol": "^0.5.4",
     "@types/long": "^4.0.0",
+    "axios": "^0.18.0",
     "long": "^4.0.0",
-    "readonly-date": "^1.0.0"
+    "readonly-date": "^1.0.0",
+    "xstream": "^11.7.0"
   }
 }

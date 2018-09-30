@@ -34,9 +34,10 @@ import * as codecImpl from "./codecimpl";
 import { InitData, Normalize } from "./normalize";
 import { Decoder, Keyed, Result } from "./types";
 
-// queryByAddress is a type guard to use in the account-based queries
-const queryByAddress = (query: BcpAccountQuery): query is BcpAddressQuery =>
-  (query as BcpAddressQuery).address !== undefined;
+// a type checker to use in the account-based queries
+function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery {
+  return (query as BcpAddressQuery).address !== undefined;
+}
 
 // onChange returns a filter than only passes when the
 // value is different than the last one
@@ -142,7 +143,7 @@ export class Client implements IovReader {
   }
 
   public async getAccount(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>> {
-    const res = queryByAddress(account)
+    const res = isAddressQuery(account)
       ? this.query("/wallets", account.address)
       : this.query("/wallets/name", Encoding.toAscii(account.name));
     const parser = parseMap(codecImpl.namecoin.Wallet, 5);
@@ -156,7 +157,7 @@ export class Client implements IovReader {
     // getAddress will do a lookup from name -> address if needed
     // make this an async function so easier to switch on return value
     const getAddress = async (): Promise<Uint8Array | undefined> => {
-      if (queryByAddress(account)) {
+      if (isAddressQuery(account)) {
         return account.address;
       }
       const addrRes = await this.getAccount(account);
@@ -244,7 +245,7 @@ export class Client implements IovReader {
   // watchAccount gets current balance and emits an update every time
   // it changes
   public watchAccount(account: BcpAccountQuery): Stream<BcpAccount | undefined> {
-    if (!queryByAddress(account)) {
+    if (!isAddressQuery(account)) {
       throw new Error("watchAccount requires an address, not name, to watch");
     }
     // oneAccount normalizes the BcpEnvelope to just get the
@@ -265,7 +266,7 @@ export class Client implements IovReader {
   // watchNonce gets current nonce and emits an update every time
   // it changes
   public watchNonce(account: BcpAccountQuery): Stream<BcpNonce | undefined> {
-    if (!queryByAddress(account)) {
+    if (!isAddressQuery(account)) {
       throw new Error("watchNonce requires an address, not name, to watch");
     }
     // oneNonce normalizes the BcpEnvelope to just get the
