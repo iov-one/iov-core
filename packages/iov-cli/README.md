@@ -48,7 +48,7 @@ $ iov-cli
 > profile.getIdentities(0)
 []
 
-> const faucet = await profile.createIdentity(0)
+> const faucet = await profile.createIdentity(0, 0)
 
 > faucet.pubkey
 { algo: 'ed25519',
@@ -71,7 +71,7 @@ $ iov-cli
 > const faucetAddress = writer.keyToAddress(chainId, faucet.pubkey);
 > (await reader.getAccount({ address: faucetAddress })).data[0].balance
 
-> const recipient = await profile.createIdentity(0);
+> const recipient = await profile.createIdentity(0, 1);
 > const recipientAddress = writer.keyToAddress(chainId, recipient.pubkey);
 
 > .editor
@@ -195,7 +195,7 @@ When using a Testnet, you can use the BovFaucet to receive tokens:
 'helmet album grow detail apology thank wire chef fame core private cargo'
 > const profile = new UserProfile();
 > profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic(mnemonic));
-> const me = await profile.createIdentity(0);
+> const me = await profile.createIdentity(0, 0);
 
 > const writer = new IovWriter(profile);
 > await writer.addChain(bnsConnector("https://bov.friendnet-slow.iov.one"));
@@ -245,7 +245,7 @@ Do 1. and 2. like above
 > profile.getIdentities(1)
 []
 
-> const softwareIdentity = await profile.createIdentity(0)
+> const softwareIdentity = await profile.createIdentity(0, 0)
 > const hardwareIdentity = await profile.createIdentity(1)
 
 > softwareIdentity.pubkey

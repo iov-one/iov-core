@@ -24,7 +24,7 @@ profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic(mneumonic));
 // the "0" in the next two lines refers to the keyring entry.
 // we only added one, but you could add multiple with different mneumonics,
 // or one as ledger, secp256k1, etc....
-const identity = await profile.createIdentity(0);
+const identity = await profile.createIdentity(0, 0);
 profile.getIdentities(0);
 ```
 
