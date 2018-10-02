@@ -93,7 +93,7 @@ export class LiskClient implements BcpConnection {
 
     // Sleep some seconds to ensure transaction will be found.
     // Sleep duration determined by trial and error. 15 seconds was not enough.
-    await new Promise(resolve => setTimeout(resolve, 20 * 1000));
+    await new Promise(resolve => setTimeout(resolve, 30 * 1000));
 
     const result = await axios.get(this.baseUrl + `/api/transactions?id=${transactionId}`);
     const responseBody = result.data;
