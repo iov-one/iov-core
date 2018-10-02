@@ -63,7 +63,7 @@ script:
 - ./scripts/travis.sh
 
 after_script:
-- source ./scripts/blockchain_start.sh
+- source ./scripts/blockchain_stop.sh
 
 # whitelist long living branches to avoid testing feature branches twice (as branch and as pull request)
 branches:
