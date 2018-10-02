@@ -4,7 +4,7 @@
 // this should serve as an entry point into the whole monorepo.
 
 export { Address, Nonce, SendTx, SetNameTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
-export { bnsFromOrToTag } from "@iov/bns";
+export { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "@iov/bns";
 export {
   Ed25519KeyringEntry,
   Ed25519SimpleAddressKeyringEntry,
