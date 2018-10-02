@@ -3,10 +3,12 @@ import { Address, BcpAccount, BcpAccountQuery, BcpConnection, BcpNonce, BcpQuery
 import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 export declare function generateNonce(): Nonce;
 export declare class LiskClient implements BcpConnection {
+    static connect(baseUrl: string): Promise<LiskClient>;
     private readonly baseUrl;
-    constructor(baseUrl: string);
+    private readonly myChainId;
+    constructor(baseUrl: string, chainId: ChainId);
     disconnect(): void;
-    chainId(): Promise<ChainId>;
+    chainId(): ChainId;
     height(): Promise<number>;
     postTx(bytes: PostableBytes): Promise<BcpTransactionResponse>;
     getTicker(_: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>>;
