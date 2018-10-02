@@ -126,6 +126,13 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     }
 
     const newIdentity = this.buildLocalIdentity(keypair.pubkey as PublicKeyBytes, undefined);
+
+    if (this.identities.find(i => i.id === newIdentity.id)) {
+      throw new Error(
+        "Identity ID collision: this happens when you try to create multiple identities with the same keypair in the same entry.",
+      );
+    }
+
     this.privkeys.set(newIdentity.id, keypair);
     this.identities.push(newIdentity);
     return newIdentity;

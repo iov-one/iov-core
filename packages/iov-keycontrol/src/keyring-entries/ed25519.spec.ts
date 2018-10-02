@@ -75,6 +75,18 @@ describe("Ed25519KeyringEntry", () => {
     expect(newIdentity4.label).toEqual(lastIdentity.label);
   });
 
+  it("throws when adding the same keypair twice", async () => {
+    // Same keypair leads to the same identity identifier, so we don't support it
+
+    const entry = new Ed25519KeyringEntry();
+    await entry.createIdentity(defaultKeypair);
+
+    await entry
+      .createIdentity(defaultKeypair)
+      .then(() => fail("must not resolve"))
+      .catch(error => expect(error).toMatch(/ID collision/i));
+  });
+
   it("can set, change and unset an identity label", async () => {
     const keyringEntry = new Ed25519KeyringEntry();
     const newIdentity = await keyringEntry.createIdentity(defaultKeypair);
