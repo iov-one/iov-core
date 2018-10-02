@@ -39,7 +39,7 @@ export class IovWriter {
 
   public async addChain(connector: ChainConnector): Promise<void> {
     const connection = await connectChain(connector);
-    const { chainId } = connection;
+    const chainId = connection.client.chainId();
     if (this.knownChains.get(chainId) !== undefined) {
       throw new Error(`Chain ${chainId} is already registered`);
     }
@@ -100,7 +100,6 @@ export interface ChainConnector {
 }
 
 export interface ChainConnection {
-  readonly chainId: ChainId;
   readonly client: BcpConnection;
   readonly codec: TxCodec;
 }
@@ -114,11 +113,8 @@ export const bnsConnector = (url: string): ChainConnector => ({
 });
 
 const connectChain = async (x: ChainConnector): Promise<ChainConnection> => {
-  const client = await x.client();
-  const chainId = await client.chainId();
   return {
-    chainId,
-    client,
+    client: await x.client(),
     codec: x.codec,
   };
 };
