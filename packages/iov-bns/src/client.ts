@@ -284,7 +284,7 @@ export class Client implements BcpAtomicSwapConnection {
     const open: OpenSwap[] = [];
     const combiner = (evt: OpenSwap | SwapClaimTx | SwapTimeoutTx): BcpAtomicSwap => {
       switch (evt.kind) {
-        case SwapState.OPEN:
+        case SwapState.Open:
           open.push(evt);
           return evt;
         default:

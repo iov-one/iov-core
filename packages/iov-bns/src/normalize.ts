@@ -109,7 +109,7 @@ export class Normalize {
         timeout: counter.timeout,
       };
       return {
-        kind: SwapState.OPEN,
+        kind: SwapState.Open,
         data,
       };
     };
@@ -119,13 +119,13 @@ export class Normalize {
   public static settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTx | SwapTimeoutTx): BcpAtomicSwap {
     if (tx.kind === TransactionKind.SwapClaim) {
       return {
-        kind: SwapState.CLAIMED,
+        kind: SwapState.Claimed,
         data: swap.data,
         preimage: tx.preimage,
       };
     } else {
       return {
-        kind: SwapState.EXPIRED,
+        kind: SwapState.Expired,
         data: swap.data,
       };
     }

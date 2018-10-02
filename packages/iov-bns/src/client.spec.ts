@@ -552,7 +552,7 @@ describe("Integration tests with bov+tendermint", () => {
     expect(idSwap.data.length).toEqual(1);
 
     const swap = idSwap.data[0];
-    expect(swap.kind).toEqual(SwapState.OPEN);
+    expect(swap.kind).toEqual(SwapState.Open);
 
     // and it matches expectations
     const swapData = swap.data;
@@ -669,9 +669,9 @@ describe("Integration tests with bov+tendermint", () => {
     const midSwaps = await client.getSwap(rcptQuery);
     expect(midSwaps.data.length).toEqual(2);
     const [open1, open2] = midSwaps.data;
-    expect(open1.kind).toEqual(SwapState.OPEN);
+    expect(open1.kind).toEqual(SwapState.Open);
     expect(open1.data.id).toEqual(id1);
-    expect(open2.kind).toEqual(SwapState.OPEN);
+    expect(open2.kind).toEqual(SwapState.Open);
     expect(open2.data.id).toEqual(id2);
 
     // then claim, offer, claim - 2 closed, 1 open
@@ -690,25 +690,25 @@ describe("Integration tests with bov+tendermint", () => {
     const finalSwaps = await client.getSwap({ recipient: rcptAddr });
     expect(finalSwaps.data.length).toEqual(3);
     const [open3, claim2, claim1] = finalSwaps.data;
-    expect(open3.kind).toEqual(SwapState.OPEN);
+    expect(open3.kind).toEqual(SwapState.Open);
     expect(open3.data.id).toEqual(id3);
-    expect(claim2.kind).toEqual(SwapState.CLAIMED);
+    expect(claim2.kind).toEqual(SwapState.Claimed);
     expect(claim2.data.id).toEqual(id2);
-    expect(claim1.kind).toEqual(SwapState.CLAIMED);
+    expect(claim1.kind).toEqual(SwapState.Claimed);
     expect(claim1.data.id).toEqual(id1);
 
     // validate liveView is correct
     const vals = liveView.value();
     expect(vals.length).toEqual(5);
-    expect(vals[0].kind).toEqual(SwapState.OPEN);
+    expect(vals[0].kind).toEqual(SwapState.Open);
     expect(vals[0].data.id).toEqual(id1);
-    expect(vals[1].kind).toEqual(SwapState.OPEN);
+    expect(vals[1].kind).toEqual(SwapState.Open);
     expect(vals[1].data.id).toEqual(id2);
-    expect(vals[2].kind).toEqual(SwapState.CLAIMED);
+    expect(vals[2].kind).toEqual(SwapState.Claimed);
     expect(vals[2].data.id).toEqual(id2);
-    expect(vals[3].kind).toEqual(SwapState.OPEN);
+    expect(vals[3].kind).toEqual(SwapState.Open);
     expect(vals[3].data.id).toEqual(id3);
-    expect(vals[4].kind).toEqual(SwapState.CLAIMED);
+    expect(vals[4].kind).toEqual(SwapState.Claimed);
     expect(vals[4].data.id).toEqual(id1);
   });
 });
