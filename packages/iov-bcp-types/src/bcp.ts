@@ -3,12 +3,11 @@ import { Stream } from "xstream";
 import { ChainId, PostableBytes, PublicKeyBundle, Tag, TxId, TxQuery } from "@iov/tendermint-types";
 
 import { Address, SignedTransaction } from "./signables";
-import { Nonce, TokenTicker } from "./transactions";
+import { Nonce, TokenTicker, UnsignedTransaction } from "./transactions";
 
 /*
 Types defined to match
 https://app.swaggerhub.com/apis/IOV.one/BOV/0.0.4#/basic/getAccounts
-
 Only a subset currently implemented.
 */
 
@@ -69,7 +68,8 @@ export interface BcpTransactionResponse {
   };
 }
 
-export interface ConfirmedTransaction extends SignedTransaction {
+export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTransaction>
+  extends SignedTransaction<T> {
   readonly height: number; // the block it was written to
   readonly txid: TxId; // a unique identifier (hash of the data)
   // Data from executing tx (result, code, tags...)
@@ -124,7 +124,7 @@ export interface BcpConnection {
   // readonly streamBlocks: () => Stream<Block>;
 
   // chainId, and height return generic info
-  readonly chainId: () => Promise<ChainId>;
+  readonly chainId: () => ChainId;
   readonly height: () => Promise<number>;
 
   // these emits the new blockHeight on every block,

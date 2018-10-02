@@ -53,12 +53,12 @@ export interface BcpSwapIdQuery {
   readonly swapid: SwapIdBytes;
 }
 
-// can we implement this as well? maybe id should equal swap
-// export interface SwapHashQuery {
-//   readonly hashlock: Uint8Array;
-// }
+// on some chains, swapid may equal hashlock, but often these may differ
+export interface BcpSwapHashQuery {
+  readonly hashlock: Uint8Array;
+}
 
-export type BcpSwapQuery = BcpSwapRecipientQuery | BcpSwapSenderQuery | BcpSwapIdQuery;
+export type BcpSwapQuery = BcpSwapRecipientQuery | BcpSwapSenderQuery | BcpSwapIdQuery | BcpSwapHashQuery;
 
 // isQueryBySwapRecipient is a type guard to use in the swap-based queries
 export function isQueryBySwapRecipient(query: BcpSwapQuery): query is BcpSwapRecipientQuery {
@@ -71,6 +71,10 @@ export function isQueryBySwapSender(query: BcpSwapQuery): query is BcpSwapSender
 // isQueryBySwapId is a type guard to use in the swap-based queries
 export function isQueryBySwapId(query: BcpSwapQuery): query is BcpSwapIdQuery {
   return (query as BcpSwapIdQuery).swapid !== undefined;
+}
+// isQueryBySwapHash is a type guard to use in the swap-based queries
+export function isQueryBySwapHash(query: BcpSwapQuery): query is BcpSwapHashQuery {
+  return (query as BcpSwapHashQuery).hashlock !== undefined;
 }
 
 // BcpAtomicSwapConnection is an optional extension to the base BcpConnection

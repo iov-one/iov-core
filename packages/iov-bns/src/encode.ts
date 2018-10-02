@@ -13,7 +13,7 @@ import {
 
 import * as codecImpl from "./codecimpl";
 import { encodeFullSig, encodeToken } from "./types";
-import { hashIdentifier, keyToAddress } from "./util";
+import { keyToAddress, preimageIdentifier } from "./util";
 
 export const buildSignedTx = (tx: SignedTransaction): codecImpl.app.ITx => {
   const sigs: ReadonlyArray<FullSignature> = [tx.primarySignature, ...tx.otherSignatures];
@@ -65,7 +65,7 @@ const buildSetNameTx = (tx: SetNameTx): codecImpl.app.ITx => ({
 const buildSwapOfferTx = (tx: SwapOfferTx): codecImpl.app.ITx => {
   const hashed = {
     ...tx,
-    hashCode: hashIdentifier(tx.preimage),
+    hashCode: preimageIdentifier(tx.preimage),
     kind: TransactionKind.SwapCounter,
   };
   return buildSwapCounterTx(hashed as SwapCounterTx);

@@ -17,8 +17,8 @@ export interface FullSignature {
     readonly publicKey: PublicKeyBundle;
     readonly signature: SignatureBytes;
 }
-export interface SignedTransaction {
-    readonly transaction: UnsignedTransaction;
+export interface SignedTransaction<T extends UnsignedTransaction = UnsignedTransaction> {
+    readonly transaction: T;
     readonly primarySignature: FullSignature;
     readonly otherSignatures: ReadonlyArray<FullSignature>;
 }

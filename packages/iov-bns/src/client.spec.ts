@@ -4,13 +4,18 @@ import {
   Address,
   BcpAccount,
   BcpNonce,
+  BcpSwapQuery,
   BcpTransactionResponse,
   Nonce,
   SendTx,
+  SwapClaimTx,
+  SwapIdBytes,
   SwapOfferTx,
+  SwapState,
   TokenTicker,
   TransactionKind,
 } from "@iov/bcp-types";
+import { Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import {
   Ed25519SimpleAddressKeyringEntry,
@@ -465,6 +470,10 @@ describe("Integration tests with bov+tendermint", () => {
     const nonce = await getNonce(client, faucetAddr);
 
     const preimage = Encoding.toAscii("my top secret phrase... keep it on the down low ;)");
+    const hash = new Sha256(preimage).digest();
+
+    const initSwaps = await client.getSwap({ recipient: rcptAddr });
+    expect(initSwaps.data.length).toEqual(0);
 
     // construct a sendtx, this is normally used in the IovWriter api
     const swapOfferTx: SwapOfferTx = {
@@ -510,5 +519,196 @@ describe("Integration tests with bov+tendermint", () => {
     // make sure it also stored a result
     expect(loaded.result).toEqual(txResult);
     expect(loaded.height).toEqual(txHeight!);
+
+    // ----  prepare queries
+    const querySwapId: BcpSwapQuery = { swapid: txResult as SwapIdBytes };
+    const querySwapSender: BcpSwapQuery = { sender: faucetAddr };
+    const querySwapRecipient: BcpSwapQuery = { recipient: rcptAddr };
+    const querySwapHash: BcpSwapQuery = { hashlock: hash };
+
+    // ----- client.searchTx() -----
+    // we should be able to find the transaction through quite a number of tag queries
+
+    const txById = await client.searchTx({ tags: [Client.swapQueryTags(querySwapId)] });
+    expect(txById.length).toEqual(1);
+    expect(txById[0].txid).toEqual(txid);
+
+    const txBySender = await client.searchTx({ tags: [Client.swapQueryTags(querySwapSender)] });
+    expect(txBySender.length).toEqual(1);
+    expect(txBySender[0].txid).toEqual(txid);
+
+    const txByRecipient = await client.searchTx({ tags: [Client.swapQueryTags(querySwapRecipient)] });
+    expect(txByRecipient.length).toEqual(1);
+    expect(txByRecipient[0].txid).toEqual(txid);
+
+    const txByHash = await client.searchTx({ tags: [Client.swapQueryTags(querySwapHash)] });
+    expect(txByHash.length).toEqual(1);
+    expect(txByHash[0].txid).toEqual(txid);
+
+    // ----- client.getSwap() -------
+
+    // we can also swap by id (returned by the transaction result)
+    const idSwap = await client.getSwap(querySwapId);
+    expect(idSwap.data.length).toEqual(1);
+
+    const swap = idSwap.data[0];
+    expect(swap.kind).toEqual(SwapState.Open);
+
+    // and it matches expectations
+    const swapData = swap.data;
+    expect(swapData.id).toEqual(txResult);
+    expect(swapData.sender).toEqual(faucetAddr);
+    expect(swapData.recipient).toEqual(rcptAddr);
+    expect(swapData.timeout).toEqual(1000); // FIXME: timeout from tx (the next line is expected, right?)
+    // expect(swapData.timeout).toEqual(loaded.height + 1000); // when tx was commited plus timeout
+    expect(swapData.amount.length).toEqual(1);
+    expect(swapData.amount[0].whole).toEqual(123);
+    expect(swapData.amount[0].tokenTicker).toEqual(cash);
+    expect(swapData.hashlock).toEqual(hash);
+
+    // we can get the swap by the recipient
+    const rcptSwap = await client.getSwap(querySwapRecipient);
+    expect(rcptSwap.data.length).toEqual(1);
+    expect(rcptSwap.data[0]).toEqual(swap);
+
+    // we can also get it by the sender
+    const sendSwap = await client.getSwap(querySwapSender);
+    expect(sendSwap.data.length).toEqual(1);
+    expect(sendSwap.data[0]).toEqual(swap);
+
+    // we can also get it by the hash
+    const hashSwap = await client.getSwap(querySwapHash);
+    expect(hashSwap.data.length).toEqual(1);
+    expect(hashSwap.data[0]).toEqual(swap);
+  });
+
+  const openSwap = async (
+    client: Client,
+    profile: UserProfile,
+    sender: PublicIdentity,
+    rcptAddr: Address,
+    preimage: Uint8Array,
+  ): Promise<BcpTransactionResponse> => {
+    // construct a swapOfferTx, sign and post to the chain
+    const chainId = await client.chainId();
+    const nonce = await getNonce(client, keyToAddress(sender.pubkey));
+    const swapOfferTx: SwapOfferTx = {
+      kind: TransactionKind.SwapOffer,
+      chainId,
+      signer: sender.pubkey,
+      recipient: rcptAddr,
+      amount: [
+        {
+          whole: 21,
+          fractional: 0,
+          tokenTicker: cash,
+        },
+      ],
+      timeout: 5000,
+      preimage,
+    };
+    const signed = await profile.signTransaction(0, sender, swapOfferTx, bnsCodec, nonce);
+    const txBytes = bnsCodec.bytesToPost(signed);
+    return client.postTx(txBytes);
+  };
+
+  const claimSwap = async (
+    client: Client,
+    profile: UserProfile,
+    sender: PublicIdentity,
+    swapId: SwapIdBytes,
+    preimage: Uint8Array,
+  ): Promise<BcpTransactionResponse> => {
+    // construct a swapOfferTx, sign and post to the chain
+    const chainId = await client.chainId();
+    const nonce = await getNonce(client, keyToAddress(sender.pubkey));
+    const swapClaimTx: SwapClaimTx = {
+      kind: TransactionKind.SwapClaim,
+      chainId,
+      signer: sender.pubkey,
+      swapId,
+      preimage,
+    };
+    const signed = await profile.signTransaction(0, sender, swapClaimTx, bnsCodec, nonce);
+    const txBytes = bnsCodec.bytesToPost(signed);
+    return client.postTx(txBytes);
+  };
+
+  it("Get and watch atomic swap lifecycle", async () => {
+    pendingWithoutBov();
+    const client = await Client.connect(tendermintUrl);
+    const profile = await userProfile();
+
+    const faucet = faucetId(profile);
+    const rcpt = await recipient(profile, 121);
+    const rcptAddr = keyToAddress(rcpt.pubkey);
+
+    // create the preimages for the three swaps
+    const preimage1 = Encoding.toAscii("the first swap is easy");
+    // const hash1 = new Sha256(preimage1).digest();
+    const preimage2 = Encoding.toAscii("ze 2nd iS l337 !@!");
+    // const hash2 = new Sha256(preimage2).digest();
+    const preimage3 = Encoding.toAscii("and this one is a gift.");
+    // const hash3 = new Sha256(preimage3).digest();
+
+    // nothing to start with
+    const rcptQuery = { recipient: rcptAddr };
+    const initSwaps = await client.getSwap(rcptQuery);
+    expect(initSwaps.data.length).toEqual(0);
+
+    // make two offers
+    const res1 = await openSwap(client, profile, faucet, rcptAddr, preimage1);
+    const id1 = res1.data.result as SwapIdBytes;
+    expect(id1.length).toEqual(8);
+
+    const res2 = await openSwap(client, profile, faucet, rcptAddr, preimage2);
+    const id2 = res2.data.result as SwapIdBytes;
+    expect(id2.length).toEqual(8);
+
+    // find two open
+    const midSwaps = await client.getSwap(rcptQuery);
+    expect(midSwaps.data.length).toEqual(2);
+    const [open1, open2] = midSwaps.data;
+    expect(open1.kind).toEqual(SwapState.Open);
+    expect(open1.data.id).toEqual(id1);
+    expect(open2.kind).toEqual(SwapState.Open);
+    expect(open2.data.id).toEqual(id2);
+
+    // then claim, offer, claim - 2 closed, 1 open
+    await claimSwap(client, profile, faucet, id2, preimage1);
+
+    // start to watch
+    const liveView = asArray(client.watchSwap(rcptQuery));
+
+    const res3 = await openSwap(client, profile, faucet, rcptAddr, preimage3);
+    const id3 = res3.data.result as SwapIdBytes;
+    expect(id3.length).toEqual(8);
+
+    await claimSwap(client, profile, faucet, id1, preimage1);
+
+    // make sure we find two claims, one open
+    const finalSwaps = await client.getSwap({ recipient: rcptAddr });
+    expect(finalSwaps.data.length).toEqual(3);
+    const [open3, claim2, claim1] = finalSwaps.data;
+    expect(open3.kind).toEqual(SwapState.Open);
+    expect(open3.data.id).toEqual(id3);
+    expect(claim2.kind).toEqual(SwapState.Claimed);
+    expect(claim2.data.id).toEqual(id2);
+    expect(claim1.kind).toEqual(SwapState.Claimed);
+    expect(claim1.data.id).toEqual(id1);
+
+    // validate liveView is correct
+    const vals = liveView.value();
+    expect(vals.length).toEqual(5);
+    expect(vals[0].kind).toEqual(SwapState.Open);
+    expect(vals[0].data.id).toEqual(id1);
+    expect(vals[1].kind).toEqual(SwapState.Open);
+    expect(vals[1].data.id).toEqual(id2);
+    expect(vals[2].kind).toEqual(SwapState.Claimed);
+    expect(vals[2].data.id).toEqual(id2);
+    expect(vals[3].kind).toEqual(SwapState.Open);
+    expect(vals[3].data.id).toEqual(id3);
+    expect(vals[4].kind).toEqual(SwapState.Claimed);
+    expect(vals[4].data.id).toEqual(id1);
   });
 });

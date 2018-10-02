@@ -19,7 +19,6 @@ export interface ChainConnector {
     readonly codec: TxCodec;
 }
 export interface ChainConnection {
-    readonly chainId: ChainId;
     readonly client: BcpConnection;
     readonly codec: TxCodec;
 }

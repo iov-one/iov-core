@@ -1,4 +1,4 @@
-import { BcpAccount, BcpCoin, BcpNonce, BcpTicker } from "@iov/bcp-types";
+import { BcpAccount, BcpAtomicSwap, BcpCoin, BcpNonce, BcpTicker, ConfirmedTransaction, OpenSwap, SwapClaimTx, SwapCounterTx, SwapTimeoutTx } from "@iov/bcp-types";
 import { ChainId } from "@iov/tendermint-types";
 import * as codecImpl from "./codecimpl";
 import { Keyed } from "./types";
@@ -11,4 +11,7 @@ export declare class Normalize {
     static nonce(acct: codecImpl.sigs.IUserData & Keyed): BcpNonce;
     static account(initData: InitData): (a: codecImpl.namecoin.IWallet & Keyed) => BcpAccount;
     static coin(initData: InitData): (c: codecImpl.x.ICoin) => BcpCoin;
+    static swapOffer(initData: InitData): (swap: codecImpl.escrow.Escrow & Keyed) => BcpAtomicSwap;
+    static swapOfferFromTx(initData: InitData): (tx: ConfirmedTransaction<SwapCounterTx>) => OpenSwap;
+    static settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTx | SwapTimeoutTx): BcpAtomicSwap;
 }

@@ -1,7 +1,8 @@
 import Long from "long";
-import { FullSignature, FungibleToken } from "@iov/bcp-types";
+import { BcpCoin, FullSignature, FungibleToken } from "@iov/bcp-types";
 import { Algorithm, PrivateKeyBundle, PrivateKeyBytes, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 import * as codecImpl from "./codecimpl";
+import { InitData } from "./normalize";
 export interface Result {
     readonly key: Uint8Array;
     readonly value: Uint8Array;
@@ -24,6 +25,7 @@ export declare const encodeSignature: (algo: Algorithm, sigs: SignatureBytes) =>
     ed25519: SignatureBytes;
 };
 export declare const decodeToken: (token: codecImpl.x.ICoin) => FungibleToken;
+export declare const fungibleToBcpCoin: (initData: InitData) => (token: FungibleToken) => BcpCoin;
 export declare const decodePubKey: (publicKey: codecImpl.crypto.IPublicKey) => PublicKeyBundle;
 export declare const decodePrivKey: (privateKey: codecImpl.crypto.IPrivateKey) => PrivateKeyBundle;
 export declare const decodeSignature: (signature: codecImpl.crypto.ISignature) => SignatureBytes;

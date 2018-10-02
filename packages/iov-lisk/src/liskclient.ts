@@ -6,13 +6,13 @@ import {
   Address,
   BcpAccount,
   BcpAccountQuery,
-  BcpAddressQuery,
   BcpConnection,
   BcpNonce,
   BcpQueryEnvelope,
   BcpTicker,
   BcpTransactionResponse,
   ConfirmedTransaction,
+  isAddressQuery,
   Nonce,
   TokenTicker,
 } from "@iov/bcp-types";
@@ -22,10 +22,6 @@ import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, Tag, TxId, TxQuery }
 import { constants } from "./constants";
 import { Parse } from "./parse";
 
-function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery {
-  return (query as BcpAddressQuery).address !== undefined;
-}
-
 /**
  * Encodes the current date and time as a nonce
  */
@@ -34,28 +30,46 @@ export function generateNonce(): Nonce {
   return Parse.timeToNonce(now);
 }
 
+function checkAndNormalizeUrl(url: string): string {
+  if (!url.match(/^https?:\/\/[-\.a-zA-Z0-9]+(:[0-9]+)?\/?$/)) {
+    throw new Error(
+      "Invalid API URL. Expected a base URL like https://testnet.lisk.io or http://123.123.132.132:8000/",
+    );
+  }
+  return url.endsWith("/") ? url.slice(0, -1) : url;
+}
+
+async function loadChainId(baseUrl: string): Promise<ChainId> {
+  const url = checkAndNormalizeUrl(baseUrl) + "/api/node/constants";
+  const result = await axios.get(url);
+  const responseBody = result.data;
+  return responseBody.data.nethash;
+}
+
 export class LiskClient implements BcpConnection {
+  public static async connect(baseUrl: string): Promise<LiskClient> {
+    const chainId = await loadChainId(baseUrl);
+    return new LiskClient(baseUrl, chainId);
+  }
+
   private readonly baseUrl: string;
+  private readonly myChainId: ChainId;
 
-  constructor(baseUrl: string) {
-    if (!baseUrl.match(/^https?:\/\/[-\.a-zA-Z0-9]+(:[0-9]+)?\/?$/)) {
-      throw new Error(
-        "Invalid API URL. Expected a base URL like https://testnet.lisk.io or http://123.123.132.132:8000/",
-      );
+  constructor(baseUrl: string, chainId: ChainId) {
+    this.baseUrl = checkAndNormalizeUrl(baseUrl);
+
+    if (chainId.length < 4) {
+      throw new Error("Expect a real chainId");
     }
-
-    this.baseUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+    this.myChainId = chainId;
   }
 
   public disconnect(): void {
     // no-op
   }
 
-  public async chainId(): Promise<ChainId> {
-    const url = this.baseUrl + "/api/node/constants";
-    const result = await axios.get(url);
-    const responseBody = result.data;
-    return responseBody.data.nethash;
+  public chainId(): ChainId {
+    return this.myChainId;
   }
 
   public async height(): Promise<number> {

@@ -1,4 +1,15 @@
-import { Address, Nonce, SignableBytes } from "@iov/bcp-types";
+import { As } from "type-tagger";
+
+import {
+  Address,
+  ConfirmedTransaction,
+  Nonce,
+  SignableBytes,
+  SwapClaimTx,
+  SwapCounterTx,
+  SwapTimeoutTx,
+  TransactionKind,
+} from "@iov/bcp-types";
 import { Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBundle } from "@iov/tendermint-types";
@@ -40,12 +51,32 @@ export const appendSignBytes = (bz: Uint8Array, chainId: ChainId, nonce: Nonce) 
 // probably only works after 0.21, but no need to import ripemd160 now
 export const tendermintHash = (data: Uint8Array) => new Sha256(data).digest().slice(0, 20);
 
-export const hashId = Encoding.toAscii("hash/sha256/");
-export const hashIdentifier = (data: Uint8Array) =>
-  Uint8Array.from([...hashId, ...new Sha256(data).digest()]);
-
 export const arraysEqual = (a: Uint8Array, b: Uint8Array): boolean =>
   a.length === b.length && a.every((n: number, i: number): boolean => n === b[i]);
 
-export const isHashIdentifier = (ident: Uint8Array): boolean =>
+// we use this type to differentiate between a raw hash of the data and the id used internally in weave
+export type HashId = Uint8Array & As<"hashid">;
+
+export const hashId = Encoding.toAscii("hash/sha256/");
+export const preimageIdentifier = (data: Uint8Array): HashId => hashIdentifier(new Sha256(data).digest());
+export const hashIdentifier = (hash: Uint8Array): HashId => Uint8Array.from([...hashId, ...hash]) as HashId;
+
+export const isHashIdentifier = (ident: Uint8Array): ident is HashId =>
   arraysEqual(hashId, ident.slice(0, hashId.length));
+export const hashFromIdentifier = (ident: HashId): Uint8Array => ident.slice(hashId.length);
+
+// calculate keys for query tags
+export const bucketKey = (bucket: string) => Encoding.toAscii(`${bucket}:`);
+export const indexKey = (bucket: string, index: string) => Encoding.toAscii(`_i.${bucket}_${index}:`);
+
+export function isSwapOffer(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapCounterTx> {
+  return tx.transaction.kind === TransactionKind.SwapCounter;
+}
+
+export function isSwapRelease(
+  tx: ConfirmedTransaction,
+): tx is ConfirmedTransaction<SwapClaimTx | SwapTimeoutTx> {
+  return (
+    tx.transaction.kind === TransactionKind.SwapClaim || tx.transaction.kind === TransactionKind.SwapTimeout
+  );
+}
