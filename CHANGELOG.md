@@ -4,6 +4,11 @@
 
 * @iov/core: expose Ed25519KeyringEntry
 * @iov/keycontrol: refactor entry ID generation
+* @iov/bcp-types: rename interface IovReader -> BcpConnection
+* @iov/bcp-types: make BcpConnection.chainId() synchronous for easier use by clients
+* @iov/bns: expose transaction result
+* @iov/bns: expose atomic swap queries on the bns client
+* @iov/bns: transaction search can handle unlimited number of results
 
 Breaking changes
 
