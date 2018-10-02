@@ -4,6 +4,10 @@
 
 * @iov/lisk: new package to connect to the Lisk blockchain
 
+Breaking changes
+
+* Ed25519KeyringEntry now takes a keypair as an argument in createIdentity()
+
 ## 0.6.1
 
 * @iov/keycontrol: add Ed25519HdWallet and Secp256k1HdWallet that work like Ed25519SimpleAddressKeyringEntry but allow derivation of arbirtary SLIP-0010 paths

@@ -1,7 +1,7 @@
 import PseudoRandom from "random-js";
 
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
-import { Ed25519, Ed25519Keypair, Random } from "@iov/crypto";
+import { Ed25519, Ed25519Keypair } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
@@ -120,9 +120,10 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     this.labelProducer.update(label);
   }
 
-  public async createIdentity(): Promise<LocalIdentity> {
-    const seed = await Random.getBytes(32);
-    const keypair = await Ed25519.makeKeypair(seed);
+  public async createIdentity(keypair?: Ed25519Keypair): Promise<LocalIdentity> {
+    if (!keypair) {
+      throw new Error("Ed25519.createIdentity requires a keypair argument");
+    }
 
     const newIdentity = this.buildLocalIdentity(keypair.pubkey as PublicKeyBytes, undefined);
     this.privkeys.set(newIdentity.id, keypair);
