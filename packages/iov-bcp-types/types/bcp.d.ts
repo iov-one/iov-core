@@ -28,7 +28,7 @@ export interface BcpNonce {
 export interface BcpTicker {
     readonly tokenTicker: TokenTicker;
     readonly sigFigs: number;
-    readonly tokenName?: string;
+    readonly tokenName: string;
 }
 export interface BcpTransactionResponse {
     readonly metadata: {

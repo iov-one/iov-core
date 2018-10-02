@@ -1,5 +1,4 @@
 import { Address, BcpConnection, BcpTransactionResponse, Nonce, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
-import { Client as BnsClient } from "@iov/bns";
 import { KeyringEntryId, UserProfile } from "@iov/keycontrol";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 export declare class IovWriter {
@@ -22,5 +21,4 @@ export interface ChainConnection {
     readonly client: BcpConnection;
     readonly codec: TxCodec;
 }
-export declare const bnsFromOrToTag: typeof BnsClient.fromOrToTag;
 export declare const bnsConnector: (url: string) => ChainConnector;

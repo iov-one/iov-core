@@ -30,7 +30,7 @@ export class IovWriter {
   }
 
   public chainIds(): ReadonlyArray<ChainId> {
-    return Array.from(this.knownChains).map(([x, _]: [string, ChainConnection]) => x as ChainId);
+    return Array.from(this.knownChains.keys()).map(key => key as ChainId);
   }
 
   public reader(chainId: ChainId): BcpConnection {
@@ -40,7 +40,7 @@ export class IovWriter {
   public async addChain(connector: ChainConnector): Promise<void> {
     const connection = await connectChain(connector);
     const chainId = connection.client.chainId();
-    if (this.knownChains.get(chainId) !== undefined) {
+    if (this.knownChains.has(chainId)) {
       throw new Error(`Chain ${chainId} is already registered`);
     }
     this.knownChains.set(chainId, connection);
@@ -103,8 +103,6 @@ export interface ChainConnection {
   readonly client: BcpConnection;
   readonly codec: TxCodec;
 }
-
-export const bnsFromOrToTag = BnsClient.fromOrToTag;
 
 // bnsConnector is a helper to connect to a bns-based chain at a given url
 export const bnsConnector = (url: string): ChainConnector => ({
