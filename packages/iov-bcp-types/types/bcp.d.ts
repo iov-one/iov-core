@@ -54,7 +54,7 @@ export interface BcpValueNameQuery {
     readonly name: string;
 }
 export declare type BcpAccountQuery = BcpAddressQuery | BcpValueNameQuery;
-export declare function isQueryByAddress(query: BcpAccountQuery): query is BcpAddressQuery;
+export declare function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery;
 export interface BcpConnection {
     readonly disconnect: () => void;
     readonly chainId: () => Promise<ChainId>;

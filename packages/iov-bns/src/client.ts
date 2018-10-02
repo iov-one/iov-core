@@ -11,6 +11,7 @@ import {
   BcpTransactionResponse,
   ConfirmedTransaction,
   dummyEnvelope,
+  isAddressQuery,
   TokenTicker,
   TxReadCodec,
 } from "@iov/bcp-types";
@@ -32,11 +33,6 @@ import { bnsCodec } from "./bnscodec";
 import * as codecImpl from "./codecimpl";
 import { InitData, Normalize } from "./normalize";
 import { Decoder, Keyed, Result } from "./types";
-
-// a type checker to use in the account-based queries
-function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery {
-  return (query as BcpAddressQuery).address !== undefined;
-}
 
 // onChange returns a filter than only passes when the
 // value is different than the last one

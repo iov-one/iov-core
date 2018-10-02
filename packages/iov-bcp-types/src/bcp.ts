@@ -88,8 +88,8 @@ export interface BcpValueNameQuery {
 
 export type BcpAccountQuery = BcpAddressQuery | BcpValueNameQuery;
 
-// isQueryByAddress is a type guard to use in the account-based queries
-export function isQueryByAddress(query: BcpAccountQuery): query is BcpAddressQuery {
+// a type checker to use in the account-based queries
+export function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery {
   return (query as BcpAddressQuery).address !== undefined;
 }
 
