@@ -1,5 +1,7 @@
 # Changelog
 
+## 0.7.0 (not yet released)
+
 ## 0.6.0
 
 * @iov/core: expose Ed25519KeyringEntry
