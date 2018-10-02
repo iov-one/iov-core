@@ -42,9 +42,6 @@ CI Tests:
 
 (Node 10 tested on many dev machines)
 
-**Windows note:** The development tools *definitely* work under windows in "Linux subsystem for windows"
-bash shell. They most likely work under cygwin as well. But they do rely on minor shell scripting.
-
 ## Gettting Started
 
 The best way to learn about code is to use it.
@@ -61,12 +58,33 @@ To build the documentation locally, run `yarn install && yarn build && yarn docs
 in this repository. This will generate a `./docs` directory in each package that you
 can browse locally to see API docs on the various packages.
 
+## Developing under Windows 10
+
+Most of the developers working on this project in windows are also using Windows Subsystem for Linux
+(WSL), which should have maximum compatibility, as CI is linux and osx. However, we do attempt to ensure
+that this code also compiles on the normal windows shell, if you have set up git, node, yarn etc. correctly.
+(Note this has only be verified under windows 10, no guarantees for older versions).
+
+### Line endings (CRLF vs LF)
+
+All the code in the repo should use LF not the windows-specific CRLF as a line ending.
+`tsc` is currently set up to output properly. However, you should also make sure your editor
+saves with `LF` line endings rather than `CRLF`.
+
+A bigger issue is `git` changing the endings upon commit. Here is a short workaround,
+adapted from a [stackoverflow discussion](https://stackoverflow.com/questions/2517190/how-do-i-force-git-to-use-lf-instead-of-crlf-under-windows):
+
+```
+git config --global core.autocrlf false
+git config --global core.eol lf
+```
+
 ## FAQ For Potential Issues
 
 ### Libusb fails to build, why?
 
 If you are running on linux, you may not have the proper dependencies installed. For ubuntu, try the
-following: `sudo apt-get install libudev-dev libusb-1.0-0 libusb-1.0-0-dev`. 
+following: `sudo apt-get install libudev-dev libusb-1.0-0 libusb-1.0-0-dev`.
 These are needed to compile the usb driver.
 
 Currently, Libusb requires node-pre-gyp version `0.10.2` or lower to compile properly. If for some reason

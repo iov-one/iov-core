@@ -14,8 +14,8 @@
     "access": "public"
   },
   "scripts": {
-    "docs": "rm -rf docs && typedoc --options typedoc.js",
-    "lint": "tslint -t verbose --project . ${TSLINT_FLAGS}",
+    "docs": "shx rm -rf docs && typedoc --options typedoc.js",
+    "lint": "cross-env-shell \"tslint -t verbose --project . ${TSLINT_FLAGS}\"",
     "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
     "test-node": "node jasmine-testrunner.js",
     "test-edge": "yarn pack-web && karma start --single-run --browsers Edge",
@@ -24,8 +24,8 @@
     "test-safari": "yarn pack-web && karma start --single-run --browsers Safari",
     "test": "yarn build-or-skip && yarn test-node",
     "prebuild": "yarn format && yarn lint",
-    "move-types": "rm ./types/* && mv build/*.d.ts ./types && rm ./types/*.spec.d.ts",
-    "build": "rm -rf ./build && tsc && cp ./src/codecimpl.js ./src/codecimpl.d.ts ./build && yarn move-types",
+    "move-types": "shx rm ./types/* && shx mv build/*.d.ts ./types && shx rm ./types/*.spec.d.ts",
+    "build": "shx rm -rf ./build && tsc && shx cp ./src/codecimpl.js ./src/codecimpl.d.ts ./build && yarn move-types",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js",
     "find-proto": "find $GOPATH/src/github.com/confio/weave $GOPATH/src/github.com/iov-one/bcp-demo -name '*.proto' -not -path '*/vendor/*' -not -path '*/examples/*'",

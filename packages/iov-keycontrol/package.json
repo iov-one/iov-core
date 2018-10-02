@@ -14,9 +14,9 @@
     "access": "public"
   },
   "scripts": {
-    "docs": "rm -rf docs && typedoc --options typedoc.js",
+    "docs": "shx rm -rf docs && typedoc --options typedoc.js",
     "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
-    "lint": "tslint -t verbose --project . ${TSLINT_FLAGS}",
+    "lint": "cross-env-shell \"tslint -t verbose --project . ${TSLINT_FLAGS}\"",
     "lint-fix": "yarn lint --fix",
     "test-node": "node jasmine-testrunner.js",
     "test-edge": "yarn pack-web && karma start --single-run --browsers Edge",
@@ -25,8 +25,8 @@
     "test-safari": "yarn pack-web && karma start --single-run --browsers Safari",
     "test": "yarn build-or-skip && yarn test-node",
     "prebuild": "yarn format && yarn lint",
-    "preprocess-types": "rm -r ./types/*",
-    "postprocess-types": "rm ./types/*.spec.d.ts ./types/**/*.spec.d.ts",
+    "preprocess-types": "shx rm -r ./types/*",
+    "postprocess-types": "shx rm ./types/*.spec.d.ts && shx rm ./types/**/*.spec.d.ts",
     "build": "yarn preprocess-types && tsc --declarationDir ./types && yarn postprocess-types",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"

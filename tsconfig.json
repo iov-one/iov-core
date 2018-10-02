@@ -5,6 +5,7 @@
     "forceConsistentCasingInFileNames": true,
     "module": "commonjs",
     "moduleResolution": "node",
+    "newLine": "LF",
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
@@ -18,6 +19,6 @@
     "typeRoots": [
       "./node_modules/@types",
       "./custom_types"
-    ]    
+    ]
   }
 }
