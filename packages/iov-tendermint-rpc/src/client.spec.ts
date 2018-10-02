@@ -132,11 +132,61 @@ function kvTestSuite(rpcFactory: () => RpcClient): void {
     // except without the proof
     expect(s.txs[0]).toEqual({ ...r, proof: undefined });
 
+    // ensure txSearchAll works as well
+    const sall = await client.txSearchAll({ query });
+    // should find the tx
+    expect(sall.totalCount).toEqual(1);
+    // should return same info as querying directly,
+    // except without the proof
+    expect(sall.txs[0]).toEqual({ ...r, proof: undefined });
+
     // and let's query the block itself to see this transaction
     const block = await client.block(height);
     expect(block.blockMeta.header.numTxs).toEqual(1);
     expect(block.block.txs.length).toEqual(1);
     expect(block.block.txs[0]).toEqual(tx);
+  });
+
+  it("Can paginate over all txs", async () => {
+    pendingWithoutTendermint();
+    const client = new Client(rpcFactory(), v0_20);
+
+    const find = randomId();
+    const query = buildTxQuery({ tags: [{ key: "app.key", value: find }] });
+
+    const sendTx = async () => {
+      const me = randomId();
+      const tx = buildKvTx(find, me);
+
+      const txRes = await client.broadcastTxCommit({ tx });
+      expect(responses.txCommitSuccess(txRes)).toBeTruthy();
+      expect(txRes.height).toBeTruthy();
+      expect(txRes.hash.length).not.toEqual(0);
+    };
+
+    // send 3 txs
+    await sendTx();
+    await sendTx();
+    await sendTx();
+
+    // expect one page of results
+    const s1 = await client.txSearch({ query, page: 1, per_page: 2 });
+    expect(s1.totalCount).toEqual(3);
+    expect(s1.txs.length).toEqual(2);
+
+    // second page
+    const s2 = await client.txSearch({ query, page: 2, per_page: 2 });
+    expect(s2.totalCount).toEqual(3);
+    expect(s2.txs.length).toEqual(1);
+
+    // and all together now
+    const sall = await client.txSearchAll({ query, per_page: 2 });
+    expect(sall.totalCount).toEqual(3);
+    expect(sall.txs.length).toEqual(3);
+    // make sure there are in order from lowest to highest height
+    const [tx1, tx2, tx3] = sall.txs;
+    expect(tx2.height).toEqual(tx1.height + 1);
+    expect(tx3.height).toEqual(tx2.height + 1);
   });
 }
 
