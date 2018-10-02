@@ -1,10 +1,11 @@
 import { Address, BcpAccountQuery, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
+import { Ed25519KeyringEntry } from "@iov/keycontrol";
 import { ChainId } from "@iov/tendermint-types";
 
+import { passphraseToKeypair } from "./derivation";
 import { liskCodec } from "./liskcodec";
 import { generateNonce, LiskConnection } from "./liskconnection";
-import { LiskKeyringEntry } from "./liskkeyringentry";
 
 function pendingWithoutLongRunning(): void {
   if (!process.env.LONG_RUNNING_ENABLED) {
@@ -125,9 +126,11 @@ describe("LiskConnection", () => {
     async () => {
       pendingWithoutLongRunning();
 
-      const entry = new LiskKeyringEntry();
+      const entry = new Ed25519KeyringEntry();
       const mainIdentity = await entry.createIdentity(
-        "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+        await passphraseToKeypair(
+          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+        ),
       );
 
       const recipientAddress = Encoding.toAscii("6076671634347365051L") as Address;
