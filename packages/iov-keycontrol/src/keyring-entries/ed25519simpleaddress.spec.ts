@@ -27,9 +27,9 @@ describe("Ed25519SimpleAddressKeyringEntry", () => {
   it("creates correct paths", async () => {
     // https://github.com/iov-one/iov-core/blob/392234e/docs/KeyBase.md#simple-addresses
     const entry = new Ed25519SimpleAddressKeyringEntry(emptyEntry);
-    await entry.createIdentity();
-    await entry.createIdentity();
-    await entry.createIdentity();
+    await entry.createIdentity(0);
+    await entry.createIdentity(1);
+    await entry.createIdentity(2);
 
     const decodedJson = JSON.parse(entry.serialize());
     expect(decodedJson.identities[0].privkeyPath).toEqual([0x80000000 + 4804438, 0x80000000 + 0]);

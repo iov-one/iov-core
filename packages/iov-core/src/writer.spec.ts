@@ -1,6 +1,6 @@
 import { SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { bnsConnector, bnsFromOrToTag } from "@iov/bns";
-import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@iov/keycontrol";
+import { Ed25519SimpleAddressKeyringEntry, UserProfile } from "@iov/keycontrol";
 
 import { IovWriter } from "./writer";
 
@@ -46,15 +46,6 @@ describe("IovWriter", () => {
       return profile;
     };
 
-    // will make identities if needed.
-    // index `i` is the same as in https://github.com/iov-one/iov-core/blob/392234e/docs/KeyBase.md#simple-addresses
-    const getOrCreateIdentity = async (profile: UserProfile, i: number): Promise<LocalIdentity> => {
-      while (profile.getIdentities(0).length < i + 1) {
-        await profile.createIdentity(0);
-      }
-      return profile.getIdentities(0)[i];
-    };
-
     it("can send transaction", async () => {
       pendingWithoutBov();
 
@@ -67,8 +58,8 @@ describe("IovWriter", () => {
       expect(writer.chainIds().length).toEqual(1);
       const chainId = writer.chainIds()[0];
 
-      const faucet = await getOrCreateIdentity(profile, 0);
-      const recipient = await getOrCreateIdentity(profile, 4);
+      const faucet = await profile.createIdentity(0, 0);
+      const recipient = await profile.createIdentity(0, 4);
       const recipientAddress = writer.keyToAddress(chainId, recipient.pubkey);
 
       // construct a sendtx, this mirrors the IovWriter api
@@ -133,7 +124,7 @@ describe("IovWriter", () => {
       expect(twoChains[0]).not.toEqual(twoChains[1]);
 
       // make sure we can query with multiple registered chains
-      const faucet = await getOrCreateIdentity(profile, 0);
+      const faucet = await profile.createIdentity(0, 0);
       const faucetAddr = writer.keyToAddress(bovId, faucet.pubkey);
       const reader = writer.reader(bovId);
       const acct = await reader.getAccount({ address: faucetAddr });
