@@ -30,15 +30,20 @@ export function generateNonce(): Nonce {
   return Parse.timeToNonce(now);
 }
 
+function checkAndNormalizeUrl(url: string): string {
+  if (!url.match(/^https?:\/\/[-\.a-zA-Z0-9]+(:[0-9]+)?\/?$/)) {
+    throw new Error(
+      "Invalid API URL. Expected a base URL like https://testnet.lisk.io or http://123.123.132.132:8000/",
+    );
+  }
+  return url.endsWith("/") ? url.slice(0, -1) : url;
+}
+
 async function loadChainId(baseUrl: string): Promise<ChainId> {
-  const url = normalizeUrl(baseUrl) + "/api/node/constants";
+  const url = checkAndNormalizeUrl(baseUrl) + "/api/node/constants";
   const result = await axios.get(url);
   const responseBody = result.data;
   return responseBody.data.nethash;
-}
-
-function normalizeUrl(url: string): string {
-  return url.endsWith("/") ? url.slice(0, -1) : url;
 }
 
 export class LiskClient implements BcpConnection {
@@ -51,12 +56,7 @@ export class LiskClient implements BcpConnection {
   private readonly myChainId: ChainId;
 
   constructor(baseUrl: string, chainId: ChainId) {
-    if (!baseUrl.match(/^https?:\/\/[-\.a-zA-Z0-9]+(:[0-9]+)?\/?$/)) {
-      throw new Error(
-        "Invalid API URL. Expected a base URL like https://testnet.lisk.io or http://123.123.132.132:8000/",
-      );
-    }
-    this.baseUrl = normalizeUrl(baseUrl);
+    this.baseUrl = checkAndNormalizeUrl(baseUrl);
 
     if (chainId.length < 4) {
       throw new Error("Expect a real chainId");
