@@ -7,12 +7,12 @@ import {
   BcpAccount,
   BcpAccountQuery,
   BcpAddressQuery,
+  BcpConnection,
   BcpNonce,
   BcpQueryEnvelope,
   BcpTicker,
   BcpTransactionResponse,
   ConfirmedTransaction,
-  IovReader,
   Nonce,
   TokenTicker,
 } from "@iov/bcp-types";
@@ -34,7 +34,7 @@ export function generateNonce(): Nonce {
   return Parse.timeToNonce(now);
 }
 
-export class LiskClient implements IovReader {
+export class LiskClient implements BcpConnection {
   private readonly baseUrl: string;
 
   constructor(baseUrl: string) {

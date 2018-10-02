@@ -3,9 +3,9 @@ import { BcpCoin, BcpConnection, BcpQueryEnvelope } from "./bcp";
 import { Address } from "./signables";
 import { SwapIdBytes } from "./transactions";
 export declare enum SwapState {
-    OPEN = "open",
-    CLAIMED = "claimed",
-    EXPIRED = "expired"
+    Open = "open",
+    Claimed = "claimed",
+    Expired = "expired"
 }
 export interface SwapData {
     readonly id: SwapIdBytes;
@@ -17,16 +17,16 @@ export interface SwapData {
     readonly memo?: string;
 }
 export interface OpenSwap {
-    readonly kind: SwapState.OPEN;
+    readonly kind: SwapState.Open;
     readonly data: SwapData;
 }
 export interface ClaimedSwap {
-    readonly kind: SwapState.CLAIMED;
+    readonly kind: SwapState.Claimed;
     readonly data: SwapData;
     readonly preimage: Uint8Array;
 }
 export interface ExpiredSwap {
-    readonly kind: SwapState.EXPIRED;
+    readonly kind: SwapState.Expired;
     readonly data: SwapData;
 }
 export declare type BcpAtomicSwap = OpenSwap | ClaimedSwap | ExpiredSwap;

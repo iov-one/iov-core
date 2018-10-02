@@ -5,9 +5,9 @@ import { Address } from "./signables";
 import { SwapIdBytes } from "./transactions";
 
 export enum SwapState {
-  OPEN = "open",
-  CLAIMED = "claimed",
-  EXPIRED = "expired",
+  Open = "open",
+  Claimed = "claimed",
+  Expired = "expired",
 }
 
 export interface SwapData {
@@ -22,20 +22,20 @@ export interface SwapData {
 
 // OpenSwap is an offer that has not yet been claimed
 export interface OpenSwap {
-  readonly kind: SwapState.OPEN;
+  readonly kind: SwapState.Open;
   readonly data: SwapData;
 }
 
 // ClosedSwap is returned once the swap has been claimed, exposing the preimage that was used to claim it
 export interface ClaimedSwap {
-  readonly kind: SwapState.CLAIMED;
+  readonly kind: SwapState.Claimed;
   readonly data: SwapData;
   readonly preimage: Uint8Array;
 }
 
 // ExpiredSwap is an offer that timed out without being claimed
 export interface ExpiredSwap {
-  readonly kind: SwapState.EXPIRED;
+  readonly kind: SwapState.Expired;
   readonly data: SwapData;
 }
 

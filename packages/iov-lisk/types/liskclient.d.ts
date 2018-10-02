@@ -1,8 +1,8 @@
 import { Stream } from "xstream";
-import { Address, BcpAccount, BcpAccountQuery, BcpNonce, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, ConfirmedTransaction, IovReader, Nonce, TokenTicker } from "@iov/bcp-types";
+import { Address, BcpAccount, BcpAccountQuery, BcpConnection, BcpNonce, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, ConfirmedTransaction, Nonce, TokenTicker } from "@iov/bcp-types";
 import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
 export declare function generateNonce(): Nonce;
-export declare class LiskClient implements IovReader {
+export declare class LiskClient implements BcpConnection {
     private readonly baseUrl;
     constructor(baseUrl: string);
     disconnect(): void;
