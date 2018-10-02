@@ -18,9 +18,20 @@ Breaking changes
 
 ## 0.5.3
 
+* @iov/core and @iov/keycontrol: use strict types for keyring entry IDs
+
 ## 0.5.2
 
+* @iov/bns: increase transaction search results to 100 items
+* @iov/core and @iov/keycontrol: add keyring entry IDs
+* @iov/keycontrol: ensure Ed25519SimpleAddressKeyringEntry.fromEntropyWithCurve/ and .fromMnemonicWithCurve return the correct type
+
+**Note: this version was published with an outdated build
+and should not be used**
+
 ## 0.5.1
+
+* @iov/bns: expose transaction IDs
 
 ## 0.5.0
 
