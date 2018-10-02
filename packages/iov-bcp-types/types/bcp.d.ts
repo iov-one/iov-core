@@ -2,15 +2,15 @@ import { Stream } from "xstream";
 import { ChainId, PostableBytes, PublicKeyBundle, Tag, TxId, TxQuery } from "@iov/tendermint-types";
 import { Address, SignedTransaction } from "./signables";
 import { Nonce, TokenTicker } from "./transactions";
-export interface BcpQueryEnvelope<T extends BcpData> {
+export interface BcpQueryEnvelope<T> {
     readonly metadata: BcpQueryMetadata;
     readonly data: ReadonlyArray<T>;
 }
+export declare function dummyEnvelope<T>(data: ReadonlyArray<T>): BcpQueryEnvelope<T>;
 export interface BcpQueryMetadata {
     readonly offset: number;
     readonly limit: number;
 }
-export declare type BcpData = BcpAccount | BcpNonce | BcpTicker;
 export interface BcpAccount {
     readonly address: Address;
     readonly name?: string;
@@ -41,6 +41,12 @@ export interface BcpTransactionResponse {
         readonly result: Uint8Array;
     };
 }
+export interface ConfirmedTransaction extends SignedTransaction {
+    readonly height: number;
+    readonly txid: TxId;
+    readonly result: Uint8Array;
+    readonly log: string;
+}
 export interface BcpAddressQuery {
     readonly address: Address;
 }
@@ -48,27 +54,20 @@ export interface BcpValueNameQuery {
     readonly name: string;
 }
 export declare type BcpAccountQuery = BcpAddressQuery | BcpValueNameQuery;
-export interface IovReader {
+export declare function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery;
+export interface BcpConnection {
     readonly disconnect: () => void;
     readonly chainId: () => Promise<ChainId>;
     readonly height: () => Promise<number>;
+    readonly changeBlock: () => Stream<number>;
     readonly postTx: (tx: PostableBytes) => Promise<BcpTransactionResponse>;
     readonly getTicker: (ticker: TokenTicker) => Promise<BcpQueryEnvelope<BcpTicker>>;
     readonly getAllTickers: () => Promise<BcpQueryEnvelope<BcpTicker>>;
     readonly getAccount: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpAccount>>;
     readonly getNonce: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpNonce>>;
-    readonly changeBalance: (addr: Address) => Stream<number>;
-    readonly changeNonce: (addr: Address) => Stream<number>;
-    readonly changeBlock: () => Stream<number>;
     readonly watchAccount: (account: BcpAccountQuery) => Stream<BcpAccount | undefined>;
     readonly watchNonce: (account: BcpAccountQuery) => Stream<BcpNonce | undefined>;
     readonly searchTx: (query: TxQuery) => Promise<ReadonlyArray<ConfirmedTransaction>>;
     readonly listenTx: (tags: ReadonlyArray<Tag>) => Stream<ConfirmedTransaction>;
     readonly liveTx: (txQuery: TxQuery) => Stream<ConfirmedTransaction>;
-}
-export interface ConfirmedTransaction extends SignedTransaction {
-    readonly height: number;
-    readonly txid: TxId;
-    readonly result: Uint8Array;
-    readonly log: string;
 }

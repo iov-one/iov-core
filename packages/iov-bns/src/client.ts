@@ -4,14 +4,14 @@ import {
   Address,
   BcpAccount,
   BcpAccountQuery,
-  BcpAddressQuery,
-  BcpData,
+  BcpConnection,
   BcpNonce,
   BcpQueryEnvelope,
   BcpTicker,
   BcpTransactionResponse,
   ConfirmedTransaction,
-  IovReader,
+  dummyEnvelope,
+  isAddressQuery,
   TokenTicker,
   TxReadCodec,
 } from "@iov/bcp-types";
@@ -34,11 +34,6 @@ import * as codecImpl from "./codecimpl";
 import { InitData, Normalize } from "./normalize";
 import { Decoder, Keyed, Result } from "./types";
 
-// a type checker to use in the account-based queries
-function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery {
-  return (query as BcpAddressQuery).address !== undefined;
-}
-
 // onChange returns a filter than only passes when the
 // value is different than the last one
 function onChange<T>(): (val: T) => boolean {
@@ -55,7 +50,7 @@ function onChange<T>(): (val: T) => boolean {
 // Client talks directly to the BNS blockchain and exposes the
 // same interface we have with the BCP protocol.
 // We can embed in iov-core process or use this in a BCP-relay
-export class Client implements IovReader {
+export class Client implements BcpConnection {
   public static fromOrToTag(addr: Address): Tag {
     const id = Uint8Array.from([...Encoding.toAscii("wllt:"), ...addr]);
     const key = Encoding.toHex(id).toUpperCase();
@@ -318,17 +313,6 @@ function parseMap<T extends {}>(decoder: Decoder<T>, sliceKey: number): (res: Re
     return Object.assign({}, val, { _id: res.key.slice(sliceKey) });
   };
   return mapper;
-}
-
-// dummyEnvelope just adds some plausible metadata to make bcp happy
-function dummyEnvelope<T extends BcpData>(data: ReadonlyArray<T>): BcpQueryEnvelope<T> {
-  return {
-    metadata: {
-      offset: 0,
-      limit: 100,
-    },
-    data: data,
-  };
 }
 
 /* maybe a bit abstract, but maybe we can reuse... */
