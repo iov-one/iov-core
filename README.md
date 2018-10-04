@@ -95,15 +95,18 @@ executable by the current user)
 ```
 source ./scripts/blockchain_start.sh
 cd packages/iov-tendermint-rpc
-TENDERMINT_ENABLED=1 yarn test
+yarn test
 cd ../iov-bns
-BOV_ENABLED=1 yarn test
+yarn test
 cd ../..
 source ./scripts/blockchain_stop.sh
 ```
 
-(this is to try out, you can just go into the one package you work on,
-start blockchain, run integration tests, and stop it).
+This is to try out, you can just go into the one package you work on,
+start blockchain, run integration tests, and stop it. If you are
+wondering about the magic, note that
+`blockchain_start.sh` sets TENDERMINT_ENABLED=1 and BOV_ENABLED=1
+to enable running the full integration tests.
 
 If you are working on `iov-lisk`, you can run the tests against
 the lisk testnet. Just be aware they can be very slow....

@@ -4,6 +4,7 @@ if [[ $TM_PID ]]; then
   echo "Stopping tendermint:" $TM_PID
   kill ${TM_PID}
   unset TM_PID
+  unset TENDERMINT_ENABLED
 fi
 
 if [[ $BOV_APP_PID ]]; then
@@ -12,6 +13,7 @@ if [[ $BOV_APP_PID ]]; then
   kill ${BOV_TM_PID}
   unset BOV_APP_PID
   unset BOV_TM_PID
+  unset BOV_ENABLED
   # for debug output
   # cat /tmp/bov_app.log
 fi
