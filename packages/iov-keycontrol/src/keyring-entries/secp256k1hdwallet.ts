@@ -1,9 +1,9 @@
 import { Slip10Curve, Slip10RawIndex } from "@iov/crypto";
 
 import { KeyringEntryImplementationIdString, LocalIdentity } from "../keyring";
-import { Slip10KeyringEntry } from "./slip10";
+import { Slip10Wallet } from "./slip10";
 
-export class Secp256k1HdWallet extends Slip10KeyringEntry {
+export class Secp256k1HdWallet extends Slip10Wallet {
   public static fromEntropy(bip39Entropy: Uint8Array): Secp256k1HdWallet {
     return super.fromEntropyWithCurve(
       Slip10Curve.Secp256k1,

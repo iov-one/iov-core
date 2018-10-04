@@ -1,9 +1,11 @@
-import { Slip10RawIndex } from "@iov/crypto";
+import { PrehashType, SignableBytes } from "@iov/bcp-types";
+import { Secp256k1, Slip10RawIndex } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
+import { ChainId } from "@iov/tendermint-types";
 
 import { Secp256k1HdWallet } from "./secp256k1hdwallet";
 
-const { fromHex } = Encoding;
+const { fromHex, toAscii } = Encoding;
 
 describe("Secp256k1HdWallet", () => {
   it("returns the concrete type when creating from entropy", () => {
@@ -50,6 +52,19 @@ describe("Secp256k1HdWallet", () => {
       const identity = await wallet.createIdentity([Slip10RawIndex.hardened(0), Slip10RawIndex.normal(1), Slip10RawIndex.normal(1), Slip10RawIndex.hardened(1)]);
       expect(identity.pubkey.data).toEqual(fromHex("021bcecc3222b74948984b9b3a676814dcd8d7d6d5530caa7d7a3280bf034ba62c"));
     }
+  });
+
+  it("creates correct signatures", async () => {
+    const wallet = Secp256k1HdWallet.fromMnemonic("special sign fit simple patrol salute grocery chicken wheat radar tonight ceiling");
+    // m/0'/0
+    // pubkey: 03a7a8d79df7857bf25a3a389b0ecea83c5272181d2c062346b1c64e258589fce0
+    const mainIdentity = await wallet.createIdentity([Slip10RawIndex.hardened(0), Slip10RawIndex.normal(0)]);
+
+    const data = toAscii("foo bar") as SignableBytes;
+    const signature = await wallet.createTransactionSignature(mainIdentity, data, PrehashType.None, "" as ChainId);
+
+    const valid = await Secp256k1.verifySignature(signature, data, fromHex("03a7a8d79df7857bf25a3a389b0ecea83c5272181d2c062346b1c64e258589fce0"));
+    expect(valid).toEqual(true);
   });
 
   it("can be cloned", () => {

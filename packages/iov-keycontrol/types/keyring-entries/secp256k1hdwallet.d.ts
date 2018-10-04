@@ -1,7 +1,7 @@
 import { Slip10RawIndex } from "@iov/crypto";
 import { KeyringEntryImplementationIdString, LocalIdentity } from "../keyring";
-import { Slip10KeyringEntry } from "./slip10";
-export declare class Secp256k1HdWallet extends Slip10KeyringEntry {
+import { Slip10Wallet } from "./slip10";
+export declare class Secp256k1HdWallet extends Slip10Wallet {
     static fromEntropy(bip39Entropy: Uint8Array): Secp256k1HdWallet;
     static fromMnemonic(mnemonicString: string): Secp256k1HdWallet;
     readonly implementationId: KeyringEntryImplementationIdString;

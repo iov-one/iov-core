@@ -4,7 +4,6 @@ import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import {
   Bip39,
   Ed25519,
-  Ed25519Keypair,
   EnglishMnemonic,
   Secp256k1,
   Slip10,
@@ -227,8 +226,20 @@ export class Slip10Wallet implements KeyringEntry {
     prehashType: PrehashType,
     _: ChainId,
   ): Promise<SignatureBytes> {
-    const keypair = await this.privkeyForIdentity(identity);
-    const signature = await Ed25519.createSignature(prehash(transactionBytes, prehashType), keypair);
+    const privkey = await this.privkeyForIdentity(identity);
+    const message = prehash(transactionBytes, prehashType);
+
+    let signature: Uint8Array;
+    switch (this.curve) {
+      case Slip10Curve.Ed25519:
+        signature = await Ed25519.createSignature(message, await Ed25519.makeKeypair(privkey));
+        break;
+      case Slip10Curve.Secp256k1:
+        signature = await Secp256k1.createSignature(message, privkey);
+        break;
+      default:
+        throw new Error("Unknown curve");
+    }
     return signature as SignatureBytes;
   }
 
@@ -274,12 +285,11 @@ export class Slip10Wallet implements KeyringEntry {
   }
 
   // This throws an exception when private key is missing
-  private async privkeyForIdentity(identity: PublicIdentity): Promise<Ed25519Keypair> {
+  private async privkeyForIdentity(identity: PublicIdentity): Promise<Uint8Array> {
     const privkeyPath = this.privkeyPathForIdentity(identity);
     const seed = await Bip39.mnemonicToSeed(this.secret);
-    const derivationResult = Slip10.derivePath(Slip10Curve.Ed25519, seed, privkeyPath);
-    const keypair = await Ed25519.makeKeypair(derivationResult.privkey);
-    return keypair;
+    const derivationResult = Slip10.derivePath(this.curve, seed, privkeyPath);
+    return derivationResult.privkey;
   }
 
   private buildLocalIdentity(bytes: PublicKeyBytes, label: string | undefined): LocalIdentity {
