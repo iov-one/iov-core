@@ -16,4 +16,3 @@ export declare class IovWriter {
      */
     private getChain;
 }
-export declare const bnsConnector: (url: string) => ChainConnector;

@@ -1,8 +1,8 @@
 import { SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
-import { bnsFromOrToTag } from "@iov/bns";
+import { bnsConnector, bnsFromOrToTag } from "@iov/bns";
 import { Ed25519SimpleAddressKeyringEntry, LocalIdentity, UserProfile } from "@iov/keycontrol";
 
-import { bnsConnector, IovWriter } from "./writer";
+import { IovWriter } from "./writer";
 
 // We assume the same BOV context from iov-bns to run some simple tests
 // against that backend.

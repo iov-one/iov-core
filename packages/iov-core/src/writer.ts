@@ -9,7 +9,6 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
-import { bnsCodec, Client as BnsClient } from "@iov/bns";
 import { KeyringEntryId, PublicIdentity, UserProfile } from "@iov/keycontrol";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 
@@ -112,9 +111,3 @@ export class IovWriter {
     return connector;
   }
 }
-
-// bnsConnector is a helper to connect to a bns-based chain at a given url
-export const bnsConnector = (url: string): ChainConnector => ({
-  client: () => BnsClient.connect(url),
-  codec: bnsCodec,
-});
