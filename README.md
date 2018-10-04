@@ -169,6 +169,12 @@ If `node-pre-gyp` keeps giving issues compiling this library, you may want to sw
 There have been some reported issues on node `10.6.0` even after this, all around compiling node-usb
 for the ledger transport.
 
+### My PR works but the CI rejects it
+
+Make sure you at least ran `yarn test` in all the directories where you modified code.
+The CI will reject any PR if type definitions change after compiling the code to ensure
+it was build and committed prior to pushing.
+
 ## License
 
 This repository is licensed under the Apache License 2.0 (see NOTICE and LICENSE).
