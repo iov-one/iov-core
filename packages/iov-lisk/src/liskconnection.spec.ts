@@ -2,8 +2,8 @@ import { Address, BcpAccountQuery, SendTx, TokenTicker, TransactionKind } from "
 import { Encoding } from "@iov/encoding";
 import { ChainId } from "@iov/tendermint-types";
 
-import { generateNonce, LiskConnection } from "./liskclient";
 import { liskCodec } from "./liskcodec";
+import { generateNonce, LiskConnection } from "./liskconnection";
 import { LiskKeyringEntry } from "./liskkeyringentry";
 
 function pendingWithoutLongRunning(): void {
