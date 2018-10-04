@@ -4,13 +4,31 @@ import {
   Address,
   BcpConnection,
   BcpTransactionResponse,
+  ChainConnector,
   Nonce,
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
-import { bnsCodec, Client as BnsClient } from "@iov/bns";
 import { KeyringEntryId, PublicIdentity, UserProfile } from "@iov/keycontrol";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
+
+/**
+ * An internal helper to pass around the tuple
+ */
+interface ChainConnection {
+  readonly connection: BcpConnection;
+  readonly codec: TxCodec;
+}
+
+/**
+ * An internal helper to establish a BCP connection
+ */
+async function connectChain(x: ChainConnector): Promise<ChainConnection> {
+  return {
+    connection: await x.client(),
+    codec: x.codec,
+  };
+}
 
 /*
 IovWriter handles all private key material, as well as connections to multiple chains.
@@ -34,12 +52,12 @@ export class IovWriter {
   }
 
   public reader(chainId: ChainId): BcpConnection {
-    return this.getChain(chainId).client;
+    return this.getChain(chainId).connection;
   }
 
   public async addChain(connector: ChainConnector): Promise<void> {
     const connection = await connectChain(connector);
-    const chainId = connection.client.chainId();
+    const chainId = connection.connection.chainId();
     if (this.knownChains.has(chainId)) {
       throw new Error(`Chain ${chainId} is already registered`);
     }
@@ -53,7 +71,7 @@ export class IovWriter {
   // getNonce will return one value for the address, 0 if not found
   // not the ful bcp info.
   public async getNonce(chainId: ChainId, addr: Address): Promise<Nonce> {
-    const nonce = await this.getChain(chainId).client.getNonce({ address: addr });
+    const nonce = await this.getChain(chainId).connection.getNonce({ address: addr });
     return nonce.data.length === 0 ? (Long.fromInt(0) as Nonce) : nonce.data[0].nonce;
   }
 
@@ -66,7 +84,7 @@ export class IovWriter {
     keyring: number | KeyringEntryId,
   ): Promise<BcpTransactionResponse> {
     const chainId = tx.chainId;
-    const { client, codec } = this.getChain(chainId);
+    const { connection, codec } = this.getChain(chainId);
 
     const signer = tx.signer;
     const signerAddr = this.keyToAddress(chainId, signer);
@@ -78,7 +96,7 @@ export class IovWriter {
     const fakeId: PublicIdentity = { pubkey: signer };
     const signed = await this.profile.signTransaction(keyring, fakeId, tx, codec, nonce);
     const txBytes = codec.bytesToPost(signed);
-    const post = await client.postTx(txBytes);
+    const post = await connection.postTx(txBytes);
     return post;
   }
 
@@ -93,26 +111,3 @@ export class IovWriter {
     return connector;
   }
 }
-
-export interface ChainConnector {
-  readonly client: () => Promise<BcpConnection>;
-  readonly codec: TxCodec;
-}
-
-export interface ChainConnection {
-  readonly client: BcpConnection;
-  readonly codec: TxCodec;
-}
-
-// bnsConnector is a helper to connect to a bns-based chain at a given url
-export const bnsConnector = (url: string): ChainConnector => ({
-  client: () => BnsClient.connect(url),
-  codec: bnsCodec,
-});
-
-const connectChain = async (x: ChainConnector): Promise<ChainConnection> => {
-  return {
-    client: await x.client(),
-    codec: x.codec,
-  };
-};

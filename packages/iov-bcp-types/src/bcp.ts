@@ -2,7 +2,7 @@ import { Stream } from "xstream";
 
 import { ChainId, PostableBytes, PublicKeyBundle, Tag, TxId, TxQuery } from "@iov/tendermint-types";
 
-import { Address, SignedTransaction } from "./signables";
+import { Address, SignedTransaction, TxCodec } from "./signables";
 import { Nonce, TokenTicker, UnsignedTransaction } from "./transactions";
 
 /*
@@ -158,4 +158,9 @@ export interface BcpConnection {
   // liveTx returns a stream for all historical transactions that match
   // the query, along with all new transactions arriving from listenTx
   readonly liveTx: (txQuery: TxQuery) => Stream<ConfirmedTransaction>;
+}
+
+export interface ChainConnector {
+  readonly client: () => Promise<BcpConnection>;
+  readonly codec: TxCodec;
 }

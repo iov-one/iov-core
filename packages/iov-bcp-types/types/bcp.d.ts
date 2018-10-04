@@ -1,6 +1,6 @@
 import { Stream } from "xstream";
 import { ChainId, PostableBytes, PublicKeyBundle, Tag, TxId, TxQuery } from "@iov/tendermint-types";
-import { Address, SignedTransaction } from "./signables";
+import { Address, SignedTransaction, TxCodec } from "./signables";
 import { Nonce, TokenTicker, UnsignedTransaction } from "./transactions";
 export interface BcpQueryEnvelope<T> {
     readonly metadata: BcpQueryMetadata;
@@ -77,4 +77,8 @@ export interface BcpConnection {
     readonly searchTx: (query: TxQuery) => Promise<ReadonlyArray<ConfirmedTransaction>>;
     readonly listenTx: (tags: ReadonlyArray<Tag>) => Stream<ConfirmedTransaction>;
     readonly liveTx: (txQuery: TxQuery) => Stream<ConfirmedTransaction>;
+}
+export interface ChainConnector {
+    readonly client: () => Promise<BcpConnection>;
+    readonly codec: TxCodec;
 }
