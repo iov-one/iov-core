@@ -3,7 +3,6 @@ import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
 import {
-  Address,
   BcpAccount,
   BcpAccountQuery,
   BcpConnection,
@@ -177,14 +176,6 @@ export class LiskConnection implements BcpConnection {
     } else {
       throw new Error("Query type not supported");
     }
-  }
-
-  public changeBalance(_: Address): Stream<number> {
-    throw new Error("Not implemented");
-  }
-
-  public changeNonce(_: Address): Stream<number> {
-    throw new Error("Not implemented");
   }
 
   public changeBlock(): Stream<number> {
