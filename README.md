@@ -58,7 +58,81 @@ To build the documentation locally, run `yarn install && yarn build && yarn docs
 in this repository. This will generate a `./docs` directory in each package that you
 can browse locally to see API docs on the various packages.
 
-## Developing under Windows 10
+## Contributing
+
+We are more than happy to accept open source contributions. However, please try
+to work on existing issues or create an issue and get feedback from one of the
+[main contributors](https://github.com/iov-one/iov-core/graphs/contributors)
+before starting on a PR. If you don't know where to start, we try to tag
+["good first issues"](https://github.com/iov-one/iov-core/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+that provide a nice way to get started with the iov-core repo.
+
+### Development Environment
+
+If you go into a subpackage and try to `yarn build` or `yarn test`, chances are it will fail.
+The reason is that we only check in `*.ts` files, while we need the compiled `*.js` files
+to import other packages. We push these to npm but do not check them into git to avoid commit noise.
+
+To get started, please go to the root directory and run:
+
+```
+yarn install
+yarn build
+yarn test
+```
+
+Once that passes, you have the code built and can go into any subdirectory, edit code
+and verify the changes with `yarn test` on that one package.
+
+### Integration Tests
+
+There are a number of integration tests involving communication with tendermint
+(in `iov-tendermint-rpc`) and the bns blockchain (in `iov-bns`) that require
+a test server to run and are skipped by default. If you are working on those
+packages, please run those tests. (They require docker to be installed and
+executable by the current user)
+
+```
+source ./scripts/blockchain_start.sh
+cd packages/iov-tendermint-rpc
+yarn test
+cd ../iov-bns
+yarn test
+cd ../..
+source ./scripts/blockchain_stop.sh
+```
+
+This is to try out, you can just go into the one package you work on,
+start blockchain, run integration tests, and stop it. If you are
+wondering about the magic, note that
+`blockchain_start.sh` sets TENDERMINT_ENABLED=1 and BOV_ENABLED=1
+to enable running the full integration tests.
+
+If you are working on `iov-lisk`, you can run the tests against
+the lisk testnet. Just be aware they can be very slow....
+
+```
+cd packages/iov-lisk
+LONG_RUNNING_ENABLED=1 yarn test
+```
+
+### Browser tests
+
+The CI runs all code not only under node, but also
+[in various browsers](https://github.com/iov-one/iov-core/blob/master/scripts/travis.sh#L44-L57)
+
+These work almost all of the time, but if you CI test fails in the browser,
+or if you are just curious to see this work, you can run the browser tests
+locally with any of the following, in any package you are working on:
+
+```
+yarn test-chrome
+yarn test-firefox
+yarn test-safari  # osx only
+yarn test-edge    # windows only
+```
+
+### Developing under Windows 10
 
 Most of the developers working on this project in windows are also using Windows Subsystem for Linux
 (WSL), which should have maximum compatibility, as CI is linux and osx. However, we do attempt to ensure
@@ -93,6 +167,16 @@ the compilation issues are fixed in the `node-pre-gyp` package. This package com
 `@ledger/hw-transport-node-hid` and is not easily modifiable by our team. Once the issues are resolved,
 the hard requirement of this dependency will be removed to allow it to be synchronized with the packages
 that require it.
+
+If `node-pre-gyp` keeps giving issues compiling this library, you may want to switch to node 8.
+There have been some reported issues on node `10.6.0` even after this, all around compiling node-usb
+for the ledger transport.
+
+### My PR works but the CI rejects it
+
+Make sure you at least ran `yarn test` in all the directories where you modified code.
+The CI will reject any PR if type definitions change after compiling the code to ensure
+it was build and committed prior to pushing.
 
 ## License
 
