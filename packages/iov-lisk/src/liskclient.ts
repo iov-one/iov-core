@@ -59,8 +59,8 @@ export class LiskClient implements BcpConnection {
   constructor(baseUrl: string, chainId: ChainId) {
     this.baseUrl = checkAndNormalizeUrl(baseUrl);
 
-    if (chainId.length < 4) {
-      throw new Error("Expect a real chainId");
+    if (!chainId.match(/^[a-f0-9]{64}$/)) {
+      throw new Error("The chain ID must be a Lisk nethash, encoded as 64 lower-case hex characters.");
     }
     this.myChainId = chainId;
   }
