@@ -4,7 +4,7 @@ import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
 import { KeyringEntrySerializationString } from "../keyring";
-import { Slip10Wallet } from "./slip10";
+import { Slip10Wallet } from "./slip10wallet";
 
 const { fromHex } = Encoding;
 
