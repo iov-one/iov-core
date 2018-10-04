@@ -8,6 +8,13 @@ export interface UserProfileOptions {
     readonly createdAt: ReadonlyDate;
     readonly keyring: Keyring;
 }
+/**
+ * All calls must go though the UserProfile. A newly created UserProfile
+ * is unlocked until lock() is called, which removes access to private key
+ * material. Once locked, a UserProfile cannot be unlocked anymore since the
+ * corresponding storage is not available anymore. Instead, re-create the
+ * UserProfile via the UserProfileController to get an unlocked UserProfile.
+ */
 export declare class UserProfile {
     static loadFrom(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<UserProfile>;
     private static makeNonce;

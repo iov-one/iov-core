@@ -1,4 +1,9 @@
 import { Listener, MemoryStream, Producer } from "xstream";
+/**
+ * A read only wrapper around DefaultValueProducer that allows
+ * to synchonously get the current value using the .value property
+ * and listen to to updates by suscribing to the .updates stream
+ */
 export declare class ValueAndUpdates<T> {
     readonly updates: MemoryStream<T>;
     readonly value: T;
