@@ -4,6 +4,7 @@ import {
   Address,
   BcpConnection,
   BcpTransactionResponse,
+  ChainConnector,
   Nonce,
   TxCodec,
   UnsignedTransaction,
@@ -110,11 +111,6 @@ export class IovWriter {
     }
     return connector;
   }
-}
-
-export interface ChainConnector {
-  readonly client: () => Promise<BcpConnection>;
-  readonly codec: TxCodec;
 }
 
 // bnsConnector is a helper to connect to a bns-based chain at a given url
