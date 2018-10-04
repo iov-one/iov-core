@@ -42,7 +42,7 @@ interface IdentitySerialization {
   readonly privkeyPath: ReadonlyArray<number>;
 }
 
-interface Slip10KeyringEntrySerialization {
+interface Slip10WalletSerialization {
   readonly id: string;
   readonly secret: string;
   readonly curve: string;
@@ -50,16 +50,16 @@ interface Slip10KeyringEntrySerialization {
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
 
-interface Slip10KeyringEntryConstructor {
-  new (data: KeyringEntrySerializationString): Slip10KeyringEntry;
+interface Slip10WalletConstructor {
+  new (data: KeyringEntrySerializationString): Slip10Wallet;
 }
 
-export class Slip10KeyringEntry implements KeyringEntry {
+export class Slip10Wallet implements KeyringEntry {
   public static fromEntropyWithCurve(
     curve: Slip10Curve,
     bip39Entropy: Uint8Array,
-    cls?: Slip10KeyringEntryConstructor,
-  ): Slip10KeyringEntry {
+    cls?: Slip10WalletConstructor,
+  ): Slip10Wallet {
     return this.fromMnemonicWithCurve(curve, Bip39.encode(bip39Entropy).asString(), cls);
   }
 
@@ -67,10 +67,10 @@ export class Slip10KeyringEntry implements KeyringEntry {
   public static fromMnemonicWithCurve(
     curve: Slip10Curve,
     mnemonicString: string,
-    cls: Slip10KeyringEntryConstructor = Slip10KeyringEntry,
-  ): Slip10KeyringEntry {
-    const data: Slip10KeyringEntrySerialization = {
-      id: Slip10KeyringEntry.generateId(),
+    cls: Slip10WalletConstructor = Slip10Wallet,
+  ): Slip10Wallet {
+    const data: Slip10WalletSerialization = {
+      id: Slip10Wallet.generateId(),
       secret: mnemonicString,
       curve: curve,
       label: undefined,
@@ -83,7 +83,7 @@ export class Slip10KeyringEntry implements KeyringEntry {
 
   private static generateId(): KeyringEntryId {
     // this can be pseudo-random, just used for internal book-keeping
-    const code = PseudoRandom.string()(Slip10KeyringEntry.idsPrng, 16);
+    const code = PseudoRandom.string()(Slip10Wallet.idsPrng, 16);
     return code as KeyringEntryId;
   }
 
@@ -126,7 +126,7 @@ export class Slip10KeyringEntry implements KeyringEntry {
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
 
   constructor(data: KeyringEntrySerializationString) {
-    const decodedData: Slip10KeyringEntrySerialization = JSON.parse(data);
+    const decodedData: Slip10WalletSerialization = JSON.parse(data);
 
     // id
     this.id = decodedData.id as KeyringEntryId;
@@ -145,10 +145,10 @@ export class Slip10KeyringEntry implements KeyringEntry {
     const identities: LocalIdentity[] = [];
     const privkeyPaths = new Map<string, ReadonlyArray<Slip10RawIndex>>();
     for (const record of decodedData.identities) {
-      const algorithm = Slip10KeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo);
-      if (algorithm !== Slip10KeyringEntry.algorithmFromCurve(this.curve)) {
+      const algorithm = Slip10Wallet.algorithmFromString(record.localIdentity.pubkey.algo);
+      if (algorithm !== Slip10Wallet.algorithmFromCurve(this.curve)) {
         throw new Error(
-          "Identity algorithm does not match curve. This must not happen because each Slip10KeyringEntry instance supports only one fixed curve",
+          "Identity algorithm does not match curve. This must not happen because each Slip10Wallet instance supports only one fixed curve",
         );
       }
 
@@ -171,7 +171,7 @@ export class Slip10KeyringEntry implements KeyringEntry {
   }
 
   public async createIdentity(): Promise<LocalIdentity> {
-    throw new Error("Slip10KeyringEntry.createIdentity must not be called directly. Use derived type.");
+    throw new Error("Slip10Wallet.createIdentity must not be called directly. Use derived type.");
   }
 
   public async createIdentityWithPath(path: ReadonlyArray<Slip10RawIndex>): Promise<LocalIdentity> {
@@ -204,8 +204,8 @@ export class Slip10KeyringEntry implements KeyringEntry {
   }
 
   public setIdentityLabel(identity: PublicIdentity, label: string | undefined): void {
-    const identityId = Slip10KeyringEntry.identityId(identity);
-    const index = this.identities.findIndex(i => Slip10KeyringEntry.identityId(i) === identityId);
+    const identityId = Slip10Wallet.identityId(identity);
+    const index = this.identities.findIndex(i => Slip10Wallet.identityId(i) === identityId);
     if (index === -1) {
       throw new Error("identity with id '" + identityId + "' not found");
     }
@@ -249,7 +249,7 @@ export class Slip10KeyringEntry implements KeyringEntry {
       },
     );
 
-    const out: Slip10KeyringEntrySerialization = {
+    const out: Slip10WalletSerialization = {
       id: this.id,
       secret: this.secret.asString(),
       curve: this.curve,
@@ -259,13 +259,13 @@ export class Slip10KeyringEntry implements KeyringEntry {
     return JSON.stringify(out) as KeyringEntrySerializationString;
   }
 
-  public clone(): Slip10KeyringEntry {
-    return new Slip10KeyringEntry(this.serialize());
+  public clone(): Slip10Wallet {
+    return new Slip10Wallet(this.serialize());
   }
 
   // This throws an exception when private key is missing
   private privkeyPathForIdentity(identity: PublicIdentity): ReadonlyArray<Slip10RawIndex> {
-    const identityId = Slip10KeyringEntry.identityId(identity);
+    const identityId = Slip10Wallet.identityId(identity);
     const privkeyPath = this.privkeyPaths.get(identityId);
     if (!privkeyPath) {
       throw new Error("No private key path found for identity '" + identityId + "'");
@@ -283,7 +283,7 @@ export class Slip10KeyringEntry implements KeyringEntry {
   }
 
   private buildLocalIdentity(bytes: PublicKeyBytes, label: string | undefined): LocalIdentity {
-    const algorithm = Slip10KeyringEntry.algorithmFromCurve(this.curve);
+    const algorithm = Slip10Wallet.algorithmFromCurve(this.curve);
     const pubkey: PublicKeyBundle = {
       algo: algorithm,
       data: bytes,
@@ -291,7 +291,7 @@ export class Slip10KeyringEntry implements KeyringEntry {
     return {
       pubkey,
       label,
-      id: Slip10KeyringEntry.identityId({ pubkey }),
+      id: Slip10Wallet.identityId({ pubkey }),
     };
   }
 }
