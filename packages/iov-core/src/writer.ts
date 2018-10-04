@@ -20,6 +20,16 @@ interface ChainConnection {
   readonly codec: TxCodec;
 }
 
+/**
+ * An internal helper to establish a BCP connection
+ */
+async function connectChain(x: ChainConnector): Promise<ChainConnection> {
+  return {
+    client: await x.client(),
+    codec: x.codec,
+  };
+}
+
 /*
 IovWriter handles all private key material, as well as connections to multiple chains.
 It must have a codec along with each chain to properly encode the transactions,
@@ -112,10 +122,3 @@ export const bnsConnector = (url: string): ChainConnector => ({
   client: () => BnsClient.connect(url),
   codec: bnsCodec,
 });
-
-const connectChain = async (x: ChainConnector): Promise<ChainConnection> => {
-  return {
-    client: await x.client(),
-    codec: x.codec,
-  };
-};
