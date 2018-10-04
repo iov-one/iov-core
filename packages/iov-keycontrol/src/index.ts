@@ -1,4 +1,4 @@
-export { Ed25519KeyringEntry, Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
+export { Ed25519KeyringEntry, Ed25519SimpleAddressKeyringEntry, Secp256k1HdWallet } from "./keyring-entries";
 export {
   Keyring,
   KeyringEntry,

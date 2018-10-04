@@ -3,12 +3,12 @@ import { Slip10Curve, Slip10RawIndex } from "@iov/crypto";
 import { ChainId, SignatureBytes } from "@iov/tendermint-types";
 import { KeyringEntry, KeyringEntryId, KeyringEntryImplementationIdString, KeyringEntrySerializationString, LocalIdentity, PublicIdentity } from "../keyring";
 import { ValueAndUpdates } from "../valueandupdates";
-interface Slip10KeyringEntryConstructor {
-    new (data: KeyringEntrySerializationString): Slip10KeyringEntry;
+interface Slip10WalletConstructor {
+    new (data: KeyringEntrySerializationString): Slip10Wallet;
 }
-export declare class Slip10KeyringEntry implements KeyringEntry {
-    static fromEntropyWithCurve(curve: Slip10Curve, bip39Entropy: Uint8Array, cls?: Slip10KeyringEntryConstructor): Slip10KeyringEntry;
-    static fromMnemonicWithCurve(curve: Slip10Curve, mnemonicString: string, cls?: Slip10KeyringEntryConstructor): Slip10KeyringEntry;
+export declare class Slip10Wallet implements KeyringEntry {
+    static fromEntropyWithCurve(curve: Slip10Curve, bip39Entropy: Uint8Array, cls?: Slip10WalletConstructor): Slip10Wallet;
+    static fromMnemonicWithCurve(curve: Slip10Curve, mnemonicString: string, cls?: Slip10WalletConstructor): Slip10Wallet;
     private static readonly idsPrng;
     private static generateId;
     private static identityId;
@@ -31,7 +31,7 @@ export declare class Slip10KeyringEntry implements KeyringEntry {
     getIdentities(): ReadonlyArray<LocalIdentity>;
     createTransactionSignature(identity: PublicIdentity, transactionBytes: SignableBytes, prehashType: PrehashType, _: ChainId): Promise<SignatureBytes>;
     serialize(): KeyringEntrySerializationString;
-    clone(): Slip10KeyringEntry;
+    clone(): Slip10Wallet;
     private privkeyPathForIdentity;
     private privkeyForIdentity;
     private buildLocalIdentity;
