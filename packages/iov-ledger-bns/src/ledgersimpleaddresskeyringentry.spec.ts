@@ -43,7 +43,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     keyringEntry.startDeviceTracking();
     const newIdentity = await keyringEntry.createIdentity();
     expect(newIdentity).toBeTruthy();
-    expect(newIdentity.pubkey.algo).toEqual(Algorithm.ED25519);
+    expect(newIdentity.pubkey.algo).toEqual(Algorithm.Ed25519);
     expect(newIdentity.pubkey.data.length).toEqual(32);
     keyringEntry.stopDeviceTracking();
   });

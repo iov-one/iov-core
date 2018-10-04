@@ -37,7 +37,7 @@ describe("LiskKeyringEntry", () => {
     const entry = new LiskKeyringEntry();
     const newIdentity = await entry.createIdentity("my passphrase 1");
     expect(newIdentity).toBeTruthy();
-    expect(newIdentity.pubkey.algo).toEqual(Algorithm.ED25519);
+    expect(newIdentity.pubkey.algo).toEqual(Algorithm.Ed25519);
     expect(newIdentity.pubkey.data.length).toEqual(32);
   });
 

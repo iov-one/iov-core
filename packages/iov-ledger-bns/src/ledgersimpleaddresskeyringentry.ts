@@ -242,7 +242,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
 
   private buildLocalIdentity(bytes: PublicKeyBytes, label: string | undefined): LocalIdentity {
     const pubkey: PublicKeyBundle = {
-      algo: Algorithm.ED25519, // hardcoded until we support more curves in the ledger app
+      algo: Algorithm.Ed25519, // hardcoded until we support more curves in the ledger app
       data: bytes,
     };
     return {

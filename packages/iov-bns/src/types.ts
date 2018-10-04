@@ -44,7 +44,7 @@ export const encodeFullSig = (sig: FullSignature) =>
 
 export const encodePubKey = (publicKey: PublicKeyBundle) => {
   switch (publicKey.algo) {
-    case Algorithm.ED25519:
+    case Algorithm.Ed25519:
       return { ed25519: publicKey.data };
     default:
       throw new Error("unsupported algorithm: " + publicKey.algo);
@@ -53,7 +53,7 @@ export const encodePubKey = (publicKey: PublicKeyBundle) => {
 
 export const encodePrivKey = (privateKey: PrivateKeyBundle) => {
   switch (privateKey.algo) {
-    case Algorithm.ED25519:
+    case Algorithm.Ed25519:
       return { ed25519: privateKey.data };
     default:
       throw new Error("unsupported algorithm: " + privateKey.algo);
@@ -63,7 +63,7 @@ export const encodePrivKey = (privateKey: PrivateKeyBundle) => {
 // encodeSignature needs the Algorithm to determine the type
 export const encodeSignature = (algo: Algorithm, sigs: SignatureBytes) => {
   switch (algo) {
-    case Algorithm.ED25519:
+    case Algorithm.Ed25519:
       return { ed25519: sigs };
     default:
       throw new Error("unsupported algorithm: " + algo);
@@ -89,7 +89,7 @@ export const fungibleToBcpCoin = (initData: InitData) => (token: FungibleToken):
 export const decodePubKey = (publicKey: codecImpl.crypto.IPublicKey): PublicKeyBundle => {
   if (publicKey.ed25519) {
     return {
-      algo: Algorithm.ED25519,
+      algo: Algorithm.Ed25519,
       data: publicKey.ed25519 as PublicKeyBytes,
     };
   } else {
@@ -100,7 +100,7 @@ export const decodePubKey = (publicKey: codecImpl.crypto.IPublicKey): PublicKeyB
 export const decodePrivKey = (privateKey: codecImpl.crypto.IPrivateKey): PrivateKeyBundle => {
   if (privateKey.ed25519) {
     return {
-      algo: Algorithm.ED25519,
+      algo: Algorithm.Ed25519,
       data: privateKey.ed25519 as PrivateKeyBytes,
     };
   } else {

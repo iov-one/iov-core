@@ -38,14 +38,14 @@ const { fromHex } = Encoding;
 // in this testfile to allow simpler tests in the browser as well.
 
 export const pubJson: PublicKeyBundle = {
-  algo: Algorithm.ED25519,
+  algo: Algorithm.Ed25519,
   data: fromHex("507629b5f1d3946efb8fde961e146359e33610fa1536185d44fdd5011ca011d5") as PublicKeyBytes,
 };
 export const pubBin = fromHex("0a20507629b5f1d3946efb8fde961e146359e33610fa1536185d44fdd5011ca011d5");
 
 // this private key matches the above public key
 export const privJson: PrivateKeyBundle = {
-  algo: Algorithm.ED25519,
+  algo: Algorithm.Ed25519,
   data: fromHex(
     "516e6af7454f31fa56a43d112ea847c7e5aeea754f08385ca55935757161ad96507629b5f1d3946efb8fde961e146359e33610fa1536185d44fdd5011ca011d5",
   ) as PrivateKeyBytes,

@@ -282,7 +282,7 @@ describe("UserProfile", () => {
   it("throws for non-existing entry index", async () => {
     const profile = new UserProfile();
 
-    const fakeIdentity = { pubkey: { algo: Algorithm.ED25519, data: new Uint8Array([0xaa]) as PublicKeyBytes } };
+    const fakeIdentity = { pubkey: { algo: Algorithm.Ed25519, data: new Uint8Array([0xaa]) as PublicKeyBytes } };
     const fakeTransaction: SendTx = {
       chainId: "ethereum" as ChainId,
       signer: fakeIdentity.pubkey,

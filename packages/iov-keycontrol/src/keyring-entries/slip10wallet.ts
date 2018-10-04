@@ -94,9 +94,9 @@ export class Slip10Wallet implements KeyringEntry {
   private static algorithmFromCurve(curve: Slip10Curve): Algorithm {
     switch (curve) {
       case Slip10Curve.Ed25519:
-        return Algorithm.ED25519;
+        return Algorithm.Ed25519;
       case Slip10Curve.Secp256k1:
-        return Algorithm.SECP256K1;
+        return Algorithm.Secp256k1;
       default:
         throw new Error("Unknown curve input");
     }
@@ -105,9 +105,9 @@ export class Slip10Wallet implements KeyringEntry {
   private static algorithmFromString(input: string): Algorithm {
     switch (input) {
       case "ed25519":
-        return Algorithm.ED25519;
+        return Algorithm.Ed25519;
       case "secp256k1":
-        return Algorithm.SECP256K1;
+        return Algorithm.Secp256k1;
       default:
         throw new Error("Unknown algorithm string found");
     }

@@ -22,9 +22,9 @@ export const keyToIdentifier = (key: PublicKeyBundle) =>
 
 const algoToPrefix = (algo: Algorithm) => {
   switch (algo) {
-    case Algorithm.ED25519:
+    case Algorithm.Ed25519:
       return Encoding.toAscii("sigs/ed25519/");
-    case Algorithm.SECP256K1:
+    case Algorithm.Secp256k1:
       return Encoding.toAscii("sigs/secp256k1/");
     default:
       throw new Error("Unsupported algorithm: " + algo);

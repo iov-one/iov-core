@@ -101,7 +101,7 @@ describe("Sign with ledger app", () => {
     expect(pubkey.length).toEqual(32);
 
     const sender: PublicKeyBundle = {
-      algo: Algorithm.ED25519,
+      algo: Algorithm.Ed25519,
       data: pubkey as PublicKeyBytes,
     };
 
@@ -146,7 +146,7 @@ describe("Sign with ledger app", () => {
     expect(pubkey.length).toEqual(32);
 
     const sender: PublicKeyBundle = {
-      algo: Algorithm.ED25519,
+      algo: Algorithm.Ed25519,
       data: pubkey as PublicKeyBytes,
     };
 
