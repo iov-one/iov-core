@@ -12,6 +12,7 @@ import {
   BcpTicker,
   BcpTransactionResponse,
   ConfirmedTransaction,
+  dummyEnvelope,
   isAddressQuery,
   Nonce,
   TokenTicker,
@@ -145,16 +146,7 @@ export class LiskClient implements BcpConnection {
           },
         ],
       };
-
-      const wrapped: BcpQueryEnvelope<BcpAccount> = {
-        metadata: {
-          offset: 0,
-          limit: 0,
-        },
-        data: [account],
-      };
-
-      return wrapped;
+      return dummyEnvelope([account]);
     } else {
       throw new Error("Query type not supported");
     }
