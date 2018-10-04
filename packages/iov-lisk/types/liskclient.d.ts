@@ -1,6 +1,9 @@
 import { Stream } from "xstream";
 import { Address, BcpAccount, BcpAccountQuery, BcpConnection, BcpNonce, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, ConfirmedTransaction, Nonce, TokenTicker } from "@iov/bcp-types";
 import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
+/**
+ * Encodes the current date and time as a nonce
+ */
 export declare function generateNonce(): Nonce;
 export declare class LiskClient implements BcpConnection {
     static connect(baseUrl: string): Promise<LiskClient>;

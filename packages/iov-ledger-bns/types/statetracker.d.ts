@@ -13,5 +13,8 @@ export declare class StateTracker {
     constructor();
     start(): void;
     stop(): void;
+    /**
+     * write out when we enter and leave the app
+     */
     private handleEvent;
 }
