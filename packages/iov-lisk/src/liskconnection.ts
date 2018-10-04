@@ -3,7 +3,6 @@ import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
 import {
-  Address,
   BcpAccount,
   BcpAccountQuery,
   BcpConnection,
@@ -47,10 +46,10 @@ async function loadChainId(baseUrl: string): Promise<ChainId> {
   return responseBody.data.nethash;
 }
 
-export class LiskClient implements BcpConnection {
-  public static async connect(baseUrl: string): Promise<LiskClient> {
+export class LiskConnection implements BcpConnection {
+  public static async establish(baseUrl: string): Promise<LiskConnection> {
     const chainId = await loadChainId(baseUrl);
-    return new LiskClient(baseUrl, chainId);
+    return new LiskConnection(baseUrl, chainId);
   }
 
   private readonly baseUrl: string;
@@ -59,8 +58,8 @@ export class LiskClient implements BcpConnection {
   constructor(baseUrl: string, chainId: ChainId) {
     this.baseUrl = checkAndNormalizeUrl(baseUrl);
 
-    if (chainId.length < 4) {
-      throw new Error("Expect a real chainId");
+    if (!chainId.match(/^[a-f0-9]{64}$/)) {
+      throw new Error("The chain ID must be a Lisk nethash, encoded as 64 lower-case hex characters.");
     }
     this.myChainId = chainId;
   }
@@ -177,14 +176,6 @@ export class LiskClient implements BcpConnection {
     } else {
       throw new Error("Query type not supported");
     }
-  }
-
-  public changeBalance(_: Address): Stream<number> {
-    throw new Error("Not implemented");
-  }
-
-  public changeNonce(_: Address): Stream<number> {
-    throw new Error("Not implemented");
   }
 
   public changeBlock(): Stream<number> {

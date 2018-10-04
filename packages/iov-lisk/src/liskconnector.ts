@@ -1,11 +1,11 @@
 import { ChainConnector } from "@iov/bcp-types";
 
-import { LiskClient } from "./liskclient";
 import { liskCodec } from "./liskcodec";
+import { LiskConnection } from "./liskconnection";
 
 export function liskConnector(url: string): ChainConnector {
   return {
-    client: () => LiskClient.connect(url),
+    client: () => LiskConnection.establish(url),
     codec: liskCodec,
   };
 }
