@@ -12,6 +12,14 @@ import { bnsCodec, Client as BnsClient } from "@iov/bns";
 import { KeyringEntryId, PublicIdentity, UserProfile } from "@iov/keycontrol";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 
+/**
+ * An internal helper to pass around the tuple
+ */
+interface ChainConnection {
+  readonly client: BcpConnection;
+  readonly codec: TxCodec;
+}
+
 /*
 IovWriter handles all private key material, as well as connections to multiple chains.
 It must have a codec along with each chain to properly encode the transactions,
@@ -96,11 +104,6 @@ export class IovWriter {
 
 export interface ChainConnector {
   readonly client: () => Promise<BcpConnection>;
-  readonly codec: TxCodec;
-}
-
-export interface ChainConnection {
-  readonly client: BcpConnection;
   readonly codec: TxCodec;
 }
 

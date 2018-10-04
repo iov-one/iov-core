@@ -20,8 +20,4 @@ export interface ChainConnector {
     readonly client: () => Promise<BcpConnection>;
     readonly codec: TxCodec;
 }
-export interface ChainConnection {
-    readonly client: BcpConnection;
-    readonly codec: TxCodec;
-}
 export declare const bnsConnector: (url: string) => ChainConnector;
