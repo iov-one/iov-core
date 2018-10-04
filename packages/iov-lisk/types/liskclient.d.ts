@@ -5,8 +5,8 @@ import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
  * Encodes the current date and time as a nonce
  */
 export declare function generateNonce(): Nonce;
-export declare class LiskClient implements BcpConnection {
-    static connect(baseUrl: string): Promise<LiskClient>;
+export declare class LiskConnection implements BcpConnection {
+    static connect(baseUrl: string): Promise<LiskConnection>;
     private readonly baseUrl;
     private readonly myChainId;
     constructor(baseUrl: string, chainId: ChainId);

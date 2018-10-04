@@ -47,10 +47,10 @@ async function loadChainId(baseUrl: string): Promise<ChainId> {
   return responseBody.data.nethash;
 }
 
-export class LiskClient implements BcpConnection {
-  public static async connect(baseUrl: string): Promise<LiskClient> {
+export class LiskConnection implements BcpConnection {
+  public static async connect(baseUrl: string): Promise<LiskConnection> {
     const chainId = await loadChainId(baseUrl);
-    return new LiskClient(baseUrl, chainId);
+    return new LiskConnection(baseUrl, chainId);
   }
 
   private readonly baseUrl: string;
