@@ -100,6 +100,62 @@ const bytesToPost = Encoding.fromUtf8(liskCodec.bytesToPost(signedTransaction));
 console.log(bytesToPost);
 ```
 
+## Lisk HD wallets
+
+Lisk codec and Ed25519HdWallet combined allow you to create a pure
+software implementation of the the Lisk wallet on Ledger or Trezor.
+
+### Address discovery
+
+The following code snipped shows how to implement address discovery.
+
+```ts
+import { Ed25519HdWallet } from "@iov/core";
+import { Slip10RawIndex } from "@iov/crypto";
+import { liskCodec, LiskConnection } from "@iov/lisk";
+
+const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
+
+async function deriveAddress(wallet, a): Promise<Address> {
+  // 44'/134'/a' (see https://github.com/trezor/trezor-core/tree/master/docs/coins)
+  const path = [Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(134), Slip10RawIndex.hardened(a)]
+  const pubkey = (await wallet.createIdentity(path)).pubkey;
+  return liskCodec.keyToAddress(pubkey);
+}
+
+async function getBalance(searchAddress: Address): Promise<any> {
+  const connection = new LiskConnection("https://testnet.lisk.io/", liskTestnet);
+  // FIXME: this treats programming errors and network errors as non-existing address
+  // https://github.com/iov-one/iov-core/issues/386
+  try {
+    const response = await connection.getAccount({ address: searchAddress });
+    return response.data[0].balance[0];
+  } catch (error) {
+    return undefined;
+  }
+}
+
+const wallet = Ed25519HdWallet.fromMnemonic("tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral");
+
+// from https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit
+const gapLimit = 20;
+
+let currentGapSize = 0;
+for (let a = 0; currentGapSize < gapLimit; a++) {
+  const address = await deriveAddress(wallet, a);
+  const balance = await getBalance(address);
+  const balanceString = balance ? `${balance.whole + balance.fractional/100000000} LSK` : "unknown";
+  console.log(`${a}: ${Encoding.fromAscii(address)} (${balanceString})`);
+
+  if (balance) {
+    currentGapSize = 0;
+  } else {
+    currentGapSize++;
+  }
+}
+console.log(`Stopping discovery after ${currentGapSize} unused addresses in a row.`);
+```
+
 ## License
 
 This package is part of the IOV-Core repository, licensed under the Apache License 2.0
