@@ -3,6 +3,9 @@ import { KeyringEntry, KeyringEntryId, KeyringEntryImplementationIdString, Keyri
 import { ChainId, SignatureBytes } from "@iov/tendermint-types";
 export declare class LiskKeyringEntry implements KeyringEntry {
     static readonly implementationId: KeyringEntryImplementationIdString;
+    /**
+     * A convenience function to register this entry type with the global Keyring class
+     */
     static registerWithKeyring(): void;
     private static readonly idsPrng;
     private static generateId;

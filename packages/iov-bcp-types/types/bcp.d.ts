@@ -28,6 +28,13 @@ export interface BcpNonce {
 export interface BcpTicker {
     readonly tokenTicker: TokenTicker;
     readonly sigFigs: number;
+    /**
+     * A name to be displayed to the user which allows differentiation
+     * of multiple tokens that use the same ticker.
+     *
+     * For example "Holo (HOT)" and "Hydro Protocol (HOT)" get the token
+     * names and "Holo" and "Hydro Protocol".
+     */
     readonly tokenName: string;
 }
 export interface BcpTransactionResponse {

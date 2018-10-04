@@ -4,6 +4,9 @@ import { ChainId, SignatureBytes } from "@iov/tendermint-types";
 import { LedgerState } from "./statetracker";
 export declare class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     static readonly implementationId: KeyringEntryImplementationIdString;
+    /**
+     * A convenience function to register this entry type with the global Keyring class
+     */
     static registerWithKeyring(): void;
     private static identityId;
     readonly label: ValueAndUpdates<string | undefined>;
@@ -17,7 +20,20 @@ export declare class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     private readonly identities;
     private readonly simpleAddressIndices;
     constructor(data?: KeyringEntrySerializationString);
+    /**
+     * Turn on tracking USB devices.
+     *
+     * This is must be called before every hardware interaction,
+     * i.e. createIdentity() and createTransactionSignature() and to
+     * use the canSign and deviceState properties.
+     */
     startDeviceTracking(): void;
+    /**
+     * Turn off tracking USB devices.
+     *
+     * Use this to save resources when LedgerSimpleAddressKeyringEntry is not used anymore.
+     * With device tracking turned off, canSign and deviceState are not updated anymore.
+     */
     stopDeviceTracking(): void;
     setLabel(label: string | undefined): void;
     createIdentity(): Promise<LocalIdentity>;
