@@ -75,13 +75,13 @@ describe("LiskConnection", () => {
   });
 
   it("can get chain ID", async () => {
-    const client = await LiskConnection.connect(base);
+    const client = await LiskConnection.establish(base);
     const chainId = client.chainId();
     expect(chainId).toEqual(liskTestnet);
   });
 
   it("can get height", async () => {
-    const client = await LiskConnection.connect(base);
+    const client = await LiskConnection.establish(base);
     const height = await client.height();
     expect(height).toBeGreaterThan(6000000);
     expect(height).toBeLessThan(8000000);
@@ -90,7 +90,7 @@ describe("LiskConnection", () => {
   it("can get account", async () => {
     // Generate dead target address:
     // python3 -c 'import random; print("{}L".format(random.randint(0, 18446744073709551615)))'
-    const client = await LiskConnection.connect(base);
+    const client = await LiskConnection.establish(base);
     const query: BcpAccountQuery = { address: Encoding.toAscii("15683599531721344316L") as Address };
     const account = await client.getAccount(query);
     expect(account.data[0].address).toEqual(Encoding.toAscii("15683599531721344316L"));
@@ -101,7 +101,7 @@ describe("LiskConnection", () => {
   });
 
   it("can get nonce", async () => {
-    const client = await LiskConnection.connect(base);
+    const client = await LiskConnection.establish(base);
     const query: BcpAccountQuery = { address: Encoding.toAscii("15683599531721344316L") as Address };
     const nonce = await client.getNonce(query);
 
@@ -157,7 +157,7 @@ describe("LiskConnection", () => {
       };
       const bytesToPost = liskCodec.bytesToPost(signedTransaction);
 
-      const client = await LiskConnection.connect(base);
+      const client = await LiskConnection.establish(base);
       const result = await client.postTx(bytesToPost);
       expect(result).toBeTruthy();
       expect(result.metadata.height).toBeDefined();

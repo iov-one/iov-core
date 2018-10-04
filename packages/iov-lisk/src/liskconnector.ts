@@ -5,7 +5,7 @@ import { liskCodec } from "./liskcodec";
 
 export function liskConnector(url: string): ChainConnector {
   return {
-    client: () => LiskConnection.connect(url),
+    client: () => LiskConnection.establish(url),
     codec: liskCodec,
   };
 }

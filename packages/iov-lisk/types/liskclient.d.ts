@@ -6,7 +6,7 @@ import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
  */
 export declare function generateNonce(): Nonce;
 export declare class LiskConnection implements BcpConnection {
-    static connect(baseUrl: string): Promise<LiskConnection>;
+    static establish(baseUrl: string): Promise<LiskConnection>;
     private readonly baseUrl;
     private readonly myChainId;
     constructor(baseUrl: string, chainId: ChainId);
