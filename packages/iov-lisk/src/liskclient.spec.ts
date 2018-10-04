@@ -18,8 +18,8 @@ describe("LiskConnection", () => {
   const base = "https://testnet.lisk.io";
 
   it("can be constructed", () => {
-    const client = new LiskConnection(base, liskTestnet);
-    expect(client).toBeTruthy();
+    const connection = new LiskConnection(base, liskTestnet);
+    expect(connection).toBeTruthy();
   });
 
   it("takes different kind of API URLs", () => {
@@ -70,19 +70,19 @@ describe("LiskConnection", () => {
   });
 
   it("can disconnect", () => {
-    const client = new LiskConnection(base, liskTestnet);
-    expect(() => client.disconnect()).not.toThrow();
+    const connection = new LiskConnection(base, liskTestnet);
+    expect(() => connection.disconnect()).not.toThrow();
   });
 
   it("can get chain ID", async () => {
-    const client = await LiskConnection.establish(base);
-    const chainId = client.chainId();
+    const connection = await LiskConnection.establish(base);
+    const chainId = connection.chainId();
     expect(chainId).toEqual(liskTestnet);
   });
 
   it("can get height", async () => {
-    const client = await LiskConnection.establish(base);
-    const height = await client.height();
+    const connection = await LiskConnection.establish(base);
+    const height = await connection.height();
     expect(height).toBeGreaterThan(6000000);
     expect(height).toBeLessThan(8000000);
   });
@@ -90,9 +90,9 @@ describe("LiskConnection", () => {
   it("can get account", async () => {
     // Generate dead target address:
     // python3 -c 'import random; print("{}L".format(random.randint(0, 18446744073709551615)))'
-    const client = await LiskConnection.establish(base);
+    const connection = await LiskConnection.establish(base);
     const query: BcpAccountQuery = { address: Encoding.toAscii("15683599531721344316L") as Address };
-    const account = await client.getAccount(query);
+    const account = await connection.getAccount(query);
     expect(account.data[0].address).toEqual(Encoding.toAscii("15683599531721344316L"));
     expect(account.data[0].balance[0].tokenTicker).toEqual("LSK");
     expect(account.data[0].balance[0].sigFigs).toEqual(8);
@@ -101,9 +101,9 @@ describe("LiskConnection", () => {
   });
 
   it("can get nonce", async () => {
-    const client = await LiskConnection.establish(base);
+    const connection = await LiskConnection.establish(base);
     const query: BcpAccountQuery = { address: Encoding.toAscii("15683599531721344316L") as Address };
-    const nonce = await client.getNonce(query);
+    const nonce = await connection.getNonce(query);
 
     expect(nonce.data[0].address).toEqual(Encoding.toAscii("15683599531721344316L"));
     // nonce is current timestamp +/- one second
@@ -157,8 +157,8 @@ describe("LiskConnection", () => {
       };
       const bytesToPost = liskCodec.bytesToPost(signedTransaction);
 
-      const client = await LiskConnection.establish(base);
-      const result = await client.postTx(bytesToPost);
+      const connection = await LiskConnection.establish(base);
+      const result = await connection.postTx(bytesToPost);
       expect(result).toBeTruthy();
       expect(result.metadata.height).toBeDefined();
       expect(result.metadata.height).toBeGreaterThan(6000000);
