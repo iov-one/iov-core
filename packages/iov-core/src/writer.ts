@@ -16,7 +16,7 @@ import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
  * An internal helper to pass around the tuple
  */
 interface ChainConnection {
-  readonly client: BcpConnection;
+  readonly connection: BcpConnection;
   readonly codec: TxCodec;
 }
 
@@ -25,7 +25,7 @@ interface ChainConnection {
  */
 async function connectChain(x: ChainConnector): Promise<ChainConnection> {
   return {
-    client: await x.client(),
+    connection: await x.client(),
     codec: x.codec,
   };
 }
@@ -52,12 +52,12 @@ export class IovWriter {
   }
 
   public reader(chainId: ChainId): BcpConnection {
-    return this.getChain(chainId).client;
+    return this.getChain(chainId).connection;
   }
 
   public async addChain(connector: ChainConnector): Promise<void> {
     const connection = await connectChain(connector);
-    const chainId = connection.client.chainId();
+    const chainId = connection.connection.chainId();
     if (this.knownChains.has(chainId)) {
       throw new Error(`Chain ${chainId} is already registered`);
     }
@@ -71,7 +71,7 @@ export class IovWriter {
   // getNonce will return one value for the address, 0 if not found
   // not the ful bcp info.
   public async getNonce(chainId: ChainId, addr: Address): Promise<Nonce> {
-    const nonce = await this.getChain(chainId).client.getNonce({ address: addr });
+    const nonce = await this.getChain(chainId).connection.getNonce({ address: addr });
     return nonce.data.length === 0 ? (Long.fromInt(0) as Nonce) : nonce.data[0].nonce;
   }
 
@@ -84,7 +84,7 @@ export class IovWriter {
     keyring: number | KeyringEntryId,
   ): Promise<BcpTransactionResponse> {
     const chainId = tx.chainId;
-    const { client, codec } = this.getChain(chainId);
+    const { connection, codec } = this.getChain(chainId);
 
     const signer = tx.signer;
     const signerAddr = this.keyToAddress(chainId, signer);
@@ -96,7 +96,7 @@ export class IovWriter {
     const fakeId: PublicIdentity = { pubkey: signer };
     const signed = await this.profile.signTransaction(keyring, fakeId, tx, codec, nonce);
     const txBytes = codec.bytesToPost(signed);
-    const post = await client.postTx(txBytes);
+    const post = await connection.postTx(txBytes);
     return post;
   }
 
