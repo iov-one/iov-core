@@ -1,6 +1,6 @@
 #!/bin/bash
 set -o errexit -o nounset -o pipefail
-which shellcheck > /dev/null && shellcheck "$0"
+command -v shellcheck > /dev/null && shellcheck "$0"
 
 function fold_start() {
   export CURRENT_FOLD_NAME="$1"
@@ -74,7 +74,7 @@ fold_start "test-global-cli-installation"
   OTHER_PLACE=$(mktemp -d "${TMPDIR:-/tmp}/some-lost-place.XXXXXXXXX")
   cd "$OTHER_PLACE"
   yarn global add "$WORKSPACE/packages/iov-cli"
-  /usr/bin/which iov-cli
+  command -v iov-cli
   iov-cli --selftest
 )
 fold_end

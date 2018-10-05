@@ -1,6 +1,6 @@
 #!/bin/bash
 set -o errexit -o nounset -o pipefail
-which shellcheck > /dev/null && shellcheck "$0"
+command -v shellcheck > /dev/null && shellcheck "$0"
 
 PACKAGE_DIR="iov-core"
 
