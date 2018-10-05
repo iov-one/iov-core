@@ -128,7 +128,7 @@ describe("Integration tests with bov+tendermint", () => {
     client.disconnect();
   });
 
-  it("Can query accounts", async () => {
+  it("can get accpunt by address and name", async () => {
     pendingWithoutBov();
     const client = await Client.connect(tendermintUrl);
 
@@ -137,9 +137,9 @@ describe("Integration tests with bov+tendermint", () => {
     const faucetAddr = keyToAddress(faucet.pubkey);
 
     // can get the faucet by address (there is money)
-    const source = await client.getAccount({ address: faucetAddr });
-    expect(source.data.length).toEqual(1);
-    const addrAcct = source.data[0];
+    const responseFromAddress = await client.getAccount({ address: faucetAddr });
+    expect(responseFromAddress.data.length).toEqual(1);
+    const addrAcct = responseFromAddress.data[0];
     expect(addrAcct.address).toEqual(faucetAddr);
     expect(addrAcct.name).toEqual("admin");
     expect(addrAcct.balance.length).toEqual(1);
@@ -147,16 +147,23 @@ describe("Integration tests with bov+tendermint", () => {
     expect(addrAcct.balance[0].whole).toBeGreaterThan(1000000);
 
     // can get the faucet by name, same result
-    const namedSource = await client.getAccount({ name: "admin" });
-    expect(namedSource.data.length).toEqual(1);
-    const nameAcct = namedSource.data[0];
+    const responseFromName = await client.getAccount({ name: "admin" });
+    expect(responseFromName.data.length).toEqual(1);
+    const nameAcct = responseFromName.data[0];
     expect(nameAcct).toEqual(addrAcct);
 
-    // unused account has no results
+    client.disconnect();
+  });
+
+  it("returns empty list when getting an unused account", async () => {
+    pendingWithoutBov();
+    const client = await Client.connect(tendermintUrl);
+
     const unusedAddress = Encoding.fromHex("010101020202030303040404050505050a0a0a0a") as Address;
-    const unused = await client.getAccount({ address: unusedAddress });
-    expect(unused).toBeTruthy();
-    expect(unused.data.length).toEqual(0);
+    const response = await client.getAccount({ address: unusedAddress });
+    expect(response).toBeTruthy();
+    expect(response.data).toBeTruthy();
+    expect(response.data.length).toEqual(0);
 
     client.disconnect();
   });
