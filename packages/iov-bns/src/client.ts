@@ -45,8 +45,10 @@ import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
 import { Decoder, Keyed, Result } from "./types";
 import { arraysEqual, hashIdentifier, isSwapOffer, isSwapRelease } from "./util";
 
-// onChange returns a filter than only passes when the
-// value is different than the last one
+/**
+ * Returns a filter that only passes when the
+ * value is different than the last one
+ */
 function onChange<T>(): (val: T) => boolean {
   let oldVal: T | undefined;
   return (val: T): boolean => {
@@ -58,9 +60,12 @@ function onChange<T>(): (val: T) => boolean {
   };
 }
 
-// Client talks directly to the BNS blockchain and exposes the
-// same interface we have with the BCP protocol.
-// We can embed in iov-core process or use this in a BCP-relay
+/**
+ * Talks directly to the BNS blockchain and exposes the
+ * same interface we have with the BCP protocol.
+ *
+ * We can embed in iov-core process or use this in a BCP-relay
+ */
 export class Client implements BcpAtomicSwapConnection {
   public static async connect(url: string): Promise<Client> {
     const tm = await TendermintClient.connect(url);
@@ -96,7 +101,11 @@ export class Client implements BcpAtomicSwapConnection {
     this.tmClient.disconnect();
   }
 
-  // we store this info from the initialization, no need to query every time
+  /**
+   * The chain ID this connection is connected to
+   *
+   * We store this info from the initialization, no need to query every time
+   */
   public chainId(): ChainId {
     return this.initData.chainId;
   }
@@ -181,7 +190,9 @@ export class Client implements BcpAtomicSwapConnection {
     return dummyEnvelope(data);
   }
 
-  // getSwapFromState returns all matching swaps that are open (from app state)
+  /**
+   * All matching swaps that are open (from app state)
+   */
   public async getSwapFromState(query: BcpSwapQuery): Promise<BcpQueryEnvelope<BcpAtomicSwap>> {
     const doQuery = (): Promise<QueryResponse> => {
       if (isQueryBySwapId(query)) {
@@ -202,8 +213,11 @@ export class Client implements BcpAtomicSwapConnection {
     return dummyEnvelope(data);
   }
 
-  // getSwap returns all matching swaps that are open (in app state)
-  // to get claimed and returned, we need to look at the transactions.... TODO
+  /**
+   * All matching swaps that are open (in app state)
+   *
+   * To get claimed and returned, we need to look at the transactions.... TODO
+   */
   public async getSwap(query: BcpSwapQuery): Promise<BcpQueryEnvelope<BcpAtomicSwap>> {
     // we need to combine them all to see all transactions that affect the query
     const setTxs = await this.searchTx({
@@ -231,8 +245,11 @@ export class Client implements BcpAtomicSwapConnection {
     return dummyEnvelope([...offers, ...settled]);
   }
 
-  // watchSwap emits currentState (getSwap) as a stream, then sends updates for any matching swap
-  // this includes an open swap beind claimed/expired as well as a new matching swap being offered
+  /**
+   * Emits currentState (getSwap) as a stream, then sends updates for any matching swap
+   *
+   * This includes an open swap beind claimed/expired as well as a new matching swap being offered
+   */
   public watchSwap(query: BcpSwapQuery): Stream<BcpAtomicSwap> {
     // we need to combine them all to see all transactions that affect the query
     const setTxs = this.liveTx({ tags: [bnsSwapQueryTags(query, true)] });
@@ -280,8 +297,9 @@ export class Client implements BcpAtomicSwapConnection {
     return res.txs.map(mapper);
   }
 
-  // listenTx returns a stream of all transactions that match
-  // the tags from the present moment on
+  /**
+   * A stream of all transactions that match the tags from the present moment on
+   */
   public listenTx(tags: ReadonlyArray<Tag>): Stream<ConfirmedTransaction> {
     const chainId = this.chainId();
     const txs = this.tmClient.subscribeTx(tags);
@@ -297,9 +315,12 @@ export class Client implements BcpAtomicSwapConnection {
     return txs.map(mapper);
   }
 
-  // liveTx does a search and then subscribes to all future changes.
-  // It returns a stream starting the array of all existing transactions
-  // and then continuing with live feeds
+  /**
+   * Does a search and then subscribes to all future changes.
+   *
+   * It returns a stream starting the array of all existing transactions
+   * and then continuing with live feeds
+   */
   public liveTx(txQuery: TxQuery): Stream<ConfirmedTransaction> {
     const history = streamPromise(this.searchTx(txQuery));
     const updates = this.listenTx(txQuery.tags);
@@ -310,8 +331,9 @@ export class Client implements BcpAtomicSwapConnection {
     return this.tmClient.subscribeNewBlockHeader().map(getHeaderEventHeight);
   }
 
-  // changeTx emits the blockheight for every block where a
-  // tx matching these tags is emitted
+  /**
+   * Emits the blockheight for every block where a tx matching these tags is emitted
+   */
   public changeTx(tags: ReadonlyArray<Tag>): Stream<number> {
     return this.tmClient
       .subscribeTx(tags)
@@ -319,18 +341,23 @@ export class Client implements BcpAtomicSwapConnection {
       .filter(onChange<number>());
   }
 
-  // changeBalance is a helper that triggers if the balance ever changes
+  /**
+   * A helper that triggers if the balance ever changes
+   */
   public changeBalance(addr: Address): Stream<number> {
     return this.changeTx([bnsFromOrToTag(addr)]);
   }
 
-  // changeNonce is a helper that triggers if the nonce every changes
+  /**
+   * A helper that triggers if the nonce every changes
+   */
   public changeNonce(addr: Address): Stream<number> {
     return this.changeTx([bnsNonceTag(addr)]);
   }
 
-  // watchAccount gets current balance and emits an update every time
-  // it changes
+  /**
+   * Gets current balance and emits an update every time it changes
+   */
   public watchAccount(account: BcpAccountQuery): Stream<BcpAccount | undefined> {
     if (!isAddressQuery(account)) {
       throw new Error("watchAccount requires an address, not name, to watch");
@@ -350,8 +377,9 @@ export class Client implements BcpAtomicSwapConnection {
     );
   }
 
-  // watchNonce gets current nonce and emits an update every time
-  // it changes
+  /**
+   * Gets current nonce and emits an update every time it changes
+   */
   public watchNonce(account: BcpAccountQuery): Stream<BcpNonce | undefined> {
     if (!isAddressQuery(account)) {
       throw new Error("watchNonce requires an address, not name, to watch");
@@ -376,7 +404,11 @@ export class Client implements BcpAtomicSwapConnection {
   }
 }
 
-// this is pulled out to be used in static initialzers as well
+/**
+ * Performs a query
+ *
+ * This is pulled out to be used in static initialzers as well
+ */
 async function performQuery(
   tmClient: TendermintClient,
   path: string,
