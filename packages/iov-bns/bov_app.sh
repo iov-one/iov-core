@@ -1,6 +1,6 @@
 #!/bin/bash
 set -o errexit -o nounset -o pipefail
-which shellcheck > /dev/null && shellcheck "$0"
+command -v shellcheck > /dev/null && shellcheck "$0"
 
 TM_VERSION=${TM_VERSION:-0.21.0}
 VERSION=${BOV_VERSION:-v0.5.1}
