@@ -3,7 +3,12 @@ import { As } from "type-tagger";
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { ChainId, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types";
 
-import { Ed25519KeyringEntry, Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
+import {
+  Ed25519HdWallet,
+  Ed25519KeyringEntry,
+  Ed25519SimpleAddressKeyringEntry,
+  Secp256k1HdWallet,
+} from "./keyring-entries";
 import { ValueAndUpdates } from "./valueandupdates";
 
 export type KeyringEntrySerializationString = string & As<"keyring-entry-serialization">;
@@ -56,10 +61,12 @@ export class Keyring {
 
   private static readonly deserializationRegistry = new Map([
     ["ed25519", (data: KeyringEntrySerializationString) => new Ed25519KeyringEntry(data)],
+    ["ed25519-hd", (data: KeyringEntrySerializationString) => new Ed25519HdWallet(data)],
     [
       "ed25519-simpleaddress",
       (data: KeyringEntrySerializationString) => new Ed25519SimpleAddressKeyringEntry(data),
     ],
+    ["secp256k1-hd", (data: KeyringEntrySerializationString) => new Secp256k1HdWallet(data)],
   ] as ReadonlyArray<[string, KeyringEntryDeserializer]>);
 
   private static deserializeKeyringEntry(serializedEntry: KeyringEntrySerialization): KeyringEntry {
@@ -152,7 +159,7 @@ export interface KeyringEntry {
   readonly setLabel: (label: string | undefined) => void;
 
   // createIdentity will create one new identity
-  readonly createIdentity: () => Promise<LocalIdentity>;
+  readonly createIdentity: (options?: any) => Promise<LocalIdentity>;
 
   // Sets a local label associated with the public identity to be displayed in the UI.
   // To clear a label, set it to undefined

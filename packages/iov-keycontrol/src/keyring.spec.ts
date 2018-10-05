@@ -1,7 +1,7 @@
 import { Encoding } from "@iov/encoding";
 
 import { Keyring, KeyringSerializationString } from "./keyring";
-import { Ed25519KeyringEntry, Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
+import { Ed25519HdWallet, Ed25519KeyringEntry, Ed25519SimpleAddressKeyringEntry, Secp256k1HdWallet } from "./keyring-entries";
 
 const { fromHex } = Encoding;
 
@@ -160,6 +160,20 @@ describe("Keyring", () => {
     expect(keyring.getEntries()[3].getIdentities()[1]).toEqual(i4b);
     expect(keyring.getEntries()[3].getIdentities()[2]).toEqual(i4c);
     expect(keyring.getEntries()[3].getIdentities()[3]).toEqual(i4d);
+  });
+
+  it("supports all basic entry types by default", () => {
+    const keyring = new Keyring();
+    keyring.add(new Ed25519KeyringEntry());
+    keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+    keyring.add(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+    keyring.add(Secp256k1HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+
+    expect(() => {
+      const serialized = keyring.serialize();
+      // tslint:disable-next-line:no-unused-expression
+      new Keyring(serialized);
+    }).not.toThrow();
   });
 
   it("can be cloned", () => {

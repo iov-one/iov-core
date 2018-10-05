@@ -39,7 +39,7 @@ export interface KeyringEntry {
     readonly label: ValueAndUpdates<string | undefined>;
     readonly id: KeyringEntryId;
     readonly setLabel: (label: string | undefined) => void;
-    readonly createIdentity: () => Promise<LocalIdentity>;
+    readonly createIdentity: (options?: any) => Promise<LocalIdentity>;
     readonly setIdentityLabel: (identity: PublicIdentity, label: string | undefined) => void;
     readonly getIdentities: () => ReadonlyArray<LocalIdentity>;
     readonly canSign: ValueAndUpdates<boolean>;
