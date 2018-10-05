@@ -159,7 +159,7 @@ export interface KeyringEntry {
   readonly setLabel: (label: string | undefined) => void;
 
   // createIdentity will create one new identity
-  readonly createIdentity: () => Promise<LocalIdentity>;
+  readonly createIdentity: (options?: any) => Promise<LocalIdentity>;
 
   // Sets a local label associated with the public identity to be displayed in the UI.
   // To clear a label, set it to undefined

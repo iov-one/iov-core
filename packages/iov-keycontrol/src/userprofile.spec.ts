@@ -4,11 +4,15 @@ import MemDownConstructor from "memdown";
 import { ReadonlyDate } from "readonly-date";
 
 import { Address, Nonce, PrehashType, SendTx, SignableBytes, SignedTransaction, SigningJob, TokenTicker, TransactionIdBytes, TransactionKind, TxCodec } from "@iov/bcp-types";
+import { Slip10RawIndex } from "@iov/crypto";
+import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { Keyring, KeyringEntryId } from "./keyring";
-import { Ed25519SimpleAddressKeyringEntry } from "./keyring-entries";
+import { Ed25519SimpleAddressKeyringEntry, Secp256k1HdWallet } from "./keyring-entries";
 import { UserProfile } from "./userprofile";
+
+const { fromHex } = Encoding;
 
 describe("UserProfile", () => {
   const defaultEncryptionPassword = "my super str0ng and super long password";
@@ -197,6 +201,17 @@ describe("UserProfile", () => {
 
     // nothing hapenned to the profile
     expect(profile.getIdentities(0).length).toEqual(0);
+  });
+
+  it("can create identities with options", async () => {
+    const profile = new UserProfile();
+    const entry = Secp256k1HdWallet.fromMnemonic("insect spirit promote illness clean damp dash divorce emerge elbow kangaroo enroll");
+    profile.addEntry(entry);
+
+    const path = [Slip10RawIndex.hardened(4321), Slip10RawIndex.normal(0)];
+    const identityFromPath = await profile.createIdentity(entry.id, path);
+
+    expect(identityFromPath.pubkey.data).toEqual(fromHex("0391d774120344c8fc02bf0e441cf41989d122b1b93cc6dd28e1d270b0d2c69139"));
   });
 
   it("can be stored", async () => {
