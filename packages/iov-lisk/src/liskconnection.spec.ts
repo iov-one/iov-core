@@ -100,6 +100,15 @@ describe("LiskConnection", () => {
     expect(account.data[0].balance[0].fractional).toEqual(48687542);
   });
 
+  it("returns empty list when getting an unused account", async () => {
+    const unusedAddress = Encoding.toAscii("5648777643193648871L") as Address;
+    const connection = await LiskConnection.establish(base);
+    const response = await connection.getAccount({ address: unusedAddress });
+    expect(response).toBeTruthy();
+    expect(response.data).toBeTruthy();
+    expect(response.data.length).toEqual(0);
+  });
+
   it("can get nonce", async () => {
     const connection = await LiskConnection.establish(base);
     const query: BcpAccountQuery = { address: Encoding.toAscii("15683599531721344316L") as Address };
