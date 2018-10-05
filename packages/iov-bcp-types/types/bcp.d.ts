@@ -70,6 +70,11 @@ export interface BcpConnection {
     readonly postTx: (tx: PostableBytes) => Promise<BcpTransactionResponse>;
     readonly getTicker: (ticker: TokenTicker) => Promise<BcpQueryEnvelope<BcpTicker>>;
     readonly getAllTickers: () => Promise<BcpQueryEnvelope<BcpTicker>>;
+    /**
+     * Get the current account information (e.g. balance)
+     *
+     * If an account is not found on the blockchain, an envelope with an empty data array is returned
+     */
     readonly getAccount: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpAccount>>;
     readonly getNonce: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpNonce>>;
     readonly watchAccount: (account: BcpAccountQuery) => Stream<BcpAccount | undefined>;

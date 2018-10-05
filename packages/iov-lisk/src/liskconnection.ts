@@ -134,18 +134,21 @@ export class LiskConnection implements BcpConnection {
       const result = await axios.get(url);
       const responseBody = result.data;
 
-      const account: BcpAccount = {
-        address: address,
-        name: undefined,
-        balance: [
-          {
-            sigFigs: constants.primaryTokenSigFigs,
-            tokenName: constants.primaryTokenName,
-            ...Parse.liskAmount(responseBody.data[0].balance),
-          },
-        ],
-      };
-      return dummyEnvelope([account]);
+      // here we are expecting 0 or 1 results
+      const accounts: ReadonlyArray<BcpAccount> = responseBody.data.map(
+        (item: any): BcpAccount => ({
+          address: address,
+          name: undefined,
+          balance: [
+            {
+              sigFigs: constants.primaryTokenSigFigs,
+              tokenName: constants.primaryTokenName,
+              ...Parse.liskAmount(item.balance),
+            },
+          ],
+        }),
+      );
+      return dummyEnvelope(accounts);
     } else {
       throw new Error("Query type not supported");
     }
