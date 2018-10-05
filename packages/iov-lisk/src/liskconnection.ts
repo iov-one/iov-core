@@ -134,6 +134,7 @@ export class LiskConnection implements BcpConnection {
       const result = await axios.get(url);
       const responseBody = result.data;
 
+      // here we are expecting 0 or 1 results
       const accounts: ReadonlyArray<BcpAccount> = responseBody.data.map(
         (item: any): BcpAccount => ({
           address: address,
