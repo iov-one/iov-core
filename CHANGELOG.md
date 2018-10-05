@@ -2,6 +2,21 @@
 
 ## 0.7.0 (not yet released)
 
+* @iov/lisk: new package to connect to the Lisk blockchain
+
+## 0.6.1
+
+* @iov/keycontrol: add Ed25519HdWallet and Secp256k1HdWallet that work like Ed25519SimpleAddressKeyringEntry but allow derivation of arbirtary SLIP-0010 paths
+* @iov/core: move ChainConnector into @iov/bcp-types to avoid new chains to depend on @iov/core
+* @iov/bcp-types: various refactorings to improve multi chain support
+
+Other notes
+
+* The new name for keyring entries is "wallet". A keyring contains multiple wallets. This transition was started
+  with the intoduction of Ed25519HdWallet and Secp256k1HdWallet and other incompatible API changes will follow in 0.7.
+* We welcome our first external code contributor @SpasZahariev! If you want to get familiar woth the codebase,
+  check the issues labeled with "good first issue".
+
 ## 0.6.0
 
 * @iov/core: expose Ed25519KeyringEntry
