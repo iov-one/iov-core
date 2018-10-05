@@ -136,9 +136,6 @@ describe("Integration tests with bov+tendermint", () => {
     const faucet = faucetId(profile);
     const faucetAddr = keyToAddress(faucet.pubkey);
 
-    const rcpt = await recipient(profile, 1);
-    const rcptAddr = keyToAddress(rcpt.pubkey);
-
     // can get the faucet by address (there is money)
     const source = await client.getAccount({ address: faucetAddr });
     expect(source.data.length).toEqual(1);
@@ -155,10 +152,11 @@ describe("Integration tests with bov+tendermint", () => {
     const nameAcct = namedSource.data[0];
     expect(nameAcct).toEqual(addrAcct);
 
-    // empty account has no results
-    const empty = await client.getAccount({ address: rcptAddr });
-    expect(empty).toBeTruthy();
-    expect(empty.data.length).toEqual(0);
+    // unused account has no results
+    const unusedAddress = Encoding.fromHex("010101020202030303040404050505050a0a0a0a") as Address;
+    const unused = await client.getAccount({ address: unusedAddress });
+    expect(unused).toBeTruthy();
+    expect(unused.data.length).toEqual(0);
 
     client.disconnect();
   });
