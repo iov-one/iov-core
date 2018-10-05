@@ -125,14 +125,8 @@ async function deriveAddress(wallet, a): Promise<Address> {
 
 async function getBalance(searchAddress: Address): Promise<any> {
   const connection = new LiskConnection("https://testnet.lisk.io/", liskTestnet);
-  // FIXME: this treats programming errors and network errors as non-existing address
-  // https://github.com/iov-one/iov-core/issues/386
-  try {
-    const response = await connection.getAccount({ address: searchAddress });
-    return response.data[0].balance[0];
-  } catch (error) {
-    return undefined;
-  }
+  const response = await connection.getAccount({ address: searchAddress });
+  return response.data.length > 0 ? response.data[0].balance[0] : undefined;
 }
 
 const wallet = Ed25519HdWallet.fromMnemonic("tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral");
