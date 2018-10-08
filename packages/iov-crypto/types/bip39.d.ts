@@ -1,6 +1,7 @@
 export declare class EnglishMnemonic {
     private static readonly mnemonicMatcher;
     private readonly data;
+    private readonly allowedWordsLengths;
     constructor(mnemonic: string);
     asString(): string;
 }
