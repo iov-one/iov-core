@@ -162,7 +162,7 @@ export class LiskConnection implements BcpConnection {
         address: address,
         // fake pubkey, we cannot always know this
         publicKey: {
-          algo: Algorithm.ED25519,
+          algo: Algorithm.Ed25519,
           data: new Uint8Array([]) as PublicKeyBytes,
         },
         nonce: generateNonce(),

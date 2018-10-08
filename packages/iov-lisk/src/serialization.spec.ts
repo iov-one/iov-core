@@ -101,7 +101,7 @@ describe("serializeTransaction", () => {
     const tx: SendTx = {
       chainId: liskTestnet as ChainId,
       signer: {
-        algo: Algorithm.ED25519,
+        algo: Algorithm.Ed25519,
         data: pubkey as PublicKeyBytes,
       },
       kind: TransactionKind.Send,
@@ -127,7 +127,7 @@ describe("serializeTransaction", () => {
     const tx: SendTx = {
       chainId: liskTestnet as ChainId,
       signer: {
-        algo: Algorithm.ED25519,
+        algo: Algorithm.Ed25519,
         data: pubkey as PublicKeyBytes,
       },
       kind: TransactionKind.Send,
@@ -154,7 +154,7 @@ describe("serializeTransaction", () => {
     const tx: SendTx = {
       chainId: liskTestnet as ChainId,
       signer: {
-        algo: Algorithm.ED25519,
+        algo: Algorithm.Ed25519,
         data: pubkey as PublicKeyBytes,
       },
       kind: TransactionKind.Send,
@@ -180,7 +180,7 @@ describe("serializeTransaction", () => {
     const tx: SendTx = {
       chainId: liskTestnet as ChainId,
       signer: {
-        algo: Algorithm.ED25519,
+        algo: Algorithm.Ed25519,
         data: pubkey as PublicKeyBytes,
       },
       kind: TransactionKind.Send,
@@ -202,7 +202,7 @@ describe("serializeTransaction", () => {
     const tx: SendTx = {
       chainId: liskTestnet as ChainId,
       signer: {
-        algo: Algorithm.ED25519,
+        algo: Algorithm.Ed25519,
         data: pubkey as PublicKeyBytes,
       },
       kind: TransactionKind.Send,
@@ -229,7 +229,7 @@ describe("transactionId", () => {
     const tx: SendTx = {
       chainId: liskTestnet as ChainId,
       signer: {
-        algo: Algorithm.ED25519,
+        algo: Algorithm.Ed25519,
         data: pubkey as PublicKeyBytes,
       },
       kind: TransactionKind.Send,
@@ -246,7 +246,7 @@ describe("transactionId", () => {
       primarySignature: {
         nonce: emptyNonce,
         publicKey: {
-          algo: Algorithm.ED25519,
+          algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
         signature: fromHex("26272829") as SignatureBytes,

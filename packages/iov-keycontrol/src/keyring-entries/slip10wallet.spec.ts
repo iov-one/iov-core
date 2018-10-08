@@ -90,11 +90,11 @@ describe("Slip10Wallet", () => {
 
       const identities = entry.getIdentities();
       expect(identities.length).toEqual(3);
-      expect(identities[0].pubkey.algo).toEqual(Algorithm.ED25519);
+      expect(identities[0].pubkey.algo).toEqual(Algorithm.Ed25519);
       expect(identities[0].pubkey.data).toEqual(newIdentity1.pubkey.data);
-      expect(identities[1].pubkey.algo).toEqual(Algorithm.ED25519);
+      expect(identities[1].pubkey.algo).toEqual(Algorithm.Ed25519);
       expect(identities[1].pubkey.data).toEqual(newIdentity2.pubkey.data);
-      expect(identities[2].pubkey.algo).toEqual(Algorithm.ED25519);
+      expect(identities[2].pubkey.algo).toEqual(Algorithm.Ed25519);
       expect(identities[2].pubkey.data).toEqual(newIdentity3.pubkey.data);
     }
   });
@@ -121,11 +121,11 @@ describe("Slip10Wallet", () => {
 
       const identities = entry.getIdentities();
       expect(identities.length).toEqual(3);
-      expect(identities[0].pubkey.algo).toEqual(Algorithm.SECP256K1);
+      expect(identities[0].pubkey.algo).toEqual(Algorithm.Secp256k1);
       expect(identities[0].pubkey.data).toEqual(newIdentity1.pubkey.data);
-      expect(identities[1].pubkey.algo).toEqual(Algorithm.SECP256K1);
+      expect(identities[1].pubkey.algo).toEqual(Algorithm.Secp256k1);
       expect(identities[1].pubkey.data).toEqual(newIdentity2.pubkey.data);
-      expect(identities[2].pubkey.algo).toEqual(Algorithm.SECP256K1);
+      expect(identities[2].pubkey.algo).toEqual(Algorithm.Secp256k1);
       expect(identities[2].pubkey.data).toEqual(newIdentity3.pubkey.data);
     }
   });

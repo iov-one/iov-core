@@ -1,8 +1,8 @@
 import { As } from "type-tagger";
 
 export enum Algorithm {
-  ED25519 = "ed25519",
-  SECP256K1 = "secp256k1",
+  Ed25519 = "ed25519",
+  Secp256k1 = "secp256k1",
 }
 
 export type PrivateKeyBytes = Uint8Array & As<"private-key">;

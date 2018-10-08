@@ -108,7 +108,7 @@ export const liskCodec: TxCodec = {
         chainId: chainId,
         fee: Parse.liskAmount(json.fee),
         signer: {
-          algo: Algorithm.ED25519,
+          algo: Algorithm.Ed25519,
           data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
         },
         ttl: undefined,
@@ -120,7 +120,7 @@ export const liskCodec: TxCodec = {
       primarySignature: {
         nonce: Parse.timeToNonce(Parse.fromLiskTimestamp(json.timestamp)),
         publicKey: {
-          algo: Algorithm.ED25519,
+          algo: Algorithm.Ed25519,
           data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
         },
         signature: Encoding.fromHex(json.signature) as SignatureBytes,

@@ -610,7 +610,7 @@ const decodePubkey = (data: RpcPubkey): PublicKeyBundle => {
   if (data.type === "AC26791624DE60") {
     // go-amino special code
     return {
-      algo: Algorithm.ED25519,
+      algo: Algorithm.Ed25519,
       data: Base64.decode(required(data.value)) as PublicKeyBytes,
     };
   }
@@ -625,7 +625,7 @@ const decodeSignature = (data: RpcSignature): SignatureBundle => {
   if (data.type === "6BF5903DA1DB28") {
     // go-amino special code
     return {
-      algo: Algorithm.ED25519,
+      algo: Algorithm.Ed25519,
       signature: Base64.decode(required(data.value)) as SignatureBytes,
     };
   }

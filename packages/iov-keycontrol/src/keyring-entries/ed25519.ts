@@ -55,9 +55,9 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   private static algorithmFromString(input: string): Algorithm {
     switch (input) {
       case "ed25519":
-        return Algorithm.ED25519;
+        return Algorithm.Ed25519;
       case "secp256k1":
-        return Algorithm.SECP256K1;
+        return Algorithm.Secp256k1;
       default:
         throw new Error("Unknown algorithm string found");
     }
@@ -95,7 +95,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
           Encoding.fromHex(record.privkey),
           Encoding.fromHex(record.localIdentity.pubkey.data),
         );
-        if (Ed25519KeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo) !== Algorithm.ED25519) {
+        if (Ed25519KeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo) !== Algorithm.Ed25519) {
           throw new Error("This keyring only supports ed25519 private keys");
         }
         const identity = this.buildLocalIdentity(
@@ -196,7 +196,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
   private buildLocalIdentity(bytes: PublicKeyBytes, label: string | undefined): LocalIdentity {
     const pubkey: PublicKeyBundle = {
-      algo: Algorithm.ED25519,
+      algo: Algorithm.Ed25519,
       data: bytes,
     };
     return {
