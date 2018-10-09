@@ -102,17 +102,17 @@ describe("UserProfile", () => {
 
   it("can add entries", () => {
     const profile = new UserProfile();
-    let entry1;
-    let entry2;
-    let entry3;
+    const entry1 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+    const entry2 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
+    const entry3 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
     expect(profile.wallets.value.length).toEqual(0);
     expect(profile.wallets.value.map(i => i.label)).toEqual([]);
-    profile.addEntry((entry1 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash")));
+    profile.addEntry(entry1);
     expect(profile.wallets.value.length).toEqual(1);
     expect(profile.wallets.value.map(i => i.label)).toEqual([undefined]);
     expect(profile.getIdentities(entry1.id)).toBeTruthy();
-    profile.addEntry((entry2 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil")));
-    profile.addEntry((entry3 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script")));
+    profile.addEntry(entry2);
+    profile.addEntry(entry3);
     expect(profile.wallets.value.length).toEqual(3);
     expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined, undefined]);
     expect(profile.getIdentities(entry1.id)).toBeTruthy();
@@ -122,10 +122,10 @@ describe("UserProfile", () => {
 
   it("can update entry labels", () => {
     const keyring = new Keyring();
-    let entry1;
-    let entry2;
-    keyring.add((entry1 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash")));
-    keyring.add((entry2 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash")));
+    const entry1 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+    const entry2 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+    keyring.add(entry1);
+    keyring.add(entry2);
     const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
     expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined]);
 
@@ -272,10 +272,10 @@ describe("UserProfile", () => {
 
   it("stored in and loaded from storage when containing special chars", async () => {
     const db = levelup(MemDownConstructor<string, string>());
-    let entry1;
+    const entry1 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
 
     const original = new UserProfile();
-    original.addEntry((entry1 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script")));
+    original.addEntry(entry1);
     original.setEntryLabel(entry1.id, "My secret 😛");
 
     await original.storeIn(db, defaultEncryptionPassword);
@@ -369,8 +369,8 @@ describe("UserProfile", () => {
   it("can sign and append signature", async () => {
     const createdAt = new ReadonlyDate(ReadonlyDate.now());
     const keyring = new Keyring();
-    let entry;
-    keyring.add((entry = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash")));
+    const entry = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+    keyring.add(entry);
     const mainIdentity = await keyring.getEntries()[0].createIdentity(HdPaths.simpleAddress(0));
     const profile = new UserProfile({ createdAt, keyring });
 
