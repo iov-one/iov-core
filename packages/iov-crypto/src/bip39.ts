@@ -18,8 +18,11 @@ export class EnglishMnemonic {
     }
 
     const words = mnemonic.split(" ");
-    if (words.length !== 12 && words.length !== 18 && words.length !== 24) {
-      throw new Error(`Invalid word count in mnemonic (allowed: 12, 18, 24 got: ${words.length})`);
+    const allowedWordsLengths: ReadonlyArray<number> = [12, 15, 18, 21, 24];
+    if (allowedWordsLengths.indexOf(words.length) === -1) {
+      throw new Error(
+        `Invalid word count in mnemonic (allowed: ${allowedWordsLengths} got: ${words.length})`,
+      );
     }
 
     for (const word of words) {
@@ -42,7 +45,9 @@ export class EnglishMnemonic {
 
 export class Bip39 {
   public static encode(entropy: Uint8Array): EnglishMnemonic {
-    if (entropy.length !== 16 && entropy.length !== 24 && entropy.length !== 32) {
+    const allowedEntropyLengths: ReadonlyArray<number> = [16, 20, 24, 28, 32];
+
+    if (allowedEntropyLengths.indexOf(entropy.length) === -1) {
       throw new Error("invalid input length");
     }
 
