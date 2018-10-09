@@ -60,8 +60,8 @@ describe("Integration tests with bov+tendermint", () => {
     return ids[0];
   };
 
-  const getNonce = async (client: BnsConnection, addr: Address): Promise<Nonce> => {
-    const data = (await client.getNonce({ address: addr })).data;
+  const getNonce = async (connection: BnsConnection, addr: Address): Promise<Nonce> => {
+    const data = (await connection.getNonce({ address: addr })).data;
     return data.length === 0 ? (Long.fromInt(0) as Nonce) : data[0].nonce;
   };
 
@@ -83,53 +83,53 @@ describe("Integration tests with bov+tendermint", () => {
 
   it("Can connect to tendermint", async () => {
     pendingWithoutBov();
-    const client = await BnsConnection.establish(tendermintUrl);
+    const connection = await BnsConnection.establish(tendermintUrl);
 
     // we should get a reasonable string here
-    const chainId = await client.chainId();
+    const chainId = await connection.chainId();
     expect(chainId).toBeTruthy();
     expect(chainId.length).toBeGreaterThan(6);
     expect(chainId.length).toBeLessThan(26);
 
     // we expect some block to have been created
-    const height = await client.height();
+    const height = await connection.height();
     expect(height).toBeGreaterThan(1);
 
-    client.disconnect();
+    connection.disconnect();
   });
 
   it("can disconnect from tendermint", async () => {
     pendingWithoutBov();
-    const client = await BnsConnection.establish(tendermintUrl);
-    const chainId = await client.chainId();
+    const connection = await BnsConnection.establish(tendermintUrl);
+    const chainId = await connection.chainId();
     expect(chainId).toBeTruthy();
-    client.disconnect();
+    connection.disconnect();
   });
 
   it("Can query all tickers", async () => {
     pendingWithoutBov();
-    const client = await BnsConnection.establish(tendermintUrl);
+    const connection = await BnsConnection.establish(tendermintUrl);
 
-    const tickers = await client.getAllTickers();
+    const tickers = await connection.getAllTickers();
     expect(tickers.data.length).toEqual(1);
     const ticker = tickers.data[0];
     expect(ticker.tokenTicker).toEqual(cash);
     expect(ticker.tokenName).toEqual("Main token of this chain");
     expect(ticker.sigFigs).toEqual(6);
 
-    client.disconnect();
+    connection.disconnect();
   });
 
   it("can get accpunt by address and name", async () => {
     pendingWithoutBov();
-    const client = await BnsConnection.establish(tendermintUrl);
+    const connection = await BnsConnection.establish(tendermintUrl);
 
     const profile = await userProfileWithFaucet();
     const faucet = faucetId(profile);
     const faucetAddr = keyToAddress(faucet.pubkey);
 
     // can get the faucet by address (there is money)
-    const responseFromAddress = await client.getAccount({ address: faucetAddr });
+    const responseFromAddress = await connection.getAccount({ address: faucetAddr });
     expect(responseFromAddress.data.length).toEqual(1);
     const addrAcct = responseFromAddress.data[0];
     expect(addrAcct.address).toEqual(faucetAddr);
@@ -139,49 +139,49 @@ describe("Integration tests with bov+tendermint", () => {
     expect(addrAcct.balance[0].whole).toBeGreaterThan(1000000);
 
     // can get the faucet by name, same result
-    const responseFromName = await client.getAccount({ name: "admin" });
+    const responseFromName = await connection.getAccount({ name: "admin" });
     expect(responseFromName.data.length).toEqual(1);
     const nameAcct = responseFromName.data[0];
     expect(nameAcct).toEqual(addrAcct);
 
-    client.disconnect();
+    connection.disconnect();
   });
 
   it("returns empty list when getting an unused account", async () => {
     pendingWithoutBov();
-    const client = await BnsConnection.establish(tendermintUrl);
+    const connection = await BnsConnection.establish(tendermintUrl);
 
     const unusedAddress = Encoding.fromHex("010101020202030303040404050505050a0a0a0a") as Address;
-    const response = await client.getAccount({ address: unusedAddress });
+    const response = await connection.getAccount({ address: unusedAddress });
     expect(response).toBeTruthy();
     expect(response.data).toBeTruthy();
     expect(response.data.length).toEqual(0);
 
-    client.disconnect();
+    connection.disconnect();
   });
 
   it("Can query empty nonce", async () => {
     pendingWithoutBov();
-    const client = await BnsConnection.establish(tendermintUrl);
+    const connection = await BnsConnection.establish(tendermintUrl);
 
     const profile = await userProfileWithFaucet();
     const rcpt = await recipient(profile, 1);
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // can get the faucet by address (there is money)
-    const nonce = await getNonce(client, rcptAddr);
+    const nonce = await getNonce(connection, rcptAddr);
     expect(nonce.toInt()).toEqual(0);
 
-    client.disconnect();
+    connection.disconnect();
   });
 
   it("Can send transaction", async () => {
     pendingWithoutBov();
-    const client = await BnsConnection.establish(tendermintUrl);
-    const chainId = await client.chainId();
+    const connection = await BnsConnection.establish(tendermintUrl);
+    const chainId = await connection.chainId();
     // store minHeight before sending the tx, so we can filter out
     // if we re-run the test, still only find one tx in search
-    // const minHeight = (await client.height()) - 1;
+    // const minHeight = (await connection.height()) - 1;
 
     const profile = await userProfileWithFaucet();
 
@@ -191,7 +191,7 @@ describe("Integration tests with bov+tendermint", () => {
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // check current nonce (should be 0, but don't fail if used by other)
-    const nonce = await getNonce(client, faucetAddr);
+    const nonce = await getNonce(connection, faucetAddr);
 
     // construct a sendtx, this is normally used in the IovWriter api
     const sendTx: SendTx = {
@@ -208,12 +208,12 @@ describe("Integration tests with bov+tendermint", () => {
     };
     const signed = await profile.signTransaction(0, faucet, sendTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
-    const post = await client.postTx(txBytes);
+    const post = await connection.postTx(txBytes);
     // FIXME: we really should add more info here, but this is in the spec
     expect(post.metadata.status).toBe(true);
 
     // we should be a little bit richer
-    const gotMoney = await client.getAccount({ address: rcptAddr });
+    const gotMoney = await connection.getAccount({ address: rcptAddr });
     expect(gotMoney).toBeTruthy();
     expect(gotMoney.data.length).toEqual(1);
     const paid = gotMoney.data[0];
@@ -225,12 +225,12 @@ describe("Integration tests with bov+tendermint", () => {
 
     // and the nonce should go up, to be at least one
     // (worrying about replay issues)
-    const fNonce = await getNonce(client, faucetAddr);
+    const fNonce = await getNonce(connection, faucetAddr);
     expect(fNonce.toInt()).toBeGreaterThanOrEqual(1);
 
     // now verify we can query the same tx back
     const txQuery = { tags: [bnsFromOrToTag(faucetAddr)] };
-    const search = await client.searchTx(txQuery);
+    const search = await connection.searchTx(txQuery);
     expect(search.length).toBeGreaterThanOrEqual(1);
     // make sure we get a valid signature
     const mine = search[search.length - 1];
@@ -244,15 +244,15 @@ describe("Integration tests with bov+tendermint", () => {
     expect(mine.txid).toBeDefined();
     expect(mine.txid.length).toBeGreaterThan(0);
 
-    client.disconnect();
+    connection.disconnect();
   });
 
   it("can get live block feed", async () => {
     pendingWithoutBov();
-    const client = await BnsConnection.establish(tendermintUrl);
+    const connection = await BnsConnection.establish(tendermintUrl);
 
     // get the next three block heights
-    const heights = asArray(client.changeBlock().take(3));
+    const heights = asArray(connection.changeBlock().take(3));
     await heights.finished();
 
     const nums = heights.value();
@@ -263,15 +263,15 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   const sendCash = async (
-    client: BnsConnection,
+    connection: BnsConnection,
     profile: UserProfile,
     faucet: PublicIdentity,
     rcptAddr: Address,
   ): Promise<BcpTransactionResponse> => {
     // construct a sendtx, this is normally used in the IovWriter api
-    const chainId = await client.chainId();
+    const chainId = await connection.chainId();
     const faucetAddr = keyToAddress(faucet.pubkey);
-    const nonce = await getNonce(client, faucetAddr);
+    const nonce = await getNonce(connection, faucetAddr);
     const sendTx: SendTx = {
       kind: TransactionKind.Send,
       chainId,
@@ -285,12 +285,12 @@ describe("Integration tests with bov+tendermint", () => {
     };
     const signed = await profile.signTransaction(0, faucet, sendTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
-    return client.postTx(txBytes);
+    return connection.postTx(txBytes);
   };
 
   it("can get live tx feed", async () => {
     pendingWithoutBov();
-    const client = await BnsConnection.establish(tendermintUrl);
+    const connection = await BnsConnection.establish(tendermintUrl);
     const profile = await userProfileWithFaucet();
 
     const faucet = faucetId(profile);
@@ -299,23 +299,23 @@ describe("Integration tests with bov+tendermint", () => {
 
     // make sure that we have no tx here
     const query: TxQuery = { tags: [bnsFromOrToTag(rcptAddr)] };
-    const origSearch = await client.searchTx(query);
+    const origSearch = await connection.searchTx(query);
     expect(origSearch.length).toEqual(0);
 
-    const post = await sendCash(client, profile, faucet, rcptAddr);
+    const post = await sendCash(connection, profile, faucet, rcptAddr);
     expect(post.metadata.status).toBe(true);
     const firstId = post.data.txid;
     expect(firstId).toBeDefined();
 
     // hmmm... there seems to be a lag here when Travis CI is heavily loaded...
     await sleep(50);
-    const middleSearch = await client.searchTx(query);
+    const middleSearch = await connection.searchTx(query);
     expect(middleSearch.length).toEqual(1);
 
     // live.value() maintains all transactions
-    const live = asArray(client.liveTx(query));
+    const live = asArray(connection.liveTx(query));
 
-    const secondPost = await sendCash(client, profile, faucet, rcptAddr);
+    const secondPost = await sendCash(connection, profile, faucet, rcptAddr);
     expect(secondPost.metadata.status).toBe(true);
     const secondId = secondPost.data.txid;
     expect(secondId).toBeDefined();
@@ -323,7 +323,7 @@ describe("Integration tests with bov+tendermint", () => {
     // now, let's make sure it is picked up in the search
     // hmmm... there seems to be a lag here when Travis CI is heavily loaded...
     await sleep(50);
-    const afterSearch = await client.searchTx(query);
+    const afterSearch = await connection.searchTx(query);
     expect(afterSearch.length).toEqual(2);
     // make sure we have unique, defined txids
     const txIds = afterSearch.map(tx => tx.txid);
@@ -340,12 +340,12 @@ describe("Integration tests with bov+tendermint", () => {
     expect(live.value()[0].txid).toEqual(afterSearch[0].txid);
     expect(live.value()[1].txid).toEqual(afterSearch[1].txid);
 
-    client.disconnect();
+    connection.disconnect();
   });
 
   it("can provide change feeds", async () => {
     pendingWithoutBov();
-    const client = await BnsConnection.establish(tendermintUrl);
+    const connection = await BnsConnection.establish(tendermintUrl);
     const profile = await userProfileWithFaucet();
 
     const faucet = faucetId(profile);
@@ -354,17 +354,17 @@ describe("Integration tests with bov+tendermint", () => {
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // let's watch for all changes, capture them in arrays
-    const balanceFaucet = asArray(client.changeBalance(faucetAddr));
-    const balanceRcpt = asArray(client.changeBalance(rcptAddr));
-    const nonceFaucet = asArray(client.changeNonce(faucetAddr));
-    const nonceRcpt = asArray(client.changeNonce(rcptAddr));
+    const balanceFaucet = asArray(connection.changeBalance(faucetAddr));
+    const balanceRcpt = asArray(connection.changeBalance(rcptAddr));
+    const nonceFaucet = asArray(connection.changeNonce(faucetAddr));
+    const nonceRcpt = asArray(connection.changeNonce(rcptAddr));
 
-    const post = await sendCash(client, profile, faucet, rcptAddr);
+    const post = await sendCash(connection, profile, faucet, rcptAddr);
     expect(post.metadata.status).toBe(true);
     const first = post.metadata.height;
     expect(first).toBeDefined();
 
-    const secondPost = await sendCash(client, profile, faucet, rcptAddr);
+    const secondPost = await sendCash(connection, profile, faucet, rcptAddr);
     expect(secondPost.metadata.status).toBe(true);
     const second = secondPost.metadata.height;
     expect(second).toBeDefined();
@@ -383,13 +383,13 @@ describe("Integration tests with bov+tendermint", () => {
     // make sure proper values
     expect(balanceFaucet.value()).toEqual([first!, second!]);
 
-    client.disconnect();
+    connection.disconnect();
   });
 
   // make sure we can get a reactive account balance (as well as nonce)
   it("can watch accounts", async () => {
     pendingWithoutBov();
-    const client = await BnsConnection.establish(tendermintUrl);
+    const connection = await BnsConnection.establish(tendermintUrl);
     const profile = await userProfileWithFaucet();
 
     const faucet = faucetId(profile);
@@ -398,11 +398,11 @@ describe("Integration tests with bov+tendermint", () => {
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // let's watch for all changes, capture them in a value sink
-    const faucetAcct = lastValue<BcpAccount | undefined>(client.watchAccount({ address: faucetAddr }));
-    const rcptAcct = lastValue<BcpAccount | undefined>(client.watchAccount({ address: rcptAddr }));
+    const faucetAcct = lastValue<BcpAccount | undefined>(connection.watchAccount({ address: faucetAddr }));
+    const rcptAcct = lastValue<BcpAccount | undefined>(connection.watchAccount({ address: rcptAddr }));
 
-    const faucetNonce = lastValue<BcpNonce | undefined>(client.watchNonce({ address: faucetAddr }));
-    const rcptNonce = lastValue<BcpNonce | undefined>(client.watchNonce({ address: rcptAddr }));
+    const faucetNonce = lastValue<BcpNonce | undefined>(connection.watchNonce({ address: faucetAddr }));
+    const rcptNonce = lastValue<BcpNonce | undefined>(connection.watchNonce({ address: rcptAddr }));
 
     // give it a chance to get initial feed before checking and proceeding
     await sleep(100);
@@ -422,7 +422,7 @@ describe("Integration tests with bov+tendermint", () => {
     expect(origNonce.toNumber()).toBeGreaterThan(0);
 
     // send some cash and see if they update...
-    const post = await sendCash(client, profile, faucet, rcptAddr);
+    const post = await sendCash(connection, profile, faucet, rcptAddr);
     expect(post.metadata.status).toBe(true);
 
     // give it a chance to get updates before checking and proceeding
@@ -449,13 +449,13 @@ describe("Integration tests with bov+tendermint", () => {
     expect(finalNonce).toEqual(origNonce.add(1));
 
     // clean up with disconnect at the end...
-    client.disconnect();
+    connection.disconnect();
   });
 
   it("Can start atomic swap", async () => {
     pendingWithoutBov();
-    const client = await BnsConnection.establish(tendermintUrl);
-    const chainId = await client.chainId();
+    const connection = await BnsConnection.establish(tendermintUrl);
+    const chainId = await connection.chainId();
 
     const profile = await userProfileWithFaucet();
 
@@ -465,12 +465,12 @@ describe("Integration tests with bov+tendermint", () => {
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // check current nonce (should be 0, but don't fail if used by other)
-    const nonce = await getNonce(client, faucetAddr);
+    const nonce = await getNonce(connection, faucetAddr);
 
     const preimage = Encoding.toAscii("my top secret phrase... keep it on the down low ;)");
     const hash = new Sha256(preimage).digest();
 
-    const initSwaps = await client.getSwap({ recipient: rcptAddr });
+    const initSwaps = await connection.getSwap({ recipient: rcptAddr });
     expect(initSwaps.data.length).toEqual(0);
 
     // construct a sendtx, this is normally used in the IovWriter api
@@ -492,7 +492,7 @@ describe("Integration tests with bov+tendermint", () => {
 
     const signed = await profile.signTransaction(0, faucet, swapOfferTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
-    const post = await client.postTx(txBytes);
+    const post = await connection.postTx(txBytes);
     // FIXME: we really should add more info here, but this is in the spec
     expect(post.metadata.status).toBe(true);
     const txHeight = post.metadata.height;
@@ -505,7 +505,7 @@ describe("Integration tests with bov+tendermint", () => {
     expect(txid.length).toBe(20);
 
     // now query by the txid
-    const search = await client.searchTx({ hash: txid, tags: [] });
+    const search = await connection.searchTx({ hash: txid, tags: [] });
     expect(search.length).toEqual(1);
     // make sure we get he same tx loaded
     const loaded = search[0];
@@ -524,29 +524,29 @@ describe("Integration tests with bov+tendermint", () => {
     const querySwapRecipient: BcpSwapQuery = { recipient: rcptAddr };
     const querySwapHash: BcpSwapQuery = { hashlock: hash };
 
-    // ----- client.searchTx() -----
+    // ----- connection.searchTx() -----
     // we should be able to find the transaction through quite a number of tag queries
 
-    const txById = await client.searchTx({ tags: [bnsSwapQueryTags(querySwapId)] });
+    const txById = await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapId)] });
     expect(txById.length).toEqual(1);
     expect(txById[0].txid).toEqual(txid);
 
-    const txBySender = await client.searchTx({ tags: [bnsSwapQueryTags(querySwapSender)] });
+    const txBySender = await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapSender)] });
     expect(txBySender.length).toEqual(1);
     expect(txBySender[0].txid).toEqual(txid);
 
-    const txByRecipient = await client.searchTx({ tags: [bnsSwapQueryTags(querySwapRecipient)] });
+    const txByRecipient = await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapRecipient)] });
     expect(txByRecipient.length).toEqual(1);
     expect(txByRecipient[0].txid).toEqual(txid);
 
-    const txByHash = await client.searchTx({ tags: [bnsSwapQueryTags(querySwapHash)] });
+    const txByHash = await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapHash)] });
     expect(txByHash.length).toEqual(1);
     expect(txByHash[0].txid).toEqual(txid);
 
-    // ----- client.getSwap() -------
+    // ----- connection.getSwap() -------
 
     // we can also swap by id (returned by the transaction result)
-    const idSwap = await client.getSwap(querySwapId);
+    const idSwap = await connection.getSwap(querySwapId);
     expect(idSwap.data.length).toEqual(1);
 
     const swap = idSwap.data[0];
@@ -565,31 +565,31 @@ describe("Integration tests with bov+tendermint", () => {
     expect(swapData.hashlock).toEqual(hash);
 
     // we can get the swap by the recipient
-    const rcptSwap = await client.getSwap(querySwapRecipient);
+    const rcptSwap = await connection.getSwap(querySwapRecipient);
     expect(rcptSwap.data.length).toEqual(1);
     expect(rcptSwap.data[0]).toEqual(swap);
 
     // we can also get it by the sender
-    const sendSwap = await client.getSwap(querySwapSender);
+    const sendSwap = await connection.getSwap(querySwapSender);
     expect(sendSwap.data.length).toEqual(1);
     expect(sendSwap.data[0]).toEqual(swap);
 
     // we can also get it by the hash
-    const hashSwap = await client.getSwap(querySwapHash);
+    const hashSwap = await connection.getSwap(querySwapHash);
     expect(hashSwap.data.length).toEqual(1);
     expect(hashSwap.data[0]).toEqual(swap);
   });
 
   const openSwap = async (
-    client: BnsConnection,
+    connection: BnsConnection,
     profile: UserProfile,
     sender: PublicIdentity,
     rcptAddr: Address,
     preimage: Uint8Array,
   ): Promise<BcpTransactionResponse> => {
     // construct a swapOfferTx, sign and post to the chain
-    const chainId = await client.chainId();
-    const nonce = await getNonce(client, keyToAddress(sender.pubkey));
+    const chainId = await connection.chainId();
+    const nonce = await getNonce(connection, keyToAddress(sender.pubkey));
     const swapOfferTx: SwapOfferTx = {
       kind: TransactionKind.SwapOffer,
       chainId,
@@ -607,19 +607,19 @@ describe("Integration tests with bov+tendermint", () => {
     };
     const signed = await profile.signTransaction(0, sender, swapOfferTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
-    return client.postTx(txBytes);
+    return connection.postTx(txBytes);
   };
 
   const claimSwap = async (
-    client: BnsConnection,
+    connection: BnsConnection,
     profile: UserProfile,
     sender: PublicIdentity,
     swapId: SwapIdBytes,
     preimage: Uint8Array,
   ): Promise<BcpTransactionResponse> => {
     // construct a swapOfferTx, sign and post to the chain
-    const chainId = await client.chainId();
-    const nonce = await getNonce(client, keyToAddress(sender.pubkey));
+    const chainId = await connection.chainId();
+    const nonce = await getNonce(connection, keyToAddress(sender.pubkey));
     const swapClaimTx: SwapClaimTx = {
       kind: TransactionKind.SwapClaim,
       chainId,
@@ -629,12 +629,12 @@ describe("Integration tests with bov+tendermint", () => {
     };
     const signed = await profile.signTransaction(0, sender, swapClaimTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
-    return client.postTx(txBytes);
+    return connection.postTx(txBytes);
   };
 
   it("Get and watch atomic swap lifecycle", async () => {
     pendingWithoutBov();
-    const client = await BnsConnection.establish(tendermintUrl);
+    const connection = await BnsConnection.establish(tendermintUrl);
     const profile = await userProfileWithFaucet();
 
     const faucet = faucetId(profile);
@@ -651,20 +651,20 @@ describe("Integration tests with bov+tendermint", () => {
 
     // nothing to start with
     const rcptQuery = { recipient: rcptAddr };
-    const initSwaps = await client.getSwap(rcptQuery);
+    const initSwaps = await connection.getSwap(rcptQuery);
     expect(initSwaps.data.length).toEqual(0);
 
     // make two offers
-    const res1 = await openSwap(client, profile, faucet, rcptAddr, preimage1);
+    const res1 = await openSwap(connection, profile, faucet, rcptAddr, preimage1);
     const id1 = res1.data.result as SwapIdBytes;
     expect(id1.length).toEqual(8);
 
-    const res2 = await openSwap(client, profile, faucet, rcptAddr, preimage2);
+    const res2 = await openSwap(connection, profile, faucet, rcptAddr, preimage2);
     const id2 = res2.data.result as SwapIdBytes;
     expect(id2.length).toEqual(8);
 
     // find two open
-    const midSwaps = await client.getSwap(rcptQuery);
+    const midSwaps = await connection.getSwap(rcptQuery);
     expect(midSwaps.data.length).toEqual(2);
     const [open1, open2] = midSwaps.data;
     expect(open1.kind).toEqual(SwapState.Open);
@@ -673,19 +673,19 @@ describe("Integration tests with bov+tendermint", () => {
     expect(open2.data.id).toEqual(id2);
 
     // then claim, offer, claim - 2 closed, 1 open
-    await claimSwap(client, profile, faucet, id2, preimage1);
+    await claimSwap(connection, profile, faucet, id2, preimage1);
 
     // start to watch
-    const liveView = asArray(client.watchSwap(rcptQuery));
+    const liveView = asArray(connection.watchSwap(rcptQuery));
 
-    const res3 = await openSwap(client, profile, faucet, rcptAddr, preimage3);
+    const res3 = await openSwap(connection, profile, faucet, rcptAddr, preimage3);
     const id3 = res3.data.result as SwapIdBytes;
     expect(id3.length).toEqual(8);
 
-    await claimSwap(client, profile, faucet, id1, preimage1);
+    await claimSwap(connection, profile, faucet, id1, preimage1);
 
     // make sure we find two claims, one open
-    const finalSwaps = await client.getSwap({ recipient: rcptAddr });
+    const finalSwaps = await connection.getSwap({ recipient: rcptAddr });
     expect(finalSwaps.data.length).toEqual(3);
     const [open3, claim2, claim1] = finalSwaps.data;
     expect(open3.kind).toEqual(SwapState.Open);
