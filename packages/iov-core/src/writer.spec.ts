@@ -34,6 +34,7 @@ describe("IovWriter", () => {
     // this account has money in the genesis file (setup in docker)
     const mnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
     const cash = "CASH" as TokenTicker;
+    const entry = Ed25519HdWallet.fromMnemonic(mnemonic);
 
     // TODO: had issues with websockets? check again later, maybe they need to close at end?
     // max open connections??? (but 900 by default)
@@ -42,7 +43,7 @@ describe("IovWriter", () => {
 
     const userProfile = async (): Promise<UserProfile> => {
       const profile = new UserProfile();
-      profile.addEntry(Ed25519HdWallet.fromMnemonic(mnemonic));
+      profile.addEntry(entry);
       return profile;
     };
 
@@ -124,7 +125,7 @@ describe("IovWriter", () => {
       expect(twoChains[0]).not.toEqual(twoChains[1]);
 
       // make sure we can query with multiple registered chains
-      const faucet = await profile.createIdentity(0, HdPaths.simpleAddress(0));
+      const faucet = await profile.createIdentity(entry.id, HdPaths.simpleAddress(0));
       const faucetAddr = writer.keyToAddress(bovId, faucet.pubkey);
       const reader = writer.reader(bovId);
       const acct = await reader.getAccount({ address: faucetAddr });
