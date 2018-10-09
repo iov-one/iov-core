@@ -10,8 +10,8 @@ import { Result } from "./types";
  *
  * We can embed in iov-core process or use this in a BCP-relay
  */
-export declare class Client implements BcpAtomicSwapConnection {
-    static connect(url: string): Promise<Client>;
+export declare class BnsConnection implements BcpAtomicSwapConnection {
+    static establish(url: string): Promise<BnsConnection>;
     protected static initialize(tmClient: TendermintClient): Promise<InitData>;
     protected readonly tmClient: TendermintClient;
     protected readonly codec: TxReadCodec;
