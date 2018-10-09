@@ -31,6 +31,7 @@ const chainId = writer.chainIds()[0];
 const reader = writer.reader(chainId);
 
 const mainAddress = writer.keyToAddress(chainId, mainIdentity.pubkey);
+console.log("Sender address: " + mainAddress);
 console.log((await reader.getAccount({ address: mainAddress })).data[0].balance);
 
 const recipientAddress = "10145108642177909005R" as Address;
@@ -40,7 +41,6 @@ const sendTx: SendTx = {
   chainId: chainId,
   signer: mainIdentity.pubkey,
   recipient: recipientAddress,
-  memo: "We ❤️ developers – iov.one",
   amount: {
     whole: 1,
     fractional: 44550000,
@@ -62,10 +62,11 @@ for RISE manually, i.e. without the help of @iov/core.
 import { Ed25519KeyringEntry } from "@iov/core";
 import { passphraseToKeypair, generateNonce, riseCodec } from "@iov/rise";
 
-const riseTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
+const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
 
 const entry = new Ed25519KeyringEntry();
 const mainIdentity = await entry.createIdentity(await passphraseToKeypair("squeeze frog deposit chase sudden clutch fortune spring tone have snow column"));
+const mainAddress = riseCodec.keyToAddress(mainIdentity.pubkey);
 
 const recipientAddress = "10145108642177909005R" as Address;
 
@@ -74,7 +75,6 @@ const sendTx: SendTx = {
   chainId: riseTestnet,
   signer: mainIdentity.pubkey,
   recipient: recipientAddress,
-  memo: "We ❤️ developers – iov.one",
   amount: {
     whole: 1,
     fractional: 44550000,
@@ -96,8 +96,8 @@ const signedTransaction = {
   otherSignatures: [],
 };
 
-// Signed transacion you can POST to
-// https://testnet.rise.io/api/transactions
+// Signed transacion you can PUT to
+// https://twallet.rise.io/api/transactions
 const bytesToPost = Encoding.fromUtf8(riseCodec.bytesToPost(signedTransaction));
 console.log(bytesToPost);
 ```
@@ -116,7 +116,7 @@ import { Ed25519HdWallet } from "@iov/core";
 import { Slip10RawIndex } from "@iov/crypto";
 import { riseCodec, RISEConnection } from "@iov/rise";
 
-const riseTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
+const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
 
 async function deriveAddress(wallet, a): Promise<Address> {
   // 44'/134'/a' (see https://github.com/trezor/trezor-core/tree/master/docs/coins)

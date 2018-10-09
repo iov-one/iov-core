@@ -80,7 +80,7 @@ export class RiseConnection implements BcpConnection {
   }
 
   public async postTx(bytes: PostableBytes): Promise<BcpTransactionResponse> {
-    const transactionId = JSON.parse(Encoding.fromUtf8(bytes)).id as string;
+    const transactionId = JSON.parse(Encoding.fromUtf8(bytes)).transaction.id as string;
     if (!transactionId.match(/^[0-9]+$/)) {
       throw new Error("Invalid transaction ID");
     }
