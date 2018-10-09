@@ -102,46 +102,51 @@ describe("UserProfile", () => {
 
   it("can add entries", () => {
     const profile = new UserProfile();
+    let entry1;
+    let entry2;
+    let entry3;
     expect(profile.wallets.value.length).toEqual(0);
     expect(profile.wallets.value.map(i => i.label)).toEqual([]);
-    profile.addEntry(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+    profile.addEntry((entry1 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash")));
     expect(profile.wallets.value.length).toEqual(1);
     expect(profile.wallets.value.map(i => i.label)).toEqual([undefined]);
-    expect(profile.getIdentities(0)).toBeTruthy();
-    profile.addEntry(Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil"));
-    profile.addEntry(Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
+    expect(profile.getIdentities(entry1.id)).toBeTruthy();
+    profile.addEntry((entry2 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil")));
+    profile.addEntry((entry3 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script")));
     expect(profile.wallets.value.length).toEqual(3);
     expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined, undefined]);
-    expect(profile.getIdentities(0)).toBeTruthy();
-    expect(profile.getIdentities(1)).toBeTruthy();
-    expect(profile.getIdentities(2)).toBeTruthy();
+    expect(profile.getIdentities(entry1.id)).toBeTruthy();
+    expect(profile.getIdentities(entry2.id)).toBeTruthy();
+    expect(profile.getIdentities(entry3.id)).toBeTruthy();
   });
 
   it("can update entry labels", () => {
     const keyring = new Keyring();
-    keyring.add(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
-    keyring.add(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+    let entry1;
+    let entry2;
+    keyring.add((entry1 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash")));
+    keyring.add((entry2 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash")));
     const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
     expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined]);
 
-    profile.setEntryLabel(0, "foo1");
+    profile.setEntryLabel(entry1.id, "foo1");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["foo1", undefined]);
 
-    profile.setEntryLabel(1, "foo2");
+    profile.setEntryLabel(entry2.id, "foo2");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["foo1", "foo2"]);
 
-    profile.setEntryLabel(0, "bar1");
-    profile.setEntryLabel(1, "bar2");
+    profile.setEntryLabel(entry1.id, "bar1");
+    profile.setEntryLabel(entry2.id, "bar2");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["bar1", "bar2"]);
 
-    profile.setEntryLabel(1, "");
+    profile.setEntryLabel(entry2.id, "");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["bar1", ""]);
 
-    profile.setEntryLabel(0, "");
+    profile.setEntryLabel(entry1.id, "");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["", ""]);
 
-    profile.setEntryLabel(0, undefined);
-    profile.setEntryLabel(1, undefined);
+    profile.setEntryLabel(entry1.id, undefined);
+    profile.setEntryLabel(entry2.id, undefined);
     expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined]);
   });
 
@@ -162,31 +167,33 @@ describe("UserProfile", () => {
     // make sure we can query the ids if we didn't save them from creation
     expect(profile.wallets.value.map(i => i.id)).toEqual([id1, id2]);
 
-    // set the labels two different ways
-    profile.setEntryLabel(0, "first");
+    // set the labels
+    profile.setEntryLabel(id1, "first");
     profile.setEntryLabel(id2, "second");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["first", "second"]);
 
     // make some new ids
     await profile.createIdentity(id1, HdPaths.simpleAddress(0));
     const key = await profile.createIdentity(id2, HdPaths.simpleAddress(0));
-    await profile.createIdentity(1, HdPaths.simpleAddress(1));
-    expect(profile.getIdentities(0).length).toEqual(1);
+    await profile.createIdentity(id2, HdPaths.simpleAddress(1));
+    expect(profile.getIdentities(id1).length).toEqual(1);
     expect(profile.getIdentities(id2).length).toEqual(2);
 
     // set an identity label
-    profile.setIdentityLabel(1, key, "foobar");
+    profile.setIdentityLabel(id2, key, "foobar");
     const labels = profile.getIdentities(id2).map(x => x.label);
     expect(labels).toEqual(["foobar", undefined]);
   });
 
-  it("throws for non-existent id or index", () => {
+  it("throws for non-existent id", () => {
     const profile = new UserProfile();
 
     const entry1 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
     profile.addEntry(entry1);
 
-    expect(() => profile.getIdentities(2)).toThrowError(/Entry of index 2 does not exist in keyring/);
+    const entry2 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+
+    expect(() => profile.getIdentities(entry2.id)).toThrowError(`Entry of id ${entry2.id} does not exist in keyring`);
     expect(() => profile.getIdentities("balloon" as KeyringEntryId)).toThrowError(/Entry of id balloon does not exist in keyring/);
   });
 
@@ -194,14 +201,14 @@ describe("UserProfile", () => {
     const profile = new UserProfile();
     const newEntry = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
     profile.addEntry(newEntry);
-    expect(profile.getIdentities(0).length).toEqual(0);
+    expect(profile.getIdentities(newEntry.id).length).toEqual(0);
 
     // manipulate entry reference that has been added before
     await newEntry.createIdentity(HdPaths.simpleAddress(0));
     expect(newEntry.getIdentities().length).toEqual(1);
 
     // nothing hapenned to the profile
-    expect(profile.getIdentities(0).length).toEqual(0);
+    expect(profile.getIdentities(newEntry.id).length).toEqual(0);
   });
 
   it("can create identities with options", async () => {
@@ -265,10 +272,11 @@ describe("UserProfile", () => {
 
   it("stored in and loaded from storage when containing special chars", async () => {
     const db = levelup(MemDownConstructor<string, string>());
+    let entry1;
 
     const original = new UserProfile();
-    original.addEntry(Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
-    original.setEntryLabel(0, "My secret 😛");
+    original.addEntry((entry1 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script")));
+    original.setEntryLabel(entry1.id, "My secret 😛");
 
     await original.storeIn(db, defaultEncryptionPassword);
     const restored = await UserProfile.loadFrom(db, defaultEncryptionPassword);
@@ -295,7 +303,7 @@ describe("UserProfile", () => {
     await db.close();
   });
 
-  it("throws for non-existing entry index", async () => {
+  it("throws for non-existing entry id", async () => {
     const profile = new UserProfile();
 
     const fakeIdentity = { pubkey: { algo: Algorithm.Ed25519, data: new Uint8Array([0xaa]) as PublicKeyBytes } };
@@ -338,29 +346,31 @@ describe("UserProfile", () => {
       },
     };
 
-    // keyring entry of index 0 does not exist
+    // keyring entry of id bar does not exist
+    const entryId = "bar" as KeyringEntryId;
 
-    expect(() => profile.setEntryLabel(0, "foo")).toThrowError(/Entry of index 0 does not exist in keyring/);
-    expect(() => profile.getIdentities(0)).toThrowError(/Entry of index 0 does not exist in keyring/);
-    expect(() => profile.setIdentityLabel(0, fakeIdentity, "foo")).toThrowError(/Entry of index 0 does not exist in keyring/);
+    expect(() => profile.setEntryLabel(entryId, "foo")).toThrowError(/Entry of id bar does not exist in keyring/);
+    expect(() => profile.getIdentities(entryId)).toThrowError(/Entry of id bar does not exist in keyring/);
+    expect(() => profile.setIdentityLabel(entryId, fakeIdentity, "foo")).toThrowError(/Entry of id bar does not exist in keyring/);
     await profile
-      .createIdentity(0, HdPaths.simpleAddress(0))
+      .createIdentity(entryId, HdPaths.simpleAddress(0))
       .then(() => fail("Promise must not resolve"))
-      .catch(error => expect(error).toMatch(/Entry of index 0 does not exist in keyring/));
+      .catch(error => expect(error).toMatch(/Entry of id bar does not exist in keyring/));
     await profile
-      .signTransaction(0, fakeIdentity, fakeTransaction, fakeCodec, new Long(1, 2) as Nonce)
+      .signTransaction(entryId, fakeIdentity, fakeTransaction, fakeCodec, new Long(1, 2) as Nonce)
       .then(() => fail("Promise must not resolve"))
-      .catch(error => expect(error).toMatch(/Entry of index 0 does not exist in keyring/));
+      .catch(error => expect(error).toMatch(/Entry of id bar does not exist in keyring/));
     await profile
-      .appendSignature(0, fakeIdentity, fakeSignedTransaction, fakeCodec, new Long(1, 2) as Nonce)
+      .appendSignature(entryId, fakeIdentity, fakeSignedTransaction, fakeCodec, new Long(1, 2) as Nonce)
       .then(() => fail("Promise must not resolve"))
-      .catch(error => expect(error).toMatch(/Entry of index 0 does not exist in keyring/));
+      .catch(error => expect(error).toMatch(/Entry of id bar does not exist in keyring/));
   });
 
   it("can sign and append signature", async () => {
     const createdAt = new ReadonlyDate(ReadonlyDate.now());
     const keyring = new Keyring();
-    keyring.add(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+    let entry;
+    keyring.add((entry = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash")));
     const mainIdentity = await keyring.getEntries()[0].createIdentity(HdPaths.simpleAddress(0));
     const profile = new UserProfile({ createdAt, keyring });
 
@@ -398,7 +408,7 @@ describe("UserProfile", () => {
     };
     const nonce = new Long(0x11223344, 0x55667788) as Nonce;
 
-    const signedTransaction = await profile.signTransaction(0, mainIdentity, fakeTransaction, fakeCodec, nonce);
+    const signedTransaction = await profile.signTransaction(entry.id, mainIdentity, fakeTransaction, fakeCodec, nonce);
     expect(signedTransaction.transaction).toEqual(fakeTransaction);
     expect(signedTransaction.primarySignature).toBeTruthy();
     expect(signedTransaction.primarySignature.nonce).toEqual(nonce);
@@ -406,7 +416,7 @@ describe("UserProfile", () => {
     expect(signedTransaction.primarySignature.signature.length).toBeGreaterThan(0);
     expect(signedTransaction.otherSignatures).toEqual([]);
 
-    const doubleSignedTransaction = await profile.appendSignature(0, mainIdentity, signedTransaction, fakeCodec, nonce);
+    const doubleSignedTransaction = await profile.appendSignature(entry.id, mainIdentity, signedTransaction, fakeCodec, nonce);
     expect(doubleSignedTransaction.transaction).toEqual(fakeTransaction);
     expect(doubleSignedTransaction.primarySignature).toBeTruthy();
     expect(doubleSignedTransaction.primarySignature.nonce).toEqual(nonce);
