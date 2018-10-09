@@ -46,16 +46,17 @@ describe("Integration tests with bov+tendermint", () => {
   // TODO: had issues with websockets? check again later, maybe they need to close at end?
   // max open connections??? (but 900 by default)
   const tendermintUrl = "ws://localhost:22345";
+  const entry = Ed25519HdWallet.fromMnemonic(mnemonic);
 
   async function userProfileWithFaucet(): Promise<UserProfile> {
     const profile = new UserProfile();
-    profile.addEntry(Ed25519HdWallet.fromMnemonic(mnemonic));
-    await profile.createIdentity(0, HdPaths.simpleAddress(0));
+    profile.addEntry(entry);
+    await profile.createIdentity(entry.id, HdPaths.simpleAddress(0));
     return profile;
   }
 
   const faucetId = (profile: UserProfile): LocalIdentity => {
-    const ids = profile.getIdentities(0);
+    const ids = profile.getIdentities(entry.id);
     expect(ids.length).toBeGreaterThanOrEqual(1);
     return ids[0];
   };
@@ -71,7 +72,7 @@ describe("Integration tests with bov+tendermint", () => {
     if (n < 1) {
       throw new Error("Recipient count starts at 1");
     }
-    return profile.createIdentity(0, HdPaths.simpleAddress(n));
+    return profile.createIdentity(entry.id, HdPaths.simpleAddress(n));
   }
 
   it("Generate proper faucet address", async () => {
@@ -206,7 +207,7 @@ describe("Integration tests with bov+tendermint", () => {
         tokenTicker: cash,
       },
     };
-    const signed = await profile.signTransaction(0, faucet, sendTx, bnsCodec, nonce);
+    const signed = await profile.signTransaction(entry.id, faucet, sendTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     const post = await connection.postTx(txBytes);
     // FIXME: we really should add more info here, but this is in the spec
@@ -283,7 +284,7 @@ describe("Integration tests with bov+tendermint", () => {
         tokenTicker: cash,
       },
     };
-    const signed = await profile.signTransaction(0, faucet, sendTx, bnsCodec, nonce);
+    const signed = await profile.signTransaction(entry.id, faucet, sendTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     return connection.postTx(txBytes);
   };
@@ -490,7 +491,7 @@ describe("Integration tests with bov+tendermint", () => {
       preimage,
     };
 
-    const signed = await profile.signTransaction(0, faucet, swapOfferTx, bnsCodec, nonce);
+    const signed = await profile.signTransaction(entry.id, faucet, swapOfferTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     const post = await connection.postTx(txBytes);
     // FIXME: we really should add more info here, but this is in the spec
@@ -605,7 +606,7 @@ describe("Integration tests with bov+tendermint", () => {
       timeout: 5000,
       preimage,
     };
-    const signed = await profile.signTransaction(0, sender, swapOfferTx, bnsCodec, nonce);
+    const signed = await profile.signTransaction(entry.id, sender, swapOfferTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     return connection.postTx(txBytes);
   };
@@ -627,7 +628,7 @@ describe("Integration tests with bov+tendermint", () => {
       swapId,
       preimage,
     };
-    const signed = await profile.signTransaction(0, sender, swapClaimTx, bnsCodec, nonce);
+    const signed = await profile.signTransaction(entry.id, sender, swapClaimTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     return connection.postTx(txBytes);
   };
