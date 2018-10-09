@@ -33,7 +33,7 @@ const reader = writer.reader(chainId);
 const mainAddress = writer.keyToAddress(chainId, mainIdentity.pubkey);
 console.log((await reader.getAccount({ address: mainAddress })).data[0].balance);
 
-const recipientAddress = Encoding.toAscii("6076671634347365051L") as Address;
+const recipientAddress = "6076671634347365051L" as Address;
 
 const sendTx: SendTx = {
   kind: TransactionKind.Send,
@@ -67,7 +67,7 @@ const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f1
 const entry = new Ed25519KeyringEntry();
 const mainIdentity = await entry.createIdentity(await passphraseToKeypair("oxygen fall sure lava energy veteran enroll frown question detail include maximum"));
 
-const recipientAddress = Encoding.toAscii("6076671634347365051L") as Address;
+const recipientAddress = "6076671634347365051L" as Address;
 
 const sendTx: SendTx = {
   kind: TransactionKind.Send,
@@ -141,7 +141,7 @@ for (let a = 0; currentGapSize < gapLimit; a++) {
   const address = await deriveAddress(wallet, a);
   const balance = await getBalance(address);
   const balanceString = balance ? `${balance.whole + balance.fractional/100000000} LSK` : "unknown";
-  console.log(`${a}: ${Encoding.fromAscii(address)} (${balanceString})`);
+  console.log(`${a}: ${address} (${balanceString})`);
 
   if (balance) {
     currentGapSize = 0;
