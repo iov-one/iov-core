@@ -13,7 +13,7 @@ import {
 
 import * as codecImpl from "./codecimpl";
 import { encodeFullSig, encodeToken } from "./types";
-import { keyToAddress, preimageIdentifier } from "./util";
+import { decodeBnsAddress, keyToAddress, preimageIdentifier } from "./util";
 
 export const buildSignedTx = (tx: SignedTransaction): codecImpl.app.ITx => {
   const sigs: ReadonlyArray<FullSignature> = [tx.primarySignature, ...tx.otherSignatures];
@@ -48,8 +48,8 @@ export const buildMsg = (tx: UnsignedTransaction): codecImpl.app.ITx => {
 
 const buildSendTx = (tx: SendTx): codecImpl.app.ITx => ({
   sendMsg: codecImpl.cash.SendMsg.create({
-    src: keyToAddress(tx.signer),
-    dest: tx.recipient,
+    src: decodeBnsAddress(keyToAddress(tx.signer)),
+    dest: decodeBnsAddress(tx.recipient),
     amount: encodeToken(tx.amount),
     memo: tx.memo,
   }),
@@ -57,7 +57,7 @@ const buildSendTx = (tx: SendTx): codecImpl.app.ITx => ({
 
 const buildSetNameTx = (tx: SetNameTx): codecImpl.app.ITx => ({
   setNameMsg: codecImpl.namecoin.SetWalletNameMsg.create({
-    address: keyToAddress(tx.signer),
+    address: decodeBnsAddress(keyToAddress(tx.signer)),
     name: tx.name,
   }),
 });
@@ -73,9 +73,9 @@ const buildSwapOfferTx = (tx: SwapOfferTx): codecImpl.app.ITx => {
 
 const buildSwapCounterTx = (tx: SwapCounterTx): codecImpl.app.ITx => ({
   createEscrowMsg: codecImpl.escrow.CreateEscrowMsg.create({
-    sender: keyToAddress(tx.signer),
+    sender: decodeBnsAddress(keyToAddress(tx.signer)),
     arbiter: tx.hashCode,
-    recipient: tx.recipient,
+    recipient: decodeBnsAddress(tx.recipient),
     timeout: tx.timeout,
     amount: tx.amount.map(encodeToken),
   }),

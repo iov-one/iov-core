@@ -13,7 +13,7 @@ import {
 
 import { liskCodec } from "./liskcodec";
 
-const { fromHex, toAscii } = Encoding;
+const { fromHex } = Encoding;
 
 // use nethash as chain ID
 const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
@@ -27,7 +27,7 @@ describe("liskCodec", () => {
       algo: Algorithm.Ed25519,
       data: fromHex("f4852b270f76dc8b49bfa88de5906e81d3b001d23852f0e74ba60cac7180a184") as PublicKeyBytes,
     };
-    expect(liskCodec.keyToAddress(pubkey)).toEqual(toAscii("6076671634347365051L"));
+    expect(liskCodec.keyToAddress(pubkey)).toEqual("6076671634347365051L");
   });
 
   it("can create bytes to post", () => {
@@ -45,7 +45,7 @@ describe("liskCodec", () => {
         fractional: 23456789,
         tokenTicker: "LSK" as TokenTicker,
       },
-      recipient: toAscii("10010344879730196491L") as Address,
+      recipient: "10010344879730196491L" as Address,
     };
 
     const signed: SignedTransaction = {
@@ -118,7 +118,7 @@ describe("liskCodec", () => {
     expect(parsed.transaction.signer.data).toEqual(
       fromHex("06ad4341a609af2de837e1156f81849b05bf3c280940a9f45db76d09a3a3f2fa"),
     );
-    expect(parsed.transaction.recipient).toEqual(toAscii("6076671634347365051L"));
+    expect(parsed.transaction.recipient).toEqual("6076671634347365051L");
 
     expect(parsed.primarySignature.nonce).toEqual(Long.fromNumber(
       73863961 + liskEpochAsUnixTimestamp,

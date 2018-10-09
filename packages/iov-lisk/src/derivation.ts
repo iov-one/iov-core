@@ -1,5 +1,6 @@
 import Long from "long";
 
+import { Address } from "@iov/bcp-types";
 import { Ed25519, Ed25519Keypair, Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
@@ -17,10 +18,10 @@ export async function passphraseToKeypair(passphrase: string): Promise<Ed25519Ke
   return keypair;
 }
 
-export function pubkeyToAddress(pubkey: Uint8Array): Uint8Array {
+export function pubkeyToAddress(pubkey: Uint8Array): Address {
   // https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/lisk.cpp#L26
   const hash = new Sha256(pubkey).digest();
   const firstEightBytes = Array.from(hash.slice(0, 8));
   const addressString = Long.fromBytesLE(firstEightBytes, true).toString(10) + "L";
-  return Encoding.toAscii(addressString);
+  return addressString as Address;
 }

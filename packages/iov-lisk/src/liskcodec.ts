@@ -62,7 +62,7 @@ export const liskCodec: TxCodec = {
         const postableObject = {
           type: 0,
           amount: amount.toString(10),
-          recipientId: Encoding.fromAscii(signed.transaction.recipient),
+          recipientId: signed.transaction.recipient,
           senderPublicKey: Encoding.toHex(signed.primarySignature.publicKey.data),
           timestamp: liskTimestamp,
           fee: "10000000", // 0.1 LSK fixed
@@ -114,7 +114,7 @@ export const liskCodec: TxCodec = {
         ttl: undefined,
         kind: kind,
         amount: Parse.liskAmount(json.amount),
-        recipient: Encoding.toAscii(json.recipientId) as Address,
+        recipient: json.recipientId as Address,
         memo: json.asset.data,
       },
       primarySignature: {
@@ -139,6 +139,6 @@ export const liskCodec: TxCodec = {
    * These are bugs we have to deal with.
    */
   keyToAddress: (pubkey: PublicKeyBundle): Address => {
-    return pubkeyToAddress(pubkey.data) as Address;
+    return pubkeyToAddress(pubkey.data);
   },
 };

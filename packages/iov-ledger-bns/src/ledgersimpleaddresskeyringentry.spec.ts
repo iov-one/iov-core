@@ -178,7 +178,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     const tx: SendTx = {
       kind: TransactionKind.Send,
       chainId: "test-ledger-paths" as ChainId,
-      recipient: Encoding.fromHex("1234ABCD0000AA0000FFFF0000AA00001234ABCD") as RecipientId,
+      recipient: "1234ABCD0000AA0000FFFF0000AA00001234ABCD" as RecipientId,
       amount: {
         // 77.01001 PATH
         whole: 77,

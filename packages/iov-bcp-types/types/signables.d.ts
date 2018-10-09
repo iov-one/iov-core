@@ -22,7 +22,8 @@ export interface SignedTransaction<T extends UnsignedTransaction = UnsignedTrans
     readonly primarySignature: FullSignature;
     readonly otherSignatures: ReadonlyArray<FullSignature>;
 }
-export declare type Address = Uint8Array & As<"address">;
+/** A codec specific address encoded as a string */
+export declare type Address = string & As<"address">;
 export interface TxReadCodec {
     readonly parseBytes: (bytes: PostableBytes, chainId: ChainId) => SignedTransaction;
     readonly keyToAddress: (key: PublicKeyBundle) => Address;

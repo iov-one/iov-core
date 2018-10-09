@@ -14,8 +14,20 @@ import { Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 
-export const keyToAddress = (key: PublicKeyBundle) =>
-  new Sha256(keyToIdentifier(key)).digest().slice(0, 20) as Address;
+/** Encodes raw bytes into a printable address */
+export function encodeBnsAddress(bytes: Uint8Array): Address {
+  return Encoding.toHex(bytes).toUpperCase() as Address;
+}
+
+/** Decodes a printable address into raw bytes */
+export function decodeBnsAddress(address: Address): Uint8Array {
+  return Encoding.fromHex(address);
+}
+
+export function keyToAddress(key: PublicKeyBundle): Address {
+  const bytes = new Sha256(keyToIdentifier(key)).digest().slice(0, 20);
+  return encodeBnsAddress(bytes);
+}
 
 export const keyToIdentifier = (key: PublicKeyBundle) =>
   Uint8Array.from([...algoToPrefix(key.algo), ...key.data]);

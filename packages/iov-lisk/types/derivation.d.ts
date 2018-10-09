@@ -1,3 +1,4 @@
+import { Address } from "@iov/bcp-types";
 import { Ed25519Keypair } from "@iov/crypto";
 /**
  * Lisk-specific passphrase to Ed25519 keypair derivation
@@ -7,4 +8,4 @@ import { Ed25519Keypair } from "@iov/crypto";
  * in the user interface we work with plain strings here.
  */
 export declare function passphraseToKeypair(passphrase: string): Promise<Ed25519Keypair>;
-export declare function pubkeyToAddress(pubkey: Uint8Array): Uint8Array;
+export declare function pubkeyToAddress(pubkey: Uint8Array): Address;

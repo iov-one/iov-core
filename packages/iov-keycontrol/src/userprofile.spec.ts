@@ -308,7 +308,7 @@ describe("UserProfile", () => {
         fractional: 12,
         tokenTicker: "ETH" as TokenTicker,
       },
-      recipient: new Uint8Array([0x00, 0x11, 0x22]) as Address,
+      recipient: "AABBCC" as Address,
     };
     const fakeSignedTransaction: SignedTransaction = {
       transaction: fakeTransaction,
@@ -373,7 +373,7 @@ describe("UserProfile", () => {
         fractional: 12,
         tokenTicker: "ETH" as TokenTicker,
       },
-      recipient: new Uint8Array([0x00, 0x11, 0x22]) as Address,
+      recipient: "AABBCC" as Address,
     };
 
     const fakeCodec: TxCodec = {

@@ -1,5 +1,4 @@
 import { Address, BcpAccountQuery, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
-import { Encoding } from "@iov/encoding";
 import { Ed25519KeyringEntry } from "@iov/keycontrol";
 import { ChainId } from "@iov/tendermint-types";
 
@@ -92,9 +91,9 @@ describe("LiskConnection", () => {
     // Generate dead target address:
     // python3 -c 'import random; print("{}L".format(random.randint(0, 18446744073709551615)))'
     const connection = await LiskConnection.establish(base);
-    const query: BcpAccountQuery = { address: Encoding.toAscii("15683599531721344316L") as Address };
+    const query: BcpAccountQuery = { address: "15683599531721344316L" as Address };
     const account = await connection.getAccount(query);
-    expect(account.data[0].address).toEqual(Encoding.toAscii("15683599531721344316L"));
+    expect(account.data[0].address).toEqual("15683599531721344316L");
     expect(account.data[0].balance[0].tokenTicker).toEqual("LSK");
     expect(account.data[0].balance[0].sigFigs).toEqual(8);
     expect(account.data[0].balance[0].whole).toEqual(15);
@@ -102,7 +101,7 @@ describe("LiskConnection", () => {
   });
 
   it("returns empty list when getting an unused account", async () => {
-    const unusedAddress = Encoding.toAscii("5648777643193648871L") as Address;
+    const unusedAddress = "5648777643193648871L" as Address;
     const connection = await LiskConnection.establish(base);
     const response = await connection.getAccount({ address: unusedAddress });
     expect(response).toBeTruthy();
@@ -112,10 +111,10 @@ describe("LiskConnection", () => {
 
   it("can get nonce", async () => {
     const connection = await LiskConnection.establish(base);
-    const query: BcpAccountQuery = { address: Encoding.toAscii("15683599531721344316L") as Address };
+    const query: BcpAccountQuery = { address: "15683599531721344316L" as Address };
     const nonce = await connection.getNonce(query);
 
-    expect(nonce.data[0].address).toEqual(Encoding.toAscii("15683599531721344316L"));
+    expect(nonce.data[0].address).toEqual("15683599531721344316L");
     // nonce is current timestamp +/- one second
     expect(nonce.data[0].nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
     expect(nonce.data[0].nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
@@ -133,7 +132,7 @@ describe("LiskConnection", () => {
         ),
       );
 
-      const recipientAddress = Encoding.toAscii("6076671634347365051L") as Address;
+      const recipientAddress = "6076671634347365051L" as Address;
 
       const sendTx: SendTx = {
         kind: TransactionKind.Send,
