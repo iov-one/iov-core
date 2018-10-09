@@ -23,12 +23,16 @@ export class Ed25519SimpleAddressKeyringEntry extends Slip10Wallet {
 
   public readonly implementationId = "ed25519-simpleaddress" as KeyringEntryImplementationIdString;
 
-  public createIdentity(): Promise<LocalIdentity> {
-    const nextIndex = super.getIdentities().length;
+  /**
+   * Creates a simple address identity
+   *
+   * @param index an index i >= 0 as defined in https://github.com/iov-one/iov-core/blob/master/docs/KeyBase.md#simple-address-derivation
+   */
+  public createIdentity(index: number): Promise<LocalIdentity> {
     const purpose = 4804438;
     const path: ReadonlyArray<Slip10RawIndex> = [
       Slip10RawIndex.hardened(purpose),
-      Slip10RawIndex.hardened(nextIndex),
+      Slip10RawIndex.hardened(index),
     ];
     return super.createIdentityWithPath(path);
   }

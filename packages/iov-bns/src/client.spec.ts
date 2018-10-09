@@ -52,12 +52,12 @@ describe("Integration tests with bov+tendermint", () => {
   // max open connections??? (but 900 by default)
   const tendermintUrl = "ws://localhost:22345";
 
-  const userProfile = async (): Promise<UserProfile> => {
+  async function userProfileWithFaucet(): Promise<UserProfile> {
     const profile = new UserProfile();
     profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic(mnemonic));
-    await profile.createIdentity(0);
+    await profile.createIdentity(0, 0);
     return profile;
-  };
+  }
 
   const faucetId = (profile: UserProfile): LocalIdentity => {
     const ids = profile.getIdentities(0);
@@ -72,18 +72,15 @@ describe("Integration tests with bov+tendermint", () => {
 
   // recipient will make accounts if needed, returns path n
   // n must be >= 1
-  const recipient = async (profile: UserProfile, n: number): Promise<LocalIdentity> => {
+  async function recipient(profile: UserProfile, n: number): Promise<LocalIdentity> {
     if (n < 1) {
       throw new Error("Recipient count starts at 1");
     }
-    while (profile.getIdentities(0).length < n + 1) {
-      await profile.createIdentity(0);
-    }
-    return profile.getIdentities(0)[n];
-  };
+    return profile.createIdentity(0, n);
+  }
 
   it("Generate proper faucet address", async () => {
-    const profile = await userProfile();
+    const profile = await userProfileWithFaucet();
     const id = faucetId(profile);
     const addr = keyToAddress(id.pubkey);
     expect(addr).toEqual(expectedFaucetAddress);
@@ -132,7 +129,7 @@ describe("Integration tests with bov+tendermint", () => {
     pendingWithoutBov();
     const client = await Client.connect(tendermintUrl);
 
-    const profile = await userProfile();
+    const profile = await userProfileWithFaucet();
     const faucet = faucetId(profile);
     const faucetAddr = keyToAddress(faucet.pubkey);
 
@@ -172,7 +169,7 @@ describe("Integration tests with bov+tendermint", () => {
     pendingWithoutBov();
     const client = await Client.connect(tendermintUrl);
 
-    const profile = await userProfile();
+    const profile = await userProfileWithFaucet();
     const rcpt = await recipient(profile, 1);
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
@@ -191,7 +188,7 @@ describe("Integration tests with bov+tendermint", () => {
     // if we re-run the test, still only find one tx in search
     // const minHeight = (await client.height()) - 1;
 
-    const profile = await userProfile();
+    const profile = await userProfileWithFaucet();
 
     const faucet = faucetId(profile);
     const faucetAddr = keyToAddress(faucet.pubkey);
@@ -299,7 +296,7 @@ describe("Integration tests with bov+tendermint", () => {
   it("can get live tx feed", async () => {
     pendingWithoutBov();
     const client = await Client.connect(tendermintUrl);
-    const profile = await userProfile();
+    const profile = await userProfileWithFaucet();
 
     const faucet = faucetId(profile);
     const rcpt = await recipient(profile, 62);
@@ -354,7 +351,7 @@ describe("Integration tests with bov+tendermint", () => {
   it("can provide change feeds", async () => {
     pendingWithoutBov();
     const client = await Client.connect(tendermintUrl);
-    const profile = await userProfile();
+    const profile = await userProfileWithFaucet();
 
     const faucet = faucetId(profile);
     const faucetAddr = keyToAddress(faucet.pubkey);
@@ -398,7 +395,7 @@ describe("Integration tests with bov+tendermint", () => {
   it("can watch accounts", async () => {
     pendingWithoutBov();
     const client = await Client.connect(tendermintUrl);
-    const profile = await userProfile();
+    const profile = await userProfileWithFaucet();
 
     const faucet = faucetId(profile);
     const faucetAddr = keyToAddress(faucet.pubkey);
@@ -465,7 +462,7 @@ describe("Integration tests with bov+tendermint", () => {
     const client = await Client.connect(tendermintUrl);
     const chainId = await client.chainId();
 
-    const profile = await userProfile();
+    const profile = await userProfileWithFaucet();
 
     const faucet = faucetId(profile);
     const faucetAddr = keyToAddress(faucet.pubkey);
@@ -643,7 +640,7 @@ describe("Integration tests with bov+tendermint", () => {
   it("Get and watch atomic swap lifecycle", async () => {
     pendingWithoutBov();
     const client = await Client.connect(tendermintUrl);
-    const profile = await userProfile();
+    const profile = await userProfileWithFaucet();
 
     const faucet = faucetId(profile);
     const rcpt = await recipient(profile, 121);

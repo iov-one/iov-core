@@ -78,15 +78,15 @@ const { fromHex, toHex } = Encoding;
 
 // this creates two different public key identities, generated from the
 // first mnemonic using two different SLIP-0010 paths
-const id1a = await profile.createIdentity(0);
-const id1b = await profile.createIdentity(0);
+const id1a = await profile.createIdentity(0, 0);
+const id1b = await profile.createIdentity(0, 1);
 console.log(id1a);
 console.log(id1a.pubkey.algo, toHex(id1a.pubkey.data))
 console.log(id1b.pubkey.algo, toHex(id1b.pubkey.data))
 
 // this creates a different key from the second mnemonic,
 // this uses the same HD path as id1a, but different seed.
-const id2 = await profile.createIdentity(1);
+const id2 = await profile.createIdentity(1, 0);
 console.log(id2.pubkey.algo, toHex(id2.pubkey.data));
 
 // we can also add labels to the individual identies

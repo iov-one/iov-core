@@ -167,9 +167,9 @@ describe("UserProfile", () => {
     expect(profile.entryLabels.value).toEqual(["first", "second"]);
 
     // make some new ids
-    await profile.createIdentity(id1);
-    const key = await profile.createIdentity(id2);
-    await profile.createIdentity(1);
+    await profile.createIdentity(id1, 0);
+    const key = await profile.createIdentity(id2, 0);
+    await profile.createIdentity(1, 1);
     expect(profile.getIdentities(0).length).toEqual(1);
     expect(profile.getIdentities(id2).length).toEqual(2);
 
@@ -196,7 +196,7 @@ describe("UserProfile", () => {
     expect(profile.getIdentities(0).length).toEqual(0);
 
     // manipulate entry reference that has been added before
-    await newEntry.createIdentity();
+    await newEntry.createIdentity(0);
     expect(newEntry.getIdentities().length).toEqual(1);
 
     // nothing hapenned to the profile
@@ -343,7 +343,7 @@ describe("UserProfile", () => {
     expect(() => profile.getIdentities(0)).toThrowError(/Entry of index 0 does not exist in keyring/);
     expect(() => profile.setIdentityLabel(0, fakeIdentity, "foo")).toThrowError(/Entry of index 0 does not exist in keyring/);
     await profile
-      .createIdentity(0)
+      .createIdentity(0, 0)
       .then(() => fail("Promise must not resolve"))
       .catch(error => expect(error).toMatch(/Entry of index 0 does not exist in keyring/));
     await profile
@@ -360,7 +360,7 @@ describe("UserProfile", () => {
     const createdAt = new ReadonlyDate(ReadonlyDate.now());
     const keyring = new Keyring();
     keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
-    const mainIdentity = await keyring.getEntries()[0].createIdentity();
+    const mainIdentity = await keyring.getEntries()[0].createIdentity(0);
     const profile = new UserProfile({ createdAt, keyring });
 
     const fakeTransaction: SendTx = {
