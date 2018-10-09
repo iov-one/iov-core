@@ -22,7 +22,7 @@ import { asArray, lastValue } from "@iov/stream";
 import { TxQuery } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
-import { Client } from "./client";
+import { Client } from "./bnsconnection";
 import { bnsFromOrToTag, bnsSwapQueryTags } from "./tags";
 import { keyToAddress } from "./util";
 
