@@ -1,6 +1,6 @@
 import { SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { bnsConnector, bnsFromOrToTag } from "@iov/bns";
-import { Ed25519SimpleAddressKeyringEntry, UserProfile } from "@iov/keycontrol";
+import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 
 import { IovWriter } from "./writer";
 
@@ -42,7 +42,7 @@ describe("IovWriter", () => {
 
     const userProfile = async (): Promise<UserProfile> => {
       const profile = new UserProfile();
-      profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic(mnemonic));
+      profile.addEntry(Ed25519HdWallet.fromMnemonic(mnemonic));
       return profile;
     };
 
@@ -58,8 +58,8 @@ describe("IovWriter", () => {
       expect(writer.chainIds().length).toEqual(1);
       const chainId = writer.chainIds()[0];
 
-      const faucet = await profile.createIdentity(0, 0);
-      const recipient = await profile.createIdentity(0, 4);
+      const faucet = await profile.createIdentity(0, HdPaths.simpleAddress(0));
+      const recipient = await profile.createIdentity(0, HdPaths.simpleAddress(4));
       const recipientAddress = writer.keyToAddress(chainId, recipient.pubkey);
 
       // construct a sendtx, this mirrors the IovWriter api
@@ -124,7 +124,7 @@ describe("IovWriter", () => {
       expect(twoChains[0]).not.toEqual(twoChains[1]);
 
       // make sure we can query with multiple registered chains
-      const faucet = await profile.createIdentity(0, 0);
+      const faucet = await profile.createIdentity(0, HdPaths.simpleAddress(0));
       const faucetAddr = writer.keyToAddress(bovId, faucet.pubkey);
       const reader = writer.reader(bovId);
       const acct = await reader.getAccount({ address: faucetAddr });

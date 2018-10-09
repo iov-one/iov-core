@@ -17,12 +17,7 @@ import {
 } from "@iov/bcp-types";
 import { Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import {
-  Ed25519SimpleAddressKeyringEntry,
-  LocalIdentity,
-  PublicIdentity,
-  UserProfile,
-} from "@iov/keycontrol";
+import { Ed25519HdWallet, HdPaths, LocalIdentity, PublicIdentity, UserProfile } from "@iov/keycontrol";
 import { asArray, lastValue } from "@iov/stream";
 import { TxQuery } from "@iov/tendermint-types";
 
@@ -54,8 +49,8 @@ describe("Integration tests with bov+tendermint", () => {
 
   async function userProfileWithFaucet(): Promise<UserProfile> {
     const profile = new UserProfile();
-    profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic(mnemonic));
-    await profile.createIdentity(0, 0);
+    profile.addEntry(Ed25519HdWallet.fromMnemonic(mnemonic));
+    await profile.createIdentity(0, HdPaths.simpleAddress(0));
     return profile;
   }
 
@@ -76,7 +71,7 @@ describe("Integration tests with bov+tendermint", () => {
     if (n < 1) {
       throw new Error("Recipient count starts at 1");
     }
-    return profile.createIdentity(0, n);
+    return profile.createIdentity(0, HdPaths.simpleAddress(n));
   }
 
   it("Generate proper faucet address", async () => {

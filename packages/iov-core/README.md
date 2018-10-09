@@ -50,11 +50,11 @@ console.log(mnemonic24);
 Create a new profile with two entries:
 
 ```ts
-import { Ed25519SimpleAddressKeyringEntry, UserProfile} from '@iov/keycontrol';
+import { Ed25519HdWallet, UserProfile } from '@iov/keycontrol';
 
 const profile = new UserProfile();
-profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic(mnemonic12));
-profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic(mnemonic24));
+profile.addEntry(Ed25519HdWallet.fromMnemonic(mnemonic12));
+profile.addEntry(Ed25519HdWallet.fromMnemonic(mnemonic24));
 ```
 
 Inspect the profile:
@@ -73,20 +73,21 @@ profile.setEntryLabel(1, "24 words");
 Create identies on the two keyring entries (argument is index of the entry):
 
 ```ts
+import { HdPaths } from '@iov/keycontrol';
 import { Encoding } from '@iov/encoding';
 const { fromHex, toHex } = Encoding;
 
 // this creates two different public key identities, generated from the
 // first mnemonic using two different SLIP-0010 paths
-const id1a = await profile.createIdentity(0, 0);
-const id1b = await profile.createIdentity(0, 1);
+const id1a = await profile.createIdentity(0, HdPaths.simpleAddress(0));
+const id1b = await profile.createIdentity(0, HdPaths.simpleAddress(1));
 console.log(id1a);
 console.log(id1a.pubkey.algo, toHex(id1a.pubkey.data))
 console.log(id1b.pubkey.algo, toHex(id1b.pubkey.data))
 
 // this creates a different key from the second mnemonic,
 // this uses the same HD path as id1a, but different seed.
-const id2 = await profile.createIdentity(1, 0);
+const id2 = await profile.createIdentity(1, HdPaths.simpleAddress(0));
 console.log(id2.pubkey.algo, toHex(id2.pubkey.data));
 
 // we can also add labels to the individual identies

@@ -43,12 +43,12 @@ $ iov-cli
 
 ```
 > const profile = new UserProfile();
-> profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"))
+> profile.addEntry(Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"))
 
 > profile.getIdentities(0)
 []
 
-> const faucet = await profile.createIdentity(0, 0)
+> const faucet = await profile.createIdentity(0, HdPaths.simpleAddress(0))
 
 > faucet.pubkey
 { algo: 'ed25519',
@@ -71,7 +71,7 @@ $ iov-cli
 > const faucetAddress = writer.keyToAddress(chainId, faucet.pubkey);
 > (await reader.getAccount({ address: faucetAddress })).data[0].balance
 
-> const recipient = await profile.createIdentity(0, 1);
+> const recipient = await profile.createIdentity(0, HdPaths.simpleAddress(1));
 > const recipientAddress = writer.keyToAddress(chainId, recipient.pubkey);
 
 > .editor
@@ -102,7 +102,7 @@ const sendTx: SendTx = {
 > profile.entriesCount.value
 1
 
-> profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("organ wheat manage mirror wish truly tool trumpet since equip flight bracket"))
+> profile.addEntry(Ed25519HdWallet.fromMnemonic("organ wheat manage mirror wish truly tool trumpet since equip flight bracket"))
 
 > profile.entriesCount.value
 2
@@ -194,8 +194,8 @@ When using a Testnet, you can use the BovFaucet to receive tokens:
 > mnemonic
 'helmet album grow detail apology thank wire chef fame core private cargo'
 > const profile = new UserProfile();
-> profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic(mnemonic));
-> const me = await profile.createIdentity(0, 0);
+> profile.addEntry(Ed25519HdWallet.fromMnemonic(mnemonic));
+> const me = await profile.createIdentity(0, HdPaths.simpleAddress(0));
 
 > const writer = new IovWriter(profile);
 > await writer.addChain(bnsConnector("https://bov.friendnet-slow.iov.one"));
@@ -234,7 +234,7 @@ Do 1. and 2. like above
 ```
 > import { LedgerSimpleAddressKeyringEntry } from "@iov/ledger-bns";
 > const profile = new UserProfile();
-> profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral"))
+> profile.addEntry(Ed25519HdWallet.fromMnemonic("tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral"))
 > const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
 > ledgerEntry.startDeviceTracking();
 > profile.addEntry(ledgerEntry);
@@ -245,7 +245,7 @@ Do 1. and 2. like above
 > profile.getIdentities(1)
 []
 
-> const softwareIdentity = await profile.createIdentity(0, 0)
+> const softwareIdentity = await profile.createIdentity(0, HdPaths.simpleAddress(0))
 > const hardwareIdentity = await profile.createIdentity(1)
 
 > softwareIdentity.pubkey

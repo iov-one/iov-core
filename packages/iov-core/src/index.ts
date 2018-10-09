@@ -8,7 +8,7 @@ export { bnsConnector, bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "@io
 export {
   Ed25519HdWallet,
   Ed25519KeyringEntry,
-  Ed25519SimpleAddressKeyringEntry,
+  HdPaths,
   Keyring,
   KeyringEntry,
   KeyringEntryImplementationIdString,
