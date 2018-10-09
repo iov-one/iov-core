@@ -135,7 +135,7 @@ export class RiseConnection implements BcpConnection {
   public async getAccount(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>> {
     if (isAddressQuery(query)) {
       const address = query.address;
-      const url = this.baseUrl + `/api/accounts?address=${Encoding.fromAscii(address)}`;
+      const url = this.baseUrl + `/api/accounts?address=${address}`;
       const result = await axios.get(url);
       if (result.data.error) {
         return dummyEnvelope([]);
@@ -170,7 +170,7 @@ export class RiseConnection implements BcpConnection {
         address: address,
         // fake pubkey, we cannot always know this
         publicKey: {
-          algo: Algorithm.ED25519,
+          algo: Algorithm.Ed25519,
           data: new Uint8Array([]) as PublicKeyBytes,
         },
         nonce: generateNonce(),

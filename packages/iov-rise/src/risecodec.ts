@@ -62,7 +62,7 @@ export const riseCodec: TxCodec = {
         const postableObject = {
           type: 0,
           amount: amount.toNumber(),
-          recipientId: Encoding.fromAscii(signed.transaction.recipient),
+          recipientId: signed.transaction.recipient,
           senderPublicKey: Encoding.toHex(signed.primarySignature.publicKey.data),
           timestamp: liskTimestamp,
           fee: 10000000, // 0.1 RISE fixed
@@ -105,18 +105,18 @@ export const riseCodec: TxCodec = {
         chainId: chainId,
         fee: Parse.riseAmount(`${json.fee}`),
         signer: {
-          algo: Algorithm.ED25519,
+          algo: Algorithm.Ed25519,
           data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
         },
         ttl: undefined,
         kind: kind,
         amount: Parse.riseAmount(`${json.amount}`),
-        recipient: Encoding.toAscii(json.recipientId) as Address,
+        recipient: json.recipientId as Address,
       },
       primarySignature: {
         nonce: Parse.timeToNonce(Parse.fromRISETimestamp(json.timestamp)),
         publicKey: {
-          algo: Algorithm.ED25519,
+          algo: Algorithm.Ed25519,
           data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
         },
         signature: Encoding.fromHex(json.signature) as SignatureBytes,

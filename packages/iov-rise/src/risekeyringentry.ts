@@ -70,9 +70,9 @@ export class RISEKeyringEntry implements KeyringEntry {
   private static algorithmFromString(input: string): Algorithm {
     switch (input) {
       case "ed25519":
-        return Algorithm.ED25519;
+        return Algorithm.Ed25519;
       case "secp256k1":
-        return Algorithm.SECP256K1;
+        return Algorithm.Secp256k1;
       default:
         throw new Error("Unknown algorithm string found");
     }
@@ -158,7 +158,7 @@ export class RISEKeyringEntry implements KeyringEntry {
     const keypair = await passphraseToKeypair(passphrase);
 
     const pubkey = {
-      algo: Algorithm.ED25519,
+      algo: Algorithm.Ed25519,
       data: keypair.pubkey as PublicKeyBytes,
     };
     const identityId = RISEKeyringEntry.identityId({ pubkey });

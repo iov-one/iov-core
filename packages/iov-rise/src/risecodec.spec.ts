@@ -13,7 +13,7 @@ import {
 
 import { riseCodec } from "./risecodec";
 
-const { fromHex, toAscii } = Encoding;
+const { fromHex } = Encoding;
 
 // use nethash as chain ID
 const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
@@ -24,10 +24,10 @@ describe("liskCodec", () => {
   it("derives addresses properly", () => {
     // https://testnet-explorer.lisk.io/address/6076671634347365051L
     const pubkey: PublicKeyBundle = {
-      algo: Algorithm.ED25519,
+      algo: Algorithm.Ed25519,
       data: fromHex("f4852b270f76dc8b49bfa88de5906e81d3b001d23852f0e74ba60cac7180a184") as PublicKeyBytes,
     };
-    expect(riseCodec.keyToAddress(pubkey)).toEqual(toAscii("6076671634347365051R"));
+    expect(riseCodec.keyToAddress(pubkey)).toEqual("6076671634347365051R");
   });
 
   it("can create bytes to post", () => {
@@ -36,7 +36,7 @@ describe("liskCodec", () => {
     const tx: SendTx = {
       chainId: liskTestnet,
       signer: {
-        algo: Algorithm.ED25519,
+        algo: Algorithm.Ed25519,
         data: pubkey as PublicKeyBytes,
       },
       kind: TransactionKind.Send,
@@ -45,7 +45,7 @@ describe("liskCodec", () => {
         fractional: 23456789,
         tokenTicker: "RISE" as TokenTicker,
       },
-      recipient: toAscii("10010344879730196491R") as Address,
+      recipient: "10010344879730196491R" as Address,
     };
 
     const signed: SignedTransaction = {
@@ -53,7 +53,7 @@ describe("liskCodec", () => {
       primarySignature: {
         nonce: defaultCreationTimestamp as Nonce,
         publicKey: {
-          algo: Algorithm.ED25519,
+          algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
         signature: fromHex("26272829") as SignatureBytes,
@@ -108,16 +108,16 @@ describe("liskCodec", () => {
     expect(parsed.transaction.amount.whole).toEqual(2);
     expect(parsed.transaction.amount.fractional).toEqual(44550000);
     expect(parsed.transaction.amount.tokenTicker).toEqual("RISE");
-    expect(parsed.transaction.signer.algo).toEqual(Algorithm.ED25519);
+    expect(parsed.transaction.signer.algo).toEqual(Algorithm.Ed25519);
     expect(parsed.transaction.signer.data).toEqual(
       fromHex("06ad4341a609af2de837e1156f81849b05bf3c280940a9f45db76d09a3a3f2fa"),
     );
-    expect(parsed.transaction.recipient).toEqual(toAscii("6076671634347365051R"));
+    expect(parsed.transaction.recipient).toEqual("6076671634347365051R");
 
     expect(parsed.primarySignature.nonce).toEqual(Long.fromNumber(
       73863961 + liskEpochAsUnixTimestamp,
     ) as Nonce);
-    expect(parsed.primarySignature.publicKey.algo).toEqual(Algorithm.ED25519);
+    expect(parsed.primarySignature.publicKey.algo).toEqual(Algorithm.Ed25519);
     expect(parsed.primarySignature.publicKey.data).toEqual(
       fromHex("06ad4341a609af2de837e1156f81849b05bf3c280940a9f45db76d09a3a3f2fa"),
     );

@@ -7,7 +7,7 @@ import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tenderm
 
 import { amountFromComponents, serializeTransaction, toRISETimestamp, transactionId } from "./serialization";
 
-const { fromAscii, fromHex, toAscii } = Encoding;
+const { fromAscii, fromHex } = Encoding;
 
 // use nethash as chain ID
 const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
@@ -101,7 +101,7 @@ describe("serializeTransaction", () => {
     const tx: SendTx = {
       chainId: liskTestnet as ChainId,
       signer: {
-        algo: Algorithm.ED25519,
+        algo: Algorithm.Ed25519,
         data: pubkey as PublicKeyBytes,
       },
       kind: TransactionKind.Send,
@@ -110,7 +110,7 @@ describe("serializeTransaction", () => {
         fractional: 23456789,
         tokenTicker: "RISE" as TokenTicker,
       },
-      recipient: toAscii("10010344879730196491R") as Address,
+      recipient: "10010344879730196491R" as Address,
     };
 
     const serialized = serializeTransaction(tx, defaultCreationDate);
@@ -127,7 +127,7 @@ describe("serializeTransaction", () => {
     const tx: SendTx = {
       chainId: liskTestnet as ChainId,
       signer: {
-        algo: Algorithm.ED25519,
+        algo: Algorithm.Ed25519,
         data: pubkey as PublicKeyBytes,
       },
       kind: TransactionKind.Send,
@@ -141,7 +141,7 @@ describe("serializeTransaction", () => {
         fractional: 0,
         tokenTicker: "RISE" as TokenTicker,
       },
-      recipient: toAscii("10010344879730196491R") as Address,
+      recipient: "10010344879730196491R" as Address,
     };
 
     expect(() => serializeTransaction(tx, defaultCreationDate)).toThrowError(/fee must not be set/i);
@@ -157,7 +157,7 @@ describe("transactionId", () => {
     const tx: SendTx = {
       chainId: liskTestnet as ChainId,
       signer: {
-        algo: Algorithm.ED25519,
+        algo: Algorithm.Ed25519,
         data: pubkey as PublicKeyBytes,
       },
       kind: TransactionKind.Send,
@@ -166,7 +166,7 @@ describe("transactionId", () => {
         fractional: 23456789,
         tokenTicker: "RISE" as TokenTicker,
       },
-      recipient: toAscii("10010344879730196491R") as Address,
+      recipient: "10010344879730196491R" as Address,
     };
 
     const signed: SignedTransaction = {
@@ -174,7 +174,7 @@ describe("transactionId", () => {
       primarySignature: {
         nonce: emptyNonce,
         publicKey: {
-          algo: Algorithm.ED25519,
+          algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
         signature: fromHex("26272829") as SignatureBytes,
