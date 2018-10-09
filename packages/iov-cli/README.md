@@ -99,29 +99,29 @@ const sendTx: SendTx = {
 4. Add an additional entry
 
 ```
-> profile.entriesCount.value
-1
+> profile.wallets.value
+[ { id: 'ReYESw51lsOOr8_X', label: undefined } ]
 
 > profile.addEntry(Ed25519HdWallet.fromMnemonic("organ wheat manage mirror wish truly tool trumpet since equip flight bracket"))
 
-> profile.entriesCount.value
-2
+> profile.wallets.value
+[ { id: 'ReYESw51lsOOr8_X', label: undefined },
+  { id: 'FtIcQqMWcRpEIruk', label: undefined } ]
 
 > profile.getIdentities(0)
-[ { pubkey: { algo: 'ed25519', data: [Object] },
-    label: undefined } ]
+[ { pubkey: { algo: 'ed25519', data: [Uint8Array] },
+    label: 'blockchain of value faucet',
+    id: 'uul1wahs5te8fiaD' } ]
 
 > profile.getIdentities(1)
 []
 
-> profile.entryLabels.value
-[ undefined, undefined ]
-
 > profile.setEntryLabel(0, "main")
 > profile.setEntryLabel(1, "second")
 
-> profile.entryLabels.value
-[ 'main', 'second' ]
+> profile.wallets.value
+[ { id: 'ReYESw51lsOOr8_X', label: 'main' },
+  { id: 'FtIcQqMWcRpEIruk', label: 'second' } ]
 ```
 
 5. Now store to disk
