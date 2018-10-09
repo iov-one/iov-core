@@ -7,6 +7,7 @@
 Breaking changes
 
 * Ed25519KeyringEntry now takes a keypair as an argument in createIdentity()
+* Ed25519SimpleAddressKeyringEntry was removed in favour of Ed25519HdWallet together with HdPaths.simpleAddress
 
 ## 0.6.1
 
