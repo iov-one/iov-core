@@ -8,8 +8,9 @@ import { Slip10RawIndex } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
+import { HdPaths } from "./hdpaths";
 import { Keyring, KeyringEntryId } from "./keyring";
-import { Ed25519SimpleAddressKeyringEntry, Secp256k1HdWallet } from "./keyring-entries";
+import { Ed25519HdWallet, Secp256k1HdWallet } from "./keyring-entries";
 import { UserProfile } from "./userprofile";
 
 const { fromHex } = Encoding;
@@ -24,12 +25,12 @@ describe("UserProfile", () => {
 
   it("is safe against keyring manipulation", () => {
     const keyring = new Keyring();
-    keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+    keyring.add(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
     const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
     expect(profile.entriesCount.value).toEqual(1);
 
     // manipulate external keyring
-    keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("seed brass ranch destroy peasant upper steak toy hood cliff cabin kingdom"));
+    keyring.add(Ed25519HdWallet.fromMnemonic("seed brass ranch destroy peasant upper steak toy hood cliff cabin kingdom"));
 
     // profile remains unchanged
     expect(profile.entriesCount.value).toEqual(1);
@@ -51,16 +52,16 @@ describe("UserProfile", () => {
 
     {
       const keyring = new Keyring();
-      keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+      keyring.add(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
       const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
       expect(profile.entriesCount.value).toEqual(1);
     }
 
     {
       const keyring = new Keyring();
-      keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
-      keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil"));
-      keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
+      keyring.add(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+      keyring.add(Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil"));
+      keyring.add(Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
       const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
       expect(profile.entriesCount.value).toEqual(3);
     }
@@ -73,7 +74,7 @@ describe("UserProfile", () => {
     }
 
     {
-      const entry = Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+      const entry = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
       entry.setLabel("label 1");
 
       const keyring = new Keyring();
@@ -83,11 +84,11 @@ describe("UserProfile", () => {
     }
 
     {
-      const entry1 = Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+      const entry1 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
       entry1.setLabel("label 1");
-      const entry2 = Ed25519SimpleAddressKeyringEntry.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
+      const entry2 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
       entry2.setLabel("");
-      const entry3 = Ed25519SimpleAddressKeyringEntry.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
+      const entry3 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
       entry3.setLabel(undefined);
 
       const keyring = new Keyring();
@@ -103,12 +104,12 @@ describe("UserProfile", () => {
     const profile = new UserProfile();
     expect(profile.entriesCount.value).toEqual(0);
     expect(profile.entryLabels.value).toEqual([]);
-    profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+    profile.addEntry(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
     expect(profile.entriesCount.value).toEqual(1);
     expect(profile.entryLabels.value).toEqual([undefined]);
     expect(profile.getIdentities(0)).toBeTruthy();
-    profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil"));
-    profile.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
+    profile.addEntry(Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil"));
+    profile.addEntry(Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
     expect(profile.entriesCount.value).toEqual(3);
     expect(profile.entryLabels.value).toEqual([undefined, undefined, undefined]);
     expect(profile.getIdentities(0)).toBeTruthy();
@@ -118,8 +119,8 @@ describe("UserProfile", () => {
 
   it("can update entry labels", () => {
     const keyring = new Keyring();
-    keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
-    keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+    keyring.add(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+    keyring.add(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
     const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
     expect(profile.entryLabels.value).toEqual([undefined, undefined]);
 
@@ -147,14 +148,14 @@ describe("UserProfile", () => {
   it("accessors also work with id instead of number", async () => {
     const profile = new UserProfile();
 
-    const entry1 = Ed25519SimpleAddressKeyringEntry.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
+    const entry1 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
     profile.addEntry(entry1);
     const id1 = entry1.id;
 
     // make sure we can query the ids if we didn't save them from creation
     expect(profile.entryIds.value).toEqual([id1]);
 
-    const entry2 = Ed25519SimpleAddressKeyringEntry.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
+    const entry2 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
     profile.addEntry(entry2);
     const id2 = entry2.id;
 
@@ -167,9 +168,9 @@ describe("UserProfile", () => {
     expect(profile.entryLabels.value).toEqual(["first", "second"]);
 
     // make some new ids
-    await profile.createIdentity(id1, 0);
-    const key = await profile.createIdentity(id2, 0);
-    await profile.createIdentity(1, 1);
+    await profile.createIdentity(id1, HdPaths.simpleAddress(0));
+    const key = await profile.createIdentity(id2, HdPaths.simpleAddress(0));
+    await profile.createIdentity(1, HdPaths.simpleAddress(1));
     expect(profile.getIdentities(0).length).toEqual(1);
     expect(profile.getIdentities(id2).length).toEqual(2);
 
@@ -182,7 +183,7 @@ describe("UserProfile", () => {
   it("throws for non-existent id or index", () => {
     const profile = new UserProfile();
 
-    const entry1 = Ed25519SimpleAddressKeyringEntry.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
+    const entry1 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
     profile.addEntry(entry1);
 
     expect(() => profile.getIdentities(2)).toThrowError(/Entry of index 2 does not exist in keyring/);
@@ -191,12 +192,12 @@ describe("UserProfile", () => {
 
   it("added entry can not be manipulated from outside", async () => {
     const profile = new UserProfile();
-    const newEntry = Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+    const newEntry = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
     profile.addEntry(newEntry);
     expect(profile.getIdentities(0).length).toEqual(0);
 
     // manipulate entry reference that has been added before
-    await newEntry.createIdentity(0);
+    await newEntry.createIdentity(HdPaths.simpleAddress(0));
     expect(newEntry.getIdentities().length).toEqual(1);
 
     // nothing hapenned to the profile
@@ -266,7 +267,7 @@ describe("UserProfile", () => {
     const db = levelup(MemDownConstructor<string, string>());
 
     const original = new UserProfile();
-    original.addEntry(Ed25519SimpleAddressKeyringEntry.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
+    original.addEntry(Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
     original.setEntryLabel(0, "My secret 😛");
 
     await original.storeIn(db, defaultEncryptionPassword);
@@ -343,7 +344,7 @@ describe("UserProfile", () => {
     expect(() => profile.getIdentities(0)).toThrowError(/Entry of index 0 does not exist in keyring/);
     expect(() => profile.setIdentityLabel(0, fakeIdentity, "foo")).toThrowError(/Entry of index 0 does not exist in keyring/);
     await profile
-      .createIdentity(0, 0)
+      .createIdentity(0, HdPaths.simpleAddress(0))
       .then(() => fail("Promise must not resolve"))
       .catch(error => expect(error).toMatch(/Entry of index 0 does not exist in keyring/));
     await profile
@@ -359,8 +360,8 @@ describe("UserProfile", () => {
   it("can sign and append signature", async () => {
     const createdAt = new ReadonlyDate(ReadonlyDate.now());
     const keyring = new Keyring();
-    keyring.add(Ed25519SimpleAddressKeyringEntry.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
-    const mainIdentity = await keyring.getEntries()[0].createIdentity(0);
+    keyring.add(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+    const mainIdentity = await keyring.getEntries()[0].createIdentity(HdPaths.simpleAddress(0));
     const profile = new UserProfile({ createdAt, keyring });
 
     const fakeTransaction: SendTx = {
