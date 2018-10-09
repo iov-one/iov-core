@@ -12,17 +12,16 @@ export class EnglishMnemonic {
 
   private readonly data: string;
 
-  private readonly allowedWordsLengths: ReadonlyArray<number> = [12, 15, 18, 21, 24];
-
   constructor(mnemonic: string) {
     if (!EnglishMnemonic.mnemonicMatcher.test(mnemonic)) {
       throw new Error("Invalid mnemonic format");
     }
 
     const words = mnemonic.split(" ");
-    if (this.allowedWordsLengths.indexOf(words.length) === -1) {
+    const allowedWordsLengths: ReadonlyArray<number> = [12, 15, 18, 21, 24];
+    if (allowedWordsLengths.indexOf(words.length) === -1) {
       throw new Error(
-        `Invalid word count in mnemonic (allowed: ${this.allowedWordsLengths} got: ${words.length})`
+        `Invalid word count in mnemonic (allowed: ${allowedWordsLengths} got: ${words.length})`,
       );
     }
 
@@ -46,7 +45,7 @@ export class EnglishMnemonic {
 
 export class Bip39 {
   public static encode(entropy: Uint8Array): EnglishMnemonic {
-    const allowedEntropyLengths: ReadonlyArray<number> = [16, 20, 24, 28, 32]; // 20,28
+    const allowedEntropyLengths: ReadonlyArray<number> = [16, 20, 24, 28, 32];
 
     if (allowedEntropyLengths.indexOf(entropy.length) === -1) {
       throw new Error("invalid input length");
