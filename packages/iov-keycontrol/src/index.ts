@@ -10,5 +10,5 @@ export {
   LocalIdentityId,
   PublicIdentity,
 } from "./keyring";
-export { UserProfile } from "./userprofile";
+export { UserProfile, WalletInfo } from "./userprofile";
 export { DefaultValueProducer, ValueAndUpdates } from "./valueandupdates";

@@ -9,6 +9,13 @@ export interface UserProfileOptions {
     readonly keyring: Keyring;
 }
 /**
+ * Read-only information about one wallet in a keyring/user profile
+ */
+export interface WalletInfo {
+    readonly id: KeyringEntryId;
+    readonly label: string | undefined;
+}
+/**
  * All calls must go though the UserProfile. A newly created UserProfile
  * is unlocked until lock() is called, which removes access to private key
  * material. Once locked, a UserProfile cannot be unlocked anymore since the
@@ -18,18 +25,12 @@ export interface UserProfileOptions {
 export declare class UserProfile {
     static loadFrom(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<UserProfile>;
     private static makeNonce;
-    private static labels;
-    private static ids;
     readonly createdAt: ReadonlyDate;
     readonly locked: ValueAndUpdates<boolean>;
-    readonly entriesCount: ValueAndUpdates<number>;
-    readonly entryLabels: ValueAndUpdates<ReadonlyArray<string | undefined>>;
-    readonly entryIds: ValueAndUpdates<ReadonlyArray<KeyringEntryId>>;
+    readonly wallets: ValueAndUpdates<ReadonlyArray<WalletInfo>>;
     private keyring;
     private readonly lockedProducer;
-    private readonly entriesCountProducer;
-    private readonly entryLabelsProducer;
-    private readonly entryIdsProducer;
+    private readonly walletsProducer;
     constructor(options?: UserProfileOptions);
     storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<void>;
     lock(): void;
@@ -41,4 +42,5 @@ export declare class UserProfile {
     signTransaction(id: number | KeyringEntryId, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
     appendSignature(id: number | KeyringEntryId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
     private entryInPrimaryKeyring;
+    private walletInfos;
 }

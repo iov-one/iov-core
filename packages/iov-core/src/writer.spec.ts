@@ -50,16 +50,16 @@ describe("IovWriter", () => {
       pendingWithoutBov();
 
       const profile = await userProfile();
-      const entryId = profile.entryIds.value[0];
-      expect(entryId).toBeTruthy();
+      const walletId = profile.wallets.value[0].id;
+      expect(walletId).toBeTruthy();
 
       const writer = new IovWriter(profile);
       await writer.addChain(bnsConnector(bovUrl));
       expect(writer.chainIds().length).toEqual(1);
       const chainId = writer.chainIds()[0];
 
-      const faucet = await profile.createIdentity(0, HdPaths.simpleAddress(0));
-      const recipient = await profile.createIdentity(0, HdPaths.simpleAddress(4));
+      const faucet = await profile.createIdentity(walletId, HdPaths.simpleAddress(0));
+      const recipient = await profile.createIdentity(walletId, HdPaths.simpleAddress(4));
       const recipientAddress = writer.keyToAddress(chainId, recipient.pubkey);
 
       // construct a sendtx, this mirrors the IovWriter api
@@ -76,7 +76,7 @@ describe("IovWriter", () => {
           tokenTicker: cash,
         },
       };
-      const res = await writer.signAndCommit(sendTx, entryId);
+      const res = await writer.signAndCommit(sendTx, walletId);
       expect(res.metadata.status).toEqual(true);
 
       // we should be a little bit richer
