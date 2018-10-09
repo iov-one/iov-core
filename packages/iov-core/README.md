@@ -185,7 +185,7 @@ Query the testnet for some existing genesis accounts:
 ```ts
 // this is pulled from the genesis account
 import { Address } from "@iov/bcp-types"
-const bert = fromHex("e28ae9a6eb94fc88b73eb7cbd6b87bf93eb9bef0") as Address;
+const bert = "E28AE9A6EB94FC88B73EB7CBD6B87BF93EB9BEF0" as Address;
 const faucet = await reader.getAccount({ address: bert });
 console.log(faucet);
 console.log(faucet.data[0])

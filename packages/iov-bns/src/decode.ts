@@ -1,5 +1,4 @@
 import {
-  Address,
   BaseTx,
   FullSignature,
   SendTx,
@@ -16,7 +15,7 @@ import { ChainId } from "@iov/tendermint-types";
 
 import * as codecImpl from "./codecimpl";
 import { asNumber, decodeFullSig, decodeToken, ensure } from "./types";
-import { isHashIdentifier } from "./util";
+import { encodeBnsAddress, isHashIdentifier } from "./util";
 
 // export const buildTx = async (
 //   tx: Transaction,
@@ -58,7 +57,7 @@ const parseSendTx = (base: BaseTx, msg: codecImpl.cash.ISendMsg): SendTx => ({
   // TODO: would we want to ensure these match?
   //    src: await keyToAddress(tx.signer),
   kind: TransactionKind.Send,
-  recipient: ensure(msg.dest, "recipient") as Address,
+  recipient: encodeBnsAddress(ensure(msg.dest, "recipient")),
   amount: decodeToken(ensure(msg.amount)),
   memo: msg.memo || undefined,
   ...base,
@@ -78,7 +77,7 @@ const parseSwapCounterTx = (base: BaseTx, msg: codecImpl.escrow.ICreateEscrowMsg
   return {
     kind: TransactionKind.SwapCounter,
     hashCode,
-    recipient: ensure(msg.recipient, "recipient") as Address,
+    recipient: encodeBnsAddress(ensure(msg.recipient, "recipient")),
     timeout: asNumber(msg.timeout),
     amount: (msg.amount || []).map(decodeToken),
     ...base,

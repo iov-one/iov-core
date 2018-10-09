@@ -1,7 +1,6 @@
 import axios from "axios";
 
 import { Address, TokenTicker } from "@iov/bcp-types";
-import { Encoding } from "@iov/encoding";
 
 export class BovFaucet {
   private readonly url: string;
@@ -15,7 +14,7 @@ export class BovFaucet {
 
   public async credit(address: Address, ticker: TokenTicker = "IOV" as TokenTicker): Promise<void> {
     const body = {
-      address: Encoding.toHex(address),
+      address: address,
       tokens: [{ ticker: ticker }],
     };
 

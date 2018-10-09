@@ -46,7 +46,7 @@ export function serializeTransaction(unsigned: UnsignedTransaction, creationTime
         (liskTimestamp >> 24) & 0xff,
       ]);
       const amount = amountFromComponents(unsigned.amount.whole, unsigned.amount.fractional);
-      const recipientString = Encoding.fromAscii(unsigned.recipient);
+      const recipientString = unsigned.recipient;
       if (!recipientString.match(/^[0-9]{1,20}L$/)) {
         throw new Error("Recipient does not match expected format");
       }

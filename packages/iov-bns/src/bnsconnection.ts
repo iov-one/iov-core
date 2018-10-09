@@ -43,7 +43,7 @@ import * as codecImpl from "./codecimpl";
 import { InitData, Normalize } from "./normalize";
 import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
 import { Decoder, Keyed, Result } from "./types";
-import { arraysEqual, hashIdentifier, isSwapOffer, isSwapRelease } from "./util";
+import { arraysEqual, decodeBnsAddress, hashIdentifier, isSwapOffer, isSwapRelease } from "./util";
 
 /**
  * Returns a filter that only passes when the
@@ -157,7 +157,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
   public async getAccount(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>> {
     const res = isAddressQuery(account)
-      ? this.query("/wallets", account.address)
+      ? this.query("/wallets", decodeBnsAddress(account.address))
       : this.query("/wallets/name", Encoding.toAscii(account.name));
     const parser = parseMap(codecImpl.namecoin.Wallet, 5);
     const parsed = (await res).results.map(parser);
@@ -168,7 +168,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   public async getNonce(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>> {
     // getAddress will do a lookup from name -> address if needed
     // make this an async function so easier to switch on return value
-    const getAddress = async (): Promise<Uint8Array | undefined> => {
+    const getAddress = async (): Promise<Address | undefined> => {
       if (isAddressQuery(account)) {
         return account.address;
       }
@@ -183,7 +183,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     if (!addr) {
       return dummyEnvelope([]);
     }
-    const res = await this.query("/auth", addr);
+    const res = await this.query("/auth", decodeBnsAddress(addr));
 
     const parser = parseMap(codecImpl.sigs.UserData, 5);
     const data = res.results.map(parser).map(Normalize.nonce);
@@ -198,9 +198,9 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       if (isQueryBySwapId(query)) {
         return this.query("/escrows", query.swapid);
       } else if (isQueryBySwapSender(query)) {
-        return this.query("/escrows/sender", query.sender);
+        return this.query("/escrows/sender", decodeBnsAddress(query.sender));
       } else if (isQueryBySwapRecipient(query)) {
-        return this.query("/escrows/recipient", query.recipient);
+        return this.query("/escrows/recipient", decodeBnsAddress(query.recipient));
       } else {
         // if (isQueryBySwapHash(query))
         return this.query("/escrows/arbiter", hashIdentifier(query.hashlock));

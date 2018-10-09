@@ -130,7 +130,7 @@ export class LiskConnection implements BcpConnection {
   public async getAccount(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>> {
     if (isAddressQuery(query)) {
       const address = query.address;
-      const url = this.baseUrl + `/api/accounts?address=${Encoding.fromAscii(address)}`;
+      const url = this.baseUrl + `/api/accounts?address=${address}`;
       const result = await axios.get(url);
       const responseBody = result.data;
 

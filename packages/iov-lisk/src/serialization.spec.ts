@@ -7,7 +7,7 @@ import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tenderm
 
 import { amountFromComponents, serializeTransaction, toLiskTimestamp, transactionId } from "./serialization";
 
-const { fromAscii, fromHex, toAscii } = Encoding;
+const { fromAscii, fromHex } = Encoding;
 
 // use nethash as chain ID
 const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
@@ -110,7 +110,7 @@ describe("serializeTransaction", () => {
         fractional: 23456789,
         tokenTicker: "LSK" as TokenTicker,
       },
-      recipient: toAscii("10010344879730196491L") as Address,
+      recipient: "10010344879730196491L" as Address,
     };
 
     const serialized = serializeTransaction(tx, defaultCreationDate);
@@ -136,7 +136,7 @@ describe("serializeTransaction", () => {
         fractional: 23456789,
         tokenTicker: "LSK" as TokenTicker,
       },
-      recipient: toAscii("10010344879730196491L") as Address,
+      recipient: "10010344879730196491L" as Address,
       memo: "The nice memo I attach to that money for the whole world to read",
     };
 
@@ -168,7 +168,7 @@ describe("serializeTransaction", () => {
         fractional: 0,
         tokenTicker: "LSK" as TokenTicker,
       },
-      recipient: toAscii("10010344879730196491L") as Address,
+      recipient: "10010344879730196491L" as Address,
     };
 
     expect(() => serializeTransaction(tx, defaultCreationDate)).toThrowError(/fee must not be set/i);
@@ -190,7 +190,7 @@ describe("serializeTransaction", () => {
         tokenTicker: "LSK" as TokenTicker,
       },
       memo: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam",
-      recipient: toAscii("10010344879730196491L") as Address,
+      recipient: "10010344879730196491L" as Address,
     };
 
     expect(() => serializeTransaction(tx, defaultCreationDate)).toThrowError(/memo exceeds 64 bytes/i);
@@ -213,7 +213,7 @@ describe("serializeTransaction", () => {
       },
       // ⇉ (Rightwards Paired Arrows, U+21c9) takes 2 bytes in UTF-8
       memo: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed di⇉",
-      recipient: toAscii("10010344879730196491L") as Address,
+      recipient: "10010344879730196491L" as Address,
     };
 
     expect(() => serializeTransaction(tx, defaultCreationDate)).toThrowError(/memo exceeds 64 bytes/i);
@@ -238,7 +238,7 @@ describe("transactionId", () => {
         fractional: 23456789,
         tokenTicker: "LSK" as TokenTicker,
       },
-      recipient: toAscii("10010344879730196491L") as Address,
+      recipient: "10010344879730196491L" as Address,
     };
 
     const signed: SignedTransaction = {

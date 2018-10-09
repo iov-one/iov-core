@@ -1,5 +1,4 @@
 import {
-  Address,
   BcpAccount,
   BcpAtomicSwap,
   BcpCoin,
@@ -22,7 +21,7 @@ import { ChainId } from "@iov/tendermint-types";
 
 import * as codecImpl from "./codecimpl";
 import { asLong, asNumber, decodePubKey, decodeToken, ensure, fungibleToBcpCoin, Keyed } from "./types";
-import { hashFromIdentifier, isHashIdentifier, keyToAddress } from "./util";
+import { encodeBnsAddress, hashFromIdentifier, isHashIdentifier, keyToAddress } from "./util";
 
 // InitData is all the queries we do on initialization to be
 // reused by later calls
@@ -43,7 +42,7 @@ export class Normalize {
   public static nonce(acct: codecImpl.sigs.IUserData & Keyed): BcpNonce {
     // append the chainID to the name to universalize it
     return {
-      address: acct._id as Address,
+      address: encodeBnsAddress(acct._id),
       nonce: asLong(acct.sequence) as Nonce,
       publicKey: decodePubKey(ensure(acct.pubKey)),
     };
@@ -53,7 +52,7 @@ export class Normalize {
     return (acct: codecImpl.namecoin.IWallet & Keyed): BcpAccount => {
       return {
         name: typeof acct.name === "string" ? acct.name : undefined,
-        address: acct._id as Address,
+        address: encodeBnsAddress(acct._id),
         balance: ensure(acct.coins).map(this.coin(initData)),
       };
     };
@@ -78,8 +77,8 @@ export class Normalize {
 
       const data: SwapData = {
         id: swap._id as SwapIdBytes,
-        sender: ensure(swap.sender) as Address,
-        recipient: ensure(swap.recipient) as Address,
+        sender: encodeBnsAddress(ensure(swap.sender)),
+        recipient: encodeBnsAddress(ensure(swap.recipient)),
         hashlock,
         amount: ensure(swap.amount).map(this.coin(initData)),
         timeout: asNumber(swap.timeout),

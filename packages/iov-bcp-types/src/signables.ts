@@ -41,8 +41,8 @@ export interface SignedTransaction<T extends UnsignedTransaction = UnsignedTrans
   readonly otherSignatures: ReadonlyArray<FullSignature>;
 }
 
-// A codec specific address
-export type Address = Uint8Array & As<"address">;
+/** A codec specific address encoded as a string */
+export type Address = string & As<"address">;
 
 export interface TxReadCodec {
   // parseBytes will recover bytes from the blockchain into a format we can use

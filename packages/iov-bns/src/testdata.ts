@@ -55,7 +55,7 @@ export const privBin = fromHex(
 );
 
 // address is calculated by bov for the public key
-export const address = fromHex("acc00b8f2e26fd093894c5b1d87e03afab71cf99") as Address;
+export const address = "ACC00B8F2E26FD093894C5B1D87E03AFAB71CF99" as Address;
 
 export const coinJson: FungibleToken = {
   whole: 878,
@@ -75,7 +75,7 @@ export const sendTxJson: SendTx = {
   chainId,
   signer: pubJson,
   kind: TransactionKind.Send,
-  recipient: fromHex("6f0a3e37845b6a3c8ccbe6219199abc3ae0b26d9") as Address,
+  recipient: "6F0A3E37845B6A3C8CCBE6219199ABC3AE0B26D9" as Address,
   memo: "Test payment",
   amount,
 };
@@ -121,7 +121,7 @@ const randomMsg: SendTx = {
   chainId: "foo-bar-baz" as ChainId,
   signer: pubJson,
   kind: TransactionKind.Send,
-  recipient: fromHex("009985cb38847474fe9febfd56ab67e14bcd56f3") as Address,
+  recipient: "009985CB38847474FE9FEBFD56AB67E14BCD56F3" as Address,
   memo: "One more fix!",
   amount: {
     whole: 128,
@@ -157,7 +157,7 @@ const swapCounterMsg: SwapCounterTx = {
   chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
   kind: TransactionKind.SwapCounter,
-  recipient: fromHex("123485cb38847474fe9febfd56ab67e14bcd56f3") as Address,
+  recipient: "123485CB38847474FE9FEBFD56AB67E14BCD56F3" as Address,
   timeout: 7890,
   amount: [
     {

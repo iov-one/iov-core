@@ -1,7 +1,8 @@
+import { Address } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
 import { hashCode } from "./testdata";
-import { arraysEqual, isHashIdentifier } from "./util";
+import { arraysEqual, decodeBnsAddress, encodeBnsAddress, isHashIdentifier } from "./util";
 
 const { fromHex } = Encoding;
 
@@ -59,5 +60,15 @@ describe("Verify util functions", () => {
     expect(badHash).toEqual(false);
     const goodHash = isHashIdentifier(hashCode);
     expect(goodHash).toEqual(true);
+  });
+
+  it("has working encodeBnsAddress", () => {
+    const raw = fromHex("f6cade229408c93a2a8d181d62efce46ff60d210");
+    expect(encodeBnsAddress(raw)).toEqual("F6CADE229408C93A2A8D181D62EFCE46FF60D210");
+  });
+
+  it("has working decodeBnsAddress", () => {
+    const address = "F6CADE229408C93A2A8D181D62EFCE46FF60D210" as Address;
+    expect(decodeBnsAddress(address)).toEqual(fromHex("f6cade229408c93a2a8d181d62efce46ff60d210"));
   });
 });

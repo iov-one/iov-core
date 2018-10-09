@@ -1,7 +1,11 @@
 import { As } from "type-tagger";
 import { Address, ConfirmedTransaction, Nonce, SignableBytes, SwapClaimTx, SwapCounterTx, SwapTimeoutTx } from "@iov/bcp-types";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
-export declare const keyToAddress: (key: PublicKeyBundle) => Address;
+/** Encodes raw bytes into a printable address */
+export declare function encodeBnsAddress(bytes: Uint8Array): Address;
+/** Decodes a printable address into raw bytes */
+export declare function decodeBnsAddress(address: Address): Uint8Array;
+export declare function keyToAddress(key: PublicKeyBundle): Address;
 export declare const keyToIdentifier: (key: PublicKeyBundle) => Uint8Array;
 export declare const appendSignBytes: (bz: Uint8Array, chainId: ChainId, nonce: Nonce) => SignableBytes;
 export declare const tendermintHash: (data: Uint8Array) => Uint8Array;

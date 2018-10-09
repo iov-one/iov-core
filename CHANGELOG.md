@@ -9,6 +9,7 @@ Breaking changes
 * Ed25519KeyringEntry now takes a keypair as an argument in createIdentity()
 * Ed25519SimpleAddressKeyringEntry was removed in favour of Ed25519HdWallet together with HdPaths.simpleAddress
 * Client from @iov/bns was renamed to BnsConnection. The connect() function was renamed to BnsConnection.establish()
+* Address is now a string instead of an Uint8Array
 
 ## 0.6.1
 
