@@ -46,17 +46,18 @@ describe("Integration tests with bov+tendermint", () => {
   // TODO: had issues with websockets? check again later, maybe they need to close at end?
   // max open connections??? (but 900 by default)
   const tendermintUrl = "ws://localhost:22345";
-  const entry = Ed25519HdWallet.fromMnemonic(mnemonic);
+  const faucetEntry = Ed25519HdWallet.fromMnemonic(mnemonic);
 
   async function userProfileWithFaucet(): Promise<UserProfile> {
     const profile = new UserProfile();
-    profile.addEntry(entry);
-    await profile.createIdentity(entry.id, HdPaths.simpleAddress(0));
+
+    profile.addEntry(faucetEntry);
+    await profile.createIdentity(faucetEntry.id, HdPaths.simpleAddress(0));
     return profile;
   }
 
   const faucetId = (profile: UserProfile): LocalIdentity => {
-    const ids = profile.getIdentities(entry.id);
+    const ids = profile.getIdentities(faucetEntry.id);
     expect(ids.length).toBeGreaterThanOrEqual(1);
     return ids[0];
   };
@@ -69,6 +70,7 @@ describe("Integration tests with bov+tendermint", () => {
   // recipient will make accounts if needed, returns path n
   // n must be >= 1
   async function recipient(profile: UserProfile, n: number): Promise<LocalIdentity> {
+    const entry = Ed25519HdWallet.fromMnemonic(mnemonic);
     if (n < 1) {
       throw new Error("Recipient count starts at 1");
     }
@@ -207,6 +209,7 @@ describe("Integration tests with bov+tendermint", () => {
         tokenTicker: cash,
       },
     };
+    const entry = Ed25519HdWallet.fromMnemonic(mnemonic);
     const signed = await profile.signTransaction(entry.id, faucet, sendTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     const post = await connection.postTx(txBytes);
@@ -284,6 +287,7 @@ describe("Integration tests with bov+tendermint", () => {
         tokenTicker: cash,
       },
     };
+    const entry = Ed25519HdWallet.fromMnemonic(mnemonic);
     const signed = await profile.signTransaction(entry.id, faucet, sendTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     return connection.postTx(txBytes);
@@ -491,6 +495,7 @@ describe("Integration tests with bov+tendermint", () => {
       preimage,
     };
 
+    const entry = Ed25519HdWallet.fromMnemonic(mnemonic);
     const signed = await profile.signTransaction(entry.id, faucet, swapOfferTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     const post = await connection.postTx(txBytes);
@@ -606,6 +611,7 @@ describe("Integration tests with bov+tendermint", () => {
       timeout: 5000,
       preimage,
     };
+    const entry = Ed25519HdWallet.fromMnemonic(mnemonic);
     const signed = await profile.signTransaction(entry.id, sender, swapOfferTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     return connection.postTx(txBytes);
@@ -628,6 +634,7 @@ describe("Integration tests with bov+tendermint", () => {
       swapId,
       preimage,
     };
+    const entry = Ed25519HdWallet.fromMnemonic(mnemonic);
     const signed = await profile.signTransaction(entry.id, sender, swapClaimTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     return connection.postTx(txBytes);
