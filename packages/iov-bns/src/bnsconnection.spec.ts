@@ -22,7 +22,7 @@ import { asArray, lastValue } from "@iov/stream";
 import { TxQuery } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
-import { Client } from "./bnsconnection";
+import { BnsConnection } from "./bnsconnection";
 import { bnsFromOrToTag, bnsSwapQueryTags } from "./tags";
 import { keyToAddress } from "./util";
 
@@ -60,7 +60,7 @@ describe("Integration tests with bov+tendermint", () => {
     return ids[0];
   };
 
-  const getNonce = async (client: Client, addr: Address): Promise<Nonce> => {
+  const getNonce = async (client: BnsConnection, addr: Address): Promise<Nonce> => {
     const data = (await client.getNonce({ address: addr })).data;
     return data.length === 0 ? (Long.fromInt(0) as Nonce) : data[0].nonce;
   };
@@ -83,7 +83,7 @@ describe("Integration tests with bov+tendermint", () => {
 
   it("Can connect to tendermint", async () => {
     pendingWithoutBov();
-    const client = await Client.connect(tendermintUrl);
+    const client = await BnsConnection.connect(tendermintUrl);
 
     // we should get a reasonable string here
     const chainId = await client.chainId();
@@ -100,7 +100,7 @@ describe("Integration tests with bov+tendermint", () => {
 
   it("can disconnect from tendermint", async () => {
     pendingWithoutBov();
-    const client = await Client.connect(tendermintUrl);
+    const client = await BnsConnection.connect(tendermintUrl);
     const chainId = await client.chainId();
     expect(chainId).toBeTruthy();
     client.disconnect();
@@ -108,7 +108,7 @@ describe("Integration tests with bov+tendermint", () => {
 
   it("Can query all tickers", async () => {
     pendingWithoutBov();
-    const client = await Client.connect(tendermintUrl);
+    const client = await BnsConnection.connect(tendermintUrl);
 
     const tickers = await client.getAllTickers();
     expect(tickers.data.length).toEqual(1);
@@ -122,7 +122,7 @@ describe("Integration tests with bov+tendermint", () => {
 
   it("can get accpunt by address and name", async () => {
     pendingWithoutBov();
-    const client = await Client.connect(tendermintUrl);
+    const client = await BnsConnection.connect(tendermintUrl);
 
     const profile = await userProfileWithFaucet();
     const faucet = faucetId(profile);
@@ -149,7 +149,7 @@ describe("Integration tests with bov+tendermint", () => {
 
   it("returns empty list when getting an unused account", async () => {
     pendingWithoutBov();
-    const client = await Client.connect(tendermintUrl);
+    const client = await BnsConnection.connect(tendermintUrl);
 
     const unusedAddress = Encoding.fromHex("010101020202030303040404050505050a0a0a0a") as Address;
     const response = await client.getAccount({ address: unusedAddress });
@@ -162,7 +162,7 @@ describe("Integration tests with bov+tendermint", () => {
 
   it("Can query empty nonce", async () => {
     pendingWithoutBov();
-    const client = await Client.connect(tendermintUrl);
+    const client = await BnsConnection.connect(tendermintUrl);
 
     const profile = await userProfileWithFaucet();
     const rcpt = await recipient(profile, 1);
@@ -177,7 +177,7 @@ describe("Integration tests with bov+tendermint", () => {
 
   it("Can send transaction", async () => {
     pendingWithoutBov();
-    const client = await Client.connect(tendermintUrl);
+    const client = await BnsConnection.connect(tendermintUrl);
     const chainId = await client.chainId();
     // store minHeight before sending the tx, so we can filter out
     // if we re-run the test, still only find one tx in search
@@ -249,7 +249,7 @@ describe("Integration tests with bov+tendermint", () => {
 
   it("can get live block feed", async () => {
     pendingWithoutBov();
-    const client = await Client.connect(tendermintUrl);
+    const client = await BnsConnection.connect(tendermintUrl);
 
     // get the next three block heights
     const heights = asArray(client.changeBlock().take(3));
@@ -263,7 +263,7 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   const sendCash = async (
-    client: Client,
+    client: BnsConnection,
     profile: UserProfile,
     faucet: PublicIdentity,
     rcptAddr: Address,
@@ -290,7 +290,7 @@ describe("Integration tests with bov+tendermint", () => {
 
   it("can get live tx feed", async () => {
     pendingWithoutBov();
-    const client = await Client.connect(tendermintUrl);
+    const client = await BnsConnection.connect(tendermintUrl);
     const profile = await userProfileWithFaucet();
 
     const faucet = faucetId(profile);
@@ -345,7 +345,7 @@ describe("Integration tests with bov+tendermint", () => {
 
   it("can provide change feeds", async () => {
     pendingWithoutBov();
-    const client = await Client.connect(tendermintUrl);
+    const client = await BnsConnection.connect(tendermintUrl);
     const profile = await userProfileWithFaucet();
 
     const faucet = faucetId(profile);
@@ -389,7 +389,7 @@ describe("Integration tests with bov+tendermint", () => {
   // make sure we can get a reactive account balance (as well as nonce)
   it("can watch accounts", async () => {
     pendingWithoutBov();
-    const client = await Client.connect(tendermintUrl);
+    const client = await BnsConnection.connect(tendermintUrl);
     const profile = await userProfileWithFaucet();
 
     const faucet = faucetId(profile);
@@ -454,7 +454,7 @@ describe("Integration tests with bov+tendermint", () => {
 
   it("Can start atomic swap", async () => {
     pendingWithoutBov();
-    const client = await Client.connect(tendermintUrl);
+    const client = await BnsConnection.connect(tendermintUrl);
     const chainId = await client.chainId();
 
     const profile = await userProfileWithFaucet();
@@ -581,7 +581,7 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   const openSwap = async (
-    client: Client,
+    client: BnsConnection,
     profile: UserProfile,
     sender: PublicIdentity,
     rcptAddr: Address,
@@ -611,7 +611,7 @@ describe("Integration tests with bov+tendermint", () => {
   };
 
   const claimSwap = async (
-    client: Client,
+    client: BnsConnection,
     profile: UserProfile,
     sender: PublicIdentity,
     swapId: SwapIdBytes,
@@ -634,7 +634,7 @@ describe("Integration tests with bov+tendermint", () => {
 
   it("Get and watch atomic swap lifecycle", async () => {
     pendingWithoutBov();
-    const client = await Client.connect(tendermintUrl);
+    const client = await BnsConnection.connect(tendermintUrl);
     const profile = await userProfileWithFaucet();
 
     const faucet = faucetId(profile);

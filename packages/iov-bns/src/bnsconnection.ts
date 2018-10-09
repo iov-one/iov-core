@@ -66,11 +66,11 @@ function onChange<T>(): (val: T) => boolean {
  *
  * We can embed in iov-core process or use this in a BCP-relay
  */
-export class Client implements BcpAtomicSwapConnection {
-  public static async connect(url: string): Promise<Client> {
+export class BnsConnection implements BcpAtomicSwapConnection {
+  public static async connect(url: string): Promise<BnsConnection> {
     const tm = await TendermintClient.connect(url);
     const initData = await this.initialize(tm);
-    return new Client(tm, bnsCodec, initData);
+    return new BnsConnection(tm, bnsCodec, initData);
   }
 
   protected static async initialize(tmClient: TendermintClient): Promise<InitData> {

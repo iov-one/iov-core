@@ -1,4 +1,4 @@
 export { bnsCodec } from "./bnscodec";
 export { bnsConnector } from "./bnsconnector";
-export { Client } from "./bnsconnection";
+export { BnsConnection } from "./bnsconnection";
 export { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
