@@ -1,9 +1,14 @@
+import { Ed25519, Ed25519Keypair, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
 import { Keyring, KeyringSerializationString } from "./keyring";
 import { Ed25519HdWallet, Ed25519KeyringEntry, Ed25519SimpleAddressKeyringEntry, Secp256k1HdWallet } from "./keyring-entries";
 
 const { fromHex } = Encoding;
+
+async function makeRandomEd25519Keypair(): Promise<Ed25519Keypair> {
+  return Ed25519.makeKeypair(await Random.getBytes(32));
+}
 
 describe("Keyring", () => {
   it("can be constructed", () => {
@@ -110,17 +115,17 @@ describe("Keyring", () => {
     const entry1 = Ed25519SimpleAddressKeyringEntry.fromEntropy(fromHex("c7f74844892fd7b707e74fc9b6c8ef917c13ddbb380cadbc"));
     const i1a = await entry1.createIdentity(0);
     const entry2 = new Ed25519KeyringEntry();
-    const i2a = await entry2.createIdentity();
-    const i2b = await entry2.createIdentity();
+    const i2a = await entry2.createIdentity(await makeRandomEd25519Keypair());
+    const i2b = await entry2.createIdentity(await makeRandomEd25519Keypair());
     const entry3 = Ed25519SimpleAddressKeyringEntry.fromEntropy(fromHex("2a7e3f902279af82138f14f871badf8d92b33713eb6c7193"));
     const i3a = await entry3.createIdentity(0);
     const i3b = await entry3.createIdentity(1);
     const i3c = await entry3.createIdentity(2);
     const entry4 = new Ed25519KeyringEntry();
-    const i4a = await entry4.createIdentity();
-    const i4b = await entry4.createIdentity();
-    const i4c = await entry4.createIdentity();
-    const i4d = await entry4.createIdentity();
+    const i4a = await entry4.createIdentity(await makeRandomEd25519Keypair());
+    const i4b = await entry4.createIdentity(await makeRandomEd25519Keypair());
+    const i4c = await entry4.createIdentity(await makeRandomEd25519Keypair());
+    const i4d = await entry4.createIdentity(await makeRandomEd25519Keypair());
 
     const keyring = new Keyring();
     keyring.add(entry1);

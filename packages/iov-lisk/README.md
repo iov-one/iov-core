@@ -16,10 +16,11 @@ You can use @iov/lisk as an extension of @iov/core to interact with the
 Lisk blockchain as follows.
 
 ```ts
-import { liskCodec, liskConnector, LiskKeyringEntry } from "@iov/lisk";
+import { Ed25519KeyringEntry } from "@iov/core";
+import { passphraseToKeypair, liskCodec, liskConnector } from "@iov/lisk";
 
-const entry = new LiskKeyringEntry();
-const mainIdentity = await entry.createIdentity("oxygen fall sure lava energy veteran enroll frown question detail include maximum");
+const entry = new Ed25519KeyringEntry();
+const mainIdentity = await entry.createIdentity(await passphraseToKeypair("oxygen fall sure lava energy veteran enroll frown question detail include maximum"));
 
 const profile = new UserProfile();
 profile.addEntry(entry);
@@ -54,16 +55,17 @@ console.log((await reader.getAccount({ address: recipientAddress })).data[0].bal
 
 ### The manual way
 
-This is how you use `liskCodec` and `LiskKeyringEntry` to generate send transactions
+This is how you use `liskCodec` to generate send transactions
 for Lisk manually, i.e. without the help of @iov/core.
 
 ```ts
-import { generateNonce, liskCodec, LiskKeyringEntry } from "@iov/lisk";
+import { Ed25519KeyringEntry } from "@iov/core";
+import { passphraseToKeypair, generateNonce, liskCodec } from "@iov/lisk";
 
 const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
 
-const entry = new LiskKeyringEntry();
-const mainIdentity = await entry.createIdentity("oxygen fall sure lava energy veteran enroll frown question detail include maximum");
+const entry = new Ed25519KeyringEntry();
+const mainIdentity = await entry.createIdentity(await passphraseToKeypair("oxygen fall sure lava energy veteran enroll frown question detail include maximum"));
 
 const recipientAddress = Encoding.toAscii("6076671634347365051L") as Address;
 
