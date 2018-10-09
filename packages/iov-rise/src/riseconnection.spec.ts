@@ -1,9 +1,10 @@
 import { Address, BcpAccountQuery, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Ed25519KeyringEntry } from "@iov/keycontrol";
 import { ChainId } from "@iov/tendermint-types";
 
+import { passphraseToKeypair } from "./derivation";
 import { riseCodec } from "./risecodec";
 import { generateNonce, RiseConnection } from "./riseconnection";
-import { RISEKeyringEntry } from "./risekeyringentry";
 
 function pendingWithoutLongRunning(): void {
   if (!process.env.LONG_RUNNING_ENABLED) {
@@ -124,9 +125,11 @@ describe("RiseConnection", () => {
     async () => {
       pendingWithoutLongRunning();
 
-      const entry = new RISEKeyringEntry();
+      const entry = new Ed25519KeyringEntry();
       const mainIdentity = await entry.createIdentity(
-        "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+        await passphraseToKeypair(
+          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+        ),
       );
 
       const recipientAddress = "6076671634347365051R" as Address;

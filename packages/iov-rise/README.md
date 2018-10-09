@@ -16,23 +16,24 @@ You can use @iov/rise as an extension of @iov/core to interact with the
 RISE blockchain as follows.
 
 ```ts
-import { riseCodec, riseConnector, RISEKeyringEntry } from "@iov/rise";
+import { Ed25519KeyringEntry } from "@iov/core";
+import { passphraseToKeypair, riseCodec, riseConnector } from "@iov/rise";
 
-const entry = new RISEKeyringEntry();
-const mainIdentity = await entry.createIdentity("oxygen fall sure lava energy veteran enroll frown question detail include maximum");
+const entry = new Ed25519KeyringEntry();
+const mainIdentity = await entry.createIdentity(await passphraseToKeypair("squeeze frog deposit chase sudden clutch fortune spring tone have snow column"));
 
 const profile = new UserProfile();
 profile.addEntry(entry);
 
 const writer = new IovWriter(profile);
-await writer.addChain(riseConnector("https://testnet.rise.io"));
+await writer.addChain(riseConnector("https://twallet.rise.vision"));
 const chainId = writer.chainIds()[0];
 const reader = writer.reader(chainId);
 
 const mainAddress = writer.keyToAddress(chainId, mainIdentity.pubkey);
 console.log((await reader.getAccount({ address: mainAddress })).data[0].balance);
 
-const recipientAddress = Encoding.toAscii("6076671634347365051L") as Address;
+const recipientAddress = "10145108642177909005R" as Address;
 
 const sendTx: SendTx = {
   kind: TransactionKind.Send,
@@ -54,18 +55,19 @@ console.log((await reader.getAccount({ address: recipientAddress })).data[0].bal
 
 ### The manual way
 
-This is how you use `riseCodec` and `RISEKeyringEntry` to generate send transactions
+This is how you use `riseCodec` to generate send transactions
 for RISE manually, i.e. without the help of @iov/core.
 
 ```ts
-import { generateNonce, riseCodec, RISEKeyringEntry } from "@iov/rise";
+import { Ed25519KeyringEntry } from "@iov/core";
+import { passphraseToKeypair, generateNonce, riseCodec } from "@iov/rise";
 
 const riseTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
 
-const entry = new RISEKeyringEntry();
-const mainIdentity = await entry.createIdentity("oxygen fall sure lava energy veteran enroll frown question detail include maximum");
+const entry = new Ed25519KeyringEntry();
+const mainIdentity = await entry.createIdentity(await passphraseToKeypair("squeeze frog deposit chase sudden clutch fortune spring tone have snow column"));
 
-const recipientAddress = Encoding.toAscii("6076671634347365051L") as Address;
+const recipientAddress = "10145108642177909005R" as Address;
 
 const sendTx: SendTx = {
   kind: TransactionKind.Send,
