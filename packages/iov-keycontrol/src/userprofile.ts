@@ -48,6 +48,14 @@ export interface UserProfileOptions {
 }
 
 /**
+ * Read-only information about one wallet in a keyring/user profile
+ */
+export interface WalletInfo {
+  readonly id: KeyringEntryId;
+  readonly label: string | undefined;
+}
+
+/**
  * All calls must go though the UserProfile. A newly created UserProfile
  * is unlocked until lock() is called, which removes access to private key
  * material. Once locked, a UserProfile cannot be unlocked anymore since the
@@ -85,27 +93,15 @@ export class UserProfile {
     return (await Random.getBytes(24)) as Xchacha20poly1305IetfNonce;
   }
 
-  private static labels(entries: ReadonlyArray<KeyringEntry>): ReadonlyArray<string | undefined> {
-    return entries.map(e => e.label.value) as ReadonlyArray<string | undefined>;
-  }
-
-  private static ids(entries: ReadonlyArray<KeyringEntry>): ReadonlyArray<KeyringEntryId> {
-    return entries.map(e => e.id);
-  }
-
   public readonly createdAt: ReadonlyDate;
   public readonly locked: ValueAndUpdates<boolean>;
-  public readonly entriesCount: ValueAndUpdates<number>;
-  public readonly entryLabels: ValueAndUpdates<ReadonlyArray<string | undefined>>;
-  public readonly entryIds: ValueAndUpdates<ReadonlyArray<KeyringEntryId>>;
+  public readonly wallets: ValueAndUpdates<ReadonlyArray<WalletInfo>>;
 
   // Never pass the keyring reference to ensure the keyring is not retained after lock()
   // tslint:disable-next-line:readonly-keyword
   private keyring: Keyring | undefined;
   private readonly lockedProducer: DefaultValueProducer<boolean>;
-  private readonly entriesCountProducer: DefaultValueProducer<number>;
-  private readonly entryLabelsProducer: DefaultValueProducer<ReadonlyArray<string | undefined>>;
-  private readonly entryIdsProducer: DefaultValueProducer<ReadonlyArray<KeyringEntryId>>;
+  private readonly walletsProducer: DefaultValueProducer<ReadonlyArray<WalletInfo>>;
 
   // Stores a copy of keyring
   constructor(options?: UserProfileOptions) {
@@ -119,14 +115,8 @@ export class UserProfile {
 
     this.lockedProducer = new DefaultValueProducer(false);
     this.locked = new ValueAndUpdates(this.lockedProducer);
-    // TODO: we really need to clean this up and rethink what we expose where
-    // but that would be a breaking change... let's aim for 0.6
-    this.entriesCountProducer = new DefaultValueProducer(this.keyring.getEntries().length);
-    this.entriesCount = new ValueAndUpdates(this.entriesCountProducer);
-    this.entryLabelsProducer = new DefaultValueProducer(UserProfile.labels(this.keyring.getEntries()));
-    this.entryLabels = new ValueAndUpdates(this.entryLabelsProducer);
-    this.entryIdsProducer = new DefaultValueProducer(UserProfile.ids(this.keyring.getEntries()));
-    this.entryIds = new ValueAndUpdates(this.entryIdsProducer);
+    this.walletsProducer = new DefaultValueProducer(this.walletInfos());
+    this.wallets = new ValueAndUpdates(this.walletsProducer);
   }
 
   // this will clear everything in the database and store the user profile
@@ -174,20 +164,14 @@ export class UserProfile {
 
     const copy = entry.clone();
     this.keyring.add(copy);
-    this.entriesCountProducer.update(this.keyring.getEntries().length);
-    this.entryLabelsProducer.update(UserProfile.labels(this.keyring.getEntries()));
-    this.entryIdsProducer.update(UserProfile.ids(this.keyring.getEntries()));
+    this.walletsProducer.update(this.walletInfos());
   }
 
   // sets the label of the n-th keyring entry of the primary keyring
   public setEntryLabel(id: number | KeyringEntryId, label: string | undefined): void {
     const entry = this.entryInPrimaryKeyring(id);
     entry.setLabel(label);
-
-    if (!this.keyring) {
-      throw new Error("UserProfile is currently locked");
-    }
-    this.entryLabelsProducer.update(UserProfile.labels(this.keyring.getEntries()));
+    this.walletsProducer.update(this.walletInfos());
   }
 
   // creates an identitiy in the n-th keyring entry of the primary keyring
@@ -276,5 +260,16 @@ export class UserProfile {
     }
 
     return entry;
+  }
+
+  private walletInfos(): ReadonlyArray<WalletInfo> {
+    if (!this.keyring) {
+      throw new Error("UserProfile is currently locked");
+    }
+
+    return this.keyring.getEntries().map(entry => ({
+      id: entry.id,
+      label: entry.label.value,
+    }));
   }
 }

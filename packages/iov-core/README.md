@@ -61,11 +61,10 @@ Inspect the profile:
 
 ```ts
 // look at profile (value reads current state)
-console.log(profile.entriesCount.value);
-console.log(profile.entryLabels.value);
+console.log(profile.wallets.value);
 
 // listen to the profile (stream of updates, good for reactive UI)
-const sub = profile.entryLabels.updates.subscribe({ next: x => console.log(x) });
+const sub = profile.wallets.updates.subscribe({ next: wallets => console.log(wallets) });
 profile.setEntryLabel(0, "12 words");
 profile.setEntryLabel(1, "24 words");
 ```
@@ -116,7 +115,7 @@ await profile.storeIn(db, passphrase);
 const loaded = await UserProfile.loadFrom(db, passphrase);
 
 // and we have the same data
-console.log(loaded.entryLabels.value);
+console.log(loaded.wallets.value);
 const ids = profile.getIdentities(0);
 console.log(ids);
 console.log(toHex(ids[0].pubkey.data));

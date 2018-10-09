@@ -27,13 +27,13 @@ describe("UserProfile", () => {
     const keyring = new Keyring();
     keyring.add(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
     const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
-    expect(profile.entriesCount.value).toEqual(1);
+    expect(profile.wallets.value.length).toEqual(1);
 
     // manipulate external keyring
     keyring.add(Ed25519HdWallet.fromMnemonic("seed brass ranch destroy peasant upper steak toy hood cliff cabin kingdom"));
 
     // profile remains unchanged
-    expect(profile.entriesCount.value).toEqual(1);
+    expect(profile.wallets.value.length).toEqual(1);
   });
 
   it("can be locked", () => {
@@ -47,14 +47,14 @@ describe("UserProfile", () => {
     {
       const keyring = new Keyring();
       const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
-      expect(profile.entriesCount.value).toEqual(0);
+      expect(profile.wallets.value.length).toEqual(0);
     }
 
     {
       const keyring = new Keyring();
       keyring.add(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
       const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
-      expect(profile.entriesCount.value).toEqual(1);
+      expect(profile.wallets.value.length).toEqual(1);
     }
 
     {
@@ -63,14 +63,14 @@ describe("UserProfile", () => {
       keyring.add(Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil"));
       keyring.add(Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
       const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
-      expect(profile.entriesCount.value).toEqual(3);
+      expect(profile.wallets.value.length).toEqual(3);
     }
   });
 
   it("initial entry labels work", () => {
     {
       const profile = new UserProfile();
-      expect(profile.entryLabels.value).toEqual([]);
+      expect(profile.wallets.value.map(i => i.label)).toEqual([]);
     }
 
     {
@@ -80,7 +80,7 @@ describe("UserProfile", () => {
       const keyring = new Keyring();
       keyring.add(entry);
       const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
-      expect(profile.entryLabels.value).toEqual(["label 1"]);
+      expect(profile.wallets.value.map(i => i.label)).toEqual(["label 1"]);
     }
 
     {
@@ -96,22 +96,22 @@ describe("UserProfile", () => {
       keyring.add(entry2);
       keyring.add(entry3);
       const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
-      expect(profile.entryLabels.value).toEqual(["label 1", "", undefined]);
+      expect(profile.wallets.value.map(i => i.label)).toEqual(["label 1", "", undefined]);
     }
   });
 
   it("can add entries", () => {
     const profile = new UserProfile();
-    expect(profile.entriesCount.value).toEqual(0);
-    expect(profile.entryLabels.value).toEqual([]);
+    expect(profile.wallets.value.length).toEqual(0);
+    expect(profile.wallets.value.map(i => i.label)).toEqual([]);
     profile.addEntry(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
-    expect(profile.entriesCount.value).toEqual(1);
-    expect(profile.entryLabels.value).toEqual([undefined]);
+    expect(profile.wallets.value.length).toEqual(1);
+    expect(profile.wallets.value.map(i => i.label)).toEqual([undefined]);
     expect(profile.getIdentities(0)).toBeTruthy();
     profile.addEntry(Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil"));
     profile.addEntry(Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
-    expect(profile.entriesCount.value).toEqual(3);
-    expect(profile.entryLabels.value).toEqual([undefined, undefined, undefined]);
+    expect(profile.wallets.value.length).toEqual(3);
+    expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined, undefined]);
     expect(profile.getIdentities(0)).toBeTruthy();
     expect(profile.getIdentities(1)).toBeTruthy();
     expect(profile.getIdentities(2)).toBeTruthy();
@@ -122,27 +122,27 @@ describe("UserProfile", () => {
     keyring.add(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
     keyring.add(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
     const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
-    expect(profile.entryLabels.value).toEqual([undefined, undefined]);
+    expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined]);
 
     profile.setEntryLabel(0, "foo1");
-    expect(profile.entryLabels.value).toEqual(["foo1", undefined]);
+    expect(profile.wallets.value.map(i => i.label)).toEqual(["foo1", undefined]);
 
     profile.setEntryLabel(1, "foo2");
-    expect(profile.entryLabels.value).toEqual(["foo1", "foo2"]);
+    expect(profile.wallets.value.map(i => i.label)).toEqual(["foo1", "foo2"]);
 
     profile.setEntryLabel(0, "bar1");
     profile.setEntryLabel(1, "bar2");
-    expect(profile.entryLabels.value).toEqual(["bar1", "bar2"]);
+    expect(profile.wallets.value.map(i => i.label)).toEqual(["bar1", "bar2"]);
 
     profile.setEntryLabel(1, "");
-    expect(profile.entryLabels.value).toEqual(["bar1", ""]);
+    expect(profile.wallets.value.map(i => i.label)).toEqual(["bar1", ""]);
 
     profile.setEntryLabel(0, "");
-    expect(profile.entryLabels.value).toEqual(["", ""]);
+    expect(profile.wallets.value.map(i => i.label)).toEqual(["", ""]);
 
     profile.setEntryLabel(0, undefined);
     profile.setEntryLabel(1, undefined);
-    expect(profile.entryLabels.value).toEqual([undefined, undefined]);
+    expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined]);
   });
 
   it("accessors also work with id instead of number", async () => {
@@ -153,19 +153,19 @@ describe("UserProfile", () => {
     const id1 = entry1.id;
 
     // make sure we can query the ids if we didn't save them from creation
-    expect(profile.entryIds.value).toEqual([id1]);
+    expect(profile.wallets.value.map(i => i.id)).toEqual([id1]);
 
     const entry2 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
     profile.addEntry(entry2);
     const id2 = entry2.id;
 
     // make sure we can query the ids if we didn't save them from creation
-    expect(profile.entryIds.value).toEqual([id1, id2]);
+    expect(profile.wallets.value.map(i => i.id)).toEqual([id1, id2]);
 
     // set the labels two different ways
     profile.setEntryLabel(0, "first");
     profile.setEntryLabel(id2, "second");
-    expect(profile.entryLabels.value).toEqual(["first", "second"]);
+    expect(profile.wallets.value.map(i => i.label)).toEqual(["first", "second"]);
 
     // make some new ids
     await profile.createIdentity(id1, HdPaths.simpleAddress(0));
@@ -273,7 +273,7 @@ describe("UserProfile", () => {
     await original.storeIn(db, defaultEncryptionPassword);
     const restored = await UserProfile.loadFrom(db, defaultEncryptionPassword);
 
-    expect(restored.entryLabels.value).toEqual(original.entryLabels.value);
+    expect(restored.wallets.value).toEqual(original.wallets.value);
 
     await db.close();
   });
