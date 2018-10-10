@@ -119,7 +119,9 @@ import { riseCodec, RISEConnection } from "@iov/rise";
 const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
 
 async function deriveAddress(wallet, a): Promise<Address> {
-  // 44'/134'/a' (see https://github.com/trezor/trezor-core/tree/master/docs/coins)
+  // 44'/1120'/a'
+  // (see https://github.com/trezor/trezor-core/tree/master/docs/coins for account based derivation
+  // paths and https://github.com/satoshilabs/slips/blob/master/slip-0044.md for RISE coin type)
   const path = [Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(1120), Slip10RawIndex.hardened(a)]
   const pubkey = (await wallet.createIdentity(path)).pubkey;
   return riseCodec.keyToAddress(pubkey);
