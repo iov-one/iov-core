@@ -96,8 +96,8 @@ const signedTransaction = {
   otherSignatures: [],
 };
 
-// Signed transacion you can PUT to
-// https://twallet.rise.io/api/transactions
+// Signed transacion you can publish via
+// curl -X PUT -H "Content-type: application/json" -d '{"transaction": INSERT_HERE}' https://twallet.rise.vision/api/transactions
 const bytesToPost = Encoding.fromUtf8(riseCodec.bytesToPost(signedTransaction));
 console.log(bytesToPost);
 ```
