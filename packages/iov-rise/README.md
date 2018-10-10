@@ -25,16 +25,16 @@ const mainIdentity = await entry.createIdentity(await passphraseToKeypair("squee
 const profile = new UserProfile();
 profile.addEntry(entry);
 
-const writer = new IovWriter(profile);
-await writer.addChain(riseConnector("https://twallet.rise.vision"));
-const chainId = writer.chainIds()[0];
-const reader = writer.reader(chainId);
+const signer = new MultiChainSigner(profile);
+await signer.addChain(riseConnector("https://twallet.rise.vision"));
+const chainId = signer.chainIds()[0];
+const connection = signer.connection(chainId);
 
-const mainAddress = writer.keyToAddress(chainId, mainIdentity.pubkey);
+const mainAddress = signer.keyToAddress(chainId, mainIdentity.pubkey);
 console.log("Sender address: " + mainAddress);
-console.log((await reader.getAccount({ address: mainAddress })).data[0].balance);
+console.log((await connection.getAccount({ address: mainAddress })).data[0].balance);
 
-const recipientAddress = "10145108642177909005R" as Address;
+const recipientAddress = "4278021116091793760R" as Address;
 
 const sendTx: SendTx = {
   kind: TransactionKind.Send,
@@ -48,9 +48,9 @@ const sendTx: SendTx = {
   }
 };
 
-console.log("Writing to blockchain. This may take a while …");
-await writer.signAndCommit(sendTx, 0);
-console.log((await reader.getAccount({ address: recipientAddress })).data[0].balance);
+console.log("Sending transaction into the network blockchain …");
+const response = await signer.signAndCommit(sendTx, entry.id);
+console.log(`Wait a few seconds and visit https://texplorer.rise.vision/tx/${Encoding.fromAscii(response.data.txid)}`);
 ```
 
 ### The manual way
