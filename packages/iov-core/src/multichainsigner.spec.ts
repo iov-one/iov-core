@@ -2,7 +2,7 @@ import { SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { bnsConnector, bnsFromOrToTag } from "@iov/bns";
 import { Ed25519HdWallet, HdPaths, KeyringEntryId, LocalIdentity, UserProfile } from "@iov/keycontrol";
 
-import { IovWriter } from "./writer";
+import { MultiChainSigner } from "./multichainsigner";
 
 // We assume the same BOV context from iov-bns to run some simple tests
 // against that backend.
@@ -19,12 +19,12 @@ const pendingWithoutTendermint = () => {
   }
 };
 
-describe("IovWriter", () => {
+describe("MultiChainSigner", () => {
   it("works with no chains", () => {
     const profile = new UserProfile();
-    const writer = new IovWriter(profile);
-    expect(writer).toBeTruthy();
-    expect(writer.chainIds().length).toEqual(0);
+    const signer = new MultiChainSigner(profile);
+    expect(signer).toBeTruthy();
+    expect(signer.chainIds().length).toEqual(0);
   });
 
   // This uses setup from iov-bns...
@@ -57,17 +57,17 @@ describe("IovWriter", () => {
 
       const { profile, mainWalletId } = await userProfileWithFaucet();
 
-      const writer = new IovWriter(profile);
-      await writer.addChain(bnsConnector(bovUrl));
-      expect(writer.chainIds().length).toEqual(1);
-      const chainId = writer.chainIds()[0];
+      const signer = new MultiChainSigner(profile);
+      await signer.addChain(bnsConnector(bovUrl));
+      expect(signer.chainIds().length).toEqual(1);
+      const chainId = signer.chainIds()[0];
 
       const faucet = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(0));
       const recipient = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(4));
-      const recipientAddress = writer.keyToAddress(chainId, recipient.pubkey);
+      const recipientAddress = signer.keyToAddress(chainId, recipient.pubkey);
 
-      // construct a sendtx, this mirrors the IovWriter api
-      const memo = `IovWriter style (${Math.random()})`;
+      // construct a sendtx, this mirrors the MultiChainSigner api
+      const memo = `MultiChainSigner style (${Math.random()})`;
       const sendTx: SendTx = {
         kind: TransactionKind.Send,
         chainId,
@@ -80,13 +80,13 @@ describe("IovWriter", () => {
           tokenTicker: cash,
         },
       };
-      const res = await writer.signAndCommit(sendTx, mainWalletId);
+      const res = await signer.signAndCommit(sendTx, mainWalletId);
       expect(res.metadata.status).toEqual(true);
 
       // we should be a little bit richer
-      const reader = writer.reader(chainId);
+      const connection = signer.connection(chainId);
 
-      const gotMoney = await reader.getAccount({ address: recipientAddress });
+      const gotMoney = await connection.getAccount({ address: recipientAddress });
       expect(gotMoney).toBeTruthy();
       expect(gotMoney.data.length).toEqual(1);
       const paid = gotMoney.data[0];
@@ -97,7 +97,7 @@ describe("IovWriter", () => {
       expect(paid.balance[0].fractional).toBeGreaterThanOrEqual(777);
 
       // find the transaction we sent by comparing the memo
-      const results = await reader.searchTx({ tags: [bnsFromOrToTag(recipientAddress)] });
+      const results = await connection.searchTx({ tags: [bnsFromOrToTag(recipientAddress)] });
       expect(results.length).toBeGreaterThanOrEqual(1);
       const last = results[results.length - 1];
       expect(last.transaction.kind).toEqual(TransactionKind.Send);
@@ -110,17 +110,17 @@ describe("IovWriter", () => {
       pendingWithoutTendermint();
 
       const { profile, mainWalletId } = await userProfileWithFaucet();
-      const writer = new IovWriter(profile);
-      expect(writer.chainIds().length).toEqual(0);
+      const signer = new MultiChainSigner(profile);
+      expect(signer.chainIds().length).toEqual(0);
 
       // add the bov chain
-      await writer.addChain(bnsConnector(bovUrl));
-      expect(writer.chainIds().length).toEqual(1);
-      const bovId = writer.chainIds()[0];
+      await signer.addChain(bnsConnector(bovUrl));
+      expect(signer.chainIds().length).toEqual(1);
+      const bovId = signer.chainIds()[0];
 
       // add a raw tendermint chain (don't query, it will fail)
-      await writer.addChain(bnsConnector(kvstoreUrl));
-      const twoChains = writer.chainIds();
+      await signer.addChain(bnsConnector(kvstoreUrl));
+      const twoChains = signer.chainIds();
       // it should store both chains
       expect(twoChains.length).toEqual(2);
       expect(twoChains[0]).toBeDefined();
@@ -129,9 +129,9 @@ describe("IovWriter", () => {
 
       // make sure we can query with multiple registered chains
       const faucet = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(0));
-      const faucetAddr = writer.keyToAddress(bovId, faucet.pubkey);
-      const reader = writer.reader(bovId);
-      const acct = await reader.getAccount({ address: faucetAddr });
+      const faucetAddr = signer.keyToAddress(bovId, faucet.pubkey);
+      const connection = signer.connection(bovId);
+      const acct = await connection.getAccount({ address: faucetAddr });
       expect(acct).toBeTruthy();
       expect(acct.data.length).toBe(1);
       expect(acct.data[0].balance.length).toBe(1);

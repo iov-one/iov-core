@@ -13,6 +13,8 @@ Breaking changes
 * In UserProfile, .entriesCount, .entryLabels and .entryIds have been merged into .wallets
 * In UserProfile, .setEntryLabel, .createIdentity, .setIdentityLabel, .getIdentities, .signTransaction, .appendSignature
   now only accept string IDs for the entry/wallet argument
+* @iov/core: rename `IovWriter` to `MultiChainSigner`
+* @iov/core: rename the getter `reader` to `connection` in MultiChainSigner
 
 ## 0.6.1
 

@@ -186,7 +186,7 @@ describe("Integration tests with bov+tendermint", () => {
     // check current nonce (should be 0, but don't fail if used by other)
     const nonce = await getNonce(connection, faucetAddr);
 
-    // construct a sendtx, this is normally used in the IovWriter api
+    // construct a sendtx, this is normally used in the MultiChainSigner api
     const sendTx: SendTx = {
       kind: TransactionKind.Send,
       chainId,
@@ -261,7 +261,7 @@ describe("Integration tests with bov+tendermint", () => {
     faucet: PublicIdentity,
     rcptAddr: Address,
   ): Promise<BcpTransactionResponse> => {
-    // construct a sendtx, this is normally used in the IovWriter api
+    // construct a sendtx, this is normally used in the MultiChainSigner api
     const chainId = await connection.chainId();
     const faucetAddr = keyToAddress(faucet.pubkey);
     const nonce = await getNonce(connection, faucetAddr);
@@ -463,7 +463,7 @@ describe("Integration tests with bov+tendermint", () => {
     const initSwaps = await connection.getSwap({ recipient: rcptAddr });
     expect(initSwaps.data.length).toEqual(0);
 
-    // construct a sendtx, this is normally used in the IovWriter api
+    // construct a sendtx, this is normally used in the MultiChainSigner api
     const swapOfferTx: SwapOfferTx = {
       kind: TransactionKind.SwapOffer,
       chainId,

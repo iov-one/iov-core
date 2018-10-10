@@ -2,4 +2,4 @@ export { Address, Nonce, SendTx, SetNameTx, TokenTicker, TransactionKind } from 
 export { bnsConnector, bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "@iov/bns";
 export { Ed25519HdWallet, Ed25519KeyringEntry, HdPaths, Keyring, KeyringEntry, KeyringEntryImplementationIdString, KeyringEntrySerializationString, UserProfile, } from "@iov/keycontrol";
 export { ChainId } from "@iov/tendermint-types";
-export { IovWriter } from "./writer";
+export { MultiChainSigner } from "./multichainsigner";

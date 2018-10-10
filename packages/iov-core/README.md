@@ -4,8 +4,8 @@
 
 @iov/core is the main entrypoint into the monorepo, exposing high-level functionality
 to easily build blockchain clients. It uses the keymanagement functionality of `UserProfile`,
-and the generic blockchain connection of `IovReader`, and pulls them together into one
-`IovWriter`, which can query state and sign transactions on multiple blockchains.
+and the generic blockchain connection of `BcpConnection`, and pulls them together into one
+`MultiChainSigner`, which can query state and sign transactions on multiple blockchains.
 The examples below show a basic usage of the core library. You may also want to experiment
 with [@iov/cli](https://github.com/iov-one/iov-core/blob/master/packages/iov-cli/README.md)
 as a developer tool to familiarize yourself with this functionality.
@@ -161,21 +161,21 @@ in the genesis file, by running `bov init IOV $ADDR`.
 Now, connect to the network:
 
 ```ts
-import { bnsConnector, IovWriter } from '@iov/core';
+import { bnsConnector, MultiChainSigner } from '@iov/core';
 
-const writer = new IovWriter(profile);
-await writer.addChain(bnsConnector('wss://bov.friendnet-fast.iov.one/'));
+const signer = new MultiChainSigner(profile);
+await signer.addChain(bnsConnector('wss://bov.friendnet-fast.iov.one/'));
 
-const chainId = writer.chainIds()[0];
+const chainId = signer.chainIds()[0];
 console.log(chainId); // is this what you got yourself?
 ```
 
 List the tickers on the network:
 
 ```ts
-const reader = writer.reader(chainId);
+const connection = signer.connection(chainId);
 
-const tickers = await reader.getAllTickers();
+const tickers = await connection.getAllTickers();
 console.log(tickers.data);
 ```
 
@@ -185,12 +185,12 @@ Query the testnet for some existing genesis accounts:
 // this is pulled from the genesis account
 import { Address } from "@iov/bcp-types"
 const bert = "E28AE9A6EB94FC88B73EB7CBD6B87BF93EB9BEF0" as Address;
-const faucet = await reader.getAccount({ address: bert });
+const faucet = await connection.getAccount({ address: bert });
 console.log(faucet);
 console.log(faucet.data[0])
 
 // you can also query by registered name
-const byName = await reader.getAccount({ name: "bert" });
+const byName = await connection.getAccount({ name: "bert" });
 console.log(byName.data[0])
 ```
 
@@ -207,13 +207,13 @@ await faucet.credit(addr, "IOV" as TokenTicker);
 Then query your account:
 
 ```ts
-const mine = await reader.getAccount({ address: addr });
+const mine = await connection.getAccount({ address: addr });
 console.log(mine); // should show non-empty array for data
 console.log(mine.data[0]);
 
 const addr2 = bnsCodec.keyToAddress(id2.pubkey);
 console.log(toHex(addr2));
-let yours = await reader.getAccount({ address: addr2 });
+let yours = await connection.getAccount({ address: addr2 });
 console.log(yours); // should show empty array for data
 ```
 
@@ -236,17 +236,17 @@ const sendTx: SendTx = {
 };
 
 // the signer has a 0 nonce
-console.log(await writer.getNonce(chainId, addr))
+console.log(await signer.getNonce(chainId, addr))
 
 // we must have the private key for the signer (id1a)
 // second argument (0) is the keyring entry where the private key can be found
-await writer.signAndCommit(sendTx, 0);
+await signer.signAndCommit(sendTx, 0);
 
 // note that the nonce of the signer is incremented
-console.log(await writer.getNonce(chainId, addr))
+console.log(await signer.getNonce(chainId, addr))
 
 // and we have a balance on the recipient now
-yours = await reader.getAccount({ address: addr2 });
+yours = await connection.getAccount({ address: addr2 });
 console.log(yours); // should show non-empty array for data
 console.log(yours.data[0]); // should show non-empty array for data
 ```
@@ -254,7 +254,7 @@ console.log(yours.data[0]); // should show non-empty array for data
 Now, query the transaction history:
 
 ```ts
-const history = await reader.searchTx({ tags: [bnsFromOrToTag(addr2)] }));
+const history = await connection.searchTx({ tags: [bnsFromOrToTag(addr2)] }));
 console.log(history);
 const first = history[0].transaction as SendTx;
 console.log(first.amount);

@@ -17,4 +17,4 @@ export {
 } from "@iov/keycontrol";
 export { ChainId } from "@iov/tendermint-types";
 
-export { IovWriter } from "./writer";
+export { MultiChainSigner } from "./multichainsigner";
