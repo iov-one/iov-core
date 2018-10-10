@@ -9,19 +9,19 @@ import { Encoding } from "@iov/encoding";
 export function toRiseTimestamp(date: ReadonlyDate): number {
   const timestamp = Math.floor(date.getTime() / 1000);
 
-  const liskEpoch = Date.UTC(2016, 4, 24, 17, 0, 0, 0) / 1000;
-  const liskTimestamp = timestamp - liskEpoch;
+  const riseEpoch = Date.UTC(2016, 4, 24, 17, 0, 0, 0) / 1000;
+  const riseTimestamp = timestamp - riseEpoch;
 
-  // Lisk timestamp must be in the signed int32 range (to be stored in a Postgres
+  // RISE timestamp must be in the signed int32 range (to be stored in a Postgres
   // integer column and to be serializeable as 4 bytes) but has no further
   // plausibility restrictions.
-  // https://github.com/LiskHQ/lisk/blob/v1.0.3/logic/transaction.js#L674
+  // https://github.com/RiseVision/rise-node/blob/v1.1.1/src/logic/transaction.ts#L346
 
-  if (liskTimestamp < -2147483648 || liskTimestamp > 2147483647) {
-    throw new Error("Lisk timestemp not in int32 range");
+  if (riseTimestamp < -2147483648 || riseTimestamp > 2147483647) {
+    throw new Error("RISE timestamp not in int32 range");
   }
 
-  return liskTimestamp;
+  return riseTimestamp;
 }
 
 export function amountFromComponents(whole: number, fractional: number): Long {
@@ -33,7 +33,7 @@ export function amountFromComponents(whole: number, fractional: number): Long {
 
 export function serializeTransaction(unsigned: UnsignedTransaction, creationTime: ReadonlyDate): Uint8Array {
   if (unsigned.fee !== undefined) {
-    throw new Error("Fee must not be set. It is fixed in Lisk and not included in the signed content.");
+    throw new Error("Fee must not be set. It is fixed in RISE and not included in the signed content.");
   }
 
   switch (unsigned.kind) {

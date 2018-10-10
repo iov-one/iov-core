@@ -48,7 +48,7 @@ export const riseCodec: TxCodec = {
     switch (signed.transaction.kind) {
       case TransactionKind.Send:
         const timestamp = signed.primarySignature.nonce.toNumber();
-        const liskTimestamp = timestamp - 1464109200;
+        const riseTimestamp = timestamp - 1464109200;
         const id = transactionId(
           signed.transaction,
           new ReadonlyDate(timestamp * 1000),
@@ -65,7 +65,7 @@ export const riseCodec: TxCodec = {
           recipientId: signed.transaction.recipient,
           senderId: pubkeyToAddress(signed.primarySignature.publicKey.data),
           senderPublicKey: Encoding.toHex(signed.primarySignature.publicKey.data),
-          timestamp: liskTimestamp,
+          timestamp: riseTimestamp,
           fee: 10000000, // 0.1 RISE fixed
           signature: Encoding.toHex(signed.primarySignature.signature),
           id: Encoding.fromAscii(id),
@@ -127,13 +127,7 @@ export const riseCodec: TxCodec = {
   },
 
   /**
-   * ASCII-encoded address string, e.g. 6076671634347365051L
-   *
-   * Addresses cannot be stored as raw uint64 because there are two types of recipient addresses
-   * on the Lisk blockchain that cannot be encoded as uint64 :
-   * 1. leading zeros make different addresses ("123L" != "000123L")
-   * 2. some addresses exceed the uint64 range (e.g. "19961131544040416558L")
-   * These are bugs we have to deal with.
+   * Address string, e.g. 10145108642177909005R
    */
   keyToAddress: (pubkey: PublicKeyBundle): Address => {
     return pubkeyToAddress(pubkey.data) as Address;

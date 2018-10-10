@@ -11,7 +11,7 @@ const { fromAscii, fromHex } = Encoding;
 
 // use nethash as chain ID
 const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
-const liskEpochAsUnixTimestamp = 1464109200;
+const riseEpochAsUnixTimestamp = 1464109200;
 const emptyNonce = new Long(0) as Nonce;
 
 describe("toRiseTimestamp", () => {
@@ -52,7 +52,7 @@ describe("toRiseTimestamp", () => {
     // $ python3 -c 'import calendar, datetime; print(calendar.timegm(datetime.datetime(2040, 3, 21, 17, 13, 22, 0).utctimetuple()))'
     // 2215962802
     const dateIn2040 = new ReadonlyDate(ReadonlyDate.UTC(2040, 2, 21, 17, 13, 22));
-    expect(toRiseTimestamp(dateIn2040)).toEqual(2215962802 - liskEpochAsUnixTimestamp);
+    expect(toRiseTimestamp(dateIn2040)).toEqual(2215962802 - riseEpochAsUnixTimestamp);
   });
 
   it("throws for time 70 years before RISE epoch", () => {
@@ -79,13 +79,13 @@ describe("amountFromComponents", () => {
     expect(amountFromComponents(1, 23456789)).toEqual(Long.fromNumber(123456789, true));
   });
 
-  it("works for 10 million lisk", () => {
+  it("works for 10 million RISE", () => {
     expect(amountFromComponents(10000000, 0)).toEqual(Long.fromString("1000000000000000", true, 10));
     // set high and low digit to trigger precision bugs in floating point operations
     expect(amountFromComponents(10000000, 1)).toEqual(Long.fromString("1000000000000001", true, 10));
   });
 
-  it("works for 100 million lisk", () => {
+  it("works for 100 million RISE", () => {
     expect(amountFromComponents(100000000, 0)).toEqual(Long.fromString("10000000000000000", true, 10));
     // set high and low digit to trigger precision bugs in floating point operations
     expect(amountFromComponents(100000000, 1)).toEqual(Long.fromString("10000000000000001", true, 10));
@@ -93,7 +93,7 @@ describe("amountFromComponents", () => {
 });
 
 describe("serializeTransaction", () => {
-  const defaultCreationDate = new ReadonlyDate((865708731 + liskEpochAsUnixTimestamp) * 1000);
+  const defaultCreationDate = new ReadonlyDate((865708731 + riseEpochAsUnixTimestamp) * 1000);
 
   it("can serialize type 0 without memo", () => {
     const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
@@ -149,7 +149,7 @@ describe("serializeTransaction", () => {
 });
 
 describe("transactionId", () => {
-  const defaultCreationDate = new ReadonlyDate((865708731 + liskEpochAsUnixTimestamp) * 1000);
+  const defaultCreationDate = new ReadonlyDate((865708731 + riseEpochAsUnixTimestamp) * 1000);
 
   it("can calculate ID of type 0 without memo", () => {
     const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");

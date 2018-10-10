@@ -40,7 +40,7 @@ describe("Parse", () => {
     expect(Parse.riseAmount("123456789")).toEqual(expected);
   });
 
-  it("parses lisk timestamp 0 as Lisk epoch", () => {
+  it("parses RISE timestamp 0 as RISE epoch", () => {
     expect(Parse.fromRiseTimestamp(0)).toEqual(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 17, 0, 0, 0)));
   });
 
@@ -95,7 +95,7 @@ describe("Parse", () => {
       Long.fromNumber(2208988800) as Nonce,
     );
 
-    // Out of Lisk timestamp range (2016 +/- 70 years). This is not strictly
+    // Out of RISE timestamp range (2016 +/- 70 years). This is not strictly
     // required but shows that we cover the full range and more by storing
     // signed, long UNIX timestamps.
     //

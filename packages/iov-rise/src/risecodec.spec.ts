@@ -17,17 +17,17 @@ const { fromHex } = Encoding;
 
 // use nethash as chain ID
 const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
-const liskEpochAsUnixTimestamp = 1464109200;
-const defaultCreationTimestamp = Long.fromNumber(865708731 + liskEpochAsUnixTimestamp);
+const riseEpochAsUnixTimestamp = 1464109200;
+const defaultCreationTimestamp = Long.fromNumber(865708731 + riseEpochAsUnixTimestamp);
 
 describe("riseCodec", () => {
   it("derives addresses properly", () => {
-    // https://testnet-explorer.lisk.io/address/6076671634347365051L
+    // https://texplorer.rise.vision/address/10145108642177909005R
     const pubkey: PublicKeyBundle = {
       algo: Algorithm.Ed25519,
-      data: fromHex("f4852b270f76dc8b49bfa88de5906e81d3b001d23852f0e74ba60cac7180a184") as PublicKeyBytes,
+      data: fromHex("34770ce843a01d975773ba2557b6643b32fe088818d343df2c32cbb89b286b3f") as PublicKeyBytes,
     };
-    expect(riseCodec.keyToAddress(pubkey)).toEqual("6076671634347365051R");
+    expect(riseCodec.keyToAddress(pubkey)).toEqual("10145108642177909005R");
   });
 
   it("can create bytes to post", () => {
@@ -119,7 +119,7 @@ describe("riseCodec", () => {
     expect(parsed.transaction.recipient).toEqual("9662024034251537644R");
 
     expect(parsed.primarySignature.nonce).toEqual(Long.fromNumber(
-      75015345 + liskEpochAsUnixTimestamp,
+      75015345 + riseEpochAsUnixTimestamp,
     ) as Nonce);
     expect(parsed.primarySignature.publicKey.algo).toEqual(Algorithm.Ed25519);
     expect(parsed.primarySignature.publicKey.data).toEqual(

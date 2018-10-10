@@ -6,14 +6,13 @@ const { fromHex } = Encoding;
 
 describe("Derivation", () => {
   describe("passphraseToKeypair", () => {
-    it("works with passphrase from Lisk Hub", async () => {
-      const passphrase = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
+    it("works with passphrase from RISE web wallet", async () => {
+      const passphrase = "force vast web quiz trim tape hub tumble ship lemon member fault";
 
       const keypair = await passphraseToKeypair(passphrase);
       expect(keypair.pubkey).toEqual(
-        // 10176009299933723198L on Lisk Testnet
-        // ^^ Works for RISE too
-        fromHex("06ad4341a609af2de837e1156f81849b05bf3c280940a9f45db76d09a3a3f2fa"),
+        // https://texplorer.rise.vision/address/8662508892470377605R
+        fromHex("98afed9bff5bc076d3088c7ba69362e537aeb2847cc0e6452a242002c59cc3d1"),
       );
       expect(keypair.privkey).toEqual(jasmine.any(Uint8Array));
       expect(keypair.privkey.length).toEqual(32);
@@ -22,17 +21,15 @@ describe("Derivation", () => {
 
   describe("pubkeyToAddress", () => {
     it("works for address in signed int64 range", () => {
-      // https://testnet-explorer.lisk.io/address/6076671634347365051L
-      // ^^ Works for RISE too
-      const pubkey = fromHex("f4852b270f76dc8b49bfa88de5906e81d3b001d23852f0e74ba60cac7180a184");
-      expect(pubkeyToAddress(pubkey)).toEqual("6076671634347365051R");
+      // https://texplorer.rise.vision/address/2064734259257657740R
+      const pubkey = fromHex("b288e6f90327156c44d6c5599bf271e96c81ba085901396df08872bf397c3977");
+      expect(pubkeyToAddress(pubkey)).toEqual("2064734259257657740R");
     });
 
     it("works for address outside of signed int64 range", () => {
-      // https://testnet-explorer.lisk.io/address/10176009299933723198L
-      // ^^ Works for RISE too
-      const pubkey = fromHex("06ad4341a609af2de837e1156f81849b05bf3c280940a9f45db76d09a3a3f2fa");
-      expect(pubkeyToAddress(pubkey)).toEqual("10176009299933723198R");
+      // https://texplorer.rise.vision/address/10145108642177909005R
+      const pubkey = fromHex("34770ce843a01d975773ba2557b6643b32fe088818d343df2c32cbb89b286b3f");
+      expect(pubkeyToAddress(pubkey)).toEqual("10145108642177909005R");
     });
   });
 });
