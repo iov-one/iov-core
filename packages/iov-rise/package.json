@@ -1,14 +1,14 @@
 {
-  "name": "@iov/lisk",
-  "version": "0.7.0-alpha.0",
-  "description": "Transaction codec and client to communicate with the Lisk blockchain",
-  "author": "IOV SAS <admin@iov.one>",
+  "name": "@iov/rise",
+  "version": "0.6.1",
+  "description": "Transaction codec and client to communicate with the RISE blockchain",
+  "author": "Andrea Baccega <vekexasia@gmail.com>, IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
   "main": "build/index.js",
   "types": "types/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-lisk"
+    "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-rise"
   },
   "publishConfig": {
     "access": "public"
