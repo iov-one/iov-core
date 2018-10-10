@@ -20,7 +20,7 @@ const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbece
 const liskEpochAsUnixTimestamp = 1464109200;
 const defaultCreationTimestamp = Long.fromNumber(865708731 + liskEpochAsUnixTimestamp);
 
-describe("liskCodec", () => {
+describe("riseCodec", () => {
   it("derives addresses properly", () => {
     // https://testnet-explorer.lisk.io/address/6076671634347365051L
     const pubkey: PublicKeyBundle = {
