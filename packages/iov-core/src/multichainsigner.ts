@@ -51,7 +51,7 @@ export class MultiChainSigner {
     return Array.from(this.knownChains.keys()).map(key => key as ChainId);
   }
 
-  public reader(chainId: ChainId): BcpConnection {
+  public connection(chainId: ChainId): BcpConnection {
     return this.getChain(chainId).connection;
   }
 

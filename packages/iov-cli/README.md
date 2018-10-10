@@ -66,10 +66,10 @@ $ iov-cli
 > const signer = new MultiChainSigner(profile);
 > await signer.addChain(bnsConnector("ws://localhost:22345"));
 > const chainId = signer.chainIds()[0];
-> const reader = signer.reader(chainId);
+> const connection = signer.connection(chainId);
 
 > const faucetAddress = signer.keyToAddress(chainId, faucet.pubkey);
-> (await reader.getAccount({ address: faucetAddress })).data[0].balance
+> (await connection.getAccount({ address: faucetAddress })).data[0].balance
 
 > const recipient = await profile.createIdentity(0, HdPaths.simpleAddress(1));
 > const recipientAddress = signer.keyToAddress(chainId, recipient.pubkey);
@@ -89,10 +89,10 @@ const sendTx: SendTx = {
 };
 ^D
 > await signer.signAndCommit(sendTx, 0);
-> (await reader.getAccount({ address: recipientAddress })).data[0].balance;
+> (await connection.getAccount({ address: recipientAddress })).data[0].balance;
 
-> await reader.searchTx({ tags: [bnsFromOrToTag(faucetAddress)] });
-> await reader.searchTx({ tags: [bnsFromOrToTag(recipientAddress)] });
+> await connection.searchTx({ tags: [bnsFromOrToTag(faucetAddress)] });
+> await connection.searchTx({ tags: [bnsFromOrToTag(recipientAddress)] });
 ```
 
 3. Congratulations, you sent your first money!
@@ -157,7 +157,7 @@ const setNameTx: SetNameTx = {
 };
 ^D
 > await signer.signAndCommit(setNameTx, 0);
-> (await reader.getAccount({ name: "hans" })).data[0]
+> (await connection.getAccount({ name: "hans" })).data[0]
 { name: 'hans',
   address:
    Uint8Array [
@@ -169,18 +169,18 @@ const setNameTx: SetNameTx = {
 
 ### Disconnecting
 
-When you are done using a WebSocket connection, disconnect the reader
+When you are done using a WebSocket connection, disconnect the connection
 
 ```
-> (await reader.getAccount({ address: faucetAddress })).data[0].balance
+> (await connection.getAccount({ address: faucetAddress })).data[0].balance
 [ { whole: 123456789,
     fractional: 0,
     tokenTicker: 'CASH',
     tokenName: 'Main token of this chain',
     sigFigs: 6 } ]
-> reader.disconnect()
+> connection.disconnect()
 undefined
-> (await reader.getAccount({ address: faucetAddress })).data[0].balance
+> (await connection.getAccount({ address: faucetAddress })).data[0].balance
 Error: Socket was closed, so no data can be sent anymore.
     at ...
 ```
@@ -200,13 +200,13 @@ When using a Testnet, you can use the BovFaucet to receive tokens:
 > const signer = new MultiChainSigner(profile);
 > await signer.addChain(bnsConnector("https://bov.friendnet-slow.iov.one"));
 > const chainId = signer.chainIds()[0];
-> const reader = signer.reader(chainId);
+> const connection = signer.connection(chainId);
 > const meAddress = signer.keyToAddress(chainId, me.pubkey);
 
 > const bovFaucet = new BovFaucet("https://faucet.friendnet-slow.iov.one/faucet");
 
 > await bovFaucet.credit(meAddress)
-> (await reader.getAccount({ address: meAddress })).data[0].balance
+> (await connection.getAccount({ address: meAddress })).data[0].balance
 [ { whole: 10,
     fractional: 0,
     tokenTicker: 'IOV',
@@ -214,7 +214,7 @@ When using a Testnet, you can use the BovFaucet to receive tokens:
     sigFigs: 6 } ]
 
 > await bovFaucet.credit(meAddress, "PAJA" as TokenTicker)
-> (await reader.getAccount({ address: meAddress })).data[0].balance
+> (await connection.getAccount({ address: meAddress })).data[0].balance
 [ { whole: 10,
     fractional: 0,
     tokenTicker: 'IOV',

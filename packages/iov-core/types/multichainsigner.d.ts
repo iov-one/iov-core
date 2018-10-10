@@ -6,7 +6,7 @@ export declare class MultiChainSigner {
     private readonly knownChains;
     constructor(profile: UserProfile);
     chainIds(): ReadonlyArray<ChainId>;
-    reader(chainId: ChainId): BcpConnection;
+    connection(chainId: ChainId): BcpConnection;
     addChain(connector: ChainConnector): Promise<void>;
     keyToAddress(chainId: ChainId, key: PublicKeyBundle): Address;
     getNonce(chainId: ChainId, addr: Address): Promise<Nonce>;

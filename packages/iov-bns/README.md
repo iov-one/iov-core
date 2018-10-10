@@ -2,12 +2,12 @@
 
 [![npm version](https://img.shields.io/npm/v/@iov/bns.svg)](https://www.npmjs.com/package/@iov/bns)
 
-This package is an implementation of the IovReader interface for the BNS blockchain
+This package is an implementation of the BcpConnection interface for the BNS blockchain
 (currently just as [bcp-demo](https://github.com/iov-one/bcp-demo) prototype).
 It should be able to adapt this code fairly easily to support any other
 [weave](https://github.com/confio/weave) based blockchain as well.
 
-This provides a reference implementation of the full feature set of `IovReader`, so
+This provides a reference implementation of the full feature set of `BcpConnection`, so
 it is also a good read when starting support of another blockchain.
 
 Simplest usage, to use auto-detecting tendermint client and standard

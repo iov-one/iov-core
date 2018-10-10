@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/@iov/stream.svg)](https://www.npmjs.com/package/@iov/stream)
 
 @iov/stream are some helper methods and classes to ceal with stream processing.
-As IovReader exposes a Stream based event API, and tendermint/RpcClient exposes
+As BcpConnection exposes a Stream based event API, and tendermint/RpcClient exposes
 Stream based subscriptions, there is common useful functionality for creating
 and consuming streams both in applications as well as in the test code.
 

@@ -80,9 +80,9 @@ describe("MultiChainSigner", () => {
       expect(res.metadata.status).toEqual(true);
 
       // we should be a little bit richer
-      const reader = signer.reader(chainId);
+      const connection = signer.connection(chainId);
 
-      const gotMoney = await reader.getAccount({ address: recipientAddress });
+      const gotMoney = await connection.getAccount({ address: recipientAddress });
       expect(gotMoney).toBeTruthy();
       expect(gotMoney.data.length).toEqual(1);
       const paid = gotMoney.data[0];
@@ -93,7 +93,7 @@ describe("MultiChainSigner", () => {
       expect(paid.balance[0].fractional).toBeGreaterThanOrEqual(777);
 
       // find the transaction we sent by comparing the memo
-      const results = await reader.searchTx({ tags: [bnsFromOrToTag(recipientAddress)] });
+      const results = await connection.searchTx({ tags: [bnsFromOrToTag(recipientAddress)] });
       expect(results.length).toBeGreaterThanOrEqual(1);
       const last = results[results.length - 1];
       expect(last.transaction.kind).toEqual(TransactionKind.Send);
@@ -126,8 +126,8 @@ describe("MultiChainSigner", () => {
       // make sure we can query with multiple registered chains
       const faucet = await profile.createIdentity(0, HdPaths.simpleAddress(0));
       const faucetAddr = signer.keyToAddress(bovId, faucet.pubkey);
-      const reader = signer.reader(bovId);
-      const acct = await reader.getAccount({ address: faucetAddr });
+      const connection = signer.connection(bovId);
+      const acct = await connection.getAccount({ address: faucetAddr });
       expect(acct).toBeTruthy();
       expect(acct.data.length).toBe(1);
       expect(acct.data[0].balance.length).toBe(1);
