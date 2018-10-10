@@ -15,65 +15,79 @@ function pendingWithoutLongRunning(): void {
   }
 }
 
-const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
+function pendingWithoutLiskDevnet(): void {
+  if (!process.env.LISK_ENABLED) {
+    pending("Set LISK_ENABLED to enable Lisk network tests");
+  }
+}
 
 describe("LiskConnection", () => {
-  const base = "https://testnet.lisk.io";
+  // a network that does not exist used for non-networking tests
+  const dummynetBase = "https://my-host.tld:12345";
+  const dummynetChainId = "f0b96e79655665abbe95b7a7f626036eb20244ead279e5f972e87cbfd77daa09" as ChainId;
+  // a local devnet
+  const devnetBase = "http://localhost:4000";
+  const devnetChainId = "198f2b61a8eb95fbeed58b8216780b68f697f26b849acf00c8c93bb9b24f783d" as ChainId;
+  // TODO: rewrite tests based on testnet and remove the following lines
+  const testnetBase = "https://testnet.lisk.io";
+  const testnetChainId = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
 
   it("can be constructed", () => {
-    const connection = new LiskConnection(base, liskTestnet);
+    const connection = new LiskConnection(dummynetBase, dummynetChainId);
     expect(connection).toBeTruthy();
   });
 
   it("takes different kind of API URLs", () => {
-    expect(new LiskConnection("http://localhost", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("http://localhost/", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("https://localhost", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("https://localhost/", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("http://localhost:456", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("http://localhost:456/", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("https://localhost:456", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("https://localhost:456/", liskTestnet)).toBeTruthy();
+    expect(new LiskConnection("http://localhost", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("http://localhost/", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("https://localhost", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("https://localhost/", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("http://localhost:456", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("http://localhost:456/", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("https://localhost:456", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("https://localhost:456/", dummynetChainId)).toBeTruthy();
 
-    expect(new LiskConnection("http://my-HOST.tld", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("http://my-HOST.tld/", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("https://my-HOST.tld", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("https://my-HOST.tld/", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("http://my-HOST.tld:456", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("http://my-HOST.tld:456/", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("https://my-HOST.tld:456", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("https://my-HOST.tld:456/", liskTestnet)).toBeTruthy();
+    expect(new LiskConnection("http://my-HOST.tld", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("http://my-HOST.tld/", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("https://my-HOST.tld", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("https://my-HOST.tld/", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("http://my-HOST.tld:456", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("http://my-HOST.tld:456/", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("https://my-HOST.tld:456", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("https://my-HOST.tld:456/", dummynetChainId)).toBeTruthy();
 
-    expect(new LiskConnection("http://123.123.123.123", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("http://123.123.123.123/", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("https://123.123.123.123", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("https://123.123.123.123/", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("http://123.123.123.123:456", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("http://123.123.123.123:456/", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("https://123.123.123.123:456", liskTestnet)).toBeTruthy();
-    expect(new LiskConnection("https://123.123.123.123:456/", liskTestnet)).toBeTruthy();
+    expect(new LiskConnection("http://123.123.123.123", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("http://123.123.123.123/", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("https://123.123.123.123", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("https://123.123.123.123/", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("http://123.123.123.123:456", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("http://123.123.123.123:456/", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("https://123.123.123.123:456", dummynetChainId)).toBeTruthy();
+    expect(new LiskConnection("https://123.123.123.123:456/", dummynetChainId)).toBeTruthy();
   });
 
   it("throws for invalid API URLs", () => {
     // wrong scheme
-    expect(() => new LiskConnection("localhost", liskTestnet)).toThrowError(/invalid api url/i);
-    expect(() => new LiskConnection("ftp://localhost", liskTestnet)).toThrowError(/invalid api url/i);
-    expect(() => new LiskConnection("ws://localhost", liskTestnet)).toThrowError(/invalid api url/i);
+    expect(() => new LiskConnection("localhost", dummynetChainId)).toThrowError(/invalid api url/i);
+    expect(() => new LiskConnection("ftp://localhost", dummynetChainId)).toThrowError(/invalid api url/i);
+    expect(() => new LiskConnection("ws://localhost", dummynetChainId)).toThrowError(/invalid api url/i);
 
     // unsupported hosts
-    expect(() => new LiskConnection("http://[2001::0370:7344]/", liskTestnet)).toThrowError(
+    expect(() => new LiskConnection("http://[2001::0370:7344]/", dummynetChainId)).toThrowError(
       /invalid api url/i,
     );
-    expect(() => new LiskConnection("http://[2001::0370:7344]:8080/", liskTestnet)).toThrowError(
+    expect(() => new LiskConnection("http://[2001::0370:7344]:8080/", dummynetChainId)).toThrowError(
       /invalid api url/i,
     );
 
     // wrong path
-    expect(() => new LiskConnection("http://localhost/api", liskTestnet)).toThrowError(/invalid api url/i);
+    expect(() => new LiskConnection("http://localhost/api", dummynetChainId)).toThrowError(
+      /invalid api url/i,
+    );
   });
 
   it("can disconnect", () => {
-    const connection = new LiskConnection(base, liskTestnet);
+    const connection = new LiskConnection(dummynetBase, dummynetChainId);
     expect(() => connection.disconnect()).not.toThrow();
   });
 
@@ -102,20 +116,23 @@ describe("LiskConnection", () => {
   });
 
   it("can get chain ID", async () => {
-    const connection = await LiskConnection.establish(base);
+    pendingWithoutLiskDevnet();
+    const connection = await LiskConnection.establish(devnetBase);
     const chainId = connection.chainId();
-    expect(chainId).toEqual(liskTestnet);
+    expect(chainId).toEqual(devnetChainId);
   });
 
   it("can get height", async () => {
-    const connection = await LiskConnection.establish(base);
+    pendingWithoutLiskDevnet();
+    const connection = await LiskConnection.establish(devnetBase);
     const height = await connection.height();
-    expect(height).toBeGreaterThan(6000000);
-    expect(height).toBeLessThan(8000000);
+    expect(height).toBeGreaterThan(0);
+    expect(height).toBeLessThan(10000000);
   });
 
   it("can get account from address", async () => {
-    const connection = await LiskConnection.establish(base);
+    pendingWithoutLongRunning();
+    const connection = await LiskConnection.establish(testnetBase);
     const query: BcpAccountQuery = { address: "6472030874529564639L" as Address };
     const account = await connection.getAccount(query);
     expect(account.data[0].address).toEqual("6472030874529564639L");
@@ -126,7 +143,8 @@ describe("LiskConnection", () => {
   });
 
   it("can get account from pubkey", async () => {
-    const connection = await LiskConnection.establish(base);
+    pendingWithoutLongRunning();
+    const connection = await LiskConnection.establish(testnetBase);
     const pubkey: PublicKeyBundle = {
       algo: Algorithm.Ed25519,
       data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PublicKeyBytes,
@@ -141,8 +159,9 @@ describe("LiskConnection", () => {
   });
 
   it("returns empty list when getting an unused account", async () => {
+    pendingWithoutLiskDevnet();
     const unusedAddress = "5648777643193648871L" as Address;
-    const connection = await LiskConnection.establish(base);
+    const connection = await LiskConnection.establish(devnetBase);
     const response = await connection.getAccount({ address: unusedAddress });
     expect(response).toBeTruthy();
     expect(response.data).toBeTruthy();
@@ -150,7 +169,8 @@ describe("LiskConnection", () => {
   });
 
   it("can get nonce", async () => {
-    const connection = await LiskConnection.establish(base);
+    pendingWithoutLiskDevnet();
+    const connection = await LiskConnection.establish(devnetBase);
     const query: BcpAccountQuery = { address: "6472030874529564639L" as Address };
     const nonce = await connection.getNonce(query);
 
@@ -176,7 +196,7 @@ describe("LiskConnection", () => {
 
       const sendTx: SendTx = {
         kind: TransactionKind.Send,
-        chainId: liskTestnet,
+        chainId: testnetChainId,
         signer: mainIdentity.pubkey,
         recipient: recipientAddress,
         memo: "We ❤️ developers – iov.one",
@@ -194,7 +214,7 @@ describe("LiskConnection", () => {
         mainIdentity,
         signingJob.bytes,
         signingJob.prehashType,
-        liskTestnet,
+        testnetChainId,
       );
 
       const signedTransaction = {
@@ -208,7 +228,7 @@ describe("LiskConnection", () => {
       };
       const bytesToPost = liskCodec.bytesToPost(signedTransaction);
 
-      const connection = await LiskConnection.establish(base);
+      const connection = await LiskConnection.establish(testnetBase);
       const result = await connection.postTx(bytesToPost);
       expect(result).toBeTruthy();
       expect(result.metadata.height).toBeDefined();
