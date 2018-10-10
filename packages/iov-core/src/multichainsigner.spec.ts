@@ -55,14 +55,13 @@ describe("MultiChainSigner", () => {
     it("can send transaction", async () => {
       pendingWithoutBov();
 
-      const { profile, mainWalletId } = await userProfileWithFaucet();
+      const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
       const signer = new MultiChainSigner(profile);
       await signer.addChain(bnsConnector(bovUrl));
       expect(signer.chainIds().length).toEqual(1);
       const chainId = signer.chainIds()[0];
 
-      const faucet = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(0));
       const recipient = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(4));
       const recipientAddress = signer.keyToAddress(chainId, recipient.pubkey);
 
@@ -109,7 +108,7 @@ describe("MultiChainSigner", () => {
       pendingWithoutBov();
       pendingWithoutTendermint();
 
-      const { profile, mainWalletId } = await userProfileWithFaucet();
+      const { profile, faucet } = await userProfileWithFaucet();
       const signer = new MultiChainSigner(profile);
       expect(signer.chainIds().length).toEqual(0);
 
@@ -128,7 +127,6 @@ describe("MultiChainSigner", () => {
       expect(twoChains[0]).not.toEqual(twoChains[1]);
 
       // make sure we can query with multiple registered chains
-      const faucet = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(0));
       const faucetAddr = signer.keyToAddress(bovId, faucet.pubkey);
       const connection = signer.connection(bovId);
       const acct = await connection.getAccount({ address: faucetAddr });
