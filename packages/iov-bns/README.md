@@ -24,7 +24,7 @@ const client = await Client.connect('wss://bov.wolfnet.iov.one');
 The main entry point is the [Client](https://iov-one.github.io/iov-core-docs/latest/iov-bns/classes/client.html),
 which takes a tendermint client (from `iov-tendermint-rpc`) and a codec
 to parse transactions. BnsCodec for reading and writing transactions
-(also useful for IovWriter) is exported as top-level
+(also useful for MultiChainSigner) is exported as top-level
 [bnsCodec](https://iov-one.github.io/iov-core-docs/latest/iov-bns/globals.html#bnscodec).
 
 ## License

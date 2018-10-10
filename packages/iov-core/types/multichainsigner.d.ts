@@ -1,7 +1,7 @@
 import { Address, BcpConnection, BcpTransactionResponse, ChainConnector, Nonce, UnsignedTransaction } from "@iov/bcp-types";
 import { KeyringEntryId, UserProfile } from "@iov/keycontrol";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
-export declare class IovWriter {
+export declare class MultiChainSigner {
     readonly profile: UserProfile;
     private readonly knownChains;
     constructor(profile: UserProfile);

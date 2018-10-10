@@ -63,16 +63,16 @@ $ iov-cli
 [ { pubkey: { algo: 'ed25519', data: [Uint8Array] },
     label: 'blockchain of value faucet' } ]
 
-> const writer = new IovWriter(profile);
-> await writer.addChain(bnsConnector("ws://localhost:22345"));
-> const chainId = writer.chainIds()[0];
-> const reader = writer.reader(chainId);
+> const signer = new MultiChainSigner(profile);
+> await signer.addChain(bnsConnector("ws://localhost:22345"));
+> const chainId = signer.chainIds()[0];
+> const reader = signer.reader(chainId);
 
-> const faucetAddress = writer.keyToAddress(chainId, faucet.pubkey);
+> const faucetAddress = signer.keyToAddress(chainId, faucet.pubkey);
 > (await reader.getAccount({ address: faucetAddress })).data[0].balance
 
 > const recipient = await profile.createIdentity(0, HdPaths.simpleAddress(1));
-> const recipientAddress = writer.keyToAddress(chainId, recipient.pubkey);
+> const recipientAddress = signer.keyToAddress(chainId, recipient.pubkey);
 
 > .editor
 const sendTx: SendTx = {
@@ -88,7 +88,7 @@ const sendTx: SendTx = {
   },
 };
 ^D
-> await writer.signAndCommit(sendTx, 0);
+> await signer.signAndCommit(sendTx, 0);
 > (await reader.getAccount({ address: recipientAddress })).data[0].balance;
 
 > await reader.searchTx({ tags: [bnsFromOrToTag(faucetAddress)] });
@@ -144,7 +144,7 @@ UserProfile {
 
 ### Register a BNS name
 
-Assuming you have a `profile`, a `writer` and a `recipient` identity with
+Assuming you have a `profile`, a `signer` and a `recipient` identity with
 transactions associated from above
 
 ```
@@ -156,7 +156,7 @@ const setNameTx: SetNameTx = {
   name: "hans",
 };
 ^D
-> await writer.signAndCommit(setNameTx, 0);
+> await signer.signAndCommit(setNameTx, 0);
 > (await reader.getAccount({ name: "hans" })).data[0]
 { name: 'hans',
   address:
@@ -197,11 +197,11 @@ When using a Testnet, you can use the BovFaucet to receive tokens:
 > profile.addEntry(Ed25519HdWallet.fromMnemonic(mnemonic));
 > const me = await profile.createIdentity(0, HdPaths.simpleAddress(0));
 
-> const writer = new IovWriter(profile);
-> await writer.addChain(bnsConnector("https://bov.friendnet-slow.iov.one"));
-> const chainId = writer.chainIds()[0];
-> const reader = writer.reader(chainId);
-> const meAddress = writer.keyToAddress(chainId, me.pubkey);
+> const signer = new MultiChainSigner(profile);
+> await signer.addChain(bnsConnector("https://bov.friendnet-slow.iov.one"));
+> const chainId = signer.chainIds()[0];
+> const reader = signer.reader(chainId);
+> const meAddress = signer.keyToAddress(chainId, me.pubkey);
 
 > const bovFaucet = new BovFaucet("https://faucet.friendnet-slow.iov.one/faucet");
 

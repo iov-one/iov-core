@@ -25,12 +25,12 @@ const mainIdentity = await entry.createIdentity(await passphraseToKeypair("oxyge
 const profile = new UserProfile();
 profile.addEntry(entry);
 
-const writer = new IovWriter(profile);
-await writer.addChain(liskConnector("https://testnet.lisk.io"));
-const chainId = writer.chainIds()[0];
-const reader = writer.reader(chainId);
+const signer = new MultiChainSigner(profile);
+await signer.addChain(liskConnector("https://testnet.lisk.io"));
+const chainId = signer.chainIds()[0];
+const reader = signer.reader(chainId);
 
-const mainAddress = writer.keyToAddress(chainId, mainIdentity.pubkey);
+const mainAddress = signer.keyToAddress(chainId, mainIdentity.pubkey);
 console.log((await reader.getAccount({ address: mainAddress })).data[0].balance);
 
 const recipientAddress = "6076671634347365051L" as Address;
@@ -49,7 +49,7 @@ const sendTx: SendTx = {
 };
 
 console.log("Writing to blockchain. This may take a while …");
-await writer.signAndCommit(sendTx, 0);
+await signer.signAndCommit(sendTx, 0);
 console.log((await reader.getAccount({ address: recipientAddress })).data[0].balance);
 ```
 

@@ -5,7 +5,7 @@
 @iov/core is the main entrypoint into the monorepo, exposing high-level functionality
 to easily build blockchain clients. It uses the keymanagement functionality of `UserProfile`,
 and the generic blockchain connection of `IovReader`, and pulls them together into one
-`IovWriter`, which can query state and sign transactions on multiple blockchains.
+`MultiChainSigner`, which can query state and sign transactions on multiple blockchains.
 The examples below show a basic usage of the core library. You may also want to experiment
 with [@iov/cli](https://github.com/iov-one/iov-core/blob/master/packages/iov-cli/README.md)
 as a developer tool to familiarize yourself with this functionality.
@@ -161,19 +161,19 @@ in the genesis file, by running `bov init IOV $ADDR`.
 Now, connect to the network:
 
 ```ts
-import { bnsConnector, IovWriter } from '@iov/core';
+import { bnsConnector, MultiChainSigner } from '@iov/core';
 
-const writer = new IovWriter(profile);
-await writer.addChain(bnsConnector('wss://bov.friendnet-fast.iov.one/'));
+const signer = new MultiChainSigner(profile);
+await signer.addChain(bnsConnector('wss://bov.friendnet-fast.iov.one/'));
 
-const chainId = writer.chainIds()[0];
+const chainId = signer.chainIds()[0];
 console.log(chainId); // is this what you got yourself?
 ```
 
 List the tickers on the network:
 
 ```ts
-const reader = writer.reader(chainId);
+const reader = signer.reader(chainId);
 
 const tickers = await reader.getAllTickers();
 console.log(tickers.data);
@@ -236,14 +236,14 @@ const sendTx: SendTx = {
 };
 
 // the signer has a 0 nonce
-console.log(await writer.getNonce(chainId, addr))
+console.log(await signer.getNonce(chainId, addr))
 
 // we must have the private key for the signer (id1a)
 // second argument (0) is the keyring entry where the private key can be found
-await writer.signAndCommit(sendTx, 0);
+await signer.signAndCommit(sendTx, 0);
 
 // note that the nonce of the signer is incremented
-console.log(await writer.getNonce(chainId, addr))
+console.log(await signer.getNonce(chainId, addr))
 
 // and we have a balance on the recipient now
 yours = await reader.getAccount({ address: addr2 });

@@ -2,7 +2,7 @@ import { SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { bnsConnector, bnsFromOrToTag } from "@iov/bns";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 
-import { IovWriter } from "./writer";
+import { MultiChainSigner } from "./multichainsigner";
 
 // We assume the same BOV context from iov-bns to run some simple tests
 // against that backend.
@@ -19,12 +19,12 @@ const pendingWithoutTendermint = () => {
   }
 };
 
-describe("IovWriter", () => {
+describe("MultiChainSigner", () => {
   it("works with no chains", () => {
     const profile = new UserProfile();
-    const writer = new IovWriter(profile);
-    expect(writer).toBeTruthy();
-    expect(writer.chainIds().length).toEqual(0);
+    const signer = new MultiChainSigner(profile);
+    expect(signer).toBeTruthy();
+    expect(signer.chainIds().length).toEqual(0);
   });
 
   // This uses setup from iov-bns...
@@ -53,17 +53,17 @@ describe("IovWriter", () => {
       const walletId = profile.wallets.value[0].id;
       expect(walletId).toBeTruthy();
 
-      const writer = new IovWriter(profile);
-      await writer.addChain(bnsConnector(bovUrl));
-      expect(writer.chainIds().length).toEqual(1);
-      const chainId = writer.chainIds()[0];
+      const signer = new MultiChainSigner(profile);
+      await signer.addChain(bnsConnector(bovUrl));
+      expect(signer.chainIds().length).toEqual(1);
+      const chainId = signer.chainIds()[0];
 
       const faucet = await profile.createIdentity(walletId, HdPaths.simpleAddress(0));
       const recipient = await profile.createIdentity(walletId, HdPaths.simpleAddress(4));
-      const recipientAddress = writer.keyToAddress(chainId, recipient.pubkey);
+      const recipientAddress = signer.keyToAddress(chainId, recipient.pubkey);
 
-      // construct a sendtx, this mirrors the IovWriter api
-      const memo = `IovWriter style (${Math.random()})`;
+      // construct a sendtx, this mirrors the MultiChainSigner api
+      const memo = `MultiChainSigner style (${Math.random()})`;
       const sendTx: SendTx = {
         kind: TransactionKind.Send,
         chainId,
@@ -76,11 +76,11 @@ describe("IovWriter", () => {
           tokenTicker: cash,
         },
       };
-      const res = await writer.signAndCommit(sendTx, walletId);
+      const res = await signer.signAndCommit(sendTx, walletId);
       expect(res.metadata.status).toEqual(true);
 
       // we should be a little bit richer
-      const reader = writer.reader(chainId);
+      const reader = signer.reader(chainId);
 
       const gotMoney = await reader.getAccount({ address: recipientAddress });
       expect(gotMoney).toBeTruthy();
@@ -106,17 +106,17 @@ describe("IovWriter", () => {
       pendingWithoutTendermint();
 
       const profile = await userProfile();
-      const writer = new IovWriter(profile);
-      expect(writer.chainIds().length).toEqual(0);
+      const signer = new MultiChainSigner(profile);
+      expect(signer.chainIds().length).toEqual(0);
 
       // add the bov chain
-      await writer.addChain(bnsConnector(bovUrl));
-      expect(writer.chainIds().length).toEqual(1);
-      const bovId = writer.chainIds()[0];
+      await signer.addChain(bnsConnector(bovUrl));
+      expect(signer.chainIds().length).toEqual(1);
+      const bovId = signer.chainIds()[0];
 
       // add a raw tendermint chain (don't query, it will fail)
-      await writer.addChain(bnsConnector(kvstoreUrl));
-      const twoChains = writer.chainIds();
+      await signer.addChain(bnsConnector(kvstoreUrl));
+      const twoChains = signer.chainIds();
       // it should store both chains
       expect(twoChains.length).toEqual(2);
       expect(twoChains[0]).toBeDefined();
@@ -125,8 +125,8 @@ describe("IovWriter", () => {
 
       // make sure we can query with multiple registered chains
       const faucet = await profile.createIdentity(0, HdPaths.simpleAddress(0));
-      const faucetAddr = writer.keyToAddress(bovId, faucet.pubkey);
-      const reader = writer.reader(bovId);
+      const faucetAddr = signer.keyToAddress(bovId, faucet.pubkey);
+      const reader = signer.reader(bovId);
       const acct = await reader.getAccount({ address: faucetAddr });
       expect(acct).toBeTruthy();
       expect(acct.data.length).toBe(1);

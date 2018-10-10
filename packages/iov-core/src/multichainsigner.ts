@@ -31,12 +31,12 @@ async function connectChain(x: ChainConnector): Promise<ChainConnection> {
 }
 
 /*
-IovWriter handles all private key material, as well as connections to multiple chains.
+MultiChainSigner handles all private key material, as well as connections to multiple chains.
 It must have a codec along with each chain to properly encode the transactions,
 and calculate chain-specific addresses from public keys,
 even if bcp-proxy will handle translating all reads.
 */
-export class IovWriter {
+export class MultiChainSigner {
   public readonly profile: UserProfile;
   private readonly knownChains: Map<string, ChainConnection>;
 
