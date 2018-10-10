@@ -168,37 +168,33 @@ export class UserProfile {
   }
 
   // sets the label of the n-th keyring entry of the primary keyring
-  public setEntryLabel(id: number | KeyringEntryId, label: string | undefined): void {
+  public setEntryLabel(id: KeyringEntryId, label: string | undefined): void {
     const entry = this.entryInPrimaryKeyring(id);
     entry.setLabel(label);
     this.walletsProducer.update(this.walletInfos());
   }
 
   // creates an identitiy in the n-th keyring entry of the primary keyring
-  public async createIdentity(id: number | KeyringEntryId, options?: any): Promise<LocalIdentity> {
+  public async createIdentity(id: KeyringEntryId, options?: any): Promise<LocalIdentity> {
     const entry = this.entryInPrimaryKeyring(id);
     return entry.createIdentity(options);
   }
 
   // assigns a new label to one of the identities
   // in the n-th keyring entry of the primary keyring
-  public setIdentityLabel(
-    id: number | KeyringEntryId,
-    identity: PublicIdentity,
-    label: string | undefined,
-  ): void {
+  public setIdentityLabel(id: KeyringEntryId, identity: PublicIdentity, label: string | undefined): void {
     const entry = this.entryInPrimaryKeyring(id);
     entry.setIdentityLabel(identity, label);
   }
 
   // get identities of the n-th keyring entry of the primary keyring
-  public getIdentities(id: number | KeyringEntryId): ReadonlyArray<LocalIdentity> {
+  public getIdentities(id: KeyringEntryId): ReadonlyArray<LocalIdentity> {
     const entry = this.entryInPrimaryKeyring(id);
     return entry.getIdentities();
   }
 
   public async signTransaction(
-    id: number | KeyringEntryId,
+    id: KeyringEntryId,
     identity: PublicIdentity,
     transaction: UnsignedTransaction,
     codec: TxCodec,
@@ -221,7 +217,7 @@ export class UserProfile {
   }
 
   public async appendSignature(
-    id: number | KeyringEntryId,
+    id: KeyringEntryId,
     identity: PublicIdentity,
     originalTransaction: SignedTransaction,
     codec: TxCodec,
@@ -247,16 +243,15 @@ export class UserProfile {
     };
   }
 
-  private entryInPrimaryKeyring(id: number | KeyringEntryId): KeyringEntry {
+  private entryInPrimaryKeyring(id: KeyringEntryId): KeyringEntry {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
 
-    const entry = typeof id === "number" ? this.keyring.getEntryByIndex(id) : this.keyring.getEntryById(id);
+    const entry = this.keyring.getEntryById(id);
 
     if (!entry) {
-      const kind = typeof id === "number" ? "index" : "id";
-      throw new Error(`Entry of ${kind} ${id} does not exist in keyring`);
+      throw new Error(`Entry of id ${id} does not exist in keyring`);
     }
 
     return entry;

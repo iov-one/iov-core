@@ -10,7 +10,7 @@ export declare class MultiChainSigner {
     addChain(connector: ChainConnector): Promise<void>;
     keyToAddress(chainId: ChainId, key: PublicKeyBundle): Address;
     getNonce(chainId: ChainId, addr: Address): Promise<Nonce>;
-    signAndCommit(tx: UnsignedTransaction, keyring: number | KeyringEntryId): Promise<BcpTransactionResponse>;
+    signAndCommit(tx: UnsignedTransaction, keyring: KeyringEntryId): Promise<BcpTransactionResponse>;
     /**
      * Throws for unknown chain ID
      */

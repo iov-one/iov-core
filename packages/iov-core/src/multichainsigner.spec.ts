@@ -1,6 +1,6 @@
 import { SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { bnsConnector, bnsFromOrToTag } from "@iov/bns";
-import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
+import { Ed25519HdWallet, HdPaths, KeyringEntryId, LocalIdentity, UserProfile } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";
 
@@ -40,26 +40,30 @@ describe("MultiChainSigner", () => {
     const bovUrl = "http://localhost:22345";
     const kvstoreUrl = "http://localhost:12345";
 
-    const userProfile = async (): Promise<UserProfile> => {
+    async function userProfileWithFaucet(): Promise<{
+      readonly profile: UserProfile;
+      readonly mainWalletId: KeyringEntryId;
+      readonly faucet: LocalIdentity;
+    }> {
+      const wallet = Ed25519HdWallet.fromMnemonic(mnemonic);
       const profile = new UserProfile();
-      profile.addEntry(Ed25519HdWallet.fromMnemonic(mnemonic));
-      return profile;
-    };
+      profile.addEntry(wallet);
+      const faucet = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+      return { profile, mainWalletId: wallet.id, faucet };
+    }
 
     it("can send transaction", async () => {
       pendingWithoutBov();
 
-      const profile = await userProfile();
-      const walletId = profile.wallets.value[0].id;
-      expect(walletId).toBeTruthy();
+      const { profile, mainWalletId } = await userProfileWithFaucet();
 
       const signer = new MultiChainSigner(profile);
       await signer.addChain(bnsConnector(bovUrl));
       expect(signer.chainIds().length).toEqual(1);
       const chainId = signer.chainIds()[0];
 
-      const faucet = await profile.createIdentity(walletId, HdPaths.simpleAddress(0));
-      const recipient = await profile.createIdentity(walletId, HdPaths.simpleAddress(4));
+      const faucet = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(0));
+      const recipient = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(4));
       const recipientAddress = signer.keyToAddress(chainId, recipient.pubkey);
 
       // construct a sendtx, this mirrors the MultiChainSigner api
@@ -76,7 +80,7 @@ describe("MultiChainSigner", () => {
           tokenTicker: cash,
         },
       };
-      const res = await signer.signAndCommit(sendTx, walletId);
+      const res = await signer.signAndCommit(sendTx, mainWalletId);
       expect(res.metadata.status).toEqual(true);
 
       // we should be a little bit richer
@@ -105,7 +109,7 @@ describe("MultiChainSigner", () => {
       pendingWithoutBov();
       pendingWithoutTendermint();
 
-      const profile = await userProfile();
+      const { profile, mainWalletId } = await userProfileWithFaucet();
       const signer = new MultiChainSigner(profile);
       expect(signer.chainIds().length).toEqual(0);
 
@@ -124,7 +128,7 @@ describe("MultiChainSigner", () => {
       expect(twoChains[0]).not.toEqual(twoChains[1]);
 
       // make sure we can query with multiple registered chains
-      const faucet = await profile.createIdentity(0, HdPaths.simpleAddress(0));
+      const faucet = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(0));
       const faucetAddr = signer.keyToAddress(bovId, faucet.pubkey);
       const connection = signer.connection(bovId);
       const acct = await connection.getAccount({ address: faucetAddr });

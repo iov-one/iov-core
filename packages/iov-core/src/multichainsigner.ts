@@ -81,7 +81,7 @@ export class MultiChainSigner {
   // It finds the nonce, signs properly, and posts the tx to the blockchain.
   public async signAndCommit(
     tx: UnsignedTransaction,
-    keyring: number | KeyringEntryId,
+    keyring: KeyringEntryId,
   ): Promise<BcpTransactionResponse> {
     const chainId = tx.chainId;
     const { connection, codec } = this.getChain(chainId);

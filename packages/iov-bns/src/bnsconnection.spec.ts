@@ -17,7 +17,14 @@ import {
 } from "@iov/bcp-types";
 import { Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { Ed25519HdWallet, HdPaths, LocalIdentity, PublicIdentity, UserProfile } from "@iov/keycontrol";
+import {
+  Ed25519HdWallet,
+  HdPaths,
+  KeyringEntryId,
+  LocalIdentity,
+  PublicIdentity,
+  UserProfile,
+} from "@iov/keycontrol";
 import { asArray, lastValue } from "@iov/stream";
 import { TxQuery } from "@iov/tendermint-types";
 
@@ -47,37 +54,26 @@ describe("Integration tests with bov+tendermint", () => {
   // max open connections??? (but 900 by default)
   const tendermintUrl = "ws://localhost:22345";
 
-  async function userProfileWithFaucet(): Promise<UserProfile> {
+  async function userProfileWithFaucet(): Promise<{
+    readonly profile: UserProfile;
+    readonly mainWalletId: KeyringEntryId;
+    readonly faucet: LocalIdentity;
+  }> {
+    const wallet = Ed25519HdWallet.fromMnemonic(mnemonic);
     const profile = new UserProfile();
-    profile.addEntry(Ed25519HdWallet.fromMnemonic(mnemonic));
-    await profile.createIdentity(0, HdPaths.simpleAddress(0));
-    return profile;
+    profile.addEntry(wallet);
+    const faucet = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+    return { profile, mainWalletId: wallet.id, faucet };
   }
-
-  const faucetId = (profile: UserProfile): LocalIdentity => {
-    const ids = profile.getIdentities(0);
-    expect(ids.length).toBeGreaterThanOrEqual(1);
-    return ids[0];
-  };
 
   const getNonce = async (connection: BnsConnection, addr: Address): Promise<Nonce> => {
     const data = (await connection.getNonce({ address: addr })).data;
     return data.length === 0 ? (Long.fromInt(0) as Nonce) : data[0].nonce;
   };
 
-  // recipient will make accounts if needed, returns path n
-  // n must be >= 1
-  async function recipient(profile: UserProfile, n: number): Promise<LocalIdentity> {
-    if (n < 1) {
-      throw new Error("Recipient count starts at 1");
-    }
-    return profile.createIdentity(0, HdPaths.simpleAddress(n));
-  }
-
   it("Generate proper faucet address", async () => {
-    const profile = await userProfileWithFaucet();
-    const id = faucetId(profile);
-    const addr = keyToAddress(id.pubkey);
+    const { faucet } = await userProfileWithFaucet();
+    const addr = keyToAddress(faucet.pubkey);
     expect(addr).toEqual(expectedFaucetAddress);
   });
 
@@ -124,8 +120,7 @@ describe("Integration tests with bov+tendermint", () => {
     pendingWithoutBov();
     const connection = await BnsConnection.establish(tendermintUrl);
 
-    const profile = await userProfileWithFaucet();
-    const faucet = faucetId(profile);
+    const { faucet } = await userProfileWithFaucet();
     const faucetAddr = keyToAddress(faucet.pubkey);
 
     // can get the faucet by address (there is money)
@@ -164,8 +159,8 @@ describe("Integration tests with bov+tendermint", () => {
     pendingWithoutBov();
     const connection = await BnsConnection.establish(tendermintUrl);
 
-    const profile = await userProfileWithFaucet();
-    const rcpt = await recipient(profile, 1);
+    const { profile, mainWalletId } = await userProfileWithFaucet();
+    const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(1));
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // can get the faucet by address (there is money)
@@ -183,11 +178,9 @@ describe("Integration tests with bov+tendermint", () => {
     // if we re-run the test, still only find one tx in search
     // const minHeight = (await connection.height()) - 1;
 
-    const profile = await userProfileWithFaucet();
-
-    const faucet = faucetId(profile);
+    const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
     const faucetAddr = keyToAddress(faucet.pubkey);
-    const rcpt = await recipient(profile, 2);
+    const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(2));
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // check current nonce (should be 0, but don't fail if used by other)
@@ -206,7 +199,7 @@ describe("Integration tests with bov+tendermint", () => {
         tokenTicker: cash,
       },
     };
-    const signed = await profile.signTransaction(0, faucet, sendTx, bnsCodec, nonce);
+    const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     const post = await connection.postTx(txBytes);
     // FIXME: we really should add more info here, but this is in the spec
@@ -283,7 +276,8 @@ describe("Integration tests with bov+tendermint", () => {
         tokenTicker: cash,
       },
     };
-    const signed = await profile.signTransaction(0, faucet, sendTx, bnsCodec, nonce);
+    const firstWalletId = profile.wallets.value[0].id;
+    const signed = await profile.signTransaction(firstWalletId, faucet, sendTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     return connection.postTx(txBytes);
   };
@@ -291,10 +285,9 @@ describe("Integration tests with bov+tendermint", () => {
   it("can get live tx feed", async () => {
     pendingWithoutBov();
     const connection = await BnsConnection.establish(tendermintUrl);
-    const profile = await userProfileWithFaucet();
+    const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
-    const faucet = faucetId(profile);
-    const rcpt = await recipient(profile, 62);
+    const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(62));
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // make sure that we have no tx here
@@ -346,11 +339,10 @@ describe("Integration tests with bov+tendermint", () => {
   it("can provide change feeds", async () => {
     pendingWithoutBov();
     const connection = await BnsConnection.establish(tendermintUrl);
-    const profile = await userProfileWithFaucet();
+    const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
-    const faucet = faucetId(profile);
     const faucetAddr = keyToAddress(faucet.pubkey);
-    const rcpt = await recipient(profile, 87);
+    const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(87));
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // let's watch for all changes, capture them in arrays
@@ -390,11 +382,10 @@ describe("Integration tests with bov+tendermint", () => {
   it("can watch accounts", async () => {
     pendingWithoutBov();
     const connection = await BnsConnection.establish(tendermintUrl);
-    const profile = await userProfileWithFaucet();
+    const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
-    const faucet = faucetId(profile);
     const faucetAddr = keyToAddress(faucet.pubkey);
-    const rcpt = await recipient(profile, 57);
+    const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(57));
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // let's watch for all changes, capture them in a value sink
@@ -457,11 +448,10 @@ describe("Integration tests with bov+tendermint", () => {
     const connection = await BnsConnection.establish(tendermintUrl);
     const chainId = await connection.chainId();
 
-    const profile = await userProfileWithFaucet();
+    const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
-    const faucet = faucetId(profile);
     const faucetAddr = keyToAddress(faucet.pubkey);
-    const rcpt = await recipient(profile, 7);
+    const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(7));
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // check current nonce (should be 0, but don't fail if used by other)
@@ -490,7 +480,7 @@ describe("Integration tests with bov+tendermint", () => {
       preimage,
     };
 
-    const signed = await profile.signTransaction(0, faucet, swapOfferTx, bnsCodec, nonce);
+    const signed = await profile.signTransaction(mainWalletId, faucet, swapOfferTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     const post = await connection.postTx(txBytes);
     // FIXME: we really should add more info here, but this is in the spec
@@ -605,7 +595,8 @@ describe("Integration tests with bov+tendermint", () => {
       timeout: 5000,
       preimage,
     };
-    const signed = await profile.signTransaction(0, sender, swapOfferTx, bnsCodec, nonce);
+    const firstWalletId = profile.wallets.value[0].id;
+    const signed = await profile.signTransaction(firstWalletId, sender, swapOfferTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     return connection.postTx(txBytes);
   };
@@ -627,7 +618,8 @@ describe("Integration tests with bov+tendermint", () => {
       swapId,
       preimage,
     };
-    const signed = await profile.signTransaction(0, sender, swapClaimTx, bnsCodec, nonce);
+    const firstWalletId = profile.wallets.value[0].id;
+    const signed = await profile.signTransaction(firstWalletId, sender, swapClaimTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     return connection.postTx(txBytes);
   };
@@ -635,10 +627,9 @@ describe("Integration tests with bov+tendermint", () => {
   it("Get and watch atomic swap lifecycle", async () => {
     pendingWithoutBov();
     const connection = await BnsConnection.establish(tendermintUrl);
-    const profile = await userProfileWithFaucet();
+    const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
-    const faucet = faucetId(profile);
-    const rcpt = await recipient(profile, 121);
+    const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(121));
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // create the preimages for the three swaps
