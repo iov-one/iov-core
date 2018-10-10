@@ -79,24 +79,27 @@ describe("riseCodec", () => {
   });
 
   it("can parse transaction", () => {
-    // curl -s 'https://testnet.lisk.io/api/transactions?id=9181508057602672832' | jq '.data[0]'
+    // curl -s 'https://twallet.rise.vision/api/transactions/get?id=7547689790128766679' | jq '.transaction'
     const serialized = Encoding.toUtf8(`
-      {
-        "id": "9181508057602672832",
-        "height": 6309471,
-        "blockId": "1008284795900419624",
-        "type": 0,
-        "timestamp": 73863961,
-        "senderPublicKey": "06ad4341a609af2de837e1156f81849b05bf3c280940a9f45db76d09a3a3f2fa",
-        "senderId": "10176009299933723198R",
-        "recipientId": "6076671634347365051R",
-        "recipientPublicKey": "f4852b270f76dc8b49bfa88de5906e81d3b001d23852f0e74ba60cac7180a184",
-        "amount": 244550000,
-        "fee": 10000000,
-        "signature": "9a6c75056151d76791b69d268102241aa0f5930d098a1af48bab9b6e7706afcf24156ae2a7178cf1c3b7865094653dcaf99cdd7cb7aa9a8a3e5c4121f2a44a00",
-        "signatures": [],
-        "confirmations": 101
-      }
+    {
+      "signatures": [],
+      "id": "7547689790128766679",
+      "rowId": 17705,
+      "height": 1031613,
+      "blockId": "7680780071801920036",
+      "type": 0,
+      "timestamp": 75015345,
+      "senderPublicKey": "3e992130a22a124b38998887f4c791c8e4d4b9d7c21522f2dffea5d09b4d8679",
+      "senderId": "13640984096060415228R",
+      "recipientId": "9662024034251537644R",
+      "amount": 144550000,
+      "fee": 10000000,
+      "signature": "a42e0d7c7110d9c104deaa801708820c7a8625b370cfe7d07fa613af5989c660a1cda55fc2afb1cf9b7c248a506d731ec91e49ec4d9ac6e0210f7fa13e85e60d",
+      "signSignature": null,
+      "requesterPublicKey": null,
+      "asset": null,
+      "confirmations": 1811
+    }
     `) as PostableBytes;
 
     const parsed = riseCodec.parseBytes(serialized, riseTestnet);
@@ -108,25 +111,25 @@ describe("riseCodec", () => {
     expect(parsed.transaction.fee!.fractional).toEqual(10000000);
     expect(parsed.transaction.fee!.tokenTicker).toEqual("RISE");
     expect(parsed.transaction.amount).toBeTruthy();
-    expect(parsed.transaction.amount.whole).toEqual(2);
+    expect(parsed.transaction.amount.whole).toEqual(1);
     expect(parsed.transaction.amount.fractional).toEqual(44550000);
     expect(parsed.transaction.amount.tokenTicker).toEqual("RISE");
     expect(parsed.transaction.signer.algo).toEqual(Algorithm.Ed25519);
     expect(parsed.transaction.signer.data).toEqual(
-      fromHex("06ad4341a609af2de837e1156f81849b05bf3c280940a9f45db76d09a3a3f2fa"),
+      fromHex("3e992130a22a124b38998887f4c791c8e4d4b9d7c21522f2dffea5d09b4d8679"),
     );
-    expect(parsed.transaction.recipient).toEqual("6076671634347365051R");
+    expect(parsed.transaction.recipient).toEqual("9662024034251537644R");
 
     expect(parsed.primarySignature.nonce).toEqual(Long.fromNumber(
-      73863961 + liskEpochAsUnixTimestamp,
+      75015345 + liskEpochAsUnixTimestamp,
     ) as Nonce);
     expect(parsed.primarySignature.publicKey.algo).toEqual(Algorithm.Ed25519);
     expect(parsed.primarySignature.publicKey.data).toEqual(
-      fromHex("06ad4341a609af2de837e1156f81849b05bf3c280940a9f45db76d09a3a3f2fa"),
+      fromHex("3e992130a22a124b38998887f4c791c8e4d4b9d7c21522f2dffea5d09b4d8679"),
     );
     expect(parsed.primarySignature.signature).toEqual(
       fromHex(
-        "9a6c75056151d76791b69d268102241aa0f5930d098a1af48bab9b6e7706afcf24156ae2a7178cf1c3b7865094653dcaf99cdd7cb7aa9a8a3e5c4121f2a44a00",
+        "a42e0d7c7110d9c104deaa801708820c7a8625b370cfe7d07fa613af5989c660a1cda55fc2afb1cf9b7c248a506d731ec91e49ec4d9ac6e0210f7fa13e85e60d",
       ),
     );
     expect(parsed.otherSignatures).toEqual([]);
