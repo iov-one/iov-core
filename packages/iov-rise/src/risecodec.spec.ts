@@ -16,7 +16,7 @@ import { riseCodec } from "./risecodec";
 const { fromHex } = Encoding;
 
 // use nethash as chain ID
-const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
+const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
 const liskEpochAsUnixTimestamp = 1464109200;
 const defaultCreationTimestamp = Long.fromNumber(865708731 + liskEpochAsUnixTimestamp);
 
@@ -34,7 +34,7 @@ describe("liskCodec", () => {
     const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
     const tx: SendTx = {
-      chainId: liskTestnet,
+      chainId: riseTestnet,
       signer: {
         algo: Algorithm.Ed25519,
         data: pubkey as PublicKeyBytes,
@@ -96,7 +96,7 @@ describe("liskCodec", () => {
       }
     `) as PostableBytes;
 
-    const parsed = riseCodec.parseBytes(serialized, liskTestnet);
+    const parsed = riseCodec.parseBytes(serialized, riseTestnet);
     if (parsed.transaction.kind !== TransactionKind.Send) {
       throw new Error("wrong transaction kind");
     }
