@@ -112,9 +112,8 @@ software implementation of the the RISE wallet on Ledger or Trezor.
 The following code snipped shows how to implement address discovery.
 
 ```ts
-import { Ed25519HdWallet } from "@iov/core";
 import { Slip10RawIndex } from "@iov/crypto";
-import { riseCodec, RISEConnection } from "@iov/rise";
+import { riseCodec, RiseConnection } from "@iov/rise";
 
 const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
 
@@ -128,7 +127,7 @@ async function deriveAddress(wallet, a): Promise<Address> {
 }
 
 async function getBalance(searchAddress: Address): Promise<any> {
-  const connection = new RISEConnection("https://testnet.rise.io/", riseTestnet);
+  const connection = new RiseConnection("https://twallet.rise.vision/", riseTestnet);
   const response = await connection.getAccount({ address: searchAddress });
   return response.data.length > 0 ? response.data[0].balance[0] : undefined;
 }
@@ -143,7 +142,7 @@ for (let a = 0; currentGapSize < gapLimit; a++) {
   const address = await deriveAddress(wallet, a);
   const balance = await getBalance(address);
   const balanceString = balance ? `${balance.whole + balance.fractional/100000000} RISE` : "unknown";
-  console.log(`${a}: ${Encoding.fromAscii(address)} (${balanceString})`);
+  console.log(`${a}: ${address} (${balanceString})`);
 
   if (balance) {
     currentGapSize = 0;
