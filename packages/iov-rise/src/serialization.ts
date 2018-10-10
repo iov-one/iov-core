@@ -6,7 +6,7 @@ import { FullSignature, TransactionIdBytes, TransactionKind, UnsignedTransaction
 import { Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
-export function toRISETimestamp(date: ReadonlyDate): number {
+export function toRiseTimestamp(date: ReadonlyDate): number {
   const timestamp = Math.floor(date.getTime() / 1000);
 
   const liskEpoch = Date.UTC(2016, 4, 24, 17, 0, 0, 0) / 1000;
@@ -38,7 +38,7 @@ export function serializeTransaction(unsigned: UnsignedTransaction, creationTime
 
   switch (unsigned.kind) {
     case TransactionKind.Send:
-      const rise = toRISETimestamp(creationTime);
+      const rise = toRiseTimestamp(creationTime);
       const timestampBytes = new Uint8Array([
         (rise >> 0) & 0xff,
         (rise >> 8) & 0xff,

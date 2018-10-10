@@ -5,7 +5,7 @@ import { Address, Nonce, SendTx, SignedTransaction, TokenTicker, TransactionKind
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
-import { amountFromComponents, serializeTransaction, toRISETimestamp, transactionId } from "./serialization";
+import { amountFromComponents, serializeTransaction, toRiseTimestamp, transactionId } from "./serialization";
 
 const { fromAscii, fromHex } = Encoding;
 
@@ -14,35 +14,35 @@ const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbece
 const liskEpochAsUnixTimestamp = 1464109200;
 const emptyNonce = new Long(0) as Nonce;
 
-describe("toRISETimestamp", () => {
+describe("toRiseTimestamp", () => {
   it("returns 0 at RISE epoch", () => {
-    expect(toRISETimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 17, 0, 0, 0)))).toEqual(0);
+    expect(toRiseTimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 17, 0, 0, 0)))).toEqual(0);
   });
 
   it("can encode time before epoch", () => {
     // one second
-    expect(toRISETimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 16, 59, 59, 0)))).toEqual(-1);
+    expect(toRiseTimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 16, 59, 59, 0)))).toEqual(-1);
     // one minute
-    expect(toRISETimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 16, 59, 0, 0)))).toEqual(-60);
+    expect(toRiseTimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 16, 59, 0, 0)))).toEqual(-60);
     // one hour
-    expect(toRISETimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 16, 0, 0, 0)))).toEqual(-3600);
+    expect(toRiseTimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 16, 0, 0, 0)))).toEqual(-3600);
     // one day
-    expect(toRISETimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 23, 17, 0, 0, 0)))).toEqual(-86400);
+    expect(toRiseTimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 23, 17, 0, 0, 0)))).toEqual(-86400);
   });
 
   it("can encode time after epoch", () => {
     // one second
-    expect(toRISETimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 17, 0, 1, 0)))).toEqual(1);
+    expect(toRiseTimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 17, 0, 1, 0)))).toEqual(1);
     // one minute
-    expect(toRISETimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 17, 1, 0, 0)))).toEqual(60);
+    expect(toRiseTimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 17, 1, 0, 0)))).toEqual(60);
     // one hour
-    expect(toRISETimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 18, 0, 0, 0)))).toEqual(3600);
+    expect(toRiseTimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 18, 0, 0, 0)))).toEqual(3600);
     // one day
-    expect(toRISETimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 25, 17, 0, 0, 0)))).toEqual(86400);
+    expect(toRiseTimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 25, 17, 0, 0, 0)))).toEqual(86400);
   });
 
   it("can encode current time", () => {
-    expect(toRISETimestamp(new ReadonlyDate(ReadonlyDate.now()))).toBeGreaterThan(73864000);
+    expect(toRiseTimestamp(new ReadonlyDate(ReadonlyDate.now()))).toBeGreaterThan(73864000);
   });
 
   it("is not affected by the year 2038 problem", () => {
@@ -52,18 +52,18 @@ describe("toRISETimestamp", () => {
     // $ python3 -c 'import calendar, datetime; print(calendar.timegm(datetime.datetime(2040, 3, 21, 17, 13, 22, 0).utctimetuple()))'
     // 2215962802
     const dateIn2040 = new ReadonlyDate(ReadonlyDate.UTC(2040, 2, 21, 17, 13, 22));
-    expect(toRISETimestamp(dateIn2040)).toEqual(2215962802 - liskEpochAsUnixTimestamp);
+    expect(toRiseTimestamp(dateIn2040)).toEqual(2215962802 - liskEpochAsUnixTimestamp);
   });
 
   it("throws for time 70 years before RISE epoch", () => {
     expect(() =>
-      toRISETimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016 - 70, 4, 24, 17, 0, 0, 0))),
+      toRiseTimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016 - 70, 4, 24, 17, 0, 0, 0))),
     ).toThrowError(/not in int32 range/i);
   });
 
   it("throws for time 70 years after RISE epoch", () => {
     expect(() =>
-      toRISETimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016 + 70, 4, 24, 17, 0, 0, 0))),
+      toRiseTimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016 + 70, 4, 24, 17, 0, 0, 0))),
     ).toThrowError(/not in int32 range/i);
   });
 });
