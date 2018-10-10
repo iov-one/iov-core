@@ -64,17 +64,15 @@ describe("riseCodec", () => {
     const bytes = riseCodec.bytesToPost(signed);
     expect(bytes).toBeTruthy();
     expect(JSON.parse(Encoding.fromUtf8(bytes))).toEqual({
-      transaction: {
-        type: 0,
-        timestamp: 865708731,
-        amount: 123456789,
-        fee: 10000000,
-        recipientId: "10010344879730196491R",
-        senderId: "10645226540143571783R",
-        senderPublicKey: "00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff",
-        signature: "26272829",
-        id: "15806479375328957764",
-      },
+      type: 0,
+      timestamp: 865708731,
+      amount: 123456789,
+      fee: 10000000,
+      recipientId: "10010344879730196491R",
+      senderId: "10645226540143571783R",
+      senderPublicKey: "00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff",
+      signature: "26272829",
+      id: "15806479375328957764",
     });
   });
 

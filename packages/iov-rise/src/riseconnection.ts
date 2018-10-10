@@ -80,12 +80,15 @@ export class RiseConnection implements BcpConnection {
   }
 
   public async postTx(bytes: PostableBytes): Promise<BcpTransactionResponse> {
-    const transactionId = JSON.parse(Encoding.fromUtf8(bytes)).transaction.id as string;
+    const transactionId = JSON.parse(Encoding.fromUtf8(bytes)).id as string;
     if (!transactionId.match(/^[0-9]+$/)) {
       throw new Error("Invalid transaction ID");
     }
 
-    const r = await axios.put(this.baseUrl + "/api/transactions", bytes, {
+    const putBody = {
+      transaction: JSON.parse(Encoding.fromUtf8(bytes)),
+    };
+    const r = await axios.put(this.baseUrl + "/api/transactions", putBody, {
       headers: {
         "Content-Type": "application/json",
       },

@@ -60,17 +60,15 @@ export const riseCodec: TxCodec = {
         );
 
         const postableObject = {
-          transaction: {
-            type: 0,
-            amount: amount.toNumber(),
-            recipientId: signed.transaction.recipient,
-            senderId: pubkeyToAddress(signed.primarySignature.publicKey.data),
-            senderPublicKey: Encoding.toHex(signed.primarySignature.publicKey.data),
-            timestamp: liskTimestamp,
-            fee: 10000000, // 0.1 RISE fixed
-            signature: Encoding.toHex(signed.primarySignature.signature),
-            id: Encoding.fromAscii(id),
-          },
+          type: 0,
+          amount: amount.toNumber(),
+          recipientId: signed.transaction.recipient,
+          senderId: pubkeyToAddress(signed.primarySignature.publicKey.data),
+          senderPublicKey: Encoding.toHex(signed.primarySignature.publicKey.data),
+          timestamp: liskTimestamp,
+          fee: 10000000, // 0.1 RISE fixed
+          signature: Encoding.toHex(signed.primarySignature.signature),
+          id: Encoding.fromAscii(id),
         };
         return Encoding.toUtf8(JSON.stringify(postableObject)) as PostableBytes;
       default:
