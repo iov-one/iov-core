@@ -10,7 +10,6 @@
     "type": "git",
     "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-lisk"
   },
-  "private": true,
   "publishConfig": {
     "access": "public"
   },
