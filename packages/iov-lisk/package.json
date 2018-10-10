@@ -34,6 +34,7 @@
     "@iov/crypto": "^0.7.0-alpha.0",
     "@iov/encoding": "^0.6.0",
     "@iov/keycontrol": "^0.7.0-alpha.0",
+    "@iov/tendermint-types": "^0.7.0-alpha.0",
     "@types/long": "^4.0.0",
     "axios": "^0.18.0",
     "long": "^4.0.0",
