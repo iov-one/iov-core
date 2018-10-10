@@ -56,28 +56,28 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
   fold_end
 fi
 
-fold_start "test-local-cli-installation"
-(
-  WORKSPACE=$(pwd)
-  DEMO_PROJECT_DIR=$(mktemp -d "${TMPDIR:-/tmp}/iov-cli-installation.XXXXXXXXX")
-  cd "$DEMO_PROJECT_DIR"
-  yarn init -y
-  yarn add "$WORKSPACE/packages/iov-cli" --dev
-  "$(yarn bin)/iov-cli" --selftest
-)
-fold_end
+# fold_start "test-local-cli-installation"
+# (
+#   WORKSPACE=$(pwd)
+#   DEMO_PROJECT_DIR=$(mktemp -d "${TMPDIR:-/tmp}/iov-cli-installation.XXXXXXXXX")
+#   cd "$DEMO_PROJECT_DIR"
+#   yarn init -y
+#   yarn add "$WORKSPACE/packages/iov-cli" --dev
+#   "$(yarn bin)/iov-cli" --selftest
+# )
+# fold_end
 
-fold_start "test-global-cli-installation"
-(
-  WORKSPACE=$(pwd)
-  # Go to some other place where dependencies are not around
-  OTHER_PLACE=$(mktemp -d "${TMPDIR:-/tmp}/some-lost-place.XXXXXXXXX")
-  cd "$OTHER_PLACE"
-  yarn global add "$WORKSPACE/packages/iov-cli"
-  command -v iov-cli
-  iov-cli --selftest
-)
-fold_end
+# fold_start "test-global-cli-installation"
+# (
+#   WORKSPACE=$(pwd)
+#   # Go to some other place where dependencies are not around
+#   OTHER_PLACE=$(mktemp -d "${TMPDIR:-/tmp}/some-lost-place.XXXXXXXXX")
+#   cd "$OTHER_PLACE"
+#   yarn global add "$WORKSPACE/packages/iov-cli"
+#   command -v iov-cli
+#   iov-cli --selftest
+# )
+# fold_end
 
 if [[ "$TRAVIS_OS_NAME" == "linux" ]] && [[ "$TRAVIS_NODE_VERSION" == "8" ]] && [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_PULL_REQUEST_BRANCH" == "" ]]; then
   (
