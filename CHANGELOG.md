@@ -3,6 +3,7 @@
 ## 0.7.0 (not yet released)
 
 * @iov/lisk: new package to connect to the Lisk blockchain
+* @iov/rise: new package to connect to the RISE blockchain
 
 Breaking changes
 
