@@ -35,12 +35,12 @@ export declare class UserProfile {
     storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<void>;
     lock(): void;
     addEntry(entry: KeyringEntry): void;
-    setEntryLabel(id: number | KeyringEntryId, label: string | undefined): void;
-    createIdentity(id: number | KeyringEntryId, options?: any): Promise<LocalIdentity>;
-    setIdentityLabel(id: number | KeyringEntryId, identity: PublicIdentity, label: string | undefined): void;
-    getIdentities(id: number | KeyringEntryId): ReadonlyArray<LocalIdentity>;
-    signTransaction(id: number | KeyringEntryId, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
-    appendSignature(id: number | KeyringEntryId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
+    setEntryLabel(id: KeyringEntryId, label: string | undefined): void;
+    createIdentity(id: KeyringEntryId, options?: any): Promise<LocalIdentity>;
+    setIdentityLabel(id: KeyringEntryId, identity: PublicIdentity, label: string | undefined): void;
+    getIdentities(id: KeyringEntryId): ReadonlyArray<LocalIdentity>;
+    signTransaction(id: KeyringEntryId, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
+    appendSignature(id: KeyringEntryId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
     private entryInPrimaryKeyring;
     private walletInfos;
 }

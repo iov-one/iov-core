@@ -11,6 +11,8 @@ Breaking changes
 * Client from @iov/bns was renamed to BnsConnection. The connect() function was renamed to BnsConnection.establish()
 * Address is now a string instead of an Uint8Array
 * In UserProfile, .entriesCount, .entryLabels and .entryIds have been merged into .wallets
+* In UserProfile, .setEntryLabel, .createIdentity, .setIdentityLabel, .getIdentities, .signTransaction, .appendSignature
+  now only accept string IDs for the entry/wallet argument
 
 ## 0.6.1
 
