@@ -99,6 +99,26 @@ describe("Slip10Wallet", () => {
     }
   });
 
+  it("throws when adding the creating path twice", async () => {
+    // Same path leads to the same identity identifier, so we don't support it
+    const defaultPath = [Slip10RawIndex.hardened(0)];
+
+    const emptyWallets = [
+      // ed25519
+      Slip10Wallet.fromMnemonicWithCurve(Slip10Curve.Ed25519, "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard"),
+      // secp256k1
+      Slip10Wallet.fromMnemonicWithCurve(Slip10Curve.Secp256k1, "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard"),
+    ];
+
+    for (const wallet of emptyWallets) {
+      await wallet.createIdentityWithPath(defaultPath);
+      await wallet
+        .createIdentityWithPath(defaultPath)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/ID collision/i));
+    }
+  });
+
   it("can create Secp256k1 identities", async () => {
     const emptyEntries = [
       // all possible ways to construct a Slip10Wallet for Secp256k1
