@@ -41,6 +41,9 @@ retry 3 yarn install
 # Use Docker if available (currently Linux only)
 if command -v docker > /dev/null ; then
   source ./scripts/iov_blockchain_start.sh
+
+  ./scripts/lisk_start.sh
+  export LISK_ENABLED=1
 fi
 
 export ETHEREUM_ENABLED=1
@@ -50,6 +53,7 @@ export GANACHE_MNEMONIC="oxygen fall sure lava energy veteran enroll frown quest
 echo "use tendermint?" "${TENDERMINT_ENABLED:-no}"
 echo "use bov?" "${BOV_ENABLED:-no}"
 echo "use ethereum?" ${ETHEREUM_ENABLED:-no}
+echo "use Lisk?" ${LISK_ENABLED:-no}
 
 #
 # Build
