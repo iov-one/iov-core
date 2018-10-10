@@ -41,39 +41,39 @@ describe("Parse", () => {
   });
 
   it("parses lisk timestamp 0 as Lisk epoch", () => {
-    expect(Parse.fromRISETimestamp(0)).toEqual(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 17, 0, 0, 0)));
+    expect(Parse.fromRiseTimestamp(0)).toEqual(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 17, 0, 0, 0)));
   });
 
   it("can parse positive timestamps", () => {
     // one second
-    expect(Parse.fromRISETimestamp(1)).toEqual(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 17, 0, 1, 0)));
+    expect(Parse.fromRiseTimestamp(1)).toEqual(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 17, 0, 1, 0)));
     // one minute
-    expect(Parse.fromRISETimestamp(60)).toEqual(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 17, 1, 0, 0)));
+    expect(Parse.fromRiseTimestamp(60)).toEqual(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 17, 1, 0, 0)));
     // one hour
-    expect(Parse.fromRISETimestamp(3600)).toEqual(
+    expect(Parse.fromRiseTimestamp(3600)).toEqual(
       new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 18, 0, 0, 0)),
     );
     // one day
-    expect(Parse.fromRISETimestamp(86400)).toEqual(
+    expect(Parse.fromRiseTimestamp(86400)).toEqual(
       new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 25, 17, 0, 0, 0)),
     );
   });
 
   it("can parse negative timestamps", () => {
     // one second
-    expect(Parse.fromRISETimestamp(-1)).toEqual(
+    expect(Parse.fromRiseTimestamp(-1)).toEqual(
       new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 16, 59, 59, 0)),
     );
     // one minute
-    expect(Parse.fromRISETimestamp(-60)).toEqual(
+    expect(Parse.fromRiseTimestamp(-60)).toEqual(
       new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 16, 59, 0, 0)),
     );
     // one hour
-    expect(Parse.fromRISETimestamp(-3600)).toEqual(
+    expect(Parse.fromRiseTimestamp(-3600)).toEqual(
       new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 16, 0, 0, 0)),
     );
     // one day
-    expect(Parse.fromRISETimestamp(-86400)).toEqual(
+    expect(Parse.fromRiseTimestamp(-86400)).toEqual(
       new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 23, 17, 0, 0, 0)),
     );
   });

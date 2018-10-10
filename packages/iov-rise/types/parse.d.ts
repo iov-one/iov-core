@@ -7,7 +7,7 @@ export interface AmountFields {
 }
 export declare class Parse {
     static riseAmount(str: string): AmountFields;
-    static fromRISETimestamp(riseTimestamp: number): ReadonlyDate;
+    static fromRiseTimestamp(riseTimestamp: number): ReadonlyDate;
     /**
      * Convert a point in time to a nonce used in the Lisk codec.
      *

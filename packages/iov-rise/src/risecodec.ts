@@ -117,7 +117,7 @@ export const riseCodec: TxCodec = {
         recipient: json.recipientId as Address,
       },
       primarySignature: {
-        nonce: Parse.timeToNonce(Parse.fromRISETimestamp(json.timestamp)),
+        nonce: Parse.timeToNonce(Parse.fromRiseTimestamp(json.timestamp)),
         publicKey: {
           algo: Algorithm.Ed25519,
           data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,

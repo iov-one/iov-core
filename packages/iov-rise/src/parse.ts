@@ -21,7 +21,7 @@ export class Parse {
     };
   }
 
-  public static fromRISETimestamp(riseTimestamp: number): ReadonlyDate {
+  public static fromRiseTimestamp(riseTimestamp: number): ReadonlyDate {
     // Lisk timestamp must be in the signed int32 range (to be stored in a Postgres
     // integer column and to be serializeable as 4 bytes) but has no further
     // plausibility restrictions.
