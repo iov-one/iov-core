@@ -196,6 +196,13 @@ export class Slip10Wallet implements KeyringEntry {
     }
 
     const newIdentity = this.buildLocalIdentity(pubkeyBytes, undefined);
+
+    if (this.identities.find(i => i.id === newIdentity.id)) {
+      throw new Error(
+        "Identity ID collision: this happens when you try to create multiple identities with the same path in the same entry.",
+      );
+    }
+
     this.privkeyPaths.set(newIdentity.id, path);
     this.identities.push(newIdentity);
 
