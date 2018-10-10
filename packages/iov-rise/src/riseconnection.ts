@@ -88,41 +88,25 @@ export class RiseConnection implements BcpConnection {
     const putBody = {
       transaction: JSON.parse(Encoding.fromUtf8(bytes)),
     };
-    const r = await axios.put(this.baseUrl + "/api/transactions", putBody, {
+    const response = await axios.put(this.baseUrl + "/api/transactions", putBody, {
       headers: {
         "Content-Type": "application/json",
       },
     });
 
-    if (!r.data.success) {
-      throw new Error(r.data.error);
+    if (!response.data.success) {
+      throw new Error(response.data.error);
     }
-
-    // Sleep for 2 blocks
-    await new Promise(resolve => setTimeout(resolve, 60 * 1000));
-
-    const result = await axios.get(this.baseUrl + `/api/transactions/get?id=${transactionId}`);
-    const responseBody = result.data;
-    if (!responseBody.success) {
-      throw new Error(responseBody.error || `Cannot fetch ${transactionId}`);
-    }
-
-    let height: number | undefined;
-    let transactionResultBytes: Uint8Array | undefined;
-
-    const transactionResult = responseBody.transaction;
-    height = transactionResult.height;
-    transactionResultBytes = Encoding.toUtf8(JSON.stringify(transactionResult));
 
     return {
       metadata: {
         status: true, // commit failures should throw
-        height: height,
+        height: undefined,
       },
       data: {
         message: "",
         txid: Encoding.toAscii(transactionId) as TxId,
-        result: transactionResultBytes || new Uint8Array([]),
+        result: new Uint8Array([]),
       },
     };
   }

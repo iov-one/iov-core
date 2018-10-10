@@ -6,12 +6,6 @@ import { passphraseToKeypair } from "./derivation";
 import { riseCodec } from "./risecodec";
 import { generateNonce, RiseConnection } from "./riseconnection";
 
-function pendingWithoutLongRunning(): void {
-  if (!process.env.LONG_RUNNING_ENABLED) {
-    pending("Set LONG_RUNNING_ENABLED to enable long running tests");
-  }
-}
-
 const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
 
 describe("RiseConnection", () => {
@@ -120,60 +114,51 @@ describe("RiseConnection", () => {
     expect(nonce.data[0].nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
   });
 
-  it(
-    "can post transaction",
-    async () => {
-      pendingWithoutLongRunning();
+  it("can post transaction", async () => {
+    const entry = new Ed25519KeyringEntry();
+    const mainIdentity = await entry.createIdentity(
+      await passphraseToKeypair(
+        "squeeze frog deposit chase sudden clutch fortune spring tone have snow column",
+      ),
+    );
 
-      const entry = new Ed25519KeyringEntry();
-      const mainIdentity = await entry.createIdentity(
-        await passphraseToKeypair(
-          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-        ),
-      );
+    const recipientAddress = "10145108642177909005R" as Address;
 
-      const recipientAddress = "6076671634347365051R" as Address;
+    const sendTx: SendTx = {
+      kind: TransactionKind.Send,
+      chainId: riseTestnet,
+      signer: mainIdentity.pubkey,
+      recipient: recipientAddress,
+      amount: {
+        whole: 1,
+        fractional: 44550000,
+        tokenTicker: "RISE" as TokenTicker,
+      },
+    };
 
-      const sendTx: SendTx = {
-        kind: TransactionKind.Send,
-        chainId: riseTestnet,
-        signer: mainIdentity.pubkey,
-        recipient: recipientAddress,
-        amount: {
-          whole: 1,
-          fractional: 44550000,
-          tokenTicker: "RISE" as TokenTicker,
-        },
-      };
+    // Encode creation timestamp into nonce
+    const nonce = generateNonce();
+    const signingJob = riseCodec.bytesToSign(sendTx, nonce);
+    const signature = await entry.createTransactionSignature(
+      mainIdentity,
+      signingJob.bytes,
+      signingJob.prehashType,
+      riseTestnet,
+    );
 
-      // Encode creation timestamp into nonce
-      const nonce = generateNonce();
-      const signingJob = riseCodec.bytesToSign(sendTx, nonce);
-      const signature = await entry.createTransactionSignature(
-        mainIdentity,
-        signingJob.bytes,
-        signingJob.prehashType,
-        riseTestnet,
-      );
+    const signedTransaction = {
+      transaction: sendTx,
+      primarySignature: {
+        nonce: nonce,
+        publicKey: mainIdentity.pubkey,
+        signature: signature,
+      },
+      otherSignatures: [],
+    };
+    const bytesToPost = riseCodec.bytesToPost(signedTransaction);
 
-      const signedTransaction = {
-        transaction: sendTx,
-        primarySignature: {
-          nonce: nonce,
-          publicKey: mainIdentity.pubkey,
-          signature: signature,
-        },
-        otherSignatures: [],
-      };
-      const bytesToPost = riseCodec.bytesToPost(signedTransaction);
-
-      const connection = await RiseConnection.establish(base);
-      const result = await connection.postTx(bytesToPost);
-      expect(result).toBeTruthy();
-      expect(result.metadata.height).toBeDefined();
-      expect(result.metadata.height).toBeGreaterThan(6000000);
-      expect(result.metadata.height).toBeLessThan(8000000);
-    },
-    40 * 1000,
-  );
+    const connection = await RiseConnection.establish(base);
+    const result = await connection.postTx(bytesToPost);
+    expect(result).toBeTruthy();
+  });
 });
