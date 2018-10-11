@@ -1,6 +1,7 @@
 import { SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { bnsConnector, bnsFromOrToTag } from "@iov/bns";
 import { Ed25519HdWallet, HdPaths, KeyringEntryId, LocalIdentity, UserProfile } from "@iov/keycontrol";
+import { ChainId } from "@iov/tendermint-types";
 
 import { MultiChainSigner } from "./multichainsigner";
 
@@ -131,5 +132,38 @@ describe("MultiChainSigner", () => {
       expect(acct.data.length).toBe(1);
       expect(acct.data[0].balance.length).toBe(1);
     });
+  });
+
+  // transforms promise so resolved->rejected and rejected->resolved
+  const expectRejected = (prom: Promise<any>): Promise<boolean> =>
+    prom.then(
+      () => {
+        throw new Error("expected rejection");
+      },
+      () => true,
+    );
+
+  it("optionally enforces chainId", async () => {
+    pendingWithoutBov();
+    const bovUrl = "http://localhost:22345";
+
+    const signer = new MultiChainSigner(new UserProfile());
+    const connector = bnsConnector(bovUrl);
+
+    // can add with unspecified expectedChainId
+    const { connection } = await signer.addChain(connector);
+    const chainId = connection.chainId();
+    // this should error on second add to same signer
+    await expectRejected(signer.addChain(connector));
+
+    // success if adding with proper expectedChainId
+    const signer2 = new MultiChainSigner(new UserProfile());
+    const secureConnector = bnsConnector(bovUrl, chainId);
+    await signer2.addChain(secureConnector);
+
+    // error if adding with false expectedChainId
+    const signer3 = new MultiChainSigner(new UserProfile());
+    const invalidConnector = bnsConnector(bovUrl, "chain-is-not-right" as ChainId);
+    await expectRejected(signer3.addChain(invalidConnector));
   });
 });
