@@ -1,10 +1,10 @@
 import { As } from "type-tagger";
 
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
+import { ValueAndUpdates } from "@iov/stream";
 import { ChainId, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types";
 
 import { Ed25519HdWallet, Ed25519KeyringEntry, Secp256k1HdWallet } from "./keyring-entries";
-import { ValueAndUpdates } from "./valueandupdates";
 
 export type KeyringEntrySerializationString = string & As<"keyring-entry-serialization">;
 export type KeyringSerializationString = string & As<"keyring-serialization">;

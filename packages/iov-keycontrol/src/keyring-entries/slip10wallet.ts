@@ -12,6 +12,7 @@ import {
   Slip10RawIndex,
 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
+import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import {
@@ -24,7 +25,6 @@ import {
   PublicIdentity,
 } from "../keyring";
 import { prehash } from "../prehashing";
-import { DefaultValueProducer, ValueAndUpdates } from "../valueandupdates";
 
 interface PubkeySerialization {
   readonly algo: string;

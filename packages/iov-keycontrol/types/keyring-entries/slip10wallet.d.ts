@@ -1,8 +1,8 @@
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Slip10Curve, Slip10RawIndex } from "@iov/crypto";
+import { ValueAndUpdates } from "@iov/stream";
 import { ChainId, SignatureBytes } from "@iov/tendermint-types";
 import { KeyringEntry, KeyringEntryId, KeyringEntryImplementationIdString, KeyringEntrySerializationString, LocalIdentity, PublicIdentity } from "../keyring";
-import { ValueAndUpdates } from "../valueandupdates";
 interface Slip10WalletConstructor {
     new (data: KeyringEntrySerializationString): Slip10Wallet;
 }

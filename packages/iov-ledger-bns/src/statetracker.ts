@@ -1,4 +1,4 @@
-import { DefaultValueProducer, ValueAndUpdates } from "@iov/keycontrol";
+import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import TransportNodeHid, { DescriptorEvent, Subscription } from "@ledgerhq/hw-transport-node-hid";
 
 import { appVersion } from "./app";

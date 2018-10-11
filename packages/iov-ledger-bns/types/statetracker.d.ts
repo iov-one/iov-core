@@ -1,4 +1,4 @@
-import { ValueAndUpdates } from "@iov/keycontrol";
+import { ValueAndUpdates } from "@iov/stream";
 export declare enum LedgerState {
     Disconnected = 0,
     Connected = 1,
