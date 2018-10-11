@@ -108,7 +108,6 @@ export class LiskConnection implements BcpConnection {
 
     return {
       metadata: {
-        status: true, // commit failures should throw
         height: height,
       },
       data: {
