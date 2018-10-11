@@ -166,4 +166,5 @@ export interface BcpConnection {
 export interface ChainConnector {
   readonly client: () => Promise<BcpConnection>;
   readonly codec: TxCodec;
+  readonly expectedChainId?: ChainId;
 }
