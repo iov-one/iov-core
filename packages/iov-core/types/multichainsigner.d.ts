@@ -7,7 +7,14 @@ export declare class MultiChainSigner {
     constructor(profile: UserProfile);
     chainIds(): ReadonlyArray<ChainId>;
     connection(chainId: ChainId): BcpConnection;
-    addChain(connector: ChainConnector): Promise<void>;
+    /**
+     * Connects to a chain using the provided connector.
+     *
+     * @returns an object of chain information, currently just a BcpConnection
+     */
+    addChain(connector: ChainConnector): Promise<{
+        readonly connection: BcpConnection;
+    }>;
     keyToAddress(chainId: ChainId, key: PublicKeyBundle): Address;
     getNonce(chainId: ChainId, addr: Address): Promise<Nonce>;
     signAndCommit(tx: UnsignedTransaction, keyring: KeyringEntryId): Promise<BcpTransactionResponse>;
