@@ -135,12 +135,12 @@ describe("MultiChainSigner", () => {
   });
 
   // transforms promise so resolved->rejected and rejected->resolved
-  const expectRejected = (prom: Promise<any>): Promise<boolean> =>
+  const expectRejected = (prom: Promise<any>): Promise<any> =>
     prom.then(
       () => {
         throw new Error("expected rejection");
       },
-      () => true,
+      (err: any) => err,
     );
 
   it("optionally enforces chainId", async () => {
