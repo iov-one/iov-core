@@ -58,9 +58,9 @@ describe("MultiChainSigner", () => {
       const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
       const signer = new MultiChainSigner(profile);
-      await signer.addChain(bnsConnector(bovUrl));
+      const { connection } = await signer.addChain(bnsConnector(bovUrl));
       expect(signer.chainIds().length).toEqual(1);
-      const chainId = signer.chainIds()[0];
+      const chainId = connection.chainId();
 
       const recipient = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(4));
       const recipientAddress = signer.keyToAddress(chainId, recipient.pubkey);
@@ -82,8 +82,6 @@ describe("MultiChainSigner", () => {
       await signer.signAndCommit(sendTx, mainWalletId);
 
       // we should be a little bit richer
-      const connection = signer.connection(chainId);
-
       const gotMoney = await connection.getAccount({ address: recipientAddress });
       expect(gotMoney).toBeTruthy();
       expect(gotMoney.data.length).toEqual(1);

@@ -15,7 +15,7 @@ import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 /**
  * An internal helper to pass around the tuple
  */
-interface ChainConnection {
+interface Chain {
   readonly connection: BcpConnection;
   readonly codec: TxCodec;
 }
@@ -23,7 +23,7 @@ interface ChainConnection {
 /**
  * An internal helper to establish a BCP connection
  */
-async function connectChain(x: ChainConnector): Promise<ChainConnection> {
+async function connectChain(x: ChainConnector): Promise<Chain> {
   return {
     connection: await x.client(),
     codec: x.codec,
@@ -38,13 +38,13 @@ even if bcp-proxy will handle translating all reads.
 */
 export class MultiChainSigner {
   public readonly profile: UserProfile;
-  private readonly knownChains: Map<string, ChainConnection>;
+  private readonly knownChains: Map<string, Chain>;
 
   // initialize a write with a userProfile with secret info,
   // chains we want to connect to added with addChain (to keep async out of constructor)
   constructor(profile: UserProfile) {
     this.profile = profile;
-    this.knownChains = new Map<string, ChainConnection>();
+    this.knownChains = new Map<string, Chain>();
   }
 
   public chainIds(): ReadonlyArray<ChainId> {
@@ -55,13 +55,21 @@ export class MultiChainSigner {
     return this.getChain(chainId).connection;
   }
 
-  public async addChain(connector: ChainConnector): Promise<void> {
-    const connection = await connectChain(connector);
-    const chainId = connection.connection.chainId();
+  /**
+   * Connects to a chain using the provided connector.
+   *
+   * @returns an object of chain information, currently just a BcpConnection
+   */
+  public async addChain(connector: ChainConnector): Promise<{ readonly connection: BcpConnection }> {
+    const chain = await connectChain(connector);
+    const chainId = chain.connection.chainId();
     if (this.knownChains.has(chainId)) {
       throw new Error(`Chain ${chainId} is already registered`);
     }
-    this.knownChains.set(chainId, connection);
+    this.knownChains.set(chainId, chain);
+    return {
+      connection: chain.connection,
+    };
   }
 
   public keyToAddress(chainId: ChainId, key: PublicKeyBundle): Address {
@@ -103,7 +111,7 @@ export class MultiChainSigner {
   /**
    * Throws for unknown chain ID
    */
-  private getChain(chainId: ChainId): ChainConnection {
+  private getChain(chainId: ChainId): Chain {
     const connector = this.knownChains.get(chainId);
     if (connector === undefined) {
       throw new Error(`No such chain: ${chainId}`);
