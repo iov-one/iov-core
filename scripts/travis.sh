@@ -42,7 +42,7 @@ retry 3 yarn install
 if command -v docker > /dev/null ; then
   source ./scripts/iov_blockchain_start.sh
 
-  ./scripts/lisk_start.sh
+  ./scripts/lisk/start.sh
   export LISK_ENABLED=1
 fi
 

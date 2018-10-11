@@ -13,7 +13,7 @@ https://github.com/LiskHQ/lisk/blob/1.2.0/config/devnet/genesis_block.json
 From repo root:
 
 ```
-./scripts/lisk_start.sh
+./scripts/lisk/start.sh
 export LISK_ENABLED=1
 ```
 
@@ -22,7 +22,7 @@ export LISK_ENABLED=1
 From repo root:
 
 ```
-./scripts/lisk_stop.sh
+./scripts/lisk/stop.sh
 unset LISK_ENABLED
 ```
 
