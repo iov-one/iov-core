@@ -14,6 +14,8 @@ TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/lisk_start.XXXXXXXXX")
   (
     cd "lisk/docker"
     cp .env.development .env
+    # Use a version available on docker hub: https://hub.docker.com/r/lisk/core/tags/
+    sed -i -e 's|ENV_LISK_VERSION=.*|ENV_LISK_VERSION=1.2.0-alpha.3|' .env
 
     make
     make coldstart
