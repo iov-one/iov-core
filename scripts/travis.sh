@@ -1,6 +1,20 @@
 #!/bin/bash
+# shellcheck disable=SC1091
 set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
+
+#
+# Config
+#
+
+export TSLINT_FLAGS='-c ./tslint_ci.json'
+export LONG_RUNNING_ENABLED=1
+
+# Ensure consecutive Safari sessions don't re-open old tabs
+# https://github.com/karma-runner/karma-safari-launcher/issues/6
+if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+  defaults write com.apple.Safari ApplePersistenceIgnoreState YES
+fi
 
 function fold_start() {
   export CURRENT_FOLD_NAME="$1"
@@ -12,6 +26,33 @@ function fold_end() {
   travis_time_finish
   travis_fold end "$CURRENT_FOLD_NAME"
 }
+
+#
+# Install
+#
+
+source ./scripts/retry.sh
+retry 3 yarn install
+
+#
+# Start blockchains
+#
+
+# Use Docker if available (currently Linux only)
+if command -v docker > /dev/null ; then
+  source ./scripts/blockchain_start.sh
+fi
+
+export ETHEREUM_ENABLED=1
+./packages/iov-ethereum/startGanache.sh
+
+echo "use tendermint?" "${TENDERMINT_ENABLED}"
+echo "use bov?" "${BOV_ENABLED}"
+echo "use ethereum?" ${ETHEREUM_ENABLED}
+
+#
+# Build
+#
 
 fold_start "yarn-build"
 yarn build
@@ -34,6 +75,10 @@ if [[ -n "$SOURCE_CHANGES" ]]; then
   exit 1
 fi
 fold_end
+
+#
+# Test
+#
 
 fold_start "commandline-tests"
 yarn test
@@ -79,6 +124,10 @@ fi
 # )
 # fold_end
 
+#
+# Deploy
+#
+
 if [[ "$TRAVIS_OS_NAME" == "linux" ]] && [[ "$TRAVIS_NODE_VERSION" == "8" ]] && [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_PULL_REQUEST_BRANCH" == "" ]]; then
   (
     cd "$HOME"
@@ -103,3 +152,9 @@ if [[ "$TRAVIS_OS_NAME" == "linux" ]] && [[ "$TRAVIS_NODE_VERSION" == "8" ]] && 
     git push -f
   )
 fi
+
+#
+# Cleanup
+#
+./packages/iov-ethereum/stopGanache.sh
+source ./scripts/blockchain_stop.sh

@@ -30,43 +30,15 @@ before_install:
     yarn global add node-gyp
   fi
 
-install:
-- source ./scripts/retry.sh
-- retry 3 yarn install
-
 before_script:
-- export TSLINT_FLAGS='-c ./tslint_ci.json'
-- export LONG_RUNNING_ENABLED=1
-- export ETHEREUM_ENABLED=1
-- ./packages/iov-ethereum/startGanache.sh
-
 # Make variables and function from Travis available in our script
 # See implementation https://github.com/travis-ci/travis-build/blob/4041ba116ddb3bdfd66ab8acbb7094dee28d6797/lib/travis/build/templates/header.sh
 # and http://www.garbers.co.za/2017/11/01/code-folding-and-timing-in-travis-ci/
 - export ANSI_CLEAR
 - export -f travis_nanoseconds travis_fold travis_time_start travis_time_finish
 
-# Use Docker if available (currently Linux only)
-# macOS/Linux compatible temp dir deleted on reboot (https://stackoverflow.com/a/31397073)
-- |
-  if command -v docker > /dev/null ; then
-    source ./scripts/blockchain_start.sh
-  fi
-
-# Ensure consecutive Safari sessions don't re-open old tabs
-# https://github.com/karma-runner/karma-safari-launcher/issues/6
-- |
-  if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-    defaults write com.apple.Safari ApplePersistenceIgnoreState YES
-  fi
-
 script:
-- echo "use tendermint?" ${TENDERMINT_ENABLED} "use bov?" ${BOV_ENABLED} "use ethereum?" ${ETHEREUM_ENABLED}
 - ./scripts/travis.sh
-
-after_script:
-- source ./scripts/blockchain_stop.sh
-- ./packages/iov-ethereum/stopGanache.sh
 
 # whitelist long living branches to avoid testing feature branches twice (as branch and as pull request)
 branches:
