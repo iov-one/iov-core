@@ -2,7 +2,6 @@
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import {
-  DefaultValueProducer,
   Keyring,
   KeyringEntry,
   KeyringEntryId,
@@ -11,8 +10,8 @@ import {
   LocalIdentity,
   LocalIdentityId,
   PublicIdentity,
-  ValueAndUpdates,
 } from "@iov/keycontrol";
+import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { getPublicKeyWithIndex, signTransactionWithIndex } from "./app";

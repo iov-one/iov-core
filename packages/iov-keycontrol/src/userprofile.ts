@@ -14,6 +14,7 @@ import {
   Xchacha20poly1305IetfNonce,
 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
+import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import {
   Keyring,
@@ -24,7 +25,6 @@ import {
   PublicIdentity,
 } from "./keyring";
 import { DatabaseUtils } from "./utils";
-import { DefaultValueProducer, ValueAndUpdates } from "./valueandupdates";
 
 const { toAscii, fromBase64, toBase64, fromUtf8, toUtf8, toRfc3339, fromRfc3339 } = Encoding;
 

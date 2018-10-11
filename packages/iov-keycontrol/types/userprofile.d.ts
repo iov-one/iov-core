@@ -2,8 +2,8 @@ import { AbstractLevelDOWN } from "abstract-leveldown";
 import { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
 import { Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
+import { ValueAndUpdates } from "@iov/stream";
 import { Keyring, KeyringEntry, KeyringEntryId, LocalIdentity, PublicIdentity } from "./keyring";
-import { ValueAndUpdates } from "./valueandupdates";
 export interface UserProfileOptions {
     readonly createdAt: ReadonlyDate;
     readonly keyring: Keyring;

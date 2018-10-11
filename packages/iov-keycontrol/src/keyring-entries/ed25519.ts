@@ -3,6 +3,7 @@ import PseudoRandom from "random-js";
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Ed25519, Ed25519Keypair } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
+import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import {
@@ -15,7 +16,6 @@ import {
   PublicIdentity,
 } from "../keyring";
 import { prehash } from "../prehashing";
-import { DefaultValueProducer, ValueAndUpdates } from "../valueandupdates";
 
 interface PubkeySerialization {
   readonly algo: string;

@@ -11,4 +11,3 @@ export {
   PublicIdentity,
 } from "./keyring";
 export { UserProfile, WalletInfo } from "./userprofile";
-export { DefaultValueProducer, ValueAndUpdates } from "./valueandupdates";
