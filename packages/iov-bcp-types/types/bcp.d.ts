@@ -39,7 +39,6 @@ export interface BcpTicker {
 }
 export interface BcpTransactionResponse {
     readonly metadata: {
-        readonly status: boolean;
         readonly height?: number;
     };
     readonly data: {

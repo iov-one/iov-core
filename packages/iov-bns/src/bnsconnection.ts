@@ -131,7 +131,6 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return {
       metadata: {
         height: txresp.height,
-        status: txCommitSuccess(txresp),
       },
       data: {
         txid: txresp.hash,

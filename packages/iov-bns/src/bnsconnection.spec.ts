@@ -201,9 +201,7 @@ describe("Integration tests with bov+tendermint", () => {
     };
     const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
-    const post = await connection.postTx(txBytes);
-    // FIXME: we really should add more info here, but this is in the spec
-    expect(post.metadata.status).toBe(true);
+    await connection.postTx(txBytes);
 
     // we should be a little bit richer
     const gotMoney = await connection.getAccount({ address: rcptAddr });
@@ -296,7 +294,6 @@ describe("Integration tests with bov+tendermint", () => {
     expect(origSearch.length).toEqual(0);
 
     const post = await sendCash(connection, profile, faucet, rcptAddr);
-    expect(post.metadata.status).toBe(true);
     const firstId = post.data.txid;
     expect(firstId).toBeDefined();
 
@@ -309,7 +306,6 @@ describe("Integration tests with bov+tendermint", () => {
     const live = asArray(connection.liveTx(query));
 
     const secondPost = await sendCash(connection, profile, faucet, rcptAddr);
-    expect(secondPost.metadata.status).toBe(true);
     const secondId = secondPost.data.txid;
     expect(secondId).toBeDefined();
 
@@ -352,12 +348,10 @@ describe("Integration tests with bov+tendermint", () => {
     const nonceRcpt = asArray(connection.changeNonce(rcptAddr));
 
     const post = await sendCash(connection, profile, faucet, rcptAddr);
-    expect(post.metadata.status).toBe(true);
     const first = post.metadata.height;
     expect(first).toBeDefined();
 
     const secondPost = await sendCash(connection, profile, faucet, rcptAddr);
-    expect(secondPost.metadata.status).toBe(true);
     const second = secondPost.metadata.height;
     expect(second).toBeDefined();
 
@@ -412,9 +406,8 @@ describe("Integration tests with bov+tendermint", () => {
     const origNonce = faucetNonce.value()!.nonce;
     expect(origNonce.toNumber()).toBeGreaterThan(0);
 
-    // send some cash and see if they update...
-    const post = await sendCash(connection, profile, faucet, rcptAddr);
-    expect(post.metadata.status).toBe(true);
+    // send some cash
+    await sendCash(connection, profile, faucet, rcptAddr);
 
     // give it a chance to get updates before checking and proceeding
     await sleep(100);
@@ -483,8 +476,6 @@ describe("Integration tests with bov+tendermint", () => {
     const signed = await profile.signTransaction(mainWalletId, faucet, swapOfferTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     const post = await connection.postTx(txBytes);
-    // FIXME: we really should add more info here, but this is in the spec
-    expect(post.metadata.status).toBe(true);
     const txHeight = post.metadata.height;
     expect(txHeight).toBeTruthy();
     expect(txHeight).toBeGreaterThan(1);

@@ -100,7 +100,6 @@ export class RiseConnection implements BcpConnection {
 
     return {
       metadata: {
-        status: true, // commit failures should throw
         height: undefined,
       },
       data: {

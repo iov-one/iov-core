@@ -79,8 +79,7 @@ describe("MultiChainSigner", () => {
           tokenTicker: cash,
         },
       };
-      const res = await signer.signAndCommit(sendTx, mainWalletId);
-      expect(res.metadata.status).toEqual(true);
+      await signer.signAndCommit(sendTx, mainWalletId);
 
       // we should be a little bit richer
       const connection = signer.connection(chainId);
