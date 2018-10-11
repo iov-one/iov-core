@@ -31,6 +31,7 @@
     "@iov/crypto": "^0.7.0-alpha.1",
     "@iov/encoding": "^0.6.0",
     "@iov/keycontrol": "^0.7.0-alpha.1",
+    "@iov/stream": "^0.7.0-alpha.1",
     "@ledgerhq/hw-transport-node-hid": "^4.22.0",
     "@types/node-hid": "^0.7.0",
     "node-hid": "^0.7.3",
