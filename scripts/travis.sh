@@ -46,9 +46,9 @@ fi
 export ETHEREUM_ENABLED=1
 ./packages/iov-ethereum/startGanache.sh
 
-echo "use tendermint?" "${TENDERMINT_ENABLED}"
-echo "use bov?" "${BOV_ENABLED}"
-echo "use ethereum?" ${ETHEREUM_ENABLED}
+echo "use tendermint?" "${TENDERMINT_ENABLED:-no}"
+echo "use bov?" "${BOV_ENABLED:-no}"
+echo "use ethereum?" ${ETHEREUM_ENABLED:-no}
 
 #
 # Build
