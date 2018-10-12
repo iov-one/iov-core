@@ -13,16 +13,19 @@ const cmdPubkeyWithPath = 5;
 const cmdAppVersion = 0xca;
 
 export function getPublicKey(transport: TransportNodeHid): Promise<Uint8Array> {
-  return sendChunks(transport, appCode, cmdPubkey, new Uint8Array([]));
+  return sendChunks(transport, appCode, cmdPubkey, new Uint8Array([0]));
 }
 
 export function getPublicKeyWithIndex(transport: TransportNodeHid, i: number): Promise<Uint8Array> {
   const pathComponent = Slip10RawIndex.hardened(i).asNumber();
-  return sendChunks(transport, appCode, cmdPubkeyWithPath, encodeUint32(pathComponent));
+  let pathPart = encodeUint32(pathComponent);
+  pathPart = [pathComponent.length, ...pathPart];
+  return sendChunks(transport, appCode, cmdPubkeyWithPath, pathPart);
 }
 
 export function signTransaction(transport: TransportNodeHid, transaction: Uint8Array): Promise<Uint8Array> {
-  return sendChunks(transport, appCode, cmdSign, transaction);
+  const paddedTx: ReadOnlyArray<Uint8> = [0, ...transaction];
+  return sendChunks(transport, appCode, cmdSign, paddedTx);
 }
 
 export function signTransactionWithIndex(
@@ -31,7 +34,9 @@ export function signTransactionWithIndex(
   i: number,
 ): Promise<Uint8Array> {
   const pathComponent = Slip10RawIndex.hardened(i).asNumber();
-  const data = new Uint8Array([...encodeUint32(pathComponent), ...transaction]);
+  let pathPart = encodeUint32(pathComponent);
+  pathPart = [pathComponent.length, ...pathPart];
+  const data = new Uint8Array([...pathPart, ...transaction]);
   return sendChunks(transport, appCode, cmdSignWithPath, data);
 }
 
