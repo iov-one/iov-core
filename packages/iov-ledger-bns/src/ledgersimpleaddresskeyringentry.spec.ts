@@ -41,7 +41,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
 
     const keyringEntry = new LedgerSimpleAddressKeyringEntry();
     keyringEntry.startDeviceTracking();
-    const newIdentity = await keyringEntry.createIdentity();
+    const newIdentity = await keyringEntry.createIdentity(0);
     expect(newIdentity).toBeTruthy();
     expect(newIdentity.pubkey.algo).toEqual(Algorithm.Ed25519);
     expect(newIdentity.pubkey.data.length).toEqual(32);
@@ -53,7 +53,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
 
     const keyringEntry = new LedgerSimpleAddressKeyringEntry();
     keyringEntry.startDeviceTracking();
-    const newIdentity = await keyringEntry.createIdentity();
+    const newIdentity = await keyringEntry.createIdentity(0);
 
     expect(keyringEntry.getIdentities().length).toEqual(1);
 
@@ -69,11 +69,11 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
 
     const keyringEntry = new LedgerSimpleAddressKeyringEntry();
     keyringEntry.startDeviceTracking();
-    const newIdentity1 = await keyringEntry.createIdentity();
-    const newIdentity2 = await keyringEntry.createIdentity();
-    const newIdentity3 = await keyringEntry.createIdentity();
-    const newIdentity4 = await keyringEntry.createIdentity();
-    const newIdentity5 = await keyringEntry.createIdentity();
+    const newIdentity1 = await keyringEntry.createIdentity(0);
+    const newIdentity2 = await keyringEntry.createIdentity(1);
+    const newIdentity3 = await keyringEntry.createIdentity(2);
+    const newIdentity4 = await keyringEntry.createIdentity(3);
+    const newIdentity5 = await keyringEntry.createIdentity(4);
 
     // all pubkeys must be different
     const pubkeySet = new Set([newIdentity1, newIdentity2, newIdentity3, newIdentity4, newIdentity5].map(i => toHex(i.pubkey.data)));
@@ -93,12 +93,24 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     keyringEntry.stopDeviceTracking();
   });
 
+  it("throws when adding the same identity index twice", async () => {
+    pendingWithoutLedger();
+
+    const keyringEntry = new LedgerSimpleAddressKeyringEntry();
+    keyringEntry.startDeviceTracking();
+    await keyringEntry.createIdentity(0);
+    await keyringEntry
+      .createIdentity(0)
+      .then(() => fail("must not resolve"))
+      .catch(error => expect(error).toMatch(/Identity Index collision/i));
+  });
+
   it("can set, change and unset an identity label", async () => {
     pendingWithoutLedger();
 
     const keyringEntry = new LedgerSimpleAddressKeyringEntry();
     keyringEntry.startDeviceTracking();
-    const newIdentity = await keyringEntry.createIdentity();
+    const newIdentity = await keyringEntry.createIdentity(0);
     expect(keyringEntry.getIdentities()[0].label).toBeUndefined();
 
     keyringEntry.setIdentityLabel(newIdentity, "foo");
@@ -171,7 +183,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
 
     const keyringEntry = new LedgerSimpleAddressKeyringEntry();
     keyringEntry.startDeviceTracking();
-    const newIdentity = await keyringEntry.createIdentity();
+    const newIdentity = await keyringEntry.createIdentity(0);
 
     await keyringEntry.canSign.waitFor(true);
 
@@ -213,9 +225,9 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     const entry = new LedgerSimpleAddressKeyringEntry();
     entry.startDeviceTracking();
     entry.setLabel("entry with 3 identities");
-    const identity1 = await entry.createIdentity();
-    const identity2 = await entry.createIdentity();
-    const identity3 = await entry.createIdentity();
+    const identity1 = await entry.createIdentity(0);
+    const identity2 = await entry.createIdentity(1);
+    const identity3 = await entry.createIdentity(2);
     entry.setIdentityLabel(identity1, undefined);
     entry.setIdentityLabel(identity2, "");
     entry.setIdentityLabel(identity3, "foo");
@@ -291,9 +303,9 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
 
     const original = new LedgerSimpleAddressKeyringEntry();
     original.startDeviceTracking();
-    const identity1 = await original.createIdentity();
-    const identity2 = await original.createIdentity();
-    const identity3 = await original.createIdentity();
+    const identity1 = await original.createIdentity(0);
+    const identity2 = await original.createIdentity(1);
+    const identity3 = await original.createIdentity(2);
     original.stopDeviceTracking();
     original.setIdentityLabel(identity1, undefined);
     original.setIdentityLabel(identity2, "");
