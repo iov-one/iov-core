@@ -16,6 +16,7 @@ Breaking changes
   now only accept string IDs for the entry/wallet argument
 * @iov/core: rename `IovWriter` to `MultiChainSigner`
 * @iov/core: rename the getter `reader` to `connection` in MultiChainSigner
+* @iov/ledger-bns: in LedgerSimpleAddressKeyringEntry .createIdentity takes an index argument
 
 ## 0.6.1
 

@@ -142,21 +142,26 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     this.labelProducer.update(label);
   }
 
-  public async createIdentity(): Promise<LocalIdentity> {
+  public async createIdentity(index: number): Promise<LocalIdentity> {
     if (!this.deviceTracker.running) {
       throw new Error("Device tracking off. Did you call startDeviceTracking()?");
     }
 
     await this.deviceState.waitFor(LedgerState.IovAppOpen);
 
-    const nextIndex = this.identities.length;
     const transport = await connectToFirstLedger();
 
-    const pubkey = await getPublicKeyWithIndex(transport, nextIndex);
+    const pubkey = await getPublicKeyWithIndex(transport, index);
     const newIdentity = this.buildLocalIdentity(pubkey as PublicKeyBytes, undefined);
 
+    if (this.identities.find(i => i.id === newIdentity.id)) {
+      throw new Error(
+        "Identity Index collision: this happens when you try to create multiple identities with the same index in the same entry.",
+      );
+    }
+
     this.identities.push(newIdentity);
-    this.simpleAddressIndices.set(newIdentity.id, nextIndex);
+    this.simpleAddressIndices.set(newIdentity.id, index);
 
     return newIdentity;
   }
