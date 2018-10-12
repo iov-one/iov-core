@@ -1,7 +1,8 @@
-// this should return true to skip ledger tests (to run on CI)
-//
-// current solution: check for LEDGER_ENABLED=true environmental variable
-// Does this work in browsers??
+// Set the following environment variables to "1" to enable subsets of the Ledger tests
+// LEDGER_ENABLED: basic tests
+// LEDGER_SEEDED: tests that only pass when the Ledger is seeded with "tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral"
+// LEDGER_INTERACTIVE: tests that require you to press hardware buttons during the test run
+// LEDGER_ALL: all of the above
 
 export const skipTests = (): boolean => !process.env.LEDGER_ENABLED && !process.env.LEDGER_ALL;
 export const pendingWithoutLedger = (): void => {
