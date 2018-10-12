@@ -6,23 +6,13 @@ import { Uint32 } from "@iov/encoding";
 import { sendChunks } from "./exchange";
 
 const appCode = 128;
-const cmdSign = 2;
 const cmdSignWithPath = 3;
-const cmdPubkey = 4;
 const cmdPubkeyWithPath = 5;
 const cmdAppVersion = 0xca;
-
-export function getPublicKey(transport: TransportNodeHid): Promise<Uint8Array> {
-  return sendChunks(transport, appCode, cmdPubkey, new Uint8Array([]));
-}
 
 export function getPublicKeyWithIndex(transport: TransportNodeHid, i: number): Promise<Uint8Array> {
   const pathComponent = Slip10RawIndex.hardened(i).asNumber();
   return sendChunks(transport, appCode, cmdPubkeyWithPath, encodeUint32(pathComponent));
-}
-
-export function signTransaction(transport: TransportNodeHid, transaction: Uint8Array): Promise<Uint8Array> {
-  return sendChunks(transport, appCode, cmdSign, transaction);
 }
 
 export function signTransactionWithIndex(
