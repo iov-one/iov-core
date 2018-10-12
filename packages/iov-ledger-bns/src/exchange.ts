@@ -112,6 +112,7 @@ export async function sendChunks(
 ): Promise<Uint8Array> {
   let offset = 0;
   // loop over the non-end chunks
+  // add length indicator for testing
   while (offset + 255 < payload.length) {
     const chunk = payload.slice(offset, offset + 255);
     offset += 255;
