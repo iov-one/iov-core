@@ -130,6 +130,14 @@ describe("Encoding", () => {
       expect(Encoding.fromUtf8(new Uint8Array([0x20, 0x3f, 0x3d, 0x2d, 0x6e, 0x7c, 0x7e, 0x2b, 0x2d, 0x2a, 0x2f, 0x5c]))).toEqual(" ?=-n|~+-*/\\");
     });
 
+    it("encodes null character", () => {
+      expect(Encoding.toUtf8("\u0000")).toEqual(new Uint8Array([0x00]));
+    });
+
+    it("decodes null byte", () => {
+      expect(Encoding.fromUtf8(new Uint8Array([0x00]))).toEqual("\u0000");
+    });
+
     it("encodes Basic Multilingual Plane strings", () => {
       expect(Encoding.toUtf8("ö")).toEqual(new Uint8Array([0xc3, 0xb6]));
       expect(Encoding.toUtf8("¥")).toEqual(new Uint8Array([0xc2, 0xa5]));
