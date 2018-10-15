@@ -18,7 +18,7 @@ export class Ed25519HdWallet extends Slip10Wallet {
 
   public readonly implementationId = "ed25519-hd" as KeyringEntryImplementationIdString;
 
-  public createIdentity(path?: ReadonlyArray<Slip10RawIndex>): Promise<LocalIdentity> {
+  public async createIdentity(path?: ReadonlyArray<Slip10RawIndex>): Promise<LocalIdentity> {
     if (path === undefined) {
       throw new Error("Ed25519HdWallet.createIdentity requires a `path` argument");
     }

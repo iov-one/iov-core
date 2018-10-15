@@ -22,7 +22,7 @@ export class Secp256k1HdWallet extends Slip10Wallet {
 
   public readonly implementationId = "secp256k1-hd" as KeyringEntryImplementationIdString;
 
-  public createIdentity(path?: ReadonlyArray<Slip10RawIndex>): Promise<LocalIdentity> {
+  public async createIdentity(path?: ReadonlyArray<Slip10RawIndex>): Promise<LocalIdentity> {
     if (path === undefined) {
       throw new Error("Secp256k1HdWallet.createIdentity requires a `path` argument");
     }
