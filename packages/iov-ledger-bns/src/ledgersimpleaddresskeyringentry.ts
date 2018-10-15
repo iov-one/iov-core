@@ -142,7 +142,12 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     this.labelProducer.update(label);
   }
 
-  public async createIdentity(index: number): Promise<LocalIdentity> {
+  public async createIdentity(options: unknown): Promise<LocalIdentity> {
+    if (typeof options !== "number") {
+      throw new Error("Expected numeric argument");
+    }
+    const index = options;
+
     if (!this.deviceTracker.running) {
       throw new Error("Device tracking off. Did you call startDeviceTracking()?");
     }

@@ -1,5 +1,5 @@
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
-import { Slip10Curve, Slip10RawIndex } from "@iov/crypto";
+import { Slip10Curve } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { ChainId, SignatureBytes } from "@iov/tendermint-types";
 import { KeyringEntry, KeyringEntryId, KeyringEntryImplementationIdString, KeyringEntrySerializationString, LocalIdentity, PublicIdentity } from "../keyring";
@@ -25,8 +25,7 @@ export declare class Slip10Wallet implements KeyringEntry {
     private readonly labelProducer;
     constructor(data: KeyringEntrySerializationString);
     setLabel(label: string | undefined): void;
-    createIdentity(_?: any): Promise<LocalIdentity>;
-    createIdentityWithPath(path: ReadonlyArray<Slip10RawIndex>): Promise<LocalIdentity>;
+    createIdentity(options: unknown): Promise<LocalIdentity>;
     setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
     getIdentities(): ReadonlyArray<LocalIdentity>;
     createTransactionSignature(identity: PublicIdentity, transactionBytes: SignableBytes, prehashType: PrehashType, _: ChainId): Promise<SignatureBytes>;

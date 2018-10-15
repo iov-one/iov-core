@@ -1,7 +1,9 @@
 import { As } from "type-tagger";
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
+import { Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { ChainId, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types";
+import { Ed25519KeyringEntry } from "./keyring-entries";
 export declare type KeyringEntrySerializationString = string & As<"keyring-entry-serialization">;
 export declare type KeyringSerializationString = string & As<"keyring-serialization">;
 export declare type KeyringEntryImplementationIdString = string & As<"keyring-entry-implementation-id">;
@@ -39,7 +41,7 @@ export interface KeyringEntry {
     readonly label: ValueAndUpdates<string | undefined>;
     readonly id: KeyringEntryId;
     readonly setLabel: (label: string | undefined) => void;
-    readonly createIdentity: (options?: any) => Promise<LocalIdentity>;
+    readonly createIdentity: (options: Ed25519KeyringEntry | ReadonlyArray<Slip10RawIndex> | number) => Promise<LocalIdentity>;
     readonly setIdentityLabel: (identity: PublicIdentity, label: string | undefined) => void;
     readonly getIdentities: () => ReadonlyArray<LocalIdentity>;
     readonly canSign: ValueAndUpdates<boolean>;

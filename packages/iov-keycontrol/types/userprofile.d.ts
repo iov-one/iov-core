@@ -2,8 +2,10 @@ import { AbstractLevelDOWN } from "abstract-leveldown";
 import { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
 import { Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
+import { Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { Keyring, KeyringEntry, KeyringEntryId, LocalIdentity, PublicIdentity } from "./keyring";
+import { Ed25519KeyringEntry } from "./keyring-entries";
 export interface UserProfileOptions {
     readonly createdAt: ReadonlyDate;
     readonly keyring: Keyring;
@@ -36,7 +38,7 @@ export declare class UserProfile {
     lock(): void;
     addEntry(entry: KeyringEntry): void;
     setEntryLabel(id: KeyringEntryId, label: string | undefined): void;
-    createIdentity(id: KeyringEntryId, options?: any): Promise<LocalIdentity>;
+    createIdentity(id: KeyringEntryId, options: Ed25519KeyringEntry | ReadonlyArray<Slip10RawIndex> | number): Promise<LocalIdentity>;
     setIdentityLabel(id: KeyringEntryId, identity: PublicIdentity, label: string | undefined): void;
     getIdentities(id: KeyringEntryId): ReadonlyArray<LocalIdentity>;
     signTransaction(id: KeyringEntryId, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;

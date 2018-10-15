@@ -1,6 +1,7 @@
 import { As } from "type-tagger";
 
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
+import { Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { ChainId, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types";
 
@@ -150,7 +151,9 @@ export interface KeyringEntry {
   readonly setLabel: (label: string | undefined) => void;
 
   // createIdentity will create one new identity
-  readonly createIdentity: (options?: any) => Promise<LocalIdentity>;
+  readonly createIdentity: (
+    options: Ed25519KeyringEntry | ReadonlyArray<Slip10RawIndex> | number,
+  ) => Promise<LocalIdentity>;
 
   // Sets a local label associated with the public identity to be displayed in the UI.
   // To clear a label, set it to undefined
