@@ -60,11 +60,11 @@ export interface BcpValueNameQuery {
     readonly name: string;
 }
 export interface BcpPubkeyQuery {
-    readonly publicKey: PublicKeyBundle;
+    readonly pubkey: PublicKeyBundle;
 }
 export declare type BcpAccountQuery = BcpAddressQuery | BcpPubkeyQuery | BcpValueNameQuery;
 export declare function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery;
-export declare function isPublicKeyQuery(query: BcpAccountQuery): query is BcpPubkeyQuery;
+export declare function isPubkeyQuery(query: BcpAccountQuery): query is BcpPubkeyQuery;
 export declare function isValueNameQuery(query: BcpAccountQuery): query is BcpValueNameQuery;
 export interface BcpConnection {
     readonly disconnect: () => void;

@@ -92,7 +92,7 @@ export interface BcpValueNameQuery {
 }
 
 export interface BcpPubkeyQuery {
-  readonly publicKey: PublicKeyBundle;
+  readonly pubkey: PublicKeyBundle;
 }
 
 export type BcpAccountQuery = BcpAddressQuery | BcpPubkeyQuery | BcpValueNameQuery;
@@ -102,8 +102,8 @@ export function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery
   return (query as BcpAddressQuery).address !== undefined;
 }
 
-export function isPublicKeyQuery(query: BcpAccountQuery): query is BcpPubkeyQuery {
-  return (query as BcpPubkeyQuery).publicKey !== undefined;
+export function isPubkeyQuery(query: BcpAccountQuery): query is BcpPubkeyQuery {
+  return (query as BcpPubkeyQuery).pubkey !== undefined;
 }
 
 export function isValueNameQuery(query: BcpAccountQuery): query is BcpValueNameQuery {

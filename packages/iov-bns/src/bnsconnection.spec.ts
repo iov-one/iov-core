@@ -134,9 +134,9 @@ describe("Integration tests with bov+tendermint", () => {
     expect(addrAcct.balance[0].whole).toBeGreaterThan(1000000);
 
     // can get the faucet by publicKey, same result
-    const responseFromPubKey = await connection.getAccount({ publicKey: faucet.pubkey });
-    expect(responseFromPubKey.data.length).toEqual(1);
-    const pubkeyAcct = responseFromPubKey.data[0];
+    const responseFromPubkey = await connection.getAccount({ pubkey: faucet.pubkey });
+    expect(responseFromPubkey.data.length).toEqual(1);
+    const pubkeyAcct = responseFromPubkey.data[0];
     expect(pubkeyAcct).toEqual(addrAcct);
 
     // can get the faucet by name, same result

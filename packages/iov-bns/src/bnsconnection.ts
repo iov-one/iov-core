@@ -14,7 +14,7 @@ import {
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
-  isPublicKeyQuery,
+  isPubkeyQuery,
   isQueryBySwapId,
   isQueryBySwapRecipient,
   isQueryBySwapSender,
@@ -159,8 +159,8 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     let res;
     if (isAddressQuery(account)) {
       res = this.query("/wallets", decodeBnsAddress(account.address));
-    } else if (isPublicKeyQuery(account)) {
-      const address = bnsCodec.keyToAddress(account.publicKey);
+    } else if (isPubkeyQuery(account)) {
+      const address = bnsCodec.keyToAddress(account.pubkey);
       res = this.query("/wallets", decodeBnsAddress(address));
     } else {
       // if (isValueNameQuery(account))
