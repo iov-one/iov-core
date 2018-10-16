@@ -7,6 +7,7 @@ import {
   Argon2id,
   Argon2idOptions,
   Random,
+  Slip10RawIndex,
   Xchacha20poly1305Ietf,
   Xchacha20poly1305IetfCiphertext,
   Xchacha20poly1305IetfKey,
@@ -24,6 +25,7 @@ import {
   LocalIdentity,
   PublicIdentity,
 } from "./keyring";
+import { Ed25519KeyringEntry } from "./keyring-entries";
 import { DatabaseUtils } from "./utils";
 
 const { toAscii, fromBase64, toBase64, fromUtf8, toUtf8, toRfc3339, fromRfc3339 } = Encoding;
@@ -175,7 +177,10 @@ export class UserProfile {
   }
 
   // creates an identitiy in the n-th keyring entry of the primary keyring
-  public async createIdentity(id: KeyringEntryId, options?: any): Promise<LocalIdentity> {
+  public async createIdentity(
+    id: KeyringEntryId,
+    options: Ed25519KeyringEntry | ReadonlyArray<Slip10RawIndex> | number,
+  ): Promise<LocalIdentity> {
     const entry = this.entryInPrimaryKeyring(id);
     return entry.createIdentity(options);
   }

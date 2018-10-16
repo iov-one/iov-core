@@ -53,6 +53,13 @@ interface Slip10WalletConstructor {
   new (data: KeyringEntrySerializationString): Slip10Wallet;
 }
 
+function isPath(value: unknown): value is ReadonlyArray<Slip10RawIndex> {
+  if (!Array.isArray(value)) {
+    return false;
+  }
+  return value.every(item => item instanceof Slip10RawIndex);
+}
+
 export class Slip10Wallet implements KeyringEntry {
   public static fromEntropyWithCurve(
     curve: Slip10Curve,
@@ -169,11 +176,12 @@ export class Slip10Wallet implements KeyringEntry {
     this.labelProducer.update(label);
   }
 
-  public async createIdentity(_?: any): Promise<LocalIdentity> {
-    throw new Error("Slip10Wallet.createIdentity must not be called directly. Use derived type.");
-  }
+  public async createIdentity(options: unknown): Promise<LocalIdentity> {
+    if (!isPath(options)) {
+      throw new Error("Did not get the correct argument type. Expected array of Slip10RawIndex");
+    }
+    const path = options;
 
-  public async createIdentityWithPath(path: ReadonlyArray<Slip10RawIndex>): Promise<LocalIdentity> {
     const seed = await Bip39.mnemonicToSeed(this.secret);
     const derivationResult = Slip10.derivePath(this.curve, seed, path);
 

@@ -37,7 +37,7 @@ export declare class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
      */
     stopDeviceTracking(): void;
     setLabel(label: string | undefined): void;
-    createIdentity(index: number): Promise<LocalIdentity>;
+    createIdentity(options: unknown): Promise<LocalIdentity>;
     setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
     getIdentities(): ReadonlyArray<LocalIdentity>;
     createTransactionSignature(identity: PublicIdentity, transactionBytes: SignableBytes, prehashType: PrehashType, _: ChainId): Promise<SignatureBytes>;

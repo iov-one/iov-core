@@ -120,10 +120,11 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     this.labelProducer.update(label);
   }
 
-  public async createIdentity(keypair?: Ed25519Keypair): Promise<LocalIdentity> {
-    if (!keypair) {
+  public async createIdentity(options: unknown): Promise<LocalIdentity> {
+    if (!(options instanceof Ed25519Keypair)) {
       throw new Error("Ed25519.createIdentity requires a keypair argument");
     }
+    const keypair = options;
 
     const newIdentity = this.buildLocalIdentity(keypair.pubkey as PublicKeyBytes, undefined);
 

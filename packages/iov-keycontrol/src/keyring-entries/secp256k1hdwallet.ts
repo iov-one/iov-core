@@ -1,6 +1,6 @@
-import { Slip10Curve, Slip10RawIndex } from "@iov/crypto";
+import { Slip10Curve } from "@iov/crypto";
 
-import { KeyringEntryImplementationIdString, LocalIdentity } from "../keyring";
+import { KeyringEntryImplementationIdString } from "../keyring";
 import { Slip10Wallet } from "./slip10wallet";
 
 export class Secp256k1HdWallet extends Slip10Wallet {
@@ -21,13 +21,6 @@ export class Secp256k1HdWallet extends Slip10Wallet {
   }
 
   public readonly implementationId = "secp256k1-hd" as KeyringEntryImplementationIdString;
-
-  public createIdentity(path?: ReadonlyArray<Slip10RawIndex>): Promise<LocalIdentity> {
-    if (path === undefined) {
-      throw new Error("Secp256k1HdWallet.createIdentity requires a `path` argument");
-    }
-    return super.createIdentityWithPath(path);
-  }
 
   public clone(): Secp256k1HdWallet {
     return new Secp256k1HdWallet(this.serialize());
