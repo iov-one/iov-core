@@ -12,7 +12,10 @@ const cmdAppVersion = 0xca;
 
 export function getPublicKeyWithIndex(transport: TransportNodeHid, i: number): Promise<Uint8Array> {
   const pathComponent = Slip10RawIndex.hardened(i).asNumber();
-  return sendChunks(transport, appCode, cmdPubkeyWithPath, encodeUint32(pathComponent));
+  // note: as an example how to combine Uint8Arrays, look at appendSignBytes in iov-bns/src/util.ts
+  // this hard-codes to one segment
+  const chunk = Uint8Array.from([1, ...encodeUint32(pathComponent)]);
+  return sendChunks(transport, appCode, cmdPubkeyWithPath, chunk);
 }
 
 export function signTransactionWithIndex(
@@ -21,7 +24,8 @@ export function signTransactionWithIndex(
   i: number,
 ): Promise<Uint8Array> {
   const pathComponent = Slip10RawIndex.hardened(i).asNumber();
-  const data = new Uint8Array([...encodeUint32(pathComponent), ...transaction]);
+  // this hard-codes to one segment
+  const data = new Uint8Array([1, ...encodeUint32(pathComponent), ...transaction]);
   return sendChunks(transport, appCode, cmdSignWithPath, data);
 }
 
