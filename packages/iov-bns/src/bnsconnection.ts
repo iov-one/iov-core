@@ -14,6 +14,7 @@ import {
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
+  isPublicKeyQuery,
   isQueryBySwapId,
   isQueryBySwapRecipient,
   isQueryBySwapSender,
@@ -155,9 +156,16 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   }
 
   public async getAccount(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>> {
-    const res = isAddressQuery(account)
-      ? this.query("/wallets", decodeBnsAddress(account.address))
-      : this.query("/wallets/name", Encoding.toAscii(account.name));
+    let res;
+    if (isAddressQuery(account)) {
+      res = this.query("/wallets", decodeBnsAddress(account.address));
+    } else if (isPublicKeyQuery(account)) {
+      const address = bnsCodec.keyToAddress(account.publicKey);
+      res = this.query("/wallets", decodeBnsAddress(address));
+    } else {
+      // if (isValueNameQuery(account))
+      res = this.query("/wallets/name", Encoding.toAscii(account.name));
+    }
     const parser = parseMap(codecImpl.namecoin.Wallet, 5);
     const parsed = (await res).results.map(parser);
     const data = parsed.map(Normalize.account(this.initData));

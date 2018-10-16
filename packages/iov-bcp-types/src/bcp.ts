@@ -91,11 +91,23 @@ export interface BcpValueNameQuery {
   readonly name: string;
 }
 
-export type BcpAccountQuery = BcpAddressQuery | BcpValueNameQuery;
+export interface BcpPubkeyQuery {
+  readonly publicKey: PublicKeyBundle;
+}
+
+export type BcpAccountQuery = BcpAddressQuery | BcpPubkeyQuery | BcpValueNameQuery;
 
 // a type checker to use in the account-based queries
 export function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery {
   return (query as BcpAddressQuery).address !== undefined;
+}
+
+export function isPublicKeyQuery(query: BcpAccountQuery): query is BcpPubkeyQuery {
+  return (query as BcpPubkeyQuery).publicKey !== undefined;
+}
+
+export function isValueNameQuery(query: BcpAccountQuery): query is BcpValueNameQuery {
+  return (query as BcpValueNameQuery).name !== undefined;
 }
 
 // BcpConnection is a high-level interface to a blockchain node,
