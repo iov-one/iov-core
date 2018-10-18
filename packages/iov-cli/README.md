@@ -249,7 +249,7 @@ Do 1. and 2. like above
 []
 
 > const softwareIdentity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0))
-> const hardwareIdentity = await profile.createIdentity(ledgerEntry.id)
+> const hardwareIdentity = await profile.createIdentity(ledgerEntry.id, 0)
 
 > softwareIdentity.pubkey
 { algo: 'ed25519',
