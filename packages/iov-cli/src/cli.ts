@@ -54,13 +54,13 @@ export const main = (originalArgs: string[]): void => {
   console.log(colors.yellow("    - KeyringEntryId"));
   console.log(colors.yellow("    - KeyringEntryImplementationIdString"));
   console.log(colors.yellow("    - KeyringEntrySerializationString"));
+  console.log(colors.yellow("    - MultiChainSigner"));
   console.log(colors.yellow("    - Nonce"));
   console.log(colors.yellow("    - UserProfile"));
   console.log(colors.yellow("    - SendTx"));
   console.log(colors.yellow("    - SetNameTx"));
   console.log(colors.yellow("    - TokenTicker"));
   console.log(colors.yellow("    - TransactionKind"));
-  console.log(colors.yellow("    - MultiChainSigner"));
   console.log(colors.yellow("  * from @iov/crypto"));
   console.log(colors.yellow("    - Bip39"));
   console.log(colors.yellow("    - Ed25519"));
@@ -95,13 +95,13 @@ export const main = (originalArgs: string[]): void => {
       KeyringEntryId,
       KeyringEntryImplementationIdString,
       KeyringEntrySerializationString,
+      MultiChainSigner,
       Nonce,
       SendTx,
       SetNameTx,
       TokenTicker,
       TransactionKind,
       UserProfile,
-      MultiChainSigner,
     } from "@iov/core";
     import { bnsCodec } from '@iov/bns';
     import { Bip39, Ed25519, Ed25519Keypair, Random, Sha256, Sha512 } from '@iov/crypto';
