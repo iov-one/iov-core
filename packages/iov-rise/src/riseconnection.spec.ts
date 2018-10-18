@@ -1,11 +1,13 @@
 import { Address, BcpAccountQuery, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Encoding } from "@iov/encoding";
 import { Ed25519KeyringEntry } from "@iov/keycontrol";
-import { ChainId } from "@iov/tendermint-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/tendermint-types";
 
 import { passphraseToKeypair } from "./derivation";
 import { riseCodec } from "./risecodec";
 import { generateNonce, RiseConnection } from "./riseconnection";
 
+const { fromHex } = Encoding;
 const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
 
 describe("RiseConnection", () => {
@@ -81,17 +83,30 @@ describe("RiseConnection", () => {
     expect(height).toBeLessThan(4000000);
   });
 
-  it("can get account", async () => {
-    // Generate dead target address:
-    // python3 -c 'import random; print("{}R".format(random.randint(0, 18446744073709551615)))'
+  it("can get account from address", async () => {
     const connection = await RiseConnection.establish(base);
-    const query: BcpAccountQuery = { address: "1111R" as Address };
+    const query: BcpAccountQuery = { address: "6472030874529564639R" as Address };
     const account = await connection.getAccount(query);
-    expect(account.data[0].address).toEqual("1111R");
+    expect(account.data[0].address).toEqual("6472030874529564639R");
     expect(account.data[0].balance[0].tokenTicker).toEqual("RISE");
     expect(account.data[0].balance[0].sigFigs).toEqual(8);
-    expect(account.data[0].balance[0].whole).toEqual(15);
-    expect(account.data[0].balance[0].fractional).toEqual(48687542);
+    expect(account.data[0].balance[0].whole).toEqual(52);
+    expect(account.data[0].balance[0].fractional).toEqual(98643212);
+  });
+
+  it("can get account from pubkey", async () => {
+    const connection = await RiseConnection.establish(base);
+    const pubkey: PublicKeyBundle = {
+      algo: Algorithm.Ed25519,
+      data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PublicKeyBytes,
+    };
+    const query: BcpAccountQuery = { pubkey: pubkey };
+    const account = await connection.getAccount(query);
+    expect(account.data[0].address).toEqual("6472030874529564639R");
+    expect(account.data[0].balance[0].tokenTicker).toEqual("RISE");
+    expect(account.data[0].balance[0].sigFigs).toEqual(8);
+    expect(account.data[0].balance[0].whole).toEqual(52);
+    expect(account.data[0].balance[0].fractional).toEqual(98643212);
   });
 
   it("returns empty list when getting an unused account", async () => {
