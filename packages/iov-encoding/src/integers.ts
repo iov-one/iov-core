@@ -1,4 +1,7 @@
 /* tslint:disable:no-bitwise */
+import BN = require("bn.js");
+
+const uint64MaxValue = new BN("18446744073709551615", 10, "be");
 
 export class Uint32 {
   public static fromBigEndianBytes(bytes: ArrayLike<number>): Uint32 {
@@ -77,5 +80,53 @@ export class Int53 {
 
   public asString(): string {
     return this.data.toString();
+  }
+}
+
+export class Uint64 {
+  public static fromBytesBigEndian(bytes: ArrayLike<number>): Uint64 {
+    if (bytes.length !== 8) {
+      throw new Error("Invalid input length. Expected 8 bytes.");
+    }
+
+    // tslint:disable-next-line:prefer-for-of
+    for (let i = 0; i < bytes.length; ++i) {
+      if (bytes[i] > 255 || bytes[i] < 0 || Number.isNaN(bytes[i])) {
+        throw new Error("Invalid value in byte. Found: " + bytes[i]);
+      }
+    }
+
+    // tslint:disable-next-line:readonly-array
+    const asArray: number[] = [];
+    // tslint:disable-next-line:prefer-for-of
+    for (let i = 0; i < bytes.length; ++i) {
+      asArray.push(bytes[i]);
+    }
+
+    return new Uint64(new BN([...asArray]));
+  }
+
+  public static fromString(str: string): Uint64 {
+    if (!str.match(/^[0-9]+$/)) {
+      throw new Error("Invalid string format");
+    }
+    return new Uint64(new BN(str, 10, "be"));
+  }
+
+  private readonly data: BN;
+
+  private constructor(data: BN) {
+    if (data.gt(uint64MaxValue)) {
+      throw new Error("Value exceeds uint64 range");
+    }
+    this.data = data;
+  }
+
+  public toBytesBigEndian(): ReadonlyArray<number> {
+    return this.data.toArray("be", 8);
+  }
+
+  public toString(): string {
+    return this.data.toString(10);
   }
 }
