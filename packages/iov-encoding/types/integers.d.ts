@@ -20,4 +20,5 @@ export declare class Uint64 {
     toBytesBigEndian(): ReadonlyArray<number>;
     toBytesLittleEndian(): ReadonlyArray<number>;
     toString(): string;
+    toNumber(): number;
 }

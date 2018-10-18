@@ -133,4 +133,8 @@ export class Uint64 {
   public toString(): string {
     return this.data.toString(10);
   }
+
+  public toNumber(): number {
+    return this.data.toNumber();
+  }
 }

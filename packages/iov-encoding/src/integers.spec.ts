@@ -270,5 +270,26 @@ describe("Integers", () => {
         expect(a.toString()).toEqual("18446744073709551615");
       }
     });
+
+    it("can export numbers", () => {
+      {
+        const a = Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
+        expect(a.toNumber()).toEqual(0);
+      }
+      {
+        const a = Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]);
+        expect(a.toNumber()).toEqual(1);
+      }
+      {
+        // value too large for 53 bit integer
+        const a = Uint64.fromBytesBigEndian([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]);
+        expect(() => a.toNumber()).toThrowError(/number can only safely store up to 53 bits/i);
+      }
+      {
+        // Number.MAX_SAFE_INTEGER + 1
+        const a = Uint64.fromBytesBigEndian([0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
+        expect(() => a.toNumber()).toThrowError(/number can only safely store up to 53 bits/i);
+      }
+    });
   });
 });
