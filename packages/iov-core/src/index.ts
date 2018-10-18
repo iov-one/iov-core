@@ -11,6 +11,7 @@ export {
   HdPaths,
   Keyring,
   KeyringEntry,
+  KeyringEntryId,
   KeyringEntryImplementationIdString,
   KeyringEntrySerializationString,
   UserProfile,

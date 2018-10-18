@@ -43,12 +43,13 @@ $ iov-cli
 
 ```
 > const profile = new UserProfile();
-> profile.addEntry(Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"))
+> const wallet = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script")
+> profile.addEntry(wallet)
 
-> profile.getIdentities(0)
+> profile.getIdentities(wallet.id)
 []
 
-> const faucet = await profile.createIdentity(0, HdPaths.simpleAddress(0))
+> const faucet = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0))
 
 > faucet.pubkey
 { algo: 'ed25519',
@@ -57,9 +58,9 @@ $ iov-cli
      224,
      42, ...
 
-> profile.setIdentityLabel(0, faucet, "blockchain of value faucet")
+> profile.setIdentityLabel(wallet.id, faucet, "blockchain of value faucet")
 
-> profile.getIdentities(0)
+> profile.getIdentities(wallet.id)
 [ { pubkey: { algo: 'ed25519', data: [Uint8Array] },
     label: 'blockchain of value faucet' } ]
 
@@ -71,7 +72,7 @@ $ iov-cli
 > const faucetAddress = signer.keyToAddress(chainId, faucet.pubkey);
 > (await connection.getAccount({ address: faucetAddress })).data[0].balance
 
-> const recipient = await profile.createIdentity(0, HdPaths.simpleAddress(1));
+> const recipient = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(1));
 > const recipientAddress = signer.keyToAddress(chainId, recipient.pubkey);
 
 > .editor
@@ -108,16 +109,16 @@ const sendTx: SendTx = {
 [ { id: 'ReYESw51lsOOr8_X', label: undefined },
   { id: 'FtIcQqMWcRpEIruk', label: undefined } ]
 
-> profile.getIdentities(0)
+> profile.getIdentities("ReYESw51lsOOr8_X" as KeyringEntryId)
 [ { pubkey: { algo: 'ed25519', data: [Uint8Array] },
     label: 'blockchain of value faucet',
     id: 'uul1wahs5te8fiaD' } ]
 
-> profile.getIdentities(1)
+> profile.getIdentities("FtIcQqMWcRpEIruk" as KeyringEntryId)
 []
 
-> profile.setEntryLabel(0, "main")
-> profile.setEntryLabel(1, "second")
+> profile.setEntryLabel("ReYESw51lsOOr8_X" as KeyringEntryId, "main")
+> profile.setEntryLabel("FtIcQqMWcRpEIruk" as KeyringEntryId, "second")
 
 > profile.wallets.value
 [ { id: 'ReYESw51lsOOr8_X', label: 'main' },
@@ -156,7 +157,7 @@ const setNameTx: SetNameTx = {
   name: "hans",
 };
 ^D
-> await signer.signAndCommit(setNameTx, 0);
+> await signer.signAndCommit(setNameTx, wallet.id);
 > (await connection.getAccount({ name: "hans" })).data[0]
 { name: 'hans',
   address:
@@ -194,8 +195,9 @@ When using a Testnet, you can use the BovFaucet to receive tokens:
 > mnemonic
 'helmet album grow detail apology thank wire chef fame core private cargo'
 > const profile = new UserProfile();
-> profile.addEntry(Ed25519HdWallet.fromMnemonic(mnemonic));
-> const me = await profile.createIdentity(0, HdPaths.simpleAddress(0));
+> const wallet = Ed25519HdWallet.fromMnemonic(mnemonic);
+> profile.addEntry(wallet);
+> const me = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
 
 > const signer = new MultiChainSigner(profile);
 > await signer.addChain(bnsConnector("https://bov.friendnet-slow.iov.one"));
@@ -234,19 +236,20 @@ Do 1. and 2. like above
 ```
 > import { LedgerSimpleAddressKeyringEntry } from "@iov/ledger-bns";
 > const profile = new UserProfile();
-> profile.addEntry(Ed25519HdWallet.fromMnemonic("tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral"))
+> const wallet = Ed25519HdWallet.fromMnemonic("tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral");
+> profile.addEntry(wallet)
 > const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
 > ledgerEntry.startDeviceTracking();
 > profile.addEntry(ledgerEntry);
 
-> profile.getIdentities(0)
+> profile.getIdentities(wallet.id)
 []
 
-> profile.getIdentities(1)
+> profile.getIdentities(ledgerEntry.id)
 []
 
-> const softwareIdentity = await profile.createIdentity(0, HdPaths.simpleAddress(0))
-> const hardwareIdentity = await profile.createIdentity(1)
+> const softwareIdentity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0))
+> const hardwareIdentity = await profile.createIdentity(ledgerEntry.id)
 
 > softwareIdentity.pubkey
 { algo: 'ed25519',

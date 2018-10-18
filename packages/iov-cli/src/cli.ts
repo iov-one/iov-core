@@ -48,8 +48,10 @@ export const main = (originalArgs: string[]): void => {
   console.log(colors.yellow("    - bnsFromOrToTag"));
   console.log(colors.yellow("    - ChainId"));
   console.log(colors.yellow("    - Ed25519HdWallet"));
+  console.log(colors.yellow("    - HdPaths"));
   console.log(colors.yellow("    - Keyring"));
   console.log(colors.yellow("    - KeyringEntry"));
+  console.log(colors.yellow("    - KeyringEntryId"));
   console.log(colors.yellow("    - KeyringEntryImplementationIdString"));
   console.log(colors.yellow("    - KeyringEntrySerializationString"));
   console.log(colors.yellow("    - Nonce"));
@@ -87,8 +89,10 @@ export const main = (originalArgs: string[]): void => {
       bnsFromOrToTag,
       ChainId,
       Ed25519HdWallet,
+      HdPaths,
       Keyring,
       KeyringEntry,
+      KeyringEntryId,
       KeyringEntryImplementationIdString,
       KeyringEntrySerializationString,
       Nonce,
