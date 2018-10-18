@@ -3,6 +3,7 @@ import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
 import {
+  Address,
   BcpAccount,
   BcpAccountQuery,
   BcpConnection,
@@ -13,6 +14,7 @@ import {
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
+  isPubkeyQuery,
   Nonce,
   TokenTicker,
 } from "@iov/bcp-types";
@@ -20,6 +22,7 @@ import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, Tag, TxId, TxQuery } from "@iov/tendermint-types";
 
 import { constants } from "./constants";
+import { liskCodec } from "./liskcodec";
 import { Parse } from "./parse";
 
 /**
@@ -127,30 +130,33 @@ export class LiskConnection implements BcpConnection {
   }
 
   public async getAccount(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>> {
+    let address: Address;
     if (isAddressQuery(query)) {
-      const address = query.address;
-      const url = this.baseUrl + `/api/accounts?address=${address}`;
-      const result = await axios.get(url);
-      const responseBody = result.data;
-
-      // here we are expecting 0 or 1 results
-      const accounts: ReadonlyArray<BcpAccount> = responseBody.data.map(
-        (item: any): BcpAccount => ({
-          address: address,
-          name: undefined,
-          balance: [
-            {
-              sigFigs: constants.primaryTokenSigFigs,
-              tokenName: constants.primaryTokenName,
-              ...Parse.liskAmount(item.balance),
-            },
-          ],
-        }),
-      );
-      return dummyEnvelope(accounts);
+      address = query.address;
+    } else if (isPubkeyQuery(query)) {
+      address = liskCodec.keyToAddress(query.pubkey);
     } else {
       throw new Error("Query type not supported");
     }
+    const url = this.baseUrl + `/api/accounts?address=${address}`;
+    const result = await axios.get(url);
+    const responseBody = result.data;
+
+    // here we are expecting 0 or 1 results
+    const accounts: ReadonlyArray<BcpAccount> = responseBody.data.map(
+      (item: any): BcpAccount => ({
+        address: address,
+        name: undefined,
+        balance: [
+          {
+            sigFigs: constants.primaryTokenSigFigs,
+            tokenName: constants.primaryTokenName,
+            ...Parse.liskAmount(item.balance),
+          },
+        ],
+      }),
+    );
+    return dummyEnvelope(accounts);
   }
 
   public getNonce(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>> {

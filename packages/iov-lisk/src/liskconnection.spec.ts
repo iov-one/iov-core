@@ -1,10 +1,13 @@
 import { Address, BcpAccountQuery, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Encoding } from "@iov/encoding";
 import { Ed25519KeyringEntry } from "@iov/keycontrol";
-import { ChainId } from "@iov/tendermint-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/tendermint-types";
 
 import { passphraseToKeypair } from "./derivation";
 import { liskCodec } from "./liskcodec";
 import { generateNonce, LiskConnection } from "./liskconnection";
+
+const { fromHex } = Encoding;
 
 function pendingWithoutLongRunning(): void {
   if (!process.env.LONG_RUNNING_ENABLED) {
@@ -87,17 +90,30 @@ describe("LiskConnection", () => {
     expect(height).toBeLessThan(8000000);
   });
 
-  it("can get account", async () => {
-    // Generate dead target address:
-    // python3 -c 'import random; print("{}L".format(random.randint(0, 18446744073709551615)))'
+  it("can get account from address", async () => {
     const connection = await LiskConnection.establish(base);
-    const query: BcpAccountQuery = { address: "15683599531721344316L" as Address };
+    const query: BcpAccountQuery = { address: "6472030874529564639L" as Address };
     const account = await connection.getAccount(query);
-    expect(account.data[0].address).toEqual("15683599531721344316L");
+    expect(account.data[0].address).toEqual("6472030874529564639L");
     expect(account.data[0].balance[0].tokenTicker).toEqual("LSK");
     expect(account.data[0].balance[0].sigFigs).toEqual(8);
-    expect(account.data[0].balance[0].whole).toEqual(15);
-    expect(account.data[0].balance[0].fractional).toEqual(48687542);
+    expect(account.data[0].balance[0].whole).toEqual(98);
+    expect(account.data[0].balance[0].fractional).toEqual(66543211);
+  });
+
+  it("can get account from pubkey", async () => {
+    const connection = await LiskConnection.establish(base);
+    const pubkey: PublicKeyBundle = {
+      algo: Algorithm.Ed25519,
+      data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PublicKeyBytes,
+    };
+    const query: BcpAccountQuery = { pubkey: pubkey };
+    const account = await connection.getAccount(query);
+    expect(account.data[0].address).toEqual("6472030874529564639L");
+    expect(account.data[0].balance[0].tokenTicker).toEqual("LSK");
+    expect(account.data[0].balance[0].sigFigs).toEqual(8);
+    expect(account.data[0].balance[0].whole).toEqual(98);
+    expect(account.data[0].balance[0].fractional).toEqual(66543211);
   });
 
   it("returns empty list when getting an unused account", async () => {
@@ -111,10 +127,10 @@ describe("LiskConnection", () => {
 
   it("can get nonce", async () => {
     const connection = await LiskConnection.establish(base);
-    const query: BcpAccountQuery = { address: "15683599531721344316L" as Address };
+    const query: BcpAccountQuery = { address: "6472030874529564639L" as Address };
     const nonce = await connection.getNonce(query);
 
-    expect(nonce.data[0].address).toEqual("15683599531721344316L");
+    expect(nonce.data[0].address).toEqual("6472030874529564639L");
     // nonce is current timestamp +/- one second
     expect(nonce.data[0].nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
     expect(nonce.data[0].nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);

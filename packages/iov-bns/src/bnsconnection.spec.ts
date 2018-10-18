@@ -116,7 +116,7 @@ describe("Integration tests with bov+tendermint", () => {
     connection.disconnect();
   });
 
-  it("can get accpunt by address and name", async () => {
+  it("can get account by address, publicKey and name", async () => {
     pendingWithoutBov();
     const connection = await BnsConnection.establish(tendermintUrl);
 
@@ -132,6 +132,12 @@ describe("Integration tests with bov+tendermint", () => {
     expect(addrAcct.balance.length).toEqual(1);
     expect(addrAcct.balance[0].tokenTicker).toEqual(cash);
     expect(addrAcct.balance[0].whole).toBeGreaterThan(1000000);
+
+    // can get the faucet by publicKey, same result
+    const responseFromPubkey = await connection.getAccount({ pubkey: faucet.pubkey });
+    expect(responseFromPubkey.data.length).toEqual(1);
+    const pubkeyAcct = responseFromPubkey.data[0];
+    expect(pubkeyAcct).toEqual(addrAcct);
 
     // can get the faucet by name, same result
     const responseFromName = await connection.getAccount({ name: "admin" });

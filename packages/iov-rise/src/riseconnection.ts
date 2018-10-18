@@ -3,6 +3,7 @@ import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
 import {
+  Address,
   BcpAccount,
   BcpAccountQuery,
   BcpConnection,
@@ -13,6 +14,7 @@ import {
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
+  isPubkeyQuery,
   Nonce,
   TokenTicker,
 } from "@iov/bcp-types";
@@ -21,6 +23,7 @@ import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, Tag, TxId, TxQuery }
 
 import { constants } from "./constants";
 import { Parse } from "./parse";
+import { riseCodec } from "./risecodec";
 
 /**
  * Encodes the current date and time as a nonce
@@ -119,33 +122,36 @@ export class RiseConnection implements BcpConnection {
   }
 
   public async getAccount(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>> {
+    let address: Address;
     if (isAddressQuery(query)) {
-      const address = query.address;
-      const url = this.baseUrl + `/api/accounts?address=${address}`;
-      const result = await axios.get(url);
-      if (result.data.error) {
-        return dummyEnvelope([]);
-      }
-      const responseBody = result.data.account;
-
-      const accounts: ReadonlyArray<BcpAccount> = [
-        {
-          address: address,
-          name: undefined,
-          balance: [
-            {
-              sigFigs: constants.primaryTokenSigFigs,
-              tokenName: constants.primaryTokenName,
-              ...Parse.riseAmount(responseBody.balance),
-            },
-          ],
-        },
-      ];
-
-      return dummyEnvelope(accounts);
+      address = query.address;
+    } else if (isPubkeyQuery(query)) {
+      address = riseCodec.keyToAddress(query.pubkey);
     } else {
       throw new Error("Query type not supported");
     }
+    const url = this.baseUrl + `/api/accounts?address=${address}`;
+    const result = await axios.get(url);
+    if (result.data.error) {
+      return dummyEnvelope([]);
+    }
+    const responseBody = result.data.account;
+
+    const accounts: ReadonlyArray<BcpAccount> = [
+      {
+        address: address,
+        name: undefined,
+        balance: [
+          {
+            sigFigs: constants.primaryTokenSigFigs,
+            tokenName: constants.primaryTokenName,
+            ...Parse.riseAmount(responseBody.balance),
+          },
+        ],
+      },
+    ];
+
+    return dummyEnvelope(accounts);
   }
 
   public getNonce(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>> {
