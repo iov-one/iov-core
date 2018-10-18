@@ -4,7 +4,7 @@ import { ReadonlyDate } from "readonly-date";
 
 import { FullSignature, TransactionIdBytes, TransactionKind, UnsignedTransaction } from "@iov/bcp-types";
 import { Sha256 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Uint64 } from "@iov/encoding";
 
 export function toLiskTimestamp(date: ReadonlyDate): number {
   const timestamp = Math.floor(date.getTime() / 1000);
@@ -24,11 +24,12 @@ export function toLiskTimestamp(date: ReadonlyDate): number {
   return liskTimestamp;
 }
 
-export function amountFromComponents(whole: number, fractional: number): Long {
-  return Long.fromNumber(whole)
+export function amountFromComponents(whole: number, fractional: number): Uint64 {
+  const amount = Long.fromNumber(whole)
     .multiply(100000000)
     .add(fractional)
-    .toUnsigned();
+    .toBytesBE();
+  return Uint64.fromBytesBigEndian(amount);
 }
 
 export function serializeTransaction(unsigned: UnsignedTransaction, creationTime: ReadonlyDate): Uint8Array {
@@ -67,7 +68,7 @@ export function serializeTransaction(unsigned: UnsignedTransaction, creationTime
         ...timestampBytes,
         ...unsigned.signer.data,
         ...recipient.toBytesBE(),
-        ...amount.toBytesLE(),
+        ...amount.toBytesLittleEndian(),
         ...memoBytes,
       ]);
     default:
