@@ -126,6 +126,10 @@ export class Uint64 {
     return this.data.toArray("be", 8);
   }
 
+  public toBytesLittleEndian(): ReadonlyArray<number> {
+    return this.data.toArray("le", 8);
+  }
+
   public toString(): string {
     return this.data.toString(10);
   }

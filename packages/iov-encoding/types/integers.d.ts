@@ -18,5 +18,6 @@ export declare class Uint64 {
     private readonly data;
     private constructor();
     toBytesBigEndian(): ReadonlyArray<number>;
+    toBytesLittleEndian(): ReadonlyArray<number>;
     toString(): string;
 }
