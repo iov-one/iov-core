@@ -1,4 +1,4 @@
-import { Encoding } from "./encoding";
+import { Bech32, Encoding } from "./encoding";
 
 describe("Encoding", () => {
   it("encodes to hex", () => {
@@ -311,5 +311,23 @@ describe("Encoding", () => {
       expect(Encoding.toRfc3339(new Date(Date.UTC(0, 0, 1, 0, 0, 0)))).toEqual("1900-01-01T00:00:00.000Z");
       expect(Encoding.toRfc3339(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 456)))).toEqual("2002-10-02T11:12:13.456Z");
     });
+  });
+});
+
+describe("Bech32", () => {
+  const lskAddressUtf8 = Encoding.toUtf8("6472030874529564639L");
+  const riseAddressUtf8 = Encoding.toUtf8("6472030874529564639R");
+  const ethAddressUtf8 = Encoding.toUtf8("0x9D4e856E572E442f0A4b2763e72d08A0E99D8deD");
+
+  it("encodes", () => {
+    expect(Bech32.encode("lsk", lskAddressUtf8)).toEqual("lsk1xc6rwv3sxvcrsde5x5erjdfkxsmrxw2v54fadf");
+    expect(Bech32.encode("rise", riseAddressUtf8)).toEqual("rise1xc6rwv3sxvcrsde5x5erjdfkxsmrxw2jwvs309");
+    expect(Bech32.encode("eth", ethAddressUtf8)).toEqual("eth1xpurj3p5v5ur2dj9x5mny3f5xsexvvzpx33rydekxdjnwvnyxquyzvz98yu5gwryv4zqws4a42");
+  });
+
+  it("decodes", () => {
+    expect(Bech32.decode("lsk1xc6rwv3sxvcrsde5x5erjdfkxsmrxw2v54fadf")).toEqual({ prefix: "lsk", data: lskAddressUtf8 });
+    expect(Bech32.decode("rise1xc6rwv3sxvcrsde5x5erjdfkxsmrxw2jwvs309")).toEqual({ prefix: "rise", data: riseAddressUtf8 });
+    expect(Bech32.decode("eth1xpurj3p5v5ur2dj9x5mny3f5xsexvvzpx33rydekxdjnwvnyxquyzvz98yu5gwryv4zqws4a42")).toEqual({ prefix: "eth", data: ethAddressUtf8 });
   });
 });
