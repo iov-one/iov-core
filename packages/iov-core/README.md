@@ -53,8 +53,10 @@ Create a new profile with two entries:
 import { Ed25519HdWallet, UserProfile } from '@iov/keycontrol';
 
 const profile = new UserProfile();
-profile.addEntry(Ed25519HdWallet.fromMnemonic(mnemonic12));
-profile.addEntry(Ed25519HdWallet.fromMnemonic(mnemonic24));
+const wallet1 = Ed25519HdWallet.fromMnemonic(mnemonic12);
+const wallet2 = Ed25519HdWallet.fromMnemonic(mnemonic24);
+profile.addEntry(wallet1);
+profile.addEntry(wallet2);
 ```
 
 Inspect the profile:
@@ -65,8 +67,8 @@ console.log(profile.wallets.value);
 
 // listen to the profile (stream of updates, good for reactive UI)
 const sub = profile.wallets.updates.subscribe({ next: wallets => console.log(wallets) });
-profile.setEntryLabel(0, "12 words");
-profile.setEntryLabel(1, "24 words");
+profile.setEntryLabel(wallet1.id, "12 words");
+profile.setEntryLabel(wallet2.id, "24 words");
 ```
 
 Create identies on the two keyring entries (argument is index of the entry):
@@ -78,20 +80,20 @@ const { fromHex, toHex } = Encoding;
 
 // this creates two different public key identities, generated from the
 // first mnemonic using two different SLIP-0010 paths
-const id1a = await profile.createIdentity(0, HdPaths.simpleAddress(0));
-const id1b = await profile.createIdentity(0, HdPaths.simpleAddress(1));
+const id1a = await profile.createIdentity(wallet1.id, HdPaths.simpleAddress(0));
+const id1b = await profile.createIdentity(wallet1.id, HdPaths.simpleAddress(1));
 console.log(id1a);
 console.log(id1a.pubkey.algo, toHex(id1a.pubkey.data))
 console.log(id1b.pubkey.algo, toHex(id1b.pubkey.data))
 
 // this creates a different key from the second mnemonic,
 // this uses the same HD path as id1a, but different seed.
-const id2 = await profile.createIdentity(1, HdPaths.simpleAddress(0));
+const id2 = await profile.createIdentity(wallet2.id, HdPaths.simpleAddress(0));
 console.log(id2.pubkey.algo, toHex(id2.pubkey.data));
 
 // we can also add labels to the individual identies
-profile.setIdentityLabel(0, id1a, 'main account');
-console.log(profile.getIdentities(0));
+profile.setIdentityLabel(wallet1.id, id1a, 'main account');
+console.log(profile.getIdentities(wallet1.id));
 ```
 
 Save and reload keyring:
@@ -116,7 +118,7 @@ const loaded = await UserProfile.loadFrom(db, passphrase);
 
 // and we have the same data
 console.log(loaded.wallets.value);
-const ids = profile.getIdentities(0);
+const ids = profile.getIdentities(loaded.wallets.value[0].id);
 console.log(ids);
 console.log(toHex(ids[0].pubkey.data));
 console.log(toHex(id1a.pubkey.data));
@@ -239,8 +241,8 @@ const sendTx: SendTx = {
 console.log(await signer.getNonce(chainId, addr))
 
 // we must have the private key for the signer (id1a)
-// second argument (0) is the keyring entry where the private key can be found
-await signer.signAndCommit(sendTx, 0);
+// second argument is the ID of the wallet where the private key can be found
+await signer.signAndCommit(sendTx, wallet1.id);
 
 // note that the nonce of the signer is incremented
 console.log(await signer.getNonce(chainId, addr))
