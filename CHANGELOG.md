@@ -7,16 +7,22 @@
 
 Breaking changes
 
-* Ed25519KeyringEntry now takes a keypair as an argument in createIdentity()
-* Ed25519SimpleAddressKeyringEntry was removed in favour of Ed25519HdWallet together with HdPaths.simpleAddress
-* Client from @iov/bns was renamed to BnsConnection. The connect() function was renamed to BnsConnection.establish()
-* Address is now a string instead of an Uint8Array
-* In UserProfile, .entriesCount, .entryLabels and .entryIds have been merged into .wallets
-* In UserProfile, .setEntryLabel, .createIdentity, .setIdentityLabel, .getIdentities, .signTransaction, .appendSignature
-  now only accept string IDs for the entry/wallet argument
+* @iov/bcp-types: `Address` is now a `string` instead of an `Uint8Array`
+* @iov/bcp-types: `BcpTransactionResponse.metadata.success` was removed since failures are reported as promise rejections
+* @iov/bcp-types: optional field `expectedChainId` added to `ChainConnector`
+* @iov/bcp-types: `BcpConnection.getAccount` can not ne called with a pubkey input
+* @iov/bcp-types: `Nonce` is now implemented by `Int53` from @iov/encoding instead of `Long`
+* @iov/bns: `Client` was renamed to `BnsConnection`. The `connect()` function was renamed to `BnsConnection.establish()`
+* @iov/keycontrol: `Ed25519KeyringEntry` now takes a keypair as an argument in `createIdentity()`
+* @iov/keycontrol: `Ed25519SimpleAddressKeyringEntry` was removed in favour of `Ed25519HdWallet` together with `HdPaths.simpleAddress`
+* @iov/keycontrol: in `UserProfile`, `.entriesCount`, `.entryLabels` and `.entryIds` have been merged into `.wallets`
+* @iov/keycontrol: in `UserProfile`, `.setEntryLabel`, `.createIdentity`, `.setIdentityLabel`, `.getIdentities`, `.signTransaction`, `.appendSignature` now only accept string IDs for the entry/wallet argument
+* @iov/keycontrol: `DefaultValueProducer` and `ValueAndUpdates` moved into @iov/stream
+* @iov/keycontrol: `KeyringEntry.createIdentity` now takes a required options argument of type `Ed25519KeyringEntry | ReadonlyArray<Slip10RawIndex> | number`
 * @iov/core: rename `IovWriter` to `MultiChainSigner`
-* @iov/core: rename the getter `reader` to `connection` in MultiChainSigner
-* @iov/ledger-bns: in LedgerSimpleAddressKeyringEntry .createIdentity takes an index argument
+* @iov/core: rename the getter `reader` to `connection` in `MultiChainSigner`
+* @iov/core: `MultiChainSigner.addChain` now returns chain information of the chain added
+* @iov/ledger-bns: in `LedgerSimpleAddressKeyringEntry`, `.createIdentity` takes an index argument
 
 ## 0.6.1
 
