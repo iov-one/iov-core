@@ -15,6 +15,7 @@ export declare class Int53 {
 export declare class Uint64 {
     static fromBytesBigEndian(bytes: ArrayLike<number>): Uint64;
     static fromString(str: string): Uint64;
+    static fromNumber(input: number): Uint64;
     private readonly data;
     private constructor();
     toBytesBigEndian(): ReadonlyArray<number>;

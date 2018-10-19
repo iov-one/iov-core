@@ -113,9 +113,26 @@ export class Uint64 {
     return new Uint64(new BN(str, 10, "be"));
   }
 
+  public static fromNumber(input: number): Uint64 {
+    if (Number.isNaN(input)) {
+      throw new Error("Input is not a number");
+    }
+
+    let bigint: BN;
+    try {
+      bigint = new BN(input);
+    } catch {
+      throw new Error("Input is not a safe integer");
+    }
+    return new Uint64(bigint);
+  }
+
   private readonly data: BN;
 
   private constructor(data: BN) {
+    if (data.isNeg()) {
+      throw new Error("Input is negative");
+    }
     if (data.gt(uint64MaxValue)) {
       throw new Error("Value exceeds uint64 range");
     }

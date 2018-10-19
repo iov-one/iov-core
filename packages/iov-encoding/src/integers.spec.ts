@@ -236,6 +236,29 @@ describe("Integers", () => {
       expect(() => Uint64.fromString("99999999999999999999")).toThrowError(/value exceeds uint64 range/i);
     });
 
+    it("can be constructed from number", () => {
+      const a = Uint64.fromNumber(0);
+      expect(a.toNumber()).toEqual(0);
+      const b = Uint64.fromNumber(1);
+      expect(b.toNumber()).toEqual(1);
+      const c = Uint64.fromNumber(Number.MAX_SAFE_INTEGER);
+      expect(c.toNumber()).toEqual(Number.MAX_SAFE_INTEGER);
+    });
+
+    it("throws when constructed from wrong numbers", () => {
+      // not a number
+      expect(() => Uint64.fromNumber(Number.NaN)).toThrowError(/input is not a number/i);
+
+      // not an integer
+      expect(() => Uint64.fromNumber(Number.NEGATIVE_INFINITY)).toThrowError(/input is not a safe integer/i);
+      expect(() => Uint64.fromNumber(Number.POSITIVE_INFINITY)).toThrowError(/input is not a safe integer/i);
+      expect(() => Uint64.fromNumber(Number.MAX_SAFE_INTEGER + 1)).toThrowError(/input is not a safe integer/i);
+
+      // negative integer
+      expect(() => Uint64.fromNumber(-1)).toThrowError(/input is negative/i);
+      expect(() => Uint64.fromNumber(Number.MIN_SAFE_INTEGER)).toThrowError(/input is negative/i);
+    });
+
     it("can export bytes (big endian)", () => {
       expect(Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]).toBytesBigEndian()).toEqual([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
       expect(Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]).toBytesBigEndian()).toEqual([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]);
