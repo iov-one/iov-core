@@ -17,7 +17,7 @@ import { Algorithm, ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 
 /** Encodes raw bytes into a bech32 address */
 export function encodeBnsAddress(bytes: Uint8Array): Address {
-  return Bech32.encode("tiov", bytes).toUpperCase() as Address;
+  return Bech32.encode("tiov", bytes) as Address;
 }
 
 /** Decodes a printable address into bech32 object */

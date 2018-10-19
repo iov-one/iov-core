@@ -66,11 +66,11 @@ describe("Verify util functions", () => {
     // raw data generated using https://github.com/nym-zone/bech32
     // bech32 -e -h tiov f6cade229408c93a2a8d181d62efce46ff60d210
     const raw = fromHex("f6cade229408c93a2a8d181d62efce46ff60d210");
-    expect(encodeBnsAddress(raw)).toEqual("TIOV17M9DUG55PRYN525DRQWK9M7WGMLKP5SS4J2MKY");
+    expect(encodeBnsAddress(raw)).toEqual("tiov17m9dug55pryn525drqwk9m7wgmlkp5ss4j2mky");
   });
 
   it("has working decodeBnsAddress", () => {
-    const address = "TIOV17M9DUG55PRYN525DRQWK9M7WGMLKP5SS4J2MKY" as Address;
+    const address = "tiov17m9dug55pryn525drqwk9m7wgmlkp5ss4j2mky" as Address;
     expect(decodeBnsAddress(address)).toEqual({
       prefix: "tiov",
       data: fromHex("f6cade229408c93a2a8d181d62efce46ff60d210"),

@@ -45,9 +45,9 @@ describe("Integration tests with bov+tendermint", () => {
   // the first key generated from this mneumonic produces the given address
   // this account has money in the genesis file (setup in docker)
   // expectedFaucetAddress generated using https://github.com/nym-zone/bech32
-  // bech32 -e -h tiov B1CA7E78F74423AE01DA3B51E676934D9105F282
+  // bech32 -e -h tiov b1ca7e78f74423ae01da3b51e676934d9105f282
   const mnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
-  const expectedFaucetAddress = "TIOV1K898U78HGS36UQW68DG7VA5NFKGSTU5Z0FHZ3F" as Address;
+  const expectedFaucetAddress = "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address;
   const cash = "CASH" as TokenTicker;
 
   // TODO: had issues with websockets? check again later, maybe they need to close at end?
