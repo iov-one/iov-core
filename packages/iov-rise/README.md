@@ -16,14 +16,14 @@ You can use @iov/rise as an extension of @iov/core to interact with the
 RISE blockchain as follows.
 
 ```ts
-import { Ed25519KeyringEntry } from "@iov/core";
+import { Ed25519Wallet } from "@iov/core";
 import { passphraseToKeypair, riseCodec, riseConnector } from "@iov/rise";
 
-const entry = new Ed25519KeyringEntry();
-const mainIdentity = await entry.createIdentity(await passphraseToKeypair("squeeze frog deposit chase sudden clutch fortune spring tone have snow column"));
+const wallet = new Ed25519Wallet();
+const mainIdentity = await wallet.createIdentity(await passphraseToKeypair("squeeze frog deposit chase sudden clutch fortune spring tone have snow column"));
 
 const profile = new UserProfile();
-profile.addEntry(entry);
+profile.addEntry(wallet);
 
 const signer = new MultiChainSigner(profile);
 await signer.addChain(riseConnector("https://twallet.rise.vision"));
@@ -49,7 +49,7 @@ const sendTx: SendTx = {
 };
 
 console.log("Sending transaction into the network blockchain …");
-const response = await signer.signAndCommit(sendTx, entry.id);
+const response = await signer.signAndCommit(sendTx, wallet.id);
 console.log(`Wait a few seconds and visit https://texplorer.rise.vision/tx/${Encoding.fromAscii(response.data.txid)}`);
 ```
 
@@ -59,13 +59,13 @@ This is how you use `riseCodec` to generate send transactions
 for RISE manually, i.e. without the help of @iov/core.
 
 ```ts
-import { Ed25519KeyringEntry } from "@iov/core";
+import { Ed25519Wallet } from "@iov/core";
 import { passphraseToKeypair, generateNonce, riseCodec } from "@iov/rise";
 
 const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
 
-const entry = new Ed25519KeyringEntry();
-const mainIdentity = await entry.createIdentity(await passphraseToKeypair("squeeze frog deposit chase sudden clutch fortune spring tone have snow column"));
+const wallet = new Ed25519Wallet();
+const mainIdentity = await wallet.createIdentity(await passphraseToKeypair("squeeze frog deposit chase sudden clutch fortune spring tone have snow column"));
 const mainAddress = riseCodec.keyToAddress(mainIdentity.pubkey);
 
 const recipientAddress = "10145108642177909005R" as Address;
@@ -84,7 +84,7 @@ const sendTx: SendTx = {
 
 const nonce = generateNonce();
 const signingJob = riseCodec.bytesToSign(sendTx, nonce);
-const signature = await entry.createTransactionSignature(mainIdentity, signingJob.bytes, signingJob.prehashType, riseTestnet);
+const signature = await wallet.createTransactionSignature(mainIdentity, signingJob.bytes, signingJob.prehashType, riseTestnet);
 
 const signedTransaction = {
   transaction: sendTx,

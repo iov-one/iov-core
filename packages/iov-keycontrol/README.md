@@ -36,7 +36,7 @@ As you see above, everything goes through the [UserProfile](https://iov-one.gith
 which is the main entry point into this package.
 
 The main entries you can add are
-* [Ed25519KeyringEntry](https://iov-one.github.io/iov-core-docs/latest/iov-keycontrol/classes/ed25519keyringentry.html),
+* [Ed25519Wallet](https://iov-one.github.io/iov-core-docs/latest/iov-keycontrol/classes/ed25519wallet.html),
   which stores arbitrary Ed25519 keypairs.
 * [Ed25519HdWallet](https://iov-one.github.io/iov-core-docs/latest/iov-keycontrol/classes/ed25519hdwallet.html),
   which generates HD keys ala SLIP-0010 (BIP-0032), with an arbitrary path (not chain-dependent).

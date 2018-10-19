@@ -2,7 +2,7 @@ import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { ValueAndUpdates } from "@iov/stream";
 import { ChainId, SignatureBytes } from "@iov/tendermint-types";
 import { LocalIdentity, PublicIdentity, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "../keyring";
-export declare class Ed25519KeyringEntry implements Wallet {
+export declare class Ed25519Wallet implements Wallet {
     private static readonly idsPrng;
     private static generateId;
     private static identityId;
@@ -21,7 +21,7 @@ export declare class Ed25519KeyringEntry implements Wallet {
     getIdentities(): ReadonlyArray<LocalIdentity>;
     createTransactionSignature(identity: PublicIdentity, transactionBytes: SignableBytes, prehashType: PrehashType, _: ChainId): Promise<SignatureBytes>;
     serialize(): WalletSerializationString;
-    clone(): Ed25519KeyringEntry;
+    clone(): Ed25519Wallet;
     private privateKeyForIdentity;
     private buildLocalIdentity;
 }

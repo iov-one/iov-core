@@ -32,18 +32,18 @@ interface IdentitySerialization {
   readonly privkey: string;
 }
 
-interface Ed25519KeyringEntrySerialization {
+interface Ed25519WalletSerialization {
   readonly id: string;
   readonly label: string | undefined;
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
 
-export class Ed25519KeyringEntry implements Wallet {
+export class Ed25519Wallet implements Wallet {
   private static readonly idsPrng: PseudoRandom.Engine = PseudoRandom.engines.mt19937().autoSeed();
 
   private static generateId(): WalletId {
     // this can be pseudo-random, just used for internal book-keeping
-    const code = PseudoRandom.string()(Ed25519KeyringEntry.idsPrng, 16);
+    const code = PseudoRandom.string()(Ed25519Wallet.idsPrng, 16);
     return code as WalletId;
   }
 
@@ -83,7 +83,7 @@ export class Ed25519KeyringEntry implements Wallet {
     const privkeys = new Map<string, Ed25519Keypair>();
 
     if (data) {
-      const decodedData: Ed25519KeyringEntrySerialization = JSON.parse(data);
+      const decodedData: Ed25519WalletSerialization = JSON.parse(data);
 
       // label
       label = decodedData.label;
@@ -95,7 +95,7 @@ export class Ed25519KeyringEntry implements Wallet {
           Encoding.fromHex(record.privkey),
           Encoding.fromHex(record.localIdentity.pubkey.data),
         );
-        if (Ed25519KeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo) !== Algorithm.Ed25519) {
+        if (Ed25519Wallet.algorithmFromString(record.localIdentity.pubkey.algo) !== Algorithm.Ed25519) {
           throw new Error("This keyring only supports ed25519 private keys");
         }
         const identity = this.buildLocalIdentity(
@@ -106,7 +106,7 @@ export class Ed25519KeyringEntry implements Wallet {
         privkeys.set(identity.id, keypair);
       }
     } else {
-      id = Ed25519KeyringEntry.generateId();
+      id = Ed25519Wallet.generateId();
     }
 
     this.identities = identities;
@@ -140,8 +140,8 @@ export class Ed25519KeyringEntry implements Wallet {
   }
 
   public setIdentityLabel(identity: PublicIdentity, label: string | undefined): void {
-    const identityId = Ed25519KeyringEntry.identityId(identity);
-    const index = this.identities.findIndex(i => Ed25519KeyringEntry.identityId(i) === identityId);
+    const identityId = Ed25519Wallet.identityId(identity);
+    const index = this.identities.findIndex(i => Ed25519Wallet.identityId(i) === identityId);
     if (index === -1) {
       throw new Error("identity with id '" + identityId + "' not found");
     }
@@ -169,7 +169,7 @@ export class Ed25519KeyringEntry implements Wallet {
   }
 
   public serialize(): WalletSerializationString {
-    const out: Ed25519KeyringEntrySerialization = {
+    const out: Ed25519WalletSerialization = {
       id: this.id,
       label: this.label.value,
       identities: this.identities.map(identity => {
@@ -189,13 +189,13 @@ export class Ed25519KeyringEntry implements Wallet {
     return JSON.stringify(out) as WalletSerializationString;
   }
 
-  public clone(): Ed25519KeyringEntry {
-    return new Ed25519KeyringEntry(this.serialize());
+  public clone(): Ed25519Wallet {
+    return new Ed25519Wallet(this.serialize());
   }
 
   // This throws an exception when private key is missing
   private privateKeyForIdentity(identity: PublicIdentity): Ed25519Keypair {
-    const identityId = Ed25519KeyringEntry.identityId(identity);
+    const identityId = Ed25519Wallet.identityId(identity);
     const privkey = this.privkeys.get(identityId);
     if (!privkey) {
       throw new Error("No private key found for identity '" + identityId + "'");
@@ -211,7 +211,7 @@ export class Ed25519KeyringEntry implements Wallet {
     return {
       pubkey,
       label,
-      id: Ed25519KeyringEntry.identityId({ pubkey }),
+      id: Ed25519Wallet.identityId({ pubkey }),
     };
   }
 }

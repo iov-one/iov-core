@@ -3,7 +3,7 @@ import { Encoding } from "@iov/encoding";
 
 import { HdPaths } from "./hdpaths";
 import { Keyring, KeyringSerializationString } from "./keyring";
-import { Ed25519HdWallet, Ed25519KeyringEntry, Secp256k1HdWallet } from "./keyring-entries";
+import { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./keyring-entries";
 
 const { fromHex } = Encoding;
 
@@ -109,20 +109,20 @@ describe("Keyring", () => {
     const keyring = new Keyring('{"entries":[{"implementationId":"ed25519","data":"{ \\"identities\\":[{\\"localIdentity\\": { \\"pubkey\\": { \\"algo\\": \\"ed25519\\", \\"data\\": \\"aabbccdd\\" }, \\"nickname\\": \\"foo\\" }, \\"privkey\\": \\"223322112233aabb\\"}] }"}]}' as KeyringSerializationString);
 
     expect(keyring.getEntries().length).toEqual(1);
-    expect(keyring.getEntries()[0]).toEqual(jasmine.any(Ed25519KeyringEntry));
+    expect(keyring.getEntries()[0]).toEqual(jasmine.any(Ed25519Wallet));
   });
 
   it("can serialize and deserialize multiple entries", async () => {
     const entry1 = Ed25519HdWallet.fromEntropy(fromHex("c7f74844892fd7b707e74fc9b6c8ef917c13ddbb380cadbc"));
     const i1a = await entry1.createIdentity(HdPaths.simpleAddress(0));
-    const entry2 = new Ed25519KeyringEntry();
+    const entry2 = new Ed25519Wallet();
     const i2a = await entry2.createIdentity(await makeRandomEd25519Keypair());
     const i2b = await entry2.createIdentity(await makeRandomEd25519Keypair());
     const entry3 = Ed25519HdWallet.fromEntropy(fromHex("2a7e3f902279af82138f14f871badf8d92b33713eb6c7193"));
     const i3a = await entry3.createIdentity(HdPaths.simpleAddress(0));
     const i3b = await entry3.createIdentity(HdPaths.simpleAddress(1));
     const i3c = await entry3.createIdentity(HdPaths.simpleAddress(2));
-    const entry4 = new Ed25519KeyringEntry();
+    const entry4 = new Ed25519Wallet();
     const i4a = await entry4.createIdentity(await makeRandomEd25519Keypair());
     const i4b = await entry4.createIdentity(await makeRandomEd25519Keypair());
     const i4c = await entry4.createIdentity(await makeRandomEd25519Keypair());
@@ -144,11 +144,11 @@ describe("Keyring", () => {
     expect(restored.getEntries().length).toEqual(4);
     expect(keyring.getEntries()[0]).toEqual(jasmine.any(Ed25519HdWallet));
     expect(keyring.getEntries()[0].getIdentities().length).toEqual(1);
-    expect(keyring.getEntries()[1]).toEqual(jasmine.any(Ed25519KeyringEntry));
+    expect(keyring.getEntries()[1]).toEqual(jasmine.any(Ed25519Wallet));
     expect(keyring.getEntries()[1].getIdentities().length).toEqual(2);
     expect(keyring.getEntries()[2]).toEqual(jasmine.any(Ed25519HdWallet));
     expect(keyring.getEntries()[2].getIdentities().length).toEqual(3);
-    expect(keyring.getEntries()[3]).toEqual(jasmine.any(Ed25519KeyringEntry));
+    expect(keyring.getEntries()[3]).toEqual(jasmine.any(Ed25519Wallet));
     expect(keyring.getEntries()[3].getIdentities().length).toEqual(4);
 
     // compare keyring entry content (via LocalIdentity equality)
@@ -170,7 +170,7 @@ describe("Keyring", () => {
 
   it("supports all basic entry types by default", () => {
     const keyring = new Keyring();
-    keyring.add(new Ed25519KeyringEntry());
+    keyring.add(new Ed25519Wallet());
     keyring.add(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
     keyring.add(Secp256k1HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
 

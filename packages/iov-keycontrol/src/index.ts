@@ -1,5 +1,5 @@
 export { HdPaths } from "./hdpaths";
-export { Ed25519HdWallet, Ed25519KeyringEntry, Secp256k1HdWallet } from "./keyring-entries";
+export { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./keyring-entries";
 export {
   Keyring,
   LocalIdentity,

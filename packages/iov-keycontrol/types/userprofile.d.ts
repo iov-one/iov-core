@@ -5,7 +5,7 @@ import { Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp
 import { Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { Keyring, LocalIdentity, PublicIdentity, Wallet, WalletId } from "./keyring";
-import { Ed25519KeyringEntry } from "./keyring-entries";
+import { Ed25519Wallet } from "./keyring-entries";
 export interface UserProfileOptions {
     readonly createdAt: ReadonlyDate;
     readonly keyring: Keyring;
@@ -38,7 +38,7 @@ export declare class UserProfile {
     lock(): void;
     addEntry(entry: Wallet): WalletInfo;
     setEntryLabel(id: WalletId, label: string | undefined): void;
-    createIdentity(id: WalletId, options: Ed25519KeyringEntry | ReadonlyArray<Slip10RawIndex> | number): Promise<LocalIdentity>;
+    createIdentity(id: WalletId, options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number): Promise<LocalIdentity>;
     setIdentityLabel(id: WalletId, identity: PublicIdentity, label: string | undefined): void;
     getIdentities(id: WalletId): ReadonlyArray<LocalIdentity>;
     signTransaction(id: WalletId, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;

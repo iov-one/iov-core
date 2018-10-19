@@ -3,7 +3,7 @@ import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { ChainId, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types";
-import { Ed25519KeyringEntry } from "./keyring-entries";
+import { Ed25519Wallet } from "./keyring-entries";
 export declare type KeyringSerializationString = string & As<"keyring-serialization">;
 export declare type WalletImplementationIdString = string & As<"wallet-implementation-id">;
 export declare type WalletSerializationString = string & As<"wallet-serialization">;
@@ -49,7 +49,7 @@ export interface Wallet {
     readonly label: ValueAndUpdates<string | undefined>;
     readonly id: WalletId;
     readonly setLabel: (label: string | undefined) => void;
-    readonly createIdentity: (options: Ed25519KeyringEntry | ReadonlyArray<Slip10RawIndex> | number) => Promise<LocalIdentity>;
+    readonly createIdentity: (options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number) => Promise<LocalIdentity>;
     readonly setIdentityLabel: (identity: PublicIdentity, label: string | undefined) => void;
     readonly getIdentities: () => ReadonlyArray<LocalIdentity>;
     readonly canSign: ValueAndUpdates<boolean>;
