@@ -171,6 +171,9 @@ describe("Integers", () => {
       expect(() => Int53.fromString("+0")).toThrowError(/invalid string format/i);
       expect(() => Int53.fromString("1e6")).toThrowError(/invalid string format/i);
 
+      expect(() => Int53.fromString("9007199254740992")).toThrowError(/input not in int53 range/i);
+      expect(() => Int53.fromString("-9007199254740992")).toThrowError(/input not in int53 range/i);
+
       // tslint:enable:no-unused-expression
     });
   });
