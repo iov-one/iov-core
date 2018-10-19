@@ -1,8 +1,7 @@
-import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
 import { Address, Nonce, SendTx, SignedTransaction, TokenTicker, TransactionKind } from "@iov/bcp-types";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { amountFromComponents, serializeTransaction, toRiseTimestamp, transactionId } from "./serialization";
@@ -12,7 +11,7 @@ const { fromAscii, fromHex } = Encoding;
 // use nethash as chain ID
 const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
 const riseEpochAsUnixTimestamp = 1464109200;
-const emptyNonce = new Long(0) as Nonce;
+const emptyNonce = new Int53(0) as Nonce;
 
 describe("toRiseTimestamp", () => {
   it("returns 0 at RISE epoch", () => {

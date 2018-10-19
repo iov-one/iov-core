@@ -1,8 +1,7 @@
-import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
 import { Address, Nonce, SendTx, SignedTransaction, TokenTicker, TransactionKind } from "@iov/bcp-types";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { amountFromComponents, serializeTransaction, toLiskTimestamp, transactionId } from "./serialization";
@@ -12,7 +11,7 @@ const { fromAscii, fromHex } = Encoding;
 // use nethash as chain ID
 const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
 const liskEpochAsUnixTimestamp = 1464109200;
-const emptyNonce = new Long(0) as Nonce;
+const emptyNonce = new Int53(0) as Nonce;
 
 describe("toLiskTimestamp", () => {
   it("returns 0 at Lisk epoch", () => {

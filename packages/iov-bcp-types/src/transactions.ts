@@ -1,11 +1,11 @@
-import Long from "long";
 import { As } from "type-tagger";
 
+import { Int53 } from "@iov/encoding";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 
 import { Address } from "./signables";
 
-export type Nonce = Long & As<"nonce">;
+export type Nonce = Int53 & As<"nonce">;
 
 // TODO: can't we just make this a number (block height?)
 export type TtlBytes = Uint8Array & As<"ttl">;

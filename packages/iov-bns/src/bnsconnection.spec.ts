@@ -1,5 +1,3 @@
-import Long from "long";
-
 import {
   Address,
   BcpAccount,
@@ -16,7 +14,7 @@ import {
   TransactionKind,
 } from "@iov/bcp-types";
 import { Sha256 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 import {
   Ed25519HdWallet,
   HdPaths,
@@ -68,7 +66,7 @@ describe("Integration tests with bov+tendermint", () => {
 
   const getNonce = async (connection: BnsConnection, addr: Address): Promise<Nonce> => {
     const data = (await connection.getNonce({ address: addr })).data;
-    return data.length === 0 ? (Long.fromInt(0) as Nonce) : data[0].nonce;
+    return data.length === 0 ? (new Int53(0) as Nonce) : data[0].nonce;
   };
 
   it("Generate proper faucet address", async () => {
@@ -171,7 +169,7 @@ describe("Integration tests with bov+tendermint", () => {
 
     // can get the faucet by address (there is money)
     const nonce = await getNonce(connection, rcptAddr);
-    expect(nonce.toInt()).toEqual(0);
+    expect(nonce.toNumber()).toEqual(0);
 
     connection.disconnect();
   });
@@ -223,7 +221,7 @@ describe("Integration tests with bov+tendermint", () => {
     // and the nonce should go up, to be at least one
     // (worrying about replay issues)
     const fNonce = await getNonce(connection, faucetAddr);
-    expect(fNonce.toInt()).toBeGreaterThanOrEqual(1);
+    expect(fNonce.toNumber()).toBeGreaterThanOrEqual(1);
 
     // now verify we can query the same tx back
     const txQuery = { tags: [bnsFromOrToTag(faucetAddr)] };
@@ -435,8 +433,8 @@ describe("Integration tests with bov+tendermint", () => {
     expect(end.whole + 680).toEqual(start.whole);
     // and faucetNonce gone up by one
     expect(faucetNonce.value()).toBeDefined();
-    const finalNonce: Long = faucetNonce.value()!.nonce;
-    expect(finalNonce).toEqual(origNonce.add(1));
+    const finalNonce = faucetNonce.value()!.nonce;
+    expect(finalNonce.toNumber()).toEqual(origNonce.toNumber() + 1);
 
     // clean up with disconnect at the end...
     connection.disconnect();

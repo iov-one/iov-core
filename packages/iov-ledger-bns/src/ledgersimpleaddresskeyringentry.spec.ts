@@ -1,9 +1,7 @@
-import Long from "long";
-
 import { Nonce, PrehashType, RecipientId, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { bnsCodec } from "@iov/bns";
 import { Ed25519, Sha512 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 import { KeyringEntrySerializationString } from "@iov/keycontrol";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
@@ -199,7 +197,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
       },
       signer: newIdentity.pubkey,
     };
-    const nonce = Long.fromNumber(5) as Nonce;
+    const nonce = new Int53(5) as Nonce;
     const { bytes, prehashType } = bnsCodec.bytesToSign(tx, nonce);
 
     const signature = await keyringEntry.createTransactionSignature(newIdentity, bytes, prehashType, tx.chainId);

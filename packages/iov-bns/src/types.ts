@@ -1,6 +1,7 @@
-import Long from "long";
+import * as Long from "long";
 
 import { BcpCoin, FullSignature, FungibleToken, Nonce, TokenTicker } from "@iov/bcp-types";
+import { Int53 } from "@iov/encoding";
 import {
   Algorithm,
   PrivateKeyBundle,
@@ -37,7 +38,7 @@ export const encodeToken = (token: FungibleToken) =>
 
 export const encodeFullSig = (sig: FullSignature) =>
   codecImpl.sigs.StdSignature.create({
-    sequence: sig.nonce,
+    sequence: sig.nonce.toNumber(),
     pubKey: encodePubKey(sig.publicKey),
     signature: encodeSignature(sig.publicKey.algo, sig.signature),
   });
@@ -117,7 +118,7 @@ export const decodeSignature = (signature: codecImpl.crypto.ISignature): Signatu
 };
 
 export const decodeFullSig = (sig: codecImpl.sigs.IStdSignature): FullSignature => ({
-  nonce: asLong(sig.sequence) as Nonce,
+  nonce: asInt53(sig.sequence) as Nonce,
   publicKey: decodePubKey(ensure(sig.pubKey)),
   signature: decodeSignature(ensure(sig.signature)),
 });
@@ -132,15 +133,15 @@ export const asNumber = (maybeLong: Long | number | null | undefined): number =>
   }
 };
 
-export const asLong = (maybeLong: Long | number | null | undefined): Long => {
-  if (!maybeLong) {
-    return Long.fromInt(0);
-  } else if (typeof maybeLong === "number") {
-    return Long.fromNumber(maybeLong);
+export function asInt53(input: Long | number | null | undefined): Int53 {
+  if (!input) {
+    return new Int53(0);
+  } else if (typeof input === "number") {
+    return new Int53(input);
   } else {
-    return maybeLong;
+    return Int53.fromString(input.toString());
   }
-};
+}
 
 export const ensure = <T>(maybe: T | null | undefined, msg?: string): T => {
   if (maybe === null || maybe === undefined) {

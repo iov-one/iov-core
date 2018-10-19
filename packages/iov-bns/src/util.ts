@@ -1,3 +1,4 @@
+import Long from "long";
 import { As } from "type-tagger";
 
 import {
@@ -54,7 +55,7 @@ export const appendSignBytes = (bz: Uint8Array, chainId: ChainId, nonce: Nonce) 
     ...signCodev1,
     chainId.length,
     ...Encoding.toAscii(chainId),
-    ...nonce.toBytesBE(),
+    ...Long.fromNumber(nonce.toNumber()).toBytesBE(),
     ...bz,
   ]) as SignableBytes;
 };
