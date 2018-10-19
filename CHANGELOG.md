@@ -20,6 +20,7 @@ Breaking changes
 * @iov/keycontrol: in `UserProfile`, `.setEntryLabel`, `.createIdentity`, `.setIdentityLabel`, `.getIdentities`, `.signTransaction`, `.appendSignature` now only accept string IDs for the entry/wallet argument
 * @iov/keycontrol: `DefaultValueProducer` and `ValueAndUpdates` moved into @iov/stream
 * @iov/keycontrol: `KeyringEntry.createIdentity` now takes a required options argument of type `Ed25519KeyringEntry | ReadonlyArray<Slip10RawIndex> | number`
+* @iov/keycontrol: rename symbols to `Wallet`, `WalletId`, `WalletImplementationIdString`, `WalletSerializationString`
 * @iov/core: rename `IovWriter` to `MultiChainSigner`
 * @iov/core: rename the getter `reader` to `connection` in `MultiChainSigner`
 * @iov/core: `MultiChainSigner.addChain` now returns chain information of the chain added

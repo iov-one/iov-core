@@ -18,10 +18,10 @@ import { Encoding, Int53 } from "@iov/encoding";
 import {
   Ed25519HdWallet,
   HdPaths,
-  KeyringEntryId,
   LocalIdentity,
   PublicIdentity,
   UserProfile,
+  WalletId,
 } from "@iov/keycontrol";
 import { asArray, lastValue } from "@iov/stream";
 import { TxQuery } from "@iov/tendermint-types";
@@ -56,7 +56,7 @@ describe("Integration tests with bov+tendermint", () => {
 
   async function userProfileWithFaucet(): Promise<{
     readonly profile: UserProfile;
-    readonly mainWalletId: KeyringEntryId;
+    readonly mainWalletId: WalletId;
     readonly faucet: LocalIdentity;
   }> {
     const wallet = Ed25519HdWallet.fromMnemonic(mnemonic);

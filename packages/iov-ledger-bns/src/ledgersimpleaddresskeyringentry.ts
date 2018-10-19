@@ -3,13 +3,13 @@ import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import {
   Keyring,
-  KeyringEntry,
-  KeyringEntryId,
-  KeyringEntryImplementationIdString,
-  KeyringEntrySerializationString,
   LocalIdentity,
   LocalIdentityId,
   PublicIdentity,
+  Wallet,
+  WalletId,
+  WalletImplementationIdString,
+  WalletSerializationString,
 } from "@iov/keycontrol";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
@@ -40,17 +40,17 @@ interface LedgerKeyringEntrySerialization {
 }
 
 // this is the id of any LedgerSimpleAddressKeyringEntry until it connects with the app
-const defaultId = "uninitialized" as KeyringEntryId;
+const defaultId = "uninitialized" as WalletId;
 
-export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
-  public static readonly implementationId = "ledger-simpleaddress" as KeyringEntryImplementationIdString;
+export class LedgerSimpleAddressKeyringEntry implements Wallet {
+  public static readonly implementationId = "ledger-simpleaddress" as WalletImplementationIdString;
 
   /**
    * A convenience function to register this entry type with the global Keyring class
    */
   public static registerWithKeyring(): void {
     const implId = LedgerSimpleAddressKeyringEntry.implementationId;
-    Keyring.registerEntryType(implId, (data: KeyringEntrySerializationString) => {
+    Keyring.registerEntryType(implId, (data: WalletSerializationString) => {
       return new LedgerSimpleAddressKeyringEntry(data);
     });
   }
@@ -66,7 +66,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   public readonly deviceState: ValueAndUpdates<LedgerState>;
   // id will be set the first time the keyring connects to a given device, "uninitialized" until then
   // tslint:disable-next-line:readonly-keyword
-  public id: KeyringEntryId;
+  public id: WalletId;
 
   private readonly deviceTracker = new StateTracker();
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
@@ -76,7 +76,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   // the `i` from https://github.com/iov-one/iov-core/blob/master/docs/KeyBase.md#simple-addresses
   private readonly simpleAddressIndices: Map<string, number>;
 
-  constructor(data?: KeyringEntrySerializationString) {
+  constructor(data?: WalletSerializationString) {
     this.canSignProducer = new DefaultValueProducer(false);
     this.canSign = new ValueAndUpdates(this.canSignProducer);
 
@@ -97,7 +97,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
 
       // label
       label = decodedData.label;
-      id = decodedData.id as KeyringEntryId;
+      id = decodedData.id as WalletId;
 
       // identities
       for (const record of decodedData.identities) {
@@ -214,7 +214,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     return signature as SignatureBytes;
   }
 
-  public serialize(): KeyringEntrySerializationString {
+  public serialize(): WalletSerializationString {
     const out: LedgerKeyringEntrySerialization = {
       label: this.label.value,
       id: this.id,
@@ -232,10 +232,10 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
         };
       }),
     };
-    return JSON.stringify(out) as KeyringEntrySerializationString;
+    return JSON.stringify(out) as WalletSerializationString;
   }
 
-  public clone(): KeyringEntry {
+  public clone(): Wallet {
     return new LedgerSimpleAddressKeyringEntry(this.serialize());
   }
 

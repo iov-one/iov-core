@@ -3,7 +3,7 @@ import { Ed25519Keypair, Sha256, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
-import { KeyringEntrySerializationString } from "../keyring";
+import { WalletSerializationString } from "../keyring";
 import { Ed25519KeyringEntry } from "./ed25519";
 
 const { fromHex, toHex } = Encoding;
@@ -207,7 +207,7 @@ describe("Ed25519KeyringEntry", () => {
   it("can deserialize", () => {
     {
       // empty
-      const entry = new Ed25519KeyringEntry('{ "id": "ed25519:444555666", "identities": [] }' as KeyringEntrySerializationString);
+      const entry = new Ed25519KeyringEntry('{ "id": "ed25519:444555666", "identities": [] }' as WalletSerializationString);
       expect(entry).toBeTruthy();
       expect(entry.id).toEqual("ed25519:444555666");
       expect(entry.label.value).toBeUndefined();
@@ -216,7 +216,7 @@ describe("Ed25519KeyringEntry", () => {
 
     {
       // one element
-      const serialized = '{ "id": "ed25519:12345678", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}] }' as KeyringEntrySerializationString;
+      const serialized = '{ "id": "ed25519:12345678", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}] }' as WalletSerializationString;
       const entry = new Ed25519KeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.id).toEqual("ed25519:12345678");
@@ -229,7 +229,7 @@ describe("Ed25519KeyringEntry", () => {
 
     {
       // two elements
-      const serialized = '{ "id": "ed25519:87654321", "label": "2 keys", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "privkey": "ddddeeee"}] }' as KeyringEntrySerializationString;
+      const serialized = '{ "id": "ed25519:87654321", "label": "2 keys", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "privkey": "ddddeeee"}] }' as WalletSerializationString;
       const entry = new Ed25519KeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.id).toEqual("ed25519:87654321");

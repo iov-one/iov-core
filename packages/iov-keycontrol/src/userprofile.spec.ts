@@ -8,7 +8,7 @@ import { Encoding, Int53 } from "@iov/encoding";
 import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { HdPaths } from "./hdpaths";
-import { Keyring, KeyringEntryId } from "./keyring";
+import { Keyring, WalletId } from "./keyring";
 import { Ed25519HdWallet, Secp256k1HdWallet } from "./keyring-entries";
 import { UserProfile } from "./userprofile";
 
@@ -208,7 +208,7 @@ describe("UserProfile", () => {
     const entry2 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
 
     expect(() => profile.getIdentities(entry2.id)).toThrowError(`Entry of id ${entry2.id} does not exist in keyring`);
-    expect(() => profile.getIdentities("balloon" as KeyringEntryId)).toThrowError(/Entry of id balloon does not exist in keyring/);
+    expect(() => profile.getIdentities("balloon" as WalletId)).toThrowError(/Entry of id balloon does not exist in keyring/);
   });
 
   it("added entry can not be manipulated from outside", async () => {
@@ -361,7 +361,7 @@ describe("UserProfile", () => {
     };
 
     // keyring entry of id bar does not exist
-    const entryId = "bar" as KeyringEntryId;
+    const entryId = "bar" as WalletId;
 
     expect(() => profile.setEntryLabel(entryId, "foo")).toThrowError(/Entry of id bar does not exist in keyring/);
     expect(() => profile.getIdentities(entryId)).toThrowError(/Entry of id bar does not exist in keyring/);

@@ -2,7 +2,7 @@ import { Nonce, PrehashType, RecipientId, SendTx, TokenTicker, TransactionKind }
 import { bnsCodec } from "@iov/bns";
 import { Ed25519, Sha512 } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
-import { KeyringEntrySerializationString } from "@iov/keycontrol";
+import { WalletSerializationString } from "@iov/keycontrol";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
 import { pendingWithoutInteractiveLedger, pendingWithoutLedger } from "./common.spec";
@@ -265,14 +265,14 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
   it("can deserialize", () => {
     {
       // empty
-      const entry = new LedgerSimpleAddressKeyringEntry('{ "identities": [] }' as KeyringEntrySerializationString);
+      const entry = new LedgerSimpleAddressKeyringEntry('{ "identities": [] }' as WalletSerializationString);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(0);
     }
 
     {
       // one element
-      const serialized = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}] }' as KeyringEntrySerializationString;
+      const serialized = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}] }' as WalletSerializationString;
       const entry = new LedgerSimpleAddressKeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(1);
@@ -283,7 +283,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
 
     {
       // two elements
-      const serialized = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "simpleAddressIndex": 23}] }' as KeyringEntrySerializationString;
+      const serialized = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "simpleAddressIndex": 23}] }' as WalletSerializationString;
       const entry = new LedgerSimpleAddressKeyringEntry(serialized);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(2);
@@ -319,7 +319,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
   });
 
   it("can be cloned", () => {
-    const oneIdentitySerialization = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}] }' as KeyringEntrySerializationString;
+    const oneIdentitySerialization = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}] }' as WalletSerializationString;
     const original = new LedgerSimpleAddressKeyringEntry(oneIdentitySerialization);
     const clone = original.clone();
     expect(clone).not.toBe(original);

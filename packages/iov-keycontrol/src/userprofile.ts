@@ -19,11 +19,11 @@ import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import {
   Keyring,
-  KeyringEntry,
-  KeyringEntryId,
   KeyringSerializationString,
   LocalIdentity,
   PublicIdentity,
+  Wallet,
+  WalletId,
 } from "./keyring";
 import { Ed25519KeyringEntry } from "./keyring-entries";
 import { DatabaseUtils } from "./utils";
@@ -53,7 +53,7 @@ export interface UserProfileOptions {
  * Read-only information about one wallet in a keyring/user profile
  */
 export interface WalletInfo {
-  readonly id: KeyringEntryId;
+  readonly id: WalletId;
   readonly label: string | undefined;
 }
 
@@ -159,7 +159,7 @@ export class UserProfile {
   }
 
   // Adds a copy of the entry to the primary keyring
-  public addEntry(entry: KeyringEntry): WalletInfo {
+  public addEntry(entry: Wallet): WalletInfo {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
@@ -174,7 +174,7 @@ export class UserProfile {
   }
 
   // sets the label of the n-th keyring entry of the primary keyring
-  public setEntryLabel(id: KeyringEntryId, label: string | undefined): void {
+  public setEntryLabel(id: WalletId, label: string | undefined): void {
     const entry = this.entryInPrimaryKeyring(id);
     entry.setLabel(label);
     this.walletsProducer.update(this.walletInfos());
@@ -182,7 +182,7 @@ export class UserProfile {
 
   // creates an identitiy in the n-th keyring entry of the primary keyring
   public async createIdentity(
-    id: KeyringEntryId,
+    id: WalletId,
     options: Ed25519KeyringEntry | ReadonlyArray<Slip10RawIndex> | number,
   ): Promise<LocalIdentity> {
     const entry = this.entryInPrimaryKeyring(id);
@@ -191,19 +191,19 @@ export class UserProfile {
 
   // assigns a new label to one of the identities
   // in the n-th keyring entry of the primary keyring
-  public setIdentityLabel(id: KeyringEntryId, identity: PublicIdentity, label: string | undefined): void {
+  public setIdentityLabel(id: WalletId, identity: PublicIdentity, label: string | undefined): void {
     const entry = this.entryInPrimaryKeyring(id);
     entry.setIdentityLabel(identity, label);
   }
 
   // get identities of the n-th keyring entry of the primary keyring
-  public getIdentities(id: KeyringEntryId): ReadonlyArray<LocalIdentity> {
+  public getIdentities(id: WalletId): ReadonlyArray<LocalIdentity> {
     const entry = this.entryInPrimaryKeyring(id);
     return entry.getIdentities();
   }
 
   public async signTransaction(
-    id: KeyringEntryId,
+    id: WalletId,
     identity: PublicIdentity,
     transaction: UnsignedTransaction,
     codec: TxCodec,
@@ -226,7 +226,7 @@ export class UserProfile {
   }
 
   public async appendSignature(
-    id: KeyringEntryId,
+    id: WalletId,
     identity: PublicIdentity,
     originalTransaction: SignedTransaction,
     codec: TxCodec,
@@ -252,7 +252,7 @@ export class UserProfile {
     };
   }
 
-  private entryInPrimaryKeyring(id: KeyringEntryId): KeyringEntry {
+  private entryInPrimaryKeyring(id: WalletId): Wallet {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }

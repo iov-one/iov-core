@@ -16,13 +16,13 @@ import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import {
-  KeyringEntry,
-  KeyringEntryId,
-  KeyringEntryImplementationIdString,
-  KeyringEntrySerializationString,
   LocalIdentity,
   LocalIdentityId,
   PublicIdentity,
+  Wallet,
+  WalletId,
+  WalletImplementationIdString,
+  WalletSerializationString,
 } from "../keyring";
 import { prehash } from "../prehashing";
 
@@ -50,7 +50,7 @@ interface Slip10WalletSerialization {
 }
 
 interface Slip10WalletConstructor {
-  new (data: KeyringEntrySerializationString): Slip10Wallet;
+  new (data: WalletSerializationString): Slip10Wallet;
 }
 
 function isPath(value: unknown): value is ReadonlyArray<Slip10RawIndex> {
@@ -60,7 +60,7 @@ function isPath(value: unknown): value is ReadonlyArray<Slip10RawIndex> {
   return value.every(item => item instanceof Slip10RawIndex);
 }
 
-export class Slip10Wallet implements KeyringEntry {
+export class Slip10Wallet implements Wallet {
   public static fromEntropyWithCurve(
     curve: Slip10Curve,
     bip39Entropy: Uint8Array,
@@ -82,15 +82,15 @@ export class Slip10Wallet implements KeyringEntry {
       label: undefined,
       identities: [],
     };
-    return new cls(JSON.stringify(data) as KeyringEntrySerializationString);
+    return new cls(JSON.stringify(data) as WalletSerializationString);
   }
 
   private static readonly idsPrng: PseudoRandom.Engine = PseudoRandom.engines.mt19937().autoSeed();
 
-  private static generateId(): KeyringEntryId {
+  private static generateId(): WalletId {
     // this can be pseudo-random, just used for internal book-keeping
     const code = PseudoRandom.string()(Slip10Wallet.idsPrng, 16);
-    return code as KeyringEntryId;
+    return code as WalletId;
   }
 
   private static identityId(identity: PublicIdentity): LocalIdentityId {
@@ -122,8 +122,8 @@ export class Slip10Wallet implements KeyringEntry {
 
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
-  public readonly implementationId = "override me!" as KeyringEntryImplementationIdString;
-  public readonly id: KeyringEntryId;
+  public readonly implementationId = "override me!" as WalletImplementationIdString;
+  public readonly id: WalletId;
 
   private readonly secret: EnglishMnemonic;
   private readonly curve: Slip10Curve;
@@ -131,11 +131,11 @@ export class Slip10Wallet implements KeyringEntry {
   private readonly privkeyPaths: Map<string, ReadonlyArray<Slip10RawIndex>>;
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
 
-  constructor(data: KeyringEntrySerializationString) {
+  constructor(data: WalletSerializationString) {
     const decodedData: Slip10WalletSerialization = JSON.parse(data);
 
     // id
-    this.id = decodedData.id as KeyringEntryId;
+    this.id = decodedData.id as WalletId;
 
     // secret
     this.secret = new EnglishMnemonic(decodedData.secret);
@@ -258,7 +258,7 @@ export class Slip10Wallet implements KeyringEntry {
     return signature as SignatureBytes;
   }
 
-  public serialize(): KeyringEntrySerializationString {
+  public serialize(): WalletSerializationString {
     const serializedIdentities = this.identities.map(
       (identity): IdentitySerialization => {
         const privkeyPath = this.privkeyPathForIdentity(identity);
@@ -282,7 +282,7 @@ export class Slip10Wallet implements KeyringEntry {
       label: this.label.value,
       identities: serializedIdentities,
     };
-    return JSON.stringify(out) as KeyringEntrySerializationString;
+    return JSON.stringify(out) as WalletSerializationString;
   }
 
   public clone(): Slip10Wallet {

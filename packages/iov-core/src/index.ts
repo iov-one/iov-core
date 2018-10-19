@@ -10,11 +10,11 @@ export {
   Ed25519KeyringEntry,
   HdPaths,
   Keyring,
-  KeyringEntry,
-  KeyringEntryId,
-  KeyringEntryImplementationIdString,
-  KeyringEntrySerializationString,
   UserProfile,
+  Wallet,
+  WalletId,
+  WalletImplementationIdString,
+  WalletSerializationString,
 } from "@iov/keycontrol";
 export { ChainId } from "@iov/tendermint-types";
 

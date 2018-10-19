@@ -7,12 +7,12 @@ import { ChainId, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types"
 
 import { Ed25519HdWallet, Ed25519KeyringEntry, Secp256k1HdWallet } from "./keyring-entries";
 
-export type KeyringEntrySerializationString = string & As<"keyring-entry-serialization">;
 export type KeyringSerializationString = string & As<"keyring-serialization">;
-export type KeyringEntryImplementationIdString = string & As<"keyring-entry-implementation-id">;
+export type WalletImplementationIdString = string & As<"wallet-implementation-id">;
+export type WalletSerializationString = string & As<"wallet-serialization">;
 
 export type LocalIdentityId = string & As<"local-identity-id">;
-export type KeyringEntryId = string & As<"keyring-entry-id">;
+export type WalletId = string & As<"wallet-id">;
 
 // PublicIdentity is a public key we can identify with on a blockchain
 export interface PublicIdentity {
@@ -31,22 +31,22 @@ export interface LocalIdentity extends PublicIdentity {
 }
 
 export interface KeyringEntrySerialization {
-  readonly implementationId: KeyringEntryImplementationIdString;
-  readonly data: KeyringEntrySerializationString;
+  readonly implementationId: WalletImplementationIdString;
+  readonly data: WalletSerializationString;
 }
 
 export interface KeyringSerialization {
   readonly entries: KeyringEntrySerialization[];
 }
 
-export type KeyringEntryDeserializer = (data: KeyringEntrySerializationString) => KeyringEntry;
+export type KeyringEntryDeserializer = (data: WalletSerializationString) => Wallet;
 
 /*
 A Keyring a collection of KeyringEntrys
 */
 export class Keyring {
   public static registerEntryType(
-    implementationId: KeyringEntryImplementationIdString,
+    implementationId: WalletImplementationIdString,
     deserializer: KeyringEntryDeserializer,
   ): void {
     if (Keyring.deserializationRegistry.has(implementationId)) {
@@ -56,12 +56,12 @@ export class Keyring {
   }
 
   private static readonly deserializationRegistry = new Map([
-    ["ed25519", (data: KeyringEntrySerializationString) => new Ed25519KeyringEntry(data)],
-    ["ed25519-hd", (data: KeyringEntrySerializationString) => new Ed25519HdWallet(data)],
-    ["secp256k1-hd", (data: KeyringEntrySerializationString) => new Secp256k1HdWallet(data)],
+    ["ed25519", (data: WalletSerializationString) => new Ed25519KeyringEntry(data)],
+    ["ed25519-hd", (data: WalletSerializationString) => new Ed25519HdWallet(data)],
+    ["secp256k1-hd", (data: WalletSerializationString) => new Secp256k1HdWallet(data)],
   ] as ReadonlyArray<[string, KeyringEntryDeserializer]>);
 
-  private static deserializeKeyringEntry(serializedEntry: KeyringEntrySerialization): KeyringEntry {
+  private static deserializeKeyringEntry(serializedEntry: KeyringEntrySerialization): Wallet {
     const implId = serializedEntry.implementationId;
 
     const deserializer = Keyring.deserializationRegistry.get(implId);
@@ -76,7 +76,7 @@ export class Keyring {
     }
   }
 
-  private readonly entries: KeyringEntry[];
+  private readonly entries: Wallet[];
 
   constructor(data?: KeyringSerializationString) {
     if (data) {
@@ -87,23 +87,23 @@ export class Keyring {
     }
   }
 
-  public add(entry: KeyringEntry): void {
+  public add(entry: Wallet): void {
     this.entries.push(entry);
   }
 
   // Note: this returns an array with mutable element references. Thus e.g.
   // .getEntries().createIdentity() will change the keyring.
-  public getEntries(): ReadonlyArray<KeyringEntry> {
+  public getEntries(): ReadonlyArray<Wallet> {
     return this.entries;
   }
 
   // if you stored the immutible keyring entry reference, you can get the object back here
-  public getEntryById(id: string): KeyringEntry | undefined {
+  public getEntryById(id: string): Wallet | undefined {
     return this.entries.find(e => e.id === id);
   }
 
   // if you stored the immutible keyring entry reference, you can get the object back here
-  public getEntryByIndex(n: number): KeyringEntry | undefined {
+  public getEntryByIndex(n: number): Wallet | undefined {
     return this.entries.find((_, index) => index === n);
   }
 
@@ -126,25 +126,21 @@ export class Keyring {
   }
 }
 
-/*
-KeyringEntry is a generic interface for managing a set of keys and signing
-data with them. A KeyringEntry is instanciated using KeyringEntryFactory
-and assigned to a Keyring.
-
-A KeyringEntry is responsible for generating secure (random) private keys
-and signing with them. KeyringEntry can be implemented in software or as
-a bridge to a hardware wallet.
-
-It is inspired by metamask's design:
-https://github.com/MetaMask/KeyringController/blob/master/docs/keyring.md
-*/
-export interface KeyringEntry {
+/**
+ * A is a generic interface for managing a set of keys and signing
+ * data with them.
+ *
+ * A Wallet is responsible for storing private keys securely and
+ * signing with them. Wallet can be implemented in software or as
+ * a bridge to a hardware wallet.
+ */
+export interface Wallet {
   readonly label: ValueAndUpdates<string | undefined>;
 
   // id is a unique identifier based on the content of the keyring
   // the same implementation with same seed/secret should have same identifier
   // otherwise, they will be different
-  readonly id: KeyringEntryId;
+  readonly id: WalletId;
 
   // Sets a label associated with the keyring entry to be displayed in the UI.
   // To clear the label, set it to undefined.
@@ -169,7 +165,7 @@ export interface KeyringEntry {
 
   // A string identifying the concrete implementation of this interface
   // for deserialization purpose
-  readonly implementationId: KeyringEntryImplementationIdString;
+  readonly implementationId: WalletImplementationIdString;
 
   // createTransactionSignature will return a detached signature for the signable bytes
   // with the private key that matches the given PublicIdentity.
@@ -186,7 +182,7 @@ export interface KeyringEntry {
 
   // serialize will produce a representation that can be writen to disk.
   // this will contain secret info, so handle securely!
-  readonly serialize: () => KeyringEntrySerializationString;
+  readonly serialize: () => WalletSerializationString;
 
-  readonly clone: () => KeyringEntry;
+  readonly clone: () => Wallet;
 }

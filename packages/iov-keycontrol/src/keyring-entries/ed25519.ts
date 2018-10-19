@@ -7,13 +7,13 @@ import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import {
-  KeyringEntry,
-  KeyringEntryId,
-  KeyringEntryImplementationIdString,
-  KeyringEntrySerializationString,
   LocalIdentity,
   LocalIdentityId,
   PublicIdentity,
+  Wallet,
+  WalletId,
+  WalletImplementationIdString,
+  WalletSerializationString,
 } from "../keyring";
 import { prehash } from "../prehashing";
 
@@ -38,13 +38,13 @@ interface Ed25519KeyringEntrySerialization {
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
 
-export class Ed25519KeyringEntry implements KeyringEntry {
+export class Ed25519KeyringEntry implements Wallet {
   private static readonly idsPrng: PseudoRandom.Engine = PseudoRandom.engines.mt19937().autoSeed();
 
-  private static generateId(): KeyringEntryId {
+  private static generateId(): WalletId {
     // this can be pseudo-random, just used for internal book-keeping
     const code = PseudoRandom.string()(Ed25519KeyringEntry.idsPrng, 16);
-    return code as KeyringEntryId;
+    return code as WalletId;
   }
 
   private static identityId(identity: PublicIdentity): LocalIdentityId {
@@ -65,19 +65,19 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
-  public readonly implementationId = "ed25519" as KeyringEntryImplementationIdString;
+  public readonly implementationId = "ed25519" as WalletImplementationIdString;
   // id represents the state of the Keyring...
   // since there is no seed (like slip10), and no default state, we just create
   // an arbitrary string upon construction, which is persisted through clone and serialization
   // this doesn't change as keys are added to the KeyringEntry
-  public readonly id: KeyringEntryId;
+  public readonly id: WalletId;
 
   private readonly identities: LocalIdentity[];
   private readonly privkeys: Map<string, Ed25519Keypair>;
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
 
-  constructor(data?: KeyringEntrySerializationString) {
-    let id: KeyringEntryId;
+  constructor(data?: WalletSerializationString) {
+    let id: WalletId;
     let label: string | undefined;
     const identities: LocalIdentity[] = [];
     const privkeys = new Map<string, Ed25519Keypair>();
@@ -87,7 +87,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
       // label
       label = decodedData.label;
-      id = decodedData.id as KeyringEntryId;
+      id = decodedData.id as WalletId;
 
       // identities
       for (const record of decodedData.identities) {
@@ -168,7 +168,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     return signature as SignatureBytes;
   }
 
-  public serialize(): KeyringEntrySerializationString {
+  public serialize(): WalletSerializationString {
     const out: Ed25519KeyringEntrySerialization = {
       id: this.id,
       label: this.label.value,
@@ -186,7 +186,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
         };
       }),
     };
-    return JSON.stringify(out) as KeyringEntrySerializationString;
+    return JSON.stringify(out) as WalletSerializationString;
   }
 
   public clone(): Ed25519KeyringEntry {

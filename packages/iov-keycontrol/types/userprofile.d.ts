@@ -4,7 +4,7 @@ import { ReadonlyDate } from "readonly-date";
 import { Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
 import { Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
-import { Keyring, KeyringEntry, KeyringEntryId, LocalIdentity, PublicIdentity } from "./keyring";
+import { Keyring, LocalIdentity, PublicIdentity, Wallet, WalletId } from "./keyring";
 import { Ed25519KeyringEntry } from "./keyring-entries";
 export interface UserProfileOptions {
     readonly createdAt: ReadonlyDate;
@@ -14,7 +14,7 @@ export interface UserProfileOptions {
  * Read-only information about one wallet in a keyring/user profile
  */
 export interface WalletInfo {
-    readonly id: KeyringEntryId;
+    readonly id: WalletId;
     readonly label: string | undefined;
 }
 /**
@@ -36,13 +36,13 @@ export declare class UserProfile {
     constructor(options?: UserProfileOptions);
     storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<void>;
     lock(): void;
-    addEntry(entry: KeyringEntry): WalletInfo;
-    setEntryLabel(id: KeyringEntryId, label: string | undefined): void;
-    createIdentity(id: KeyringEntryId, options: Ed25519KeyringEntry | ReadonlyArray<Slip10RawIndex> | number): Promise<LocalIdentity>;
-    setIdentityLabel(id: KeyringEntryId, identity: PublicIdentity, label: string | undefined): void;
-    getIdentities(id: KeyringEntryId): ReadonlyArray<LocalIdentity>;
-    signTransaction(id: KeyringEntryId, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
-    appendSignature(id: KeyringEntryId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
+    addEntry(entry: Wallet): WalletInfo;
+    setEntryLabel(id: WalletId, label: string | undefined): void;
+    createIdentity(id: WalletId, options: Ed25519KeyringEntry | ReadonlyArray<Slip10RawIndex> | number): Promise<LocalIdentity>;
+    setIdentityLabel(id: WalletId, identity: PublicIdentity, label: string | undefined): void;
+    getIdentities(id: WalletId): ReadonlyArray<LocalIdentity>;
+    signTransaction(id: WalletId, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
+    appendSignature(id: WalletId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
     private entryInPrimaryKeyring;
     private walletInfos;
 }

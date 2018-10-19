@@ -2,11 +2,11 @@ import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Slip10Curve } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { ChainId, SignatureBytes } from "@iov/tendermint-types";
-import { KeyringEntry, KeyringEntryId, KeyringEntryImplementationIdString, KeyringEntrySerializationString, LocalIdentity, PublicIdentity } from "../keyring";
+import { LocalIdentity, PublicIdentity, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "../keyring";
 interface Slip10WalletConstructor {
-    new (data: KeyringEntrySerializationString): Slip10Wallet;
+    new (data: WalletSerializationString): Slip10Wallet;
 }
-export declare class Slip10Wallet implements KeyringEntry {
+export declare class Slip10Wallet implements Wallet {
     static fromEntropyWithCurve(curve: Slip10Curve, bip39Entropy: Uint8Array, cls?: Slip10WalletConstructor): Slip10Wallet;
     static fromMnemonicWithCurve(curve: Slip10Curve, mnemonicString: string, cls?: Slip10WalletConstructor): Slip10Wallet;
     private static readonly idsPrng;
@@ -16,20 +16,20 @@ export declare class Slip10Wallet implements KeyringEntry {
     private static algorithmFromString;
     readonly label: ValueAndUpdates<string | undefined>;
     readonly canSign: ValueAndUpdates<boolean>;
-    readonly implementationId: KeyringEntryImplementationIdString;
-    readonly id: KeyringEntryId;
+    readonly implementationId: WalletImplementationIdString;
+    readonly id: WalletId;
     private readonly secret;
     private readonly curve;
     private readonly identities;
     private readonly privkeyPaths;
     private readonly labelProducer;
-    constructor(data: KeyringEntrySerializationString);
+    constructor(data: WalletSerializationString);
     setLabel(label: string | undefined): void;
     createIdentity(options: unknown): Promise<LocalIdentity>;
     setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
     getIdentities(): ReadonlyArray<LocalIdentity>;
     createTransactionSignature(identity: PublicIdentity, transactionBytes: SignableBytes, prehashType: PrehashType, _: ChainId): Promise<SignatureBytes>;
-    serialize(): KeyringEntrySerializationString;
+    serialize(): WalletSerializationString;
     clone(): Slip10Wallet;
     private privkeyPathForIdentity;
     private privkeyForIdentity;

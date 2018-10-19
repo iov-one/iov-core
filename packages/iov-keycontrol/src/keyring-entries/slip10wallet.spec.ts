@@ -3,7 +3,7 @@ import { Sha256, Sha512, Slip10Curve, Slip10RawIndex } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
-import { KeyringEntrySerializationString } from "../keyring";
+import { WalletSerializationString } from "../keyring";
 import { Slip10Wallet } from "./slip10wallet";
 
 const { fromHex } = Encoding;
@@ -21,7 +21,7 @@ describe("Slip10Wallet", () => {
       "curve": "ed25519 seed",
       "identities": []
     }
-    ` as KeyringEntrySerializationString;
+    ` as WalletSerializationString;
 
   const emptySecp256k1Entry = `
     {
@@ -30,7 +30,7 @@ describe("Slip10Wallet", () => {
       "curve": "Bitcoin seed",
       "identities": []
     }
-    ` as KeyringEntrySerializationString;
+    ` as WalletSerializationString;
 
   it("can be deserialized", () => {
     const entry = new Slip10Wallet(emptyEntry);
@@ -314,7 +314,7 @@ describe("Slip10Wallet", () => {
           "curve": "ed25519 seed",
           "identities": []
         }
-        ` as KeyringEntrySerializationString);
+        ` as WalletSerializationString);
       expect(entry).toBeTruthy();
       expect(entry.getIdentities().length).toEqual(0);
       expect(entry.id).toEqual("eMpTy");
@@ -340,7 +340,7 @@ describe("Slip10Wallet", () => {
             }
           ]
         }
-        ` as KeyringEntrySerializationString;
+        ` as WalletSerializationString;
       const entry = new Slip10Wallet(serialized);
       expect(entry).toBeTruthy();
       expect(entry.id).toEqual("1elemenT");
@@ -379,7 +379,7 @@ describe("Slip10Wallet", () => {
               "privkeyPath": [2147483650]
             }
           ]
-        }` as KeyringEntrySerializationString;
+        }` as WalletSerializationString;
       const entry = new Slip10Wallet(serialized);
       expect(entry).toBeTruthy();
       expect(entry.id).toEqual("2elemeNT");
