@@ -671,6 +671,13 @@
   resolved "https://registry.yarnpkg.com/@types/base64-js/-/base64-js-1.2.5.tgz#582b2476169a6cba460a214d476c744441d873d5"
   integrity sha1-WCskdhaabLpGCiFNR2x0REHYc9U=
 
+"@types/bech32@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@types/bech32/-/bech32-1.1.1.tgz#a8574f9519369c91d5e69287551f675621a67f44"
+  integrity sha512-Kggl80lb2fVzRUhJlkZlrN9BJqrKCPe+QfpZ/TgiPlPTKbWcrgWuDPEAODNOUzfxVJyL4tzkwhH4qCWysVKIhg==
+  dependencies:
+    "@types/node" "*"
+
 "@types/diff@^3.5.1":
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/@types/diff/-/diff-3.5.1.tgz#30253f6e177564ad7da707b1ebe46d3eade71706"
@@ -1341,6 +1348,11 @@ bcrypt-pbkdf@^1.0.0:
   integrity sha1-pDAdOJtqQ/m2f/PKEaP2Y342Dp4=
   dependencies:
     tweetnacl "^0.14.3"
+
+bech32@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/bech32/-/bech32-1.1.3.tgz#bd47a8986bbb3eec34a56a097a84b8d3e9a2dfcd"
+  integrity sha512-yuVFUvrNcoJi0sv5phmqc6P+Fl1HjRDRNOOkHY2X/3LBy2bIGNSFx4fZ95HMaXHupuS7cZR15AsvtmCIF4UEyg==
 
 better-assert@~1.0.0:
   version "1.0.2"
