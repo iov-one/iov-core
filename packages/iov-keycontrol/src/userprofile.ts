@@ -159,7 +159,7 @@ export class UserProfile {
   }
 
   // Adds a copy of the entry to the primary keyring
-  public addEntry(entry: KeyringEntry): void {
+  public addEntry(entry: KeyringEntry): WalletInfo {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
@@ -167,6 +167,10 @@ export class UserProfile {
     const copy = entry.clone();
     this.keyring.add(copy);
     this.walletsProducer.update(this.walletInfos());
+    return {
+      id: copy.id,
+      label: copy.label.value,
+    };
   }
 
   // sets the label of the n-th keyring entry of the primary keyring

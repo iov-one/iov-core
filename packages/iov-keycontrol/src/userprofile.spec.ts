@@ -119,6 +119,21 @@ describe("UserProfile", () => {
     expect(profile.getIdentities(entry3.id)).toBeTruthy();
   });
 
+  it("addEntry returns wallet info", () => {
+    const profile = new UserProfile();
+    const entry1 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+    const entry2 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
+    entry2.setLabel("my-label");
+
+    const wallet1 = profile.addEntry(entry1);
+    expect(wallet1.id).toEqual(entry1.id);
+    expect(wallet1.label).toEqual(undefined);
+
+    const wallet2 = profile.addEntry(entry2);
+    expect(wallet2.id).toEqual(entry2.id);
+    expect(wallet2.label).toEqual("my-label");
+  });
+
   it("can update entry labels", () => {
     const keyring = new Keyring();
     const entry1 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");

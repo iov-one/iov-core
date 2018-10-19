@@ -24,6 +24,10 @@ Breaking changes
 * @iov/core: `MultiChainSigner.addChain` now returns chain information of the chain added
 * @iov/ledger-bns: in `LedgerSimpleAddressKeyringEntry`, `.createIdentity` takes an index argument
 
+Enhancements:
+
+* @iov/keycontrol: `UserProfile.setEntry()` now returns `WalletInfo` of new wallet added, for ease of use
+
 ## 0.6.1
 
 * @iov/keycontrol: add Ed25519HdWallet and Secp256k1HdWallet that work like Ed25519SimpleAddressKeyringEntry but allow derivation of arbirtary SLIP-0010 paths
