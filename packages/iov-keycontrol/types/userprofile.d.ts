@@ -36,7 +36,7 @@ export declare class UserProfile {
     constructor(options?: UserProfileOptions);
     storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<void>;
     lock(): void;
-    addEntry(entry: KeyringEntry): void;
+    addEntry(entry: KeyringEntry): WalletInfo;
     setEntryLabel(id: KeyringEntryId, label: string | undefined): void;
     createIdentity(id: KeyringEntryId, options: Ed25519KeyringEntry | ReadonlyArray<Slip10RawIndex> | number): Promise<LocalIdentity>;
     setIdentityLabel(id: KeyringEntryId, identity: PublicIdentity, label: string | undefined): void;
