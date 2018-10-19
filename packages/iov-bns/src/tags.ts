@@ -11,14 +11,14 @@ import { Tag } from "@iov/tendermint-types";
 import { bucketKey, decodeBnsAddress, hashIdentifier, indexKey } from "./util";
 
 export function bnsFromOrToTag(addr: Address): Tag {
-  const id = Uint8Array.from([...Encoding.toAscii("wllt:"), ...decodeBnsAddress(addr)]);
+  const id = Uint8Array.from([...Encoding.toAscii("wllt:"), ...decodeBnsAddress(addr).data]);
   const key = Encoding.toHex(id).toUpperCase();
   const value = "s"; // "s" for "set"
   return { key, value };
 }
 
 export function bnsNonceTag(addr: Address): Tag {
-  const id = Uint8Array.from([...Encoding.toAscii("sigs:"), ...decodeBnsAddress(addr)]);
+  const id = Uint8Array.from([...Encoding.toAscii("sigs:"), ...decodeBnsAddress(addr).data]);
   const key = Encoding.toHex(id).toUpperCase();
   const value = "s"; // "s" for "set"
   return { key, value };
@@ -30,9 +30,9 @@ export function bnsSwapQueryTags(query: BcpSwapQuery, set = true): Tag {
   if (isQueryBySwapId(query)) {
     binKey = Uint8Array.from([...bucketKey(bucket), ...query.swapid]);
   } else if (isQueryBySwapSender(query)) {
-    binKey = Uint8Array.from([...indexKey(bucket, "sender"), ...decodeBnsAddress(query.sender)]);
+    binKey = Uint8Array.from([...indexKey(bucket, "sender"), ...decodeBnsAddress(query.sender).data]);
   } else if (isQueryBySwapRecipient(query)) {
-    binKey = Uint8Array.from([...indexKey(bucket, "recipient"), ...decodeBnsAddress(query.recipient)]);
+    binKey = Uint8Array.from([...indexKey(bucket, "recipient"), ...decodeBnsAddress(query.recipient).data]);
   } else {
     // if (isQueryBySwapHash(query))
     binKey = Uint8Array.from([...indexKey(bucket, "arbiter"), ...hashIdentifier(query.hashlock)]);
