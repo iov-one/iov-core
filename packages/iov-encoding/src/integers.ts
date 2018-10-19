@@ -25,11 +25,11 @@ export class Uint32 {
 
   constructor(input: number) {
     if (Number.isNaN(input)) {
-      throw new Error("input is not a number");
+      throw new Error("Input is not a number");
     }
 
     if (input < 0 || input > 4294967295) {
-      throw new Error("input not in uint32 range: " + input.toString());
+      throw new Error("Input not in uint32 range: " + input.toString());
     }
 
     this.data = input;
@@ -64,11 +64,11 @@ export class Int53 {
 
   constructor(input: number) {
     if (Number.isNaN(input)) {
-      throw new Error("input is not a number");
+      throw new Error("Input is not a number");
     }
 
     if (input < Number.MIN_SAFE_INTEGER || input > Number.MAX_SAFE_INTEGER) {
-      throw new Error("input not in int53 range: " + input.toString());
+      throw new Error("Input not in int53 range: " + input.toString());
     }
 
     this.data = input;
@@ -134,7 +134,7 @@ export class Uint64 {
       throw new Error("Input is negative");
     }
     if (data.gt(uint64MaxValue)) {
-      throw new Error("Value exceeds uint64 range");
+      throw new Error("Input exceeds uint64 range");
     }
     this.data = data;
   }

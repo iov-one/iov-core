@@ -232,8 +232,8 @@ describe("Integers", () => {
     });
 
     it("throws for string values exceeding uint64", () => {
-      expect(() => Uint64.fromString("18446744073709551616")).toThrowError(/value exceeds uint64 range/i);
-      expect(() => Uint64.fromString("99999999999999999999")).toThrowError(/value exceeds uint64 range/i);
+      expect(() => Uint64.fromString("18446744073709551616")).toThrowError(/input exceeds uint64 range/i);
+      expect(() => Uint64.fromString("99999999999999999999")).toThrowError(/input exceeds uint64 range/i);
     });
 
     it("can be constructed from number", () => {
