@@ -128,40 +128,40 @@ describe("Integers", () => {
     });
 
     it("can convert to number", () => {
-      expect(new Int53(0).asNumber()).toEqual(0);
-      expect(new Int53(1).asNumber()).toEqual(1);
-      expect(new Int53(42).asNumber()).toEqual(42);
-      expect(new Int53(1000000000).asNumber()).toEqual(1000000000);
-      expect(new Int53(2147483647).asNumber()).toEqual(2147483647);
-      expect(new Int53(2147483648).asNumber()).toEqual(2147483648);
-      expect(new Int53(4294967295).asNumber()).toEqual(4294967295);
-      expect(new Int53(9007199254740991).asNumber()).toEqual(9007199254740991);
+      expect(new Int53(0).toNumber()).toEqual(0);
+      expect(new Int53(1).toNumber()).toEqual(1);
+      expect(new Int53(42).toNumber()).toEqual(42);
+      expect(new Int53(1000000000).toNumber()).toEqual(1000000000);
+      expect(new Int53(2147483647).toNumber()).toEqual(2147483647);
+      expect(new Int53(2147483648).toNumber()).toEqual(2147483648);
+      expect(new Int53(4294967295).toNumber()).toEqual(4294967295);
+      expect(new Int53(9007199254740991).toNumber()).toEqual(9007199254740991);
 
-      expect(new Int53(-1).asNumber()).toEqual(-1);
-      expect(new Int53(-9007199254740991).asNumber()).toEqual(-9007199254740991);
+      expect(new Int53(-1).toNumber()).toEqual(-1);
+      expect(new Int53(-9007199254740991).toNumber()).toEqual(-9007199254740991);
     });
 
     it("can convert to string", () => {
-      expect(new Int53(0).asString()).toEqual("0");
-      expect(new Int53(1).asString()).toEqual("1");
-      expect(new Int53(42).asString()).toEqual("42");
-      expect(new Int53(1000000000).asString()).toEqual("1000000000");
-      expect(new Int53(2147483647).asString()).toEqual("2147483647");
-      expect(new Int53(2147483648).asString()).toEqual("2147483648");
-      expect(new Int53(4294967295).asString()).toEqual("4294967295");
-      expect(new Int53(9007199254740991).asString()).toEqual("9007199254740991");
+      expect(new Int53(0).toString()).toEqual("0");
+      expect(new Int53(1).toString()).toEqual("1");
+      expect(new Int53(42).toString()).toEqual("42");
+      expect(new Int53(1000000000).toString()).toEqual("1000000000");
+      expect(new Int53(2147483647).toString()).toEqual("2147483647");
+      expect(new Int53(2147483648).toString()).toEqual("2147483648");
+      expect(new Int53(4294967295).toString()).toEqual("4294967295");
+      expect(new Int53(9007199254740991).toString()).toEqual("9007199254740991");
 
-      expect(new Int53(-1).asString()).toEqual("-1");
-      expect(new Int53(-9007199254740991).asString()).toEqual("-9007199254740991");
+      expect(new Int53(-1).toString()).toEqual("-1");
+      expect(new Int53(-9007199254740991).toString()).toEqual("-9007199254740991");
     });
 
     it("can be constructed from string", () => {
-      expect(Int53.fromString("0").asString()).toEqual("0");
-      expect(Int53.fromString("1").asString()).toEqual("1");
-      expect(Int53.fromString("9007199254740991").asString()).toEqual("9007199254740991");
+      expect(Int53.fromString("0").toString()).toEqual("0");
+      expect(Int53.fromString("1").toString()).toEqual("1");
+      expect(Int53.fromString("9007199254740991").toString()).toEqual("9007199254740991");
 
-      expect(Int53.fromString("-1").asString()).toEqual("-1");
-      expect(Int53.fromString("-9007199254740991").asString()).toEqual("-9007199254740991");
+      expect(Int53.fromString("-1").toString()).toEqual("-1");
+      expect(Int53.fromString("-9007199254740991").toString()).toEqual("-9007199254740991");
     });
 
     it("throws for invalid string format", () => {

@@ -74,11 +74,11 @@ export class Int53 {
     this.data = input;
   }
 
-  public asNumber(): number {
+  public toNumber(): number {
     return this.data;
   }
 
-  public asString(): string {
+  public toString(): string {
     return this.data.toString();
   }
 }

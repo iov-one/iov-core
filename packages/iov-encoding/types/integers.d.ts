@@ -9,8 +9,8 @@ export declare class Int53 {
     static fromString(str: string): Int53;
     protected readonly data: number;
     constructor(input: number);
-    asNumber(): number;
-    asString(): string;
+    toNumber(): number;
+    toString(): string;
 }
 export declare class Uint64 {
     static fromBytesBigEndian(bytes: ArrayLike<number>): Uint64;
