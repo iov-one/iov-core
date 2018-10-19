@@ -4,6 +4,7 @@
 
 * @iov/lisk: new package to connect to the Lisk blockchain
 * @iov/rise: new package to connect to the RISE blockchain
+* @iov/encoding: bech32 encoding support for address bytes
 
 Breaking changes
 
