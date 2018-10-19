@@ -109,16 +109,16 @@ const sendTx: SendTx = {
 [ { id: 'ReYESw51lsOOr8_X', label: undefined },
   { id: 'FtIcQqMWcRpEIruk', label: undefined } ]
 
-> profile.getIdentities("ReYESw51lsOOr8_X" as KeyringEntryId)
+> profile.getIdentities("ReYESw51lsOOr8_X" as WalletId)
 [ { pubkey: { algo: 'ed25519', data: [Uint8Array] },
     label: 'blockchain of value faucet',
     id: 'uul1wahs5te8fiaD' } ]
 
-> profile.getIdentities("FtIcQqMWcRpEIruk" as KeyringEntryId)
+> profile.getIdentities("FtIcQqMWcRpEIruk" as WalletId)
 []
 
-> profile.setEntryLabel("ReYESw51lsOOr8_X" as KeyringEntryId, "main")
-> profile.setEntryLabel("FtIcQqMWcRpEIruk" as KeyringEntryId, "second")
+> profile.setEntryLabel("ReYESw51lsOOr8_X" as WalletId, "main")
+> profile.setEntryLabel("FtIcQqMWcRpEIruk" as WalletId, "second")
 
 > profile.wallets.value
 [ { id: 'ReYESw51lsOOr8_X', label: 'main' },
