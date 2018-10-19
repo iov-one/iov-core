@@ -1,8 +1,8 @@
-import Long from "long";
 import { As } from "type-tagger";
+import { Int53 } from "@iov/encoding";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 import { Address } from "./signables";
-export declare type Nonce = Long & As<"nonce">;
+export declare type Nonce = Int53 & As<"nonce">;
 export declare type TtlBytes = Uint8Array & As<"ttl">;
 export declare type TokenTicker = string & As<"token-ticker">;
 export declare type SwapIdBytes = Uint8Array & As<"swap-id">;

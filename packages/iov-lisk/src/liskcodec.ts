@@ -61,7 +61,7 @@ export const liskCodec: TxCodec = {
 
         const postableObject = {
           type: 0,
-          amount: amount.toString(10),
+          amount: amount.toString(),
           recipientId: signed.transaction.recipient,
           senderPublicKey: Encoding.toHex(signed.primarySignature.publicKey.data),
           timestamp: liskTimestamp,

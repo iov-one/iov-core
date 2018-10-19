@@ -1,10 +1,9 @@
 import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
-import Long from "long";
 
 import { Nonce, PrehashType, RecipientId, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { bnsCodec } from "@iov/bns";
 import { Ed25519, Sha512 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/tendermint-types";
 
 import { appVersion, getPublicKeyWithIndex, signTransactionWithIndex } from "./app";
@@ -113,7 +112,7 @@ describe("Sign with ledger app", () => {
       signer: sender,
       memo: "Hi Mom!",
     };
-    const nonce = Long.fromNumber(123) as Nonce;
+    const nonce = new Int53(123) as Nonce;
     const { bytes, prehashType } = bnsCodec.bytesToSign(tx, nonce);
 
     const signature = await signTransactionWithIndex(transport!, bytes, 0);
@@ -157,7 +156,7 @@ describe("Sign with ledger app", () => {
       },
       signer: sender,
     };
-    const nonce = Long.fromNumber(5) as Nonce;
+    const nonce = new Int53(5) as Nonce;
     const { bytes, prehashType } = bnsCodec.bytesToSign(tx, nonce);
 
     const signature = await signTransactionWithIndex(transport!, bytes, simpleAddressIndex);

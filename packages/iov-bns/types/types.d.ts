@@ -1,5 +1,6 @@
-import Long from "long";
+import * as Long from "long";
 import { BcpCoin, FullSignature, FungibleToken } from "@iov/bcp-types";
+import { Int53 } from "@iov/encoding";
 import { Algorithm, PrivateKeyBundle, PrivateKeyBytes, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 import * as codecImpl from "./codecimpl";
 import { InitData } from "./normalize";
@@ -31,5 +32,5 @@ export declare const decodePrivKey: (privateKey: codecImpl.crypto.IPrivateKey) =
 export declare const decodeSignature: (signature: codecImpl.crypto.ISignature) => SignatureBytes;
 export declare const decodeFullSig: (sig: codecImpl.sigs.IStdSignature) => FullSignature;
 export declare const asNumber: (maybeLong: number | Long | null | undefined) => number;
-export declare const asLong: (maybeLong: number | Long | null | undefined) => Long;
+export declare function asInt53(input: Long | number | null | undefined): Int53;
 export declare const ensure: <T>(maybe: T | null | undefined, msg?: string | undefined) => T;

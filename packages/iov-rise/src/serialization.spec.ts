@@ -1,8 +1,7 @@
-import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
 import { Address, Nonce, SendTx, SignedTransaction, TokenTicker, TransactionKind } from "@iov/bcp-types";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { amountFromComponents, serializeTransaction, toRiseTimestamp, transactionId } from "./serialization";
@@ -12,7 +11,7 @@ const { fromAscii, fromHex } = Encoding;
 // use nethash as chain ID
 const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
 const riseEpochAsUnixTimestamp = 1464109200;
-const emptyNonce = new Long(0) as Nonce;
+const emptyNonce = new Int53(0) as Nonce;
 
 describe("toRiseTimestamp", () => {
   it("returns 0 at RISE epoch", () => {
@@ -70,25 +69,25 @@ describe("toRiseTimestamp", () => {
 
 describe("amountFromComponents", () => {
   it("works for some simple values", () => {
-    expect(amountFromComponents(0, 0)).toEqual(Long.fromNumber(0, true));
-    expect(amountFromComponents(0, 1)).toEqual(Long.fromNumber(1, true));
-    expect(amountFromComponents(0, 123)).toEqual(Long.fromNumber(123, true));
-    expect(amountFromComponents(1, 0)).toEqual(Long.fromNumber(100000000, true));
-    expect(amountFromComponents(123, 0)).toEqual(Long.fromNumber(12300000000, true));
-    expect(amountFromComponents(1, 1)).toEqual(Long.fromNumber(100000001, true));
-    expect(amountFromComponents(1, 23456789)).toEqual(Long.fromNumber(123456789, true));
+    expect(amountFromComponents(0, 0).toString()).toEqual("0");
+    expect(amountFromComponents(0, 1).toString()).toEqual("1");
+    expect(amountFromComponents(0, 123).toString()).toEqual("123");
+    expect(amountFromComponents(1, 0).toString()).toEqual("100000000");
+    expect(amountFromComponents(123, 0).toString()).toEqual("12300000000");
+    expect(amountFromComponents(1, 1).toString()).toEqual("100000001");
+    expect(amountFromComponents(1, 23456789).toString()).toEqual("123456789");
   });
 
   it("works for 10 million RISE", () => {
-    expect(amountFromComponents(10000000, 0)).toEqual(Long.fromString("1000000000000000", true, 10));
+    expect(amountFromComponents(10000000, 0).toString()).toEqual("1000000000000000");
     // set high and low digit to trigger precision bugs in floating point operations
-    expect(amountFromComponents(10000000, 1)).toEqual(Long.fromString("1000000000000001", true, 10));
+    expect(amountFromComponents(10000000, 1).toString()).toEqual("1000000000000001");
   });
 
   it("works for 100 million RISE", () => {
-    expect(amountFromComponents(100000000, 0)).toEqual(Long.fromString("10000000000000000", true, 10));
+    expect(amountFromComponents(100000000, 0).toString()).toEqual("10000000000000000");
     // set high and low digit to trigger precision bugs in floating point operations
-    expect(amountFromComponents(100000000, 1)).toEqual(Long.fromString("10000000000000001", true, 10));
+    expect(amountFromComponents(100000000, 1).toString()).toEqual("10000000000000001");
   });
 });
 

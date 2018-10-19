@@ -2,6 +2,7 @@ import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
 import { Nonce, TokenTicker } from "@iov/bcp-types";
+import { Int53 } from "@iov/encoding";
 
 import { constants } from "./constants";
 
@@ -46,6 +47,6 @@ export class Parse {
    * @param date the JavaScript date and time object
    */
   public static timeToNonce(date: ReadonlyDate): Nonce {
-    return Long.fromNumber(Math.floor(date.getTime() / 1000)) as Nonce;
+    return new Int53(Math.floor(date.getTime() / 1000)) as Nonce;
   }
 }

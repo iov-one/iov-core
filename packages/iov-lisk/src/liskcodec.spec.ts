@@ -1,7 +1,5 @@
-import Long from "long";
-
 import { Address, Nonce, SendTx, SignedTransaction, TokenTicker, TransactionKind } from "@iov/bcp-types";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 import {
   Algorithm,
   ChainId,
@@ -18,7 +16,7 @@ const { fromHex } = Encoding;
 // use nethash as chain ID
 const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
 const liskEpochAsUnixTimestamp = 1464109200;
-const defaultCreationTimestamp = Long.fromNumber(865708731 + liskEpochAsUnixTimestamp);
+const defaultCreationTimestamp = new Int53(865708731 + liskEpochAsUnixTimestamp);
 
 describe("liskCodec", () => {
   it("derives addresses properly", () => {
@@ -120,9 +118,7 @@ describe("liskCodec", () => {
     );
     expect(parsed.transaction.recipient).toEqual("6076671634347365051L");
 
-    expect(parsed.primarySignature.nonce).toEqual(Long.fromNumber(
-      73863961 + liskEpochAsUnixTimestamp,
-    ) as Nonce);
+    expect(parsed.primarySignature.nonce).toEqual(new Int53(73863961 + liskEpochAsUnixTimestamp) as Nonce);
     expect(parsed.primarySignature.publicKey.algo).toEqual(Algorithm.Ed25519);
     expect(parsed.primarySignature.publicKey.data).toEqual(
       fromHex("06ad4341a609af2de837e1156f81849b05bf3c280940a9f45db76d09a3a3f2fa"),

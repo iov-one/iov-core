@@ -1,11 +1,10 @@
 import levelup from "levelup";
-import Long from "long";
 import MemDownConstructor from "memdown";
 import { ReadonlyDate } from "readonly-date";
 
 import { Address, Nonce, PrehashType, SendTx, SignableBytes, SignedTransaction, SigningJob, TokenTicker, TransactionIdBytes, TransactionKind, TxCodec } from "@iov/bcp-types";
 import { Slip10RawIndex } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { HdPaths } from "./hdpaths";
@@ -321,7 +320,7 @@ describe("UserProfile", () => {
     const fakeSignedTransaction: SignedTransaction = {
       transaction: fakeTransaction,
       primarySignature: {
-        nonce: new Long(0, 11) as Nonce,
+        nonce: new Int53(11) as Nonce,
         publicKey: fakeIdentity.pubkey,
         signature: new Uint8Array([]) as SignatureBytes,
       },
@@ -357,11 +356,11 @@ describe("UserProfile", () => {
       .then(() => fail("Promise must not resolve"))
       .catch(error => expect(error).toMatch(/Entry of id bar does not exist in keyring/));
     await profile
-      .signTransaction(entryId, fakeIdentity, fakeTransaction, fakeCodec, new Long(1, 2) as Nonce)
+      .signTransaction(entryId, fakeIdentity, fakeTransaction, fakeCodec, new Int53(12) as Nonce)
       .then(() => fail("Promise must not resolve"))
       .catch(error => expect(error).toMatch(/Entry of id bar does not exist in keyring/));
     await profile
-      .appendSignature(entryId, fakeIdentity, fakeSignedTransaction, fakeCodec, new Long(1, 2) as Nonce)
+      .appendSignature(entryId, fakeIdentity, fakeSignedTransaction, fakeCodec, new Int53(12) as Nonce)
       .then(() => fail("Promise must not resolve"))
       .catch(error => expect(error).toMatch(/Entry of id bar does not exist in keyring/));
   });
@@ -406,7 +405,7 @@ describe("UserProfile", () => {
         throw new Error("not implemented");
       },
     };
-    const nonce = new Long(0x11223344, 0x55667788) as Nonce;
+    const nonce = new Int53(0x112233445566) as Nonce;
 
     const signedTransaction = await profile.signTransaction(entry.id, mainIdentity, fakeTransaction, fakeCodec, nonce);
     expect(signedTransaction.transaction).toEqual(fakeTransaction);

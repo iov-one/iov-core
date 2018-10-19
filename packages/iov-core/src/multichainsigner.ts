@@ -1,5 +1,3 @@
-import Long from "long";
-
 import {
   Address,
   BcpConnection,
@@ -9,6 +7,7 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
+import { Int53 } from "@iov/encoding";
 import { KeyringEntryId, PublicIdentity, UserProfile } from "@iov/keycontrol";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 
@@ -83,7 +82,7 @@ export class MultiChainSigner {
   // not the ful bcp info.
   public async getNonce(chainId: ChainId, addr: Address): Promise<Nonce> {
     const nonce = await this.getChain(chainId).connection.getNonce({ address: addr });
-    return nonce.data.length === 0 ? (Long.fromInt(0) as Nonce) : nonce.data[0].nonce;
+    return nonce.data.length === 0 ? (new Int53(0) as Nonce) : nonce.data[0].nonce;
   }
 
   // signAndCommit will sign the transaction given the signer specified in

@@ -46,7 +46,7 @@ export function may<T, U>(transform: (val: T) => U, value: T | null | undefined)
 }
 
 export function parseInteger(str: IntegerString): number {
-  return Int53.fromString(str).asNumber();
+  return Int53.fromString(str).toNumber();
 }
 
 export class Base64 {
