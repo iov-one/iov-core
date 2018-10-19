@@ -315,19 +315,15 @@ describe("Encoding", () => {
 });
 
 describe("Bech32", () => {
-  const lskAddressUtf8 = Encoding.toUtf8("6472030874529564639L");
-  const riseAddressUtf8 = Encoding.toUtf8("6472030874529564639R");
-  const ethAddressUtf8 = Encoding.toUtf8("0x9D4e856E572E442f0A4b2763e72d08A0E99D8deD");
+  // test data generate using https://github.com/nym-zone/bech32
+  // bech32 -e -h eth 9D4e856E572E442f0A4b2763e72d08A0E99D8deD
+  const ethAddressRaw = Encoding.fromHex("9D4e856E572E442f0A4b2763e72d08A0E99D8deD");
 
   it("encodes", () => {
-    expect(Bech32.encode("lsk", lskAddressUtf8)).toEqual("lsk1xc6rwv3sxvcrsde5x5erjdfkxsmrxw2v54fadf");
-    expect(Bech32.encode("rise", riseAddressUtf8)).toEqual("rise1xc6rwv3sxvcrsde5x5erjdfkxsmrxw2jwvs309");
-    expect(Bech32.encode("eth", ethAddressUtf8)).toEqual("eth1xpurj3p5v5ur2dj9x5mny3f5xsexvvzpx33rydekxdjnwvnyxquyzvz98yu5gwryv4zqws4a42");
+    expect(Bech32.encode("eth", ethAddressRaw)).toEqual("eth1n48g2mjh9ezz7zjtya37wtgg5r5emr0drkwlgw");
   });
 
   it("decodes", () => {
-    expect(Bech32.decode("lsk1xc6rwv3sxvcrsde5x5erjdfkxsmrxw2v54fadf")).toEqual({ prefix: "lsk", data: lskAddressUtf8 });
-    expect(Bech32.decode("rise1xc6rwv3sxvcrsde5x5erjdfkxsmrxw2jwvs309")).toEqual({ prefix: "rise", data: riseAddressUtf8 });
-    expect(Bech32.decode("eth1xpurj3p5v5ur2dj9x5mny3f5xsexvvzpx33rydekxdjnwvnyxquyzvz98yu5gwryv4zqws4a42")).toEqual({ prefix: "eth", data: ethAddressUtf8 });
+    expect(Bech32.decode("eth1n48g2mjh9ezz7zjtya37wtgg5r5emr0drkwlgw")).toEqual({ prefix: "eth", data: ethAddressRaw });
   });
 });
