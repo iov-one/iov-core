@@ -151,8 +151,9 @@ describe("Integration tests with bov+tendermint", () => {
   it("returns empty list when getting an unused account", async () => {
     pendingWithoutBov();
     const connection = await BnsConnection.establish(tendermintUrl);
-
-    const unusedAddress = "010101020202030303040404050505050A0A0A0A" as Address;
+    // unusedAddress generated using https://github.com/nym-zone/bech32
+    // bech32 -e -h tiov 010101020202030303040404050505050A0A0A0A
+    const unusedAddress = "tiov1qyqszqszqgpsxqcyqszq2pg9q59q5zs2fx9n6s" as Address;
     const response = await connection.getAccount({ address: unusedAddress });
     expect(response).toBeTruthy();
     expect(response.data).toBeTruthy();
