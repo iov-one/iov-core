@@ -43,6 +43,7 @@ export declare class UserProfile {
     getIdentities(id: WalletId): ReadonlyArray<LocalIdentity>;
     signTransaction(id: WalletId, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
     appendSignature(id: WalletId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
-    private entryInPrimaryKeyring;
+    /** Throws if wallet does not exist in primary keyring */
+    private findWalletInPrimaryKeyring;
     private walletInfos;
 }

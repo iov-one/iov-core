@@ -207,8 +207,8 @@ describe("UserProfile", () => {
 
     const wallet2 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
 
-    expect(() => profile.getIdentities(wallet2.id)).toThrowError(`Entry of id ${wallet2.id} does not exist in keyring`);
-    expect(() => profile.getIdentities("balloon" as WalletId)).toThrowError(/Entry of id balloon does not exist in keyring/);
+    expect(() => profile.getIdentities(wallet2.id)).toThrowError(`Wallet of id '${wallet2.id}' does not exist in keyring`);
+    expect(() => profile.getIdentities("balloon" as WalletId)).toThrowError(/Wallet of id 'balloon' does not exist in keyring/);
   });
 
   it("added wallet can not be manipulated from outside", async () => {
@@ -360,24 +360,24 @@ describe("UserProfile", () => {
       },
     };
 
-    // keyring entry of id bar does not exist
+    // wallet of id 'bar' does not exist
     const walletId = "bar" as WalletId;
 
-    expect(() => profile.setEntryLabel(walletId, "foo")).toThrowError(/Entry of id bar does not exist in keyring/);
-    expect(() => profile.getIdentities(walletId)).toThrowError(/Entry of id bar does not exist in keyring/);
-    expect(() => profile.setIdentityLabel(walletId, fakeIdentity, "foo")).toThrowError(/Entry of id bar does not exist in keyring/);
+    expect(() => profile.setEntryLabel(walletId, "foo")).toThrowError(/wallet of id 'bar' does not exist in keyring/i);
+    expect(() => profile.getIdentities(walletId)).toThrowError(/wallet of id 'bar' does not exist in keyring/i);
+    expect(() => profile.setIdentityLabel(walletId, fakeIdentity, "foo")).toThrowError(/wallet of id 'bar' does not exist in keyring/i);
     await profile
       .createIdentity(walletId, HdPaths.simpleAddress(0))
       .then(() => fail("Promise must not resolve"))
-      .catch(error => expect(error).toMatch(/Entry of id bar does not exist in keyring/));
+      .catch(error => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
     await profile
       .signTransaction(walletId, fakeIdentity, fakeTransaction, fakeCodec, new Int53(12) as Nonce)
       .then(() => fail("Promise must not resolve"))
-      .catch(error => expect(error).toMatch(/Entry of id bar does not exist in keyring/));
+      .catch(error => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
     await profile
       .appendSignature(walletId, fakeIdentity, fakeSignedTransaction, fakeCodec, new Int53(12) as Nonce)
       .then(() => fail("Promise must not resolve"))
-      .catch(error => expect(error).toMatch(/Entry of id bar does not exist in keyring/));
+      .catch(error => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
   });
 
   it("can sign and append signature", async () => {

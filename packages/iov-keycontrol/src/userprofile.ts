@@ -175,7 +175,7 @@ export class UserProfile {
 
   // sets the label of the n-th keyring entry of the primary keyring
   public setEntryLabel(id: WalletId, label: string | undefined): void {
-    const wallet = this.entryInPrimaryKeyring(id);
+    const wallet = this.findWalletInPrimaryKeyring(id);
     wallet.setLabel(label);
     this.walletsProducer.update(this.walletInfos());
   }
@@ -185,20 +185,20 @@ export class UserProfile {
     id: WalletId,
     options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number,
   ): Promise<LocalIdentity> {
-    const wallet = this.entryInPrimaryKeyring(id);
+    const wallet = this.findWalletInPrimaryKeyring(id);
     return wallet.createIdentity(options);
   }
 
   // assigns a new label to one of the identities
   // in the n-th keyring entry of the primary keyring
   public setIdentityLabel(id: WalletId, identity: PublicIdentity, label: string | undefined): void {
-    const wallet = this.entryInPrimaryKeyring(id);
+    const wallet = this.findWalletInPrimaryKeyring(id);
     wallet.setIdentityLabel(identity, label);
   }
 
   // get identities of the n-th keyring entry of the primary keyring
   public getIdentities(id: WalletId): ReadonlyArray<LocalIdentity> {
-    const wallet = this.entryInPrimaryKeyring(id);
+    const wallet = this.findWalletInPrimaryKeyring(id);
     return wallet.getIdentities();
   }
 
@@ -209,7 +209,7 @@ export class UserProfile {
     codec: TxCodec,
     nonce: Nonce,
   ): Promise<SignedTransaction> {
-    const wallet = this.entryInPrimaryKeyring(id);
+    const wallet = this.findWalletInPrimaryKeyring(id);
 
     const { bytes, prehashType } = codec.bytesToSign(transaction, nonce);
     const signature: FullSignature = {
@@ -232,7 +232,7 @@ export class UserProfile {
     codec: TxCodec,
     nonce: Nonce,
   ): Promise<SignedTransaction> {
-    const wallet = this.entryInPrimaryKeyring(id);
+    const wallet = this.findWalletInPrimaryKeyring(id);
 
     const { bytes, prehashType } = codec.bytesToSign(originalTransaction.transaction, nonce);
     const newSignature: FullSignature = {
@@ -252,7 +252,8 @@ export class UserProfile {
     };
   }
 
-  private entryInPrimaryKeyring(id: WalletId): Wallet {
+  /** Throws if wallet does not exist in primary keyring */
+  private findWalletInPrimaryKeyring(id: WalletId): Wallet {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
@@ -260,7 +261,7 @@ export class UserProfile {
     const wallet = this.keyring.getEntryById(id);
 
     if (!wallet) {
-      throw new Error(`Entry of id ${id} does not exist in keyring`);
+      throw new Error(`Wallet of id '${id}' does not exist in keyring`);
     }
 
     return wallet;
