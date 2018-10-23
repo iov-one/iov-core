@@ -4,8 +4,9 @@ import { ReadonlyDate } from "readonly-date";
 import { Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
 import { Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
-import { Keyring, KeyringEntry, KeyringEntryId, LocalIdentity, PublicIdentity } from "./keyring";
-import { Ed25519KeyringEntry } from "./keyring-entries";
+import { Keyring } from "./keyring";
+import { LocalIdentity, PublicIdentity, Wallet, WalletId } from "./wallet";
+import { Ed25519Wallet } from "./wallets";
 export interface UserProfileOptions {
     readonly createdAt: ReadonlyDate;
     readonly keyring: Keyring;
@@ -14,7 +15,7 @@ export interface UserProfileOptions {
  * Read-only information about one wallet in a keyring/user profile
  */
 export interface WalletInfo {
-    readonly id: KeyringEntryId;
+    readonly id: WalletId;
     readonly label: string | undefined;
 }
 /**
@@ -36,13 +37,21 @@ export declare class UserProfile {
     constructor(options?: UserProfileOptions);
     storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<void>;
     lock(): void;
-    addEntry(entry: KeyringEntry): WalletInfo;
-    setEntryLabel(id: KeyringEntryId, label: string | undefined): void;
-    createIdentity(id: KeyringEntryId, options: Ed25519KeyringEntry | ReadonlyArray<Slip10RawIndex> | number): Promise<LocalIdentity>;
-    setIdentityLabel(id: KeyringEntryId, identity: PublicIdentity, label: string | undefined): void;
-    getIdentities(id: KeyringEntryId): ReadonlyArray<LocalIdentity>;
-    signTransaction(id: KeyringEntryId, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
-    appendSignature(id: KeyringEntryId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
-    private entryInPrimaryKeyring;
+    /**
+     * Adds a copy of the wallet to the primary keyring
+     */
+    addWallet(wallet: Wallet): WalletInfo;
+    /** Sets the label of the wallet with the given ID in the primary keyring  */
+    setWalletLabel(id: WalletId, label: string | undefined): void;
+    /** Creates an identitiy in the wallet with the given ID in the primary keyring */
+    createIdentity(id: WalletId, options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number): Promise<LocalIdentity>;
+    /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
+    setIdentityLabel(id: WalletId, identity: PublicIdentity, label: string | undefined): void;
+    /** Get identities of the wallet with the given ID in the primary keyring  */
+    getIdentities(id: WalletId): ReadonlyArray<LocalIdentity>;
+    signTransaction(id: WalletId, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
+    appendSignature(id: WalletId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
+    /** Throws if wallet does not exist in primary keyring */
+    private findWalletInPrimaryKeyring;
     private walletInfos;
 }

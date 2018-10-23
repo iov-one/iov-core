@@ -47,7 +47,7 @@ const mnemonic24 = Bip39.encode(entropy32).asString();
 console.log(mnemonic24);
 ```
 
-Create a new profile with two entries:
+Create a new profile with two wallets:
 
 ```ts
 import { Ed25519HdWallet, UserProfile } from '@iov/keycontrol';
@@ -55,8 +55,8 @@ import { Ed25519HdWallet, UserProfile } from '@iov/keycontrol';
 const profile = new UserProfile();
 const wallet1 = Ed25519HdWallet.fromMnemonic(mnemonic12);
 const wallet2 = Ed25519HdWallet.fromMnemonic(mnemonic24);
-profile.addEntry(wallet1);
-profile.addEntry(wallet2);
+profile.addWallet(wallet1);
+profile.addWallet(wallet2);
 ```
 
 Inspect the profile:
@@ -67,11 +67,11 @@ console.log(profile.wallets.value);
 
 // listen to the profile (stream of updates, good for reactive UI)
 const sub = profile.wallets.updates.subscribe({ next: wallets => console.log(wallets) });
-profile.setEntryLabel(wallet1.id, "12 words");
-profile.setEntryLabel(wallet2.id, "24 words");
+profile.setWalletLabel(wallet1.id, "12 words");
+profile.setWalletLabel(wallet2.id, "24 words");
 ```
 
-Create identies on the two keyring entries (argument is index of the entry):
+Create identies on the two wallets:
 
 ```ts
 import { HdPaths } from '@iov/keycontrol';

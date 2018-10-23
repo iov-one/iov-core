@@ -8,7 +8,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
-import { KeyringEntryId, PublicIdentity, UserProfile } from "@iov/keycontrol";
+import { PublicIdentity, UserProfile, WalletId } from "@iov/keycontrol";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 
 /**
@@ -89,10 +89,7 @@ export class MultiChainSigner {
   // the transaction and look up the private key for this public key
   // in the given keyring.
   // It finds the nonce, signs properly, and posts the tx to the blockchain.
-  public async signAndCommit(
-    tx: UnsignedTransaction,
-    keyring: KeyringEntryId,
-  ): Promise<BcpTransactionResponse> {
+  public async signAndCommit(tx: UnsignedTransaction, walletId: WalletId): Promise<BcpTransactionResponse> {
     const chainId = tx.chainId;
     const { connection, codec } = this.getChain(chainId);
 
@@ -104,7 +101,7 @@ export class MultiChainSigner {
     // a PublicIdentity to sign. Same information content, so I fake it.
     // TODO: Simon, a cleaner solution would be nicer. How?
     const fakeId: PublicIdentity = { pubkey: signer };
-    const signed = await this.profile.signTransaction(keyring, fakeId, tx, codec, nonce);
+    const signed = await this.profile.signTransaction(walletId, fakeId, tx, codec, nonce);
     const txBytes = codec.bytesToPost(signed);
     const post = await connection.postTx(txBytes);
     return post;

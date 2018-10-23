@@ -1,26 +1,26 @@
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
-import { KeyringEntry, KeyringEntryId, KeyringEntryImplementationIdString, KeyringEntrySerializationString, LocalIdentity, PublicIdentity } from "@iov/keycontrol";
+import { LocalIdentity, PublicIdentity, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "@iov/keycontrol";
 import { ValueAndUpdates } from "@iov/stream";
 import { ChainId, SignatureBytes } from "@iov/tendermint-types";
 import { LedgerState } from "./statetracker";
-export declare class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
-    static readonly implementationId: KeyringEntryImplementationIdString;
+export declare class LedgerSimpleAddressWallet implements Wallet {
+    static readonly implementationId: WalletImplementationIdString;
     /**
-     * A convenience function to register this entry type with the global Keyring class
+     * A convenience function to register this wallet type with the global Keyring class
      */
     static registerWithKeyring(): void;
     private static identityId;
     readonly label: ValueAndUpdates<string | undefined>;
     readonly canSign: ValueAndUpdates<boolean>;
-    readonly implementationId: KeyringEntryImplementationIdString;
+    readonly implementationId: WalletImplementationIdString;
     readonly deviceState: ValueAndUpdates<LedgerState>;
-    id: KeyringEntryId;
+    id: WalletId;
     private readonly deviceTracker;
     private readonly labelProducer;
     private readonly canSignProducer;
     private readonly identities;
     private readonly simpleAddressIndices;
-    constructor(data?: KeyringEntrySerializationString);
+    constructor(data?: WalletSerializationString);
     /**
      * Turn on tracking USB devices.
      *
@@ -32,7 +32,7 @@ export declare class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     /**
      * Turn off tracking USB devices.
      *
-     * Use this to save resources when LedgerSimpleAddressKeyringEntry is not used anymore.
+     * Use this to save resources when LedgerSimpleAddressWallet is not used anymore.
      * With device tracking turned off, canSign and deviceState are not updated anymore.
      */
     stopDeviceTracking(): void;
@@ -41,8 +41,8 @@ export declare class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
     getIdentities(): ReadonlyArray<LocalIdentity>;
     createTransactionSignature(identity: PublicIdentity, transactionBytes: SignableBytes, prehashType: PrehashType, _: ChainId): Promise<SignatureBytes>;
-    serialize(): KeyringEntrySerializationString;
-    clone(): KeyringEntry;
+    serialize(): WalletSerializationString;
+    clone(): Wallet;
     private simpleAddressIndex;
     private buildLocalIdentity;
 }

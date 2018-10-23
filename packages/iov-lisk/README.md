@@ -16,14 +16,14 @@ You can use @iov/lisk as an extension of @iov/core to interact with the
 Lisk blockchain as follows.
 
 ```ts
-import { Ed25519KeyringEntry } from "@iov/core";
+import { Ed25519Wallet } from "@iov/core";
 import { passphraseToKeypair, liskCodec, liskConnector } from "@iov/lisk";
 
-const entry = new Ed25519KeyringEntry();
-const mainIdentity = await entry.createIdentity(await passphraseToKeypair("oxygen fall sure lava energy veteran enroll frown question detail include maximum"));
+const wallet = new Ed25519Wallet();
+const mainIdentity = await wallet.createIdentity(await passphraseToKeypair("oxygen fall sure lava energy veteran enroll frown question detail include maximum"));
 
 const profile = new UserProfile();
-profile.addEntry(entry);
+profile.addWallet(wallet);
 
 const signer = new MultiChainSigner(profile);
 await signer.addChain(liskConnector("https://testnet.lisk.io"));
@@ -59,13 +59,13 @@ This is how you use `liskCodec` to generate send transactions
 for Lisk manually, i.e. without the help of @iov/core.
 
 ```ts
-import { Ed25519KeyringEntry } from "@iov/core";
+import { Ed25519Wallet } from "@iov/core";
 import { passphraseToKeypair, generateNonce, liskCodec } from "@iov/lisk";
 
 const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
 
-const entry = new Ed25519KeyringEntry();
-const mainIdentity = await entry.createIdentity(await passphraseToKeypair("oxygen fall sure lava energy veteran enroll frown question detail include maximum"));
+const wallet = new Ed25519Wallet();
+const mainIdentity = await wallet.createIdentity(await passphraseToKeypair("oxygen fall sure lava energy veteran enroll frown question detail include maximum"));
 
 const recipientAddress = "6076671634347365051L" as Address;
 
@@ -84,7 +84,7 @@ const sendTx: SendTx = {
 
 const nonce = generateNonce();
 const signingJob = liskCodec.bytesToSign(sendTx, nonce);
-const signature = await entry.createTransactionSignature(mainIdentity, signingJob.bytes, signingJob.prehashType, liskTestnet);
+const signature = await wallet.createTransactionSignature(mainIdentity, signingJob.bytes, signingJob.prehashType, liskTestnet);
 
 const signedTransaction = {
   transaction: sendTx,

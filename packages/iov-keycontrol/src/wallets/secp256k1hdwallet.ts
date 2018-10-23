@@ -1,6 +1,6 @@
 import { Slip10Curve } from "@iov/crypto";
 
-import { KeyringEntryImplementationIdString } from "../keyring";
+import { WalletImplementationIdString } from "../wallet";
 import { Slip10Wallet } from "./slip10wallet";
 
 export class Secp256k1HdWallet extends Slip10Wallet {
@@ -20,7 +20,7 @@ export class Secp256k1HdWallet extends Slip10Wallet {
     ) as Secp256k1HdWallet;
   }
 
-  public readonly implementationId = "secp256k1-hd" as KeyringEntryImplementationIdString;
+  public readonly implementationId = "secp256k1-hd" as WalletImplementationIdString;
 
   public clone(): Secp256k1HdWallet {
     return new Secp256k1HdWallet(this.serialize());

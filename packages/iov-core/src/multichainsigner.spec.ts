@@ -1,6 +1,6 @@
 import { SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { bnsConnector, bnsFromOrToTag } from "@iov/bns";
-import { Ed25519HdWallet, HdPaths, KeyringEntryId, LocalIdentity, UserProfile } from "@iov/keycontrol";
+import { Ed25519HdWallet, HdPaths, LocalIdentity, UserProfile, WalletId } from "@iov/keycontrol";
 import { ChainId } from "@iov/tendermint-types";
 
 import { MultiChainSigner } from "./multichainsigner";
@@ -43,12 +43,12 @@ describe("MultiChainSigner", () => {
 
     async function userProfileWithFaucet(): Promise<{
       readonly profile: UserProfile;
-      readonly mainWalletId: KeyringEntryId;
+      readonly mainWalletId: WalletId;
       readonly faucet: LocalIdentity;
     }> {
       const wallet = Ed25519HdWallet.fromMnemonic(mnemonic);
       const profile = new UserProfile();
-      profile.addEntry(wallet);
+      profile.addWallet(wallet);
       const faucet = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
       return { profile, mainWalletId: wallet.id, faucet };
     }

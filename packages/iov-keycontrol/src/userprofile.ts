@@ -17,16 +17,10 @@ import {
 import { Encoding } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
-import {
-  Keyring,
-  KeyringEntry,
-  KeyringEntryId,
-  KeyringSerializationString,
-  LocalIdentity,
-  PublicIdentity,
-} from "./keyring";
-import { Ed25519KeyringEntry } from "./keyring-entries";
+import { Keyring, KeyringSerializationString } from "./keyring";
 import { DatabaseUtils } from "./utils";
+import { LocalIdentity, PublicIdentity, Wallet, WalletId } from "./wallet";
+import { Ed25519Wallet } from "./wallets";
 
 const { toAscii, fromBase64, toBase64, fromUtf8, toUtf8, toRfc3339, fromRfc3339 } = Encoding;
 
@@ -53,7 +47,7 @@ export interface UserProfileOptions {
  * Read-only information about one wallet in a keyring/user profile
  */
 export interface WalletInfo {
-  readonly id: KeyringEntryId;
+  readonly id: WalletId;
   readonly label: string | undefined;
 }
 
@@ -158,13 +152,15 @@ export class UserProfile {
     this.lockedProducer.update(true);
   }
 
-  // Adds a copy of the entry to the primary keyring
-  public addEntry(entry: KeyringEntry): WalletInfo {
+  /**
+   * Adds a copy of the wallet to the primary keyring
+   */
+  public addWallet(wallet: Wallet): WalletInfo {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
 
-    const copy = entry.clone();
+    const copy = wallet.clone();
     this.keyring.add(copy);
     this.walletsProducer.update(this.walletInfos());
     return {
@@ -173,49 +169,48 @@ export class UserProfile {
     };
   }
 
-  // sets the label of the n-th keyring entry of the primary keyring
-  public setEntryLabel(id: KeyringEntryId, label: string | undefined): void {
-    const entry = this.entryInPrimaryKeyring(id);
-    entry.setLabel(label);
+  /** Sets the label of the wallet with the given ID in the primary keyring  */
+  public setWalletLabel(id: WalletId, label: string | undefined): void {
+    const wallet = this.findWalletInPrimaryKeyring(id);
+    wallet.setLabel(label);
     this.walletsProducer.update(this.walletInfos());
   }
 
-  // creates an identitiy in the n-th keyring entry of the primary keyring
+  /** Creates an identitiy in the wallet with the given ID in the primary keyring */
   public async createIdentity(
-    id: KeyringEntryId,
-    options: Ed25519KeyringEntry | ReadonlyArray<Slip10RawIndex> | number,
+    id: WalletId,
+    options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number,
   ): Promise<LocalIdentity> {
-    const entry = this.entryInPrimaryKeyring(id);
-    return entry.createIdentity(options);
+    const wallet = this.findWalletInPrimaryKeyring(id);
+    return wallet.createIdentity(options);
   }
 
-  // assigns a new label to one of the identities
-  // in the n-th keyring entry of the primary keyring
-  public setIdentityLabel(id: KeyringEntryId, identity: PublicIdentity, label: string | undefined): void {
-    const entry = this.entryInPrimaryKeyring(id);
-    entry.setIdentityLabel(identity, label);
+  /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
+  public setIdentityLabel(id: WalletId, identity: PublicIdentity, label: string | undefined): void {
+    const wallet = this.findWalletInPrimaryKeyring(id);
+    wallet.setIdentityLabel(identity, label);
   }
 
-  // get identities of the n-th keyring entry of the primary keyring
-  public getIdentities(id: KeyringEntryId): ReadonlyArray<LocalIdentity> {
-    const entry = this.entryInPrimaryKeyring(id);
-    return entry.getIdentities();
+  /** Get identities of the wallet with the given ID in the primary keyring  */
+  public getIdentities(id: WalletId): ReadonlyArray<LocalIdentity> {
+    const wallet = this.findWalletInPrimaryKeyring(id);
+    return wallet.getIdentities();
   }
 
   public async signTransaction(
-    id: KeyringEntryId,
+    id: WalletId,
     identity: PublicIdentity,
     transaction: UnsignedTransaction,
     codec: TxCodec,
     nonce: Nonce,
   ): Promise<SignedTransaction> {
-    const entry = this.entryInPrimaryKeyring(id);
+    const wallet = this.findWalletInPrimaryKeyring(id);
 
     const { bytes, prehashType } = codec.bytesToSign(transaction, nonce);
     const signature: FullSignature = {
       publicKey: identity.pubkey,
       nonce: nonce,
-      signature: await entry.createTransactionSignature(identity, bytes, prehashType, transaction.chainId),
+      signature: await wallet.createTransactionSignature(identity, bytes, prehashType, transaction.chainId),
     };
 
     return {
@@ -226,19 +221,19 @@ export class UserProfile {
   }
 
   public async appendSignature(
-    id: KeyringEntryId,
+    id: WalletId,
     identity: PublicIdentity,
     originalTransaction: SignedTransaction,
     codec: TxCodec,
     nonce: Nonce,
   ): Promise<SignedTransaction> {
-    const entry = this.entryInPrimaryKeyring(id);
+    const wallet = this.findWalletInPrimaryKeyring(id);
 
     const { bytes, prehashType } = codec.bytesToSign(originalTransaction.transaction, nonce);
     const newSignature: FullSignature = {
       publicKey: identity.pubkey,
       nonce: nonce,
-      signature: await entry.createTransactionSignature(
+      signature: await wallet.createTransactionSignature(
         identity,
         bytes,
         prehashType,
@@ -252,18 +247,19 @@ export class UserProfile {
     };
   }
 
-  private entryInPrimaryKeyring(id: KeyringEntryId): KeyringEntry {
+  /** Throws if wallet does not exist in primary keyring */
+  private findWalletInPrimaryKeyring(id: WalletId): Wallet {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
 
-    const entry = this.keyring.getEntryById(id);
+    const wallet = this.keyring.getWallet(id);
 
-    if (!entry) {
-      throw new Error(`Entry of id ${id} does not exist in keyring`);
+    if (!wallet) {
+      throw new Error(`Wallet of id '${id}' does not exist in keyring`);
     }
 
-    return entry;
+    return wallet;
   }
 
   private walletInfos(): ReadonlyArray<WalletInfo> {
@@ -271,9 +267,9 @@ export class UserProfile {
       throw new Error("UserProfile is currently locked");
     }
 
-    return this.keyring.getEntries().map(entry => ({
-      id: entry.id,
-      label: entry.label.value,
+    return this.keyring.getWallets().map(wallet => ({
+      id: wallet.id,
+      label: wallet.label.value,
     }));
   }
 }

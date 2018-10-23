@@ -3,13 +3,13 @@ import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import {
   Keyring,
-  KeyringEntry,
-  KeyringEntryId,
-  KeyringEntryImplementationIdString,
-  KeyringEntrySerializationString,
   LocalIdentity,
   LocalIdentityId,
   PublicIdentity,
+  Wallet,
+  WalletId,
+  WalletImplementationIdString,
+  WalletSerializationString,
 } from "@iov/keycontrol";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
@@ -33,25 +33,25 @@ interface IdentitySerialization {
   readonly simpleAddressIndex: number;
 }
 
-interface LedgerKeyringEntrySerialization {
+interface LedgerSimpleAddressWalletSerialization {
   readonly label: string | undefined;
   readonly id: string;
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
 
-// this is the id of any LedgerSimpleAddressKeyringEntry until it connects with the app
-const defaultId = "uninitialized" as KeyringEntryId;
+// this is the id of any LedgerSimpleAddressWallet until it connects with the app
+const defaultId = "uninitialized" as WalletId;
 
-export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
-  public static readonly implementationId = "ledger-simpleaddress" as KeyringEntryImplementationIdString;
+export class LedgerSimpleAddressWallet implements Wallet {
+  public static readonly implementationId = "ledger-simpleaddress" as WalletImplementationIdString;
 
   /**
-   * A convenience function to register this entry type with the global Keyring class
+   * A convenience function to register this wallet type with the global Keyring class
    */
   public static registerWithKeyring(): void {
-    const implId = LedgerSimpleAddressKeyringEntry.implementationId;
-    Keyring.registerEntryType(implId, (data: KeyringEntrySerializationString) => {
-      return new LedgerSimpleAddressKeyringEntry(data);
+    const implId = LedgerSimpleAddressWallet.implementationId;
+    Keyring.registerWalletType(implId, (data: WalletSerializationString) => {
+      return new LedgerSimpleAddressWallet(data);
     });
   }
 
@@ -62,11 +62,11 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
 
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign: ValueAndUpdates<boolean>;
-  public readonly implementationId = LedgerSimpleAddressKeyringEntry.implementationId;
+  public readonly implementationId = LedgerSimpleAddressWallet.implementationId;
   public readonly deviceState: ValueAndUpdates<LedgerState>;
   // id will be set the first time the keyring connects to a given device, "uninitialized" until then
   // tslint:disable-next-line:readonly-keyword
-  public id: KeyringEntryId;
+  public id: WalletId;
 
   private readonly deviceTracker = new StateTracker();
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
@@ -76,7 +76,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   // the `i` from https://github.com/iov-one/iov-core/blob/master/docs/KeyBase.md#simple-addresses
   private readonly simpleAddressIndices: Map<string, number>;
 
-  constructor(data?: KeyringEntrySerializationString) {
+  constructor(data?: WalletSerializationString) {
     this.canSignProducer = new DefaultValueProducer(false);
     this.canSign = new ValueAndUpdates(this.canSignProducer);
 
@@ -93,11 +93,11 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     const simpleAddressIndices = new Map<string, number>();
 
     if (data) {
-      const decodedData: LedgerKeyringEntrySerialization = JSON.parse(data);
+      const decodedData: LedgerSimpleAddressWalletSerialization = JSON.parse(data);
 
       // label
       label = decodedData.label;
-      id = decodedData.id as KeyringEntryId;
+      id = decodedData.id as WalletId;
 
       // identities
       for (const record of decodedData.identities) {
@@ -131,7 +131,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   /**
    * Turn off tracking USB devices.
    *
-   * Use this to save resources when LedgerSimpleAddressKeyringEntry is not used anymore.
+   * Use this to save resources when LedgerSimpleAddressWallet is not used anymore.
    * With device tracking turned off, canSign and deviceState are not updated anymore.
    */
   public stopDeviceTracking(): void {
@@ -161,7 +161,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
 
     if (this.identities.find(i => i.id === newIdentity.id)) {
       throw new Error(
-        "Identity Index collision: this happens when you try to create multiple identities with the same index in the same entry.",
+        "Identity Index collision: this happens when you try to create multiple identities with the same index in the same wallet.",
       );
     }
 
@@ -172,10 +172,8 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
   }
 
   public setIdentityLabel(identity: PublicIdentity, label: string | undefined): void {
-    const identityId = LedgerSimpleAddressKeyringEntry.identityId(identity);
-    const index = this.identities.findIndex(
-      i => LedgerSimpleAddressKeyringEntry.identityId(i) === identityId,
-    );
+    const identityId = LedgerSimpleAddressWallet.identityId(identity);
+    const index = this.identities.findIndex(i => LedgerSimpleAddressWallet.identityId(i) === identityId);
     if (index === -1) {
       throw new Error("identity with id '" + identityId + "' not found");
     }
@@ -214,8 +212,8 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     return signature as SignatureBytes;
   }
 
-  public serialize(): KeyringEntrySerializationString {
-    const out: LedgerKeyringEntrySerialization = {
+  public serialize(): WalletSerializationString {
+    const out: LedgerSimpleAddressWalletSerialization = {
       label: this.label.value,
       id: this.id,
       identities: this.identities.map(identity => {
@@ -232,16 +230,16 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
         };
       }),
     };
-    return JSON.stringify(out) as KeyringEntrySerializationString;
+    return JSON.stringify(out) as WalletSerializationString;
   }
 
-  public clone(): KeyringEntry {
-    return new LedgerSimpleAddressKeyringEntry(this.serialize());
+  public clone(): Wallet {
+    return new LedgerSimpleAddressWallet(this.serialize());
   }
 
   // This throws an exception when address index is missing
   private simpleAddressIndex(identity: PublicIdentity): number {
-    const identityId = LedgerSimpleAddressKeyringEntry.identityId(identity);
+    const identityId = LedgerSimpleAddressWallet.identityId(identity);
     const out = this.simpleAddressIndices.get(identityId);
     if (out === undefined) {
       throw new Error("No address index found for identity '" + identityId + "'");
@@ -257,7 +255,7 @@ export class LedgerSimpleAddressKeyringEntry implements KeyringEntry {
     return {
       pubkey,
       label,
-      id: LedgerSimpleAddressKeyringEntry.identityId({ pubkey }),
+      id: LedgerSimpleAddressWallet.identityId({ pubkey }),
     };
   }
 }

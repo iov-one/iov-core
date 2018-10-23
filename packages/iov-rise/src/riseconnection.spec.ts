@@ -1,6 +1,6 @@
 import { Address, BcpAccountQuery, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
-import { Ed25519KeyringEntry } from "@iov/keycontrol";
+import { Ed25519Wallet } from "@iov/keycontrol";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/tendermint-types";
 
 import { passphraseToKeypair } from "./derivation";
@@ -130,8 +130,8 @@ describe("RiseConnection", () => {
   });
 
   it("can post transaction", async () => {
-    const entry = new Ed25519KeyringEntry();
-    const mainIdentity = await entry.createIdentity(
+    const wallet = new Ed25519Wallet();
+    const mainIdentity = await wallet.createIdentity(
       await passphraseToKeypair(
         "squeeze frog deposit chase sudden clutch fortune spring tone have snow column",
       ),
@@ -154,7 +154,7 @@ describe("RiseConnection", () => {
     // Encode creation timestamp into nonce
     const nonce = generateNonce();
     const signingJob = riseCodec.bytesToSign(sendTx, nonce);
-    const signature = await entry.createTransactionSignature(
+    const signature = await wallet.createTransactionSignature(
       mainIdentity,
       signingJob.bytes,
       signingJob.prehashType,

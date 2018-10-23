@@ -20,10 +20,20 @@ Breaking changes
 * @iov/keycontrol: in `UserProfile`, `.setEntryLabel`, `.createIdentity`, `.setIdentityLabel`, `.getIdentities`, `.signTransaction`, `.appendSignature` now only accept string IDs for the entry/wallet argument
 * @iov/keycontrol: `DefaultValueProducer` and `ValueAndUpdates` moved into @iov/stream
 * @iov/keycontrol: `KeyringEntry.createIdentity` now takes a required options argument of type `Ed25519KeyringEntry | ReadonlyArray<Slip10RawIndex> | number`
+* @iov/keycontrol: rename symbols to `Wallet`, `WalletId`, `WalletImplementationIdString`, `WalletSerializationString`
+* @iov/keycontrol: rename `Ed25519KeyringEntry` to `Ed25519WalletId`
+* @iov/keycontrol: in `Keyring`, rename `.getEntries/.getEntryById` to `.getWallets/.getWallet`
+* @iov/keycontrol: in `Keyring`, remove obsolete `.getEntryByIndex`
+* @iov/keycontrol: in `UserProfile`, rename `.addEntry/.setEntryLabel` to `.addWallet/.setWalletLabel`
 * @iov/core: rename `IovWriter` to `MultiChainSigner`
 * @iov/core: rename the getter `reader` to `connection` in `MultiChainSigner`
 * @iov/core: `MultiChainSigner.addChain` now returns chain information of the chain added
 * @iov/ledger-bns: in `LedgerSimpleAddressKeyringEntry`, `.createIdentity` takes an index argument
+* @iov/ledger-bns: rename `LedgerSimpleAddressKeyringEntry` to `LedgerSimpleAddressWallet`
+* Due to updates in the Keyring serialization, UserProfiles stored with
+  earlier versions of IOV-Core cannot be opened with 0.7.0. To migrate to
+  the new version, extract the secret data using an older version and
+  create a new UserProfile in 0.7.0.
 
 Enhancements:
 

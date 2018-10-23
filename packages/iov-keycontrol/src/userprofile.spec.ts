@@ -8,9 +8,10 @@ import { Encoding, Int53 } from "@iov/encoding";
 import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { HdPaths } from "./hdpaths";
-import { Keyring, KeyringEntryId } from "./keyring";
-import { Ed25519HdWallet, Secp256k1HdWallet } from "./keyring-entries";
+import { Keyring } from "./keyring";
 import { UserProfile } from "./userprofile";
+import { WalletId } from "./wallet";
+import { Ed25519HdWallet, Secp256k1HdWallet } from "./wallets";
 
 const { fromHex } = Encoding;
 
@@ -42,7 +43,7 @@ describe("UserProfile", () => {
     expect(profile.locked.value).toEqual(true);
   });
 
-  it("initial entries count works", () => {
+  it("initial wallet count works", () => {
     {
       const keyring = new Keyring();
       const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
@@ -66,124 +67,124 @@ describe("UserProfile", () => {
     }
   });
 
-  it("initial entry labels work", () => {
+  it("initial wallet labels work", () => {
     {
       const profile = new UserProfile();
       expect(profile.wallets.value.map(i => i.label)).toEqual([]);
     }
 
     {
-      const entry = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
-      entry.setLabel("label 1");
+      const wallet = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+      wallet.setLabel("label 1");
 
       const keyring = new Keyring();
-      keyring.add(entry);
+      keyring.add(wallet);
       const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
       expect(profile.wallets.value.map(i => i.label)).toEqual(["label 1"]);
     }
 
     {
-      const entry1 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
-      entry1.setLabel("label 1");
-      const entry2 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
-      entry2.setLabel("");
-      const entry3 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
-      entry3.setLabel(undefined);
+      const wallet1 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+      wallet1.setLabel("label 1");
+      const wallet2 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
+      wallet2.setLabel("");
+      const wallet3 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
+      wallet3.setLabel(undefined);
 
       const keyring = new Keyring();
-      keyring.add(entry1);
-      keyring.add(entry2);
-      keyring.add(entry3);
+      keyring.add(wallet1);
+      keyring.add(wallet2);
+      keyring.add(wallet3);
       const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
       expect(profile.wallets.value.map(i => i.label)).toEqual(["label 1", "", undefined]);
     }
   });
 
-  it("can add entries", () => {
+  it("can add wallets", () => {
     const profile = new UserProfile();
-    const entry1 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
-    const entry2 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
-    const entry3 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
+    const wallet1 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+    const wallet2 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
+    const wallet3 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
     expect(profile.wallets.value.length).toEqual(0);
     expect(profile.wallets.value.map(i => i.label)).toEqual([]);
-    profile.addEntry(entry1);
+    profile.addWallet(wallet1);
     expect(profile.wallets.value.length).toEqual(1);
     expect(profile.wallets.value.map(i => i.label)).toEqual([undefined]);
-    expect(profile.getIdentities(entry1.id)).toBeTruthy();
-    profile.addEntry(entry2);
-    profile.addEntry(entry3);
+    expect(profile.getIdentities(wallet1.id)).toBeTruthy();
+    profile.addWallet(wallet2);
+    profile.addWallet(wallet3);
     expect(profile.wallets.value.length).toEqual(3);
     expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined, undefined]);
-    expect(profile.getIdentities(entry1.id)).toBeTruthy();
-    expect(profile.getIdentities(entry2.id)).toBeTruthy();
-    expect(profile.getIdentities(entry3.id)).toBeTruthy();
+    expect(profile.getIdentities(wallet1.id)).toBeTruthy();
+    expect(profile.getIdentities(wallet2.id)).toBeTruthy();
+    expect(profile.getIdentities(wallet3.id)).toBeTruthy();
   });
 
-  it("addEntry returns wallet info", () => {
+  it("returns wallet info when adding wallet", () => {
     const profile = new UserProfile();
-    const entry1 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
-    const entry2 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
-    entry2.setLabel("my-label");
+    const wallet1 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+    const wallet2 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
+    wallet2.setLabel("my-label");
 
-    const wallet1 = profile.addEntry(entry1);
-    expect(wallet1.id).toEqual(entry1.id);
-    expect(wallet1.label).toEqual(undefined);
+    const walletInfo1 = profile.addWallet(wallet1);
+    expect(walletInfo1.id).toEqual(wallet1.id);
+    expect(walletInfo1.label).toEqual(undefined);
 
-    const wallet2 = profile.addEntry(entry2);
-    expect(wallet2.id).toEqual(entry2.id);
-    expect(wallet2.label).toEqual("my-label");
+    const walletInfo2 = profile.addWallet(wallet2);
+    expect(walletInfo2.id).toEqual(wallet2.id);
+    expect(walletInfo2.label).toEqual("my-label");
   });
 
-  it("can update entry labels", () => {
+  it("can update wallet labels", () => {
     const keyring = new Keyring();
-    const entry1 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
-    const entry2 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
-    keyring.add(entry1);
-    keyring.add(entry2);
+    const wallet1 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+    const wallet2 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+    keyring.add(wallet1);
+    keyring.add(wallet2);
     const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
     expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined]);
 
-    profile.setEntryLabel(entry1.id, "foo1");
+    profile.setWalletLabel(wallet1.id, "foo1");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["foo1", undefined]);
 
-    profile.setEntryLabel(entry2.id, "foo2");
+    profile.setWalletLabel(wallet2.id, "foo2");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["foo1", "foo2"]);
 
-    profile.setEntryLabel(entry1.id, "bar1");
-    profile.setEntryLabel(entry2.id, "bar2");
+    profile.setWalletLabel(wallet1.id, "bar1");
+    profile.setWalletLabel(wallet2.id, "bar2");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["bar1", "bar2"]);
 
-    profile.setEntryLabel(entry2.id, "");
+    profile.setWalletLabel(wallet2.id, "");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["bar1", ""]);
 
-    profile.setEntryLabel(entry1.id, "");
+    profile.setWalletLabel(wallet1.id, "");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["", ""]);
 
-    profile.setEntryLabel(entry1.id, undefined);
-    profile.setEntryLabel(entry2.id, undefined);
+    profile.setWalletLabel(wallet1.id, undefined);
+    profile.setWalletLabel(wallet2.id, undefined);
     expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined]);
   });
 
   it("accessors also work with id instead of number", async () => {
     const profile = new UserProfile();
 
-    const entry1 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
-    profile.addEntry(entry1);
-    const id1 = entry1.id;
+    const wallet1 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
+    profile.addWallet(wallet1);
+    const id1 = wallet1.id;
 
     // make sure we can query the ids if we didn't save them from creation
     expect(profile.wallets.value.map(i => i.id)).toEqual([id1]);
 
-    const entry2 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
-    profile.addEntry(entry2);
-    const id2 = entry2.id;
+    const wallet2 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
+    profile.addWallet(wallet2);
+    const id2 = wallet2.id;
 
     // make sure we can query the ids if we didn't save them from creation
     expect(profile.wallets.value.map(i => i.id)).toEqual([id1, id2]);
 
     // set the labels
-    profile.setEntryLabel(id1, "first");
-    profile.setEntryLabel(id2, "second");
+    profile.setWalletLabel(id1, "first");
+    profile.setWalletLabel(id2, "second");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["first", "second"]);
 
     // make some new ids
@@ -202,36 +203,36 @@ describe("UserProfile", () => {
   it("throws for non-existent id", () => {
     const profile = new UserProfile();
 
-    const entry1 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
-    profile.addEntry(entry1);
+    const wallet1 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
+    profile.addWallet(wallet1);
 
-    const entry2 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+    const wallet2 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
 
-    expect(() => profile.getIdentities(entry2.id)).toThrowError(`Entry of id ${entry2.id} does not exist in keyring`);
-    expect(() => profile.getIdentities("balloon" as KeyringEntryId)).toThrowError(/Entry of id balloon does not exist in keyring/);
+    expect(() => profile.getIdentities(wallet2.id)).toThrowError(`Wallet of id '${wallet2.id}' does not exist in keyring`);
+    expect(() => profile.getIdentities("balloon" as WalletId)).toThrowError(/Wallet of id 'balloon' does not exist in keyring/);
   });
 
-  it("added entry can not be manipulated from outside", async () => {
+  it("added wallet can not be manipulated from outside", async () => {
     const profile = new UserProfile();
-    const newEntry = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
-    profile.addEntry(newEntry);
-    expect(profile.getIdentities(newEntry.id).length).toEqual(0);
+    const newWallet = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+    profile.addWallet(newWallet);
+    expect(profile.getIdentities(newWallet.id).length).toEqual(0);
 
-    // manipulate entry reference that has been added before
-    await newEntry.createIdentity(HdPaths.simpleAddress(0));
-    expect(newEntry.getIdentities().length).toEqual(1);
+    // manipulate wallet reference that has been added before
+    await newWallet.createIdentity(HdPaths.simpleAddress(0));
+    expect(newWallet.getIdentities().length).toEqual(1);
 
     // nothing hapenned to the profile
-    expect(profile.getIdentities(newEntry.id).length).toEqual(0);
+    expect(profile.getIdentities(newWallet.id).length).toEqual(0);
   });
 
   it("can create identities with options", async () => {
     const profile = new UserProfile();
-    const entry = Secp256k1HdWallet.fromMnemonic("insect spirit promote illness clean damp dash divorce emerge elbow kangaroo enroll");
-    profile.addEntry(entry);
+    const wallet = Secp256k1HdWallet.fromMnemonic("insect spirit promote illness clean damp dash divorce emerge elbow kangaroo enroll");
+    profile.addWallet(wallet);
 
     const path = [Slip10RawIndex.hardened(4321), Slip10RawIndex.normal(0)];
-    const identityFromPath = await profile.createIdentity(entry.id, path);
+    const identityFromPath = await profile.createIdentity(wallet.id, path);
 
     expect(identityFromPath.pubkey.data).toEqual(fromHex("0391d774120344c8fc02bf0e441cf41989d122b1b93cc6dd28e1d270b0d2c69139"));
   });
@@ -286,11 +287,11 @@ describe("UserProfile", () => {
 
   it("stored in and loaded from storage when containing special chars", async () => {
     const db = levelup(MemDownConstructor<string, string>());
-    const entry1 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
+    const wallet1 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
 
     const original = new UserProfile();
-    original.addEntry(entry1);
-    original.setEntryLabel(entry1.id, "My secret 😛");
+    original.addWallet(wallet1);
+    original.setWalletLabel(wallet1.id, "My secret 😛");
 
     await original.storeIn(db, defaultEncryptionPassword);
     const restored = await UserProfile.loadFrom(db, defaultEncryptionPassword);
@@ -317,7 +318,7 @@ describe("UserProfile", () => {
     await db.close();
   });
 
-  it("throws for non-existing entry id", async () => {
+  it("throws for non-existing wallet id", async () => {
     const profile = new UserProfile();
 
     const fakeIdentity = { pubkey: { algo: Algorithm.Ed25519, data: new Uint8Array([0xaa]) as PublicKeyBytes } };
@@ -360,32 +361,32 @@ describe("UserProfile", () => {
       },
     };
 
-    // keyring entry of id bar does not exist
-    const entryId = "bar" as KeyringEntryId;
+    // wallet of id 'bar' does not exist
+    const walletId = "bar" as WalletId;
 
-    expect(() => profile.setEntryLabel(entryId, "foo")).toThrowError(/Entry of id bar does not exist in keyring/);
-    expect(() => profile.getIdentities(entryId)).toThrowError(/Entry of id bar does not exist in keyring/);
-    expect(() => profile.setIdentityLabel(entryId, fakeIdentity, "foo")).toThrowError(/Entry of id bar does not exist in keyring/);
+    expect(() => profile.setWalletLabel(walletId, "foo")).toThrowError(/wallet of id 'bar' does not exist in keyring/i);
+    expect(() => profile.getIdentities(walletId)).toThrowError(/wallet of id 'bar' does not exist in keyring/i);
+    expect(() => profile.setIdentityLabel(walletId, fakeIdentity, "foo")).toThrowError(/wallet of id 'bar' does not exist in keyring/i);
     await profile
-      .createIdentity(entryId, HdPaths.simpleAddress(0))
+      .createIdentity(walletId, HdPaths.simpleAddress(0))
       .then(() => fail("Promise must not resolve"))
-      .catch(error => expect(error).toMatch(/Entry of id bar does not exist in keyring/));
+      .catch(error => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
     await profile
-      .signTransaction(entryId, fakeIdentity, fakeTransaction, fakeCodec, new Int53(12) as Nonce)
+      .signTransaction(walletId, fakeIdentity, fakeTransaction, fakeCodec, new Int53(12) as Nonce)
       .then(() => fail("Promise must not resolve"))
-      .catch(error => expect(error).toMatch(/Entry of id bar does not exist in keyring/));
+      .catch(error => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
     await profile
-      .appendSignature(entryId, fakeIdentity, fakeSignedTransaction, fakeCodec, new Int53(12) as Nonce)
+      .appendSignature(walletId, fakeIdentity, fakeSignedTransaction, fakeCodec, new Int53(12) as Nonce)
       .then(() => fail("Promise must not resolve"))
-      .catch(error => expect(error).toMatch(/Entry of id bar does not exist in keyring/));
+      .catch(error => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
   });
 
   it("can sign and append signature", async () => {
     const createdAt = new ReadonlyDate(ReadonlyDate.now());
     const keyring = new Keyring();
-    const entry = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
-    keyring.add(entry);
-    const mainIdentity = await keyring.getEntries()[0].createIdentity(HdPaths.simpleAddress(0));
+    const wallet = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
+    keyring.add(wallet);
+    const mainIdentity = await keyring.getWallets()[0].createIdentity(HdPaths.simpleAddress(0));
     const profile = new UserProfile({ createdAt, keyring });
 
     const fakeTransaction: SendTx = {
@@ -422,7 +423,7 @@ describe("UserProfile", () => {
     };
     const nonce = new Int53(0x112233445566) as Nonce;
 
-    const signedTransaction = await profile.signTransaction(entry.id, mainIdentity, fakeTransaction, fakeCodec, nonce);
+    const signedTransaction = await profile.signTransaction(wallet.id, mainIdentity, fakeTransaction, fakeCodec, nonce);
     expect(signedTransaction.transaction).toEqual(fakeTransaction);
     expect(signedTransaction.primarySignature).toBeTruthy();
     expect(signedTransaction.primarySignature.nonce).toEqual(nonce);
@@ -430,7 +431,7 @@ describe("UserProfile", () => {
     expect(signedTransaction.primarySignature.signature.length).toBeGreaterThan(0);
     expect(signedTransaction.otherSignatures).toEqual([]);
 
-    const doubleSignedTransaction = await profile.appendSignature(entry.id, mainIdentity, signedTransaction, fakeCodec, nonce);
+    const doubleSignedTransaction = await profile.appendSignature(wallet.id, mainIdentity, signedTransaction, fakeCodec, nonce);
     expect(doubleSignedTransaction.transaction).toEqual(fakeTransaction);
     expect(doubleSignedTransaction.primarySignature).toBeTruthy();
     expect(doubleSignedTransaction.primarySignature.nonce).toEqual(nonce);

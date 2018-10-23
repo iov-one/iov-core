@@ -44,7 +44,7 @@ $ iov-cli
 ```
 > const profile = new UserProfile();
 > const wallet = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script")
-> profile.addEntry(wallet)
+> profile.addWallet(wallet)
 
 > profile.getIdentities(wallet.id)
 []
@@ -97,28 +97,28 @@ const sendTx: SendTx = {
 ```
 
 3. Congratulations, you sent your first money!
-4. Add an additional entry
+4. Add an additional wallet
 
 ```
 > profile.wallets.value
 [ { id: 'ReYESw51lsOOr8_X', label: undefined } ]
 
-> profile.addEntry(Ed25519HdWallet.fromMnemonic("organ wheat manage mirror wish truly tool trumpet since equip flight bracket"))
+> profile.addWallet(Ed25519HdWallet.fromMnemonic("organ wheat manage mirror wish truly tool trumpet since equip flight bracket"))
 
 > profile.wallets.value
 [ { id: 'ReYESw51lsOOr8_X', label: undefined },
   { id: 'FtIcQqMWcRpEIruk', label: undefined } ]
 
-> profile.getIdentities("ReYESw51lsOOr8_X" as KeyringEntryId)
+> profile.getIdentities("ReYESw51lsOOr8_X" as WalletId)
 [ { pubkey: { algo: 'ed25519', data: [Uint8Array] },
     label: 'blockchain of value faucet',
     id: 'uul1wahs5te8fiaD' } ]
 
-> profile.getIdentities("FtIcQqMWcRpEIruk" as KeyringEntryId)
+> profile.getIdentities("FtIcQqMWcRpEIruk" as WalletId)
 []
 
-> profile.setEntryLabel("ReYESw51lsOOr8_X" as KeyringEntryId, "main")
-> profile.setEntryLabel("FtIcQqMWcRpEIruk" as KeyringEntryId, "second")
+> profile.setWalletLabel("ReYESw51lsOOr8_X" as WalletId, "main")
+> profile.setWalletLabel("FtIcQqMWcRpEIruk" as WalletId, "second")
 
 > profile.wallets.value
 [ { id: 'ReYESw51lsOOr8_X', label: 'main' },
@@ -139,7 +139,7 @@ const sendTx: SendTx = {
 > profileFromDb
 UserProfile {
   createdAt: 2018-07-04T16:07:14.583Z,
-  keyring: Keyring { entries: [ [Object], [Object] ] },
+  keyring: Keyring { wallets: [ [Object], [Object] ] },
   ...
 ```
 
@@ -196,7 +196,7 @@ When using a Testnet, you can use the BovFaucet to receive tokens:
 'helmet album grow detail apology thank wire chef fame core private cargo'
 > const profile = new UserProfile();
 > const wallet = Ed25519HdWallet.fromMnemonic(mnemonic);
-> profile.addEntry(wallet);
+> profile.addWallet(wallet);
 > const me = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
 
 > const signer = new MultiChainSigner(profile);
@@ -234,22 +234,22 @@ When using a Testnet, you can use the BovFaucet to receive tokens:
 Do 1. and 2. like above
 
 ```
-> import { LedgerSimpleAddressKeyringEntry } from "@iov/ledger-bns";
+> import { LedgerSimpleAddressWallet } from "@iov/ledger-bns";
 > const profile = new UserProfile();
 > const wallet = Ed25519HdWallet.fromMnemonic("tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral");
-> profile.addEntry(wallet)
-> const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
-> ledgerEntry.startDeviceTracking();
-> profile.addEntry(ledgerEntry);
+> profile.addWallet(wallet)
+> const ledgerWallet = new LedgerSimpleAddressWallet();
+> ledgerWallet.startDeviceTracking();
+> profile.addWallet(ledgerWallet);
 
 > profile.getIdentities(wallet.id)
 []
 
-> profile.getIdentities(ledgerEntry.id)
+> profile.getIdentities(ledgerWallet.id)
 []
 
 > const softwareIdentity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0))
-> const hardwareIdentity = await profile.createIdentity(ledgerEntry.id, 0)
+> const hardwareIdentity = await profile.createIdentity(ledgerWallet.id, 0)
 
 > softwareIdentity.pubkey
 { algo: 'ed25519',
@@ -265,14 +265,14 @@ Do 1. and 2. like above
      84,
      114, ...
 
-> LedgerSimpleAddressKeyringEntry.registerWithKeyring()
+> LedgerSimpleAddressWallet.registerWithKeyring()
 > const db = levelup(leveldown('./my_userprofile_db'))
 > await profile.storeIn(db, "secret passwd")
 > const profileFromDb = await UserProfile.loadFrom(db, "secret passwd");
 > profileFromDb
 UserProfile {
   createdAt: 2018-08-02T16:25:38.274Z,
-  keyring: Keyring { entries: [ [Object], [Object] ] }, ...
+  keyring: Keyring { wallets: [ [Object], [Object] ] }, ...
 ```
 
 ## License

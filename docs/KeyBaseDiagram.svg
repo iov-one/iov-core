@@ -6,12 +6,39 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="561px"
    height="411px"
    version="1.1"
    content="&lt;mxfile userAgent=&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36&quot; version=&quot;9.0.2&quot; editor=&quot;www.draw.io&quot; type=&quot;google&quot;&gt;&lt;diagram id=&quot;b1694e3b-069a-4984-3a0f-183f49f3df5f&quot; name=&quot;Page-1&quot;&gt;3Vldc9o4FP01PIaxLczHIyG0u7O0zWxmp+2jsIRRI1tUFgH21++VLdlYNoEkJu1sHrB8fCXZ59wPSemhWbL/KPFm/UkQynuBR/Y9dNcLAj/wQrho5FAg4QgVQCwZMUYV8MD+pQb0DLplhGY1QyUEV2xTByORpjRSNQxLKXZ1s5Xg9Vk3OKYN4CHCvIl+ZUStC3QcehX+B2Xx2s7se+bJEkePsRTb1MzXC9Aq/yseJ9iOZeyzNSZidwSheQ/NpBCqaCX7GeWaW0tb0e/Diafle0uaqks6oBHBPh4hvAwi5K3IjRnhCfOt4WIaKSHN26qDZQhefKOb24QXBuj2iUrFgMMFXlJ+LzKmmEjBZCmUEgkYcP3gtmRoJrjud1dxVI0x5SzWfZXYALpWCYcbH5piqzhL6awU3gPQvDP0pfuTRPglveC2VCRUyQOYVD5bdDEeWyq0q/RHBlofST80GDYeF5cjV6xDwxB/oQioQTcl4J/mVki1FrFIMZ9X6G1OKSWGkSPGflClDibE8FYJTWI5wkJognO7TGGppjp4AIg4zjIWWfgD43Y4mhJrlIqUFoh5Xmmh3/d5JeDzxFZG9AQFQbtaknKs2FN97DbuTdd7wWDWSuXQUTl05IOPjakyvRwFy9d4najDLkUFLuXhm8b7ob39bsxeLmRlVGn5EtfpUnPI9LkGJ2zCN/rFq2MyaCTGfzIq76VYMZDKlXa3Zoo+bHD+rTsoknX5cLYpsteK7bW8XWSwMj1Z3/abGWzcksHG18hgYYOtu9uTNSQ6QEonVNeQM7wti3hYLEugrCZfisJQ88i38Tmo84lGTT6H78XnpMHn7+ByaFinaNxSM4MWikqwU46svz9HUrN6EZyt8wzrOxl2z9S3o3aeXftBePUSd0Re2MKdxd5YCV3pfORIUrx6oxKeHch1/ytWVL+5WO1c8FF4XG1vvL7n1QtufzIeWuCeSgYfpDNZ52uhM3Vx8kudyV08D17rTHafaAaaoPdzpmaB7wVDrnSRgUasG58tAqOXYE9/vGP4Fz1IlsbzNKetrY/pIF+C6Dw9hRuc6NyeLjN9mZMgDP3JA0s2nE4JkTTL6tMDF95CO6F8xqg5uxNI9aXomWLTRW0ZOQmqZTmDvBafLg27LS6DhnsAgX+XBKLp50skXLBMu7tYwc+fBKiATTLNfkP6ByPUD+tB3bL+sfF59R2xP3xRqq82NC0J3myZTIo/t5vqKIfb9PJsEi+c7FdlcfcIJHRXaZdmcd8J3cHo/dYEQXNNUNuneRFOtVb4Sd/glMAvF1hfVlIkcLlj2WPDtyCQVN2bMiXFI7VnWGZtAXNwB8LmJCsCd6HHx2T2iCthhOSb/bagrod9B3HtalOm0CMf89vS6lXC2kZxS9FdidylKg2GP7fCPrjJ8kMJKIYefPy+emjzZ13zL8sfeu9TFeJi8BOp9n+j9cAJ6EFT6qBNancrcIHUcFsdWhdxXP1nAM3/Aw==&lt;/diagram&gt;&lt;/mxfile&gt;"
    style="background-color: rgb(255, 255, 255);"
-   id="svg82">
+   id="svg82"
+   sodipodi:docname="KeyBaseDiagram.svg"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   inkscape:export-filename="/home/simon/IOV/iov-core/docs/KeyBaseDiagram.png"
+   inkscape:export-xdpi="171.21169"
+   inkscape:export-ydpi="171.21169">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1861"
+     inkscape:window-height="1025"
+     id="namedview70"
+     showgrid="false"
+     inkscape:zoom="2"
+     inkscape:cx="280.5"
+     inkscape:cy="205.5"
+     inkscape:window-x="59"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg82" />
   <metadata
      id="metadata86">
     <rdf:RDF>
@@ -20,7 +47,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -261,38 +288,6 @@
       </text>
     </switch>
   </g>
-  <text
-     id="text4621"
-     y="61.944088"
-     x="224.60835"
-     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
-     xml:space="preserve"><tspan
-       id="tspan4611"
-       y="61.944088"
-       x="359.15002"><tspan
-         id="tspan4607"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.66666698px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;"
-         y="61.944088"
-         x="359.15002">N KeyringEntry</tspan><tspan
-         id="tspan4609"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.66666698px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;"
-         y="61.944088"
-         x="439.19171"
-         dx="0" /></tspan><tspan
-       id="tspan4615"
-       y="80.309967"
-       x="265.86877"><tspan
-         id="tspan4613"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.66666698px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;"
-         y="80.309967"
-         x="264.17087">(for example Ed25519SimpleAddressKeyringEntry, </tspan></tspan><tspan
-       id="tspan4619"
-       y="98.67585"
-       x="304.88962"><tspan
-         id="tspan4617"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.66666698px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;"
-         y="98.67585"
-         x="304.88962">LedgerSimpleAddressKeyringEntry)</tspan></tspan></text>
   <rect
      style="fill:none;stroke:#000000;stroke-width:0.73699141"
      id="rect48-6"
@@ -386,4 +381,18 @@
          x="52.245762"
          y="269.06567" /></flowRegion><flowPara
        id="flowPara3957"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.66666698px;font-family:sans-serif;-inkscape-font-specification:sans-serif">UserProfile can save and load from Disk</flowPara></flowRoot></svg>
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.66666698px;font-family:sans-serif;-inkscape-font-specification:sans-serif">UserProfile can save and load from Disk</flowPara></flowRoot>  <flowRoot
+     xml:space="preserve"
+     id="flowRoot970"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:13.33333302px;line-height:125%;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     transform="translate(215.5,20)"><flowRegion
+       id="flowRegion972"><rect
+         id="rect974"
+         width="291.5"
+         height="145.5"
+         x="40.5"
+         y="29.5" /></flowRegion><flowPara
+       id="flowPara976"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif">N Wallets</flowPara><flowPara
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif"
+       id="flowPara978">(for example Ed25519HdWallet or LedgerSimpleAddressWallet)</flowPara></flowRoot></svg>

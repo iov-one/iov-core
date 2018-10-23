@@ -6,16 +6,16 @@ import { Encoding } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
+import { prehash } from "../prehashing";
 import {
-  KeyringEntry,
-  KeyringEntryId,
-  KeyringEntryImplementationIdString,
-  KeyringEntrySerializationString,
   LocalIdentity,
   LocalIdentityId,
   PublicIdentity,
-} from "../keyring";
-import { prehash } from "../prehashing";
+  Wallet,
+  WalletId,
+  WalletImplementationIdString,
+  WalletSerializationString,
+} from "../wallet";
 
 interface PubkeySerialization {
   readonly algo: string;
@@ -32,19 +32,19 @@ interface IdentitySerialization {
   readonly privkey: string;
 }
 
-interface Ed25519KeyringEntrySerialization {
+interface Ed25519WalletSerialization {
   readonly id: string;
   readonly label: string | undefined;
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
 
-export class Ed25519KeyringEntry implements KeyringEntry {
+export class Ed25519Wallet implements Wallet {
   private static readonly idsPrng: PseudoRandom.Engine = PseudoRandom.engines.mt19937().autoSeed();
 
-  private static generateId(): KeyringEntryId {
+  private static generateId(): WalletId {
     // this can be pseudo-random, just used for internal book-keeping
-    const code = PseudoRandom.string()(Ed25519KeyringEntry.idsPrng, 16);
-    return code as KeyringEntryId;
+    const code = PseudoRandom.string()(Ed25519Wallet.idsPrng, 16);
+    return code as WalletId;
   }
 
   private static identityId(identity: PublicIdentity): LocalIdentityId {
@@ -65,29 +65,25 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
-  public readonly implementationId = "ed25519" as KeyringEntryImplementationIdString;
-  // id represents the state of the Keyring...
-  // since there is no seed (like slip10), and no default state, we just create
-  // an arbitrary string upon construction, which is persisted through clone and serialization
-  // this doesn't change as keys are added to the KeyringEntry
-  public readonly id: KeyringEntryId;
+  public readonly implementationId = "ed25519" as WalletImplementationIdString;
+  public readonly id: WalletId;
 
   private readonly identities: LocalIdentity[];
   private readonly privkeys: Map<string, Ed25519Keypair>;
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
 
-  constructor(data?: KeyringEntrySerializationString) {
-    let id: KeyringEntryId;
+  constructor(data?: WalletSerializationString) {
+    let id: WalletId;
     let label: string | undefined;
     const identities: LocalIdentity[] = [];
     const privkeys = new Map<string, Ed25519Keypair>();
 
     if (data) {
-      const decodedData: Ed25519KeyringEntrySerialization = JSON.parse(data);
+      const decodedData: Ed25519WalletSerialization = JSON.parse(data);
 
       // label
       label = decodedData.label;
-      id = decodedData.id as KeyringEntryId;
+      id = decodedData.id as WalletId;
 
       // identities
       for (const record of decodedData.identities) {
@@ -95,7 +91,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
           Encoding.fromHex(record.privkey),
           Encoding.fromHex(record.localIdentity.pubkey.data),
         );
-        if (Ed25519KeyringEntry.algorithmFromString(record.localIdentity.pubkey.algo) !== Algorithm.Ed25519) {
+        if (Ed25519Wallet.algorithmFromString(record.localIdentity.pubkey.algo) !== Algorithm.Ed25519) {
           throw new Error("This keyring only supports ed25519 private keys");
         }
         const identity = this.buildLocalIdentity(
@@ -106,7 +102,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
         privkeys.set(identity.id, keypair);
       }
     } else {
-      id = Ed25519KeyringEntry.generateId();
+      id = Ed25519Wallet.generateId();
     }
 
     this.identities = identities;
@@ -130,7 +126,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
 
     if (this.identities.find(i => i.id === newIdentity.id)) {
       throw new Error(
-        "Identity ID collision: this happens when you try to create multiple identities with the same keypair in the same entry.",
+        "Identity ID collision: this happens when you try to create multiple identities with the same keypair in the same wallet.",
       );
     }
 
@@ -140,8 +136,8 @@ export class Ed25519KeyringEntry implements KeyringEntry {
   }
 
   public setIdentityLabel(identity: PublicIdentity, label: string | undefined): void {
-    const identityId = Ed25519KeyringEntry.identityId(identity);
-    const index = this.identities.findIndex(i => Ed25519KeyringEntry.identityId(i) === identityId);
+    const identityId = Ed25519Wallet.identityId(identity);
+    const index = this.identities.findIndex(i => Ed25519Wallet.identityId(i) === identityId);
     if (index === -1) {
       throw new Error("identity with id '" + identityId + "' not found");
     }
@@ -168,8 +164,8 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     return signature as SignatureBytes;
   }
 
-  public serialize(): KeyringEntrySerializationString {
-    const out: Ed25519KeyringEntrySerialization = {
+  public serialize(): WalletSerializationString {
+    const out: Ed25519WalletSerialization = {
       id: this.id,
       label: this.label.value,
       identities: this.identities.map(identity => {
@@ -186,16 +182,16 @@ export class Ed25519KeyringEntry implements KeyringEntry {
         };
       }),
     };
-    return JSON.stringify(out) as KeyringEntrySerializationString;
+    return JSON.stringify(out) as WalletSerializationString;
   }
 
-  public clone(): Ed25519KeyringEntry {
-    return new Ed25519KeyringEntry(this.serialize());
+  public clone(): Ed25519Wallet {
+    return new Ed25519Wallet(this.serialize());
   }
 
   // This throws an exception when private key is missing
   private privateKeyForIdentity(identity: PublicIdentity): Ed25519Keypair {
-    const identityId = Ed25519KeyringEntry.identityId(identity);
+    const identityId = Ed25519Wallet.identityId(identity);
     const privkey = this.privkeys.get(identityId);
     if (!privkey) {
       throw new Error("No private key found for identity '" + identityId + "'");
@@ -211,7 +207,7 @@ export class Ed25519KeyringEntry implements KeyringEntry {
     return {
       pubkey,
       label,
-      id: Ed25519KeyringEntry.identityId({ pubkey }),
+      id: Ed25519Wallet.identityId({ pubkey }),
     };
   }
 }

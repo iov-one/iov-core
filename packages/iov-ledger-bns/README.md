@@ -2,54 +2,54 @@
 
 [![npm version](https://img.shields.io/npm/v/@iov/ledger-bns.svg)](https://www.npmjs.com/package/@iov/ledger-bns)
 
-This package provides an adaptor to use the bns ledger app as a keyring entry.
+This package provides an adaptor to use the bns ledger app as a wallet.
 The app is still in dev mode and not available in the ledger store, so
 this is really for cutting edge devs now.
 
-It should also demonstrate how to implement an additional KeyringEntry outside of @iov/keycontrol
+It should also demonstrate how to implement an additional Wallet outside of @iov/keycontrol
 that can be dynamically loaded by any app in initialization.
 
 ## Getting started
 
-Create a LedgerSimpleAddressKeyringEntry for signing with a Ledger. All
+Create a LedgerSimpleAddressWallet for signing with a Ledger. All
 further functionality is provided by the `UserProfile`.
 
 ```ts
 import { UserProfile } from "@iov/core";
-import { LedgerSimpleAddressKeyringEntry } from "@iov/ledger-bns";
+import { LedgerSimpleAddressWallet } from "@iov/ledger-bns";
 
 const profile = new UserProfile();
-profile.addEntry(new LedgerSimpleAddressKeyringEntry());
+profile.addWallet(new LedgerSimpleAddressWallet());
 ```
 
 The @iov/cli [provides further examples](https://github.com/iov-one/iov-core/tree/master/packages/iov-cli#ledger-usage)
-of how to use this keyring entry.
+of how to use this wallet.
 
 ### Observing Ledger state
 
 An application may want to react to state changes of the ledger connection. There
 are two interfaces to do so: `readonly canSign: ValueAndUpdates<boolean>` and `readonly deviceState: ValueAndUpdates<LedgerState>`.
 
-`canSign` is provided for every keyring entry and works as follows:
+`canSign` is provided for every wallet and works as follows:
 
 ```ts
-const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
-ledgerEntry.startDeviceTracking();
+const ledgerWallet = new LedgerSimpleAddressWallet();
+ledgerWallet.startDeviceTracking();
 
-const canSign1 = ledgerEntry.canSign.value; // false
+const canSign1 = ledgerWallet.canSign.value; // false
 
 // connect Ledger and open app
 
-const canSign2 = ledgerEntry.canSign.value; // true
+const canSign2 = ledgerWallet.canSign.value; // true
 ```
 
 You can subscribe for updates
 
 ```ts
-const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
-ledgerEntry.startDeviceTracking();
+const ledgerWallet = new LedgerSimpleAddressWallet();
+ledgerWallet.startDeviceTracking();
 
-ledgerEntry.canSign.updates.subscribe({
+ledgerWallet.canSign.updates.subscribe({
   next: value => {
     console.log("canSign is now", value);
   }
@@ -59,11 +59,11 @@ ledgerEntry.canSign.updates.subscribe({
 or wait until a specific value is reached
 
 ```ts
-const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
-ledgerEntry.startDeviceTracking();
+const ledgerWallet = new LedgerSimpleAddressWallet();
+ledgerWallet.startDeviceTracking();
 
 async function signWhenReady() {
-  await ledgerEntry.canSign.waitFor(true);
+  await ledgerWallet.canSign.waitFor(true);
   // canSign is now true. Proceed.
 }
 ```
@@ -71,32 +71,32 @@ async function signWhenReady() {
 `deviceState` is very similar to `canSign` but Ledger specifig and a three state interface:
 `LedgerState.Disconnected`, `LedgerState.Connected`, `LedgerState.IovAppOpen`.
 
-First, make sure to `import { LedgerSimpleAddressKeyringEntry, LedgerState } from "@iov/ledger-bns";`.
+First, make sure to `import { LedgerSimpleAddressWallet, LedgerState } from "@iov/ledger-bns";`.
 
 Check the current state:
 
 ```ts
-const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
-ledgerEntry.startDeviceTracking();
+const ledgerWallet = new LedgerSimpleAddressWallet();
+ledgerWallet.startDeviceTracking();
 
-const state1 = ledgerEntry.deviceState.value; // LedgerState.Disconnected
+const state1 = ledgerWallet.deviceState.value; // LedgerState.Disconnected
 
 // connect and wait some time
-const state2 = ledgerEntry.deviceState.value; // LedgerState.Connected
+const state2 = ledgerWallet.deviceState.value; // LedgerState.Connected
 
 // open app
-const state3 = ledgerEntry.deviceState.value; // LedgerState.IovAppOpen
+const state3 = ledgerWallet.deviceState.value; // LedgerState.IovAppOpen
 ```
 
 Subscribe for updates:
 
 ```ts
-import { LedgerSimpleAddressKeyringEntry, LedgerState } from "@iov/ledger-bns";
+import { LedgerSimpleAddressWallet, LedgerState } from "@iov/ledger-bns";
 
-const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
-ledgerEntry.startDeviceTracking();
+const ledgerWallet = new LedgerSimpleAddressWallet();
+ledgerWallet.startDeviceTracking();
 
-ledgerEntry.deviceState.updates.subscribe({
+ledgerWallet.deviceState.updates.subscribe({
   next: value => {
     switch (value) {
       case LedgerState.Disconnected:
@@ -116,11 +116,11 @@ ledgerEntry.deviceState.updates.subscribe({
 Wait until a specific value is reached:
 
 ```ts
-const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
-ledgerEntry.startDeviceTracking();
+const ledgerWallet = new LedgerSimpleAddressWallet();
+ledgerWallet.startDeviceTracking();
 
 async function signWhenReady() {
-  await ledgerEntry.deviceState.waitFor(LedgerState.IovAppOpen);
+  await ledgerWallet.deviceState.waitFor(LedgerState.IovAppOpen);
   // signing app open
 }
 ```
