@@ -99,7 +99,12 @@ export class Keyring {
     return this.wallets;
   }
 
-  // if you stored the immutible keyring entry reference, you can get the object back here
+  /**
+   * Finds a wallet and returns a mutable references. Thus e.g.
+   * .getWallet(xyz).createIdentity() will change the keyring.
+   *
+   * @returns a wallet if ID is found, undefined otherwise
+   */
   public getWallet(id: WalletId): Wallet | undefined {
     return this.wallets.find(wallet => wallet.id === id);
   }

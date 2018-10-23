@@ -32,6 +32,12 @@ export declare class Keyring {
      * .getWallets().createIdentity() will change the keyring.
      */
     getWallets(): ReadonlyArray<Wallet>;
+    /**
+     * Finds a wallet and returns a mutable references. Thus e.g.
+     * .getWallet(xyz).createIdentity() will change the keyring.
+     *
+     * @returns a wallet if ID is found, undefined otherwise
+     */
     getWallet(id: WalletId): Wallet | undefined;
     serialize(): KeyringSerializationString;
     clone(): Keyring;
