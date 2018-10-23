@@ -50,7 +50,7 @@ export class LedgerSimpleAddressWallet implements Wallet {
    */
   public static registerWithKeyring(): void {
     const implId = LedgerSimpleAddressWallet.implementationId;
-    Keyring.registerEntryType(implId, (data: WalletSerializationString) => {
+    Keyring.registerWalletType(implId, (data: WalletSerializationString) => {
       return new LedgerSimpleAddressWallet(data);
     });
   }

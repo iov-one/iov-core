@@ -39,18 +39,18 @@ interface KeyringSerialization {
   readonly entries: WalletSerialization[];
 }
 
-export type KeyringEntryDeserializer = (data: WalletSerializationString) => Wallet;
+export type WalletDeserializer = (data: WalletSerializationString) => Wallet;
 
 /**
  * A collection of wallets
  */
 export class Keyring {
-  public static registerEntryType(
+  public static registerWalletType(
     implementationId: WalletImplementationIdString,
-    deserializer: KeyringEntryDeserializer,
+    deserializer: WalletDeserializer,
   ): void {
     if (Keyring.deserializationRegistry.has(implementationId)) {
-      throw new Error(`Entry type "${implementationId}" already registered.`);
+      throw new Error(`Wallet type "${implementationId}" already registered.`);
     }
     Keyring.deserializationRegistry.set(implementationId, deserializer);
   }
@@ -59,7 +59,7 @@ export class Keyring {
     ["ed25519", (data: WalletSerializationString) => new Ed25519Wallet(data)],
     ["ed25519-hd", (data: WalletSerializationString) => new Ed25519HdWallet(data)],
     ["secp256k1-hd", (data: WalletSerializationString) => new Secp256k1HdWallet(data)],
-  ] as ReadonlyArray<[string, KeyringEntryDeserializer]>);
+  ] as ReadonlyArray<[string, WalletDeserializer]>);
 
   private static deserializeWallet(serializedWallet: WalletSerialization): Wallet {
     const implId = serializedWallet.implementationId;

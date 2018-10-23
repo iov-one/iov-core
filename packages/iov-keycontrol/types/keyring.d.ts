@@ -16,12 +16,12 @@ export interface LocalIdentity extends PublicIdentity {
     readonly id: LocalIdentityId;
     readonly label?: string;
 }
-export declare type KeyringEntryDeserializer = (data: WalletSerializationString) => Wallet;
+export declare type WalletDeserializer = (data: WalletSerializationString) => Wallet;
 /**
  * A collection of wallets
  */
 export declare class Keyring {
-    static registerEntryType(implementationId: WalletImplementationIdString, deserializer: KeyringEntryDeserializer): void;
+    static registerWalletType(implementationId: WalletImplementationIdString, deserializer: WalletDeserializer): void;
     private static readonly deserializationRegistry;
     private static deserializeWallet;
     private readonly wallets;
