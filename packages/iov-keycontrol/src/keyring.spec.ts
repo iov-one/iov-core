@@ -29,7 +29,7 @@ describe("Keyring", () => {
     keyring.add(wallet);
 
     expect(keyring.getEntries().length).toEqual(1);
-    // Ensure added entry is the same object, no copy of it
+    // Ensure added wallet is the same object, no copy of it
     expect(keyring.getEntries()[0]).toBe(wallet);
   });
 
@@ -139,7 +139,7 @@ describe("Keyring", () => {
     const restored = new Keyring(serialized);
     expect(restored).toBeTruthy();
 
-    // compare keyring entries
+    // compare wallets
 
     expect(restored.getEntries().length).toEqual(4);
     expect(keyring.getEntries()[0]).toEqual(jasmine.any(Ed25519HdWallet));
@@ -151,7 +151,7 @@ describe("Keyring", () => {
     expect(keyring.getEntries()[3]).toEqual(jasmine.any(Ed25519Wallet));
     expect(keyring.getEntries()[3].getIdentities().length).toEqual(4);
 
-    // compare keyring entry content (via LocalIdentity equality)
+    // compare wallet content (via LocalIdentity equality)
 
     expect(keyring.getEntries()[0].getIdentities()[0]).toEqual(i1a);
 
@@ -168,7 +168,7 @@ describe("Keyring", () => {
     expect(keyring.getEntries()[3].getIdentities()[3]).toEqual(i4d);
   });
 
-  it("supports all basic entry types by default", () => {
+  it("supports all basic wallet types by default", () => {
     const keyring = new Keyring();
     keyring.add(new Ed25519Wallet());
     keyring.add(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
