@@ -69,6 +69,7 @@ export const main = (originalArgs: string[]): void => {
   console.log(colors.yellow("    - Sha256"));
   console.log(colors.yellow("    - Sha512"));
   console.log(colors.yellow("  * from @iov/encoding"));
+  console.log(colors.yellow("    - Bech32"));
   console.log(colors.yellow("    - Encoding"));
   console.log(colors.yellow("  * from @iov/faucets"));
   console.log(colors.yellow("    - BovFaucet"));
@@ -105,7 +106,7 @@ export const main = (originalArgs: string[]): void => {
     } from "@iov/core";
     import { bnsCodec } from '@iov/bns';
     import { Bip39, Ed25519, Ed25519Keypair, Random, Sha256, Sha512 } from '@iov/crypto';
-    import { Encoding } from '@iov/encoding';
+    import { Bech32, Encoding } from '@iov/encoding';
     import { BovFaucet } from '@iov/faucets';
     const { toAscii, fromHex, toHex } = Encoding;
   `;
