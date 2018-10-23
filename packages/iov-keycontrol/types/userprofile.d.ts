@@ -37,8 +37,12 @@ export declare class UserProfile {
     constructor(options?: UserProfileOptions);
     storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<void>;
     lock(): void;
-    addEntry(entry: Wallet): WalletInfo;
-    setEntryLabel(id: WalletId, label: string | undefined): void;
+    /**
+     * Adds a copy of the wallet to the primary keyring
+     */
+    addWallet(wallet: Wallet): WalletInfo;
+    /** Sets the label of the wallet with the given ID in the primary keyring  */
+    setWalletLabel(id: WalletId, label: string | undefined): void;
     createIdentity(id: WalletId, options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number): Promise<LocalIdentity>;
     setIdentityLabel(id: WalletId, identity: PublicIdentity, label: string | undefined): void;
     getIdentities(id: WalletId): ReadonlyArray<LocalIdentity>;

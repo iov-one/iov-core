@@ -152,13 +152,15 @@ export class UserProfile {
     this.lockedProducer.update(true);
   }
 
-  // Adds a copy of the entry to the primary keyring
-  public addEntry(entry: Wallet): WalletInfo {
+  /**
+   * Adds a copy of the wallet to the primary keyring
+   */
+  public addWallet(wallet: Wallet): WalletInfo {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
 
-    const copy = entry.clone();
+    const copy = wallet.clone();
     this.keyring.add(copy);
     this.walletsProducer.update(this.walletInfos());
     return {
@@ -167,8 +169,8 @@ export class UserProfile {
     };
   }
 
-  // sets the label of the n-th keyring entry of the primary keyring
-  public setEntryLabel(id: WalletId, label: string | undefined): void {
+  /** Sets the label of the wallet with the given ID in the primary keyring  */
+  public setWalletLabel(id: WalletId, label: string | undefined): void {
     const wallet = this.findWalletInPrimaryKeyring(id);
     wallet.setLabel(label);
     this.walletsProducer.update(this.walletInfos());

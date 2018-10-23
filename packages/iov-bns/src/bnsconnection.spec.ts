@@ -61,7 +61,7 @@ describe("Integration tests with bov+tendermint", () => {
   }> {
     const wallet = Ed25519HdWallet.fromMnemonic(mnemonic);
     const profile = new UserProfile();
-    profile.addEntry(wallet);
+    profile.addWallet(wallet);
     const faucet = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
     return { profile, mainWalletId: wallet.id, faucet };
   }

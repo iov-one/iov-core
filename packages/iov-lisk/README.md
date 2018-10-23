@@ -23,7 +23,7 @@ const wallet = new Ed25519Wallet();
 const mainIdentity = await wallet.createIdentity(await passphraseToKeypair("oxygen fall sure lava energy veteran enroll frown question detail include maximum"));
 
 const profile = new UserProfile();
-profile.addEntry(wallet);
+profile.addWallet(wallet);
 
 const signer = new MultiChainSigner(profile);
 await signer.addChain(liskConnector("https://testnet.lisk.io"));

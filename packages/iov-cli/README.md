@@ -44,7 +44,7 @@ $ iov-cli
 ```
 > const profile = new UserProfile();
 > const wallet = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script")
-> profile.addEntry(wallet)
+> profile.addWallet(wallet)
 
 > profile.getIdentities(wallet.id)
 []
@@ -103,7 +103,7 @@ const sendTx: SendTx = {
 > profile.wallets.value
 [ { id: 'ReYESw51lsOOr8_X', label: undefined } ]
 
-> profile.addEntry(Ed25519HdWallet.fromMnemonic("organ wheat manage mirror wish truly tool trumpet since equip flight bracket"))
+> profile.addWallet(Ed25519HdWallet.fromMnemonic("organ wheat manage mirror wish truly tool trumpet since equip flight bracket"))
 
 > profile.wallets.value
 [ { id: 'ReYESw51lsOOr8_X', label: undefined },
@@ -117,8 +117,8 @@ const sendTx: SendTx = {
 > profile.getIdentities("FtIcQqMWcRpEIruk" as WalletId)
 []
 
-> profile.setEntryLabel("ReYESw51lsOOr8_X" as WalletId, "main")
-> profile.setEntryLabel("FtIcQqMWcRpEIruk" as WalletId, "second")
+> profile.setWalletLabel("ReYESw51lsOOr8_X" as WalletId, "main")
+> profile.setWalletLabel("FtIcQqMWcRpEIruk" as WalletId, "second")
 
 > profile.wallets.value
 [ { id: 'ReYESw51lsOOr8_X', label: 'main' },
@@ -196,7 +196,7 @@ When using a Testnet, you can use the BovFaucet to receive tokens:
 'helmet album grow detail apology thank wire chef fame core private cargo'
 > const profile = new UserProfile();
 > const wallet = Ed25519HdWallet.fromMnemonic(mnemonic);
-> profile.addEntry(wallet);
+> profile.addWallet(wallet);
 > const me = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
 
 > const signer = new MultiChainSigner(profile);
@@ -237,10 +237,10 @@ Do 1. and 2. like above
 > import { LedgerSimpleAddressWallet } from "@iov/ledger-bns";
 > const profile = new UserProfile();
 > const wallet = Ed25519HdWallet.fromMnemonic("tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral");
-> profile.addEntry(wallet)
+> profile.addWallet(wallet)
 > const ledgerWallet = new LedgerSimpleAddressWallet();
 > ledgerWallet.startDeviceTracking();
-> profile.addEntry(ledgerWallet);
+> profile.addWallet(ledgerWallet);
 
 > profile.getIdentities(wallet.id)
 []

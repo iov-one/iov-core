@@ -107,12 +107,12 @@ describe("UserProfile", () => {
     const wallet3 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
     expect(profile.wallets.value.length).toEqual(0);
     expect(profile.wallets.value.map(i => i.label)).toEqual([]);
-    profile.addEntry(wallet1);
+    profile.addWallet(wallet1);
     expect(profile.wallets.value.length).toEqual(1);
     expect(profile.wallets.value.map(i => i.label)).toEqual([undefined]);
     expect(profile.getIdentities(wallet1.id)).toBeTruthy();
-    profile.addEntry(wallet2);
-    profile.addEntry(wallet3);
+    profile.addWallet(wallet2);
+    profile.addWallet(wallet3);
     expect(profile.wallets.value.length).toEqual(3);
     expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined, undefined]);
     expect(profile.getIdentities(wallet1.id)).toBeTruthy();
@@ -126,11 +126,11 @@ describe("UserProfile", () => {
     const wallet2 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
     wallet2.setLabel("my-label");
 
-    const walletInfo1 = profile.addEntry(wallet1);
+    const walletInfo1 = profile.addWallet(wallet1);
     expect(walletInfo1.id).toEqual(wallet1.id);
     expect(walletInfo1.label).toEqual(undefined);
 
-    const walletInfo2 = profile.addEntry(wallet2);
+    const walletInfo2 = profile.addWallet(wallet2);
     expect(walletInfo2.id).toEqual(wallet2.id);
     expect(walletInfo2.label).toEqual("my-label");
   });
@@ -144,24 +144,24 @@ describe("UserProfile", () => {
     const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
     expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined]);
 
-    profile.setEntryLabel(wallet1.id, "foo1");
+    profile.setWalletLabel(wallet1.id, "foo1");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["foo1", undefined]);
 
-    profile.setEntryLabel(wallet2.id, "foo2");
+    profile.setWalletLabel(wallet2.id, "foo2");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["foo1", "foo2"]);
 
-    profile.setEntryLabel(wallet1.id, "bar1");
-    profile.setEntryLabel(wallet2.id, "bar2");
+    profile.setWalletLabel(wallet1.id, "bar1");
+    profile.setWalletLabel(wallet2.id, "bar2");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["bar1", "bar2"]);
 
-    profile.setEntryLabel(wallet2.id, "");
+    profile.setWalletLabel(wallet2.id, "");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["bar1", ""]);
 
-    profile.setEntryLabel(wallet1.id, "");
+    profile.setWalletLabel(wallet1.id, "");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["", ""]);
 
-    profile.setEntryLabel(wallet1.id, undefined);
-    profile.setEntryLabel(wallet2.id, undefined);
+    profile.setWalletLabel(wallet1.id, undefined);
+    profile.setWalletLabel(wallet2.id, undefined);
     expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined]);
   });
 
@@ -169,14 +169,14 @@ describe("UserProfile", () => {
     const profile = new UserProfile();
 
     const wallet1 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
-    profile.addEntry(wallet1);
+    profile.addWallet(wallet1);
     const id1 = wallet1.id;
 
     // make sure we can query the ids if we didn't save them from creation
     expect(profile.wallets.value.map(i => i.id)).toEqual([id1]);
 
     const wallet2 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
-    profile.addEntry(wallet2);
+    profile.addWallet(wallet2);
     const id2 = wallet2.id;
 
     // make sure we can query the ids if we didn't save them from creation
@@ -204,7 +204,7 @@ describe("UserProfile", () => {
     const profile = new UserProfile();
 
     const wallet1 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
-    profile.addEntry(wallet1);
+    profile.addWallet(wallet1);
 
     const wallet2 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
 
@@ -215,7 +215,7 @@ describe("UserProfile", () => {
   it("added wallet can not be manipulated from outside", async () => {
     const profile = new UserProfile();
     const newWallet = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
-    profile.addEntry(newWallet);
+    profile.addWallet(newWallet);
     expect(profile.getIdentities(newWallet.id).length).toEqual(0);
 
     // manipulate entry reference that has been added before
@@ -229,7 +229,7 @@ describe("UserProfile", () => {
   it("can create identities with options", async () => {
     const profile = new UserProfile();
     const wallet = Secp256k1HdWallet.fromMnemonic("insect spirit promote illness clean damp dash divorce emerge elbow kangaroo enroll");
-    profile.addEntry(wallet);
+    profile.addWallet(wallet);
 
     const path = [Slip10RawIndex.hardened(4321), Slip10RawIndex.normal(0)];
     const identityFromPath = await profile.createIdentity(wallet.id, path);
@@ -290,8 +290,8 @@ describe("UserProfile", () => {
     const wallet1 = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script");
 
     const original = new UserProfile();
-    original.addEntry(wallet1);
-    original.setEntryLabel(wallet1.id, "My secret 😛");
+    original.addWallet(wallet1);
+    original.setWalletLabel(wallet1.id, "My secret 😛");
 
     await original.storeIn(db, defaultEncryptionPassword);
     const restored = await UserProfile.loadFrom(db, defaultEncryptionPassword);
@@ -364,7 +364,7 @@ describe("UserProfile", () => {
     // wallet of id 'bar' does not exist
     const walletId = "bar" as WalletId;
 
-    expect(() => profile.setEntryLabel(walletId, "foo")).toThrowError(/wallet of id 'bar' does not exist in keyring/i);
+    expect(() => profile.setWalletLabel(walletId, "foo")).toThrowError(/wallet of id 'bar' does not exist in keyring/i);
     expect(() => profile.getIdentities(walletId)).toThrowError(/wallet of id 'bar' does not exist in keyring/i);
     expect(() => profile.setIdentityLabel(walletId, fakeIdentity, "foo")).toThrowError(/wallet of id 'bar' does not exist in keyring/i);
     await profile

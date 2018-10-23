@@ -23,7 +23,7 @@ const wallet = new Ed25519Wallet();
 const mainIdentity = await wallet.createIdentity(await passphraseToKeypair("squeeze frog deposit chase sudden clutch fortune spring tone have snow column"));
 
 const profile = new UserProfile();
-profile.addEntry(wallet);
+profile.addWallet(wallet);
 
 const signer = new MultiChainSigner(profile);
 await signer.addChain(riseConnector("https://twallet.rise.vision"));

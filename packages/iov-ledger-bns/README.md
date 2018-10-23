@@ -19,18 +19,18 @@ import { UserProfile } from "@iov/core";
 import { LedgerSimpleAddressWallet } from "@iov/ledger-bns";
 
 const profile = new UserProfile();
-profile.addEntry(new LedgerSimpleAddressWallet());
+profile.addWallet(new LedgerSimpleAddressWallet());
 ```
 
 The @iov/cli [provides further examples](https://github.com/iov-one/iov-core/tree/master/packages/iov-cli#ledger-usage)
-of how to use this keyring entry.
+of how to use this wallet.
 
 ### Observing Ledger state
 
 An application may want to react to state changes of the ledger connection. There
 are two interfaces to do so: `readonly canSign: ValueAndUpdates<boolean>` and `readonly deviceState: ValueAndUpdates<LedgerState>`.
 
-`canSign` is provided for every keyring entry and works as follows:
+`canSign` is provided for every wallet and works as follows:
 
 ```ts
 const ledgerWallet = new LedgerSimpleAddressWallet();

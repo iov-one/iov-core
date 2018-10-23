@@ -19,7 +19,7 @@ const profile = new UserProfile();
 const seed = await Random.getBytes(16);
 const mnemonic = Bip39.encode(seed).asString();
 console.log(mnemonic);
-profile.addEntry(Ed25519HdWallet.fromMnemonic(mneumonic));
+profile.addWallet(Ed25519HdWallet.fromMnemonic(mneumonic));
 
 // the "0" in the next two lines refers to the keyring entry.
 // we only added one, but you could add multiple with different mneumonics,
