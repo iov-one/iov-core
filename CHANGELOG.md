@@ -23,6 +23,7 @@ Breaking changes
 * @iov/keycontrol: rename symbols to `Wallet`, `WalletId`, `WalletImplementationIdString`, `WalletSerializationString`
 * @iov/keycontrol: rename `Ed25519KeyringEntry` to `Ed25519WalletId`
 * @iov/keycontrol: in `Keyring`, rename `.getEntries/.getEntryById` to `.getWallets/.getWallet`
+* @iov/keycontrol: in `Keyring`, remove obsolete `.getEntryByIndex`
 * @iov/core: rename `IovWriter` to `MultiChainSigner`
 * @iov/core: rename the getter `reader` to `connection` in `MultiChainSigner`
 * @iov/core: `MultiChainSigner.addChain` now returns chain information of the chain added

@@ -33,7 +33,6 @@ export declare class Keyring {
      */
     getWallets(): ReadonlyArray<Wallet>;
     getWallet(id: WalletId): Wallet | undefined;
-    getEntryByIndex(n: number): Wallet | undefined;
     serialize(): KeyringSerializationString;
     clone(): Keyring;
 }

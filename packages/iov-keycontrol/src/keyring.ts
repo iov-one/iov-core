@@ -104,11 +104,6 @@ export class Keyring {
     return this.wallets.find(wallet => wallet.id === id);
   }
 
-  // if you stored the immutible keyring entry reference, you can get the object back here
-  public getEntryByIndex(n: number): Wallet | undefined {
-    return this.wallets.find((_, index) => index === n);
-  }
-
   // serialize will produce a representation that can be writen to disk.
   // this will contain secret info, so handle securely!
   public serialize(): KeyringSerializationString {
