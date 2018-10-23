@@ -2,11 +2,11 @@
 
 [![npm version](https://img.shields.io/npm/v/@iov/ledger-bns.svg)](https://www.npmjs.com/package/@iov/ledger-bns)
 
-This package provides an adaptor to use the bns ledger app as a keyring entry.
+This package provides an adaptor to use the bns ledger app as a wallet.
 The app is still in dev mode and not available in the ledger store, so
 this is really for cutting edge devs now.
 
-It should also demonstrate how to implement an additional KeyringEntry outside of @iov/keycontrol
+It should also demonstrate how to implement an additional Wallet outside of @iov/keycontrol
 that can be dynamically loaded by any app in initialization.
 
 ## Getting started

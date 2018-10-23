@@ -66,10 +66,6 @@ export class Ed25519Wallet implements Wallet {
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
   public readonly implementationId = "ed25519" as WalletImplementationIdString;
-  // id represents the state of the Keyring...
-  // since there is no seed (like slip10), and no default state, we just create
-  // an arbitrary string upon construction, which is persisted through clone and serialization
-  // this doesn't change as keys are added to the KeyringEntry
   public readonly id: WalletId;
 
   private readonly identities: LocalIdentity[];
@@ -130,7 +126,7 @@ export class Ed25519Wallet implements Wallet {
 
     if (this.identities.find(i => i.id === newIdentity.id)) {
       throw new Error(
-        "Identity ID collision: this happens when you try to create multiple identities with the same keypair in the same entry.",
+        "Identity ID collision: this happens when you try to create multiple identities with the same keypair in the same wallet.",
       );
     }
 

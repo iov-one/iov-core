@@ -33,7 +33,7 @@ interface IdentitySerialization {
   readonly simpleAddressIndex: number;
 }
 
-interface LedgerKeyringEntrySerialization {
+interface LedgerSimpleAddressWalletSerialization {
   readonly label: string | undefined;
   readonly id: string;
   readonly identities: ReadonlyArray<IdentitySerialization>;
@@ -46,7 +46,7 @@ export class LedgerSimpleAddressWallet implements Wallet {
   public static readonly implementationId = "ledger-simpleaddress" as WalletImplementationIdString;
 
   /**
-   * A convenience function to register this entry type with the global Keyring class
+   * A convenience function to register this wallet type with the global Keyring class
    */
   public static registerWithKeyring(): void {
     const implId = LedgerSimpleAddressWallet.implementationId;
@@ -93,7 +93,7 @@ export class LedgerSimpleAddressWallet implements Wallet {
     const simpleAddressIndices = new Map<string, number>();
 
     if (data) {
-      const decodedData: LedgerKeyringEntrySerialization = JSON.parse(data);
+      const decodedData: LedgerSimpleAddressWalletSerialization = JSON.parse(data);
 
       // label
       label = decodedData.label;
@@ -161,7 +161,7 @@ export class LedgerSimpleAddressWallet implements Wallet {
 
     if (this.identities.find(i => i.id === newIdentity.id)) {
       throw new Error(
-        "Identity Index collision: this happens when you try to create multiple identities with the same index in the same entry.",
+        "Identity Index collision: this happens when you try to create multiple identities with the same index in the same wallet.",
       );
     }
 
@@ -213,7 +213,7 @@ export class LedgerSimpleAddressWallet implements Wallet {
   }
 
   public serialize(): WalletSerializationString {
-    const out: LedgerKeyringEntrySerialization = {
+    const out: LedgerSimpleAddressWalletSerialization = {
       label: this.label.value,
       id: this.id,
       identities: this.identities.map(identity => {

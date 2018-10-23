@@ -43,7 +43,7 @@ describe("UserProfile", () => {
     expect(profile.locked.value).toEqual(true);
   });
 
-  it("initial entries count works", () => {
+  it("initial wallet count works", () => {
     {
       const keyring = new Keyring();
       const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
@@ -67,7 +67,7 @@ describe("UserProfile", () => {
     }
   });
 
-  it("initial entry labels work", () => {
+  it("initial wallet labels work", () => {
     {
       const profile = new UserProfile();
       expect(profile.wallets.value.map(i => i.label)).toEqual([]);
@@ -120,7 +120,7 @@ describe("UserProfile", () => {
     expect(profile.getIdentities(wallet3.id)).toBeTruthy();
   });
 
-  it("addEntry returns wallet info", () => {
+  it("returns wallet info when adding wallet", () => {
     const profile = new UserProfile();
     const wallet1 = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
     const wallet2 = Ed25519HdWallet.fromMnemonic("perfect clump orphan margin memory amazing morning use snap skate erosion civil");
@@ -183,8 +183,8 @@ describe("UserProfile", () => {
     expect(profile.wallets.value.map(i => i.id)).toEqual([id1, id2]);
 
     // set the labels
-    profile.setEntryLabel(id1, "first");
-    profile.setEntryLabel(id2, "second");
+    profile.setWalletLabel(id1, "first");
+    profile.setWalletLabel(id2, "second");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["first", "second"]);
 
     // make some new ids
@@ -218,7 +218,7 @@ describe("UserProfile", () => {
     profile.addWallet(newWallet);
     expect(profile.getIdentities(newWallet.id).length).toEqual(0);
 
-    // manipulate entry reference that has been added before
+    // manipulate wallet reference that has been added before
     await newWallet.createIdentity(HdPaths.simpleAddress(0));
     expect(newWallet.getIdentities().length).toEqual(1);
 
@@ -318,7 +318,7 @@ describe("UserProfile", () => {
     await db.close();
   });
 
-  it("throws for non-existing entry id", async () => {
+  it("throws for non-existing wallet id", async () => {
     const profile = new UserProfile();
 
     const fakeIdentity = { pubkey: { algo: Algorithm.Ed25519, data: new Uint8Array([0xaa]) as PublicKeyBytes } };

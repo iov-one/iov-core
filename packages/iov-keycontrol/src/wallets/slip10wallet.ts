@@ -207,7 +207,7 @@ export class Slip10Wallet implements Wallet {
 
     if (this.identities.find(i => i.id === newIdentity.id)) {
       throw new Error(
-        "Identity ID collision: this happens when you try to create multiple identities with the same path in the same entry.",
+        "Identity ID collision: this happens when you try to create multiple identities with the same path in the same wallet.",
       );
     }
 

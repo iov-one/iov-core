@@ -47,7 +47,7 @@ const mnemonic24 = Bip39.encode(entropy32).asString();
 console.log(mnemonic24);
 ```
 
-Create a new profile with two entries:
+Create a new profile with two wallets:
 
 ```ts
 import { Ed25519HdWallet, UserProfile } from '@iov/keycontrol';
@@ -71,7 +71,7 @@ profile.setWalletLabel(wallet1.id, "12 words");
 profile.setWalletLabel(wallet2.id, "24 words");
 ```
 
-Create identies on the two keyring entries (argument is index of the entry):
+Create identies on the two wallets:
 
 ```ts
 import { HdPaths } from '@iov/keycontrol';

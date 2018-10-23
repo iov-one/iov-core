@@ -6,7 +6,7 @@ import { LedgerState } from "./statetracker";
 export declare class LedgerSimpleAddressWallet implements Wallet {
     static readonly implementationId: WalletImplementationIdString;
     /**
-     * A convenience function to register this entry type with the global Keyring class
+     * A convenience function to register this wallet type with the global Keyring class
      */
     static registerWithKeyring(): void;
     private static identityId;

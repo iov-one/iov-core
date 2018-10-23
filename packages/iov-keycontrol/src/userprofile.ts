@@ -176,7 +176,7 @@ export class UserProfile {
     this.walletsProducer.update(this.walletInfos());
   }
 
-  // creates an identitiy in the n-th keyring entry of the primary keyring
+  /** Creates an identitiy in the wallet with the given ID in the primary keyring */
   public async createIdentity(
     id: WalletId,
     options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number,
@@ -185,14 +185,13 @@ export class UserProfile {
     return wallet.createIdentity(options);
   }
 
-  // assigns a new label to one of the identities
-  // in the n-th keyring entry of the primary keyring
+  /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
   public setIdentityLabel(id: WalletId, identity: PublicIdentity, label: string | undefined): void {
     const wallet = this.findWalletInPrimaryKeyring(id);
     wallet.setIdentityLabel(identity, label);
   }
 
-  // get identities of the n-th keyring entry of the primary keyring
+  /** Get identities of the wallet with the given ID in the primary keyring  */
   public getIdentities(id: WalletId): ReadonlyArray<LocalIdentity> {
     const wallet = this.findWalletInPrimaryKeyring(id);
     return wallet.getIdentities();

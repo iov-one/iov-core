@@ -97,7 +97,7 @@ const sendTx: SendTx = {
 ```
 
 3. Congratulations, you sent your first money!
-4. Add an additional entry
+4. Add an additional wallet
 
 ```
 > profile.wallets.value
@@ -139,7 +139,7 @@ const sendTx: SendTx = {
 > profileFromDb
 UserProfile {
   createdAt: 2018-07-04T16:07:14.583Z,
-  keyring: Keyring { entries: [ [Object], [Object] ] },
+  keyring: Keyring { wallets: [ [Object], [Object] ] },
   ...
 ```
 
@@ -272,7 +272,7 @@ Do 1. and 2. like above
 > profileFromDb
 UserProfile {
   createdAt: 2018-08-02T16:25:38.274Z,
-  keyring: Keyring { entries: [ [Object], [Object] ] }, ...
+  keyring: Keyring { wallets: [ [Object], [Object] ] }, ...
 ```
 
 ## License

@@ -43,8 +43,11 @@ export declare class UserProfile {
     addWallet(wallet: Wallet): WalletInfo;
     /** Sets the label of the wallet with the given ID in the primary keyring  */
     setWalletLabel(id: WalletId, label: string | undefined): void;
+    /** Creates an identitiy in the wallet with the given ID in the primary keyring */
     createIdentity(id: WalletId, options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number): Promise<LocalIdentity>;
+    /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
     setIdentityLabel(id: WalletId, identity: PublicIdentity, label: string | undefined): void;
+    /** Get identities of the wallet with the given ID in the primary keyring  */
     getIdentities(id: WalletId): ReadonlyArray<LocalIdentity>;
     signTransaction(id: WalletId, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
     appendSignature(id: WalletId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
