@@ -6,6 +6,6 @@
     "rootDir": "src"
   },
   "include": [
-    "src/**/*", "../iov-ethereum/src/utils.ts"
+    "src/**/*"
   ]
 }
