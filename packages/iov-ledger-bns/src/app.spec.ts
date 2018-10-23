@@ -102,7 +102,7 @@ describe("Sign with ledger app", () => {
     const tx: SendTx = {
       kind: TransactionKind.Send,
       chainId: "test-bns-ledger" as ChainId,
-      recipient: "0123456789012345678901234567890123456789" as RecipientId,
+      recipient: "tiov1qy352eufqy352eufqy352eufqy352eufpralqn" as RecipientId,
       amount: {
         // 1234.789 LGR
         whole: 1234,
@@ -147,7 +147,7 @@ describe("Sign with ledger app", () => {
     const tx: SendTx = {
       kind: TransactionKind.Send,
       chainId: "test-ledger-paths" as ChainId,
-      recipient: "1234ABCD0000AA0000FFFF0000AA00001234ABCD" as RecipientId,
+      recipient: "tiov1zg62hngqqz4qqq8lluqqp2sqqqfrf27dzrrmea" as RecipientId,
       amount: {
         // 77.01001 PATH
         whole: 77,

@@ -188,7 +188,7 @@ describe("LedgerSimpleAddressWallet", () => {
     const tx: SendTx = {
       kind: TransactionKind.Send,
       chainId: "test-ledger-paths" as ChainId,
-      recipient: "1234ABCD0000AA0000FFFF0000AA00001234ABCD" as RecipientId,
+      recipient: "tiov1zg62hngqqz4qqq8lluqqp2sqqqfrf27dzrrmea" as RecipientId,
       amount: {
         // 77.01001 PATH
         whole: 77,
