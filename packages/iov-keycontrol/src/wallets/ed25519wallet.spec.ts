@@ -3,7 +3,7 @@ import { Ed25519Keypair, Sha256, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
-import { WalletSerializationString } from "../keyring";
+import { WalletSerializationString } from "../wallet";
 import { Ed25519Wallet } from "./ed25519wallet";
 
 const { fromHex, toHex } = Encoding;

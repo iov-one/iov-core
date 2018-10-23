@@ -1,6 +1,7 @@
 export { HdPaths } from "./hdpaths";
+export { Keyring } from "./keyring";
+export { UserProfile, WalletInfo } from "./userprofile";
 export {
-  Keyring,
   LocalIdentity,
   LocalIdentityId,
   PublicIdentity,
@@ -8,6 +9,5 @@ export {
   WalletId,
   WalletImplementationIdString,
   WalletSerializationString,
-} from "./keyring";
-export { UserProfile, WalletInfo } from "./userprofile";
+} from "./wallet";
 export { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./wallets";

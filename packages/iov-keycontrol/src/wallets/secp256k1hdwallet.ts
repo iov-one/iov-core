@@ -1,6 +1,6 @@
 import { Slip10Curve } from "@iov/crypto";
 
-import { WalletImplementationIdString } from "../keyring";
+import { WalletImplementationIdString } from "../wallet";
 import { Slip10Wallet } from "./slip10wallet";
 
 export class Secp256k1HdWallet extends Slip10Wallet {

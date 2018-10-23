@@ -1,7 +1,7 @@
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { ValueAndUpdates } from "@iov/stream";
 import { ChainId, SignatureBytes } from "@iov/tendermint-types";
-import { LocalIdentity, PublicIdentity, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "../keyring";
+import { LocalIdentity, PublicIdentity, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "../wallet";
 export declare class Ed25519Wallet implements Wallet {
     private static readonly idsPrng;
     private static generateId;

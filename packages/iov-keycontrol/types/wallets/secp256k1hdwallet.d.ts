@@ -1,4 +1,4 @@
-import { WalletImplementationIdString } from "../keyring";
+import { WalletImplementationIdString } from "../wallet";
 import { Slip10Wallet } from "./slip10wallet";
 export declare class Secp256k1HdWallet extends Slip10Wallet {
     static fromEntropy(bip39Entropy: Uint8Array): Secp256k1HdWallet;

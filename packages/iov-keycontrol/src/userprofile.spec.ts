@@ -8,8 +8,9 @@ import { Encoding, Int53 } from "@iov/encoding";
 import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { HdPaths } from "./hdpaths";
-import { Keyring, WalletId } from "./keyring";
+import { Keyring } from "./keyring";
 import { UserProfile } from "./userprofile";
+import { WalletId } from "./wallet";
 import { Ed25519HdWallet, Secp256k1HdWallet } from "./wallets";
 
 const { fromHex } = Encoding;

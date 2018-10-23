@@ -15,6 +15,7 @@ import { Encoding } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
+import { prehash } from "../prehashing";
 import {
   LocalIdentity,
   LocalIdentityId,
@@ -23,8 +24,7 @@ import {
   WalletId,
   WalletImplementationIdString,
   WalletSerializationString,
-} from "../keyring";
-import { prehash } from "../prehashing";
+} from "../wallet";
 
 interface PubkeySerialization {
   readonly algo: string;

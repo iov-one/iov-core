@@ -3,7 +3,7 @@ import { Sha256, Sha512, Slip10Curve, Slip10RawIndex } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
-import { WalletSerializationString } from "../keyring";
+import { WalletSerializationString } from "../wallet";
 import { Slip10Wallet } from "./slip10wallet";
 
 const { fromHex } = Encoding;

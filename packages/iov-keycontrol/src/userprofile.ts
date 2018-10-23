@@ -17,15 +17,9 @@ import {
 import { Encoding } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
-import {
-  Keyring,
-  KeyringSerializationString,
-  LocalIdentity,
-  PublicIdentity,
-  Wallet,
-  WalletId,
-} from "./keyring";
+import { Keyring, KeyringSerializationString } from "./keyring";
 import { DatabaseUtils } from "./utils";
+import { LocalIdentity, PublicIdentity, Wallet, WalletId } from "./wallet";
 import { Ed25519Wallet } from "./wallets";
 
 const { toAscii, fromBase64, toBase64, fromUtf8, toUtf8, toRfc3339, fromRfc3339 } = Encoding;
