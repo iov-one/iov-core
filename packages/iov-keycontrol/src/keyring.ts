@@ -30,20 +30,20 @@ export interface LocalIdentity extends PublicIdentity {
   readonly label?: string;
 }
 
-export interface KeyringEntrySerialization {
+interface WalletSerialization {
   readonly implementationId: WalletImplementationIdString;
   readonly data: WalletSerializationString;
 }
 
-export interface KeyringSerialization {
-  readonly entries: KeyringEntrySerialization[];
+interface KeyringSerialization {
+  readonly entries: WalletSerialization[];
 }
 
 export type KeyringEntryDeserializer = (data: WalletSerializationString) => Wallet;
 
-/*
-A Keyring a collection of KeyringEntrys
-*/
+/**
+ * A collection of wallets
+ */
 export class Keyring {
   public static registerEntryType(
     implementationId: WalletImplementationIdString,
@@ -61,60 +61,60 @@ export class Keyring {
     ["secp256k1-hd", (data: WalletSerializationString) => new Secp256k1HdWallet(data)],
   ] as ReadonlyArray<[string, KeyringEntryDeserializer]>);
 
-  private static deserializeKeyringEntry(serializedEntry: KeyringEntrySerialization): Wallet {
-    const implId = serializedEntry.implementationId;
+  private static deserializeWallet(serializedWallet: WalletSerialization): Wallet {
+    const implId = serializedWallet.implementationId;
 
     const deserializer = Keyring.deserializationRegistry.get(implId);
     if (!deserializer) {
-      throw new Error(`No deserializer registered for keyring entry of type "${implId}".`);
+      throw new Error(`No deserializer registered for wallet of type "${implId}".`);
     }
 
     try {
-      return deserializer(serializedEntry.data);
+      return deserializer(serializedWallet.data);
     } catch (e) {
-      throw new Error(`Error creating keyring entry of type ${implId}: ${e.message}`);
+      throw new Error(`Error creating wallet of type ${implId}: ${e.message}`);
     }
   }
 
-  private readonly entries: Wallet[];
+  private readonly wallets: Wallet[];
 
   constructor(data?: KeyringSerializationString) {
     if (data) {
       const parsedData = JSON.parse(data) as KeyringSerialization;
-      this.entries = parsedData.entries.map(Keyring.deserializeKeyringEntry);
+      this.wallets = parsedData.entries.map(Keyring.deserializeWallet);
     } else {
-      this.entries = [];
+      this.wallets = [];
     }
   }
 
-  public add(entry: Wallet): void {
-    this.entries.push(entry);
+  public add(wallet: Wallet): void {
+    this.wallets.push(wallet);
   }
 
   // Note: this returns an array with mutable element references. Thus e.g.
   // .getEntries().createIdentity() will change the keyring.
   public getEntries(): ReadonlyArray<Wallet> {
-    return this.entries;
+    return this.wallets;
   }
 
   // if you stored the immutible keyring entry reference, you can get the object back here
   public getEntryById(id: string): Wallet | undefined {
-    return this.entries.find(e => e.id === id);
+    return this.wallets.find(e => e.id === id);
   }
 
   // if you stored the immutible keyring entry reference, you can get the object back here
   public getEntryByIndex(n: number): Wallet | undefined {
-    return this.entries.find((_, index) => index === n);
+    return this.wallets.find((_, index) => index === n);
   }
 
   // serialize will produce a representation that can be writen to disk.
   // this will contain secret info, so handle securely!
   public serialize(): KeyringSerializationString {
     const out: KeyringSerialization = {
-      entries: this.entries.map(
-        (entry): KeyringEntrySerialization => ({
-          implementationId: entry.implementationId,
-          data: entry.serialize(),
+      entries: this.wallets.map(
+        (wallet): WalletSerialization => ({
+          implementationId: wallet.implementationId,
+          data: wallet.serialize(),
         }),
       ),
     };

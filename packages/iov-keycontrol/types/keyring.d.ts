@@ -16,21 +16,17 @@ export interface LocalIdentity extends PublicIdentity {
     readonly id: LocalIdentityId;
     readonly label?: string;
 }
-export interface KeyringEntrySerialization {
-    readonly implementationId: WalletImplementationIdString;
-    readonly data: WalletSerializationString;
-}
-export interface KeyringSerialization {
-    readonly entries: KeyringEntrySerialization[];
-}
 export declare type KeyringEntryDeserializer = (data: WalletSerializationString) => Wallet;
+/**
+ * A collection of wallets
+ */
 export declare class Keyring {
     static registerEntryType(implementationId: WalletImplementationIdString, deserializer: KeyringEntryDeserializer): void;
     private static readonly deserializationRegistry;
-    private static deserializeKeyringEntry;
-    private readonly entries;
+    private static deserializeWallet;
+    private readonly wallets;
     constructor(data?: KeyringSerializationString);
-    add(entry: Wallet): void;
+    add(wallet: Wallet): void;
     getEntries(): ReadonlyArray<Wallet>;
     getEntryById(id: string): Wallet | undefined;
     getEntryByIndex(n: number): Wallet | undefined;
