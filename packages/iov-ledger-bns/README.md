@@ -11,15 +11,15 @@ that can be dynamically loaded by any app in initialization.
 
 ## Getting started
 
-Create a LedgerSimpleAddressKeyringEntry for signing with a Ledger. All
+Create a LedgerSimpleAddressWallet for signing with a Ledger. All
 further functionality is provided by the `UserProfile`.
 
 ```ts
 import { UserProfile } from "@iov/core";
-import { LedgerSimpleAddressKeyringEntry } from "@iov/ledger-bns";
+import { LedgerSimpleAddressWallet } from "@iov/ledger-bns";
 
 const profile = new UserProfile();
-profile.addEntry(new LedgerSimpleAddressKeyringEntry());
+profile.addEntry(new LedgerSimpleAddressWallet());
 ```
 
 The @iov/cli [provides further examples](https://github.com/iov-one/iov-core/tree/master/packages/iov-cli#ledger-usage)
@@ -33,7 +33,7 @@ are two interfaces to do so: `readonly canSign: ValueAndUpdates<boolean>` and `r
 `canSign` is provided for every keyring entry and works as follows:
 
 ```ts
-const ledgerWallet = new LedgerSimpleAddressKeyringEntry();
+const ledgerWallet = new LedgerSimpleAddressWallet();
 ledgerWallet.startDeviceTracking();
 
 const canSign1 = ledgerWallet.canSign.value; // false
@@ -46,7 +46,7 @@ const canSign2 = ledgerWallet.canSign.value; // true
 You can subscribe for updates
 
 ```ts
-const ledgerWallet = new LedgerSimpleAddressKeyringEntry();
+const ledgerWallet = new LedgerSimpleAddressWallet();
 ledgerWallet.startDeviceTracking();
 
 ledgerWallet.canSign.updates.subscribe({
@@ -59,7 +59,7 @@ ledgerWallet.canSign.updates.subscribe({
 or wait until a specific value is reached
 
 ```ts
-const ledgerWallet = new LedgerSimpleAddressKeyringEntry();
+const ledgerWallet = new LedgerSimpleAddressWallet();
 ledgerWallet.startDeviceTracking();
 
 async function signWhenReady() {
@@ -71,12 +71,12 @@ async function signWhenReady() {
 `deviceState` is very similar to `canSign` but Ledger specifig and a three state interface:
 `LedgerState.Disconnected`, `LedgerState.Connected`, `LedgerState.IovAppOpen`.
 
-First, make sure to `import { LedgerSimpleAddressKeyringEntry, LedgerState } from "@iov/ledger-bns";`.
+First, make sure to `import { LedgerSimpleAddressWallet, LedgerState } from "@iov/ledger-bns";`.
 
 Check the current state:
 
 ```ts
-const ledgerWallet = new LedgerSimpleAddressKeyringEntry();
+const ledgerWallet = new LedgerSimpleAddressWallet();
 ledgerWallet.startDeviceTracking();
 
 const state1 = ledgerWallet.deviceState.value; // LedgerState.Disconnected
@@ -91,9 +91,9 @@ const state3 = ledgerWallet.deviceState.value; // LedgerState.IovAppOpen
 Subscribe for updates:
 
 ```ts
-import { LedgerSimpleAddressKeyringEntry, LedgerState } from "@iov/ledger-bns";
+import { LedgerSimpleAddressWallet, LedgerState } from "@iov/ledger-bns";
 
-const ledgerWallet = new LedgerSimpleAddressKeyringEntry();
+const ledgerWallet = new LedgerSimpleAddressWallet();
 ledgerWallet.startDeviceTracking();
 
 ledgerWallet.deviceState.updates.subscribe({
@@ -116,7 +116,7 @@ ledgerWallet.deviceState.updates.subscribe({
 Wait until a specific value is reached:
 
 ```ts
-const ledgerWallet = new LedgerSimpleAddressKeyringEntry();
+const ledgerWallet = new LedgerSimpleAddressWallet();
 ledgerWallet.startDeviceTracking();
 
 async function signWhenReady() {

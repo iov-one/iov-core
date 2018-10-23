@@ -6,25 +6,25 @@ import { WalletSerializationString } from "@iov/keycontrol";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
 import { pendingWithoutInteractiveLedger, pendingWithoutLedger } from "./common.spec";
-import { LedgerSimpleAddressKeyringEntry } from "./ledgersimpleaddresskeyringentry";
+import { LedgerSimpleAddressWallet } from "./ledgersimpleaddresskeyringentry";
 import { LedgerState } from "./statetracker";
 
 const { toHex } = Encoding;
 
-describe("LedgerSimpleAddressKeyringEntry", () => {
+describe("LedgerSimpleAddressWallet", () => {
   it("can be constructed", () => {
-    const wallet = new LedgerSimpleAddressKeyringEntry();
+    const wallet = new LedgerSimpleAddressWallet();
     expect(wallet).toBeTruthy();
   });
 
   it("is empty after construction", () => {
-    const wallet = new LedgerSimpleAddressKeyringEntry();
+    const wallet = new LedgerSimpleAddressWallet();
     expect(wallet.label.value).toBeUndefined();
     expect(wallet.getIdentities().length).toEqual(0);
   });
 
   it("can have a label", () => {
-    const wallet = new LedgerSimpleAddressKeyringEntry();
+    const wallet = new LedgerSimpleAddressWallet();
     expect(wallet.label.value).toBeUndefined();
 
     wallet.setLabel("foo");
@@ -37,7 +37,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
   it("can create an identity", async () => {
     pendingWithoutLedger();
 
-    const wallet = new LedgerSimpleAddressKeyringEntry();
+    const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
     const newIdentity = await wallet.createIdentity(0);
     expect(newIdentity).toBeTruthy();
@@ -49,7 +49,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
   it("can load a newly created identity", async () => {
     pendingWithoutLedger();
 
-    const wallet = new LedgerSimpleAddressKeyringEntry();
+    const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
     const newIdentity = await wallet.createIdentity(0);
 
@@ -65,7 +65,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
   it("can create multiple identities", async () => {
     pendingWithoutLedger();
 
-    const wallet = new LedgerSimpleAddressKeyringEntry();
+    const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
     const newIdentity1 = await wallet.createIdentity(0);
     const newIdentity2 = await wallet.createIdentity(1);
@@ -94,7 +94,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
   it("throws when adding the same identity index twice", async () => {
     pendingWithoutLedger();
 
-    const wallet = new LedgerSimpleAddressKeyringEntry();
+    const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
     await wallet.createIdentity(0);
     await wallet
@@ -106,7 +106,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
   it("can set, change and unset an identity label", async () => {
     pendingWithoutLedger();
 
-    const wallet = new LedgerSimpleAddressKeyringEntry();
+    const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
     const newIdentity = await wallet.createIdentity(0);
     expect(wallet.getIdentities()[0].label).toBeUndefined();
@@ -125,7 +125,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
   it("has disconnected device state when created", () => {
     pendingWithoutInteractiveLedger();
 
-    const wallet = new LedgerSimpleAddressKeyringEntry();
+    const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
     expect(wallet.deviceState.value).toEqual(LedgerState.Disconnected);
     wallet.stopDeviceTracking();
@@ -134,7 +134,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
   it("changed device state to app open after some time", async () => {
     pendingWithoutInteractiveLedger();
 
-    const wallet = new LedgerSimpleAddressKeyringEntry();
+    const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
     expect(wallet.deviceState.value).toEqual(LedgerState.Disconnected);
 
@@ -146,14 +146,14 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
   it("cannot sign when created", () => {
     pendingWithoutInteractiveLedger();
 
-    const wallet = new LedgerSimpleAddressKeyringEntry();
+    const wallet = new LedgerSimpleAddressWallet();
     expect(wallet.canSign.value).toEqual(false);
   });
 
   it("can sign after some time", async () => {
     pendingWithoutInteractiveLedger();
 
-    const wallet = new LedgerSimpleAddressKeyringEntry();
+    const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
     expect(wallet.canSign.value).toEqual(false);
 
@@ -165,7 +165,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
   it("cannot sign when device tracking is off", async () => {
     pendingWithoutInteractiveLedger();
 
-    const wallet = new LedgerSimpleAddressKeyringEntry();
+    const wallet = new LedgerSimpleAddressWallet();
     expect(wallet.canSign.value).toEqual(false);
 
     wallet.startDeviceTracking();
@@ -179,7 +179,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
   it("can sign", async () => {
     pendingWithoutInteractiveLedger();
 
-    const wallet = new LedgerSimpleAddressKeyringEntry();
+    const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
     const newIdentity = await wallet.createIdentity(0);
 
@@ -220,7 +220,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
   it("can serialize multiple identities", async () => {
     pendingWithoutLedger();
 
-    const wallet = new LedgerSimpleAddressKeyringEntry();
+    const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
     wallet.setLabel("wallet with 3 identities");
     const identity1 = await wallet.createIdentity(0);
@@ -265,7 +265,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
   it("can deserialize", () => {
     {
       // empty
-      const wallet = new LedgerSimpleAddressKeyringEntry('{ "identities": [] }' as WalletSerializationString);
+      const wallet = new LedgerSimpleAddressWallet('{ "identities": [] }' as WalletSerializationString);
       expect(wallet).toBeTruthy();
       expect(wallet.getIdentities().length).toEqual(0);
     }
@@ -273,7 +273,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     {
       // one element
       const serialized = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}] }' as WalletSerializationString;
-      const wallet = new LedgerSimpleAddressKeyringEntry(serialized);
+      const wallet = new LedgerSimpleAddressWallet(serialized);
       expect(wallet).toBeTruthy();
       expect(wallet.getIdentities().length).toEqual(1);
       expect(wallet.getIdentities()[0].pubkey.algo).toEqual("ed25519");
@@ -284,7 +284,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     {
       // two elements
       const serialized = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "simpleAddressIndex": 23}] }' as WalletSerializationString;
-      const wallet = new LedgerSimpleAddressKeyringEntry(serialized);
+      const wallet = new LedgerSimpleAddressWallet(serialized);
       expect(wallet).toBeTruthy();
       expect(wallet.getIdentities().length).toEqual(2);
       expect(wallet.getIdentities()[0].pubkey.algo).toEqual("ed25519");
@@ -299,7 +299,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
   it("can serialize and restore a full keyring wallet", async () => {
     pendingWithoutLedger();
 
-    const original = new LedgerSimpleAddressKeyringEntry();
+    const original = new LedgerSimpleAddressWallet();
     original.startDeviceTracking();
     const identity1 = await original.createIdentity(0);
     const identity2 = await original.createIdentity(1);
@@ -309,7 +309,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
     original.setIdentityLabel(identity2, "");
     original.setIdentityLabel(identity3, "foo");
 
-    const restored = new LedgerSimpleAddressKeyringEntry(original.serialize());
+    const restored = new LedgerSimpleAddressWallet(original.serialize());
 
     // pubkeys and labels match
     expect(original.getIdentities()).toEqual(restored.getIdentities());
@@ -320,7 +320,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
 
   it("can be cloned", () => {
     const oneIdentitySerialization = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}] }' as WalletSerializationString;
-    const original = new LedgerSimpleAddressKeyringEntry(oneIdentitySerialization);
+    const original = new LedgerSimpleAddressWallet(oneIdentitySerialization);
     const clone = original.clone();
     expect(clone).not.toBe(original);
     expect(clone.serialize()).toEqual(original.serialize());
@@ -328,7 +328,7 @@ describe("LedgerSimpleAddressKeyringEntry", () => {
 
   describe("Keyring integration", () => {
     it("wallet type can be registered", () => {
-      LedgerSimpleAddressKeyringEntry.registerWithKeyring();
+      LedgerSimpleAddressWallet.registerWithKeyring();
     });
   });
 });

@@ -41,7 +41,7 @@ The main entries you can add are
 * [Ed25519HdWallet](https://iov-one.github.io/iov-core-docs/latest/iov-keycontrol/classes/ed25519hdwallet.html),
   which generates HD keys ala SLIP-0010 (BIP-0032), with an arbitrary path (not chain-dependent).
   Use HdPaths.simpleAddress to generate a simple address path from an index.
-* [LedgerSimpleAddressKeyringEntry](https://iov-one.github.io/iov-core-docs/latest/iov-ledger-bns/classes/ledgersimpleaddresskeyringentry.html)
+* [LedgerSimpleAddressWallet](https://iov-one.github.io/iov-core-docs/latest/iov-ledger-bns/classes/ledgersimpleaddresswallet.html)
   which allows you to connect to a Ledger device for signing BNS transaction.
 
 ## License

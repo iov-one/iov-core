@@ -3,7 +3,7 @@ import { LocalIdentity, PublicIdentity, Wallet, WalletId, WalletImplementationId
 import { ValueAndUpdates } from "@iov/stream";
 import { ChainId, SignatureBytes } from "@iov/tendermint-types";
 import { LedgerState } from "./statetracker";
-export declare class LedgerSimpleAddressKeyringEntry implements Wallet {
+export declare class LedgerSimpleAddressWallet implements Wallet {
     static readonly implementationId: WalletImplementationIdString;
     /**
      * A convenience function to register this entry type with the global Keyring class
@@ -32,7 +32,7 @@ export declare class LedgerSimpleAddressKeyringEntry implements Wallet {
     /**
      * Turn off tracking USB devices.
      *
-     * Use this to save resources when LedgerSimpleAddressKeyringEntry is not used anymore.
+     * Use this to save resources when LedgerSimpleAddressWallet is not used anymore.
      * With device tracking turned off, canSign and deviceState are not updated anymore.
      */
     stopDeviceTracking(): void;

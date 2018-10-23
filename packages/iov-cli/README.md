@@ -234,11 +234,11 @@ When using a Testnet, you can use the BovFaucet to receive tokens:
 Do 1. and 2. like above
 
 ```
-> import { LedgerSimpleAddressKeyringEntry } from "@iov/ledger-bns";
+> import { LedgerSimpleAddressWallet } from "@iov/ledger-bns";
 > const profile = new UserProfile();
 > const wallet = Ed25519HdWallet.fromMnemonic("tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral");
 > profile.addEntry(wallet)
-> const ledgerWallet = new LedgerSimpleAddressKeyringEntry();
+> const ledgerWallet = new LedgerSimpleAddressWallet();
 > ledgerWallet.startDeviceTracking();
 > profile.addEntry(ledgerWallet);
 
@@ -265,7 +265,7 @@ Do 1. and 2. like above
      84,
      114, ...
 
-> LedgerSimpleAddressKeyringEntry.registerWithKeyring()
+> LedgerSimpleAddressWallet.registerWithKeyring()
 > const db = levelup(leveldown('./my_userprofile_db'))
 > await profile.storeIn(db, "secret passwd")
 > const profileFromDb = await UserProfile.loadFrom(db, "secret passwd");
