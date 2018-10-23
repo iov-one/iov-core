@@ -2,9 +2,10 @@ import { EthereumConnection } from "./ethereumconnection";
 import { TestConfig } from "./testconfig";
 
 describe("EthereumConnection", () => {
+  console.log(`Running test in env ${TestConfig.env}`);
   const base = TestConfig.base;
   const nodeChainId = TestConfig.chainId;
-  console.log(`Running test in env ${TestConfig.env}`);
+  const minHeight = TestConfig.minHeight;
 
   it("can be constructed", () => {
     const connection = new EthereumConnection(base, nodeChainId);
@@ -15,5 +16,11 @@ describe("EthereumConnection", () => {
     const connection = await EthereumConnection.establish(base);
     const chainId = connection.chainId();
     expect(chainId).toEqual(nodeChainId);
+  });
+
+  it("can get height", async () => {
+    const connection = await EthereumConnection.establish(base);
+    const height = await connection.height();
+    expect(height).toBeGreaterThan(minHeight);
   });
 });

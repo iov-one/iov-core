@@ -13,6 +13,7 @@ import {
   TokenTicker,
 } from "@iov/bcp-types";
 import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
+import { decodeHexQuantity } from "./utils";
 
 async function loadChainId(baseUrl: string, queryId: number): Promise<ChainId> {
   // see https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version
@@ -61,7 +62,15 @@ export class EthereumConnection implements BcpConnection {
   }
 
   public async height(): Promise<number> {
-    throw new Error("Not implemented");
+    // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_blocknumber
+    const result = await axios.post(this.baseUrl, {
+      jsonrpc: "2.0",
+      method: "eth_blockNumber",
+      params: [],
+      id: getQueryCounter(),
+    });
+    const responseBody = result.data;
+    return decodeHexQuantity(responseBody.result);
   }
 
   public async postTx(_: PostableBytes): Promise<BcpTransactionResponse> {
