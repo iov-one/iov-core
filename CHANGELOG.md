@@ -27,6 +27,10 @@ Breaking changes
 * @iov/core: `MultiChainSigner.addChain` now returns chain information of the chain added
 * @iov/ledger-bns: in `LedgerSimpleAddressKeyringEntry`, `.createIdentity` takes an index argument
 * @iov/ledger-bns: rename `LedgerSimpleAddressKeyringEntry` to `LedgerSimpleAddressWallet`
+* Due to updates in the Keyring serialization, UserProfiles stored with
+  earlier versions of IOV-Core cannot be opened with 0.7.0. To migrate to
+  the new version, extract the secret data using an older version and
+  create a new UserProfile in 0.7.0.
 
 Enhancements:
 

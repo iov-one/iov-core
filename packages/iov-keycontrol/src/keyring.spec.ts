@@ -55,7 +55,7 @@ describe("Keyring", () => {
 
   it("can serialize empty", () => {
     const keyring = new Keyring();
-    expect(keyring.serialize()).toEqual('{"entries":[]}');
+    expect(keyring.serialize()).toEqual('{"wallets":[]}');
   });
 
   it("can serialize one wallet", () => {
@@ -63,7 +63,7 @@ describe("Keyring", () => {
     const wallet = Ed25519HdWallet.fromEntropy(fromHex("c7f74844892fd7b707e74fc9b6c8ef917c13ddbb380cadbc"));
     keyring.add(wallet);
 
-    expect(keyring.serialize()).toMatch(/^{\"entries\":\[{\"implementationId\":\"ed25519-hd\",\"data\":\"{.*}\"}\]}$/);
+    expect(keyring.serialize()).toMatch(/^{\"wallets\":\[{\"implementationId\":\"ed25519-hd\",\"data\":\"{.*}\"}\]}$/);
   });
 
   it("can serialize many wallets", () => {
@@ -81,11 +81,11 @@ describe("Keyring", () => {
     keyring.add(wallet5);
     keyring.add(wallet6);
 
-    expect(keyring.serialize()).toMatch(/^{\"entries\":\[{\"implementationId\":\"ed25519-hd\",\"data\":\"{.*}\"}(,{\"implementationId\":\"ed25519-hd\",\"data\":\"{.*}\"}){5}\]}$/);
+    expect(keyring.serialize()).toMatch(/^{\"wallets\":\[{\"implementationId\":\"ed25519-hd\",\"data\":\"{.*}\"}(,{\"implementationId\":\"ed25519-hd\",\"data\":\"{.*}\"}){5}\]}$/);
   });
 
   it("can deserialize empty", () => {
-    const keyring = new Keyring('{"entries":[]}' as KeyringSerializationString);
+    const keyring = new Keyring('{"wallets":[]}' as KeyringSerializationString);
     expect(keyring).toBeTruthy();
     expect(keyring.getEntries().length).toEqual(0);
   });
@@ -93,7 +93,7 @@ describe("Keyring", () => {
   it("can deserialize one ed25519-hd wallet", () => {
     const keyring = new Keyring(`
       {
-        "entries": [
+        "wallets": [
           {
             "implementationId": "ed25519-hd",
             "data": "{\\"secret\\":\\"side ripple bachelor banner word swear buzz try situate rent desk carry scorpion uphold undo account pumpkin throw\\",\\"curve\\":\\"ed25519 seed\\",\\"identities\\":[]}"
@@ -106,7 +106,7 @@ describe("Keyring", () => {
   });
 
   it("can deserialize one ed25519 wallet", () => {
-    const keyring = new Keyring('{"entries":[{"implementationId":"ed25519","data":"{ \\"identities\\":[{\\"localIdentity\\": { \\"pubkey\\": { \\"algo\\": \\"ed25519\\", \\"data\\": \\"aabbccdd\\" }, \\"nickname\\": \\"foo\\" }, \\"privkey\\": \\"223322112233aabb\\"}] }"}]}' as KeyringSerializationString);
+    const keyring = new Keyring('{"wallets":[{"implementationId":"ed25519","data":"{ \\"identities\\":[{\\"localIdentity\\": { \\"pubkey\\": { \\"algo\\": \\"ed25519\\", \\"data\\": \\"aabbccdd\\" }, \\"nickname\\": \\"foo\\" }, \\"privkey\\": \\"223322112233aabb\\"}] }"}]}' as KeyringSerializationString);
 
     expect(keyring.getEntries().length).toEqual(1);
     expect(keyring.getEntries()[0]).toEqual(jasmine.any(Ed25519Wallet));

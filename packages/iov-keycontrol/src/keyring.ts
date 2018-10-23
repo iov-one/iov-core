@@ -36,7 +36,7 @@ interface WalletSerialization {
 }
 
 interface KeyringSerialization {
-  readonly entries: WalletSerialization[];
+  readonly wallets: WalletSerialization[];
 }
 
 export type WalletDeserializer = (data: WalletSerializationString) => Wallet;
@@ -81,7 +81,7 @@ export class Keyring {
   constructor(data?: KeyringSerializationString) {
     if (data) {
       const parsedData = JSON.parse(data) as KeyringSerialization;
-      this.wallets = parsedData.entries.map(Keyring.deserializeWallet);
+      this.wallets = parsedData.wallets.map(Keyring.deserializeWallet);
     } else {
       this.wallets = [];
     }
@@ -111,7 +111,7 @@ export class Keyring {
   // this will contain secret info, so handle securely!
   public serialize(): KeyringSerializationString {
     const out: KeyringSerialization = {
-      entries: this.wallets.map(
+      wallets: this.wallets.map(
         (wallet): WalletSerialization => ({
           implementationId: wallet.implementationId,
           data: wallet.serialize(),
