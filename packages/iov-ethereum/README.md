@@ -22,6 +22,13 @@ To run Ethereum tests locally, you need to install ganache and set as follow:
 - Network ID: `5777`
 - Mnemonic: `oxygen fall sure lava energy veteran enroll frown question detail include maximum`
 
+Or run the followin script:
+```
+cd packages/iov-ethereum
+source startGanache.sh
+yarn test
+source stopGanache.sh
+```
 
 ## License
 

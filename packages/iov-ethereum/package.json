@@ -40,5 +40,8 @@
     "long": "^4.0.0",
     "readonly-date": "^1.0.0",
     "xstream": "^11.7.0"
+  },
+  "devDependencies": {
+    "ganache-cli": "^6.1.8"
   }
 }
