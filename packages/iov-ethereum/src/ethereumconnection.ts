@@ -39,7 +39,7 @@ export class EthereumConnection implements BcpConnection {
   constructor(baseUrl: string, chainId: ChainId) {
     this.baseUrl = baseUrl;
 
-    if (!chainId.match(/^[0-9]*$/)) {
+    if (!chainId.match(/^[0-9]+$/)) {
       // see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#specification
       throw new Error("Ethereum chain ID must be a string of numbers.");
     }
