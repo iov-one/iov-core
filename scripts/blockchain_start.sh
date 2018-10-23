@@ -14,10 +14,10 @@ else
   PACKAGES="${SCRIPT_DIR}/../packages"
 
   export TM_VERSION=0.21.0
-  export BOV_VERSION=v0.6.0
+  export BOV_VERSION=v0.8.0
   docker pull tendermint/tendermint:${TM_VERSION}
   docker pull iov1/tendermint:${TM_VERSION}
-  docker pull iov1/bov:${BOV_VERSION}
+  docker pull iov1/bnsd:${BOV_VERSION}
   export TENDERMINT_ENABLED=1
   export BOV_ENABLED=1
 
