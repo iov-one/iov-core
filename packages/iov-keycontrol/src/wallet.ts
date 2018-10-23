@@ -47,8 +47,10 @@ export interface Wallet {
   // otherwise, they will be different
   readonly id: WalletId;
 
-  // Sets a label associated with the keyring entry to be displayed in the UI.
-  // To clear the label, set it to undefined.
+  /**
+   * Sets a label for this wallet to be displayed in the UI.
+   * To clear the label, set it to undefined.
+   */
   readonly setLabel: (label: string | undefined) => void;
 
   // createIdentity will create one new identity

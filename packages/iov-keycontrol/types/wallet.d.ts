@@ -31,6 +31,10 @@ export declare type WalletSerializationString = string & As<"wallet-serializatio
 export interface Wallet {
     readonly label: ValueAndUpdates<string | undefined>;
     readonly id: WalletId;
+    /**
+     * Sets a label for this wallet to be displayed in the UI.
+     * To clear the label, set it to undefined.
+     */
     readonly setLabel: (label: string | undefined) => void;
     readonly createIdentity: (options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number) => Promise<LocalIdentity>;
     readonly setIdentityLabel: (identity: PublicIdentity, label: string | undefined) => void;
