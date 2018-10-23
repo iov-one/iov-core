@@ -6,7 +6,7 @@ import { WalletSerializationString } from "@iov/keycontrol";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
 import { pendingWithoutInteractiveLedger, pendingWithoutLedger } from "./common.spec";
-import { LedgerSimpleAddressWallet } from "./ledgersimpleaddresskeyringentry";
+import { LedgerSimpleAddressWallet } from "./ledgersimpleaddresswallet";
 import { LedgerState } from "./statetracker";
 
 const { toHex } = Encoding;
