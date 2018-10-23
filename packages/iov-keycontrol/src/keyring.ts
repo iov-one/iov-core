@@ -91,15 +91,17 @@ export class Keyring {
     this.wallets.push(wallet);
   }
 
-  // Note: this returns an array with mutable element references. Thus e.g.
-  // .getEntries().createIdentity() will change the keyring.
-  public getEntries(): ReadonlyArray<Wallet> {
+  /**
+   * this returns an array with mutable element references. Thus e.g.
+   * .getWallets().createIdentity() will change the keyring.
+   */
+  public getWallets(): ReadonlyArray<Wallet> {
     return this.wallets;
   }
 
   // if you stored the immutible keyring entry reference, you can get the object back here
-  public getEntryById(id: string): Wallet | undefined {
-    return this.wallets.find(e => e.id === id);
+  public getWallet(id: WalletId): Wallet | undefined {
+    return this.wallets.find(wallet => wallet.id === id);
   }
 
   // if you stored the immutible keyring entry reference, you can get the object back here

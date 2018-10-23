@@ -258,7 +258,7 @@ export class UserProfile {
       throw new Error("UserProfile is currently locked");
     }
 
-    const wallet = this.keyring.getEntryById(id);
+    const wallet = this.keyring.getWallet(id);
 
     if (!wallet) {
       throw new Error(`Wallet of id '${id}' does not exist in keyring`);
@@ -272,7 +272,7 @@ export class UserProfile {
       throw new Error("UserProfile is currently locked");
     }
 
-    return this.keyring.getEntries().map(wallet => ({
+    return this.keyring.getWallets().map(wallet => ({
       id: wallet.id,
       label: wallet.label.value,
     }));

@@ -385,7 +385,7 @@ describe("UserProfile", () => {
     const keyring = new Keyring();
     const wallet = Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash");
     keyring.add(wallet);
-    const mainIdentity = await keyring.getEntries()[0].createIdentity(HdPaths.simpleAddress(0));
+    const mainIdentity = await keyring.getWallets()[0].createIdentity(HdPaths.simpleAddress(0));
     const profile = new UserProfile({ createdAt, keyring });
 
     const fakeTransaction: SendTx = {

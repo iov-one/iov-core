@@ -19,7 +19,7 @@ describe("Keyring", () => {
 
   it("is empty after construction", () => {
     const keyring = new Keyring();
-    expect(keyring.getEntries().length).toEqual(0);
+    expect(keyring.getWallets().length).toEqual(0);
   });
 
   it("can add one wallet", () => {
@@ -28,9 +28,9 @@ describe("Keyring", () => {
 
     keyring.add(wallet);
 
-    expect(keyring.getEntries().length).toEqual(1);
+    expect(keyring.getWallets().length).toEqual(1);
     // Ensure added wallet is the same object, no copy of it
-    expect(keyring.getEntries()[0]).toBe(wallet);
+    expect(keyring.getWallets()[0]).toBe(wallet);
   });
 
   it("can add multiple wallets", () => {
@@ -46,11 +46,11 @@ describe("Keyring", () => {
     keyring.add(wallet3);
     keyring.add(wallet4);
 
-    expect(keyring.getEntries().length).toEqual(4);
-    expect(keyring.getEntries()[0]).toBe(wallet1);
-    expect(keyring.getEntries()[1]).toBe(wallet2);
-    expect(keyring.getEntries()[2]).toBe(wallet3);
-    expect(keyring.getEntries()[3]).toBe(wallet4);
+    expect(keyring.getWallets().length).toEqual(4);
+    expect(keyring.getWallets()[0]).toBe(wallet1);
+    expect(keyring.getWallets()[1]).toBe(wallet2);
+    expect(keyring.getWallets()[2]).toBe(wallet3);
+    expect(keyring.getWallets()[3]).toBe(wallet4);
   });
 
   it("can serialize empty", () => {
@@ -87,7 +87,7 @@ describe("Keyring", () => {
   it("can deserialize empty", () => {
     const keyring = new Keyring('{"wallets":[]}' as KeyringSerializationString);
     expect(keyring).toBeTruthy();
-    expect(keyring.getEntries().length).toEqual(0);
+    expect(keyring.getWallets().length).toEqual(0);
   });
 
   it("can deserialize one ed25519-hd wallet", () => {
@@ -101,15 +101,15 @@ describe("Keyring", () => {
         ]
       }` as KeyringSerializationString);
 
-    expect(keyring.getEntries().length).toEqual(1);
-    expect(keyring.getEntries()[0]).toEqual(jasmine.any(Ed25519HdWallet));
+    expect(keyring.getWallets().length).toEqual(1);
+    expect(keyring.getWallets()[0]).toEqual(jasmine.any(Ed25519HdWallet));
   });
 
   it("can deserialize one ed25519 wallet", () => {
     const keyring = new Keyring('{"wallets":[{"implementationId":"ed25519","data":"{ \\"identities\\":[{\\"localIdentity\\": { \\"pubkey\\": { \\"algo\\": \\"ed25519\\", \\"data\\": \\"aabbccdd\\" }, \\"nickname\\": \\"foo\\" }, \\"privkey\\": \\"223322112233aabb\\"}] }"}]}' as KeyringSerializationString);
 
-    expect(keyring.getEntries().length).toEqual(1);
-    expect(keyring.getEntries()[0]).toEqual(jasmine.any(Ed25519Wallet));
+    expect(keyring.getWallets().length).toEqual(1);
+    expect(keyring.getWallets()[0]).toEqual(jasmine.any(Ed25519Wallet));
   });
 
   it("can serialize and deserialize multiple wallets", async () => {
@@ -141,31 +141,31 @@ describe("Keyring", () => {
 
     // compare wallets
 
-    expect(restored.getEntries().length).toEqual(4);
-    expect(keyring.getEntries()[0]).toEqual(jasmine.any(Ed25519HdWallet));
-    expect(keyring.getEntries()[0].getIdentities().length).toEqual(1);
-    expect(keyring.getEntries()[1]).toEqual(jasmine.any(Ed25519Wallet));
-    expect(keyring.getEntries()[1].getIdentities().length).toEqual(2);
-    expect(keyring.getEntries()[2]).toEqual(jasmine.any(Ed25519HdWallet));
-    expect(keyring.getEntries()[2].getIdentities().length).toEqual(3);
-    expect(keyring.getEntries()[3]).toEqual(jasmine.any(Ed25519Wallet));
-    expect(keyring.getEntries()[3].getIdentities().length).toEqual(4);
+    expect(restored.getWallets().length).toEqual(4);
+    expect(keyring.getWallets()[0]).toEqual(jasmine.any(Ed25519HdWallet));
+    expect(keyring.getWallets()[0].getIdentities().length).toEqual(1);
+    expect(keyring.getWallets()[1]).toEqual(jasmine.any(Ed25519Wallet));
+    expect(keyring.getWallets()[1].getIdentities().length).toEqual(2);
+    expect(keyring.getWallets()[2]).toEqual(jasmine.any(Ed25519HdWallet));
+    expect(keyring.getWallets()[2].getIdentities().length).toEqual(3);
+    expect(keyring.getWallets()[3]).toEqual(jasmine.any(Ed25519Wallet));
+    expect(keyring.getWallets()[3].getIdentities().length).toEqual(4);
 
     // compare wallet content (via LocalIdentity equality)
 
-    expect(keyring.getEntries()[0].getIdentities()[0]).toEqual(i1a);
+    expect(keyring.getWallets()[0].getIdentities()[0]).toEqual(i1a);
 
-    expect(keyring.getEntries()[1].getIdentities()[0]).toEqual(i2a);
-    expect(keyring.getEntries()[1].getIdentities()[1]).toEqual(i2b);
+    expect(keyring.getWallets()[1].getIdentities()[0]).toEqual(i2a);
+    expect(keyring.getWallets()[1].getIdentities()[1]).toEqual(i2b);
 
-    expect(keyring.getEntries()[2].getIdentities()[0]).toEqual(i3a);
-    expect(keyring.getEntries()[2].getIdentities()[1]).toEqual(i3b);
-    expect(keyring.getEntries()[2].getIdentities()[2]).toEqual(i3c);
+    expect(keyring.getWallets()[2].getIdentities()[0]).toEqual(i3a);
+    expect(keyring.getWallets()[2].getIdentities()[1]).toEqual(i3b);
+    expect(keyring.getWallets()[2].getIdentities()[2]).toEqual(i3c);
 
-    expect(keyring.getEntries()[3].getIdentities()[0]).toEqual(i4a);
-    expect(keyring.getEntries()[3].getIdentities()[1]).toEqual(i4b);
-    expect(keyring.getEntries()[3].getIdentities()[2]).toEqual(i4c);
-    expect(keyring.getEntries()[3].getIdentities()[3]).toEqual(i4d);
+    expect(keyring.getWallets()[3].getIdentities()[0]).toEqual(i4a);
+    expect(keyring.getWallets()[3].getIdentities()[1]).toEqual(i4b);
+    expect(keyring.getWallets()[3].getIdentities()[2]).toEqual(i4c);
+    expect(keyring.getWallets()[3].getIdentities()[3]).toEqual(i4d);
   });
 
   it("supports all basic wallet types by default", () => {

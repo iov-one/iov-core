@@ -27,8 +27,12 @@ export declare class Keyring {
     private readonly wallets;
     constructor(data?: KeyringSerializationString);
     add(wallet: Wallet): void;
-    getEntries(): ReadonlyArray<Wallet>;
-    getEntryById(id: string): Wallet | undefined;
+    /**
+     * this returns an array with mutable element references. Thus e.g.
+     * .getWallets().createIdentity() will change the keyring.
+     */
+    getWallets(): ReadonlyArray<Wallet>;
+    getWallet(id: WalletId): Wallet | undefined;
     getEntryByIndex(n: number): Wallet | undefined;
     serialize(): KeyringSerializationString;
     clone(): Keyring;
