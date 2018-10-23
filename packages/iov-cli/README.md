@@ -238,18 +238,18 @@ Do 1. and 2. like above
 > const profile = new UserProfile();
 > const wallet = Ed25519HdWallet.fromMnemonic("tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral");
 > profile.addEntry(wallet)
-> const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
-> ledgerEntry.startDeviceTracking();
-> profile.addEntry(ledgerEntry);
+> const ledgerWallet = new LedgerSimpleAddressKeyringEntry();
+> ledgerWallet.startDeviceTracking();
+> profile.addEntry(ledgerWallet);
 
 > profile.getIdentities(wallet.id)
 []
 
-> profile.getIdentities(ledgerEntry.id)
+> profile.getIdentities(ledgerWallet.id)
 []
 
 > const softwareIdentity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0))
-> const hardwareIdentity = await profile.createIdentity(ledgerEntry.id, 0)
+> const hardwareIdentity = await profile.createIdentity(ledgerWallet.id, 0)
 
 > softwareIdentity.pubkey
 { algo: 'ed25519',

@@ -175,8 +175,8 @@ export class UserProfile {
 
   // sets the label of the n-th keyring entry of the primary keyring
   public setEntryLabel(id: WalletId, label: string | undefined): void {
-    const entry = this.entryInPrimaryKeyring(id);
-    entry.setLabel(label);
+    const wallet = this.entryInPrimaryKeyring(id);
+    wallet.setLabel(label);
     this.walletsProducer.update(this.walletInfos());
   }
 
@@ -185,21 +185,21 @@ export class UserProfile {
     id: WalletId,
     options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number,
   ): Promise<LocalIdentity> {
-    const entry = this.entryInPrimaryKeyring(id);
-    return entry.createIdentity(options);
+    const wallet = this.entryInPrimaryKeyring(id);
+    return wallet.createIdentity(options);
   }
 
   // assigns a new label to one of the identities
   // in the n-th keyring entry of the primary keyring
   public setIdentityLabel(id: WalletId, identity: PublicIdentity, label: string | undefined): void {
-    const entry = this.entryInPrimaryKeyring(id);
-    entry.setIdentityLabel(identity, label);
+    const wallet = this.entryInPrimaryKeyring(id);
+    wallet.setIdentityLabel(identity, label);
   }
 
   // get identities of the n-th keyring entry of the primary keyring
   public getIdentities(id: WalletId): ReadonlyArray<LocalIdentity> {
-    const entry = this.entryInPrimaryKeyring(id);
-    return entry.getIdentities();
+    const wallet = this.entryInPrimaryKeyring(id);
+    return wallet.getIdentities();
   }
 
   public async signTransaction(
@@ -209,13 +209,13 @@ export class UserProfile {
     codec: TxCodec,
     nonce: Nonce,
   ): Promise<SignedTransaction> {
-    const entry = this.entryInPrimaryKeyring(id);
+    const wallet = this.entryInPrimaryKeyring(id);
 
     const { bytes, prehashType } = codec.bytesToSign(transaction, nonce);
     const signature: FullSignature = {
       publicKey: identity.pubkey,
       nonce: nonce,
-      signature: await entry.createTransactionSignature(identity, bytes, prehashType, transaction.chainId),
+      signature: await wallet.createTransactionSignature(identity, bytes, prehashType, transaction.chainId),
     };
 
     return {
@@ -232,13 +232,13 @@ export class UserProfile {
     codec: TxCodec,
     nonce: Nonce,
   ): Promise<SignedTransaction> {
-    const entry = this.entryInPrimaryKeyring(id);
+    const wallet = this.entryInPrimaryKeyring(id);
 
     const { bytes, prehashType } = codec.bytesToSign(originalTransaction.transaction, nonce);
     const newSignature: FullSignature = {
       publicKey: identity.pubkey,
       nonce: nonce,
-      signature: await entry.createTransactionSignature(
+      signature: await wallet.createTransactionSignature(
         identity,
         bytes,
         prehashType,
@@ -257,13 +257,13 @@ export class UserProfile {
       throw new Error("UserProfile is currently locked");
     }
 
-    const entry = this.keyring.getEntryById(id);
+    const wallet = this.keyring.getEntryById(id);
 
-    if (!entry) {
+    if (!wallet) {
       throw new Error(`Entry of id ${id} does not exist in keyring`);
     }
 
-    return entry;
+    return wallet;
   }
 
   private walletInfos(): ReadonlyArray<WalletInfo> {
@@ -271,9 +271,9 @@ export class UserProfile {
       throw new Error("UserProfile is currently locked");
     }
 
-    return this.keyring.getEntries().map(entry => ({
-      id: entry.id,
-      label: entry.label.value,
+    return this.keyring.getEntries().map(wallet => ({
+      id: wallet.id,
+      label: wallet.label.value,
     }));
   }
 }

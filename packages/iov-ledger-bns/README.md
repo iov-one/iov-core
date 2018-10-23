@@ -33,23 +33,23 @@ are two interfaces to do so: `readonly canSign: ValueAndUpdates<boolean>` and `r
 `canSign` is provided for every keyring entry and works as follows:
 
 ```ts
-const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
-ledgerEntry.startDeviceTracking();
+const ledgerWallet = new LedgerSimpleAddressKeyringEntry();
+ledgerWallet.startDeviceTracking();
 
-const canSign1 = ledgerEntry.canSign.value; // false
+const canSign1 = ledgerWallet.canSign.value; // false
 
 // connect Ledger and open app
 
-const canSign2 = ledgerEntry.canSign.value; // true
+const canSign2 = ledgerWallet.canSign.value; // true
 ```
 
 You can subscribe for updates
 
 ```ts
-const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
-ledgerEntry.startDeviceTracking();
+const ledgerWallet = new LedgerSimpleAddressKeyringEntry();
+ledgerWallet.startDeviceTracking();
 
-ledgerEntry.canSign.updates.subscribe({
+ledgerWallet.canSign.updates.subscribe({
   next: value => {
     console.log("canSign is now", value);
   }
@@ -59,11 +59,11 @@ ledgerEntry.canSign.updates.subscribe({
 or wait until a specific value is reached
 
 ```ts
-const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
-ledgerEntry.startDeviceTracking();
+const ledgerWallet = new LedgerSimpleAddressKeyringEntry();
+ledgerWallet.startDeviceTracking();
 
 async function signWhenReady() {
-  await ledgerEntry.canSign.waitFor(true);
+  await ledgerWallet.canSign.waitFor(true);
   // canSign is now true. Proceed.
 }
 ```
@@ -76,16 +76,16 @@ First, make sure to `import { LedgerSimpleAddressKeyringEntry, LedgerState } fro
 Check the current state:
 
 ```ts
-const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
-ledgerEntry.startDeviceTracking();
+const ledgerWallet = new LedgerSimpleAddressKeyringEntry();
+ledgerWallet.startDeviceTracking();
 
-const state1 = ledgerEntry.deviceState.value; // LedgerState.Disconnected
+const state1 = ledgerWallet.deviceState.value; // LedgerState.Disconnected
 
 // connect and wait some time
-const state2 = ledgerEntry.deviceState.value; // LedgerState.Connected
+const state2 = ledgerWallet.deviceState.value; // LedgerState.Connected
 
 // open app
-const state3 = ledgerEntry.deviceState.value; // LedgerState.IovAppOpen
+const state3 = ledgerWallet.deviceState.value; // LedgerState.IovAppOpen
 ```
 
 Subscribe for updates:
@@ -93,10 +93,10 @@ Subscribe for updates:
 ```ts
 import { LedgerSimpleAddressKeyringEntry, LedgerState } from "@iov/ledger-bns";
 
-const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
-ledgerEntry.startDeviceTracking();
+const ledgerWallet = new LedgerSimpleAddressKeyringEntry();
+ledgerWallet.startDeviceTracking();
 
-ledgerEntry.deviceState.updates.subscribe({
+ledgerWallet.deviceState.updates.subscribe({
   next: value => {
     switch (value) {
       case LedgerState.Disconnected:
@@ -116,11 +116,11 @@ ledgerEntry.deviceState.updates.subscribe({
 Wait until a specific value is reached:
 
 ```ts
-const ledgerEntry = new LedgerSimpleAddressKeyringEntry();
-ledgerEntry.startDeviceTracking();
+const ledgerWallet = new LedgerSimpleAddressKeyringEntry();
+ledgerWallet.startDeviceTracking();
 
 async function signWhenReady() {
-  await ledgerEntry.deviceState.waitFor(LedgerState.IovAppOpen);
+  await ledgerWallet.deviceState.waitFor(LedgerState.IovAppOpen);
   // signing app open
 }
 ```
