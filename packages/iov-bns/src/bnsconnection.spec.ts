@@ -44,8 +44,10 @@ const sleep = (t: number) => new Promise(resolve => setTimeout(resolve, t));
 describe("Integration tests with bov+tendermint", () => {
   // the first key generated from this mneumonic produces the given address
   // this account has money in the genesis file (setup in docker)
+  // expectedFaucetAddress generated using https://github.com/nym-zone/bech32
+  // bech32 -e -h tiov b1ca7e78f74423ae01da3b51e676934d9105f282
   const mnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
-  const expectedFaucetAddress = "B1CA7E78F74423AE01DA3B51E676934D9105F282" as Address;
+  const expectedFaucetAddress = "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address;
   const cash = "CASH" as TokenTicker;
 
   // TODO: had issues with websockets? check again later, maybe they need to close at end?
@@ -149,8 +151,9 @@ describe("Integration tests with bov+tendermint", () => {
   it("returns empty list when getting an unused account", async () => {
     pendingWithoutBov();
     const connection = await BnsConnection.establish(tendermintUrl);
-
-    const unusedAddress = "010101020202030303040404050505050A0A0A0A" as Address;
+    // unusedAddress generated using https://github.com/nym-zone/bech32
+    // bech32 -e -h tiov 010101020202030303040404050505050A0A0A0A
+    const unusedAddress = "tiov1qyqszqszqgpsxqcyqszq2pg9q59q5zs2fx9n6s" as Address;
     const response = await connection.getAccount({ address: unusedAddress });
     expect(response).toBeTruthy();
     expect(response.data).toBeTruthy();

@@ -53,7 +53,9 @@ export const privBin = fromHex(
 );
 
 // address is calculated by bov for the public key
-export const address = "ACC00B8F2E26FD093894C5B1D87E03AFAB71CF99" as Address;
+// address generated using https://github.com/nym-zone/bech32
+// bech32 -e -h tiov acc00b8f2e26fd093894c5b1d87e03afab71cf99
+export const address = "tiov14nqqhrewym7sjwy5ckcaslsr474hrnuek3vnr4" as Address;
 
 export const coinJson: FungibleToken = {
   whole: 878,
@@ -69,11 +71,13 @@ const amount = {
 };
 export const chainId = "test-123" as ChainId;
 // the sender in this tx is the above pubkey, pubkey->address should match
+// recipient address generated using https://github.com/nym-zone/bech32
+// bech32 -e -h tiov 6f0a3e37845b6a3c8ccbe6219199abc3ae0b26d9
 export const sendTxJson: SendTx = {
   chainId,
   signer: pubJson,
   kind: TransactionKind.Send,
-  recipient: "6F0A3E37845B6A3C8CCBE6219199ABC3AE0B26D9" as Address,
+  recipient: "tiov1du9ruduytd4rerxtucserxdtcwhqkfkezjy4w0" as Address,
   memo: "Test payment",
   amount,
 };
@@ -115,11 +119,13 @@ const sig2: FullSignature = {
     "baddad00cafe00bece8675da9d005f2018b69820673d57f5500ae2728d3e5012a44c786133cd911cc40761cda9ccf9094c1bbe1dc11f2d568cc4998072819a0c",
   ) as SignatureBytes,
 };
+// recipient address generated using https://github.com/nym-zone/bech32
+// bech32 -e -h tiov 009985cb38847474fe9febfd56ab67e14bcd56f3
 const randomMsg: SendTx = {
   chainId: "foo-bar-baz" as ChainId,
   signer: pubJson,
   kind: TransactionKind.Send,
-  recipient: "009985CB38847474FE9FEBFD56AB67E14BCD56F3" as Address,
+  recipient: "tiov1qzvctjecs368fl5la074d2m8u99u64hn8q7kyn" as Address,
   memo: "One more fix!",
   amount: {
     whole: 128,
@@ -151,11 +157,13 @@ export const setNameTxJson: SignedTransaction = {
 };
 
 export const hashCode = Uint8Array.from([...hashId, ...fromHex("1122334455aabbccddee")]);
+// recipient address generated using https://github.com/nym-zone/bech32
+// bech32 -e -h tiov 123485cb38847474fe9febfd56ab67e14bcd56f3
 const swapCounterMsg: SwapCounterTx = {
   chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
   kind: TransactionKind.SwapCounter,
-  recipient: "123485CB38847474FE9FEBFD56AB67E14BCD56F3" as Address,
+  recipient: "tiov1zg6gtjecs368fl5la074d2m8u99u64hnhhlprg" as Address,
   timeout: 7890,
   amount: [
     {

@@ -48,8 +48,8 @@ export const buildMsg = (tx: UnsignedTransaction): codecImpl.app.ITx => {
 
 const buildSendTx = (tx: SendTx): codecImpl.app.ITx => ({
   sendMsg: codecImpl.cash.SendMsg.create({
-    src: decodeBnsAddress(keyToAddress(tx.signer)),
-    dest: decodeBnsAddress(tx.recipient),
+    src: decodeBnsAddress(keyToAddress(tx.signer)).data,
+    dest: decodeBnsAddress(tx.recipient).data,
     amount: encodeToken(tx.amount),
     memo: tx.memo,
   }),
@@ -57,7 +57,7 @@ const buildSendTx = (tx: SendTx): codecImpl.app.ITx => ({
 
 const buildSetNameTx = (tx: SetNameTx): codecImpl.app.ITx => ({
   setNameMsg: codecImpl.namecoin.SetWalletNameMsg.create({
-    address: decodeBnsAddress(keyToAddress(tx.signer)),
+    address: decodeBnsAddress(keyToAddress(tx.signer)).data,
     name: tx.name,
   }),
 });
@@ -73,9 +73,9 @@ const buildSwapOfferTx = (tx: SwapOfferTx): codecImpl.app.ITx => {
 
 const buildSwapCounterTx = (tx: SwapCounterTx): codecImpl.app.ITx => ({
   createEscrowMsg: codecImpl.escrow.CreateEscrowMsg.create({
-    sender: decodeBnsAddress(keyToAddress(tx.signer)),
+    sender: decodeBnsAddress(keyToAddress(tx.signer)).data,
     arbiter: tx.hashCode,
-    recipient: decodeBnsAddress(tx.recipient),
+    recipient: decodeBnsAddress(tx.recipient).data,
     timeout: tx.timeout,
     amount: tx.amount.map(encodeToken),
   }),

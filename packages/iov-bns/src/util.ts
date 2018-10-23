@@ -12,17 +12,17 @@ import {
   TransactionKind,
 } from "@iov/bcp-types";
 import { Sha256 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Bech32, Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 
-/** Encodes raw bytes into a printable address */
+/** Encodes raw bytes into a bech32 address */
 export function encodeBnsAddress(bytes: Uint8Array): Address {
-  return Encoding.toHex(bytes).toUpperCase() as Address;
+  return Bech32.encode("tiov", bytes) as Address;
 }
 
-/** Decodes a printable address into raw bytes */
-export function decodeBnsAddress(address: Address): Uint8Array {
-  return Encoding.fromHex(address);
+/** Decodes a printable address into bech32 object */
+export function decodeBnsAddress(address: Address): { readonly prefix: string; readonly data: Uint8Array } {
+  return Bech32.decode(address);
 }
 
 export function keyToAddress(key: PublicKeyBundle): Address {
