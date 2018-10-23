@@ -3,7 +3,7 @@ import { Encoding } from "@iov/encoding";
 
 import { HdPaths } from "./hdpaths";
 import { Keyring, KeyringSerializationString } from "./keyring";
-import { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./keyring-entries";
+import { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./wallets";
 
 const { fromHex } = Encoding;
 

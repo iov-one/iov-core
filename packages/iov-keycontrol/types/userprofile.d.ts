@@ -5,7 +5,7 @@ import { Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp
 import { Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { Keyring, LocalIdentity, PublicIdentity, Wallet, WalletId } from "./keyring";
-import { Ed25519Wallet } from "./keyring-entries";
+import { Ed25519Wallet } from "./wallets";
 export interface UserProfileOptions {
     readonly createdAt: ReadonlyDate;
     readonly keyring: Keyring;

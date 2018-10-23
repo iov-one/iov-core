@@ -3,7 +3,7 @@ import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { ChainId, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types";
-import { Ed25519Wallet } from "./keyring-entries";
+import { Ed25519Wallet } from "./wallets";
 export declare type KeyringSerializationString = string & As<"keyring-serialization">;
 export declare type WalletImplementationIdString = string & As<"wallet-implementation-id">;
 export declare type WalletSerializationString = string & As<"wallet-serialization">;

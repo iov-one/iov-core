@@ -9,8 +9,8 @@ import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, SignatureBytes } fro
 
 import { HdPaths } from "./hdpaths";
 import { Keyring, WalletId } from "./keyring";
-import { Ed25519HdWallet, Secp256k1HdWallet } from "./keyring-entries";
 import { UserProfile } from "./userprofile";
+import { Ed25519HdWallet, Secp256k1HdWallet } from "./wallets";
 
 const { fromHex } = Encoding;
 

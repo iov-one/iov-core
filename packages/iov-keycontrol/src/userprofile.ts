@@ -25,8 +25,8 @@ import {
   Wallet,
   WalletId,
 } from "./keyring";
-import { Ed25519Wallet } from "./keyring-entries";
 import { DatabaseUtils } from "./utils";
+import { Ed25519Wallet } from "./wallets";
 
 const { toAscii, fromBase64, toBase64, fromUtf8, toUtf8, toRfc3339, fromRfc3339 } = Encoding;
 

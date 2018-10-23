@@ -5,7 +5,7 @@ import { Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { ChainId, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types";
 
-import { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./keyring-entries";
+import { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./wallets";
 
 export type KeyringSerializationString = string & As<"keyring-serialization">;
 export type WalletImplementationIdString = string & As<"wallet-implementation-id">;
