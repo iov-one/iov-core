@@ -4,7 +4,7 @@
 
 function shutdownGanache() {
   GANACHE_SEARCH="$(ps -ef | grep "[g]anache" | awk '{print $2}')"
-  export GANACHE_PID="${GANACHE_SEARCH}"
+  GANACHE_PID="${GANACHE_SEARCH}"
   if [ "$GANACHE_PID" != "" ]
   then
     echo "Killing existing Ganache CLI process $GANACHE_PID"
