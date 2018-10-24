@@ -359,6 +359,9 @@ describe("UserProfile", () => {
       keyToAddress: (): Address => {
         throw new Error("not implemented");
       },
+      isValidAddress: (): boolean => {
+        throw new Error("not implemented");
+      },
     };
 
     // wallet of id 'bar' does not exist
@@ -418,6 +421,9 @@ describe("UserProfile", () => {
         throw new Error("not implemented");
       },
       keyToAddress: (): Address => {
+        throw new Error("not implemented");
+      },
+      isValidAddress: (): boolean => {
         throw new Error("not implemented");
       },
     };
