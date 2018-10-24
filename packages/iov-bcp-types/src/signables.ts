@@ -49,6 +49,8 @@ export interface TxReadCodec {
   readonly parseBytes: (bytes: PostableBytes, chainId: ChainId) => SignedTransaction;
   // chain-dependent way to calculate address from key
   readonly keyToAddress: (key: PublicKeyBundle) => Address;
+  // chain-dependent validation of address
+  readonly isValidAddress: (address: string) => boolean;
 }
 
 // TxCodec knows how to convert Transactions to bytes for a given blockchain

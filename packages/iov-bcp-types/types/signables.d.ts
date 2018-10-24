@@ -27,6 +27,7 @@ export declare type Address = string & As<"address">;
 export interface TxReadCodec {
     readonly parseBytes: (bytes: PostableBytes, chainId: ChainId) => SignedTransaction;
     readonly keyToAddress: (key: PublicKeyBundle) => Address;
+    readonly isValidAddress: (address: string) => boolean;
 }
 export interface TxCodec extends TxReadCodec {
     readonly bytesToSign: (tx: UnsignedTransaction, nonce: Nonce) => SigningJob;
