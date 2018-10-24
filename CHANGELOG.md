@@ -1,19 +1,24 @@
 # Changelog
 
-## 0.7.0 (not yet released)
+## 0.7.0
 
+* @iov/bcp-types: optional field `expectedChainId` added to `ChainConnector`
+* @iov/bcp-types: `BcpConnection.getAccount` can now be called with a pubkey input
+* @iov/bcp-types: `TxReadCodec` and all its implementations now contain a `isValidAddress` method
+* @iov/core: `MultiChainSigner.addChain` now returns chain information of the chain added
 * @iov/lisk: new package to connect to the Lisk blockchain
 * @iov/rise: new package to connect to the RISE blockchain
 * @iov/encoding: bech32 encoding support for address bytes
+* @iov/keycontrol: `UserProfile.setEntry()` now returns `WalletInfo` of new wallet added, for ease of use
 
 Breaking changes
 
 * @iov/bcp-types: `Address` is now a `string` instead of an `Uint8Array`
 * @iov/bcp-types: `BcpTransactionResponse.metadata.success` was removed since failures are reported as promise rejections
-* @iov/bcp-types: optional field `expectedChainId` added to `ChainConnector`
-* @iov/bcp-types: `BcpConnection.getAccount` can not ne called with a pubkey input
 * @iov/bcp-types: `Nonce` is now implemented by `Int53` from @iov/encoding instead of `Long`
 * @iov/bns: `Client` was renamed to `BnsConnection`. The `connect()` function was renamed to `BnsConnection.establish()`
+* @iov/core: rename `IovWriter` to `MultiChainSigner`
+* @iov/core: rename the getter `reader` to `connection` in `MultiChainSigner`
 * @iov/faucets: `BovFaucet.credit` now expects an address in bech32 format
 * @iov/keycontrol: `Ed25519KeyringEntry` now takes a keypair as an argument in `createIdentity()`
 * @iov/keycontrol: `Ed25519SimpleAddressKeyringEntry` was removed in favour of `Ed25519HdWallet` together with `HdPaths.simpleAddress`
@@ -26,19 +31,12 @@ Breaking changes
 * @iov/keycontrol: in `Keyring`, rename `.getEntries/.getEntryById` to `.getWallets/.getWallet`
 * @iov/keycontrol: in `Keyring`, remove obsolete `.getEntryByIndex`
 * @iov/keycontrol: in `UserProfile`, rename `.addEntry/.setEntryLabel` to `.addWallet/.setWalletLabel`
-* @iov/core: rename `IovWriter` to `MultiChainSigner`
-* @iov/core: rename the getter `reader` to `connection` in `MultiChainSigner`
-* @iov/core: `MultiChainSigner.addChain` now returns chain information of the chain added
 * @iov/ledger-bns: in `LedgerSimpleAddressKeyringEntry`, `.createIdentity` takes an index argument
 * @iov/ledger-bns: rename `LedgerSimpleAddressKeyringEntry` to `LedgerSimpleAddressWallet`
 * Due to updates in the Keyring serialization, UserProfiles stored with
   earlier versions of IOV-Core cannot be opened with 0.7.0. To migrate to
   the new version, extract the secret data using an older version and
   create a new UserProfile in 0.7.0.
-
-Enhancements:
-
-* @iov/keycontrol: `UserProfile.setEntry()` now returns `WalletInfo` of new wallet added, for ease of use
 
 ## 0.6.1
 
