@@ -1,6 +1,6 @@
 import { Encoding } from "@iov/encoding";
 
-import { passphraseToKeypair, pubkeyToAddress } from "./derivation";
+import { isValidAddress, passphraseToKeypair, pubkeyToAddress } from "./derivation";
 
 const { fromHex } = Encoding;
 
@@ -30,6 +30,30 @@ describe("Derivation", () => {
       // https://texplorer.rise.vision/address/10145108642177909005R
       const pubkey = fromHex("34770ce843a01d975773ba2557b6643b32fe088818d343df2c32cbb89b286b3f");
       expect(pubkeyToAddress(pubkey)).toEqual("10145108642177909005R");
+    });
+  });
+
+  describe("isValidAddress", () => {
+    it("works for valid numbers within unsigned int64 range", () => {
+      expect(isValidAddress("1234567890R")).toBeTruthy();
+      expect(isValidAddress("6076671634347365051R")).toBeTruthy();
+      expect(isValidAddress("10176009299933723198R")).toBeTruthy();
+      // 2**64-1
+      expect(isValidAddress("18446744073709551615R")).toBeTruthy();
+    });
+
+    it("rejects malformed addresses", () => {
+      // invalid ending
+      expect(isValidAddress("1234567890L")).toBeFalsy();
+      // leading 0
+      expect(isValidAddress("01234567821R")).toBeFalsy();
+      // decimal
+      expect(isValidAddress("12345.6788R")).toBeFalsy();
+      // string values
+      expect(isValidAddress("12some45R")).toBeFalsy();
+      // 2**64, 2**64 + 1
+      expect(isValidAddress("18446744073709551616R")).toBeFalsy();
+      expect(isValidAddress("18446744073709551617R")).toBeFalsy();
     });
   });
 });
