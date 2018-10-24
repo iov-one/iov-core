@@ -66,12 +66,14 @@ export class Ed25519Keypair {
 }
 
 export class Ed25519 {
-  // Generates a keypair deterministically from a given 32 bytes seed.
-  // This seed equals the Ed25519 private key.
-  //
-  // For implementation details see crypto_sign_seed_keypair in
-  // https://download.libsodium.org/doc/public-key_cryptography/public-key_signatures.html
-  // and diagram on https://blog.mozilla.org/warner/2011/11/29/ed25519-keys/
+  /**
+   * Generates a keypair deterministically from a given 32 bytes seed.
+   *
+   * This seed equals the Ed25519 private key.
+   * For implementation details see crypto_sign_seed_keypair in
+   * https://download.libsodium.org/doc/public-key_cryptography/public-key_signatures.html
+   * and diagram on https://blog.mozilla.org/warner/2011/11/29/ed25519-keys/
+   */
   public static async makeKeypair(seed: Uint8Array): Promise<Ed25519Keypair> {
     await sodium.ready;
     const keypair = sodium.crypto_sign_seed_keypair(seed);

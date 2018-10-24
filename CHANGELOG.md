@@ -14,6 +14,7 @@ Breaking changes
 * @iov/bcp-types: `BcpConnection.getAccount` can not ne called with a pubkey input
 * @iov/bcp-types: `Nonce` is now implemented by `Int53` from @iov/encoding instead of `Long`
 * @iov/bns: `Client` was renamed to `BnsConnection`. The `connect()` function was renamed to `BnsConnection.establish()`
+* @iov/faucets: `BovFaucet.credit` now expects an address in bech32 format
 * @iov/keycontrol: `Ed25519KeyringEntry` now takes a keypair as an argument in `createIdentity()`
 * @iov/keycontrol: `Ed25519SimpleAddressKeyringEntry` was removed in favour of `Ed25519HdWallet` together with `HdPaths.simpleAddress`
 * @iov/keycontrol: in `UserProfile`, `.entriesCount`, `.entryLabels` and `.entryIds` have been merged into `.wallets`

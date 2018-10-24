@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@iov/bcp-types": "^0.7.0-alpha.1",
+    "@iov/bns": "^0.7.0-alpha.1",
     "@iov/crypto": "^0.7.0-alpha.1",
     "@iov/encoding": "^0.6.0",
     "axios": "^0.18.0"

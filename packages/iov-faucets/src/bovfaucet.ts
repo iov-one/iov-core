@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import { Address, TokenTicker } from "@iov/bcp-types";
+import { Bech32, Encoding } from "@iov/encoding";
 
 export class BovFaucet {
   private readonly url: string;
@@ -13,8 +14,10 @@ export class BovFaucet {
   }
 
   public async credit(address: Address, ticker: TokenTicker = "IOV" as TokenTicker): Promise<void> {
+    const addressAsHex = Encoding.toHex(Bech32.decode(address).data);
+
     const body = {
-      address: address,
+      address: addressAsHex,
       tokens: [{ ticker: ticker }],
     };
 
