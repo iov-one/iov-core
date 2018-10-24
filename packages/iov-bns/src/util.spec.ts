@@ -82,10 +82,12 @@ describe("Verify util functions", () => {
     const good2 = encodeBnsAddress(fromHex("1234567890abcdef1234567890abcdef12345678"));
     const bad = "ti17m9dug55pryn525drqwk9m7wgmlkp5ss4j2m1"; // bad size
     const bad2 = "tiov17m9dug55pryn525drqwk9m7wgmlkp5ss4j2m12"; // bad checksum
+    const bad3 = "btc17m9dug55pryn525drqwk9m7wgmlkp5ss4j2mky"; // bad prefix
 
-    expect(isValidAddress(good)).toBeTruthy();
-    expect(isValidAddress(good2)).toBeTruthy();
-    expect(isValidAddress(bad)).toBeFalsy();
-    expect(isValidAddress(bad2)).toBeFalsy();
+    expect(isValidAddress(good)).toEqual(true);
+    expect(isValidAddress(good2)).toEqual(true);
+    expect(isValidAddress(bad)).toEqual(false);
+    expect(isValidAddress(bad2)).toEqual(false);
+    expect(isValidAddress(bad3)).toEqual(false);
   });
 });

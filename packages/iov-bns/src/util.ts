@@ -47,9 +47,8 @@ const algoToPrefix = (algo: Algorithm) => {
 export function isValidAddress(address: string): boolean {
   try {
     decodeBnsAddress(address as Address);
-    // TODO: validate the perfix against something
     return true;
-  } catch (err) {
+  } catch {
     return false;
   }
 }
