@@ -1,11 +1,17 @@
 import { Address, TokenTicker } from "@iov/bcp-types";
-import { Random } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { bnsCodec } from "@iov/bns";
+import { Ed25519, Random } from "@iov/crypto";
+import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/tendermint-types";
 
 import { BovFaucet } from "./bovfaucet";
 
 async function randomBovAddress(): Promise<Address> {
-  return Encoding.toHex(await Random.getBytes(20)).toUpperCase() as Address;
+  const rawKeypair = await Ed25519.makeKeypair(await Random.getBytes(32));
+  const pubkey: PublicKeyBundle = {
+    algo: Algorithm.Ed25519,
+    data: rawKeypair.pubkey as PublicKeyBytes,
+  };
+  return bnsCodec.keyToAddress(pubkey);
 }
 
 describe("BovFaucet", () => {
