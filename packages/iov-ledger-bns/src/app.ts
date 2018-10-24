@@ -12,7 +12,7 @@ const cmdAppVersion = 0xca;
 
 export function getPublicKeyWithIndex(transport: TransportNodeHid, i: number): Promise<Uint8Array> {
   const pathComponent = Slip10RawIndex.hardened(i);
-  const chunk = buildPathPrefix([pathComponent]);
+  const chunk = buildPrefixedPath([pathComponent]);
   return sendChunks(transport, appCode, cmdPubkeyWithPath, chunk);
 }
 
@@ -22,17 +22,17 @@ export function signTransactionWithIndex(
   i: number,
 ): Promise<Uint8Array> {
   const pathComponent = Slip10RawIndex.hardened(i);
-  const data = new Uint8Array([...buildPathPrefix([pathComponent]), ...transaction]);
+  const data = new Uint8Array([...buildPrefixedPath([pathComponent]), ...transaction]);
   return sendChunks(transport, appCode, cmdSignWithPath, data);
 }
 
 // construct a binary length-prefixed path to send to the ledger
-function buildPathPrefix(path: ReadonlyArray<Slip10RawIndex>): Uint8Array {
+function buildPrefixedPath(path: ReadonlyArray<Slip10RawIndex>): Uint8Array {
   // I'm sure there is a better way to do this, but...
   let res = new Uint8Array([path.length]);
   // note: as an example how to combine Uint8Arrays, look at appendSignBytes in iov-bns/src/util.ts
-  for (const step of path.map(slip => slip.toBytesBigEndian())) {
-    res = Uint8Array.from([...res, ...step]);
+  for (const componentBytes of path.map(component => component.toBytesBigEndian())) {
+    res = Uint8Array.from([...res, ...componentBytes]);
   }
   return res;
 }
