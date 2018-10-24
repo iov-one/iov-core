@@ -12,7 +12,7 @@ import { ChainId, PostableBytes } from "@iov/tendermint-types";
 import * as codecImpl from "./codecimpl";
 import { parseTx } from "./decode";
 import { buildSignedTx, buildUnsignedTx } from "./encode";
-import { appendSignBytes, keyToAddress, tendermintHash } from "./util";
+import { appendSignBytes, isValidAddress, keyToAddress, tendermintHash } from "./util";
 
 export const bnsCodec: TxCodec = {
   // these are the bytes we create to add a signature
@@ -46,4 +46,5 @@ export const bnsCodec: TxCodec = {
   },
 
   keyToAddress: keyToAddress,
+  isValidAddress: isValidAddress,
 };

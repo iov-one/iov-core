@@ -44,6 +44,15 @@ const algoToPrefix = (algo: Algorithm) => {
   }
 };
 
+export function isValidAddress(address: string): boolean {
+  try {
+    decodeBnsAddress(address as Address);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 const signCodev1: Uint8Array = Uint8Array.from([0, 0xca, 0xfe, 0]);
 
 // append chainID and nonce to the raw tx bytes to prepare for signing

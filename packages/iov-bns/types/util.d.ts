@@ -10,6 +10,7 @@ export declare function decodeBnsAddress(address: Address): {
 };
 export declare function keyToAddress(key: PublicKeyBundle): Address;
 export declare const keyToIdentifier: (key: PublicKeyBundle) => Uint8Array;
+export declare function isValidAddress(address: string): boolean;
 export declare const appendSignBytes: (bz: Uint8Array, chainId: ChainId, nonce: Nonce) => SignableBytes;
 export declare const tendermintHash: (data: Uint8Array) => Uint8Array;
 export declare const arraysEqual: (a: Uint8Array, b: Uint8Array) => boolean;

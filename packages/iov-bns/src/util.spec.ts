@@ -2,7 +2,7 @@ import { Address } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
 import { hashCode } from "./testdata";
-import { arraysEqual, decodeBnsAddress, encodeBnsAddress, isHashIdentifier } from "./util";
+import { arraysEqual, decodeBnsAddress, encodeBnsAddress, isHashIdentifier, isValidAddress } from "./util";
 
 const { fromHex } = Encoding;
 
@@ -75,5 +75,19 @@ describe("Verify util functions", () => {
       prefix: "tiov",
       data: fromHex("f6cade229408c93a2a8d181d62efce46ff60d210"),
     });
+  });
+
+  it("isValidAddress checks valid addresses", () => {
+    const good = "tiov17m9dug55pryn525drqwk9m7wgmlkp5ss4j2mky";
+    const good2 = encodeBnsAddress(fromHex("1234567890abcdef1234567890abcdef12345678"));
+    const bad = "ti17m9dug55pryn525drqwk9m7wgmlkp5ss4j2m1"; // bad size
+    const bad2 = "tiov17m9dug55pryn525drqwk9m7wgmlkp5ss4j2m12"; // bad checksum
+    const bad3 = "btc17m9dug55pryn525drqwk9m7wgmlkp5ss4j2mky"; // bad prefix
+
+    expect(isValidAddress(good)).toEqual(true);
+    expect(isValidAddress(good2)).toEqual(true);
+    expect(isValidAddress(bad)).toEqual(false);
+    expect(isValidAddress(bad2)).toEqual(false);
+    expect(isValidAddress(bad3)).toEqual(false);
   });
 });

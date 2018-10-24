@@ -22,7 +22,7 @@ import {
   SignatureBytes,
 } from "@iov/tendermint-types";
 
-import { pubkeyToAddress } from "./derivation";
+import { isValidAddress, pubkeyToAddress } from "./derivation";
 import { Parse } from "./parse";
 import { amountFromComponents, serializeTransaction, transactionId } from "./serialization";
 
@@ -132,4 +132,6 @@ export const riseCodec: TxCodec = {
   keyToAddress: (pubkey: PublicKeyBundle): Address => {
     return pubkeyToAddress(pubkey.data) as Address;
   },
+
+  isValidAddress: isValidAddress,
 };
