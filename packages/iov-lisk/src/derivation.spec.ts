@@ -35,25 +35,25 @@ describe("Derivation", () => {
 
   describe("isValidAddress", () => {
     it("works for valid numbers within unsigned int64 range", () => {
-      expect(isValidAddress("1234567890L")).toBeTruthy();
-      expect(isValidAddress("6076671634347365051L")).toBeTruthy();
-      expect(isValidAddress("10176009299933723198L")).toBeTruthy();
+      expect(isValidAddress("1234567890L")).toEqual(true);
+      expect(isValidAddress("6076671634347365051L")).toEqual(true);
+      expect(isValidAddress("10176009299933723198L")).toEqual(true);
       // 2**64-1
-      expect(isValidAddress("18446744073709551615L")).toBeTruthy();
+      expect(isValidAddress("18446744073709551615L")).toEqual(true);
     });
 
     it("rejects malformed addresses", () => {
       // invalid ending
-      expect(isValidAddress("1234567890R")).toBeFalsy();
+      expect(isValidAddress("1234567890R")).toEqual(false);
       // leading 0
-      expect(isValidAddress("01234567821L")).toBeFalsy();
+      expect(isValidAddress("01234567821L")).toEqual(false);
       // decimal
-      expect(isValidAddress("12345.6788L")).toBeFalsy();
+      expect(isValidAddress("12345.6788L")).toEqual(false);
       // string values
-      expect(isValidAddress("12some45L")).toBeFalsy();
+      expect(isValidAddress("12some45L")).toEqual(false);
       // 2**64, 2**64 + 1
-      expect(isValidAddress("18446744073709551616L")).toBeFalsy();
-      expect(isValidAddress("18446744073709551617L")).toBeFalsy();
+      expect(isValidAddress("18446744073709551616L")).toEqual(false);
+      expect(isValidAddress("18446744073709551617L")).toEqual(false);
     });
   });
 });
