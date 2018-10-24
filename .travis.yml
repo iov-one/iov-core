@@ -37,7 +37,7 @@ install:
 before_script:
 - export TSLINT_FLAGS='-c ./tslint_ci.json'
 - export LONG_RUNNING_ENABLED=1
-- source ./packages/iov-ethereum/startGanache.sh
+- ./packages/iov-ethereum/startGanache.sh
 
 # Make variables and function from Travis available in our script
 # See implementation https://github.com/travis-ci/travis-build/blob/4041ba116ddb3bdfd66ab8acbb7094dee28d6797/lib/travis/build/templates/header.sh
@@ -65,7 +65,7 @@ script:
 
 after_script:
 - source ./scripts/blockchain_stop.sh
-- source ./packages/iov-ethereum/stopGanache.sh
+- ./packages/iov-ethereum/stopGanache.sh
 
 # whitelist long living branches to avoid testing feature branches twice (as branch and as pull request)
 branches:
