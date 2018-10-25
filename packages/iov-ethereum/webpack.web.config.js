@@ -15,7 +15,7 @@ module.exports = [
       filename: "tests.js",
     },
     plugins: [
-      new webpack.EnvironmentPlugin(['LONG_RUNNING_ENABLED']),
+      new webpack.EnvironmentPlugin(['ETH_ENV']),
     ],
   },
 ];
