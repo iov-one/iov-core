@@ -93,19 +93,19 @@ packages, please run those tests. (They require docker to be installed and
 executable by the current user)
 
 ```
-source ./scripts/blockchain_start.sh
+source ./scripts/iov_blockchain_start.sh
 cd packages/iov-tendermint-rpc
 yarn test
 cd ../iov-bns
 yarn test
 cd ../..
-source ./scripts/blockchain_stop.sh
+source ./scripts/iov_blockchain_stop.sh
 ```
 
 This is to try out, you can just go into the one package you work on,
 start blockchain, run integration tests, and stop it. If you are
 wondering about the magic, note that
-`blockchain_start.sh` sets TENDERMINT_ENABLED=1 and BOV_ENABLED=1
+`iov_blockchain_start.sh` sets TENDERMINT_ENABLED=1 and BOV_ENABLED=1
 to enable running the full integration tests.
 
 If you are working on `iov-lisk`, you can run the tests against

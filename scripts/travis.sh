@@ -40,7 +40,7 @@ retry 3 yarn install
 
 # Use Docker if available (currently Linux only)
 if command -v docker > /dev/null ; then
-  source ./scripts/blockchain_start.sh
+  source ./scripts/iov_blockchain_start.sh
 fi
 
 export ETHEREUM_ENABLED=1
@@ -157,4 +157,4 @@ fi
 # Cleanup
 #
 ./packages/iov-ethereum/stopGanache.sh
-source ./scripts/blockchain_stop.sh
+source ./scripts/iov_blockchain_stop.sh
