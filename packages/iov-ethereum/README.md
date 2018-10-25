@@ -25,6 +25,7 @@ To run Ethereum tests locally, you need to install ganache and set as follow:
 Or run the followin script:
 ```
 cd packages/iov-ethereum
+export GANACHE_MNEMONIC="oxygen fall sure lava energy veteran enroll frown question detail include maximum"
 ./startGanache.sh
 export ETHEREUM_ENABLED=1
 yarn test

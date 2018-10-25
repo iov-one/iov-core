@@ -44,6 +44,7 @@ if command -v docker > /dev/null ; then
 fi
 
 export ETHEREUM_ENABLED=1
+export GANACHE_MNEMONIC="oxygen fall sure lava energy veteran enroll frown question detail include maximum"
 ./packages/iov-ethereum/startGanache.sh
 
 echo "use tendermint?" "${TENDERMINT_ENABLED:-no}"
