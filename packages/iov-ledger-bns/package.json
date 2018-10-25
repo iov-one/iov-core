@@ -20,7 +20,8 @@
     "test-node": "node jasmine-testrunner.js",
     "test": "yarn build-or-skip && yarn test-node",
     "prebuild": "yarn format && yarn lint",
-    "build": "tsc && shx rm ./types/* && shx mv build/*.d.ts ./types",
+    "move-types": "shx rm -r ./types/* && shx mv build/types/* ./types && shx rm ./types/*.spec.d.ts",
+    "build": "shx rm -rf ./build && tsc && yarn move-types",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
     "listen": "ts-node ./src/scripts/listen.ts | grep -v '^dev'",
     "checkapp": "ts-node ./src/scripts/checkapp.ts | grep -v '^dev'"

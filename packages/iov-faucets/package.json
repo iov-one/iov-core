@@ -5,7 +5,7 @@
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
   "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "types": "types/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-faucets"
@@ -18,7 +18,8 @@
     "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
     "lint": "cross-env-shell \"tslint -t verbose --project . ${TSLINT_FLAGS}\"",
     "prebuild": "yarn format && yarn lint",
-    "build": "tsc",
+    "move-types": "shx rm -r ./types/* && shx mv build/types/* ./types && shx rm ./types/*.spec.d.ts",
+    "build": "shx rm -rf ./build && tsc && yarn move-types",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
     "test-node": "node jasmine-testrunner.js",
     "test": "yarn build-or-skip && yarn test-node"
