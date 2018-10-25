@@ -26,6 +26,7 @@ Or run the followin script:
 ```
 cd packages/iov-ethereum
 ./startGanache.sh
+export ETHEREUM_ENABLED=1
 yarn test
 ./stopGanache.sh
 ```

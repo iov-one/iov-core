@@ -1,13 +1,15 @@
 import { EthereumConnection } from "./ethereumconnection";
 import { TestConfig } from "./testconfig";
 
-const skipTests = (): boolean => !process.env.ETHEREUM_ENABLED;
+function skipTests(): boolean {
+  return !process.env.ETHEREUM_ENABLED;
+}
 
-const pendingWithoutEthereum = () => {
+function pendingWithoutEthereum(): void {
   if (skipTests()) {
-    pending("Set ETHEREUM_ENABLED to enable ethereum-node-based tests");
+    return pending("Set ETHEREUM_ENABLED to enable ethereum-node-based tests");
   }
-};
+}
 
 describe("EthereumConnection", () => {
   const base = TestConfig.base;
