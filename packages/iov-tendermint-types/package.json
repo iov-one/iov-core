@@ -20,7 +20,7 @@
     "lint-fix": "yarn lint --fix",
     "prebuild": "yarn format && yarn lint",
     "move-types": "shx rm -r ./types/* && shx mv build/types/* ./types",
-    "build": "tsc && yarn move-types",
+    "build": "shx rm -rf ./build && tsc && yarn move-types",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
     "test": "echo \"Info: no test specified\""
   },
