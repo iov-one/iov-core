@@ -37,6 +37,7 @@ install:
 before_script:
 - export TSLINT_FLAGS='-c ./tslint_ci.json'
 - export LONG_RUNNING_ENABLED=1
+- export ETHEREUM_ENABLED=1
 - ./packages/iov-ethereum/startGanache.sh
 
 # Make variables and function from Travis available in our script
@@ -60,7 +61,7 @@ before_script:
   fi
 
 script:
-- echo "use tendermint?" ${TENDERMINT_ENABLED} "use bov?" ${BOV_ENABLED}
+- echo "use tendermint?" ${TENDERMINT_ENABLED} "use bov?" ${BOV_ENABLED} "use ethereum?" ${ETHEREUM_ENABLED}
 - ./scripts/travis.sh
 
 after_script:
