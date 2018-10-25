@@ -2,8 +2,17 @@
 set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
-TM_VERSION=${TM_VERSION:-0.21.0}
-BOV_VERSION=${BOV_VERSION:-v0.8.0}
+if [ -z "$TM_VERSION" ]; then
+  echo "TM_VERSION must be set"; exit 1
+fi
+
+if [ -z "$BOV_VERSION" ]; then
+  echo "BOV_VERSION must be set"; exit 1
+fi
+
+if [ -z "$BOV_DIR" ]; then
+  echo "BOV_DIR must be set"; exit 1
+fi
 
 chmod 777 "${BOV_DIR}"
 
