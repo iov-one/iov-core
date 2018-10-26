@@ -38,6 +38,7 @@
     "@iov/tendermint-types": "^0.7.1",
     "@types/long": "^4.0.0",
     "axios": "^0.18.0",
+    "bn.js": "^4.11.8",
     "long": "^4.0.0",
     "readonly-date": "^1.0.0",
     "xstream": "^11.7.0"
