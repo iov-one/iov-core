@@ -25,7 +25,8 @@ docker run --user="$UID" \
 mv "${BOV_DIR}/config/genesis.json" "${BOV_DIR}/config/genesis.json.orig"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-jq --argjson appState "$(<"$SCRIPT_DIR/genesis_app_state.json")" '. + {"app_state" : $appState}' \
+APP_STATE=$(<"$SCRIPT_DIR/genesis_app_state.json")
+jq ". + {\"app_state\" : $APP_STATE}" \
   "${BOV_DIR}/config/genesis.json.orig" \
   > "${BOV_DIR}/config/genesis.json"
 
