@@ -152,6 +152,8 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const res = await this.query("/tokens?prefix", Uint8Array.from([]));
     const parser = parseMap(codecImpl.namecoin.Token, 4);
     const data = res.results.map(parser).map(Normalize.token);
+    // Sort by ticker
+    data.sort((a, b) => a.tokenTicker.localeCompare(b.tokenTicker));
     return dummyEnvelope(data);
   }
 
