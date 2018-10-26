@@ -79,7 +79,7 @@ describe("RiseConnection", () => {
     expect(response.data[0].sigFigs).toEqual(8);
   });
 
-  it("can get non-existing ticker", async () => {
+  it("produces empty result for non-existing ticker", async () => {
     const connection = new RiseConnection(base, riseTestnet);
     const response = await connection.getTicker("ETH" as TokenTicker);
     expect(response.data.length).toEqual(0);

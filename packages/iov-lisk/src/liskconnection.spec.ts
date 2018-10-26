@@ -86,7 +86,7 @@ describe("LiskConnection", () => {
     expect(response.data[0].sigFigs).toEqual(8);
   });
 
-  it("can get non-existing ticker", async () => {
+  it("produces empty result for non-existing ticker", async () => {
     const connection = new LiskConnection(base, liskTestnet);
     const response = await connection.getTicker("ETH" as TokenTicker);
     expect(response.data.length).toEqual(0);
