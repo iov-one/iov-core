@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.1
+
+* @iov/lisk: Implement `LiskConnection.getTicker` and `.getAllTickers`
+* @iov/rise: Implement `RiseConnection.getTicker` and `.getAllTickers`
+
 ## 0.7.0
 
 * @iov/bcp-types: optional field `expectedChainId` added to `ChainConnector`

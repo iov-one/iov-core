@@ -14,7 +14,7 @@ export declare class LiskConnection implements BcpConnection {
     chainId(): ChainId;
     height(): Promise<number>;
     postTx(bytes: PostableBytes): Promise<BcpTransactionResponse>;
-    getTicker(_: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>>;
+    getTicker(searchTicker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAccount(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>>;
     getNonce(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>>;

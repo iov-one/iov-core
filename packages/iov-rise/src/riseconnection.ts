@@ -113,12 +113,20 @@ export class RiseConnection implements BcpConnection {
     };
   }
 
-  public getTicker(_: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {
-    throw new Error("Not implemented");
+  public async getTicker(searchTicker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {
+    const results = (await this.getAllTickers()).data.filter(t => t.tokenTicker === searchTicker);
+    return dummyEnvelope(results);
   }
 
-  public getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>> {
-    throw new Error("Not implemented");
+  public async getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>> {
+    const tickers: ReadonlyArray<BcpTicker> = [
+      {
+        tokenTicker: constants.primaryTokenTicker,
+        tokenName: constants.primaryTokenName,
+        sigFigs: constants.primaryTokenSigFigs,
+      },
+    ];
+    return dummyEnvelope(tickers);
   }
 
   public async getAccount(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>> {
