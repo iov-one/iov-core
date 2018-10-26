@@ -11,6 +11,24 @@
         {
           "whole": 100000000,
           "ticker": "BASH"
+        },
+        {
+          "whole": 100,
+          "ticker": "ASH"
+        }
+      ]
+    },
+    {
+      "address": "053e4ffbb040d4dc3b201dfe9264c00d918e087b",
+      "name": "faucet",
+      "coins": [
+        {
+          "whole": 1000000,
+          "ticker": "CASH"
+        },
+        {
+          "whole": 2000000,
+          "ticker": "BASH"
         }
       ]
     }
@@ -24,6 +42,11 @@
     {
       "ticker": "BASH",
       "name": "Another token of this chain",
+      "sig_figs": 6
+    },
+    {
+      "ticker": "ASH",
+      "name": "Let the Phoenix arise",
       "sig_figs": 6
     }
   ]
