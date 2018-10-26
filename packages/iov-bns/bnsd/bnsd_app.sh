@@ -15,5 +15,8 @@ if [ ! -d "${BOV_DIR}" ]; then
   echo "Error: directory not created for bov"; exit 1;
 fi
 
-exec docker run -v "${BOV_DIR}:/data" "iov1/bnsd:${BOV_VERSION}" -home "/data" \
+exec docker run --user="$UID" \
+  -v "${BOV_DIR}:/data" \
+  "iov1/bnsd:${BOV_VERSION}" \
+  -home "/data" \
   start -bind="unix:///data/app.sock"

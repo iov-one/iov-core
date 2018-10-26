@@ -22,7 +22,8 @@ fi
 PORT=${BOV_PORT:-22345}
 
 # tx indexing set in bov init
-exec docker run -p "${PORT}:26657" -v "${BOV_DIR}:/tendermint" \
+exec docker run --user="$UID" \
+  -p "${PORT}:26657" -v "${BOV_DIR}:/tendermint" \
   "iov1/tendermint:${TM_VERSION}" node \
   --proxy_app="unix:///tendermint/app.sock" \
   --rpc.laddr=tcp://0.0.0.0:26657 \
