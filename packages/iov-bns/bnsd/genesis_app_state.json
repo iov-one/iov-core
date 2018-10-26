@@ -7,14 +7,6 @@
         {
           "whole": 123456789,
           "ticker": "CASH"
-        },
-        {
-          "whole": 100000000,
-          "ticker": "BASH"
-        },
-        {
-          "whole": 100,
-          "ticker": "ASH"
         }
       ]
     },
