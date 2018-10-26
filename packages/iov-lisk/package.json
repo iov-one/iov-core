@@ -1,6 +1,6 @@
 {
   "name": "@iov/lisk",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Transaction codec and client to communicate with the Lisk blockchain",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -30,11 +30,11 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
   },
   "dependencies": {
-    "@iov/bcp-types": "^0.7.0",
-    "@iov/crypto": "^0.7.0",
-    "@iov/encoding": "^0.7.0",
-    "@iov/keycontrol": "^0.7.0",
-    "@iov/tendermint-types": "^0.7.0",
+    "@iov/bcp-types": "^0.7.1",
+    "@iov/crypto": "^0.7.1",
+    "@iov/encoding": "^0.7.1",
+    "@iov/keycontrol": "^0.7.1",
+    "@iov/tendermint-types": "^0.7.1",
     "@types/long": "^4.0.0",
     "axios": "^0.18.0",
     "long": "^4.0.0",
