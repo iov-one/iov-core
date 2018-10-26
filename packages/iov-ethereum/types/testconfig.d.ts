@@ -1,4 +1,4 @@
-import { Address } from "@iov/bcp-types";
+import { Address, Nonce } from "@iov/bcp-types";
 import { ChainId } from "@iov/tendermint-types";
 export interface EthereumNetworkConfig {
     readonly env: string;
@@ -8,5 +8,6 @@ export interface EthereumNetworkConfig {
     readonly address: Address;
     readonly whole: number;
     readonly fractional: number;
+    readonly nonce: Nonce;
 }
 export declare const TestConfig: EthereumNetworkConfig;

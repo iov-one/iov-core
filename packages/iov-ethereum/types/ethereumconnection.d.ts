@@ -13,7 +13,7 @@ export declare class EthereumConnection implements BcpConnection {
     getTicker(_: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAccount(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>>;
-    getNonce(_: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>>;
+    getNonce(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>>;
     changeBlock(): Stream<number>;
     watchAccount(_: BcpAccountQuery): Stream<BcpAccount | undefined>;
     watchNonce(_: BcpAccountQuery): Stream<BcpNonce | undefined>;

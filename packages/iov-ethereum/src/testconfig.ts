@@ -1,4 +1,5 @@
-import { Address } from "@iov/bcp-types";
+import { Address, Nonce } from "@iov/bcp-types";
+import { Int53 } from "@iov/encoding";
 import { ChainId } from "@iov/tendermint-types";
 
 export interface EthereumNetworkConfig {
@@ -9,6 +10,7 @@ export interface EthereumNetworkConfig {
   readonly address: Address;
   readonly whole: number;
   readonly fractional: number;
+  readonly nonce: Nonce;
 }
 
 // Chain Id is from eip-155.md
@@ -24,6 +26,7 @@ const local: EthereumNetworkConfig = {
   address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
   whole: 100,
   fractional: 0,
+  nonce: new Int53(0) as Nonce,
 };
 
 const testnetRopsten: EthereumNetworkConfig = {
@@ -34,6 +37,7 @@ const testnetRopsten: EthereumNetworkConfig = {
   address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
   whole: 100,
   fractional: 0,
+  nonce: new Int53(0) as Nonce,
 };
 
 const testnetRinkeby: EthereumNetworkConfig = {
@@ -44,6 +48,7 @@ const testnetRinkeby: EthereumNetworkConfig = {
   address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
   whole: 100,
   fractional: 0,
+  nonce: new Int53(0) as Nonce,
 };
 
 const config = new Map<string, EthereumNetworkConfig>();

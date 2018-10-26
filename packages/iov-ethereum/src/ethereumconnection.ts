@@ -15,11 +15,11 @@ import {
   isAddressQuery,
   TokenTicker,
 } from "@iov/bcp-types";
-import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
+import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, Tag, TxQuery } from "@iov/tendermint-types";
 
 import { constants } from "./constants";
 import { Parse } from "./parse";
-import { decodeHexQuantity, decodeHexQuantityString } from "./utils";
+import { decodeHexQuantity, decodeHexQuantityNonce, decodeHexQuantityString } from "./utils";
 
 async function loadChainId(baseUrl: string): Promise<ChainId> {
   // see https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version
@@ -118,8 +118,39 @@ export class EthereumConnection implements BcpConnection {
     return dummyEnvelope(accounts);
   }
 
-  public getNonce(_: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>> {
-    throw new Error("Not implemented");
+  public async getNonce(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>> {
+    if (isAddressQuery(query)) {
+      const address = query.address;
+
+      // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount
+      const nonceResponse = await axios.post(this.baseUrl, {
+        jsonrpc: "2.0",
+        method: "eth_getTransactionCount",
+        params: [address, "latest"],
+        id: 4,
+      });
+
+      const nonce: BcpNonce = {
+        address: address,
+        // fake pubkey, we cannot always know this
+        publicKey: {
+          algo: Algorithm.Ed25519,
+          data: new Uint8Array([]) as PublicKeyBytes,
+        },
+        nonce: decodeHexQuantityNonce(nonceResponse.data.result),
+      };
+
+      const out: BcpQueryEnvelope<BcpNonce> = {
+        metadata: {
+          offset: 0,
+          limit: 0,
+        },
+        data: [nonce],
+      };
+      return Promise.resolve(out);
+    } else {
+      throw new Error("Query type not supported");
+    }
   }
 
   public changeBlock(): Stream<number> {
