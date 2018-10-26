@@ -33,13 +33,13 @@ else
   echo "Started tendermint" $TM_PID
   sleep 2
 
-  "${PACKAGES}"/iov-bns/bov_init.sh
-  "${PACKAGES}"/iov-bns/bov_tm.sh > /tmp/bov_tm.log &
+  "${PACKAGES}"/iov-bns/bnsd/bnsd_init.sh
+  "${PACKAGES}"/iov-bns/bnsd/bnsd_tm.sh > /tmp/bnsd_tm.log &
   export BOV_TM_PID=$!
-  "${PACKAGES}"/iov-bns/bov_app.sh > /tmp/bov_app.log &
+  "${PACKAGES}"/iov-bns/bnsd/bnsd_app.sh > /tmp/bnsd_app.log &
   export BOV_APP_PID=$!
   sleep 3
   # for debug output
-  cat /tmp/bov_tm.log
-  cat /tmp/bov_app.log
+  cat /tmp/bnsd_tm.log
+  cat /tmp/bnsd_app.log
 fi

@@ -102,16 +102,24 @@ describe("Integration tests with bov+tendermint", () => {
     connection.disconnect();
   });
 
-  it("Can query all tickers", async () => {
+  it("can query all tickers", async () => {
     pendingWithoutBov();
     const connection = await BnsConnection.establish(tendermintUrl);
 
-    const tickers = await connection.getAllTickers();
-    expect(tickers.data.length).toEqual(1);
-    const ticker = tickers.data[0];
-    expect(ticker.tokenTicker).toEqual(cash);
-    expect(ticker.tokenName).toEqual("Main token of this chain");
-    expect(ticker.sigFigs).toEqual(6);
+    const response = await connection.getAllTickers();
+    expect(response.data.length).toEqual(3);
+
+    expect(response.data[0].tokenTicker).toEqual("ASH" as TokenTicker);
+    expect(response.data[0].tokenName).toEqual("Let the Phoenix arise");
+    expect(response.data[0].sigFigs).toEqual(6);
+
+    expect(response.data[1].tokenTicker).toEqual("BASH" as TokenTicker);
+    expect(response.data[1].tokenName).toEqual("Another token of this chain");
+    expect(response.data[1].sigFigs).toEqual(6);
+
+    expect(response.data[2].tokenTicker).toEqual("CASH" as TokenTicker);
+    expect(response.data[2].tokenName).toEqual("Main token of this chain");
+    expect(response.data[2].sigFigs).toEqual(6);
 
     connection.disconnect();
   });

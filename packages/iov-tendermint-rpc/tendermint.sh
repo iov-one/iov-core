@@ -16,11 +16,14 @@ PORT=${TM_PORT:-12345}
 
 chmod 777 "${TM_DIR}"
 
-docker run -v "${TM_DIR}:/tendermint" \
-  "tendermint/tendermint:${TM_VERSION}" init
+docker run --user="$UID" \
+  -v "${TM_DIR}:/tendermint" \
+  "tendermint/tendermint:${TM_VERSION}" \
+  init
 
 # must enable tx index for search and subscribe
-exec docker run -p "${PORT}:26657" -v "${TM_DIR}:/tendermint" \
+exec docker run --user="$UID" \
+  -p "${PORT}:26657" -v "${TM_DIR}:/tendermint" \
   -e "TM_TX_INDEX_INDEX_ALL_TAGS=true" \
   "tendermint/tendermint:${TM_VERSION}" node \
   --proxy_app=kvstore \

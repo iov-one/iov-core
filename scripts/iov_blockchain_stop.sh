@@ -17,5 +17,5 @@ if [[ ! -z ${BOV_APP_PID:-} ]]; then
   unset BOV_TM_PID
   unset BOV_ENABLED
   # for debug output
-  # cat /tmp/bov_app.log
+  # cat /tmp/bnsd_app.log
 fi
