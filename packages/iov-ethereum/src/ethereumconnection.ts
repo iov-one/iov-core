@@ -2,6 +2,7 @@ import axios from "axios";
 import { Stream } from "xstream";
 
 import {
+  Address,
   BcpAccount,
   BcpAccountQuery,
   BcpConnection,
@@ -10,10 +11,15 @@ import {
   BcpTicker,
   BcpTransactionResponse,
   ConfirmedTransaction,
+  dummyEnvelope,
+  isAddressQuery,
   TokenTicker,
 } from "@iov/bcp-types";
 import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
-import { decodeHexQuantity } from "./utils";
+
+import { constants } from "./constants";
+import { Parse } from "./parse";
+import { decodeHexQuantity, decodeHexQuantityString } from "./utils";
 
 async function loadChainId(baseUrl: string): Promise<ChainId> {
   // see https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version
@@ -78,8 +84,38 @@ export class EthereumConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public async getAccount(_: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>> {
-    throw new Error("Not implemented");
+  public async getAccount(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>> {
+    let address: Address;
+    if (isAddressQuery(query)) {
+      address = query.address;
+    } else {
+      throw new Error("Query type not supported");
+    }
+
+    // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance
+    const confirmedBalance = await axios.post(this.baseUrl, {
+      jsonrpc: "2.0",
+      method: "eth_getBalance",
+      params: [address, "latest"],
+      id: 3,
+    });
+    const responseBody = confirmedBalance.data;
+
+    // here we are expecting 0 or 1 results
+    const accounts: ReadonlyArray<BcpAccount> = [responseBody].map(
+      (item: any): BcpAccount => ({
+        address: address,
+        name: undefined,
+        balance: [
+          {
+            sigFigs: constants.primaryTokenSigFigs,
+            tokenName: constants.primaryTokenName,
+            ...Parse.ethereumAmount(decodeHexQuantityString(item.result)),
+          },
+        ],
+      }),
+    );
+    return dummyEnvelope(accounts);
   }
 
   public getNonce(_: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>> {
