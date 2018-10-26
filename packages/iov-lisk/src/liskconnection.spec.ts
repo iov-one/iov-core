@@ -77,6 +77,15 @@ describe("LiskConnection", () => {
     expect(() => connection.disconnect()).not.toThrow();
   });
 
+  it("can get all tickers", async () => {
+    const connection = new LiskConnection(base, liskTestnet);
+    const response = await connection.getAllTickers();
+    expect(response.data.length).toEqual(1);
+    expect(response.data[0].tokenTicker).toEqual("LSK");
+    expect(response.data[0].tokenName).toEqual("Lisk");
+    expect(response.data[0].sigFigs).toEqual(8);
+  });
+
   it("can get chain ID", async () => {
     const connection = await LiskConnection.establish(base);
     const chainId = connection.chainId();
