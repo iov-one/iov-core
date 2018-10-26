@@ -1,0 +1,30 @@
+{
+  "wallets": [
+    {
+      "address": "b1ca7e78f74423ae01da3b51e676934d9105f282",
+      "name": "admin",
+      "coins": [
+        {
+          "whole": 123456789,
+          "ticker": "CASH"
+        },
+        {
+          "whole": 100000000,
+          "ticker": "BASH"
+        }
+      ]
+    }
+  ],
+  "tokens": [
+    {
+      "ticker": "CASH",
+      "name": "Main token of this chain",
+      "sig_figs": 6
+    },
+    {
+      "ticker": "BASH",
+      "name": "Another token of this chain",
+      "sig_figs": 6
+    }
+  ]
+}

@@ -22,8 +22,12 @@ docker run --user="$UID" \
   "iov1/tendermint:${TM_VERSION}" \
   init
 
+mv "${BOV_DIR}/config/genesis.json" "${BOV_DIR}/config/genesis.json.orig"
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cp "$SCRIPT_DIR/genesis.json" "${BOV_DIR}/config/genesis.json"
+jq --argjson appState "$(<"$SCRIPT_DIR/genesis_app_state.json")" '. + {"app_state" : $appState}' \
+  "${BOV_DIR}/config/genesis.json.orig" \
+  > "${BOV_DIR}/config/genesis.json"
 
 docker run --user="$UID" \
   -v "${BOV_DIR}:/data" \
