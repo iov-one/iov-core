@@ -1,3 +1,6 @@
+import { Nonce } from "@iov/bcp-types";
+import { Int53 } from "@iov/encoding";
+
 import BN = require("bn.js");
 
 export function decodeHexQuantity(hexString: string): number {
@@ -13,4 +16,9 @@ export function decodeHexQuantityString(hexString: string): string {
     return hexToBN.toString();
   }
   throw new Error("invalid hex quantity input");
+}
+
+export function decodeHexQuantityNonce(hexString: string): Nonce {
+  const nonce = decodeHexQuantity(hexString);
+  return new Int53(nonce) as Nonce;
 }
