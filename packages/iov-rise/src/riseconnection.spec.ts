@@ -70,6 +70,21 @@ describe("RiseConnection", () => {
     expect(() => connection.disconnect()).not.toThrow();
   });
 
+  it("can get existing ticker", async () => {
+    const connection = new RiseConnection(base, riseTestnet);
+    const response = await connection.getTicker("RISE" as TokenTicker);
+    expect(response.data.length).toEqual(1);
+    expect(response.data[0].tokenTicker).toEqual("RISE");
+    expect(response.data[0].tokenName).toEqual("RISE");
+    expect(response.data[0].sigFigs).toEqual(8);
+  });
+
+  it("can get non-existing ticker", async () => {
+    const connection = new RiseConnection(base, riseTestnet);
+    const response = await connection.getTicker("ETH" as TokenTicker);
+    expect(response.data.length).toEqual(0);
+  });
+
   it("can get all tickers", async () => {
     const connection = new RiseConnection(base, riseTestnet);
     const response = await connection.getAllTickers();

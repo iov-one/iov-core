@@ -121,8 +121,9 @@ export class LiskConnection implements BcpConnection {
     };
   }
 
-  public getTicker(_: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {
-    throw new Error("Not implemented");
+  public async getTicker(searchTicker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {
+    const results = (await this.getAllTickers()).data.filter(t => t.tokenTicker === searchTicker);
+    return dummyEnvelope(results);
   }
 
   public async getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>> {
