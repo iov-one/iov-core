@@ -52,6 +52,12 @@ echo "use bov?" "${BOV_ENABLED:-no}"
 echo "use ethereum?" ${ETHEREUM_ENABLED:-no}
 
 #
+# Start faucet
+#
+
+./scripts/iov_faucet_start.sh
+
+#
 # Build
 #
 
