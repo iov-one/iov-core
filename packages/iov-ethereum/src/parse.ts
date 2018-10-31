@@ -10,11 +10,10 @@ export interface AmountFields {
 
 export class Parse {
   public static ethereumAmount(total: string): AmountFields {
-    const totalLenght = total.length;
     const sigFigs = constants.primaryTokenSigFigs;
     return {
-      whole: Number(total.substring(0, totalLenght - sigFigs).replace(/^0+/, "")) || 0,
-      fractional: Number(total.substring(totalLenght - sigFigs, totalLenght).replace(/^0+/, "")) || 0,
+      whole: Number.parseInt(total.slice(0, -sigFigs).replace(/^0+/, ""), 10) || 0,
+      fractional: Number.parseInt(total.slice(-sigFigs).replace(/^0+/, ""), 10) || 0,
       tokenTicker: constants.primaryTokenTicker,
     };
   }
