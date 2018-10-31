@@ -1,9 +1,9 @@
 import { Address, BcpAccountQuery, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Derivation } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet } from "@iov/keycontrol";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/tendermint-types";
 
-import { passphraseToKeypair } from "./derivation";
 import { liskCodec } from "./liskcodec";
 import { generateNonce, LiskConnection } from "./liskconnection";
 
@@ -167,7 +167,7 @@ describe("LiskConnection", () => {
 
       const wallet = new Ed25519Wallet();
       const mainIdentity = await wallet.createIdentity(
-        await passphraseToKeypair(
+        await Derivation.passphraseToKeypair(
           "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
         ),
       );

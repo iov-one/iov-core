@@ -1,14 +1,14 @@
 {
-  "name": "@iov/lisk",
+  "name": "@iov/dpos",
   "version": "0.7.1",
-  "description": "Transaction codec and client to communicate with the Lisk blockchain",
+  "description": "Common functionality used for @iov/lisk and @iov/rise",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
   "main": "build/index.js",
   "types": "types/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-lisk"
+    "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-dpos"
   },
   "publishConfig": {
     "access": "public"
@@ -32,14 +32,8 @@
   "dependencies": {
     "@iov/bcp-types": "^0.7.1",
     "@iov/crypto": "^0.7.1",
-    "@iov/dpos": "^0.7.1",
     "@iov/encoding": "^0.7.1",
-    "@iov/keycontrol": "^0.7.1",
-    "@iov/tendermint-types": "^0.7.1",
     "@types/long": "^4.0.0",
-    "axios": "^0.18.0",
-    "long": "^4.0.0",
-    "readonly-date": "^1.0.0",
-    "xstream": "^11.7.0"
+    "long": "^4.0.0"
   }
 }
