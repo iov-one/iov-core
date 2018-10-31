@@ -3,6 +3,11 @@ import axios from "axios";
 import { Address, TokenTicker } from "@iov/bcp-types";
 import { Bech32, Encoding } from "@iov/encoding";
 
+/**
+ * A faucet for the blockchain of value.
+ *
+ * @deprecated will be removed in 0.9. Migrate to IovFaucet.
+ */
 export class BovFaucet {
   private readonly url: string;
 
