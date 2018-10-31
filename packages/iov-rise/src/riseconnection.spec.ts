@@ -1,9 +1,9 @@
 import { Address, BcpAccountQuery, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Derivation } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet } from "@iov/keycontrol";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/tendermint-types";
 
-import { passphraseToKeypair } from "./derivation";
 import { riseCodec } from "./risecodec";
 import { generateNonce, RiseConnection } from "./riseconnection";
 
@@ -156,7 +156,7 @@ describe("RiseConnection", () => {
   it("can post transaction", async () => {
     const wallet = new Ed25519Wallet();
     const mainIdentity = await wallet.createIdentity(
-      await passphraseToKeypair(
+      await Derivation.passphraseToKeypair(
         "squeeze frog deposit chase sudden clutch fortune spring tone have snow column",
       ),
     );
