@@ -1,3 +1,5 @@
+import { Address, Nonce } from "@iov/bcp-types";
+import { Int53 } from "@iov/encoding";
 import { ChainId } from "@iov/tendermint-types";
 
 export interface EthereumNetworkConfig {
@@ -5,6 +7,10 @@ export interface EthereumNetworkConfig {
   readonly base: string;
   readonly chainId: ChainId;
   readonly minHeight: number;
+  readonly address: Address;
+  readonly whole: number;
+  readonly fractional: number;
+  readonly nonce: Nonce;
 }
 
 // Chain Id is from eip-155.md
@@ -17,6 +23,10 @@ const local: EthereumNetworkConfig = {
   base: "http://localhost:7545",
   chainId: "5777" as ChainId,
   minHeight: -1,
+  address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
+  whole: 100,
+  fractional: 0,
+  nonce: new Int53(0) as Nonce,
 };
 
 const testnetRopsten: EthereumNetworkConfig = {
@@ -24,13 +34,21 @@ const testnetRopsten: EthereumNetworkConfig = {
   base: "https://ropsten.infura.io/",
   chainId: "3" as ChainId,
   minHeight: 4284887,
+  address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
+  whole: 100,
+  fractional: 0,
+  nonce: new Int53(0) as Nonce,
 };
 
 const testnetRinkeby: EthereumNetworkConfig = {
   env: "rinkeby",
   base: "https://rinkeby.infura.io",
-  chainId: "4" as ChainId, // ISSUE: returns 0x30fdc1 (decimal number 3210689)
+  chainId: "4" as ChainId,
   minHeight: 3211058,
+  address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
+  whole: 100,
+  fractional: 0,
+  nonce: new Int53(0) as Nonce,
 };
 
 const config = new Map<string, EthereumNetworkConfig>();
