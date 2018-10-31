@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.0
+
+Deprecations
+
+* @iov/faucets: `BovFaucet` is deprecated and will be removed in 0.9. Migrate to the `IovFaucet`.
+
 ## 0.7.1
 
 * @iov/lisk: Implement `LiskConnection.getTicker` and `.getAllTickers`
