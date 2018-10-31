@@ -55,7 +55,9 @@ echo "use ethereum?" ${ETHEREUM_ENABLED:-no}
 # Start faucet
 #
 
-./scripts/iov_faucet_start.sh
+if [[ ! -z ${BOV_ENABLED:-} ]]; then
+  ./scripts/iov_faucet_start.sh
+fi
 
 #
 # Build
