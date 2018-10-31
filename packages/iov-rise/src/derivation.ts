@@ -4,6 +4,8 @@ import { Address } from "@iov/bcp-types";
 import { Sha256 } from "@iov/crypto";
 import { Derivation } from "@iov/dpos";
 
+import { constants } from "./constants";
+
 export function pubkeyToAddress(pubkey: Uint8Array): Address {
   // https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/lisk.cpp#L26
   const hash = new Sha256(pubkey).digest();
@@ -13,5 +15,5 @@ export function pubkeyToAddress(pubkey: Uint8Array): Address {
 }
 
 export function isValidAddress(address: string): boolean {
-  return Derivation.isValidAddressWithEnding(address, "R");
+  return Derivation.isValidAddressWithEnding(address, constants.addressSuffix);
 }
