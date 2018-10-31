@@ -92,7 +92,7 @@ describe("LiskConnection", () => {
   });
 
   it("can get existing ticker", async () => {
-    const connection = new LiskConnection(base, liskTestnet);
+    const connection = new LiskConnection(dummynetBase, dummynetChainId);
     const response = await connection.getTicker("LSK" as TokenTicker);
     expect(response.data.length).toEqual(1);
     expect(response.data[0].tokenTicker).toEqual("LSK");
@@ -101,13 +101,13 @@ describe("LiskConnection", () => {
   });
 
   it("produces empty result for non-existing ticker", async () => {
-    const connection = new LiskConnection(base, liskTestnet);
+    const connection = new LiskConnection(dummynetBase, dummynetChainId);
     const response = await connection.getTicker("ETH" as TokenTicker);
     expect(response.data.length).toEqual(0);
   });
 
   it("can get all tickers", async () => {
-    const connection = new LiskConnection(base, liskTestnet);
+    const connection = new LiskConnection(dummynetBase, dummynetChainId);
     const response = await connection.getAllTickers();
     expect(response.data.length).toEqual(1);
     expect(response.data[0].tokenTicker).toEqual("LSK");
