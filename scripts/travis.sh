@@ -44,6 +44,10 @@ if command -v docker > /dev/null ; then
 
   ./scripts/lisk/start.sh
   export LISK_ENABLED=1
+
+  # Run in background because script waits for blocks and
+  # takes some time but will be ready before tests start
+  ./scripts/lisk/init.sh &
 fi
 
 export ETHEREUM_ENABLED=1

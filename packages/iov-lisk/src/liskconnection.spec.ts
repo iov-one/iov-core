@@ -131,31 +131,31 @@ describe("LiskConnection", () => {
   });
 
   it("can get account from address", async () => {
-    pendingWithoutLongRunning();
-    const connection = await LiskConnection.establish(testnetBase);
-    const query: BcpAccountQuery = { address: "6472030874529564639L" as Address };
+    pendingWithoutLiskDevnet();
+    const connection = await LiskConnection.establish(devnetBase);
+    const query: BcpAccountQuery = { address: "1349293588603668134L" as Address };
     const account = await connection.getAccount(query);
-    expect(account.data[0].address).toEqual("6472030874529564639L");
+    expect(account.data[0].address).toEqual("1349293588603668134L");
     expect(account.data[0].balance[0].tokenTicker).toEqual("LSK");
     expect(account.data[0].balance[0].sigFigs).toEqual(8);
-    expect(account.data[0].balance[0].whole).toEqual(98);
-    expect(account.data[0].balance[0].fractional).toEqual(66543211);
+    expect(account.data[0].balance[0].whole).toEqual(100);
+    expect(account.data[0].balance[0].fractional).toEqual(34556677);
   });
 
   it("can get account from pubkey", async () => {
-    pendingWithoutLongRunning();
-    const connection = await LiskConnection.establish(testnetBase);
+    pendingWithoutLiskDevnet();
+    const connection = await LiskConnection.establish(devnetBase);
     const pubkey: PublicKeyBundle = {
       algo: Algorithm.Ed25519,
-      data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PublicKeyBytes,
+      data: fromHex("e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6") as PublicKeyBytes,
     };
     const query: BcpAccountQuery = { pubkey: pubkey };
     const account = await connection.getAccount(query);
-    expect(account.data[0].address).toEqual("6472030874529564639L");
+    expect(account.data[0].address).toEqual("1349293588603668134L");
     expect(account.data[0].balance[0].tokenTicker).toEqual("LSK");
     expect(account.data[0].balance[0].sigFigs).toEqual(8);
-    expect(account.data[0].balance[0].whole).toEqual(98);
-    expect(account.data[0].balance[0].fractional).toEqual(66543211);
+    expect(account.data[0].balance[0].whole).toEqual(100);
+    expect(account.data[0].balance[0].fractional).toEqual(34556677);
   });
 
   it("returns empty list when getting an unused account", async () => {
