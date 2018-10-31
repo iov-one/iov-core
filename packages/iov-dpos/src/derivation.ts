@@ -1,5 +1,6 @@
 import Long from "long";
 
+import { Address } from "@iov/bcp-types";
 import { Ed25519, Ed25519Keypair, Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
@@ -21,5 +22,13 @@ export class Derivation {
     const hash = new Sha256(encodedPassphrase).digest();
     const keypair = await Ed25519.makeKeypair(hash);
     return keypair;
+  }
+
+  public static pubkeyToAddress(pubkey: Uint8Array, suffix: string): Address {
+    // https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/lisk.cpp#L26
+    const hash = new Sha256(pubkey).digest();
+    const firstEightBytes = Array.from(hash.slice(0, 8));
+    const addressString = Long.fromBytesLE(firstEightBytes, true).toString(10) + suffix;
+    return addressString as Address;
   }
 }
