@@ -3,6 +3,12 @@ import { TokenTicker } from "@iov/bcp-types";
 import { IovFaucet } from "./iovfaucet";
 import { randomBnsAddress } from "./utils";
 
+function pendingWithoutBnsd(): void {
+  if (!process.env.BOV_ENABLED) {
+    pending("Set BOV_ENABLED to enable tests that need a bnsd blockchain");
+  }
+}
+
 describe("IovFaucet", () => {
   const faucetUrl = "http://localhost:8000";
   const primaryToken = "CASH" as TokenTicker;
@@ -22,6 +28,7 @@ describe("IovFaucet", () => {
   });
 
   it("can be used to credit a wallet", async () => {
+    pendingWithoutBnsd();
     const faucet = new IovFaucet(faucetUrl);
     const address = await randomBnsAddress();
     await faucet.credit(address, primaryToken).catch(error => {
@@ -35,6 +42,7 @@ describe("IovFaucet", () => {
   });
 
   it("can be used to credit a wallet with a different token", async () => {
+    pendingWithoutBnsd();
     const faucet = new IovFaucet(faucetUrl);
     const address = await randomBnsAddress();
     await faucet.credit(address, secondaryToken).catch(error => {
