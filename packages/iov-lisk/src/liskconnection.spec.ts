@@ -9,12 +9,6 @@ import { generateNonce, LiskConnection } from "./liskconnection";
 
 const { fromHex } = Encoding;
 
-function pendingWithoutLongRunning(): void {
-  if (!process.env.LONG_RUNNING_ENABLED) {
-    pending("Set LONG_RUNNING_ENABLED to enable long running tests");
-  }
-}
-
 function pendingWithoutLiskDevnet(): void {
   if (!process.env.LISK_ENABLED) {
     pending("Set LISK_ENABLED to enable Lisk network tests");
@@ -28,9 +22,6 @@ describe("LiskConnection", () => {
   // a local devnet
   const devnetBase = "http://localhost:4000";
   const devnetChainId = "198f2b61a8eb95fbeed58b8216780b68f697f26b849acf00c8c93bb9b24f783d" as ChainId;
-  // TODO: rewrite tests based on testnet and remove the following lines
-  const testnetBase = "https://testnet.lisk.io";
-  const testnetChainId = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
 
   it("can be constructed", () => {
     const connection = new LiskConnection(dummynetBase, dummynetChainId);
@@ -183,20 +174,20 @@ describe("LiskConnection", () => {
   it(
     "can post transaction",
     async () => {
-      pendingWithoutLongRunning();
+      pendingWithoutLiskDevnet();
 
       const wallet = new Ed25519Wallet();
       const mainIdentity = await wallet.createIdentity(
         await Derivation.passphraseToKeypair(
-          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+          "wagon stock borrow episode laundry kitten salute link globe zero feed marble",
         ),
       );
 
-      const recipientAddress = "6076671634347365051L" as Address;
+      const recipientAddress = "16313739661670634666L" as Address;
 
       const sendTx: SendTx = {
         kind: TransactionKind.Send,
-        chainId: testnetChainId,
+        chainId: devnetChainId,
         signer: mainIdentity.pubkey,
         recipient: recipientAddress,
         memo: "We ❤️ developers – iov.one",
@@ -214,7 +205,7 @@ describe("LiskConnection", () => {
         mainIdentity,
         signingJob.bytes,
         signingJob.prehashType,
-        testnetChainId,
+        devnetChainId,
       );
 
       const signedTransaction = {
@@ -228,12 +219,12 @@ describe("LiskConnection", () => {
       };
       const bytesToPost = liskCodec.bytesToPost(signedTransaction);
 
-      const connection = await LiskConnection.establish(testnetBase);
+      const connection = await LiskConnection.establish(devnetBase);
       const result = await connection.postTx(bytesToPost);
       expect(result).toBeTruthy();
       expect(result.metadata.height).toBeDefined();
-      expect(result.metadata.height).toBeGreaterThan(6000000);
-      expect(result.metadata.height).toBeLessThan(8000000);
+      expect(result.metadata.height).toBeGreaterThan(0);
+      expect(result.metadata.height).toBeLessThan(10_000_000);
     },
     40 * 1000,
   );
