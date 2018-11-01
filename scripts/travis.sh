@@ -59,6 +59,14 @@ echo "use ethereum?" ${ETHEREUM_ENABLED:-no}
 echo "use Lisk?" ${LISK_ENABLED:-no}
 
 #
+# Start faucet
+#
+
+if [[ ! -z ${BOV_ENABLED:-} ]]; then
+  ./scripts/iov_faucet_start.sh
+fi
+
+#
 # Build
 #
 
