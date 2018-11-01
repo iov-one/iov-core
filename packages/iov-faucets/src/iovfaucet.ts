@@ -20,6 +20,16 @@ export class IovFaucet {
       address: address,
       ticker: ticker,
     };
-    await axios.post(this.baseUrl + "/credit", body);
+
+    try {
+      await axios.post(this.baseUrl + "/credit", body);
+    } catch (error) {
+      if (error.response) {
+        // append response body to error message
+        throw new Error(`${error}; response body: ${JSON.stringify(error.response.data)}`);
+      } else {
+        throw error;
+      }
+    }
   }
 }

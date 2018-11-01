@@ -31,27 +31,13 @@ describe("IovFaucet", () => {
     pendingWithoutBnsd();
     const faucet = new IovFaucet(faucetUrl);
     const address = await randomBnsAddress();
-    await faucet.credit(address, primaryToken).catch(error => {
-      if (error.response) {
-        // append response body to error message
-        throw new Error(`${error}; response body: ${JSON.stringify(error.response.data)}`);
-      } else {
-        throw error;
-      }
-    });
+    await faucet.credit(address, primaryToken);
   });
 
   it("can be used to credit a wallet with a different token", async () => {
     pendingWithoutBnsd();
     const faucet = new IovFaucet(faucetUrl);
     const address = await randomBnsAddress();
-    await faucet.credit(address, secondaryToken).catch(error => {
-      if (error.response) {
-        // append response body to error message
-        throw new Error(`${error}; response body: ${JSON.stringify(error.response.data)}`);
-      } else {
-        throw error;
-      }
-    });
+    await faucet.credit(address, secondaryToken);
   });
 });
