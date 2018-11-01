@@ -1,4 +1,4 @@
-import { TokenTicker } from "@iov/bcp-types";
+import { Address, TokenTicker } from "@iov/bcp-types";
 
 import { IovFaucet } from "./iovfaucet";
 import { randomBnsAddress } from "./utils";
@@ -39,5 +39,27 @@ describe("IovFaucet", () => {
     const faucet = new IovFaucet(faucetUrl);
     const address = await randomBnsAddress();
     await faucet.credit(address, secondaryToken);
+  });
+
+  it("throws for invalid ticker", async () => {
+    pendingWithoutBnsd();
+    const faucet = new IovFaucet(faucetUrl);
+    const address = await randomBnsAddress();
+    await faucet
+      .credit(address, "ETH" as TokenTicker)
+      .then(() => fail("must not resolve"))
+      .catch(error => expect(error).toMatch(/token is not available/i));
+  });
+
+  it("throws for invalid address", async () => {
+    pendingWithoutBnsd();
+    const faucet = new IovFaucet(faucetUrl);
+
+    for (const address of ["be5cc2cc05db2cdb4313c18306a5157291cfdcd1" as Address, "1234L" as Address]) {
+      await faucet
+        .credit(address, primaryToken)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/address is not in the expected format for this chain/i));
+    }
   });
 });
