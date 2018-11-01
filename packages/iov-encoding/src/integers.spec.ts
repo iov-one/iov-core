@@ -5,11 +5,24 @@ describe("Integers", () => {
     it("can be constructed", () => {
       expect(new Uint32(0)).toBeTruthy();
       expect(new Uint32(1)).toBeTruthy();
+      expect(new Uint32(1.0)).toBeTruthy();
       expect(new Uint32(42)).toBeTruthy();
       expect(new Uint32(1000000000)).toBeTruthy();
       expect(new Uint32(2147483647)).toBeTruthy();
       expect(new Uint32(2147483648)).toBeTruthy();
       expect(new Uint32(4294967295)).toBeTruthy();
+    });
+
+    it("throws for invald numbers", () => {
+      // tslint:disable:no-unused-expression
+
+      expect(() => new Uint32(NaN)).toThrowError(/not a number/);
+
+      expect(() => new Uint32(1.1)).toThrowError(/not an integer/i);
+      expect(() => new Uint32(Number.NEGATIVE_INFINITY)).toThrowError(/not an integer/i);
+      expect(() => new Uint32(Number.POSITIVE_INFINITY)).toThrowError(/not an integer/i);
+
+      // tslint:enable:no-unused-expression
     });
 
     it("throws for values out of range", () => {
@@ -19,16 +32,6 @@ describe("Integers", () => {
       expect(() => new Uint32(4294967296)).toThrowError(/not in uint32 range/);
       expect(() => new Uint32(Number.MIN_SAFE_INTEGER)).toThrowError(/not in uint32 range/);
       expect(() => new Uint32(Number.MAX_SAFE_INTEGER)).toThrowError(/not in uint32 range/);
-      expect(() => new Uint32(Number.NEGATIVE_INFINITY)).toThrowError(/not in uint32 range/);
-      expect(() => new Uint32(Number.POSITIVE_INFINITY)).toThrowError(/not in uint32 range/);
-
-      // tslint:enable:no-unused-expression
-    });
-
-    it("throws for invald numbers", () => {
-      // tslint:disable:no-unused-expression
-
-      expect(() => new Uint32(NaN)).toThrowError(/not a number/);
 
       // tslint:enable:no-unused-expression
     });
@@ -94,6 +97,7 @@ describe("Integers", () => {
     it("can be constructed", () => {
       expect(new Int53(0)).toBeTruthy();
       expect(new Int53(1)).toBeTruthy();
+      expect(new Int53(1.0)).toBeTruthy();
       expect(new Int53(42)).toBeTruthy();
       expect(new Int53(1000000000)).toBeTruthy();
       expect(new Int53(2147483647)).toBeTruthy();
@@ -108,21 +112,23 @@ describe("Integers", () => {
       expect(new Int53(-9007199254740991)).toBeTruthy();
     });
 
+    it("throws for invald numbers", () => {
+      // tslint:disable:no-unused-expression
+
+      expect(() => new Int53(NaN)).toThrowError(/not a number/);
+
+      expect(() => new Int53(1.1)).toThrowError(/not an integer/i);
+      expect(() => new Int53(Number.NEGATIVE_INFINITY)).toThrowError(/not an integer/i);
+      expect(() => new Int53(Number.POSITIVE_INFINITY)).toThrowError(/not an integer/i);
+
+      // tslint:enable:no-unused-expression
+    });
+
     it("throws for values out of range", () => {
       // tslint:disable:no-unused-expression
 
       expect(() => new Int53(Number.MIN_SAFE_INTEGER - 1)).toThrowError(/not in int53 range/);
       expect(() => new Int53(Number.MAX_SAFE_INTEGER + 1)).toThrowError(/not in int53 range/);
-      expect(() => new Int53(Number.NEGATIVE_INFINITY)).toThrowError(/not in int53 range/);
-      expect(() => new Int53(Number.POSITIVE_INFINITY)).toThrowError(/not in int53 range/);
-
-      // tslint:enable:no-unused-expression
-    });
-
-    it("throws for invald numbers", () => {
-      // tslint:disable:no-unused-expression
-
-      expect(() => new Int53(NaN)).toThrowError(/not a number/);
 
       // tslint:enable:no-unused-expression
     });
