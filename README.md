@@ -108,12 +108,13 @@ wondering about the magic, note that
 `iov_blockchain_start.sh` sets TENDERMINT_ENABLED=1 and BOV_ENABLED=1
 to enable running the full integration tests.
 
-If you are working on `iov-lisk`, you can run the tests against
-the lisk testnet. Just be aware they can be very slow....
+If you are working on `iov-lisk`, you can run the tests against a local
+Lisk devnet. See [scripts/lisk/README.md](https://github.com/iov-one/iov-core/tree/master/scripts/lisk#start)
+how to start the Lisk devnet.
 
 ```
 cd packages/iov-lisk
-LONG_RUNNING_ENABLED=1 yarn test
+yarn test
 ```
 
 ### Browser tests

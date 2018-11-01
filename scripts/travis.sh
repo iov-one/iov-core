@@ -8,7 +8,6 @@ command -v shellcheck > /dev/null && shellcheck "$0"
 #
 
 export TSLINT_FLAGS='-c ./tslint_ci.json'
-export LONG_RUNNING_ENABLED=1
 
 # Ensure consecutive Safari sessions don't re-open old tabs
 # https://github.com/karma-runner/karma-safari-launcher/issues/6
