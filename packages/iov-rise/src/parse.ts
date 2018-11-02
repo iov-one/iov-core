@@ -1,27 +1,9 @@
-import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
-import { Nonce, TokenTicker } from "@iov/bcp-types";
+import { Nonce } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 
-import { constants } from "./constants";
-
-export interface AmountFields {
-  readonly whole: number;
-  readonly fractional: number;
-  readonly tokenTicker: TokenTicker;
-}
-
 export class Parse {
-  public static riseAmount(str: string): AmountFields {
-    const amount = Long.fromString(str, true, 10);
-    return {
-      whole: amount.divide(100000000).toNumber(),
-      fractional: amount.modulo(100000000).toNumber(),
-      tokenTicker: constants.primaryTokenTicker,
-    };
-  }
-
   public static fromRiseTimestamp(riseTimestamp: number): ReadonlyDate {
     // RISE timestamp must be in the signed int32 range (to be stored in a Postgres
     // integer column and to be serializeable as 4 bytes) but has no further

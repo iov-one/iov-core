@@ -1,45 +1,11 @@
 import { ReadonlyDate } from "readonly-date";
 
-import { Nonce, TokenTicker } from "@iov/bcp-types";
+import { Nonce } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 
-import { AmountFields, Parse } from "./parse";
+import { Parse } from "./parse";
 
 describe("Parse", () => {
-  it("can parse zero amount", () => {
-    const expected: AmountFields = { whole: 0, fractional: 0, tokenTicker: "RISE" as TokenTicker };
-    expect(Parse.riseAmount("0")).toEqual(expected);
-    expect(Parse.riseAmount("00")).toEqual(expected);
-    expect(Parse.riseAmount("000000000")).toEqual(expected);
-  });
-
-  it("can parse 1 RISE", () => {
-    const expected: AmountFields = { whole: 1, fractional: 0, tokenTicker: "RISE" as TokenTicker };
-    expect(Parse.riseAmount("100000000")).toEqual(expected);
-    expect(Parse.riseAmount("00100000000")).toEqual(expected);
-    expect(Parse.riseAmount("000000000100000000")).toEqual(expected);
-  });
-
-  it("can parse 10 million RISE", () => {
-    const expected: AmountFields = { whole: 10000000, fractional: 0, tokenTicker: "RISE" as TokenTicker };
-    expect(Parse.riseAmount("1000000000000000")).toEqual(expected);
-  });
-
-  it("can parse 100 million RISE", () => {
-    const expected: AmountFields = { whole: 100000000, fractional: 0, tokenTicker: "RISE" as TokenTicker };
-    expect(Parse.riseAmount("10000000000000000")).toEqual(expected);
-  });
-
-  it("can parse 1.23 RISE", () => {
-    const expected: AmountFields = { whole: 1, fractional: 23000000, tokenTicker: "RISE" as TokenTicker };
-    expect(Parse.riseAmount("123000000")).toEqual(expected);
-  });
-
-  it("can parse 1.23456789 RISE", () => {
-    const expected: AmountFields = { whole: 1, fractional: 23456789, tokenTicker: "RISE" as TokenTicker };
-    expect(Parse.riseAmount("123456789")).toEqual(expected);
-  });
-
   it("parses RISE timestamp 0 as RISE epoch", () => {
     expect(Parse.fromRiseTimestamp(0)).toEqual(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 17, 0, 0, 0)));
   });

@@ -18,19 +18,20 @@ import {
   Nonce,
   TokenTicker,
 } from "@iov/bcp-types";
+import { Parse } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, Tag, TxId, TxQuery } from "@iov/tendermint-types";
 
 import { constants } from "./constants";
 import { liskCodec } from "./liskcodec";
-import { Parse } from "./parse";
+import { Parse as LiskParse } from "./parse";
 
 /**
  * Encodes the current date and time as a nonce
  */
 export function generateNonce(): Nonce {
   const now = new ReadonlyDate(ReadonlyDate.now());
-  return Parse.timeToNonce(now);
+  return LiskParse.timeToNonce(now);
 }
 
 function checkAndNormalizeUrl(url: string): string {
@@ -159,7 +160,8 @@ export class LiskConnection implements BcpConnection {
           {
             sigFigs: constants.primaryTokenSigFigs,
             tokenName: constants.primaryTokenName,
-            ...Parse.liskAmount(item.balance),
+            tokenTicker: constants.primaryTokenTicker,
+            ...Parse.parseAmount(item.balance),
           },
         ],
       }),

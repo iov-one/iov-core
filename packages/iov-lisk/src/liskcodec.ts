@@ -12,6 +12,7 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
+import { Parse } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import {
   Algorithm,
@@ -22,8 +23,9 @@ import {
   SignatureBytes,
 } from "@iov/tendermint-types";
 
+import { constants } from "./constants";
 import { isValidAddress, pubkeyToAddress } from "./derivation";
-import { Parse } from "./parse";
+import { Parse as LiskParse } from "./parse";
 import { amountFromComponents, serializeTransaction, transactionId } from "./serialization";
 
 export const liskCodec: TxCodec = {
@@ -106,19 +108,25 @@ export const liskCodec: TxCodec = {
     return {
       transaction: {
         chainId: chainId,
-        fee: Parse.liskAmount(json.fee),
+        fee: {
+          ...Parse.parseAmount(json.fee),
+          tokenTicker: constants.primaryTokenTicker,
+        },
         signer: {
           algo: Algorithm.Ed25519,
           data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
         },
         ttl: undefined,
         kind: kind,
-        amount: Parse.liskAmount(json.amount),
+        amount: {
+          ...Parse.parseAmount(json.amount),
+          tokenTicker: constants.primaryTokenTicker,
+        },
         recipient: json.recipientId as Address,
         memo: json.asset.data,
       },
       primarySignature: {
-        nonce: Parse.timeToNonce(Parse.fromLiskTimestamp(json.timestamp)),
+        nonce: LiskParse.timeToNonce(LiskParse.fromLiskTimestamp(json.timestamp)),
         publicKey: {
           algo: Algorithm.Ed25519,
           data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,

@@ -1,12 +1,6 @@
 import { ReadonlyDate } from "readonly-date";
-import { Nonce, TokenTicker } from "@iov/bcp-types";
-export interface AmountFields {
-    readonly whole: number;
-    readonly fractional: number;
-    readonly tokenTicker: TokenTicker;
-}
+import { Nonce } from "@iov/bcp-types";
 export declare class Parse {
-    static riseAmount(str: string): AmountFields;
     static fromRiseTimestamp(riseTimestamp: number): ReadonlyDate;
     /**
      * Convert a point in time to a nonce used in the RISE codec.
