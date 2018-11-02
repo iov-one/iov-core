@@ -108,7 +108,7 @@ export class Xchacha20poly1305Ietf {
     return sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(
       message,
       additionalData,
-      null, // secret nonce: unused and should be null (https://download.libsodium.org/doc/secret-key_cryptography/xchacha20-poly1305_construction.html)
+      null, // secret nonce: unused and should be null (https://download.libsodium.org/doc/secret-key_cryptography/aead/chacha20-poly1305/xchacha20-poly1305_construction)
       nonce,
       key,
     ) as Xchacha20poly1305IetfCiphertext;
@@ -124,7 +124,7 @@ export class Xchacha20poly1305Ietf {
     const additionalData = undefined;
 
     return sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
-      null, // secret nonce: unused and should be null (https://download.libsodium.org/doc/secret-key_cryptography/ietf_chacha20-poly1305_construction.html)
+      null, // secret nonce: unused and should be null (https://download.libsodium.org/doc/secret-key_cryptography/aead/chacha20-poly1305/xchacha20-poly1305_construction)
       ciphertext,
       additionalData,
       nonce,
