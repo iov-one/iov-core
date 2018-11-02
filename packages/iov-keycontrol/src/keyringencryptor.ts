@@ -1,0 +1,42 @@
+import { As } from "type-tagger";
+
+import {
+  Random,
+  Xchacha20poly1305Ietf,
+  Xchacha20poly1305IetfKey,
+  Xchacha20poly1305IetfMessage,
+  Xchacha20poly1305IetfNonce,
+} from "@iov/crypto";
+import { Encoding } from "@iov/encoding";
+
+import { Keyring } from "./keyring";
+
+const { toUtf8 } = Encoding;
+
+export type EncryptedKeyring = Uint8Array & As<"encrypted-keyring">;
+
+export class KeyringEncryptor {
+  public static async encrypt(keyring: Keyring, encryptionKey: Uint8Array): Promise<EncryptedKeyring> {
+    if (encryptionKey.length !== 32) {
+      throw new Error("32 byte encryption key expected");
+    }
+
+    // Format version 1 specs:
+    // - encode keyring serialization as UTF-8
+    // - use Xchacha20poly1305Ietf with 24 byte nonce
+    // - prepend nonce to ciphertext
+    const keyringPlaintext = toUtf8(keyring.serialize()) as Xchacha20poly1305IetfMessage;
+    const keyringNonce = await KeyringEncryptor.makeXchacha20poly1305IetfNonce();
+    const keyringCiphertext = await Xchacha20poly1305Ietf.encrypt(
+      keyringPlaintext,
+      encryptionKey as Xchacha20poly1305IetfKey,
+      keyringNonce,
+    );
+    const out = new Uint8Array([...keyringNonce, ...keyringCiphertext]);
+    return out as EncryptedKeyring;
+  }
+
+  private static async makeXchacha20poly1305IetfNonce(): Promise<Xchacha20poly1305IetfNonce> {
+    return (await Random.getBytes(24)) as Xchacha20poly1305IetfNonce;
+  }
+}

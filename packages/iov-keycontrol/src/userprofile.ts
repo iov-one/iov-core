@@ -6,23 +6,22 @@ import { FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction }
 import {
   Argon2id,
   Argon2idOptions,
-  Random,
   Slip10RawIndex,
   Xchacha20poly1305Ietf,
   Xchacha20poly1305IetfCiphertext,
   Xchacha20poly1305IetfKey,
-  Xchacha20poly1305IetfMessage,
   Xchacha20poly1305IetfNonce,
 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { Keyring, KeyringSerializationString } from "./keyring";
+import { KeyringEncryptor } from "./keyringencryptor";
 import { DatabaseUtils } from "./utils";
 import { LocalIdentity, PublicIdentity, Wallet, WalletId } from "./wallet";
 import { Ed25519Wallet } from "./wallets";
 
-const { toAscii, fromBase64, toBase64, fromUtf8, toUtf8, toRfc3339, fromRfc3339 } = Encoding;
+const { toAscii, fromBase64, toBase64, fromUtf8, toRfc3339, fromRfc3339 } = Encoding;
 
 const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
@@ -85,10 +84,6 @@ export class UserProfile {
     return new UserProfile({ createdAt, keyring });
   }
 
-  private static async makeNonce(): Promise<Xchacha20poly1305IetfNonce> {
-    return (await Random.getBytes(24)) as Xchacha20poly1305IetfNonce;
-  }
-
   public readonly createdAt: ReadonlyDate;
   public readonly locked: ValueAndUpdates<boolean>;
   public readonly wallets: ValueAndUpdates<ReadonlyArray<WalletInfo>>;
@@ -124,22 +119,12 @@ export class UserProfile {
     await DatabaseUtils.clear(db);
 
     // process
-    const encryptionKey = (await Argon2id.execute(
-      password,
-      userProfileSalt,
-      weakPasswordHashingOptions,
-    )) as Xchacha20poly1305IetfKey;
-    const keyringPlaintext = toUtf8(this.keyring.serialize()) as Xchacha20poly1305IetfMessage;
-    const keyringNonce = await UserProfile.makeNonce();
-    const keyringCiphertext = await Xchacha20poly1305Ietf.encrypt(
-      keyringPlaintext,
-      encryptionKey,
-      keyringNonce,
-    );
+    const encryptionKey = await Argon2id.execute(password, userProfileSalt, weakPasswordHashingOptions);
+    const encryptedKeyring = await KeyringEncryptor.encrypt(this.keyring, encryptionKey);
 
     // create storage values (raw strings)
     const createdAtForStorage = toRfc3339(this.createdAt);
-    const keyringForStorage = toBase64(new Uint8Array([...keyringNonce, ...keyringCiphertext]));
+    const keyringForStorage = toBase64(encryptedKeyring);
 
     // store
     await db.put(storageKeyCreatedAt, createdAtForStorage);

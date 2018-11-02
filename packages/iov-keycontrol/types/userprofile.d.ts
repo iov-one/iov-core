@@ -27,7 +27,6 @@ export interface WalletInfo {
  */
 export declare class UserProfile {
     static loadFrom(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<UserProfile>;
-    private static makeNonce;
     readonly createdAt: ReadonlyDate;
     readonly locked: ValueAndUpdates<boolean>;
     readonly wallets: ValueAndUpdates<ReadonlyArray<WalletInfo>>;
