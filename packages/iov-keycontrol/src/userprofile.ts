@@ -4,7 +4,7 @@ import { ReadonlyDate } from "readonly-date";
 
 import { FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
 import { Argon2id, Argon2idOptions, Slip10RawIndex } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { Keyring } from "./keyring";
@@ -15,6 +15,7 @@ import { Ed25519Wallet } from "./wallets";
 
 const { toAscii, fromBase64, toBase64, toRfc3339, fromRfc3339 } = Encoding;
 
+const storageKeyFormatVersion = "format_version";
 const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
 
@@ -54,19 +55,26 @@ export class UserProfile {
     db: LevelUp<AbstractLevelDOWN<string, string>>,
     password: string,
   ): Promise<UserProfile> {
-    // get from storage (raw strings)
-    const createdAtFromStorage = await db.get(storageKeyCreatedAt, { asBuffer: false });
-    const keyringFromStorage = await db.get(storageKeyKeyring, { asBuffer: false });
+    const formatVersion = Int53.fromString(await db.get(storageKeyFormatVersion, { asBuffer: false }));
 
-    // process
-    const encryptionKey = await Argon2id.execute(password, userProfileSalt, weakPasswordHashingOptions);
-    const encryptedKeyring = fromBase64(keyringFromStorage) as EncryptedKeyring;
-    const keyringSerialization = await KeyringEncryptor.decrypt(encryptedKeyring, encryptionKey);
+    switch (formatVersion.toNumber()) {
+      case 1:
+        // get from storage (raw strings)
+        const createdAtFromStorage = await db.get(storageKeyCreatedAt, { asBuffer: false });
+        const keyringFromStorage = await db.get(storageKeyKeyring, { asBuffer: false });
 
-    // create objects
-    const createdAt = fromRfc3339(createdAtFromStorage);
-    const keyring = new Keyring(keyringSerialization);
-    return new UserProfile({ createdAt, keyring });
+        // process
+        const encryptionKey = await Argon2id.execute(password, userProfileSalt, weakPasswordHashingOptions);
+        const encryptedKeyring = fromBase64(keyringFromStorage) as EncryptedKeyring;
+        const keyringSerialization = await KeyringEncryptor.decrypt(encryptedKeyring, encryptionKey);
+
+        // create objects
+        const createdAt = fromRfc3339(createdAtFromStorage);
+        const keyring = new Keyring(keyringSerialization);
+        return new UserProfile({ createdAt, keyring });
+      default:
+        throw new Error(`Unsupported format version: ${formatVersion.toNumber()}`);
+    }
   }
 
   public readonly createdAt: ReadonlyDate;
@@ -108,10 +116,12 @@ export class UserProfile {
     const encryptedKeyring = await KeyringEncryptor.encrypt(this.keyring.serialize(), encryptionKey);
 
     // create storage values (raw strings)
+    const formatVersionForStorage = "1";
     const createdAtForStorage = toRfc3339(this.createdAt);
     const keyringForStorage = toBase64(encryptedKeyring);
 
     // store
+    await db.put(storageKeyFormatVersion, formatVersionForStorage);
     await db.put(storageKeyCreatedAt, createdAtForStorage);
     await db.put(storageKeyKeyring, keyringForStorage);
   }
