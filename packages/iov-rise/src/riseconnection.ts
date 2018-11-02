@@ -23,7 +23,6 @@ import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, Tag, TxId, TxQuery } from "@iov/tendermint-types";
 
 import { constants } from "./constants";
-import { Parse as RiseParse } from "./parse";
 import { riseCodec } from "./risecodec";
 
 /**
@@ -31,7 +30,7 @@ import { riseCodec } from "./risecodec";
  */
 export function generateNonce(): Nonce {
   const now = new ReadonlyDate(ReadonlyDate.now());
-  return RiseParse.timeToNonce(now);
+  return Parse.timeToNonce(now);
 }
 
 function checkAndNormalizeUrl(url: string): string {

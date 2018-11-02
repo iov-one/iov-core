@@ -25,7 +25,6 @@ import {
 
 import { constants } from "./constants";
 import { isValidAddress, pubkeyToAddress } from "./derivation";
-import { Parse as LiskParse } from "./parse";
 import { amountFromComponents, serializeTransaction, transactionId } from "./serialization";
 
 export const liskCodec: TxCodec = {
@@ -126,7 +125,7 @@ export const liskCodec: TxCodec = {
         memo: json.asset.data,
       },
       primarySignature: {
-        nonce: LiskParse.timeToNonce(LiskParse.fromLiskTimestamp(json.timestamp)),
+        nonce: Parse.timeToNonce(Parse.fromTimestamp(json.timestamp)),
         publicKey: {
           algo: Algorithm.Ed25519,
           data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,

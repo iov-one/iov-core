@@ -24,14 +24,13 @@ import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, Tag, TxId, TxQuery }
 
 import { constants } from "./constants";
 import { liskCodec } from "./liskcodec";
-import { Parse as LiskParse } from "./parse";
 
 /**
  * Encodes the current date and time as a nonce
  */
 export function generateNonce(): Nonce {
   const now = new ReadonlyDate(ReadonlyDate.now());
-  return LiskParse.timeToNonce(now);
+  return Parse.timeToNonce(now);
 }
 
 function checkAndNormalizeUrl(url: string): string {

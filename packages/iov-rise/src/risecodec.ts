@@ -25,7 +25,6 @@ import {
 
 import { constants } from "./constants";
 import { isValidAddress, pubkeyToAddress } from "./derivation";
-import { Parse as RiseParse } from "./parse";
 import { amountFromComponents, serializeTransaction, transactionId } from "./serialization";
 
 export const riseCodec: TxCodec = {
@@ -123,7 +122,7 @@ export const riseCodec: TxCodec = {
         recipient: json.recipientId as Address,
       },
       primarySignature: {
-        nonce: RiseParse.timeToNonce(RiseParse.fromRiseTimestamp(json.timestamp)),
+        nonce: Parse.timeToNonce(Parse.fromTimestamp(json.timestamp)),
         publicKey: {
           algo: Algorithm.Ed25519,
           data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
