@@ -10,8 +10,6 @@ if [ -z "${BASH_SOURCE[0]}" ]; then
 else
   # get this files directory regardless of pwd when we run it
   SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-  # this is root of all the lerna packages to find package-specific scripts
-  PACKAGES="${SCRIPT_DIR}/../packages"
 
   export TM_VERSION=0.21.0
   export BOV_VERSION=v0.8.0
@@ -28,15 +26,15 @@ else
   echo "TM_DIR = $TM_DIR"
   echo "BOV_DIR = $BOV_DIR"
 
-  "${PACKAGES}"/iov-tendermint-rpc/tendermint.sh > /tmp/foo.log &
+  "${SCRIPT_DIR}"/tendermint/tendermint.sh > /tmp/foo.log &
   export TM_PID=$!
   echo "Started tendermint" $TM_PID
   sleep 2
 
-  "${PACKAGES}"/iov-bns/bnsd/bnsd_init.sh
-  "${PACKAGES}"/iov-bns/bnsd/bnsd_tm.sh > /tmp/bnsd_tm.log &
+  "${SCRIPT_DIR}"/bnsd/bnsd_init.sh
+  "${SCRIPT_DIR}"/bnsd/bnsd_tm.sh > /tmp/bnsd_tm.log &
   export BOV_TM_PID=$!
-  "${PACKAGES}"/iov-bns/bnsd/bnsd_app.sh > /tmp/bnsd_app.log &
+  "${SCRIPT_DIR}"/bnsd/bnsd_app.sh > /tmp/bnsd_app.log &
   export BOV_APP_PID=$!
   sleep 3
   # for debug output
