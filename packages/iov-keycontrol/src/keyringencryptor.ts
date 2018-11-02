@@ -8,7 +8,7 @@ import {
   Xchacha20poly1305IetfMessage,
   Xchacha20poly1305IetfNonce,
 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Uint32 } from "@iov/encoding";
 
 import { KeyringSerializationString } from "./keyring";
 
@@ -29,6 +29,7 @@ export class KeyringEncryptor {
     // - encode keyring serialization as UTF-8
     // - use Xchacha20poly1305Ietf with 24 byte nonce
     // - prepend nonce to ciphertext
+    const formatVersion = new Uint32(1);
     const keyringPlaintext = toUtf8(keyringSerialization) as Xchacha20poly1305IetfMessage;
     const keyringNonce = await KeyringEncryptor.makeXchacha20poly1305IetfNonce();
     const keyringCiphertext = await Xchacha20poly1305Ietf.encrypt(
@@ -36,7 +37,7 @@ export class KeyringEncryptor {
       encryptionKey as Xchacha20poly1305IetfKey,
       keyringNonce,
     );
-    const out = new Uint8Array([...keyringNonce, ...keyringCiphertext]);
+    const out = new Uint8Array([...formatVersion.toBytesBigEndian(), ...keyringNonce, ...keyringCiphertext]);
     return out as EncryptedKeyring;
   }
 
@@ -44,15 +45,28 @@ export class KeyringEncryptor {
     encrypted: EncryptedKeyring,
     encryptionKey: Uint8Array,
   ): Promise<KeyringSerializationString> {
-    const nonceLength = 24;
-    const nonce = encrypted.slice(0, nonceLength) as Xchacha20poly1305IetfNonce;
-    const ciphertext = encrypted.slice(nonceLength) as Xchacha20poly1305IetfCiphertext;
-    const decrypted = await Xchacha20poly1305Ietf.decrypt(
-      ciphertext,
-      encryptionKey as Xchacha20poly1305IetfKey,
-      nonce,
-    );
-    return Encoding.fromUtf8(decrypted) as KeyringSerializationString;
+    const formatVersionLength = 4;
+    const formatVersion = Uint32.fromBigEndianBytes(encrypted.slice(0, formatVersionLength));
+
+    switch (formatVersion.asNumber()) {
+      case 1:
+        const nonceLength = 24;
+        const nonce = encrypted.slice(
+          formatVersionLength,
+          formatVersionLength + nonceLength,
+        ) as Xchacha20poly1305IetfNonce;
+        const ciphertext = encrypted.slice(
+          formatVersionLength + nonceLength,
+        ) as Xchacha20poly1305IetfCiphertext;
+        const decrypted = await Xchacha20poly1305Ietf.decrypt(
+          ciphertext,
+          encryptionKey as Xchacha20poly1305IetfKey,
+          nonce,
+        );
+        return Encoding.fromUtf8(decrypted) as KeyringSerializationString;
+      default:
+        throw new Error(`Unsupported format version: ${formatVersion.asNumber()}`);
+    }
   }
 
   private static async makeXchacha20poly1305IetfNonce(): Promise<Xchacha20poly1305IetfNonce> {
