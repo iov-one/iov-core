@@ -11,10 +11,30 @@ interface WalletSerialization {
 }
 
 interface KeyringSerialization {
+  readonly formatVersion: number;
   readonly wallets: WalletSerialization[];
 }
 
 export type WalletDeserializer = (data: WalletSerializationString) => Wallet;
+
+function deserialize(data: KeyringSerializationString): KeyringSerialization {
+  const doc = JSON.parse(data);
+  const formatVersion = doc.formatVersion;
+
+  if (typeof formatVersion !== "number") {
+    throw new Error("Expected property 'formatVersion' of type number");
+  }
+
+  // Case distinctions / migrations based on formatVersion go here
+  switch (formatVersion) {
+    case 1:
+      break;
+    default:
+      throw new Error(`Got unsupported format version: '${formatVersion}'`);
+  }
+
+  return doc;
+}
 
 /**
  * A collection of wallets
@@ -55,7 +75,7 @@ export class Keyring {
 
   constructor(data?: KeyringSerializationString) {
     if (data) {
-      const parsedData = JSON.parse(data) as KeyringSerialization;
+      const parsedData = deserialize(data);
       this.wallets = parsedData.wallets.map(Keyring.deserializeWallet);
     } else {
       this.wallets = [];
@@ -88,6 +108,7 @@ export class Keyring {
   // this will contain secret info, so handle securely!
   public serialize(): KeyringSerializationString {
     const out: KeyringSerialization = {
+      formatVersion: 1,
       wallets: this.wallets.map(
         (wallet): WalletSerialization => ({
           implementationId: wallet.implementationId,
