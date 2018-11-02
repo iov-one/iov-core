@@ -265,14 +265,14 @@ describe("LedgerSimpleAddressWallet", () => {
   it("can deserialize", () => {
     {
       // empty
-      const wallet = new LedgerSimpleAddressWallet('{ "identities": [] }' as WalletSerializationString);
+      const wallet = new LedgerSimpleAddressWallet('{ "formatVersion": 1, "identities": [] }' as WalletSerializationString);
       expect(wallet).toBeTruthy();
       expect(wallet.getIdentities().length).toEqual(0);
     }
 
     {
       // one element
-      const serialized = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}] }' as WalletSerializationString;
+      const serialized = '{ "formatVersion": 1, "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}] }' as WalletSerializationString;
       const wallet = new LedgerSimpleAddressWallet(serialized);
       expect(wallet).toBeTruthy();
       expect(wallet.getIdentities().length).toEqual(1);
@@ -283,7 +283,7 @@ describe("LedgerSimpleAddressWallet", () => {
 
     {
       // two elements
-      const serialized = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "simpleAddressIndex": 23}] }' as WalletSerializationString;
+      const serialized = '{ "formatVersion": 1, "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "simpleAddressIndex": 23}] }' as WalletSerializationString;
       const wallet = new LedgerSimpleAddressWallet(serialized);
       expect(wallet).toBeTruthy();
       expect(wallet.getIdentities().length).toEqual(2);
@@ -294,6 +294,11 @@ describe("LedgerSimpleAddressWallet", () => {
       expect(wallet.getIdentities()[1].pubkey.data).toEqual(Encoding.fromHex("ddccbbaa"));
       expect(wallet.getIdentities()[1].label).toEqual("bar");
     }
+  });
+
+  it("throws for unsupported format version", () => {
+    const data = '{ "formatVersion": 123, "identities": [] }' as WalletSerializationString;
+    expect(() => new LedgerSimpleAddressWallet(data)).toThrowError(/unsupported format version/i);
   });
 
   it("can serialize and restore a full keyring wallet", async () => {
@@ -319,7 +324,7 @@ describe("LedgerSimpleAddressWallet", () => {
   });
 
   it("can be cloned", () => {
-    const oneIdentitySerialization = '{ "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}] }' as WalletSerializationString;
+    const oneIdentitySerialization = '{ "formatVersion": 1, "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}] }' as WalletSerializationString;
     const original = new LedgerSimpleAddressWallet(oneIdentitySerialization);
     const clone = original.clone();
     expect(clone).not.toBe(original);

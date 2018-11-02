@@ -34,9 +34,29 @@ interface IdentitySerialization {
 }
 
 interface LedgerSimpleAddressWalletSerialization {
+  readonly formatVersion: number;
   readonly label: string | undefined;
   readonly id: string;
   readonly identities: ReadonlyArray<IdentitySerialization>;
+}
+
+function deserialize(data: WalletSerializationString): LedgerSimpleAddressWalletSerialization {
+  const doc = JSON.parse(data);
+  const formatVersion = doc.formatVersion;
+
+  if (typeof formatVersion !== "number") {
+    throw new Error("Expected property 'formatVersion' of type number");
+  }
+
+  // Case distinctions / migrations based on formatVersion go here
+  switch (formatVersion) {
+    case 1:
+      break;
+    default:
+      throw new Error(`Got unsupported format version: '${formatVersion}'`);
+  }
+
+  return doc;
 }
 
 // this is the id of any LedgerSimpleAddressWallet until it connects with the app
@@ -93,7 +113,7 @@ export class LedgerSimpleAddressWallet implements Wallet {
     const simpleAddressIndices = new Map<string, number>();
 
     if (data) {
-      const decodedData: LedgerSimpleAddressWalletSerialization = JSON.parse(data);
+      const decodedData = deserialize(data);
 
       // label
       label = decodedData.label;
@@ -214,6 +234,7 @@ export class LedgerSimpleAddressWallet implements Wallet {
 
   public serialize(): WalletSerializationString {
     const out: LedgerSimpleAddressWalletSerialization = {
+      formatVersion: 1,
       label: this.label.value,
       id: this.id,
       identities: this.identities.map(identity => {
