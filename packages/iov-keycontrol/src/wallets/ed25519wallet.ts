@@ -56,6 +56,7 @@ function deserialize(data: WalletSerializationString): Ed25519WalletSerializatio
   }
 
   // other checks
+
   const id = doc.id;
   if (typeof id !== "string") {
     throw new Error("Expected property 'id' of type string");
