@@ -11,7 +11,6 @@ TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/faucet_start.XXXXXXXXX")
     yarn install
     yarn build
     yarn dev-init
-    yarn dev-refill
 
     LOGFILE="$TMP_DIR/faucet.log"
     yarn dev-start > "$LOGFILE" &
