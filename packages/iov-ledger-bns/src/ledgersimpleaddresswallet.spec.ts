@@ -304,7 +304,7 @@ describe("LedgerSimpleAddressWallet", () => {
     expect(() => new LedgerSimpleAddressWallet(data)).toThrowError(/unsupported format version/i);
   });
 
-  it("can serialize and restore a full keyring wallet", async () => {
+  it("can serialize and restore a full wallet", async () => {
     pendingWithoutLedger();
 
     const original = new LedgerSimpleAddressWallet();
