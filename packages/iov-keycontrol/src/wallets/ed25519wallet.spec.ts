@@ -105,7 +105,7 @@ describe("Ed25519Wallet", () => {
   it("generates unique ids", async () => {
     const wallet = new Ed25519Wallet();
     const originalId = wallet.id;
-    expect(originalId).toMatch(/^[-_:a-zA-Z0-9]+$/);
+    expect(originalId).toMatch(/^[a-zA-Z0-9]+$/);
 
     const id1 = await wallet.createIdentity(defaultKeypair);
     expect(id1).toBeTruthy();
@@ -207,19 +207,19 @@ describe("Ed25519Wallet", () => {
   it("can deserialize", () => {
     {
       // empty
-      const wallet = new Ed25519Wallet('{ "formatVersion": 1, "id": "ed25519:444555666", "identities": [] }' as WalletSerializationString);
+      const wallet = new Ed25519Wallet('{ "formatVersion": 1, "id": "h4g9q37hg9q", "identities": [] }' as WalletSerializationString);
       expect(wallet).toBeTruthy();
-      expect(wallet.id).toEqual("ed25519:444555666");
+      expect(wallet.id).toEqual("h4g9q37hg9q");
       expect(wallet.label.value).toBeUndefined();
       expect(wallet.getIdentities().length).toEqual(0);
     }
 
     {
       // one element
-      const serialized = '{ "formatVersion": 1, "id": "ed25519:12345678", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}] }' as WalletSerializationString;
+      const serialized = '{ "formatVersion": 1, "id": "h4g9q37hg9q", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}] }' as WalletSerializationString;
       const wallet = new Ed25519Wallet(serialized);
       expect(wallet).toBeTruthy();
-      expect(wallet.id).toEqual("ed25519:12345678");
+      expect(wallet.id).toEqual("h4g9q37hg9q");
       expect(wallet.label.value).toBeUndefined();
       expect(wallet.getIdentities().length).toEqual(1);
       expect(wallet.getIdentities()[0].pubkey.algo).toEqual("ed25519");
@@ -229,10 +229,10 @@ describe("Ed25519Wallet", () => {
 
     {
       // two elements
-      const serialized = '{ "formatVersion": 1, "id": "ed25519:87654321", "label": "2 keys", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "privkey": "ddddeeee"}] }' as WalletSerializationString;
+      const serialized = '{ "formatVersion": 1, "id": "h4g9q37hg9q", "label": "2 keys", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "privkey": "ddddeeee"}] }' as WalletSerializationString;
       const wallet = new Ed25519Wallet(serialized);
       expect(wallet).toBeTruthy();
-      expect(wallet.id).toEqual("ed25519:87654321");
+      expect(wallet.id).toEqual("h4g9q37hg9q");
       expect(wallet.label.value).toEqual("2 keys");
       expect(wallet.getIdentities().length).toEqual(2);
       expect(wallet.getIdentities()[0].pubkey.algo).toEqual("ed25519");
@@ -245,7 +245,7 @@ describe("Ed25519Wallet", () => {
   });
 
   it("throws for unsupported format version", () => {
-    const data = '{ "formatVersion": 123, "id": "rt33g34g_F4G43", "identities": [] }' as WalletSerializationString;
+    const data = '{ "formatVersion": 123, "id": "h4g9q37hg9q", "identities": [] }' as WalletSerializationString;
     expect(() => new Ed25519Wallet(data)).toThrowError(/unsupported format version/i);
   });
 

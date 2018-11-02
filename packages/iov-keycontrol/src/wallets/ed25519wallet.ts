@@ -55,15 +55,26 @@ function deserialize(data: WalletSerializationString): Ed25519WalletSerializatio
       throw new Error(`Got unsupported format version: '${formatVersion}'`);
   }
 
+  // other checks
+  const id = doc.id;
+  if (typeof id !== "string") {
+    throw new Error("Expected property 'id' of type string");
+  }
+
+  if (!id.match(/^[a-zA-Z0-9]+$/)) {
+    throw new Error(`Property 'id' does not match expected format. Got: '${id}'`);
+  }
+
   return doc;
 }
 
 export class Ed25519Wallet implements Wallet {
+  private static readonly idPool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   private static readonly idsPrng: PseudoRandom.Engine = PseudoRandom.engines.mt19937().autoSeed();
 
   private static generateId(): WalletId {
     // this can be pseudo-random, just used for internal book-keeping
-    const code = PseudoRandom.string()(Ed25519Wallet.idsPrng, 16);
+    const code = PseudoRandom.string(Ed25519Wallet.idPool)(Ed25519Wallet.idsPrng, 16);
     return code as WalletId;
   }
 

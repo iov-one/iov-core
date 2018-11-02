@@ -106,7 +106,7 @@ describe("Keyring", () => {
   });
 
   it("can deserialize one ed25519 wallet", () => {
-    const keyring = new Keyring('{"wallets":[{"implementationId":"ed25519", "data":"{ \\"formatVersion\\": 1, \\"identities\\":[{\\"localIdentity\\": { \\"pubkey\\": { \\"algo\\": \\"ed25519\\", \\"data\\": \\"aabbccdd\\" }, \\"nickname\\": \\"foo\\" }, \\"privkey\\": \\"223322112233aabb\\"}] }"}]}' as KeyringSerializationString);
+    const keyring = new Keyring('{"wallets":[{"implementationId":"ed25519", "data":"{ \\"formatVersion\\": 1, \\"id\\": \\"n3u04gh03h\\", \\"identities\\":[{\\"localIdentity\\": { \\"pubkey\\": { \\"algo\\": \\"ed25519\\", \\"data\\": \\"aabbccdd\\" }, \\"nickname\\": \\"foo\\" }, \\"privkey\\": \\"223322112233aabb\\"}] }"}]}' as KeyringSerializationString);
 
     expect(keyring.getWallets().length).toEqual(1);
     expect(keyring.getWallets()[0]).toEqual(jasmine.any(Ed25519Wallet));
