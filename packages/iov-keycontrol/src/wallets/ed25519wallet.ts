@@ -33,9 +33,29 @@ interface IdentitySerialization {
 }
 
 interface Ed25519WalletSerialization {
+  readonly formatVersion: number;
   readonly id: string;
   readonly label: string | undefined;
   readonly identities: ReadonlyArray<IdentitySerialization>;
+}
+
+function deserialize(data: WalletSerializationString): Ed25519WalletSerialization {
+  const doc = JSON.parse(data);
+  const formatVersion = doc.formatVersion;
+
+  if (typeof formatVersion !== "number") {
+    throw new Error("Expected property 'formatVersion' of type number");
+  }
+
+  // Case distinctions / migrations based on formatVersion go here
+  switch (formatVersion) {
+    case 1:
+      break;
+    default:
+      throw new Error(`Got unsupported format version: '${formatVersion}'`);
+  }
+
+  return doc;
 }
 
 export class Ed25519Wallet implements Wallet {
@@ -79,7 +99,7 @@ export class Ed25519Wallet implements Wallet {
     const privkeys = new Map<string, Ed25519Keypair>();
 
     if (data) {
-      const decodedData: Ed25519WalletSerialization = JSON.parse(data);
+      const decodedData = deserialize(data);
 
       // label
       label = decodedData.label;
@@ -166,6 +186,7 @@ export class Ed25519Wallet implements Wallet {
 
   public serialize(): WalletSerializationString {
     const out: Ed25519WalletSerialization = {
+      formatVersion: 1,
       id: this.id,
       label: this.label.value,
       identities: this.identities.map(identity => {
