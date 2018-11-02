@@ -2,6 +2,10 @@
 set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
+# get this files directory regardless of pwd when we run it
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+REPO_ROOT="$SCRIPT_DIR/../.."
+
 function startupGanache() {
   # shellcheck disable=SC2009
   GANACHE_SEARCH=$(ps -ef | grep "[g]anache" || true)
@@ -11,7 +15,7 @@ function startupGanache() {
     echo "Killing existing Ganache CLI process $GANACHE_PID"
     kill -9 "$GANACHE_PID"
   fi
-  ./node_modules/.bin/ganache-cli -p 7545 -i 5777 -m "$GANACHE_MNEMONIC" > /dev/null &
+  "$REPO_ROOT/node_modules/.bin/ganache-cli" -p 7545 -i 5777 -m "$GANACHE_MNEMONIC" > /dev/null &
   GANACHE_PID=$!
   echo "Started new Ganache CLI as process $GANACHE_PID"
 }

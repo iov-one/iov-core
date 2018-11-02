@@ -51,7 +51,7 @@ fi
 
 export ETHEREUM_ENABLED=1
 export GANACHE_MNEMONIC="oxygen fall sure lava energy veteran enroll frown question detail include maximum"
-./packages/iov-ethereum/startGanache.sh
+./scripts/ethereum/start.sh
 
 echo "use tendermint?" "${TENDERMINT_ENABLED:-no}"
 echo "use bov?" "${BOV_ENABLED:-no}"
@@ -172,5 +172,5 @@ fi
 #
 # Cleanup
 #
-./packages/iov-ethereum/stopGanache.sh
+./scripts/ethereum/stop.sh
 source ./scripts/iov_blockchain_stop.sh
