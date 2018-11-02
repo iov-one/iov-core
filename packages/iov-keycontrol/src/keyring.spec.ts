@@ -96,7 +96,7 @@ describe("Keyring", () => {
         "wallets": [
           {
             "implementationId": "ed25519-hd",
-            "data": "{\\"secret\\":\\"side ripple bachelor banner word swear buzz try situate rent desk carry scorpion uphold undo account pumpkin throw\\",\\"curve\\":\\"ed25519 seed\\",\\"identities\\":[]}"
+            "data": "{\\"formatVersion\\": 1, \\"secret\\":\\"side ripple bachelor banner word swear buzz try situate rent desk carry scorpion uphold undo account pumpkin throw\\",\\"curve\\":\\"ed25519 seed\\",\\"identities\\":[]}"
           }
         ]
       }` as KeyringSerializationString);

@@ -42,6 +42,7 @@ interface IdentitySerialization {
 }
 
 interface Slip10WalletSerialization {
+  readonly formatVersion: number;
   readonly id: string;
   readonly secret: string;
   readonly curve: string;
@@ -60,6 +61,25 @@ function isPath(value: unknown): value is ReadonlyArray<Slip10RawIndex> {
   return value.every(item => item instanceof Slip10RawIndex);
 }
 
+function deserialize(data: WalletSerializationString): Slip10WalletSerialization {
+  const doc = JSON.parse(data);
+  const formatVersion = doc.formatVersion;
+
+  if (typeof formatVersion !== "number") {
+    throw new Error("Expected property 'formatVersion' of type number");
+  }
+
+  // Case distinctions / migrations based on formatVersion go here
+  switch (formatVersion) {
+    case 1:
+      break;
+    default:
+      throw new Error(`Got unsupported format version: '${formatVersion}'`);
+  }
+
+  return doc;
+}
+
 export class Slip10Wallet implements Wallet {
   public static fromEntropyWithCurve(
     curve: Slip10Curve,
@@ -76,6 +96,7 @@ export class Slip10Wallet implements Wallet {
     cls: Slip10WalletConstructor = Slip10Wallet,
   ): Slip10Wallet {
     const data: Slip10WalletSerialization = {
+      formatVersion: 1,
       id: Slip10Wallet.generateId(),
       secret: mnemonicString,
       curve: curve,
@@ -132,7 +153,7 @@ export class Slip10Wallet implements Wallet {
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
 
   constructor(data: WalletSerializationString) {
-    const decodedData: Slip10WalletSerialization = JSON.parse(data);
+    const decodedData = deserialize(data);
 
     // id
     this.id = decodedData.id as WalletId;
@@ -276,6 +297,7 @@ export class Slip10Wallet implements Wallet {
     );
 
     const out: Slip10WalletSerialization = {
+      formatVersion: 1,
       id: this.id,
       secret: this.secret.asString(),
       curve: this.curve,
