@@ -9,6 +9,7 @@ interface Slip10WalletConstructor {
 export declare class Slip10Wallet implements Wallet {
     static fromEntropyWithCurve(curve: Slip10Curve, bip39Entropy: Uint8Array, cls?: Slip10WalletConstructor): Slip10Wallet;
     static fromMnemonicWithCurve(curve: Slip10Curve, mnemonicString: string, cls?: Slip10WalletConstructor): Slip10Wallet;
+    private static readonly idPool;
     private static readonly idsPrng;
     private static generateId;
     private static identityId;

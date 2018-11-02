@@ -17,7 +17,7 @@ describe("Slip10Wallet", () => {
   const emptyWallet = `
     {
       "formatVersion": 1,
-      "id": "aX-_oHf",
+      "id": "aX7hg93h9goHf",
       "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
       "curve": "ed25519 seed",
       "identities": []
@@ -27,7 +27,7 @@ describe("Slip10Wallet", () => {
   const emptySecp256k1Wallet = `
     {
       "formatVersion": 1,
-      "id": "2h3487-_h",
+      "id": "2h3487euib4h",
       "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
       "curve": "Bitcoin seed",
       "identities": []

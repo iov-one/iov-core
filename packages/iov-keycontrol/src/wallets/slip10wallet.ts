@@ -77,6 +77,16 @@ function deserialize(data: WalletSerializationString): Slip10WalletSerialization
       throw new Error(`Got unsupported format version: '${formatVersion}'`);
   }
 
+  // other checks
+  const id = doc.id;
+  if (typeof id !== "string") {
+    throw new Error("Expected property 'id' of type string");
+  }
+
+  if (!id.match(/^[a-zA-Z0-9]+$/)) {
+    throw new Error(`Property 'id' does not match expected format. Got: '${id}'`);
+  }
+
   return doc;
 }
 
@@ -106,11 +116,12 @@ export class Slip10Wallet implements Wallet {
     return new cls(JSON.stringify(data) as WalletSerializationString);
   }
 
+  private static readonly idPool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   private static readonly idsPrng: PseudoRandom.Engine = PseudoRandom.engines.mt19937().autoSeed();
 
   private static generateId(): WalletId {
     // this can be pseudo-random, just used for internal book-keeping
-    const code = PseudoRandom.string()(Slip10Wallet.idsPrng, 16);
+    const code = PseudoRandom.string(Slip10Wallet.idPool)(Slip10Wallet.idsPrng, 16);
     return code as WalletId;
   }
 
