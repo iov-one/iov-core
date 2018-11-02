@@ -56,6 +56,17 @@ function deserialize(data: WalletSerializationString): LedgerSimpleAddressWallet
       throw new Error(`Got unsupported format version: '${formatVersion}'`);
   }
 
+  // other checks
+
+  const id = doc.id;
+  if (typeof id !== "string") {
+    throw new Error("Expected property 'id' of type string");
+  }
+
+  if (!id.match(/^[a-zA-Z0-9]+$/)) {
+    throw new Error(`Property 'id' does not match expected format. Got: '${id}'`);
+  }
+
   return doc;
 }
 
