@@ -120,7 +120,7 @@ export class UserProfile {
 
     // process
     const encryptionKey = await Argon2id.execute(password, userProfileSalt, weakPasswordHashingOptions);
-    const encryptedKeyring = await KeyringEncryptor.encrypt(this.keyring, encryptionKey);
+    const encryptedKeyring = await KeyringEncryptor.encrypt(this.keyring.serialize(), encryptionKey);
 
     // create storage values (raw strings)
     const createdAtForStorage = toRfc3339(this.createdAt);
