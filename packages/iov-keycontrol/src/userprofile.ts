@@ -3,25 +3,17 @@ import { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
 
 import { FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
-import {
-  Argon2id,
-  Argon2idOptions,
-  Slip10RawIndex,
-  Xchacha20poly1305Ietf,
-  Xchacha20poly1305IetfCiphertext,
-  Xchacha20poly1305IetfKey,
-  Xchacha20poly1305IetfNonce,
-} from "@iov/crypto";
+import { Argon2id, Argon2idOptions, Slip10RawIndex } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
-import { Keyring, KeyringSerializationString } from "./keyring";
-import { KeyringEncryptor } from "./keyringencryptor";
+import { Keyring } from "./keyring";
+import { EncryptedKeyring, KeyringEncryptor } from "./keyringencryptor";
 import { DatabaseUtils } from "./utils";
 import { LocalIdentity, PublicIdentity, Wallet, WalletId } from "./wallet";
 import { Ed25519Wallet } from "./wallets";
 
-const { toAscii, fromBase64, toBase64, fromUtf8, toRfc3339, fromRfc3339 } = Encoding;
+const { toAscii, fromBase64, toBase64, toRfc3339, fromRfc3339 } = Encoding;
 
 const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
@@ -67,16 +59,9 @@ export class UserProfile {
     const keyringFromStorage = await db.get(storageKeyKeyring, { asBuffer: false });
 
     // process
-    const encryptionKey = (await Argon2id.execute(
-      password,
-      userProfileSalt,
-      weakPasswordHashingOptions,
-    )) as Xchacha20poly1305IetfKey;
-    const keyringBundle = fromBase64(keyringFromStorage);
-    const keyringNonce = keyringBundle.slice(0, 24) as Xchacha20poly1305IetfNonce;
-    const keyringCiphertext = keyringBundle.slice(24) as Xchacha20poly1305IetfCiphertext;
-    const decrypted = await Xchacha20poly1305Ietf.decrypt(keyringCiphertext, encryptionKey, keyringNonce);
-    const keyringSerialization = fromUtf8(decrypted) as KeyringSerializationString;
+    const encryptionKey = await Argon2id.execute(password, userProfileSalt, weakPasswordHashingOptions);
+    const encryptedKeyring = fromBase64(keyringFromStorage) as EncryptedKeyring;
+    const keyringSerialization = await KeyringEncryptor.decrypt(encryptedKeyring, encryptionKey);
 
     // create objects
     const createdAt = fromRfc3339(createdAtFromStorage);
