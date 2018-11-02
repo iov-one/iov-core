@@ -28,6 +28,10 @@ export class Uint32 {
       throw new Error("Input is not a number");
     }
 
+    if (!Number.isInteger(input)) {
+      throw new Error("Input is not an integer");
+    }
+
     if (input < 0 || input > 4294967295) {
       throw new Error("Input not in uint32 range: " + input.toString());
     }
@@ -65,6 +69,10 @@ export class Int53 {
   constructor(input: number) {
     if (Number.isNaN(input)) {
       throw new Error("Input is not a number");
+    }
+
+    if (!Number.isInteger(input)) {
+      throw new Error("Input is not an integer");
     }
 
     if (input < Number.MIN_SAFE_INTEGER || input > Number.MAX_SAFE_INTEGER) {
