@@ -3,6 +3,7 @@ import { As } from "type-tagger";
 import {
   Random,
   Xchacha20poly1305Ietf,
+  Xchacha20poly1305IetfCiphertext,
   Xchacha20poly1305IetfKey,
   Xchacha20poly1305IetfMessage,
   Xchacha20poly1305IetfNonce,
@@ -37,6 +38,21 @@ export class KeyringEncryptor {
     );
     const out = new Uint8Array([...keyringNonce, ...keyringCiphertext]);
     return out as EncryptedKeyring;
+  }
+
+  public static async decrypt(
+    encrypted: EncryptedKeyring,
+    encryptionKey: Uint8Array,
+  ): Promise<KeyringSerializationString> {
+    const nonceLength = 24;
+    const nonce = encrypted.slice(0, nonceLength) as Xchacha20poly1305IetfNonce;
+    const ciphertext = encrypted.slice(nonceLength) as Xchacha20poly1305IetfCiphertext;
+    const decrypted = await Xchacha20poly1305Ietf.decrypt(
+      ciphertext,
+      encryptionKey as Xchacha20poly1305IetfKey,
+      nonce,
+    );
+    return Encoding.fromUtf8(decrypted) as KeyringSerializationString;
   }
 
   private static async makeXchacha20poly1305IetfNonce(): Promise<Xchacha20poly1305IetfNonce> {

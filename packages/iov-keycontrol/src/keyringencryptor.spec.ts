@@ -12,4 +12,14 @@ describe("KeyringEncryptor", () => {
 
     expect(encrypted.length).toEqual(24 /* nonce */ + serializationLength + 16 /* authentication tag */);
   });
+
+  it("can decrypt encrypted data", async () => {
+    const originalSerialization = new Keyring().serialize();
+    const key = Encoding.fromHex("0000000000000000000000000000000000000000000000000000000000000000");
+
+    const encrypted = await KeyringEncryptor.encrypt(originalSerialization, key);
+    const decrypted = await KeyringEncryptor.decrypt(encrypted, key);
+
+    expect(decrypted).toEqual(originalSerialization);
+  });
 });
