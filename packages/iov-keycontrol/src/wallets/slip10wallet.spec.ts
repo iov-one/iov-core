@@ -16,7 +16,8 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 30 * 1000;
 describe("Slip10Wallet", () => {
   const emptyWallet = `
     {
-      "id": "aX-_oHf",
+      "formatVersion": 1,
+      "id": "aX7hg93h9goHf",
       "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
       "curve": "ed25519 seed",
       "identities": []
@@ -25,7 +26,8 @@ describe("Slip10Wallet", () => {
 
   const emptySecp256k1Wallet = `
     {
-      "id": "2h3487-_h",
+      "formatVersion": 1,
+      "id": "2h3487euib4h",
       "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
       "curve": "Bitcoin seed",
       "identities": []
@@ -309,6 +311,7 @@ describe("Slip10Wallet", () => {
       // empty
       const wallet = new Slip10Wallet(`
         {
+          "formatVersion": 1,
           "id": "eMpTy",
           "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
           "curve": "ed25519 seed",
@@ -324,6 +327,7 @@ describe("Slip10Wallet", () => {
       // one element
       const serialized = `
         {
+          "formatVersion": 1,
           "id": "1elemenT",
           "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
           "curve": "ed25519 seed",
@@ -354,6 +358,7 @@ describe("Slip10Wallet", () => {
       // two elements
       const serialized = `
         {
+          "formatVersion": 1,
           "id": "2elemeNT",
           "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
           "curve": "ed25519 seed",
@@ -391,6 +396,19 @@ describe("Slip10Wallet", () => {
       expect(wallet.getIdentities()[1].pubkey.data).toEqual(Encoding.fromHex("ddccbbaa"));
       expect(wallet.getIdentities()[1].label).toEqual("bar");
     }
+  });
+
+  it("throws for unsupported format version", () => {
+    const data = `
+      {
+        "formatVersion": 123,
+        "id": "eMpTy",
+        "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
+        "curve": "ed25519 seed",
+        "identities": []
+      }
+      ` as WalletSerializationString;
+    expect(() => new Slip10Wallet(data)).toThrowError(/unsupported format version/i);
   });
 
   it("can serialize and restore a full wallet", async () => {

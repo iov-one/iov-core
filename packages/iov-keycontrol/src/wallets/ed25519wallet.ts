@@ -33,17 +33,49 @@ interface IdentitySerialization {
 }
 
 interface Ed25519WalletSerialization {
+  readonly formatVersion: number;
   readonly id: string;
   readonly label: string | undefined;
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
 
+function deserialize(data: WalletSerializationString): Ed25519WalletSerialization {
+  const doc = JSON.parse(data);
+  const formatVersion = doc.formatVersion;
+
+  if (typeof formatVersion !== "number") {
+    throw new Error("Expected property 'formatVersion' of type number");
+  }
+
+  // Case distinctions / migrations based on formatVersion go here
+  switch (formatVersion) {
+    case 1:
+      break;
+    default:
+      throw new Error(`Got unsupported format version: '${formatVersion}'`);
+  }
+
+  // other checks
+
+  const id = doc.id;
+  if (typeof id !== "string") {
+    throw new Error("Expected property 'id' of type string");
+  }
+
+  if (!id.match(/^[a-zA-Z0-9]+$/)) {
+    throw new Error(`Property 'id' does not match expected format. Got: '${id}'`);
+  }
+
+  return doc;
+}
+
 export class Ed25519Wallet implements Wallet {
+  private static readonly idPool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   private static readonly idsPrng: PseudoRandom.Engine = PseudoRandom.engines.mt19937().autoSeed();
 
   private static generateId(): WalletId {
     // this can be pseudo-random, just used for internal book-keeping
-    const code = PseudoRandom.string()(Ed25519Wallet.idsPrng, 16);
+    const code = PseudoRandom.string(Ed25519Wallet.idPool)(Ed25519Wallet.idsPrng, 16);
     return code as WalletId;
   }
 
@@ -79,7 +111,7 @@ export class Ed25519Wallet implements Wallet {
     const privkeys = new Map<string, Ed25519Keypair>();
 
     if (data) {
-      const decodedData: Ed25519WalletSerialization = JSON.parse(data);
+      const decodedData = deserialize(data);
 
       // label
       label = decodedData.label;
@@ -166,6 +198,7 @@ export class Ed25519Wallet implements Wallet {
 
   public serialize(): WalletSerializationString {
     const out: Ed25519WalletSerialization = {
+      formatVersion: 1,
       id: this.id,
       label: this.label.value,
       identities: this.identities.map(identity => {

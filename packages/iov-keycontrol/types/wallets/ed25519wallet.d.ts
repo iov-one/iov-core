@@ -3,6 +3,7 @@ import { ValueAndUpdates } from "@iov/stream";
 import { ChainId, SignatureBytes } from "@iov/tendermint-types";
 import { LocalIdentity, PublicIdentity, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "../wallet";
 export declare class Ed25519Wallet implements Wallet {
+    private static readonly idPool;
     private static readonly idsPrng;
     private static generateId;
     private static identityId;
