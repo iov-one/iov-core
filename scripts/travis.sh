@@ -49,9 +49,9 @@ if command -v docker > /dev/null ; then
   (sleep 20 && ./scripts/lisk/init.sh ) &
 fi
 
-export ETHEREUM_ENABLED=1
 export GANACHE_MNEMONIC="oxygen fall sure lava energy veteran enroll frown question detail include maximum"
-./packages/iov-ethereum/startGanache.sh
+./scripts/ethereum/start.sh
+export ETHEREUM_ENABLED=1
 
 echo "use tendermint?" "${TENDERMINT_ENABLED:-no}"
 echo "use bov?" "${BOV_ENABLED:-no}"
@@ -172,5 +172,7 @@ fi
 #
 # Cleanup
 #
-./packages/iov-ethereum/stopGanache.sh
+unset ETHEREUM_ENABLED
+./scripts/ethereum/stop.sh
+
 source ./scripts/iov_blockchain_stop.sh
