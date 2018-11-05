@@ -17,20 +17,10 @@ Ethereum blockchain as follows.
 
 ### Local test
 
-To run Ethereum tests locally, you need to install ganache and set as follow:
+To run Ethereum tests locally, you need to install ganache and start with the following settings:
 - RPC Server: `http://127.0.0.1:7545`
 - Network ID: `5777`
 - Mnemonic: `oxygen fall sure lava energy veteran enroll frown question detail include maximum`
-
-Or run the followin script:
-```
-cd packages/iov-ethereum
-export GANACHE_MNEMONIC="oxygen fall sure lava energy veteran enroll frown question detail include maximum"
-./startGanache.sh
-export ETHEREUM_ENABLED=1
-yarn test
-./stopGanache.sh
-```
 
 ## License
 
