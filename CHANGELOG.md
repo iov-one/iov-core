@@ -2,11 +2,19 @@
 
 ## 0.8.0
 
-* @iov/faucets: Add `IovFaucet` to connect to the new faucet application
+* @iov/faucets: add `IovFaucet` to connect to the new faucet application
+* @iov/keycontrol: add format versioning to `Wallet`, `Keyring`, keyring encryption and `UserProfile`
 
 Deprecations
 
 * @iov/faucets: `BovFaucet` is deprecated and will be removed in 0.9. Migrate to the `IovFaucet`.
+
+Breaking changes
+
+* Due to updates in all serialization formats, UserProfiles stored with
+  earlier versions of IOV-Core cannot be opened with 0.8.0. To migrate to
+  the new version, extract the secret data using an older version and
+  create a new UserProfile in 0.8.0.
 
 ## 0.7.1
 

@@ -245,6 +245,7 @@ describe("UserProfile", () => {
     const profile = new UserProfile({ createdAt, keyring });
 
     await profile.storeIn(db, defaultEncryptionPassword);
+    expect(await db.get("format_version", { asBuffer: false })).toEqual("1");
     expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
     expect(await db.get("keyring", { asBuffer: false })).toMatch(/^[-_/=a-zA-Z0-9+]+$/);
 
@@ -316,6 +317,23 @@ describe("UserProfile", () => {
       .catch(error => expect(error).toMatch(/invalid usage/));
 
     await db.close();
+  });
+
+  it("throws when loading a profile with no format version", async () => {
+    const db = levelup(MemDownConstructor<string, string>());
+
+    await UserProfile.loadFrom(db, defaultEncryptionPassword)
+      .then(() => fail("must not resolve"))
+      .catch(error => expect(error).toMatch(/key not found in database/i));
+  });
+
+  it("throws when loading a profile with unsupported format version", async () => {
+    const db = levelup(MemDownConstructor<string, string>());
+    db.put("format_version", "123");
+
+    await UserProfile.loadFrom(db, defaultEncryptionPassword)
+      .then(() => fail("must not resolve"))
+      .catch(error => expect(error).toMatch(/unsupported format version/i));
   });
 
   it("throws for non-existing wallet id", async () => {
