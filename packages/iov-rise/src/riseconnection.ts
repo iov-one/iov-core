@@ -18,11 +18,11 @@ import {
   Nonce,
   TokenTicker,
 } from "@iov/bcp-types";
+import { Parse } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, Tag, TxId, TxQuery } from "@iov/tendermint-types";
 
 import { constants } from "./constants";
-import { Parse } from "./parse";
 import { riseCodec } from "./risecodec";
 
 /**
@@ -153,7 +153,8 @@ export class RiseConnection implements BcpConnection {
           {
             sigFigs: constants.primaryTokenSigFigs,
             tokenName: constants.primaryTokenName,
-            ...Parse.riseAmount(responseBody.balance),
+            tokenTicker: constants.primaryTokenTicker,
+            ...Parse.parseAmount(responseBody.balance),
           },
         ],
       },

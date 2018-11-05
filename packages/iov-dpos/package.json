@@ -34,6 +34,7 @@
     "@iov/crypto": "^0.7.1",
     "@iov/encoding": "^0.7.1",
     "@types/long": "^4.0.0",
-    "long": "^4.0.0"
+    "long": "^4.0.0",
+    "readonly-date": "^1.0.0"
   }
 }

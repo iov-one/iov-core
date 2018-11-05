@@ -1,19 +1,18 @@
 import { ReadonlyDate } from "readonly-date";
-import { Nonce, TokenTicker } from "@iov/bcp-types";
-export interface AmountFields {
+import { Nonce } from "@iov/bcp-types";
+export interface Amount {
     readonly whole: number;
     readonly fractional: number;
-    readonly tokenTicker: TokenTicker;
 }
 export declare class Parse {
-    static liskAmount(str: string): AmountFields;
-    static fromLiskTimestamp(liskTimestamp: number): ReadonlyDate;
+    static parseAmount(str: string): Amount;
+    static fromTimestamp(timestamp: number): ReadonlyDate;
     /**
-     * Convert a point in time to a nonce used in the Lisk codec.
+     * Convert a point in time to a nonce used in the Lisk/RISE codec.
      *
      * The nonce stores a UNIX timestamp as integer in seconds resolution.
      * Since we use a Long variable, we are not affected by the year 2038 problem.
-     * The full range of possible Lisk timestamps (epoch in 2016 +/- 68 years)
+     * The full range of possible Lisk/RISE timestamps (epoch in 2016 +/- 68 years)
      * is covered since we allow negative nonce values.
      *
      * @param date the JavaScript date and time object

@@ -18,12 +18,12 @@ import {
   Nonce,
   TokenTicker,
 } from "@iov/bcp-types";
+import { Parse } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, Tag, TxId, TxQuery } from "@iov/tendermint-types";
 
 import { constants } from "./constants";
 import { liskCodec } from "./liskcodec";
-import { Parse } from "./parse";
 
 /**
  * Encodes the current date and time as a nonce
@@ -159,7 +159,8 @@ export class LiskConnection implements BcpConnection {
           {
             sigFigs: constants.primaryTokenSigFigs,
             tokenName: constants.primaryTokenName,
-            ...Parse.liskAmount(item.balance),
+            tokenTicker: constants.primaryTokenTicker,
+            ...Parse.parseAmount(item.balance),
           },
         ],
       }),
