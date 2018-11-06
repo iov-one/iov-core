@@ -15,6 +15,7 @@ describe("LedgerSimpleAddressWallet", () => {
   it("can be constructed", () => {
     const wallet = new LedgerSimpleAddressWallet();
     expect(wallet).toBeTruthy();
+    expect(wallet.id).toMatch(/^[a-zA-Z0-9]+$/);
   });
 
   it("is empty after construction", () => {
