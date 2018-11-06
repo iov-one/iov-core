@@ -2,6 +2,8 @@
 set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
+PORT=22345
+
 if [ -z "$BNSD_TM_VERSION" ]; then
   echo "BNSD_TM_VERSION must be set"; exit 1
 fi
@@ -18,8 +20,6 @@ fi
 if [ ! -d "${BNSD_DIR}" ]; then
   echo "Error: directory not created for bov"; exit 1;
 fi
-
-PORT=${BOV_PORT:-22345}
 
 # tx indexing set in bov init
 exec docker run --user="$UID" \
