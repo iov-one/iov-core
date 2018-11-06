@@ -9,12 +9,15 @@ export declare class LedgerSimpleAddressWallet implements Wallet {
      * A convenience function to register this wallet type with the global Keyring class
      */
     static registerWithKeyring(): void;
+    private static readonly idPool;
+    private static readonly idsPrng;
+    private static generateId;
     private static identityId;
+    readonly id: WalletId;
     readonly label: ValueAndUpdates<string | undefined>;
     readonly canSign: ValueAndUpdates<boolean>;
     readonly implementationId: WalletImplementationIdString;
     readonly deviceState: ValueAndUpdates<LedgerState>;
-    id: WalletId;
     private readonly deviceTracker;
     private readonly labelProducer;
     private readonly canSignProducer;

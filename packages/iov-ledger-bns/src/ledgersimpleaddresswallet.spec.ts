@@ -2,7 +2,7 @@ import { Nonce, PrehashType, RecipientId, SendTx, TokenTicker, TransactionKind }
 import { bnsCodec } from "@iov/bns";
 import { Ed25519, Sha512 } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
-import { WalletSerializationString } from "@iov/keycontrol";
+import { WalletId, WalletSerializationString } from "@iov/keycontrol";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
 import { pendingWithoutInteractiveLedger, pendingWithoutLedger } from "./common.spec";
@@ -22,6 +22,18 @@ describe("LedgerSimpleAddressWallet", () => {
     const wallet = new LedgerSimpleAddressWallet();
     expect(wallet.label.value).toBeUndefined();
     expect(wallet.getIdentities().length).toEqual(0);
+  });
+
+  it("generates unique ID on creation", async () => {
+    const walletIds: ReadonlyArray<WalletId> = [
+      new LedgerSimpleAddressWallet(),
+      new LedgerSimpleAddressWallet(),
+      new LedgerSimpleAddressWallet(),
+      new LedgerSimpleAddressWallet(),
+      new LedgerSimpleAddressWallet(),
+    ].map(wallet => wallet.id);
+    const uniqueWalletIds = new Set(walletIds);
+    expect(uniqueWalletIds.size).toEqual(5);
   });
 
   it("can have a label", () => {

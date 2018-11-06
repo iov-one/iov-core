@@ -35,8 +35,10 @@
     "@iov/stream": "^0.7.1",
     "@ledgerhq/hw-transport-node-hid": "^4.22.0",
     "@types/node-hid": "^0.7.0",
+    "@types/random-js": "^1.0.31",
     "node-hid": "^0.7.3",
-    "node-pre-gyp": "=0.10.2"
+    "node-pre-gyp": "=0.10.2",
+    "random-js": "^1.0.8"
   },
   "devDependencies": {
     "ts-node": "^7.0.0"
