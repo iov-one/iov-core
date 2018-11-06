@@ -31,17 +31,19 @@ import { BnsConnection } from "./bnsconnection";
 import { bnsFromOrToTag, bnsSwapQueryTags } from "./tags";
 import { keyToAddress } from "./util";
 
-const skipTests = (): boolean => !process.env.BOV_ENABLED;
+function skipTests(): boolean {
+  return !process.env.BNSD_ENABLED;
+}
 
-const pendingWithoutBov = () => {
+function pendingWithoutBnsd(): void {
   if (skipTests()) {
-    pending("Set BOV_ENABLED to enable bov-based tests");
+    pending("Set BNSD_ENABLED to enable bnsd-based tests");
   }
-};
+}
 
 const sleep = (t: number) => new Promise(resolve => setTimeout(resolve, t));
 
-describe("Integration tests with bov+tendermint", () => {
+describe("Integration tests with bnsd+tendermint", () => {
   // the first key generated from this mneumonic produces the given address
   // this account has money in the genesis file (setup in docker)
   // expectedFaucetAddress generated using https://github.com/nym-zone/bech32
@@ -50,9 +52,7 @@ describe("Integration tests with bov+tendermint", () => {
   const expectedFaucetAddress = "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address;
   const cash = "CASH" as TokenTicker;
 
-  // TODO: had issues with websockets? check again later, maybe they need to close at end?
-  // max open connections??? (but 900 by default)
-  const tendermintUrl = "ws://localhost:22345";
+  const bnsdTendermintUrl = "ws://localhost:22345";
 
   async function userProfileWithFaucet(): Promise<{
     readonly profile: UserProfile;
@@ -78,8 +78,8 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("Can connect to tendermint", async () => {
-    pendingWithoutBov();
-    const connection = await BnsConnection.establish(tendermintUrl);
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
     // we should get a reasonable string here
     const chainId = await connection.chainId();
@@ -95,16 +95,16 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("can disconnect from tendermint", async () => {
-    pendingWithoutBov();
-    const connection = await BnsConnection.establish(tendermintUrl);
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
     const chainId = await connection.chainId();
     expect(chainId).toBeTruthy();
     connection.disconnect();
   });
 
   it("can query all tickers", async () => {
-    pendingWithoutBov();
-    const connection = await BnsConnection.establish(tendermintUrl);
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
     const response = await connection.getAllTickers();
     expect(response.data.length).toEqual(3);
@@ -125,8 +125,8 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("can get account by address, publicKey and name", async () => {
-    pendingWithoutBov();
-    const connection = await BnsConnection.establish(tendermintUrl);
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
     const { faucet } = await userProfileWithFaucet();
     const faucetAddr = keyToAddress(faucet.pubkey);
@@ -157,8 +157,8 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("returns empty list when getting an unused account", async () => {
-    pendingWithoutBov();
-    const connection = await BnsConnection.establish(tendermintUrl);
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
     // unusedAddress generated using https://github.com/nym-zone/bech32
     // bech32 -e -h tiov 010101020202030303040404050505050A0A0A0A
     const unusedAddress = "tiov1qyqszqszqgpsxqcyqszq2pg9q59q5zs2fx9n6s" as Address;
@@ -171,8 +171,8 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("Can query empty nonce", async () => {
-    pendingWithoutBov();
-    const connection = await BnsConnection.establish(tendermintUrl);
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
     const { profile, mainWalletId } = await userProfileWithFaucet();
     const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(1));
@@ -186,8 +186,8 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("Can send transaction", async () => {
-    pendingWithoutBov();
-    const connection = await BnsConnection.establish(tendermintUrl);
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
     const chainId = await connection.chainId();
     // store minHeight before sending the tx, so we can filter out
     // if we re-run the test, still only find one tx in search
@@ -254,8 +254,8 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("can get live block feed", async () => {
-    pendingWithoutBov();
-    const connection = await BnsConnection.establish(tendermintUrl);
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
     // get the next three block heights
     const heights = asArray(connection.changeBlock().take(3));
@@ -296,8 +296,8 @@ describe("Integration tests with bov+tendermint", () => {
   };
 
   it("can get live tx feed", async () => {
-    pendingWithoutBov();
-    const connection = await BnsConnection.establish(tendermintUrl);
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
     const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
     const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(62));
@@ -348,8 +348,8 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("can provide change feeds", async () => {
-    pendingWithoutBov();
-    const connection = await BnsConnection.establish(tendermintUrl);
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
     const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
     const faucetAddr = keyToAddress(faucet.pubkey);
@@ -389,8 +389,8 @@ describe("Integration tests with bov+tendermint", () => {
 
   // make sure we can get a reactive account balance (as well as nonce)
   it("can watch accounts", async () => {
-    pendingWithoutBov();
-    const connection = await BnsConnection.establish(tendermintUrl);
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
     const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
     const faucetAddr = keyToAddress(faucet.pubkey);
@@ -452,8 +452,8 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("Can start atomic swap", async () => {
-    pendingWithoutBov();
-    const connection = await BnsConnection.establish(tendermintUrl);
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
     const chainId = await connection.chainId();
 
     const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
@@ -631,8 +631,8 @@ describe("Integration tests with bov+tendermint", () => {
   };
 
   it("Get and watch atomic swap lifecycle", async () => {
-    pendingWithoutBov();
-    const connection = await BnsConnection.establish(tendermintUrl);
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
     const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
     const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(121));

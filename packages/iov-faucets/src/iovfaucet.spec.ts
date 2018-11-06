@@ -4,8 +4,8 @@ import { IovFaucet } from "./iovfaucet";
 import { randomBnsAddress } from "./utils";
 
 function pendingWithoutBnsd(): void {
-  if (!process.env.BOV_ENABLED) {
-    pending("Set BOV_ENABLED to enable tests that need a bnsd blockchain");
+  if (!process.env.BNSD_ENABLED) {
+    pending("Set BNSD_ENABLED to enable tests that need a bnsd blockchain");
   }
 }
 

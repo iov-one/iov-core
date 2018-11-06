@@ -54,7 +54,7 @@ export GANACHE_MNEMONIC="oxygen fall sure lava energy veteran enroll frown quest
 export ETHEREUM_ENABLED=1
 
 echo "use tendermint?" "${TENDERMINT_ENABLED:-no}"
-echo "use bov?" "${BOV_ENABLED:-no}"
+echo "use bnsd?" "${BNSD_ENABLED:-no}"
 echo "use ethereum?" ${ETHEREUM_ENABLED:-no}
 echo "use Lisk?" ${LISK_ENABLED:-no}
 
@@ -62,7 +62,7 @@ echo "use Lisk?" ${LISK_ENABLED:-no}
 # Start faucet
 #
 
-if [[ ! -z ${BOV_ENABLED:-} ]]; then
+if [[ ! -z ${BNSD_ENABLED:-} ]]; then
   ./scripts/iov_faucet_start.sh
 fi
 

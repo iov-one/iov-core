@@ -5,14 +5,14 @@ import { ChainId } from "@iov/tendermint-types";
 
 import { MultiChainSigner } from "./multichainsigner";
 
-// We assume the same BOV context from iov-bns to run some simple tests
+// We assume the same bnsd context from iov-bns to run some simple tests
 // against that backend.
 // We can also add other backends as they are writen.
-const pendingWithoutBov = () => {
-  if (!process.env.BOV_ENABLED) {
-    pending("Set BOV_ENABLED to enable bov-based tests");
+function pendingWithoutBnsd(): void {
+  if (!process.env.BNSD_ENABLED) {
+    pending("Set BNSD_ENABLED to enable bnsd-based tests");
   }
-};
+}
 
 const pendingWithoutTendermint = () => {
   if (!process.env.TENDERMINT_ENABLED) {
@@ -21,6 +21,11 @@ const pendingWithoutTendermint = () => {
 };
 
 describe("MultiChainSigner", () => {
+  // TODO: had issues with websockets? check again later, maybe they need to close at end?
+  // max open connections??? (but 900 by default)
+  const bnsdTendermintUrl = "http://localhost:22345";
+  const rawTendermintUrl = "http://localhost:12345";
+
   it("works with no chains", () => {
     const profile = new UserProfile();
     const signer = new MultiChainSigner(profile);
@@ -36,11 +41,6 @@ describe("MultiChainSigner", () => {
     const mnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
     const cash = "CASH" as TokenTicker;
 
-    // TODO: had issues with websockets? check again later, maybe they need to close at end?
-    // max open connections??? (but 900 by default)
-    const bovUrl = "http://localhost:22345";
-    const kvstoreUrl = "http://localhost:12345";
-
     async function userProfileWithFaucet(): Promise<{
       readonly profile: UserProfile;
       readonly mainWalletId: WalletId;
@@ -54,12 +54,12 @@ describe("MultiChainSigner", () => {
     }
 
     it("can send transaction", async () => {
-      pendingWithoutBov();
+      pendingWithoutBnsd();
 
       const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
       const signer = new MultiChainSigner(profile);
-      const { connection } = await signer.addChain(bnsConnector(bovUrl));
+      const { connection } = await signer.addChain(bnsConnector(bnsdTendermintUrl));
       expect(signer.chainIds().length).toEqual(1);
       const chainId = connection.chainId();
 
@@ -103,7 +103,7 @@ describe("MultiChainSigner", () => {
 
     it("can add two chains", async () => {
       // this requires both chains to check
-      pendingWithoutBov();
+      pendingWithoutBnsd();
       pendingWithoutTendermint();
 
       const { profile, faucet } = await userProfileWithFaucet();
@@ -111,12 +111,12 @@ describe("MultiChainSigner", () => {
       expect(signer.chainIds().length).toEqual(0);
 
       // add the bov chain
-      await signer.addChain(bnsConnector(bovUrl));
+      await signer.addChain(bnsConnector(bnsdTendermintUrl));
       expect(signer.chainIds().length).toEqual(1);
       const bovId = signer.chainIds()[0];
 
       // add a raw tendermint chain (don't query, it will fail)
-      await signer.addChain(bnsConnector(kvstoreUrl));
+      await signer.addChain(bnsConnector(rawTendermintUrl));
       const twoChains = signer.chainIds();
       // it should store both chains
       expect(twoChains.length).toEqual(2);
@@ -144,11 +144,9 @@ describe("MultiChainSigner", () => {
     );
 
   it("optionally enforces chainId", async () => {
-    pendingWithoutBov();
-    const bovUrl = "http://localhost:22345";
-
+    pendingWithoutBnsd();
     const signer = new MultiChainSigner(new UserProfile());
-    const connector = bnsConnector(bovUrl);
+    const connector = bnsConnector(bnsdTendermintUrl);
 
     // can add with unspecified expectedChainId
     const { connection } = await signer.addChain(connector);
@@ -158,12 +156,12 @@ describe("MultiChainSigner", () => {
 
     // success if adding with proper expectedChainId
     const signer2 = new MultiChainSigner(new UserProfile());
-    const secureConnector = bnsConnector(bovUrl, chainId);
+    const secureConnector = bnsConnector(bnsdTendermintUrl, chainId);
     await signer2.addChain(secureConnector);
 
     // error if adding with false expectedChainId
     const signer3 = new MultiChainSigner(new UserProfile());
-    const invalidConnector = bnsConnector(bovUrl, "chain-is-not-right" as ChainId);
+    const invalidConnector = bnsConnector(bnsdTendermintUrl, "chain-is-not-right" as ChainId);
     await expectRejected(signer3.addChain(invalidConnector));
   });
 });
