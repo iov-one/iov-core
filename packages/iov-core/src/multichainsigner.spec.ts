@@ -21,6 +21,11 @@ const pendingWithoutTendermint = () => {
 };
 
 describe("MultiChainSigner", () => {
+  // TODO: had issues with websockets? check again later, maybe they need to close at end?
+  // max open connections??? (but 900 by default)
+  const bnsdTendermintUrl = "http://localhost:22345";
+  const rawTendermintUrl = "http://localhost:12345";
+
   it("works with no chains", () => {
     const profile = new UserProfile();
     const signer = new MultiChainSigner(profile);
@@ -35,11 +40,6 @@ describe("MultiChainSigner", () => {
     // this account has money in the genesis file (setup in docker)
     const mnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
     const cash = "CASH" as TokenTicker;
-
-    // TODO: had issues with websockets? check again later, maybe they need to close at end?
-    // max open connections??? (but 900 by default)
-    const bovUrl = "http://localhost:22345";
-    const kvstoreUrl = "http://localhost:12345";
 
     async function userProfileWithFaucet(): Promise<{
       readonly profile: UserProfile;
@@ -59,7 +59,7 @@ describe("MultiChainSigner", () => {
       const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
       const signer = new MultiChainSigner(profile);
-      const { connection } = await signer.addChain(bnsConnector(bovUrl));
+      const { connection } = await signer.addChain(bnsConnector(bnsdTendermintUrl));
       expect(signer.chainIds().length).toEqual(1);
       const chainId = connection.chainId();
 
@@ -111,12 +111,12 @@ describe("MultiChainSigner", () => {
       expect(signer.chainIds().length).toEqual(0);
 
       // add the bov chain
-      await signer.addChain(bnsConnector(bovUrl));
+      await signer.addChain(bnsConnector(bnsdTendermintUrl));
       expect(signer.chainIds().length).toEqual(1);
       const bovId = signer.chainIds()[0];
 
       // add a raw tendermint chain (don't query, it will fail)
-      await signer.addChain(bnsConnector(kvstoreUrl));
+      await signer.addChain(bnsConnector(rawTendermintUrl));
       const twoChains = signer.chainIds();
       // it should store both chains
       expect(twoChains.length).toEqual(2);
@@ -145,10 +145,8 @@ describe("MultiChainSigner", () => {
 
   it("optionally enforces chainId", async () => {
     pendingWithoutBnsd();
-    const bovUrl = "http://localhost:22345";
-
     const signer = new MultiChainSigner(new UserProfile());
-    const connector = bnsConnector(bovUrl);
+    const connector = bnsConnector(bnsdTendermintUrl);
 
     // can add with unspecified expectedChainId
     const { connection } = await signer.addChain(connector);
@@ -158,12 +156,12 @@ describe("MultiChainSigner", () => {
 
     // success if adding with proper expectedChainId
     const signer2 = new MultiChainSigner(new UserProfile());
-    const secureConnector = bnsConnector(bovUrl, chainId);
+    const secureConnector = bnsConnector(bnsdTendermintUrl, chainId);
     await signer2.addChain(secureConnector);
 
     // error if adding with false expectedChainId
     const signer3 = new MultiChainSigner(new UserProfile());
-    const invalidConnector = bnsConnector(bovUrl, "chain-is-not-right" as ChainId);
+    const invalidConnector = bnsConnector(bnsdTendermintUrl, "chain-is-not-right" as ChainId);
     await expectRejected(signer3.addChain(invalidConnector));
   });
 });
