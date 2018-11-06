@@ -10,28 +10,28 @@ if [ -z "$BNSD_VERSION" ]; then
   echo "BNSD_VERSION must be set"; exit 1
 fi
 
-if [ -z "$BOV_DIR" ]; then
-  echo "BOV_DIR must be set"; exit 1
+if [ -z "$BNSD_DIR" ]; then
+  echo "BNSD_DIR must be set"; exit 1
 fi
 
 
-chmod 777 "${BOV_DIR}"
+chmod 777 "${BNSD_DIR}"
 
 docker run --user="$UID" \
-  -v "${BOV_DIR}:/tendermint" \
+  -v "${BNSD_DIR}:/tendermint" \
   "iov1/tendermint:${BNSD_TM_VERSION}" \
   init
 
-mv "${BOV_DIR}/config/genesis.json" "${BOV_DIR}/config/genesis.json.orig"
+mv "${BNSD_DIR}/config/genesis.json" "${BNSD_DIR}/config/genesis.json.orig"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 APP_STATE=$(<"$SCRIPT_DIR/genesis_app_state.json")
 jq ". + {\"app_state\" : $APP_STATE}" \
-  "${BOV_DIR}/config/genesis.json.orig" \
-  > "${BOV_DIR}/config/genesis.json"
+  "${BNSD_DIR}/config/genesis.json.orig" \
+  > "${BNSD_DIR}/config/genesis.json"
 
 docker run --user="$UID" \
-  -v "${BOV_DIR}:/data" \
+  -v "${BNSD_DIR}:/data" \
   "iov1/bnsd:${BNSD_VERSION}" \
   -home "/data" \
   init -i
