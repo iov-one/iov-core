@@ -7,7 +7,12 @@ import { Encoding, Int53 } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/tendermint-types";
 
 import { appVersion, getPublicKeyWithIndex, signTransactionWithIndex } from "./app";
-import { pendingWithoutInteractiveLedger, pendingWithoutLedger, skipInteractiveTests, skipTests } from "./common.spec";
+import {
+  pendingWithoutInteractiveLedger,
+  pendingWithoutLedger,
+  skipInteractiveTests,
+  skipTests,
+} from "./common.spec";
 import { connectToFirstLedger } from "./exchange";
 
 describe("Query ledger app", () => {
@@ -73,7 +78,9 @@ describe("Sign with ledger app", () => {
     pendingWithoutInteractiveLedger();
 
     // this is pre-generated signbytes
-    const message = Encoding.fromHex("00cafe0008746573742d31323300000000000000110a440a1403694b56200b605a3a726304b6dfaa6e916458ee12146bc29ffe4fc6a4b2395c3f47b5ca9dfa377295f91a0808fa011a03455448220c54657374207061796d656e74");
+    const message = Encoding.fromHex(
+      "00cafe0008746573742d31323300000000000000110a440a1403694b56200b605a3a726304b6dfaa6e916458ee12146bc29ffe4fc6a4b2395c3f47b5ca9dfa377295f91a0808fa011a03455448220c54657374207061796d656e74",
+    );
 
     const pubkey = await getPublicKeyWithIndex(transport!, 0);
     expect(pubkey.length).toEqual(32);
