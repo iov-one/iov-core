@@ -171,61 +171,54 @@ describe("LiskConnection", () => {
     expect(nonce.data[0].nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
   });
 
-  it(
-    "can post transaction",
-    async () => {
-      pendingWithoutLiskDevnet();
+  it("can post transaction", async () => {
+    pendingWithoutLiskDevnet();
 
-      const wallet = new Ed25519Wallet();
-      const mainIdentity = await wallet.createIdentity(
-        await Derivation.passphraseToKeypair(
-          "wagon stock borrow episode laundry kitten salute link globe zero feed marble",
-        ),
-      );
+    const wallet = new Ed25519Wallet();
+    const mainIdentity = await wallet.createIdentity(
+      await Derivation.passphraseToKeypair(
+        "wagon stock borrow episode laundry kitten salute link globe zero feed marble",
+      ),
+    );
 
-      const recipientAddress = "16313739661670634666L" as Address;
+    const recipientAddress = "16313739661670634666L" as Address;
 
-      const sendTx: SendTx = {
-        kind: TransactionKind.Send,
-        chainId: devnetChainId,
-        signer: mainIdentity.pubkey,
-        recipient: recipientAddress,
-        memo: "We ❤️ developers – iov.one",
-        amount: {
-          whole: 1,
-          fractional: 44550000,
-          tokenTicker: "LSK" as TokenTicker,
-        },
-      };
+    const sendTx: SendTx = {
+      kind: TransactionKind.Send,
+      chainId: devnetChainId,
+      signer: mainIdentity.pubkey,
+      recipient: recipientAddress,
+      memo: "We ❤️ developers – iov.one",
+      amount: {
+        whole: 1,
+        fractional: 44550000,
+        tokenTicker: "LSK" as TokenTicker,
+      },
+    };
 
-      // Encode creation timestamp into nonce
-      const nonce = generateNonce();
-      const signingJob = liskCodec.bytesToSign(sendTx, nonce);
-      const signature = await wallet.createTransactionSignature(
-        mainIdentity,
-        signingJob.bytes,
-        signingJob.prehashType,
-        devnetChainId,
-      );
+    // Encode creation timestamp into nonce
+    const nonce = generateNonce();
+    const signingJob = liskCodec.bytesToSign(sendTx, nonce);
+    const signature = await wallet.createTransactionSignature(
+      mainIdentity,
+      signingJob.bytes,
+      signingJob.prehashType,
+      devnetChainId,
+    );
 
-      const signedTransaction = {
-        transaction: sendTx,
-        primarySignature: {
-          nonce: nonce,
-          publicKey: mainIdentity.pubkey,
-          signature: signature,
-        },
-        otherSignatures: [],
-      };
-      const bytesToPost = liskCodec.bytesToPost(signedTransaction);
+    const signedTransaction = {
+      transaction: sendTx,
+      primarySignature: {
+        nonce: nonce,
+        publicKey: mainIdentity.pubkey,
+        signature: signature,
+      },
+      otherSignatures: [],
+    };
+    const bytesToPost = liskCodec.bytesToPost(signedTransaction);
 
-      const connection = await LiskConnection.establish(devnetBase);
-      const result = await connection.postTx(bytesToPost);
-      expect(result).toBeTruthy();
-      expect(result.metadata.height).toBeDefined();
-      expect(result.metadata.height).toBeGreaterThan(0);
-      expect(result.metadata.height).toBeLessThan(10_000_000);
-    },
-    40 * 1000,
-  );
+    const connection = await LiskConnection.establish(devnetBase);
+    const result = await connection.postTx(bytesToPost);
+    expect(result).toBeTruthy();
+  });
 });
