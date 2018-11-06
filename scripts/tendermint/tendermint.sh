@@ -2,10 +2,7 @@
 set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
-if [ -z "$TM_VERSION" ]; then
-  echo "TM_VERSION must be set"
-  exit 1
-fi
+TM_VERSION=0.21.0
 
 if [ -z "$TM_DIR" ]; then
   echo "TM_DIR must be set"
@@ -15,6 +12,8 @@ fi
 PORT=${TM_PORT:-12345}
 
 chmod 777 "${TM_DIR}"
+
+docker pull "tendermint/tendermint:${TM_VERSION}"
 
 docker run --user="$UID" \
   -v "${TM_DIR}:/tendermint" \
