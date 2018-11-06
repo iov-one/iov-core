@@ -2,7 +2,7 @@ import { Address, BcpAccountQuery, SendTx, TokenTicker, TransactionKind } from "
 import { Derivation } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet } from "@iov/keycontrol";
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/tendermint-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { riseCodec } from "./risecodec";
 import { generateNonce, RiseConnection } from "./riseconnection";
@@ -12,6 +12,11 @@ const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbece
 
 describe("RiseConnection", () => {
   const base = "https://twallet.rise.vision";
+  const defaultSendAmount = {
+    whole: 0,
+    fractional: 14550000,
+    tokenTicker: "RISE" as TokenTicker,
+  };
 
   it("can be constructed", () => {
     const connection = new RiseConnection(base, riseTestnet);
@@ -168,11 +173,7 @@ describe("RiseConnection", () => {
       chainId: riseTestnet,
       signer: mainIdentity.pubkey,
       recipient: recipientAddress,
-      amount: {
-        whole: 1,
-        fractional: 44550000,
-        tokenTicker: "RISE" as TokenTicker,
-      },
+      amount: defaultSendAmount,
     };
 
     // Encode creation timestamp into nonce
@@ -199,5 +200,54 @@ describe("RiseConnection", () => {
     const connection = await RiseConnection.establish(base);
     const result = await connection.postTx(bytesToPost);
     expect(result).toBeTruthy();
+  });
+
+  it("throws for transaction with corrupted signature", async () => {
+    const wallet = new Ed25519Wallet();
+    const mainIdentity = await wallet.createIdentity(
+      await Derivation.passphraseToKeypair(
+        "squeeze frog deposit chase sudden clutch fortune spring tone have snow column",
+      ),
+    );
+
+    const recipientAddress = "10145108642177909005R" as Address;
+
+    const sendTx: SendTx = {
+      kind: TransactionKind.Send,
+      chainId: riseTestnet,
+      signer: mainIdentity.pubkey,
+      recipient: recipientAddress,
+      amount: defaultSendAmount,
+    };
+
+    // Encode creation timestamp into nonce
+    const nonce = generateNonce();
+    const signingJob = riseCodec.bytesToSign(sendTx, nonce);
+    const signature = await wallet.createTransactionSignature(
+      mainIdentity,
+      signingJob.bytes,
+      signingJob.prehashType,
+      riseTestnet,
+    );
+
+    // tslint:disable-next-line:no-bitwise
+    const corruptedSignature = signature.map((x, i) => (i === 0 ? x ^ 0x01 : x)) as SignatureBytes;
+
+    const signedTransaction = {
+      transaction: sendTx,
+      primarySignature: {
+        nonce: nonce,
+        publicKey: mainIdentity.pubkey,
+        signature: corruptedSignature,
+      },
+      otherSignatures: [],
+    };
+    const bytesToPost = riseCodec.bytesToPost(signedTransaction);
+
+    const connection = await RiseConnection.establish(base);
+    await connection
+      .postTx(bytesToPost)
+      .then(() => fail("must not resolve"))
+      .catch(error => expect(error).toMatch(/Failed to verify signature/i));
   });
 });

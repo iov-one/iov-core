@@ -88,35 +88,24 @@ export class LiskConnection implements BcpConnection {
       throw new Error("Invalid transaction ID");
     }
 
-    await axios.post(this.baseUrl + "/api/transactions", bytes, {
+    const response = await axios.post(this.baseUrl + "/api/transactions", bytes, {
       headers: {
         "Content-Type": "application/json",
       },
     });
 
-    // Sleep some seconds to ensure transaction will be found.
-    // Sleep duration determined by trial and error. 15 seconds was not enough.
-    await new Promise(resolve => setTimeout(resolve, 24 * 1000));
-
-    const result = await axios.get(this.baseUrl + `/api/transactions?id=${transactionId}`);
-    const responseBody = result.data;
-
-    let height: number | undefined;
-    let transactionResultBytes: Uint8Array | undefined;
-    if (responseBody.meta.count === 1) {
-      const transactionResult = responseBody.data[0];
-      height = transactionResult.height;
-      transactionResultBytes = Encoding.toUtf8(JSON.stringify(transactionResult));
+    if (typeof response.data.meta.status !== "boolean" || response.data.meta.status !== true) {
+      throw new Error("Did not get meta.status: true");
     }
 
     return {
       metadata: {
-        height: height,
+        height: undefined,
       },
       data: {
         message: "",
         txid: Encoding.toAscii(transactionId) as TxId,
-        result: transactionResultBytes || new Uint8Array([]),
+        result: new Uint8Array([]),
       },
     };
   }

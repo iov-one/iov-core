@@ -12,6 +12,8 @@ Deprecations
 
 Breaking changes
 
+* @iov/lisk: LiskConnection.postTx does not wait for block anymore (analogue to RiseConnection.postTx),
+  making it faster and more reliable. Transaction state tracking will improve in the future.
 * Due to updates in all serialization formats, UserProfiles stored with
   earlier versions of IOV-Core cannot be opened with 0.8.0. To migrate to
   the new version, extract the secret data using an older version and
