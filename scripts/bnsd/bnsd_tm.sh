@@ -18,10 +18,10 @@ fi
 
 # this assumes it was run after bnsd_init.sh and this exists
 if [ ! -d "${BNSD_DIR}" ]; then
-  echo "Error: directory not created for bov"; exit 1;
+  echo "Error: directory not created for bnsd"; exit 1;
 fi
 
-# tx indexing set in bov init
+# tx indexing set in init
 exec docker run --user="$UID" \
   -p "${PORT}:26657" -v "${BNSD_DIR}:/tendermint" \
   "iov1/tendermint:${BNSD_TM_VERSION}" node \

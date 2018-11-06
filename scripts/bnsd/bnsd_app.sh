@@ -12,7 +12,7 @@ fi
 
 # this assumes it was run after bnsd_init.sh and this exists
 if [ ! -d "${BNSD_DIR}" ]; then
-  echo "Error: directory not created for bnds"; exit 1;
+  echo "Error: directory not created for bnsd"; exit 1;
 fi
 
 exec docker run --user="$UID" \
