@@ -11,6 +11,17 @@ else
   # get this files directory regardless of pwd when we run it
   SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+  #
+  # Start Tendermint
+  #
+  "${SCRIPT_DIR}"/tendermint/tendermint.sh > /tmp/foo.log &
+  export TM_PID=$!
+  echo "Started tendermint" $TM_PID
+  export TENDERMINT_ENABLED=1
+
+  #
+  # Start bnsd
+  #
   BNSD_DIR=$(mktemp -d "${TMPDIR:-/tmp}/bnsd.XXXXXXXXX")
   export BNSD_DIR
   echo "BNSD_DIR = $BNSD_DIR"
@@ -19,13 +30,6 @@ else
   docker pull iov1/tendermint:${BNSD_TM_VERSION}
   docker pull iov1/bnsd:${BNSD_VERSION}
   export BOV_ENABLED=1
-
-  "${SCRIPT_DIR}"/tendermint/tendermint.sh > /tmp/foo.log &
-  export TM_PID=$!
-  echo "Started tendermint" $TM_PID
-  export TENDERMINT_ENABLED=1
-  sleep 2
-
   "${SCRIPT_DIR}"/bnsd/bnsd_init.sh
   "${SCRIPT_DIR}"/bnsd/bnsd_tm.sh > /tmp/bnsd_tm.log &
   export BOV_TM_PID=$!
