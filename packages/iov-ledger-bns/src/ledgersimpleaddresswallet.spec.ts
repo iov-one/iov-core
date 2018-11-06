@@ -239,6 +239,7 @@ describe("LedgerSimpleAddressWallet", () => {
 
     const decodedJson = JSON.parse(serialized);
     expect(decodedJson).toBeTruthy();
+    expect(decodedJson.id).toMatch(/^[a-zA-Z0-9]+$/);
     expect(decodedJson.label).toEqual("wallet with 3 identities");
     expect(decodedJson.secret).toMatch(/^[a-z]+( [a-z]+)*$/);
     expect(decodedJson.identities.length).toEqual(3);
