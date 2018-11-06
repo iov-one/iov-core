@@ -12,6 +12,11 @@ const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbece
 
 describe("RiseConnection", () => {
   const base = "https://twallet.rise.vision";
+  const defaultSendAmount = {
+    whole: 0,
+    fractional: 14550000,
+    tokenTicker: "RISE" as TokenTicker,
+  };
 
   it("can be constructed", () => {
     const connection = new RiseConnection(base, riseTestnet);
@@ -168,11 +173,7 @@ describe("RiseConnection", () => {
       chainId: riseTestnet,
       signer: mainIdentity.pubkey,
       recipient: recipientAddress,
-      amount: {
-        whole: 1,
-        fractional: 44550000,
-        tokenTicker: "RISE" as TokenTicker,
-      },
+      amount: defaultSendAmount,
     };
 
     // Encode creation timestamp into nonce
@@ -216,11 +217,7 @@ describe("RiseConnection", () => {
       chainId: riseTestnet,
       signer: mainIdentity.pubkey,
       recipient: recipientAddress,
-      amount: {
-        whole: 1,
-        fractional: 44550000,
-        tokenTicker: "RISE" as TokenTicker,
-      },
+      amount: defaultSendAmount,
     };
 
     // Encode creation timestamp into nonce
