@@ -12,13 +12,13 @@ else
   SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
   export BNSD_TM_VERSION=0.21.0
-  export BOV_VERSION=v0.8.0
+  export BNSD_VERSION=v0.8.0
   docker pull iov1/tendermint:${BNSD_TM_VERSION}
-  docker pull iov1/bnsd:${BOV_VERSION}
+  docker pull iov1/bnsd:${BNSD_VERSION}
   export BOV_ENABLED=1
 
   TM_DIR=$(mktemp -d "${TMPDIR:-/tmp}/tendermint.XXXXXXXXX")
-  BOV_DIR=$(mktemp -d "${TMPDIR:-/tmp}/bov_${BOV_VERSION}.XXXXXXXXX")
+  BOV_DIR=$(mktemp -d "${TMPDIR:-/tmp}/bnsd.XXXXXXXXX")
   export TM_DIR
   export BOV_DIR
   echo "TM_DIR = $TM_DIR"

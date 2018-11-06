@@ -2,8 +2,8 @@
 set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
-if [ -z "$BOV_VERSION" ]; then
-  echo "BOV_VERSION must be set"; exit 1
+if [ -z "$BNSD_VERSION" ]; then
+  echo "BNSD_VERSION must be set"; exit 1
 fi
 
 if [ -z "$BOV_DIR" ]; then
@@ -17,6 +17,6 @@ fi
 
 exec docker run --user="$UID" \
   -v "${BOV_DIR}:/data" \
-  "iov1/bnsd:${BOV_VERSION}" \
+  "iov1/bnsd:${BNSD_VERSION}" \
   -home "/data" \
   start -bind="unix:///data/app.sock"

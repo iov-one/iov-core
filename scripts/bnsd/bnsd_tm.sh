@@ -6,8 +6,8 @@ if [ -z "$BNSD_TM_VERSION" ]; then
   echo "BNSD_TM_VERSION must be set"; exit 1
 fi
 
-if [ -z "$BOV_VERSION" ]; then
-  echo "BOV_VERSION must be set"; exit 1
+if [ -z "$BNSD_VERSION" ]; then
+  echo "BNSD_VERSION must be set"; exit 1
 fi
 
 if [ -z "$BOV_DIR" ]; then

@@ -6,8 +6,8 @@ if [ -z "$BNSD_TM_VERSION" ]; then
   echo "BNSD_TM_VERSION must be set"; exit 1
 fi
 
-if [ -z "$BOV_VERSION" ]; then
-  echo "BOV_VERSION must be set"; exit 1
+if [ -z "$BNSD_VERSION" ]; then
+  echo "BNSD_VERSION must be set"; exit 1
 fi
 
 if [ -z "$BOV_DIR" ]; then
@@ -32,6 +32,6 @@ jq ". + {\"app_state\" : $APP_STATE}" \
 
 docker run --user="$UID" \
   -v "${BOV_DIR}:/data" \
-  "iov1/bnsd:${BOV_VERSION}" \
+  "iov1/bnsd:${BNSD_VERSION}" \
   -home "/data" \
   init -i
