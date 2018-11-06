@@ -2,6 +2,7 @@
 
 ## 0.8.0
 
+* @iov/dpos: Add new package with shared code for Lisk and RISE. Don't use this directly. No code change necessary for users of @iov/lisk and @iov/rise.
 * @iov/faucets: add `IovFaucet` to connect to the new faucet application
 * @iov/keycontrol: add format versioning to `Wallet`, `Keyring`, keyring encryption and `UserProfile`
 
