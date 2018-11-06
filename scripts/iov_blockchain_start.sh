@@ -17,11 +17,9 @@ else
   docker pull iov1/bnsd:${BNSD_VERSION}
   export BOV_ENABLED=1
 
-  TM_DIR=$(mktemp -d "${TMPDIR:-/tmp}/tendermint.XXXXXXXXX")
+
   BOV_DIR=$(mktemp -d "${TMPDIR:-/tmp}/bnsd.XXXXXXXXX")
-  export TM_DIR
   export BOV_DIR
-  echo "TM_DIR = $TM_DIR"
   echo "BOV_DIR = $BOV_DIR"
 
   "${SCRIPT_DIR}"/tendermint/tendermint.sh > /tmp/foo.log &
