@@ -9,12 +9,12 @@ if [[ ! -z ${TM_PID:-} ]]; then
   unset TENDERMINT_ENABLED
 fi
 
-if [[ ! -z ${BOV_APP_PID:-} ]]; then
-  echo "Stopping bov: ${BOV_TM_PID} ${BOV_APP_PID}"
-  kill "${BOV_APP_PID}"
-  kill "${BOV_TM_PID}"
-  unset BOV_APP_PID
-  unset BOV_TM_PID
+if [[ ! -z ${BNSD_APP_PID:-} ]]; then
+  echo "Stopping bnsd (Tendermint: ${BNSD_TM_PID:-}; Application: ${BNSD_APP_PID:-})"
+  kill "${BNSD_APP_PID}"
+  kill "${BNSD_TM_PID}"
+  unset BNSD_APP_PID
+  unset BNSD_TM_PID
   unset BNSD_ENABLED
   # for debug output
   # cat /tmp/bnsd_app.log

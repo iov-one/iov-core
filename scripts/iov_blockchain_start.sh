@@ -32,9 +32,9 @@ else
   export BNSD_ENABLED=1
   "${SCRIPT_DIR}"/bnsd/bnsd_init.sh
   "${SCRIPT_DIR}"/bnsd/bnsd_tm.sh > /tmp/bnsd_tm.log &
-  export BOV_TM_PID=$!
+  export BNSD_TM_PID=$!
   "${SCRIPT_DIR}"/bnsd/bnsd_app.sh > /tmp/bnsd_app.log &
-  export BOV_APP_PID=$!
+  export BNSD_APP_PID=$!
   sleep 3
   # for debug output
   cat /tmp/bnsd_tm.log
