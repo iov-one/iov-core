@@ -2,8 +2,8 @@
 set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
-if [ -z "$TM_VERSION" ]; then
-  echo "TM_VERSION must be set"; exit 1
+if [ -z "$BNSD_TM_VERSION" ]; then
+  echo "BNSD_TM_VERSION must be set"; exit 1
 fi
 
 if [ -z "$BOV_VERSION" ]; then
@@ -24,7 +24,7 @@ PORT=${BOV_PORT:-22345}
 # tx indexing set in bov init
 exec docker run --user="$UID" \
   -p "${PORT}:26657" -v "${BOV_DIR}:/tendermint" \
-  "iov1/tendermint:${TM_VERSION}" node \
+  "iov1/tendermint:${BNSD_TM_VERSION}" node \
   --proxy_app="unix:///tendermint/app.sock" \
   --rpc.laddr=tcp://0.0.0.0:26657 \
   --log_level=state:info,rpc:info,*:error
