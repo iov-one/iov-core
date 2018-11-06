@@ -1,12 +1,4 @@
 {
   "printWidth": 110,
-  "trailingComma": "all",
-  "overrides": [
-    {
-      "files": "*.spec.ts",
-      "options": {
-        "printWidth": 5000
-      }
-    }
-  ]
+  "trailingComma": "all"
 }

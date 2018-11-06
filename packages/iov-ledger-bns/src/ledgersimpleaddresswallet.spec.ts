@@ -2,7 +2,7 @@ import { Nonce, PrehashType, RecipientId, SendTx, TokenTicker, TransactionKind }
 import { bnsCodec } from "@iov/bns";
 import { Ed25519, Sha512 } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
-import { WalletSerializationString } from "@iov/keycontrol";
+import { WalletId, WalletSerializationString } from "@iov/keycontrol";
 import { Algorithm, ChainId } from "@iov/tendermint-types";
 
 import { pendingWithoutInteractiveLedger, pendingWithoutLedger } from "./common.spec";
@@ -15,12 +15,25 @@ describe("LedgerSimpleAddressWallet", () => {
   it("can be constructed", () => {
     const wallet = new LedgerSimpleAddressWallet();
     expect(wallet).toBeTruthy();
+    expect(wallet.id).toMatch(/^[a-zA-Z0-9]+$/);
   });
 
   it("is empty after construction", () => {
     const wallet = new LedgerSimpleAddressWallet();
     expect(wallet.label.value).toBeUndefined();
     expect(wallet.getIdentities().length).toEqual(0);
+  });
+
+  it("generates unique ID on creation", async () => {
+    const walletIds: ReadonlyArray<WalletId> = [
+      new LedgerSimpleAddressWallet(),
+      new LedgerSimpleAddressWallet(),
+      new LedgerSimpleAddressWallet(),
+      new LedgerSimpleAddressWallet(),
+      new LedgerSimpleAddressWallet(),
+    ].map(wallet => wallet.id);
+    const uniqueWalletIds = new Set(walletIds);
+    expect(uniqueWalletIds.size).toEqual(5);
   });
 
   it("can have a label", () => {
@@ -74,7 +87,9 @@ describe("LedgerSimpleAddressWallet", () => {
     const newIdentity5 = await wallet.createIdentity(4);
 
     // all pubkeys must be different
-    const pubkeySet = new Set([newIdentity1, newIdentity2, newIdentity3, newIdentity4, newIdentity5].map(i => toHex(i.pubkey.data)));
+    const pubkeySet = new Set(
+      [newIdentity1, newIdentity2, newIdentity3, newIdentity4, newIdentity5].map(i => toHex(i.pubkey.data)),
+    );
     expect(pubkeySet.size).toEqual(5);
 
     expect(wallet.getIdentities().length).toEqual(5);
@@ -236,6 +251,7 @@ describe("LedgerSimpleAddressWallet", () => {
 
     const decodedJson = JSON.parse(serialized);
     expect(decodedJson).toBeTruthy();
+    expect(decodedJson.id).toMatch(/^[a-zA-Z0-9]+$/);
     expect(decodedJson.label).toEqual("wallet with 3 identities");
     expect(decodedJson.secret).toMatch(/^[a-z]+( [a-z]+)*$/);
     expect(decodedJson.identities.length).toEqual(3);
@@ -256,16 +272,24 @@ describe("LedgerSimpleAddressWallet", () => {
     expect(decodedJson.identities[2].simpleAddressIndex).toEqual(2);
 
     // keys are different
-    expect(decodedJson.identities[0].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[1].localIdentity.pubkey.data);
-    expect(decodedJson.identities[1].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[2].localIdentity.pubkey.data);
-    expect(decodedJson.identities[2].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[0].localIdentity.pubkey.data);
+    expect(decodedJson.identities[0].localIdentity.pubkey.data).not.toEqual(
+      decodedJson.identities[1].localIdentity.pubkey.data,
+    );
+    expect(decodedJson.identities[1].localIdentity.pubkey.data).not.toEqual(
+      decodedJson.identities[2].localIdentity.pubkey.data,
+    );
+    expect(decodedJson.identities[2].localIdentity.pubkey.data).not.toEqual(
+      decodedJson.identities[0].localIdentity.pubkey.data,
+    );
     wallet.stopDeviceTracking();
   });
 
   it("can deserialize", () => {
     {
       // empty
-      const wallet = new LedgerSimpleAddressWallet('{ "formatVersion": 1, "id": "7g97g98huhdd7", "identities": [] }' as WalletSerializationString);
+      const wallet = new LedgerSimpleAddressWallet(
+        '{ "formatVersion": 1, "id": "7g97g98huhdd7", "identities": [] }' as WalletSerializationString,
+      );
       expect(wallet).toBeTruthy();
       expect(wallet.id).toEqual("7g97g98huhdd7");
       expect(wallet.getIdentities().length).toEqual(0);

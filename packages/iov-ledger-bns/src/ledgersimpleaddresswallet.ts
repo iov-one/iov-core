@@ -1,4 +1,6 @@
 // tslint:disable:readonly-array
+import PseudoRandom from "random-js";
+
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import {
@@ -35,8 +37,8 @@ interface IdentitySerialization {
 
 interface LedgerSimpleAddressWalletSerialization {
   readonly formatVersion: number;
-  readonly label: string | undefined;
   readonly id: string;
+  readonly label: string | undefined;
   readonly identities: ReadonlyArray<IdentitySerialization>;
 }
 
@@ -70,9 +72,6 @@ function deserialize(data: WalletSerializationString): LedgerSimpleAddressWallet
   return doc;
 }
 
-// this is the id of any LedgerSimpleAddressWallet until it connects with the app
-const defaultId = "uninitialized" as WalletId;
-
 export class LedgerSimpleAddressWallet implements Wallet {
   public static readonly implementationId = "ledger-simpleaddress" as WalletImplementationIdString;
 
@@ -86,18 +85,25 @@ export class LedgerSimpleAddressWallet implements Wallet {
     });
   }
 
+  private static readonly idPool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  private static readonly idsPrng: PseudoRandom.Engine = PseudoRandom.engines.mt19937().autoSeed();
+
+  private static generateId(): WalletId {
+    // this can be pseudo-random, just used for internal book-keeping
+    const code = PseudoRandom.string(LedgerSimpleAddressWallet.idPool)(LedgerSimpleAddressWallet.idsPrng, 16);
+    return code as WalletId;
+  }
+
   private static identityId(identity: PublicIdentity): LocalIdentityId {
     const id = identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
     return id as LocalIdentityId;
   }
 
+  public readonly id: WalletId;
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign: ValueAndUpdates<boolean>;
   public readonly implementationId = LedgerSimpleAddressWallet.implementationId;
   public readonly deviceState: ValueAndUpdates<LedgerState>;
-  // id will be set the first time the keyring connects to a given device, "uninitialized" until then
-  // tslint:disable-next-line:readonly-keyword
-  public id: WalletId;
 
   private readonly deviceTracker = new StateTracker();
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
@@ -118,17 +124,19 @@ export class LedgerSimpleAddressWallet implements Wallet {
     });
     this.deviceState = this.deviceTracker.state;
 
+    let id: WalletId;
     let label: string | undefined;
-    let id = defaultId;
     const identities: LocalIdentity[] = [];
     const simpleAddressIndices = new Map<string, number>();
 
     if (data) {
       const decodedData = deserialize(data);
 
+      // id
+      id = decodedData.id as WalletId;
+
       // label
       label = decodedData.label;
-      id = decodedData.id as WalletId;
 
       // identities
       for (const record of decodedData.identities) {
@@ -139,13 +147,15 @@ export class LedgerSimpleAddressWallet implements Wallet {
         identities.push(identity);
         simpleAddressIndices.set(identity.id, record.simpleAddressIndex);
       }
+    } else {
+      id = LedgerSimpleAddressWallet.generateId();
     }
 
+    this.id = id;
     this.labelProducer = new DefaultValueProducer<string | undefined>(label);
     this.label = new ValueAndUpdates(this.labelProducer);
     this.identities = identities;
     this.simpleAddressIndices = simpleAddressIndices;
-    this.id = id;
   }
 
   /**
