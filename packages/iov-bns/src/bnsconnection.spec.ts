@@ -31,13 +31,15 @@ import { BnsConnection } from "./bnsconnection";
 import { bnsFromOrToTag, bnsSwapQueryTags } from "./tags";
 import { keyToAddress } from "./util";
 
-const skipTests = (): boolean => !process.env.BOV_ENABLED;
+function skipTests(): boolean {
+  return !process.env.BNSD_ENABLED;
+}
 
-const pendingWithoutBov = () => {
+function pendingWithoutBnsd(): void {
   if (skipTests()) {
-    pending("Set BOV_ENABLED to enable bov-based tests");
+    pending("Set BNSD_ENABLED to enable bnsd-based tests");
   }
-};
+}
 
 const sleep = (t: number) => new Promise(resolve => setTimeout(resolve, t));
 
@@ -78,7 +80,7 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("Can connect to tendermint", async () => {
-    pendingWithoutBov();
+    pendingWithoutBnsd();
     const connection = await BnsConnection.establish(tendermintUrl);
 
     // we should get a reasonable string here
@@ -95,7 +97,7 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("can disconnect from tendermint", async () => {
-    pendingWithoutBov();
+    pendingWithoutBnsd();
     const connection = await BnsConnection.establish(tendermintUrl);
     const chainId = await connection.chainId();
     expect(chainId).toBeTruthy();
@@ -103,7 +105,7 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("can query all tickers", async () => {
-    pendingWithoutBov();
+    pendingWithoutBnsd();
     const connection = await BnsConnection.establish(tendermintUrl);
 
     const response = await connection.getAllTickers();
@@ -125,7 +127,7 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("can get account by address, publicKey and name", async () => {
-    pendingWithoutBov();
+    pendingWithoutBnsd();
     const connection = await BnsConnection.establish(tendermintUrl);
 
     const { faucet } = await userProfileWithFaucet();
@@ -157,7 +159,7 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("returns empty list when getting an unused account", async () => {
-    pendingWithoutBov();
+    pendingWithoutBnsd();
     const connection = await BnsConnection.establish(tendermintUrl);
     // unusedAddress generated using https://github.com/nym-zone/bech32
     // bech32 -e -h tiov 010101020202030303040404050505050A0A0A0A
@@ -171,7 +173,7 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("Can query empty nonce", async () => {
-    pendingWithoutBov();
+    pendingWithoutBnsd();
     const connection = await BnsConnection.establish(tendermintUrl);
 
     const { profile, mainWalletId } = await userProfileWithFaucet();
@@ -186,7 +188,7 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("Can send transaction", async () => {
-    pendingWithoutBov();
+    pendingWithoutBnsd();
     const connection = await BnsConnection.establish(tendermintUrl);
     const chainId = await connection.chainId();
     // store minHeight before sending the tx, so we can filter out
@@ -254,7 +256,7 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("can get live block feed", async () => {
-    pendingWithoutBov();
+    pendingWithoutBnsd();
     const connection = await BnsConnection.establish(tendermintUrl);
 
     // get the next three block heights
@@ -296,7 +298,7 @@ describe("Integration tests with bov+tendermint", () => {
   };
 
   it("can get live tx feed", async () => {
-    pendingWithoutBov();
+    pendingWithoutBnsd();
     const connection = await BnsConnection.establish(tendermintUrl);
     const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
@@ -348,7 +350,7 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("can provide change feeds", async () => {
-    pendingWithoutBov();
+    pendingWithoutBnsd();
     const connection = await BnsConnection.establish(tendermintUrl);
     const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
@@ -389,7 +391,7 @@ describe("Integration tests with bov+tendermint", () => {
 
   // make sure we can get a reactive account balance (as well as nonce)
   it("can watch accounts", async () => {
-    pendingWithoutBov();
+    pendingWithoutBnsd();
     const connection = await BnsConnection.establish(tendermintUrl);
     const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
@@ -452,7 +454,7 @@ describe("Integration tests with bov+tendermint", () => {
   });
 
   it("Can start atomic swap", async () => {
-    pendingWithoutBov();
+    pendingWithoutBnsd();
     const connection = await BnsConnection.establish(tendermintUrl);
     const chainId = await connection.chainId();
 
@@ -631,7 +633,7 @@ describe("Integration tests with bov+tendermint", () => {
   };
 
   it("Get and watch atomic swap lifecycle", async () => {
-    pendingWithoutBov();
+    pendingWithoutBnsd();
     const connection = await BnsConnection.establish(tendermintUrl);
     const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 

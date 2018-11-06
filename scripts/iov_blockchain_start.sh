@@ -29,7 +29,7 @@ else
   export BNSD_VERSION=v0.8.0
   docker pull iov1/tendermint:${BNSD_TM_VERSION}
   docker pull iov1/bnsd:${BNSD_VERSION}
-  export BOV_ENABLED=1
+  export BNSD_ENABLED=1
   "${SCRIPT_DIR}"/bnsd/bnsd_init.sh
   "${SCRIPT_DIR}"/bnsd/bnsd_tm.sh > /tmp/bnsd_tm.log &
   export BOV_TM_PID=$!

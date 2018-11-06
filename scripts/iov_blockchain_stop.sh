@@ -15,7 +15,7 @@ if [[ ! -z ${BOV_APP_PID:-} ]]; then
   kill "${BOV_TM_PID}"
   unset BOV_APP_PID
   unset BOV_TM_PID
-  unset BOV_ENABLED
+  unset BNSD_ENABLED
   # for debug output
   # cat /tmp/bnsd_app.log
 fi

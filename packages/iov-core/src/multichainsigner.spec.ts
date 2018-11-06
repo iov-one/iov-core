@@ -5,14 +5,14 @@ import { ChainId } from "@iov/tendermint-types";
 
 import { MultiChainSigner } from "./multichainsigner";
 
-// We assume the same BOV context from iov-bns to run some simple tests
+// We assume the same bnsd context from iov-bns to run some simple tests
 // against that backend.
 // We can also add other backends as they are writen.
-const pendingWithoutBov = () => {
-  if (!process.env.BOV_ENABLED) {
-    pending("Set BOV_ENABLED to enable bov-based tests");
+function pendingWithoutBnsd(): void {
+  if (!process.env.BNSD_ENABLED) {
+    pending("Set BNSD_ENABLED to enable bnsd-based tests");
   }
-};
+}
 
 const pendingWithoutTendermint = () => {
   if (!process.env.TENDERMINT_ENABLED) {
@@ -54,7 +54,7 @@ describe("MultiChainSigner", () => {
     }
 
     it("can send transaction", async () => {
-      pendingWithoutBov();
+      pendingWithoutBnsd();
 
       const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
@@ -103,7 +103,7 @@ describe("MultiChainSigner", () => {
 
     it("can add two chains", async () => {
       // this requires both chains to check
-      pendingWithoutBov();
+      pendingWithoutBnsd();
       pendingWithoutTendermint();
 
       const { profile, faucet } = await userProfileWithFaucet();
@@ -144,7 +144,7 @@ describe("MultiChainSigner", () => {
     );
 
   it("optionally enforces chainId", async () => {
-    pendingWithoutBov();
+    pendingWithoutBnsd();
     const bovUrl = "http://localhost:22345";
 
     const signer = new MultiChainSigner(new UserProfile());
