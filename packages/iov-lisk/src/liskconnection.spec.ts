@@ -2,7 +2,7 @@ import { Address, BcpAccountQuery, SendTx, TokenTicker, TransactionKind } from "
 import { Derivation } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet } from "@iov/keycontrol";
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/tendermint-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { liskCodec } from "./liskcodec";
 import { generateNonce, LiskConnection } from "./liskconnection";
@@ -220,5 +220,61 @@ describe("LiskConnection", () => {
     const connection = await LiskConnection.establish(devnetBase);
     const result = await connection.postTx(bytesToPost);
     expect(result).toBeTruthy();
+  });
+
+  it("throws for invalid transaction", async () => {
+    pendingWithoutLiskDevnet();
+
+    const wallet = new Ed25519Wallet();
+    const mainIdentity = await wallet.createIdentity(
+      await Derivation.passphraseToKeypair(
+        "wagon stock borrow episode laundry kitten salute link globe zero feed marble",
+      ),
+    );
+
+    const recipientAddress = "16313739661670634666L" as Address;
+
+    const sendTx: SendTx = {
+      kind: TransactionKind.Send,
+      chainId: devnetChainId,
+      signer: mainIdentity.pubkey,
+      recipient: recipientAddress,
+      memo: "We ❤️ developers – iov.one",
+      amount: {
+        whole: 1,
+        fractional: 44550000,
+        tokenTicker: "LSK" as TokenTicker,
+      },
+    };
+
+    // Encode creation timestamp into nonce
+    const nonce = generateNonce();
+    const signingJob = liskCodec.bytesToSign(sendTx, nonce);
+    const signature = await wallet.createTransactionSignature(
+      mainIdentity,
+      signingJob.bytes,
+      signingJob.prehashType,
+      devnetChainId,
+    );
+
+    // tslint:disable-next-line:no-bitwise
+    const corruptedSignature = signature.map((x, i) => (i === 0 ? x ^ 0x01 : x)) as SignatureBytes;
+
+    const signedTransaction = {
+      transaction: sendTx,
+      primarySignature: {
+        nonce: nonce,
+        publicKey: mainIdentity.pubkey,
+        signature: corruptedSignature,
+      },
+      otherSignatures: [],
+    };
+    const bytesToPost = liskCodec.bytesToPost(signedTransaction);
+
+    const connection = await LiskConnection.establish(devnetBase);
+    await connection
+      .postTx(bytesToPost)
+      .then(() => fail("must not resolve"))
+      .catch(error => expect(error).toMatch(/failed with status code 409/i));
   });
 });

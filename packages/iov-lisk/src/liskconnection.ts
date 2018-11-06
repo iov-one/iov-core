@@ -88,11 +88,15 @@ export class LiskConnection implements BcpConnection {
       throw new Error("Invalid transaction ID");
     }
 
-    await axios.post(this.baseUrl + "/api/transactions", bytes, {
+    const response = await axios.post(this.baseUrl + "/api/transactions", bytes, {
       headers: {
         "Content-Type": "application/json",
       },
     });
+
+    if (typeof response.data.meta.status !== "boolean" || response.data.meta.status !== true) {
+      throw new Error("Did not get meta.status: true");
+    }
 
     return {
       metadata: {
