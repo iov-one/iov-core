@@ -2,10 +2,9 @@ import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
 
 import * as codecImpl from "./codecimpl";
 import { buildMsg, buildSignedTx, buildUnsignedTx, encodePrivkey, encodePubkey, encodeToken } from "./encode";
-import { appendSignBytes, keyToAddress } from "./util";
+import { appendSignBytes } from "./util";
 
 import {
-  address,
   coinBin,
   coinJson,
   privBin,
@@ -27,11 +26,6 @@ describe("Encode helpers", () => {
     // force result into Uint8Array for tests so it passes
     // if buffer of correct type as well
     expect(Uint8Array.from(encoded)).toEqual(pubBin);
-  });
-
-  it("create address", () => {
-    const calculatedAddress = keyToAddress(pubJson);
-    expect(calculatedAddress).toEqual(address);
   });
 
   it("encode private key", () => {

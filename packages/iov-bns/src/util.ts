@@ -25,15 +25,7 @@ export function decodeBnsAddress(address: Address): { readonly prefix: string; r
   return Bech32.decode(address);
 }
 
-export function keyToAddress(key: PublicKeyBundle): Address {
-  const bytes = new Sha256(keyToIdentifier(key)).digest().slice(0, 20);
-  return encodeBnsAddress(bytes);
-}
-
-export const keyToIdentifier = (key: PublicKeyBundle) =>
-  Uint8Array.from([...algoToPrefix(key.algo), ...key.data]);
-
-const algoToPrefix = (algo: Algorithm) => {
+function algoToPrefix(algo: Algorithm): Uint8Array {
   switch (algo) {
     case Algorithm.Ed25519:
       return Encoding.toAscii("sigs/ed25519/");
@@ -42,7 +34,16 @@ const algoToPrefix = (algo: Algorithm) => {
     default:
       throw new Error("Unsupported algorithm: " + algo);
   }
-};
+}
+
+function keyToIdentifier(key: PublicKeyBundle): Uint8Array {
+  return Uint8Array.from([...algoToPrefix(key.algo), ...key.data]);
+}
+
+export function keyToAddress(key: PublicKeyBundle): Address {
+  const bytes = new Sha256(keyToIdentifier(key)).digest().slice(0, 20);
+  return encodeBnsAddress(bytes);
+}
 
 export function isValidAddress(address: string): boolean {
   try {
