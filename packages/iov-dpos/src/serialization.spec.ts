@@ -1,10 +1,24 @@
 import { ReadonlyDate } from "readonly-date";
 
-import { Serialization } from "./serialization";
+import { Address, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Encoding } from "@iov/encoding";
+import { Algorithm, ChainId, PublicKeyBytes } from "@iov/tendermint-types";
 
-const { amountFromComponents, toTimestamp } = Serialization;
+import { Serialization, TransactionSerializationOptions } from "./serialization";
+
+const { fromHex } = Encoding;
+const { amountFromComponents, serializeTransaction, toTimestamp } = Serialization;
 
 const epochAsUnixTimestamp = 1464109200;
+// use nethash as chain ID
+const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
+const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
+const liskTransactionSerializationOptions: TransactionSerializationOptions = {
+  maxMemoLength: 64,
+};
+const riseTransactionSerializationOptions: TransactionSerializationOptions = {
+  maxMemoLength: 0,
+};
 
 describe("Serialization", () => {
   describe("toTimestamp", () => {
@@ -82,6 +96,166 @@ describe("Serialization", () => {
       expect(amountFromComponents(100000000, 0).toString()).toEqual("10000000000000000");
       // set high and low digit to trigger precision bugs in floating point operations
       expect(amountFromComponents(100000000, 1).toString()).toEqual("10000000000000001");
+    });
+  });
+
+  describe("serializeTransaction", () => {
+    const defaultCreationDate = new ReadonlyDate((865708731 + epochAsUnixTimestamp) * 1000);
+
+    it("can serialize RISE transaction of type 0 without memo", () => {
+      const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
+
+      const tx: SendTx = {
+        chainId: riseTestnet,
+        signer: {
+          algo: Algorithm.Ed25519,
+          data: pubkey as PublicKeyBytes,
+        },
+        kind: TransactionKind.Send,
+        amount: {
+          whole: 1,
+          fractional: 23456789,
+          tokenTicker: "RISE" as TokenTicker,
+        },
+        recipient: "10010344879730196491R" as Address,
+      };
+
+      const serialized = serializeTransaction(tx, defaultCreationDate, riseTransactionSerializationOptions);
+      expect(serialized).toEqual(
+        fromHex(
+          "00bbaa993300112233445566778899aabbccddeeff00112233445566778899aabbccddeeff8aebe3a18b78000b15cd5b0700000000",
+        ),
+      );
+    });
+
+    it("can serialize Lisk transaction of type 0 without memo", () => {
+      const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
+
+      const tx: SendTx = {
+        chainId: liskTestnet as ChainId,
+        signer: {
+          algo: Algorithm.Ed25519,
+          data: pubkey as PublicKeyBytes,
+        },
+        kind: TransactionKind.Send,
+        amount: {
+          whole: 1,
+          fractional: 23456789,
+          tokenTicker: "LSK" as TokenTicker,
+        },
+        recipient: "10010344879730196491L" as Address,
+      };
+
+      const serialized = serializeTransaction(tx, defaultCreationDate, liskTransactionSerializationOptions);
+      expect(serialized).toEqual(
+        fromHex(
+          "00bbaa993300112233445566778899aabbccddeeff00112233445566778899aabbccddeeff8aebe3a18b78000b15cd5b0700000000",
+        ),
+      );
+    });
+
+    it("can serialize Lisk transaction of type 0 with memo", () => {
+      const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
+
+      const tx: SendTx = {
+        chainId: liskTestnet as ChainId,
+        signer: {
+          algo: Algorithm.Ed25519,
+          data: pubkey as PublicKeyBytes,
+        },
+        kind: TransactionKind.Send,
+        amount: {
+          whole: 1,
+          fractional: 23456789,
+          tokenTicker: "LSK" as TokenTicker,
+        },
+        recipient: "10010344879730196491L" as Address,
+        memo: "The nice memo I attach to that money for the whole world to read",
+      };
+
+      const serialized = serializeTransaction(tx, defaultCreationDate, liskTransactionSerializationOptions);
+      expect(serialized).toEqual(
+        fromHex(
+          "00bbaa993300112233445566778899aabbccddeeff00112233445566778899aabbccddeeff8aebe3a18b78000b15cd5b0700000000546865206e696365206d656d6f20492061747461636820746f2074686174206d6f6e657920666f72207468652077686f6c6520776f726c6420746f2072656164",
+        ),
+      );
+    });
+
+    it("fails to serialize Lisk transaction of type 0 with memo > 64 chars", () => {
+      const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
+
+      const tx: SendTx = {
+        chainId: liskTestnet,
+        signer: {
+          algo: Algorithm.Ed25519,
+          data: pubkey as PublicKeyBytes,
+        },
+        kind: TransactionKind.Send,
+        amount: {
+          whole: 1,
+          fractional: 23456789,
+          tokenTicker: "LSK" as TokenTicker,
+        },
+        memo: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam",
+        recipient: "10010344879730196491L" as Address,
+      };
+
+      expect(() =>
+        serializeTransaction(tx, defaultCreationDate, liskTransactionSerializationOptions),
+      ).toThrowError(/memo length exceeds limit/i);
+    });
+
+    it("fails to serialize Lisk transaction of type 0 with memo > 64 bytes", () => {
+      const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
+
+      const tx: SendTx = {
+        chainId: liskTestnet,
+        signer: {
+          algo: Algorithm.Ed25519,
+          data: pubkey as PublicKeyBytes,
+        },
+        kind: TransactionKind.Send,
+        amount: {
+          whole: 1,
+          fractional: 23456789,
+          tokenTicker: "LSK" as TokenTicker,
+        },
+        // ⇉ (Rightwards Paired Arrows, U+21c9) takes 2 bytes in UTF-8
+        memo: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed di⇉",
+        recipient: "10010344879730196491L" as Address,
+      };
+
+      expect(() =>
+        serializeTransaction(tx, defaultCreationDate, liskTransactionSerializationOptions),
+      ).toThrowError(/memo length exceeds limit/i);
+    });
+
+    it("fails to serialize transaction with fee", () => {
+      const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
+
+      const tx: SendTx = {
+        chainId: "xnet" as ChainId,
+        signer: {
+          algo: Algorithm.Ed25519,
+          data: pubkey as PublicKeyBytes,
+        },
+        kind: TransactionKind.Send,
+        amount: {
+          whole: 1,
+          fractional: 23456789,
+          tokenTicker: "XNET" as TokenTicker,
+        },
+        fee: {
+          whole: 0,
+          fractional: 0,
+          tokenTicker: "XNET" as TokenTicker,
+        },
+        recipient: "10010344879730196491X" as Address,
+      };
+
+      expect(() => serializeTransaction(tx, defaultCreationDate, { maxMemoLength: 12 })).toThrowError(
+        /fee must not be set/i,
+      );
     });
   });
 });

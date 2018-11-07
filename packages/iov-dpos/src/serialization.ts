@@ -1,7 +1,13 @@
+// tslint:disable:no-bitwise
 import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
-import { Uint64 } from "@iov/encoding";
+import { TransactionKind, UnsignedTransaction } from "@iov/bcp-types";
+import { Encoding, Uint64 } from "@iov/encoding";
+
+export interface TransactionSerializationOptions {
+  readonly maxMemoLength: number; // in bytes
+}
 
 export class Serialization {
   public static toTimestamp(date: ReadonlyDate): number {
@@ -30,5 +36,55 @@ export class Serialization {
       .add(fractional)
       .toBytesBE();
     return Uint64.fromBytesBigEndian(amount);
+  }
+
+  public static serializeTransaction(
+    unsigned: UnsignedTransaction,
+    creationTime: ReadonlyDate,
+    options: TransactionSerializationOptions,
+  ): Uint8Array {
+    if (unsigned.fee !== undefined) {
+      throw new Error("Fee must not be set. It is fixed and not included in the signed content.");
+    }
+
+    switch (unsigned.kind) {
+      case TransactionKind.Send:
+        const timestamp = Serialization.toTimestamp(creationTime);
+        const timestampBytes = new Uint8Array([
+          (timestamp >> 0) & 0xff,
+          (timestamp >> 8) & 0xff,
+          (timestamp >> 16) & 0xff,
+          (timestamp >> 24) & 0xff,
+        ]);
+        const amount = Serialization.amountFromComponents(unsigned.amount.whole, unsigned.amount.fractional);
+        const fullRecipientString = unsigned.recipient;
+
+        if (!fullRecipientString.match(/^[0-9]{1,20}[A-Z]{1}$/)) {
+          throw new Error("Recipient does not match expected format");
+        }
+        const recipientNumberString = fullRecipientString.slice(0, -1);
+
+        if (recipientNumberString !== "0" && recipientNumberString[0] === "0") {
+          throw new Error("Recipient must not contain leading zeros");
+        }
+
+        const recipient = Long.fromString(recipientNumberString, true, 10);
+
+        const memoBytes = unsigned.memo !== undefined ? Encoding.toUtf8(unsigned.memo) : new Uint8Array([]);
+        if (memoBytes.length > options.maxMemoLength) {
+          throw new Error(`Memo length exceeds limit. Allowed: ${options.maxMemoLength} bytes`);
+        }
+
+        return new Uint8Array([
+          0, // transaction type
+          ...timestampBytes,
+          ...unsigned.signer.data,
+          ...recipient.toBytesBE(),
+          ...amount.toBytesLittleEndian(),
+          ...memoBytes,
+        ]);
+      default:
+        throw new Error("Unsupported kind of transaction");
+    }
   }
 }
