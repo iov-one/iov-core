@@ -1,7 +1,7 @@
 import * as Long from "long";
 import { BcpCoin, FullSignature, FungibleToken } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
-import { Algorithm, PrivateKeyBundle, PrivateKeyBytes, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
+import { Algorithm, PrivateKeyBundle, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types";
 import * as codecImpl from "./codecimpl";
 import { InitData } from "./normalize";
 export interface Result {
@@ -14,21 +14,14 @@ export interface Keyed {
 export interface Decoder<T extends {}> {
     readonly decode: (data: Uint8Array) => T;
 }
-export declare const encodeToken: (token: FungibleToken) => codecImpl.x.Coin;
 export declare const encodeFullSig: (sig: FullSignature) => codecImpl.sigs.StdSignature;
-export declare const encodePubKey: (publicKey: PublicKeyBundle) => {
-    ed25519: PublicKeyBytes;
-};
-export declare const encodePrivKey: (privateKey: PrivateKeyBundle) => {
-    ed25519: PrivateKeyBytes;
-};
 export declare const encodeSignature: (algo: Algorithm, sigs: SignatureBytes) => {
     ed25519: SignatureBytes;
 };
 export declare const decodeToken: (token: codecImpl.x.ICoin) => FungibleToken;
 export declare const fungibleToBcpCoin: (initData: InitData) => (token: FungibleToken) => BcpCoin;
-export declare const decodePubKey: (publicKey: codecImpl.crypto.IPublicKey) => PublicKeyBundle;
-export declare const decodePrivKey: (privateKey: codecImpl.crypto.IPrivateKey) => PrivateKeyBundle;
+export declare function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PublicKeyBundle;
+export declare function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivateKeyBundle;
 export declare const decodeSignature: (signature: codecImpl.crypto.ISignature) => SignatureBytes;
 export declare const decodeFullSig: (sig: codecImpl.sigs.IStdSignature) => FullSignature;
 export declare const asNumber: (maybeLong: number | Long | null | undefined) => number;

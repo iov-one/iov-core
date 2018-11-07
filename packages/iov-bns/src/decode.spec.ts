@@ -1,6 +1,6 @@
 import * as codecImpl from "./codecimpl";
 import { parseTx } from "./decode";
-import { decodePrivKey, decodePubKey, decodeToken } from "./types";
+import { decodePrivkey, decodePubkey, decodeToken } from "./types";
 
 import {
   chainId,
@@ -18,13 +18,13 @@ import {
 describe("Decode helpers", () => {
   it("decode pubkey", () => {
     const decoded = codecImpl.crypto.PublicKey.decode(pubBin);
-    const pubkey = decodePubKey(decoded);
+    const pubkey = decodePubkey(decoded);
     expect(pubkey).toEqual(pubJson);
   });
 
   it("decode privkey", () => {
     const decoded = codecImpl.crypto.PrivateKey.decode(privBin);
-    const privkey = decodePrivKey(decoded);
+    const privkey = decodePrivkey(decoded);
     expect(privkey).toEqual(privJson);
   });
 

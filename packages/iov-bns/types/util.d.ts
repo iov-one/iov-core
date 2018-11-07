@@ -9,7 +9,6 @@ export declare function decodeBnsAddress(address: Address): {
     readonly data: Uint8Array;
 };
 export declare function keyToAddress(key: PublicKeyBundle): Address;
-export declare const keyToIdentifier: (key: PublicKeyBundle) => Uint8Array;
 export declare function isValidAddress(address: string): boolean;
 export declare const appendSignBytes: (bz: Uint8Array, chainId: ChainId, nonce: Nonce) => SignableBytes;
 export declare const tendermintHash: (data: Uint8Array) => Uint8Array;

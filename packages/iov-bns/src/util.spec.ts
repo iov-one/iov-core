@@ -1,12 +1,24 @@
 import { Address } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
-import { hashCode } from "./testdata";
-import { arraysEqual, decodeBnsAddress, encodeBnsAddress, isHashIdentifier, isValidAddress } from "./util";
+import { address, hashCode, pubJson } from "./testdata";
+import {
+  arraysEqual,
+  decodeBnsAddress,
+  encodeBnsAddress,
+  isHashIdentifier,
+  isValidAddress,
+  keyToAddress,
+} from "./util";
 
 const { fromHex } = Encoding;
 
-describe("Verify util functions", () => {
+describe("Util", () => {
+  it("has working keyToAddress", () => {
+    const calculatedAddress = keyToAddress(pubJson);
+    expect(calculatedAddress).toEqual(address);
+  });
+
   it("verify array comparison", () => {
     const a = fromHex("12345678");
     const b = fromHex("000012345678");
@@ -70,8 +82,7 @@ describe("Verify util functions", () => {
   });
 
   it("has working decodeBnsAddress", () => {
-    const address = "tiov17m9dug55pryn525drqwk9m7wgmlkp5ss4j2mky" as Address;
-    expect(decodeBnsAddress(address)).toEqual({
+    expect(decodeBnsAddress("tiov17m9dug55pryn525drqwk9m7wgmlkp5ss4j2mky" as Address)).toEqual({
       prefix: "tiov",
       data: fromHex("f6cade229408c93a2a8d181d62efce46ff60d210"),
     });
