@@ -1,13 +1,14 @@
 #!/bin/bash
 # This will check out the version of weave passed on the cli.
 # Usage: bash weave.sh <v0.9.0>
+# OR     VERSION=v0.9.0 bash weave.sh
 
-# check args
-if [ -z "$1" ]; then
-  echo "Please provide a tag to checkout";
+# use cli arg, or environmental variable
+TAG=${1:-$VERSION}
+if [ -z "$TAG" ]; then
+  echo "Please provide a tag to checkout, either as an arg or via VERSION env var";
   exit 1;
 fi
-TAG="$1"
 
 # clone or update weave
 if [ -d weave ]; then
