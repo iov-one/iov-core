@@ -232,6 +232,13 @@ describe("LedgerSimpleAddressWallet", () => {
     wallet.stopDeviceTracking();
   });
 
+  it("throws when trying to export the secret", () => {
+    const wallet = new LedgerSimpleAddressWallet();
+    expect(() => wallet.printableSecret()).toThrowError(
+      /extrating the secret from a hardware wallet is not possible/i,
+    );
+  });
+
   it("can serialize multiple identities", async () => {
     pendingWithoutLedger();
 

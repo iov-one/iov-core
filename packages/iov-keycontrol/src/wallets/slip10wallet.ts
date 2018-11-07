@@ -291,6 +291,10 @@ export class Slip10Wallet implements Wallet {
     return signature as SignatureBytes;
   }
 
+  public printableSecret(): string {
+    return this.secret.asString();
+  }
+
   public serialize(): WalletSerializationString {
     const serializedIdentities = this.identities.map(
       (identity): IdentitySerialization => {

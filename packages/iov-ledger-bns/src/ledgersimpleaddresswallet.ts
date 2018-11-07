@@ -253,6 +253,10 @@ export class LedgerSimpleAddressWallet implements Wallet {
     return signature as SignatureBytes;
   }
 
+  public printableSecret(): string {
+    throw new Error("Extrating the secret from a hardware wallet is not possible");
+  }
+
   public serialize(): WalletSerializationString {
     const out: LedgerSimpleAddressWalletSerialization = {
       formatVersion: 1,

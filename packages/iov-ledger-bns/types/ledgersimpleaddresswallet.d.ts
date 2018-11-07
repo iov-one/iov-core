@@ -44,6 +44,7 @@ export declare class LedgerSimpleAddressWallet implements Wallet {
     setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
     getIdentities(): ReadonlyArray<LocalIdentity>;
     createTransactionSignature(identity: PublicIdentity, transactionBytes: SignableBytes, prehashType: PrehashType, _: ChainId): Promise<SignatureBytes>;
+    printableSecret(): string;
     serialize(): WalletSerializationString;
     clone(): Wallet;
     private simpleAddressIndex;

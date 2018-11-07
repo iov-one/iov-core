@@ -87,6 +87,16 @@ export interface Wallet {
     chainId: ChainId,
   ) => Promise<SignatureBytes>;
 
+  /**
+   * Exposes the secret data of this wallet in a printable format for
+   * backup purposes.
+   *
+   * The format depends on the implementation and may change over time,
+   * so do not try to parse the result or make any kind of assumtions on
+   * how the result looks like.
+   */
+  readonly printableSecret: () => string;
+
   // serialize will produce a representation that can be writen to disk.
   // this will contain secret info, so handle securely!
   readonly serialize: () => WalletSerializationString;
