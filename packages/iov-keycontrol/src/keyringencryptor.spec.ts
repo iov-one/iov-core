@@ -10,7 +10,9 @@ describe("KeyringEncryptor", () => {
     const key = Encoding.fromHex("0000000000000000000000000000000000000000000000000000000000000000");
     const encrypted = await KeyringEncryptor.encrypt(keyringSerialization, key);
 
-    expect(encrypted.length).toEqual(4 /* version */ + 24 /* nonce */ + serializationLength + 16 /* authentication tag */);
+    expect(encrypted.length).toEqual(
+      4 /* version */ + 24 /* nonce */ + serializationLength + 16 /* authentication tag */,
+    );
   });
 
   it("can decrypt encrypted data", async () => {

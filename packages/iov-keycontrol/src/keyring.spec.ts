@@ -24,7 +24,9 @@ describe("Keyring", () => {
 
   it("can add one wallet", () => {
     const keyring = new Keyring();
-    const wallet = Ed25519HdWallet.fromEntropy(fromHex("065a823769888cbc84e8455522f0e1a066447cb1120aa92e6ee251b74257a7bf"));
+    const wallet = Ed25519HdWallet.fromEntropy(
+      fromHex("065a823769888cbc84e8455522f0e1a066447cb1120aa92e6ee251b74257a7bf"),
+    );
 
     keyring.add(wallet);
 
@@ -36,10 +38,16 @@ describe("Keyring", () => {
   it("can add multiple wallets", () => {
     const keyring = new Keyring();
     const wallet1 = Ed25519HdWallet.fromEntropy(fromHex("f7e7f1bbb327113a46fd3fa1020413de"));
-    const wallet2 = Ed25519HdWallet.fromMnemonic("flip hunt behind absorb blush proof hurry embody quantum start pencil rapid");
+    const wallet2 = Ed25519HdWallet.fromMnemonic(
+      "flip hunt behind absorb blush proof hurry embody quantum start pencil rapid",
+    );
     // Wallet 3 and 4 have the same seed. This is stupid but not the Keyring's problem
-    const wallet3 = Ed25519HdWallet.fromEntropy(fromHex("3275a0acb9f697875d829119e4eda0f799afe5e8fb0bc7199c75ae19df610949"));
-    const wallet4 = Ed25519HdWallet.fromEntropy(fromHex("3275a0acb9f697875d829119e4eda0f799afe5e8fb0bc7199c75ae19df610949"));
+    const wallet3 = Ed25519HdWallet.fromEntropy(
+      fromHex("3275a0acb9f697875d829119e4eda0f799afe5e8fb0bc7199c75ae19df610949"),
+    );
+    const wallet4 = Ed25519HdWallet.fromEntropy(
+      fromHex("3275a0acb9f697875d829119e4eda0f799afe5e8fb0bc7199c75ae19df610949"),
+    );
 
     keyring.add(wallet1);
     keyring.add(wallet2);
@@ -63,7 +71,9 @@ describe("Keyring", () => {
     const wallet = Ed25519HdWallet.fromEntropy(fromHex("c7f74844892fd7b707e74fc9b6c8ef917c13ddbb380cadbc"));
     keyring.add(wallet);
 
-    expect(keyring.serialize()).toMatch(/^{\"formatVersion\":1,\"wallets\":\[{\"implementationId\":\"ed25519-hd\",\"data\":\"{.*}\"}\]}$/);
+    expect(keyring.serialize()).toMatch(
+      /^{\"formatVersion\":1,\"wallets\":\[{\"implementationId\":\"ed25519-hd\",\"data\":\"{.*}\"}\]}$/,
+    );
   });
 
   it("can serialize many wallets", () => {
@@ -81,7 +91,9 @@ describe("Keyring", () => {
     keyring.add(wallet5);
     keyring.add(wallet6);
 
-    expect(keyring.serialize()).toMatch(/^{\"formatVersion\":1,\"wallets\":\[{\"implementationId\":\"ed25519-hd\",\"data\":\"{.*}\"}(,{\"implementationId\":\"ed25519-hd\",\"data\":\"{.*}\"}){5}\]}$/);
+    expect(keyring.serialize()).toMatch(
+      /^{\"formatVersion\":1,\"wallets\":\[{\"implementationId\":\"ed25519-hd\",\"data\":\"{.*}\"}(,{\"implementationId\":\"ed25519-hd\",\"data\":\"{.*}\"}){5}\]}$/,
+    );
   });
 
   it("can deserialize empty", () => {
@@ -112,7 +124,9 @@ describe("Keyring", () => {
   });
 
   it("can deserialize one ed25519 wallet", () => {
-    const keyring = new Keyring('{"formatVersion": 1, "wallets": [{"implementationId":"ed25519", "data":"{ \\"formatVersion\\": 1, \\"id\\": \\"n3u04gh03h\\", \\"identities\\":[{\\"localIdentity\\": { \\"pubkey\\": { \\"algo\\": \\"ed25519\\", \\"data\\": \\"aabbccdd\\" }, \\"nickname\\": \\"foo\\" }, \\"privkey\\": \\"223322112233aabb\\"}] }"}]}' as KeyringSerializationString);
+    const keyring = new Keyring(
+      '{"formatVersion": 1, "wallets": [{"implementationId":"ed25519", "data":"{ \\"formatVersion\\": 1, \\"id\\": \\"n3u04gh03h\\", \\"identities\\":[{\\"localIdentity\\": { \\"pubkey\\": { \\"algo\\": \\"ed25519\\", \\"data\\": \\"aabbccdd\\" }, \\"nickname\\": \\"foo\\" }, \\"privkey\\": \\"223322112233aabb\\"}] }"}]}' as KeyringSerializationString,
+    );
 
     expect(keyring.getWallets().length).toEqual(1);
     expect(keyring.getWallets()[0]).toEqual(jasmine.any(Ed25519Wallet));
@@ -177,8 +191,12 @@ describe("Keyring", () => {
   it("supports all basic wallet types by default", () => {
     const keyring = new Keyring();
     keyring.add(new Ed25519Wallet());
-    keyring.add(Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
-    keyring.add(Secp256k1HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"));
+    keyring.add(
+      Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"),
+    );
+    keyring.add(
+      Secp256k1HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"),
+    );
 
     expect(() => {
       const serialized = keyring.serialize();
