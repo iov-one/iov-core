@@ -2,7 +2,7 @@ import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
 
 import * as codecImpl from "./codecimpl";
 import { buildMsg, buildSignedTx, buildUnsignedTx } from "./encode";
-import { encodePrivKey, encodePubKey, encodeToken } from "./types";
+import { encodePrivkey, encodePubkey, encodeToken } from "./types";
 import { appendSignBytes, keyToAddress } from "./util";
 
 import {
@@ -23,7 +23,7 @@ import {
 
 describe("Encode helpers", () => {
   it("encode pubkey", () => {
-    const pubkey: codecImpl.crypto.IPublicKey = encodePubKey(pubJson);
+    const pubkey = encodePubkey(pubJson);
     const encoded = codecImpl.crypto.PublicKey.encode(pubkey).finish();
     // force result into Uint8Array for tests so it passes
     // if buffer of correct type as well
@@ -36,7 +36,7 @@ describe("Encode helpers", () => {
   });
 
   it("encode private key", () => {
-    const privkey = encodePrivKey(privJson);
+    const privkey = encodePrivkey(privJson);
     const encoded = codecImpl.crypto.PublicKey.encode(privkey).finish();
     expect(Uint8Array.from(encoded)).toEqual(privBin);
   });

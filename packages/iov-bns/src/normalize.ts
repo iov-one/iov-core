@@ -20,7 +20,7 @@ import { Encoding } from "@iov/encoding";
 import { ChainId } from "@iov/tendermint-types";
 
 import * as codecImpl from "./codecimpl";
-import { asInt53, asNumber, decodePubKey, decodeToken, ensure, fungibleToBcpCoin, Keyed } from "./types";
+import { asInt53, asNumber, decodePubkey, decodeToken, ensure, fungibleToBcpCoin, Keyed } from "./types";
 import { encodeBnsAddress, hashFromIdentifier, isHashIdentifier, keyToAddress } from "./util";
 
 // InitData is all the queries we do on initialization to be
@@ -44,7 +44,7 @@ export class Normalize {
     return {
       address: encodeBnsAddress(acct._id),
       nonce: asInt53(acct.sequence) as Nonce,
-      publicKey: decodePubKey(ensure(acct.pubKey)),
+      publicKey: decodePubkey(ensure(acct.pubKey)),
     };
   }
 

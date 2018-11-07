@@ -39,27 +39,27 @@ export const encodeToken = (token: FungibleToken) =>
 export const encodeFullSig = (sig: FullSignature) =>
   codecImpl.sigs.StdSignature.create({
     sequence: sig.nonce.toNumber(),
-    pubKey: encodePubKey(sig.publicKey),
+    pubKey: encodePubkey(sig.publicKey),
     signature: encodeSignature(sig.publicKey.algo, sig.signature),
   });
 
-export const encodePubKey = (publicKey: PublicKeyBundle) => {
+export function encodePubkey(publicKey: PublicKeyBundle): codecImpl.crypto.IPublicKey {
   switch (publicKey.algo) {
     case Algorithm.Ed25519:
       return { ed25519: publicKey.data };
     default:
       throw new Error("unsupported algorithm: " + publicKey.algo);
   }
-};
+}
 
-export const encodePrivKey = (privateKey: PrivateKeyBundle) => {
+export function encodePrivkey(privateKey: PrivateKeyBundle): codecImpl.crypto.IPrivateKey {
   switch (privateKey.algo) {
     case Algorithm.Ed25519:
       return { ed25519: privateKey.data };
     default:
       throw new Error("unsupported algorithm: " + privateKey.algo);
   }
-};
+}
 
 // encodeSignature needs the Algorithm to determine the type
 export const encodeSignature = (algo: Algorithm, sigs: SignatureBytes) => {
@@ -87,7 +87,7 @@ export const fungibleToBcpCoin = (initData: InitData) => (token: FungibleToken):
   };
 };
 
-export const decodePubKey = (publicKey: codecImpl.crypto.IPublicKey): PublicKeyBundle => {
+export function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PublicKeyBundle {
   if (publicKey.ed25519) {
     return {
       algo: Algorithm.Ed25519,
@@ -96,9 +96,9 @@ export const decodePubKey = (publicKey: codecImpl.crypto.IPublicKey): PublicKeyB
   } else {
     throw new Error("Unknown public key algorithm");
   }
-};
+}
 
-export const decodePrivKey = (privateKey: codecImpl.crypto.IPrivateKey): PrivateKeyBundle => {
+export function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivateKeyBundle {
   if (privateKey.ed25519) {
     return {
       algo: Algorithm.Ed25519,
@@ -107,7 +107,7 @@ export const decodePrivKey = (privateKey: codecImpl.crypto.IPrivateKey): Private
   } else {
     throw new Error("Unknown private key algorithm");
   }
-};
+}
 
 export const decodeSignature = (signature: codecImpl.crypto.ISignature): SignatureBytes => {
   if (signature.ed25519) {
@@ -119,7 +119,7 @@ export const decodeSignature = (signature: codecImpl.crypto.ISignature): Signatu
 
 export const decodeFullSig = (sig: codecImpl.sigs.IStdSignature): FullSignature => ({
   nonce: asInt53(sig.sequence) as Nonce,
-  publicKey: decodePubKey(ensure(sig.pubKey)),
+  publicKey: decodePubkey(ensure(sig.pubKey)),
   signature: decodeSignature(ensure(sig.signature)),
 });
 
