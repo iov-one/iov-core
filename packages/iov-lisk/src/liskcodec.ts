@@ -25,7 +25,7 @@ import {
 
 import { constants } from "./constants";
 import { isValidAddress, pubkeyToAddress } from "./derivation";
-import { serializeTransaction, transactionId } from "./serialization";
+import { transactionId } from "./serialization";
 
 export const liskCodec: TxCodec = {
   /**
@@ -36,7 +36,11 @@ export const liskCodec: TxCodec = {
     const creationTimestamp = nonce.toNumber();
     const creationDate = new ReadonlyDate(creationTimestamp * 1000);
     return {
-      bytes: serializeTransaction(unsigned, creationDate) as SignableBytes,
+      bytes: Serialization.serializeTransaction(
+        unsigned,
+        creationDate,
+        constants.transactionSerializationOptions,
+      ) as SignableBytes,
       prehashType: PrehashType.Sha256,
     };
   },
