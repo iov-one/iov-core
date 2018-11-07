@@ -25,7 +25,6 @@ import {
 
 import { constants } from "./constants";
 import { isValidAddress, pubkeyToAddress } from "./derivation";
-import { transactionId } from "./serialization";
 
 export const riseCodec: TxCodec = {
   /**
@@ -54,10 +53,11 @@ export const riseCodec: TxCodec = {
       case TransactionKind.Send:
         const timestamp = signed.primarySignature.nonce.toNumber();
         const riseTimestamp = timestamp - 1464109200;
-        const id = transactionId(
+        const id = Serialization.transactionId(
           signed.transaction,
           new ReadonlyDate(timestamp * 1000),
           signed.primarySignature,
+          constants.transactionSerializationOptions,
         );
         const amount = Serialization.amountFromComponents(
           signed.transaction.amount.whole,
@@ -88,7 +88,12 @@ export const riseCodec: TxCodec = {
   identifier: (signed: SignedTransaction): TransactionIdBytes => {
     const creationTimestamp = signed.primarySignature.nonce.toNumber();
     const creationDate = new ReadonlyDate(creationTimestamp * 1000);
-    return transactionId(signed.transaction, creationDate, signed.primarySignature);
+    return Serialization.transactionId(
+      signed.transaction,
+      creationDate,
+      signed.primarySignature,
+      constants.transactionSerializationOptions,
+    );
   },
 
   /**
