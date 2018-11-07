@@ -33,4 +33,14 @@ export class HdPaths {
       Slip10RawIndex.normal(address),
     ];
   }
+
+  /**
+   * The default MetaMask derivation path
+   *
+   * What MetaMask calls the account is a BIP44 address index: m/44'/60'/0'/0/<account>
+   * (see https://github.com/MetaMask/eth-hd-keyring/blob/018a11a3a2/index.js#L8)
+   */
+  public static metamaskHdKeyTree(account: number): ReadonlyArray<Slip10RawIndex> {
+    return HdPaths.bip44(60, 0, 0, account);
+  }
 }

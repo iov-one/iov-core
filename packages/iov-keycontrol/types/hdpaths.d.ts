@@ -14,4 +14,11 @@ export declare class HdPaths {
      * Don't be misled by people calling their path BIP44 in cases where it is not.
      */
     static bip44(coinType: number, account: number, change: number, address: number): ReadonlyArray<Slip10RawIndex>;
+    /**
+     * The default MetaMask derivation path
+     *
+     * What MetaMask calls the account is a BIP44 address index: m/44'/60'/0'/0/<account>
+     * (see https://github.com/MetaMask/eth-hd-keyring/blob/018a11a3a2/index.js#L8)
+     */
+    static metamaskHdKeyTree(account: number): ReadonlyArray<Slip10RawIndex>;
 }
