@@ -12,7 +12,7 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
-import { Parse } from "@iov/dpos";
+import { Parse, Serialization } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import {
   Algorithm,
@@ -25,7 +25,7 @@ import {
 
 import { constants } from "./constants";
 import { isValidAddress, pubkeyToAddress } from "./derivation";
-import { amountFromComponents, serializeTransaction, transactionId } from "./serialization";
+import { serializeTransaction, transactionId } from "./serialization";
 
 export const liskCodec: TxCodec = {
   /**
@@ -55,7 +55,7 @@ export const liskCodec: TxCodec = {
           new ReadonlyDate(timestamp * 1000),
           signed.primarySignature,
         );
-        const amount = amountFromComponents(
+        const amount = Serialization.amountFromComponents(
           signed.transaction.amount.whole,
           signed.transaction.amount.fractional,
         );

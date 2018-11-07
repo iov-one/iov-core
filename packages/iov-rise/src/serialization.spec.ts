@@ -4,7 +4,7 @@ import { Address, Nonce, SendTx, SignedTransaction, TokenTicker, TransactionKind
 import { Encoding, Int53 } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
-import { amountFromComponents, serializeTransaction, transactionId } from "./serialization";
+import { serializeTransaction, transactionId } from "./serialization";
 
 const { fromAscii, fromHex } = Encoding;
 
@@ -12,30 +12,6 @@ const { fromAscii, fromHex } = Encoding;
 const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
 const riseEpochAsUnixTimestamp = 1464109200;
 const emptyNonce = new Int53(0) as Nonce;
-
-describe("amountFromComponents", () => {
-  it("works for some simple values", () => {
-    expect(amountFromComponents(0, 0).toString()).toEqual("0");
-    expect(amountFromComponents(0, 1).toString()).toEqual("1");
-    expect(amountFromComponents(0, 123).toString()).toEqual("123");
-    expect(amountFromComponents(1, 0).toString()).toEqual("100000000");
-    expect(amountFromComponents(123, 0).toString()).toEqual("12300000000");
-    expect(amountFromComponents(1, 1).toString()).toEqual("100000001");
-    expect(amountFromComponents(1, 23456789).toString()).toEqual("123456789");
-  });
-
-  it("works for 10 million RISE", () => {
-    expect(amountFromComponents(10000000, 0).toString()).toEqual("1000000000000000");
-    // set high and low digit to trigger precision bugs in floating point operations
-    expect(amountFromComponents(10000000, 1).toString()).toEqual("1000000000000001");
-  });
-
-  it("works for 100 million RISE", () => {
-    expect(amountFromComponents(100000000, 0).toString()).toEqual("10000000000000000");
-    // set high and low digit to trigger precision bugs in floating point operations
-    expect(amountFromComponents(100000000, 1).toString()).toEqual("10000000000000001");
-  });
-});
 
 describe("serializeTransaction", () => {
   const defaultCreationDate = new ReadonlyDate((865708731 + riseEpochAsUnixTimestamp) * 1000);

@@ -5,15 +5,7 @@ import { ReadonlyDate } from "readonly-date";
 import { FullSignature, TransactionIdBytes, TransactionKind, UnsignedTransaction } from "@iov/bcp-types";
 import { Sha256 } from "@iov/crypto";
 import { Serialization } from "@iov/dpos";
-import { Encoding, Uint64 } from "@iov/encoding";
-
-export function amountFromComponents(whole: number, fractional: number): Uint64 {
-  const amount = Long.fromNumber(whole)
-    .multiply(100000000)
-    .add(fractional)
-    .toBytesBE();
-  return Uint64.fromBytesBigEndian(amount);
-}
+import { Encoding } from "@iov/encoding";
 
 export function serializeTransaction(unsigned: UnsignedTransaction, creationTime: ReadonlyDate): Uint8Array {
   if (unsigned.fee !== undefined) {
@@ -29,7 +21,7 @@ export function serializeTransaction(unsigned: UnsignedTransaction, creationTime
         (liskTimestamp >> 16) & 0xff,
         (liskTimestamp >> 24) & 0xff,
       ]);
-      const amount = amountFromComponents(unsigned.amount.whole, unsigned.amount.fractional);
+      const amount = Serialization.amountFromComponents(unsigned.amount.whole, unsigned.amount.fractional);
       const recipientString = unsigned.recipient;
       if (!recipientString.match(/^[0-9]{1,20}L$/)) {
         throw new Error("Recipient does not match expected format");
