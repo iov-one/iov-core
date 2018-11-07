@@ -5,4 +5,7 @@ export const constants = {
   primaryTokenTicker: "LSK" as TokenTicker,
   primaryTokenName: "Lisk",
   primaryTokenSigFigs: 8,
+  transactionSerializationOptions: {
+    maxMemoLength: 64,
+  },
 };

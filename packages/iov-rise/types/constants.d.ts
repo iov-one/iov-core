@@ -4,4 +4,7 @@ export declare const constants: {
     primaryTokenTicker: TokenTicker;
     primaryTokenName: string;
     primaryTokenSigFigs: number;
+    transactionSerializationOptions: {
+        maxMemoLength: number;
+    };
 };

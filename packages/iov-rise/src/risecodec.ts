@@ -12,7 +12,7 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
-import { Parse } from "@iov/dpos";
+import { Parse, Serialization } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import {
   Algorithm,
@@ -25,7 +25,6 @@ import {
 
 import { constants } from "./constants";
 import { isValidAddress, pubkeyToAddress } from "./derivation";
-import { amountFromComponents, serializeTransaction, transactionId } from "./serialization";
 
 export const riseCodec: TxCodec = {
   /**
@@ -36,7 +35,11 @@ export const riseCodec: TxCodec = {
     const creationTimestamp = nonce.toNumber();
     const creationDate = new ReadonlyDate(creationTimestamp * 1000);
     return {
-      bytes: serializeTransaction(unsigned, creationDate) as SignableBytes,
+      bytes: Serialization.serializeTransaction(
+        unsigned,
+        creationDate,
+        constants.transactionSerializationOptions,
+      ) as SignableBytes,
       prehashType: PrehashType.Sha256,
     };
   },
@@ -50,12 +53,13 @@ export const riseCodec: TxCodec = {
       case TransactionKind.Send:
         const timestamp = signed.primarySignature.nonce.toNumber();
         const riseTimestamp = timestamp - 1464109200;
-        const id = transactionId(
+        const id = Serialization.transactionId(
           signed.transaction,
           new ReadonlyDate(timestamp * 1000),
           signed.primarySignature,
+          constants.transactionSerializationOptions,
         );
-        const amount = amountFromComponents(
+        const amount = Serialization.amountFromComponents(
           signed.transaction.amount.whole,
           signed.transaction.amount.fractional,
         );
@@ -84,7 +88,12 @@ export const riseCodec: TxCodec = {
   identifier: (signed: SignedTransaction): TransactionIdBytes => {
     const creationTimestamp = signed.primarySignature.nonce.toNumber();
     const creationDate = new ReadonlyDate(creationTimestamp * 1000);
-    return transactionId(signed.transaction, creationDate, signed.primarySignature);
+    return Serialization.transactionId(
+      signed.transaction,
+      creationDate,
+      signed.primarySignature,
+      constants.transactionSerializationOptions,
+    );
   },
 
   /**
