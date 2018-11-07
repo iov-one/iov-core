@@ -50,6 +50,15 @@ export declare class UserProfile {
     getIdentities(id: WalletId): ReadonlyArray<LocalIdentity>;
     signTransaction(id: WalletId, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
     appendSignature(id: WalletId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
+    /**
+     * Exposes the secret data of a wallet in a printable format for
+     * backup purposes.
+     *
+     * The format depends on the implementation and may change over time,
+     * so do not try to parse the result or make any kind of assumtions on
+     * how the result looks like.
+     */
+    printableSecret(id: WalletId): string;
     /** Throws if wallet does not exist in primary keyring */
     private findWalletInPrimaryKeyring;
     private walletInfos;
