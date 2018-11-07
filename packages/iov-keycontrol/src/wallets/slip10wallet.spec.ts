@@ -42,21 +42,30 @@ describe("Slip10Wallet", () => {
   });
 
   it("can be created from entropy", () => {
-    const wallet = Slip10Wallet.fromEntropyWithCurve(Slip10Curve.Ed25519, Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"));
+    const wallet = Slip10Wallet.fromEntropyWithCurve(
+      Slip10Curve.Ed25519,
+      Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"),
+    );
     expect(wallet).toBeTruthy();
     expect(wallet.getIdentities().length).toEqual(0);
     expect(wallet.id).toBeTruthy();
   });
 
   it("can be created from mnemonic", () => {
-    const wallet = Slip10Wallet.fromMnemonicWithCurve(Slip10Curve.Ed25519, "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard");
+    const wallet = Slip10Wallet.fromMnemonicWithCurve(
+      Slip10Curve.Ed25519,
+      "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard",
+    );
     expect(wallet).toBeTruthy();
     expect(wallet.getIdentities().length).toEqual(0);
     expect(wallet.id).toBeTruthy();
   });
 
   it("can have a label", () => {
-    const wallet = Slip10Wallet.fromMnemonicWithCurve(Slip10Curve.Ed25519, "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard");
+    const wallet = Slip10Wallet.fromMnemonicWithCurve(
+      Slip10Curve.Ed25519,
+      "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard",
+    );
     expect(wallet.label.value).toBeUndefined();
 
     wallet.setLabel("foo");
@@ -70,17 +79,28 @@ describe("Slip10Wallet", () => {
     const emptyWallets = [
       // all possible ways to construct a Slip10Wallet
       new Slip10Wallet(emptyWallet),
-      Slip10Wallet.fromEntropyWithCurve(Slip10Curve.Ed25519, Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad")),
-      Slip10Wallet.fromMnemonicWithCurve(Slip10Curve.Ed25519, "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard"),
+      Slip10Wallet.fromEntropyWithCurve(
+        Slip10Curve.Ed25519,
+        Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"),
+      ),
+      Slip10Wallet.fromMnemonicWithCurve(
+        Slip10Curve.Ed25519,
+        "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard",
+      ),
     ];
 
     for (const wallet of emptyWallets) {
       const newIdentity1 = await wallet.createIdentity([Slip10RawIndex.hardened(0)]);
       const newIdentity2 = await wallet.createIdentity([Slip10RawIndex.hardened(1)]);
-      const newIdentity3 = await wallet.createIdentity([Slip10RawIndex.hardened(1), Slip10RawIndex.hardened(0)]);
+      const newIdentity3 = await wallet.createIdentity([
+        Slip10RawIndex.hardened(1),
+        Slip10RawIndex.hardened(0),
+      ]);
 
       // all pubkeys must be different
-      const pubkeySet = new Set([newIdentity1, newIdentity2, newIdentity3].map(i => Encoding.toHex(i.pubkey.data)));
+      const pubkeySet = new Set(
+        [newIdentity1, newIdentity2, newIdentity3].map(i => Encoding.toHex(i.pubkey.data)),
+      );
       expect(pubkeySet.size).toEqual(3);
       // all localidentity.ids must be different
       const idSet = new Set([newIdentity1, newIdentity2, newIdentity3].map(i => i.id));
@@ -107,9 +127,15 @@ describe("Slip10Wallet", () => {
 
     const emptyWallets = [
       // ed25519
-      Slip10Wallet.fromMnemonicWithCurve(Slip10Curve.Ed25519, "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard"),
+      Slip10Wallet.fromMnemonicWithCurve(
+        Slip10Curve.Ed25519,
+        "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard",
+      ),
       // secp256k1
-      Slip10Wallet.fromMnemonicWithCurve(Slip10Curve.Secp256k1, "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard"),
+      Slip10Wallet.fromMnemonicWithCurve(
+        Slip10Curve.Secp256k1,
+        "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard",
+      ),
     ];
 
     for (const wallet of emptyWallets) {
@@ -125,17 +151,28 @@ describe("Slip10Wallet", () => {
     const emptyWallets = [
       // all possible ways to construct a Slip10Wallet for Secp256k1
       new Slip10Wallet(emptySecp256k1Wallet),
-      Slip10Wallet.fromEntropyWithCurve(Slip10Curve.Secp256k1, Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad")),
-      Slip10Wallet.fromMnemonicWithCurve(Slip10Curve.Secp256k1, "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard"),
+      Slip10Wallet.fromEntropyWithCurve(
+        Slip10Curve.Secp256k1,
+        Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"),
+      ),
+      Slip10Wallet.fromMnemonicWithCurve(
+        Slip10Curve.Secp256k1,
+        "execute wheel pupil bachelor crystal short domain faculty shrimp focus swap hazard",
+      ),
     ];
 
     for (const wallet of emptyWallets) {
       const newIdentity1 = await wallet.createIdentity([Slip10RawIndex.hardened(0)]);
       const newIdentity2 = await wallet.createIdentity([Slip10RawIndex.hardened(1)]);
-      const newIdentity3 = await wallet.createIdentity([Slip10RawIndex.hardened(1), Slip10RawIndex.hardened(0)]);
+      const newIdentity3 = await wallet.createIdentity([
+        Slip10RawIndex.hardened(1),
+        Slip10RawIndex.hardened(0),
+      ]);
 
       // all pubkeys must be different
-      const pubkeySet = new Set([newIdentity1, newIdentity2, newIdentity3].map(i => Encoding.toHex(i.pubkey.data)));
+      const pubkeySet = new Set(
+        [newIdentity1, newIdentity2, newIdentity3].map(i => Encoding.toHex(i.pubkey.data)),
+      );
       expect(pubkeySet.size).toEqual(3);
       // all localidentity.ids must be different
       const idSet = new Set([newIdentity1, newIdentity2, newIdentity3].map(i => i.id));
@@ -156,19 +193,46 @@ describe("Slip10Wallet", () => {
     // Test data generated by the BIP44 tool of
     // https://iancoleman.io/bip39/#english
 
-    const wallet = Slip10Wallet.fromMnemonicWithCurve(Slip10Curve.Secp256k1, "mushroom faint dumb venture million true skull grab pitch mesh share tortoise");
+    const wallet = Slip10Wallet.fromMnemonicWithCurve(
+      Slip10Curve.Secp256k1,
+      "mushroom faint dumb venture million true skull grab pitch mesh share tortoise",
+    );
 
     // m/44'/0'/7'/1/0
-    const address0 = await wallet.createIdentity([Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(0), Slip10RawIndex.hardened(7), Slip10RawIndex.normal(1), Slip10RawIndex.normal(0)]);
-    expect(address0.pubkey.data).toEqual(fromHex("0388557bc34cf8229fc40cffe464344e946bf5c46257e820ea1632f3acbeaa723b"));
+    const address0 = await wallet.createIdentity([
+      Slip10RawIndex.hardened(44),
+      Slip10RawIndex.hardened(0),
+      Slip10RawIndex.hardened(7),
+      Slip10RawIndex.normal(1),
+      Slip10RawIndex.normal(0),
+    ]);
+    expect(address0.pubkey.data).toEqual(
+      fromHex("0388557bc34cf8229fc40cffe464344e946bf5c46257e820ea1632f3acbeaa723b"),
+    );
 
     // m/44'/0'/7'/1/1
-    const address1 = await wallet.createIdentity([Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(0), Slip10RawIndex.hardened(7), Slip10RawIndex.normal(1), Slip10RawIndex.normal(1)]);
-    expect(address1.pubkey.data).toEqual(fromHex("03cf16066cbcb077cac488ad03995db1a6ad97c3f1088b59a9d5ae4ca449d7e4ad"));
+    const address1 = await wallet.createIdentity([
+      Slip10RawIndex.hardened(44),
+      Slip10RawIndex.hardened(0),
+      Slip10RawIndex.hardened(7),
+      Slip10RawIndex.normal(1),
+      Slip10RawIndex.normal(1),
+    ]);
+    expect(address1.pubkey.data).toEqual(
+      fromHex("03cf16066cbcb077cac488ad03995db1a6ad97c3f1088b59a9d5ae4ca449d7e4ad"),
+    );
 
     // m/44'/0'/7'/1/2
-    const address2 = await wallet.createIdentity([Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(0), Slip10RawIndex.hardened(7), Slip10RawIndex.normal(1), Slip10RawIndex.normal(2)]);
-    expect(address2.pubkey.data).toEqual(fromHex("02f4a71480c4f6928ad10002ab17815ea4db2a56e545e5ef74d71d7b490171db93"));
+    const address2 = await wallet.createIdentity([
+      Slip10RawIndex.hardened(44),
+      Slip10RawIndex.hardened(0),
+      Slip10RawIndex.hardened(7),
+      Slip10RawIndex.normal(1),
+      Slip10RawIndex.normal(2),
+    ]);
+    expect(address2.pubkey.data).toEqual(
+      fromHex("02f4a71480c4f6928ad10002ab17815ea4db2a56e545e5ef74d71d7b490171db93"),
+    );
   });
 
   it("generates ed25519 keys compatible to Stellar", async () => {
@@ -178,19 +242,40 @@ describe("Slip10Wallet", () => {
     // $ yarn add stellar-sdk
     // $ node
     // > Keypair.fromPublicKey("GDRXE2BQUC3AZNPVFSCEZ76NJ3WWL25FYFK6RGZGIEKWE4SOOHSUJUJ6").rawPublicKey().toString("hex")
-    const wallet = Slip10Wallet.fromMnemonicWithCurve(Slip10Curve.Ed25519, "illness spike retreat truth genius clock brain pass fit cave bargain toe");
+    const wallet = Slip10Wallet.fromMnemonicWithCurve(
+      Slip10Curve.Ed25519,
+      "illness spike retreat truth genius clock brain pass fit cave bargain toe",
+    );
 
     // m/44'/148'/0'
-    const address0 = await wallet.createIdentity([Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(148), Slip10RawIndex.hardened(0)]);
-    expect(address0.pubkey.data).toEqual(fromHex("e3726830a0b60cb5f52c844cffcd4eed65eba5c155e89b26411562724e71e544"));
+    const address0 = await wallet.createIdentity([
+      Slip10RawIndex.hardened(44),
+      Slip10RawIndex.hardened(148),
+      Slip10RawIndex.hardened(0),
+    ]);
+    expect(address0.pubkey.data).toEqual(
+      fromHex("e3726830a0b60cb5f52c844cffcd4eed65eba5c155e89b26411562724e71e544"),
+    );
 
     // m/44'/148'/1'
-    const address1 = await wallet.createIdentity([Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(148), Slip10RawIndex.hardened(1)]);
-    expect(address1.pubkey.data).toEqual(fromHex("416edcd6746d5293579a7039ac67bcf1a8698efecf81183bbb0ac877da86ada3"));
+    const address1 = await wallet.createIdentity([
+      Slip10RawIndex.hardened(44),
+      Slip10RawIndex.hardened(148),
+      Slip10RawIndex.hardened(1),
+    ]);
+    expect(address1.pubkey.data).toEqual(
+      fromHex("416edcd6746d5293579a7039ac67bcf1a8698efecf81183bbb0ac877da86ada3"),
+    );
 
     // m/44'/148'/2'
-    const address2 = await wallet.createIdentity([Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(148), Slip10RawIndex.hardened(2)]);
-    expect(address2.pubkey.data).toEqual(fromHex("31d7c4074e8e8c07025e6f33a07e93ea45b9d83e96179f6b1f23465e96d8dd89"));
+    const address2 = await wallet.createIdentity([
+      Slip10RawIndex.hardened(44),
+      Slip10RawIndex.hardened(148),
+      Slip10RawIndex.hardened(2),
+    ]);
+    expect(address2.pubkey.data).toEqual(
+      fromHex("31d7c4074e8e8c07025e6f33a07e93ea45b9d83e96179f6b1f23465e96d8dd89"),
+    );
   });
 
   it("can set, change and unset an identity label", async () => {
@@ -231,9 +316,24 @@ describe("Slip10Wallet", () => {
     const transactionBytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
     const chainId = "some-chain" as ChainId;
 
-    const signaturePrehashNone = await wallet.createTransactionSignature(mainIdentity, transactionBytes, PrehashType.None, chainId);
-    const signaturePrehashSha256 = await wallet.createTransactionSignature(mainIdentity, transactionBytes, PrehashType.Sha256, chainId);
-    const signaturePrehashSha512 = await wallet.createTransactionSignature(mainIdentity, transactionBytes, PrehashType.Sha512, chainId);
+    const signaturePrehashNone = await wallet.createTransactionSignature(
+      mainIdentity,
+      transactionBytes,
+      PrehashType.None,
+      chainId,
+    );
+    const signaturePrehashSha256 = await wallet.createTransactionSignature(
+      mainIdentity,
+      transactionBytes,
+      PrehashType.Sha256,
+      chainId,
+    );
+    const signaturePrehashSha512 = await wallet.createTransactionSignature(
+      mainIdentity,
+      transactionBytes,
+      PrehashType.Sha512,
+      chainId,
+    );
     expect(signaturePrehashNone.length).toEqual(64);
     expect(signaturePrehashSha256.length).toEqual(64);
     expect(signaturePrehashSha512.length).toEqual(64);
@@ -252,11 +352,25 @@ describe("Slip10Wallet", () => {
     const bytesSha256 = new Sha256(bytes).digest();
     const bytesSha512 = new Sha512(bytes).digest();
 
-    const expectedSha256 = await wallet.createTransactionSignature(mainIdentity, bytesSha256 as SignableBytes, PrehashType.None, chainId);
-    const expectedSha512 = await wallet.createTransactionSignature(mainIdentity, bytesSha512 as SignableBytes, PrehashType.None, chainId);
+    const expectedSha256 = await wallet.createTransactionSignature(
+      mainIdentity,
+      bytesSha256 as SignableBytes,
+      PrehashType.None,
+      chainId,
+    );
+    const expectedSha512 = await wallet.createTransactionSignature(
+      mainIdentity,
+      bytesSha512 as SignableBytes,
+      PrehashType.None,
+      chainId,
+    );
 
-    expect(await wallet.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha256, chainId)).toEqual(expectedSha256);
-    expect(await wallet.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha512, chainId)).toEqual(expectedSha512);
+    expect(await wallet.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha256, chainId)).toEqual(
+      expectedSha256,
+    );
+    expect(await wallet.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha512, chainId)).toEqual(
+      expectedSha512,
+    );
   });
 
   it("can serialize multiple identities", async () => {
@@ -298,9 +412,15 @@ describe("Slip10Wallet", () => {
     expect(decodedJson.identities[2].privkeyPath).toEqual([0x80000000 + 2, 0x80000000 + 0]);
 
     // keys are different
-    expect(decodedJson.identities[0].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[1].localIdentity.pubkey.data);
-    expect(decodedJson.identities[1].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[2].localIdentity.pubkey.data);
-    expect(decodedJson.identities[2].localIdentity.pubkey.data).not.toEqual(decodedJson.identities[0].localIdentity.pubkey.data);
+    expect(decodedJson.identities[0].localIdentity.pubkey.data).not.toEqual(
+      decodedJson.identities[1].localIdentity.pubkey.data,
+    );
+    expect(decodedJson.identities[1].localIdentity.pubkey.data).not.toEqual(
+      decodedJson.identities[2].localIdentity.pubkey.data,
+    );
+    expect(decodedJson.identities[2].localIdentity.pubkey.data).not.toEqual(
+      decodedJson.identities[0].localIdentity.pubkey.data,
+    );
     expect(decodedJson.identities[0].privkeyPath).not.toEqual(decodedJson.identities[1].privkeyPath);
     expect(decodedJson.identities[1].privkeyPath).not.toEqual(decodedJson.identities[2].privkeyPath);
     expect(decodedJson.identities[2].privkeyPath).not.toEqual(decodedJson.identities[0].privkeyPath);
@@ -430,9 +550,15 @@ describe("Slip10Wallet", () => {
     // privkeys match
     const tx = new Uint8Array([]) as SignableBytes;
     const chainId = "" as ChainId;
-    expect(await original.createTransactionSignature(identity1, tx, PrehashType.None, chainId)).toEqual(await restored.createTransactionSignature(identity1, tx, PrehashType.None, chainId));
-    expect(await original.createTransactionSignature(identity2, tx, PrehashType.None, chainId)).toEqual(await restored.createTransactionSignature(identity2, tx, PrehashType.None, chainId));
-    expect(await original.createTransactionSignature(identity3, tx, PrehashType.None, chainId)).toEqual(await restored.createTransactionSignature(identity3, tx, PrehashType.None, chainId));
+    expect(await original.createTransactionSignature(identity1, tx, PrehashType.None, chainId)).toEqual(
+      await restored.createTransactionSignature(identity1, tx, PrehashType.None, chainId),
+    );
+    expect(await original.createTransactionSignature(identity2, tx, PrehashType.None, chainId)).toEqual(
+      await restored.createTransactionSignature(identity2, tx, PrehashType.None, chainId),
+    );
+    expect(await original.createTransactionSignature(identity3, tx, PrehashType.None, chainId)).toEqual(
+      await restored.createTransactionSignature(identity3, tx, PrehashType.None, chainId),
+    );
   });
 
   it("can be cloned", () => {
@@ -448,8 +574,14 @@ describe("Slip10Wallet", () => {
   });
 
   it("generates different IDs for the same mnemonic", () => {
-    const wallet1 = Slip10Wallet.fromMnemonicWithCurve(Slip10Curve.Ed25519, "accident situate kitten crunch frog lobster horror hen wife gold extra athlete");
-    const wallet2 = Slip10Wallet.fromMnemonicWithCurve(Slip10Curve.Ed25519, "accident situate kitten crunch frog lobster horror hen wife gold extra athlete");
+    const wallet1 = Slip10Wallet.fromMnemonicWithCurve(
+      Slip10Curve.Ed25519,
+      "accident situate kitten crunch frog lobster horror hen wife gold extra athlete",
+    );
+    const wallet2 = Slip10Wallet.fromMnemonicWithCurve(
+      Slip10Curve.Ed25519,
+      "accident situate kitten crunch frog lobster horror hen wife gold extra athlete",
+    );
     expect(wallet1.id).not.toEqual(wallet2.id);
   });
 });
