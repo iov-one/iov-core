@@ -196,6 +196,13 @@ export class Ed25519Wallet implements Wallet {
     return signature as SignatureBytes;
   }
 
+  public printableSecret(): string {
+    const libsodiumPrivkeys = [...this.privkeys.values()].map(pair => pair.toLibsodiumPrivkey());
+    const hexstringsSorted = libsodiumPrivkeys.map(privkey => Encoding.toHex(privkey)).sort();
+    const outStrings = hexstringsSorted.map(hexstring => (hexstring.match(/.{1,16}/g) || []).join(" "));
+    return outStrings.join("; ");
+  }
+
   public serialize(): WalletSerializationString {
     const out: Ed25519WalletSerialization = {
       formatVersion: 1,

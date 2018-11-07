@@ -42,6 +42,15 @@ export interface Wallet {
     readonly canSign: ValueAndUpdates<boolean>;
     readonly implementationId: WalletImplementationIdString;
     readonly createTransactionSignature: (identity: PublicIdentity, transactionBytes: SignableBytes, prehash: PrehashType, chainId: ChainId) => Promise<SignatureBytes>;
+    /**
+     * Exposes the secret data of this wallet in a printable format for
+     * backup purposes.
+     *
+     * The format depends on the implementation and may change over time,
+     * so do not try to parse the result or make any kind of assumtions on
+     * how the result looks like.
+     */
+    readonly printableSecret: () => string;
     readonly serialize: () => WalletSerializationString;
     readonly clone: () => Wallet;
 }

@@ -373,6 +373,29 @@ describe("Slip10Wallet", () => {
     );
   });
 
+  it("can export the secret in a printable format", () => {
+    {
+      const wallet = Slip10Wallet.fromMnemonicWithCurve(
+        Slip10Curve.Ed25519,
+        "hockey brief travel soldier saddle nose negative admit where fetch anxiety guess",
+        Slip10Wallet,
+      );
+      expect(wallet.printableSecret()).toEqual(
+        "hockey brief travel soldier saddle nose negative admit where fetch anxiety guess",
+      );
+    }
+    {
+      const wallet = Slip10Wallet.fromEntropyWithCurve(
+        Slip10Curve.Ed25519,
+        fromHex("7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f"),
+        Slip10Wallet,
+      );
+      expect(wallet.printableSecret()).toEqual(
+        "legal winner thank year wave sausage worth useful legal winner thank yellow",
+      );
+    }
+  });
+
   it("can serialize multiple identities", async () => {
     const wallet = new Slip10Wallet(emptyWallet);
     wallet.setLabel("wallet with 3 identities");

@@ -211,6 +211,43 @@ describe("Ed25519Wallet", () => {
     );
   });
 
+  it("can export the secret in a printable format", async () => {
+    {
+      const wallet = new Ed25519Wallet();
+      await wallet.createIdentity(
+        Ed25519Keypair.fromLibsodiumPrivkey(
+          fromHex(
+            "0000000000000000aaaaaaaaaaaaaaaa1111111111111111dddddddddddddddd7777777777777777bbbbbbbbbbbbbbbb5555555555555555ffffffffffffffff",
+          ),
+        ),
+      );
+      expect(wallet.printableSecret()).toEqual(
+        "0000000000000000 aaaaaaaaaaaaaaaa 1111111111111111 dddddddddddddddd 7777777777777777 bbbbbbbbbbbbbbbb 5555555555555555 ffffffffffffffff",
+      );
+    }
+    {
+      // multiple keys are sorted by hex value
+      const wallet = new Ed25519Wallet();
+      await wallet.createIdentity(
+        Ed25519Keypair.fromLibsodiumPrivkey(
+          fromHex(
+            "e79d85cdde2d416d6805bcbf561b707423af94effb528472c3cda80eef4609a796d810bed70594cb593a6bab9eabe88d6c9d9e3b0955fcd33cb097a6172bac40",
+          ),
+        ),
+      );
+      await wallet.createIdentity(
+        Ed25519Keypair.fromLibsodiumPrivkey(
+          fromHex(
+            "0000000000000000aaaaaaaaaaaaaaaa1111111111111111dddddddddddddddd7777777777777777bbbbbbbbbbbbbbbb5555555555555555ffffffffffffffff",
+          ),
+        ),
+      );
+      expect(wallet.printableSecret()).toEqual(
+        "0000000000000000 aaaaaaaaaaaaaaaa 1111111111111111 dddddddddddddddd 7777777777777777 bbbbbbbbbbbbbbbb 5555555555555555 ffffffffffffffff; e79d85cdde2d416d 6805bcbf561b7074 23af94effb528472 c3cda80eef4609a7 96d810bed70594cb 593a6bab9eabe88d 6c9d9e3b0955fcd3 3cb097a6172bac40",
+      );
+    }
+  });
+
   it("can serialize multiple identities", async () => {
     const keypair1 = new Ed25519Keypair(
       fromHex("9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60"),

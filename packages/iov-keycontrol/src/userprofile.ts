@@ -227,6 +227,19 @@ export class UserProfile {
     };
   }
 
+  /**
+   * Exposes the secret data of a wallet in a printable format for
+   * backup purposes.
+   *
+   * The format depends on the implementation and may change over time,
+   * so do not try to parse the result or make any kind of assumtions on
+   * how the result looks like.
+   */
+  public printableSecret(id: WalletId): string {
+    const wallet = this.findWalletInPrimaryKeyring(id);
+    return wallet.printableSecret();
+  }
+
   /** Throws if wallet does not exist in primary keyring */
   private findWalletInPrimaryKeyring(id: WalletId): Wallet {
     if (!this.keyring) {
