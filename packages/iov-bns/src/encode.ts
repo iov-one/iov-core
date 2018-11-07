@@ -1,5 +1,6 @@
 import {
   FullSignature,
+  FungibleToken,
   SendTx,
   SetNameTx,
   SignedTransaction,
@@ -10,10 +11,39 @@ import {
   TransactionKind,
   UnsignedTransaction,
 } from "@iov/bcp-types";
+import { Algorithm, PrivateKeyBundle, PublicKeyBundle } from "@iov/tendermint-types";
 
 import * as codecImpl from "./codecimpl";
-import { encodeFullSig, encodeToken } from "./types";
+import { encodeFullSig } from "./types";
 import { decodeBnsAddress, keyToAddress, preimageIdentifier } from "./util";
+
+export function encodePubkey(publicKey: PublicKeyBundle): codecImpl.crypto.IPublicKey {
+  switch (publicKey.algo) {
+    case Algorithm.Ed25519:
+      return { ed25519: publicKey.data };
+    default:
+      throw new Error("unsupported algorithm: " + publicKey.algo);
+  }
+}
+
+export function encodePrivkey(privateKey: PrivateKeyBundle): codecImpl.crypto.IPrivateKey {
+  switch (privateKey.algo) {
+    case Algorithm.Ed25519:
+      return { ed25519: privateKey.data };
+    default:
+      throw new Error("unsupported algorithm: " + privateKey.algo);
+  }
+}
+
+export function encodeToken(token: FungibleToken): codecImpl.x.Coin {
+  return codecImpl.x.Coin.create({
+    // use null instead of 0 to not encode zero fields
+    // for compatibility with golang encoder
+    whole: token.whole || null,
+    fractional: token.fractional || null,
+    ticker: token.tokenTicker,
+  });
+}
 
 export const buildSignedTx = (tx: SignedTransaction): codecImpl.app.ITx => {
   const sigs: ReadonlyArray<FullSignature> = [tx.primarySignature, ...tx.otherSignatures];

@@ -12,6 +12,7 @@ import {
 } from "@iov/tendermint-types";
 
 import * as codecImpl from "./codecimpl";
+import { encodePubkey } from "./encode";
 import { InitData } from "./normalize";
 
 export interface Result {
@@ -27,39 +28,12 @@ export interface Decoder<T extends {}> {
   readonly decode: (data: Uint8Array) => T;
 }
 
-export const encodeToken = (token: FungibleToken) =>
-  codecImpl.x.Coin.create({
-    // use null instead of 0 to not encode zero fields
-    // for compatibility with golang encoder
-    whole: token.whole || null,
-    fractional: token.fractional || null,
-    ticker: token.tokenTicker,
-  });
-
 export const encodeFullSig = (sig: FullSignature) =>
   codecImpl.sigs.StdSignature.create({
     sequence: sig.nonce.toNumber(),
     pubKey: encodePubkey(sig.publicKey),
     signature: encodeSignature(sig.publicKey.algo, sig.signature),
   });
-
-export function encodePubkey(publicKey: PublicKeyBundle): codecImpl.crypto.IPublicKey {
-  switch (publicKey.algo) {
-    case Algorithm.Ed25519:
-      return { ed25519: publicKey.data };
-    default:
-      throw new Error("unsupported algorithm: " + publicKey.algo);
-  }
-}
-
-export function encodePrivkey(privateKey: PrivateKeyBundle): codecImpl.crypto.IPrivateKey {
-  switch (privateKey.algo) {
-    case Algorithm.Ed25519:
-      return { ed25519: privateKey.data };
-    default:
-      throw new Error("unsupported algorithm: " + privateKey.algo);
-  }
-}
 
 // encodeSignature needs the Algorithm to determine the type
 export const encodeSignature = (algo: Algorithm, sigs: SignatureBytes) => {

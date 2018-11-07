@@ -14,10 +14,7 @@ export interface Keyed {
 export interface Decoder<T extends {}> {
     readonly decode: (data: Uint8Array) => T;
 }
-export declare const encodeToken: (token: FungibleToken) => codecImpl.x.Coin;
 export declare const encodeFullSig: (sig: FullSignature) => codecImpl.sigs.StdSignature;
-export declare function encodePubkey(publicKey: PublicKeyBundle): codecImpl.crypto.IPublicKey;
-export declare function encodePrivkey(privateKey: PrivateKeyBundle): codecImpl.crypto.IPrivateKey;
 export declare const encodeSignature: (algo: Algorithm, sigs: SignatureBytes) => {
     ed25519: SignatureBytes;
 };
