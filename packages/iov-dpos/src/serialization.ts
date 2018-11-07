@@ -1,4 +1,7 @@
+import Long from "long";
 import { ReadonlyDate } from "readonly-date";
+
+import { Uint64 } from "@iov/encoding";
 
 export class Serialization {
   public static toTimestamp(date: ReadonlyDate): number {
@@ -17,5 +20,15 @@ export class Serialization {
     }
 
     return timestamp;
+  }
+
+  public static amountFromComponents(whole: number, fractional: number): Uint64 {
+    // Do math on a Long (signed 64 bit integer). The max possible value is ~700 times
+    // the current Lisk/RISE supply: (2**63-1) / (130_000_000 * 100_000_000) = 709.49
+    const amount = Long.fromNumber(whole)
+      .multiply(100000000)
+      .add(fractional)
+      .toBytesBE();
+    return Uint64.fromBytesBigEndian(amount);
   }
 }

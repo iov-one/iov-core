@@ -2,7 +2,7 @@ import { ReadonlyDate } from "readonly-date";
 
 import { Serialization } from "./serialization";
 
-const { toTimestamp } = Serialization;
+const { amountFromComponents, toTimestamp } = Serialization;
 
 const epochAsUnixTimestamp = 1464109200;
 
@@ -58,6 +58,30 @@ describe("Serialization", () => {
       expect(() =>
         toTimestamp(new ReadonlyDate(ReadonlyDate.UTC(2016 + 70, 4, 24, 17, 0, 0, 0))),
       ).toThrowError(/not in int32 range/i);
+    });
+  });
+
+  describe("amountFromComponents", () => {
+    it("works for some simple values", () => {
+      expect(amountFromComponents(0, 0).toString()).toEqual("0");
+      expect(amountFromComponents(0, 1).toString()).toEqual("1");
+      expect(amountFromComponents(0, 123).toString()).toEqual("123");
+      expect(amountFromComponents(1, 0).toString()).toEqual("100000000");
+      expect(amountFromComponents(123, 0).toString()).toEqual("12300000000");
+      expect(amountFromComponents(1, 1).toString()).toEqual("100000001");
+      expect(amountFromComponents(1, 23456789).toString()).toEqual("123456789");
+    });
+
+    it("works for amount 10 million", () => {
+      expect(amountFromComponents(10000000, 0).toString()).toEqual("1000000000000000");
+      // set high and low digit to trigger precision bugs in floating point operations
+      expect(amountFromComponents(10000000, 1).toString()).toEqual("1000000000000001");
+    });
+
+    it("works for amount 100 million", () => {
+      expect(amountFromComponents(100000000, 0).toString()).toEqual("10000000000000000");
+      // set high and low digit to trigger precision bugs in floating point operations
+      expect(amountFromComponents(100000000, 1).toString()).toEqual("10000000000000001");
     });
   });
 });
