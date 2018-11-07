@@ -35,7 +35,7 @@ describe("Keyring", () => {
     expect(keyring.getWallets()[0]).toBe(wallet);
   });
 
-  it("can add multiple wallets", () => {
+  it("can add and get multiple wallets", () => {
     const keyring = new Keyring();
     const wallet1 = Ed25519HdWallet.fromEntropy(fromHex("f7e7f1bbb327113a46fd3fa1020413de"));
     const wallet2 = Ed25519HdWallet.fromMnemonic(
@@ -54,11 +54,18 @@ describe("Keyring", () => {
     keyring.add(wallet3);
     keyring.add(wallet4);
 
+    // get via getWallets()
     expect(keyring.getWallets().length).toEqual(4);
     expect(keyring.getWallets()[0]).toBe(wallet1);
     expect(keyring.getWallets()[1]).toBe(wallet2);
     expect(keyring.getWallets()[2]).toBe(wallet3);
     expect(keyring.getWallets()[3]).toBe(wallet4);
+
+    // get via getWallet()
+    expect(keyring.getWallet(wallet1.id)).toBe(wallet1);
+    expect(keyring.getWallet(wallet2.id)).toBe(wallet2);
+    expect(keyring.getWallet(wallet3.id)).toBe(wallet3);
+    expect(keyring.getWallet(wallet4.id)).toBe(wallet4);
   });
 
   it("can serialize empty", () => {
