@@ -2,7 +2,8 @@
 import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
-import { TransactionKind, UnsignedTransaction } from "@iov/bcp-types";
+import { FullSignature, TransactionIdBytes, TransactionKind, UnsignedTransaction } from "@iov/bcp-types";
+import { Sha256 } from "@iov/crypto";
 import { Encoding, Uint64 } from "@iov/encoding";
 
 export interface TransactionSerializationOptions {
@@ -86,5 +87,17 @@ export class Serialization {
       default:
         throw new Error("Unsupported kind of transaction");
     }
+  }
+
+  public static transactionId(
+    unsigned: UnsignedTransaction,
+    creationTime: ReadonlyDate,
+    primarySignature: FullSignature,
+    options: TransactionSerializationOptions,
+  ): TransactionIdBytes {
+    const serialized = Serialization.serializeTransaction(unsigned, creationTime, options);
+    const hash = new Sha256(serialized).update(primarySignature.signature).digest();
+    const idString = Long.fromBytesLE(Array.from(hash.slice(0, 8)), true).toString(10);
+    return Encoding.toAscii(idString) as TransactionIdBytes;
   }
 }
