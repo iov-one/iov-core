@@ -4,25 +4,8 @@ import { ReadonlyDate } from "readonly-date";
 
 import { FullSignature, TransactionIdBytes, TransactionKind, UnsignedTransaction } from "@iov/bcp-types";
 import { Sha256 } from "@iov/crypto";
+import { Serialization } from "@iov/dpos";
 import { Encoding, Uint64 } from "@iov/encoding";
-
-export function toRiseTimestamp(date: ReadonlyDate): number {
-  const timestamp = Math.floor(date.getTime() / 1000);
-
-  const riseEpoch = Date.UTC(2016, 4, 24, 17, 0, 0, 0) / 1000;
-  const riseTimestamp = timestamp - riseEpoch;
-
-  // RISE timestamp must be in the signed int32 range (to be stored in a Postgres
-  // integer column and to be serializeable as 4 bytes) but has no further
-  // plausibility restrictions.
-  // https://github.com/RiseVision/rise-node/blob/v1.1.1/src/logic/transaction.ts#L346
-
-  if (riseTimestamp < -2147483648 || riseTimestamp > 2147483647) {
-    throw new Error("RISE timestamp not in int32 range");
-  }
-
-  return riseTimestamp;
-}
 
 export function amountFromComponents(whole: number, fractional: number): Uint64 {
   const amount = Long.fromNumber(whole)
@@ -39,7 +22,7 @@ export function serializeTransaction(unsigned: UnsignedTransaction, creationTime
 
   switch (unsigned.kind) {
     case TransactionKind.Send:
-      const rise = toRiseTimestamp(creationTime);
+      const rise = Serialization.toTimestamp(creationTime);
       const timestampBytes = new Uint8Array([
         (rise >> 0) & 0xff,
         (rise >> 8) & 0xff,
