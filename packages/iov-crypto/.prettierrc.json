@@ -5,7 +5,7 @@
     {
       "files": "*.spec.ts",
       "options": {
-        "printWidth": 5000
+        "printWidth": 8000
       }
     }
   ]
