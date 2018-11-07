@@ -10,7 +10,6 @@ TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/faucet_start.XXXXXXXXX")
     cd "iov-faucet"
     yarn install
     yarn build
-    yarn dev-init
 
     LOGFILE="$TMP_DIR/faucet.log"
     yarn dev-start > "$LOGFILE" &
