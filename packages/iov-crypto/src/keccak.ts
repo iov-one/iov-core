@@ -1,3 +1,4 @@
+import { Address } from "@iov/bcp-types";
 import jssha3 from "js-sha3";
 import { HashFunction } from "./sha";
 
@@ -6,7 +7,7 @@ export class Keccak256 implements HashFunction {
 
   private readonly impl: any;
 
-  constructor(firstData?: Uint8Array) {
+  constructor(firstData?: Uint8Array | Address) {
     this.impl = jssha3.keccak256.create();
 
     if (firstData) {
@@ -14,7 +15,7 @@ export class Keccak256 implements HashFunction {
     }
   }
 
-  public update(data: Uint8Array): Keccak256 {
+  public update(data: Uint8Array | Address): Keccak256 {
     this.impl.update(data);
     return this;
   }
