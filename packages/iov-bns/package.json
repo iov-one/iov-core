@@ -1,6 +1,6 @@
 {
   "name": "@iov/bns",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Transaction codec and BCP client to communicate with BNS blockchain",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -35,10 +35,10 @@
   },
   "dependencies": {
     "@iov/bcp-types": "^0.8.0",
-    "@iov/crypto": "^0.8.0",
+    "@iov/crypto": "^0.8.1",
     "@iov/encoding": "^0.8.0",
     "@iov/stream": "^0.8.0",
-    "@iov/tendermint-rpc": "^0.8.0",
+    "@iov/tendermint-rpc": "^0.8.1",
     "@iov/tendermint-types": "^0.8.0",
     "@types/long": "^4.0.0",
     "@types/node": "^10.3.2",
@@ -47,7 +47,7 @@
     "xstream": "^11.7.0"
   },
   "devDependencies": {
-    "@iov/keycontrol": "^0.8.0"
+    "@iov/keycontrol": "^0.8.1"
   },
   "gitHead": "39379b38f0ac128a48aa7174692c4c932ed326f7"
 }

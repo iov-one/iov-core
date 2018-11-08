@@ -1,6 +1,6 @@
 {
   "name": "@iov/faucets",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Faucets for some of the supported blockchains",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -26,8 +26,8 @@
   },
   "dependencies": {
     "@iov/bcp-types": "^0.8.0",
-    "@iov/bns": "^0.8.0",
-    "@iov/crypto": "^0.8.0",
+    "@iov/bns": "^0.8.1",
+    "@iov/crypto": "^0.8.1",
     "@iov/encoding": "^0.8.0",
     "axios": "^0.18.0"
   }

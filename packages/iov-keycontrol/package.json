@@ -1,6 +1,6 @@
 {
   "name": "@iov/keycontrol",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Keyrings and Keycontroller for safe cryptography",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@iov/bcp-types": "^0.8.0",
-    "@iov/crypto": "^0.8.0",
+    "@iov/crypto": "^0.8.1",
     "@iov/encoding": "^0.8.0",
     "@iov/stream": "^0.8.0",
     "@iov/tendermint-types": "^0.8.0",
