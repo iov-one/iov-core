@@ -1,6 +1,6 @@
+import { As } from "type-tagger";
 import { TxId } from "@iov/tendermint-types";
 import { JsonRpcRequest } from "./common";
-import { QueryString } from "./encodings";
 export declare const enum Method {
     ABCI_INFO = "abci_info",
     ABCI_QUERY = "abci_query",
@@ -92,6 +92,7 @@ export interface SubscribeRequest {
         readonly tags?: ReadonlyArray<QueryTag>;
     };
 }
+export declare type QueryString = string & As<"query">;
 export interface QueryTag {
     readonly key: string;
     readonly value: string;
@@ -133,4 +134,5 @@ export declare class DefaultParams {
     static encodeHealth(req: HealthRequest): JsonRpcRequest;
     static encodeStatus(req: StatusRequest): JsonRpcRequest;
 }
+export declare function buildTagsQuery(tags: ReadonlyArray<QueryTag>): QueryString;
 export declare function buildTxQuery(query: TxQuery): QueryString;

@@ -1,8 +1,9 @@
+import { As } from "type-tagger";
+
 import { Encoding } from "@iov/encoding";
 import { TxId } from "@iov/tendermint-types";
 
 import { JsonRpcRequest, jsonRpcWith } from "./common";
-import { QueryString } from "./encodings";
 
 // union type of all possible methods?
 export const enum Method {
@@ -123,6 +124,8 @@ export interface SubscribeRequest {
   };
 }
 
+export type QueryString = string & As<"query">;
+
 export interface QueryTag {
   readonly key: string;
   readonly value: string;
@@ -185,6 +188,10 @@ export class DefaultParams {
 
 function buildTagQuery(tag: QueryTag): string {
   return `${tag.key}='${tag.value}'`;
+}
+
+export function buildTagsQuery(tags: ReadonlyArray<QueryTag>): QueryString {
+  return tags.map(buildTagQuery).join(" AND ") as QueryString;
 }
 
 export function buildTxQuery(query: TxQuery): QueryString {

@@ -37,7 +37,7 @@ export class Params extends requests.DefaultParams {
       ...(req.query.tags ? req.query.tags : []),
     ];
 
-    const queryString = requests.buildTxQuery({ tags: allTags });
+    const queryString = requests.buildTagsQuery(allTags);
     return jsonRpcWith("subscribe", { query: queryString });
   }
 

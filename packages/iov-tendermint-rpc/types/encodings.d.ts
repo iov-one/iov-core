@@ -5,7 +5,6 @@ export declare type HexString = string & As<"hex">;
 export declare type IntegerString = string & As<"integer">;
 export declare type IpPortString = string & As<"ipport">;
 export declare type DateTimeString = string & As<"datetime">;
-export declare type QueryString = string & As<"query">;
 export declare function notEmpty<T>(value: T): T;
 export declare function required<T>(value: T | null | undefined): T;
 export declare function optional<T>(value: T | null | undefined, fallback: T): T;
