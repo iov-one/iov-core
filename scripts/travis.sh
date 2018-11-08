@@ -70,6 +70,11 @@ fi
 # Build
 #
 
+fold_start "update-npmipgnore"
+# This in combination with check-dirty (below) ensures .npmignore files are up-to-date
+./scripts/update_npmignore.sh
+fold_end
+
 fold_start "yarn-build"
 yarn build
 fold_end
