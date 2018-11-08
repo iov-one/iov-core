@@ -305,7 +305,6 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       result: txResult.data || new Uint8Array([]),
       ...this.codec.parseBytes(tx, chainId),
     });
-    // make sure we sort by height, as tendermint may be sorting by string value of the height
     return res.txs.map(mapper);
   }
 
