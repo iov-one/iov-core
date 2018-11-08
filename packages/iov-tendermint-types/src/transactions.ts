@@ -1,12 +1,6 @@
 import { As } from "type-tagger";
 
-import { Algorithm } from "./keys";
-
 export type SignatureBytes = Uint8Array & As<"signature">;
-export interface SignatureBundle {
-  readonly algo: Algorithm;
-  readonly signature: SignatureBytes;
-}
 
 export type PostableBytes = Uint8Array & As<"postable">;
 
