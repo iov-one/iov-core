@@ -122,5 +122,4 @@ export declare class DefaultParams {
     static encodeHealth(req: HealthRequest): JsonRpcRequest;
     static encodeStatus(req: StatusRequest): JsonRpcRequest;
 }
-export declare const buildTxQuery: (query: TxQuery) => QueryString;
-export declare const buildTagQuery: (tag: Tag) => string;
+export declare function buildTxQuery(query: TxQuery): QueryString;

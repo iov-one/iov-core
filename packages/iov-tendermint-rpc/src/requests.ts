@@ -170,7 +170,11 @@ export class DefaultParams {
   }
 }
 
-export const buildTxQuery = (query: TxQuery): QueryString => {
+function buildTagQuery(tag: Tag): string {
+  return `${tag.key}='${tag.value}'`;
+}
+
+export function buildTxQuery(query: TxQuery): QueryString {
   const tags: ReadonlyArray<string> = query.tags.map(buildTagQuery);
   const opts: ReadonlyArray<string | false> = [
     !!query.height && `tx.height=${query.height}`,
@@ -180,6 +184,4 @@ export const buildTxQuery = (query: TxQuery): QueryString => {
   ];
   const result: string = [...tags, ...opts.filter(x => !!x)].join(" AND ");
   return result as QueryString;
-};
-
-export const buildTagQuery = (tag: Tag): string => `${tag.key}='${tag.value}'`;
+}
