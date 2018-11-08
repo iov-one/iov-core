@@ -4,6 +4,7 @@ import { Encoding } from "@iov/encoding";
 import { address, hashCode, pubJson } from "./testdata";
 import {
   arraysEqual,
+  buildTxQuery,
   decodeBnsAddress,
   encodeBnsAddress,
   isHashIdentifier,
@@ -100,5 +101,37 @@ describe("Util", () => {
     expect(isValidAddress(bad)).toEqual(false);
     expect(isValidAddress(bad2)).toEqual(false);
     expect(isValidAddress(bad3)).toEqual(false);
+  });
+
+  describe("buildTxQuery", () => {
+    it("handles no tags", () => {
+      const query = buildTxQuery({ tags: [] });
+      expect(query).toEqual("");
+    });
+
+    it("handles one tags", () => {
+      const query = buildTxQuery({ tags: [{ key: "abc", value: "def" }] });
+      expect(query).toEqual("abc='def'");
+    });
+
+    it("handles two tags", () => {
+      const query = buildTxQuery({ tags: [{ key: "k", value: "9" }, { key: "L", value: "7" }] });
+      expect(query).toEqual("k='9' AND L='7'");
+    });
+
+    it("handles height", () => {
+      const query = buildTxQuery({ height: 17, tags: [] });
+      expect(query).toEqual("tx.height=17");
+    });
+
+    it("handles min and max height", () => {
+      const query = buildTxQuery({ minHeight: 21, maxHeight: 111, tags: [] });
+      expect(query).toEqual("tx.height>21 AND tx.height<111");
+    });
+
+    it("handles height with tags", () => {
+      const query = buildTxQuery({ minHeight: 77, tags: [{ key: "some", value: "info" }] });
+      expect(query).toEqual("some='info' AND tx.height>77");
+    });
   });
 });

@@ -30,7 +30,6 @@ import {
 import { Encoding } from "@iov/encoding";
 import { streamPromise } from "@iov/stream";
 import {
-  buildTxQuery,
   Client as TendermintClient,
   getHeaderEventHeight,
   getTxEventHeight,
@@ -46,7 +45,14 @@ import * as codecImpl from "./codecimpl";
 import { InitData, Normalize } from "./normalize";
 import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
 import { Decoder, Keyed, Result } from "./types";
-import { arraysEqual, decodeBnsAddress, hashIdentifier, isSwapOffer, isSwapRelease } from "./util";
+import {
+  arraysEqual,
+  buildTxQuery,
+  decodeBnsAddress,
+  hashIdentifier,
+  isSwapOffer,
+  isSwapRelease,
+} from "./util";
 
 /**
  * Returns a filter that only passes when the

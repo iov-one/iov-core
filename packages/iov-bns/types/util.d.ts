@@ -1,5 +1,6 @@
 import { As } from "type-tagger";
-import { Address, ConfirmedTransaction, Nonce, SignableBytes, SwapClaimTx, SwapCounterTx, SwapTimeoutTx } from "@iov/bcp-types";
+import { Address, BcpTxQuery, ConfirmedTransaction, Nonce, SignableBytes, SwapClaimTx, SwapCounterTx, SwapTimeoutTx } from "@iov/bcp-types";
+import { QueryString } from "@iov/tendermint-rpc";
 import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 /** Encodes raw bytes into a bech32 address */
 export declare function encodeBnsAddress(bytes: Uint8Array): Address;
@@ -23,3 +24,4 @@ export declare const bucketKey: (bucket: string) => Uint8Array;
 export declare const indexKey: (bucket: string, index: string) => Uint8Array;
 export declare function isSwapOffer(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapCounterTx>;
 export declare function isSwapRelease(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapClaimTx | SwapTimeoutTx>;
+export declare function buildTxQuery(query: BcpTxQuery): QueryString;

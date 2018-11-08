@@ -1,5 +1,4 @@
 import { As } from "type-tagger";
-import { TxId } from "@iov/tendermint-types";
 import { JsonRpcRequest } from "./common";
 export declare const enum Method {
     ABCI_INFO = "abci_info",
@@ -97,13 +96,6 @@ export interface QueryTag {
     readonly key: string;
     readonly value: string;
 }
-export interface TxQuery {
-    readonly tags: ReadonlyArray<QueryTag>;
-    readonly hash?: TxId;
-    readonly height?: number;
-    readonly minHeight?: number;
-    readonly maxHeight?: number;
-}
 export interface TxRequest {
     readonly method: Method.TX;
     readonly params: TxParams;
@@ -135,4 +127,3 @@ export declare class DefaultParams {
     static encodeStatus(req: StatusRequest): JsonRpcRequest;
 }
 export declare function buildTagsQuery(tags: ReadonlyArray<QueryTag>): QueryString;
-export declare function buildTxQuery(query: TxQuery): QueryString;

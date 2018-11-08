@@ -3,6 +3,7 @@ import { As } from "type-tagger";
 
 import {
   Address,
+  BcpTxQuery,
   ConfirmedTransaction,
   Nonce,
   SignableBytes,
@@ -13,6 +14,7 @@ import {
 } from "@iov/bcp-types";
 import { Sha256 } from "@iov/crypto";
 import { Bech32, Encoding } from "@iov/encoding";
+import { QueryString } from "@iov/tendermint-rpc";
 import { Algorithm, ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 
 /** Encodes raw bytes into a bech32 address */
@@ -102,4 +104,16 @@ export function isSwapRelease(
   return (
     tx.transaction.kind === TransactionKind.SwapClaim || tx.transaction.kind === TransactionKind.SwapTimeout
   );
+}
+
+export function buildTxQuery(query: BcpTxQuery): QueryString {
+  const tags: ReadonlyArray<string> = query.tags.map(tag => `${tag.key}='${tag.value}'`);
+  const opts: ReadonlyArray<string | false> = [
+    !!query.height && `tx.height=${query.height}`,
+    !!query.minHeight && `tx.height>${query.minHeight}`,
+    !!query.maxHeight && `tx.height<${query.maxHeight}`,
+    !!query.hash && `tx.hash='${Encoding.toHex(query.hash)}'`,
+  ];
+  const result: string = [...tags, ...opts.filter(x => !!x)].join(" AND ");
+  return result as QueryString;
 }
