@@ -14,16 +14,9 @@ import {
   TransactionKind,
 } from "@iov/bcp-types";
 import { Encoding, Int53 } from "@iov/encoding";
-import {
-  Algorithm,
-  ChainId,
-  PrivateKeyBundle,
-  PrivateKeyBytes,
-  PublicKeyBundle,
-  PublicKeyBytes,
-  SignatureBytes,
-} from "@iov/tendermint-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
+import { PrivateKeyBundle, PrivateKeyBytes } from "./types";
 import { hashId } from "./util";
 
 const { fromHex } = Encoding;

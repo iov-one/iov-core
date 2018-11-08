@@ -1,9 +1,15 @@
 import * as Long from "long";
+import { As } from "type-tagger";
 import { BcpCoin, FullSignature, FungibleToken } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
-import { Algorithm, PrivateKeyBundle, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types";
+import { Algorithm, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types";
 import * as codecImpl from "./codecimpl";
 import { InitData } from "./normalize";
+export declare type PrivateKeyBytes = Uint8Array & As<"private-key">;
+export interface PrivateKeyBundle {
+    readonly algo: Algorithm;
+    readonly data: PrivateKeyBytes;
+}
 export interface Result {
     readonly key: Uint8Array;
     readonly value: Uint8Array;

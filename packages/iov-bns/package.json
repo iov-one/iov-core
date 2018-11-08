@@ -44,6 +44,7 @@
     "@types/node": "^10.3.2",
     "long": "^4.0.0",
     "protobufjs": "^6.8.6",
+    "type-tagger": "^1.0.0",
     "xstream": "^11.7.0"
   },
   "devDependencies": {
