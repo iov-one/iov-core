@@ -63,7 +63,9 @@ echo "use Lisk?" ${LISK_ENABLED:-no}
 #
 
 if [[ ! -z ${BNSD_ENABLED:-} ]]; then
+  fold_start "faucet-start"
   ./scripts/iov_faucet_start.sh
+  fold_end
 fi
 
 #
