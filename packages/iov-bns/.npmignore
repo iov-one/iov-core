@@ -26,6 +26,7 @@ tmp/
 build/
 dist/
 docs/
+weave/
 
 # .npmignore additions
 !build/
