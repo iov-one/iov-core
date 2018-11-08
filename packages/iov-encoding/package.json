@@ -38,6 +38,5 @@
   "devDependencies": {
     "@types/base64-js": "^1.2.5",
     "@types/bech32": "^1.1.1"
-  },
-  "gitHead": "39379b38f0ac128a48aa7174692c4c932ed326f7"
+  }
 }
