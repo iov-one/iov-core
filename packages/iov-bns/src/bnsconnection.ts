@@ -229,10 +229,12 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    */
   public async getSwap(query: BcpSwapQuery): Promise<BcpQueryEnvelope<BcpAtomicSwap>> {
     // we need to combine them all to see all transactions that affect the query
-    const setTxs = await this.searchTx({
+    const setTxs: ReadonlyArray<ConfirmedTransaction> = await this.searchTx({
       tags: [bnsSwapQueryTags(query, true)],
     });
-    const delTxs = await this.searchTx({ tags: [bnsSwapQueryTags(query, false)] });
+    const delTxs: ReadonlyArray<ConfirmedTransaction> = await this.searchTx({
+      tags: [bnsSwapQueryTags(query, false)],
+    });
 
     // tslint:disable-next-line:readonly-array
     const offers: OpenSwap[] = setTxs.filter(isSwapOffer).map(Normalize.swapOfferFromTx(this.initData));
