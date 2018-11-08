@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.1
+
+* @iov/dpos: Deduplicate `Serialization` from Lisk and RISE
+* @iov/keycontrol: Add `Wallet.printableSecret` and `UserProfile.printableSecret`
+* @iov/keycontrol: Add `HdPaths.bip44` and `HdPaths.metamaskHdKeyTree` HD path builders
+* @iov/tendermint-rpc: Ensure transaction search results are sorted by height
+
 ## 0.8.0
 
 * @iov/dpos: Add new package with shared code for Lisk and RISE. Don't use this directly. No code change necessary for users of @iov/lisk and @iov/rise.
