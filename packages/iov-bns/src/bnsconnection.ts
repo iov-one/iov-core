@@ -306,9 +306,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       ...this.codec.parseBytes(tx, chainId),
     });
     // make sure we sort by height, as tendermint may be sorting by string value of the height
-    return res.txs
-      .map(mapper)
-      .sort((a: ConfirmedTransaction, b: ConfirmedTransaction) => a.height - b.height);
+    return res.txs.map(mapper);
   }
 
   /**

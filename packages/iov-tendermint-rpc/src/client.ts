@@ -129,27 +129,33 @@ export class Client {
     return this.doCall(query, this.p.encodeTx, this.r.decodeTx);
   }
 
-  public txSearch(params: requests.TxSearchParams): Promise<responses.TxSearchResponse> {
+  public async txSearch(params: requests.TxSearchParams): Promise<responses.TxSearchResponse> {
     const query: requests.TxSearchRequest = { params, method: requests.Method.TX_SEARCH };
-    return this.doCall(query, this.p.encodeTxSearch, this.r.decodeTxSearch);
+    const resp = await this.doCall(query, this.p.encodeTxSearch, this.r.decodeTxSearch);
+    return {
+      ...resp,
+      txs: [...resp.txs].sort((a, b) => a.height - b.height),
+    };
   }
 
   // this should paginate through all txSearch options to ensure it returns all results.
   // starts with page 1 or whatever was provided (eg. to start on page 7)
   public async txSearchAll(params: requests.TxSearchParams): Promise<responses.TxSearchResponse> {
     let page = params.page || 1;
-    let txs: ReadonlyArray<responses.TxResponse> = [];
+    // tslint:disable-next-line:readonly-array
+    const txs: responses.TxResponse[] = [];
     let done = false;
 
     while (!done) {
       const resp = await this.txSearch({ ...params, page });
-      txs = [...txs, ...resp.txs];
+      txs.push(...resp.txs);
       if (txs.length < resp.totalCount) {
         page++;
       } else {
         done = true;
       }
     }
+    txs.sort((a, b) => a.height - b.height);
 
     return {
       totalCount: txs.length,
