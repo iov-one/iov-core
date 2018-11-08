@@ -166,7 +166,7 @@ if [[ "$TRAVIS_OS_NAME" == "linux" ]] && [[ "$TRAVIS_NODE_VERSION" == "8" ]] && 
     git reset master
   )
 
-  ./copy_docs.sh
+  ./scripts/copy_docs.sh
 
   (
     cd "../iov-core-docs"
