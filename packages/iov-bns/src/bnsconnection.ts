@@ -8,9 +8,11 @@ import {
   BcpAtomicSwapConnection,
   BcpNonce,
   BcpQueryEnvelope,
+  BcpQueryTag,
   BcpSwapQuery,
   BcpTicker,
   BcpTransactionResponse,
+  BcpTxQuery,
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
@@ -37,7 +39,7 @@ import {
   TxEvent,
   TxResponse,
 } from "@iov/tendermint-rpc";
-import { ChainId, PostableBytes, Tag, TxId, TxQuery } from "@iov/tendermint-types";
+import { ChainId, PostableBytes, TxId } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
 import * as codecImpl from "./codecimpl";
@@ -293,7 +295,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return Stream.merge(offers, releases).map(combiner);
   }
 
-  public async searchTx(txQuery: TxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  public async searchTx(txQuery: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
     // this will paginate over all transactions, even if multiple pages.
     // FIXME: consider making a streaming interface here, but that will break clients
     const res = await this.tmClient.txSearchAll({ query: buildTxQuery(txQuery) });
@@ -311,7 +313,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   /**
    * A stream of all transactions that match the tags from the present moment on
    */
-  public listenTx(tags: ReadonlyArray<Tag>): Stream<ConfirmedTransaction> {
+  public listenTx(tags: ReadonlyArray<BcpQueryTag>): Stream<ConfirmedTransaction> {
     const chainId = this.chainId();
     const txs = this.tmClient.subscribeTx(tags);
 
@@ -332,7 +334,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    * It returns a stream starting the array of all existing transactions
    * and then continuing with live feeds
    */
-  public liveTx(txQuery: TxQuery): Stream<ConfirmedTransaction> {
+  public liveTx(txQuery: BcpTxQuery): Stream<ConfirmedTransaction> {
     const history = streamPromise(this.searchTx(txQuery));
     const updates = this.listenTx(txQuery.tags);
     return Stream.merge(history, updates);
@@ -345,7 +347,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   /**
    * Emits the blockheight for every block where a tx matching these tags is emitted
    */
-  public changeTx(tags: ReadonlyArray<Tag>): Stream<number> {
+  public changeTx(tags: ReadonlyArray<BcpQueryTag>): Stream<number> {
     return this.tmClient
       .subscribeTx(tags)
       .map(getTxEventHeight)

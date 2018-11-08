@@ -9,8 +9,10 @@ import {
   BcpConnection,
   BcpNonce,
   BcpQueryEnvelope,
+  BcpQueryTag,
   BcpTicker,
   BcpTransactionResponse,
+  BcpTxQuery,
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
@@ -20,7 +22,7 @@ import {
 } from "@iov/bcp-types";
 import { Parse } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
-import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, Tag, TxId, TxQuery } from "@iov/tendermint-types";
+import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, TxId } from "@iov/tendermint-types";
 
 import { constants } from "./constants";
 import { riseCodec } from "./risecodec";
@@ -210,15 +212,15 @@ export class RiseConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public searchTx(_: TxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  public searchTx(_: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
     throw new Error("Not implemented");
   }
 
-  public listenTx(_: ReadonlyArray<Tag>): Stream<ConfirmedTransaction> {
+  public listenTx(_: ReadonlyArray<BcpQueryTag>): Stream<ConfirmedTransaction> {
     throw new Error("Not implemented");
   }
 
-  public liveTx(_: TxQuery): Stream<ConfirmedTransaction> {
+  public liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
     throw new Error("Not implemented");
   }
 }

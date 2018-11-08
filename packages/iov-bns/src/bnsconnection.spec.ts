@@ -4,6 +4,7 @@ import {
   BcpNonce,
   BcpSwapQuery,
   BcpTransactionResponse,
+  BcpTxQuery,
   Nonce,
   SendTx,
   SwapClaimTx,
@@ -24,7 +25,6 @@ import {
   WalletId,
 } from "@iov/keycontrol";
 import { asArray, lastValue } from "@iov/stream";
-import { TxQuery } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
@@ -304,7 +304,7 @@ describe("Integration tests with bnsd+tendermint", () => {
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // make sure that we have no tx here
-    const query: TxQuery = { tags: [bnsFromOrToTag(rcptAddr)] };
+    const query: BcpTxQuery = { tags: [bnsFromOrToTag(rcptAddr)] };
     const origSearch = await connection.searchTx(query);
     expect(origSearch.length).toEqual(0);
 

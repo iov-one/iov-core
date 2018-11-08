@@ -1,4 +1,4 @@
-import { Tag, TxQuery } from "@iov/tendermint-types";
+import { TxId } from "@iov/tendermint-types";
 import { JsonRpcRequest } from "./common";
 import { QueryString } from "./encodings";
 export declare const enum Method {
@@ -89,8 +89,19 @@ export interface SubscribeRequest {
     readonly method: Method.SUBSCRIBE;
     readonly query: {
         readonly type: SubscriptionEventType;
-        readonly tags?: ReadonlyArray<Tag>;
+        readonly tags?: ReadonlyArray<QueryTag>;
     };
+}
+export interface QueryTag {
+    readonly key: string;
+    readonly value: string;
+}
+export interface TxQuery {
+    readonly tags: ReadonlyArray<QueryTag>;
+    readonly hash?: TxId;
+    readonly height?: number;
+    readonly minHeight?: number;
+    readonly maxHeight?: number;
 }
 export interface TxRequest {
     readonly method: Method.TX;

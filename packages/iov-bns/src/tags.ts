@@ -1,30 +1,30 @@
 import {
   Address,
+  BcpQueryTag,
   BcpSwapQuery,
   isQueryBySwapId,
   isQueryBySwapRecipient,
   isQueryBySwapSender,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
-import { Tag } from "@iov/tendermint-types";
 
 import { bucketKey, decodeBnsAddress, hashIdentifier, indexKey } from "./util";
 
-export function bnsFromOrToTag(addr: Address): Tag {
+export function bnsFromOrToTag(addr: Address): BcpQueryTag {
   const id = Uint8Array.from([...Encoding.toAscii("wllt:"), ...decodeBnsAddress(addr).data]);
   const key = Encoding.toHex(id).toUpperCase();
   const value = "s"; // "s" for "set"
   return { key, value };
 }
 
-export function bnsNonceTag(addr: Address): Tag {
+export function bnsNonceTag(addr: Address): BcpQueryTag {
   const id = Uint8Array.from([...Encoding.toAscii("sigs:"), ...decodeBnsAddress(addr).data]);
   const key = Encoding.toHex(id).toUpperCase();
   const value = "s"; // "s" for "set"
   return { key, value };
 }
 
-export function bnsSwapQueryTags(query: BcpSwapQuery, set = true): Tag {
+export function bnsSwapQueryTags(query: BcpSwapQuery, set = true): BcpQueryTag {
   let binKey: Uint8Array;
   const bucket = "esc";
   if (isQueryBySwapId(query)) {

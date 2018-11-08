@@ -1,5 +1,4 @@
 import { Stream } from "xstream";
-import { Tag } from "@iov/tendermint-types";
 import { Adaptor } from "./adaptor";
 import * as requests from "./requests";
 import * as responses from "./responses";
@@ -26,7 +25,7 @@ export declare class Client {
     status(): Promise<responses.StatusResponse>;
     subscribeNewBlock(): Stream<responses.NewBlockEvent>;
     subscribeNewBlockHeader(): Stream<responses.NewBlockHeaderEvent>;
-    subscribeTx(tags?: ReadonlyArray<Tag>): Stream<responses.TxEvent>;
+    subscribeTx(tags?: ReadonlyArray<requests.QueryTag>): Stream<responses.TxEvent>;
     tx(params: requests.TxParams): Promise<responses.TxResponse>;
     txSearch(params: requests.TxSearchParams): Promise<responses.TxSearchResponse>;
     txSearchAll(params: requests.TxSearchParams): Promise<responses.TxSearchResponse>;

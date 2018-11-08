@@ -1,5 +1,5 @@
 import { Encoding } from "@iov/encoding";
-import { Tag, TxQuery } from "@iov/tendermint-types";
+import { TxId } from "@iov/tendermint-types";
 
 import { JsonRpcRequest, jsonRpcWith } from "./common";
 import { QueryString } from "./encodings";
@@ -119,8 +119,21 @@ export interface SubscribeRequest {
   readonly method: Method.SUBSCRIBE;
   readonly query: {
     readonly type: SubscriptionEventType;
-    readonly tags?: ReadonlyArray<Tag>;
+    readonly tags?: ReadonlyArray<QueryTag>;
   };
+}
+
+export interface QueryTag {
+  readonly key: string;
+  readonly value: string;
+}
+
+export interface TxQuery {
+  readonly tags: ReadonlyArray<QueryTag>;
+  readonly hash?: TxId;
+  readonly height?: number;
+  readonly minHeight?: number;
+  readonly maxHeight?: number;
 }
 
 export interface TxRequest {
@@ -170,7 +183,7 @@ export class DefaultParams {
   }
 }
 
-function buildTagQuery(tag: Tag): string {
+function buildTagQuery(tag: QueryTag): string {
   return `${tag.key}='${tag.value}'`;
 }
 

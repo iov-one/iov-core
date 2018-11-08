@@ -2,12 +2,11 @@
 import { ReadonlyDate } from "readonly-date";
 
 import { Encoding } from "@iov/encoding";
-import { Tag } from "@iov/tendermint-types";
 
 import { v0_20 } from "./adaptor";
 import { Client } from "./client";
 import { randomId } from "./common";
-import { buildTxQuery } from "./requests";
+import { buildTxQuery, QueryTag } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, RpcClient, WebsocketClient } from "./rpcclient";
 
@@ -371,7 +370,7 @@ describe("Client", () => {
       (async () => {
         const events: responses.TxEvent[] = [];
         const client = await Client.connect("ws://" + tendermintUrl);
-        const tags: ReadonlyArray<Tag> = [{ key: "app.creator", value: "jae" }];
+        const tags: ReadonlyArray<QueryTag> = [{ key: "app.creator", value: "jae" }];
         const stream = client.subscribeTx(tags);
         expect(stream).toBeTruthy();
         const subscription = stream.subscribe({

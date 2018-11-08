@@ -1,6 +1,6 @@
 import { Stream } from "xstream";
-import { BcpAccount, BcpAccountQuery, BcpConnection, BcpNonce, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, ConfirmedTransaction, Nonce, TokenTicker } from "@iov/bcp-types";
-import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
+import { BcpAccount, BcpAccountQuery, BcpConnection, BcpNonce, BcpQueryEnvelope, BcpQueryTag, BcpTicker, BcpTransactionResponse, BcpTxQuery, ConfirmedTransaction, Nonce, TokenTicker } from "@iov/bcp-types";
+import { ChainId, PostableBytes } from "@iov/tendermint-types";
 /**
  * Encodes the current date and time as a nonce
  */
@@ -21,7 +21,7 @@ export declare class LiskConnection implements BcpConnection {
     changeBlock(): Stream<number>;
     watchAccount(_: BcpAccountQuery): Stream<BcpAccount | undefined>;
     watchNonce(_: BcpAccountQuery): Stream<BcpNonce | undefined>;
-    searchTx(_: TxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
-    listenTx(_: ReadonlyArray<Tag>): Stream<ConfirmedTransaction>;
-    liveTx(_: TxQuery): Stream<ConfirmedTransaction>;
+    searchTx(_: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
+    listenTx(_: ReadonlyArray<BcpQueryTag>): Stream<ConfirmedTransaction>;
+    liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction>;
 }

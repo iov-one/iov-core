@@ -1,7 +1,5 @@
 import { Stream } from "xstream";
 
-import { Tag } from "@iov/tendermint-types";
-
 import { Adaptor, Decoder, Encoder, findAdaptor, Params, Responses } from "./adaptor";
 import { JsonRpcEvent } from "./common";
 import * as requests from "./requests";
@@ -113,7 +111,7 @@ export class Client {
     return this.subscribe(request, this.r.decodeNewBlockHeaderEvent);
   }
 
-  public subscribeTx(tags?: ReadonlyArray<Tag>): Stream<responses.TxEvent> {
+  public subscribeTx(tags?: ReadonlyArray<requests.QueryTag>): Stream<responses.TxEvent> {
     const request: requests.SubscribeRequest = {
       method: requests.Method.SUBSCRIBE,
       query: {
