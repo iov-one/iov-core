@@ -46,6 +46,5 @@
     "readonly-date": "^1.0.0",
     "type-tagger": "^1.0.0",
     "xstream": "^11.4.0"
-  },
-  "gitHead": "39379b38f0ac128a48aa7174692c4c932ed326f7"
+  }
 }

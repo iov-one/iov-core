@@ -49,6 +49,5 @@
   },
   "devDependencies": {
     "@iov/keycontrol": "^0.8.1"
-  },
-  "gitHead": "39379b38f0ac128a48aa7174692c4c932ed326f7"
+  }
 }

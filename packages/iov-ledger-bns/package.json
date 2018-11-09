@@ -42,6 +42,5 @@
   },
   "devDependencies": {
     "ts-node": "^7.0.0"
-  },
-  "gitHead": "39379b38f0ac128a48aa7174692c4c932ed326f7"
+  }
 }

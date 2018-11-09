@@ -1,4 +1,3 @@
-// tslint:disable:no-empty-interface
 import { ReadonlyDate } from "readonly-date";
 
 import {
