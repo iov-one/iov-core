@@ -14,7 +14,7 @@ import {
   TokenTicker,
   TransactionKind,
 } from "@iov/bcp-types";
-import { Sha256 } from "@iov/crypto";
+import { Random, Sha256 } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 import {
   Ed25519HdWallet,
@@ -25,6 +25,7 @@ import {
   WalletId,
 } from "@iov/keycontrol";
 import { asArray, lastValue } from "@iov/stream";
+import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
@@ -43,14 +44,47 @@ function pendingWithoutBnsd(): void {
 
 const sleep = (t: number) => new Promise(resolve => setTimeout(resolve, t));
 
-describe("Integration tests with bnsd+tendermint", () => {
+const cash = "CASH" as TokenTicker;
+
+async function getNonce(connection: BnsConnection, addr: Address): Promise<Nonce> {
+  const data = (await connection.getNonce({ address: addr })).data;
+  return data.length === 0 ? (new Int53(0) as Nonce) : data[0].nonce;
+}
+
+async function ensureNonceNonZero(
+  connection: BnsConnection,
+  profile: UserProfile,
+  identity: PublicIdentity,
+): Promise<void> {
+  const nonce = await getNonce(connection, keyToAddress(identity.pubkey));
+  const randomRecipientAddress = keyToAddress({
+    algo: Algorithm.Ed25519,
+    data: (await Random.getBytes(32)) as PublicKeyBytes,
+  });
+  const sendTx: SendTx = {
+    kind: TransactionKind.Send,
+    chainId: await connection.chainId(),
+    signer: identity.pubkey,
+    recipient: randomRecipientAddress,
+    amount: {
+      whole: 0,
+      fractional: 1,
+      tokenTicker: cash,
+    },
+  };
+  const firstWalletId = profile.wallets.value[0].id;
+  const signed = await profile.signTransaction(firstWalletId, identity, sendTx, bnsCodec, nonce);
+  const txBytes = bnsCodec.bytesToPost(signed);
+  await connection.postTx(txBytes);
+}
+
+describe("BnsConnection", () => {
   // the first key generated from this mneumonic produces the given address
   // this account has money in the genesis file (setup in docker)
   // expectedFaucetAddress generated using https://github.com/nym-zone/bech32
   // bech32 -e -h tiov b1ca7e78f74423ae01da3b51e676934d9105f282
   const mnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
   const expectedFaucetAddress = "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address;
-  const cash = "CASH" as TokenTicker;
 
   const bnsdTendermintUrl = "ws://localhost:22345";
 
@@ -65,11 +99,6 @@ describe("Integration tests with bnsd+tendermint", () => {
     const faucet = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
     return { profile, mainWalletId: wallet.id, faucet };
   }
-
-  const getNonce = async (connection: BnsConnection, addr: Address): Promise<Nonce> => {
-    const data = (await connection.getNonce({ address: addr })).data;
-    return data.length === 0 ? (new Int53(0) as Nonce) : data[0].nonce;
-  };
 
   it("Generate proper faucet address", async () => {
     const { faucet } = await userProfileWithFaucet();
@@ -170,19 +199,58 @@ describe("Integration tests with bnsd+tendermint", () => {
     connection.disconnect();
   });
 
-  it("Can query empty nonce", async () => {
-    pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
+  describe("getNonce", () => {
+    it("can query empty nonce from unused account by address, pubkey and name", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
-    const { profile, mainWalletId } = await userProfileWithFaucet();
-    const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(1));
-    const rcptAddr = keyToAddress(rcpt.pubkey);
+      // by address
+      const unusedAddress = "tiov1qyqszqszqgpsxqcyqszq2pg9q59q5zs2fx9n6s" as Address;
+      const response1 = await connection.getNonce({ address: unusedAddress });
+      expect(response1.data.length).toEqual(0);
 
-    // can get the faucet by address (there is money)
-    const nonce = await getNonce(connection, rcptAddr);
-    expect(nonce.toNumber()).toEqual(0);
+      // by pubkey
+      const unusedPubkey: PublicKeyBundle = {
+        algo: Algorithm.Ed25519,
+        data: Encoding.fromHex(
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        ) as PublicKeyBytes,
+      };
+      const response2 = await connection.getNonce({ pubkey: unusedPubkey });
+      expect(response2.data.length).toEqual(0);
 
-    connection.disconnect();
+      // by name
+      const unusedValueName = "i_do_not_exist";
+      const response = await connection.getNonce({ name: unusedValueName });
+      expect(response.data.length).toEqual(0);
+
+      connection.disconnect();
+    });
+
+    it("can query nonce from faucet by address, pubkey and name", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const { profile, faucet } = await userProfileWithFaucet();
+      await ensureNonceNonZero(connection, profile, faucet);
+
+      // by address
+      const faucetAddress = keyToAddress(faucet.pubkey);
+      const response1 = await connection.getNonce({ address: faucetAddress });
+      expect(response1.data.length).toEqual(1);
+      expect(response1.data[0].nonce.toNumber()).toBeGreaterThan(0);
+
+      // by pubkey
+      const response2 = await connection.getNonce({ pubkey: faucet.pubkey });
+      expect(response2.data.length).toEqual(1);
+      expect(response2.data[0].nonce.toNumber()).toBeGreaterThan(0);
+
+      // by name
+      const response3 = await connection.getNonce({ name: "admin" });
+      expect(response3.data.length).toEqual(1);
+      expect(response3.data[0].nonce.toNumber()).toBeGreaterThan(0);
+
+      connection.disconnect();
+    });
   });
 
   it("Can send transaction", async () => {
