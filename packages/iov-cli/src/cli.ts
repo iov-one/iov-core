@@ -53,6 +53,7 @@ export const main = (originalArgs: string[]): void => {
   console.log(colors.yellow("    - MultiChainSigner"));
   console.log(colors.yellow("    - Nonce"));
   console.log(colors.yellow("    - UserProfile"));
+  console.log(colors.yellow("    - Secp256k1HdWallet"));
   console.log(colors.yellow("    - SendTx"));
   console.log(colors.yellow("    - SetNameTx"));
   console.log(colors.yellow("    - TokenTicker"));
@@ -94,6 +95,7 @@ export const main = (originalArgs: string[]): void => {
       Keyring,
       MultiChainSigner,
       Nonce,
+      Secp256k1HdWallet,
       SendTx,
       SetNameTx,
       TokenTicker,
