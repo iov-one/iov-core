@@ -13,12 +13,12 @@ import { Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { ChainId, PostableBytes, PublicKeyBundle } from "@iov/tendermint-types";
 
-const { toHex } = Encoding;
+const { toAscii, toHex } = Encoding;
 
 export function toChecksumAddress(address: string): Address {
   // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md
   const addressLower = address.toLowerCase().replace("0x", "") as Address;
-  const addressHash = toHex(new Keccak256(addressLower).digest());
+  const addressHash = toHex(new Keccak256(toAscii(addressLower)).digest());
   let checksumAddress = "0x";
   for (let i = 0; i < 40; i++) {
     checksumAddress += parseInt(addressHash[i], 16) > 7 ? addressLower[i].toUpperCase() : addressLower[i];
