@@ -10,6 +10,7 @@ export {
   Ed25519Wallet,
   HdPaths,
   Keyring,
+  Secp256k1HdWallet,
   UserProfile,
   Wallet,
   WalletId,
