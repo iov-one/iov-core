@@ -33,9 +33,37 @@ describe("ethereumCodec", () => {
     const pubkey: PublicKeyBundle = {
       algo: Algorithm.Secp256k1,
       data: fromHex(
-        "4bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
+        "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
       ) as PublicKeyBytes,
     };
     expect(ethereumCodec.keyToAddress(pubkey)).toEqual("0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
+  });
+
+  it("throws error for invalid inputs", () => {
+    const pubkeyInvalidAlgo: PublicKeyBundle = {
+      algo: Algorithm.Ed25519,
+      data: fromHex(
+        "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
+      ) as PublicKeyBytes,
+    };
+    const pubkeyInvalidDataLenght: PublicKeyBundle = {
+      algo: Algorithm.Secp256k1,
+      data: fromHex(
+        "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff9923",
+      ) as PublicKeyBytes,
+    };
+    const pubkeyInvalidDataPrefix: PublicKeyBundle = {
+      algo: Algorithm.Secp256k1,
+      data: fromHex(
+        "074bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
+      ) as PublicKeyBytes,
+    };
+    expect(() => ethereumCodec.keyToAddress(pubkeyInvalidAlgo)).toThrowError(/Invalid pubkey data input/);
+    expect(() => ethereumCodec.keyToAddress(pubkeyInvalidDataLenght)).toThrowError(
+      /Invalid pubkey data input/,
+    );
+    expect(() => ethereumCodec.keyToAddress(pubkeyInvalidDataPrefix)).toThrowError(
+      /Invalid pubkey data input/,
+    );
   });
 });

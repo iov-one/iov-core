@@ -11,7 +11,7 @@ import {
 } from "@iov/bcp-types";
 import { Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { ChainId, PostableBytes, PublicKeyBundle } from "@iov/tendermint-types";
+import { Algorithm, ChainId, PostableBytes, PublicKeyBundle } from "@iov/tendermint-types";
 
 const { toAscii, toHex } = Encoding;
 
@@ -40,7 +40,10 @@ export const ethereumCodec: TxCodec = {
     throw new Error(`Not implemented bytes: ${bytes}, chainId: ${chainId}`);
   },
   keyToAddress: (pubkey: PublicKeyBundle): Address => {
-    const hash = toHex(new Keccak256(pubkey.data).digest());
+    if (pubkey.algo !== Algorithm.Secp256k1 || pubkey.data.length !== 65 || pubkey.data[0] !== 0x04) {
+      throw new Error(`Invalid pubkey data input: ${pubkey}`);
+    }
+    const hash = toHex(new Keccak256(pubkey.data.slice(1)).digest());
     const lastFortyChars = hash.slice(-40);
     const addressString = toChecksumAddress("0x" + lastFortyChars);
     return addressString as Address;
