@@ -294,16 +294,19 @@ describe("UserProfile", () => {
 
   it("can create identities with options", async () => {
     const profile = new UserProfile();
-    const wallet = Secp256k1HdWallet.fromMnemonic(
-      "insect spirit promote illness clean damp dash divorce emerge elbow kangaroo enroll",
+    const wallet = profile.addWallet(
+      Secp256k1HdWallet.fromMnemonic(
+        "special sign fit simple patrol salute grocery chicken wheat radar tonight ceiling",
+      ),
     );
-    profile.addWallet(wallet);
 
-    const path = [Slip10RawIndex.hardened(4321), Slip10RawIndex.normal(0)];
+    const path = [Slip10RawIndex.hardened(0), Slip10RawIndex.normal(0)];
     const identityFromPath = await profile.createIdentity(wallet.id, path);
 
     expect(identityFromPath.pubkey.data).toEqual(
-      fromHex("0391d774120344c8fc02bf0e441cf41989d122b1b93cc6dd28e1d270b0d2c69139"),
+      fromHex(
+        "04a7a8d79df7857bf25a3a389b0ecea83c5272181d2c062346b1c64e258589fce0f48fe3900d52ef9a034a35e671329bb65441d8e010484d3e4817578550448e99",
+      ),
     );
   });
 
