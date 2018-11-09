@@ -22,7 +22,7 @@ export interface BcpCoin extends BcpTicker {
 }
 export interface BcpNonce {
     readonly address: Address;
-    readonly publicKey: PublicKeyBundle;
+    readonly pubkey: PublicKeyBundle;
     readonly nonce: Nonce;
 }
 export interface BcpTicker {
