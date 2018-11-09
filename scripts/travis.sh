@@ -63,7 +63,9 @@ echo "use Lisk?" ${LISK_ENABLED:-no}
 #
 
 if [[ ! -z ${BNSD_ENABLED:-} ]]; then
+  fold_start "faucet-start"
   ./scripts/iov_faucet_start.sh
+  fold_end
 fi
 
 #
@@ -179,5 +181,11 @@ fi
 #
 unset ETHEREUM_ENABLED
 ./scripts/ethereum/stop.sh
+
+if [[ ! -z ${BNSD_ENABLED:-} ]]; then
+  fold_start "faucet-stop"
+  ./scripts/iov_faucet_stop.sh
+  fold_end
+fi
 
 source ./scripts/iov_blockchain_stop.sh
