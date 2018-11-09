@@ -108,11 +108,12 @@ function buildSwapOfferTx(tx: SwapOfferTx): codecImpl.app.ITx {
 function buildSwapCounterTx(tx: SwapCounterTx): codecImpl.app.ITx {
   return {
     createEscrowMsg: codecImpl.escrow.CreateEscrowMsg.create({
-      sender: decodeBnsAddress(keyToAddress(tx.signer)).data,
+      src: decodeBnsAddress(keyToAddress(tx.signer)).data,
       arbiter: tx.hashCode,
       recipient: decodeBnsAddress(tx.recipient).data,
-      timeout: tx.timeout,
       amount: tx.amount.map(encodeToken),
+      timeout: tx.timeout,
+      memo: undefined,
     }),
   };
 }

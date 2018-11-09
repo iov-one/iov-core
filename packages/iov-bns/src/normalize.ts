@@ -44,7 +44,7 @@ export class Normalize {
     return {
       address: encodeBnsAddress(acct._id),
       nonce: asInt53(acct.sequence) as Nonce,
-      publicKey: decodePubkey(ensure(acct.pubKey)),
+      publicKey: decodePubkey(ensure(acct.pubkey)),
     };
   }
 
