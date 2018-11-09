@@ -22,11 +22,15 @@ else
   #
   # Start bnsd
   #
+
+  # Choose from https://hub.docker.com/r/iov1/tendermint/tags/
+  export BNSD_TM_VERSION=0.21.0
+  # Choose from https://hub.docker.com/r/iov1/bnsd/tags/
+  export BNSD_VERSION=v0.8.0
+
   BNSD_DIR=$(mktemp -d "${TMPDIR:-/tmp}/bnsd.XXXXXXXXX")
   export BNSD_DIR
   echo "BNSD_DIR = $BNSD_DIR"
-  export BNSD_TM_VERSION=0.21.0
-  export BNSD_VERSION=v0.8.0
   docker pull iov1/tendermint:${BNSD_TM_VERSION}
   docker pull iov1/bnsd:${BNSD_VERSION}
   export BNSD_ENABLED=1

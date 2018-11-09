@@ -2,7 +2,7 @@
 set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
-# Coose from https://hub.docker.com/r/iov1/iov-faucet/tags/
+# Choose from https://hub.docker.com/r/iov1/iov-faucet/tags/
 FAUCET_VERSION="v0.1.0"
 
 TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/faucet_start.XXXXXXXXX")
