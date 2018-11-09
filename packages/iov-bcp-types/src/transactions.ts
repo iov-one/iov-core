@@ -69,6 +69,7 @@ export interface SwapCounterTx extends BaseTx {
   readonly recipient: RecipientId;
   readonly timeout: number; // number of blocks in the future
   readonly hashCode: Uint8Array; // pulled from the offer transaction
+  readonly memo?: string;
 }
 
 export interface SwapClaimTx extends BaseTx {

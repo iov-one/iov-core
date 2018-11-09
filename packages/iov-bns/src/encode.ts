@@ -113,7 +113,7 @@ function buildSwapCounterTx(tx: SwapCounterTx): codecImpl.app.ITx {
       recipient: decodeBnsAddress(tx.recipient).data,
       amount: tx.amount.map(encodeToken),
       timeout: tx.timeout,
-      memo: undefined,
+      memo: tx.memo,
     }),
   };
 }
