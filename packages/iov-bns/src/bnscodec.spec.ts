@@ -36,9 +36,9 @@ describe("Check codec", () => {
     // it should validate
     switch (prehashType) {
       case PrehashType.Sha512:
-        const pubKey = sig.publicKey.data;
+        const pubkey = sig.pubkey.data;
         const prehash = new Sha512(bytes).digest();
-        const valid = await Ed25519.verifySignature(sig.signature, prehash, pubKey);
+        const valid = await Ed25519.verifySignature(sig.signature, prehash, pubkey);
         expect(valid).toEqual(true);
         break;
       default:

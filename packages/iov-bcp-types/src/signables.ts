@@ -25,7 +25,7 @@ export interface SigningJob {
 // I figure string if this will be json dumped, but maybe less efficient
 export interface FullSignature {
   readonly nonce: Nonce;
-  readonly publicKey: PublicKeyBundle;
+  readonly pubkey: PublicKeyBundle;
   readonly signature: SignatureBytes;
 }
 

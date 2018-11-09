@@ -68,7 +68,7 @@ export const liskCodec: TxCodec = {
           type: 0,
           amount: amount.toString(),
           recipientId: signed.transaction.recipient,
-          senderPublicKey: Encoding.toHex(signed.primarySignature.publicKey.data),
+          senderPublicKey: Encoding.toHex(signed.primarySignature.pubkey.data),
           timestamp: liskTimestamp,
           fee: "10000000", // 0.1 LSK fixed
           asset: {
@@ -135,7 +135,7 @@ export const liskCodec: TxCodec = {
       },
       primarySignature: {
         nonce: Parse.timeToNonce(Parse.fromTimestamp(json.timestamp)),
-        publicKey: {
+        pubkey: {
           algo: Algorithm.Ed25519,
           data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
         },

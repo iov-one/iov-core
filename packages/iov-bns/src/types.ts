@@ -31,8 +31,8 @@ export interface Decoder<T extends {}> {
 export const encodeFullSig = (sig: FullSignature) =>
   codecImpl.sigs.StdSignature.create({
     sequence: sig.nonce.toNumber(),
-    pubkey: encodePubkey(sig.publicKey),
-    signature: encodeSignature(sig.publicKey.algo, sig.signature),
+    pubkey: encodePubkey(sig.pubkey),
+    signature: encodeSignature(sig.pubkey.algo, sig.signature),
   });
 
 // encodeSignature needs the Algorithm to determine the type
@@ -93,7 +93,7 @@ export const decodeSignature = (signature: codecImpl.crypto.ISignature): Signatu
 
 export const decodeFullSig = (sig: codecImpl.sigs.IStdSignature): FullSignature => ({
   nonce: asInt53(sig.sequence) as Nonce,
-  publicKey: decodePubkey(ensure(sig.pubkey)),
+  pubkey: decodePubkey(ensure(sig.pubkey)),
   signature: decodeSignature(ensure(sig.signature)),
 });
 

@@ -68,8 +68,8 @@ export const riseCodec: TxCodec = {
           type: 0,
           amount: amount.toNumber(),
           recipientId: signed.transaction.recipient,
-          senderId: pubkeyToAddress(signed.primarySignature.publicKey.data),
-          senderPublicKey: Encoding.toHex(signed.primarySignature.publicKey.data),
+          senderId: pubkeyToAddress(signed.primarySignature.pubkey.data),
+          senderPublicKey: Encoding.toHex(signed.primarySignature.pubkey.data),
           timestamp: riseTimestamp,
           fee: 10000000, // 0.1 RISE fixed
           signature: Encoding.toHex(signed.primarySignature.signature),
@@ -132,7 +132,7 @@ export const riseCodec: TxCodec = {
       },
       primarySignature: {
         nonce: Parse.timeToNonce(Parse.fromTimestamp(json.timestamp)),
-        publicKey: {
+        pubkey: {
           algo: Algorithm.Ed25519,
           data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
         },

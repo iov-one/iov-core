@@ -50,7 +50,7 @@ describe("riseCodec", () => {
       transaction: tx,
       primarySignature: {
         nonce: defaultCreationTimestamp as Nonce,
-        publicKey: {
+        pubkey: {
           algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
@@ -117,8 +117,8 @@ describe("riseCodec", () => {
     expect(parsed.transaction.recipient).toEqual("9662024034251537644R");
 
     expect(parsed.primarySignature.nonce).toEqual(new Int53(75015345 + riseEpochAsUnixTimestamp) as Nonce);
-    expect(parsed.primarySignature.publicKey.algo).toEqual(Algorithm.Ed25519);
-    expect(parsed.primarySignature.publicKey.data).toEqual(
+    expect(parsed.primarySignature.pubkey.algo).toEqual(Algorithm.Ed25519);
+    expect(parsed.primarySignature.pubkey.data).toEqual(
       fromHex("3e992130a22a124b38998887f4c791c8e4d4b9d7c21522f2dffea5d09b4d8679"),
     );
     expect(parsed.primarySignature.signature).toEqual(

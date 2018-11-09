@@ -14,7 +14,7 @@ export interface SigningJob {
 }
 export interface FullSignature {
     readonly nonce: Nonce;
-    readonly publicKey: PublicKeyBundle;
+    readonly pubkey: PublicKeyBundle;
     readonly signature: SignatureBytes;
 }
 /** A signable transaction knows how to serialize itself and how to store signatures */

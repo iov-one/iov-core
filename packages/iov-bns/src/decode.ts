@@ -104,7 +104,7 @@ const parseSwapTimeoutTx = (base: BaseTx, msg: codecImpl.escrow.IReturnEscrowMsg
 const parseBaseTx = (tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId): BaseTx => {
   const base: BaseTx = {
     chainId,
-    signer: sig.publicKey,
+    signer: sig.pubkey,
   };
   if (tx.fees && tx.fees.fees) {
     return { ...base, fee: decodeToken(tx.fees.fees) };
