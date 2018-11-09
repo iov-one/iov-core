@@ -5,7 +5,6 @@ import {
   PostableBytes,
   PublicKeyBundle,
   PublicKeyBytes,
-  SignatureBundle,
   SignatureBytes,
   TxId,
 } from "@iov/tendermint-types";
@@ -621,7 +620,7 @@ export interface RpcSignature {
   readonly type: string;
   readonly value: Base64String;
 }
-const decodeSignature = (data: RpcSignature): SignatureBundle => {
+const decodeSignature = (data: RpcSignature): responses.VoteSignatureBundle => {
   if (data.type === "6BF5903DA1DB28") {
     // go-amino special code
     return {

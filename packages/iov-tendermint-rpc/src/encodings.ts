@@ -9,7 +9,6 @@ export type HexString = string & As<"hex">;
 export type IntegerString = string & As<"integer">;
 export type IpPortString = string & As<"ipport">;
 export type DateTimeString = string & As<"datetime">;
-export type QueryString = string & As<"query">;
 
 interface Lengther {
   readonly length: number;

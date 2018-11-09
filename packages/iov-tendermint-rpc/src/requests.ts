@@ -1,8 +1,6 @@
-import { Encoding } from "@iov/encoding";
-import { Tag, TxQuery } from "@iov/tendermint-types";
+import { As } from "type-tagger";
 
 import { JsonRpcRequest, jsonRpcWith } from "./common";
-import { QueryString } from "./encodings";
 
 // union type of all possible methods?
 export const enum Method {
@@ -119,8 +117,15 @@ export interface SubscribeRequest {
   readonly method: Method.SUBSCRIBE;
   readonly query: {
     readonly type: SubscriptionEventType;
-    readonly tags?: ReadonlyArray<Tag>;
+    readonly tags?: ReadonlyArray<QueryTag>;
   };
+}
+
+export type QueryString = string & As<"query">;
+
+export interface QueryTag {
+  readonly key: string;
+  readonly value: string;
 }
 
 export interface TxRequest {
@@ -170,16 +175,6 @@ export class DefaultParams {
   }
 }
 
-export const buildTxQuery = (query: TxQuery): QueryString => {
-  const tags: ReadonlyArray<string> = query.tags.map(buildTagQuery);
-  const opts: ReadonlyArray<string | false> = [
-    !!query.height && `tx.height=${query.height}`,
-    !!query.minHeight && `tx.height>${query.minHeight}`,
-    !!query.maxHeight && `tx.height<${query.maxHeight}`,
-    !!query.hash && `tx.hash='${Encoding.toHex(query.hash)}'`,
-  ];
-  const result: string = [...tags, ...opts.filter(x => !!x)].join(" AND ");
-  return result as QueryString;
-};
-
-export const buildTagQuery = (tag: Tag): string => `${tag.key}='${tag.value}'`;
+export function buildTagsQuery(tags: ReadonlyArray<QueryTag>): QueryString {
+  return tags.map(tag => `${tag.key}='${tag.value}'`).join(" AND ") as QueryString;
+}

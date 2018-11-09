@@ -8,14 +8,16 @@ import {
   BcpConnection,
   BcpNonce,
   BcpQueryEnvelope,
+  BcpQueryTag,
   BcpTicker,
   BcpTransactionResponse,
+  BcpTxQuery,
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
   TokenTicker,
 } from "@iov/bcp-types";
-import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, Tag, TxQuery } from "@iov/tendermint-types";
+import { Algorithm, ChainId, PostableBytes, PublicKeyBytes } from "@iov/tendermint-types";
 
 import { constants } from "./constants";
 import { Parse } from "./parse";
@@ -165,15 +167,15 @@ export class EthereumConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public searchTx(_: TxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  public searchTx(_: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
     throw new Error("Not implemented");
   }
 
-  public listenTx(_: ReadonlyArray<Tag>): Stream<ConfirmedTransaction> {
+  public listenTx(_: ReadonlyArray<BcpQueryTag>): Stream<ConfirmedTransaction> {
     throw new Error("Not implemented");
   }
 
-  public liveTx(_: TxQuery): Stream<ConfirmedTransaction> {
+  public liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
     throw new Error("Not implemented");
   }
 }

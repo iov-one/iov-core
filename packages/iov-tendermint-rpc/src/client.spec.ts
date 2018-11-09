@@ -2,12 +2,11 @@
 import { ReadonlyDate } from "readonly-date";
 
 import { Encoding } from "@iov/encoding";
-import { Tag } from "@iov/tendermint-types";
 
 import { v0_20 } from "./adaptor";
 import { Client } from "./client";
 import { randomId } from "./common";
-import { buildTxQuery } from "./requests";
+import { buildTagsQuery, QueryTag } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, RpcClient, WebsocketClient } from "./rpcclient";
 
@@ -122,8 +121,7 @@ function kvTestSuite(rpcFactory: () => RpcClient): void {
 
     // txSearch - you must enable the indexer when running
     // tendermint, else you get empty results
-    const query = buildTxQuery({ tags: [{ key: "app.key", value: find }] });
-    expect(query).toEqual(`app.key='${find}'`);
+    const query = buildTagsQuery([{ key: "app.key", value: find }]);
 
     const s = await client.txSearch({ query, page: 1, per_page: 30 });
     // should find the tx
@@ -152,7 +150,7 @@ function kvTestSuite(rpcFactory: () => RpcClient): void {
     const client = new Client(rpcFactory(), v0_20);
 
     const find = randomId();
-    const query = buildTxQuery({ tags: [{ key: "app.key", value: find }] });
+    const query = buildTagsQuery([{ key: "app.key", value: find }]);
 
     const sendTx = async () => {
       const me = randomId();
@@ -371,7 +369,7 @@ describe("Client", () => {
       (async () => {
         const events: responses.TxEvent[] = [];
         const client = await Client.connect("ws://" + tendermintUrl);
-        const tags: ReadonlyArray<Tag> = [{ key: "app.creator", value: "jae" }];
+        const tags: ReadonlyArray<QueryTag> = [{ key: "app.creator", value: "jae" }];
         const stream = client.subscribeTx(tags);
         expect(stream).toBeTruthy();
         const subscription = stream.subscribe({

@@ -1,7 +1,7 @@
 import { Stream } from "xstream";
-import { Address, BcpAccount, BcpAccountQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpNonce, BcpQueryEnvelope, BcpSwapQuery, BcpTicker, BcpTransactionResponse, ConfirmedTransaction, TokenTicker, TxReadCodec } from "@iov/bcp-types";
+import { Address, BcpAccount, BcpAccountQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpNonce, BcpQueryEnvelope, BcpQueryTag, BcpSwapQuery, BcpTicker, BcpTransactionResponse, BcpTxQuery, ConfirmedTransaction, TokenTicker, TxReadCodec } from "@iov/bcp-types";
 import { Client as TendermintClient, StatusResponse } from "@iov/tendermint-rpc";
-import { ChainId, PostableBytes, Tag, TxQuery } from "@iov/tendermint-types";
+import { ChainId, PostableBytes } from "@iov/tendermint-types";
 import { InitData } from "./normalize";
 import { Result } from "./types";
 /**
@@ -47,23 +47,23 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
      * This includes an open swap beind claimed/expired as well as a new matching swap being offered
      */
     watchSwap(query: BcpSwapQuery): Stream<BcpAtomicSwap>;
-    searchTx(txQuery: TxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
+    searchTx(txQuery: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
     /**
      * A stream of all transactions that match the tags from the present moment on
      */
-    listenTx(tags: ReadonlyArray<Tag>): Stream<ConfirmedTransaction>;
+    listenTx(tags: ReadonlyArray<BcpQueryTag>): Stream<ConfirmedTransaction>;
     /**
      * Does a search and then subscribes to all future changes.
      *
      * It returns a stream starting the array of all existing transactions
      * and then continuing with live feeds
      */
-    liveTx(txQuery: TxQuery): Stream<ConfirmedTransaction>;
+    liveTx(txQuery: BcpTxQuery): Stream<ConfirmedTransaction>;
     changeBlock(): Stream<number>;
     /**
      * Emits the blockheight for every block where a tx matching these tags is emitted
      */
-    changeTx(tags: ReadonlyArray<Tag>): Stream<number>;
+    changeTx(tags: ReadonlyArray<BcpQueryTag>): Stream<number>;
     /**
      * A helper that triggers if the balance ever changes
      */

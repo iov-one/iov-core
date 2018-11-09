@@ -1,5 +1,5 @@
 import { ReadonlyDate } from "readonly-date";
-import { ChainId, PostableBytes, PublicKeyBundle, SignatureBundle, TxId } from "@iov/tendermint-types";
+import { Algorithm, ChainId, PostableBytes, PublicKeyBundle, SignatureBytes, TxId } from "@iov/tendermint-types";
 import { IpPortString } from "./encodings";
 export declare type Response = AbciInfoResponse | AbciQueryResponse | BlockResponse | BlockResultsResponse | BlockchainResponse | BroadcastTxAsyncResponse | BroadcastTxSyncResponse | BroadcastTxCommitResponse | CommitResponse | GenesisResponse | HealthResponse | StatusResponse | TxResponse | TxSearchResponse | ValidatorsResponse;
 export interface AbciInfoResponse {
@@ -147,6 +147,10 @@ export declare const enum VoteType {
     PREVOTE = 1,
     PRECOMMIT = 2
 }
+export interface VoteSignatureBundle {
+    readonly algo: Algorithm;
+    readonly signature: SignatureBytes;
+}
 export interface Vote {
     readonly type: VoteType;
     readonly validatorAddress: Uint8Array;
@@ -155,7 +159,7 @@ export interface Vote {
     readonly round: number;
     readonly timestamp: ReadonlyDate;
     readonly blockId: BlockId;
-    readonly signature: SignatureBundle;
+    readonly signature: VoteSignatureBundle;
 }
 export interface Header {
     readonly chainId: ChainId;

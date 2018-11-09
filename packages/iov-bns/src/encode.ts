@@ -11,10 +11,10 @@ import {
   TransactionKind,
   UnsignedTransaction,
 } from "@iov/bcp-types";
-import { Algorithm, PrivateKeyBundle, PublicKeyBundle } from "@iov/tendermint-types";
+import { Algorithm, PublicKeyBundle } from "@iov/tendermint-types";
 
 import * as codecImpl from "./codecimpl";
-import { encodeFullSig } from "./types";
+import { encodeFullSig, PrivateKeyBundle } from "./types";
 import { decodeBnsAddress, keyToAddress, preimageIdentifier } from "./util";
 
 export function encodePubkey(publicKey: PublicKeyBundle): codecImpl.crypto.IPublicKey {
