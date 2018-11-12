@@ -7,7 +7,7 @@ describe("Ethereum utils", () => {
   describe("decodeHexQuantity", () => {
     it("verify valid inputs", () => {
       let decStrQty;
-      decStrQty = decodeHexQuantity("0x09184e72a000");
+      decStrQty = decodeHexQuantity("0x9184e72a000");
       expect(decStrQty).toEqual(10000000000000);
       decStrQty = decodeHexQuantity("0x400");
       expect(decStrQty).toEqual(1024);
@@ -23,6 +23,7 @@ describe("Ethereum utils", () => {
       expect(() => decodeHexQuantity("0x")).toThrowError(/invalid hex quantity input/);
       expect(() => decodeHexQuantity("ff")).toThrowError(/invalid hex quantity input/);
       expect(() => decodeHexQuantity("0xa0xa0xa0xa0xa")).toThrowError(/invalid hex quantity input/);
+      expect(() => decodeHexQuantity("0x0400")).toThrowError(/invalid hex quantity input/);
     });
   });
 
@@ -59,7 +60,7 @@ describe("Ethereum utils", () => {
       let decStrQty;
       decStrQty = decodeHexQuantityNonce("0x38d7ea4c67fff");
       expect(decStrQty).toEqual(new Int53(999999999999999) as Nonce);
-      decStrQty = decodeHexQuantityNonce("0x09184e72a000");
+      decStrQty = decodeHexQuantityNonce("0x9184e72a000");
       expect(decStrQty).toEqual(new Int53(10000000000000) as Nonce);
       decStrQty = decodeHexQuantityNonce("0x400");
       expect(decStrQty).toEqual(new Int53(1024) as Nonce);
@@ -77,6 +78,7 @@ describe("Ethereum utils", () => {
       expect(() => decodeHexQuantity("0xa0xa0xa0xa0xa")).toThrowError(/invalid hex quantity input/);
       expect(() => decodeHexQuantityNonce("0xd3c21bcecceda0ffffff")).toThrowError(/Input not in int53 range/);
       expect(() => decodeHexQuantityNonce("0xde0b6b3a763ffff")).toThrowError(/Input not in int53 range/);
+      expect(() => decodeHexQuantityNonce("0x0400")).toThrowError(/invalid hex quantity input/);
     });
   });
 });
