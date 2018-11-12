@@ -4,7 +4,7 @@ import { Int53 } from "@iov/encoding";
 import BN = require("bn.js");
 
 export function decodeHexQuantity(hexString: string): number {
-  if (hexString.match(/^0x[a-f0-9]+$/)) {
+  if (hexString === "0x0" || hexString.match(/^0x{1}[a-f1-9][a-f0-9]*$/)) {
     return parseInt(hexString, 16);
   }
   throw new Error("invalid hex quantity input");
