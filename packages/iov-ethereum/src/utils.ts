@@ -33,3 +33,10 @@ export function encodeQuantity(value: number): string {
     throw new Error("Input is not a safe integer");
   }
 }
+
+export function encodeQuantityString(value: string): string {
+  if (!value.match(/^[0-9]+$/)) {
+    throw new Error("Input is not a valid string number");
+  }
+  return "0x" + new BN(value).toString(16);
+}

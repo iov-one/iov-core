@@ -1,7 +1,13 @@
 import { Nonce } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 
-import { decodeHexQuantity, decodeHexQuantityNonce, decodeHexQuantityString, encodeQuantity } from "./utils";
+import {
+  decodeHexQuantity,
+  decodeHexQuantityNonce,
+  decodeHexQuantityString,
+  encodeQuantity,
+  encodeQuantityString,
+} from "./utils";
 
 describe("Ethereum utils", () => {
   describe("decodeHexQuantity", () => {
@@ -100,6 +106,26 @@ describe("Ethereum utils", () => {
     it("throws error for invalid inputs", () => {
       expect(() => encodeQuantity(NaN)).toThrowError(/Input is not a number/);
       expect(() => encodeQuantity(12345678901234567890)).toThrowError(/Input is not a safe integer/);
+    });
+  });
+
+  describe("encodeQuantityString", () => {
+    it("verify valid inputs", () => {
+      let encQtyHex;
+      encQtyHex = encodeQuantityString("10000000000000");
+      expect(encQtyHex).toEqual("0x9184e72a000");
+      encQtyHex = encodeQuantityString("1024");
+      expect(encQtyHex).toEqual("0x400");
+      encQtyHex = encodeQuantityString("65");
+      expect(encQtyHex).toEqual("0x41");
+      encQtyHex = encodeQuantityString("2");
+      expect(encQtyHex).toEqual("0x2");
+      encQtyHex = encodeQuantityString("0");
+      expect(encQtyHex).toEqual("0x0");
+    });
+
+    it("throws error for invalid inputs", () => {
+      expect(() => encodeQuantityString("1234abc")).toThrowError(/Input is not a valid string number/);
     });
   });
 });
