@@ -22,3 +22,14 @@ export function decodeHexQuantityNonce(hexString: string): Nonce {
   const nonce = decodeHexQuantity(hexString);
   return new Int53(nonce) as Nonce;
 }
+
+export function encodeQuantity(value: number): string {
+  if (Number.isNaN(value)) {
+    throw new Error("Input is not a number");
+  }
+  try {
+    return "0x" + new BN(value).toString(16);
+  } catch {
+    throw new Error("Input is not a safe integer");
+  }
+}
