@@ -199,13 +199,13 @@ fi
 if [[ ! -z ${BNSD_ENABLED:-} ]]; then
   fold_start "bnsd-stop"
   unset BNSD_ENABLED
-  "${SCRIPT_DIR}"/bnsd/stop.sh
+  ./scripts/bnsd/stop.sh
   fold_end
 fi
 
 if [[ ! -z ${TENDERMINT_ENABLED:-} ]]; then
   fold_start "tendermint-stop"
   unset TENDERMINT_ENABLED
-  "${SCRIPT_DIR}"/tendermint/stop.sh
+  ./scripts/tendermint/stop.sh
   fold_end
 fi
