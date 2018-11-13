@@ -12,12 +12,6 @@ else
   SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
   #
-  # Start Tendermint
-  #
-  "${SCRIPT_DIR}"/tendermint/start.sh
-  export TENDERMINT_ENABLED=1
-
-  #
   # Start bnsd
   #
 

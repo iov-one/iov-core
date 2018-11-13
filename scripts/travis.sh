@@ -39,6 +39,11 @@ retry 3 yarn install
 
 # Use Docker if available (currently Linux only)
 if command -v docker > /dev/null ; then
+  fold_start "tendermint-start"
+  ./scripts/tendermint/start.sh
+  export TENDERMINT_ENABLED=1
+  fold_end
+
   source ./scripts/iov_blockchain_start.sh
 
   ./scripts/lisk/start.sh
@@ -189,3 +194,10 @@ if [[ ! -z ${BNSD_ENABLED:-} ]]; then
 fi
 
 source ./scripts/iov_blockchain_stop.sh
+
+if [[ ! -z ${TENDERMINT_ENABLED:-} ]]; then
+  fold_start "tendermint-stop"
+  unset TENDERMINT_ENABLED
+  "${SCRIPT_DIR}"/tendermint/stop.sh
+  fold_end
+fi
