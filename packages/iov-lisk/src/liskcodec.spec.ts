@@ -50,7 +50,7 @@ describe("liskCodec", () => {
       transaction: tx,
       primarySignature: {
         nonce: defaultCreationTimestamp as Nonce,
-        publicKey: {
+        pubkey: {
           algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
@@ -119,8 +119,8 @@ describe("liskCodec", () => {
     expect(parsed.transaction.recipient).toEqual("6076671634347365051L");
 
     expect(parsed.primarySignature.nonce).toEqual(new Int53(73863961 + liskEpochAsUnixTimestamp) as Nonce);
-    expect(parsed.primarySignature.publicKey.algo).toEqual(Algorithm.Ed25519);
-    expect(parsed.primarySignature.publicKey.data).toEqual(
+    expect(parsed.primarySignature.pubkey.algo).toEqual(Algorithm.Ed25519);
+    expect(parsed.primarySignature.pubkey.data).toEqual(
       fromHex("06ad4341a609af2de837e1156f81849b05bf3c280940a9f45db76d09a3a3f2fa"),
     );
     expect(parsed.primarySignature.signature).toEqual(

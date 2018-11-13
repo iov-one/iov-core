@@ -50,6 +50,7 @@ export interface SwapCounterTx extends BaseTx {
     readonly recipient: RecipientId;
     readonly timeout: number;
     readonly hashCode: Uint8Array;
+    readonly memo?: string;
 }
 export interface SwapClaimTx extends BaseTx {
     readonly kind: TransactionKind.SwapClaim;

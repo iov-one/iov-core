@@ -1,4 +1,11 @@
-import { Address, BcpAccountQuery, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import {
+  Address,
+  BcpAccountQuery,
+  SendTx,
+  SignedTransaction,
+  TokenTicker,
+  TransactionKind,
+} from "@iov/bcp-types";
 import { Derivation } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet } from "@iov/keycontrol";
@@ -186,11 +193,11 @@ describe("RiseConnection", () => {
       riseTestnet,
     );
 
-    const signedTransaction = {
+    const signedTransaction: SignedTransaction = {
       transaction: sendTx,
       primarySignature: {
         nonce: nonce,
-        publicKey: mainIdentity.pubkey,
+        pubkey: mainIdentity.pubkey,
         signature: signature,
       },
       otherSignatures: [],
@@ -233,11 +240,11 @@ describe("RiseConnection", () => {
     // tslint:disable-next-line:no-bitwise
     const corruptedSignature = signature.map((x, i) => (i === 0 ? x ^ 0x01 : x)) as SignatureBytes;
 
-    const signedTransaction = {
+    const signedTransaction: SignedTransaction = {
       transaction: sendTx,
       primarySignature: {
         nonce: nonce,
-        publicKey: mainIdentity.pubkey,
+        pubkey: mainIdentity.pubkey,
         signature: corruptedSignature,
       },
       otherSignatures: [],

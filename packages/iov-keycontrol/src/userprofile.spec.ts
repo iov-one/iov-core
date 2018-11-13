@@ -444,7 +444,7 @@ describe("UserProfile", () => {
       transaction: fakeTransaction,
       primarySignature: {
         nonce: new Int53(11) as Nonce,
-        publicKey: fakeIdentity.pubkey,
+        pubkey: fakeIdentity.pubkey,
         signature: new Uint8Array([]) as SignatureBytes,
       },
       otherSignatures: [],
@@ -554,7 +554,7 @@ describe("UserProfile", () => {
     expect(signedTransaction.transaction).toEqual(fakeTransaction);
     expect(signedTransaction.primarySignature).toBeTruthy();
     expect(signedTransaction.primarySignature.nonce).toEqual(nonce);
-    expect(signedTransaction.primarySignature.publicKey).toEqual(mainIdentity.pubkey);
+    expect(signedTransaction.primarySignature.pubkey).toEqual(mainIdentity.pubkey);
     expect(signedTransaction.primarySignature.signature.length).toBeGreaterThan(0);
     expect(signedTransaction.otherSignatures).toEqual([]);
 
@@ -568,11 +568,11 @@ describe("UserProfile", () => {
     expect(doubleSignedTransaction.transaction).toEqual(fakeTransaction);
     expect(doubleSignedTransaction.primarySignature).toBeTruthy();
     expect(doubleSignedTransaction.primarySignature.nonce).toEqual(nonce);
-    expect(doubleSignedTransaction.primarySignature.publicKey).toEqual(mainIdentity.pubkey);
+    expect(doubleSignedTransaction.primarySignature.pubkey).toEqual(mainIdentity.pubkey);
     expect(doubleSignedTransaction.primarySignature.signature.length).toBeGreaterThan(0);
     expect(doubleSignedTransaction.otherSignatures.length).toEqual(1);
     expect(doubleSignedTransaction.otherSignatures[0].nonce).toEqual(nonce);
-    expect(doubleSignedTransaction.otherSignatures[0].publicKey).toEqual(mainIdentity.pubkey);
+    expect(doubleSignedTransaction.otherSignatures[0].pubkey).toEqual(mainIdentity.pubkey);
     expect(doubleSignedTransaction.otherSignatures[0].signature.length).toBeGreaterThan(0);
   });
 });

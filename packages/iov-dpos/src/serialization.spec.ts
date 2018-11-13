@@ -282,7 +282,7 @@ describe("Serialization", () => {
         transaction: tx,
         primarySignature: {
           nonce: zeroNonce,
-          publicKey: {
+          pubkey: {
             algo: Algorithm.Ed25519,
             data: pubkey as PublicKeyBytes,
           },

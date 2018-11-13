@@ -188,7 +188,7 @@ export class UserProfile {
 
     const { bytes, prehashType } = codec.bytesToSign(transaction, nonce);
     const signature: FullSignature = {
-      publicKey: identity.pubkey,
+      pubkey: identity.pubkey,
       nonce: nonce,
       signature: await wallet.createTransactionSignature(identity, bytes, prehashType, transaction.chainId),
     };
@@ -211,7 +211,7 @@ export class UserProfile {
 
     const { bytes, prehashType } = codec.bytesToSign(originalTransaction.transaction, nonce);
     const newSignature: FullSignature = {
-      publicKey: identity.pubkey,
+      pubkey: identity.pubkey,
       nonce: nonce,
       signature: await wallet.createTransactionSignature(
         identity,

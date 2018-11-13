@@ -52,6 +52,7 @@ import {
   hashIdentifier,
   isSwapOffer,
   isSwapRelease,
+  keyToAddress,
 } from "./util";
 
 /**
@@ -182,26 +183,23 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return dummyEnvelope(data);
   }
 
-  public async getNonce(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>> {
-    // getAddress will do a lookup from name -> address if needed
-    // make this an async function so easier to switch on return value
-    const getAddress = async (): Promise<Address | undefined> => {
-      if (isAddressQuery(account)) {
-        return account.address;
-      }
-      const addrRes = await this.getAccount(account);
-      if (addrRes.data.length === 0) {
-        return undefined;
-      }
-      return addrRes.data[0].address;
-    };
+  public async getNonce(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>> {
+    let address: Address;
 
-    const addr = await getAddress();
-    if (!addr) {
-      return dummyEnvelope([]);
+    if (isAddressQuery(query)) {
+      address = query.address;
+    } else if (isPubkeyQuery(query)) {
+      address = keyToAddress(query.pubkey);
+    } else {
+      const addressResult = await this.getAccount(query);
+      if (addressResult.data.length === 0) {
+        return dummyEnvelope([]);
+      } else {
+        address = addressResult.data[0].address;
+      }
     }
-    const res = await this.query("/auth", decodeBnsAddress(addr).data);
 
+    const res = await this.query("/auth", decodeBnsAddress(address).data);
     const parser = parseMap(codecImpl.sigs.UserData, 5);
     const data = res.results.map(parser).map(Normalize.nonce);
     return dummyEnvelope(data);
