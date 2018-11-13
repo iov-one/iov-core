@@ -51,7 +51,8 @@ export const parseTx = (tx: codecImpl.app.ITx, chainId: ChainId): SignedTransact
     otherSignatures: sigs.slice(1),
   };
 };
-export const parseMsg = (base: BaseTx, tx: codecImpl.app.ITx): UnsignedTransaction => {
+
+export function parseMsg(base: BaseTx, tx: codecImpl.app.ITx): UnsignedTransaction {
   if (tx.sendMsg) {
     return parseSendTx(base, tx.sendMsg);
   } else if (tx.setNameMsg) {
@@ -66,7 +67,7 @@ export const parseMsg = (base: BaseTx, tx: codecImpl.app.ITx): UnsignedTransacti
     return parseRegisterUsernameTx(base, tx.issueUsernameNftMsg);
   }
   throw new Error("unknown message type in transaction");
-};
+}
 
 const parseSendTx = (base: BaseTx, msg: codecImpl.cash.ISendMsg): SendTx => ({
   // TODO: would we want to ensure these match?
@@ -133,7 +134,7 @@ function parseRegisterUsernameTx(base: BaseTx, msg: codecImpl.username.IIssueTok
     chainAddresses.map(
       (chainAddress): [ChainId, Address] => [
         Encoding.fromUtf8(ensure(chainAddress.chainID, "chainID")) as ChainId,
-        Encoding.fromUtf8(ensure(chainAddress.chainID, "address")) as Address,
+        Encoding.fromUtf8(ensure(chainAddress.address, "address")) as Address,
       ],
     ),
   );
