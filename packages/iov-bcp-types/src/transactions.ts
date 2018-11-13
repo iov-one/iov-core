@@ -49,6 +49,8 @@ export interface BaseTx {
   /** the chain on which the transaction should be valid */
   readonly chainId: ChainId;
   readonly fee?: Amount;
+  readonly gasPrice?: Amount;
+  readonly gasLimit?: Amount;
   // signer needs to be a PublicKey as we use that to as an identifier to the Keyring for lookup
   readonly signer: PublicKeyBundle;
   readonly ttl?: TtlBytes;
