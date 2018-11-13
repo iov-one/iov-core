@@ -2,10 +2,9 @@
 
 # blockchain_stop is meant to be sourced by .travis.yml or locally after running tests
 
-if [[ ! -z ${TM_PID:-} ]]; then
-  echo "Stopping tendermint: $TM_PID"
-  kill "${TM_PID}"
-  unset TM_PID
+if [[ ! -z ${TENDERMINT_ENABLED:-} ]]; then
+  echo "Stopping tendermint"
+  "${SCRIPT_DIR}"/tendermint/stop.sh
   unset TENDERMINT_ENABLED
 fi
 

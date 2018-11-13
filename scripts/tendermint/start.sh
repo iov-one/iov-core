@@ -3,25 +3,28 @@ set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
 TM_VERSION=0.21.0
-TM_DIR=$(mktemp -d "${TMPDIR:-/tmp}/tendermint.XXXXXXXXX")
-echo "TM_DIR = $TM_DIR"
+PORT=12345
 
-PORT=${TM_PORT:-12345}
-
-chmod 777 "${TM_DIR}"
+TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/tendermint.XXXXXXXXX")
+chmod 777 "${TMP_DIR}"
+echo "Using temporary dir $TMP_DIR"
+LOGFILE="$TMP_DIR/tendermint.log"
 
 docker pull "tendermint/tendermint:${TM_VERSION}"
 
 docker run --user="$UID" \
-  -v "${TM_DIR}:/tendermint" \
+  -v "${TMP_DIR}:/tendermint" \
   "tendermint/tendermint:${TM_VERSION}" \
   init
 
 # must enable tx index for search and subscribe
-exec docker run --user="$UID" \
-  -p "${PORT}:26657" -v "${TM_DIR}:/tendermint" \
+docker run --user="$UID" \
+  -p "${PORT}:26657" -v "${TMP_DIR}:/tendermint" \
   -e "TM_TX_INDEX_INDEX_ALL_TAGS=true" \
   "tendermint/tendermint:${TM_VERSION}" node \
   --proxy_app=kvstore \
   --rpc.laddr=tcp://0.0.0.0:26657 \
-  --log_level=state:info,rpc:info,*:error
+  --log_level=state:info,rpc:info,*:error \
+  > "$LOGFILE" &
+
+echo "Tendermint running and logging into $LOGFILE"

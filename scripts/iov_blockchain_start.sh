@@ -14,9 +14,7 @@ else
   #
   # Start Tendermint
   #
-  "${SCRIPT_DIR}"/tendermint/tendermint.sh > /tmp/foo.log &
-  export TM_PID=$!
-  echo "Started tendermint" $TM_PID
+  "${SCRIPT_DIR}"/tendermint/start.sh
   export TENDERMINT_ENABLED=1
 
   #
