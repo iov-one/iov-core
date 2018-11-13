@@ -1,4 +1,5 @@
 import {
+  Amount,
   BaseTx,
   FullSignature,
   SendTx,
@@ -8,13 +9,14 @@ import {
   SwapCounterTx,
   SwapIdBytes,
   SwapTimeoutTx,
+  TokenTicker,
   TransactionKind,
   UnsignedTransaction,
 } from "@iov/bcp-types";
 import { ChainId } from "@iov/tendermint-types";
 
 import * as codecImpl from "./codecimpl";
-import { asNumber, decodeAmount, decodeFullSig, ensure } from "./types";
+import { asNumber, decodeFullSig, ensure } from "./types";
 import { encodeBnsAddress, isHashIdentifier } from "./util";
 
 // export const buildTx = async (
@@ -28,6 +30,14 @@ import { encodeBnsAddress, isHashIdentifier } from "./util";
 //     signatures: sigs.map(encodeFullSig),
 //   });
 // };
+
+export function decodeAmount(coin: codecImpl.x.ICoin): Amount {
+  return {
+    whole: asNumber(coin.whole),
+    fractional: asNumber(coin.fractional),
+    tokenTicker: (coin.ticker || "") as TokenTicker,
+  };
+}
 
 export const parseTx = (tx: codecImpl.app.ITx, chainId: ChainId): SignedTransaction => {
   const sigs = ensure(tx.signatures, "signatures").map(decodeFullSig);

@@ -1,7 +1,7 @@
 import * as Long from "long";
 import { As } from "type-tagger";
 
-import { Amount, BcpCoin, FullSignature, Nonce, TokenTicker } from "@iov/bcp-types";
+import { Amount, BcpCoin, FullSignature, Nonce } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 import { Algorithm, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
@@ -44,14 +44,6 @@ export const encodeSignature = (algo: Algorithm, sigs: SignatureBytes) => {
       throw new Error("unsupported algorithm: " + algo);
   }
 };
-
-export function decodeAmount(coin: codecImpl.x.ICoin): Amount {
-  return {
-    whole: asNumber(coin.whole),
-    fractional: asNumber(coin.fractional),
-    tokenTicker: (coin.ticker || "") as TokenTicker,
-  };
-}
 
 export const fungibleToBcpCoin = (initData: InitData) => (amount: Amount): BcpCoin => {
   const tickerInfo = initData.tickers.get(amount.tokenTicker);

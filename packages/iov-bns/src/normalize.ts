@@ -20,7 +20,8 @@ import { Encoding } from "@iov/encoding";
 import { ChainId } from "@iov/tendermint-types";
 
 import * as codecImpl from "./codecimpl";
-import { asInt53, asNumber, decodeAmount, decodePubkey, ensure, fungibleToBcpCoin, Keyed } from "./types";
+import { decodeAmount } from "./decode";
+import { asInt53, asNumber, decodePubkey, ensure, fungibleToBcpCoin, Keyed } from "./types";
 import { encodeBnsAddress, hashFromIdentifier, isHashIdentifier, keyToAddress } from "./util";
 
 // InitData is all the queries we do on initialization to be

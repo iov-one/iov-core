@@ -24,7 +24,6 @@ export declare const encodeFullSig: (sig: FullSignature) => codecImpl.sigs.StdSi
 export declare const encodeSignature: (algo: Algorithm, sigs: SignatureBytes) => {
     ed25519: SignatureBytes;
 };
-export declare function decodeAmount(coin: codecImpl.x.ICoin): Amount;
 export declare const fungibleToBcpCoin: (initData: InitData) => (amount: Amount) => BcpCoin;
 export declare function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PublicKeyBundle;
 export declare function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivateKeyBundle;
