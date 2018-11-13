@@ -22,18 +22,6 @@ import * as codecImpl from "./generated/codecimpl";
 import { asNumber, decodeFullSig, ensure } from "./types";
 import { encodeBnsAddress, isHashIdentifier } from "./util";
 
-// export const buildTx = async (
-//   tx: Transaction,
-//   sigs: ReadonlyArray<FullSignature>,
-// ): Promise<codec.app.ITx> => {
-//   const msg = await buildMsg(tx);
-//   return codec.app.Tx.create({
-//     ...msg,
-//     fees: tx.fee ? { fees: encodeToken(tx.fee) } : null,
-//     signatures: sigs.map(encodeFullSig),
-//   });
-// };
-
 export function decodeAmount(coin: codecImpl.x.ICoin): Amount {
   return {
     whole: asNumber(coin.whole),
@@ -42,7 +30,7 @@ export function decodeAmount(coin: codecImpl.x.ICoin): Amount {
   };
 }
 
-export const parseTx = (tx: codecImpl.app.ITx, chainId: ChainId): SignedTransaction => {
+export function parseTx(tx: codecImpl.app.ITx, chainId: ChainId): SignedTransaction {
   const sigs = ensure(tx.signatures, "signatures").map(decodeFullSig);
   const sig = ensure(sigs[0], "first signature");
   return {
@@ -50,7 +38,7 @@ export const parseTx = (tx: codecImpl.app.ITx, chainId: ChainId): SignedTransact
     primarySignature: sig,
     otherSignatures: sigs.slice(1),
   };
-};
+}
 
 export function parseMsg(base: BaseTx, tx: codecImpl.app.ITx): UnsignedTransaction {
   if (tx.sendMsg) {
@@ -69,23 +57,27 @@ export function parseMsg(base: BaseTx, tx: codecImpl.app.ITx): UnsignedTransacti
   throw new Error("unknown message type in transaction");
 }
 
-const parseSendTx = (base: BaseTx, msg: codecImpl.cash.ISendMsg): SendTx => ({
-  // TODO: would we want to ensure these match?
-  //    src: await keyToAddress(tx.signer),
-  kind: TransactionKind.Send,
-  recipient: encodeBnsAddress(ensure(msg.dest, "recipient")),
-  amount: decodeAmount(ensure(msg.amount)),
-  memo: msg.memo || undefined,
-  ...base,
-});
+function parseSendTx(base: BaseTx, msg: codecImpl.cash.ISendMsg): SendTx {
+  return {
+    // TODO: would we want to ensure these match?
+    //    src: await keyToAddress(tx.signer),
+    kind: TransactionKind.Send,
+    recipient: encodeBnsAddress(ensure(msg.dest, "recipient")),
+    amount: decodeAmount(ensure(msg.amount)),
+    memo: msg.memo || undefined,
+    ...base,
+  };
+}
 
-const parseSetNameTx = (base: BaseTx, msg: codecImpl.namecoin.ISetWalletNameMsg): SetNameTx => ({
-  kind: TransactionKind.SetName,
-  name: ensure(msg.name, "name"),
-  ...base,
-});
+function parseSetNameTx(base: BaseTx, msg: codecImpl.namecoin.ISetWalletNameMsg): SetNameTx {
+  return {
+    kind: TransactionKind.SetName,
+    name: ensure(msg.name, "name"),
+    ...base,
+  };
+}
 
-const parseSwapCounterTx = (base: BaseTx, msg: codecImpl.escrow.ICreateEscrowMsg): SwapCounterTx => {
+function parseSwapCounterTx(base: BaseTx, msg: codecImpl.escrow.ICreateEscrowMsg): SwapCounterTx {
   const hashCode = ensure(msg.arbiter, "arbiter");
   if (!isHashIdentifier(hashCode)) {
     throw new Error("escrow not controlled by hashlock");
@@ -98,26 +90,30 @@ const parseSwapCounterTx = (base: BaseTx, msg: codecImpl.escrow.ICreateEscrowMsg
     amount: (msg.amount || []).map(decodeAmount),
     ...base,
   };
-};
+}
 
-const parseSwapClaimTx = (
+function parseSwapClaimTx(
   base: BaseTx,
   msg: codecImpl.escrow.IReturnEscrowMsg,
   tx: codecImpl.app.ITx,
-): SwapClaimTx => ({
-  kind: TransactionKind.SwapClaim,
-  swapId: ensure(msg.escrowId) as SwapIdBytes,
-  preimage: ensure(tx.preimage),
-  ...base,
-});
+): SwapClaimTx {
+  return {
+    kind: TransactionKind.SwapClaim,
+    swapId: ensure(msg.escrowId) as SwapIdBytes,
+    preimage: ensure(tx.preimage),
+    ...base,
+  };
+}
 
-const parseSwapTimeoutTx = (base: BaseTx, msg: codecImpl.escrow.IReturnEscrowMsg): SwapTimeoutTx => ({
-  kind: TransactionKind.SwapTimeout,
-  swapId: ensure(msg.escrowId) as SwapIdBytes,
-  ...base,
-});
+function parseSwapTimeoutTx(base: BaseTx, msg: codecImpl.escrow.IReturnEscrowMsg): SwapTimeoutTx {
+  return {
+    kind: TransactionKind.SwapTimeout,
+    swapId: ensure(msg.escrowId) as SwapIdBytes,
+    ...base,
+  };
+}
 
-const parseBaseTx = (tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId): BaseTx => {
+function parseBaseTx(tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId): BaseTx {
   const base: BaseTx = {
     chainId,
     signer: sig.pubkey,
@@ -126,7 +122,7 @@ const parseBaseTx = (tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId
     return { ...base, fee: decodeAmount(tx.fees.fees) };
   }
   return base;
-};
+}
 
 function parseRegisterUsernameTx(base: BaseTx, msg: codecImpl.username.IIssueTokenMsg): RegisterUsernameTx {
   const chainAddresses = ensure(ensure(msg.details, "details").addresses, "details.addresses");
