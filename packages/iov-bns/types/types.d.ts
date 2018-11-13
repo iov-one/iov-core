@@ -1,10 +1,9 @@
 import * as Long from "long";
 import { As } from "type-tagger";
-import { Amount, BcpCoin, FullSignature } from "@iov/bcp-types";
+import { FullSignature } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 import { Algorithm, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types";
 import * as codecImpl from "./codecimpl";
-import { InitData } from "./normalize";
 export declare type PrivateKeyBytes = Uint8Array & As<"private-key">;
 export interface PrivateKeyBundle {
     readonly algo: Algorithm;
@@ -24,7 +23,6 @@ export declare const encodeFullSig: (sig: FullSignature) => codecImpl.sigs.StdSi
 export declare const encodeSignature: (algo: Algorithm, sigs: SignatureBytes) => {
     ed25519: SignatureBytes;
 };
-export declare const amountToBcpCoin: (initData: InitData) => (amount: Amount) => BcpCoin;
 export declare function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PublicKeyBundle;
 export declare function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivateKeyBundle;
 export declare const decodeSignature: (signature: codecImpl.crypto.ISignature) => SignatureBytes;
