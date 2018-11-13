@@ -14,6 +14,7 @@ export enum PrehashType {
   None,
   Sha512,
   Sha256,
+  Keccak256,
 }
 
 export interface SigningJob {
