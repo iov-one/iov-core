@@ -1,7 +1,14 @@
 import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
 
 import * as codecImpl from "./codecimpl";
-import { buildMsg, buildSignedTx, buildUnsignedTx, encodePrivkey, encodePubkey, encodeToken } from "./encode";
+import {
+  buildMsg,
+  buildSignedTx,
+  buildUnsignedTx,
+  encodeAmount,
+  encodePrivkey,
+  encodePubkey,
+} from "./encode";
 import { appendSignBytes } from "./util";
 
 import {
@@ -34,9 +41,9 @@ describe("Encode helpers", () => {
     expect(Uint8Array.from(encoded)).toEqual(privBin);
   });
 
-  it("encode coin", () => {
-    const token = encodeToken(coinJson);
-    const encoded = codecImpl.x.Coin.encode(token).finish();
+  it("encodes amount", () => {
+    const amount = encodeAmount(coinJson);
+    const encoded = codecImpl.x.Coin.encode(amount).finish();
     expect(Uint8Array.from(encoded)).toEqual(coinBin);
   });
 });

@@ -1,4 +1,5 @@
 import {
+  Amount,
   BcpAccount,
   BcpAtomicSwap,
   BcpCoin,
@@ -20,8 +21,21 @@ import { Encoding } from "@iov/encoding";
 import { ChainId } from "@iov/tendermint-types";
 
 import * as codecImpl from "./codecimpl";
-import { asInt53, asNumber, decodePubkey, decodeToken, ensure, fungibleToBcpCoin, Keyed } from "./types";
+import { decodeAmount } from "./decode";
+import { asInt53, asNumber, decodePubkey, ensure, Keyed } from "./types";
 import { encodeBnsAddress, hashFromIdentifier, isHashIdentifier, keyToAddress } from "./util";
+
+function makeAmountToBcpCoinConverter(initData: InitData): (amount: Amount) => BcpCoin {
+  return (amount: Amount) => {
+    const tickerInfo = initData.tickers.get(amount.tokenTicker);
+    return {
+      ...amount,
+      // Better defaults?
+      tokenName: tickerInfo ? tickerInfo.tokenName : "<Unknown token>",
+      sigFigs: tickerInfo ? tickerInfo.sigFigs : 9,
+    };
+  };
+}
 
 // InitData is all the queries we do on initialization to be
 // reused by later calls
@@ -60,8 +74,8 @@ export class Normalize {
 
   public static coin(initData: InitData): (c: codecImpl.x.ICoin) => BcpCoin {
     return (coin: codecImpl.x.ICoin): BcpCoin => {
-      const token = decodeToken(coin);
-      return fungibleToBcpCoin(initData)(token);
+      const amount = decodeAmount(coin);
+      return makeAmountToBcpCoinConverter(initData)(amount);
     };
   }
 
@@ -106,7 +120,7 @@ export class Normalize {
           sender: keyToAddress(counter.signer),
           recipient: counter.recipient,
           hashlock: hashFromIdentifier(counter.hashCode),
-          amount: counter.amount.map(fungibleToBcpCoin(initData)),
+          amount: counter.amount.map(makeAmountToBcpCoinConverter(initData)),
           timeout: counter.timeout,
           memo: counter.memo,
         },

@@ -1,13 +1,12 @@
 import * as Long from "long";
 import { As } from "type-tagger";
 
-import { BcpCoin, FullSignature, FungibleToken, Nonce, TokenTicker } from "@iov/bcp-types";
+import { FullSignature, Nonce } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 import { Algorithm, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import * as codecImpl from "./codecimpl";
 import { encodePubkey } from "./encode";
-import { InitData } from "./normalize";
 
 export type PrivateKeyBytes = Uint8Array & As<"private-key">;
 export interface PrivateKeyBundle {
@@ -43,22 +42,6 @@ export const encodeSignature = (algo: Algorithm, sigs: SignatureBytes) => {
     default:
       throw new Error("unsupported algorithm: " + algo);
   }
-};
-
-export const decodeToken = (token: codecImpl.x.ICoin): FungibleToken => ({
-  whole: asNumber(token.whole),
-  fractional: asNumber(token.fractional),
-  tokenTicker: (token.ticker || "") as TokenTicker,
-});
-
-export const fungibleToBcpCoin = (initData: InitData) => (token: FungibleToken): BcpCoin => {
-  const tickerInfo = initData.tickers.get(token.tokenTicker);
-  return {
-    ...token,
-    // Better defaults?
-    tokenName: tickerInfo ? tickerInfo.tokenName : "<Unknown token>",
-    sigFigs: tickerInfo ? tickerInfo.sigFigs : 9,
-  };
 };
 
 export function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PublicKeyBundle {

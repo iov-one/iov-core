@@ -1,7 +1,7 @@
 import {
   Address,
+  Amount,
   FullSignature,
-  FungibleToken,
   Nonce,
   SendTx,
   SetNameTx,
@@ -50,7 +50,7 @@ export const privBin = fromHex(
 // bech32 -e -h tiov acc00b8f2e26fd093894c5b1d87e03afab71cf99
 export const address = "tiov14nqqhrewym7sjwy5ckcaslsr474hrnuek3vnr4" as Address;
 
-export const coinJson: FungibleToken = {
+export const coinJson: Amount = {
   whole: 878,
   fractional: 1567000,
   tokenTicker: "IOV" as TokenTicker,

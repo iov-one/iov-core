@@ -1,6 +1,6 @@
 import {
+  Amount,
   FullSignature,
-  FungibleToken,
   SendTx,
   SetNameTx,
   SignedTransaction,
@@ -35,13 +35,13 @@ export function encodePrivkey(privateKey: PrivateKeyBundle): codecImpl.crypto.IP
   }
 }
 
-export function encodeToken(token: FungibleToken): codecImpl.x.Coin {
+export function encodeAmount(amount: Amount): codecImpl.x.Coin {
   return codecImpl.x.Coin.create({
     // use null instead of 0 to not encode zero fields
     // for compatibility with golang encoder
-    whole: token.whole || null,
-    fractional: token.fractional || null,
-    ticker: token.tokenTicker,
+    whole: amount.whole || null,
+    fractional: amount.fractional || null,
+    ticker: amount.tokenTicker,
   });
 }
 
@@ -55,7 +55,7 @@ export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.app.ITx {
   const msg = buildMsg(tx);
   return codecImpl.app.Tx.create({
     ...msg,
-    fees: tx.fee ? { fees: encodeToken(tx.fee) } : null,
+    fees: tx.fee ? { fees: encodeAmount(tx.fee) } : null,
   });
 }
 
@@ -81,7 +81,7 @@ function buildSendTx(tx: SendTx): codecImpl.app.ITx {
     sendMsg: codecImpl.cash.SendMsg.create({
       src: decodeBnsAddress(keyToAddress(tx.signer)).data,
       dest: decodeBnsAddress(tx.recipient).data,
-      amount: encodeToken(tx.amount),
+      amount: encodeAmount(tx.amount),
       memo: tx.memo,
     }),
   };
@@ -111,7 +111,7 @@ function buildSwapCounterTx(tx: SwapCounterTx): codecImpl.app.ITx {
       src: decodeBnsAddress(keyToAddress(tx.signer)).data,
       arbiter: tx.hashCode,
       recipient: decodeBnsAddress(tx.recipient).data,
-      amount: tx.amount.map(encodeToken),
+      amount: tx.amount.map(encodeAmount),
       timeout: tx.timeout,
       memo: tx.memo,
     }),

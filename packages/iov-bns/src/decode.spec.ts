@@ -1,6 +1,6 @@
 import * as codecImpl from "./codecimpl";
-import { parseTx } from "./decode";
-import { decodePrivkey, decodePubkey, decodeToken } from "./types";
+import { decodeAmount, parseTx } from "./decode";
+import { decodePrivkey, decodePubkey } from "./types";
 
 import {
   chainId,
@@ -15,7 +15,7 @@ import {
   signedTxBin,
 } from "./testdata";
 
-describe("Decode helpers", () => {
+describe("Decode", () => {
   it("decode pubkey", () => {
     const decoded = codecImpl.crypto.PublicKey.decode(pubBin);
     const pubkey = decodePubkey(decoded);
@@ -28,29 +28,29 @@ describe("Decode helpers", () => {
     expect(privkey).toEqual(privJson);
   });
 
-  it("decode coin", () => {
+  it("has working decodeAmount", () => {
     const decoded = codecImpl.x.Coin.decode(coinBin);
-    const token = decodeToken(decoded);
-    expect(token).toEqual(coinJson);
-  });
-});
-
-describe("Decode transactions", () => {
-  it("decode invalid transaction fails", () => {
-    /* tslint:disable-next-line:no-bitwise */
-    const badBin = signedTxBin.map((x: number, i: number) => (i % 5 ? x ^ 0x01 : x));
-    expect(codecImpl.app.Tx.decode.bind(null, badBin)).toThrowError();
+    const amount = decodeAmount(decoded);
+    expect(amount).toEqual(coinJson);
   });
 
-  // unsigned tx will fail as parsing requires a sig to extract signer
-  it("decode unsigned transaction fails", () => {
-    const decoded = codecImpl.app.Tx.decode(sendTxBin);
-    expect(parseTx.bind(null, decoded, chainId)).toThrowError(/missing first signature/);
-  });
+  describe(" transactions", () => {
+    it("decode invalid transaction fails", () => {
+      /* tslint:disable-next-line:no-bitwise */
+      const badBin = signedTxBin.map((x: number, i: number) => (i % 5 ? x ^ 0x01 : x));
+      expect(codecImpl.app.Tx.decode.bind(null, badBin)).toThrowError();
+    });
 
-  it("decode signed transaction", () => {
-    const decoded = codecImpl.app.Tx.decode(signedTxBin);
-    const tx = parseTx(decoded, chainId);
-    expect(tx.transaction).toEqual(sendTxJson);
+    // unsigned tx will fail as parsing requires a sig to extract signer
+    it("decode unsigned transaction fails", () => {
+      const decoded = codecImpl.app.Tx.decode(sendTxBin);
+      expect(parseTx.bind(null, decoded, chainId)).toThrowError(/missing first signature/);
+    });
+
+    it("decode signed transaction", () => {
+      const decoded = codecImpl.app.Tx.decode(signedTxBin);
+      const tx = parseTx(decoded, chainId);
+      expect(tx.transaction).toEqual(sendTxJson);
+    });
   });
 });
