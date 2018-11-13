@@ -28,6 +28,7 @@ export interface Amount {
 
 export enum TransactionKind {
   Send,
+  /** @deprecated see SetNameTx */
   SetName,
   SwapOffer,
   SwapCounter,
@@ -50,6 +51,11 @@ export interface SendTx extends BaseTx {
   readonly memo?: string;
 }
 
+/**
+ * Associates a simple name to an account on a weave-based blockchain.
+ *
+ * @deprecated will be dropped in favour of RegisterUsernameTx
+ */
 export interface SetNameTx extends BaseTx {
   readonly kind: TransactionKind.SetName;
   readonly name: string;
