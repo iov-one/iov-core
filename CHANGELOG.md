@@ -8,6 +8,7 @@ Breaking changes
 
 * @iov/bns: Re-generate BNS codec from weave v0.9.0 and adapt wrapper types.
 * @iov/crypto: Convert pubkey of Secp256k1Keypair into uncompressed format with prefix `04`.
+* @iov/dpos: Rename `Amount`/`parseAmount` to `Quantity`/`parseQuantity`
 * @iov/keycontrol: Let `Secp256k1HdWallet` work on uncompressed pubkeys. Since `Secp256k1HdWallet`
   was not used yet, there is no migration for existing `Secp256k1HdWallet`.
 * @iov/tendermint-types: Move types `PrivateKeyBundle`, `PrivateKeyBytes` into @iov/bns;
