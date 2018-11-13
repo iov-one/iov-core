@@ -34,6 +34,8 @@ export interface BaseTx {
     /** the chain on which the transaction should be valid */
     readonly chainId: ChainId;
     readonly fee?: Amount;
+    readonly gasPrice?: Amount;
+    readonly gasLimit?: Amount;
     readonly signer: PublicKeyBundle;
     readonly ttl?: TtlBytes;
 }
