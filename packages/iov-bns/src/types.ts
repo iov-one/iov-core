@@ -45,7 +45,7 @@ export const encodeSignature = (algo: Algorithm, sigs: SignatureBytes) => {
   }
 };
 
-export const fungibleToBcpCoin = (initData: InitData) => (amount: Amount): BcpCoin => {
+export const amountToBcpCoin = (initData: InitData) => (amount: Amount): BcpCoin => {
   const tickerInfo = initData.tickers.get(amount.tokenTicker);
   return {
     ...amount,

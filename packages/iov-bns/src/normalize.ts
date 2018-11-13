@@ -21,7 +21,7 @@ import { ChainId } from "@iov/tendermint-types";
 
 import * as codecImpl from "./codecimpl";
 import { decodeAmount } from "./decode";
-import { asInt53, asNumber, decodePubkey, ensure, fungibleToBcpCoin, Keyed } from "./types";
+import { amountToBcpCoin, asInt53, asNumber, decodePubkey, ensure, Keyed } from "./types";
 import { encodeBnsAddress, hashFromIdentifier, isHashIdentifier, keyToAddress } from "./util";
 
 // InitData is all the queries we do on initialization to be
@@ -62,7 +62,7 @@ export class Normalize {
   public static coin(initData: InitData): (c: codecImpl.x.ICoin) => BcpCoin {
     return (coin: codecImpl.x.ICoin): BcpCoin => {
       const amount = decodeAmount(coin);
-      return fungibleToBcpCoin(initData)(amount);
+      return amountToBcpCoin(initData)(amount);
     };
   }
 
@@ -107,7 +107,7 @@ export class Normalize {
           sender: keyToAddress(counter.signer),
           recipient: counter.recipient,
           hashlock: hashFromIdentifier(counter.hashCode),
-          amount: counter.amount.map(fungibleToBcpCoin(initData)),
+          amount: counter.amount.map(amountToBcpCoin(initData)),
           timeout: counter.timeout,
           memo: counter.memo,
         },
