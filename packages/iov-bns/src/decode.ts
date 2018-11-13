@@ -1,7 +1,9 @@
 import {
+  Address,
   Amount,
   BaseTx,
   FullSignature,
+  RegisterUsernameTx,
   SendTx,
   SetNameTx,
   SignedTransaction,
@@ -13,6 +15,7 @@ import {
   TransactionKind,
   UnsignedTransaction,
 } from "@iov/bcp-types";
+import { Encoding } from "@iov/encoding";
 import { ChainId } from "@iov/tendermint-types";
 
 import * as codecImpl from "./generated/codecimpl";
@@ -59,6 +62,8 @@ export const parseMsg = (base: BaseTx, tx: codecImpl.app.ITx): UnsignedTransacti
     return parseSwapClaimTx(base, tx.releaseEscrowMsg, tx);
   } else if (tx.returnEscrowMsg) {
     return parseSwapTimeoutTx(base, tx.returnEscrowMsg);
+  } else if (tx.issueUsernameNftMsg) {
+    return parseRegisterUsernameTx(base, tx.issueUsernameNftMsg);
   }
   throw new Error("unknown message type in transaction");
 };
@@ -121,3 +126,27 @@ const parseBaseTx = (tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId
   }
   return base;
 };
+
+function parseRegisterUsernameTx(base: BaseTx, msg: codecImpl.username.IIssueTokenMsg): RegisterUsernameTx {
+  const chainAddresses = ensure(ensure(msg.details, "details").addresses, "details.addresses");
+  const addressesAsMap = new Map(
+    chainAddresses.map(
+      (chainAddress): [ChainId, Address] => [
+        Encoding.fromUtf8(ensure(chainAddress.chainID, "chainID")) as ChainId,
+        Encoding.fromUtf8(ensure(chainAddress.chainID, "address")) as Address,
+      ],
+    ),
+  );
+  if (addressesAsMap.size !== chainAddresses.length) {
+    throw new Error(
+      "Map does not have the same number of elements as list. Are there duplicate chain ID entries in the transaction?",
+    );
+  }
+
+  return {
+    kind: TransactionKind.RegisterUsername,
+    username: Encoding.fromUtf8(ensure(msg.id, "id")),
+    addresses: addressesAsMap,
+    ...base,
+  };
+}
