@@ -14,7 +14,7 @@ import {
 import { ChainId } from "@iov/tendermint-types";
 
 import * as codecImpl from "./codecimpl";
-import { asNumber, decodeFullSig, decodeToken, ensure } from "./types";
+import { asNumber, decodeAmount, decodeFullSig, ensure } from "./types";
 import { encodeBnsAddress, isHashIdentifier } from "./util";
 
 // export const buildTx = async (
@@ -58,7 +58,7 @@ const parseSendTx = (base: BaseTx, msg: codecImpl.cash.ISendMsg): SendTx => ({
   //    src: await keyToAddress(tx.signer),
   kind: TransactionKind.Send,
   recipient: encodeBnsAddress(ensure(msg.dest, "recipient")),
-  amount: decodeToken(ensure(msg.amount)),
+  amount: decodeAmount(ensure(msg.amount)),
   memo: msg.memo || undefined,
   ...base,
 });
@@ -79,7 +79,7 @@ const parseSwapCounterTx = (base: BaseTx, msg: codecImpl.escrow.ICreateEscrowMsg
     hashCode,
     recipient: encodeBnsAddress(ensure(msg.recipient, "recipient")),
     timeout: asNumber(msg.timeout),
-    amount: (msg.amount || []).map(decodeToken),
+    amount: (msg.amount || []).map(decodeAmount),
     ...base,
   };
 };
@@ -107,7 +107,7 @@ const parseBaseTx = (tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId
     signer: sig.pubkey,
   };
   if (tx.fees && tx.fees.fees) {
-    return { ...base, fee: decodeToken(tx.fees.fees) };
+    return { ...base, fee: decodeAmount(tx.fees.fees) };
   }
   return base;
 };

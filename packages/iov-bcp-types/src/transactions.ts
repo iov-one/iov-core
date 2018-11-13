@@ -20,7 +20,7 @@ export type SwapIdString = string & As<"swap-id">;
 // but waiting on clarity on BNS spec, for now simplest working solution...
 export type RecipientId = Address;
 
-export interface FungibleToken {
+export interface Amount {
   readonly whole: number;
   readonly fractional: number;
   readonly tokenTicker: TokenTicker;
@@ -37,7 +37,7 @@ export enum TransactionKind {
 
 export interface BaseTx {
   readonly chainId: ChainId;
-  readonly fee?: FungibleToken;
+  readonly fee?: Amount;
   // signer needs to be a PublicKey as we use that to as an identifier to the Keyring for lookup
   readonly signer: PublicKeyBundle;
   readonly ttl?: TtlBytes;
@@ -45,7 +45,7 @@ export interface BaseTx {
 
 export interface SendTx extends BaseTx {
   readonly kind: TransactionKind.Send;
-  readonly amount: FungibleToken;
+  readonly amount: Amount;
   readonly recipient: RecipientId;
   readonly memo?: string;
 }
@@ -57,7 +57,7 @@ export interface SetNameTx extends BaseTx {
 
 export interface SwapOfferTx extends BaseTx {
   readonly kind: TransactionKind.SwapOffer;
-  readonly amount: ReadonlyArray<FungibleToken>;
+  readonly amount: ReadonlyArray<Amount>;
   readonly recipient: RecipientId;
   readonly timeout: number; // number of blocks in the future
   readonly preimage: Uint8Array;
@@ -65,7 +65,7 @@ export interface SwapOfferTx extends BaseTx {
 
 export interface SwapCounterTx extends BaseTx {
   readonly kind: TransactionKind.SwapCounter;
-  readonly amount: ReadonlyArray<FungibleToken>;
+  readonly amount: ReadonlyArray<Amount>;
   readonly recipient: RecipientId;
   readonly timeout: number; // number of blocks in the future
   readonly hashCode: Uint8Array; // pulled from the offer transaction

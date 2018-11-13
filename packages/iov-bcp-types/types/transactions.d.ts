@@ -8,7 +8,7 @@ export declare type TokenTicker = string & As<"token-ticker">;
 export declare type SwapIdBytes = Uint8Array & As<"swap-id">;
 export declare type SwapIdString = string & As<"swap-id">;
 export declare type RecipientId = Address;
-export interface FungibleToken {
+export interface Amount {
     readonly whole: number;
     readonly fractional: number;
     readonly tokenTicker: TokenTicker;
@@ -23,13 +23,13 @@ export declare enum TransactionKind {
 }
 export interface BaseTx {
     readonly chainId: ChainId;
-    readonly fee?: FungibleToken;
+    readonly fee?: Amount;
     readonly signer: PublicKeyBundle;
     readonly ttl?: TtlBytes;
 }
 export interface SendTx extends BaseTx {
     readonly kind: TransactionKind.Send;
-    readonly amount: FungibleToken;
+    readonly amount: Amount;
     readonly recipient: RecipientId;
     readonly memo?: string;
 }
@@ -39,14 +39,14 @@ export interface SetNameTx extends BaseTx {
 }
 export interface SwapOfferTx extends BaseTx {
     readonly kind: TransactionKind.SwapOffer;
-    readonly amount: ReadonlyArray<FungibleToken>;
+    readonly amount: ReadonlyArray<Amount>;
     readonly recipient: RecipientId;
     readonly timeout: number;
     readonly preimage: Uint8Array;
 }
 export interface SwapCounterTx extends BaseTx {
     readonly kind: TransactionKind.SwapCounter;
-    readonly amount: ReadonlyArray<FungibleToken>;
+    readonly amount: ReadonlyArray<Amount>;
     readonly recipient: RecipientId;
     readonly timeout: number;
     readonly hashCode: Uint8Array;

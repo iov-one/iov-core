@@ -1,6 +1,6 @@
 import * as codecImpl from "./codecimpl";
 import { parseTx } from "./decode";
-import { decodePrivkey, decodePubkey, decodeToken } from "./types";
+import { decodeAmount, decodePrivkey, decodePubkey } from "./types";
 
 import {
   chainId,
@@ -28,10 +28,10 @@ describe("Decode helpers", () => {
     expect(privkey).toEqual(privJson);
   });
 
-  it("decode coin", () => {
+  it("decode amount", () => {
     const decoded = codecImpl.x.Coin.decode(coinBin);
-    const token = decodeToken(decoded);
-    expect(token).toEqual(coinJson);
+    const amount = decodeAmount(decoded);
+    expect(amount).toEqual(coinJson);
   });
 });
 

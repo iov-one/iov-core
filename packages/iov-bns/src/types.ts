@@ -1,7 +1,7 @@
 import * as Long from "long";
 import { As } from "type-tagger";
 
-import { BcpCoin, FullSignature, FungibleToken, Nonce, TokenTicker } from "@iov/bcp-types";
+import { Amount, BcpCoin, FullSignature, Nonce, TokenTicker } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 import { Algorithm, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
@@ -45,16 +45,18 @@ export const encodeSignature = (algo: Algorithm, sigs: SignatureBytes) => {
   }
 };
 
-export const decodeToken = (token: codecImpl.x.ICoin): FungibleToken => ({
-  whole: asNumber(token.whole),
-  fractional: asNumber(token.fractional),
-  tokenTicker: (token.ticker || "") as TokenTicker,
-});
-
-export const fungibleToBcpCoin = (initData: InitData) => (token: FungibleToken): BcpCoin => {
-  const tickerInfo = initData.tickers.get(token.tokenTicker);
+export function decodeAmount(coin: codecImpl.x.ICoin): Amount {
   return {
-    ...token,
+    whole: asNumber(coin.whole),
+    fractional: asNumber(coin.fractional),
+    tokenTicker: (coin.ticker || "") as TokenTicker,
+  };
+}
+
+export const fungibleToBcpCoin = (initData: InitData) => (amount: Amount): BcpCoin => {
+  const tickerInfo = initData.tickers.get(amount.tokenTicker);
+  return {
+    ...amount,
     // Better defaults?
     tokenName: tickerInfo ? tickerInfo.tokenName : "<Unknown token>",
     sigFigs: tickerInfo ? tickerInfo.sigFigs : 9,
