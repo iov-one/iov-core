@@ -16,7 +16,6 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BNSD_DIR=$(mktemp -d "${TMPDIR:-/tmp}/bnsd.XXXXXXXXX")
 export BNSD_DIR
 echo "BNSD_DIR = $BNSD_DIR"
-export BNSD_ENABLED=1
 "${SCRIPT_DIR}"/bnsd_init.sh
 "${SCRIPT_DIR}"/bnsd_tm.sh > /tmp/bnsd_tm.log &
 "${SCRIPT_DIR}"/bnsd_app.sh > /tmp/bnsd_app.log &
