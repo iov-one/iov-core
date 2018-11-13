@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.9.0 (not released yet)
+
+* @iov/core: Export `Secp256k1HdWallet` and import by default in @iov/cli.
+
+Breaking changes
+
+* @iov/bns: Re-generate BNS codec from weave v0.9.0 and adapt wrapper types.
+* @iov/crypto: Convert pubkey of Secp256k1Keypair into uncompressed format with prefix `04`.
+* @iov/keycontrol: Let `Secp256k1HdWallet` work on uncompressed pubkeys. Since `Secp256k1HdWallet`
+  was not used yet, there is no migration for existing `Secp256k1HdWallet`.
+* @iov/tendermint-types: Move types `PrivateKeyBundle`, `PrivateKeyBytes` into @iov/bns;
+  split `Tag` into `BcpQueryTag` in @iov/bcp-types and `QueryTag` in @iov/tendermint-rpc;
+  rename `TxQuery` into `BcpTxQuery` in @iov/bcp-types; make `SignatureBundle` available
+  in @iov/tendermint-rcp only and rename to `VoteSignatureBundle`; move `buildTxQuery` into @iov/bns.
+
 ## 0.8.1
 
 * @iov/dpos: Deduplicate `Serialization` from Lisk and RISE
