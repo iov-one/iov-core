@@ -6,6 +6,7 @@ import {
   BcpTransactionResponse,
   BcpTxQuery,
   Nonce,
+  RegisterUsernameTx,
   SendTx,
   SwapClaimTx,
   SwapIdBytes,
@@ -317,6 +318,43 @@ describe("BnsConnection", () => {
     // make sure we have a txid
     expect(mine.txid).toBeDefined();
     expect(mine.txid.length).toBeGreaterThan(0);
+
+    connection.disconnect();
+  });
+
+  it("can register a username", async () => {
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
+    const chainId = await connection.chainId();
+
+    const profile = new UserProfile();
+    const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+    const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+
+    // Create and send registration
+    const address = keyToAddress(identity.pubkey);
+    const username = `testuser`; // _${Math.random()}`;
+    const registration: RegisterUsernameTx = {
+      kind: TransactionKind.RegisterUsername,
+      chainId: chainId,
+      signer: identity.pubkey,
+      addresses: new Map([[chainId, address]]),
+      username: username,
+    };
+    const nonce = await getNonce(connection, address);
+    const signed = await profile.signTransaction(wallet.id, identity, registration, bnsCodec, nonce);
+    const txBytes = bnsCodec.bytesToPost(signed);
+    await connection.postTx(txBytes);
+
+    // Find registration transaction
+    const searchResult = await connection.searchTx({ tags: [bnsFromOrToTag(address)] });
+    expect(searchResult.length).toEqual(1);
+    if (searchResult[0].transaction.kind !== TransactionKind.RegisterUsername) {
+      throw new Error("Unexpected transaction kind");
+    }
+    expect(searchResult[0].transaction.username).toEqual(username);
+    expect(searchResult[0].transaction.addresses.size).toEqual(1);
+    expect(searchResult[0].transaction.addresses.get(chainId)).toEqual(address);
 
     connection.disconnect();
   });
