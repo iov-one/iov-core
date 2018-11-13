@@ -151,7 +151,7 @@ export class LiskConnection implements BcpConnection {
             sigFigs: constants.primaryTokenSigFigs,
             tokenName: constants.primaryTokenName,
             tokenTicker: constants.primaryTokenTicker,
-            ...Parse.parseAmount(item.balance),
+            ...Parse.parseQuantity(item.balance),
           },
         ],
       }),

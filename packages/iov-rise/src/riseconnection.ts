@@ -164,7 +164,7 @@ export class RiseConnection implements BcpConnection {
             sigFigs: constants.primaryTokenSigFigs,
             tokenName: constants.primaryTokenName,
             tokenTicker: constants.primaryTokenTicker,
-            ...Parse.parseAmount(responseBody.balance),
+            ...Parse.parseQuantity(responseBody.balance),
           },
         ],
       },

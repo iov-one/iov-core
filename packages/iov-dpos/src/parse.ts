@@ -4,17 +4,17 @@ import { ReadonlyDate } from "readonly-date";
 import { Nonce } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 
-export interface Amount {
+export interface Quantity {
   readonly whole: number;
   readonly fractional: number;
 }
 
 export class Parse {
-  public static parseAmount(str: string): Amount {
-    const amount = Long.fromString(str, true, 10);
+  public static parseQuantity(str: string): Quantity {
+    const quantity = Long.fromString(str, true, 10);
     return {
-      whole: amount.divide(100000000).toNumber(),
-      fractional: amount.modulo(100000000).toNumber(),
+      whole: quantity.divide(100000000).toNumber(),
+      fractional: quantity.modulo(100000000).toNumber(),
     };
   }
 

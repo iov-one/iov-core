@@ -115,7 +115,7 @@ export const riseCodec: TxCodec = {
       transaction: {
         chainId: chainId,
         fee: {
-          ...Parse.parseAmount(`${json.fee}`), // `fee` is a number
+          ...Parse.parseQuantity(`${json.fee}`), // `fee` is a number
           tokenTicker: constants.primaryTokenTicker,
         },
         signer: {
@@ -125,7 +125,7 @@ export const riseCodec: TxCodec = {
         ttl: undefined,
         kind: kind,
         amount: {
-          ...Parse.parseAmount(`${json.amount}`), // `amount` is a number
+          ...Parse.parseQuantity(`${json.amount}`), // `amount` is a number
           tokenTicker: constants.primaryTokenTicker,
         },
         recipient: json.recipientId as Address,
