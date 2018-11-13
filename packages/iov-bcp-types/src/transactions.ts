@@ -34,6 +34,7 @@ export enum TransactionKind {
   SwapCounter,
   SwapClaim,
   SwapTimeout,
+  RegisterUsername,
 }
 
 export interface BaseTx {
@@ -89,10 +90,17 @@ export interface SwapTimeoutTx extends BaseTx {
   readonly swapId: SwapIdBytes; // pulled from the offer transaction
 }
 
+export interface RegisterUsernameTx extends BaseTx {
+  readonly kind: TransactionKind.RegisterUsername;
+  readonly username: string;
+  readonly addresses: Map<ChainId, Address>;
+}
+
 export type UnsignedTransaction =
   | SendTx
   | SetNameTx
   | SwapOfferTx
   | SwapCounterTx
   | SwapClaimTx
-  | SwapTimeoutTx;
+  | SwapTimeoutTx
+  | RegisterUsernameTx;

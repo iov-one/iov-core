@@ -20,7 +20,8 @@ export declare enum TransactionKind {
     SwapOffer = 2,
     SwapCounter = 3,
     SwapClaim = 4,
-    SwapTimeout = 5
+    SwapTimeout = 5,
+    RegisterUsername = 6
 }
 export interface BaseTx {
     readonly chainId: ChainId;
@@ -67,4 +68,9 @@ export interface SwapTimeoutTx extends BaseTx {
     readonly kind: TransactionKind.SwapTimeout;
     readonly swapId: SwapIdBytes;
 }
-export declare type UnsignedTransaction = SendTx | SetNameTx | SwapOfferTx | SwapCounterTx | SwapClaimTx | SwapTimeoutTx;
+export interface RegisterUsernameTx extends BaseTx {
+    readonly kind: TransactionKind.RegisterUsername;
+    readonly username: string;
+    readonly addresses: Map<ChainId, Address>;
+}
+export declare type UnsignedTransaction = SendTx | SetNameTx | SwapOfferTx | SwapCounterTx | SwapClaimTx | SwapTimeoutTx | RegisterUsernameTx;

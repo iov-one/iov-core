@@ -73,6 +73,8 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
       return buildSwapClaimTx(tx);
     case TransactionKind.SwapTimeout:
       return buildSwapTimeoutTx(tx);
+    default:
+      throw new Error("Received transacion of unsupported kind.");
   }
 }
 
