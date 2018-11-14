@@ -15,7 +15,7 @@ import {
 } from "@iov/bcp-types";
 import { ChainId } from "@iov/tendermint-types";
 
-import * as codecImpl from "./codecimpl";
+import * as codecImpl from "./generated/codecimpl";
 import { asNumber, decodeFullSig, ensure } from "./types";
 import { encodeBnsAddress, isHashIdentifier } from "./util";
 

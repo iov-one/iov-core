@@ -33,10 +33,10 @@ definition. These can be combined, but as bcpd and bnsd define the same type (`T
 compile `./cmd/bnsd` and `./cmd/bcpd` together. We will have to update package names in calling code.
 
 `yarn pack-proto`: will compile all the protobuf files returned by `yarn find-proto` into a javascript module
-located at `./src/codecimpl.js`. This contains the codecs to serialize and deserialize everything.
+located at `./src/generated/codecimpl.js`. This contains the codecs to serialize and deserialize everything.
 
-`yarn define-proto`: will generate typescript definitions for `./src/codecimpl.js` and
-save them under `src/codecimpl.d.ts`. This allows us to properly use all the codecs from typescript.
+`yarn define-proto`: will generate typescript definitions for `./src/generated/codecimpl.js` and
+save them under `src/generated/codecimpl.d.ts`. This allows us to properly use all the codecs from typescript.
 
 ## Quick setup
 

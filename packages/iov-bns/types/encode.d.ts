@@ -1,6 +1,6 @@
 import { Amount, SignedTransaction, UnsignedTransaction } from "@iov/bcp-types";
 import { PublicKeyBundle } from "@iov/tendermint-types";
-import * as codecImpl from "./codecimpl";
+import * as codecImpl from "./generated/codecimpl";
 import { PrivateKeyBundle } from "./types";
 export declare function encodePubkey(publicKey: PublicKeyBundle): codecImpl.crypto.IPublicKey;
 export declare function encodePrivkey(privateKey: PrivateKeyBundle): codecImpl.crypto.IPrivateKey;

@@ -13,7 +13,7 @@ import {
 } from "@iov/bcp-types";
 import { Algorithm, PublicKeyBundle } from "@iov/tendermint-types";
 
-import * as codecImpl from "./codecimpl";
+import * as codecImpl from "./generated/codecimpl";
 import { encodeFullSig, PrivateKeyBundle } from "./types";
 import { decodeBnsAddress, keyToAddress, preimageIdentifier } from "./util";
 

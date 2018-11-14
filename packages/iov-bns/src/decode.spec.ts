@@ -1,5 +1,5 @@
-import * as codecImpl from "./codecimpl";
 import { decodeAmount, parseTx } from "./decode";
+import * as codecImpl from "./generated/codecimpl";
 import { decodePrivkey, decodePubkey } from "./types";
 
 import {

@@ -1,6 +1,6 @@
 import { BcpAccount, BcpAtomicSwap, BcpCoin, BcpNonce, BcpTicker, ConfirmedTransaction, OpenSwap, SwapClaimTx, SwapCounterTx, SwapTimeoutTx } from "@iov/bcp-types";
 import { ChainId } from "@iov/tendermint-types";
-import * as codecImpl from "./codecimpl";
+import * as codecImpl from "./generated/codecimpl";
 import { Keyed } from "./types";
 export interface InitData {
     readonly chainId: ChainId;

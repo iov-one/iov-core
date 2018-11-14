@@ -1,6 +1,5 @@
 import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
 
-import * as codecImpl from "./codecimpl";
 import {
   buildMsg,
   buildSignedTx,
@@ -9,6 +8,7 @@ import {
   encodePrivkey,
   encodePubkey,
 } from "./encode";
+import * as codecImpl from "./generated/codecimpl";
 import { appendSignBytes } from "./util";
 
 import {
