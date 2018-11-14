@@ -69,7 +69,7 @@ describe("Decode", () => {
     it("works for RegisterUsername", () => {
       const transactionMessage: codecImpl.app.ITx = {
         issueUsernameNftMsg: {
-          id: Encoding.toAscii("Bob"),
+          id: Encoding.toAscii("bobby"),
           owner: Encoding.fromHex("0011223344556677889900112233445566778899"),
           approvals: [],
           details: {
@@ -90,7 +90,7 @@ describe("Decode", () => {
       if (parsed.kind !== TransactionKind.RegisterUsername) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.username).toEqual("Bob");
+      expect(parsed.username).toEqual("bobby");
       expect(parsed.addresses.size).toEqual(2);
       expect(parsed.addresses.get("chain1" as ChainId)).toEqual("23456782367823X" as Address);
       expect(parsed.addresses.get("chain2" as ChainId)).toEqual(

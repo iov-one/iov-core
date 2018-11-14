@@ -63,7 +63,7 @@ describe("Encode", () => {
         kind: TransactionKind.RegisterUsername,
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
-        username: "Alice",
+        username: "alice",
         addresses: new Map([
           ["chain1" as ChainId, "367X" as Address],
           ["chain3" as ChainId, "0xddffeeffddaa44" as Address],
@@ -72,7 +72,7 @@ describe("Encode", () => {
       };
       const msg = buildMsg(registerUsername);
       expect(msg.issueUsernameNftMsg).toBeDefined();
-      expect(msg.issueUsernameNftMsg!.id).toEqual(toAscii("Alice"));
+      expect(msg.issueUsernameNftMsg!.id).toEqual(toAscii("alice"));
       expect(msg.issueUsernameNftMsg!.details).toBeDefined();
       expect(msg.issueUsernameNftMsg!.details!.addresses).toBeDefined();
       expect(msg.issueUsernameNftMsg!.details!.addresses!.length).toEqual(3);
