@@ -13,10 +13,10 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
-import { Algorithm, PublicKeyBundle } from "@iov/tendermint-types";
+import { Algorithm, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types";
 
 import * as codecImpl from "./generated/codecimpl";
-import { encodeFullSig, PrivateKeyBundle } from "./types";
+import { PrivateKeyBundle } from "./types";
 import { decodeBnsAddress, keyToAddress, preimageIdentifier } from "./util";
 
 export function encodePubkey(publicKey: PublicKeyBundle): codecImpl.crypto.IPublicKey {
@@ -47,10 +47,27 @@ export function encodeAmount(amount: Amount): codecImpl.x.Coin {
   });
 }
 
+function encodeSignature(algo: Algorithm, bytes: SignatureBytes): codecImpl.crypto.ISignature {
+  switch (algo) {
+    case Algorithm.Ed25519:
+      return { ed25519: bytes };
+    default:
+      throw new Error("unsupported algorithm: " + algo);
+  }
+}
+
+export function encodeFullSignature(fullSignature: FullSignature): codecImpl.sigs.IStdSignature {
+  return codecImpl.sigs.StdSignature.create({
+    sequence: fullSignature.nonce.toNumber(),
+    pubkey: encodePubkey(fullSignature.pubkey),
+    signature: encodeSignature(fullSignature.pubkey.algo, fullSignature.signature),
+  });
+}
+
 export function buildSignedTx(tx: SignedTransaction): codecImpl.app.ITx {
   const sigs: ReadonlyArray<FullSignature> = [tx.primarySignature, ...tx.otherSignatures];
   const built = buildUnsignedTx(tx.transaction);
-  return { ...built, signatures: sigs.map(encodeFullSig) };
+  return { ...built, signatures: sigs.map(encodeFullSignature) };
 }
 
 export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.app.ITx {

@@ -1,10 +1,11 @@
-import { Amount, SignedTransaction, UnsignedTransaction } from "@iov/bcp-types";
+import { Amount, FullSignature, SignedTransaction, UnsignedTransaction } from "@iov/bcp-types";
 import { PublicKeyBundle } from "@iov/tendermint-types";
 import * as codecImpl from "./generated/codecimpl";
 import { PrivateKeyBundle } from "./types";
 export declare function encodePubkey(publicKey: PublicKeyBundle): codecImpl.crypto.IPublicKey;
 export declare function encodePrivkey(privateKey: PrivateKeyBundle): codecImpl.crypto.IPrivateKey;
 export declare function encodeAmount(amount: Amount): codecImpl.x.Coin;
+export declare function encodeFullSignature(fullSignature: FullSignature): codecImpl.sigs.IStdSignature;
 export declare function buildSignedTx(tx: SignedTransaction): codecImpl.app.ITx;
 export declare function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.app.ITx;
 export declare function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx;

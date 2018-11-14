@@ -5,7 +5,6 @@ import { FullSignature, Nonce } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 import { Algorithm, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
-import { encodePubkey } from "./encode";
 import * as codecImpl from "./generated/codecimpl";
 
 export type PrivateKeyBytes = Uint8Array & As<"private-key">;
@@ -26,23 +25,6 @@ export interface Keyed {
 export interface Decoder<T extends {}> {
   readonly decode: (data: Uint8Array) => T;
 }
-
-export const encodeFullSig = (sig: FullSignature) =>
-  codecImpl.sigs.StdSignature.create({
-    sequence: sig.nonce.toNumber(),
-    pubkey: encodePubkey(sig.pubkey),
-    signature: encodeSignature(sig.pubkey.algo, sig.signature),
-  });
-
-// encodeSignature needs the Algorithm to determine the type
-export const encodeSignature = (algo: Algorithm, sigs: SignatureBytes) => {
-  switch (algo) {
-    case Algorithm.Ed25519:
-      return { ed25519: sigs };
-    default:
-      throw new Error("unsupported algorithm: " + algo);
-  }
-};
 
 export function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PublicKeyBundle {
   if (publicKey.ed25519) {
