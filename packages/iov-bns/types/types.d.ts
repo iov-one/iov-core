@@ -3,7 +3,7 @@ import { As } from "type-tagger";
 import { FullSignature } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 import { Algorithm, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types";
-import * as codecImpl from "./codecimpl";
+import * as codecImpl from "./generated/codecimpl";
 export declare type PrivateKeyBytes = Uint8Array & As<"private-key">;
 export interface PrivateKeyBundle {
     readonly algo: Algorithm;

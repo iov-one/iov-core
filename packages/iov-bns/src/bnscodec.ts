@@ -9,9 +9,9 @@ import {
 } from "@iov/bcp-types";
 import { ChainId, PostableBytes } from "@iov/tendermint-types";
 
-import * as codecImpl from "./codecimpl";
 import { parseTx } from "./decode";
 import { buildSignedTx, buildUnsignedTx } from "./encode";
+import * as codecImpl from "./generated/codecimpl";
 import { appendSignBytes, isValidAddress, keyToAddress, tendermintHash } from "./util";
 
 export const bnsCodec: TxCodec = {

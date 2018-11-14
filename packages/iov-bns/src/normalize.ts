@@ -20,8 +20,8 @@ import {
 import { Encoding } from "@iov/encoding";
 import { ChainId } from "@iov/tendermint-types";
 
-import * as codecImpl from "./codecimpl";
 import { decodeAmount } from "./decode";
+import * as codecImpl from "./generated/codecimpl";
 import { asInt53, asNumber, decodePubkey, ensure, Keyed } from "./types";
 import { encodeBnsAddress, hashFromIdentifier, isHashIdentifier, keyToAddress } from "./util";
 

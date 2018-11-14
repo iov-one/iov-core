@@ -5,8 +5,8 @@ import { FullSignature, Nonce } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 import { Algorithm, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
-import * as codecImpl from "./codecimpl";
 import { encodePubkey } from "./encode";
+import * as codecImpl from "./generated/codecimpl";
 
 export type PrivateKeyBytes = Uint8Array & As<"private-key">;
 export interface PrivateKeyBundle {

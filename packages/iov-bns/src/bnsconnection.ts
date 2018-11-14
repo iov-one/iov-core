@@ -41,7 +41,7 @@ import {
 import { ChainId, PostableBytes, TxId } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
-import * as codecImpl from "./codecimpl";
+import * as codecImpl from "./generated/codecimpl";
 import { InitData, Normalize } from "./normalize";
 import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
 import { Decoder, Keyed, Result } from "./types";
