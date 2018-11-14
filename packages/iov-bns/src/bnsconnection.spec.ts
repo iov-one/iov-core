@@ -338,7 +338,12 @@ describe("BnsConnection", () => {
       kind: TransactionKind.RegisterUsername,
       chainId: chainId,
       signer: identity.pubkey,
-      addresses: new Map([[chainId, address]]),
+      addresses: new Map([
+        // TODO: Re-enable when there are pre-registered blockchains for testing
+        // (https://github.com/iov-one/weave/issues/184)
+        //
+        // [chainId, address],
+      ]),
       username: username,
     };
     const nonce = await getNonce(connection, address);
@@ -353,8 +358,7 @@ describe("BnsConnection", () => {
       throw new Error("Unexpected transaction kind");
     }
     expect(searchResult[0].transaction.username).toEqual(username);
-    expect(searchResult[0].transaction.addresses.size).toEqual(1);
-    expect(searchResult[0].transaction.addresses.get(chainId)).toEqual(address);
+    expect(searchResult[0].transaction.addresses.size).toEqual(0);
 
     connection.disconnect();
   });
