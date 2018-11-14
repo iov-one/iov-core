@@ -30,7 +30,7 @@ import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/tendermint-type
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
-import { bnsFromOrToTag, bnsSwapQueryTags } from "./tags";
+import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
 import { keyToAddress } from "./util";
 
 function skipTests(): boolean {
@@ -347,7 +347,7 @@ describe("BnsConnection", () => {
     await connection.postTx(txBytes);
 
     // Find registration transaction
-    const searchResult = await connection.searchTx({ tags: [bnsFromOrToTag(address)] });
+    const searchResult = await connection.searchTx({ tags: [bnsNonceTag(address)] });
     expect(searchResult.length).toEqual(1);
     if (searchResult[0].transaction.kind !== TransactionKind.RegisterUsername) {
       throw new Error("Unexpected transaction kind");
