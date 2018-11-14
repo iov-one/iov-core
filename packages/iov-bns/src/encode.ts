@@ -1,6 +1,7 @@
 import {
   Amount,
   FullSignature,
+  RegisterUsernameTx,
   SendTx,
   SetNameTx,
   SignedTransaction,
@@ -11,6 +12,7 @@ import {
   TransactionKind,
   UnsignedTransaction,
 } from "@iov/bcp-types";
+import { Encoding } from "@iov/encoding";
 import { Algorithm, PublicKeyBundle } from "@iov/tendermint-types";
 
 import * as codecImpl from "./generated/codecimpl";
@@ -73,6 +75,10 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
       return buildSwapClaimTx(tx);
     case TransactionKind.SwapTimeout:
       return buildSwapTimeoutTx(tx);
+    case TransactionKind.RegisterUsername:
+      return buildRegisterUsernameTx(tx);
+    default:
+      throw new Error("Received transacion of unsupported kind.");
   }
 }
 
@@ -131,6 +137,31 @@ function buildSwapTimeoutTx(tx: SwapTimeoutTx): codecImpl.app.ITx {
   return {
     returnEscrowMsg: codecImpl.escrow.ReturnEscrowMsg.create({
       escrowId: tx.swapId,
+    }),
+  };
+}
+
+function buildRegisterUsernameTx(tx: RegisterUsernameTx): codecImpl.app.ITx {
+  const sortedAddressPairs = [...tx.addresses.entries()].sort((pair1, pair2) => {
+    return pair1[0].localeCompare(pair2[0]); // sort by chain ID
+  });
+  const chainAddresses = sortedAddressPairs.map(
+    (pair): codecImpl.username.IChainAddress => {
+      return {
+        chainID: Encoding.toUtf8(pair[0]),
+        address: Encoding.toUtf8(pair[1]),
+      };
+    },
+  );
+
+  return {
+    issueUsernameNftMsg: codecImpl.username.IssueTokenMsg.create({
+      id: Encoding.toUtf8(tx.username),
+      owner: decodeBnsAddress(keyToAddress(tx.signer)).data,
+      approvals: undefined,
+      details: codecImpl.username.TokenDetails.create({
+        addresses: chainAddresses,
+      }),
     }),
   };
 }

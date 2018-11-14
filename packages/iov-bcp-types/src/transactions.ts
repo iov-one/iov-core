@@ -28,11 +28,13 @@ export interface Amount {
 
 export enum TransactionKind {
   Send,
+  /** @deprecated see SetNameTx */
   SetName,
   SwapOffer,
   SwapCounter,
   SwapClaim,
   SwapTimeout,
+  RegisterUsername,
 }
 
 export interface BaseTx {
@@ -50,6 +52,11 @@ export interface SendTx extends BaseTx {
   readonly memo?: string;
 }
 
+/**
+ * Associates a simple name to an account on a weave-based blockchain.
+ *
+ * @deprecated will be dropped in favour of RegisterUsernameTx
+ */
 export interface SetNameTx extends BaseTx {
   readonly kind: TransactionKind.SetName;
   readonly name: string;
@@ -83,10 +90,17 @@ export interface SwapTimeoutTx extends BaseTx {
   readonly swapId: SwapIdBytes; // pulled from the offer transaction
 }
 
+export interface RegisterUsernameTx extends BaseTx {
+  readonly kind: TransactionKind.RegisterUsername;
+  readonly username: string;
+  readonly addresses: Map<ChainId, Address>;
+}
+
 export type UnsignedTransaction =
   | SendTx
   | SetNameTx
   | SwapOfferTx
   | SwapCounterTx
   | SwapClaimTx
-  | SwapTimeoutTx;
+  | SwapTimeoutTx
+  | RegisterUsernameTx;
