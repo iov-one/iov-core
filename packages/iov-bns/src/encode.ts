@@ -2,6 +2,7 @@ import { Algorithm, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
 import {
   Amount,
   FullSignature,
+  RegisterBlockchainTx,
   RegisterUsernameTx,
   SendTx,
   SetNameTx,
@@ -92,6 +93,8 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
       return buildSwapClaimTx(tx);
     case TransactionKind.SwapTimeout:
       return buildSwapTimeoutTx(tx);
+    case TransactionKind.RegisterBlockchain:
+      return buildRegisterBlockchainTx(tx);
     case TransactionKind.RegisterUsername:
       return buildRegisterUsernameTx(tx);
     default:
@@ -154,6 +157,17 @@ function buildSwapTimeoutTx(tx: SwapTimeoutTx): codecImpl.app.ITx {
   return {
     returnEscrowMsg: codecImpl.escrow.ReturnEscrowMsg.create({
       escrowId: tx.swapId,
+    }),
+  };
+}
+
+function buildRegisterBlockchainTx(tx: RegisterBlockchainTx): codecImpl.app.ITx {
+  return {
+    issueBlockchainNftMsg: codecImpl.blockchain.IssueTokenMsg.create({
+      id: Encoding.toUtf8(tx.blockchainId),
+      owner: decodeBnsAddress(keyToAddress(tx.signer)).data,
+      approvals: undefined,
+      details: undefined,
     }),
   };
 }
