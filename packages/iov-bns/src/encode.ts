@@ -167,7 +167,10 @@ function buildRegisterBlockchainTx(tx: RegisterBlockchainTx): codecImpl.app.ITx 
       id: Encoding.toUtf8(tx.blockchainId),
       owner: decodeBnsAddress(keyToAddress(tx.signer)).data,
       approvals: undefined,
-      details: undefined,
+      details: codecImpl.blockchain.TokenDetails.create({
+        chain: codecImpl.blockchain.Chain.create({}),
+        iov: codecImpl.blockchain.IOV.create({}),
+      }),
     }),
   };
 }

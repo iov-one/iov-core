@@ -29,6 +29,7 @@ import {
   privJson,
   pubBin,
   pubJson,
+  registerBlockchainTransaction,
   sendTxBin,
   sendTxJson,
   sig,
@@ -91,6 +92,20 @@ describe("Encode", () => {
       const msg = buildMsg(registerBlockchain);
       expect(msg.issueBlockchainNftMsg).toBeDefined();
       expect(msg.issueBlockchainNftMsg!.id).toEqual(toAscii("wonderland"));
+    });
+
+    it("matches test data for RegisterBlockchainTx", () => {
+      const registerBlockchain: RegisterBlockchainTx = {
+        kind: TransactionKind.RegisterBlockchain,
+        chainId: "registry-chain" as ChainId,
+        signer: {
+          algo: Algorithm.Ed25519,
+          data: registerBlockchainTransaction.ownerEd25519Pubkey,
+        },
+        blockchainId: registerBlockchainTransaction.blockchainId,
+      };
+      const encoded = new Uint8Array(codecImpl.app.Tx.encode(buildMsg(registerBlockchain)).finish());
+      expect(encoded).toEqual(registerBlockchainTransaction.expectedBinary);
     });
 
     it("works for RegisterUsernameTx", () => {

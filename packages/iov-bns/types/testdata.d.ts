@@ -1,4 +1,4 @@
-import { ChainId, PublicKeyBundle } from "@iov/base-types";
+import { ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import { Address, Amount, FullSignature, SendTx, SignedTransaction } from "@iov/bcp-types";
 import { PrivateKeyBundle } from "./types";
 export declare const pubJson: PublicKeyBundle;
@@ -21,3 +21,9 @@ export declare const hashCode: Uint8Array;
 export declare const swapCounterTxJson: SignedTransaction;
 export declare const swapClaimTxJson: SignedTransaction;
 export declare const swapTimeoutTxJson: SignedTransaction;
+export declare const registerBlockchainTransaction: {
+    ownerEd25519Pubkey: PublicKeyBytes;
+    ownerAddredd: Uint8Array;
+    blockchainId: ChainId;
+    expectedBinary: Uint8Array;
+};
