@@ -7,6 +7,7 @@ import {
   decodeHexQuantityString,
   encodeQuantity,
   encodeQuantityString,
+  stringDataToHex,
 } from "./utils";
 
 describe("Ethereum utils", () => {
@@ -126,6 +127,18 @@ describe("Ethereum utils", () => {
 
     it("throws error for invalid inputs", () => {
       expect(() => encodeQuantityString("1234abc")).toThrowError(/Input is not a valid string number/);
+    });
+  });
+
+  describe("stringDataToHex", () => {
+    it("verify valid inputs", () => {
+      let dataToHex;
+      dataToHex = stringDataToHex("A");
+      expect(dataToHex).toEqual("0x41");
+      dataToHex = stringDataToHex("\0B\0");
+      expect(dataToHex).toEqual("0x004200");
+      dataToHex = stringDataToHex("");
+      expect(dataToHex).toEqual("0x");
     });
   });
 });
