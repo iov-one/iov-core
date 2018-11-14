@@ -1,4 +1,4 @@
-import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
@@ -7,6 +7,7 @@ import {
   BcpTransactionResponse,
   BcpTxQuery,
   Nonce,
+  RegisterBlockchainTx,
   RegisterUsernameTx,
   SendTx,
   SwapClaimTx,
@@ -318,6 +319,40 @@ describe("BnsConnection", () => {
     // make sure we have a txid
     expect(mine.txid).toBeDefined();
     expect(mine.txid.length).toBeGreaterThan(0);
+
+    connection.disconnect();
+  });
+
+  it("can register a blockchain", async () => {
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
+    const chainId = await connection.chainId();
+
+    const profile = new UserProfile();
+    const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+    const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+    const identityAddress = keyToAddress(identity.pubkey);
+
+    // Create and send registration
+    const blockchainId = `wunderland_${Math.random()}` as ChainId;
+    const registration: RegisterBlockchainTx = {
+      kind: TransactionKind.RegisterBlockchain,
+      chainId: chainId,
+      signer: identity.pubkey,
+      blockchainId: blockchainId,
+    };
+    const nonce = await getNonce(connection, identityAddress);
+    const signed = await profile.signTransaction(wallet.id, identity, registration, bnsCodec, nonce);
+    const txBytes = bnsCodec.bytesToPost(signed);
+    await connection.postTx(txBytes);
+
+    // Find registration transaction
+    const searchResult = await connection.searchTx({ tags: [bnsNonceTag(identityAddress)] });
+    expect(searchResult.length).toEqual(1);
+    if (searchResult[0].transaction.kind !== TransactionKind.RegisterBlockchain) {
+      throw new Error("Unexpected transaction kind");
+    }
+    expect(searchResult[0].transaction.blockchainId).toEqual(blockchainId);
 
     connection.disconnect();
   });
