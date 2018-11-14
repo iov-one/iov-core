@@ -44,7 +44,10 @@ if command -v docker > /dev/null ; then
   export TENDERMINT_ENABLED=1
   fold_end
 
-  source ./scripts/iov_blockchain_start.sh
+  fold_start "bnsd-start"
+  ./scripts/bnsd/start.sh
+  export BNSD_ENABLED=1
+  fold_end
 
   ./scripts/lisk/start.sh
   export LISK_ENABLED=1
@@ -193,11 +196,16 @@ if [[ ! -z ${BNSD_ENABLED:-} ]]; then
   fold_end
 fi
 
-source ./scripts/iov_blockchain_stop.sh
+if [[ ! -z ${BNSD_ENABLED:-} ]]; then
+  fold_start "bnsd-stop"
+  unset BNSD_ENABLED
+  ./scripts/bnsd/stop.sh
+  fold_end
+fi
 
 if [[ ! -z ${TENDERMINT_ENABLED:-} ]]; then
   fold_start "tendermint-stop"
   unset TENDERMINT_ENABLED
-  "${SCRIPT_DIR}"/tendermint/stop.sh
+  ./scripts/tendermint/stop.sh
   fold_end
 fi
