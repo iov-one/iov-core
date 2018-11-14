@@ -333,7 +333,7 @@ describe("BnsConnection", () => {
 
     // Create and send registration
     const address = keyToAddress(identity.pubkey);
-    const username = `testuser`; // _${Math.random()}`;
+    const username = `testuser_${Math.random()}`;
     const registration: RegisterUsernameTx = {
       kind: TransactionKind.RegisterUsername,
       chainId: chainId,
