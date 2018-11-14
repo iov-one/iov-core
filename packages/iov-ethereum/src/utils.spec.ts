@@ -7,6 +7,7 @@ import {
   decodeHexQuantityString,
   encodeQuantity,
   encodeQuantityString,
+  hexPadToEven,
   stringDataToHex,
 } from "./utils";
 
@@ -139,6 +140,14 @@ describe("Ethereum utils", () => {
       expect(dataToHex).toEqual("0x004200");
       dataToHex = stringDataToHex("");
       expect(dataToHex).toEqual("0x");
+    });
+  });
+
+  describe("hexPadToEven", () => {
+    it("transform to valid outputs", () => {
+      expect(hexPadToEven("0x2")).toEqual("02");
+      expect(hexPadToEven("0x5208")).toEqual("5208");
+      expect(hexPadToEven("0x4a817c800")).toEqual("04a817c800");
     });
   });
 });

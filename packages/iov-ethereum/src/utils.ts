@@ -50,3 +50,10 @@ export function stringDataToHex(stringData: string): string {
   }
   return "0x" + hex;
 }
+
+export function hexPadToEven(hex: string): string {
+  if (hex.length % 2 !== 0) {
+    return "0" + hex.replace("0x", "");
+  }
+  return hex.replace("0x", "");
+}
