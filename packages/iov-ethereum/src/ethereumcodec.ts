@@ -2,6 +2,8 @@ import { Algorithm, ChainId, PostableBytes, PublicKeyBundle } from "@iov/base-ty
 import {
   Address,
   Nonce,
+  PrehashType,
+  SignableBytes,
   SignedTransaction,
   SigningJob,
   TransactionIdBytes,
@@ -10,6 +12,10 @@ import {
 } from "@iov/bcp-types";
 import { Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
+
+// import { constants } from "./constants";
+import { isValidAddress } from "./derivation";
+import { Serialization } from "./serialization";
 
 const { toAscii, toHex } = Encoding;
 
@@ -26,7 +32,10 @@ export function toChecksumAddress(address: string): Address {
 
 export const ethereumCodec: TxCodec = {
   bytesToSign: (unsigned: UnsignedTransaction, nonce: Nonce): SigningJob => {
-    throw new Error(`Not implemented utx: ${unsigned}, nonce: ${nonce}`);
+    return {
+      bytes: Serialization.serializeTransaction(unsigned, nonce) as SignableBytes,
+      prehashType: PrehashType.Keccak256,
+    };
   },
   bytesToPost: (signed: SignedTransaction): PostableBytes => {
     throw new Error(`Not implemented tx: ${signed}`);
@@ -46,7 +55,5 @@ export const ethereumCodec: TxCodec = {
     const addressString = toChecksumAddress("0x" + lastFortyChars);
     return addressString as Address;
   },
-  isValidAddress: (address: string): boolean => {
-    throw new Error(`Not implemented ${address}`);
-  },
+  isValidAddress: isValidAddress,
 };
