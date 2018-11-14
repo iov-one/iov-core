@@ -40,3 +40,12 @@ export function encodeQuantityString(value: string): string {
   }
   return "0x" + new BN(value).toString(16);
 }
+
+export function stringDataToHex(stringData: string): string {
+  let hex = "";
+  for (let i = 0; i < stringData.length; i++) {
+    const n = stringData.charCodeAt(i).toString(16);
+    hex += n.length < 2 ? "0" + n : n;
+  }
+  return "0x" + hex;
+}
