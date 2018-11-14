@@ -31,7 +31,8 @@
     "find-proto": "find ./weave -name '*.proto' -not -path '*/vendor/*' -not -path '*/examples/*' -not -path '*/cmd/bcpd/*'",
     "pack-proto": "pbjs -t static-module -w commonjs -o src/generated/codecimpl.js `yarn -s find-proto`",
     "define-proto": "pbts src/generated/codecimpl.js -o src/generated/codecimpl.d.ts",
-    "protoc": "./scripts/weave.sh && yarn pack-proto && yarn define-proto && yarn format"
+    "store-codec-version": "git -C ./weave log --pretty=oneline --decorate --max-count=1 > src/generated/codec_version.txt",
+    "protoc": "./scripts/weave.sh && yarn pack-proto && yarn define-proto && yarn format && yarn store-codec-version"
   },
   "dependencies": {
     "@iov/bcp-types": "^0.8.0",
