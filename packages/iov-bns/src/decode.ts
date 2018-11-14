@@ -4,6 +4,7 @@ import {
   Amount,
   BaseTx,
   FullSignature,
+  RegisterBlockchainTx,
   RegisterUsernameTx,
   SendTx,
   SetNameTx,
@@ -51,6 +52,8 @@ export function parseMsg(base: BaseTx, tx: codecImpl.app.ITx): UnsignedTransacti
     return parseSwapClaimTx(base, tx.releaseEscrowMsg, tx);
   } else if (tx.returnEscrowMsg) {
     return parseSwapTimeoutTx(base, tx.returnEscrowMsg);
+  } else if (tx.issueBlockchainNftMsg) {
+    return parseRegisterBlockchainTx(base, tx.issueBlockchainNftMsg);
   } else if (tx.issueUsernameNftMsg) {
     return parseRegisterUsernameTx(base, tx.issueUsernameNftMsg);
   }
@@ -122,6 +125,17 @@ function parseBaseTx(tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId
     return { ...base, fee: decodeAmount(tx.fees.fees) };
   }
   return base;
+}
+
+function parseRegisterBlockchainTx(
+  base: BaseTx,
+  msg: codecImpl.blockchain.IIssueTokenMsg,
+): RegisterBlockchainTx {
+  return {
+    kind: TransactionKind.RegisterBlockchain,
+    blockchainId: Encoding.fromUtf8(ensure(msg.id, "id")) as ChainId,
+    ...base,
+  };
 }
 
 function parseRegisterUsernameTx(base: BaseTx, msg: codecImpl.username.IIssueTokenMsg): RegisterUsernameTx {

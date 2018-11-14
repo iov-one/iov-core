@@ -68,6 +68,22 @@ describe("Decode", () => {
 
     it("works for RegisterUsername", () => {
       const transactionMessage: codecImpl.app.ITx = {
+        issueBlockchainNftMsg: {
+          id: Encoding.toAscii("wonderland"),
+          owner: Encoding.fromHex("0011223344556677889900112233445566778899"),
+          approvals: undefined,
+          details: undefined,
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (parsed.kind !== TransactionKind.RegisterBlockchain) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.blockchainId).toEqual("wonderland");
+    });
+
+    it("works for RegisterUsername", () => {
+      const transactionMessage: codecImpl.app.ITx = {
         issueUsernameNftMsg: {
           id: Encoding.toAscii("bobby"),
           owner: Encoding.fromHex("0011223344556677889900112233445566778899"),
