@@ -34,10 +34,12 @@ export enum TransactionKind {
   SwapCounter,
   SwapClaim,
   SwapTimeout,
+  RegisterBlockchain,
   RegisterUsername,
 }
 
 export interface BaseTx {
+  /** the chain on which the transaction should be valid */
   readonly chainId: ChainId;
   readonly fee?: Amount;
   // signer needs to be a PublicKey as we use that to as an identifier to the Keyring for lookup
@@ -90,6 +92,12 @@ export interface SwapTimeoutTx extends BaseTx {
   readonly swapId: SwapIdBytes; // pulled from the offer transaction
 }
 
+export interface RegisterBlockchainTx extends BaseTx {
+  readonly kind: TransactionKind.RegisterBlockchain;
+  /** the ID of the blockchain to be registered */
+  readonly blockchainId: ChainId;
+}
+
 export interface RegisterUsernameTx extends BaseTx {
   readonly kind: TransactionKind.RegisterUsername;
   readonly username: string;
@@ -103,4 +111,5 @@ export type UnsignedTransaction =
   | SwapCounterTx
   | SwapClaimTx
   | SwapTimeoutTx
+  | RegisterBlockchainTx
   | RegisterUsernameTx;

@@ -21,9 +21,11 @@ export declare enum TransactionKind {
     SwapCounter = 3,
     SwapClaim = 4,
     SwapTimeout = 5,
-    RegisterUsername = 6
+    RegisterBlockchain = 6,
+    RegisterUsername = 7
 }
 export interface BaseTx {
+    /** the chain on which the transaction should be valid */
     readonly chainId: ChainId;
     readonly fee?: Amount;
     readonly signer: PublicKeyBundle;
@@ -68,9 +70,14 @@ export interface SwapTimeoutTx extends BaseTx {
     readonly kind: TransactionKind.SwapTimeout;
     readonly swapId: SwapIdBytes;
 }
+export interface RegisterBlockchainTx extends BaseTx {
+    readonly kind: TransactionKind.RegisterBlockchain;
+    /** the ID of the blockchain to be registered */
+    readonly blockchainId: ChainId;
+}
 export interface RegisterUsernameTx extends BaseTx {
     readonly kind: TransactionKind.RegisterUsername;
     readonly username: string;
     readonly addresses: Map<ChainId, Address>;
 }
-export declare type UnsignedTransaction = SendTx | SetNameTx | SwapOfferTx | SwapCounterTx | SwapClaimTx | SwapTimeoutTx | RegisterUsernameTx;
+export declare type UnsignedTransaction = SendTx | SetNameTx | SwapOfferTx | SwapCounterTx | SwapClaimTx | SwapTimeoutTx | RegisterBlockchainTx | RegisterUsernameTx;
