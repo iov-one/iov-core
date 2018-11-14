@@ -19,7 +19,7 @@ import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } f
 import { PrivateKeyBundle, PrivateKeyBytes } from "./types";
 import { hashId } from "./util";
 
-const { fromHex } = Encoding;
+const { fromBase64, fromHex } = Encoding;
 
 // ------------------- standard data set ---------------
 //
@@ -196,4 +196,13 @@ export const swapTimeoutTxJson: SignedTransaction = {
   transaction: swapTimeoutMsg,
   primarySignature: sig,
   otherSignatures: [],
+};
+
+export const registerBlockchainTransaction = {
+  ownerEd25519Pubkey: fromBase64("cl29Lo8fu20LtXoCcbCYbYCZbhTpC+0i38dcaayyKP4=") as PublicKeyBytes,
+  ownerAddredd: fromHex("A8024F44B310E654B287EB7A1DE069E8B07510F5"), // unused
+  blockchainId: "test-chain-123456" as ChainId,
+  expectedBinary: fromHex(
+    "82012f0a14a8024f44b310e654b287eb7a1de069e8b07510f51211746573742d636861696e2d3132333435361a040a001200",
+  ),
 };
