@@ -1,4 +1,11 @@
-import { Address, FullSignature, Nonce, RegisterUsernameTx, TransactionKind } from "@iov/bcp-types";
+import {
+  Address,
+  FullSignature,
+  Nonce,
+  RegisterBlockchainTx,
+  RegisterUsernameTx,
+  TransactionKind,
+} from "@iov/bcp-types";
 import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
@@ -73,6 +80,18 @@ describe("Encode", () => {
       algo: Algorithm.Ed25519,
       data: fromHex("00112233445566778899aa") as PublicKeyBytes,
     };
+
+    it("works for RegisterBlockchainTx", () => {
+      const registerBlockchain: RegisterBlockchainTx = {
+        kind: TransactionKind.RegisterBlockchain,
+        chainId: "registry-chain" as ChainId,
+        signer: defaultSigner,
+        blockchainId: "wonderland" as ChainId,
+      };
+      const msg = buildMsg(registerBlockchain);
+      expect(msg.issueBlockchainNftMsg).toBeDefined();
+      expect(msg.issueBlockchainNftMsg!.id).toEqual(toAscii("wonderland"));
+    });
 
     it("works for RegisterUsernameTx", () => {
       const registerUsername: RegisterUsernameTx = {
