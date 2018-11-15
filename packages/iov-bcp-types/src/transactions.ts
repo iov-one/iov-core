@@ -26,7 +26,13 @@ export interface Amount {
   readonly tokenTicker: TokenTicker;
 }
 
+export interface ChainAddressPair {
+  readonly chainId: ChainId;
+  readonly address: Address;
+}
+
 export enum TransactionKind {
+  AddAddressToUsername,
   Send,
   /** @deprecated see SetNameTx */
   SetName,
@@ -36,6 +42,7 @@ export enum TransactionKind {
   SwapTimeout,
   RegisterBlockchain,
   RegisterUsername,
+  RemoveAddressFromUsername,
 }
 
 export interface BaseTx {
@@ -45,6 +52,13 @@ export interface BaseTx {
   // signer needs to be a PublicKey as we use that to as an identifier to the Keyring for lookup
   readonly signer: PublicKeyBundle;
   readonly ttl?: TtlBytes;
+}
+
+export interface AddAddressToUsernameTx extends BaseTx {
+  readonly kind: TransactionKind.AddAddressToUsername;
+  /** the username to be updated, must exist on chain */
+  readonly username: string;
+  readonly payload: ChainAddressPair;
 }
 
 export interface SendTx extends BaseTx {
@@ -106,7 +120,15 @@ export interface RegisterUsernameTx extends BaseTx {
   readonly addresses: Map<ChainId, Address>;
 }
 
+export interface RemoveAddressFromUsernameTx extends BaseTx {
+  readonly kind: TransactionKind.RemoveAddressFromUsername;
+  /** the username to be updated, must exist on chain */
+  readonly username: string;
+  readonly payload: ChainAddressPair;
+}
+
 export type UnsignedTransaction =
+  | AddAddressToUsernameTx
   | SendTx
   | SetNameTx
   | SwapOfferTx
@@ -114,4 +136,5 @@ export type UnsignedTransaction =
   | SwapClaimTx
   | SwapTimeoutTx
   | RegisterBlockchainTx
-  | RegisterUsernameTx;
+  | RegisterUsernameTx
+  | RemoveAddressFromUsernameTx;

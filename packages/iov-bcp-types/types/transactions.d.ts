@@ -13,16 +13,22 @@ export interface Amount {
     readonly fractional: number;
     readonly tokenTicker: TokenTicker;
 }
+export interface ChainAddressPair {
+    readonly chainId: ChainId;
+    readonly address: Address;
+}
 export declare enum TransactionKind {
-    Send = 0,
+    AddAddressToUsername = 0,
+    Send = 1,
     /** @deprecated see SetNameTx */
-    SetName = 1,
-    SwapOffer = 2,
-    SwapCounter = 3,
-    SwapClaim = 4,
-    SwapTimeout = 5,
-    RegisterBlockchain = 6,
-    RegisterUsername = 7
+    SetName = 2,
+    SwapOffer = 3,
+    SwapCounter = 4,
+    SwapClaim = 5,
+    SwapTimeout = 6,
+    RegisterBlockchain = 7,
+    RegisterUsername = 8,
+    RemoveAddressFromUsername = 9
 }
 export interface BaseTx {
     /** the chain on which the transaction should be valid */
@@ -30,6 +36,12 @@ export interface BaseTx {
     readonly fee?: Amount;
     readonly signer: PublicKeyBundle;
     readonly ttl?: TtlBytes;
+}
+export interface AddAddressToUsernameTx extends BaseTx {
+    readonly kind: TransactionKind.AddAddressToUsername;
+    /** the username to be updated, must exist on chain */
+    readonly username: string;
+    readonly payload: ChainAddressPair;
 }
 export interface SendTx extends BaseTx {
     readonly kind: TransactionKind.Send;
@@ -82,4 +94,10 @@ export interface RegisterUsernameTx extends BaseTx {
     readonly username: string;
     readonly addresses: Map<ChainId, Address>;
 }
-export declare type UnsignedTransaction = SendTx | SetNameTx | SwapOfferTx | SwapCounterTx | SwapClaimTx | SwapTimeoutTx | RegisterBlockchainTx | RegisterUsernameTx;
+export interface RemoveAddressFromUsernameTx extends BaseTx {
+    readonly kind: TransactionKind.RemoveAddressFromUsername;
+    /** the username to be updated, must exist on chain */
+    readonly username: string;
+    readonly payload: ChainAddressPair;
+}
+export declare type UnsignedTransaction = AddAddressToUsernameTx | SendTx | SetNameTx | SwapOfferTx | SwapCounterTx | SwapClaimTx | SwapTimeoutTx | RegisterBlockchainTx | RegisterUsernameTx | RemoveAddressFromUsernameTx;
