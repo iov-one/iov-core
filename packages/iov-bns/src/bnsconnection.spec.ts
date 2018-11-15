@@ -334,12 +334,14 @@ describe("BnsConnection", () => {
     const identityAddress = keyToAddress(identity.pubkey);
 
     // Create and send registration
-    const blockchainId = `wunderland_${Math.random()}` as ChainId;
+    const blockchainId = `wonderland_${Math.random()}` as ChainId;
     const registration: RegisterBlockchainTx = {
       kind: TransactionKind.RegisterBlockchain,
       chainId: chainId,
       signer: identity.pubkey,
       blockchainId: blockchainId,
+      codecName: "wonderland_rules",
+      codecConfig: `{ "any" : [ "json", "content" ] }`,
     };
     const nonce = await getNonce(connection, identityAddress);
     const signed = await profile.signTransaction(wallet.id, identity, registration, bnsCodec, nonce);

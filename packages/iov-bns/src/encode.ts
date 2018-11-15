@@ -169,7 +169,10 @@ function buildRegisterBlockchainTx(tx: RegisterBlockchainTx): codecImpl.app.ITx 
       approvals: undefined,
       details: codecImpl.blockchain.TokenDetails.create({
         chain: codecImpl.blockchain.Chain.create({}),
-        iov: codecImpl.blockchain.IOV.create({}),
+        iov: codecImpl.blockchain.IOV.create({
+          codec: tx.codecName,
+          codecConfig: tx.codecConfig,
+        }),
       }),
     }),
   };
