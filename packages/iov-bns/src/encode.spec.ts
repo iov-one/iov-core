@@ -1,10 +1,12 @@
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import {
+  AddAddressToUsernameTx,
   Address,
   FullSignature,
   Nonce,
   RegisterBlockchainTx,
   RegisterUsernameTx,
+  RemoveAddressFromUsernameTx,
   TransactionKind,
 } from "@iov/bcp-types";
 import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
@@ -37,7 +39,7 @@ import {
   signedTxJson,
 } from "./testdata";
 
-const { fromHex, toAscii } = Encoding;
+const { fromHex, toAscii, toUtf8 } = Encoding;
 
 describe("Encode", () => {
   it("encode pubkey", () => {
@@ -81,6 +83,23 @@ describe("Encode", () => {
       data: fromHex("00112233445566778899aa") as PublicKeyBytes,
     };
 
+    it("works for AddAddressToUsernameTx", () => {
+      const addAddress: AddAddressToUsernameTx = {
+        kind: TransactionKind.AddAddressToUsername,
+        chainId: "registry-chain" as ChainId,
+        signer: defaultSigner,
+        username: "alice",
+        payload: {
+          chainId: "other-land" as ChainId,
+          address: "865765858O" as Address,
+        },
+      };
+      const msg = buildMsg(addAddress).addUsernameAddressNftMsg!;
+      expect(msg.id).toEqual(toUtf8("alice"));
+      expect(msg.chainID).toEqual(toUtf8("other-land"));
+      expect(msg.address).toEqual(toUtf8("865765858O"));
+    });
+
     it("works for RegisterBlockchainTx", () => {
       const registerBlockchain: RegisterBlockchainTx = {
         kind: TransactionKind.RegisterBlockchain,
@@ -120,6 +139,23 @@ describe("Encode", () => {
       expect(msg.issueUsernameNftMsg!.details!.addresses![1].address).toEqual(toAscii("0x00aabbddccffee"));
       expect(msg.issueUsernameNftMsg!.details!.addresses![2].chainID).toEqual(toAscii("chain3"));
       expect(msg.issueUsernameNftMsg!.details!.addresses![2].address).toEqual(toAscii("0xddffeeffddaa44"));
+    });
+
+    it("works for RemoveAddressFromUsernameTx", () => {
+      const removeAddress: RemoveAddressFromUsernameTx = {
+        kind: TransactionKind.RemoveAddressFromUsername,
+        chainId: "registry-chain" as ChainId,
+        signer: defaultSigner,
+        username: "alice",
+        payload: {
+          chainId: "other-land" as ChainId,
+          address: "865765858O" as Address,
+        },
+      };
+      const msg = buildMsg(removeAddress).removeUsernameAddressMsg!;
+      expect(msg.id).toEqual(toUtf8("alice"));
+      expect(msg.chainID).toEqual(toUtf8("other-land"));
+      expect(msg.address).toEqual(toUtf8("865765858O"));
     });
   });
 });

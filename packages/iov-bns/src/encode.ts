@@ -1,9 +1,11 @@
 import { Algorithm, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
 import {
+  AddAddressToUsernameTx,
   Amount,
   FullSignature,
   RegisterBlockchainTx,
   RegisterUsernameTx,
+  RemoveAddressFromUsernameTx,
   SendTx,
   SetNameTx,
   SignedTransaction,
@@ -81,6 +83,8 @@ export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.app.ITx {
 
 export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
   switch (tx.kind) {
+    case TransactionKind.AddAddressToUsername:
+      return buildAddAddressToUsernameTx(tx);
     case TransactionKind.Send:
       return buildSendTx(tx);
     case TransactionKind.SetName:
@@ -97,9 +101,21 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
       return buildRegisterBlockchainTx(tx);
     case TransactionKind.RegisterUsername:
       return buildRegisterUsernameTx(tx);
+    case TransactionKind.RemoveAddressFromUsername:
+      return buildRemoveAddressFromUsernameTx(tx);
     default:
       throw new Error("Received transacion of unsupported kind.");
   }
+}
+
+function buildAddAddressToUsernameTx(tx: AddAddressToUsernameTx): codecImpl.app.ITx {
+  return {
+    addUsernameAddressNftMsg: {
+      id: Encoding.toUtf8(tx.username),
+      chainID: Encoding.toUtf8(tx.payload.chainId),
+      address: Encoding.toUtf8(tx.payload.address),
+    },
+  };
 }
 
 function buildSendTx(tx: SendTx): codecImpl.app.ITx {
@@ -200,5 +216,15 @@ function buildRegisterUsernameTx(tx: RegisterUsernameTx): codecImpl.app.ITx {
         addresses: chainAddresses,
       }),
     }),
+  };
+}
+
+function buildRemoveAddressFromUsernameTx(tx: RemoveAddressFromUsernameTx): codecImpl.app.ITx {
+  return {
+    removeUsernameAddressMsg: {
+      id: Encoding.toUtf8(tx.username),
+      chainID: Encoding.toUtf8(tx.payload.chainId),
+      address: Encoding.toUtf8(tx.payload.address),
+    },
   };
 }
