@@ -1,14 +1,14 @@
 {
-  "name": "@iov/tendermint-types",
+  "name": "@iov/base-types",
   "version": "0.8.0",
-  "description": "Types for the communication with tendermint",
+  "description": "The most fundamental types used in IOV products",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
   "main": "build/index.js",
   "types": "types/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-tendermint-types"
+    "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-base-types"
   },
   "publishConfig": {
     "access": "public"

@@ -16,6 +16,7 @@ Breaking changes
   split `Tag` into `BcpQueryTag` in @iov/bcp-types and `QueryTag` in @iov/tendermint-rpc;
   rename `TxQuery` into `BcpTxQuery` in @iov/bcp-types; make `SignatureBundle` available
   in @iov/tendermint-rcp only and rename to `VoteSignatureBundle`; move `buildTxQuery` into @iov/bns.
+* @iov/tendermint-types: renamed to @iov/base-types
 
 ## 0.8.1
 
