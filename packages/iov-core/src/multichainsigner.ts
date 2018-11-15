@@ -1,3 +1,4 @@
+import { ChainId, PublicKeyBundle } from "@iov/base-types";
 import {
   Address,
   BcpConnection,
@@ -9,7 +10,6 @@ import {
 } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 import { PublicIdentity, UserProfile, WalletId } from "@iov/keycontrol";
-import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 
 /**
  * An internal helper to pass around the tuple

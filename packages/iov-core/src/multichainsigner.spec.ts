@@ -1,7 +1,7 @@
+import { ChainId } from "@iov/base-types";
 import { SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { bnsConnector, bnsFromOrToTag } from "@iov/bns";
 import { Ed25519HdWallet, HdPaths, LocalIdentity, UserProfile, WalletId } from "@iov/keycontrol";
-import { ChainId } from "@iov/tendermint-types";
 
 import { MultiChainSigner } from "./multichainsigner";
 

@@ -1,3 +1,4 @@
+import { Algorithm, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
 import {
   Amount,
   FullSignature,
@@ -13,7 +14,6 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
-import { Algorithm, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types";
 
 import * as codecImpl from "./generated/codecimpl";
 import { PrivateKeyBundle } from "./types";

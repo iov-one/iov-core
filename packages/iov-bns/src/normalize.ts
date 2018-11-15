@@ -1,3 +1,4 @@
+import { ChainId } from "@iov/base-types";
 import {
   Amount,
   BcpAccount,
@@ -18,7 +19,6 @@ import {
   TransactionKind,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
-import { ChainId } from "@iov/tendermint-types";
 
 import { decodeAmount } from "./decode";
 import * as codecImpl from "./generated/codecimpl";

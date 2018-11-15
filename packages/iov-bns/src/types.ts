@@ -1,9 +1,9 @@
 import * as Long from "long";
 import { As } from "type-tagger";
 
+import { Algorithm, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import { FullSignature, Nonce } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
-import { Algorithm, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import * as codecImpl from "./generated/codecimpl";
 

@@ -1,9 +1,9 @@
+import { Algorithm, ChainId } from "@iov/base-types";
 import { Nonce, PrehashType, RecipientId, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { bnsCodec } from "@iov/bns";
 import { Ed25519, Sha512 } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 import { WalletId, WalletSerializationString } from "@iov/keycontrol";
-import { Algorithm, ChainId } from "@iov/tendermint-types";
 
 import { pendingWithoutInteractiveLedger, pendingWithoutLedger } from "./common.spec";
 import { LedgerSimpleAddressWallet } from "./ledgersimpleaddresswallet";

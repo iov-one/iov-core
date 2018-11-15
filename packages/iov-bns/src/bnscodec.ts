@@ -1,3 +1,4 @@
+import { ChainId, PostableBytes } from "@iov/base-types";
 import {
   Nonce,
   PrehashType,
@@ -7,7 +8,6 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
-import { ChainId, PostableBytes } from "@iov/tendermint-types";
 
 import { parseTx } from "./decode";
 import { buildSignedTx, buildUnsignedTx } from "./encode";

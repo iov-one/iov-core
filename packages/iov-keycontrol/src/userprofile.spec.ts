@@ -2,6 +2,7 @@ import levelup from "levelup";
 import MemDownConstructor from "memdown";
 import { ReadonlyDate } from "readonly-date";
 
+import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import {
   Address,
   Nonce,
@@ -17,7 +18,6 @@ import {
 } from "@iov/bcp-types";
 import { Slip10RawIndex } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
-import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { HdPaths } from "./hdpaths";
 import { Keyring } from "./keyring";

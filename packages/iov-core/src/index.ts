@@ -3,6 +3,7 @@
 
 // this should serve as an entry point into the whole monorepo.
 
+export { ChainId } from "@iov/base-types";
 export { Address, Nonce, SendTx, SetNameTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 export { bnsConnector, bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "@iov/bns";
 export {
@@ -17,6 +18,5 @@ export {
   WalletImplementationIdString,
   WalletSerializationString,
 } from "@iov/keycontrol";
-export { ChainId } from "@iov/tendermint-types";
 
 export { MultiChainSigner } from "./multichainsigner";

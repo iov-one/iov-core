@@ -1,3 +1,4 @@
+import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
@@ -26,7 +27,6 @@ import {
   WalletId,
 } from "@iov/keycontrol";
 import { asArray, lastValue } from "@iov/stream";
-import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";

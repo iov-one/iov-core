@@ -1,7 +1,7 @@
 import { As } from "type-tagger";
+import { ChainId, PublicKeyBundle } from "@iov/base-types";
 import { Address, BcpTxQuery, ConfirmedTransaction, Nonce, SignableBytes, SwapClaimTx, SwapCounterTx, SwapTimeoutTx } from "@iov/bcp-types";
 import { QueryString } from "@iov/tendermint-rpc";
-import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 /** Encodes raw bytes into a bech32 address */
 export declare function encodeBnsAddress(bytes: Uint8Array): Address;
 /** Decodes a printable address into bech32 object */

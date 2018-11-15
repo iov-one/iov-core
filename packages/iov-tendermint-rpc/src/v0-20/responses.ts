@@ -1,4 +1,3 @@
-import { Encoding } from "@iov/encoding";
 import {
   Algorithm,
   ChainId,
@@ -7,7 +6,8 @@ import {
   PublicKeyBytes,
   SignatureBytes,
   TxId,
-} from "@iov/tendermint-types";
+} from "@iov/base-types";
+import { Encoding } from "@iov/encoding";
 
 import { JsonRpcEvent, JsonRpcSuccess } from "../common";
 import {

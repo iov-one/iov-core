@@ -2,6 +2,7 @@ import axios from "axios";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
+import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, TxId } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
@@ -22,7 +23,6 @@ import {
 } from "@iov/bcp-types";
 import { Parse } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
-import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, TxId } from "@iov/tendermint-types";
 
 import { constants } from "./constants";
 import { riseCodec } from "./risecodec";

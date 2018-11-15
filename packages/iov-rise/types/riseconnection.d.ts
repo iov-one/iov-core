@@ -1,6 +1,6 @@
 import { Stream } from "xstream";
+import { ChainId, PostableBytes } from "@iov/base-types";
 import { BcpAccount, BcpAccountQuery, BcpConnection, BcpNonce, BcpQueryEnvelope, BcpQueryTag, BcpTicker, BcpTransactionResponse, BcpTxQuery, ConfirmedTransaction, Nonce, TokenTicker } from "@iov/bcp-types";
-import { ChainId, PostableBytes } from "@iov/tendermint-types";
 /**
  * Encodes the current date and time as a nonce
  */

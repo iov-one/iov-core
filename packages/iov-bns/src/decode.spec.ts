@@ -1,6 +1,6 @@
+import { Algorithm, ChainId, PublicKeyBytes } from "@iov/base-types";
 import { Address, BaseTx, TransactionKind } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
-import { Algorithm, ChainId, PublicKeyBytes } from "@iov/tendermint-types";
 
 import { decodeAmount, parseMsg, parseTx } from "./decode";
 import * as codecImpl from "./generated/codecimpl";

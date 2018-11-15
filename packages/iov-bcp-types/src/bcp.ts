@@ -1,6 +1,6 @@
 import { Stream } from "xstream";
 
-import { ChainId, PostableBytes, PublicKeyBundle, TxId } from "@iov/tendermint-types";
+import { ChainId, PostableBytes, PublicKeyBundle, TxId } from "@iov/base-types";
 
 import { Address, SignedTransaction, TxCodec } from "./signables";
 import { Nonce, TokenTicker, UnsignedTransaction } from "./transactions";

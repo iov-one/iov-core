@@ -1,5 +1,5 @@
+import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import { Encoding } from "@iov/encoding";
-import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/tendermint-types";
 import { ethereumCodec, toChecksumAddress } from "./ethereumcodec";
 
 const { fromHex } = Encoding;

@@ -1,6 +1,7 @@
 // tslint:disable:readonly-array
 import PseudoRandom from "random-js";
 
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import {
@@ -14,7 +15,6 @@ import {
   WalletSerializationString,
 } from "@iov/keycontrol";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { getPublicKeyWithIndex, signTransactionWithIndex } from "./app";
 import { connectToFirstLedger } from "./exchange";

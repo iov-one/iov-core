@@ -1,5 +1,4 @@
-// import createKeccakHash from "keccak";
-
+import { Algorithm, ChainId, PostableBytes, PublicKeyBundle } from "@iov/base-types";
 import {
   Address,
   Nonce,
@@ -11,7 +10,6 @@ import {
 } from "@iov/bcp-types";
 import { Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { Algorithm, ChainId, PostableBytes, PublicKeyBundle } from "@iov/tendermint-types";
 
 const { toAscii, toHex } = Encoding;
 

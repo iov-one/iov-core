@@ -1,6 +1,6 @@
 import { Stream } from "xstream";
+import { ChainId, PostableBytes } from "@iov/base-types";
 import { BcpAccount, BcpAccountQuery, BcpConnection, BcpNonce, BcpQueryEnvelope, BcpQueryTag, BcpTicker, BcpTransactionResponse, BcpTxQuery, ConfirmedTransaction, TokenTicker } from "@iov/bcp-types";
-import { ChainId, PostableBytes } from "@iov/tendermint-types";
 export declare class EthereumConnection implements BcpConnection {
     static establish(baseUrl: string): Promise<EthereumConnection>;
     private readonly baseUrl;

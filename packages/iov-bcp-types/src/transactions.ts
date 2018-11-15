@@ -1,7 +1,7 @@
 import { As } from "type-tagger";
 
+import { ChainId, PublicKeyBundle } from "@iov/base-types";
 import { Int53 } from "@iov/encoding";
-import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 
 import { Address } from "./signables";
 
