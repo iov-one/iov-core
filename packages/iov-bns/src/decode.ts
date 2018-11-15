@@ -1,11 +1,13 @@
 import { ChainId } from "@iov/base-types";
 import {
+  AddAddressToUsernameTx,
   Address,
   Amount,
   BaseTx,
   FullSignature,
   RegisterBlockchainTx,
   RegisterUsernameTx,
+  RemoveAddressFromUsernameTx,
   SendTx,
   SetNameTx,
   SignedTransaction,
@@ -22,6 +24,8 @@ import { Encoding } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
 import { asNumber, decodeFullSig, ensure } from "./types";
 import { encodeBnsAddress, isHashIdentifier } from "./util";
+
+const { fromUtf8 } = Encoding;
 
 export function decodeAmount(coin: codecImpl.x.ICoin): Amount {
   return {
@@ -42,7 +46,9 @@ export function parseTx(tx: codecImpl.app.ITx, chainId: ChainId): SignedTransact
 }
 
 export function parseMsg(base: BaseTx, tx: codecImpl.app.ITx): UnsignedTransaction {
-  if (tx.sendMsg) {
+  if (tx.addUsernameAddressNftMsg) {
+    return parseAddAddressToUsernameTx(base, tx.addUsernameAddressNftMsg);
+  } else if (tx.sendMsg) {
     return parseSendTx(base, tx.sendMsg);
   } else if (tx.setNameMsg) {
     return parseSetNameTx(base, tx.setNameMsg);
@@ -56,8 +62,25 @@ export function parseMsg(base: BaseTx, tx: codecImpl.app.ITx): UnsignedTransacti
     return parseRegisterBlockchainTx(base, tx.issueBlockchainNftMsg);
   } else if (tx.issueUsernameNftMsg) {
     return parseRegisterUsernameTx(base, tx.issueUsernameNftMsg);
+  } else if (tx.removeUsernameAddressMsg) {
+    return parseRemoveAddressFromUsernameTx(base, tx.removeUsernameAddressMsg);
   }
   throw new Error("unknown message type in transaction");
+}
+
+function parseAddAddressToUsernameTx(
+  base: BaseTx,
+  msg: codecImpl.username.IAddChainAddressMsg,
+): AddAddressToUsernameTx {
+  return {
+    ...base,
+    kind: TransactionKind.AddAddressToUsername,
+    username: fromUtf8(ensure(msg.id, "id")),
+    payload: {
+      chainId: fromUtf8(ensure(msg.chainID, "chainID")) as ChainId,
+      address: fromUtf8(ensure(msg.address, "address")) as Address,
+    },
+  };
 }
 
 function parseSendTx(base: BaseTx, msg: codecImpl.cash.ISendMsg): SendTx {
@@ -166,5 +189,20 @@ function parseRegisterUsernameTx(base: BaseTx, msg: codecImpl.username.IIssueTok
     username: Encoding.fromUtf8(ensure(msg.id, "id")),
     addresses: addressesAsMap,
     ...base,
+  };
+}
+
+function parseRemoveAddressFromUsernameTx(
+  base: BaseTx,
+  msg: codecImpl.username.IRemoveChainAddressMsg,
+): RemoveAddressFromUsernameTx {
+  return {
+    ...base,
+    kind: TransactionKind.RemoveAddressFromUsername,
+    username: fromUtf8(ensure(msg.id, "id")),
+    payload: {
+      chainId: fromUtf8(ensure(msg.chainID, "chainID")) as ChainId,
+      address: fromUtf8(ensure(msg.address, "address")) as Address,
+    },
   };
 }

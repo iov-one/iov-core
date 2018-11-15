@@ -18,6 +18,8 @@ import {
 } from "./testdata";
 import { decodePrivkey, decodePubkey } from "./types";
 
+const { toUtf8 } = Encoding;
+
 describe("Decode", () => {
   it("decode pubkey", () => {
     const decoded = codecImpl.crypto.PublicKey.decode(pubBin);
@@ -65,6 +67,23 @@ describe("Decode", () => {
         data: Encoding.fromHex("aabbccdd") as PublicKeyBytes,
       },
     };
+
+    it("works for AddAddressToUsername", () => {
+      const transactionMessage: codecImpl.app.ITx = {
+        addUsernameAddressNftMsg: {
+          id: toUtf8("alice"),
+          address: toUtf8("0xAABB001122DD"),
+          chainID: toUtf8("wonderland"),
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (parsed.kind !== TransactionKind.AddAddressToUsername) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.username).toEqual("alice");
+      expect(parsed.payload.address).toEqual("0xAABB001122DD");
+      expect(parsed.payload.chainId).toEqual("wonderland");
+    });
 
     it("works for RegisterBlockchain", () => {
       const transactionMessage: codecImpl.app.ITx = {
@@ -119,6 +138,23 @@ describe("Decode", () => {
       expect(parsed.addresses.get("chain2" as ChainId)).toEqual(
         "0x001100aabbccddffeeddaa8899776655" as Address,
       );
+    });
+
+    it("works for RemoveAddressFromUsername", () => {
+      const transactionMessage: codecImpl.app.ITx = {
+        removeUsernameAddressMsg: {
+          id: toUtf8("alice"),
+          address: toUtf8("0xAABB001122DD"),
+          chainID: toUtf8("wonderland"),
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (parsed.kind !== TransactionKind.RemoveAddressFromUsername) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.username).toEqual("alice");
+      expect(parsed.payload.address).toEqual("0xAABB001122DD");
+      expect(parsed.payload.chainId).toEqual("wonderland");
     });
   });
 });
