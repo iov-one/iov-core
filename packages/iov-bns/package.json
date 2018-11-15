@@ -35,12 +35,12 @@
     "protoc": "./scripts/weave.sh && yarn pack-proto && yarn define-proto && yarn format && yarn store-codec-version"
   },
   "dependencies": {
+    "@iov/base-types": "^0.8.0",
     "@iov/bcp-types": "^0.8.0",
     "@iov/crypto": "^0.8.1",
     "@iov/encoding": "^0.8.0",
     "@iov/stream": "^0.8.0",
     "@iov/tendermint-rpc": "^0.8.1",
-    "@iov/tendermint-types": "^0.8.0",
     "@types/long": "^4.0.0",
     "@types/node": "^10.3.2",
     "long": "^4.0.0",
