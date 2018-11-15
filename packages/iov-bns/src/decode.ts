@@ -131,10 +131,17 @@ function parseRegisterBlockchainTx(
   base: BaseTx,
   msg: codecImpl.blockchain.IIssueTokenMsg,
 ): RegisterBlockchainTx {
+  const id = ensure(msg.id, "id");
+  const details = ensure(msg.details, "details");
+  const iov = ensure(details.iov, "details.iov");
+  const codec = ensure(iov.codec, "details.iov.codec");
+  const codecConfig = ensure(iov.codecConfig, "details.iov.codecConfig");
   return {
-    kind: TransactionKind.RegisterBlockchain,
-    blockchainId: Encoding.fromUtf8(ensure(msg.id, "id")) as ChainId,
     ...base,
+    kind: TransactionKind.RegisterBlockchain,
+    blockchainId: Encoding.fromUtf8(id) as ChainId,
+    codecName: codec,
+    codecConfig: codecConfig,
   };
 }
 

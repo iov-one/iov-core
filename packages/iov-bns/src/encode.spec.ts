@@ -29,7 +29,6 @@ import {
   privJson,
   pubBin,
   pubJson,
-  registerBlockchainTransaction,
   sendTxBin,
   sendTxJson,
   sig,
@@ -88,24 +87,13 @@ describe("Encode", () => {
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
         blockchainId: "wonderland" as ChainId,
+        codecName: "rules_of_wonderland",
+        codecConfig: `{ rules: ["make peace not war"] }`,
       };
-      const msg = buildMsg(registerBlockchain);
-      expect(msg.issueBlockchainNftMsg).toBeDefined();
-      expect(msg.issueBlockchainNftMsg!.id).toEqual(toAscii("wonderland"));
-    });
-
-    it("matches test data for RegisterBlockchainTx", () => {
-      const registerBlockchain: RegisterBlockchainTx = {
-        kind: TransactionKind.RegisterBlockchain,
-        chainId: "registry-chain" as ChainId,
-        signer: {
-          algo: Algorithm.Ed25519,
-          data: registerBlockchainTransaction.ownerEd25519Pubkey,
-        },
-        blockchainId: registerBlockchainTransaction.blockchainId,
-      };
-      const encoded = new Uint8Array(codecImpl.app.Tx.encode(buildMsg(registerBlockchain)).finish());
-      expect(encoded).toEqual(registerBlockchainTransaction.expectedBinary);
+      const msg = buildMsg(registerBlockchain).issueBlockchainNftMsg!;
+      expect(msg.id).toEqual(toAscii("wonderland"));
+      expect(msg.details!.iov!.codec).toEqual("rules_of_wonderland");
+      expect(msg.details!.iov!.codecConfig).toEqual(`{ rules: ["make peace not war"] }`);
     });
 
     it("works for RegisterUsernameTx", () => {

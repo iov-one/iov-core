@@ -74,8 +74,8 @@ export interface RegisterBlockchainTx extends BaseTx {
     readonly kind: TransactionKind.RegisterBlockchain;
     /** the ID of the blockchain to be registered */
     readonly blockchainId: ChainId;
-    readonly codecName?: string;
-    readonly codecConfig?: string;
+    readonly codecName: string;
+    readonly codecConfig: string;
 }
 export interface RegisterUsernameTx extends BaseTx {
     readonly kind: TransactionKind.RegisterUsername;

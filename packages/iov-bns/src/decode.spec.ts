@@ -66,13 +66,18 @@ describe("Decode", () => {
       },
     };
 
-    it("works for RegisterUsername", () => {
+    it("works for RegisterBlockchain", () => {
       const transactionMessage: codecImpl.app.ITx = {
         issueBlockchainNftMsg: {
           id: Encoding.toAscii("wonderland"),
           owner: Encoding.fromHex("0011223344556677889900112233445566778899"),
           approvals: undefined,
-          details: undefined,
+          details: {
+            iov: {
+              codec: "wonderland_rules",
+              codecConfig: `{ rules: ["make peace not war"] }`,
+            },
+          },
         },
       };
       const parsed = parseMsg(defaultBaseTx, transactionMessage);
@@ -80,6 +85,8 @@ describe("Decode", () => {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.blockchainId).toEqual("wonderland");
+      expect(parsed.codecName).toEqual("wonderland_rules");
+      expect(parsed.codecConfig).toEqual(`{ rules: ["make peace not war"] }`);
     });
 
     it("works for RegisterUsername", () => {

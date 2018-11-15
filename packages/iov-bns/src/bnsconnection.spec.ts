@@ -355,6 +355,8 @@ describe("BnsConnection", () => {
       throw new Error("Unexpected transaction kind");
     }
     expect(searchResult[0].transaction.blockchainId).toEqual(blockchainId);
+    expect(searchResult[0].transaction.codecName).toEqual("wonderland_rules");
+    expect(searchResult[0].transaction.codecConfig).toEqual(`{ "any" : [ "json", "content" ] }`);
 
     connection.disconnect();
   });
