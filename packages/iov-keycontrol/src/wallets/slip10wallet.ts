@@ -274,6 +274,21 @@ export class Slip10Wallet implements Wallet {
     prehashType: PrehashType,
     _: ChainId,
   ): Promise<SignatureBytes> {
+    // validate curve/prehash combination
+    switch (this.curve) {
+      case Slip10Curve.Ed25519:
+        // no restrictions, go ahead
+        break;
+      case Slip10Curve.Secp256k1:
+        switch (prehashType) {
+          case PrehashType.None:
+            throw new Error("Prehashing required for Secp256k1");
+        }
+        break;
+      default:
+        throw new Error("Unknown curve");
+    }
+
     const privkey = await this.privkeyForIdentity(identity);
     const message = prehash(transactionBytes, prehashType);
 

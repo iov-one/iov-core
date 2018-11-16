@@ -1,6 +1,6 @@
 import { ChainId } from "@iov/base-types";
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
-import { Secp256k1, Slip10RawIndex } from "@iov/crypto";
+import { Secp256k1, Sha256, Slip10RawIndex } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
 import { Secp256k1HdWallet } from "./secp256k1hdwallet";
@@ -118,13 +118,13 @@ describe("Secp256k1HdWallet", () => {
     const signature = await wallet.createTransactionSignature(
       mainIdentity,
       data,
-      PrehashType.None,
+      PrehashType.Sha256,
       "" as ChainId,
     );
 
     const valid = await Secp256k1.verifySignature(
       signature,
-      data,
+      new Sha256(data).digest(),
       fromHex(
         "04a7a8d79df7857bf25a3a389b0ecea83c5272181d2c062346b1c64e258589fce0f48fe3900d52ef9a034a35e671329bb65441d8e010484d3e4817578550448e99",
       ),
