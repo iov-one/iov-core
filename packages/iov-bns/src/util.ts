@@ -1,6 +1,7 @@
 import Long from "long";
 import { As } from "type-tagger";
 
+import { Algorithm, ChainId, PublicKeyBundle } from "@iov/base-types";
 import {
   Address,
   BcpTxQuery,
@@ -15,7 +16,6 @@ import {
 import { Sha256 } from "@iov/crypto";
 import { Bech32, Encoding } from "@iov/encoding";
 import { QueryString } from "@iov/tendermint-rpc";
-import { Algorithm, ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 
 /** Encodes raw bytes into a bech32 address */
 export function encodeBnsAddress(bytes: Uint8Array): Address {

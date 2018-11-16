@@ -1,5 +1,5 @@
 import { ReadonlyDate } from "readonly-date";
-import { Algorithm, ChainId, PostableBytes, PublicKeyBundle, SignatureBytes, TxId } from "@iov/tendermint-types";
+import { Algorithm, ChainId, PostableBytes, PublicKeyBundle, SignatureBytes, TxId } from "@iov/base-types";
 import { IpPortString } from "./encodings";
 export declare type Response = AbciInfoResponse | AbciQueryResponse | BlockResponse | BlockResultsResponse | BlockchainResponse | BroadcastTxAsyncResponse | BroadcastTxSyncResponse | BroadcastTxCommitResponse | CommitResponse | GenesisResponse | HealthResponse | StatusResponse | TxResponse | TxSearchResponse | ValidatorsResponse;
 export interface AbciInfoResponse {

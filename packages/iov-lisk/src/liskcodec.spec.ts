@@ -1,5 +1,3 @@
-import { Address, Nonce, SendTx, SignedTransaction, TokenTicker, TransactionKind } from "@iov/bcp-types";
-import { Encoding, Int53 } from "@iov/encoding";
 import {
   Algorithm,
   ChainId,
@@ -7,7 +5,9 @@ import {
   PublicKeyBundle,
   PublicKeyBytes,
   SignatureBytes,
-} from "@iov/tendermint-types";
+} from "@iov/base-types";
+import { Address, Nonce, SendTx, SignedTransaction, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Encoding, Int53 } from "@iov/encoding";
 
 import { liskCodec } from "./liskcodec";
 

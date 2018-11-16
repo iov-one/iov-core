@@ -1,6 +1,14 @@
 import { ReadonlyDate } from "readonly-date";
 
 import {
+  Algorithm,
+  ChainId,
+  PostableBytes,
+  PublicKeyBundle,
+  PublicKeyBytes,
+  SignatureBytes,
+} from "@iov/base-types";
+import {
   Address,
   Nonce,
   PrehashType,
@@ -14,14 +22,6 @@ import {
 } from "@iov/bcp-types";
 import { Parse, Serialization } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
-import {
-  Algorithm,
-  ChainId,
-  PostableBytes,
-  PublicKeyBundle,
-  PublicKeyBytes,
-  SignatureBytes,
-} from "@iov/tendermint-types";
 
 import { constants } from "./constants";
 import { isValidAddress, pubkeyToAddress } from "./derivation";

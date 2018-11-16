@@ -1,3 +1,4 @@
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import {
   Address,
   Amount,
@@ -14,7 +15,6 @@ import {
   TransactionKind,
 } from "@iov/bcp-types";
 import { Encoding, Int53 } from "@iov/encoding";
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { PrivateKeyBundle, PrivateKeyBytes } from "./types";
 import { hashId } from "./util";

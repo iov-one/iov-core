@@ -1,5 +1,5 @@
+import { PostableBytes, TxId } from "@iov/base-types";
 import { Ripemd160 } from "@iov/crypto";
-import { PostableBytes, TxId } from "@iov/tendermint-types";
 
 export function hashTx(tx: PostableBytes): TxId {
   const hash = new Ripemd160(prefix(tx)).update(tx).digest();

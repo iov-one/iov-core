@@ -1,9 +1,9 @@
 import { As } from "type-tagger";
 
+import { ChainId, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
-import { ChainId, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types";
 
 import { Ed25519Wallet } from "./wallets";
 

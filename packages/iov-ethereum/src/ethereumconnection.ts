@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Stream } from "xstream";
 
+import { Algorithm, ChainId, PostableBytes, PublicKeyBytes } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
@@ -17,7 +18,6 @@ import {
   isAddressQuery,
   TokenTicker,
 } from "@iov/bcp-types";
-import { Algorithm, ChainId, PostableBytes, PublicKeyBytes } from "@iov/tendermint-types";
 
 import { constants } from "./constants";
 import { Parse } from "./parse";

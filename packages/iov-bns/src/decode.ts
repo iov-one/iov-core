@@ -1,3 +1,4 @@
+import { ChainId } from "@iov/base-types";
 import {
   Address,
   Amount,
@@ -16,7 +17,6 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
-import { ChainId } from "@iov/tendermint-types";
 
 import * as codecImpl from "./generated/codecimpl";
 import { asNumber, decodeFullSig, ensure } from "./types";

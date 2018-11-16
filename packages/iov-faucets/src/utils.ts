@@ -1,7 +1,7 @@
+import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import { Address } from "@iov/bcp-types";
 import { bnsCodec } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
-import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/tendermint-types";
 
 /**
  * Helper function for tests. Not exported in the package.

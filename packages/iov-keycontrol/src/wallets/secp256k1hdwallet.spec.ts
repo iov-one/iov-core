@@ -1,7 +1,7 @@
+import { ChainId } from "@iov/base-types";
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Secp256k1, Slip10RawIndex } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { ChainId } from "@iov/tendermint-types";
 
 import { Secp256k1HdWallet } from "./secp256k1hdwallet";
 

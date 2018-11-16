@@ -1,6 +1,6 @@
 import { As } from "type-tagger";
 
-import { ChainId, PostableBytes, PublicKeyBundle, SignatureBytes } from "@iov/tendermint-types";
+import { ChainId, PostableBytes, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
 
 import { Nonce, UnsignedTransaction } from "./transactions";
 

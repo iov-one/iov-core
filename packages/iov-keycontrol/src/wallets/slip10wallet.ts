@@ -1,5 +1,6 @@
 import PseudoRandom from "random-js";
 
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import {
   Bip39,
@@ -13,7 +14,6 @@ import {
 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { prehash } from "../prehashing";
 import {

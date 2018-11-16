@@ -1,7 +1,7 @@
 import { Stream } from "xstream";
+import { ChainId, PostableBytes } from "@iov/base-types";
 import { Address, BcpAccount, BcpAccountQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpNonce, BcpQueryEnvelope, BcpQueryTag, BcpSwapQuery, BcpTicker, BcpTransactionResponse, BcpTxQuery, ConfirmedTransaction, TokenTicker, TxReadCodec } from "@iov/bcp-types";
 import { Client as TendermintClient, StatusResponse } from "@iov/tendermint-rpc";
-import { ChainId, PostableBytes } from "@iov/tendermint-types";
 import { InitData } from "./normalize";
 import { Result } from "./types";
 /**

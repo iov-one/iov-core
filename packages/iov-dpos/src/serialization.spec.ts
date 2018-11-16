@@ -1,8 +1,8 @@
 import { ReadonlyDate } from "readonly-date";
 
+import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import { Address, Nonce, SendTx, SignedTransaction, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Encoding, Int53 } from "@iov/encoding";
-import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/tendermint-types";
 
 import { Serialization, TransactionSerializationOptions } from "./serialization";
 

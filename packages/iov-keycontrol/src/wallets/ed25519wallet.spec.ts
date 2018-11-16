@@ -1,7 +1,7 @@
+import { Algorithm, ChainId } from "@iov/base-types";
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Ed25519Keypair, Sha256, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { Algorithm, ChainId } from "@iov/tendermint-types";
 
 import { WalletSerializationString } from "../wallet";
 import { Ed25519Wallet } from "./ed25519wallet";

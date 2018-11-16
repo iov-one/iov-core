@@ -1,5 +1,6 @@
 import { Stream } from "xstream";
 
+import { ChainId, PostableBytes, TxId } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
@@ -38,7 +39,6 @@ import {
   TxEvent,
   TxResponse,
 } from "@iov/tendermint-rpc";
-import { ChainId, PostableBytes, TxId } from "@iov/tendermint-types";
 
 import { bnsCodec } from "./bnscodec";
 import * as codecImpl from "./generated/codecimpl";

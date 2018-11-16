@@ -1,5 +1,5 @@
+import { ChainId, PublicKeyBundle } from "@iov/base-types";
 import { Address, Amount, FullSignature, SendTx, SignedTransaction } from "@iov/bcp-types";
-import { ChainId, PublicKeyBundle } from "@iov/tendermint-types";
 import { PrivateKeyBundle } from "./types";
 export declare const pubJson: PublicKeyBundle;
 export declare const pubBin: Uint8Array;

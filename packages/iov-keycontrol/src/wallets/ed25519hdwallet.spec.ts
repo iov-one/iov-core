@@ -1,7 +1,7 @@
+import { ChainId } from "@iov/base-types";
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Ed25519, Slip10RawIndex } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { ChainId } from "@iov/tendermint-types";
 
 import { Ed25519HdWallet } from "./ed25519hdwallet";
 

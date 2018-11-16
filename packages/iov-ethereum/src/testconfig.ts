@@ -1,6 +1,6 @@
+import { ChainId } from "@iov/base-types";
 import { Address, Nonce } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
-import { ChainId } from "@iov/tendermint-types";
 
 export interface EthereumNetworkConfig {
   readonly env: string;

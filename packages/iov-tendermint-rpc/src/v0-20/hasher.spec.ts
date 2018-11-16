@@ -1,5 +1,5 @@
+import { PostableBytes } from "@iov/base-types";
 import { Encoding } from "@iov/encoding";
-import { PostableBytes } from "@iov/tendermint-types";
 
 import { hashTx } from "./hasher";
 
