@@ -9,6 +9,7 @@ Breaking changes
 * @iov/bcp-types: Rename `FungibleToken` to `Amount`
 * @iov/bns: Re-generate BNS codec from weave v0.9.0 and adapt wrapper types.
 * @iov/crypto: Convert pubkey of Secp256k1Keypair into uncompressed format with prefix `04`.
+* @iov/crypto: Secp256k1.createSignature/.verifySignature now comsume a message hash and do no hashing internally.
 * @iov/dpos: Rename `Amount`/`parseAmount` to `Quantity`/`parseQuantity`
 * @iov/keycontrol: Let `Secp256k1HdWallet` work on uncompressed pubkeys. Since `Secp256k1HdWallet`
   was not used yet, there is no migration for existing `Secp256k1HdWallet`.
