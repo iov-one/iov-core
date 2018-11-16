@@ -307,7 +307,10 @@ export class Slip10Wallet implements Wallet {
         //   const r = sig.r();
         //   const s = sig.s();
         //   const recoveryParam = sig.recovery;
-        signature = (await Secp256k1.createSignature(message, privkey)).toFixedLength();
+        signature =
+          prehashType === PrehashType.Keccak256
+            ? (await Secp256k1.createSignature(message, privkey)).toFixedLength()
+            : (await Secp256k1.createSignature(message, privkey)).toDer();
         break;
       default:
         throw new Error("Unknown curve");
