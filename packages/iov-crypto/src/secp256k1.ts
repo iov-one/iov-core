@@ -3,8 +3,6 @@ import { Encoding } from "@iov/encoding";
 import BN = require("bn.js");
 import elliptic = require("elliptic");
 
-import { Sha256 } from "./sha";
-
 const secp256k1 = new elliptic.ec("secp256k1");
 const secp256k1N = new BN("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141", "hex");
 
@@ -49,8 +47,14 @@ export class Secp256k1 {
   // - deterministic (RFC 6979)
   // - lowS signature
   // - DER encoded
-  public static async createSignature(message: Uint8Array, privkey: Uint8Array): Promise<Uint8Array> {
-    const messageHash = new Sha256(message).digest();
+  public static async createSignature(messageHash: Uint8Array, privkey: Uint8Array): Promise<Uint8Array> {
+    if (messageHash.length === 0) {
+      throw new Error("Message hash must not be empty");
+    }
+    if (messageHash.length > 32) {
+      throw new Error("Message hash length must not exceed 32 bytes");
+    }
+
     const keypair = secp256k1.keyFromPrivate(privkey);
     // the `canonical` option ensures creation of lowS signature representations
     const signature = new Uint8Array(keypair.sign(messageHash, { canonical: true }).toDER());
@@ -59,10 +63,16 @@ export class Secp256k1 {
 
   public static async verifySignature(
     signature: Uint8Array,
-    message: Uint8Array,
+    messageHash: Uint8Array,
     pubkey: Uint8Array,
   ): Promise<boolean> {
-    const messageHash = new Sha256(message).digest();
+    if (messageHash.length === 0) {
+      throw new Error("Message hash must not be empty");
+    }
+    if (messageHash.length > 32) {
+      throw new Error("Message hash length must not exceed 32 bytes");
+    }
+
     const keypair = secp256k1.keyFromPublic(pubkey);
 
     // From https://github.com/indutny/elliptic:
