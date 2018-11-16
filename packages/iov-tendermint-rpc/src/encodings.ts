@@ -49,7 +49,7 @@ export function parseInteger(str: IntegerString): number {
 }
 
 export function encodeInteger(num: number): IntegerString {
-  return new Int53(num).toString();
+  return new Int53(num).toString() as IntegerString;
 }
 
 export class Base64 {

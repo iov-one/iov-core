@@ -78,7 +78,7 @@ export interface BlockchainRequest {
 export interface BlockchainRequestParams {
   readonly minHeight?: number;
   readonly maxHeight?: number;
-};
+}
 
 export interface BlockResultsRequest {
   readonly method: Method.BLOCK_RESULTS;

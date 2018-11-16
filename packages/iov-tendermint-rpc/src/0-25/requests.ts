@@ -1,7 +1,7 @@
 import { Encoding } from "@iov/encoding";
 
 import { JsonRpcRequest, jsonRpcWith } from "../common";
-import { Base64, Base64String, encodeInteger, HexString, may, notEmpty } from "../encodings";
+import { Base64, Base64String, encodeInteger, HexString, IntegerString, may, notEmpty } from "../encodings";
 import * as requests from "../requests";
 
 /***** queries *****/
@@ -59,17 +59,17 @@ interface HeightParam {
   readonly height?: number;
 }
 interface RpcHeightParam {
-  readonly height?: string;
+  readonly height?: IntegerString;
 }
 function encodeHeightParam(param: HeightParam): RpcHeightParam {
   return {
-    height: may(encodeInteger, param.height)
+    height: may(encodeInteger, param.height),
   };
 }
 
 interface RpcBlockchainRequestParams {
-  readonly minHeight?: string;
-  readonly maxHeight?: string;
+  readonly minHeight?: IntegerString;
+  readonly maxHeight?: IntegerString;
 }
 function encodeBlockchainRequestParams(param: requests.BlockchainRequestParams): RpcBlockchainRequestParams {
   return {
@@ -116,8 +116,8 @@ function encodeTxParams(params: requests.TxParams): RpcTxParams {
 interface RpcTxSearchParams {
   readonly query: requests.QueryString;
   readonly prove?: boolean;
-  readonly page?: string;
-  readonly per_page?: string;
+  readonly page?: IntegerString;
+  readonly per_page?: IntegerString;
 }
 function encodeTxSearchParams(params: requests.TxSearchParams): RpcTxSearchParams {
   return {
