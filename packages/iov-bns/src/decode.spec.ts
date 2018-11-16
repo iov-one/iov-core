@@ -1,5 +1,5 @@
 import { Algorithm, ChainId, PublicKeyBytes } from "@iov/base-types";
-import { Address, BaseTx, TransactionKind } from "@iov/bcp-types";
+import { Address, BaseTx, BnsBlockchainId, TransactionKind } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
 import { decodeAmount, parseMsg, parseTx } from "./decode";
@@ -72,8 +72,8 @@ describe("Decode", () => {
       const transactionMessage: codecImpl.app.ITx = {
         addUsernameAddressNftMsg: {
           id: toUtf8("alice"),
-          address: toUtf8("0xAABB001122DD"),
           chainID: toUtf8("wonderland"),
+          address: toUtf8("0xAABB001122DD"),
         },
       };
       const parsed = parseMsg(defaultBaseTx, transactionMessage);
@@ -81,8 +81,8 @@ describe("Decode", () => {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.username).toEqual("alice");
+      expect(parsed.payload.blockchainId).toEqual(toUtf8("wonderland"));
       expect(parsed.payload.address).toEqual("0xAABB001122DD");
-      expect(parsed.payload.chainId).toEqual("wonderland");
     });
 
     it("works for RegisterBlockchain", () => {
@@ -103,7 +103,7 @@ describe("Decode", () => {
       if (parsed.kind !== TransactionKind.RegisterBlockchain) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.blockchainId).toEqual("wonderland");
+      expect(parsed.blockchainId).toEqual(toUtf8("wonderland"));
       expect(parsed.codecName).toEqual("wonderland_rules");
       expect(parsed.codecConfig).toEqual(`{ rules: ["make peace not war"] }`);
     });
@@ -135,11 +135,11 @@ describe("Decode", () => {
       expect(parsed.username).toEqual("bobby");
       expect(parsed.addresses.length).toEqual(2);
       expect(parsed.addresses[0]).toEqual({
-        chainId: "chain1" as ChainId,
+        blockchainId: toUtf8("chain1") as BnsBlockchainId,
         address: "23456782367823X" as Address,
       });
       expect(parsed.addresses[1]).toEqual({
-        chainId: "chain2" as ChainId,
+        blockchainId: toUtf8("chain2") as BnsBlockchainId,
         address: "0x001100aabbccddffeeddaa8899776655" as Address,
       });
     });
@@ -158,7 +158,7 @@ describe("Decode", () => {
       }
       expect(parsed.username).toEqual("alice");
       expect(parsed.payload.address).toEqual("0xAABB001122DD");
-      expect(parsed.payload.chainId).toEqual("wonderland");
+      expect(parsed.payload.blockchainId).toEqual(toUtf8("wonderland"));
     });
   });
 });

@@ -1,4 +1,4 @@
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
+import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import {
   AddAddressToUsernameTx,
   Address,
@@ -7,6 +7,7 @@ import {
   BcpSwapQuery,
   BcpTransactionResponse,
   BcpTxQuery,
+  BnsBlockchainId,
   Nonce,
   RegisterBlockchainTx,
   RegisterUsernameTx,
@@ -35,6 +36,8 @@ import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
 import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
 import { keyToAddress } from "./util";
+
+const { toUtf8 } = Encoding;
 
 function skipTests(): boolean {
   return !process.env.BNSD_ENABLED;
@@ -336,7 +339,7 @@ describe("BnsConnection", () => {
     const identityAddress = keyToAddress(identity.pubkey);
 
     // Create and send registration
-    const blockchainId = `wonderland_${Math.random()}` as ChainId;
+    const blockchainId = toUtf8(`wonderland_${Math.random()}`) as BnsBlockchainId;
     const registration: RegisterBlockchainTx = {
       kind: TransactionKind.RegisterBlockchain,
       chainId: chainId,
@@ -436,7 +439,7 @@ describe("BnsConnection", () => {
     );
 
     // Register a blockchain
-    const blockchainId = `wonderland_${Math.random()}` as ChainId;
+    const blockchainId = toUtf8(`wonderland_${Math.random()}`) as BnsBlockchainId;
     const blockchainRegistration: RegisterBlockchainTx = {
       kind: TransactionKind.RegisterBlockchain,
       chainId: chainId,
@@ -465,7 +468,7 @@ describe("BnsConnection", () => {
       signer: identity.pubkey,
       username: username,
       payload: {
-        chainId: blockchainId,
+        blockchainId: blockchainId,
         address: address,
       },
     };
@@ -488,7 +491,7 @@ describe("BnsConnection", () => {
       signer: identity.pubkey,
       username: username,
       payload: {
-        chainId: blockchainId,
+        blockchainId: blockchainId,
         address: address,
       },
     };

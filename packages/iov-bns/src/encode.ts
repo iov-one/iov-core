@@ -112,7 +112,7 @@ function buildAddAddressToUsernameTx(tx: AddAddressToUsernameTx): codecImpl.app.
   return {
     addUsernameAddressNftMsg: {
       id: Encoding.toUtf8(tx.username),
-      chainID: Encoding.toUtf8(tx.payload.chainId),
+      chainID: tx.payload.blockchainId,
       address: Encoding.toUtf8(tx.payload.address),
     },
   };
@@ -180,7 +180,7 @@ function buildSwapTimeoutTx(tx: SwapTimeoutTx): codecImpl.app.ITx {
 function buildRegisterBlockchainTx(tx: RegisterBlockchainTx): codecImpl.app.ITx {
   return {
     issueBlockchainNftMsg: codecImpl.blockchain.IssueTokenMsg.create({
-      id: Encoding.toUtf8(tx.blockchainId),
+      id: tx.blockchainId,
       owner: decodeBnsAddress(keyToAddress(tx.signer)).data,
       approvals: undefined,
       details: codecImpl.blockchain.TokenDetails.create({
@@ -198,7 +198,7 @@ function buildRegisterUsernameTx(tx: RegisterUsernameTx): codecImpl.app.ITx {
   const chainAddresses = tx.addresses.map(
     (pair): codecImpl.username.IChainAddress => {
       return {
-        chainID: Encoding.toUtf8(pair.chainId),
+        chainID: pair.blockchainId,
         address: Encoding.toUtf8(pair.address),
       };
     },
@@ -220,7 +220,7 @@ function buildRemoveAddressFromUsernameTx(tx: RemoveAddressFromUsernameTx): code
   return {
     removeUsernameAddressMsg: {
       id: Encoding.toUtf8(tx.username),
-      chainID: Encoding.toUtf8(tx.payload.chainId),
+      chainID: tx.payload.blockchainId,
       address: Encoding.toUtf8(tx.payload.address),
     },
   };
