@@ -510,6 +510,33 @@ describe("BnsConnection", () => {
       ),
     );
 
+    // Adding second address for the same chain fails
+    const address2 = `testaddress2_${Math.random()}` as Address;
+    const addAddress2: AddAddressToUsernameTx = {
+      kind: TransactionKind.AddAddressToUsername,
+      chainId: registryChainId,
+      signer: identity.pubkey,
+      username: username,
+      payload: {
+        blockchainId: blockchainId,
+        address: address2,
+      },
+    };
+    await connection
+      .postTx(
+        bnsCodec.bytesToPost(
+          await profile.signTransaction(
+            wallet.id,
+            identity,
+            addAddress2,
+            bnsCodec,
+            await getNonce(connection, identityAddress),
+          ),
+        ),
+      )
+      .then(() => fail("must not resolve"))
+      .catch(error => expect(error).toMatch(/duplicate entry/i));
+
     // Remove address
     const removeAddress: RemoveAddressFromUsernameTx = {
       kind: TransactionKind.RemoveAddressFromUsername,
@@ -532,6 +559,22 @@ describe("BnsConnection", () => {
         ),
       ),
     );
+
+    // Do the same removal again
+    await connection
+      .postTx(
+        bnsCodec.bytesToPost(
+          await profile.signTransaction(
+            wallet.id,
+            identity,
+            removeAddress,
+            bnsCodec,
+            await getNonce(connection, identityAddress),
+          ),
+        ),
+      )
+      .then(() => fail("must not resolve"))
+      .catch(error => expect(error).toMatch(/invalid entry/i));
 
     connection.disconnect();
   });
