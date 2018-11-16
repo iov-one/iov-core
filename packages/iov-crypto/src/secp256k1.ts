@@ -61,6 +61,13 @@ export class Secp256k1 {
     return signature;
   }
 
+  public static async createSignatureEth(message: Uint8Array, privkey: Uint8Array): Promise<Uint8Array> {
+    const keypair = secp256k1.keyFromPrivate(privkey);
+    const signatureBase = keypair.sign(message, { canonical: true });
+    const signature = new Uint8Array(signatureBase.toDER());
+    return signature;
+  }
+
   public static async verifySignature(
     signature: Uint8Array,
     messageHash: Uint8Array,

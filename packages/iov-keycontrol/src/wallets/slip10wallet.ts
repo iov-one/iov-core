@@ -298,7 +298,10 @@ export class Slip10Wallet implements Wallet {
         signature = await Ed25519.createSignature(message, await Ed25519.makeKeypair(privkey));
         break;
       case Slip10Curve.Secp256k1:
-        signature = await Secp256k1.createSignature(message, privkey);
+        signature =
+          prehashType === PrehashType.Keccak256
+            ? await Secp256k1.createSignatureEth(message, privkey)
+            : await Secp256k1.createSignature(message, privkey);
         break;
       default:
         throw new Error("Unknown curve");
