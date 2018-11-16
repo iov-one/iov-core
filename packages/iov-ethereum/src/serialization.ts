@@ -7,7 +7,7 @@ import { constants } from "./constants";
 import { isValidAddress } from "./derivation";
 import { encodeQuantity, encodeQuantityString, hexPadToEven, stringDataToHex } from "./utils";
 
-const { fromHex } = Encoding;
+const { fromHex, toRlp } = Encoding;
 
 export class Serialization {
   public static serializeTransaction(unsigned: UnsignedTransaction, nonce: Nonce): Uint8Array {
@@ -16,12 +16,15 @@ export class Serialization {
         let gasPriceHex = "0x";
         let gasLimitHex = "0x";
         let dataHex = "0x";
+        let nonceHex = "0x";
 
-        const nonceHex = encodeQuantity(nonce.toNumber());
         const chainIdHex = encodeQuantity(Number(unsigned.chainId));
         const valueHex = encodeQuantityString(
           Serialization.amountFromComponents(unsigned.amount.whole, unsigned.amount.fractional),
         );
+        if (nonce.toNumber() > 0) {
+          nonceHex = encodeQuantity(nonce.toNumber());
+        }
         if (unsigned.gasPrice) {
           gasPriceHex = encodeQuantityString(
             Serialization.amountFromComponents(unsigned.gasPrice.whole, unsigned.gasPrice.fractional),
@@ -39,15 +42,19 @@ export class Serialization {
           throw new Error("Invalid recipient address");
         }
 
-        return new Uint8Array([
-          ...fromHex(hexPadToEven(nonceHex)),
-          ...fromHex(hexPadToEven(gasPriceHex)),
-          ...fromHex(hexPadToEven(gasLimitHex)),
-          ...fromHex(hexPadToEven(unsigned.recipient)),
-          ...fromHex(hexPadToEven(valueHex)),
-          ...fromHex(hexPadToEven(dataHex)),
-          ...fromHex(hexPadToEven(chainIdHex)),
-        ]);
+        return new Uint8Array(
+          toRlp([
+            Buffer.from(fromHex(hexPadToEven(nonceHex))),
+            Buffer.from(fromHex(hexPadToEven(gasPriceHex))),
+            Buffer.from(fromHex(hexPadToEven(gasLimitHex))),
+            Buffer.from(fromHex(hexPadToEven(unsigned.recipient))),
+            Buffer.from(fromHex(hexPadToEven(valueHex))),
+            Buffer.from(fromHex(hexPadToEven(dataHex))),
+            Buffer.from(fromHex(hexPadToEven(chainIdHex))),
+            Buffer.from([]),
+            Buffer.from([]),
+          ]),
+        );
       default:
         throw new Error("Unsupported kind of transaction");
     }
