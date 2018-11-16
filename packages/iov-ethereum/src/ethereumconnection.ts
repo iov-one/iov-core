@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Stream } from "xstream";
 
-import { Algorithm, ChainId, PostableBytes, PublicKeyBytes } from "@iov/base-types";
+import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, TxId } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
@@ -18,6 +18,7 @@ import {
   isAddressQuery,
   TokenTicker,
 } from "@iov/bcp-types";
+import { Encoding } from "@iov/encoding";
 
 import { constants } from "./constants";
 import { Parse } from "./parse";
@@ -74,8 +75,23 @@ export class EthereumConnection implements BcpConnection {
     return decodeHexQuantity(responseBody.result);
   }
 
-  public async postTx(_: PostableBytes): Promise<BcpTransactionResponse> {
-    throw new Error("Not implemented");
+  public async postTx(bytes: PostableBytes): Promise<BcpTransactionResponse> {
+    const result = await axios.post(this.baseUrl, {
+      jsonrpc: "2.0",
+      method: "eth_sendRawTransaction",
+      params: ["0x" + Encoding.toHex(bytes)],
+      id: 5,
+    });
+    return {
+      metadata: {
+        height: undefined,
+      },
+      data: {
+        message: "",
+        txid: Encoding.fromHex(result.data.result) as TxId,
+        result: result.data,
+      },
+    };
   }
 
   public getTicker(_: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {

@@ -1,4 +1,8 @@
-import { Address, BcpAccountQuery } from "@iov/bcp-types";
+import { Address, BcpAccountQuery, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Slip10RawIndex } from "@iov/crypto";
+import { Secp256k1HdWallet } from "@iov/keycontrol";
+
+import { ethereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
 import { TestConfig } from "./testconfig";
 
@@ -61,5 +65,65 @@ describe("EthereumConnection", () => {
 
     expect(nonceResp.data[0].address).toEqual(address);
     expect(nonceResp.data[0].nonce).toEqual(nonce);
+  });
+
+  it("can post transaction", async () => {
+    pendingWithoutEthereum();
+
+    const wallet = Secp256k1HdWallet.fromMnemonic(
+      "wagon stock borrow episode laundry kitten salute link globe zero feed marble",
+    );
+    const mainIdentity = await wallet.createIdentity([
+      Slip10RawIndex.hardened(0),
+      Slip10RawIndex.hardened(1),
+    ]);
+
+    const recipientAddress = "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address;
+
+    const sendTx: SendTx = {
+      kind: TransactionKind.Send,
+      chainId: nodeChainId,
+      signer: mainIdentity.pubkey,
+      recipient: recipientAddress,
+      amount: {
+        whole: 20,
+        fractional: 0,
+        tokenTicker: "ETH" as TokenTicker,
+      },
+      gasPrice: {
+        whole: 0,
+        fractional: 20000000000,
+        tokenTicker: "ETH" as TokenTicker,
+      },
+      gasLimit: {
+        whole: 0,
+        fractional: 21000,
+        tokenTicker: "ETH" as TokenTicker,
+      },
+    };
+
+    const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
+    const signature = await wallet.createTransactionSignature(
+      mainIdentity,
+      signingJob.bytes,
+      signingJob.prehashType,
+      nodeChainId,
+    );
+
+    const signedTransaction = {
+      transaction: sendTx,
+      transactionBytes: signingJob.bytes,
+      primarySignature: {
+        nonce: nonce,
+        publicKey: mainIdentity.pubkey,
+        signature: signature,
+      },
+      otherSignatures: [],
+    };
+    const bytesToPost = ethereumCodec.bytesToPost(signedTransaction);
+
+    const connection = await EthereumConnection.establish(base);
+    const result = await connection.postTx(bytesToPost);
+    expect(result).toBeTruthy();
   });
 });
