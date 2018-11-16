@@ -65,7 +65,9 @@ describe("Serialization", () => {
       };
       const serializedTx = serializeTransaction(tx, TestConfig.nonce);
       expect(serializedTx).toEqual(
-        fromHex("0004a817c800520843aa18faae961c23715735682dc75662d90f4dde01158e460913d000001691"),
+        fromHex(
+          "ef808504a817c8008252089443aa18faae961c23715735682dc75662d90f4dde8901158e460913d00000808216918080",
+        ),
       );
     });
   });
