@@ -133,11 +133,15 @@ describe("Decode", () => {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.username).toEqual("bobby");
-      expect(parsed.addresses.size).toEqual(2);
-      expect(parsed.addresses.get("chain1" as ChainId)).toEqual("23456782367823X" as Address);
-      expect(parsed.addresses.get("chain2" as ChainId)).toEqual(
-        "0x001100aabbccddffeeddaa8899776655" as Address,
-      );
+      expect(parsed.addresses.length).toEqual(2);
+      expect(parsed.addresses[0]).toEqual({
+        chainId: "chain1" as ChainId,
+        address: "23456782367823X" as Address,
+      });
+      expect(parsed.addresses[1]).toEqual({
+        chainId: "chain2" as ChainId,
+        address: "0x001100aabbccddffeeddaa8899776655" as Address,
+      });
     });
 
     it("works for RemoveAddressFromUsername", () => {

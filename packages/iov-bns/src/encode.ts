@@ -195,14 +195,11 @@ function buildRegisterBlockchainTx(tx: RegisterBlockchainTx): codecImpl.app.ITx 
 }
 
 function buildRegisterUsernameTx(tx: RegisterUsernameTx): codecImpl.app.ITx {
-  const sortedAddressPairs = [...tx.addresses.entries()].sort((pair1, pair2) => {
-    return pair1[0].localeCompare(pair2[0]); // sort by chain ID
-  });
-  const chainAddresses = sortedAddressPairs.map(
+  const chainAddresses = tx.addresses.map(
     (pair): codecImpl.username.IChainAddress => {
       return {
-        chainID: Encoding.toUtf8(pair[0]),
-        address: Encoding.toUtf8(pair[1]),
+        chainID: Encoding.toUtf8(pair.chainId),
+        address: Encoding.toUtf8(pair.address),
       };
     },
   );

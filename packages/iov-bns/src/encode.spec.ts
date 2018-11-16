@@ -121,11 +121,20 @@ describe("Encode", () => {
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
         username: "alice",
-        addresses: new Map([
-          ["chain1" as ChainId, "367X" as Address],
-          ["chain3" as ChainId, "0xddffeeffddaa44" as Address],
-          ["chain2" as ChainId, "0x00aabbddccffee" as Address],
-        ]),
+        addresses: [
+          {
+            chainId: "chain1" as ChainId,
+            address: "367X" as Address,
+          },
+          {
+            chainId: "chain3" as ChainId,
+            address: "0xddffeeffddaa44" as Address,
+          },
+          {
+            chainId: "chain2" as ChainId,
+            address: "0x00aabbddccffee" as Address,
+          },
+        ],
       };
       const msg = buildMsg(registerUsername);
       expect(msg.issueUsernameNftMsg).toBeDefined();
@@ -135,10 +144,10 @@ describe("Encode", () => {
       expect(msg.issueUsernameNftMsg!.details!.addresses!.length).toEqual(3);
       expect(msg.issueUsernameNftMsg!.details!.addresses![0].chainID).toEqual(toAscii("chain1"));
       expect(msg.issueUsernameNftMsg!.details!.addresses![0].address).toEqual(toAscii("367X"));
-      expect(msg.issueUsernameNftMsg!.details!.addresses![1].chainID).toEqual(toAscii("chain2"));
-      expect(msg.issueUsernameNftMsg!.details!.addresses![1].address).toEqual(toAscii("0x00aabbddccffee"));
-      expect(msg.issueUsernameNftMsg!.details!.addresses![2].chainID).toEqual(toAscii("chain3"));
-      expect(msg.issueUsernameNftMsg!.details!.addresses![2].address).toEqual(toAscii("0xddffeeffddaa44"));
+      expect(msg.issueUsernameNftMsg!.details!.addresses![1].chainID).toEqual(toAscii("chain3"));
+      expect(msg.issueUsernameNftMsg!.details!.addresses![1].address).toEqual(toAscii("0xddffeeffddaa44"));
+      expect(msg.issueUsernameNftMsg!.details!.addresses![2].chainID).toEqual(toAscii("chain2"));
+      expect(msg.issueUsernameNftMsg!.details!.addresses![2].address).toEqual(toAscii("0x00aabbddccffee"));
     });
 
     it("works for RemoveAddressFromUsernameTx", () => {

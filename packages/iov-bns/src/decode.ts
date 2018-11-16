@@ -4,6 +4,7 @@ import {
   Address,
   Amount,
   BaseTx,
+  ChainAddressPair,
   FullSignature,
   RegisterBlockchainTx,
   RegisterUsernameTx,
@@ -170,24 +171,19 @@ function parseRegisterBlockchainTx(
 
 function parseRegisterUsernameTx(base: BaseTx, msg: codecImpl.username.IIssueTokenMsg): RegisterUsernameTx {
   const chainAddresses = ensure(ensure(msg.details, "details").addresses, "details.addresses");
-  const addressesAsMap = new Map(
-    chainAddresses.map(
-      (chainAddress): [ChainId, Address] => [
-        Encoding.fromUtf8(ensure(chainAddress.chainID, "chainID")) as ChainId,
-        Encoding.fromUtf8(ensure(chainAddress.address, "address")) as Address,
-      ],
-    ),
+  const addresses = chainAddresses.map(
+    (chainAddress): ChainAddressPair => {
+      return {
+        chainId: Encoding.fromUtf8(ensure(chainAddress.chainID, "chainID")) as ChainId,
+        address: Encoding.fromUtf8(ensure(chainAddress.address, "address")) as Address,
+      };
+    },
   );
-  if (addressesAsMap.size !== chainAddresses.length) {
-    throw new Error(
-      "Map does not have the same number of elements as list. Are there duplicate chain ID entries in the transaction?",
-    );
-  }
 
   return {
     kind: TransactionKind.RegisterUsername,
     username: Encoding.fromUtf8(ensure(msg.id, "id")),
-    addresses: addressesAsMap,
+    addresses: addresses,
     ...base,
   };
 }

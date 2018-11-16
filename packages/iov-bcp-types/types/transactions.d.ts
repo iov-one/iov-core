@@ -92,7 +92,7 @@ export interface RegisterBlockchainTx extends BaseTx {
 export interface RegisterUsernameTx extends BaseTx {
     readonly kind: TransactionKind.RegisterUsername;
     readonly username: string;
-    readonly addresses: Map<ChainId, Address>;
+    readonly addresses: ReadonlyArray<ChainAddressPair>;
 }
 export interface RemoveAddressFromUsernameTx extends BaseTx {
     readonly kind: TransactionKind.RemoveAddressFromUsername;
