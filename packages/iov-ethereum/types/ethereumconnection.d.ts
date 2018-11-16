@@ -9,7 +9,7 @@ export declare class EthereumConnection implements BcpConnection {
     disconnect(): void;
     chainId(): ChainId;
     height(): Promise<number>;
-    postTx(_: PostableBytes): Promise<BcpTransactionResponse>;
+    postTx(bytes: PostableBytes): Promise<BcpTransactionResponse>;
     getTicker(_: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAccount(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>>;
