@@ -48,6 +48,10 @@ export function parseInteger(str: IntegerString): number {
   return Int53.fromString(str).toNumber();
 }
 
+export function encodeInteger(num: number): IntegerString {
+  return new Int53(num).toString();
+}
+
 export class Base64 {
   public static encode(data: Uint8Array): Base64String {
     return Encoding.toBase64(data) as Base64String;
