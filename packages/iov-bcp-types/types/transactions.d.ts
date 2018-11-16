@@ -88,6 +88,15 @@ export interface RegisterBlockchainTx extends BaseTx {
     readonly kind: TransactionKind.RegisterBlockchain;
     /** the ID of the blockchain to be registered */
     readonly blockchainId: BnsBlockchainId;
+    /** as defined in https://github.com/iov-one/bns-spec/blob/master/docs/data/ObjectDefinitions.rst#chain */
+    readonly chain: {
+        readonly chainId: ChainId;
+        readonly networkId: string | undefined;
+        readonly name: string;
+        readonly enabled: boolean;
+        readonly production: boolean;
+        readonly mainTickerId: TokenTicker | undefined;
+    };
     readonly codecName: string;
     readonly codecConfig: string;
 }

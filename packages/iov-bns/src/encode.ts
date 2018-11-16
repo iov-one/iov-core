@@ -22,6 +22,12 @@ import * as codecImpl from "./generated/codecimpl";
 import { PrivateKeyBundle } from "./types";
 import { decodeBnsAddress, keyToAddress, preimageIdentifier } from "./util";
 
+const { toUtf8 } = Encoding;
+
+function encodeBoolean(value: boolean): true | undefined {
+  return value ? true : undefined;
+}
+
 export function encodePubkey(publicKey: PublicKeyBundle): codecImpl.crypto.IPublicKey {
   switch (publicKey.algo) {
     case Algorithm.Ed25519:
@@ -184,7 +190,14 @@ function buildRegisterBlockchainTx(tx: RegisterBlockchainTx): codecImpl.app.ITx 
       owner: decodeBnsAddress(keyToAddress(tx.signer)).data,
       approvals: undefined,
       details: codecImpl.blockchain.TokenDetails.create({
-        chain: codecImpl.blockchain.Chain.create({}),
+        chain: codecImpl.blockchain.Chain.create({
+          chainID: tx.chain.chainId,
+          networkID: tx.chain.networkId,
+          name: tx.chain.name,
+          enabled: encodeBoolean(tx.chain.enabled),
+          production: encodeBoolean(tx.chain.production),
+          mainTickerID: tx.chain.mainTickerId ? toUtf8(tx.chain.mainTickerId) : undefined,
+        }),
         iov: codecImpl.blockchain.IOV.create({
           codec: tx.codecName,
           codecConfig: tx.codecConfig,

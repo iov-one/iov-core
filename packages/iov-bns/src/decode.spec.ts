@@ -1,5 +1,5 @@
 import { Algorithm, ChainId, PublicKeyBytes } from "@iov/base-types";
-import { Address, BaseTx, BnsBlockchainId, TransactionKind } from "@iov/bcp-types";
+import { Address, BaseTx, BnsBlockchainId, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
 import { decodeAmount, parseMsg, parseTx } from "./decode";
@@ -92,6 +92,14 @@ describe("Decode", () => {
           owner: Encoding.fromHex("0011223344556677889900112233445566778899"),
           approvals: undefined,
           details: {
+            chain: {
+              chainID: "wonderland",
+              networkID: "7rg047g4h",
+              production: false,
+              enabled: true,
+              mainTickerID: toUtf8("WONDER"),
+              name: "Wonderland",
+            },
             iov: {
               codec: "wonderland_rules",
               codecConfig: `{ rules: ["make peace not war"] }`,
@@ -104,6 +112,14 @@ describe("Decode", () => {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.blockchainId).toEqual(toUtf8("wonderland"));
+      expect(parsed.chain).toEqual({
+        chainId: "wonderland" as ChainId,
+        networkId: "7rg047g4h",
+        production: false,
+        enabled: true,
+        mainTickerId: "WONDER" as TokenTicker,
+        name: "Wonderland",
+      });
       expect(parsed.codecName).toEqual("wonderland_rules");
       expect(parsed.codecConfig).toEqual(`{ rules: ["make peace not war"] }`);
     });

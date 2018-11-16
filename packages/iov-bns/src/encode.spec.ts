@@ -8,6 +8,7 @@ import {
   RegisterBlockchainTx,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
+  TokenTicker,
   TransactionKind,
 } from "@iov/bcp-types";
 import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
@@ -107,11 +108,25 @@ describe("Encode", () => {
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
         blockchainId: toUtf8("wonderland") as BnsBlockchainId,
+        chain: {
+          chainId: "wonderland" as ChainId,
+          networkId: "7rg047g4h",
+          production: false,
+          enabled: true,
+          mainTickerId: "WONDER" as TokenTicker,
+          name: "Wonderland",
+        },
         codecName: "rules_of_wonderland",
         codecConfig: `{ rules: ["make peace not war"] }`,
       };
       const msg = buildMsg(registerBlockchain).issueBlockchainNftMsg!;
       expect(msg.id).toEqual(toAscii("wonderland"));
+      expect(msg.details!.chain!.chainID).toEqual("wonderland");
+      expect(msg.details!.chain!.networkID).toEqual("7rg047g4h");
+      expect(msg.details!.chain!.production).toEqual(false);
+      expect(msg.details!.chain!.enabled).toEqual(true);
+      expect(msg.details!.chain!.mainTickerID).toEqual(toUtf8("WONDER"));
+      expect(msg.details!.chain!.name).toEqual("Wonderland");
       expect(msg.details!.iov!.codec).toEqual("rules_of_wonderland");
       expect(msg.details!.iov!.codecConfig).toEqual(`{ rules: ["make peace not war"] }`);
     });

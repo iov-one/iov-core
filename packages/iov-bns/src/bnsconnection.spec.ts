@@ -1,4 +1,4 @@
-import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import {
   AddAddressToUsernameTx,
   Address,
@@ -331,7 +331,7 @@ describe("BnsConnection", () => {
   it("can register a blockchain", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const chainId = await connection.chainId();
+    const registraChainId = await connection.chainId();
 
     const profile = new UserProfile();
     const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
@@ -339,12 +339,21 @@ describe("BnsConnection", () => {
     const identityAddress = keyToAddress(identity.pubkey);
 
     // Create and send registration
-    const blockchainId = toUtf8(`wonderland_${Math.random()}`) as BnsBlockchainId;
+    const chainId = `wonderland_${Math.random()}` as ChainId;
+    const blockchainId = toUtf8(chainId) as BnsBlockchainId;
     const registration: RegisterBlockchainTx = {
       kind: TransactionKind.RegisterBlockchain,
-      chainId: chainId,
+      chainId: registraChainId,
       signer: identity.pubkey,
       blockchainId: blockchainId,
+      chain: {
+        chainId: chainId,
+        networkId: "7rg047g4h",
+        production: false,
+        enabled: true,
+        mainTickerId: undefined,
+        name: "Wonderland",
+      },
       codecName: "wonderland_rules",
       codecConfig: `{ "any" : [ "json", "content" ] }`,
     };
@@ -360,6 +369,14 @@ describe("BnsConnection", () => {
       throw new Error("Unexpected transaction kind");
     }
     expect(searchResult[0].transaction.blockchainId).toEqual(blockchainId);
+    expect(searchResult[0].transaction.chain).toEqual({
+      chainId: chainId,
+      networkId: "7rg047g4h",
+      production: false,
+      enabled: true,
+      mainTickerId: undefined,
+      name: "Wonderland",
+    });
     expect(searchResult[0].transaction.codecName).toEqual("wonderland_rules");
     expect(searchResult[0].transaction.codecConfig).toEqual(`{ "any" : [ "json", "content" ] }`);
 
@@ -410,7 +427,7 @@ describe("BnsConnection", () => {
   it("can add address to username and remove again", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const chainId = await connection.chainId();
+    const registryChainId = await connection.chainId();
 
     const profile = new UserProfile();
     const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
@@ -421,7 +438,7 @@ describe("BnsConnection", () => {
     const username = `testuser_${Math.random()}`;
     const usernameRegistration: RegisterUsernameTx = {
       kind: TransactionKind.RegisterUsername,
-      chainId: chainId,
+      chainId: registryChainId,
       signer: identity.pubkey,
       username: username,
       addresses: [],
@@ -439,12 +456,21 @@ describe("BnsConnection", () => {
     );
 
     // Register a blockchain
-    const blockchainId = toUtf8(`wonderland_${Math.random()}`) as BnsBlockchainId;
+    const chainId = `wonderland_${Math.random()}` as ChainId;
+    const blockchainId = toUtf8(chainId) as BnsBlockchainId;
     const blockchainRegistration: RegisterBlockchainTx = {
       kind: TransactionKind.RegisterBlockchain,
-      chainId: chainId,
+      chainId: registryChainId,
       signer: identity.pubkey,
       blockchainId: blockchainId,
+      chain: {
+        chainId: chainId,
+        networkId: "7rg047g4h",
+        production: false,
+        enabled: true,
+        mainTickerId: undefined,
+        name: "Wonderland",
+      },
       codecName: "wonderland_rules",
       codecConfig: `{ "any" : [ "json", "content" ] }`,
     };
@@ -464,7 +490,7 @@ describe("BnsConnection", () => {
     const address = `testaddress_${Math.random()}` as Address;
     const addAddress: AddAddressToUsernameTx = {
       kind: TransactionKind.AddAddressToUsername,
-      chainId: chainId,
+      chainId: registryChainId,
       signer: identity.pubkey,
       username: username,
       payload: {
@@ -487,7 +513,7 @@ describe("BnsConnection", () => {
     // Remove address
     const removeAddress: RemoveAddressFromUsernameTx = {
       kind: TransactionKind.RemoveAddressFromUsername,
-      chainId: chainId,
+      chainId: registryChainId,
       signer: identity.pubkey,
       username: username,
       payload: {
