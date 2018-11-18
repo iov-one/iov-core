@@ -1,6 +1,6 @@
+import { Algorithm, PublicKeyBytes } from "@iov/base-types";
 import { Address, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
-import { Algorithm, PublicKeyBytes } from "@iov/tendermint-types";
 
 import { Serialization } from "./serialization";
 import { TestConfig } from "./testconfig";

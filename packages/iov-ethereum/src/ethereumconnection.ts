@@ -22,7 +22,7 @@ import { Encoding } from "@iov/encoding";
 
 import { constants } from "./constants";
 import { Parse } from "./parse";
-import { decodeHexQuantity, decodeHexQuantityNonce, decodeHexQuantityString } from "./utils";
+import { decodeHexQuantity, decodeHexQuantityNonce, decodeHexQuantityString, hexPadToEven } from "./utils";
 
 async function loadChainId(baseUrl: string): Promise<ChainId> {
   // see https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version
@@ -82,13 +82,16 @@ export class EthereumConnection implements BcpConnection {
       params: ["0x" + Encoding.toHex(bytes)],
       id: 5,
     });
+    const message = result.data.error ? result.data.error.message : null;
+    const transactionHash = result.data.result ? result.data.result : "";
+
     return {
       metadata: {
         height: undefined,
       },
       data: {
-        message: "",
-        txid: Encoding.fromHex(result.data.result) as TxId,
+        message: message,
+        txid: Encoding.fromHex(hexPadToEven(transactionHash)) as TxId,
         result: result.data,
       },
     };

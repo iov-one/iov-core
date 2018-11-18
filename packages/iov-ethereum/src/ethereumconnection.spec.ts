@@ -1,4 +1,11 @@
-import { Address, BcpAccountQuery, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import {
+  Address,
+  BcpAccountQuery,
+  SendTx,
+  SignedTransaction,
+  TokenTicker,
+  TransactionKind,
+} from "@iov/bcp-types";
 import { Slip10RawIndex } from "@iov/crypto";
 import { Secp256k1HdWallet } from "@iov/keycontrol";
 
@@ -71,11 +78,14 @@ describe("EthereumConnection", () => {
     pendingWithoutEthereum();
 
     const wallet = Secp256k1HdWallet.fromMnemonic(
-      "wagon stock borrow episode laundry kitten salute link globe zero feed marble",
+      "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
     );
     const mainIdentity = await wallet.createIdentity([
+      Slip10RawIndex.hardened(44),
+      Slip10RawIndex.hardened(60),
       Slip10RawIndex.hardened(0),
-      Slip10RawIndex.hardened(1),
+      Slip10RawIndex.normal(0),
+      Slip10RawIndex.normal(0),
     ]);
 
     const recipientAddress = "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address;
@@ -110,12 +120,11 @@ describe("EthereumConnection", () => {
       nodeChainId,
     );
 
-    const signedTransaction = {
+    const signedTransaction: SignedTransaction = {
       transaction: sendTx,
-      transactionBytes: signingJob.bytes,
       primarySignature: {
         nonce: nonce,
-        publicKey: mainIdentity.pubkey,
+        pubkey: mainIdentity.pubkey,
         signature: signature,
       },
       otherSignatures: [],
@@ -125,5 +134,6 @@ describe("EthereumConnection", () => {
     const connection = await EthereumConnection.establish(base);
     const result = await connection.postTx(bytesToPost);
     expect(result).toBeTruthy();
+    expect(result.data.message).toBeNull();
   });
 });
