@@ -108,8 +108,10 @@ describe("Ethereum utils", () => {
     });
 
     it("throws error for invalid inputs", () => {
-      expect(() => encodeQuantity(NaN)).toThrowError(/Input is not a number/);
+      expect(() => encodeQuantity(NaN)).toThrowError(/Input is not a valid number/);
       expect(() => encodeQuantity(12345678901234567890)).toThrowError(/Input is not a safe integer/);
+      expect(() => encodeQuantity(-1234)).toThrowError(/Input is not a valid number/);
+      expect(() => encodeQuantity(1.234)).toThrowError(/Input is not a valid number/);
     });
   });
 

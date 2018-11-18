@@ -26,8 +26,8 @@ export function decodeHexQuantityNonce(hexString: string): Nonce {
 }
 
 export function encodeQuantity(value: number): string {
-  if (Number.isNaN(value)) {
-    throw new Error("Input is not a number");
+  if (Number.isNaN(value) || !/^[0-9]+$/.test(String(value))) {
+    throw new Error("Input is not a valid number");
   }
   try {
     return "0x" + new BN(value).toString(16);
