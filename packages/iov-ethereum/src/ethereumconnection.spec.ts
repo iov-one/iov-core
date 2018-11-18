@@ -85,10 +85,10 @@ describe("EthereumConnection", () => {
       Slip10RawIndex.hardened(60),
       Slip10RawIndex.hardened(0),
       Slip10RawIndex.normal(0),
-      Slip10RawIndex.normal(0),
+      Slip10RawIndex.normal(1),
     ]);
 
-    const recipientAddress = "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address;
+    const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 
     const sendTx: SendTx = {
       kind: TransactionKind.Send,
@@ -96,8 +96,8 @@ describe("EthereumConnection", () => {
       signer: mainIdentity.pubkey,
       recipient: recipientAddress,
       amount: {
-        whole: 20,
-        fractional: 0,
+        whole: 1,
+        fractional: 44550000,
         tokenTicker: "ETH" as TokenTicker,
       },
       gasPrice: {
