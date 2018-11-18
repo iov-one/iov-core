@@ -6,7 +6,7 @@ import BN = require("bn.js");
 import { constants } from "./constants";
 import { isValidAddress } from "./derivation";
 import { toRlp } from "./encoding";
-import { encodeQuantity, encodeQuantityString, hexPadToEven, stringDataToHex } from "./utils";
+import { encodeQuantity, encodeQuantityString, hexPadToEven } from "./utils";
 
 const { fromHex } = Encoding;
 
@@ -37,7 +37,7 @@ export class Serialization {
           );
         }
         if (unsigned.memo) {
-          dataHex = stringDataToHex(unsigned.memo);
+          dataHex = "0x" + Encoding.toHex(Encoding.toUtf8(unsigned.memo));
         }
         if (!isValidAddress(unsigned.recipient)) {
           throw new Error("Invalid recipient address");
