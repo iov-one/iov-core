@@ -20,7 +20,7 @@ const env = process.env.ETH_ENV || "";
 
 const local: EthereumNetworkConfig = {
   env: "local",
-  base: "http://localhost:7545",
+  base: "http://localhost:8545",
   chainId: "5777" as ChainId,
   minHeight: -1,
   address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
