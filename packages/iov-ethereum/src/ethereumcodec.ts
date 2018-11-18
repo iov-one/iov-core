@@ -14,7 +14,7 @@ import {
 import { Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
-import { encodeQuantity, encodeQuantityString, hexPadToEven, stringDataToHex } from "./utils";
+import { encodeQuantity, encodeQuantityString, hexPadToEven } from "./utils";
 
 import { isValidAddress } from "./derivation";
 import { toRlp } from "./encoding";
@@ -73,7 +73,7 @@ export const ethereumCodec: TxCodec = {
           );
         }
         if (signed.transaction.memo) {
-          dataHex = stringDataToHex(signed.transaction.memo);
+          dataHex = "0x" + Encoding.toHex(Encoding.toUtf8(signed.transaction.memo));
         }
         if (!isValidAddress(signed.transaction.recipient)) {
           throw new Error("Invalid recipient address");
