@@ -14,6 +14,7 @@ describe("isValidAddress", () => {
   });
 
   it("rejects malformed addresses", () => {
+    // changed some letters from previous test from upper to lowercase and vice versa
     expect(isValidAddress("0x52908400098527886E0F7030069857D2E4169ee7")).toEqual(false);
     expect(isValidAddress("0x8617E340B3D01FA5F11F306F4090FD50e238070d")).toEqual(false);
     expect(isValidAddress("0xde709f2102306220921060314715629080e2FB77")).toEqual(false);
@@ -22,5 +23,17 @@ describe("isValidAddress", () => {
     expect(isValidAddress("0xfB6916095ca1df60bB79Ce92cE3Ea74c37C5D359")).toEqual(false);
     expect(isValidAddress("0xdbF03B407c01E7cD3CBea99509d93f8DDDC8C6fb")).toEqual(false);
     expect(isValidAddress("0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b9ADB")).toEqual(false);
+    // to short
+    expect(() => isValidAddress("0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b9")).toThrowError(
+      /Invalid ethereum address/,
+    );
+    // to long
+    expect(() => isValidAddress("0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b91234")).toThrowError(
+      /Invalid ethereum address/,
+    );
+    // not starting with 0x
+    expect(() => isValidAddress("D1220A0cf47c7B9Be7A2E6BA89F429762e7b91234")).toThrowError(
+      /Invalid ethereum address/,
+    );
   });
 });
