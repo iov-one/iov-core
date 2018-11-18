@@ -5,9 +5,10 @@ import BN = require("bn.js");
 
 import { constants } from "./constants";
 import { isValidAddress } from "./derivation";
+import { toRlp } from "./encoding";
 import { encodeQuantity, encodeQuantityString, hexPadToEven, stringDataToHex } from "./utils";
 
-const { fromHex, toRlp } = Encoding;
+const { fromHex } = Encoding;
 
 export class Serialization {
   public static serializeTransaction(unsigned: UnsignedTransaction, nonce: Nonce): Uint8Array {

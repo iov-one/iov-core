@@ -16,10 +16,9 @@ import { Encoding } from "@iov/encoding";
 
 import { encodeQuantity, encodeQuantityString, hexPadToEven, stringDataToHex } from "./utils";
 
-// import { constants } from "./constants";
 import { isValidAddress } from "./derivation";
+import { toRlp } from "./encoding";
 import { Serialization } from "./serialization";
-
 const { fromHex, toAscii, toHex } = Encoding;
 
 export function toChecksumAddress(address: string): Address {
@@ -90,7 +89,7 @@ export const ethereumCodec: TxCodec = {
         }
         const chainIdHex = encodeQuantity(v);
         const postableTx = new Uint8Array(
-          Encoding.toRlp([
+          toRlp([
             Buffer.from(fromHex(hexPadToEven(nonceHex))),
             Buffer.from(fromHex(hexPadToEven(gasPriceHex))),
             Buffer.from(fromHex(hexPadToEven(gasLimitHex))),
