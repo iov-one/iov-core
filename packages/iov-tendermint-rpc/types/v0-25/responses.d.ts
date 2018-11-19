@@ -212,7 +212,7 @@ export interface RpcSyncInfo {
     readonly syncing: boolean;
 }
 export interface RpcValidatorGenesis {
-    readonly pub_key: RpcPubkey;
+    readonly pub_key: RpcAminoPubkey;
     readonly power: IntegerString;
     readonly name?: string;
 }

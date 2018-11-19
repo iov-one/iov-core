@@ -523,12 +523,12 @@ const decodeSyncInfo = (data: RpcSyncInfo): responses.SyncInfo => ({
 
 // this is in genesis
 export interface RpcValidatorGenesis {
-  readonly pub_key: RpcPubkey;
+  readonly pub_key: RpcAminoPubkey;
   readonly power: IntegerString;
   readonly name?: string;
 }
 const decodeValidatorGenesis = (data: RpcValidatorGenesis): responses.Validator => ({
-  pubkey: decodePubkey(required(data.pub_key)),
+  pubkey: decodeAminoPubkey(required(data.pub_key)),
   votingPower: parseInteger(required(data.power)),
   name: data.name,
 });
