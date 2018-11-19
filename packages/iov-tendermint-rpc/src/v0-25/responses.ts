@@ -511,14 +511,14 @@ export interface RpcSyncInfo {
   readonly latest_app_hash: HexString;
   readonly latest_block_height: IntegerString;
   readonly latest_block_time: DateTimeString;
-  readonly syncing: boolean;
+  readonly catching_up?: boolean;
 }
 const decodeSyncInfo = (data: RpcSyncInfo): responses.SyncInfo => ({
   latestBlockHash: Encoding.fromHex(required(data.latest_block_hash)),
   latestAppHash: Encoding.fromHex(required(data.latest_app_hash)),
   latestBlockTime: DateTime.decode(required(data.latest_block_time)),
   latestBlockHeight: parseInteger(required(data.latest_block_height)),
-  syncing: required(data.syncing),
+  syncing: !optional<boolean>(data.catching_up, false),
 });
 
 // this is in genesis
