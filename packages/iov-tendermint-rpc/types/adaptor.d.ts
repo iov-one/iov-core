@@ -3,6 +3,7 @@ import * as requests from "./requests";
 import * as responses from "./responses";
 import { RpcClient } from "./rpcclient";
 export declare const v0_20: Adaptor;
+export declare const v0_25: Adaptor;
 export interface Adaptor {
     readonly params: Params;
     readonly responses: Responses;
