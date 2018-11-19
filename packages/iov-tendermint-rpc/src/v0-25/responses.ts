@@ -572,12 +572,18 @@ export interface RpcConsensusParams {
   readonly block_gossip_params: RpcBlockGossipParams;
   readonly evidence_params: RpcEvidenceParams;
 }
-const decodeConsensusParams = (data: RpcConsensusParams): responses.ConsensusParams => ({
-  blockSizeParams: decodeBlockSizeParams(required(data.block_size_params)),
-  txSizeParams: decodeTxSizeParams(required(data.tx_size_params)),
-  blockGossipParams: decodeBlockGossipParams(required(data.block_gossip_params)),
-  evidenceParams: decodeEvidenceParams(required(data.evidence_params)),
-});
+const decodeConsensusParams = (data: RpcConsensusParams): responses.ConsensusParams => {
+  if (true) {
+    const msg = JSON.stringify(data);
+    throw new Error(`consensus: ${msg}`);
+  }
+  return {
+    blockSizeParams: decodeBlockSizeParams(required(data.block_size_params)),
+    txSizeParams: decodeTxSizeParams(required(data.tx_size_params)),
+    blockGossipParams: decodeBlockGossipParams(required(data.block_gossip_params)),
+    evidenceParams: decodeEvidenceParams(required(data.evidence_params)),
+  };
+};
 
 export interface RpcBlockSizeParams {
   readonly max_bytes: IntegerString;
