@@ -420,7 +420,7 @@ const decodeCommit = (data: RpcCommit): responses.Commit => ({
 
 function ensureInt(n: number): number {
   if (typeof n !== "number") {
-    throw(`${n} is not a number`);
+    throw new Error(`${n} is not a number`);
   }
   return n;
 }

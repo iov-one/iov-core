@@ -35,9 +35,9 @@ export interface AbciQueryResult {
     readonly response: RpcAbciQueryResponse;
 }
 export interface RpcAbciQueryResponse {
-    readonly key: HexString;
-    readonly value: HexString;
-    readonly proof?: HexString;
+    readonly key: Base64String;
+    readonly value?: Base64String;
+    readonly proof?: Base64String;
     readonly height?: IntegerString;
     readonly index?: IntegerString;
     readonly code?: IntegerString;
@@ -97,7 +97,7 @@ export interface RpcStatusResponse {
     readonly validator_info: RpcValidatorInfo;
 }
 export interface RpcTxResponse {
-    readonly tx: HexString;
+    readonly tx: Base64String;
     readonly tx_result: RpcTxData;
     readonly height: IntegerString;
     readonly index: IntegerString;
@@ -171,7 +171,7 @@ export interface RpcCommit {
     readonly precommits: ReadonlyArray<RpcVote>;
 }
 export interface RpcVote {
-    readonly type: IntegerString;
+    readonly type: number;
     readonly validator_address: HexString;
     readonly validator_index: IntegerString;
     readonly height: IntegerString;
