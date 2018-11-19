@@ -568,48 +568,20 @@ const decodeValidatorInfo = (data: RpcValidatorInfo): responses.Validator => ({
 
 export interface RpcConsensusParams {
   readonly block_size_params: RpcBlockSizeParams;
-  readonly tx_size_params: RpcTxSizeParams;
-  readonly block_gossip_params: RpcBlockGossipParams;
   readonly evidence_params: RpcEvidenceParams;
 }
-const decodeConsensusParams = (data: RpcConsensusParams): responses.ConsensusParams => {
-  if (true) {
-    const msg = JSON.stringify(data);
-    throw new Error(`consensus: ${msg}`);
-  }
-  return {
-    blockSizeParams: decodeBlockSizeParams(required(data.block_size_params)),
-    txSizeParams: decodeTxSizeParams(required(data.tx_size_params)),
-    blockGossipParams: decodeBlockGossipParams(required(data.block_gossip_params)),
-    evidenceParams: decodeEvidenceParams(required(data.evidence_params)),
-  };
-};
+const decodeConsensusParams = (data: RpcConsensusParams): responses.ConsensusParams => ({
+  blockSizeParams: decodeBlockSizeParams(required(data.block_size_params)),
+  evidenceParams: decodeEvidenceParams(required(data.evidence_params)),
+});
 
 export interface RpcBlockSizeParams {
   readonly max_bytes: IntegerString;
-  readonly max_txs: IntegerString;
   readonly max_gas: IntegerString;
 }
 const decodeBlockSizeParams = (data: RpcBlockSizeParams): responses.BlockSizeParams => ({
   maxBytes: parseInteger(required(data.max_bytes)),
-  maxTxs: parseInteger(required(data.max_txs)),
   maxGas: parseInteger(required(data.max_gas)),
-});
-
-export interface RpcTxSizeParams {
-  readonly max_bytes: IntegerString;
-  readonly max_gas: IntegerString;
-}
-const decodeTxSizeParams = (data: RpcTxSizeParams): responses.TxSizeParams => ({
-  maxBytes: parseInteger(required(data.max_bytes)),
-  maxGas: parseInteger(required(data.max_gas)),
-});
-
-export interface RpcBlockGossipParams {
-  readonly block_part_size_bytes: IntegerString;
-}
-const decodeBlockGossipParams = (data: RpcBlockGossipParams): responses.BlockGossipParams => ({
-  blockPartSizeBytes: parseInteger(required(data.block_part_size_bytes)),
 });
 
 export interface RpcEvidenceParams {

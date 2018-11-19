@@ -231,21 +231,11 @@ export interface RpcValidatorInfo {
 }
 export interface RpcConsensusParams {
     readonly block_size_params: RpcBlockSizeParams;
-    readonly tx_size_params: RpcTxSizeParams;
-    readonly block_gossip_params: RpcBlockGossipParams;
     readonly evidence_params: RpcEvidenceParams;
 }
 export interface RpcBlockSizeParams {
     readonly max_bytes: IntegerString;
-    readonly max_txs: IntegerString;
     readonly max_gas: IntegerString;
-}
-export interface RpcTxSizeParams {
-    readonly max_bytes: IntegerString;
-    readonly max_gas: IntegerString;
-}
-export interface RpcBlockGossipParams {
-    readonly block_part_size_bytes: IntegerString;
 }
 export interface RpcEvidenceParams {
     readonly max_age: IntegerString;
