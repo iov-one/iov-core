@@ -73,7 +73,7 @@ export interface RpcBroadcastTxCommitResponse {
     readonly deliver_tx?: RpcTxData;
 }
 export interface RpcCommitResponse {
-    readonly SignedHeader: {
+    readonly signed_header: {
         readonly header: RpcHeader;
         readonly commit: RpcCommit;
     };

@@ -209,7 +209,7 @@ const decodeBroadcastTxCommit = (
 });
 
 export interface RpcCommitResponse {
-  readonly SignedHeader: {
+  readonly signed_header: {
     readonly header: RpcHeader;
     readonly commit: RpcCommit;
   };
@@ -217,8 +217,8 @@ export interface RpcCommitResponse {
 }
 const decodeCommitResponse = (data: RpcCommitResponse): responses.CommitResponse => ({
   canonical: required(data.canonical),
-  header: decodeHeader(data.SignedHeader.header),
-  commit: decodeCommit(data.SignedHeader.commit),
+  header: decodeHeader(data.signed_header.header),
+  commit: decodeCommit(data.signed_header.commit),
 });
 
 export interface GenesisResult {
