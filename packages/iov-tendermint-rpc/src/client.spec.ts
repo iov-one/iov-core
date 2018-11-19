@@ -195,7 +195,8 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
   it("can subscribe to block header events", done => {
     pendingWithoutTendermint();
 
-    const testStart = ReadonlyDate.now();
+    // seems that tendermint just guarantees within the last few seconds for timestamp
+    const testStart = ReadonlyDate.now() - 3000;
 
     (async () => {
       const events: responses.NewBlockHeaderEvent[] = [];

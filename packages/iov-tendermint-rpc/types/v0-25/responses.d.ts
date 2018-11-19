@@ -258,7 +258,4 @@ export interface RpcAminoPubkey {
     readonly type: string;
     readonly value: Base64String;
 }
-export interface RpcSignature {
-    readonly type: string;
-    readonly value: HexString;
-}
+export declare type RpcSignature = Base64String;

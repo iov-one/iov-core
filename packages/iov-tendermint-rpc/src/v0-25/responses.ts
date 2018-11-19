@@ -644,19 +644,10 @@ const decodeAminoPubkey = (data: RpcAminoPubkey): PublicKeyBundle => {
   throw new Error(`unknown pubkey type: ${data.type}`);
 };
 
-export interface RpcSignature {
-  readonly type: string;
-  readonly value: HexString;
-}
+export type RpcSignature = Base64String;
 const decodeSignature = (data: RpcSignature): responses.VoteSignatureBundle => {
-  const msg = JSON.stringify(data);
-  throw new Error(`signature: ${msg}`);
-  if (data.type === "6BF5903DA1DB28") {
-    // go-amino special code
-    return {
-      algo: Algorithm.Ed25519,
-      signature: Hex.decode(required(data.value)) as SignatureBytes,
-    };
-  }
-  throw new Error(`unknown signature type: ${data.type}`);
+  return {
+    algo: Algorithm.Ed25519,
+    signature: Base64.decode(required(data)) as SignatureBytes,
+  };
 };
