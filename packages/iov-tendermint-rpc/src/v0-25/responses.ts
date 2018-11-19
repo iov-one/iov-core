@@ -122,18 +122,18 @@ export interface AbciQueryResult {
   readonly response: RpcAbciQueryResponse;
 }
 export interface RpcAbciQueryResponse {
-  readonly key: HexString;
-  readonly value: HexString;
-  readonly proof?: HexString;
+  readonly key: Base64String;
+  readonly value?: Base64String;
+  readonly proof?: Base64String;
   readonly height?: IntegerString;
   readonly index?: IntegerString;
   readonly code?: IntegerString; // only for errors
   readonly log?: string;
 }
 const decodeAbciQuery = (data: RpcAbciQueryResponse): responses.AbciQueryResponse => ({
-  key: Hex.decode(optional(data.key, "" as HexString)),
-  value: Hex.decode(optional(data.value, "" as HexString)),
-  // proof: may(Hex.decode, data.proof),
+  key: Base64.decode(optional(data.key, "" as Base64String)),
+  value: Base64.decode(optional(data.value, "" as Base64String)),
+  // proof: may(Base64.decode, data.proof),
   height: may(parseInteger, data.height),
   code: may(parseInteger, data.code),
   index: may(parseInteger, data.index),
@@ -256,7 +256,7 @@ const decodeStatus = (data: RpcStatusResponse): responses.StatusResponse => ({
 });
 
 export interface RpcTxResponse {
-  readonly tx: HexString;
+  readonly tx: Base64String;
   readonly tx_result: RpcTxData;
   readonly height: IntegerString;
   readonly index: IntegerString;
@@ -264,7 +264,7 @@ export interface RpcTxResponse {
   readonly proof?: RpcTxProof;
 }
 const decodeTxResponse = (data: RpcTxResponse): responses.TxResponse => ({
-  tx: Hex.decode(required(data.tx)) as PostableBytes,
+  tx: Base64.decode(required(data.tx)) as PostableBytes,
   txResult: decodeTxData(required(data.tx_result)),
   height: parseInteger(required(data.height)),
   index: parseInteger(required(data.index)),
@@ -418,8 +418,14 @@ const decodeCommit = (data: RpcCommit): responses.Commit => ({
   precommits: required(data.precommits).map(decodeVote),
 });
 
+function ensureInt(n: number): number {
+  if (typeof n !== "number") {
+    throw(`${n} is not a number`);
+  }
+  return n;
+}
 export interface RpcVote {
-  readonly type: IntegerString;
+  readonly type: number;
   readonly validator_address: HexString;
   readonly validator_index: IntegerString;
   readonly height: IntegerString;
@@ -429,7 +435,7 @@ export interface RpcVote {
   readonly signature: RpcSignature;
 }
 const decodeVote = (data: RpcVote): responses.Vote => ({
-  type: parseInteger(required(data.type)),
+  type: ensureInt(required(data.type)),
   validatorAddress: Encoding.fromHex(required(data.validator_address)),
   validatorIndex: parseInteger(required(data.validator_index)),
   height: parseInteger(required(data.height)),
