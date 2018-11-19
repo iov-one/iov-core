@@ -219,7 +219,7 @@ export interface RpcValidatorGenesis {
 export interface RpcValidatorUpdate {
     readonly address: HexString;
     readonly pub_key: RpcPubkey;
-    readonly power: number;
+    readonly voting_power: IntegerString;
 }
 export interface RpcValidatorData extends RpcValidatorUpdate {
     readonly accum?: IntegerString;

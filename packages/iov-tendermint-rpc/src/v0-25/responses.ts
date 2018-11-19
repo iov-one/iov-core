@@ -537,11 +537,11 @@ const decodeValidatorGenesis = (data: RpcValidatorGenesis): responses.Validator 
 export interface RpcValidatorUpdate {
   readonly address: HexString;
   readonly pub_key: RpcPubkey;
-  readonly power: number;
+  readonly voting_power: IntegerString;
 }
 const decodeValidatorUpdate = (data: RpcValidatorUpdate): responses.Validator => ({
   pubkey: decodePubkey(required(data.pub_key)),
-  votingPower: required(data.power),
+  votingPower: parseInteger(required(data.voting_power)),
   address: Hex.decode(required(data.address)),
 });
 
