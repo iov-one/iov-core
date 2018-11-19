@@ -212,7 +212,7 @@ export interface RpcSyncInfo {
     readonly catching_up?: boolean;
 }
 export interface RpcValidatorGenesis {
-    readonly pub_key: RpcAminoPubkey;
+    readonly pub_key: RpcPubkey;
     readonly power: IntegerString;
     readonly name?: string;
 }
@@ -226,7 +226,7 @@ export interface RpcValidatorData extends RpcValidatorUpdate {
 }
 export interface RpcValidatorInfo {
     readonly address: HexString;
-    readonly pub_key: RpcAminoPubkey;
+    readonly pub_key: RpcPubkey;
     readonly voting_power: IntegerString;
 }
 export interface RpcConsensusParams {
@@ -241,10 +241,6 @@ export interface RpcEvidenceParams {
     readonly max_age: IntegerString;
 }
 export interface RpcPubkey {
-    readonly type: string;
-    readonly value: HexString;
-}
-export interface RpcAminoPubkey {
     readonly type: string;
     readonly value: Base64String;
 }

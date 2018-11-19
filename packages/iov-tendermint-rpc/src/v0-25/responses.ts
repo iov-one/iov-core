@@ -523,12 +523,12 @@ const decodeSyncInfo = (data: RpcSyncInfo): responses.SyncInfo => ({
 
 // this is in genesis
 export interface RpcValidatorGenesis {
-  readonly pub_key: RpcAminoPubkey;
+  readonly pub_key: RpcPubkey;
   readonly power: IntegerString;
   readonly name?: string;
 }
 const decodeValidatorGenesis = (data: RpcValidatorGenesis): responses.Validator => ({
-  pubkey: decodeAminoPubkey(required(data.pub_key)),
+  pubkey: decodePubkey(required(data.pub_key)),
   votingPower: parseInteger(required(data.power)),
   name: data.name,
 });
@@ -557,11 +557,11 @@ const decodeValidatorData = (data: RpcValidatorData): responses.Validator => ({
 // this is in status
 export interface RpcValidatorInfo {
   readonly address: HexString;
-  readonly pub_key: RpcAminoPubkey;
+  readonly pub_key: RpcPubkey;
   readonly voting_power: IntegerString;
 }
 const decodeValidatorInfo = (data: RpcValidatorInfo): responses.Validator => ({
-  pubkey: decodeAminoPubkey(required(data.pub_key)),
+  pubkey: decodePubkey(required(data.pub_key)),
   votingPower: parseInteger(required(data.voting_power)),
   address: Encoding.fromHex(required(data.address)),
 });
@@ -591,27 +591,12 @@ const decodeEvidenceParams = (data: RpcEvidenceParams): responses.EvidenceParams
   maxAge: parseInteger(required(data.max_age)),
 });
 
-export interface RpcPubkey {
-  readonly type: string;
-  readonly value: HexString;
-}
-const decodePubkey = (data: RpcPubkey): PublicKeyBundle => {
-  if (data.type === "ed25519") {
-    // go-amino special code
-    return {
-      algo: Algorithm.Ed25519,
-      data: Hex.decode(required(data.value)) as PublicKeyBytes,
-    };
-  }
-  throw new Error(`unknown pubkey type: ${data.type}`);
-};
-
 // yes, a different format for status and dump consensus state
-export interface RpcAminoPubkey {
+export interface RpcPubkey {
   readonly type: string;
   readonly value: Base64String;
 }
-const decodeAminoPubkey = (data: RpcAminoPubkey): PublicKeyBundle => {
+const decodePubkey = (data: RpcPubkey): PublicKeyBundle => {
   if (data.type === "tendermint/PubKeyEd25519") {
     // go-amino special code
     return {
