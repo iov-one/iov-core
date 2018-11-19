@@ -4,7 +4,7 @@ command -v shellcheck > /dev/null && shellcheck "$0"
 
 # Choose from https://hub.docker.com/r/tendermint/tendermint/tags/
 # TENDERMINT_VERSION is available for manualy testing different versions and usually unset
-VERSION=${TENDERMINT_VERSION:-0.21.0}
+VERSION=${TENDERMINT_VERSION:-0.25.0}
 PORT=12345
 
 TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/tendermint.XXXXXXXXX")

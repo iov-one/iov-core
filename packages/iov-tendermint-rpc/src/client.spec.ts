@@ -3,8 +3,7 @@ import { ReadonlyDate } from "readonly-date";
 
 import { Encoding } from "@iov/encoding";
 
-import { Adaptor, v0_20 } from "./adaptor";
-// import { v0_20, v0_25 } from "./adaptor";
+import { Adaptor, v0_25 } from "./adaptor";
 import { Client } from "./client";
 import { randomId } from "./common";
 import { buildTagsQuery, QueryTag } from "./requests";
@@ -148,7 +147,7 @@ function kvTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
 
   it("Can paginate over all txs", async () => {
     pendingWithoutTendermint();
-    const client = new Client(rpcFactory(), v0_20);
+    const client = new Client(rpcFactory(), adaptor);
 
     const find = randomId();
     const query = buildTagsQuery([{ key: "app.key", value: find }]);
@@ -399,12 +398,12 @@ describe("Client", () => {
   });
 
   describe("With HttpClient: v0-20", () => {
-    kvTestSuite(() => new HttpClient(tendermintUrl), v0_20);
+    kvTestSuite(() => new HttpClient(tendermintUrl), v0_25);
   });
 
   describe("With WebsocketClient", () => {
     const onError = skipTests() ? () => 0 : console.log;
     const factory = () => new WebsocketClient(tendermintUrl, onError);
-    websocketTestSuite(factory, v0_20);
+    websocketTestSuite(factory, v0_25);
   });
 });
