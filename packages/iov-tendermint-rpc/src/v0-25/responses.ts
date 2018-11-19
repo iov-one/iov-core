@@ -259,7 +259,7 @@ export interface RpcTxResponse {
   readonly tx: Base64String;
   readonly tx_result: RpcTxData;
   readonly height: IntegerString;
-  readonly index: IntegerString;
+  readonly index: number;
   readonly hash: HexString;
   readonly proof?: RpcTxProof;
 }
@@ -267,7 +267,7 @@ const decodeTxResponse = (data: RpcTxResponse): responses.TxResponse => ({
   tx: Base64.decode(required(data.tx)) as PostableBytes,
   txResult: decodeTxData(required(data.tx_result)),
   height: parseInteger(required(data.height)),
-  index: parseInteger(required(data.index)),
+  index: ensureInt(required(data.index)),
   hash: Encoding.fromHex(required(data.hash)) as TxId,
   proof: may(decodeTxProof, data.proof),
 });
@@ -285,7 +285,7 @@ export interface RpcTxEvent {
   readonly tx: Base64String;
   readonly result: RpcTxData;
   readonly height: IntegerString;
-  readonly index: IntegerString;
+  readonly index: number;
 }
 
 function decodeTxEvent(data: RpcTxEvent): responses.TxEvent {
@@ -295,7 +295,7 @@ function decodeTxEvent(data: RpcTxEvent): responses.TxEvent {
     hash: Uint8Array.from([]) as TxId, // TODO
     result: decodeTxData(data.result),
     height: parseInteger(required(data.height)),
-    index: parseInteger(required(data.index)),
+    index: ensureInt(required(data.index)),
   };
 }
 
@@ -649,6 +649,8 @@ export interface RpcSignature {
   readonly value: HexString;
 }
 const decodeSignature = (data: RpcSignature): responses.VoteSignatureBundle => {
+  const msg = JSON.stringify(data);
+  throw new Error(`signature: ${msg}`);
   if (data.type === "6BF5903DA1DB28") {
     // go-amino special code
     return {

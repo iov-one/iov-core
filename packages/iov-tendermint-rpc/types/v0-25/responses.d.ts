@@ -100,7 +100,7 @@ export interface RpcTxResponse {
     readonly tx: Base64String;
     readonly tx_result: RpcTxData;
     readonly height: IntegerString;
-    readonly index: IntegerString;
+    readonly index: number;
     readonly hash: HexString;
     readonly proof?: RpcTxProof;
 }
@@ -112,7 +112,7 @@ export interface RpcTxEvent {
     readonly tx: Base64String;
     readonly result: RpcTxData;
     readonly height: IntegerString;
-    readonly index: IntegerString;
+    readonly index: number;
 }
 export interface RpcValidatorsResponse {
     readonly block_height: IntegerString;
