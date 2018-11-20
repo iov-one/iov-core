@@ -26,11 +26,8 @@ export interface Amount {
   readonly tokenTicker: TokenTicker;
 }
 
-/** the primary identifier for a registered blockchain in the BNS */
-export type BnsBlockchainId = Uint8Array & As<"blockchain-nft-id">;
-
 export interface ChainAddressPair {
-  readonly blockchainId: BnsBlockchainId;
+  readonly chainId: ChainId;
   readonly address: Address;
 }
 
@@ -111,9 +108,11 @@ export interface SwapTimeoutTx extends BaseTx {
 
 export interface RegisterBlockchainTx extends BaseTx {
   readonly kind: TransactionKind.RegisterBlockchain;
-  /** the ID of the blockchain to be registered */
-  readonly blockchainId: BnsBlockchainId;
-  /** as defined in https://github.com/iov-one/bns-spec/blob/master/docs/data/ObjectDefinitions.rst#chain */
+  /**
+   * The chain to be registered
+   *
+   * Fields as defined in https://github.com/iov-one/bns-spec/blob/master/docs/data/ObjectDefinitions.rst#chain
+   */
   readonly chain: {
     readonly chainId: ChainId;
     readonly name: string;

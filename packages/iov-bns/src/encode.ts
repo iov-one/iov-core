@@ -117,9 +117,9 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
 function buildAddAddressToUsernameTx(tx: AddAddressToUsernameTx): codecImpl.app.ITx {
   return {
     addUsernameAddressNftMsg: {
-      id: Encoding.toUtf8(tx.username),
-      chainID: tx.payload.blockchainId,
-      address: Encoding.toUtf8(tx.payload.address),
+      id: toUtf8(tx.username),
+      chainID: toUtf8(tx.payload.chainId),
+      address: toUtf8(tx.payload.address),
     },
   };
 }
@@ -186,7 +186,7 @@ function buildSwapTimeoutTx(tx: SwapTimeoutTx): codecImpl.app.ITx {
 function buildRegisterBlockchainTx(tx: RegisterBlockchainTx): codecImpl.app.ITx {
   return {
     issueBlockchainNftMsg: codecImpl.blockchain.IssueTokenMsg.create({
-      id: tx.blockchainId,
+      id: toUtf8(tx.chain.chainId),
       owner: decodeBnsAddress(keyToAddress(tx.signer)).data,
       approvals: undefined,
       details: codecImpl.blockchain.TokenDetails.create({
@@ -211,8 +211,8 @@ function buildRegisterUsernameTx(tx: RegisterUsernameTx): codecImpl.app.ITx {
   const chainAddresses = tx.addresses.map(
     (pair): codecImpl.username.IChainAddress => {
       return {
-        chainID: pair.blockchainId,
-        address: Encoding.toUtf8(pair.address),
+        chainID: toUtf8(pair.chainId),
+        address: toUtf8(pair.address),
       };
     },
   );
@@ -232,9 +232,9 @@ function buildRegisterUsernameTx(tx: RegisterUsernameTx): codecImpl.app.ITx {
 function buildRemoveAddressFromUsernameTx(tx: RemoveAddressFromUsernameTx): codecImpl.app.ITx {
   return {
     removeUsernameAddressMsg: {
-      id: Encoding.toUtf8(tx.username),
-      chainID: tx.payload.blockchainId,
-      address: Encoding.toUtf8(tx.payload.address),
+      id: toUtf8(tx.username),
+      chainID: toUtf8(tx.payload.chainId),
+      address: toUtf8(tx.payload.address),
     },
   };
 }

@@ -4,7 +4,6 @@ import {
   Address,
   Amount,
   BaseTx,
-  BnsBlockchainId,
   ChainAddressPair,
   FullSignature,
   RegisterBlockchainTx,
@@ -79,7 +78,7 @@ function parseAddAddressToUsernameTx(
     kind: TransactionKind.AddAddressToUsername,
     username: fromUtf8(ensure(msg.id, "id")),
     payload: {
-      blockchainId: ensure(msg.chainID, "chainID") as BnsBlockchainId,
+      chainId: fromUtf8(ensure(msg.chainID, "chainID")) as ChainId,
       address: fromUtf8(ensure(msg.address, "address")) as Address,
     },
   };
@@ -156,7 +155,6 @@ function parseRegisterBlockchainTx(
   base: BaseTx,
   msg: codecImpl.blockchain.IIssueTokenMsg,
 ): RegisterBlockchainTx {
-  const id = ensure(msg.id, "id");
   const details = ensure(msg.details, "details");
 
   const chain = ensure(details.chain, "details.chain");
@@ -173,7 +171,6 @@ function parseRegisterBlockchainTx(
   return {
     ...base,
     kind: TransactionKind.RegisterBlockchain,
-    blockchainId: id as BnsBlockchainId,
     chain: {
       chainId: chainId as ChainId,
       name: name,
@@ -193,8 +190,8 @@ function parseRegisterUsernameTx(base: BaseTx, msg: codecImpl.username.IIssueTok
   const addresses = chainAddresses.map(
     (chainAddress): ChainAddressPair => {
       return {
-        blockchainId: ensure(chainAddress.chainID, "chainID") as BnsBlockchainId,
-        address: Encoding.fromUtf8(ensure(chainAddress.address, "address")) as Address,
+        chainId: fromUtf8(ensure(chainAddress.chainID, "chainID")) as ChainId,
+        address: fromUtf8(ensure(chainAddress.address, "address")) as Address,
       };
     },
   );
@@ -216,7 +213,7 @@ function parseRemoveAddressFromUsernameTx(
     kind: TransactionKind.RemoveAddressFromUsername,
     username: fromUtf8(ensure(msg.id, "id")),
     payload: {
-      blockchainId: ensure(msg.chainID, "chainID") as BnsBlockchainId,
+      chainId: fromUtf8(ensure(msg.chainID, "chainID")) as ChainId,
       address: fromUtf8(ensure(msg.address, "address")) as Address,
     },
   };

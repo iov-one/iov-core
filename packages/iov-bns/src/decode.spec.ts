@@ -1,5 +1,5 @@
 import { Algorithm, ChainId, PublicKeyBytes } from "@iov/base-types";
-import { Address, BaseTx, BnsBlockchainId, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Address, BaseTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
 import { decodeAmount, parseMsg, parseTx } from "./decode";
@@ -81,7 +81,7 @@ describe("Decode", () => {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.username).toEqual("alice");
-      expect(parsed.payload.blockchainId).toEqual(toUtf8("wonderland"));
+      expect(parsed.payload.chainId).toEqual("wonderland");
       expect(parsed.payload.address).toEqual("0xAABB001122DD");
     });
 
@@ -111,7 +111,6 @@ describe("Decode", () => {
       if (parsed.kind !== TransactionKind.RegisterBlockchain) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.blockchainId).toEqual(toUtf8("wonderland"));
       expect(parsed.chain).toEqual({
         chainId: "wonderland" as ChainId,
         networkId: "7rg047g4h",
@@ -151,11 +150,11 @@ describe("Decode", () => {
       expect(parsed.username).toEqual("bobby");
       expect(parsed.addresses.length).toEqual(2);
       expect(parsed.addresses[0]).toEqual({
-        blockchainId: toUtf8("chain1") as BnsBlockchainId,
+        chainId: "chain1" as ChainId,
         address: "23456782367823X" as Address,
       });
       expect(parsed.addresses[1]).toEqual({
-        blockchainId: toUtf8("chain2") as BnsBlockchainId,
+        chainId: "chain2" as ChainId,
         address: "0x001100aabbccddffeeddaa8899776655" as Address,
       });
     });
@@ -173,8 +172,8 @@ describe("Decode", () => {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.username).toEqual("alice");
+      expect(parsed.payload.chainId).toEqual("wonderland");
       expect(parsed.payload.address).toEqual("0xAABB001122DD");
-      expect(parsed.payload.blockchainId).toEqual(toUtf8("wonderland"));
     });
   });
 });

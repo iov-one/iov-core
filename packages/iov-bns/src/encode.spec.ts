@@ -2,7 +2,6 @@ import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } f
 import {
   AddAddressToUsernameTx,
   Address,
-  BnsBlockchainId,
   FullSignature,
   Nonce,
   RegisterBlockchainTx,
@@ -92,7 +91,7 @@ describe("Encode", () => {
         signer: defaultSigner,
         username: "alice",
         payload: {
-          blockchainId: toUtf8("other-land") as BnsBlockchainId,
+          chainId: "other-land" as ChainId,
           address: "865765858O" as Address,
         },
       };
@@ -107,7 +106,6 @@ describe("Encode", () => {
         kind: TransactionKind.RegisterBlockchain,
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
-        blockchainId: toUtf8("wonderland") as BnsBlockchainId,
         chain: {
           chainId: "wonderland" as ChainId,
           production: false,
@@ -139,15 +137,15 @@ describe("Encode", () => {
         username: "alice",
         addresses: [
           {
-            blockchainId: toUtf8("chain1") as BnsBlockchainId,
+            chainId: "chain1" as ChainId,
             address: "367X" as Address,
           },
           {
-            blockchainId: toUtf8("chain3") as BnsBlockchainId,
+            chainId: "chain3" as ChainId,
             address: "0xddffeeffddaa44" as Address,
           },
           {
-            blockchainId: toUtf8("chain2") as BnsBlockchainId,
+            chainId: "chain2" as ChainId,
             address: "0x00aabbddccffee" as Address,
           },
         ],
@@ -173,7 +171,7 @@ describe("Encode", () => {
         signer: defaultSigner,
         username: "alice",
         payload: {
-          blockchainId: toUtf8("other-land") as BnsBlockchainId,
+          chainId: "other-land" as ChainId,
           address: "865765858O" as Address,
         },
       };

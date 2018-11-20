@@ -7,7 +7,6 @@ import {
   BcpSwapQuery,
   BcpTransactionResponse,
   BcpTxQuery,
-  BnsBlockchainId,
   Nonce,
   RegisterBlockchainTx,
   RegisterUsernameTx,
@@ -36,8 +35,6 @@ import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
 import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
 import { keyToAddress } from "./util";
-
-const { toUtf8 } = Encoding;
 
 function skipTests(): boolean {
   return !process.env.BNSD_ENABLED;
@@ -340,12 +337,10 @@ describe("BnsConnection", () => {
 
     // Create and send registration
     const chainId = `wonderland_${Math.random()}` as ChainId;
-    const blockchainId = toUtf8(chainId) as BnsBlockchainId;
     const registration: RegisterBlockchainTx = {
       kind: TransactionKind.RegisterBlockchain,
       chainId: registryChainId,
       signer: identity.pubkey,
-      blockchainId: blockchainId,
       chain: {
         chainId: chainId,
         production: false,
@@ -367,7 +362,6 @@ describe("BnsConnection", () => {
     if (searchResult[0].transaction.kind !== TransactionKind.RegisterBlockchain) {
       throw new Error("Unexpected transaction kind");
     }
-    expect(searchResult[0].transaction.blockchainId).toEqual(blockchainId);
     expect(searchResult[0].transaction.chain).toEqual({
       chainId: chainId,
       production: false,
@@ -456,12 +450,10 @@ describe("BnsConnection", () => {
 
     // Register a blockchain
     const chainId = `wonderland_${Math.random()}` as ChainId;
-    const blockchainId = toUtf8(chainId) as BnsBlockchainId;
     const blockchainRegistration: RegisterBlockchainTx = {
       kind: TransactionKind.RegisterBlockchain,
       chainId: registryChainId,
       signer: identity.pubkey,
-      blockchainId: blockchainId,
       chain: {
         chainId: chainId,
         networkId: "7rg047g4h",
@@ -492,7 +484,7 @@ describe("BnsConnection", () => {
       signer: identity.pubkey,
       username: username,
       payload: {
-        blockchainId: blockchainId,
+        chainId: chainId,
         address: address,
       },
     };
@@ -516,7 +508,7 @@ describe("BnsConnection", () => {
       signer: identity.pubkey,
       username: username,
       payload: {
-        blockchainId: blockchainId,
+        chainId: chainId,
         address: address2,
       },
     };
@@ -542,7 +534,7 @@ describe("BnsConnection", () => {
       signer: identity.pubkey,
       username: username,
       payload: {
-        blockchainId: blockchainId,
+        chainId: chainId,
         address: address,
       },
     };
