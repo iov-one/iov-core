@@ -49,17 +49,21 @@ if command -v docker > /dev/null ; then
   export BNSD_ENABLED=1
   fold_end
 
+  fold_start "lisk-start"
   ./scripts/lisk/start.sh
   export LISK_ENABLED=1
+  fold_end
 
   # Wait until API is ready and run in background because script waits for
   # blocks and takes some time but will be ready before tests start
   (sleep 20 && ./scripts/lisk/init.sh ) &
 fi
 
+fold_start "ethereum-start"
 export GANACHE_MNEMONIC="oxygen fall sure lava energy veteran enroll frown question detail include maximum"
 ./scripts/ethereum/start.sh
 export ETHEREUM_ENABLED=1
+fold_end
 
 echo "use tendermint?" "${TENDERMINT_ENABLED:-no}"
 echo "use bnsd?" "${BNSD_ENABLED:-no}"
@@ -187,8 +191,10 @@ fi
 #
 # Cleanup
 #
+fold_start "ethereum-stop"
 unset ETHEREUM_ENABLED
 ./scripts/ethereum/stop.sh
+fold_end
 
 if [[ ! -z ${BNSD_ENABLED:-} ]]; then
   fold_start "faucet-stop"
