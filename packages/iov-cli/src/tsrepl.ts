@@ -8,7 +8,7 @@ import { isRecoverable, executeJavaScriptAsync } from "./helpers";
 
 interface ReplEvalResult {
   readonly result: any;
-  readonly error: any;
+  readonly error: Error | null;
 }
 
 export class TsRepl {
@@ -49,7 +49,7 @@ export class TsRepl {
       code: string,
       _context: any,
       _filename: string,
-      callback: (err?: Error, result?: any) => any,
+      callback: (err: Error | null, result?: any) => any,
     ) => {
       const result = await this.replEval(code);
       callback(result.error, result.result);
@@ -66,8 +66,9 @@ export class TsRepl {
 
     // Prepare context for TypeScript: TypeScript compiler expects the exports shortcut
     // to exist in `Object.defineProperty(exports, "__esModule", { value: true });`
-    if (!repl.context.exports) {
-      repl.context.exports = repl.context.module.exports;
+    const unsafeReplContext = repl.context as any;
+    if (!unsafeReplContext.exports) {
+      unsafeReplContext.exports = unsafeReplContext.module.exports;
     }
 
     // REPL context is created with a default set of module resolution paths,
@@ -82,7 +83,7 @@ export class TsRepl {
     // However, this does not include the installation path of @iov/cli because
     // REPL does not inherit module paths from the current process. Thus we override
     // the repl paths with the current process' paths
-    repl.context.module.paths = module.paths;
+    unsafeReplContext.module.paths = module.paths;
 
     this.context = createContext(repl.context);
 
@@ -169,7 +170,7 @@ export class TsRepl {
     if (code === ".scope") {
       return {
         result: undefined,
-        error: undefined,
+        error: null,
       };
     }
 
@@ -179,7 +180,7 @@ export class TsRepl {
       const result = await this.compileAndExecute(code, isAutocompletionRequest);
       return {
         result: result,
-        error: undefined,
+        error: null,
       };
     } catch (error) {
       if (this.debuggingEnabled) {
@@ -187,14 +188,14 @@ export class TsRepl {
         console.log(this.evalData.input);
       }
 
-      let outError: Error | undefined;
+      let outError: Error | null;
       if (error instanceof TSError) {
         // Support recoverable compilations using >= node 6.
         if (Recoverable && isRecoverable(error)) {
           outError = new Recoverable(error);
         } else {
           console.error(error.diagnosticText);
-          outError = undefined;
+          outError = null;
         }
       } else {
         outError = error;
