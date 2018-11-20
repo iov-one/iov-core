@@ -322,7 +322,7 @@ const decodeTag = (data: RpcTag): responses.Tag => ({
 const decodeTags = (tags: ReadonlyArray<RpcTag>) => tags.map(decodeTag);
 
 export interface RpcTxData {
-  readonly code?: IntegerString;
+  readonly code?: number;
   readonly log?: string;
   readonly data?: Base64String;
   readonly tags?: ReadonlyArray<RpcTag>;
@@ -330,7 +330,7 @@ export interface RpcTxData {
 const decodeTxData = (data: RpcTxData): responses.TxData => ({
   data: may(Base64.decode, data.data),
   log: data.log,
-  code: Integer.parse(optional(data.code, "0" as IntegerString)),
+  code: Integer.ensure(optional<number>(data.code, 0)),
   tags: may(decodeTags, data.tags),
 });
 
