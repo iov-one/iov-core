@@ -189,25 +189,23 @@ function kvTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
 }
 
 function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
-  // don't print out WebSocket errors if marked pending
-  kvTestSuite(rpcFactory, adaptor);
-
   it("can subscribe to block header events", done => {
     pendingWithoutTendermint();
 
-    // seems that tendermint just guarantees within the last second for timestamp
-    const testStart = ReadonlyDate.now() - 1000;
+    const testStart = ReadonlyDate.now();
 
     (async () => {
       const events: responses.NewBlockHeaderEvent[] = [];
-      const client = await Client.connect("ws://" + tendermintUrl);
+      const client = new Client(rpcFactory(), adaptor);
       const stream = client.subscribeNewBlockHeader();
       expect(stream).toBeTruthy();
       const subscription = stream.subscribe({
         next: event => {
           expect(event.chainId).toMatch(/^[-a-zA-Z0-9]{3,30}$/);
           expect(event.height).toBeGreaterThan(0);
-          expect(event.time.getTime()).toBeGreaterThan(testStart);
+          // seems that tendermint just guarantees within the last second for timestamp
+          expect(event.time.getTime()).toBeGreaterThan(testStart - 1000);
+          expect(event.time.getTime()).toBeLessThanOrEqual(ReadonlyDate.now());
           expect(event.numTxs).toEqual(0);
           expect(event.lastBlockId).toBeTruthy();
           expect(event.totalTxs).toBeGreaterThan(0);
@@ -250,19 +248,20 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
   it("can subscribe to block events", done => {
     pendingWithoutTendermint();
 
-    // seems that tendermint just guarantees within the last second for timestamp
-    const testStart = ReadonlyDate.now() - 1000;
+    const testStart = ReadonlyDate.now();
 
     (async () => {
       const events: responses.NewBlockEvent[] = [];
-      const client = await Client.connect("ws://" + tendermintUrl);
+      const client = new Client(rpcFactory(), adaptor);
       const stream = client.subscribeNewBlock();
       expect(stream).toBeTruthy();
       const subscription = stream.subscribe({
         next: event => {
           expect(event.header.chainId).toMatch(/^[-a-zA-Z0-9]{3,30}$/);
           expect(event.header.height).toBeGreaterThan(0);
-          expect(event.header.time.getTime()).toBeGreaterThan(testStart);
+          // seems that tendermint just guarantees within the last second for timestamp
+          expect(event.header.time.getTime()).toBeGreaterThan(testStart - 1000);
+          expect(event.header.time.getTime()).toBeLessThanOrEqual(ReadonlyDate.now());
           expect(event.header.numTxs).toEqual(1);
           expect(event.header.lastBlockId).toBeTruthy();
           expect(event.header.totalTxs).toBeGreaterThan(0);
@@ -308,7 +307,7 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
 
     (async () => {
       const events: responses.TxEvent[] = [];
-      const client = await Client.connect("ws://" + tendermintUrl);
+      const client = new Client(rpcFactory(), adaptor);
       const stream = client.subscribeTx();
       expect(stream).toBeTruthy();
       const subscription = stream.subscribe({
@@ -345,7 +344,7 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
 
     (async () => {
       const events: responses.TxEvent[] = [];
-      const client = await Client.connect("ws://" + tendermintUrl);
+      const client = new Client(rpcFactory(), adaptor);
       const tags: ReadonlyArray<QueryTag> = [{ key: "app.creator", value: "jae" }];
       const stream = client.subscribeTx(tags);
       expect(stream).toBeTruthy();
@@ -399,13 +398,15 @@ describe("Client", () => {
     expect(info3).toBeTruthy();
   });
 
-  describe("With HttpClient: v0-20", () => {
+  describe("With HttpClient: v0-25", () => {
     kvTestSuite(() => new HttpClient(tendermintUrl), v0_25);
   });
 
-  describe("With WebsocketClient", () => {
+  describe("With WebsocketClient: v0-25", () => {
+    // don't print out WebSocket errors if marked pending
     const onError = skipTests() ? () => 0 : console.log;
     const factory = () => new WebsocketClient(tendermintUrl, onError);
+    kvTestSuite(factory, v0_25);
     websocketTestSuite(factory, v0_25);
   });
 });
