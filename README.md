@@ -174,16 +174,8 @@ If you are running on linux, you may not have the proper dependencies installed.
 following: `sudo apt-get install libudev-dev libusb-1.0-0 libusb-1.0-0-dev`.
 These are needed to compile the usb driver.
 
-Currently, Libusb requires node-pre-gyp version `0.10.2` or lower to compile properly. If for some reason
-your dependency is `0.10.3` or higher, you may have issues. Its recommended to use only `0.10.2` until
-the compilation issues are fixed in the `node-pre-gyp` package. This package comes as a dependency of
-`@ledger/hw-transport-node-hid` and is not easily modifiable by our team. Once the issues are resolved,
-the hard requirement of this dependency will be removed to allow it to be synchronized with the packages
-that require it.
-
-If `node-pre-gyp` keeps giving issues compiling this library, you may want to switch to node 8.
-There have been some reported issues on node `10.6.0` even after this, all around compiling node-usb
-for the ledger transport.
+Sometimes compiling native code with `node-pre-gyp` causes issues in very
+recent versions of Node.js. At the moment, Node.js 8, 10 and 11 should work.
 
 ### My PR works but the CI rejects it
 
