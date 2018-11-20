@@ -124,7 +124,7 @@ export interface RpcTag {
     readonly value: Base64String;
 }
 export interface RpcTxData {
-    readonly code?: IntegerString;
+    readonly code?: number;
     readonly log?: string;
     readonly data?: Base64String;
     readonly tags?: ReadonlyArray<RpcTag>;
