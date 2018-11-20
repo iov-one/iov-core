@@ -14,7 +14,7 @@ describe("IovFaucet", () => {
   const primaryToken = "CASH" as TokenTicker;
   const secondaryToken = "BASH" as TokenTicker;
 
-  it("can be constructed", () => {
+  xit("can be constructed", () => {
     // http
     expect(new IovFaucet("http://localhost:8000")).toBeTruthy();
     expect(new IovFaucet("http://localhost:8000/")).toBeTruthy();
@@ -27,21 +27,21 @@ describe("IovFaucet", () => {
     expect(new IovFaucet("https://localhost/")).toBeTruthy();
   });
 
-  it("can be used to credit a wallet", async () => {
+  xit("can be used to credit a wallet", async () => {
     pendingWithoutBnsd();
     const faucet = new IovFaucet(faucetUrl);
     const address = await randomBnsAddress();
     await faucet.credit(address, primaryToken);
   });
 
-  it("can be used to credit a wallet with a different token", async () => {
+  xit("can be used to credit a wallet with a different token", async () => {
     pendingWithoutBnsd();
     const faucet = new IovFaucet(faucetUrl);
     const address = await randomBnsAddress();
     await faucet.credit(address, secondaryToken);
   });
 
-  it("throws for invalid ticker", async () => {
+  xit("throws for invalid ticker", async () => {
     pendingWithoutBnsd();
     const faucet = new IovFaucet(faucetUrl);
     const address = await randomBnsAddress();
@@ -51,7 +51,7 @@ describe("IovFaucet", () => {
       .catch(error => expect(error).toMatch(/token is not available/i));
   });
 
-  it("throws for invalid address", async () => {
+  xit("throws for invalid address", async () => {
     pendingWithoutBnsd();
     const faucet = new IovFaucet(faucetUrl);
 
