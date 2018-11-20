@@ -65,20 +65,23 @@ export GANACHE_MNEMONIC="oxygen fall sure lava energy veteran enroll frown quest
 export ETHEREUM_ENABLED=1
 fold_end
 
-echo "use tendermint?" "${TENDERMINT_ENABLED:-no}"
-echo "use bnsd?" "${BNSD_ENABLED:-no}"
-echo "use ethereum?" ${ETHEREUM_ENABLED:-no}
-echo "use Lisk?" ${LISK_ENABLED:-no}
-
 #
 # Start faucet
 #
 
-if [[ ! -z ${BNSD_ENABLED:-} ]]; then
-  fold_start "faucet-start"
-  ./scripts/iov_faucet_start.sh
-  fold_end
-fi
+# Disabled until faucet supports bnsd:v0.9.x
+# if [[ ! -z ${BNSD_ENABLED:-} ]]; then
+#  fold_start "faucet-start"
+#   ./scripts/iov_faucet_start.sh
+#   export FAUCET_ENABLED=1
+#   fold_end
+# fi
+
+echo "use tendermint? ${TENDERMINT_ENABLED:-no}"
+echo "use bnsd? ${BNSD_ENABLED:-no}"
+echo "use IOV faucet? ${FAUCET_ENABLED:-no}"
+echo "use ethereum? ${ETHEREUM_ENABLED:-no}"
+echo "use Lisk? ${LISK_ENABLED:-no}"
 
 #
 # Build
@@ -196,8 +199,9 @@ unset ETHEREUM_ENABLED
 ./scripts/ethereum/stop.sh
 fold_end
 
-if [[ ! -z ${BNSD_ENABLED:-} ]]; then
+if [[ ! -z ${FAUCET_ENABLED:-} ]]; then
   fold_start "faucet-stop"
+  unset FAUCET_ENABLED
   ./scripts/iov_faucet_stop.sh
   fold_end
 fi

@@ -3,9 +3,9 @@ import { Address, TokenTicker } from "@iov/bcp-types";
 import { IovFaucet } from "./iovfaucet";
 import { randomBnsAddress } from "./utils";
 
-function pendingWithoutBnsd(): void {
-  if (!process.env.BNSD_ENABLED) {
-    pending("Set BNSD_ENABLED to enable tests that need a bnsd blockchain");
+function pendingWithoutFaucet(): void {
+  if (!process.env.FAUCET_ENABLED) {
+    pending("Set FAUCET_ENABLED to enable tests that need a IOV faucet");
   }
 }
 
@@ -28,21 +28,21 @@ describe("IovFaucet", () => {
   });
 
   it("can be used to credit a wallet", async () => {
-    pendingWithoutBnsd();
+    pendingWithoutFaucet();
     const faucet = new IovFaucet(faucetUrl);
     const address = await randomBnsAddress();
     await faucet.credit(address, primaryToken);
   });
 
   it("can be used to credit a wallet with a different token", async () => {
-    pendingWithoutBnsd();
+    pendingWithoutFaucet();
     const faucet = new IovFaucet(faucetUrl);
     const address = await randomBnsAddress();
     await faucet.credit(address, secondaryToken);
   });
 
   it("throws for invalid ticker", async () => {
-    pendingWithoutBnsd();
+    pendingWithoutFaucet();
     const faucet = new IovFaucet(faucetUrl);
     const address = await randomBnsAddress();
     await faucet
@@ -52,7 +52,7 @@ describe("IovFaucet", () => {
   });
 
   it("throws for invalid address", async () => {
-    pendingWithoutBnsd();
+    pendingWithoutFaucet();
     const faucet = new IovFaucet(faucetUrl);
 
     for (const address of ["be5cc2cc05db2cdb4313c18306a5157291cfdcd1" as Address, "1234L" as Address]) {
