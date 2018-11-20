@@ -31,6 +31,8 @@ describe("EthereumConnection", () => {
   const whole = TestConfig.whole;
   const fractional = TestConfig.fractional;
   const nonce = TestConfig.nonce;
+  const gasPrice = TestConfig.gasPrice;
+  const gasLimit = TestConfig.gasLimit;
 
   it(`can be constructed for ${base}`, () => {
     pendingWithoutEthereum();
@@ -96,23 +98,27 @@ describe("EthereumConnection", () => {
       signer: mainIdentity.pubkey,
       recipient: recipientAddress,
       amount: {
-        whole: 1,
-        fractional: 44550000,
+        whole: 0,
+        fractional: 3445500,
         tokenTicker: "ETH" as TokenTicker,
       },
       gasPrice: {
         whole: 0,
-        fractional: 20000000000,
+        fractional: gasPrice,
         tokenTicker: "ETH" as TokenTicker,
       },
       gasLimit: {
         whole: 0,
-        fractional: 21000,
+        fractional: gasLimit,
         tokenTicker: "ETH" as TokenTicker,
       },
+      memo: "We \u2665 developers – iov.one",
     };
-
-    const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
+    const connection = await EthereumConnection.establish(base);
+    const senderAddress = ethereumCodec.keyToAddress(mainIdentity.pubkey);
+    const query: BcpAccountQuery = { address: senderAddress as Address };
+    const nonceResp = await connection.getNonce(query);
+    const signingJob = ethereumCodec.bytesToSign(sendTx, nonceResp.data[0].nonce);
     const signature = await wallet.createTransactionSignature(
       mainIdentity,
       signingJob.bytes,
@@ -123,7 +129,7 @@ describe("EthereumConnection", () => {
     const signedTransaction: SignedTransaction = {
       transaction: sendTx,
       primarySignature: {
-        nonce: nonce,
+        nonce: nonceResp.data[0].nonce,
         pubkey: mainIdentity.pubkey,
         signature: signature,
       },
@@ -131,7 +137,6 @@ describe("EthereumConnection", () => {
     };
     const bytesToPost = ethereumCodec.bytesToPost(signedTransaction);
 
-    const connection = await EthereumConnection.establish(base);
     const result = await connection.postTx(bytesToPost);
     expect(result).toBeTruthy();
     expect(result.data.message).toBeNull();
