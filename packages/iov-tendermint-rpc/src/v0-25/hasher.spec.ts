@@ -3,8 +3,8 @@ import { Encoding } from "@iov/encoding";
 
 import { hashTx } from "./hasher";
 
-describe("Validate hash tx like tendermint", () => {
-  it("Matches example from local test", () => {
+describe("Hasher", () => {
+  it("creates transaction hash equal to local test", () => {
     // this was taken from a result from /search_tx
     // for events we need to calculate this client side.
     const txId = Encoding.fromHex("ceb861fd1ac9ab97bd56559e195b1cf87e7beda9");

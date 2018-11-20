@@ -293,7 +293,7 @@ function decodeTxEvent(data: RpcTxEvent): responses.TxEvent {
   const tx = Base64.decode(required(data.tx)) as PostableBytes;
   return {
     tx,
-    hash: hashTx(tx), // TODO
+    hash: hashTx(tx),
     result: decodeTxData(data.result),
     height: Integer.parse(required(data.height)),
     index: Integer.ensure(required(data.index)),
