@@ -12,7 +12,7 @@ export declare function may<T, U>(transform: (val: T) => U, value: T | null | un
 export declare class Integer {
     static parse(str: IntegerString): number;
     static encode(num: number): IntegerString;
-    static ensure(n: number): number;
+    static ensure(num: unknown): number;
 }
 export declare class Base64 {
     static encode(data: Uint8Array): Base64String;

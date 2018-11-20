@@ -53,11 +53,14 @@ export class Integer {
     return new Int53(num).toString() as IntegerString;
   }
 
-  public static ensure(n: number): number {
-    if (typeof n !== "number") {
-      throw new Error(`${n} is not a number`);
+  public static ensure(num: unknown): number {
+    if (typeof num !== "number") {
+      throw new Error(`${num} is not a number`);
     }
-    return n;
+    if (!Number.isInteger(num)) {
+      throw new Error(`${num} is not an integer`);
+    }
+    return num;
   }
 }
 
