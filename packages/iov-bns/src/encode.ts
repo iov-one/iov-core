@@ -192,10 +192,10 @@ function buildRegisterBlockchainTx(tx: RegisterBlockchainTx): codecImpl.app.ITx 
       details: codecImpl.blockchain.TokenDetails.create({
         chain: codecImpl.blockchain.Chain.create({
           chainID: tx.chain.chainId,
-          networkID: tx.chain.networkId,
           name: tx.chain.name,
           enabled: encodeBoolean(tx.chain.enabled),
           production: encodeBoolean(tx.chain.production),
+          networkID: tx.chain.networkId,
           mainTickerID: tx.chain.mainTickerId ? toUtf8(tx.chain.mainTickerId) : undefined,
         }),
         iov: codecImpl.blockchain.IOV.create({

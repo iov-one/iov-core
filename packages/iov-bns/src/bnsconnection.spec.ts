@@ -348,11 +348,10 @@ describe("BnsConnection", () => {
       blockchainId: blockchainId,
       chain: {
         chainId: chainId,
-        networkId: "7rg047g4h",
         production: false,
         enabled: true,
-        mainTickerId: undefined,
         name: "Wonderland",
+        networkId: "7rg047g4h",
       },
       codecName: "wonderland_rules",
       codecConfig: `{ "any" : [ "json", "content" ] }`,
@@ -371,11 +370,11 @@ describe("BnsConnection", () => {
     expect(searchResult[0].transaction.blockchainId).toEqual(blockchainId);
     expect(searchResult[0].transaction.chain).toEqual({
       chainId: chainId,
-      networkId: "7rg047g4h",
       production: false,
       enabled: true,
-      mainTickerId: undefined,
       name: "Wonderland",
+      networkId: "7rg047g4h",
+      mainTickerId: undefined,
     });
     expect(searchResult[0].transaction.codecName).toEqual("wonderland_rules");
     expect(searchResult[0].transaction.codecConfig).toEqual(`{ "any" : [ "json", "content" ] }`);
@@ -468,7 +467,6 @@ describe("BnsConnection", () => {
         networkId: "7rg047g4h",
         production: false,
         enabled: true,
-        mainTickerId: undefined,
         name: "Wonderland",
       },
       codecName: "wonderland_rules",

@@ -161,10 +161,10 @@ function parseRegisterBlockchainTx(
 
   const chain = ensure(details.chain, "details.chain");
   const chainId = ensure(chain.chainID, "details.chain.chainID");
-  const networkId = chain.networkID || undefined;
   const name = ensure(chain.name, "details.chain.name");
   const production = ensure(chain.production, "details.chain.production");
   const enabled = ensure(chain.enabled, "details.chain.enabled");
+  const networkId = chain.networkID || undefined;
   const mainTickerId = chain.mainTickerID || undefined;
 
   const iov = ensure(details.iov, "details.iov");
@@ -176,10 +176,10 @@ function parseRegisterBlockchainTx(
     blockchainId: id as BnsBlockchainId,
     chain: {
       chainId: chainId as ChainId,
-      networkId: networkId,
       name: name,
       production: production,
       enabled: enabled,
+      networkId: networkId,
       mainTickerId:
         mainTickerId && mainTickerId.length > 0 ? (fromUtf8(mainTickerId) as TokenTicker) : undefined,
     },

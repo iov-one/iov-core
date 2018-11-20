@@ -116,11 +116,12 @@ export interface RegisterBlockchainTx extends BaseTx {
   /** as defined in https://github.com/iov-one/bns-spec/blob/master/docs/data/ObjectDefinitions.rst#chain */
   readonly chain: {
     readonly chainId: ChainId;
-    readonly networkId: string | undefined;
     readonly name: string;
     readonly enabled: boolean;
     readonly production: boolean;
-    readonly mainTickerId: TokenTicker | undefined;
+
+    readonly networkId?: string;
+    readonly mainTickerId?: TokenTicker;
   };
   readonly codecName: string;
   readonly codecConfig: string;
