@@ -25,6 +25,7 @@ import {
   required,
 } from "../encodings";
 import * as responses from "../responses";
+import { hashTx } from "./hasher";
 
 /*** adaptor ***/
 
@@ -292,7 +293,7 @@ function decodeTxEvent(data: RpcTxEvent): responses.TxEvent {
   const tx = Base64.decode(required(data.tx)) as PostableBytes;
   return {
     tx,
-    hash: Uint8Array.from([]) as TxId, // TODO
+    hash: hashTx(tx), // TODO
     result: decodeTxData(data.result),
     height: Integer.parse(required(data.height)),
     index: Integer.ensure(required(data.index)),
