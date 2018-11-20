@@ -331,7 +331,7 @@ describe("BnsConnection", () => {
   it("can register a blockchain", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const registraChainId = await connection.chainId();
+    const registryChainId = await connection.chainId();
 
     const profile = new UserProfile();
     const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
@@ -343,7 +343,7 @@ describe("BnsConnection", () => {
     const blockchainId = toUtf8(chainId) as BnsBlockchainId;
     const registration: RegisterBlockchainTx = {
       kind: TransactionKind.RegisterBlockchain,
-      chainId: registraChainId,
+      chainId: registryChainId,
       signer: identity.pubkey,
       blockchainId: blockchainId,
       chain: {
@@ -386,7 +386,7 @@ describe("BnsConnection", () => {
   it("can register a username", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const chainId = await connection.chainId();
+    const registryChainId = await connection.chainId();
 
     const profile = new UserProfile();
     const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
@@ -397,7 +397,7 @@ describe("BnsConnection", () => {
     const username = `testuser_${Math.random()}`;
     const registration: RegisterUsernameTx = {
       kind: TransactionKind.RegisterUsername,
-      chainId: chainId,
+      chainId: registryChainId,
       signer: identity.pubkey,
       addresses: [
         // TODO: Re-enable when there are pre-registered blockchains for testing
