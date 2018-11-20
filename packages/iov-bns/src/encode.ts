@@ -1,8 +1,11 @@
 import { Algorithm, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
 import {
+  AddAddressToUsernameTx,
   Amount,
   FullSignature,
+  RegisterBlockchainTx,
   RegisterUsernameTx,
+  RemoveAddressFromUsernameTx,
   SendTx,
   SetNameTx,
   SignedTransaction,
@@ -18,6 +21,12 @@ import { Encoding } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
 import { PrivateKeyBundle } from "./types";
 import { decodeBnsAddress, keyToAddress, preimageIdentifier } from "./util";
+
+const { toUtf8 } = Encoding;
+
+function encodeBoolean(value: boolean): true | undefined {
+  return value ? true : undefined;
+}
 
 export function encodePubkey(publicKey: PublicKeyBundle): codecImpl.crypto.IPublicKey {
   switch (publicKey.algo) {
@@ -80,6 +89,8 @@ export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.app.ITx {
 
 export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
   switch (tx.kind) {
+    case TransactionKind.AddAddressToUsername:
+      return buildAddAddressToUsernameTx(tx);
     case TransactionKind.Send:
       return buildSendTx(tx);
     case TransactionKind.SetName:
@@ -92,11 +103,25 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
       return buildSwapClaimTx(tx);
     case TransactionKind.SwapTimeout:
       return buildSwapTimeoutTx(tx);
+    case TransactionKind.RegisterBlockchain:
+      return buildRegisterBlockchainTx(tx);
     case TransactionKind.RegisterUsername:
       return buildRegisterUsernameTx(tx);
+    case TransactionKind.RemoveAddressFromUsername:
+      return buildRemoveAddressFromUsernameTx(tx);
     default:
       throw new Error("Received transacion of unsupported kind.");
   }
+}
+
+function buildAddAddressToUsernameTx(tx: AddAddressToUsernameTx): codecImpl.app.ITx {
+  return {
+    addUsernameAddressNftMsg: {
+      id: toUtf8(tx.username),
+      chainID: toUtf8(tx.payload.chainId),
+      address: toUtf8(tx.payload.address),
+    },
+  };
 }
 
 function buildSendTx(tx: SendTx): codecImpl.app.ITx {
@@ -158,15 +183,36 @@ function buildSwapTimeoutTx(tx: SwapTimeoutTx): codecImpl.app.ITx {
   };
 }
 
+function buildRegisterBlockchainTx(tx: RegisterBlockchainTx): codecImpl.app.ITx {
+  return {
+    issueBlockchainNftMsg: codecImpl.blockchain.IssueTokenMsg.create({
+      id: toUtf8(tx.chain.chainId),
+      owner: decodeBnsAddress(keyToAddress(tx.signer)).data,
+      approvals: undefined,
+      details: codecImpl.blockchain.TokenDetails.create({
+        chain: codecImpl.blockchain.Chain.create({
+          chainID: tx.chain.chainId,
+          name: tx.chain.name,
+          enabled: encodeBoolean(tx.chain.enabled),
+          production: encodeBoolean(tx.chain.production),
+          networkID: tx.chain.networkId,
+          mainTickerID: tx.chain.mainTickerId ? toUtf8(tx.chain.mainTickerId) : undefined,
+        }),
+        iov: codecImpl.blockchain.IOV.create({
+          codec: tx.codecName,
+          codecConfig: tx.codecConfig,
+        }),
+      }),
+    }),
+  };
+}
+
 function buildRegisterUsernameTx(tx: RegisterUsernameTx): codecImpl.app.ITx {
-  const sortedAddressPairs = [...tx.addresses.entries()].sort((pair1, pair2) => {
-    return pair1[0].localeCompare(pair2[0]); // sort by chain ID
-  });
-  const chainAddresses = sortedAddressPairs.map(
+  const chainAddresses = tx.addresses.map(
     (pair): codecImpl.username.IChainAddress => {
       return {
-        chainID: Encoding.toUtf8(pair[0]),
-        address: Encoding.toUtf8(pair[1]),
+        chainID: toUtf8(pair.chainId),
+        address: toUtf8(pair.address),
       };
     },
   );
@@ -180,5 +226,15 @@ function buildRegisterUsernameTx(tx: RegisterUsernameTx): codecImpl.app.ITx {
         addresses: chainAddresses,
       }),
     }),
+  };
+}
+
+function buildRemoveAddressFromUsernameTx(tx: RemoveAddressFromUsernameTx): codecImpl.app.ITx {
+  return {
+    removeUsernameAddressMsg: {
+      id: toUtf8(tx.username),
+      chainID: toUtf8(tx.payload.chainId),
+      address: toUtf8(tx.payload.address),
+    },
   };
 }

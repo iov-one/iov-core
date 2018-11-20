@@ -1,5 +1,6 @@
-import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import {
+  AddAddressToUsernameTx,
   Address,
   BcpAccount,
   BcpNonce,
@@ -7,7 +8,9 @@ import {
   BcpTransactionResponse,
   BcpTxQuery,
   Nonce,
+  RegisterBlockchainTx,
   RegisterUsernameTx,
+  RemoveAddressFromUsernameTx,
   SendTx,
   SwapClaimTx,
   SwapIdBytes,
@@ -322,10 +325,61 @@ describe("BnsConnection", () => {
     connection.disconnect();
   });
 
+  it("can register a blockchain", async () => {
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
+    const registryChainId = await connection.chainId();
+
+    const profile = new UserProfile();
+    const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+    const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+    const identityAddress = keyToAddress(identity.pubkey);
+
+    // Create and send registration
+    const chainId = `wonderland_${Math.random()}` as ChainId;
+    const registration: RegisterBlockchainTx = {
+      kind: TransactionKind.RegisterBlockchain,
+      chainId: registryChainId,
+      signer: identity.pubkey,
+      chain: {
+        chainId: chainId,
+        production: false,
+        enabled: true,
+        name: "Wonderland",
+        networkId: "7rg047g4h",
+      },
+      codecName: "wonderland_rules",
+      codecConfig: `{ "any" : [ "json", "content" ] }`,
+    };
+    const nonce = await getNonce(connection, identityAddress);
+    const signed = await profile.signTransaction(wallet.id, identity, registration, bnsCodec, nonce);
+    const txBytes = bnsCodec.bytesToPost(signed);
+    await connection.postTx(txBytes);
+
+    // Find registration transaction
+    const searchResult = await connection.searchTx({ tags: [bnsNonceTag(identityAddress)] });
+    expect(searchResult.length).toEqual(1);
+    if (searchResult[0].transaction.kind !== TransactionKind.RegisterBlockchain) {
+      throw new Error("Unexpected transaction kind");
+    }
+    expect(searchResult[0].transaction.chain).toEqual({
+      chainId: chainId,
+      production: false,
+      enabled: true,
+      name: "Wonderland",
+      networkId: "7rg047g4h",
+      mainTickerId: undefined,
+    });
+    expect(searchResult[0].transaction.codecName).toEqual("wonderland_rules");
+    expect(searchResult[0].transaction.codecConfig).toEqual(`{ "any" : [ "json", "content" ] }`);
+
+    connection.disconnect();
+  });
+
   it("can register a username", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const chainId = await connection.chainId();
+    const registryChainId = await connection.chainId();
 
     const profile = new UserProfile();
     const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
@@ -336,14 +390,14 @@ describe("BnsConnection", () => {
     const username = `testuser_${Math.random()}`;
     const registration: RegisterUsernameTx = {
       kind: TransactionKind.RegisterUsername,
-      chainId: chainId,
+      chainId: registryChainId,
       signer: identity.pubkey,
-      addresses: new Map([
+      addresses: [
         // TODO: Re-enable when there are pre-registered blockchains for testing
         // (https://github.com/iov-one/weave/issues/184)
         //
-        // [chainId, address],
-      ]),
+        // { chainId: ..., address: ... },
+      ],
       username: username,
     };
     const nonce = await getNonce(connection, address);
@@ -358,7 +412,159 @@ describe("BnsConnection", () => {
       throw new Error("Unexpected transaction kind");
     }
     expect(searchResult[0].transaction.username).toEqual(username);
-    expect(searchResult[0].transaction.addresses.size).toEqual(0);
+    expect(searchResult[0].transaction.addresses.length).toEqual(0);
+
+    connection.disconnect();
+  });
+
+  it("can add address to username and remove again", async () => {
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
+    const registryChainId = await connection.chainId();
+
+    const profile = new UserProfile();
+    const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+    const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+    const identityAddress = keyToAddress(identity.pubkey);
+
+    // Create and send registration
+    const username = `testuser_${Math.random()}`;
+    const usernameRegistration: RegisterUsernameTx = {
+      kind: TransactionKind.RegisterUsername,
+      chainId: registryChainId,
+      signer: identity.pubkey,
+      username: username,
+      addresses: [],
+    };
+    await connection.postTx(
+      bnsCodec.bytesToPost(
+        await profile.signTransaction(
+          wallet.id,
+          identity,
+          usernameRegistration,
+          bnsCodec,
+          await getNonce(connection, identityAddress),
+        ),
+      ),
+    );
+
+    // Register a blockchain
+    const chainId = `wonderland_${Math.random()}` as ChainId;
+    const blockchainRegistration: RegisterBlockchainTx = {
+      kind: TransactionKind.RegisterBlockchain,
+      chainId: registryChainId,
+      signer: identity.pubkey,
+      chain: {
+        chainId: chainId,
+        networkId: "7rg047g4h",
+        production: false,
+        enabled: true,
+        name: "Wonderland",
+      },
+      codecName: "wonderland_rules",
+      codecConfig: `{ "any" : [ "json", "content" ] }`,
+    };
+    await connection.postTx(
+      bnsCodec.bytesToPost(
+        await profile.signTransaction(
+          wallet.id,
+          identity,
+          blockchainRegistration,
+          bnsCodec,
+          await getNonce(connection, identityAddress),
+        ),
+      ),
+    );
+
+    // Add address
+    const address = `testaddress_${Math.random()}` as Address;
+    const addAddress: AddAddressToUsernameTx = {
+      kind: TransactionKind.AddAddressToUsername,
+      chainId: registryChainId,
+      signer: identity.pubkey,
+      username: username,
+      payload: {
+        chainId: chainId,
+        address: address,
+      },
+    };
+    await connection.postTx(
+      bnsCodec.bytesToPost(
+        await profile.signTransaction(
+          wallet.id,
+          identity,
+          addAddress,
+          bnsCodec,
+          await getNonce(connection, identityAddress),
+        ),
+      ),
+    );
+
+    // Adding second address for the same chain fails
+    const address2 = `testaddress2_${Math.random()}` as Address;
+    const addAddress2: AddAddressToUsernameTx = {
+      kind: TransactionKind.AddAddressToUsername,
+      chainId: registryChainId,
+      signer: identity.pubkey,
+      username: username,
+      payload: {
+        chainId: chainId,
+        address: address2,
+      },
+    };
+    await connection
+      .postTx(
+        bnsCodec.bytesToPost(
+          await profile.signTransaction(
+            wallet.id,
+            identity,
+            addAddress2,
+            bnsCodec,
+            await getNonce(connection, identityAddress),
+          ),
+        ),
+      )
+      .then(() => fail("must not resolve"))
+      .catch(error => expect(error).toMatch(/duplicate entry/i));
+
+    // Remove address
+    const removeAddress: RemoveAddressFromUsernameTx = {
+      kind: TransactionKind.RemoveAddressFromUsername,
+      chainId: registryChainId,
+      signer: identity.pubkey,
+      username: username,
+      payload: {
+        chainId: chainId,
+        address: address,
+      },
+    };
+    await connection.postTx(
+      bnsCodec.bytesToPost(
+        await profile.signTransaction(
+          wallet.id,
+          identity,
+          removeAddress,
+          bnsCodec,
+          await getNonce(connection, identityAddress),
+        ),
+      ),
+    );
+
+    // Do the same removal again
+    await connection
+      .postTx(
+        bnsCodec.bytesToPost(
+          await profile.signTransaction(
+            wallet.id,
+            identity,
+            removeAddress,
+            bnsCodec,
+            await getNonce(connection, identityAddress),
+          ),
+        ),
+      )
+      .then(() => fail("must not resolve"))
+      .catch(error => expect(error).toMatch(/invalid entry/i));
 
     connection.disconnect();
   });

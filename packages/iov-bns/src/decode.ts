@@ -1,10 +1,14 @@
 import { ChainId } from "@iov/base-types";
 import {
+  AddAddressToUsernameTx,
   Address,
   Amount,
   BaseTx,
+  ChainAddressPair,
   FullSignature,
+  RegisterBlockchainTx,
   RegisterUsernameTx,
+  RemoveAddressFromUsernameTx,
   SendTx,
   SetNameTx,
   SignedTransaction,
@@ -21,6 +25,8 @@ import { Encoding } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
 import { asNumber, decodeFullSig, ensure } from "./types";
 import { encodeBnsAddress, isHashIdentifier } from "./util";
+
+const { fromUtf8 } = Encoding;
 
 export function decodeAmount(coin: codecImpl.x.ICoin): Amount {
   return {
@@ -41,7 +47,9 @@ export function parseTx(tx: codecImpl.app.ITx, chainId: ChainId): SignedTransact
 }
 
 export function parseMsg(base: BaseTx, tx: codecImpl.app.ITx): UnsignedTransaction {
-  if (tx.sendMsg) {
+  if (tx.addUsernameAddressNftMsg) {
+    return parseAddAddressToUsernameTx(base, tx.addUsernameAddressNftMsg);
+  } else if (tx.sendMsg) {
     return parseSendTx(base, tx.sendMsg);
   } else if (tx.setNameMsg) {
     return parseSetNameTx(base, tx.setNameMsg);
@@ -51,10 +59,29 @@ export function parseMsg(base: BaseTx, tx: codecImpl.app.ITx): UnsignedTransacti
     return parseSwapClaimTx(base, tx.releaseEscrowMsg, tx);
   } else if (tx.returnEscrowMsg) {
     return parseSwapTimeoutTx(base, tx.returnEscrowMsg);
+  } else if (tx.issueBlockchainNftMsg) {
+    return parseRegisterBlockchainTx(base, tx.issueBlockchainNftMsg);
   } else if (tx.issueUsernameNftMsg) {
     return parseRegisterUsernameTx(base, tx.issueUsernameNftMsg);
+  } else if (tx.removeUsernameAddressMsg) {
+    return parseRemoveAddressFromUsernameTx(base, tx.removeUsernameAddressMsg);
   }
   throw new Error("unknown message type in transaction");
+}
+
+function parseAddAddressToUsernameTx(
+  base: BaseTx,
+  msg: codecImpl.username.IAddChainAddressMsg,
+): AddAddressToUsernameTx {
+  return {
+    ...base,
+    kind: TransactionKind.AddAddressToUsername,
+    username: fromUtf8(ensure(msg.id, "id")),
+    payload: {
+      chainId: fromUtf8(ensure(msg.chainID, "chainID")) as ChainId,
+      address: fromUtf8(ensure(msg.address, "address")) as Address,
+    },
+  };
 }
 
 function parseSendTx(base: BaseTx, msg: codecImpl.cash.ISendMsg): SendTx {
@@ -124,26 +151,70 @@ function parseBaseTx(tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId
   return base;
 }
 
+function parseRegisterBlockchainTx(
+  base: BaseTx,
+  msg: codecImpl.blockchain.IIssueTokenMsg,
+): RegisterBlockchainTx {
+  const details = ensure(msg.details, "details");
+
+  const chain = ensure(details.chain, "details.chain");
+  const chainId = ensure(chain.chainID, "details.chain.chainID");
+  const name = ensure(chain.name, "details.chain.name");
+  const production = ensure(chain.production, "details.chain.production");
+  const enabled = ensure(chain.enabled, "details.chain.enabled");
+  const networkId = chain.networkID || undefined;
+  const mainTickerId = chain.mainTickerID || undefined;
+
+  const iov = ensure(details.iov, "details.iov");
+  const codec = ensure(iov.codec, "details.iov.codec");
+  const codecConfig = ensure(iov.codecConfig, "details.iov.codecConfig");
+  return {
+    ...base,
+    kind: TransactionKind.RegisterBlockchain,
+    chain: {
+      chainId: chainId as ChainId,
+      name: name,
+      production: production,
+      enabled: enabled,
+      networkId: networkId,
+      mainTickerId:
+        mainTickerId && mainTickerId.length > 0 ? (fromUtf8(mainTickerId) as TokenTicker) : undefined,
+    },
+    codecName: codec,
+    codecConfig: codecConfig,
+  };
+}
+
 function parseRegisterUsernameTx(base: BaseTx, msg: codecImpl.username.IIssueTokenMsg): RegisterUsernameTx {
   const chainAddresses = ensure(ensure(msg.details, "details").addresses, "details.addresses");
-  const addressesAsMap = new Map(
-    chainAddresses.map(
-      (chainAddress): [ChainId, Address] => [
-        Encoding.fromUtf8(ensure(chainAddress.chainID, "chainID")) as ChainId,
-        Encoding.fromUtf8(ensure(chainAddress.address, "address")) as Address,
-      ],
-    ),
+  const addresses = chainAddresses.map(
+    (chainAddress): ChainAddressPair => {
+      return {
+        chainId: fromUtf8(ensure(chainAddress.chainID, "chainID")) as ChainId,
+        address: fromUtf8(ensure(chainAddress.address, "address")) as Address,
+      };
+    },
   );
-  if (addressesAsMap.size !== chainAddresses.length) {
-    throw new Error(
-      "Map does not have the same number of elements as list. Are there duplicate chain ID entries in the transaction?",
-    );
-  }
 
   return {
     kind: TransactionKind.RegisterUsername,
     username: Encoding.fromUtf8(ensure(msg.id, "id")),
-    addresses: addressesAsMap,
+    addresses: addresses,
     ...base,
+  };
+}
+
+function parseRemoveAddressFromUsernameTx(
+  base: BaseTx,
+  msg: codecImpl.username.IRemoveChainAddressMsg,
+): RemoveAddressFromUsernameTx {
+  return {
+    ...base,
+    kind: TransactionKind.RemoveAddressFromUsername,
+    username: fromUtf8(ensure(msg.id, "id")),
+    payload: {
+      chainId: fromUtf8(ensure(msg.chainID, "chainID")) as ChainId,
+      address: fromUtf8(ensure(msg.address, "address")) as Address,
+    },
   };
 }

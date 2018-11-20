@@ -26,7 +26,13 @@ export interface Amount {
   readonly tokenTicker: TokenTicker;
 }
 
+export interface ChainAddressPair {
+  readonly chainId: ChainId;
+  readonly address: Address;
+}
+
 export enum TransactionKind {
+  AddAddressToUsername,
   Send,
   /** @deprecated see SetNameTx */
   SetName,
@@ -34,15 +40,25 @@ export enum TransactionKind {
   SwapCounter,
   SwapClaim,
   SwapTimeout,
+  RegisterBlockchain,
   RegisterUsername,
+  RemoveAddressFromUsername,
 }
 
 export interface BaseTx {
+  /** the chain on which the transaction should be valid */
   readonly chainId: ChainId;
   readonly fee?: Amount;
   // signer needs to be a PublicKey as we use that to as an identifier to the Keyring for lookup
   readonly signer: PublicKeyBundle;
   readonly ttl?: TtlBytes;
+}
+
+export interface AddAddressToUsernameTx extends BaseTx {
+  readonly kind: TransactionKind.AddAddressToUsername;
+  /** the username to be updated, must exist on chain */
+  readonly username: string;
+  readonly payload: ChainAddressPair;
 }
 
 export interface SendTx extends BaseTx {
@@ -90,17 +106,47 @@ export interface SwapTimeoutTx extends BaseTx {
   readonly swapId: SwapIdBytes; // pulled from the offer transaction
 }
 
+export interface RegisterBlockchainTx extends BaseTx {
+  readonly kind: TransactionKind.RegisterBlockchain;
+  /**
+   * The chain to be registered
+   *
+   * Fields as defined in https://github.com/iov-one/bns-spec/blob/master/docs/data/ObjectDefinitions.rst#chain
+   */
+  readonly chain: {
+    readonly chainId: ChainId;
+    readonly name: string;
+    readonly enabled: boolean;
+    readonly production: boolean;
+
+    readonly networkId?: string;
+    readonly mainTickerId?: TokenTicker;
+  };
+  readonly codecName: string;
+  readonly codecConfig: string;
+}
+
 export interface RegisterUsernameTx extends BaseTx {
   readonly kind: TransactionKind.RegisterUsername;
   readonly username: string;
-  readonly addresses: Map<ChainId, Address>;
+  readonly addresses: ReadonlyArray<ChainAddressPair>;
+}
+
+export interface RemoveAddressFromUsernameTx extends BaseTx {
+  readonly kind: TransactionKind.RemoveAddressFromUsername;
+  /** the username to be updated, must exist on chain */
+  readonly username: string;
+  readonly payload: ChainAddressPair;
 }
 
 export type UnsignedTransaction =
+  | AddAddressToUsernameTx
   | SendTx
   | SetNameTx
   | SwapOfferTx
   | SwapCounterTx
   | SwapClaimTx
   | SwapTimeoutTx
-  | RegisterUsernameTx;
+  | RegisterBlockchainTx
+  | RegisterUsernameTx
+  | RemoveAddressFromUsernameTx;

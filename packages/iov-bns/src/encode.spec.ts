@@ -1,5 +1,15 @@
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
-import { Address, FullSignature, Nonce, RegisterUsernameTx, TransactionKind } from "@iov/bcp-types";
+import {
+  AddAddressToUsernameTx,
+  Address,
+  FullSignature,
+  Nonce,
+  RegisterBlockchainTx,
+  RegisterUsernameTx,
+  RemoveAddressFromUsernameTx,
+  TokenTicker,
+  TransactionKind,
+} from "@iov/bcp-types";
 import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 
@@ -30,7 +40,7 @@ import {
   signedTxJson,
 } from "./testdata";
 
-const { fromHex, toAscii } = Encoding;
+const { fromHex, toAscii, toUtf8 } = Encoding;
 
 describe("Encode", () => {
   it("encode pubkey", () => {
@@ -74,17 +84,71 @@ describe("Encode", () => {
       data: fromHex("00112233445566778899aa") as PublicKeyBytes,
     };
 
+    it("works for AddAddressToUsernameTx", () => {
+      const addAddress: AddAddressToUsernameTx = {
+        kind: TransactionKind.AddAddressToUsername,
+        chainId: "registry-chain" as ChainId,
+        signer: defaultSigner,
+        username: "alice",
+        payload: {
+          chainId: "other-land" as ChainId,
+          address: "865765858O" as Address,
+        },
+      };
+      const msg = buildMsg(addAddress).addUsernameAddressNftMsg!;
+      expect(msg.id).toEqual(toUtf8("alice"));
+      expect(msg.chainID).toEqual(toUtf8("other-land"));
+      expect(msg.address).toEqual(toUtf8("865765858O"));
+    });
+
+    it("works for RegisterBlockchainTx", () => {
+      const registerBlockchain: RegisterBlockchainTx = {
+        kind: TransactionKind.RegisterBlockchain,
+        chainId: "registry-chain" as ChainId,
+        signer: defaultSigner,
+        chain: {
+          chainId: "wonderland" as ChainId,
+          production: false,
+          enabled: true,
+          name: "Wonderland",
+          networkId: "7rg047g4h",
+          mainTickerId: "WONDER" as TokenTicker,
+        },
+        codecName: "rules_of_wonderland",
+        codecConfig: `{ rules: ["make peace not war"] }`,
+      };
+      const msg = buildMsg(registerBlockchain).issueBlockchainNftMsg!;
+      expect(msg.id).toEqual(toAscii("wonderland"));
+      expect(msg.details!.chain!.chainID).toEqual("wonderland");
+      expect(msg.details!.chain!.production).toEqual(false);
+      expect(msg.details!.chain!.enabled).toEqual(true);
+      expect(msg.details!.chain!.name).toEqual("Wonderland");
+      expect(msg.details!.chain!.networkID).toEqual("7rg047g4h");
+      expect(msg.details!.chain!.mainTickerID).toEqual(toUtf8("WONDER"));
+      expect(msg.details!.iov!.codec).toEqual("rules_of_wonderland");
+      expect(msg.details!.iov!.codecConfig).toEqual(`{ rules: ["make peace not war"] }`);
+    });
+
     it("works for RegisterUsernameTx", () => {
       const registerUsername: RegisterUsernameTx = {
         kind: TransactionKind.RegisterUsername,
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
         username: "alice",
-        addresses: new Map([
-          ["chain1" as ChainId, "367X" as Address],
-          ["chain3" as ChainId, "0xddffeeffddaa44" as Address],
-          ["chain2" as ChainId, "0x00aabbddccffee" as Address],
-        ]),
+        addresses: [
+          {
+            chainId: "chain1" as ChainId,
+            address: "367X" as Address,
+          },
+          {
+            chainId: "chain3" as ChainId,
+            address: "0xddffeeffddaa44" as Address,
+          },
+          {
+            chainId: "chain2" as ChainId,
+            address: "0x00aabbddccffee" as Address,
+          },
+        ],
       };
       const msg = buildMsg(registerUsername);
       expect(msg.issueUsernameNftMsg).toBeDefined();
@@ -94,10 +158,27 @@ describe("Encode", () => {
       expect(msg.issueUsernameNftMsg!.details!.addresses!.length).toEqual(3);
       expect(msg.issueUsernameNftMsg!.details!.addresses![0].chainID).toEqual(toAscii("chain1"));
       expect(msg.issueUsernameNftMsg!.details!.addresses![0].address).toEqual(toAscii("367X"));
-      expect(msg.issueUsernameNftMsg!.details!.addresses![1].chainID).toEqual(toAscii("chain2"));
-      expect(msg.issueUsernameNftMsg!.details!.addresses![1].address).toEqual(toAscii("0x00aabbddccffee"));
-      expect(msg.issueUsernameNftMsg!.details!.addresses![2].chainID).toEqual(toAscii("chain3"));
-      expect(msg.issueUsernameNftMsg!.details!.addresses![2].address).toEqual(toAscii("0xddffeeffddaa44"));
+      expect(msg.issueUsernameNftMsg!.details!.addresses![1].chainID).toEqual(toAscii("chain3"));
+      expect(msg.issueUsernameNftMsg!.details!.addresses![1].address).toEqual(toAscii("0xddffeeffddaa44"));
+      expect(msg.issueUsernameNftMsg!.details!.addresses![2].chainID).toEqual(toAscii("chain2"));
+      expect(msg.issueUsernameNftMsg!.details!.addresses![2].address).toEqual(toAscii("0x00aabbddccffee"));
+    });
+
+    it("works for RemoveAddressFromUsernameTx", () => {
+      const removeAddress: RemoveAddressFromUsernameTx = {
+        kind: TransactionKind.RemoveAddressFromUsername,
+        chainId: "registry-chain" as ChainId,
+        signer: defaultSigner,
+        username: "alice",
+        payload: {
+          chainId: "other-land" as ChainId,
+          address: "865765858O" as Address,
+        },
+      };
+      const msg = buildMsg(removeAddress).removeUsernameAddressMsg!;
+      expect(msg.id).toEqual(toUtf8("alice"));
+      expect(msg.chainID).toEqual(toUtf8("other-land"));
+      expect(msg.address).toEqual(toUtf8("865765858O"));
     });
   });
 });

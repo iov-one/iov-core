@@ -1,5 +1,5 @@
 import { Algorithm, ChainId, PublicKeyBytes } from "@iov/base-types";
-import { Address, BaseTx, TransactionKind } from "@iov/bcp-types";
+import { Address, BaseTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
 import { decodeAmount, parseMsg, parseTx } from "./decode";
@@ -17,6 +17,8 @@ import {
   signedTxBin,
 } from "./testdata";
 import { decodePrivkey, decodePubkey } from "./types";
+
+const { toUtf8 } = Encoding;
 
 describe("Decode", () => {
   it("decode pubkey", () => {
@@ -66,6 +68,61 @@ describe("Decode", () => {
       },
     };
 
+    it("works for AddAddressToUsername", () => {
+      const transactionMessage: codecImpl.app.ITx = {
+        addUsernameAddressNftMsg: {
+          id: toUtf8("alice"),
+          chainID: toUtf8("wonderland"),
+          address: toUtf8("0xAABB001122DD"),
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (parsed.kind !== TransactionKind.AddAddressToUsername) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.username).toEqual("alice");
+      expect(parsed.payload.chainId).toEqual("wonderland");
+      expect(parsed.payload.address).toEqual("0xAABB001122DD");
+    });
+
+    it("works for RegisterBlockchain", () => {
+      const transactionMessage: codecImpl.app.ITx = {
+        issueBlockchainNftMsg: {
+          id: Encoding.toAscii("wonderland"),
+          owner: Encoding.fromHex("0011223344556677889900112233445566778899"),
+          approvals: undefined,
+          details: {
+            chain: {
+              chainID: "wonderland",
+              networkID: "7rg047g4h",
+              production: false,
+              enabled: true,
+              mainTickerID: toUtf8("WONDER"),
+              name: "Wonderland",
+            },
+            iov: {
+              codec: "wonderland_rules",
+              codecConfig: `{ rules: ["make peace not war"] }`,
+            },
+          },
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (parsed.kind !== TransactionKind.RegisterBlockchain) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.chain).toEqual({
+        chainId: "wonderland" as ChainId,
+        networkId: "7rg047g4h",
+        production: false,
+        enabled: true,
+        mainTickerId: "WONDER" as TokenTicker,
+        name: "Wonderland",
+      });
+      expect(parsed.codecName).toEqual("wonderland_rules");
+      expect(parsed.codecConfig).toEqual(`{ rules: ["make peace not war"] }`);
+    });
+
     it("works for RegisterUsername", () => {
       const transactionMessage: codecImpl.app.ITx = {
         issueUsernameNftMsg: {
@@ -91,11 +148,32 @@ describe("Decode", () => {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.username).toEqual("bobby");
-      expect(parsed.addresses.size).toEqual(2);
-      expect(parsed.addresses.get("chain1" as ChainId)).toEqual("23456782367823X" as Address);
-      expect(parsed.addresses.get("chain2" as ChainId)).toEqual(
-        "0x001100aabbccddffeeddaa8899776655" as Address,
-      );
+      expect(parsed.addresses.length).toEqual(2);
+      expect(parsed.addresses[0]).toEqual({
+        chainId: "chain1" as ChainId,
+        address: "23456782367823X" as Address,
+      });
+      expect(parsed.addresses[1]).toEqual({
+        chainId: "chain2" as ChainId,
+        address: "0x001100aabbccddffeeddaa8899776655" as Address,
+      });
+    });
+
+    it("works for RemoveAddressFromUsername", () => {
+      const transactionMessage: codecImpl.app.ITx = {
+        removeUsernameAddressMsg: {
+          id: toUtf8("alice"),
+          address: toUtf8("0xAABB001122DD"),
+          chainID: toUtf8("wonderland"),
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (parsed.kind !== TransactionKind.RemoveAddressFromUsername) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.username).toEqual("alice");
+      expect(parsed.payload.chainId).toEqual("wonderland");
+      expect(parsed.payload.address).toEqual("0xAABB001122DD");
     });
   });
 });
