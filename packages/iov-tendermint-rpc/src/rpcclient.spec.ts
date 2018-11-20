@@ -1,6 +1,6 @@
 // tslint:disable:no-console
 import { JsonRpcEvent, jsonRpcWith } from "./common";
-import { parseInteger } from "./encodings";
+import { Integer } from "./encodings";
 import { Method } from "./requests";
 import { HttpClient, HttpUriClient, instanceOfRpcStreamingClient, RpcClient, WebsocketClient } from "./rpcclient";
 
@@ -122,7 +122,7 @@ describe("RpcClient", () => {
 
           if (events.length === 2) {
             // make sure they are consequtive heights
-            const height = (i: number) => parseInteger((events[i].data.value as any).header.height);
+            const height = (i: number) => Integer.parse((events[i].data.value as any).header.height);
             expect(height(1)).toEqual(height(0) + 1);
 
             sub.unsubscribe();

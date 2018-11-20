@@ -1,7 +1,7 @@
 import { Encoding } from "@iov/encoding";
 
 import { JsonRpcRequest, jsonRpcWith } from "../common";
-import { Base64, Base64String, encodeInteger, HexString, IntegerString, may, notEmpty } from "../encodings";
+import { Base64, Base64String, HexString, Integer, IntegerString, may, notEmpty } from "../encodings";
 import * as requests from "../requests";
 
 /***** queries *****/
@@ -63,7 +63,7 @@ interface RpcHeightParam {
 }
 function encodeHeightParam(param: HeightParam): RpcHeightParam {
   return {
-    height: may(encodeInteger, param.height),
+    height: may(Integer.encode, param.height),
   };
 }
 
@@ -73,8 +73,8 @@ interface RpcBlockchainRequestParams {
 }
 function encodeBlockchainRequestParams(param: requests.BlockchainRequestParams): RpcBlockchainRequestParams {
   return {
-    minHeight: may(encodeInteger, param.minHeight),
-    maxHeight: may(encodeInteger, param.maxHeight),
+    minHeight: may(Integer.encode, param.minHeight),
+    maxHeight: may(Integer.encode, param.maxHeight),
   };
 }
 
@@ -88,7 +88,7 @@ function encodeAbciQueryParams(params: requests.AbciQueryParams): RpcAbciQueryPa
   return {
     path: notEmpty(params.path),
     data: Encoding.toHex(params.data) as HexString,
-    height: may(encodeInteger, params.height),
+    height: may(Integer.encode, params.height),
     trusted: params.trusted,
   };
 }
@@ -123,7 +123,7 @@ function encodeTxSearchParams(params: requests.TxSearchParams): RpcTxSearchParam
   return {
     query: params.query,
     prove: params.prove,
-    page: may(encodeInteger, params.page),
-    per_page: may(encodeInteger, params.per_page),
+    page: may(Integer.encode, params.page),
+    per_page: may(Integer.encode, params.per_page),
   };
 }

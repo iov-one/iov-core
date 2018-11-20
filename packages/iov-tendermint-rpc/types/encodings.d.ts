@@ -9,8 +9,11 @@ export declare function notEmpty<T>(value: T): T;
 export declare function required<T>(value: T | null | undefined): T;
 export declare function optional<T>(value: T | null | undefined, fallback: T): T;
 export declare function may<T, U>(transform: (val: T) => U, value: T | null | undefined): U | undefined;
-export declare function parseInteger(str: IntegerString): number;
-export declare function encodeInteger(num: number): IntegerString;
+export declare class Integer {
+    static parse(str: IntegerString): number;
+    static encode(num: number): IntegerString;
+    static ensure(n: number): number;
+}
 export declare class Base64 {
     static encode(data: Uint8Array): Base64String;
     static decode(base64String: Base64String): Uint8Array;

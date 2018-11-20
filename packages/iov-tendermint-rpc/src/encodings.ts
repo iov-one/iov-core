@@ -44,12 +44,21 @@ export function may<T, U>(transform: (val: T) => U, value: T | null | undefined)
   return value === undefined || value === null ? undefined : transform(value);
 }
 
-export function parseInteger(str: IntegerString): number {
-  return Int53.fromString(str).toNumber();
-}
+export class Integer {
+  public static parse(str: IntegerString): number {
+    return Int53.fromString(str).toNumber();
+  }
 
-export function encodeInteger(num: number): IntegerString {
-  return new Int53(num).toString() as IntegerString;
+  public static encode(num: number): IntegerString {
+    return new Int53(num).toString() as IntegerString;
+  }
+
+  public static ensure(n: number): number {
+    if (typeof n !== "number") {
+      throw new Error(`${n} is not a number`);
+    }
+    return n;
+  }
 }
 
 export class Base64 {
