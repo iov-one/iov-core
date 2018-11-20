@@ -77,11 +77,11 @@ fold_end
 #   fold_end
 # fi
 
-echo "use tendermint?" "${TENDERMINT_ENABLED:-no}"
-echo "use bnsd?" "${BNSD_ENABLED:-no}"
-echo "use IOV faucet?" ${FAUCET_ENABLED:-no}
-echo "use ethereum?" ${ETHEREUM_ENABLED:-no}
-echo "use Lisk?" ${LISK_ENABLED:-no}
+echo "use tendermint? ${TENDERMINT_ENABLED:-no}"
+echo "use bnsd? ${BNSD_ENABLED:-no}"
+echo "use IOV faucet? ${FAUCET_ENABLED:-no}"
+echo "use ethereum? ${ETHEREUM_ENABLED:-no}"
+echo "use Lisk? ${LISK_ENABLED:-no}"
 
 #
 # Build
