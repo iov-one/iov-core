@@ -3,9 +3,9 @@ set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
 # Choose from https://hub.docker.com/r/iov1/tendermint/tags/
-export BNSD_TM_VERSION=0.21.0
+export BNSD_TM_VERSION=0.25.0
 # Choose from https://hub.docker.com/r/iov1/bnsd/tags/
-export BNSD_VERSION=v0.8.0
+export BNSD_VERSION=v0.9.2
 
 docker pull "iov1/tendermint:${BNSD_TM_VERSION}"
 docker pull "iov1/bnsd:${BNSD_VERSION}"
