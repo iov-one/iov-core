@@ -3,7 +3,7 @@ import { ReadonlyDate } from "readonly-date";
 
 import { Encoding } from "@iov/encoding";
 
-import { v0_20 } from "./adaptor";
+import { Adaptor, v0_25 } from "./adaptor";
 import { Client } from "./client";
 import { randomId } from "./common";
 import { buildTagsQuery, QueryTag } from "./requests";
@@ -27,13 +27,13 @@ function buildKvTx(k: string, v: string): Uint8Array {
   return Encoding.toAscii(`${k}=${v}`);
 }
 
-function kvTestSuite(rpcFactory: () => RpcClient): void {
+function kvTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
   const key = randomId();
   const value = randomId();
 
   it("Tries to connect with known version to tendermint", async () => {
     pendingWithoutTendermint();
-    const client = new Client(rpcFactory(), v0_20);
+    const client = new Client(rpcFactory(), adaptor);
     expect(await client.abciInfo()).toBeTruthy();
   });
 
@@ -53,7 +53,7 @@ function kvTestSuite(rpcFactory: () => RpcClient): void {
 
   it("Posts a transaction", async () => {
     pendingWithoutTendermint();
-    const client = new Client(rpcFactory(), v0_20);
+    const client = new Client(rpcFactory(), adaptor);
     const tx = buildKvTx(key, value);
 
     const response = await client.broadcastTxCommit({ tx: tx });
@@ -69,7 +69,7 @@ function kvTestSuite(rpcFactory: () => RpcClient): void {
 
   it("Queries the state", async () => {
     pendingWithoutTendermint();
-    const client = new Client(rpcFactory(), v0_20);
+    const client = new Client(rpcFactory(), adaptor);
 
     const binKey = Encoding.toAscii(key);
     const binValue = Encoding.toAscii(value);
@@ -83,7 +83,7 @@ function kvTestSuite(rpcFactory: () => RpcClient): void {
 
   it("Sanity check - calls don't error", async () => {
     pendingWithoutTendermint();
-    const client = new Client(rpcFactory(), v0_20);
+    const client = new Client(rpcFactory(), adaptor);
 
     expect(await client.block()).toBeTruthy();
     expect(await client.blockchain(2, 4)).toBeTruthy();
@@ -97,7 +97,7 @@ function kvTestSuite(rpcFactory: () => RpcClient): void {
 
   it("Can query a tx properly", async () => {
     pendingWithoutTendermint();
-    const client = new Client(rpcFactory(), v0_20);
+    const client = new Client(rpcFactory(), adaptor);
 
     const find = randomId();
     const me = randomId();
@@ -147,7 +147,7 @@ function kvTestSuite(rpcFactory: () => RpcClient): void {
 
   it("Can paginate over all txs", async () => {
     pendingWithoutTendermint();
-    const client = new Client(rpcFactory(), v0_20);
+    const client = new Client(rpcFactory(), adaptor);
 
     const find = randomId();
     const query = buildTagsQuery([{ key: "app.key", value: find }]);
@@ -188,6 +188,196 @@ function kvTestSuite(rpcFactory: () => RpcClient): void {
   });
 }
 
+function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
+  it("can subscribe to block header events", done => {
+    pendingWithoutTendermint();
+
+    const testStart = ReadonlyDate.now();
+
+    (async () => {
+      const events: responses.NewBlockHeaderEvent[] = [];
+      const client = new Client(rpcFactory(), adaptor);
+      const stream = client.subscribeNewBlockHeader();
+      expect(stream).toBeTruthy();
+      const subscription = stream.subscribe({
+        next: event => {
+          expect(event.chainId).toMatch(/^[-a-zA-Z0-9]{3,30}$/);
+          expect(event.height).toBeGreaterThan(0);
+          // seems that tendermint just guarantees within the last second for timestamp
+          expect(event.time.getTime()).toBeGreaterThan(testStart - 1000);
+          expect(event.time.getTime()).toBeLessThanOrEqual(ReadonlyDate.now());
+          expect(event.numTxs).toEqual(0);
+          expect(event.lastBlockId).toBeTruthy();
+          expect(event.totalTxs).toBeGreaterThan(0);
+
+          // merkle roots for proofs
+          expect(event.appHash).toBeTruthy();
+          expect(event.consensusHash).toBeTruthy();
+          expect(event.dataHash).toBeTruthy();
+          expect(event.evidenceHash).toBeTruthy();
+          expect(event.lastCommitHash).toBeTruthy();
+          expect(event.lastResultsHash).toBeTruthy();
+          expect(event.validatorsHash).toBeTruthy();
+
+          events.push(event);
+
+          if (events.length === 2) {
+            subscription.unsubscribe();
+            expect(events.length).toEqual(2);
+            expect(events[1].chainId).toEqual(events[0].chainId);
+            expect(events[1].height).toEqual(events[0].height + 1);
+            expect(events[1].time.getTime()).toBeGreaterThan(events[0].time.getTime());
+            expect(events[1].totalTxs).toEqual(events[0].totalTxs);
+
+            expect(events[1].appHash).toEqual(events[0].appHash);
+            expect(events[1].consensusHash).toEqual(events[0].consensusHash);
+            expect(events[1].dataHash).toEqual(events[0].dataHash);
+            expect(events[1].evidenceHash).toEqual(events[0].evidenceHash);
+            expect(events[1].lastCommitHash).not.toEqual(events[0].lastCommitHash);
+            expect(events[1].lastResultsHash).not.toEqual(events[0].lastResultsHash);
+            expect(events[1].validatorsHash).toEqual(events[0].validatorsHash);
+            done();
+          }
+        },
+        error: fail,
+        complete: () => fail("Stream must not close just because we don't listen anymore"),
+      });
+    })().catch(fail);
+  });
+
+  it("can subscribe to block events", done => {
+    pendingWithoutTendermint();
+
+    const testStart = ReadonlyDate.now();
+
+    (async () => {
+      const events: responses.NewBlockEvent[] = [];
+      const client = new Client(rpcFactory(), adaptor);
+      const stream = client.subscribeNewBlock();
+      expect(stream).toBeTruthy();
+      const subscription = stream.subscribe({
+        next: event => {
+          expect(event.header.chainId).toMatch(/^[-a-zA-Z0-9]{3,30}$/);
+          expect(event.header.height).toBeGreaterThan(0);
+          // seems that tendermint just guarantees within the last second for timestamp
+          expect(event.header.time.getTime()).toBeGreaterThan(testStart - 1000);
+          expect(event.header.time.getTime()).toBeLessThanOrEqual(ReadonlyDate.now());
+          expect(event.header.numTxs).toEqual(1);
+          expect(event.header.lastBlockId).toBeTruthy();
+          expect(event.header.totalTxs).toBeGreaterThan(0);
+
+          // merkle roots for proofs
+          expect(event.header.appHash).toBeTruthy();
+          expect(event.header.consensusHash).toBeTruthy();
+          expect(event.header.dataHash).toBeTruthy();
+          expect(event.header.evidenceHash).toBeTruthy();
+          expect(event.header.lastCommitHash).toBeTruthy();
+          expect(event.header.lastResultsHash).toBeTruthy();
+          expect(event.header.validatorsHash).toBeTruthy();
+
+          events.push(event);
+
+          if (events.length === 2) {
+            subscription.unsubscribe();
+            expect(events.length).toEqual(2);
+            expect(events[1].header.height).toEqual(events[0].header.height + 1);
+            expect(events[1].header.chainId).toEqual(events[0].header.chainId);
+            expect(events[1].header.time.getTime()).toBeGreaterThan(events[0].header.time.getTime());
+            expect(events[1].header.totalTxs).toEqual(events[0].header.totalTxs + 1);
+
+            expect(events[1].header.appHash).not.toEqual(events[0].header.appHash);
+            expect(events[1].header.validatorsHash).toEqual(events[0].header.validatorsHash);
+            done();
+          }
+        },
+        error: fail,
+        complete: () => fail("Stream must not close just because we don't listen anymore"),
+      });
+
+      const transaction1 = buildKvTx(randomId(), randomId());
+      const transaction2 = buildKvTx(randomId(), randomId());
+
+      await client.broadcastTxCommit({ tx: transaction1 });
+      await client.broadcastTxCommit({ tx: transaction2 });
+    })().catch(fail);
+  });
+
+  it("can subscribe to transaction events", done => {
+    pendingWithoutTendermint();
+
+    (async () => {
+      const events: responses.TxEvent[] = [];
+      const client = new Client(rpcFactory(), adaptor);
+      const stream = client.subscribeTx();
+      expect(stream).toBeTruthy();
+      const subscription = stream.subscribe({
+        next: event => {
+          expect(event.height).toBeGreaterThan(0);
+          expect(event.index).toEqual(0);
+          expect(event.result).toBeTruthy();
+          expect(event.tx.length).toBeGreaterThan(10);
+
+          events.push(event);
+
+          if (events.length === 2) {
+            subscription.unsubscribe();
+            expect(events.length).toEqual(2);
+            expect(events[1].height).toEqual(events[0].height + 1);
+            expect(events[1].result.tags).not.toEqual(events[0].result.tags);
+            done();
+          }
+        },
+        error: fail,
+        complete: () => fail("Stream must not close just because we don't listen anymore"),
+      });
+
+      const transaction1 = buildKvTx(randomId(), randomId());
+      const transaction2 = buildKvTx(randomId(), randomId());
+
+      await client.broadcastTxCommit({ tx: transaction1 });
+      await client.broadcastTxCommit({ tx: transaction2 });
+    })().catch(fail);
+  });
+
+  it("can subscribe to transaction events filtered by creator", done => {
+    pendingWithoutTendermint();
+
+    (async () => {
+      const events: responses.TxEvent[] = [];
+      const client = new Client(rpcFactory(), adaptor);
+      const tags: ReadonlyArray<QueryTag> = [{ key: "app.creator", value: "jae" }];
+      const stream = client.subscribeTx(tags);
+      expect(stream).toBeTruthy();
+      const subscription = stream.subscribe({
+        next: event => {
+          expect(event.height).toBeGreaterThan(0);
+          expect(event.index).toEqual(0);
+          expect(event.result).toBeTruthy();
+          expect(event.tx.length).toBeGreaterThan(10);
+
+          events.push(event);
+
+          if (events.length === 2) {
+            subscription.unsubscribe();
+            expect(events.length).toEqual(2);
+            expect(events[1].height).toEqual(events[0].height + 1);
+            expect(events[1].result.tags).not.toEqual(events[0].result.tags);
+            done();
+          }
+        },
+        error: fail,
+        complete: () => fail("Stream must not close just because we don't listen anymore"),
+      });
+
+      const transaction1 = buildKvTx(randomId(), randomId());
+      const transaction2 = buildKvTx(randomId(), randomId());
+
+      await client.broadcastTxCommit({ tx: transaction1 });
+      await client.broadcastTxCommit({ tx: transaction2 });
+    })().catch(fail);
+  });
+}
+
 describe("Client", () => {
   it("can connect to a given url", async () => {
     pendingWithoutTendermint();
@@ -208,197 +398,15 @@ describe("Client", () => {
     expect(info3).toBeTruthy();
   });
 
-  describe("With HttpClient", () => {
-    kvTestSuite(() => new HttpClient(tendermintUrl));
+  describe("With HttpClient: v0-25", () => {
+    kvTestSuite(() => new HttpClient(tendermintUrl), v0_25);
   });
 
-  describe("With WebsocketClient", () => {
+  describe("With WebsocketClient: v0-25", () => {
     // don't print out WebSocket errors if marked pending
     const onError = skipTests() ? () => 0 : console.log;
-    kvTestSuite(() => new WebsocketClient(tendermintUrl, onError));
-
-    it("can subscribe to block header events", done => {
-      pendingWithoutTendermint();
-
-      const testStart = ReadonlyDate.now();
-
-      (async () => {
-        const events: responses.NewBlockHeaderEvent[] = [];
-        const client = await Client.connect("ws://" + tendermintUrl);
-        const stream = client.subscribeNewBlockHeader();
-        expect(stream).toBeTruthy();
-        const subscription = stream.subscribe({
-          next: event => {
-            expect(event.chainId).toMatch(/^[-a-zA-Z0-9]{3,30}$/);
-            expect(event.height).toBeGreaterThan(0);
-            expect(event.time.getTime()).toBeGreaterThan(testStart);
-            expect(event.numTxs).toEqual(0);
-            expect(event.lastBlockId).toBeTruthy();
-            expect(event.totalTxs).toBeGreaterThan(0);
-
-            // merkle roots for proofs
-            expect(event.appHash).toBeTruthy();
-            expect(event.consensusHash).toBeTruthy();
-            expect(event.dataHash).toBeTruthy();
-            expect(event.evidenceHash).toBeTruthy();
-            expect(event.lastCommitHash).toBeTruthy();
-            expect(event.lastResultsHash).toBeTruthy();
-            expect(event.validatorsHash).toBeTruthy();
-
-            events.push(event);
-
-            if (events.length === 2) {
-              subscription.unsubscribe();
-              expect(events.length).toEqual(2);
-              expect(events[1].chainId).toEqual(events[0].chainId);
-              expect(events[1].height).toEqual(events[0].height + 1);
-              expect(events[1].time.getTime()).toBeGreaterThan(events[0].time.getTime());
-              expect(events[1].totalTxs).toEqual(events[0].totalTxs);
-
-              expect(events[1].appHash).toEqual(events[0].appHash);
-              expect(events[1].consensusHash).toEqual(events[0].consensusHash);
-              expect(events[1].dataHash).toEqual(events[0].dataHash);
-              expect(events[1].evidenceHash).toEqual(events[0].evidenceHash);
-              expect(events[1].lastCommitHash).not.toEqual(events[0].lastCommitHash);
-              expect(events[1].lastResultsHash).not.toEqual(events[0].lastResultsHash);
-              expect(events[1].validatorsHash).toEqual(events[0].validatorsHash);
-              done();
-            }
-          },
-          error: fail,
-          complete: () => fail("Stream must not close just because we don't listen anymore"),
-        });
-      })().catch(fail);
-    });
-
-    it("can subscribe to block events", done => {
-      pendingWithoutTendermint();
-
-      const testStart = ReadonlyDate.now();
-
-      (async () => {
-        const events: responses.NewBlockEvent[] = [];
-        const client = await Client.connect("ws://" + tendermintUrl);
-        const stream = client.subscribeNewBlock();
-        expect(stream).toBeTruthy();
-        const subscription = stream.subscribe({
-          next: event => {
-            expect(event.header.chainId).toMatch(/^[-a-zA-Z0-9]{3,30}$/);
-            expect(event.header.height).toBeGreaterThan(0);
-            expect(event.header.time.getTime()).toBeGreaterThan(testStart);
-            expect(event.header.numTxs).toEqual(1);
-            expect(event.header.lastBlockId).toBeTruthy();
-            expect(event.header.totalTxs).toBeGreaterThan(0);
-
-            // merkle roots for proofs
-            expect(event.header.appHash).toBeTruthy();
-            expect(event.header.consensusHash).toBeTruthy();
-            expect(event.header.dataHash).toBeTruthy();
-            expect(event.header.evidenceHash).toBeTruthy();
-            expect(event.header.lastCommitHash).toBeTruthy();
-            expect(event.header.lastResultsHash).toBeTruthy();
-            expect(event.header.validatorsHash).toBeTruthy();
-
-            events.push(event);
-
-            if (events.length === 2) {
-              subscription.unsubscribe();
-              expect(events.length).toEqual(2);
-              expect(events[1].header.height).toEqual(events[0].header.height + 1);
-              expect(events[1].header.chainId).toEqual(events[0].header.chainId);
-              expect(events[1].header.time.getTime()).toBeGreaterThan(events[0].header.time.getTime());
-              expect(events[1].header.totalTxs).toEqual(events[0].header.totalTxs + 1);
-
-              expect(events[1].header.appHash).not.toEqual(events[0].header.appHash);
-              expect(events[1].header.validatorsHash).toEqual(events[0].header.validatorsHash);
-              done();
-            }
-          },
-          error: fail,
-          complete: () => fail("Stream must not close just because we don't listen anymore"),
-        });
-
-        const transaction1 = buildKvTx(randomId(), randomId());
-        const transaction2 = buildKvTx(randomId(), randomId());
-
-        await client.broadcastTxCommit({ tx: transaction1 });
-        await client.broadcastTxCommit({ tx: transaction2 });
-      })().catch(fail);
-    });
-
-    it("can subscribe to transaction events", done => {
-      pendingWithoutTendermint();
-
-      (async () => {
-        const events: responses.TxEvent[] = [];
-        const client = await Client.connect("ws://" + tendermintUrl);
-        const stream = client.subscribeTx();
-        expect(stream).toBeTruthy();
-        const subscription = stream.subscribe({
-          next: event => {
-            expect(event.height).toBeGreaterThan(0);
-            expect(event.index).toEqual(0);
-            expect(event.result).toBeTruthy();
-            expect(event.tx.length).toBeGreaterThan(10);
-
-            events.push(event);
-
-            if (events.length === 2) {
-              subscription.unsubscribe();
-              expect(events.length).toEqual(2);
-              expect(events[1].height).toEqual(events[0].height + 1);
-              expect(events[1].result.tags).not.toEqual(events[0].result.tags);
-              done();
-            }
-          },
-          error: fail,
-          complete: () => fail("Stream must not close just because we don't listen anymore"),
-        });
-
-        const transaction1 = buildKvTx(randomId(), randomId());
-        const transaction2 = buildKvTx(randomId(), randomId());
-
-        await client.broadcastTxCommit({ tx: transaction1 });
-        await client.broadcastTxCommit({ tx: transaction2 });
-      })().catch(fail);
-    });
-
-    it("can subscribe to transaction events filtered by creator", done => {
-      pendingWithoutTendermint();
-
-      (async () => {
-        const events: responses.TxEvent[] = [];
-        const client = await Client.connect("ws://" + tendermintUrl);
-        const tags: ReadonlyArray<QueryTag> = [{ key: "app.creator", value: "jae" }];
-        const stream = client.subscribeTx(tags);
-        expect(stream).toBeTruthy();
-        const subscription = stream.subscribe({
-          next: event => {
-            expect(event.height).toBeGreaterThan(0);
-            expect(event.index).toEqual(0);
-            expect(event.result).toBeTruthy();
-            expect(event.tx.length).toBeGreaterThan(10);
-
-            events.push(event);
-
-            if (events.length === 2) {
-              subscription.unsubscribe();
-              expect(events.length).toEqual(2);
-              expect(events[1].height).toEqual(events[0].height + 1);
-              expect(events[1].result.tags).not.toEqual(events[0].result.tags);
-              done();
-            }
-          },
-          error: fail,
-          complete: () => fail("Stream must not close just because we don't listen anymore"),
-        });
-
-        const transaction1 = buildKvTx(randomId(), randomId());
-        const transaction2 = buildKvTx(randomId(), randomId());
-
-        await client.broadcastTxCommit({ tx: transaction1 });
-        await client.broadcastTxCommit({ tx: transaction2 });
-      })().catch(fail);
-    });
+    const factory = () => new WebsocketClient(tendermintUrl, onError);
+    kvTestSuite(factory, v0_25);
+    websocketTestSuite(factory, v0_25);
   });
 });

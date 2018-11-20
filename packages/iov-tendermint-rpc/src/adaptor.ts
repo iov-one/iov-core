@@ -6,9 +6,12 @@ import * as requests from "./requests";
 import * as responses from "./responses";
 import { RpcClient } from "./rpcclient";
 import { v0_20 as v0_20_ } from "./v0-20";
+import { v0_25 as v0_25_ } from "./v0-25";
 
 // tslint:disable-next-line:variable-name
 export const v0_20: Adaptor = v0_20_;
+// tslint:disable-next-line:variable-name
+export const v0_25: Adaptor = v0_25_;
 
 export interface Adaptor {
   readonly params: Params;
@@ -79,6 +82,8 @@ export const findAdaptor = async (client: RpcClient): Promise<Adaptor> => {
     return v0_20;
   } else if (version.startsWith("0.21.")) {
     return v0_20;
+  } else if (version.startsWith("0.25.")) {
+    return v0_25;
   }
   throw new Error(`Unsupported tendermint version: ${version}`);
 };

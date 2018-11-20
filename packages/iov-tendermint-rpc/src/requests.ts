@@ -73,10 +73,11 @@ export interface BlockRequest {
 
 export interface BlockchainRequest {
   readonly method: Method.BLOCKCHAIN;
-  readonly params: {
-    readonly minHeight?: number;
-    readonly maxHeight?: number;
-  };
+  readonly params: BlockchainRequestParams;
+}
+export interface BlockchainRequestParams {
+  readonly minHeight?: number;
+  readonly maxHeight?: number;
 }
 
 export interface BlockResultsRequest {

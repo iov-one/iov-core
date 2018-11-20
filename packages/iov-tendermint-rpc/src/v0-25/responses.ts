@@ -15,6 +15,7 @@ import {
   Base64String,
   DateTime,
   DateTimeString,
+  Hex,
   HexString,
   Integer,
   IntegerString,
@@ -24,7 +25,6 @@ import {
   required,
 } from "../encodings";
 import * as responses from "../responses";
-import { hashTx } from "./hasher";
 
 /*** adaptor ***/
 
@@ -109,12 +109,12 @@ export interface AbciInfoResult {
 }
 export interface RpcAbciInfoResponse {
   readonly data?: string;
-  readonly last_block_height?: number;
+  readonly last_block_height?: IntegerString;
   readonly last_block_app_hash?: Base64String;
 }
 const decodeAbciInfo = (data: RpcAbciInfoResponse): responses.AbciInfoResponse => ({
   data: data.data,
-  lastBlockHeight: data.last_block_height,
+  lastBlockHeight: may(Integer.parse, data.last_block_height),
   lastBlockAppHash: may(Base64.decode, data.last_block_app_hash),
 });
 
@@ -123,18 +123,20 @@ export interface AbciQueryResult {
 }
 export interface RpcAbciQueryResponse {
   readonly key: Base64String;
-  readonly value: Base64String;
+  readonly value?: Base64String;
+  readonly proof?: Base64String;
   readonly height?: IntegerString;
-  readonly index?: number;
-  readonly code?: number; // only for errors
+  readonly index?: IntegerString;
+  readonly code?: IntegerString; // only for errors
   readonly log?: string;
 }
 const decodeAbciQuery = (data: RpcAbciQueryResponse): responses.AbciQueryResponse => ({
   key: Base64.decode(optional(data.key, "" as Base64String)),
   value: Base64.decode(optional(data.value, "" as Base64String)),
+  // proof: may(Base64.decode, data.proof),
   height: may(Integer.parse, data.height),
-  code: data.code,
-  index: data.index,
+  code: may(Integer.parse, data.code),
+  index: may(Integer.parse, data.index),
   log: data.log,
 });
 
@@ -148,7 +150,7 @@ const decodeBlockResponse = (data: RpcBlockResponse): responses.BlockResponse =>
 });
 
 export interface RpcBlockResultsResponse {
-  readonly height: number;
+  readonly height: IntegerString;
   readonly results: {
     readonly DeliverTx: ReadonlyArray<RpcTxData>;
     readonly EndBlock: {
@@ -163,7 +165,7 @@ const decodeBlockResults = (data: RpcBlockResultsResponse): responses.BlockResul
   const end = data.results.EndBlock;
   const validators = optional(end.validator_updates, [] as ReadonlyArray<RpcValidatorUpdate>);
   return {
-    height: required(data.height),
+    height: Integer.parse(required(data.height)),
     results: res.map(decodeTxData),
     endBlock: {
       validatorUpdates: validators.map(decodeValidatorUpdate),
@@ -174,11 +176,11 @@ const decodeBlockResults = (data: RpcBlockResultsResponse): responses.BlockResul
 };
 
 export interface RpcBlockchainResponse {
-  readonly last_height: number;
+  readonly last_height: IntegerString;
   readonly block_metas: ReadonlyArray<RpcBlockMeta>;
 }
 const decodeBlockchain = (data: RpcBlockchainResponse): responses.BlockchainResponse => ({
-  lastHeight: required(data.last_height),
+  lastHeight: Integer.parse(required(data.last_height)),
   blockMetas: required(data.block_metas).map(decodeBlockMeta),
 });
 
@@ -192,7 +194,7 @@ const decodeBroadcastTxSync = (data: RpcBroadcastTxSyncResponse): responses.Broa
 });
 
 export interface RpcBroadcastTxCommitResponse {
-  readonly height?: number;
+  readonly height?: IntegerString;
   readonly hash: HexString;
   readonly check_tx: RpcTxData;
   readonly deliver_tx?: RpcTxData;
@@ -200,14 +202,14 @@ export interface RpcBroadcastTxCommitResponse {
 const decodeBroadcastTxCommit = (
   data: RpcBroadcastTxCommitResponse,
 ): responses.BroadcastTxCommitResponse => ({
-  height: data.height,
+  height: may(Integer.parse, data.height),
   hash: Encoding.fromHex(required(data.hash)) as TxId,
   checkTx: decodeTxData(required(data.check_tx)),
   deliverTx: may(decodeTxData, data.deliver_tx),
 });
 
 export interface RpcCommitResponse {
-  readonly SignedHeader: {
+  readonly signed_header: {
     readonly header: RpcHeader;
     readonly commit: RpcCommit;
   };
@@ -215,8 +217,8 @@ export interface RpcCommitResponse {
 }
 const decodeCommitResponse = (data: RpcCommitResponse): responses.CommitResponse => ({
   canonical: required(data.canonical),
-  header: decodeHeader(data.SignedHeader.header),
-  commit: decodeCommit(data.SignedHeader.commit),
+  header: decodeHeader(data.signed_header.header),
+  commit: decodeCommit(data.signed_header.commit),
 });
 
 export interface GenesisResult {
@@ -256,7 +258,7 @@ const decodeStatus = (data: RpcStatusResponse): responses.StatusResponse => ({
 export interface RpcTxResponse {
   readonly tx: Base64String;
   readonly tx_result: RpcTxData;
-  readonly height: number;
+  readonly height: IntegerString;
   readonly index: number;
   readonly hash: HexString;
   readonly proof?: RpcTxProof;
@@ -264,25 +266,25 @@ export interface RpcTxResponse {
 const decodeTxResponse = (data: RpcTxResponse): responses.TxResponse => ({
   tx: Base64.decode(required(data.tx)) as PostableBytes,
   txResult: decodeTxData(required(data.tx_result)),
-  height: required(data.height),
-  index: required(data.index),
+  height: Integer.parse(required(data.height)),
+  index: Integer.ensure(required(data.index)),
   hash: Encoding.fromHex(required(data.hash)) as TxId,
   proof: may(decodeTxProof, data.proof),
 });
 
 export interface RpcTxSearchResponse {
   readonly txs: ReadonlyArray<RpcTxResponse>;
-  readonly total_count: number;
+  readonly total_count: IntegerString;
 }
 const decodeTxSearch = (data: RpcTxSearchResponse): responses.TxSearchResponse => ({
-  totalCount: required(data.total_count),
+  totalCount: Integer.parse(required(data.total_count)),
   txs: required(data.txs).map(decodeTxResponse),
 });
 
 export interface RpcTxEvent {
   readonly tx: Base64String;
   readonly result: RpcTxData;
-  readonly height: number;
+  readonly height: IntegerString;
   readonly index: number;
 }
 
@@ -290,19 +292,19 @@ function decodeTxEvent(data: RpcTxEvent): responses.TxEvent {
   const tx = Base64.decode(required(data.tx)) as PostableBytes;
   return {
     tx,
-    hash: hashTx(tx),
+    hash: Uint8Array.from([]) as TxId, // TODO
     result: decodeTxData(data.result),
-    height: required(data.height),
-    index: required(data.index),
+    height: Integer.parse(required(data.height)),
+    index: Integer.ensure(required(data.index)),
   };
 }
 
 export interface RpcValidatorsResponse {
-  readonly block_height: number;
+  readonly block_height: IntegerString;
   readonly validators: ReadonlyArray<RpcValidatorData>;
 }
 const decodeValidators = (data: RpcValidatorsResponse): responses.ValidatorsResponse => ({
-  blockHeight: required(data.block_height),
+  blockHeight: Integer.parse(required(data.block_height)),
   results: required(data.validators).map(decodeValidatorData),
 });
 
@@ -319,7 +321,7 @@ const decodeTag = (data: RpcTag): responses.Tag => ({
 const decodeTags = (tags: ReadonlyArray<RpcTag>) => tags.map(decodeTag);
 
 export interface RpcTxData {
-  readonly code?: number;
+  readonly code?: IntegerString;
   readonly log?: string;
   readonly data?: Base64String;
   readonly tags?: ReadonlyArray<RpcTag>;
@@ -327,15 +329,15 @@ export interface RpcTxData {
 const decodeTxData = (data: RpcTxData): responses.TxData => ({
   data: may(Base64.decode, data.data),
   log: data.log,
-  code: optional<number>(data.code, 0),
+  code: Integer.parse(optional(data.code, "0" as IntegerString)),
   tags: may(decodeTags, data.tags),
 });
 
 export interface RpcTxProof {
   readonly Data: Base64String;
   readonly RootHash: HexString;
-  readonly Total: number;
-  readonly Index: number;
+  readonly Total: IntegerString;
+  readonly Index: IntegerString;
   readonly Proof: {
     readonly aunts: ReadonlyArray<Base64String>;
   };
@@ -343,8 +345,8 @@ export interface RpcTxProof {
 const decodeTxProof = (data: RpcTxProof): responses.TxProof => ({
   data: Base64.decode(required(data.Data)),
   rootHash: Encoding.fromHex(required(data.RootHash)),
-  total: required(data.Total),
-  index: required(data.Index),
+  total: Integer.parse(required(data.Total)),
+  index: Integer.parse(required(data.Index)),
   proof: {
     aunts: required(data.Proof.aunts).map(Base64.decode),
   },
@@ -362,14 +364,14 @@ const decodeBlockMeta = (data: RpcBlockMeta): responses.BlockMeta => ({
 export interface RpcBlockId {
   readonly hash: HexString;
   readonly parts: {
-    readonly total: number;
+    readonly total: IntegerString;
     readonly hash: HexString;
   };
 }
 const decodeBlockId = (data: RpcBlockId): responses.BlockId => ({
   hash: Encoding.fromHex(required(data.hash)),
   parts: {
-    total: required(data.parts.total),
+    total: Integer.parse(required(data.parts.total)),
     hash: Encoding.fromHex(required(data.parts.hash)),
   },
 });
@@ -394,12 +396,15 @@ const decodeBlock = (data: RpcBlock): responses.Block => ({
 export interface RpcEvidence {
   readonly type: string;
   readonly validator: RpcValidatorUpdate;
-  readonly height: number;
-  readonly time: number;
-  readonly totalVotingPower: number;
+  readonly height: IntegerString;
+  readonly time: IntegerString;
+  readonly totalVotingPower: IntegerString;
 }
 const decodeEvidence = (data: RpcEvidence): responses.Evidence => ({
-  ...data,
+  type: required(data.type),
+  height: Integer.parse(required(data.height)),
+  time: Integer.parse(required(data.time)),
+  totalVotingPower: Integer.parse(required(data.totalVotingPower)),
   validator: decodeValidatorUpdate(data.validator),
 });
 const decodeEvidences = (ev: ReadonlyArray<RpcEvidence>) => ev.map(decodeEvidence);
@@ -414,21 +419,21 @@ const decodeCommit = (data: RpcCommit): responses.Commit => ({
 });
 
 export interface RpcVote {
-  readonly type: responses.VoteType;
+  readonly type: number;
   readonly validator_address: HexString;
-  readonly validator_index: number;
-  readonly height: number;
-  readonly round: number;
+  readonly validator_index: IntegerString;
+  readonly height: IntegerString;
+  readonly round: IntegerString;
   readonly timestamp: DateTimeString;
   readonly block_id: RpcBlockId;
   readonly signature: RpcSignature;
 }
 const decodeVote = (data: RpcVote): responses.Vote => ({
-  type: required(data.type),
+  type: Integer.ensure(required(data.type)),
   validatorAddress: Encoding.fromHex(required(data.validator_address)),
-  validatorIndex: required(data.validator_index),
-  height: required(data.height),
-  round: required(data.round),
+  validatorIndex: Integer.parse(required(data.validator_index)),
+  height: Integer.parse(required(data.height)),
+  round: Integer.parse(required(data.round)),
   timestamp: DateTime.decode(required(data.timestamp)),
   blockId: decodeBlockId(required(data.block_id)),
   signature: decodeSignature(required(data.signature)),
@@ -436,11 +441,11 @@ const decodeVote = (data: RpcVote): responses.Vote => ({
 
 export interface RpcHeader {
   readonly chain_id: string; // ChainId
-  readonly height: number;
+  readonly height: IntegerString;
   readonly time: DateTimeString;
-  readonly num_txs: number;
+  readonly num_txs: IntegerString;
   readonly last_block_id: RpcBlockId;
-  readonly total_txs: number;
+  readonly total_txs: IntegerString;
 
   // merkle roots for proofs
   readonly app_hash: HexString;
@@ -453,10 +458,10 @@ export interface RpcHeader {
 }
 const decodeHeader = (data: RpcHeader): responses.Header => ({
   chainId: required(data.chain_id) as ChainId,
-  height: required(data.height),
+  height: Integer.parse(required(data.height)),
   time: DateTime.decode(required(data.time)),
-  numTxs: required(data.num_txs),
-  totalTxs: required(data.total_txs),
+  numTxs: Integer.parse(required(data.num_txs)),
+  totalTxs: Integer.parse(required(data.total_txs)),
   lastBlockId: decodeBlockId(data.last_block_id),
 
   appHash: Encoding.fromHex(required(data.app_hash)),
@@ -498,115 +503,95 @@ const decodeNodeInfo = (data: RpcNodeInfo): responses.NodeInfo => ({
 export interface RpcSyncInfo {
   readonly latest_block_hash: HexString;
   readonly latest_app_hash: HexString;
-  readonly latest_block_height: number;
+  readonly latest_block_height: IntegerString;
   readonly latest_block_time: DateTimeString;
-  readonly syncing: boolean;
+  readonly catching_up?: boolean;
 }
 const decodeSyncInfo = (data: RpcSyncInfo): responses.SyncInfo => ({
   latestBlockHash: Encoding.fromHex(required(data.latest_block_hash)),
   latestAppHash: Encoding.fromHex(required(data.latest_app_hash)),
   latestBlockTime: DateTime.decode(required(data.latest_block_time)),
-  latestBlockHeight: required(data.latest_block_height),
-  syncing: required(data.syncing),
+  latestBlockHeight: Integer.parse(required(data.latest_block_height)),
+  syncing: !optional<boolean>(data.catching_up, false),
 });
 
 // this is in genesis
 export interface RpcValidatorGenesis {
   readonly pub_key: RpcPubkey;
-  readonly power: number;
+  readonly power: IntegerString;
   readonly name?: string;
 }
 const decodeValidatorGenesis = (data: RpcValidatorGenesis): responses.Validator => ({
   pubkey: decodePubkey(required(data.pub_key)),
-  votingPower: required(data.power),
+  votingPower: Integer.parse(required(data.power)),
   name: data.name,
 });
 
-// this is in status
+// for evidence, block results, etc.
 export interface RpcValidatorUpdate {
-  readonly address: Base64String;
+  readonly address: HexString;
   readonly pub_key: RpcPubkey;
-  readonly power: number;
+  readonly voting_power: IntegerString;
 }
 const decodeValidatorUpdate = (data: RpcValidatorUpdate): responses.Validator => ({
   pubkey: decodePubkey(required(data.pub_key)),
-  votingPower: required(data.power),
-  address: Base64.decode(required(data.address)),
+  votingPower: Integer.parse(required(data.voting_power)),
+  address: Hex.decode(required(data.address)),
+});
+
+// for validators
+export interface RpcValidatorData extends RpcValidatorUpdate {
+  readonly accum?: IntegerString;
+}
+const decodeValidatorData = (data: RpcValidatorData): responses.Validator => ({
+  ...decodeValidatorUpdate(data),
+  accum: may(Integer.parse, data.accum),
 });
 
 // this is in status
 export interface RpcValidatorInfo {
   readonly address: HexString;
   readonly pub_key: RpcPubkey;
-  readonly voting_power: number;
+  readonly voting_power: IntegerString;
 }
 const decodeValidatorInfo = (data: RpcValidatorInfo): responses.Validator => ({
   pubkey: decodePubkey(required(data.pub_key)),
-  votingPower: required(data.voting_power),
+  votingPower: Integer.parse(required(data.voting_power)),
   address: Encoding.fromHex(required(data.address)),
-});
-
-export interface RpcValidatorData extends RpcValidatorInfo {
-  readonly accum?: number;
-}
-const decodeValidatorData = (data: RpcValidatorData): responses.Validator => ({
-  ...decodeValidatorInfo(data),
-  accum: data.accum,
 });
 
 export interface RpcConsensusParams {
   readonly block_size_params: RpcBlockSizeParams;
-  readonly tx_size_params: RpcTxSizeParams;
-  readonly block_gossip_params: RpcBlockGossipParams;
   readonly evidence_params: RpcEvidenceParams;
 }
 const decodeConsensusParams = (data: RpcConsensusParams): responses.ConsensusParams => ({
   blockSizeParams: decodeBlockSizeParams(required(data.block_size_params)),
-  txSizeParams: decodeTxSizeParams(required(data.tx_size_params)),
-  blockGossipParams: decodeBlockGossipParams(required(data.block_gossip_params)),
   evidenceParams: decodeEvidenceParams(required(data.evidence_params)),
 });
 
 export interface RpcBlockSizeParams {
-  readonly max_bytes: number;
-  readonly max_txs: number;
-  readonly max_gas: number;
+  readonly max_bytes: IntegerString;
+  readonly max_gas: IntegerString;
 }
 const decodeBlockSizeParams = (data: RpcBlockSizeParams): responses.BlockSizeParams => ({
-  maxBytes: required(data.max_bytes),
-  maxTxs: required(data.max_txs),
-  maxGas: required(data.max_gas),
-});
-
-export interface RpcTxSizeParams {
-  readonly max_bytes: number;
-  readonly max_gas: number;
-}
-const decodeTxSizeParams = (data: RpcTxSizeParams): responses.TxSizeParams => ({
-  maxBytes: required(data.max_bytes),
-  maxGas: required(data.max_gas),
-});
-
-export interface RpcBlockGossipParams {
-  readonly block_part_size_bytes: number;
-}
-const decodeBlockGossipParams = (data: RpcBlockGossipParams): responses.BlockGossipParams => ({
-  blockPartSizeBytes: required(data.block_part_size_bytes),
+  maxBytes: Integer.parse(required(data.max_bytes)),
+  maxGas: Integer.parse(required(data.max_gas)),
 });
 
 export interface RpcEvidenceParams {
-  readonly max_age: number;
+  readonly max_age: IntegerString;
 }
 const decodeEvidenceParams = (data: RpcEvidenceParams): responses.EvidenceParams => ({
-  maxAge: required(data.max_age),
+  maxAge: Integer.parse(required(data.max_age)),
 });
 
+// yes, a different format for status and dump consensus state
 export interface RpcPubkey {
   readonly type: string;
   readonly value: Base64String;
 }
 const decodePubkey = (data: RpcPubkey): PublicKeyBundle => {
-  if (data.type === "AC26791624DE60") {
+  if (data.type === "tendermint/PubKeyEd25519") {
     // go-amino special code
     return {
       algo: Algorithm.Ed25519,
@@ -616,17 +601,10 @@ const decodePubkey = (data: RpcPubkey): PublicKeyBundle => {
   throw new Error(`unknown pubkey type: ${data.type}`);
 };
 
-export interface RpcSignature {
-  readonly type: string;
-  readonly value: Base64String;
-}
+export type RpcSignature = Base64String;
 const decodeSignature = (data: RpcSignature): responses.VoteSignatureBundle => {
-  if (data.type === "6BF5903DA1DB28") {
-    // go-amino special code
-    return {
-      algo: Algorithm.Ed25519,
-      signature: Base64.decode(required(data.value)) as SignatureBytes,
-    };
-  }
-  throw new Error(`unknown signature type: ${data.type}`);
+  return {
+    algo: Algorithm.Ed25519,
+    signature: Base64.decode(required(data)) as SignatureBytes,
+  };
 };

@@ -262,15 +262,16 @@ export interface Validator {
 
 export interface ConsensusParams {
   readonly blockSizeParams: BlockSizeParams;
-  readonly txSizeParams: TxSizeParams;
-  readonly blockGossipParams: BlockGossipParams;
   readonly evidenceParams: EvidenceParams;
+  // no longer exist in 0.25
+  readonly txSizeParams?: TxSizeParams;
+  readonly blockGossipParams?: BlockGossipParams;
 }
 
 export interface BlockSizeParams {
   readonly maxBytes: number;
-  readonly maxTxs: number;
   readonly maxGas: number;
+  readonly maxTxs?: number; // no longer exists in 0.25
 }
 
 export interface TxSizeParams {
