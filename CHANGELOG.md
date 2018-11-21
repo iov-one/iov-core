@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.9.0 (not released yet)
+## 0.9.0
 
 * @iov/core: Export `Secp256k1HdWallet` and import by default in @iov/cli.
 * @iov/faucets: Postpone removal of `BovFaucet` to 0.10.x
@@ -9,6 +9,7 @@ Breaking changes
 
 * @iov/bcp-types: Rename `FungibleToken` to `Amount`
 * @iov/bns: Re-generate BNS codec from weave v0.9.0 and adapt wrapper types.
+* @iov/bns: Add support for blockchain and username NFTs
 * @iov/crypto: Convert pubkey of Secp256k1Keypair into uncompressed format with prefix `04`.
 * @iov/crypto: Secp256k1.createSignature/.verifySignature now comsume a message hash and do no hashing internally.
 * @iov/dpos: Rename `Amount`/`parseAmount` to `Quantity`/`parseQuantity`
