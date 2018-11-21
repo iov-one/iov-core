@@ -3,6 +3,7 @@
 ## 0.9.0 (not released yet)
 
 * @iov/core: Export `Secp256k1HdWallet` and import by default in @iov/cli.
+* @iov/faucets: Postpone removal of `BovFaucet` to 0.10.x
 
 Breaking changes
 
