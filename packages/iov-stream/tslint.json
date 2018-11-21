@@ -1,6 +1,3 @@
 {
-  "extends": "../../tslint.json",
-  "rules": {
-    "no-mixed-interface": false
-  }
+  "extends": "../../tslint.json"
 }
