@@ -1,9 +1,18 @@
 import * as Long from "long";
 import { As } from "type-tagger";
 import { Algorithm, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
-import { FullSignature } from "@iov/bcp-types";
+import { Address, FullSignature } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
+export interface BnsUsernameByUsernameQuery {
+    readonly username: string;
+}
+export interface BnsUsernameByOwnerAddressQuery {
+    readonly owner: Address;
+}
+export declare type BnsUsernameQuery = BnsUsernameByUsernameQuery | BnsUsernameByOwnerAddressQuery;
+export declare function isBnsUsernameByUsernameQuery(query: BnsUsernameQuery): query is BnsUsernameByUsernameQuery;
+export declare function isBnsUsernameByOwnerAddressQuery(query: BnsUsernameQuery): query is BnsUsernameByOwnerAddressQuery;
 export declare type PrivateKeyBytes = Uint8Array & As<"private-key">;
 export interface PrivateKeyBundle {
     readonly algo: Algorithm;
