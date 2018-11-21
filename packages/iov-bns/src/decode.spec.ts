@@ -2,7 +2,7 @@ import { Algorithm, ChainId, PublicKeyBytes } from "@iov/base-types";
 import { Address, BaseTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
-import { decodeAmount, parseMsg, parseTx } from "./decode";
+import { decodeAmount, decodeUsernameNft, parseMsg, parseTx } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import {
   chainId,
@@ -18,9 +18,34 @@ import {
 } from "./testdata";
 import { decodePrivkey, decodePubkey } from "./types";
 
-const { toUtf8 } = Encoding;
+const { fromHex, toUtf8 } = Encoding;
 
 describe("Decode", () => {
+  it("decodes username NFT", () => {
+    const nft: codecImpl.username.IUsernameToken = {
+      base: {
+        id: toUtf8("alice"),
+        owner: fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"),
+      },
+      details: {
+        addresses: [
+          {
+            chainID: toUtf8("wonderland"),
+            address: toUtf8("12345W"),
+          },
+        ],
+      },
+    };
+    const decoded = decodeUsernameNft(nft);
+    expect(decoded.id).toEqual("alice");
+    expect(decoded.owner).toEqual(fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"));
+    expect(decoded.addresses.length).toEqual(1);
+    expect(decoded.addresses[0]).toEqual({
+      chainId: "wonderland" as ChainId,
+      address: "12345W" as Address,
+    });
+  });
+
   it("decode pubkey", () => {
     const decoded = codecImpl.crypto.PublicKey.decode(pubBin);
     const pubkey = decodePubkey(decoded);

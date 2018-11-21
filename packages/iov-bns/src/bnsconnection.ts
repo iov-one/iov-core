@@ -41,10 +41,12 @@ import {
 } from "@iov/tendermint-rpc";
 
 import { bnsCodec } from "./bnscodec";
+import { decodeUsernameNft } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import { InitData, Normalize } from "./normalize";
 import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
 import {
+  BnsUsernameNft,
   BnsUsernameQuery,
   Decoder,
   isBnsUsernameByChainAndAddressQuery,
@@ -63,7 +65,7 @@ import {
   keyToAddress,
 } from "./util";
 
-const { toAscii, toHex, toUtf8, fromUtf8 } = Encoding;
+const { toAscii, toHex, toUtf8 } = Encoding;
 
 /**
  * Returns a filter that only passes when the
@@ -426,7 +428,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     );
   }
 
-  public async getUsername(query: BnsUsernameQuery): Promise<ReadonlyArray<{ readonly id: string }>> {
+  public async getUsername(query: BnsUsernameQuery): Promise<ReadonlyArray<BnsUsernameNft>> {
     // https://github.com/iov-one/weave/blob/v0.9.2/x/nft/username/handler_test.go#L207
     let results: ReadonlyArray<Result>;
     if (isBnsUsernameByUsernameQuery(query)) {
@@ -442,11 +444,8 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     }
 
     const parser = createParser(codecImpl.username.UsernameToken, "usrnft:");
-    const data = results.map(parser).map(username => ({
-      id: fromUtf8(username.base!.id!),
-    }));
-
-    return data;
+    const nfts = results.map(parser).map(decodeUsernameNft);
+    return nfts;
   }
 
   protected query(path: string, data: Uint8Array): Promise<QueryResponse> {

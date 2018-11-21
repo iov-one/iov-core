@@ -23,10 +23,21 @@ import {
 import { Encoding } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
-import { asNumber, decodeFullSig, ensure } from "./types";
+import { asNumber, BnsAddressBytes, BnsUsernameNft, decodeFullSig, ensure } from "./types";
 import { encodeBnsAddress, isHashIdentifier } from "./util";
 
 const { fromUtf8 } = Encoding;
+
+export function decodeUsernameNft(nft: codecImpl.username.IUsernameToken): BnsUsernameNft {
+  return {
+    id: fromUtf8(nft.base!.id!),
+    owner: nft.base!.owner! as BnsAddressBytes,
+    addresses: nft.details!.addresses!.map(pair => ({
+      chainId: fromUtf8(pair.chainID!) as ChainId,
+      address: fromUtf8(pair.address!) as Address,
+    })),
+  };
+}
 
 export function decodeAmount(coin: codecImpl.x.ICoin): Amount {
   return {

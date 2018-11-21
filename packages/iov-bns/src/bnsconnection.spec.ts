@@ -34,7 +34,8 @@ import { asArray, lastValue } from "@iov/stream";
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
 import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
-import { keyToAddress } from "./util";
+import { BnsAddressBytes } from "./types";
+import { decodeBnsAddress, keyToAddress } from "./util";
 
 function skipTests(): boolean {
   return !process.env.BNSD_ENABLED;
@@ -598,6 +599,11 @@ describe("BnsConnection", () => {
       {
         const results = await connection.getUsername({ username: username });
         expect(results.length).toEqual(1);
+        expect(results[0]).toEqual({
+          id: username,
+          owner: decodeBnsAddress(identityAddress).data as BnsAddressBytes,
+          addresses: [],
+        });
       }
 
       // Query by owner
@@ -679,6 +685,16 @@ describe("BnsConnection", () => {
         address: "12345678912345W" as Address,
       });
       expect(results.length).toEqual(1);
+      expect(results[0]).toEqual({
+        id: username,
+        owner: decodeBnsAddress(identityAddress).data as BnsAddressBytes,
+        addresses: [
+          {
+            chainId: chainId,
+            address: "12345678912345W" as Address,
+          },
+        ],
+      });
 
       connection.disconnect();
     });

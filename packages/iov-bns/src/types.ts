@@ -2,7 +2,7 @@ import * as Long from "long";
 import { As } from "type-tagger";
 
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
-import { Address, FullSignature, Nonce } from "@iov/bcp-types";
+import { Address, ChainAddressPair, FullSignature, Nonce } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
@@ -42,6 +42,14 @@ export function isBnsUsernameByChainAndAddressQuery(
     typeof (query as BnsUsernameByChainAndAddressQuery).chain !== "undefined" &&
     typeof (query as BnsUsernameByChainAndAddressQuery).address !== "undefined"
   );
+}
+
+export type BnsAddressBytes = Uint8Array & As<"bns-address-bytes">;
+
+export interface BnsUsernameNft {
+  readonly id: string;
+  readonly owner: BnsAddressBytes;
+  readonly addresses: ReadonlyArray<ChainAddressPair>;
 }
 
 export type PrivateKeyBytes = Uint8Array & As<"private-key">;
