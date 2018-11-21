@@ -377,6 +377,7 @@ describe("BnsConnection", () => {
     connection.disconnect();
   });
 
+  // Activate when https://github.com/tendermint/tendermint/issues/2759 is fixed
   xit("can search for transactions (min/max height)", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
