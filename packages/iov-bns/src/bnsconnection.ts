@@ -47,11 +47,11 @@ import { InitData, Normalize } from "./normalize";
 import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
 import {
   BnsUsernameNft,
-  BnsUsernameQuery,
+  BnsUsernamesQuery,
   Decoder,
-  isBnsUsernameByChainAndAddressQuery,
-  isBnsUsernameByOwnerAddressQuery,
-  isBnsUsernameByUsernameQuery,
+  isBnsUsernamesByChainAndAddressQuery,
+  isBnsUsernamesByOwnerAddressQuery,
+  isBnsUsernamesByUsernameQuery,
   Keyed,
   Result,
 } from "./types";
@@ -428,15 +428,15 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     );
   }
 
-  public async getUsername(query: BnsUsernameQuery): Promise<ReadonlyArray<BnsUsernameNft>> {
+  public async getUsernames(query: BnsUsernamesQuery): Promise<ReadonlyArray<BnsUsernameNft>> {
     // https://github.com/iov-one/weave/blob/v0.9.2/x/nft/username/handler_test.go#L207
     let results: ReadonlyArray<Result>;
-    if (isBnsUsernameByUsernameQuery(query)) {
+    if (isBnsUsernamesByUsernameQuery(query)) {
       results = (await this.query("/nft/usernames", toUtf8(query.username))).results;
-    } else if (isBnsUsernameByOwnerAddressQuery(query)) {
+    } else if (isBnsUsernamesByOwnerAddressQuery(query)) {
       const rawAddress = decodeBnsAddress(query.owner).data;
       results = (await this.query("/nft/usernames/owner", rawAddress)).results;
-    } else if (isBnsUsernameByChainAndAddressQuery(query)) {
+    } else if (isBnsUsernamesByChainAndAddressQuery(query)) {
       const pairSerialized = `${query.address}*${query.chain}`;
       results = (await this.query("/nft/usernames/chainaddr", toUtf8(pairSerialized))).results;
     } else {

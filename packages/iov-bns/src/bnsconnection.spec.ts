@@ -570,8 +570,8 @@ describe("BnsConnection", () => {
     connection.disconnect();
   });
 
-  describe("getUsername", () => {
-    it("can query username by name or owner", async () => {
+  describe("getUsernames", () => {
+    it("can query usernames by name or owner", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const registryChainId = await connection.chainId();
@@ -597,7 +597,7 @@ describe("BnsConnection", () => {
 
       // Query by name
       {
-        const results = await connection.getUsername({ username: username });
+        const results = await connection.getUsernames({ username: username });
         expect(results.length).toEqual(1);
         expect(results[0]).toEqual({
           id: username,
@@ -608,14 +608,14 @@ describe("BnsConnection", () => {
 
       // Query by owner
       {
-        const results = await connection.getUsername({ owner: identityAddress });
+        const results = await connection.getUsernames({ owner: identityAddress });
         expect(results.length).toBeGreaterThanOrEqual(1);
       }
 
       connection.disconnect();
     });
 
-    it("can query username by (chain, address)", async () => {
+    it("can query usernames by (chain, address)", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const registryChainId = await connection.chainId();
@@ -680,7 +680,7 @@ describe("BnsConnection", () => {
       );
 
       // Query by (chain, address)
-      const results = await connection.getUsername({
+      const results = await connection.getUsernames({
         chain: chainId,
         address: "12345678912345W" as Address,
       });

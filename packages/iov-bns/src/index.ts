@@ -3,10 +3,10 @@ export { bnsConnector } from "./bnsconnector";
 export { BnsConnection } from "./bnsconnection";
 export { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
 export {
-  BnsUsernameByChainAndAddressQuery,
-  BnsUsernameByOwnerAddressQuery,
-  BnsUsernameByUsernameQuery,
-  BnsUsernameQuery,
+  BnsUsernamesByChainAndAddressQuery,
+  BnsUsernamesByOwnerAddressQuery,
+  BnsUsernamesByUsernameQuery,
+  BnsUsernamesQuery,
   BnsUsernameNft,
   BnsAddressBytes,
 } from "./types";

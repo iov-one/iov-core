@@ -4,20 +4,20 @@ import { Algorithm, ChainId, PublicKeyBundle, SignatureBytes } from "@iov/base-t
 import { Address, ChainAddressPair, FullSignature } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
-export interface BnsUsernameByUsernameQuery {
+export interface BnsUsernamesByUsernameQuery {
     readonly username: string;
 }
-export interface BnsUsernameByOwnerAddressQuery {
+export interface BnsUsernamesByOwnerAddressQuery {
     readonly owner: Address;
 }
-export interface BnsUsernameByChainAndAddressQuery {
+export interface BnsUsernamesByChainAndAddressQuery {
     readonly chain: ChainId;
     readonly address: Address;
 }
-export declare type BnsUsernameQuery = BnsUsernameByUsernameQuery | BnsUsernameByOwnerAddressQuery | BnsUsernameByChainAndAddressQuery;
-export declare function isBnsUsernameByUsernameQuery(query: BnsUsernameQuery): query is BnsUsernameByUsernameQuery;
-export declare function isBnsUsernameByOwnerAddressQuery(query: BnsUsernameQuery): query is BnsUsernameByOwnerAddressQuery;
-export declare function isBnsUsernameByChainAndAddressQuery(query: BnsUsernameQuery): query is BnsUsernameByChainAndAddressQuery;
+export declare type BnsUsernamesQuery = BnsUsernamesByUsernameQuery | BnsUsernamesByOwnerAddressQuery | BnsUsernamesByChainAndAddressQuery;
+export declare function isBnsUsernamesByUsernameQuery(query: BnsUsernamesQuery): query is BnsUsernamesByUsernameQuery;
+export declare function isBnsUsernamesByOwnerAddressQuery(query: BnsUsernamesQuery): query is BnsUsernamesByOwnerAddressQuery;
+export declare function isBnsUsernamesByChainAndAddressQuery(query: BnsUsernamesQuery): query is BnsUsernamesByChainAndAddressQuery;
 export declare type BnsAddressBytes = Uint8Array & As<"bns-address-bytes">;
 export interface BnsUsernameNft {
     readonly id: string;

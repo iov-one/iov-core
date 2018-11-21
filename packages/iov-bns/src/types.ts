@@ -7,40 +7,42 @@ import { Int53 } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
 
-export interface BnsUsernameByUsernameQuery {
+export interface BnsUsernamesByUsernameQuery {
   readonly username: string;
 }
 
-export interface BnsUsernameByOwnerAddressQuery {
+export interface BnsUsernamesByOwnerAddressQuery {
   readonly owner: Address;
 }
 
-export interface BnsUsernameByChainAndAddressQuery {
+export interface BnsUsernamesByChainAndAddressQuery {
   readonly chain: ChainId;
   readonly address: Address;
 }
 
-export type BnsUsernameQuery =
-  | BnsUsernameByUsernameQuery
-  | BnsUsernameByOwnerAddressQuery
-  | BnsUsernameByChainAndAddressQuery;
+export type BnsUsernamesQuery =
+  | BnsUsernamesByUsernameQuery
+  | BnsUsernamesByOwnerAddressQuery
+  | BnsUsernamesByChainAndAddressQuery;
 
-export function isBnsUsernameByUsernameQuery(query: BnsUsernameQuery): query is BnsUsernameByUsernameQuery {
-  return typeof (query as BnsUsernameByUsernameQuery).username !== "undefined";
+export function isBnsUsernamesByUsernameQuery(
+  query: BnsUsernamesQuery,
+): query is BnsUsernamesByUsernameQuery {
+  return typeof (query as BnsUsernamesByUsernameQuery).username !== "undefined";
 }
 
-export function isBnsUsernameByOwnerAddressQuery(
-  query: BnsUsernameQuery,
-): query is BnsUsernameByOwnerAddressQuery {
-  return typeof (query as BnsUsernameByOwnerAddressQuery).owner !== "undefined";
+export function isBnsUsernamesByOwnerAddressQuery(
+  query: BnsUsernamesQuery,
+): query is BnsUsernamesByOwnerAddressQuery {
+  return typeof (query as BnsUsernamesByOwnerAddressQuery).owner !== "undefined";
 }
 
-export function isBnsUsernameByChainAndAddressQuery(
-  query: BnsUsernameQuery,
-): query is BnsUsernameByChainAndAddressQuery {
+export function isBnsUsernamesByChainAndAddressQuery(
+  query: BnsUsernamesQuery,
+): query is BnsUsernamesByChainAndAddressQuery {
   return (
-    typeof (query as BnsUsernameByChainAndAddressQuery).chain !== "undefined" &&
-    typeof (query as BnsUsernameByChainAndAddressQuery).address !== "undefined"
+    typeof (query as BnsUsernamesByChainAndAddressQuery).chain !== "undefined" &&
+    typeof (query as BnsUsernamesByChainAndAddressQuery).address !== "undefined"
   );
 }
 

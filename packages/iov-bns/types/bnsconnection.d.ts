@@ -3,7 +3,7 @@ import { ChainId, PostableBytes } from "@iov/base-types";
 import { Address, BcpAccount, BcpAccountQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpNonce, BcpQueryEnvelope, BcpQueryTag, BcpSwapQuery, BcpTicker, BcpTransactionResponse, BcpTxQuery, ConfirmedTransaction, TokenTicker, TxReadCodec } from "@iov/bcp-types";
 import { Client as TendermintClient, StatusResponse } from "@iov/tendermint-rpc";
 import { InitData } from "./normalize";
-import { BnsUsernameNft, BnsUsernameQuery, Result } from "./types";
+import { BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
  * Talks directly to the BNS blockchain and exposes the
  * same interface we have with the BCP protocol.
@@ -80,7 +80,7 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
      * Gets current nonce and emits an update every time it changes
      */
     watchNonce(account: BcpAccountQuery): Stream<BcpNonce | undefined>;
-    getUsername(query: BnsUsernameQuery): Promise<ReadonlyArray<BnsUsernameNft>>;
+    getUsernames(query: BnsUsernamesQuery): Promise<ReadonlyArray<BnsUsernameNft>>;
     protected query(path: string, data: Uint8Array): Promise<QueryResponse>;
 }
 export interface QueryResponse {
