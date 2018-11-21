@@ -29,6 +29,10 @@ import { encodeBnsAddress, isHashIdentifier } from "./util";
 const { fromUtf8 } = Encoding;
 
 export function decodeBlockchainNft(nft: codecImpl.blockchain.IBlockchainToken): BnsBlockchainNft {
+  const base = ensure(nft.base, "base");
+  const id = ensure(base.id, "base.id");
+  const owner = ensure(base.owner, "base.owner");
+
   const details = ensure(nft.details, "details");
 
   const chain = ensure(details.chain, "details.chain");
@@ -44,8 +48,8 @@ export function decodeBlockchainNft(nft: codecImpl.blockchain.IBlockchainToken):
   const codecConfig = ensure(iov.codecConfig, "details.iov.codecConfig");
 
   return {
-    id: fromUtf8(nft.base!.id!),
-    owner: nft.base!.owner! as BnsAddressBytes,
+    id: fromUtf8(id),
+    owner: owner as BnsAddressBytes,
     chain: {
       chainId: chainId as ChainId,
       name: name,
@@ -61,12 +65,19 @@ export function decodeBlockchainNft(nft: codecImpl.blockchain.IBlockchainToken):
 }
 
 export function decodeUsernameNft(nft: codecImpl.username.IUsernameToken): BnsUsernameNft {
+  const base = ensure(nft.base, "base");
+  const id = ensure(base.id, "base.id");
+  const owner = ensure(base.owner, "base.owner");
+
+  const details = ensure(nft.details, "details");
+  const addresses = ensure(details.addresses, "details.addresses");
+
   return {
-    id: fromUtf8(nft.base!.id!),
-    owner: nft.base!.owner! as BnsAddressBytes,
-    addresses: nft.details!.addresses!.map(pair => ({
-      chainId: fromUtf8(pair.chainID!) as ChainId,
-      address: fromUtf8(pair.address!) as Address,
+    id: fromUtf8(id),
+    owner: owner as BnsAddressBytes,
+    addresses: addresses.map(pair => ({
+      chainId: fromUtf8(ensure(pair.chainID, "details.addresses[n].chainID")) as ChainId,
+      address: fromUtf8(ensure(pair.address, "details.addresses[n].address")) as Address,
     })),
   };
 }
