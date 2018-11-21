@@ -1,1 +1,1 @@
-67d3f265505081afdb049e80bd6529eed2056d16 (HEAD, tag: v0.9.2) add base handler to bnsd (#178)
+63aa1b2d593807294e000d3a34b15533066739a0 (HEAD, tag: v0.9.3, origin/master, origin/HEAD) Update blockchain id regexp and add tests (#194)
