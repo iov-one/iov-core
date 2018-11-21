@@ -612,21 +612,29 @@ describe("BnsConnection", () => {
         ),
       );
 
-      // Query by chain ID
-      const results = await connection.getBlockchains({ chainId: chainId });
-      expect(results.length).toEqual(1);
-      expect(results[0].id).toEqual(chainId);
-      expect(results[0].owner).toEqual(decodeBnsAddress(identityAddress).data as BnsAddressBytes);
-      expect(results[0].chain).toEqual({
-        chainId: chainId,
-        production: false,
-        enabled: true,
-        name: "Wonderland",
-        networkId: "7rg047g4h",
-        mainTickerId: undefined,
-      });
-      expect(results[0].codecName).toEqual("wonderland_rules");
-      expect(results[0].codecConfig).toEqual(`{ "any" : [ "json", "content" ] }`);
+      // Query by existing chain ID
+      {
+        const results = await connection.getBlockchains({ chainId: chainId });
+        expect(results.length).toEqual(1);
+        expect(results[0].id).toEqual(chainId);
+        expect(results[0].owner).toEqual(decodeBnsAddress(identityAddress).data as BnsAddressBytes);
+        expect(results[0].chain).toEqual({
+          chainId: chainId,
+          production: false,
+          enabled: true,
+          name: "Wonderland",
+          networkId: "7rg047g4h",
+          mainTickerId: undefined,
+        });
+        expect(results[0].codecName).toEqual("wonderland_rules");
+        expect(results[0].codecConfig).toEqual(`{ "any" : [ "json", "content" ] }`);
+      }
+
+      // Query by non-existing chain ID
+      {
+        const results = await connection.getBlockchains({ chainId: "chain_we_dont_have" as ChainId });
+        expect(results.length).toEqual(0);
+      }
 
       connection.disconnect();
     });
@@ -657,7 +665,7 @@ describe("BnsConnection", () => {
       const txBytes = bnsCodec.bytesToPost(signed);
       await connection.postTx(txBytes);
 
-      // Query by name
+      // Query by existing name
       {
         const results = await connection.getUsernames({ username: username });
         expect(results.length).toEqual(1);
@@ -668,10 +676,22 @@ describe("BnsConnection", () => {
         });
       }
 
-      // Query by owner
+      // Query by non-existing name
+      {
+        const results = await connection.getUsernames({ username: "user_we_dont_have" });
+        expect(results.length).toEqual(0);
+      }
+
+      // Query by existing owner
       {
         const results = await connection.getUsernames({ owner: identityAddress });
         expect(results.length).toBeGreaterThanOrEqual(1);
+      }
+
+      // Query by non-existing owner
+      {
+        const results = await connection.getUsernames({ owner: await randomBnsAddress() });
+        expect(results.length).toEqual(0);
       }
 
       connection.disconnect();
@@ -741,22 +761,40 @@ describe("BnsConnection", () => {
         ),
       );
 
-      // Query by (chain, address)
-      const results = await connection.getUsernames({
-        chain: chainId,
-        address: "12345678912345W" as Address,
-      });
-      expect(results.length).toEqual(1);
-      expect(results[0]).toEqual({
-        id: username,
-        owner: decodeBnsAddress(identityAddress).data as BnsAddressBytes,
-        addresses: [
-          {
-            chainId: chainId,
-            address: "12345678912345W" as Address,
-          },
-        ],
-      });
+      // Query by existing (chain, address)
+      {
+        const results = await connection.getUsernames({
+          chain: chainId,
+          address: "12345678912345W" as Address,
+        });
+        expect(results.length).toEqual(1);
+        expect(results[0]).toEqual({
+          id: username,
+          owner: decodeBnsAddress(identityAddress).data as BnsAddressBytes,
+          addresses: [
+            {
+              chainId: chainId,
+              address: "12345678912345W" as Address,
+            },
+          ],
+        });
+      }
+
+      // Query by non-existing (chain, address)
+      {
+        const results = await connection.getUsernames({
+          chain: chainId,
+          address: "OTHER_ADDRESS" as Address,
+        });
+        expect(results.length).toEqual(0);
+      }
+      {
+        const results = await connection.getUsernames({
+          chain: "OTHER_CHAIN" as ChainId,
+          address: "12345678912345W" as Address,
+        });
+        expect(results.length).toEqual(0);
+      }
 
       connection.disconnect();
     });
