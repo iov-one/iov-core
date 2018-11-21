@@ -55,6 +55,8 @@ import {
   keyToAddress,
 } from "./util";
 
+const { toAscii, toHex } = Encoding;
+
 /**
  * Returns a filter that only passes when the
  * value is different than the last one
@@ -89,7 +91,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
     // inlining getAllTickers
     const res = await performQuery(tmClient, "/tokens?prefix", Uint8Array.from([]));
-    const parser = createParser(codecImpl.namecoin.Token, 4);
+    const parser = createParser(codecImpl.namecoin.Token, "tkn:");
     const data = res.results.map(parser).map(Normalize.token);
 
     const toKeyValue = (t: BcpTicker): [string, BcpTicker] => [t.tokenTicker, t];
@@ -152,14 +154,14 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
   public async getTicker(ticker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {
     const res = await this.query("/tokens", Encoding.toAscii(ticker));
-    const parser = createParser(codecImpl.namecoin.Token, 4);
+    const parser = createParser(codecImpl.namecoin.Token, "tkn:");
     const data = res.results.map(parser).map(Normalize.token);
     return dummyEnvelope(data);
   }
 
   public async getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>> {
     const res = await this.query("/tokens?prefix", Uint8Array.from([]));
-    const parser = createParser(codecImpl.namecoin.Token, 4);
+    const parser = createParser(codecImpl.namecoin.Token, "tkn:");
     const data = res.results.map(parser).map(Normalize.token);
     // Sort by ticker
     data.sort((a, b) => a.tokenTicker.localeCompare(b.tokenTicker));
@@ -177,7 +179,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       // if (isValueNameQuery(account))
       res = this.query("/wallets/name", Encoding.toAscii(account.name));
     }
-    const parser = createParser(codecImpl.namecoin.Wallet, 5);
+    const parser = createParser(codecImpl.namecoin.Wallet, "wllt:");
     const parsed = (await res).results.map(parser);
     const data = parsed.map(Normalize.account(this.initData));
     return dummyEnvelope(data);
@@ -200,7 +202,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     }
 
     const res = await this.query("/auth", decodeBnsAddress(address).data);
-    const parser = createParser(codecImpl.sigs.UserData, 5);
+    const parser = createParser(codecImpl.sigs.UserData, "sigs:");
     const data = res.results.map(parser).map(Normalize.nonce);
     return dummyEnvelope(data);
   }
@@ -223,7 +225,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     };
 
     const res = await doQuery();
-    const parser = createParser(codecImpl.escrow.Escrow, 4); // prefix: "esc:"
+    const parser = createParser(codecImpl.escrow.Escrow, "esc:");
     const data = res.results.map(parser).map(Normalize.swapOffer(this.initData));
     return dummyEnvelope(data);
   }
@@ -445,13 +447,21 @@ export interface QueryResponse {
   readonly results: ReadonlyArray<Result>;
 }
 
-function createParser<T extends {}>(decoder: Decoder<T>, sliceKey: number): (res: Result) => T & Keyed {
+function createParser<T extends {}>(decoder: Decoder<T>, keyPrefix: string): (res: Result) => T & Keyed {
   const parser = (res: Result): T & Keyed => {
+    const keyPrefixAsAscii = toAscii(keyPrefix);
+    if (!keyPrefixAsAscii.every((byte, i) => byte === res.key[i])) {
+      throw new Error(
+        "Result does not start with expected prefix. " +
+          `Expected prefix '${keyPrefix}' (0x${toHex(keyPrefixAsAscii)}) in 0x${toHex(res.key)}`,
+      );
+    }
+
     const val: T = decoder.decode(res.value);
     // bug: https://github.com/Microsoft/TypeScript/issues/13557
     // workaround from: https://github.com/OfficeDev/office-ui-fabric-react/blob/1dbfc5ee7c38e982282f13ef92884538e7226169/packages/foundation/src/createComponent.tsx#L62-L64
     // tslint:disable-next-line:prefer-object-spread
-    return Object.assign({}, val, { _id: res.key.slice(sliceKey) });
+    return Object.assign({}, val, { _id: res.key.slice(keyPrefix.length) });
   };
   return parser;
 }
