@@ -13692,6 +13692,1432 @@ $root.x = (function() {
     return x;
 })();
 
+$root.paychan = (function() {
+
+    /**
+     * Namespace paychan.
+     * @exports paychan
+     * @namespace
+     */
+    var paychan = {};
+
+    paychan.PaymentChannel = (function() {
+
+        /**
+         * Properties of a PaymentChannel.
+         * @memberof paychan
+         * @interface IPaymentChannel
+         * @property {Uint8Array|null} [src] PaymentChannel src
+         * @property {crypto.IPublicKey|null} [senderPubkey] PaymentChannel senderPubkey
+         * @property {Uint8Array|null} [recipient] PaymentChannel recipient
+         * @property {x.ICoin|null} [total] PaymentChannel total
+         * @property {number|Long|null} [timeout] PaymentChannel timeout
+         * @property {string|null} [memo] PaymentChannel memo
+         * @property {x.ICoin|null} [transferred] PaymentChannel transferred
+         */
+
+        /**
+         * Constructs a new PaymentChannel.
+         * @memberof paychan
+         * @classdesc Represents a PaymentChannel.
+         * @implements IPaymentChannel
+         * @constructor
+         * @param {paychan.IPaymentChannel=} [properties] Properties to set
+         */
+        function PaymentChannel(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * PaymentChannel src.
+         * @member {Uint8Array} src
+         * @memberof paychan.PaymentChannel
+         * @instance
+         */
+        PaymentChannel.prototype.src = $util.newBuffer([]);
+
+        /**
+         * PaymentChannel senderPubkey.
+         * @member {crypto.IPublicKey|null|undefined} senderPubkey
+         * @memberof paychan.PaymentChannel
+         * @instance
+         */
+        PaymentChannel.prototype.senderPubkey = null;
+
+        /**
+         * PaymentChannel recipient.
+         * @member {Uint8Array} recipient
+         * @memberof paychan.PaymentChannel
+         * @instance
+         */
+        PaymentChannel.prototype.recipient = $util.newBuffer([]);
+
+        /**
+         * PaymentChannel total.
+         * @member {x.ICoin|null|undefined} total
+         * @memberof paychan.PaymentChannel
+         * @instance
+         */
+        PaymentChannel.prototype.total = null;
+
+        /**
+         * PaymentChannel timeout.
+         * @member {number|Long} timeout
+         * @memberof paychan.PaymentChannel
+         * @instance
+         */
+        PaymentChannel.prototype.timeout = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * PaymentChannel memo.
+         * @member {string} memo
+         * @memberof paychan.PaymentChannel
+         * @instance
+         */
+        PaymentChannel.prototype.memo = "";
+
+        /**
+         * PaymentChannel transferred.
+         * @member {x.ICoin|null|undefined} transferred
+         * @memberof paychan.PaymentChannel
+         * @instance
+         */
+        PaymentChannel.prototype.transferred = null;
+
+        /**
+         * Creates a new PaymentChannel instance using the specified properties.
+         * @function create
+         * @memberof paychan.PaymentChannel
+         * @static
+         * @param {paychan.IPaymentChannel=} [properties] Properties to set
+         * @returns {paychan.PaymentChannel} PaymentChannel instance
+         */
+        PaymentChannel.create = function create(properties) {
+            return new PaymentChannel(properties);
+        };
+
+        /**
+         * Encodes the specified PaymentChannel message. Does not implicitly {@link paychan.PaymentChannel.verify|verify} messages.
+         * @function encode
+         * @memberof paychan.PaymentChannel
+         * @static
+         * @param {paychan.IPaymentChannel} message PaymentChannel message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        PaymentChannel.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.src != null && message.hasOwnProperty("src"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.src);
+            if (message.senderPubkey != null && message.hasOwnProperty("senderPubkey"))
+                $root.crypto.PublicKey.encode(message.senderPubkey, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            if (message.recipient != null && message.hasOwnProperty("recipient"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.recipient);
+            if (message.total != null && message.hasOwnProperty("total"))
+                $root.x.Coin.encode(message.total, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            if (message.timeout != null && message.hasOwnProperty("timeout"))
+                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.timeout);
+            if (message.memo != null && message.hasOwnProperty("memo"))
+                writer.uint32(/* id 6, wireType 2 =*/50).string(message.memo);
+            if (message.transferred != null && message.hasOwnProperty("transferred"))
+                $root.x.Coin.encode(message.transferred, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified PaymentChannel message, length delimited. Does not implicitly {@link paychan.PaymentChannel.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof paychan.PaymentChannel
+         * @static
+         * @param {paychan.IPaymentChannel} message PaymentChannel message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        PaymentChannel.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a PaymentChannel message from the specified reader or buffer.
+         * @function decode
+         * @memberof paychan.PaymentChannel
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {paychan.PaymentChannel} PaymentChannel
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        PaymentChannel.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.paychan.PaymentChannel();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.src = reader.bytes();
+                    break;
+                case 2:
+                    message.senderPubkey = $root.crypto.PublicKey.decode(reader, reader.uint32());
+                    break;
+                case 3:
+                    message.recipient = reader.bytes();
+                    break;
+                case 4:
+                    message.total = $root.x.Coin.decode(reader, reader.uint32());
+                    break;
+                case 5:
+                    message.timeout = reader.int64();
+                    break;
+                case 6:
+                    message.memo = reader.string();
+                    break;
+                case 7:
+                    message.transferred = $root.x.Coin.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a PaymentChannel message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof paychan.PaymentChannel
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {paychan.PaymentChannel} PaymentChannel
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        PaymentChannel.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a PaymentChannel message.
+         * @function verify
+         * @memberof paychan.PaymentChannel
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        PaymentChannel.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.src != null && message.hasOwnProperty("src"))
+                if (!(message.src && typeof message.src.length === "number" || $util.isString(message.src)))
+                    return "src: buffer expected";
+            if (message.senderPubkey != null && message.hasOwnProperty("senderPubkey")) {
+                var error = $root.crypto.PublicKey.verify(message.senderPubkey);
+                if (error)
+                    return "senderPubkey." + error;
+            }
+            if (message.recipient != null && message.hasOwnProperty("recipient"))
+                if (!(message.recipient && typeof message.recipient.length === "number" || $util.isString(message.recipient)))
+                    return "recipient: buffer expected";
+            if (message.total != null && message.hasOwnProperty("total")) {
+                var error = $root.x.Coin.verify(message.total);
+                if (error)
+                    return "total." + error;
+            }
+            if (message.timeout != null && message.hasOwnProperty("timeout"))
+                if (!$util.isInteger(message.timeout) && !(message.timeout && $util.isInteger(message.timeout.low) && $util.isInteger(message.timeout.high)))
+                    return "timeout: integer|Long expected";
+            if (message.memo != null && message.hasOwnProperty("memo"))
+                if (!$util.isString(message.memo))
+                    return "memo: string expected";
+            if (message.transferred != null && message.hasOwnProperty("transferred")) {
+                var error = $root.x.Coin.verify(message.transferred);
+                if (error)
+                    return "transferred." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates a PaymentChannel message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof paychan.PaymentChannel
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {paychan.PaymentChannel} PaymentChannel
+         */
+        PaymentChannel.fromObject = function fromObject(object) {
+            if (object instanceof $root.paychan.PaymentChannel)
+                return object;
+            var message = new $root.paychan.PaymentChannel();
+            if (object.src != null)
+                if (typeof object.src === "string")
+                    $util.base64.decode(object.src, message.src = $util.newBuffer($util.base64.length(object.src)), 0);
+                else if (object.src.length)
+                    message.src = object.src;
+            if (object.senderPubkey != null) {
+                if (typeof object.senderPubkey !== "object")
+                    throw TypeError(".paychan.PaymentChannel.senderPubkey: object expected");
+                message.senderPubkey = $root.crypto.PublicKey.fromObject(object.senderPubkey);
+            }
+            if (object.recipient != null)
+                if (typeof object.recipient === "string")
+                    $util.base64.decode(object.recipient, message.recipient = $util.newBuffer($util.base64.length(object.recipient)), 0);
+                else if (object.recipient.length)
+                    message.recipient = object.recipient;
+            if (object.total != null) {
+                if (typeof object.total !== "object")
+                    throw TypeError(".paychan.PaymentChannel.total: object expected");
+                message.total = $root.x.Coin.fromObject(object.total);
+            }
+            if (object.timeout != null)
+                if ($util.Long)
+                    (message.timeout = $util.Long.fromValue(object.timeout)).unsigned = false;
+                else if (typeof object.timeout === "string")
+                    message.timeout = parseInt(object.timeout, 10);
+                else if (typeof object.timeout === "number")
+                    message.timeout = object.timeout;
+                else if (typeof object.timeout === "object")
+                    message.timeout = new $util.LongBits(object.timeout.low >>> 0, object.timeout.high >>> 0).toNumber();
+            if (object.memo != null)
+                message.memo = String(object.memo);
+            if (object.transferred != null) {
+                if (typeof object.transferred !== "object")
+                    throw TypeError(".paychan.PaymentChannel.transferred: object expected");
+                message.transferred = $root.x.Coin.fromObject(object.transferred);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a PaymentChannel message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof paychan.PaymentChannel
+         * @static
+         * @param {paychan.PaymentChannel} message PaymentChannel
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        PaymentChannel.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                if (options.bytes === String)
+                    object.src = "";
+                else {
+                    object.src = [];
+                    if (options.bytes !== Array)
+                        object.src = $util.newBuffer(object.src);
+                }
+                object.senderPubkey = null;
+                if (options.bytes === String)
+                    object.recipient = "";
+                else {
+                    object.recipient = [];
+                    if (options.bytes !== Array)
+                        object.recipient = $util.newBuffer(object.recipient);
+                }
+                object.total = null;
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.timeout = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.timeout = options.longs === String ? "0" : 0;
+                object.memo = "";
+                object.transferred = null;
+            }
+            if (message.src != null && message.hasOwnProperty("src"))
+                object.src = options.bytes === String ? $util.base64.encode(message.src, 0, message.src.length) : options.bytes === Array ? Array.prototype.slice.call(message.src) : message.src;
+            if (message.senderPubkey != null && message.hasOwnProperty("senderPubkey"))
+                object.senderPubkey = $root.crypto.PublicKey.toObject(message.senderPubkey, options);
+            if (message.recipient != null && message.hasOwnProperty("recipient"))
+                object.recipient = options.bytes === String ? $util.base64.encode(message.recipient, 0, message.recipient.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipient) : message.recipient;
+            if (message.total != null && message.hasOwnProperty("total"))
+                object.total = $root.x.Coin.toObject(message.total, options);
+            if (message.timeout != null && message.hasOwnProperty("timeout"))
+                if (typeof message.timeout === "number")
+                    object.timeout = options.longs === String ? String(message.timeout) : message.timeout;
+                else
+                    object.timeout = options.longs === String ? $util.Long.prototype.toString.call(message.timeout) : options.longs === Number ? new $util.LongBits(message.timeout.low >>> 0, message.timeout.high >>> 0).toNumber() : message.timeout;
+            if (message.memo != null && message.hasOwnProperty("memo"))
+                object.memo = message.memo;
+            if (message.transferred != null && message.hasOwnProperty("transferred"))
+                object.transferred = $root.x.Coin.toObject(message.transferred, options);
+            return object;
+        };
+
+        /**
+         * Converts this PaymentChannel to JSON.
+         * @function toJSON
+         * @memberof paychan.PaymentChannel
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        PaymentChannel.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return PaymentChannel;
+    })();
+
+    paychan.CreatePaymentChannelMsg = (function() {
+
+        /**
+         * Properties of a CreatePaymentChannelMsg.
+         * @memberof paychan
+         * @interface ICreatePaymentChannelMsg
+         * @property {Uint8Array|null} [src] CreatePaymentChannelMsg src
+         * @property {crypto.IPublicKey|null} [senderPubkey] CreatePaymentChannelMsg senderPubkey
+         * @property {Uint8Array|null} [recipient] CreatePaymentChannelMsg recipient
+         * @property {x.ICoin|null} [total] CreatePaymentChannelMsg total
+         * @property {number|Long|null} [timeout] CreatePaymentChannelMsg timeout
+         * @property {string|null} [memo] CreatePaymentChannelMsg memo
+         */
+
+        /**
+         * Constructs a new CreatePaymentChannelMsg.
+         * @memberof paychan
+         * @classdesc Represents a CreatePaymentChannelMsg.
+         * @implements ICreatePaymentChannelMsg
+         * @constructor
+         * @param {paychan.ICreatePaymentChannelMsg=} [properties] Properties to set
+         */
+        function CreatePaymentChannelMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * CreatePaymentChannelMsg src.
+         * @member {Uint8Array} src
+         * @memberof paychan.CreatePaymentChannelMsg
+         * @instance
+         */
+        CreatePaymentChannelMsg.prototype.src = $util.newBuffer([]);
+
+        /**
+         * CreatePaymentChannelMsg senderPubkey.
+         * @member {crypto.IPublicKey|null|undefined} senderPubkey
+         * @memberof paychan.CreatePaymentChannelMsg
+         * @instance
+         */
+        CreatePaymentChannelMsg.prototype.senderPubkey = null;
+
+        /**
+         * CreatePaymentChannelMsg recipient.
+         * @member {Uint8Array} recipient
+         * @memberof paychan.CreatePaymentChannelMsg
+         * @instance
+         */
+        CreatePaymentChannelMsg.prototype.recipient = $util.newBuffer([]);
+
+        /**
+         * CreatePaymentChannelMsg total.
+         * @member {x.ICoin|null|undefined} total
+         * @memberof paychan.CreatePaymentChannelMsg
+         * @instance
+         */
+        CreatePaymentChannelMsg.prototype.total = null;
+
+        /**
+         * CreatePaymentChannelMsg timeout.
+         * @member {number|Long} timeout
+         * @memberof paychan.CreatePaymentChannelMsg
+         * @instance
+         */
+        CreatePaymentChannelMsg.prototype.timeout = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * CreatePaymentChannelMsg memo.
+         * @member {string} memo
+         * @memberof paychan.CreatePaymentChannelMsg
+         * @instance
+         */
+        CreatePaymentChannelMsg.prototype.memo = "";
+
+        /**
+         * Creates a new CreatePaymentChannelMsg instance using the specified properties.
+         * @function create
+         * @memberof paychan.CreatePaymentChannelMsg
+         * @static
+         * @param {paychan.ICreatePaymentChannelMsg=} [properties] Properties to set
+         * @returns {paychan.CreatePaymentChannelMsg} CreatePaymentChannelMsg instance
+         */
+        CreatePaymentChannelMsg.create = function create(properties) {
+            return new CreatePaymentChannelMsg(properties);
+        };
+
+        /**
+         * Encodes the specified CreatePaymentChannelMsg message. Does not implicitly {@link paychan.CreatePaymentChannelMsg.verify|verify} messages.
+         * @function encode
+         * @memberof paychan.CreatePaymentChannelMsg
+         * @static
+         * @param {paychan.ICreatePaymentChannelMsg} message CreatePaymentChannelMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CreatePaymentChannelMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.src != null && message.hasOwnProperty("src"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.src);
+            if (message.senderPubkey != null && message.hasOwnProperty("senderPubkey"))
+                $root.crypto.PublicKey.encode(message.senderPubkey, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            if (message.recipient != null && message.hasOwnProperty("recipient"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.recipient);
+            if (message.total != null && message.hasOwnProperty("total"))
+                $root.x.Coin.encode(message.total, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            if (message.timeout != null && message.hasOwnProperty("timeout"))
+                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.timeout);
+            if (message.memo != null && message.hasOwnProperty("memo"))
+                writer.uint32(/* id 6, wireType 2 =*/50).string(message.memo);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified CreatePaymentChannelMsg message, length delimited. Does not implicitly {@link paychan.CreatePaymentChannelMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof paychan.CreatePaymentChannelMsg
+         * @static
+         * @param {paychan.ICreatePaymentChannelMsg} message CreatePaymentChannelMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CreatePaymentChannelMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a CreatePaymentChannelMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof paychan.CreatePaymentChannelMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {paychan.CreatePaymentChannelMsg} CreatePaymentChannelMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CreatePaymentChannelMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.paychan.CreatePaymentChannelMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.src = reader.bytes();
+                    break;
+                case 2:
+                    message.senderPubkey = $root.crypto.PublicKey.decode(reader, reader.uint32());
+                    break;
+                case 3:
+                    message.recipient = reader.bytes();
+                    break;
+                case 4:
+                    message.total = $root.x.Coin.decode(reader, reader.uint32());
+                    break;
+                case 5:
+                    message.timeout = reader.int64();
+                    break;
+                case 6:
+                    message.memo = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a CreatePaymentChannelMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof paychan.CreatePaymentChannelMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {paychan.CreatePaymentChannelMsg} CreatePaymentChannelMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CreatePaymentChannelMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a CreatePaymentChannelMsg message.
+         * @function verify
+         * @memberof paychan.CreatePaymentChannelMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        CreatePaymentChannelMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.src != null && message.hasOwnProperty("src"))
+                if (!(message.src && typeof message.src.length === "number" || $util.isString(message.src)))
+                    return "src: buffer expected";
+            if (message.senderPubkey != null && message.hasOwnProperty("senderPubkey")) {
+                var error = $root.crypto.PublicKey.verify(message.senderPubkey);
+                if (error)
+                    return "senderPubkey." + error;
+            }
+            if (message.recipient != null && message.hasOwnProperty("recipient"))
+                if (!(message.recipient && typeof message.recipient.length === "number" || $util.isString(message.recipient)))
+                    return "recipient: buffer expected";
+            if (message.total != null && message.hasOwnProperty("total")) {
+                var error = $root.x.Coin.verify(message.total);
+                if (error)
+                    return "total." + error;
+            }
+            if (message.timeout != null && message.hasOwnProperty("timeout"))
+                if (!$util.isInteger(message.timeout) && !(message.timeout && $util.isInteger(message.timeout.low) && $util.isInteger(message.timeout.high)))
+                    return "timeout: integer|Long expected";
+            if (message.memo != null && message.hasOwnProperty("memo"))
+                if (!$util.isString(message.memo))
+                    return "memo: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a CreatePaymentChannelMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof paychan.CreatePaymentChannelMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {paychan.CreatePaymentChannelMsg} CreatePaymentChannelMsg
+         */
+        CreatePaymentChannelMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.paychan.CreatePaymentChannelMsg)
+                return object;
+            var message = new $root.paychan.CreatePaymentChannelMsg();
+            if (object.src != null)
+                if (typeof object.src === "string")
+                    $util.base64.decode(object.src, message.src = $util.newBuffer($util.base64.length(object.src)), 0);
+                else if (object.src.length)
+                    message.src = object.src;
+            if (object.senderPubkey != null) {
+                if (typeof object.senderPubkey !== "object")
+                    throw TypeError(".paychan.CreatePaymentChannelMsg.senderPubkey: object expected");
+                message.senderPubkey = $root.crypto.PublicKey.fromObject(object.senderPubkey);
+            }
+            if (object.recipient != null)
+                if (typeof object.recipient === "string")
+                    $util.base64.decode(object.recipient, message.recipient = $util.newBuffer($util.base64.length(object.recipient)), 0);
+                else if (object.recipient.length)
+                    message.recipient = object.recipient;
+            if (object.total != null) {
+                if (typeof object.total !== "object")
+                    throw TypeError(".paychan.CreatePaymentChannelMsg.total: object expected");
+                message.total = $root.x.Coin.fromObject(object.total);
+            }
+            if (object.timeout != null)
+                if ($util.Long)
+                    (message.timeout = $util.Long.fromValue(object.timeout)).unsigned = false;
+                else if (typeof object.timeout === "string")
+                    message.timeout = parseInt(object.timeout, 10);
+                else if (typeof object.timeout === "number")
+                    message.timeout = object.timeout;
+                else if (typeof object.timeout === "object")
+                    message.timeout = new $util.LongBits(object.timeout.low >>> 0, object.timeout.high >>> 0).toNumber();
+            if (object.memo != null)
+                message.memo = String(object.memo);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a CreatePaymentChannelMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof paychan.CreatePaymentChannelMsg
+         * @static
+         * @param {paychan.CreatePaymentChannelMsg} message CreatePaymentChannelMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        CreatePaymentChannelMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                if (options.bytes === String)
+                    object.src = "";
+                else {
+                    object.src = [];
+                    if (options.bytes !== Array)
+                        object.src = $util.newBuffer(object.src);
+                }
+                object.senderPubkey = null;
+                if (options.bytes === String)
+                    object.recipient = "";
+                else {
+                    object.recipient = [];
+                    if (options.bytes !== Array)
+                        object.recipient = $util.newBuffer(object.recipient);
+                }
+                object.total = null;
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.timeout = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.timeout = options.longs === String ? "0" : 0;
+                object.memo = "";
+            }
+            if (message.src != null && message.hasOwnProperty("src"))
+                object.src = options.bytes === String ? $util.base64.encode(message.src, 0, message.src.length) : options.bytes === Array ? Array.prototype.slice.call(message.src) : message.src;
+            if (message.senderPubkey != null && message.hasOwnProperty("senderPubkey"))
+                object.senderPubkey = $root.crypto.PublicKey.toObject(message.senderPubkey, options);
+            if (message.recipient != null && message.hasOwnProperty("recipient"))
+                object.recipient = options.bytes === String ? $util.base64.encode(message.recipient, 0, message.recipient.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipient) : message.recipient;
+            if (message.total != null && message.hasOwnProperty("total"))
+                object.total = $root.x.Coin.toObject(message.total, options);
+            if (message.timeout != null && message.hasOwnProperty("timeout"))
+                if (typeof message.timeout === "number")
+                    object.timeout = options.longs === String ? String(message.timeout) : message.timeout;
+                else
+                    object.timeout = options.longs === String ? $util.Long.prototype.toString.call(message.timeout) : options.longs === Number ? new $util.LongBits(message.timeout.low >>> 0, message.timeout.high >>> 0).toNumber() : message.timeout;
+            if (message.memo != null && message.hasOwnProperty("memo"))
+                object.memo = message.memo;
+            return object;
+        };
+
+        /**
+         * Converts this CreatePaymentChannelMsg to JSON.
+         * @function toJSON
+         * @memberof paychan.CreatePaymentChannelMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        CreatePaymentChannelMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return CreatePaymentChannelMsg;
+    })();
+
+    paychan.Payment = (function() {
+
+        /**
+         * Properties of a Payment.
+         * @memberof paychan
+         * @interface IPayment
+         * @property {string|null} [chainId] Payment chainId
+         * @property {Uint8Array|null} [channelId] Payment channelId
+         * @property {x.ICoin|null} [amount] Payment amount
+         * @property {string|null} [memo] Payment memo
+         */
+
+        /**
+         * Constructs a new Payment.
+         * @memberof paychan
+         * @classdesc Represents a Payment.
+         * @implements IPayment
+         * @constructor
+         * @param {paychan.IPayment=} [properties] Properties to set
+         */
+        function Payment(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Payment chainId.
+         * @member {string} chainId
+         * @memberof paychan.Payment
+         * @instance
+         */
+        Payment.prototype.chainId = "";
+
+        /**
+         * Payment channelId.
+         * @member {Uint8Array} channelId
+         * @memberof paychan.Payment
+         * @instance
+         */
+        Payment.prototype.channelId = $util.newBuffer([]);
+
+        /**
+         * Payment amount.
+         * @member {x.ICoin|null|undefined} amount
+         * @memberof paychan.Payment
+         * @instance
+         */
+        Payment.prototype.amount = null;
+
+        /**
+         * Payment memo.
+         * @member {string} memo
+         * @memberof paychan.Payment
+         * @instance
+         */
+        Payment.prototype.memo = "";
+
+        /**
+         * Creates a new Payment instance using the specified properties.
+         * @function create
+         * @memberof paychan.Payment
+         * @static
+         * @param {paychan.IPayment=} [properties] Properties to set
+         * @returns {paychan.Payment} Payment instance
+         */
+        Payment.create = function create(properties) {
+            return new Payment(properties);
+        };
+
+        /**
+         * Encodes the specified Payment message. Does not implicitly {@link paychan.Payment.verify|verify} messages.
+         * @function encode
+         * @memberof paychan.Payment
+         * @static
+         * @param {paychan.IPayment} message Payment message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Payment.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.chainId != null && message.hasOwnProperty("chainId"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.chainId);
+            if (message.channelId != null && message.hasOwnProperty("channelId"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.channelId);
+            if (message.amount != null && message.hasOwnProperty("amount"))
+                $root.x.Coin.encode(message.amount, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            if (message.memo != null && message.hasOwnProperty("memo"))
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.memo);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Payment message, length delimited. Does not implicitly {@link paychan.Payment.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof paychan.Payment
+         * @static
+         * @param {paychan.IPayment} message Payment message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Payment.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Payment message from the specified reader or buffer.
+         * @function decode
+         * @memberof paychan.Payment
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {paychan.Payment} Payment
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Payment.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.paychan.Payment();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.chainId = reader.string();
+                    break;
+                case 2:
+                    message.channelId = reader.bytes();
+                    break;
+                case 3:
+                    message.amount = $root.x.Coin.decode(reader, reader.uint32());
+                    break;
+                case 4:
+                    message.memo = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Payment message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof paychan.Payment
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {paychan.Payment} Payment
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Payment.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Payment message.
+         * @function verify
+         * @memberof paychan.Payment
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Payment.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.chainId != null && message.hasOwnProperty("chainId"))
+                if (!$util.isString(message.chainId))
+                    return "chainId: string expected";
+            if (message.channelId != null && message.hasOwnProperty("channelId"))
+                if (!(message.channelId && typeof message.channelId.length === "number" || $util.isString(message.channelId)))
+                    return "channelId: buffer expected";
+            if (message.amount != null && message.hasOwnProperty("amount")) {
+                var error = $root.x.Coin.verify(message.amount);
+                if (error)
+                    return "amount." + error;
+            }
+            if (message.memo != null && message.hasOwnProperty("memo"))
+                if (!$util.isString(message.memo))
+                    return "memo: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a Payment message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof paychan.Payment
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {paychan.Payment} Payment
+         */
+        Payment.fromObject = function fromObject(object) {
+            if (object instanceof $root.paychan.Payment)
+                return object;
+            var message = new $root.paychan.Payment();
+            if (object.chainId != null)
+                message.chainId = String(object.chainId);
+            if (object.channelId != null)
+                if (typeof object.channelId === "string")
+                    $util.base64.decode(object.channelId, message.channelId = $util.newBuffer($util.base64.length(object.channelId)), 0);
+                else if (object.channelId.length)
+                    message.channelId = object.channelId;
+            if (object.amount != null) {
+                if (typeof object.amount !== "object")
+                    throw TypeError(".paychan.Payment.amount: object expected");
+                message.amount = $root.x.Coin.fromObject(object.amount);
+            }
+            if (object.memo != null)
+                message.memo = String(object.memo);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Payment message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof paychan.Payment
+         * @static
+         * @param {paychan.Payment} message Payment
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Payment.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.chainId = "";
+                if (options.bytes === String)
+                    object.channelId = "";
+                else {
+                    object.channelId = [];
+                    if (options.bytes !== Array)
+                        object.channelId = $util.newBuffer(object.channelId);
+                }
+                object.amount = null;
+                object.memo = "";
+            }
+            if (message.chainId != null && message.hasOwnProperty("chainId"))
+                object.chainId = message.chainId;
+            if (message.channelId != null && message.hasOwnProperty("channelId"))
+                object.channelId = options.bytes === String ? $util.base64.encode(message.channelId, 0, message.channelId.length) : options.bytes === Array ? Array.prototype.slice.call(message.channelId) : message.channelId;
+            if (message.amount != null && message.hasOwnProperty("amount"))
+                object.amount = $root.x.Coin.toObject(message.amount, options);
+            if (message.memo != null && message.hasOwnProperty("memo"))
+                object.memo = message.memo;
+            return object;
+        };
+
+        /**
+         * Converts this Payment to JSON.
+         * @function toJSON
+         * @memberof paychan.Payment
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Payment.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Payment;
+    })();
+
+    paychan.TransferPaymentChannelMsg = (function() {
+
+        /**
+         * Properties of a TransferPaymentChannelMsg.
+         * @memberof paychan
+         * @interface ITransferPaymentChannelMsg
+         * @property {paychan.IPayment|null} [payment] TransferPaymentChannelMsg payment
+         * @property {crypto.ISignature|null} [signature] TransferPaymentChannelMsg signature
+         */
+
+        /**
+         * Constructs a new TransferPaymentChannelMsg.
+         * @memberof paychan
+         * @classdesc Represents a TransferPaymentChannelMsg.
+         * @implements ITransferPaymentChannelMsg
+         * @constructor
+         * @param {paychan.ITransferPaymentChannelMsg=} [properties] Properties to set
+         */
+        function TransferPaymentChannelMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * TransferPaymentChannelMsg payment.
+         * @member {paychan.IPayment|null|undefined} payment
+         * @memberof paychan.TransferPaymentChannelMsg
+         * @instance
+         */
+        TransferPaymentChannelMsg.prototype.payment = null;
+
+        /**
+         * TransferPaymentChannelMsg signature.
+         * @member {crypto.ISignature|null|undefined} signature
+         * @memberof paychan.TransferPaymentChannelMsg
+         * @instance
+         */
+        TransferPaymentChannelMsg.prototype.signature = null;
+
+        /**
+         * Creates a new TransferPaymentChannelMsg instance using the specified properties.
+         * @function create
+         * @memberof paychan.TransferPaymentChannelMsg
+         * @static
+         * @param {paychan.ITransferPaymentChannelMsg=} [properties] Properties to set
+         * @returns {paychan.TransferPaymentChannelMsg} TransferPaymentChannelMsg instance
+         */
+        TransferPaymentChannelMsg.create = function create(properties) {
+            return new TransferPaymentChannelMsg(properties);
+        };
+
+        /**
+         * Encodes the specified TransferPaymentChannelMsg message. Does not implicitly {@link paychan.TransferPaymentChannelMsg.verify|verify} messages.
+         * @function encode
+         * @memberof paychan.TransferPaymentChannelMsg
+         * @static
+         * @param {paychan.ITransferPaymentChannelMsg} message TransferPaymentChannelMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        TransferPaymentChannelMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.payment != null && message.hasOwnProperty("payment"))
+                $root.paychan.Payment.encode(message.payment, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.signature != null && message.hasOwnProperty("signature"))
+                $root.crypto.Signature.encode(message.signature, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified TransferPaymentChannelMsg message, length delimited. Does not implicitly {@link paychan.TransferPaymentChannelMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof paychan.TransferPaymentChannelMsg
+         * @static
+         * @param {paychan.ITransferPaymentChannelMsg} message TransferPaymentChannelMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        TransferPaymentChannelMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a TransferPaymentChannelMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof paychan.TransferPaymentChannelMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {paychan.TransferPaymentChannelMsg} TransferPaymentChannelMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        TransferPaymentChannelMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.paychan.TransferPaymentChannelMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.payment = $root.paychan.Payment.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.signature = $root.crypto.Signature.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a TransferPaymentChannelMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof paychan.TransferPaymentChannelMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {paychan.TransferPaymentChannelMsg} TransferPaymentChannelMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        TransferPaymentChannelMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a TransferPaymentChannelMsg message.
+         * @function verify
+         * @memberof paychan.TransferPaymentChannelMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        TransferPaymentChannelMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.payment != null && message.hasOwnProperty("payment")) {
+                var error = $root.paychan.Payment.verify(message.payment);
+                if (error)
+                    return "payment." + error;
+            }
+            if (message.signature != null && message.hasOwnProperty("signature")) {
+                var error = $root.crypto.Signature.verify(message.signature);
+                if (error)
+                    return "signature." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates a TransferPaymentChannelMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof paychan.TransferPaymentChannelMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {paychan.TransferPaymentChannelMsg} TransferPaymentChannelMsg
+         */
+        TransferPaymentChannelMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.paychan.TransferPaymentChannelMsg)
+                return object;
+            var message = new $root.paychan.TransferPaymentChannelMsg();
+            if (object.payment != null) {
+                if (typeof object.payment !== "object")
+                    throw TypeError(".paychan.TransferPaymentChannelMsg.payment: object expected");
+                message.payment = $root.paychan.Payment.fromObject(object.payment);
+            }
+            if (object.signature != null) {
+                if (typeof object.signature !== "object")
+                    throw TypeError(".paychan.TransferPaymentChannelMsg.signature: object expected");
+                message.signature = $root.crypto.Signature.fromObject(object.signature);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a TransferPaymentChannelMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof paychan.TransferPaymentChannelMsg
+         * @static
+         * @param {paychan.TransferPaymentChannelMsg} message TransferPaymentChannelMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        TransferPaymentChannelMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.payment = null;
+                object.signature = null;
+            }
+            if (message.payment != null && message.hasOwnProperty("payment"))
+                object.payment = $root.paychan.Payment.toObject(message.payment, options);
+            if (message.signature != null && message.hasOwnProperty("signature"))
+                object.signature = $root.crypto.Signature.toObject(message.signature, options);
+            return object;
+        };
+
+        /**
+         * Converts this TransferPaymentChannelMsg to JSON.
+         * @function toJSON
+         * @memberof paychan.TransferPaymentChannelMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        TransferPaymentChannelMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return TransferPaymentChannelMsg;
+    })();
+
+    paychan.ClosePaymentChannelMsg = (function() {
+
+        /**
+         * Properties of a ClosePaymentChannelMsg.
+         * @memberof paychan
+         * @interface IClosePaymentChannelMsg
+         * @property {Uint8Array|null} [channelId] ClosePaymentChannelMsg channelId
+         * @property {string|null} [memo] ClosePaymentChannelMsg memo
+         */
+
+        /**
+         * Constructs a new ClosePaymentChannelMsg.
+         * @memberof paychan
+         * @classdesc Represents a ClosePaymentChannelMsg.
+         * @implements IClosePaymentChannelMsg
+         * @constructor
+         * @param {paychan.IClosePaymentChannelMsg=} [properties] Properties to set
+         */
+        function ClosePaymentChannelMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ClosePaymentChannelMsg channelId.
+         * @member {Uint8Array} channelId
+         * @memberof paychan.ClosePaymentChannelMsg
+         * @instance
+         */
+        ClosePaymentChannelMsg.prototype.channelId = $util.newBuffer([]);
+
+        /**
+         * ClosePaymentChannelMsg memo.
+         * @member {string} memo
+         * @memberof paychan.ClosePaymentChannelMsg
+         * @instance
+         */
+        ClosePaymentChannelMsg.prototype.memo = "";
+
+        /**
+         * Creates a new ClosePaymentChannelMsg instance using the specified properties.
+         * @function create
+         * @memberof paychan.ClosePaymentChannelMsg
+         * @static
+         * @param {paychan.IClosePaymentChannelMsg=} [properties] Properties to set
+         * @returns {paychan.ClosePaymentChannelMsg} ClosePaymentChannelMsg instance
+         */
+        ClosePaymentChannelMsg.create = function create(properties) {
+            return new ClosePaymentChannelMsg(properties);
+        };
+
+        /**
+         * Encodes the specified ClosePaymentChannelMsg message. Does not implicitly {@link paychan.ClosePaymentChannelMsg.verify|verify} messages.
+         * @function encode
+         * @memberof paychan.ClosePaymentChannelMsg
+         * @static
+         * @param {paychan.IClosePaymentChannelMsg} message ClosePaymentChannelMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ClosePaymentChannelMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.channelId != null && message.hasOwnProperty("channelId"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.channelId);
+            if (message.memo != null && message.hasOwnProperty("memo"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.memo);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ClosePaymentChannelMsg message, length delimited. Does not implicitly {@link paychan.ClosePaymentChannelMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof paychan.ClosePaymentChannelMsg
+         * @static
+         * @param {paychan.IClosePaymentChannelMsg} message ClosePaymentChannelMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ClosePaymentChannelMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ClosePaymentChannelMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof paychan.ClosePaymentChannelMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {paychan.ClosePaymentChannelMsg} ClosePaymentChannelMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ClosePaymentChannelMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.paychan.ClosePaymentChannelMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.channelId = reader.bytes();
+                    break;
+                case 2:
+                    message.memo = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a ClosePaymentChannelMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof paychan.ClosePaymentChannelMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {paychan.ClosePaymentChannelMsg} ClosePaymentChannelMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ClosePaymentChannelMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ClosePaymentChannelMsg message.
+         * @function verify
+         * @memberof paychan.ClosePaymentChannelMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ClosePaymentChannelMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.channelId != null && message.hasOwnProperty("channelId"))
+                if (!(message.channelId && typeof message.channelId.length === "number" || $util.isString(message.channelId)))
+                    return "channelId: buffer expected";
+            if (message.memo != null && message.hasOwnProperty("memo"))
+                if (!$util.isString(message.memo))
+                    return "memo: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a ClosePaymentChannelMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof paychan.ClosePaymentChannelMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {paychan.ClosePaymentChannelMsg} ClosePaymentChannelMsg
+         */
+        ClosePaymentChannelMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.paychan.ClosePaymentChannelMsg)
+                return object;
+            var message = new $root.paychan.ClosePaymentChannelMsg();
+            if (object.channelId != null)
+                if (typeof object.channelId === "string")
+                    $util.base64.decode(object.channelId, message.channelId = $util.newBuffer($util.base64.length(object.channelId)), 0);
+                else if (object.channelId.length)
+                    message.channelId = object.channelId;
+            if (object.memo != null)
+                message.memo = String(object.memo);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ClosePaymentChannelMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof paychan.ClosePaymentChannelMsg
+         * @static
+         * @param {paychan.ClosePaymentChannelMsg} message ClosePaymentChannelMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ClosePaymentChannelMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                if (options.bytes === String)
+                    object.channelId = "";
+                else {
+                    object.channelId = [];
+                    if (options.bytes !== Array)
+                        object.channelId = $util.newBuffer(object.channelId);
+                }
+                object.memo = "";
+            }
+            if (message.channelId != null && message.hasOwnProperty("channelId"))
+                object.channelId = options.bytes === String ? $util.base64.encode(message.channelId, 0, message.channelId.length) : options.bytes === Array ? Array.prototype.slice.call(message.channelId) : message.channelId;
+            if (message.memo != null && message.hasOwnProperty("memo"))
+                object.memo = message.memo;
+            return object;
+        };
+
+        /**
+         * Converts this ClosePaymentChannelMsg to JSON.
+         * @function toJSON
+         * @memberof paychan.ClosePaymentChannelMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ClosePaymentChannelMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ClosePaymentChannelMsg;
+    })();
+
+    return paychan;
+})();
+
 $root.sigs = (function() {
 
     /**

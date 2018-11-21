@@ -5523,6 +5523,590 @@ export namespace x {
   }
 }
 
+/** Namespace paychan. */
+export namespace paychan {
+  /** Properties of a PaymentChannel. */
+  interface IPaymentChannel {
+    /** PaymentChannel src */
+    src?: Uint8Array | null;
+
+    /** PaymentChannel senderPubkey */
+    senderPubkey?: crypto.IPublicKey | null;
+
+    /** PaymentChannel recipient */
+    recipient?: Uint8Array | null;
+
+    /** PaymentChannel total */
+    total?: x.ICoin | null;
+
+    /** PaymentChannel timeout */
+    timeout?: number | Long | null;
+
+    /** PaymentChannel memo */
+    memo?: string | null;
+
+    /** PaymentChannel transferred */
+    transferred?: x.ICoin | null;
+  }
+
+  /** Represents a PaymentChannel. */
+  class PaymentChannel implements IPaymentChannel {
+    /**
+     * Constructs a new PaymentChannel.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: paychan.IPaymentChannel);
+
+    /** PaymentChannel src. */
+    public src: Uint8Array;
+
+    /** PaymentChannel senderPubkey. */
+    public senderPubkey?: crypto.IPublicKey | null;
+
+    /** PaymentChannel recipient. */
+    public recipient: Uint8Array;
+
+    /** PaymentChannel total. */
+    public total?: x.ICoin | null;
+
+    /** PaymentChannel timeout. */
+    public timeout: number | Long;
+
+    /** PaymentChannel memo. */
+    public memo: string;
+
+    /** PaymentChannel transferred. */
+    public transferred?: x.ICoin | null;
+
+    /**
+     * Creates a new PaymentChannel instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns PaymentChannel instance
+     */
+    public static create(properties?: paychan.IPaymentChannel): paychan.PaymentChannel;
+
+    /**
+     * Encodes the specified PaymentChannel message. Does not implicitly {@link paychan.PaymentChannel.verify|verify} messages.
+     * @param message PaymentChannel message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: paychan.IPaymentChannel, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified PaymentChannel message, length delimited. Does not implicitly {@link paychan.PaymentChannel.verify|verify} messages.
+     * @param message PaymentChannel message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: paychan.IPaymentChannel,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a PaymentChannel message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns PaymentChannel
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): paychan.PaymentChannel;
+
+    /**
+     * Decodes a PaymentChannel message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns PaymentChannel
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): paychan.PaymentChannel;
+
+    /**
+     * Verifies a PaymentChannel message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a PaymentChannel message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns PaymentChannel
+     */
+    public static fromObject(object: { [k: string]: any }): paychan.PaymentChannel;
+
+    /**
+     * Creates a plain object from a PaymentChannel message. Also converts values to other types if specified.
+     * @param message PaymentChannel
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: paychan.PaymentChannel,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this PaymentChannel to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a CreatePaymentChannelMsg. */
+  interface ICreatePaymentChannelMsg {
+    /** CreatePaymentChannelMsg src */
+    src?: Uint8Array | null;
+
+    /** CreatePaymentChannelMsg senderPubkey */
+    senderPubkey?: crypto.IPublicKey | null;
+
+    /** CreatePaymentChannelMsg recipient */
+    recipient?: Uint8Array | null;
+
+    /** CreatePaymentChannelMsg total */
+    total?: x.ICoin | null;
+
+    /** CreatePaymentChannelMsg timeout */
+    timeout?: number | Long | null;
+
+    /** CreatePaymentChannelMsg memo */
+    memo?: string | null;
+  }
+
+  /** Represents a CreatePaymentChannelMsg. */
+  class CreatePaymentChannelMsg implements ICreatePaymentChannelMsg {
+    /**
+     * Constructs a new CreatePaymentChannelMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: paychan.ICreatePaymentChannelMsg);
+
+    /** CreatePaymentChannelMsg src. */
+    public src: Uint8Array;
+
+    /** CreatePaymentChannelMsg senderPubkey. */
+    public senderPubkey?: crypto.IPublicKey | null;
+
+    /** CreatePaymentChannelMsg recipient. */
+    public recipient: Uint8Array;
+
+    /** CreatePaymentChannelMsg total. */
+    public total?: x.ICoin | null;
+
+    /** CreatePaymentChannelMsg timeout. */
+    public timeout: number | Long;
+
+    /** CreatePaymentChannelMsg memo. */
+    public memo: string;
+
+    /**
+     * Creates a new CreatePaymentChannelMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns CreatePaymentChannelMsg instance
+     */
+    public static create(properties?: paychan.ICreatePaymentChannelMsg): paychan.CreatePaymentChannelMsg;
+
+    /**
+     * Encodes the specified CreatePaymentChannelMsg message. Does not implicitly {@link paychan.CreatePaymentChannelMsg.verify|verify} messages.
+     * @param message CreatePaymentChannelMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: paychan.ICreatePaymentChannelMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Encodes the specified CreatePaymentChannelMsg message, length delimited. Does not implicitly {@link paychan.CreatePaymentChannelMsg.verify|verify} messages.
+     * @param message CreatePaymentChannelMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: paychan.ICreatePaymentChannelMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a CreatePaymentChannelMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns CreatePaymentChannelMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): paychan.CreatePaymentChannelMsg;
+
+    /**
+     * Decodes a CreatePaymentChannelMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns CreatePaymentChannelMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): paychan.CreatePaymentChannelMsg;
+
+    /**
+     * Verifies a CreatePaymentChannelMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a CreatePaymentChannelMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns CreatePaymentChannelMsg
+     */
+    public static fromObject(object: { [k: string]: any }): paychan.CreatePaymentChannelMsg;
+
+    /**
+     * Creates a plain object from a CreatePaymentChannelMsg message. Also converts values to other types if specified.
+     * @param message CreatePaymentChannelMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: paychan.CreatePaymentChannelMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this CreatePaymentChannelMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a Payment. */
+  interface IPayment {
+    /** Payment chainId */
+    chainId?: string | null;
+
+    /** Payment channelId */
+    channelId?: Uint8Array | null;
+
+    /** Payment amount */
+    amount?: x.ICoin | null;
+
+    /** Payment memo */
+    memo?: string | null;
+  }
+
+  /** Represents a Payment. */
+  class Payment implements IPayment {
+    /**
+     * Constructs a new Payment.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: paychan.IPayment);
+
+    /** Payment chainId. */
+    public chainId: string;
+
+    /** Payment channelId. */
+    public channelId: Uint8Array;
+
+    /** Payment amount. */
+    public amount?: x.ICoin | null;
+
+    /** Payment memo. */
+    public memo: string;
+
+    /**
+     * Creates a new Payment instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Payment instance
+     */
+    public static create(properties?: paychan.IPayment): paychan.Payment;
+
+    /**
+     * Encodes the specified Payment message. Does not implicitly {@link paychan.Payment.verify|verify} messages.
+     * @param message Payment message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: paychan.IPayment, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Payment message, length delimited. Does not implicitly {@link paychan.Payment.verify|verify} messages.
+     * @param message Payment message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: paychan.IPayment, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a Payment message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Payment
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): paychan.Payment;
+
+    /**
+     * Decodes a Payment message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Payment
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): paychan.Payment;
+
+    /**
+     * Verifies a Payment message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Payment message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Payment
+     */
+    public static fromObject(object: { [k: string]: any }): paychan.Payment;
+
+    /**
+     * Creates a plain object from a Payment message. Also converts values to other types if specified.
+     * @param message Payment
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: paychan.Payment,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Payment to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a TransferPaymentChannelMsg. */
+  interface ITransferPaymentChannelMsg {
+    /** TransferPaymentChannelMsg payment */
+    payment?: paychan.IPayment | null;
+
+    /** TransferPaymentChannelMsg signature */
+    signature?: crypto.ISignature | null;
+  }
+
+  /** Represents a TransferPaymentChannelMsg. */
+  class TransferPaymentChannelMsg implements ITransferPaymentChannelMsg {
+    /**
+     * Constructs a new TransferPaymentChannelMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: paychan.ITransferPaymentChannelMsg);
+
+    /** TransferPaymentChannelMsg payment. */
+    public payment?: paychan.IPayment | null;
+
+    /** TransferPaymentChannelMsg signature. */
+    public signature?: crypto.ISignature | null;
+
+    /**
+     * Creates a new TransferPaymentChannelMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns TransferPaymentChannelMsg instance
+     */
+    public static create(properties?: paychan.ITransferPaymentChannelMsg): paychan.TransferPaymentChannelMsg;
+
+    /**
+     * Encodes the specified TransferPaymentChannelMsg message. Does not implicitly {@link paychan.TransferPaymentChannelMsg.verify|verify} messages.
+     * @param message TransferPaymentChannelMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: paychan.ITransferPaymentChannelMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Encodes the specified TransferPaymentChannelMsg message, length delimited. Does not implicitly {@link paychan.TransferPaymentChannelMsg.verify|verify} messages.
+     * @param message TransferPaymentChannelMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: paychan.ITransferPaymentChannelMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a TransferPaymentChannelMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns TransferPaymentChannelMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): paychan.TransferPaymentChannelMsg;
+
+    /**
+     * Decodes a TransferPaymentChannelMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns TransferPaymentChannelMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): paychan.TransferPaymentChannelMsg;
+
+    /**
+     * Verifies a TransferPaymentChannelMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a TransferPaymentChannelMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns TransferPaymentChannelMsg
+     */
+    public static fromObject(object: { [k: string]: any }): paychan.TransferPaymentChannelMsg;
+
+    /**
+     * Creates a plain object from a TransferPaymentChannelMsg message. Also converts values to other types if specified.
+     * @param message TransferPaymentChannelMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: paychan.TransferPaymentChannelMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this TransferPaymentChannelMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a ClosePaymentChannelMsg. */
+  interface IClosePaymentChannelMsg {
+    /** ClosePaymentChannelMsg channelId */
+    channelId?: Uint8Array | null;
+
+    /** ClosePaymentChannelMsg memo */
+    memo?: string | null;
+  }
+
+  /** Represents a ClosePaymentChannelMsg. */
+  class ClosePaymentChannelMsg implements IClosePaymentChannelMsg {
+    /**
+     * Constructs a new ClosePaymentChannelMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: paychan.IClosePaymentChannelMsg);
+
+    /** ClosePaymentChannelMsg channelId. */
+    public channelId: Uint8Array;
+
+    /** ClosePaymentChannelMsg memo. */
+    public memo: string;
+
+    /**
+     * Creates a new ClosePaymentChannelMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ClosePaymentChannelMsg instance
+     */
+    public static create(properties?: paychan.IClosePaymentChannelMsg): paychan.ClosePaymentChannelMsg;
+
+    /**
+     * Encodes the specified ClosePaymentChannelMsg message. Does not implicitly {@link paychan.ClosePaymentChannelMsg.verify|verify} messages.
+     * @param message ClosePaymentChannelMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: paychan.IClosePaymentChannelMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ClosePaymentChannelMsg message, length delimited. Does not implicitly {@link paychan.ClosePaymentChannelMsg.verify|verify} messages.
+     * @param message ClosePaymentChannelMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: paychan.IClosePaymentChannelMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a ClosePaymentChannelMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ClosePaymentChannelMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): paychan.ClosePaymentChannelMsg;
+
+    /**
+     * Decodes a ClosePaymentChannelMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ClosePaymentChannelMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): paychan.ClosePaymentChannelMsg;
+
+    /**
+     * Verifies a ClosePaymentChannelMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a ClosePaymentChannelMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ClosePaymentChannelMsg
+     */
+    public static fromObject(object: { [k: string]: any }): paychan.ClosePaymentChannelMsg;
+
+    /**
+     * Creates a plain object from a ClosePaymentChannelMsg message. Also converts values to other types if specified.
+     * @param message ClosePaymentChannelMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: paychan.ClosePaymentChannelMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this ClosePaymentChannelMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+}
+
 /** Namespace sigs. */
 export namespace sigs {
   /** Properties of a UserData. */
