@@ -89,7 +89,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
     // inlining getAllTickers
     const res = await performQuery(tmClient, "/tokens?prefix", Uint8Array.from([]));
-    const parser = parseMap(codecImpl.namecoin.Token, 4);
+    const parser = createParser(codecImpl.namecoin.Token, 4);
     const data = res.results.map(parser).map(Normalize.token);
 
     const toKeyValue = (t: BcpTicker): [string, BcpTicker] => [t.tokenTicker, t];
@@ -152,14 +152,14 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
   public async getTicker(ticker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {
     const res = await this.query("/tokens", Encoding.toAscii(ticker));
-    const parser = parseMap(codecImpl.namecoin.Token, 4);
+    const parser = createParser(codecImpl.namecoin.Token, 4);
     const data = res.results.map(parser).map(Normalize.token);
     return dummyEnvelope(data);
   }
 
   public async getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>> {
     const res = await this.query("/tokens?prefix", Uint8Array.from([]));
-    const parser = parseMap(codecImpl.namecoin.Token, 4);
+    const parser = createParser(codecImpl.namecoin.Token, 4);
     const data = res.results.map(parser).map(Normalize.token);
     // Sort by ticker
     data.sort((a, b) => a.tokenTicker.localeCompare(b.tokenTicker));
@@ -177,7 +177,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       // if (isValueNameQuery(account))
       res = this.query("/wallets/name", Encoding.toAscii(account.name));
     }
-    const parser = parseMap(codecImpl.namecoin.Wallet, 5);
+    const parser = createParser(codecImpl.namecoin.Wallet, 5);
     const parsed = (await res).results.map(parser);
     const data = parsed.map(Normalize.account(this.initData));
     return dummyEnvelope(data);
@@ -200,7 +200,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     }
 
     const res = await this.query("/auth", decodeBnsAddress(address).data);
-    const parser = parseMap(codecImpl.sigs.UserData, 5);
+    const parser = createParser(codecImpl.sigs.UserData, 5);
     const data = res.results.map(parser).map(Normalize.nonce);
     return dummyEnvelope(data);
   }
@@ -223,7 +223,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     };
 
     const res = await doQuery();
-    const parser = parseMap(codecImpl.escrow.Escrow, 4); // prefix: "esc:"
+    const parser = createParser(codecImpl.escrow.Escrow, 4); // prefix: "esc:"
     const data = res.results.map(parser).map(Normalize.swapOffer(this.initData));
     return dummyEnvelope(data);
   }
@@ -445,15 +445,15 @@ export interface QueryResponse {
   readonly results: ReadonlyArray<Result>;
 }
 
-function parseMap<T extends {}>(decoder: Decoder<T>, sliceKey: number): (res: Result) => T & Keyed {
-  const mapper = (res: Result): T & Keyed => {
+function createParser<T extends {}>(decoder: Decoder<T>, sliceKey: number): (res: Result) => T & Keyed {
+  const parser = (res: Result): T & Keyed => {
     const val: T = decoder.decode(res.value);
     // bug: https://github.com/Microsoft/TypeScript/issues/13557
     // workaround from: https://github.com/OfficeDev/office-ui-fabric-react/blob/1dbfc5ee7c38e982282f13ef92884538e7226169/packages/foundation/src/createComponent.tsx#L62-L64
     // tslint:disable-next-line:prefer-object-spread
     return Object.assign({}, val, { _id: res.key.slice(sliceKey) });
   };
-  return mapper;
+  return parser;
 }
 
 /* maybe a bit abstract, but maybe we can reuse... */
