@@ -570,6 +570,65 @@ describe("BnsConnection", () => {
     connection.disconnect();
   });
 
+  describe("getBlockchains", () => {
+    it("can query blockchains by chain ID", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = await connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+      const identityAddress = keyToAddress(identity.pubkey);
+
+      // Register blockchain
+      const chainId = `wonderland_${Math.random()}` as ChainId;
+      const blockchainRegistration: RegisterBlockchainTx = {
+        kind: TransactionKind.RegisterBlockchain,
+        chainId: registryChainId,
+        signer: identity.pubkey,
+        chain: {
+          chainId: chainId,
+          production: false,
+          enabled: true,
+          name: "Wonderland",
+          networkId: "7rg047g4h",
+        },
+        codecName: "wonderland_rules",
+        codecConfig: `{ "any" : [ "json", "content" ] }`,
+      };
+      await connection.postTx(
+        bnsCodec.bytesToPost(
+          await profile.signTransaction(
+            wallet.id,
+            identity,
+            blockchainRegistration,
+            bnsCodec,
+            await getNonce(connection, identityAddress),
+          ),
+        ),
+      );
+
+      // Query by chain ID
+      const results = await connection.getBlockchains({ chainId: chainId });
+      expect(results.length).toEqual(1);
+      expect(results[0].id).toEqual(chainId);
+      expect(results[0].owner).toEqual(decodeBnsAddress(identityAddress).data as BnsAddressBytes);
+      expect(results[0].chain).toEqual({
+        chainId: chainId,
+        production: false,
+        enabled: true,
+        name: "Wonderland",
+        networkId: "7rg047g4h",
+        mainTickerId: undefined,
+      });
+      expect(results[0].codecName).toEqual("wonderland_rules");
+      expect(results[0].codecConfig).toEqual(`{ "any" : [ "json", "content" ] }`);
+
+      connection.disconnect();
+    });
+  });
+
   describe("getUsernames", () => {
     it("can query usernames by name or owner", async () => {
       pendingWithoutBnsd();
@@ -581,7 +640,7 @@ describe("BnsConnection", () => {
       const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
       const identityAddress = keyToAddress(identity.pubkey);
 
-      // Create and send registration
+      // Register username
       const username = `testuser_${Math.random()}`;
       const registration: RegisterUsernameTx = {
         kind: TransactionKind.RegisterUsername,

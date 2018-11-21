@@ -41,14 +41,17 @@ import {
 } from "@iov/tendermint-rpc";
 
 import { bnsCodec } from "./bnscodec";
-import { decodeUsernameNft } from "./decode";
+import { decodeBlockchainNft, decodeUsernameNft } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import { InitData, Normalize } from "./normalize";
 import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
 import {
+  BnsBlockchainNft,
+  BnsBlockchainsQuery,
   BnsUsernameNft,
   BnsUsernamesQuery,
   Decoder,
+  isBnsBlockchainsByChainIdQuery,
   isBnsUsernamesByChainAndAddressQuery,
   isBnsUsernamesByOwnerAddressQuery,
   isBnsUsernamesByUsernameQuery,
@@ -426,6 +429,20 @@ export class BnsConnection implements BcpAtomicSwapConnection {
         .map(() => Stream.fromPromise(oneNonce()))
         .flatten(),
     );
+  }
+
+  public async getBlockchains(query: BnsBlockchainsQuery): Promise<ReadonlyArray<BnsBlockchainNft>> {
+    // https://github.com/iov-one/weave/blob/v0.9.2/x/nft/username/handler_test.go#L207
+    let results: ReadonlyArray<Result>;
+    if (isBnsBlockchainsByChainIdQuery(query)) {
+      results = (await this.query("/nft/blockchains", toUtf8(query.chainId))).results;
+    } else {
+      throw new Error("Unsupported query");
+    }
+
+    const parser = createParser(codecImpl.blockchain.BlockchainToken, "bchnft:");
+    const nfts = results.map(parser).map(decodeBlockchainNft);
+    return nfts;
   }
 
   public async getUsernames(query: BnsUsernamesQuery): Promise<ReadonlyArray<BnsUsernameNft>> {

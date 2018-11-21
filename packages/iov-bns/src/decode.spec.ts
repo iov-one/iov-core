@@ -2,7 +2,7 @@ import { Algorithm, ChainId, PublicKeyBytes } from "@iov/base-types";
 import { Address, BaseTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
-import { decodeAmount, decodeUsernameNft, parseMsg, parseTx } from "./decode";
+import { decodeAmount, decodeBlockchainNft, decodeUsernameNft, parseMsg, parseTx } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import {
   chainId,
@@ -21,6 +21,42 @@ import { decodePrivkey, decodePubkey } from "./types";
 const { fromHex, toUtf8 } = Encoding;
 
 describe("Decode", () => {
+  it("decodes blokchain NFT", () => {
+    const nft: codecImpl.blockchain.IBlockchainToken = {
+      base: {
+        id: toUtf8("alice"),
+        owner: fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"),
+      },
+      details: {
+        chain: {
+          chainID: "wonderland",
+          networkID: "7rg047g4h",
+          production: false,
+          enabled: true,
+          mainTickerID: toUtf8("WONDER"),
+          name: "Wonderland",
+        },
+        iov: {
+          codec: "wonderland_rules",
+          codecConfig: `{ rules: ["make peace not war"] }`,
+        },
+      },
+    };
+    const decoded = decodeBlockchainNft(nft);
+    expect(decoded.id).toEqual("alice");
+    expect(decoded.owner).toEqual(fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"));
+    expect(decoded.chain).toEqual({
+      chainId: "wonderland" as ChainId,
+      networkId: "7rg047g4h",
+      production: false,
+      enabled: true,
+      mainTickerId: "WONDER" as TokenTicker,
+      name: "Wonderland",
+    });
+    expect(decoded.codecName).toEqual("wonderland_rules");
+    expect(decoded.codecConfig).toEqual(`{ rules: ["make peace not war"] }`);
+  });
+
   it("decodes username NFT", () => {
     const nft: codecImpl.username.IUsernameToken = {
       base: {

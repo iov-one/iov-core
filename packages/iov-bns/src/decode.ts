@@ -23,10 +23,42 @@ import {
 import { Encoding } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
-import { asNumber, BnsAddressBytes, BnsUsernameNft, decodeFullSig, ensure } from "./types";
+import { asNumber, BnsAddressBytes, BnsBlockchainNft, BnsUsernameNft, decodeFullSig, ensure } from "./types";
 import { encodeBnsAddress, isHashIdentifier } from "./util";
 
 const { fromUtf8 } = Encoding;
+
+export function decodeBlockchainNft(nft: codecImpl.blockchain.IBlockchainToken): BnsBlockchainNft {
+  const details = ensure(nft.details, "details");
+
+  const chain = ensure(details.chain, "details.chain");
+  const chainId = ensure(chain.chainID, "details.chain.chainID");
+  const name = ensure(chain.name, "details.chain.name");
+  const production = ensure(chain.production, "details.chain.production");
+  const enabled = ensure(chain.enabled, "details.chain.enabled");
+  const networkId = chain.networkID || undefined;
+  const mainTickerId = chain.mainTickerID || undefined;
+
+  const iov = ensure(details.iov, "details.iov");
+  const codec = ensure(iov.codec, "details.iov.codec");
+  const codecConfig = ensure(iov.codecConfig, "details.iov.codecConfig");
+
+  return {
+    id: fromUtf8(nft.base!.id!),
+    owner: nft.base!.owner! as BnsAddressBytes,
+    chain: {
+      chainId: chainId as ChainId,
+      name: name,
+      production: production,
+      enabled: enabled,
+      networkId: networkId,
+      mainTickerId:
+        mainTickerId && mainTickerId.length > 0 ? (fromUtf8(mainTickerId) as TokenTicker) : undefined,
+    },
+    codecName: codec,
+    codecConfig: codecConfig,
+  };
+}
 
 export function decodeUsernameNft(nft: codecImpl.username.IUsernameToken): BnsUsernameNft {
   return {
