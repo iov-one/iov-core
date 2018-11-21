@@ -569,43 +569,45 @@ describe("BnsConnection", () => {
     connection.disconnect();
   });
 
-  it("can query username", async () => {
-    pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const registryChainId = await connection.chainId();
+  describe("getUsername", () => {
+    it("can query username by name or owner", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = await connection.chainId();
 
-    const profile = new UserProfile();
-    const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-    const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
-    const identityAddress = keyToAddress(identity.pubkey);
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+      const identityAddress = keyToAddress(identity.pubkey);
 
-    // Create and send registration
-    const username = `testuser_${Math.random()}`;
-    const registration: RegisterUsernameTx = {
-      kind: TransactionKind.RegisterUsername,
-      chainId: registryChainId,
-      signer: identity.pubkey,
-      addresses: [],
-      username: username,
-    };
-    const nonce = await getNonce(connection, identityAddress);
-    const signed = await profile.signTransaction(wallet.id, identity, registration, bnsCodec, nonce);
-    const txBytes = bnsCodec.bytesToPost(signed);
-    await connection.postTx(txBytes);
+      // Create and send registration
+      const username = `testuser_${Math.random()}`;
+      const registration: RegisterUsernameTx = {
+        kind: TransactionKind.RegisterUsername,
+        chainId: registryChainId,
+        signer: identity.pubkey,
+        addresses: [],
+        username: username,
+      };
+      const nonce = await getNonce(connection, identityAddress);
+      const signed = await profile.signTransaction(wallet.id, identity, registration, bnsCodec, nonce);
+      const txBytes = bnsCodec.bytesToPost(signed);
+      await connection.postTx(txBytes);
 
-    // Query by name
-    {
-      const results = await connection.getUsername({ username: username });
-      expect(results.length).toEqual(1);
-    }
+      // Query by name
+      {
+        const results = await connection.getUsername({ username: username });
+        expect(results.length).toEqual(1);
+      }
 
-    // Query by owner
-    {
-      const results = await connection.getUsername({ owner: identityAddress });
-      expect(results.length).toBeGreaterThanOrEqual(1);
-    }
+      // Query by owner
+      {
+        const results = await connection.getUsername({ owner: identityAddress });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+      }
 
-    connection.disconnect();
+      connection.disconnect();
+    });
   });
 
   it("can get live block feed", async () => {
