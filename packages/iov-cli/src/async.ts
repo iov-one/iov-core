@@ -1,5 +1,5 @@
-import recast = require("recast");
 import babylon = require("babylon");
+import recast = require("recast");
 
 export function wrapInAsyncFunction(code: string): string {
   const codeInAsyncFunction = `(async () => {
@@ -25,8 +25,9 @@ export function wrapInAsyncFunction(code: string): string {
   }
 
   // Remove var, let, const from variable declarations to make them available in context
+  // tslint:disable-next-line:no-object-mutation
   ast.program.body[0].expression.callee.body.body = body.map((node: any) => {
-    if (node.type == "VariableDeclaration") {
+    if (node.type === "VariableDeclaration") {
       return {
         type: "ExpressionStatement",
         expression: {

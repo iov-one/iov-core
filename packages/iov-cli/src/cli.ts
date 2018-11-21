@@ -1,10 +1,11 @@
 import { ArgumentParser } from "argparse";
+// tslint:disable-next-line:no-submodule-imports
 import colors = require("colors/safe");
 import { join } from "path";
 
 import { TsRepl } from "./tsrepl";
 
-export const main = (originalArgs: string[]): void => {
+export function main(originalArgs: ReadonlyArray<string>): void {
   const parser = new ArgumentParser({ description: "The IOV-Core REPL" });
   parser.addArgument("--version", {
     action: "storeTrue",
@@ -23,7 +24,7 @@ export const main = (originalArgs: string[]): void => {
     action: "storeTrue",
     help: "Enable debugging",
   });
-  const args = parser.parseArgs(originalArgs);
+  const args = parser.parseArgs([...originalArgs]);
 
   if (args.version) {
     const version = require(join(__dirname, "..", "package.json")).version;
@@ -131,4 +132,4 @@ export const main = (originalArgs: string[]): void => {
     console.error(error);
     process.exit(1);
   });
-};
+}
