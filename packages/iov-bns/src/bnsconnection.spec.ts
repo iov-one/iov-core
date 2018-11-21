@@ -49,6 +49,13 @@ function pendingWithoutBnsd(): void {
 
 const sleep = (t: number) => new Promise(resolve => setTimeout(resolve, t));
 
+async function randomBnsAddress(): Promise<Address> {
+  return keyToAddress({
+    algo: Algorithm.Ed25519,
+    data: (await Random.getBytes(32)) as PublicKeyBytes,
+  });
+}
+
 const cash = "CASH" as TokenTicker;
 
 async function getNonce(connection: BnsConnection, addr: Address): Promise<Nonce> {
@@ -62,15 +69,11 @@ async function ensureNonceNonZero(
   identity: PublicIdentity,
 ): Promise<void> {
   const nonce = await getNonce(connection, keyToAddress(identity.pubkey));
-  const randomRecipientAddress = keyToAddress({
-    algo: Algorithm.Ed25519,
-    data: (await Random.getBytes(32)) as PublicKeyBytes,
-  });
   const sendTx: SendTx = {
     kind: TransactionKind.Send,
     chainId: await connection.chainId(),
     signer: identity.pubkey,
-    recipient: randomRecipientAddress,
+    recipient: await randomBnsAddress(),
     amount: {
       whole: 0,
       fractional: 1,
