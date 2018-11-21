@@ -62,7 +62,7 @@ import {
   keyToAddress,
 } from "./util";
 
-const { toAscii, toHex, fromUtf8 } = Encoding;
+const { toAscii, toHex, toUtf8, fromUtf8 } = Encoding;
 
 /**
  * Returns a filter that only passes when the
@@ -429,7 +429,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     // https://github.com/iov-one/weave/blob/v0.9.2/x/nft/username/handler_test.go#L207
     let results: ReadonlyArray<Result>;
     if (isBnsUsernameByUsernameQuery(query)) {
-      results = (await this.query("/nft/usernames", Encoding.toUtf8(query.username))).results;
+      results = (await this.query("/nft/usernames", toUtf8(query.username))).results;
     } else if (isBnsUsernameByOwnerAddressQuery(query)) {
       const rawAddress = decodeBnsAddress(query.owner).data;
       results = (await this.query("/nft/usernames/owner", rawAddress)).results;
