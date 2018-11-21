@@ -1,11 +1,99 @@
 import * as Long from "long";
 import { As } from "type-tagger";
 
-import { Algorithm, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
-import { FullSignature, Nonce } from "@iov/bcp-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
+import { Address, ChainAddressPair, FullSignature, Nonce, TokenTicker } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
+
+// NFTs
+
+/** raw address type used to encode NFT owners */
+export type BnsAddressBytes = Uint8Array & As<"bns-address-bytes">;
+
+// blockchain NFT
+
+export interface BnsBlockchainNft {
+  readonly id: string;
+  readonly owner: BnsAddressBytes;
+  /**
+   * The registered chain information
+   *
+   * Fields as defined in https://github.com/iov-one/bns-spec/blob/master/docs/data/ObjectDefinitions.rst#chain
+   */
+  readonly chain: {
+    readonly chainId: ChainId;
+    readonly name: string;
+    readonly enabled: boolean;
+    readonly production: boolean;
+    readonly networkId: string | undefined;
+    readonly mainTickerId: TokenTicker | undefined;
+  };
+  readonly codecName: string;
+  readonly codecConfig: string;
+}
+
+export interface BnsBlockchainsByChainIdQuery {
+  readonly chainId: ChainId;
+}
+
+export type BnsBlockchainsQuery = BnsBlockchainsByChainIdQuery;
+
+export function isBnsBlockchainsByChainIdQuery(
+  query: BnsBlockchainsQuery,
+): query is BnsBlockchainsByChainIdQuery {
+  return typeof (query as BnsBlockchainsByChainIdQuery).chainId !== "undefined";
+}
+
+// username NFT
+
+export interface BnsUsernameNft {
+  readonly id: string;
+  readonly owner: BnsAddressBytes;
+  readonly addresses: ReadonlyArray<ChainAddressPair>;
+}
+
+export interface BnsUsernamesByUsernameQuery {
+  readonly username: string;
+}
+
+export interface BnsUsernamesByOwnerAddressQuery {
+  readonly owner: Address;
+}
+
+export interface BnsUsernamesByChainAndAddressQuery {
+  readonly chain: ChainId;
+  readonly address: Address;
+}
+
+export type BnsUsernamesQuery =
+  | BnsUsernamesByUsernameQuery
+  | BnsUsernamesByOwnerAddressQuery
+  | BnsUsernamesByChainAndAddressQuery;
+
+export function isBnsUsernamesByUsernameQuery(
+  query: BnsUsernamesQuery,
+): query is BnsUsernamesByUsernameQuery {
+  return typeof (query as BnsUsernamesByUsernameQuery).username !== "undefined";
+}
+
+export function isBnsUsernamesByOwnerAddressQuery(
+  query: BnsUsernamesQuery,
+): query is BnsUsernamesByOwnerAddressQuery {
+  return typeof (query as BnsUsernamesByOwnerAddressQuery).owner !== "undefined";
+}
+
+export function isBnsUsernamesByChainAndAddressQuery(
+  query: BnsUsernamesQuery,
+): query is BnsUsernamesByChainAndAddressQuery {
+  return (
+    typeof (query as BnsUsernamesByChainAndAddressQuery).chain !== "undefined" &&
+    typeof (query as BnsUsernamesByChainAndAddressQuery).address !== "undefined"
+  );
+}
+
+// Rest
 
 export type PrivateKeyBytes = Uint8Array & As<"private-key">;
 export interface PrivateKeyBundle {

@@ -34,7 +34,8 @@ import { asArray, lastValue } from "@iov/stream";
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
 import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
-import { keyToAddress } from "./util";
+import { BnsAddressBytes } from "./types";
+import { decodeBnsAddress, keyToAddress } from "./util";
 
 function skipTests(): boolean {
   return !process.env.BNSD_ENABLED;
@@ -47,6 +48,13 @@ function pendingWithoutBnsd(): void {
 }
 
 const sleep = (t: number) => new Promise(resolve => setTimeout(resolve, t));
+
+async function randomBnsAddress(): Promise<Address> {
+  return keyToAddress({
+    algo: Algorithm.Ed25519,
+    data: (await Random.getBytes(32)) as PublicKeyBytes,
+  });
+}
 
 const cash = "CASH" as TokenTicker;
 
@@ -61,15 +69,11 @@ async function ensureNonceNonZero(
   identity: PublicIdentity,
 ): Promise<void> {
   const nonce = await getNonce(connection, keyToAddress(identity.pubkey));
-  const randomRecipientAddress = keyToAddress({
-    algo: Algorithm.Ed25519,
-    data: (await Random.getBytes(32)) as PublicKeyBytes,
-  });
   const sendTx: SendTx = {
     kind: TransactionKind.Send,
     chainId: await connection.chainId(),
     signer: identity.pubkey,
-    recipient: randomRecipientAddress,
+    recipient: await randomBnsAddress(),
     amount: {
       whole: 0,
       fractional: 1,
@@ -699,6 +703,233 @@ describe("BnsConnection", () => {
       .catch(error => expect(error).toMatch(/invalid entry/i));
 
     connection.disconnect();
+  });
+
+  describe("getBlockchains", () => {
+    it("can query blockchains by chain ID", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = await connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+      const identityAddress = keyToAddress(identity.pubkey);
+
+      // Register blockchain
+      const chainId = `wonderland_${Math.random()}` as ChainId;
+      const blockchainRegistration: RegisterBlockchainTx = {
+        kind: TransactionKind.RegisterBlockchain,
+        chainId: registryChainId,
+        signer: identity.pubkey,
+        chain: {
+          chainId: chainId,
+          production: false,
+          enabled: true,
+          name: "Wonderland",
+          networkId: "7rg047g4h",
+        },
+        codecName: "wonderland_rules",
+        codecConfig: `{ "any" : [ "json", "content" ] }`,
+      };
+      await connection.postTx(
+        bnsCodec.bytesToPost(
+          await profile.signTransaction(
+            wallet.id,
+            identity,
+            blockchainRegistration,
+            bnsCodec,
+            await getNonce(connection, identityAddress),
+          ),
+        ),
+      );
+
+      // Query by existing chain ID
+      {
+        const results = await connection.getBlockchains({ chainId: chainId });
+        expect(results.length).toEqual(1);
+        expect(results[0].id).toEqual(chainId);
+        expect(results[0].owner).toEqual(decodeBnsAddress(identityAddress).data as BnsAddressBytes);
+        expect(results[0].chain).toEqual({
+          chainId: chainId,
+          production: false,
+          enabled: true,
+          name: "Wonderland",
+          networkId: "7rg047g4h",
+          mainTickerId: undefined,
+        });
+        expect(results[0].codecName).toEqual("wonderland_rules");
+        expect(results[0].codecConfig).toEqual(`{ "any" : [ "json", "content" ] }`);
+      }
+
+      // Query by non-existing chain ID
+      {
+        const results = await connection.getBlockchains({ chainId: "chain_we_dont_have" as ChainId });
+        expect(results.length).toEqual(0);
+      }
+
+      connection.disconnect();
+    });
+  });
+
+  describe("getUsernames", () => {
+    it("can query usernames by name or owner", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = await connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+      const identityAddress = keyToAddress(identity.pubkey);
+
+      // Register username
+      const username = `testuser_${Math.random()}`;
+      const registration: RegisterUsernameTx = {
+        kind: TransactionKind.RegisterUsername,
+        chainId: registryChainId,
+        signer: identity.pubkey,
+        addresses: [],
+        username: username,
+      };
+      const nonce = await getNonce(connection, identityAddress);
+      const signed = await profile.signTransaction(wallet.id, identity, registration, bnsCodec, nonce);
+      const txBytes = bnsCodec.bytesToPost(signed);
+      await connection.postTx(txBytes);
+
+      // Query by existing name
+      {
+        const results = await connection.getUsernames({ username: username });
+        expect(results.length).toEqual(1);
+        expect(results[0]).toEqual({
+          id: username,
+          owner: decodeBnsAddress(identityAddress).data as BnsAddressBytes,
+          addresses: [],
+        });
+      }
+
+      // Query by non-existing name
+      {
+        const results = await connection.getUsernames({ username: "user_we_dont_have" });
+        expect(results.length).toEqual(0);
+      }
+
+      // Query by existing owner
+      {
+        const results = await connection.getUsernames({ owner: identityAddress });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+      }
+
+      // Query by non-existing owner
+      {
+        const results = await connection.getUsernames({ owner: await randomBnsAddress() });
+        expect(results.length).toEqual(0);
+      }
+
+      connection.disconnect();
+    });
+
+    it("can query usernames by (chain, address)", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = await connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+      const identityAddress = keyToAddress(identity.pubkey);
+
+      // Register blockchain
+      const chainId = `wonderland_${Math.random()}` as ChainId;
+      const blockchainRegistration: RegisterBlockchainTx = {
+        kind: TransactionKind.RegisterBlockchain,
+        chainId: registryChainId,
+        signer: identity.pubkey,
+        chain: {
+          chainId: chainId,
+          production: false,
+          enabled: true,
+          name: "Wonderland",
+          networkId: "7rg047g4h",
+        },
+        codecName: "wonderland_rules",
+        codecConfig: `{ "any" : [ "json", "content" ] }`,
+      };
+      await connection.postTx(
+        bnsCodec.bytesToPost(
+          await profile.signTransaction(
+            wallet.id,
+            identity,
+            blockchainRegistration,
+            bnsCodec,
+            await getNonce(connection, identityAddress),
+          ),
+        ),
+      );
+
+      // Register username
+      const username = `testuser_${Math.random()}`;
+      const usernameRegistration: RegisterUsernameTx = {
+        kind: TransactionKind.RegisterUsername,
+        chainId: registryChainId,
+        signer: identity.pubkey,
+        addresses: [
+          {
+            address: "12345678912345W" as Address,
+            chainId: chainId,
+          },
+        ],
+        username: username,
+      };
+      await connection.postTx(
+        bnsCodec.bytesToPost(
+          await profile.signTransaction(
+            wallet.id,
+            identity,
+            usernameRegistration,
+            bnsCodec,
+            await getNonce(connection, identityAddress),
+          ),
+        ),
+      );
+
+      // Query by existing (chain, address)
+      {
+        const results = await connection.getUsernames({
+          chain: chainId,
+          address: "12345678912345W" as Address,
+        });
+        expect(results.length).toEqual(1);
+        expect(results[0]).toEqual({
+          id: username,
+          owner: decodeBnsAddress(identityAddress).data as BnsAddressBytes,
+          addresses: [
+            {
+              chainId: chainId,
+              address: "12345678912345W" as Address,
+            },
+          ],
+        });
+      }
+
+      // Query by non-existing (chain, address)
+      {
+        const results = await connection.getUsernames({
+          chain: chainId,
+          address: "OTHER_ADDRESS" as Address,
+        });
+        expect(results.length).toEqual(0);
+      }
+      {
+        const results = await connection.getUsernames({
+          chain: "OTHER_CHAIN" as ChainId,
+          address: "12345678912345W" as Address,
+        });
+        expect(results.length).toEqual(0);
+      }
+
+      connection.disconnect();
+    });
   });
 
   it("can get live block feed", async () => {

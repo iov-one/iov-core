@@ -1,9 +1,54 @@
 import * as Long from "long";
 import { As } from "type-tagger";
-import { Algorithm, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
-import { FullSignature } from "@iov/bcp-types";
+import { Algorithm, ChainId, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
+import { Address, ChainAddressPair, FullSignature, TokenTicker } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
+/** raw address type used to encode NFT owners */
+export declare type BnsAddressBytes = Uint8Array & As<"bns-address-bytes">;
+export interface BnsBlockchainNft {
+    readonly id: string;
+    readonly owner: BnsAddressBytes;
+    /**
+     * The registered chain information
+     *
+     * Fields as defined in https://github.com/iov-one/bns-spec/blob/master/docs/data/ObjectDefinitions.rst#chain
+     */
+    readonly chain: {
+        readonly chainId: ChainId;
+        readonly name: string;
+        readonly enabled: boolean;
+        readonly production: boolean;
+        readonly networkId: string | undefined;
+        readonly mainTickerId: TokenTicker | undefined;
+    };
+    readonly codecName: string;
+    readonly codecConfig: string;
+}
+export interface BnsBlockchainsByChainIdQuery {
+    readonly chainId: ChainId;
+}
+export declare type BnsBlockchainsQuery = BnsBlockchainsByChainIdQuery;
+export declare function isBnsBlockchainsByChainIdQuery(query: BnsBlockchainsQuery): query is BnsBlockchainsByChainIdQuery;
+export interface BnsUsernameNft {
+    readonly id: string;
+    readonly owner: BnsAddressBytes;
+    readonly addresses: ReadonlyArray<ChainAddressPair>;
+}
+export interface BnsUsernamesByUsernameQuery {
+    readonly username: string;
+}
+export interface BnsUsernamesByOwnerAddressQuery {
+    readonly owner: Address;
+}
+export interface BnsUsernamesByChainAndAddressQuery {
+    readonly chain: ChainId;
+    readonly address: Address;
+}
+export declare type BnsUsernamesQuery = BnsUsernamesByUsernameQuery | BnsUsernamesByOwnerAddressQuery | BnsUsernamesByChainAndAddressQuery;
+export declare function isBnsUsernamesByUsernameQuery(query: BnsUsernamesQuery): query is BnsUsernamesByUsernameQuery;
+export declare function isBnsUsernamesByOwnerAddressQuery(query: BnsUsernamesQuery): query is BnsUsernamesByOwnerAddressQuery;
+export declare function isBnsUsernamesByChainAndAddressQuery(query: BnsUsernamesQuery): query is BnsUsernamesByChainAndAddressQuery;
 export declare type PrivateKeyBytes = Uint8Array & As<"private-key">;
 export interface PrivateKeyBundle {
     readonly algo: Algorithm;
