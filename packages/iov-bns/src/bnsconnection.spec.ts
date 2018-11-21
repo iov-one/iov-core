@@ -325,6 +325,138 @@ describe("BnsConnection", () => {
     connection.disconnect();
   });
 
+  it("can search for transactions", async () => {
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
+    const chainId = await connection.chainId();
+
+    const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
+    const faucetAddress = keyToAddress(faucet.pubkey);
+    const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(68));
+    const rcptAddress = keyToAddress(rcpt.pubkey);
+
+    // construct a sendtx, this is normally used in the MultiChainSigner api
+    const memo = `Payment ${Math.random()}`;
+    const sendTx: SendTx = {
+      kind: TransactionKind.Send,
+      chainId: chainId,
+      signer: faucet.pubkey,
+      recipient: rcptAddress,
+      memo: memo,
+      amount: {
+        whole: 1,
+        fractional: 1,
+        tokenTicker: cash,
+      },
+    };
+
+    const nonce = await getNonce(connection, faucetAddress);
+    const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
+    const txBytes = bnsCodec.bytesToPost(signed);
+    const response = await connection.postTx(txBytes);
+    const txHeight = response.metadata.height!;
+
+    {
+      // finds transaction using tag
+      const results = await connection.searchTx({ tags: [bnsFromOrToTag(rcptAddress)] });
+      expect(results.length).toBeGreaterThanOrEqual(1);
+      const mostRecentResult = results[results.length - 1];
+      expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
+      expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+    }
+
+    {
+      // finds transaction using tag and height
+      const results = await connection.searchTx({ tags: [bnsFromOrToTag(rcptAddress)], height: txHeight });
+      expect(results.length).toBeGreaterThanOrEqual(1);
+      const mostRecentResult = results[results.length - 1];
+      expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
+      expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+    }
+
+    connection.disconnect();
+  });
+
+  // Activate when https://github.com/tendermint/tendermint/issues/2759 is fixed
+  xit("can search for transactions (min/max height)", async () => {
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
+    const chainId = await connection.chainId();
+    const initialHeight = await connection.height();
+
+    const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
+    const faucetAddress = keyToAddress(faucet.pubkey);
+    const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(68));
+    const rcptAddress = keyToAddress(rcpt.pubkey);
+
+    // construct a sendtx, this is normally used in the MultiChainSigner api
+    const memo = `Payment ${Math.random()}`;
+    const sendTx: SendTx = {
+      kind: TransactionKind.Send,
+      chainId: chainId,
+      signer: faucet.pubkey,
+      recipient: rcptAddress,
+      memo: memo,
+      amount: {
+        whole: 1,
+        fractional: 1,
+        tokenTicker: cash,
+      },
+    };
+
+    const nonce = await getNonce(connection, faucetAddress);
+    const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
+    const txBytes = bnsCodec.bytesToPost(signed);
+    await connection.postTx(txBytes);
+
+    {
+      // finds transaction using tag and minHeight = 1
+      const results = await connection.searchTx({ tags: [bnsFromOrToTag(rcptAddress)], minHeight: 1 });
+      expect(results.length).toBeGreaterThanOrEqual(1);
+      const mostRecentResult = results[results.length - 1];
+      expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
+      expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+    }
+
+    {
+      // finds transaction using tag and minHeight = initialHeight
+      const results = await connection.searchTx({
+        tags: [bnsFromOrToTag(rcptAddress)],
+        minHeight: initialHeight,
+      });
+      expect(results.length).toBeGreaterThanOrEqual(1);
+      const mostRecentResult = results[results.length - 1];
+      expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
+      expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+    }
+
+    {
+      // finds transaction using tag and maxHeight = 500 million
+      const results = await connection.searchTx({
+        tags: [bnsFromOrToTag(rcptAddress)],
+        maxHeight: 500_000_000,
+      });
+      expect(results.length).toBeGreaterThanOrEqual(1);
+      const mostRecentResult = results[results.length - 1];
+      expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
+      expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+    }
+
+    {
+      // finds transaction using tag and maxHeight = initialHeight + 10
+      const results = await connection.searchTx({
+        tags: [bnsFromOrToTag(rcptAddress)],
+        maxHeight: initialHeight + 10,
+      });
+      expect(results.length).toBeGreaterThanOrEqual(1);
+      const mostRecentResult = results[results.length - 1];
+      expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
+      expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+    }
+
+    connection.disconnect();
+  });
+
   it("can register a blockchain", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
