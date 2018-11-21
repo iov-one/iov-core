@@ -1,7 +1,7 @@
 import * as Long from "long";
 import { As } from "type-tagger";
 
-import { Algorithm, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import { Address, FullSignature, Nonce } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 
@@ -15,7 +15,15 @@ export interface BnsUsernameByOwnerAddressQuery {
   readonly owner: Address;
 }
 
-export type BnsUsernameQuery = BnsUsernameByUsernameQuery | BnsUsernameByOwnerAddressQuery;
+export interface BnsUsernameByChainAndAddressQuery {
+  readonly chain: ChainId;
+  readonly address: Address;
+}
+
+export type BnsUsernameQuery =
+  | BnsUsernameByUsernameQuery
+  | BnsUsernameByOwnerAddressQuery
+  | BnsUsernameByChainAndAddressQuery;
 
 export function isBnsUsernameByUsernameQuery(query: BnsUsernameQuery): query is BnsUsernameByUsernameQuery {
   return typeof (query as BnsUsernameByUsernameQuery).username !== "undefined";
@@ -25,6 +33,15 @@ export function isBnsUsernameByOwnerAddressQuery(
   query: BnsUsernameQuery,
 ): query is BnsUsernameByOwnerAddressQuery {
   return typeof (query as BnsUsernameByOwnerAddressQuery).owner !== "undefined";
+}
+
+export function isBnsUsernameByChainAndAddressQuery(
+  query: BnsUsernameQuery,
+): query is BnsUsernameByChainAndAddressQuery {
+  return (
+    typeof (query as BnsUsernameByChainAndAddressQuery).chain !== "undefined" &&
+    typeof (query as BnsUsernameByChainAndAddressQuery).address !== "undefined"
+  );
 }
 
 export type PrivateKeyBytes = Uint8Array & As<"private-key">;

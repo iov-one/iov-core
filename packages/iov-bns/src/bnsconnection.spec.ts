@@ -608,6 +608,80 @@ describe("BnsConnection", () => {
 
       connection.disconnect();
     });
+
+    it("can query username by (chain, address)", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = await connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+      const identityAddress = keyToAddress(identity.pubkey);
+
+      // Register blockchain
+      const chainId = `wonderland_${Math.random()}` as ChainId;
+      const blockchainRegistration: RegisterBlockchainTx = {
+        kind: TransactionKind.RegisterBlockchain,
+        chainId: registryChainId,
+        signer: identity.pubkey,
+        chain: {
+          chainId: chainId,
+          production: false,
+          enabled: true,
+          name: "Wonderland",
+          networkId: "7rg047g4h",
+        },
+        codecName: "wonderland_rules",
+        codecConfig: `{ "any" : [ "json", "content" ] }`,
+      };
+      await connection.postTx(
+        bnsCodec.bytesToPost(
+          await profile.signTransaction(
+            wallet.id,
+            identity,
+            blockchainRegistration,
+            bnsCodec,
+            await getNonce(connection, identityAddress),
+          ),
+        ),
+      );
+
+      // Register username
+      const username = `testuser_${Math.random()}`;
+      const usernameRegistration: RegisterUsernameTx = {
+        kind: TransactionKind.RegisterUsername,
+        chainId: registryChainId,
+        signer: identity.pubkey,
+        addresses: [
+          {
+            address: "12345678912345W" as Address,
+            chainId: chainId,
+          },
+        ],
+        username: username,
+      };
+      await connection.postTx(
+        bnsCodec.bytesToPost(
+          await profile.signTransaction(
+            wallet.id,
+            identity,
+            usernameRegistration,
+            bnsCodec,
+            await getNonce(connection, identityAddress),
+          ),
+        ),
+      );
+
+      // Query by (chain, address)
+      const results = await connection.getUsername({
+        chain: chainId,
+        address: "12345678912345W" as Address,
+      });
+      expect(results.length).toEqual(1);
+
+      connection.disconnect();
+    });
   });
 
   it("can get live block feed", async () => {
