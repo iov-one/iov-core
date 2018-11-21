@@ -69,13 +69,12 @@ fold_end
 # Start faucet
 #
 
-# Disabled until faucet supports bnsd:v0.9.x
-# if [[ ! -z ${BNSD_ENABLED:-} ]]; then
-#  fold_start "faucet-start"
-#   ./scripts/iov_faucet_start.sh
-#   export FAUCET_ENABLED=1
-#   fold_end
-# fi
+if [[ ! -z ${BNSD_ENABLED:-} ]]; then
+  fold_start "faucet-start"
+  ./scripts/iov_faucet_start.sh
+  export FAUCET_ENABLED=1
+  fold_end
+fi
 
 echo "use tendermint? ${TENDERMINT_ENABLED:-no}"
 echo "use bnsd? ${BNSD_ENABLED:-no}"
