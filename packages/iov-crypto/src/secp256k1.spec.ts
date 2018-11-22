@@ -69,7 +69,7 @@ describe("Secp256k1", () => {
     const privkey = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0b9");
     const keypair = await Secp256k1.makeKeypair(privkey);
     const messageHash = new Uint8Array([0x11, 0x22]);
-    const signature = await Secp256k1.createSignature(messageHash, keypair.privkey);
+    const signature = (await Secp256k1.createSignature(messageHash, keypair.privkey)).toDer();
     expect(signature).toBeTruthy();
     expect(signature.byteLength).toBeGreaterThanOrEqual(70);
     expect(signature.byteLength).toBeLessThanOrEqual(72);
@@ -107,7 +107,7 @@ describe("Secp256k1", () => {
     const privkey = fromHex("43a9c17ccbb0e767ea29ce1f10813afde5f1e0a7a504e89b4d2cc2b952b8e0b9");
     const keypair = await Secp256k1.makeKeypair(privkey);
     const messageHash = new Uint8Array([0x11, 0x22]);
-    const signature = await Secp256k1.createSignature(messageHash, keypair.privkey);
+    const signature = (await Secp256k1.createSignature(messageHash, keypair.privkey)).toDer();
 
     {
       // valid
@@ -331,7 +331,7 @@ describe("Secp256k1", () => {
       const messageHash = new Sha256(row.message).digest();
 
       // create signature
-      const calculatedSignature = await Secp256k1.createSignature(messageHash, row.privkey);
+      const calculatedSignature = (await Secp256k1.createSignature(messageHash, row.privkey)).toDer();
       since(`(index ${index}) #{message}`)
         .expect(toHex(calculatedSignature))
         .toEqual(toHex(row.signature));
