@@ -3,7 +3,7 @@ import { Encoding } from "@iov/encoding";
 import BN = require("bn.js");
 import elliptic = require("elliptic");
 
-import { ExtendedSecp256k1Signature } from "./secp256k1signature";
+import { ExtendedSecp256k1Signature, Secp256k1Signature } from "./secp256k1signature";
 
 const secp256k1 = new elliptic.ec("secp256k1");
 const secp256k1N = new BN("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141", "hex");
@@ -71,7 +71,7 @@ export class Secp256k1 {
   }
 
   public static async verifySignature(
-    signature: Uint8Array,
+    signature: Secp256k1Signature,
     messageHash: Uint8Array,
     pubkey: Uint8Array,
   ): Promise<boolean> {
@@ -98,7 +98,7 @@ export class Secp256k1 {
     // common to both types. Uint8Array is not an array of ints but the interface is
     // similar
     try {
-      return keypair.verify(messageHash, signature);
+      return keypair.verify(messageHash, signature.toDer());
     } catch (error) {
       return false;
     }
