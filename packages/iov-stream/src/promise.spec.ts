@@ -24,6 +24,18 @@ describe("streamPromise", () => {
     expect(reader.value()).toEqual([0x00, 0x11, 0x22]);
   });
 
+  it("works for delayed resolution", async () => {
+    const inputPromise = new Promise<number[]>(resolve => {
+      // resolve after 50 ms
+      setTimeout(() => resolve([1, 2, 3]), 50);
+    });
+    const stream = streamPromise(inputPromise);
+
+    const reader = asArray<number>(stream);
+    await reader.finished();
+    expect(reader.value()).toEqual([1, 2, 3]);
+  });
+
   it("sends proper values", async () => {
     const input = ["let", "us", "say", "something"];
     const prom = Promise.resolve(input);
