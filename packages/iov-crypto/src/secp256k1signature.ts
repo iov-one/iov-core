@@ -18,6 +18,10 @@ export class Secp256k1Signature {
       throw new Error("The recovery parameter must be an integer.");
     }
 
+    if (recovery < 0 || recovery > 4) {
+      throw new Error("The recovery parameter must be one of 0, 1, 2, 3.");
+    }
+
     this.data = {
       r: r,
       s: s,
