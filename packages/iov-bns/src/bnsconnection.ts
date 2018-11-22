@@ -1,4 +1,4 @@
-import { Stream } from "xstream";
+import { Producer, Stream, Subscription } from "xstream";
 
 import { ChainId, PostableBytes, TxId } from "@iov/base-types";
 import {
@@ -29,7 +29,6 @@ import {
   TxReadCodec,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
-import { streamPromise } from "@iov/stream";
 import {
   Client as TendermintClient,
   getHeaderEventHeight,
@@ -354,9 +353,58 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    * and then continuing with live feeds
    */
   public liveTx(txQuery: BcpTxQuery): Stream<ConfirmedTransaction> {
-    const history = streamPromise(this.searchTx(txQuery));
-    const updates = this.listenTx(txQuery.tags);
-    return Stream.merge(history, updates);
+    let updatesSubscription: Subscription | undefined;
+
+    const producer: Producer<ConfirmedTransaction> = {
+      start: listener => {
+        // called as soon as anyone subscribes to the stream
+
+        // 1. subscribe to updates before queying history to ensure we don't miss something; store updates in queue
+        // 2. when history is there, send history and process queue
+        // 3. skip queue and send updates directly
+
+        let doneSendingHistory = false;
+        const queue = new Array<ConfirmedTransaction>();
+
+        updatesSubscription = this.listenTx(txQuery.tags).subscribe({
+          next: value => {
+            if (doneSendingHistory) {
+              listener.next(value);
+            } else {
+              queue.push(value);
+            }
+          },
+        });
+
+        this.searchTx(txQuery).then(history => {
+          for (const transaction of history) {
+            listener.next(transaction);
+          }
+
+          const historyIds = history.map(transaction => Encoding.toHex(transaction.txid));
+
+          let element: ConfirmedTransaction | undefined;
+          // tslint:disable-next-line:no-conditional-assignment
+          while ((element = queue.shift())) {
+            const elementId = Encoding.toHex(element.txid);
+            if (historyIds.indexOf(elementId) !== -1) {
+              // only do this for elements not already sent
+              listener.next(element);
+            }
+          }
+
+          doneSendingHistory = true;
+        });
+      },
+      stop: () => {
+        if (!updatesSubscription) {
+          throw new Error("stop() was clled before start(). This is not expected to happen.");
+        }
+        updatesSubscription.unsubscribe();
+      },
+    };
+
+    return Stream.create(producer);
   }
 
   public changeBlock(): Stream<number> {

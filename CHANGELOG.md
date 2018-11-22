@@ -3,6 +3,7 @@
 ## 0.9.1
 
 * @iov/stream: Generalize `streamPromise` to take a promise of an iterable
+* @iov/bns: Fix order of events in `listenTx`. All history tx events are now emitted before updates.
 
 ## 0.9.0
 
