@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.1
+
+* @iov/stream: Generalize `streamPromise` to take a promise of an iterable
+
 ## 0.9.0
 
 * @iov/core: Export `Secp256k1HdWallet` and import by default in @iov/cli.
