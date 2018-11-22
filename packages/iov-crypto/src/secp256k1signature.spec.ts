@@ -43,11 +43,20 @@ describe("Secp256k1Signature", () => {
     expect(() => new Secp256k1Signature(new Uint8Array([0xaa]), fromHex("00F25B86E1D8A11D72475B3ED273B0781C7D7F6F9E1DAE0DD5D3EE9B84F3FAB891"))).toThrowError(/unsigned integer s must be encoded as unpadded big endian./i);
   });
 
-  it("can encode as DER", () => {
+  it("can encode to DER", () => {
     // Signature 3045022100f25b86e1d8a11d72475b3ed273b0781c7d7f6f9e1dae0dd5d3ee9b84f3fab891022063d9c4e1391de077244583e9a6e3d8e8e1f236a3bf5963735353b93b1a3ba935
     // decoded by http://asn1-playground.oss.com/
     const signature = new Secp256k1Signature(fromHex("F25B86E1D8A11D72475B3ED273B0781C7D7F6F9E1DAE0DD5D3EE9B84F3FAB891"), fromHex("63D9C4E1391DE077244583E9A6E3D8E8E1F236A3BF5963735353B93B1A3BA935"));
     expect(signature.toDer()).toEqual(fromHex("3045022100f25b86e1d8a11d72475b3ed273b0781c7d7f6f9e1dae0dd5d3ee9b84f3fab891022063d9c4e1391de077244583e9a6e3d8e8e1f236a3bf5963735353b93b1a3ba935"));
+  });
+
+  it("can decode from DER", () => {
+    // Signature 3045022100f25b86e1d8a11d72475b3ed273b0781c7d7f6f9e1dae0dd5d3ee9b84f3fab891022063d9c4e1391de077244583e9a6e3d8e8e1f236a3bf5963735353b93b1a3ba935
+    // decoded by http://asn1-playground.oss.com/
+    const signature = Secp256k1Signature.fromDer(fromHex("3045022100f25b86e1d8a11d72475b3ed273b0781c7d7f6f9e1dae0dd5d3ee9b84f3fab891022063d9c4e1391de077244583e9a6e3d8e8e1f236a3bf5963735353b93b1a3ba935"));
+    expect(signature.toDer()).toEqual(fromHex("3045022100f25b86e1d8a11d72475b3ed273b0781c7d7f6f9e1dae0dd5d3ee9b84f3fab891022063d9c4e1391de077244583e9a6e3d8e8e1f236a3bf5963735353b93b1a3ba935"));
+    expect(signature.r()).toEqual(fromHex("F25B86E1D8A11D72475B3ED273B0781C7D7F6F9E1DAE0DD5D3EE9B84F3FAB891"));
+    expect(signature.s()).toEqual(fromHex("63D9C4E1391DE077244583E9A6E3D8E8E1F236A3BF5963735353B93B1A3BA935"));
   });
 });
 

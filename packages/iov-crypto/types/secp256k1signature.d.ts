@@ -1,4 +1,5 @@
 export declare class Secp256k1Signature {
+    static fromDer(data: Uint8Array): Secp256k1Signature;
     private readonly data;
     constructor(r: Uint8Array, s: Uint8Array);
     r(length?: number): Uint8Array;
