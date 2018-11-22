@@ -15,6 +15,15 @@ describe("streamPromise", () => {
     expect(counter.value()).toEqual(input.length);
   });
 
+  it("works for iterables like Uint8Array", async () => {
+    const inputPromise = Promise.resolve(new Uint8Array([0x00, 0x11, 0x22]));
+    const stream = streamPromise(inputPromise);
+
+    const reader = asArray<number>(stream);
+    await reader.finished();
+    expect(reader.value()).toEqual([0x00, 0x11, 0x22]);
+  });
+
   it("sends proper values", async () => {
     const input = ["let", "us", "say", "something"];
     const prom = Promise.resolve(input);
