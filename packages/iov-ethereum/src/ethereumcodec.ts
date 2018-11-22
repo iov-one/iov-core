@@ -73,15 +73,14 @@ export const ethereumCodec: TxCodec = {
           );
         }
         if (signed.transaction.memo) {
-          dataHex = Encoding.toHex(Encoding.toUtf8(signed.transaction.memo));
+          dataHex += Encoding.toHex(Encoding.toUtf8(signed.transaction.memo));
         }
         if (!isValidAddress(signed.transaction.recipient)) {
           throw new Error("Invalid recipient address");
         }
         const sig = signed.primarySignature.signature;
-        const r = sig.slice(4, 36);
-        const s = sig.slice(38, 70);
-        // TODO: find the right way to do this
+        const r = sig.slice(0, 32);
+        const s = sig.slice(32, 64);
         let v = Number(sig.slice(-1)) + 27;
         const chainId = Number(signed.transaction.chainId);
         if (chainId > 0) {

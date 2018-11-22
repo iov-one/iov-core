@@ -37,7 +37,7 @@ export class Serialization {
           );
         }
         if (unsigned.memo) {
-          dataHex = Encoding.toHex(Encoding.toUtf8(unsigned.memo));
+          dataHex += Encoding.toHex(Encoding.toUtf8(unsigned.memo));
         }
         if (!isValidAddress(unsigned.recipient)) {
           throw new Error("Invalid recipient address");
