@@ -120,6 +120,21 @@ export class Secp256k1Signature {
  * A Secp256k1Signature plus the recovery parameter
  */
 export class ExtendedSecp256k1Signature extends Secp256k1Signature {
+  /**
+   * Decode extended signature from the simple fixed length encoding
+   * described in toFixedLength().
+   */
+  public static fromFixedLength(data: Uint8Array): ExtendedSecp256k1Signature {
+    if (data.length !== 65) {
+      throw new Error(`Got invalid data length ${data.length}. Expected 32 + 32 + 1`);
+    }
+    return new ExtendedSecp256k1Signature(
+      trimLeadingNullBytes(data.slice(0, 32)),
+      trimLeadingNullBytes(data.slice(32, 64)),
+      data[64],
+    );
+  }
+
   public readonly recovery: number;
 
   constructor(r: Uint8Array, s: Uint8Array, recovery: number) {
@@ -134,5 +149,14 @@ export class ExtendedSecp256k1Signature extends Secp256k1Signature {
     }
 
     this.recovery = recovery;
+  }
+
+  /**
+   * A simple custom encoding that encodes the extended signature as
+   * r (32 bytes) | s (32 bytes) | recovery param (1 byte)
+   * where | denotes concatenation of bonary data.
+   */
+  public toFixedLength(): Uint8Array {
+    return new Uint8Array([...this.r(32), ...this.s(32), this.recovery]);
   }
 }

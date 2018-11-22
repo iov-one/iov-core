@@ -75,4 +75,16 @@ describe("ExtendedSecp256k1Signature", () => {
     expect(() => new ExtendedSecp256k1Signature(fromHex("aa"), fromHex("bb"), -1)).toThrowError(/the recovery parameter must be one of 0, 1, 2, 3/i);
     expect(() => new ExtendedSecp256k1Signature(fromHex("aa"), fromHex("bb"), 5)).toThrowError(/the recovery parameter must be one of 0, 1, 2, 3/i);
   });
+
+  it("can be encoded as fixed length", () => {
+    const signature = new ExtendedSecp256k1Signature(new Uint8Array([0x22, 0x33]), new Uint8Array([0xaa]), 1);
+    expect(signature.toFixedLength()).toEqual(fromHex("000000000000000000000000000000000000000000000000000000000000223300000000000000000000000000000000000000000000000000000000000000aa01"));
+  });
+
+  it("can be decoded from fixed length", () => {
+    const signature = ExtendedSecp256k1Signature.fromFixedLength(fromHex("000000000000000000000000000000000000000000000000000000000000223300000000000000000000000000000000000000000000000000000000000000aa01"));
+    expect(signature.r()).toEqual(new Uint8Array([0x22, 0x33]));
+    expect(signature.s()).toEqual(new Uint8Array([0xaa]));
+    expect(signature.recovery).toEqual(1);
+  });
 });
