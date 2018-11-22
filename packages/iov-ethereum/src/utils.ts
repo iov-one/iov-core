@@ -53,7 +53,7 @@ export function hexPadToEven(hex: string): string {
 export function trimLeadingZero(hex: string): string {
   let hexInput = hex;
   while (hexInput && hexInput.startsWith("00")) {
-    hexInput = "" + hexInput.slice(2);
+    hexInput = hexInput.slice(2);
   }
   return hexInput;
 }

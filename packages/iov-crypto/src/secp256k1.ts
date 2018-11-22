@@ -65,10 +65,11 @@ export class Secp256k1 {
     // Temporal implementation until get recoveryParam outside this function
     const keypair = secp256k1.keyFromPrivate(privkey);
     const signatureBase = keypair.sign(messageHash, { canonical: true });
-    const signatureBaseDER = signatureBase.toDER();
-    signatureBaseDER.push(signatureBase.recoveryParam);
-    const signature = new Uint8Array(signatureBaseDER);
-    return signature;
+    const r = (signatureBase.r as BN).toArray("be", 32);
+    const s = (signatureBase.s as BN).toArray("be", 32);
+    const fullSignature = r.concat(s);
+    fullSignature.push(signatureBase.recoveryParam);
+    return Uint8Array.from(fullSignature);
   }
 
   public static async verifySignature(
