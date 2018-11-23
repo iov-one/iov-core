@@ -22,10 +22,12 @@ import {
   TokenTicker,
 } from "@iov/bcp-types";
 import { Parse } from "@iov/dpos";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 
 import { constants } from "./constants";
 import { liskCodec } from "./liskcodec";
+
+const { fromAscii, toUtf8 } = Encoding;
 
 /**
  * Encodes the current date and time as a nonce
@@ -198,8 +200,41 @@ export class LiskConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public searchTx(_: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    throw new Error("Not implemented");
+  public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    if (query.height || query.minHeight || query.maxHeight || query.tags.length) {
+      throw new Error("Query by height, minHeight, maxHeight, tags not supported");
+    }
+
+    if (query.hash) {
+      const transactionId = fromAscii(query.hash);
+
+      const url = this.baseUrl + `/api/transactions?id=${transactionId}`;
+      const result = await axios.get(url);
+      const responseBody = result.data;
+      if (responseBody.data.length === 0) {
+        return [];
+      }
+
+      const transactionJson = responseBody.data[0];
+      const height = new Int53(transactionJson.height);
+      const confirmations = new Int53(transactionJson.confirmations);
+
+      const transaction = liskCodec.parseBytes(
+        toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
+        this.myChainId,
+      );
+      return [
+        {
+          ...transaction,
+          height: height.toNumber(),
+          txid: query.hash,
+          result: new Uint8Array([]),
+          log: `Found transaction with ${confirmations} confirmations`,
+        },
+      ];
+    } else {
+      throw new Error("Unsupported query.");
+    }
   }
 
   public listenTx(_: ReadonlyArray<BcpQueryTag>): Stream<ConfirmedTransaction> {

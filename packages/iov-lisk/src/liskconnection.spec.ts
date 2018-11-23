@@ -1,4 +1,4 @@
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes, TxId } from "@iov/base-types";
 import {
   Address,
   BcpAccountQuery,
@@ -14,7 +14,7 @@ import { Ed25519Wallet } from "@iov/keycontrol";
 import { liskCodec } from "./liskcodec";
 import { generateNonce, LiskConnection } from "./liskconnection";
 
-const { fromHex } = Encoding;
+const { fromHex, toAscii } = Encoding;
 
 function pendingWithoutLiskDevnet(): void {
   if (!process.env.LISK_ENABLED) {
@@ -283,5 +283,37 @@ describe("LiskConnection", () => {
       .postTx(bytesToPost)
       .then(() => fail("must not resolve"))
       .catch(error => expect(error).toMatch(/failed with status code 409/i));
+  });
+
+  it("can search transaction", async () => {
+    pendingWithoutLiskDevnet();
+    const connection = await LiskConnection.establish(devnetBase);
+
+    // by non-existing ID
+    {
+      const searchId = "98568736528934587";
+      const results = await connection.searchTx({ hash: toAscii(searchId) as TxId, tags: [] });
+      expect(results.length).toEqual(0);
+    }
+
+    // by existing ID (from lisk/init.sh)
+    {
+      const searchId = "12493173350733478622";
+      const results = await connection.searchTx({ hash: toAscii(searchId) as TxId, tags: [] });
+      expect(results.length).toEqual(1);
+      const result = results[0];
+      expect(result.height).toBeGreaterThanOrEqual(2);
+      expect(result.height).toBeLessThan(100);
+      expect(result.txid).toEqual(toAscii(searchId));
+      const transaction = result.transaction;
+      if (transaction.kind !== TransactionKind.Send) {
+        throw new Error("Unexpected transaction type");
+      }
+      expect(transaction.recipient).toEqual("1349293588603668134L");
+      expect(transaction.amount.whole).toEqual(100);
+      expect(transaction.amount.fractional).toEqual(44556677);
+    }
+
+    connection.disconnect();
   });
 });
