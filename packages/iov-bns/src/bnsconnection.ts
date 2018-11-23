@@ -160,28 +160,26 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       height: height,
       confirmations: 1,
     };
-    let blockInfoInterval: any;
+    let blocksSubscription: Subscription;
     let lastEventSent: BcpBlockInfo = firstEvent;
     const blockInfoProducer = new DefaultValueProducer<BcpBlockInfo>(firstEvent, {
       onStarted: () => {
-        blockInfoInterval = setInterval(async () => {
-          const search = await this.searchTx({ hash: txresp.hash, tags: [] });
-          if (search.length > 0) {
-            const confirmedTransaction = search[0];
+        blocksSubscription = this.changeBlock().subscribe({
+          next: blockHeight => {
             const event: BcpBlockInfo = {
               state: BcpTransactionState.InBlock,
-              height: confirmedTransaction.height,
-              confirmations: confirmedTransaction.confirmations,
+              height: height,
+              confirmations: blockHeight - height + 1,
             };
 
             if (!equal(event, lastEventSent)) {
               blockInfoProducer.update(event);
               lastEventSent = event;
             }
-          }
-        }, 750);
+          },
+        });
       },
-      onStop: () => clearInterval(blockInfoInterval),
+      onStop: () => blocksSubscription.unsubscribe(),
     });
 
     const message = txresp.deliverTx ? txresp.deliverTx.log : txresp.checkTx.log;
