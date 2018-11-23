@@ -1,6 +1,7 @@
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes, TxId } from "@iov/base-types";
 import {
   Address,
+  Amount,
   BcpAccountQuery,
   BcpBlockInfo,
   BcpTransactionState,
@@ -31,6 +32,15 @@ describe("LiskConnection", () => {
   // a local devnet
   const devnetBase = "http://localhost:4000";
   const devnetChainId = "198f2b61a8eb95fbeed58b8216780b68f697f26b849acf00c8c93bb9b24f783d" as ChainId;
+  const devnetDefaultRecipient = "16313739661670634666L" as Address;
+  const devnetDefaultKeypair = Derivation.passphraseToKeypair(
+    "wagon stock borrow episode laundry kitten salute link globe zero feed marble",
+  );
+  const devnetDefaultAmount: Amount = {
+    whole: 1,
+    fractional: 44550000,
+    tokenTicker: "LSK" as TokenTicker,
+  };
 
   it("can be constructed", () => {
     const connection = new LiskConnection(dummynetBase, dummynetChainId);
@@ -184,25 +194,15 @@ describe("LiskConnection", () => {
     pendingWithoutLiskDevnet();
 
     const wallet = new Ed25519Wallet();
-    const mainIdentity = await wallet.createIdentity(
-      await Derivation.passphraseToKeypair(
-        "wagon stock borrow episode laundry kitten salute link globe zero feed marble",
-      ),
-    );
-
-    const recipientAddress = "16313739661670634666L" as Address;
+    const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
     const sendTx: SendTx = {
       kind: TransactionKind.Send,
       chainId: devnetChainId,
       signer: mainIdentity.pubkey,
-      recipient: recipientAddress,
-      memo: "We ❤️ developers – iov.one",
-      amount: {
-        whole: 1,
-        fractional: 44550000,
-        tokenTicker: "LSK" as TokenTicker,
-      },
+      recipient: devnetDefaultRecipient,
+      memo: `We ❤️ developers – iov.one ${Math.random()}`,
+      amount: devnetDefaultAmount,
     };
 
     // Encode creation timestamp into nonce
@@ -235,25 +235,15 @@ describe("LiskConnection", () => {
     pendingWithoutLiskDevnet();
 
     const wallet = new Ed25519Wallet();
-    const mainIdentity = await wallet.createIdentity(
-      await Derivation.passphraseToKeypair(
-        "wagon stock borrow episode laundry kitten salute link globe zero feed marble",
-      ),
-    );
-
-    const recipientAddress = "16313739661670634666L" as Address;
+    const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
     const sendTx: SendTx = {
       kind: TransactionKind.Send,
       chainId: devnetChainId,
       signer: mainIdentity.pubkey,
-      recipient: recipientAddress,
-      memo: "We ❤️ developers – iov.one",
-      amount: {
-        whole: 1,
-        fractional: 44550000,
-        tokenTicker: "LSK" as TokenTicker,
-      },
+      recipient: devnetDefaultRecipient,
+      memo: `We ❤️ developers – iov.one ${Math.random()}`,
+      amount: devnetDefaultAmount,
     };
 
     // Encode creation timestamp into nonce
@@ -288,17 +278,12 @@ describe("LiskConnection", () => {
       next: info => {
         events.push(info);
 
-        if (events.length === 3) {
+        if (events.length === 2) {
           expect(events[0]).toEqual({ state: BcpTransactionState.Pending });
           expect(events[1]).toEqual({
             state: BcpTransactionState.InBlock,
             height: heightBeforeTransaction + 1,
             confirmations: 1,
-          });
-          expect(events[2]).toEqual({
-            state: BcpTransactionState.InBlock,
-            height: heightBeforeTransaction + 1,
-            confirmations: 2,
           });
           subscription.unsubscribe();
           done();
@@ -313,25 +298,15 @@ describe("LiskConnection", () => {
     pendingWithoutLiskDevnet();
 
     const wallet = new Ed25519Wallet();
-    const mainIdentity = await wallet.createIdentity(
-      await Derivation.passphraseToKeypair(
-        "wagon stock borrow episode laundry kitten salute link globe zero feed marble",
-      ),
-    );
-
-    const recipientAddress = "16313739661670634666L" as Address;
+    const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
     const sendTx: SendTx = {
       kind: TransactionKind.Send,
       chainId: devnetChainId,
       signer: mainIdentity.pubkey,
-      recipient: recipientAddress,
+      recipient: devnetDefaultRecipient,
       memo: `We ❤️ developers – iov.one ${Math.random()}`,
-      amount: {
-        whole: 1,
-        fractional: 44550000,
-        tokenTicker: "LSK" as TokenTicker,
-      },
+      amount: devnetDefaultAmount,
     };
 
     // Encode creation timestamp into nonce
@@ -373,25 +348,15 @@ describe("LiskConnection", () => {
     pendingWithoutLiskDevnet();
 
     const wallet = new Ed25519Wallet();
-    const mainIdentity = await wallet.createIdentity(
-      await Derivation.passphraseToKeypair(
-        "wagon stock borrow episode laundry kitten salute link globe zero feed marble",
-      ),
-    );
-
-    const recipientAddress = "16313739661670634666L" as Address;
+    const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
     const sendTx: SendTx = {
       kind: TransactionKind.Send,
       chainId: devnetChainId,
       signer: mainIdentity.pubkey,
-      recipient: recipientAddress,
+      recipient: devnetDefaultRecipient,
       memo: "We ❤️ developers – iov.one",
-      amount: {
-        whole: 1,
-        fractional: 44550000,
-        tokenTicker: "LSK" as TokenTicker,
-      },
+      amount: devnetDefaultAmount,
     };
 
     // Encode creation timestamp into nonce
