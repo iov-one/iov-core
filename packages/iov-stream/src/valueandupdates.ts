@@ -2,6 +2,8 @@ import { MemoryStream } from "xstream";
 
 import { DefaultValueProducer } from "./defaultvalueproducer";
 
+export type SearchFunction<T> = (value: T) => boolean;
+
 /**
  * A read only wrapper around DefaultValueProducer that allows
  * to synchonously get the current value using the .value property
@@ -21,11 +23,19 @@ export class ValueAndUpdates<T> {
     this.updates = MemoryStream.createWithMemory(this.producer);
   }
 
-  public waitFor(value: T): Promise<void> {
+  /**
+   * Resolves as soon as search value is found.
+   *
+   * @param search either a value or a function that must return true when found
+   */
+  public waitFor(search: SearchFunction<T> | T): Promise<void> {
+    const searchImplementation: SearchFunction<T> =
+      typeof search === "function" ? (search as SearchFunction<T>) : (value: T): boolean => value === search;
+
     return new Promise((resolve, reject) => {
       const subscription = this.updates.subscribe({
         next: newValue => {
-          if (newValue === value) {
+          if (searchImplementation(newValue)) {
             resolve();
 
             // MemoryStream.subscribe() calls next with the last value.
