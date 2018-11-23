@@ -2,11 +2,11 @@
 import { streamPromise } from "./promise";
 import { asArray, countStream } from "./reducer";
 
-describe("Test streamPromise", () => {
-  it("streamPromise will send many values on a stream", async () => {
+describe("streamPromise", () => {
+  it("sends many values on a stream", async () => {
     // create a promise that will resolve to an array of strings
     const input = ["a", "fd", "fvss", "gs"];
-    const prom = new Promise<ReadonlyArray<string>>(resolve => resolve(input));
+    const prom = Promise.resolve(input);
     const stream = streamPromise(prom);
 
     // materialize stream into a counter, and wait for stream to complete
@@ -15,9 +15,30 @@ describe("Test streamPromise", () => {
     expect(counter.value()).toEqual(input.length);
   });
 
-  it("streamPromise will send proper values", async () => {
+  it("works for iterables like Uint8Array", async () => {
+    const inputPromise = Promise.resolve(new Uint8Array([0x00, 0x11, 0x22]));
+    const stream = streamPromise(inputPromise);
+
+    const reader = asArray<number>(stream);
+    await reader.finished();
+    expect(reader.value()).toEqual([0x00, 0x11, 0x22]);
+  });
+
+  it("works for delayed resolution", async () => {
+    const inputPromise = new Promise<number[]>(resolve => {
+      // resolve after 50 ms
+      setTimeout(() => resolve([1, 2, 3]), 50);
+    });
+    const stream = streamPromise(inputPromise);
+
+    const reader = asArray<number>(stream);
+    await reader.finished();
+    expect(reader.value()).toEqual([1, 2, 3]);
+  });
+
+  it("sends proper values", async () => {
     const input = ["let", "us", "say", "something"];
-    const prom = new Promise<ReadonlyArray<string>>(resolve => resolve(input));
+    const prom = Promise.resolve(input);
     const stream = streamPromise(prom);
 
     // materialize stream into an array, and wait for stream to complete

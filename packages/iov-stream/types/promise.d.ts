@@ -1,2 +1,5 @@
 import { Stream } from "xstream";
-export declare function streamPromise<T>(promise: Promise<ReadonlyArray<T>>): Stream<T>;
+/**
+ * Emits one event for each array element as soon as the promise resolves
+ */
+export declare function streamPromise<T>(promise: Promise<Iterable<T>>): Stream<T>;
