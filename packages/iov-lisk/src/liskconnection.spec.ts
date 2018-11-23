@@ -190,235 +190,237 @@ describe("LiskConnection", () => {
     expect(nonce.data[0].nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
   });
 
-  it("can post transaction", async () => {
-    pendingWithoutLiskDevnet();
+  describe("postTx", () => {
+    it("can post transaction", async () => {
+      pendingWithoutLiskDevnet();
 
-    const wallet = new Ed25519Wallet();
-    const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
+      const wallet = new Ed25519Wallet();
+      const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
-    const sendTx: SendTx = {
-      kind: TransactionKind.Send,
-      chainId: devnetChainId,
-      signer: mainIdentity.pubkey,
-      recipient: devnetDefaultRecipient,
-      memo: `We ❤️ developers – iov.one ${Math.random()}`,
-      amount: devnetDefaultAmount,
-    };
+      const sendTx: SendTx = {
+        kind: TransactionKind.Send,
+        chainId: devnetChainId,
+        signer: mainIdentity.pubkey,
+        recipient: devnetDefaultRecipient,
+        memo: `We ❤️ developers – iov.one ${Math.random()}`,
+        amount: devnetDefaultAmount,
+      };
 
-    // Encode creation timestamp into nonce
-    const nonce = generateNonce();
-    const signingJob = liskCodec.bytesToSign(sendTx, nonce);
-    const signature = await wallet.createTransactionSignature(
-      mainIdentity,
-      signingJob.bytes,
-      signingJob.prehashType,
-      devnetChainId,
-    );
+      // Encode creation timestamp into nonce
+      const nonce = generateNonce();
+      const signingJob = liskCodec.bytesToSign(sendTx, nonce);
+      const signature = await wallet.createTransactionSignature(
+        mainIdentity,
+        signingJob.bytes,
+        signingJob.prehashType,
+        devnetChainId,
+      );
 
-    const signedTransaction: SignedTransaction = {
-      transaction: sendTx,
-      primarySignature: {
-        nonce: nonce,
-        pubkey: mainIdentity.pubkey,
-        signature: signature,
-      },
-      otherSignatures: [],
-    };
-    const bytesToPost = liskCodec.bytesToPost(signedTransaction);
+      const signedTransaction: SignedTransaction = {
+        transaction: sendTx,
+        primarySignature: {
+          nonce: nonce,
+          pubkey: mainIdentity.pubkey,
+          signature: signature,
+        },
+        otherSignatures: [],
+      };
+      const bytesToPost = liskCodec.bytesToPost(signedTransaction);
 
-    const connection = await LiskConnection.establish(devnetBase);
-    const result = await connection.postTx(bytesToPost);
-    expect(result).toBeTruthy();
-  });
-
-  it("can post transaction and watch confirmations", async done => {
-    pendingWithoutLiskDevnet();
-
-    const wallet = new Ed25519Wallet();
-    const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
-
-    const sendTx: SendTx = {
-      kind: TransactionKind.Send,
-      chainId: devnetChainId,
-      signer: mainIdentity.pubkey,
-      recipient: devnetDefaultRecipient,
-      memo: `We ❤️ developers – iov.one ${Math.random()}`,
-      amount: devnetDefaultAmount,
-    };
-
-    // Encode creation timestamp into nonce
-    const nonce = generateNonce();
-    const signingJob = liskCodec.bytesToSign(sendTx, nonce);
-    const signature = await wallet.createTransactionSignature(
-      mainIdentity,
-      signingJob.bytes,
-      signingJob.prehashType,
-      devnetChainId,
-    );
-
-    const signedTransaction: SignedTransaction = {
-      transaction: sendTx,
-      primarySignature: {
-        nonce: nonce,
-        pubkey: mainIdentity.pubkey,
-        signature: signature,
-      },
-      otherSignatures: [],
-    };
-    const bytesToPost = liskCodec.bytesToPost(signedTransaction);
-
-    const connection = await LiskConnection.establish(devnetBase);
-    const heightBeforeTransaction = await connection.height();
-    const result = await connection.postTx(bytesToPost);
-    expect(result).toBeTruthy();
-    expect(result.blockInfo!.value.state).toEqual(BcpTransactionState.Pending);
-
-    const events = new Array<BcpBlockInfo>();
-    const subscription = result.blockInfo!.updates.subscribe({
-      next: info => {
-        events.push(info);
-
-        if (events.length === 2) {
-          expect(events[0]).toEqual({ state: BcpTransactionState.Pending });
-          expect(events[1]).toEqual({
-            state: BcpTransactionState.InBlock,
-            height: heightBeforeTransaction + 1,
-            confirmations: 1,
-          });
-          subscription.unsubscribe();
-          done();
-        }
-      },
-      complete: fail,
-      error: fail,
+      const connection = await LiskConnection.establish(devnetBase);
+      const result = await connection.postTx(bytesToPost);
+      expect(result).toBeTruthy();
     });
-  }, 30000);
 
-  xit("can post transaction and wait for 4 confirmations", async () => {
-    pendingWithoutLiskDevnet();
+    it("can post transaction and watch confirmations", async done => {
+      pendingWithoutLiskDevnet();
 
-    const wallet = new Ed25519Wallet();
-    const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
+      const wallet = new Ed25519Wallet();
+      const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
-    const sendTx: SendTx = {
-      kind: TransactionKind.Send,
-      chainId: devnetChainId,
-      signer: mainIdentity.pubkey,
-      recipient: devnetDefaultRecipient,
-      memo: `We ❤️ developers – iov.one ${Math.random()}`,
-      amount: devnetDefaultAmount,
-    };
+      const sendTx: SendTx = {
+        kind: TransactionKind.Send,
+        chainId: devnetChainId,
+        signer: mainIdentity.pubkey,
+        recipient: devnetDefaultRecipient,
+        memo: `We ❤️ developers – iov.one ${Math.random()}`,
+        amount: devnetDefaultAmount,
+      };
 
-    // Encode creation timestamp into nonce
-    const nonce = generateNonce();
-    const signingJob = liskCodec.bytesToSign(sendTx, nonce);
-    const signature = await wallet.createTransactionSignature(
-      mainIdentity,
-      signingJob.bytes,
-      signingJob.prehashType,
-      devnetChainId,
-    );
+      // Encode creation timestamp into nonce
+      const nonce = generateNonce();
+      const signingJob = liskCodec.bytesToSign(sendTx, nonce);
+      const signature = await wallet.createTransactionSignature(
+        mainIdentity,
+        signingJob.bytes,
+        signingJob.prehashType,
+        devnetChainId,
+      );
 
-    const signedTransaction: SignedTransaction = {
-      transaction: sendTx,
-      primarySignature: {
-        nonce: nonce,
-        pubkey: mainIdentity.pubkey,
-        signature: signature,
-      },
-      otherSignatures: [],
-    };
-    const bytesToPost = liskCodec.bytesToPost(signedTransaction);
+      const signedTransaction: SignedTransaction = {
+        transaction: sendTx,
+        primarySignature: {
+          nonce: nonce,
+          pubkey: mainIdentity.pubkey,
+          signature: signature,
+        },
+        otherSignatures: [],
+      };
+      const bytesToPost = liskCodec.bytesToPost(signedTransaction);
 
-    const connection = await LiskConnection.establish(devnetBase);
-    const heightBeforeTransaction = await connection.height();
-    const result = await connection.postTx(bytesToPost);
-    await result.blockInfo!.waitFor(
-      info => info.state === BcpTransactionState.InBlock && info.confirmations === 4,
-    );
+      const connection = await LiskConnection.establish(devnetBase);
+      const heightBeforeTransaction = await connection.height();
+      const result = await connection.postTx(bytesToPost);
+      expect(result).toBeTruthy();
+      expect(result.blockInfo!.value.state).toEqual(BcpTransactionState.Pending);
 
-    expect(result.blockInfo!.value).toEqual({
-      state: BcpTransactionState.InBlock,
-      height: heightBeforeTransaction + 1,
-      confirmations: 4,
+      const events = new Array<BcpBlockInfo>();
+      const subscription = result.blockInfo!.updates.subscribe({
+        next: info => {
+          events.push(info);
+
+          if (events.length === 2) {
+            expect(events[0]).toEqual({ state: BcpTransactionState.Pending });
+            expect(events[1]).toEqual({
+              state: BcpTransactionState.InBlock,
+              height: heightBeforeTransaction + 1,
+              confirmations: 1,
+            });
+            subscription.unsubscribe();
+            done();
+          }
+        },
+        complete: fail,
+        error: fail,
+      });
+    }, 30000);
+
+    xit("can post transaction and wait for 4 confirmations", async () => {
+      pendingWithoutLiskDevnet();
+
+      const wallet = new Ed25519Wallet();
+      const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
+
+      const sendTx: SendTx = {
+        kind: TransactionKind.Send,
+        chainId: devnetChainId,
+        signer: mainIdentity.pubkey,
+        recipient: devnetDefaultRecipient,
+        memo: `We ❤️ developers – iov.one ${Math.random()}`,
+        amount: devnetDefaultAmount,
+      };
+
+      // Encode creation timestamp into nonce
+      const nonce = generateNonce();
+      const signingJob = liskCodec.bytesToSign(sendTx, nonce);
+      const signature = await wallet.createTransactionSignature(
+        mainIdentity,
+        signingJob.bytes,
+        signingJob.prehashType,
+        devnetChainId,
+      );
+
+      const signedTransaction: SignedTransaction = {
+        transaction: sendTx,
+        primarySignature: {
+          nonce: nonce,
+          pubkey: mainIdentity.pubkey,
+          signature: signature,
+        },
+        otherSignatures: [],
+      };
+      const bytesToPost = liskCodec.bytesToPost(signedTransaction);
+
+      const connection = await LiskConnection.establish(devnetBase);
+      const heightBeforeTransaction = await connection.height();
+      const result = await connection.postTx(bytesToPost);
+      await result.blockInfo!.waitFor(
+        info => info.state === BcpTransactionState.InBlock && info.confirmations === 4,
+      );
+
+      expect(result.blockInfo!.value).toEqual({
+        state: BcpTransactionState.InBlock,
+        height: heightBeforeTransaction + 1,
+        confirmations: 4,
+      });
+    }, 60000);
+
+    it("throws for invalid transaction", async () => {
+      pendingWithoutLiskDevnet();
+
+      const wallet = new Ed25519Wallet();
+      const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
+
+      const sendTx: SendTx = {
+        kind: TransactionKind.Send,
+        chainId: devnetChainId,
+        signer: mainIdentity.pubkey,
+        recipient: devnetDefaultRecipient,
+        memo: "We ❤️ developers – iov.one",
+        amount: devnetDefaultAmount,
+      };
+
+      // Encode creation timestamp into nonce
+      const nonce = generateNonce();
+      const signingJob = liskCodec.bytesToSign(sendTx, nonce);
+      const signature = await wallet.createTransactionSignature(
+        mainIdentity,
+        signingJob.bytes,
+        signingJob.prehashType,
+        devnetChainId,
+      );
+
+      // tslint:disable-next-line:no-bitwise
+      const corruptedSignature = signature.map((x, i) => (i === 0 ? x ^ 0x01 : x)) as SignatureBytes;
+
+      const signedTransaction: SignedTransaction = {
+        transaction: sendTx,
+        primarySignature: {
+          nonce: nonce,
+          pubkey: mainIdentity.pubkey,
+          signature: corruptedSignature,
+        },
+        otherSignatures: [],
+      };
+      const bytesToPost = liskCodec.bytesToPost(signedTransaction);
+
+      const connection = await LiskConnection.establish(devnetBase);
+      await connection
+        .postTx(bytesToPost)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/failed with status code 409/i));
     });
-  }, 60000);
 
-  it("throws for invalid transaction", async () => {
-    pendingWithoutLiskDevnet();
+    it("can search transaction", async () => {
+      pendingWithoutLiskDevnet();
+      const connection = await LiskConnection.establish(devnetBase);
 
-    const wallet = new Ed25519Wallet();
-    const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
-
-    const sendTx: SendTx = {
-      kind: TransactionKind.Send,
-      chainId: devnetChainId,
-      signer: mainIdentity.pubkey,
-      recipient: devnetDefaultRecipient,
-      memo: "We ❤️ developers – iov.one",
-      amount: devnetDefaultAmount,
-    };
-
-    // Encode creation timestamp into nonce
-    const nonce = generateNonce();
-    const signingJob = liskCodec.bytesToSign(sendTx, nonce);
-    const signature = await wallet.createTransactionSignature(
-      mainIdentity,
-      signingJob.bytes,
-      signingJob.prehashType,
-      devnetChainId,
-    );
-
-    // tslint:disable-next-line:no-bitwise
-    const corruptedSignature = signature.map((x, i) => (i === 0 ? x ^ 0x01 : x)) as SignatureBytes;
-
-    const signedTransaction: SignedTransaction = {
-      transaction: sendTx,
-      primarySignature: {
-        nonce: nonce,
-        pubkey: mainIdentity.pubkey,
-        signature: corruptedSignature,
-      },
-      otherSignatures: [],
-    };
-    const bytesToPost = liskCodec.bytesToPost(signedTransaction);
-
-    const connection = await LiskConnection.establish(devnetBase);
-    await connection
-      .postTx(bytesToPost)
-      .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/failed with status code 409/i));
-  });
-
-  it("can search transaction", async () => {
-    pendingWithoutLiskDevnet();
-    const connection = await LiskConnection.establish(devnetBase);
-
-    // by non-existing ID
-    {
-      const searchId = "98568736528934587";
-      const results = await connection.searchTx({ hash: toAscii(searchId) as TxId, tags: [] });
-      expect(results.length).toEqual(0);
-    }
-
-    // by existing ID (from lisk/init.sh)
-    {
-      const searchId = "12493173350733478622";
-      const results = await connection.searchTx({ hash: toAscii(searchId) as TxId, tags: [] });
-      expect(results.length).toEqual(1);
-      const result = results[0];
-      expect(result.height).toBeGreaterThanOrEqual(2);
-      expect(result.height).toBeLessThan(100);
-      expect(result.txid).toEqual(toAscii(searchId));
-      const transaction = result.transaction;
-      if (transaction.kind !== TransactionKind.Send) {
-        throw new Error("Unexpected transaction type");
+      // by non-existing ID
+      {
+        const searchId = "98568736528934587";
+        const results = await connection.searchTx({ hash: toAscii(searchId) as TxId, tags: [] });
+        expect(results.length).toEqual(0);
       }
-      expect(transaction.recipient).toEqual("1349293588603668134L");
-      expect(transaction.amount.whole).toEqual(100);
-      expect(transaction.amount.fractional).toEqual(44556677);
-    }
 
-    connection.disconnect();
+      // by existing ID (from lisk/init.sh)
+      {
+        const searchId = "12493173350733478622";
+        const results = await connection.searchTx({ hash: toAscii(searchId) as TxId, tags: [] });
+        expect(results.length).toEqual(1);
+        const result = results[0];
+        expect(result.height).toBeGreaterThanOrEqual(2);
+        expect(result.height).toBeLessThan(100);
+        expect(result.txid).toEqual(toAscii(searchId));
+        const transaction = result.transaction;
+        if (transaction.kind !== TransactionKind.Send) {
+          throw new Error("Unexpected transaction type");
+        }
+        expect(transaction.recipient).toEqual("1349293588603668134L");
+        expect(transaction.amount.whole).toEqual(100);
+        expect(transaction.amount.fractional).toEqual(44556677);
+      }
+
+      connection.disconnect();
+    });
   });
 });
