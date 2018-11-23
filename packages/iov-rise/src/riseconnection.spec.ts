@@ -19,6 +19,10 @@ const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbece
 
 describe("RiseConnection", () => {
   const base = "https://twallet.rise.vision";
+  const defaultKeypair = Derivation.passphraseToKeypair(
+    "squeeze frog deposit chase sudden clutch fortune spring tone have snow column",
+  );
+  const defaultRecipientAddress = "10145108642177909005R" as Address;
   const defaultSendAmount = {
     whole: 0,
     fractional: 14550000,
@@ -167,19 +171,13 @@ describe("RiseConnection", () => {
 
   it("can post transaction", async () => {
     const wallet = new Ed25519Wallet();
-    const mainIdentity = await wallet.createIdentity(
-      await Derivation.passphraseToKeypair(
-        "squeeze frog deposit chase sudden clutch fortune spring tone have snow column",
-      ),
-    );
-
-    const recipientAddress = "10145108642177909005R" as Address;
+    const mainIdentity = await wallet.createIdentity(await defaultKeypair);
 
     const sendTx: SendTx = {
       kind: TransactionKind.Send,
       chainId: riseTestnet,
       signer: mainIdentity.pubkey,
-      recipient: recipientAddress,
+      recipient: defaultRecipientAddress,
       amount: defaultSendAmount,
     };
 
@@ -211,19 +209,13 @@ describe("RiseConnection", () => {
 
   it("throws for transaction with corrupted signature", async () => {
     const wallet = new Ed25519Wallet();
-    const mainIdentity = await wallet.createIdentity(
-      await Derivation.passphraseToKeypair(
-        "squeeze frog deposit chase sudden clutch fortune spring tone have snow column",
-      ),
-    );
-
-    const recipientAddress = "10145108642177909005R" as Address;
+    const mainIdentity = await wallet.createIdentity(await defaultKeypair);
 
     const sendTx: SendTx = {
       kind: TransactionKind.Send,
       chainId: riseTestnet,
       signer: mainIdentity.pubkey,
-      recipient: recipientAddress,
+      recipient: defaultRecipientAddress,
       amount: defaultSendAmount,
     };
 
