@@ -261,434 +261,284 @@ describe("BnsConnection", () => {
     });
   });
 
-  it("Can send transaction", async () => {
-    pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const chainId = await connection.chainId();
-    // store minHeight before sending the tx, so we can filter out
-    // if we re-run the test, still only find one tx in search
-    // const minHeight = (await connection.height()) - 1;
+  describe("postTx", () => {
+    it("can send transaction", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const chainId = await connection.chainId();
 
-    const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
-    const faucetAddr = keyToAddress(faucet.pubkey);
-    const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(2));
-    const rcptAddr = keyToAddress(rcpt.pubkey);
+      const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
+      const faucetAddr = keyToAddress(faucet.pubkey);
+      const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(2));
+      const rcptAddr = keyToAddress(rcpt.pubkey);
 
-    // check current nonce (should be 0, but don't fail if used by other)
-    const nonce = await getNonce(connection, faucetAddr);
+      // construct a sendtx, this is normally used in the MultiChainSigner api
+      const sendTx: SendTx = {
+        kind: TransactionKind.Send,
+        chainId,
+        signer: faucet.pubkey,
+        recipient: rcptAddr,
+        memo: "My first payment",
+        amount: {
+          whole: 500,
+          fractional: 75000,
+          tokenTicker: cash,
+        },
+      };
+      const nonce = await getNonce(connection, faucetAddr);
+      const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
+      const txBytes = bnsCodec.bytesToPost(signed);
+      await connection.postTx(txBytes);
 
-    // construct a sendtx, this is normally used in the MultiChainSigner api
-    const sendTx: SendTx = {
-      kind: TransactionKind.Send,
-      chainId,
-      signer: faucet.pubkey,
-      recipient: rcptAddr,
-      memo: "My first payment",
-      amount: {
-        whole: 500,
-        fractional: 75000,
-        tokenTicker: cash,
-      },
-    };
-    const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
-    const txBytes = bnsCodec.bytesToPost(signed);
-    await connection.postTx(txBytes);
+      // we should be a little bit richer
+      const gotMoney = await connection.getAccount({ address: rcptAddr });
+      expect(gotMoney).toBeTruthy();
+      expect(gotMoney.data.length).toEqual(1);
+      const paid = gotMoney.data[0];
+      expect(paid.balance.length).toEqual(1);
+      // we may post multiple times if we have multiple tests,
+      // so just ensure at least one got in
+      expect(paid.balance[0].whole).toBeGreaterThanOrEqual(500);
+      expect(paid.balance[0].fractional).toBeGreaterThanOrEqual(75000);
 
-    // we should be a little bit richer
-    const gotMoney = await connection.getAccount({ address: rcptAddr });
-    expect(gotMoney).toBeTruthy();
-    expect(gotMoney.data.length).toEqual(1);
-    const paid = gotMoney.data[0];
-    expect(paid.balance.length).toEqual(1);
-    // we may post multiple times if we have multiple tests,
-    // so just ensure at least one got in
-    expect(paid.balance[0].whole).toBeGreaterThanOrEqual(500);
-    expect(paid.balance[0].fractional).toBeGreaterThanOrEqual(75000);
+      // and the nonce should go up, to be at least one
+      // (worrying about replay issues)
+      const fNonce = await getNonce(connection, faucetAddr);
+      expect(fNonce.toNumber()).toBeGreaterThanOrEqual(1);
 
-    // and the nonce should go up, to be at least one
-    // (worrying about replay issues)
-    const fNonce = await getNonce(connection, faucetAddr);
-    expect(fNonce.toNumber()).toBeGreaterThanOrEqual(1);
+      // now verify we can query the same tx back
+      const txQuery = { tags: [bnsFromOrToTag(faucetAddr)] };
+      const search = await connection.searchTx(txQuery);
+      expect(search.length).toBeGreaterThanOrEqual(1);
+      // make sure we get a valid signature
+      const mine = search[search.length - 1];
+      expect(mine.primarySignature.nonce).toEqual(nonce);
+      expect(mine.primarySignature.signature.length).toBeTruthy();
+      expect(mine.otherSignatures.length).toEqual(0);
+      const tx = mine.transaction;
+      expect(tx.kind).toEqual(sendTx.kind);
+      expect(tx).toEqual(sendTx);
+      // make sure we have a txid
+      expect(mine.txid).toBeDefined();
+      expect(mine.txid.length).toBeGreaterThan(0);
 
-    // now verify we can query the same tx back
-    const txQuery = { tags: [bnsFromOrToTag(faucetAddr)] };
-    const search = await connection.searchTx(txQuery);
-    expect(search.length).toBeGreaterThanOrEqual(1);
-    // make sure we get a valid signature
-    const mine = search[search.length - 1];
-    expect(mine.primarySignature.nonce).toEqual(nonce);
-    expect(mine.primarySignature.signature.length).toBeTruthy();
-    expect(mine.otherSignatures.length).toEqual(0);
-    const tx = mine.transaction;
-    expect(tx.kind).toEqual(sendTx.kind);
-    expect(tx).toEqual(sendTx);
-    // make sure we have a txid
-    expect(mine.txid).toBeDefined();
-    expect(mine.txid.length).toBeGreaterThan(0);
-
-    connection.disconnect();
-  });
-
-  it("can search for transactions", async () => {
-    pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const chainId = await connection.chainId();
-
-    const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
-    const faucetAddress = keyToAddress(faucet.pubkey);
-    const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(68));
-    const rcptAddress = keyToAddress(rcpt.pubkey);
-
-    // construct a sendtx, this is normally used in the MultiChainSigner api
-    const memo = `Payment ${Math.random()}`;
-    const sendTx: SendTx = {
-      kind: TransactionKind.Send,
-      chainId: chainId,
-      signer: faucet.pubkey,
-      recipient: rcptAddress,
-      memo: memo,
-      amount: {
-        whole: 1,
-        fractional: 1,
-        tokenTicker: cash,
-      },
-    };
-
-    const nonce = await getNonce(connection, faucetAddress);
-    const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
-    const txBytes = bnsCodec.bytesToPost(signed);
-    const response = await connection.postTx(txBytes);
-    const txHeight = response.metadata.height!;
-
-    {
-      // finds transaction using tag
-      const results = await connection.searchTx({ tags: [bnsFromOrToTag(rcptAddress)] });
-      expect(results.length).toBeGreaterThanOrEqual(1);
-      const mostRecentResult = results[results.length - 1];
-      expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
-      expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
-    }
-
-    {
-      // finds transaction using tag and height
-      const results = await connection.searchTx({ tags: [bnsFromOrToTag(rcptAddress)], height: txHeight });
-      expect(results.length).toBeGreaterThanOrEqual(1);
-      const mostRecentResult = results[results.length - 1];
-      expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
-      expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
-    }
-
-    connection.disconnect();
-  });
-
-  // Activate when https://github.com/tendermint/tendermint/issues/2759 is fixed
-  xit("can search for transactions (min/max height)", async () => {
-    pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const chainId = await connection.chainId();
-    const initialHeight = await connection.height();
-
-    const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
-    const faucetAddress = keyToAddress(faucet.pubkey);
-    const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(68));
-    const rcptAddress = keyToAddress(rcpt.pubkey);
-
-    // construct a sendtx, this is normally used in the MultiChainSigner api
-    const memo = `Payment ${Math.random()}`;
-    const sendTx: SendTx = {
-      kind: TransactionKind.Send,
-      chainId: chainId,
-      signer: faucet.pubkey,
-      recipient: rcptAddress,
-      memo: memo,
-      amount: {
-        whole: 1,
-        fractional: 1,
-        tokenTicker: cash,
-      },
-    };
-
-    const nonce = await getNonce(connection, faucetAddress);
-    const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
-    const txBytes = bnsCodec.bytesToPost(signed);
-    await connection.postTx(txBytes);
-
-    {
-      // finds transaction using tag and minHeight = 1
-      const results = await connection.searchTx({ tags: [bnsFromOrToTag(rcptAddress)], minHeight: 1 });
-      expect(results.length).toBeGreaterThanOrEqual(1);
-      const mostRecentResult = results[results.length - 1];
-      expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
-      expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
-    }
-
-    {
-      // finds transaction using tag and minHeight = initialHeight
-      const results = await connection.searchTx({
-        tags: [bnsFromOrToTag(rcptAddress)],
-        minHeight: initialHeight,
-      });
-      expect(results.length).toBeGreaterThanOrEqual(1);
-      const mostRecentResult = results[results.length - 1];
-      expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
-      expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
-    }
-
-    {
-      // finds transaction using tag and maxHeight = 500 million
-      const results = await connection.searchTx({
-        tags: [bnsFromOrToTag(rcptAddress)],
-        maxHeight: 500_000_000,
-      });
-      expect(results.length).toBeGreaterThanOrEqual(1);
-      const mostRecentResult = results[results.length - 1];
-      expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
-      expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
-    }
-
-    {
-      // finds transaction using tag and maxHeight = initialHeight + 10
-      const results = await connection.searchTx({
-        tags: [bnsFromOrToTag(rcptAddress)],
-        maxHeight: initialHeight + 10,
-      });
-      expect(results.length).toBeGreaterThanOrEqual(1);
-      const mostRecentResult = results[results.length - 1];
-      expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
-      expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
-    }
-
-    connection.disconnect();
-  });
-
-  it("can register a blockchain", async () => {
-    pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const registryChainId = await connection.chainId();
-
-    const profile = new UserProfile();
-    const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-    const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
-    const identityAddress = keyToAddress(identity.pubkey);
-
-    // Create and send registration
-    const chainId = `wonderland_${Math.random()}` as ChainId;
-    const registration: RegisterBlockchainTx = {
-      kind: TransactionKind.RegisterBlockchain,
-      chainId: registryChainId,
-      signer: identity.pubkey,
-      chain: {
-        chainId: chainId,
-        production: false,
-        enabled: true,
-        name: "Wonderland",
-        networkId: "7rg047g4h",
-      },
-      codecName: "wonderland_rules",
-      codecConfig: `{ "any" : [ "json", "content" ] }`,
-    };
-    const nonce = await getNonce(connection, identityAddress);
-    const signed = await profile.signTransaction(wallet.id, identity, registration, bnsCodec, nonce);
-    const txBytes = bnsCodec.bytesToPost(signed);
-    await connection.postTx(txBytes);
-
-    // Find registration transaction
-    const searchResult = await connection.searchTx({ tags: [bnsNonceTag(identityAddress)] });
-    expect(searchResult.length).toEqual(1);
-    if (searchResult[0].transaction.kind !== TransactionKind.RegisterBlockchain) {
-      throw new Error("Unexpected transaction kind");
-    }
-    expect(searchResult[0].transaction.chain).toEqual({
-      chainId: chainId,
-      production: false,
-      enabled: true,
-      name: "Wonderland",
-      networkId: "7rg047g4h",
-      mainTickerId: undefined,
+      connection.disconnect();
     });
-    expect(searchResult[0].transaction.codecName).toEqual("wonderland_rules");
-    expect(searchResult[0].transaction.codecConfig).toEqual(`{ "any" : [ "json", "content" ] }`);
 
-    connection.disconnect();
-  });
+    it("can register a blockchain", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = await connection.chainId();
 
-  it("can register a username", async () => {
-    pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const registryChainId = await connection.chainId();
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+      const identityAddress = keyToAddress(identity.pubkey);
 
-    const profile = new UserProfile();
-    const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-    const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+      // Create and send registration
+      const chainId = `wonderland_${Math.random()}` as ChainId;
+      const registration: RegisterBlockchainTx = {
+        kind: TransactionKind.RegisterBlockchain,
+        chainId: registryChainId,
+        signer: identity.pubkey,
+        chain: {
+          chainId: chainId,
+          production: false,
+          enabled: true,
+          name: "Wonderland",
+          networkId: "7rg047g4h",
+        },
+        codecName: "wonderland_rules",
+        codecConfig: `{ "any" : [ "json", "content" ] }`,
+      };
+      const nonce = await getNonce(connection, identityAddress);
+      const signed = await profile.signTransaction(wallet.id, identity, registration, bnsCodec, nonce);
+      const txBytes = bnsCodec.bytesToPost(signed);
+      await connection.postTx(txBytes);
 
-    // Create and send registration
-    const address = keyToAddress(identity.pubkey);
-    const username = `testuser_${Math.random()}`;
-    const registration: RegisterUsernameTx = {
-      kind: TransactionKind.RegisterUsername,
-      chainId: registryChainId,
-      signer: identity.pubkey,
-      addresses: [
-        // TODO: Re-enable when there are pre-registered blockchains for testing
-        // (https://github.com/iov-one/weave/issues/184)
-        //
-        // { chainId: ..., address: ... },
-      ],
-      username: username,
-    };
-    const nonce = await getNonce(connection, address);
-    const signed = await profile.signTransaction(wallet.id, identity, registration, bnsCodec, nonce);
-    const txBytes = bnsCodec.bytesToPost(signed);
-    await connection.postTx(txBytes);
-
-    // Find registration transaction
-    const searchResult = await connection.searchTx({ tags: [bnsNonceTag(address)] });
-    expect(searchResult.length).toEqual(1);
-    if (searchResult[0].transaction.kind !== TransactionKind.RegisterUsername) {
-      throw new Error("Unexpected transaction kind");
-    }
-    expect(searchResult[0].transaction.username).toEqual(username);
-    expect(searchResult[0].transaction.addresses.length).toEqual(0);
-
-    connection.disconnect();
-  });
-
-  it("can add address to username and remove again", async () => {
-    pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const registryChainId = await connection.chainId();
-
-    const profile = new UserProfile();
-    const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-    const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
-    const identityAddress = keyToAddress(identity.pubkey);
-
-    // Create and send registration
-    const username = `testuser_${Math.random()}`;
-    const usernameRegistration: RegisterUsernameTx = {
-      kind: TransactionKind.RegisterUsername,
-      chainId: registryChainId,
-      signer: identity.pubkey,
-      username: username,
-      addresses: [],
-    };
-    await connection.postTx(
-      bnsCodec.bytesToPost(
-        await profile.signTransaction(
-          wallet.id,
-          identity,
-          usernameRegistration,
-          bnsCodec,
-          await getNonce(connection, identityAddress),
-        ),
-      ),
-    );
-
-    // Register a blockchain
-    const chainId = `wonderland_${Math.random()}` as ChainId;
-    const blockchainRegistration: RegisterBlockchainTx = {
-      kind: TransactionKind.RegisterBlockchain,
-      chainId: registryChainId,
-      signer: identity.pubkey,
-      chain: {
+      // Find registration transaction
+      const searchResult = await connection.searchTx({ tags: [bnsNonceTag(identityAddress)] });
+      expect(searchResult.length).toEqual(1);
+      if (searchResult[0].transaction.kind !== TransactionKind.RegisterBlockchain) {
+        throw new Error("Unexpected transaction kind");
+      }
+      expect(searchResult[0].transaction.chain).toEqual({
         chainId: chainId,
-        networkId: "7rg047g4h",
         production: false,
         enabled: true,
         name: "Wonderland",
-      },
-      codecName: "wonderland_rules",
-      codecConfig: `{ "any" : [ "json", "content" ] }`,
-    };
-    await connection.postTx(
-      bnsCodec.bytesToPost(
-        await profile.signTransaction(
-          wallet.id,
-          identity,
-          blockchainRegistration,
-          bnsCodec,
-          await getNonce(connection, identityAddress),
-        ),
-      ),
-    );
+        networkId: "7rg047g4h",
+        mainTickerId: undefined,
+      });
+      expect(searchResult[0].transaction.codecName).toEqual("wonderland_rules");
+      expect(searchResult[0].transaction.codecConfig).toEqual(`{ "any" : [ "json", "content" ] }`);
 
-    // Add address
-    const address = `testaddress_${Math.random()}` as Address;
-    const addAddress: AddAddressToUsernameTx = {
-      kind: TransactionKind.AddAddressToUsername,
-      chainId: registryChainId,
-      signer: identity.pubkey,
-      username: username,
-      payload: {
-        chainId: chainId,
-        address: address,
-      },
-    };
-    await connection.postTx(
-      bnsCodec.bytesToPost(
-        await profile.signTransaction(
-          wallet.id,
-          identity,
-          addAddress,
-          bnsCodec,
-          await getNonce(connection, identityAddress),
-        ),
-      ),
-    );
+      connection.disconnect();
+    });
 
-    // Adding second address for the same chain fails
-    const address2 = `testaddress2_${Math.random()}` as Address;
-    const addAddress2: AddAddressToUsernameTx = {
-      kind: TransactionKind.AddAddressToUsername,
-      chainId: registryChainId,
-      signer: identity.pubkey,
-      username: username,
-      payload: {
-        chainId: chainId,
-        address: address2,
-      },
-    };
-    await connection
-      .postTx(
+    it("can register a username", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = await connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+
+      // Create and send registration
+      const address = keyToAddress(identity.pubkey);
+      const username = `testuser_${Math.random()}`;
+      const registration: RegisterUsernameTx = {
+        kind: TransactionKind.RegisterUsername,
+        chainId: registryChainId,
+        signer: identity.pubkey,
+        addresses: [
+          // TODO: Re-enable when there are pre-registered blockchains for testing
+          // (https://github.com/iov-one/weave/issues/184)
+          //
+          // { chainId: ..., address: ... },
+        ],
+        username: username,
+      };
+      const nonce = await getNonce(connection, address);
+      const signed = await profile.signTransaction(wallet.id, identity, registration, bnsCodec, nonce);
+      const txBytes = bnsCodec.bytesToPost(signed);
+      await connection.postTx(txBytes);
+
+      // Find registration transaction
+      const searchResult = await connection.searchTx({ tags: [bnsNonceTag(address)] });
+      expect(searchResult.length).toEqual(1);
+      if (searchResult[0].transaction.kind !== TransactionKind.RegisterUsername) {
+        throw new Error("Unexpected transaction kind");
+      }
+      expect(searchResult[0].transaction.username).toEqual(username);
+      expect(searchResult[0].transaction.addresses.length).toEqual(0);
+
+      connection.disconnect();
+    });
+
+    it("can add address to username and remove again", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = await connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+      const identityAddress = keyToAddress(identity.pubkey);
+
+      // Create and send registration
+      const username = `testuser_${Math.random()}`;
+      const usernameRegistration: RegisterUsernameTx = {
+        kind: TransactionKind.RegisterUsername,
+        chainId: registryChainId,
+        signer: identity.pubkey,
+        username: username,
+        addresses: [],
+      };
+      await connection.postTx(
         bnsCodec.bytesToPost(
           await profile.signTransaction(
             wallet.id,
             identity,
-            addAddress2,
+            usernameRegistration,
             bnsCodec,
             await getNonce(connection, identityAddress),
           ),
         ),
-      )
-      .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/duplicate entry/i));
+      );
 
-    // Remove address
-    const removeAddress: RemoveAddressFromUsernameTx = {
-      kind: TransactionKind.RemoveAddressFromUsername,
-      chainId: registryChainId,
-      signer: identity.pubkey,
-      username: username,
-      payload: {
-        chainId: chainId,
-        address: address,
-      },
-    };
-    await connection.postTx(
-      bnsCodec.bytesToPost(
-        await profile.signTransaction(
-          wallet.id,
-          identity,
-          removeAddress,
-          bnsCodec,
-          await getNonce(connection, identityAddress),
+      // Register a blockchain
+      const chainId = `wonderland_${Math.random()}` as ChainId;
+      const blockchainRegistration: RegisterBlockchainTx = {
+        kind: TransactionKind.RegisterBlockchain,
+        chainId: registryChainId,
+        signer: identity.pubkey,
+        chain: {
+          chainId: chainId,
+          networkId: "7rg047g4h",
+          production: false,
+          enabled: true,
+          name: "Wonderland",
+        },
+        codecName: "wonderland_rules",
+        codecConfig: `{ "any" : [ "json", "content" ] }`,
+      };
+      await connection.postTx(
+        bnsCodec.bytesToPost(
+          await profile.signTransaction(
+            wallet.id,
+            identity,
+            blockchainRegistration,
+            bnsCodec,
+            await getNonce(connection, identityAddress),
+          ),
         ),
-      ),
-    );
+      );
 
-    // Do the same removal again
-    await connection
-      .postTx(
+      // Add address
+      const address = `testaddress_${Math.random()}` as Address;
+      const addAddress: AddAddressToUsernameTx = {
+        kind: TransactionKind.AddAddressToUsername,
+        chainId: registryChainId,
+        signer: identity.pubkey,
+        username: username,
+        payload: {
+          chainId: chainId,
+          address: address,
+        },
+      };
+      await connection.postTx(
+        bnsCodec.bytesToPost(
+          await profile.signTransaction(
+            wallet.id,
+            identity,
+            addAddress,
+            bnsCodec,
+            await getNonce(connection, identityAddress),
+          ),
+        ),
+      );
+
+      // Adding second address for the same chain fails
+      const address2 = `testaddress2_${Math.random()}` as Address;
+      const addAddress2: AddAddressToUsernameTx = {
+        kind: TransactionKind.AddAddressToUsername,
+        chainId: registryChainId,
+        signer: identity.pubkey,
+        username: username,
+        payload: {
+          chainId: chainId,
+          address: address2,
+        },
+      };
+      await connection
+        .postTx(
+          bnsCodec.bytesToPost(
+            await profile.signTransaction(
+              wallet.id,
+              identity,
+              addAddress2,
+              bnsCodec,
+              await getNonce(connection, identityAddress),
+            ),
+          ),
+        )
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/duplicate entry/i));
+
+      // Remove address
+      const removeAddress: RemoveAddressFromUsernameTx = {
+        kind: TransactionKind.RemoveAddressFromUsername,
+        chainId: registryChainId,
+        signer: identity.pubkey,
+        username: username,
+        payload: {
+          chainId: chainId,
+          address: address,
+        },
+      };
+      await connection.postTx(
         bnsCodec.bytesToPost(
           await profile.signTransaction(
             wallet.id,
@@ -698,11 +548,160 @@ describe("BnsConnection", () => {
             await getNonce(connection, identityAddress),
           ),
         ),
-      )
-      .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/invalid entry/i));
+      );
 
-    connection.disconnect();
+      // Do the same removal again
+      await connection
+        .postTx(
+          bnsCodec.bytesToPost(
+            await profile.signTransaction(
+              wallet.id,
+              identity,
+              removeAddress,
+              bnsCodec,
+              await getNonce(connection, identityAddress),
+            ),
+          ),
+        )
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/invalid entry/i));
+
+      connection.disconnect();
+    });
+  });
+
+  describe("searchTx", () => {
+    it("can search for transactions", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const chainId = await connection.chainId();
+
+      const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
+      const faucetAddress = keyToAddress(faucet.pubkey);
+      const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(68));
+      const rcptAddress = keyToAddress(rcpt.pubkey);
+
+      // construct a sendtx, this is normally used in the MultiChainSigner api
+      const memo = `Payment ${Math.random()}`;
+      const sendTx: SendTx = {
+        kind: TransactionKind.Send,
+        chainId: chainId,
+        signer: faucet.pubkey,
+        recipient: rcptAddress,
+        memo: memo,
+        amount: {
+          whole: 1,
+          fractional: 1,
+          tokenTicker: cash,
+        },
+      };
+
+      const nonce = await getNonce(connection, faucetAddress);
+      const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
+      const txBytes = bnsCodec.bytesToPost(signed);
+      const response = await connection.postTx(txBytes);
+      const txHeight = response.metadata.height!;
+
+      {
+        // finds transaction using tag
+        const results = await connection.searchTx({ tags: [bnsFromOrToTag(rcptAddress)] });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        const mostRecentResult = results[results.length - 1];
+        expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
+        expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+      }
+
+      {
+        // finds transaction using tag and height
+        const results = await connection.searchTx({ tags: [bnsFromOrToTag(rcptAddress)], height: txHeight });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        const mostRecentResult = results[results.length - 1];
+        expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
+        expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+      }
+
+      connection.disconnect();
+    });
+
+    // Activate when https://github.com/tendermint/tendermint/issues/2759 is fixed
+    xit("can search for transactions (min/max height)", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const chainId = await connection.chainId();
+      const initialHeight = await connection.height();
+
+      const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
+      const faucetAddress = keyToAddress(faucet.pubkey);
+      const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(68));
+      const rcptAddress = keyToAddress(rcpt.pubkey);
+
+      // construct a sendtx, this is normally used in the MultiChainSigner api
+      const memo = `Payment ${Math.random()}`;
+      const sendTx: SendTx = {
+        kind: TransactionKind.Send,
+        chainId: chainId,
+        signer: faucet.pubkey,
+        recipient: rcptAddress,
+        memo: memo,
+        amount: {
+          whole: 1,
+          fractional: 1,
+          tokenTicker: cash,
+        },
+      };
+
+      const nonce = await getNonce(connection, faucetAddress);
+      const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
+      const txBytes = bnsCodec.bytesToPost(signed);
+      await connection.postTx(txBytes);
+
+      {
+        // finds transaction using tag and minHeight = 1
+        const results = await connection.searchTx({ tags: [bnsFromOrToTag(rcptAddress)], minHeight: 1 });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        const mostRecentResult = results[results.length - 1];
+        expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
+        expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+      }
+
+      {
+        // finds transaction using tag and minHeight = initialHeight
+        const results = await connection.searchTx({
+          tags: [bnsFromOrToTag(rcptAddress)],
+          minHeight: initialHeight,
+        });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        const mostRecentResult = results[results.length - 1];
+        expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
+        expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+      }
+
+      {
+        // finds transaction using tag and maxHeight = 500 million
+        const results = await connection.searchTx({
+          tags: [bnsFromOrToTag(rcptAddress)],
+          maxHeight: 500_000_000,
+        });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        const mostRecentResult = results[results.length - 1];
+        expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
+        expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+      }
+
+      {
+        // finds transaction using tag and maxHeight = initialHeight + 10
+        const results = await connection.searchTx({
+          tags: [bnsFromOrToTag(rcptAddress)],
+          maxHeight: initialHeight + 10,
+        });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        const mostRecentResult = results[results.length - 1];
+        expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
+        expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+      }
+
+      connection.disconnect();
+    });
   });
 
   describe("getBlockchains", () => {
