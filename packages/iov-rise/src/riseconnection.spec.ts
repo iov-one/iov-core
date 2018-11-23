@@ -2,6 +2,8 @@ import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes, Tx
 import {
   Address,
   BcpAccountQuery,
+  BcpBlockInfo,
+  BcpTransactionState,
   SendTx,
   SignedTransaction,
   TokenTicker,
@@ -207,6 +209,66 @@ describe("RiseConnection", () => {
       const result = await connection.postTx(bytesToPost);
       expect(result).toBeTruthy();
     });
+
+    xit("can post transaction and watch confirmations", async done => {
+      const wallet = new Ed25519Wallet();
+      const mainIdentity = await wallet.createIdentity(await defaultKeypair);
+
+      const sendTx: SendTx = {
+        kind: TransactionKind.Send,
+        chainId: riseTestnet,
+        signer: mainIdentity.pubkey,
+        recipient: defaultRecipientAddress,
+        amount: defaultSendAmount,
+      };
+
+      // Encode creation timestamp into nonce
+      const nonce = generateNonce();
+      const signingJob = riseCodec.bytesToSign(sendTx, nonce);
+      const signature = await wallet.createTransactionSignature(
+        mainIdentity,
+        signingJob.bytes,
+        signingJob.prehashType,
+        riseTestnet,
+      );
+
+      const signedTransaction: SignedTransaction = {
+        transaction: sendTx,
+        primarySignature: {
+          nonce: nonce,
+          pubkey: mainIdentity.pubkey,
+          signature: signature,
+        },
+        otherSignatures: [],
+      };
+      const bytesToPost = riseCodec.bytesToPost(signedTransaction);
+
+      const connection = await RiseConnection.establish(base);
+      const heightBeforeTransaction = await connection.height();
+      const result = await connection.postTx(bytesToPost);
+      expect(result).toBeTruthy();
+      expect(result.blockInfo!.value.state).toEqual(BcpTransactionState.Pending);
+
+      const events = new Array<BcpBlockInfo>();
+      const subscription = result.blockInfo!.updates.subscribe({
+        next: info => {
+          events.push(info);
+
+          if (events.length === 2) {
+            expect(events[0]).toEqual({ state: BcpTransactionState.Pending });
+            expect(events[1]).toEqual({
+              state: BcpTransactionState.InBlock,
+              height: heightBeforeTransaction + 1,
+              confirmations: 1,
+            });
+            subscription.unsubscribe();
+            done();
+          }
+        },
+        complete: fail,
+        error: fail,
+      });
+    }, 80_000);
 
     it("throws for transaction with corrupted signature", async () => {
       const wallet = new Ed25519Wallet();
