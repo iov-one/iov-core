@@ -318,8 +318,10 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     // FIXME: consider making a streaming interface here, but that will break clients
     const res = await this.tmClient.txSearchAll({ query: buildTxQuery(txQuery) });
     const chainId = await this.chainId();
+    const currentHeight = await this.height();
     const mapper = ({ tx, hash, height, txResult }: TxResponse): ConfirmedTransaction => ({
-      height,
+      height: height,
+      confirmations: currentHeight - height,
       txid: hash as TxId,
       log: txResult.log,
       result: txResult.data,
@@ -337,7 +339,8 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
     // destructuring ftw (or is it too confusing?)
     const mapper = ({ hash, height, tx, result }: TxEvent): ConfirmedTransaction => ({
-      height,
+      height: height,
+      confirmations: 0, // assuming block height is current height when listening to events
       txid: hash as TxId,
       log: result.log,
       result: result.data,
