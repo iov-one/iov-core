@@ -3,9 +3,11 @@ import {
   AddAddressToUsernameTx,
   Address,
   BcpAccount,
+  BcpBlockInfo,
   BcpNonce,
   BcpSwapQuery,
   BcpTransactionResponse,
+  BcpTransactionState,
   BcpTxQuery,
   Nonce,
   RegisterBlockchainTx,
@@ -323,6 +325,72 @@ describe("BnsConnection", () => {
       expect(mine.txid.length).toBeGreaterThan(0);
 
       connection.disconnect();
+    });
+
+    it("can post transaction and watch confirmations", async done => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const chainId = await connection.chainId();
+
+      const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
+      const faucetAddr = keyToAddress(faucet.pubkey);
+      const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(2));
+      const rcptAddr = keyToAddress(rcpt.pubkey);
+
+      // construct a sendtx, this is normally used in the MultiChainSigner api
+      const sendTx: SendTx = {
+        kind: TransactionKind.Send,
+        chainId,
+        signer: faucet.pubkey,
+        recipient: rcptAddr,
+        memo: "My first payment",
+        amount: {
+          whole: 500,
+          fractional: 75000,
+          tokenTicker: cash,
+        },
+      };
+      const nonce = await getNonce(connection, faucetAddr);
+      const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
+      const txBytes = bnsCodec.bytesToPost(signed);
+      const heightBeforeTransaction = await connection.height();
+      const result = await connection.postTx(txBytes);
+      expect(result.blockInfo!.value).toEqual({
+        state: BcpTransactionState.InBlock,
+        height: heightBeforeTransaction + 1,
+        confirmations: 1,
+      });
+
+      const events = new Array<BcpBlockInfo>();
+      const subscription = result.blockInfo!.updates.subscribe({
+        next: info => {
+          events.push(info);
+
+          if (events.length === 3) {
+            expect(events[0]).toEqual({
+              state: BcpTransactionState.InBlock,
+              height: heightBeforeTransaction + 1,
+              confirmations: 1,
+            });
+            expect(events[1]).toEqual({
+              state: BcpTransactionState.InBlock,
+              height: heightBeforeTransaction + 1,
+              confirmations: 2,
+            });
+            expect(events[2]).toEqual({
+              state: BcpTransactionState.InBlock,
+              height: heightBeforeTransaction + 1,
+              confirmations: 3,
+            });
+
+            subscription.unsubscribe();
+            connection.disconnect();
+            done();
+          }
+        },
+        complete: fail,
+        error: fail,
+      });
     });
 
     it("can register a blockchain", async () => {

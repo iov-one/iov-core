@@ -1,3 +1,4 @@
+import equal from "fast-deep-equal";
 import { Producer, Stream, Subscription } from "xstream";
 
 import { ChainId, PostableBytes, TxId } from "@iov/base-types";
@@ -7,12 +8,14 @@ import {
   BcpAccountQuery,
   BcpAtomicSwap,
   BcpAtomicSwapConnection,
+  BcpBlockInfo,
   BcpNonce,
   BcpQueryEnvelope,
   BcpQueryTag,
   BcpSwapQuery,
   BcpTicker,
   BcpTransactionResponse,
+  BcpTransactionState,
   BcpTxQuery,
   ConfirmedTransaction,
   dummyEnvelope,
@@ -29,6 +32,7 @@ import {
   TxReadCodec,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
+import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import {
   Client as TendermintClient,
   getHeaderEventHeight,
@@ -149,13 +153,44 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       const { checkTx, deliverTx } = txresp;
       throw new Error(JSON.stringify({ checkTx, deliverTx }, null, 2));
     }
+    const height = txresp.height!;
+
+    const firstEvent: BcpBlockInfo = {
+      state: BcpTransactionState.InBlock,
+      height: height,
+      confirmations: 1,
+    };
+    let blockInfoInterval: any;
+    let lastEventSent: BcpBlockInfo = firstEvent;
+    const blockInfoProducer = new DefaultValueProducer<BcpBlockInfo>(firstEvent, {
+      onStarted: () => {
+        blockInfoInterval = setInterval(async () => {
+          const search = await this.searchTx({ hash: txresp.hash, tags: [] });
+          if (search.length > 0) {
+            const confirmedTransaction = search[0];
+            const event: BcpBlockInfo = {
+              state: BcpTransactionState.InBlock,
+              height: confirmedTransaction.height,
+              confirmations: confirmedTransaction.confirmations,
+            };
+
+            if (!equal(event, lastEventSent)) {
+              blockInfoProducer.update(event);
+              lastEventSent = event;
+            }
+          }
+        }, 750);
+      },
+      onStop: () => clearInterval(blockInfoInterval),
+    });
 
     const message = txresp.deliverTx ? txresp.deliverTx.log : txresp.checkTx.log;
     const result = txresp.deliverTx && txresp.deliverTx.data;
     return {
       metadata: {
-        height: txresp.height,
+        height: height,
       },
+      blockInfo: new ValueAndUpdates(blockInfoProducer),
       data: {
         txid: txresp.hash,
         message: message || "",
