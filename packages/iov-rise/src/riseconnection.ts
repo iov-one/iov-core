@@ -22,10 +22,12 @@ import {
   TokenTicker,
 } from "@iov/bcp-types";
 import { Parse } from "@iov/dpos";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 
 import { constants } from "./constants";
 import { riseCodec } from "./risecodec";
+
+const { fromAscii, toUtf8 } = Encoding;
 
 /**
  * Encodes the current date and time as a nonce
@@ -212,8 +214,46 @@ export class RiseConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public searchTx(_: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    throw new Error("Not implemented");
+  public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    if (query.height || query.minHeight || query.maxHeight || query.tags.length) {
+      throw new Error("Query by height, minHeight, maxHeight, tags not supported");
+    }
+
+    if (query.hash) {
+      const transactionId = fromAscii(query.hash);
+
+      const url = this.baseUrl + `/api/transactions/get?id=${transactionId}`;
+      const result = await axios.get(url);
+      const responseBody = result.data;
+
+      if (responseBody.success !== true) {
+        switch (responseBody.error) {
+          case "Transaction not found":
+            return [];
+          default:
+            throw new Error(`RISE API error: ${responseBody.error}`);
+        }
+      }
+
+      const transactionJson = responseBody.transaction;
+      const height = new Int53(transactionJson.height);
+      const confirmations = new Int53(transactionJson.confirmations);
+
+      const transaction = riseCodec.parseBytes(
+        toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
+        this.myChainId,
+      );
+      return [
+        {
+          ...transaction,
+          height: height.toNumber(),
+          confirmations: confirmations.toNumber(),
+          txid: query.hash,
+        },
+      ];
+    } else {
+      throw new Error("Unsupported query.");
+    }
   }
 
   public listenTx(_: ReadonlyArray<BcpQueryTag>): Stream<ConfirmedTransaction> {

@@ -1,4 +1,4 @@
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes, TxId } from "@iov/base-types";
 import {
   Address,
   BcpAccountQuery,
@@ -14,7 +14,7 @@ import { Ed25519Wallet } from "@iov/keycontrol";
 import { riseCodec } from "./risecodec";
 import { generateNonce, RiseConnection } from "./riseconnection";
 
-const { fromHex } = Encoding;
+const { fromHex, toAscii } = Encoding;
 const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
 
 describe("RiseConnection", () => {
@@ -249,6 +249,38 @@ describe("RiseConnection", () => {
         .postTx(bytesToPost)
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(/Failed to verify signature/i));
+    });
+  });
+
+  describe("searchTx", () => {
+    it("can search transaction", async () => {
+      const connection = await RiseConnection.establish(base);
+
+      // by non-existing ID
+      {
+        const searchId = "98568736528934587";
+        const results = await connection.searchTx({ hash: toAscii(searchId) as TxId, tags: [] });
+        expect(results.length).toEqual(0);
+      }
+
+      // by existing ID (https://texplorer.rise.vision/tx/530955287567640950)
+      {
+        const searchId = "530955287567640950";
+        const results = await connection.searchTx({ hash: toAscii(searchId) as TxId, tags: [] });
+        expect(results.length).toEqual(1);
+        const result = results[0];
+        expect(result.height).toEqual(1156579);
+        expect(result.txid).toEqual(toAscii(searchId));
+        const transaction = result.transaction;
+        if (transaction.kind !== TransactionKind.Send) {
+          throw new Error("Unexpected transaction type");
+        }
+        expect(transaction.recipient).toEqual("10145108642177909005R");
+        expect(transaction.amount.whole).toEqual(0);
+        expect(transaction.amount.fractional).toEqual(14550000);
+      }
+
+      connection.disconnect();
     });
   });
 });
