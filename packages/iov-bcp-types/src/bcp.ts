@@ -76,7 +76,7 @@ export interface BcpTransactionResponse {
 export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTransaction>
   extends SignedTransaction<T> {
   readonly height: number; // the block it was written to
-  /** number of blocks on top of the transaction's block */
+  /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
   readonly confirmations: number;
   readonly txid: TxId; // a unique identifier (hash of the data)
   /** Data from executing tx (result, code, tags...) */

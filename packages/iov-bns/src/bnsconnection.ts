@@ -321,7 +321,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const currentHeight = await this.height();
     const mapper = ({ tx, hash, height, txResult }: TxResponse): ConfirmedTransaction => ({
       height: height,
-      confirmations: currentHeight - height,
+      confirmations: currentHeight - height + 1,
       txid: hash as TxId,
       log: txResult.log,
       result: txResult.data,
@@ -340,7 +340,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     // destructuring ftw (or is it too confusing?)
     const mapper = ({ hash, height, tx, result }: TxEvent): ConfirmedTransaction => ({
       height: height,
-      confirmations: 0, // assuming block height is current height when listening to events
+      confirmations: 1, // assuming block height is current height when listening to events
       txid: hash as TxId,
       log: result.log,
       result: result.data,
