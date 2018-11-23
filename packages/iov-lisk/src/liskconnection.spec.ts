@@ -309,6 +309,66 @@ describe("LiskConnection", () => {
     });
   }, 30000);
 
+  xit("can post transaction and wait for 4 confirmations", async () => {
+    pendingWithoutLiskDevnet();
+
+    const wallet = new Ed25519Wallet();
+    const mainIdentity = await wallet.createIdentity(
+      await Derivation.passphraseToKeypair(
+        "wagon stock borrow episode laundry kitten salute link globe zero feed marble",
+      ),
+    );
+
+    const recipientAddress = "16313739661670634666L" as Address;
+
+    const sendTx: SendTx = {
+      kind: TransactionKind.Send,
+      chainId: devnetChainId,
+      signer: mainIdentity.pubkey,
+      recipient: recipientAddress,
+      memo: `We ❤️ developers – iov.one ${Math.random()}`,
+      amount: {
+        whole: 1,
+        fractional: 44550000,
+        tokenTicker: "LSK" as TokenTicker,
+      },
+    };
+
+    // Encode creation timestamp into nonce
+    const nonce = generateNonce();
+    const signingJob = liskCodec.bytesToSign(sendTx, nonce);
+    const signature = await wallet.createTransactionSignature(
+      mainIdentity,
+      signingJob.bytes,
+      signingJob.prehashType,
+      devnetChainId,
+    );
+
+    const signedTransaction: SignedTransaction = {
+      transaction: sendTx,
+      primarySignature: {
+        nonce: nonce,
+        pubkey: mainIdentity.pubkey,
+        signature: signature,
+      },
+      otherSignatures: [],
+    };
+    const bytesToPost = liskCodec.bytesToPost(signedTransaction);
+
+    const connection = await LiskConnection.establish(devnetBase);
+    const heightBeforeTransaction = await connection.height();
+    const result = await connection.postTx(bytesToPost);
+    await result.blockInfo!.waitFor(
+      info => info.state === BcpTransactionState.InBlock && info.confirmations === 4,
+    );
+
+    expect(result.blockInfo!.value).toEqual({
+      state: BcpTransactionState.InBlock,
+      height: heightBeforeTransaction + 1,
+      confirmations: 4,
+    });
+  }, 60000);
+
   it("throws for invalid transaction", async () => {
     pendingWithoutLiskDevnet();
 
