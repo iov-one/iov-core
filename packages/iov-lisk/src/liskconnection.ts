@@ -1,4 +1,5 @@
 import axios from "axios";
+import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
@@ -7,12 +8,14 @@ import {
   Address,
   BcpAccount,
   BcpAccountQuery,
+  BcpBlockInfo,
   BcpConnection,
   BcpNonce,
   BcpQueryEnvelope,
   BcpQueryTag,
   BcpTicker,
   BcpTransactionResponse,
+  BcpTransactionState,
   BcpTxQuery,
   ConfirmedTransaction,
   dummyEnvelope,
@@ -23,11 +26,12 @@ import {
 } from "@iov/bcp-types";
 import { Parse } from "@iov/dpos";
 import { Encoding, Int53 } from "@iov/encoding";
+import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
 import { liskCodec } from "./liskcodec";
 
-const { fromAscii, toUtf8 } = Encoding;
+const { fromAscii, toAscii, toUtf8 } = Encoding;
 
 /**
  * Encodes the current date and time as a nonce
@@ -102,10 +106,40 @@ export class LiskConnection implements BcpConnection {
       throw new Error("Did not get meta.status: true");
     }
 
+    let blockInfoInterval: any;
+    let lastEventSent: BcpBlockInfo | undefined;
+    const blockInfoProducer = new DefaultValueProducer<BcpBlockInfo>(
+      {
+        state: BcpTransactionState.Pending,
+      },
+      {
+        onStarted: () => {
+          blockInfoInterval = setInterval(async () => {
+            const search = await this.searchTx({ hash: toAscii(transactionId) as TxId, tags: [] });
+            if (search.length > 0) {
+              const confirmedTransaction = search[0];
+              const event: BcpBlockInfo = {
+                state: BcpTransactionState.InBlock,
+                height: confirmedTransaction.height,
+                confirmations: confirmedTransaction.confirmations,
+              };
+
+              if (!equal(event, lastEventSent)) {
+                blockInfoProducer.update(event);
+                lastEventSent = event;
+              }
+            }
+          }, 3000);
+        },
+        onStop: () => clearInterval(blockInfoInterval),
+      },
+    );
+
     return {
       metadata: {
         height: undefined,
       },
+      blockInfo: new ValueAndUpdates(blockInfoProducer),
       data: {
         message: "",
         txid: Encoding.toAscii(transactionId) as TxId,

@@ -2,6 +2,8 @@ import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes, Tx
 import {
   Address,
   BcpAccountQuery,
+  BcpBlockInfo,
+  BcpTransactionState,
   SendTx,
   SignedTransaction,
   TokenTicker,
@@ -228,6 +230,84 @@ describe("LiskConnection", () => {
     const result = await connection.postTx(bytesToPost);
     expect(result).toBeTruthy();
   });
+
+  it("can post transaction and watch confirmations", async done => {
+    pendingWithoutLiskDevnet();
+
+    const wallet = new Ed25519Wallet();
+    const mainIdentity = await wallet.createIdentity(
+      await Derivation.passphraseToKeypair(
+        "wagon stock borrow episode laundry kitten salute link globe zero feed marble",
+      ),
+    );
+
+    const recipientAddress = "16313739661670634666L" as Address;
+
+    const sendTx: SendTx = {
+      kind: TransactionKind.Send,
+      chainId: devnetChainId,
+      signer: mainIdentity.pubkey,
+      recipient: recipientAddress,
+      memo: "We ❤️ developers – iov.one",
+      amount: {
+        whole: 1,
+        fractional: 44550000,
+        tokenTicker: "LSK" as TokenTicker,
+      },
+    };
+
+    // Encode creation timestamp into nonce
+    const nonce = generateNonce();
+    const signingJob = liskCodec.bytesToSign(sendTx, nonce);
+    const signature = await wallet.createTransactionSignature(
+      mainIdentity,
+      signingJob.bytes,
+      signingJob.prehashType,
+      devnetChainId,
+    );
+
+    const signedTransaction: SignedTransaction = {
+      transaction: sendTx,
+      primarySignature: {
+        nonce: nonce,
+        pubkey: mainIdentity.pubkey,
+        signature: signature,
+      },
+      otherSignatures: [],
+    };
+    const bytesToPost = liskCodec.bytesToPost(signedTransaction);
+
+    const connection = await LiskConnection.establish(devnetBase);
+    const heightBeforeTransaction = await connection.height();
+    const result = await connection.postTx(bytesToPost);
+    expect(result).toBeTruthy();
+    expect(result.blockInfo!.value.state).toEqual(BcpTransactionState.Pending);
+
+    const events = new Array<BcpBlockInfo>();
+    const subscription = result.blockInfo!.updates.subscribe({
+      next: info => {
+        events.push(info);
+
+        if (events.length === 3) {
+          expect(events[0]).toEqual({ state: BcpTransactionState.Pending });
+          expect(events[1]).toEqual({
+            state: BcpTransactionState.InBlock,
+            height: heightBeforeTransaction + 1,
+            confirmations: 1,
+          });
+          expect(events[2]).toEqual({
+            state: BcpTransactionState.InBlock,
+            height: heightBeforeTransaction + 1,
+            confirmations: 2,
+          });
+          subscription.unsubscribe();
+          done();
+        }
+      },
+      complete: fail,
+      error: fail,
+    });
+  }, 30000);
 
   it("throws for invalid transaction", async () => {
     pendingWithoutLiskDevnet();

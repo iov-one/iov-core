@@ -1,6 +1,7 @@
 import { Stream } from "xstream";
 
 import { ChainId, PostableBytes, PublicKeyBundle, TxId } from "@iov/base-types";
+import { ValueAndUpdates } from "@iov/stream";
 
 import { Address, SignedTransaction, TxCodec } from "./signables";
 import { Nonce, TokenTicker, UnsignedTransaction } from "./transactions";
@@ -62,10 +63,31 @@ export interface BcpTicker {
   readonly tokenName: string;
 }
 
+export enum BcpTransactionState {
+  /** accepted by a blockchain node and in mempool */
+  Pending,
+  /** successfully written in a block, but cannot yet guarantee it won't be reverted */
+  InBlock,
+}
+
+/** Information attached to a signature about its state in a block */
+export type BcpBlockInfo =
+  | { readonly state: BcpTransactionState.Pending }
+  | {
+      readonly state: BcpTransactionState.InBlock;
+      /** block height, if the transaction is included in a block */
+      readonly height: number;
+      /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
+      readonly confirmations: number;
+    };
+
 export interface BcpTransactionResponse {
+  /** @deprecated use blockInfo instead */
   readonly metadata: {
     readonly height?: number;
   };
+  /** TODO: Make non-optional as soon as implemented everywhere */
+  readonly blockInfo?: ValueAndUpdates<BcpBlockInfo>;
   readonly data: {
     readonly message: string;
     readonly txid: TxId; // a unique identifier (hash of the data)
