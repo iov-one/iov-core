@@ -321,8 +321,8 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const mapper = ({ tx, hash, height, txResult }: TxResponse): ConfirmedTransaction => ({
       height,
       txid: hash as TxId,
-      log: txResult.log || "",
-      result: txResult.data || new Uint8Array([]),
+      log: txResult.log,
+      result: txResult.data,
       ...this.codec.parseBytes(tx, chainId),
     });
     return res.txs.map(mapper);
@@ -339,8 +339,8 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const mapper = ({ hash, height, tx, result }: TxEvent): ConfirmedTransaction => ({
       height,
       txid: hash as TxId,
-      log: result.log || "",
-      result: result.data || new Uint8Array([]),
+      log: result.log,
+      result: result.data,
       ...this.codec.parseBytes(tx, chainId),
     });
     return txs.map(mapper);

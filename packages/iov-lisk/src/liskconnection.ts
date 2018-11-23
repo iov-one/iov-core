@@ -228,7 +228,6 @@ export class LiskConnection implements BcpConnection {
           ...transaction,
           height: height.toNumber(),
           txid: query.hash,
-          result: new Uint8Array([]),
           log: `Found transaction with ${confirmations} confirmations`,
         },
       ];

@@ -77,9 +77,9 @@ export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTr
   extends SignedTransaction<T> {
   readonly height: number; // the block it was written to
   readonly txid: TxId; // a unique identifier (hash of the data)
-  // Data from executing tx (result, code, tags...)
-  readonly result: Uint8Array;
-  readonly log: string;
+  /** Data from executing tx (result, code, tags...) */
+  readonly result?: Uint8Array;
+  readonly log?: string;
   // readonly tags: ReadonlyArray<Tag>;
 }
 

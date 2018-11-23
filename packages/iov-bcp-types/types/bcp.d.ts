@@ -50,8 +50,9 @@ export interface BcpTransactionResponse {
 export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTransaction> extends SignedTransaction<T> {
     readonly height: number;
     readonly txid: TxId;
-    readonly result: Uint8Array;
-    readonly log: string;
+    /** Data from executing tx (result, code, tags...) */
+    readonly result?: Uint8Array;
+    readonly log?: string;
 }
 export interface BcpQueryTag {
     readonly key: string;
