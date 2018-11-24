@@ -232,67 +232,69 @@ describe("LiskConnection", () => {
       expect(result).toBeTruthy();
     });
 
-    it("can post transaction and watch confirmations", async done => {
+    it("can post transaction and watch confirmations", done => {
       pendingWithoutLiskDevnet();
 
-      const wallet = new Ed25519Wallet();
-      const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
+      (async () => {
+        const wallet = new Ed25519Wallet();
+        const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
-      const sendTx: SendTx = {
-        kind: TransactionKind.Send,
-        chainId: devnetChainId,
-        signer: mainIdentity.pubkey,
-        recipient: devnetDefaultRecipient,
-        memo: `We ❤️ developers – iov.one ${Math.random()}`,
-        amount: devnetDefaultAmount,
-      };
+        const sendTx: SendTx = {
+          kind: TransactionKind.Send,
+          chainId: devnetChainId,
+          signer: mainIdentity.pubkey,
+          recipient: devnetDefaultRecipient,
+          memo: `We ❤️ developers – iov.one ${Math.random()}`,
+          amount: devnetDefaultAmount,
+        };
 
-      // Encode creation timestamp into nonce
-      const nonce = generateNonce();
-      const signingJob = liskCodec.bytesToSign(sendTx, nonce);
-      const signature = await wallet.createTransactionSignature(
-        mainIdentity,
-        signingJob.bytes,
-        signingJob.prehashType,
-        devnetChainId,
-      );
+        // Encode creation timestamp into nonce
+        const nonce = generateNonce();
+        const signingJob = liskCodec.bytesToSign(sendTx, nonce);
+        const signature = await wallet.createTransactionSignature(
+          mainIdentity,
+          signingJob.bytes,
+          signingJob.prehashType,
+          devnetChainId,
+        );
 
-      const signedTransaction: SignedTransaction = {
-        transaction: sendTx,
-        primarySignature: {
-          nonce: nonce,
-          pubkey: mainIdentity.pubkey,
-          signature: signature,
-        },
-        otherSignatures: [],
-      };
-      const bytesToPost = liskCodec.bytesToPost(signedTransaction);
+        const signedTransaction: SignedTransaction = {
+          transaction: sendTx,
+          primarySignature: {
+            nonce: nonce,
+            pubkey: mainIdentity.pubkey,
+            signature: signature,
+          },
+          otherSignatures: [],
+        };
+        const bytesToPost = liskCodec.bytesToPost(signedTransaction);
 
-      const connection = await LiskConnection.establish(devnetBase);
-      const heightBeforeTransaction = await connection.height();
-      const result = await connection.postTx(bytesToPost);
-      expect(result).toBeTruthy();
-      expect(result.blockInfo!.value.state).toEqual(BcpTransactionState.Pending);
+        const connection = await LiskConnection.establish(devnetBase);
+        const heightBeforeTransaction = await connection.height();
+        const result = await connection.postTx(bytesToPost);
+        expect(result).toBeTruthy();
+        expect(result.blockInfo!.value.state).toEqual(BcpTransactionState.Pending);
 
-      const events = new Array<BcpBlockInfo>();
-      const subscription = result.blockInfo!.updates.subscribe({
-        next: info => {
-          events.push(info);
+        const events = new Array<BcpBlockInfo>();
+        const subscription = result.blockInfo!.updates.subscribe({
+          next: info => {
+            events.push(info);
 
-          if (events.length === 2) {
-            expect(events[0]).toEqual({ state: BcpTransactionState.Pending });
-            expect(events[1]).toEqual({
-              state: BcpTransactionState.InBlock,
-              height: heightBeforeTransaction + 1,
-              confirmations: 1,
-            });
-            subscription.unsubscribe();
-            done();
-          }
-        },
-        complete: fail,
-        error: fail,
-      });
+            if (events.length === 2) {
+              expect(events[0]).toEqual({ state: BcpTransactionState.Pending });
+              expect(events[1]).toEqual({
+                state: BcpTransactionState.InBlock,
+                height: heightBeforeTransaction + 1,
+                confirmations: 1,
+              });
+              subscription.unsubscribe();
+              done();
+            }
+          },
+          complete: fail,
+          error: fail,
+        });
+      })().catch(fail);
     }, 30000);
 
     xit("can post transaction and wait for 4 confirmations", async () => {
