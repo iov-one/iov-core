@@ -1,6 +1,6 @@
 {
   "name": "@iov/crypto",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Cryptography resources for IOV projects",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
