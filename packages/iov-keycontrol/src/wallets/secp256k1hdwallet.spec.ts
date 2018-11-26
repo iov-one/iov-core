@@ -123,7 +123,7 @@ describe("Secp256k1HdWallet", () => {
     );
 
     const valid = await Secp256k1.verifySignature(
-      ExtendedSecp256k1Signature.fromFixedLength(signatureBytes),
+      ExtendedSecp256k1Signature.fromDer(signatureBytes),
       new Sha256(data).digest(),
       fromHex(
         "04a7a8d79df7857bf25a3a389b0ecea83c5272181d2c062346b1c64e258589fce0f48fe3900d52ef9a034a35e671329bb65441d8e010484d3e4817578550448e99",
