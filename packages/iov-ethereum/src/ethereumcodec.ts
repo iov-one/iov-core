@@ -11,10 +11,10 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
-import { Keccak256 } from "@iov/crypto";
+import { ExtendedSecp256k1Signature, Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
-import { encodeQuantity, encodeQuantityString, hexPadToEven, trimLeadingZero } from "./utils";
+import { encodeQuantity, encodeQuantityString, hexPadToEven} from "./utils";
 
 import { isValidAddress } from "./derivation";
 import { toRlp } from "./encoding";
@@ -78,10 +78,10 @@ export const ethereumCodec: TxCodec = {
         if (!isValidAddress(signed.transaction.recipient)) {
           throw new Error("Invalid recipient address");
         }
-        const sig = signed.primarySignature.signature;
-        const r = sig.slice(0, 32);
-        const s = sig.slice(32, 64);
-        let v = Number(sig.slice(-1)) + 27;
+        const sig = ExtendedSecp256k1Signature.fromFixedLength(signed.primarySignature.signature);
+        const r = sig.r();
+        const s = sig.s();
+        let v = sig.recovery + 27;
         const chainId = Number(signed.transaction.chainId);
         if (chainId > 0) {
           v += chainId * 2 + 8;
@@ -96,8 +96,8 @@ export const ethereumCodec: TxCodec = {
             Buffer.from(fromHex(hexPadToEven(valueHex))),
             Buffer.from(fromHex(hexPadToEven(dataHex))),
             Buffer.from(fromHex(hexPadToEven(chainIdHex))),
-            Buffer.from(fromHex(trimLeadingZero(toHex(r)))),
-            Buffer.from(fromHex(trimLeadingZero(toHex(s)))),
+            Buffer.from(r),
+            Buffer.from(s),
           ]),
         );
         return postableTx as PostableBytes;
