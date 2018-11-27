@@ -112,8 +112,7 @@ describe("Sign with ledger app", () => {
       recipient: "tiov1qy352eufqy352eufqy352eufqy352eufpralqn" as RecipientId,
       amount: {
         // 1234.789 LGR
-        whole: 1234,
-        fractional: 789000000,
+        quantity: "1234789000000",
         fractionalDigits: 9,
         tokenTicker: "LGR" as TokenTicker,
       },
@@ -158,8 +157,7 @@ describe("Sign with ledger app", () => {
       recipient: "tiov1zg62hngqqz4qqq8lluqqp2sqqqfrf27dzrrmea" as RecipientId,
       amount: {
         // 77.01001 PATH
-        whole: 77,
-        fractional: 10010000,
+        quantity: "77010010000",
         fractionalDigits: 9,
         tokenTicker: "PATH" as TokenTicker,
       },

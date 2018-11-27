@@ -197,10 +197,10 @@ export class RiseConnection implements BcpConnection {
         name: undefined,
         balance: [
           {
+            quantity: Parse.parseQuantity(responseBody.balance),
             fractionalDigits: constants.primaryTokenFractionalDigits,
             tokenName: constants.primaryTokenName,
             tokenTicker: constants.primaryTokenTicker,
-            ...Parse.parseQuantity(responseBody.balance),
           },
         ],
       },

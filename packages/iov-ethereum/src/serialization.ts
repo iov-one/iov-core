@@ -1,9 +1,6 @@
 import { Nonce, TransactionKind, UnsignedTransaction } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
-import BN = require("bn.js");
-
-import { constants } from "./constants";
 import { isValidAddress } from "./derivation";
 import { toRlp } from "./encoding";
 import { encodeQuantity, encodeQuantityString, hexPadToEven } from "./utils";
@@ -15,20 +12,10 @@ export class Serialization {
     switch (unsigned.kind) {
       case TransactionKind.Send:
         const chainIdHex = encodeQuantity(Number(unsigned.chainId));
-        const valueHex = encodeQuantityString(
-          Serialization.amountFromComponents(unsigned.amount.whole, unsigned.amount.fractional),
-        );
+        const valueHex = encodeQuantityString(unsigned.amount.quantity);
         const nonceHex = nonce.toNumber() > 0 ? encodeQuantity(nonce.toNumber()) : "0x";
-        const gasPriceHex = unsigned.gasPrice
-          ? encodeQuantityString(
-              Serialization.amountFromComponents(unsigned.gasPrice.whole, unsigned.gasPrice.fractional),
-            )
-          : "0x";
-        const gasLimitHex = unsigned.gasLimit
-          ? encodeQuantityString(
-              Serialization.amountFromComponents(unsigned.gasLimit.whole, unsigned.gasLimit.fractional),
-            )
-          : "0x";
+        const gasPriceHex = unsigned.gasPrice ? encodeQuantityString(unsigned.gasPrice.quantity) : "0x";
+        const gasLimitHex = unsigned.gasLimit ? encodeQuantityString(unsigned.gasLimit.quantity) : "0x";
         const dataHex = unsigned.memo ? "0x" + Encoding.toHex(Encoding.toUtf8(unsigned.memo)) : "0x";
 
         if (!isValidAddress(unsigned.recipient)) {
@@ -52,16 +39,5 @@ export class Serialization {
       default:
         throw new Error("Unsupported kind of transaction");
     }
-  }
-  public static amountFromComponents(whole: number, fractional: number): string {
-    const base10BigNumber = new BN(10);
-    const wholeBigNumber = new BN(whole);
-    const fractionalDigitsBigNumber = new BN(constants.primaryTokenFractionalDigits);
-    const fractionalBigNumber = new BN(fractional);
-    return base10BigNumber
-      .pow(fractionalDigitsBigNumber)
-      .mul(wholeBigNumber)
-      .add(fractionalBigNumber)
-      .toString();
   }
 }

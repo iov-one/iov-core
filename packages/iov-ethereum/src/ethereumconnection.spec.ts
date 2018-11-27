@@ -27,8 +27,7 @@ describe("EthereumConnection", () => {
   const nodeChainId = TestConfig.chainId;
   const minHeight = TestConfig.minHeight;
   const address = TestConfig.address;
-  const whole = TestConfig.whole;
-  const fractional = TestConfig.fractional;
+  const quantity = TestConfig.quantity;
   const nonce = TestConfig.nonce;
   const gasPrice = TestConfig.gasPrice;
   const gasLimit = TestConfig.gasLimit;
@@ -61,8 +60,7 @@ describe("EthereumConnection", () => {
     expect(account.data[0].address).toEqual(address);
     expect(account.data[0].balance[0].tokenTicker).toEqual("ETH");
     expect(account.data[0].balance[0].fractionalDigits).toEqual(18);
-    expect(account.data[0].balance[0].whole).toEqual(whole);
-    expect(account.data[0].balance[0].fractional).toEqual(fractional);
+    expect(account.data[0].balance[0].quantity).toEqual(quantity);
   });
 
   it("can get nonce", async () => {
@@ -91,20 +89,17 @@ describe("EthereumConnection", () => {
       signer: mainIdentity.pubkey,
       recipient: recipientAddress,
       amount: {
-        whole: 0,
-        fractional: 3445500,
+        quantity: "3445500",
         fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
       },
       gasPrice: {
-        whole: 0,
-        fractional: gasPrice,
+        quantity: gasPrice,
         fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
       },
       gasLimit: {
-        whole: 0,
-        fractional: gasLimit,
+        quantity: gasLimit,
         fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
       },

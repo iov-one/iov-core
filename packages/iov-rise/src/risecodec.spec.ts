@@ -39,8 +39,7 @@ describe("riseCodec", () => {
       },
       kind: TransactionKind.Send,
       amount: {
-        whole: 1,
-        fractional: 23456789,
+        quantity: "123456789",
         fractionalDigits: 8,
         tokenTicker: "RISE" as TokenTicker,
       },
@@ -104,12 +103,12 @@ describe("riseCodec", () => {
       throw new Error("wrong transaction kind");
     }
     expect(parsed.transaction.fee).toBeTruthy();
-    expect(parsed.transaction.fee!.whole).toEqual(0);
-    expect(parsed.transaction.fee!.fractional).toEqual(10000000);
+    expect(parsed.transaction.fee!.quantity).toEqual("10000000");
+    expect(parsed.transaction.fee!.fractionalDigits).toEqual(8);
     expect(parsed.transaction.fee!.tokenTicker).toEqual("RISE");
     expect(parsed.transaction.amount).toBeTruthy();
-    expect(parsed.transaction.amount.whole).toEqual(1);
-    expect(parsed.transaction.amount.fractional).toEqual(44550000);
+    expect(parsed.transaction.amount.quantity).toEqual("144550000");
+    expect(parsed.transaction.amount.fractionalDigits).toEqual(8);
     expect(parsed.transaction.amount.tokenTicker).toEqual("RISE");
     expect(parsed.transaction.signer.algo).toEqual(Algorithm.Ed25519);
     expect(parsed.transaction.signer.data).toEqual(

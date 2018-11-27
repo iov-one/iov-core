@@ -27,8 +27,7 @@ describe("RiseConnection", () => {
   );
   const defaultRecipientAddress = "10145108642177909005R" as Address;
   const defaultSendAmount: Amount = {
-    whole: 0,
-    fractional: 14550000,
+    quantity: "14550000",
     fractionalDigits: 8,
     tokenTicker: "RISE" as TokenTicker,
   };
@@ -132,8 +131,7 @@ describe("RiseConnection", () => {
     expect(account.data[0].address).toEqual("6472030874529564639R");
     expect(account.data[0].balance[0].tokenTicker).toEqual("RISE");
     expect(account.data[0].balance[0].fractionalDigits).toEqual(8);
-    expect(account.data[0].balance[0].whole).toEqual(52);
-    expect(account.data[0].balance[0].fractional).toEqual(98643212);
+    expect(account.data[0].balance[0].quantity).toEqual("5298643212");
   });
 
   it("can get account from pubkey", async () => {
@@ -147,8 +145,7 @@ describe("RiseConnection", () => {
     expect(account.data[0].address).toEqual("6472030874529564639R");
     expect(account.data[0].balance[0].tokenTicker).toEqual("RISE");
     expect(account.data[0].balance[0].fractionalDigits).toEqual(8);
-    expect(account.data[0].balance[0].whole).toEqual(52);
-    expect(account.data[0].balance[0].fractional).toEqual(98643212);
+    expect(account.data[0].balance[0].quantity).toEqual("5298643212");
   });
 
   it("returns empty list when getting an unused account", async () => {
@@ -340,8 +337,7 @@ describe("RiseConnection", () => {
           throw new Error("Unexpected transaction type");
         }
         expect(transaction.recipient).toEqual("10145108642177909005R");
-        expect(transaction.amount.whole).toEqual(0);
-        expect(transaction.amount.fractional).toEqual(14550000);
+        expect(transaction.amount.quantity).toEqual("14550000");
       }
 
       connection.disconnect();

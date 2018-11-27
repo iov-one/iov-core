@@ -59,14 +59,10 @@ export const liskCodec: TxCodec = {
           signed.primarySignature,
           constants.transactionSerializationOptions,
         );
-        const amount = Serialization.amountFromComponents(
-          signed.transaction.amount.whole,
-          signed.transaction.amount.fractional,
-        );
 
         const postableObject = {
           type: 0,
-          amount: amount.toString(),
+          amount: signed.transaction.amount.quantity,
           recipientId: signed.transaction.recipient,
           senderPublicKey: Encoding.toHex(signed.primarySignature.pubkey.data),
           timestamp: liskTimestamp,
@@ -117,7 +113,7 @@ export const liskCodec: TxCodec = {
       transaction: {
         chainId: chainId,
         fee: {
-          ...Parse.parseQuantity(json.fee),
+          quantity: Parse.parseQuantity(json.fee),
           fractionalDigits: constants.primaryTokenFractionalDigits,
           tokenTicker: constants.primaryTokenTicker,
         },
@@ -128,7 +124,7 @@ export const liskCodec: TxCodec = {
         ttl: undefined,
         kind: kind,
         amount: {
-          ...Parse.parseQuantity(json.amount),
+          quantity: Parse.parseQuantity(json.amount),
           fractionalDigits: constants.primaryTokenFractionalDigits,
           tokenTicker: constants.primaryTokenTicker,
         },

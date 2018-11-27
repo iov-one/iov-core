@@ -1,3 +1,3 @@
 export { Derivation } from "./derivation";
-export { Parse, Quantity } from "./parse";
+export { Parse } from "./parse";
 export { Serialization, TransactionSerializationOptions } from "./serialization";

@@ -47,30 +47,15 @@ export const ethereumCodec: TxCodec = {
         let dataHex = "0x";
         let nonceHex = "0x";
 
-        const valueHex = encodeQuantityString(
-          Serialization.amountFromComponents(
-            signed.transaction.amount.whole,
-            signed.transaction.amount.fractional,
-          ),
-        );
+        const valueHex = encodeQuantityString(signed.transaction.amount.quantity);
         if (signed.primarySignature.nonce.toNumber() > 0) {
           nonceHex = encodeQuantity(signed.primarySignature.nonce.toNumber());
         }
         if (signed.transaction.gasPrice) {
-          gasPriceHex = encodeQuantityString(
-            Serialization.amountFromComponents(
-              signed.transaction.gasPrice.whole,
-              signed.transaction.gasPrice.fractional,
-            ),
-          );
+          gasPriceHex = encodeQuantityString(signed.transaction.gasPrice.quantity);
         }
         if (signed.transaction.gasLimit) {
-          gasLimitHex = encodeQuantityString(
-            Serialization.amountFromComponents(
-              signed.transaction.gasLimit.whole,
-              signed.transaction.gasLimit.fractional,
-            ),
-          );
+          gasLimitHex = encodeQuantityString(signed.transaction.gasLimit.quantity);
         }
         if (signed.transaction.memo) {
           dataHex += Encoding.toHex(Encoding.toUtf8(signed.transaction.memo));

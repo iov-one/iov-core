@@ -29,16 +29,6 @@ export class Serialization {
     return timestamp;
   }
 
-  public static amountFromComponents(whole: number, fractional: number): Uint64 {
-    // Do math on a Long (signed 64 bit integer). The max possible value is ~700 times
-    // the current Lisk/RISE supply: (2**63-1) / (130_000_000 * 100_000_000) = 709.49
-    const amount = Long.fromNumber(whole)
-      .multiply(100000000)
-      .add(fractional)
-      .toBytesBE();
-    return Uint64.fromBytesBigEndian(amount);
-  }
-
   public static serializeTransaction(
     unsigned: UnsignedTransaction,
     creationTime: ReadonlyDate,
@@ -57,7 +47,7 @@ export class Serialization {
           (timestamp >> 16) & 0xff,
           (timestamp >> 24) & 0xff,
         ]);
-        const amount = Serialization.amountFromComponents(unsigned.amount.whole, unsigned.amount.fractional);
+        const amount = Uint64.fromString(unsigned.amount.quantity);
         const fullRecipientString = unsigned.recipient;
 
         if (!fullRecipientString.match(/^[0-9]{1,20}[A-Z]{1}$/)) {

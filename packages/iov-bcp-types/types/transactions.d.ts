@@ -9,8 +9,16 @@ export declare type SwapIdBytes = Uint8Array & As<"swap-id">;
 export declare type SwapIdString = string & As<"swap-id">;
 export declare type RecipientId = Address;
 export interface Amount {
-    readonly whole: number;
-    readonly fractional: number;
+    /**
+     * The quantity expressed as atimic units.
+     *
+     * Convert to whole and fractional part using
+     *   const whole = amount.quantity.slice(0, -amount.fractionalDigits);
+     *   const fractional = amount.quantity.slice(-amount.fractionalDigits);
+     * or to a floating point approximation (not safe!)
+     *   const approx = whole + fractional / 10**amount.fractionalDigits
+     */
+    readonly quantity: string;
     /**
      * The number of fractionl digits the token supports.
      *

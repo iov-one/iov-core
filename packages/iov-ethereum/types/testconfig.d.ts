@@ -6,10 +6,9 @@ export interface EthereumNetworkConfig {
     readonly chainId: ChainId;
     readonly minHeight: number;
     readonly address: Address;
-    readonly whole: number;
-    readonly fractional: number;
+    readonly quantity: string;
     readonly nonce: Nonce;
-    readonly gasPrice: number;
-    readonly gasLimit: number;
+    readonly gasPrice: string;
+    readonly gasLimit: string;
 }
 export declare const TestConfig: EthereumNetworkConfig;

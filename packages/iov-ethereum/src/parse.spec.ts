@@ -5,8 +5,7 @@ import { Parse } from "./parse";
 describe("Parse", () => {
   it("can parse zero amount", () => {
     const expected: Amount = {
-      whole: 0,
-      fractional: 0,
+      quantity: "0",
       fractionalDigits: 18,
       tokenTicker: "ETH" as TokenTicker,
     };
@@ -17,8 +16,7 @@ describe("Parse", () => {
 
   it("can parse 1 ETH", () => {
     const expected: Amount = {
-      whole: 1,
-      fractional: 0,
+      quantity: "1000000000000000000",
       fractionalDigits: 18,
       tokenTicker: "ETH" as TokenTicker,
     };
@@ -29,8 +27,7 @@ describe("Parse", () => {
 
   it("can parse 10 million ETH", () => {
     const expected: Amount = {
-      whole: 10000000,
-      fractional: 0,
+      quantity: "10000000000000000000000000",
       fractionalDigits: 18,
       tokenTicker: "ETH" as TokenTicker,
     };
@@ -39,8 +36,7 @@ describe("Parse", () => {
 
   it("can parse 100 million ETH", () => {
     const expected: Amount = {
-      whole: 100000000,
-      fractional: 0,
+      quantity: "100000000000000000000000000",
       fractionalDigits: 18,
       tokenTicker: "ETH" as TokenTicker,
     };
@@ -49,8 +45,7 @@ describe("Parse", () => {
 
   it("can parse 1.23 ETH", () => {
     const expected: Amount = {
-      whole: 1,
-      fractional: 230000000000000000,
+      quantity: "1230000000000000000",
       fractionalDigits: 18,
       tokenTicker: "ETH" as TokenTicker,
     };
@@ -59,8 +54,7 @@ describe("Parse", () => {
 
   it("can parse 1.0023 ETH", () => {
     const expected: Amount = {
-      whole: 1,
-      fractional: 2300000000000000,
+      quantity: "1002300000000000000",
       fractionalDigits: 18,
       tokenTicker: "ETH" as TokenTicker,
     };
@@ -69,8 +63,7 @@ describe("Parse", () => {
 
   it("can parse 1.234567890123456789 ETH", () => {
     const expected: Amount = {
-      whole: 1,
-      fractional: 234567890123456789,
+      quantity: "1234567890123456789",
       fractionalDigits: 18,
       tokenTicker: "ETH" as TokenTicker,
     };

@@ -7,7 +7,7 @@ import { Encoding, Int53 } from "@iov/encoding";
 import { Serialization, TransactionSerializationOptions } from "./serialization";
 
 const { fromAscii, fromHex } = Encoding;
-const { amountFromComponents, serializeTransaction, toTimestamp, transactionId } = Serialization;
+const { serializeTransaction, toTimestamp, transactionId } = Serialization;
 
 const epochAsUnixTimestamp = 1464109200;
 const defaultCreationDate = new ReadonlyDate((865708731 + epochAsUnixTimestamp) * 1000);
@@ -77,30 +77,6 @@ describe("Serialization", () => {
     });
   });
 
-  describe("amountFromComponents", () => {
-    it("works for some simple values", () => {
-      expect(amountFromComponents(0, 0).toString()).toEqual("0");
-      expect(amountFromComponents(0, 1).toString()).toEqual("1");
-      expect(amountFromComponents(0, 123).toString()).toEqual("123");
-      expect(amountFromComponents(1, 0).toString()).toEqual("100000000");
-      expect(amountFromComponents(123, 0).toString()).toEqual("12300000000");
-      expect(amountFromComponents(1, 1).toString()).toEqual("100000001");
-      expect(amountFromComponents(1, 23456789).toString()).toEqual("123456789");
-    });
-
-    it("works for amount 10 million", () => {
-      expect(amountFromComponents(10000000, 0).toString()).toEqual("1000000000000000");
-      // set high and low digit to trigger precision bugs in floating point operations
-      expect(amountFromComponents(10000000, 1).toString()).toEqual("1000000000000001");
-    });
-
-    it("works for amount 100 million", () => {
-      expect(amountFromComponents(100000000, 0).toString()).toEqual("10000000000000000");
-      // set high and low digit to trigger precision bugs in floating point operations
-      expect(amountFromComponents(100000000, 1).toString()).toEqual("10000000000000001");
-    });
-  });
-
   describe("serializeTransaction", () => {
     it("can serialize RISE transaction of type 0 without memo", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
@@ -113,8 +89,7 @@ describe("Serialization", () => {
         },
         kind: TransactionKind.Send,
         amount: {
-          whole: 1,
-          fractional: 23456789,
+          quantity: "123456789",
           fractionalDigits: 8,
           tokenTicker: "RISE" as TokenTicker,
         },
@@ -140,8 +115,7 @@ describe("Serialization", () => {
         },
         kind: TransactionKind.Send,
         amount: {
-          whole: 1,
-          fractional: 23456789,
+          quantity: "123456789",
           fractionalDigits: 8,
           tokenTicker: "LSK" as TokenTicker,
         },
@@ -167,8 +141,7 @@ describe("Serialization", () => {
         },
         kind: TransactionKind.Send,
         amount: {
-          whole: 1,
-          fractional: 23456789,
+          quantity: "123456789",
           fractionalDigits: 8,
           tokenTicker: "LSK" as TokenTicker,
         },
@@ -195,8 +168,7 @@ describe("Serialization", () => {
         },
         kind: TransactionKind.Send,
         amount: {
-          whole: 1,
-          fractional: 23456789,
+          quantity: "123456789",
           fractionalDigits: 8,
           tokenTicker: "LSK" as TokenTicker,
         },
@@ -220,8 +192,7 @@ describe("Serialization", () => {
         },
         kind: TransactionKind.Send,
         amount: {
-          whole: 1,
-          fractional: 23456789,
+          quantity: "123456789",
           fractionalDigits: 8,
           tokenTicker: "LSK" as TokenTicker,
         },
@@ -246,14 +217,12 @@ describe("Serialization", () => {
         },
         kind: TransactionKind.Send,
         amount: {
-          whole: 1,
-          fractional: 23456789,
+          quantity: "123456789",
           fractionalDigits: 8,
           tokenTicker: "XNET" as TokenTicker,
         },
         fee: {
-          whole: 0,
-          fractional: 0,
+          quantity: "0",
           fractionalDigits: 8,
           tokenTicker: "XNET" as TokenTicker,
         },
@@ -278,8 +247,7 @@ describe("Serialization", () => {
         },
         kind: TransactionKind.Send,
         amount: {
-          whole: 1,
-          fractional: 23456789,
+          quantity: "123456789",
           fractionalDigits: 8,
           tokenTicker: "LSK" as TokenTicker,
         },

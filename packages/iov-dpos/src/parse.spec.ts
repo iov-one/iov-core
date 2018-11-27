@@ -3,41 +3,35 @@ import { ReadonlyDate } from "readonly-date";
 import { Nonce } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 
-import { Parse, Quantity } from "./parse";
+import { Parse } from "./parse";
 
 describe("Parse", () => {
   it("can parse quantity zero", () => {
-    const expected: Quantity = { whole: 0, fractional: 0 };
-    expect(Parse.parseQuantity("0")).toEqual(expected);
-    expect(Parse.parseQuantity("00")).toEqual(expected);
-    expect(Parse.parseQuantity("000000000")).toEqual(expected);
+    expect(Parse.parseQuantity("0")).toEqual("0");
+    expect(Parse.parseQuantity("00")).toEqual("0");
+    expect(Parse.parseQuantity("000000000")).toEqual("0");
   });
 
   it("can parse quantity 1", () => {
-    const expected: Quantity = { whole: 1, fractional: 0 };
-    expect(Parse.parseQuantity("100000000")).toEqual(expected);
-    expect(Parse.parseQuantity("00100000000")).toEqual(expected);
-    expect(Parse.parseQuantity("000000000100000000")).toEqual(expected);
+    expect(Parse.parseQuantity("100000000")).toEqual("100000000");
+    expect(Parse.parseQuantity("00100000000")).toEqual("100000000");
+    expect(Parse.parseQuantity("000000000100000000")).toEqual("100000000");
   });
 
   it("can parse quantity 10 million", () => {
-    const expected: Quantity = { whole: 10000000, fractional: 0 };
-    expect(Parse.parseQuantity("1000000000000000")).toEqual(expected);
+    expect(Parse.parseQuantity("1000000000000000")).toEqual("1000000000000000");
   });
 
   it("can parse quantity 100 million", () => {
-    const expected: Quantity = { whole: 100000000, fractional: 0 };
-    expect(Parse.parseQuantity("10000000000000000")).toEqual(expected);
+    expect(Parse.parseQuantity("10000000000000000")).toEqual("10000000000000000");
   });
 
   it("can parse quantity 1.23", () => {
-    const expected: Quantity = { whole: 1, fractional: 23000000 };
-    expect(Parse.parseQuantity("123000000")).toEqual(expected);
+    expect(Parse.parseQuantity("123000000")).toEqual("123000000");
   });
 
   it("can parse quantity 1.23456789", () => {
-    const expected: Quantity = { whole: 1, fractional: 23456789 };
-    expect(Parse.parseQuantity("123456789")).toEqual(expected);
+    expect(Parse.parseQuantity("123456789")).toEqual("123456789");
   });
 
   it("parses timestamp 0 as epoch", () => {

@@ -186,10 +186,10 @@ export class LiskConnection implements BcpConnection {
         name: undefined,
         balance: [
           {
+            quantity: Parse.parseQuantity(item.balance),
             fractionalDigits: constants.primaryTokenFractionalDigits,
             tokenName: constants.primaryTokenName,
             tokenTicker: constants.primaryTokenTicker,
-            ...Parse.parseQuantity(item.balance),
           },
         ],
       }),

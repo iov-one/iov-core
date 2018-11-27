@@ -16,7 +16,7 @@ import {
   TransactionKind,
   UnsignedTransaction,
 } from "@iov/bcp-types";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
 import { PrivateKeyBundle } from "./types";
@@ -26,6 +26,16 @@ const { toUtf8 } = Encoding;
 
 function encodeBoolean(value: boolean): true | undefined {
   return value ? true : undefined;
+}
+
+function encodeInt(intNumber: number): number | null {
+  if (!Number.isInteger(intNumber)) {
+    throw new Error("Received some kind of number that can't be encoded.");
+  }
+
+  // use null instead of 0 to not encode zero fields
+  // for compatibility with golang encoder
+  return intNumber || null;
 }
 
 export function encodePubkey(publicKey: PublicKeyBundle): codecImpl.crypto.IPublicKey {
@@ -47,11 +57,11 @@ export function encodePrivkey(privateKey: PrivateKeyBundle): codecImpl.crypto.IP
 }
 
 export function encodeAmount(amount: Amount): codecImpl.x.Coin {
+  const whole = Int53.fromString(amount.quantity.slice(0, -amount.fractionalDigits) || "0");
+  const fractional = Int53.fromString(amount.quantity.slice(-amount.fractionalDigits) || "0");
   return codecImpl.x.Coin.create({
-    // use null instead of 0 to not encode zero fields
-    // for compatibility with golang encoder
-    whole: amount.whole || null,
-    fractional: amount.fractional || null,
+    whole: encodeInt(whole.toNumber()),
+    fractional: encodeInt(fractional.toNumber()),
     ticker: amount.tokenTicker,
   });
 }

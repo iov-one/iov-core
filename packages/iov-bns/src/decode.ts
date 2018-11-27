@@ -1,3 +1,5 @@
+import Long from "long";
+
 import { ChainId } from "@iov/base-types";
 import {
   AddAddressToUsernameTx,
@@ -111,10 +113,19 @@ export function decodeToken(data: codecImpl.namecoin.IToken & Keyed): BcpTicker 
 }
 
 export function decodeAmount(coin: codecImpl.x.ICoin): Amount {
+  const fractionalDigits = 9; // fixed for all tickers in BNS
+
+  const wholeNumber = asNumber(coin.whole);
+  const fractionalNumber = asNumber(coin.fractional);
+
+  const quantity = Long.fromNumber(wholeNumber)
+    .multiply(10 ** fractionalDigits)
+    .add(fractionalNumber)
+    .toString();
+
   return {
-    whole: asNumber(coin.whole),
-    fractional: asNumber(coin.fractional),
-    fractionalDigits: 9, // fixed for all tickers in BNS
+    quantity: quantity,
+    fractionalDigits: fractionalDigits,
     tokenTicker: (coin.ticker || "") as TokenTicker,
   };
 }
