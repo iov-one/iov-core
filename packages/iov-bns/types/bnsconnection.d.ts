@@ -15,6 +15,7 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     private readonly tmClient;
     private readonly codec;
     private readonly chainData;
+    private readonly context;
     /**
      * Private constructor to hide package private types from the public interface
      *

@@ -45,7 +45,7 @@ import {
 } from "@iov/tendermint-rpc";
 
 import { bnsCodec } from "./bnscodec";
-import { ChainData, Normalize } from "./context";
+import { ChainData, Context } from "./context";
 import { decodeBlockchainNft, decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
@@ -119,6 +119,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   private readonly tmClient: TendermintClient;
   private readonly codec: TxReadCodec;
   private readonly chainData: ChainData;
+  private readonly context: Context;
 
   /**
    * Private constructor to hide package private types from the public interface
@@ -129,6 +130,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     this.tmClient = tmClient;
     this.codec = codec;
     this.chainData = chainData;
+    this.context = new Context(chainData);
   }
 
   public disconnect(): void {
@@ -232,7 +234,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     }
     const parser = createParser(codecImpl.namecoin.Wallet, "wllt:");
     const parsed = (await res).results.map(parser);
-    const data = parsed.map(Normalize.account(this.chainData));
+    const data = parsed.map(wallet => this.context.account(wallet));
     return dummyEnvelope(data);
   }
 
@@ -277,7 +279,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
     const res = await doQuery();
     const parser = createParser(codecImpl.escrow.Escrow, "esc:");
-    const data = res.results.map(parser).map(Normalize.swapOffer(this.chainData));
+    const data = res.results.map(parser).map(escrow => this.context.swapOffer(escrow));
     return dummyEnvelope(data);
   }
 
@@ -296,7 +298,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     });
 
     // tslint:disable-next-line:readonly-array
-    const offers: OpenSwap[] = setTxs.filter(isSwapOffer).map(Normalize.swapOfferFromTx(this.chainData));
+    const offers: OpenSwap[] = setTxs.filter(isSwapOffer).map(tx => this.context.swapOfferFromTx(tx));
 
     // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout
     const release: ReadonlyArray<SwapClaimTx | SwapTimeoutTx> = [...setTxs, ...delTxs]
@@ -307,7 +309,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const settled: BcpAtomicSwap[] = [];
     for (const rel of release) {
       const idx = offers.findIndex(x => arraysEqual(x.data.id, rel.swapId));
-      const done = Normalize.settleAtomicSwap(offers[idx], rel);
+      const done = this.context.settleAtomicSwap(offers[idx], rel);
       offers.splice(idx, 1);
       settled.push(done);
     }
@@ -325,9 +327,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const setTxs = this.liveTx({ tags: [bnsSwapQueryTags(query, true)] });
     const delTxs = this.liveTx({ tags: [bnsSwapQueryTags(query, false)] });
 
-    const offers: Stream<OpenSwap> = setTxs
-      .filter(isSwapOffer)
-      .map(Normalize.swapOfferFromTx(this.chainData));
+    const offers: Stream<OpenSwap> = setTxs.filter(isSwapOffer).map(tx => this.context.swapOfferFromTx(tx));
 
     // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout
     const releases: Stream<SwapClaimTx | SwapTimeoutTx> = Stream.merge(setTxs, delTxs)
@@ -345,7 +345,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
         default:
           // event is a swap claim/timeout, resolve an open swap and return new state
           const idx = open.findIndex(x => arraysEqual(x.data.id, evt.swapId));
-          const done = Normalize.settleAtomicSwap(open[idx], evt);
+          const done = this.context.settleAtomicSwap(open[idx], evt);
           open.splice(idx, 1);
           return done;
       }
