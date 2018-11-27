@@ -24,16 +24,10 @@ describe("isValidAddress", () => {
     expect(isValidAddress("0xdbF03B407c01E7cD3CBea99509d93f8DDDC8C6fb")).toEqual(false);
     expect(isValidAddress("0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b9ADB")).toEqual(false);
     // to short
-    expect(() => isValidAddress("0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b9")).toThrowError(
-      /Invalid ethereum address/,
-    );
+    expect(isValidAddress("0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b9")).toEqual(false);
     // to long
-    expect(() => isValidAddress("0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b91234")).toThrowError(
-      /Invalid ethereum address/,
-    );
+    expect(isValidAddress("0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b91234")).toEqual(false);
     // not starting with 0x
-    expect(() => isValidAddress("D1220A0cf47c7B9Be7A2E6BA89F429762e7b91234")).toThrowError(
-      /Invalid ethereum address/,
-    );
+    expect(isValidAddress("D1220A0cf47c7B9Be7A2E6BA89F429762e7b91234")).toEqual(false);
   });
 });

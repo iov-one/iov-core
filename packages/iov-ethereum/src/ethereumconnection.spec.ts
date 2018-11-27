@@ -81,7 +81,7 @@ describe("EthereumConnection", () => {
     const wallet = Secp256k1HdWallet.fromMnemonic(
       "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
     );
-    const mainIdentity = await wallet.createIdentity(HdPaths.bip44(60, 0, 0, 1))
+    const mainIdentity = await wallet.createIdentity(HdPaths.bip44(60, 0, 0, 1));
 
     const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 

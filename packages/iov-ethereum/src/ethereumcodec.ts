@@ -14,7 +14,7 @@ import {
 import { ExtendedSecp256k1Signature, Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
-import { encodeQuantity, encodeQuantityString, hexPadToEven} from "./utils";
+import { encodeQuantity, encodeQuantityString, hexPadToEven } from "./utils";
 
 import { isValidAddress } from "./derivation";
 import { toRlp } from "./encoding";

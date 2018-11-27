@@ -19,5 +19,5 @@ export function isValidAddress(address: string): boolean {
     }
     return true;
   }
-  throw new Error("Invalid ethereum address");
+  return false;
 }

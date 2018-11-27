@@ -5,4 +5,3 @@ export declare function decodeHexQuantityNonce(hexString: string): Nonce;
 export declare function encodeQuantity(value: number): string;
 export declare function encodeQuantityString(value: string): string;
 export declare function hexPadToEven(hex: string): string;
-export declare function trimLeadingZero(hex: string): string;
