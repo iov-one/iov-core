@@ -6,12 +6,14 @@ import {
   Address,
   BcpAccount,
   BcpAccountQuery,
+  BcpBlockInfo,
   BcpConnection,
   BcpNonce,
   BcpQueryEnvelope,
   BcpQueryTag,
   BcpTicker,
   BcpTransactionResponse,
+  BcpTransactionState,
   BcpTxQuery,
   ConfirmedTransaction,
   dummyEnvelope,
@@ -19,6 +21,7 @@ import {
   TokenTicker,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
+import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
 import { Parse } from "./parse";
@@ -84,11 +87,14 @@ export class EthereumConnection implements BcpConnection {
     });
     const message = result.data.error ? result.data.error.message : null;
     const transactionHash = result.data.result ? result.data.result : "";
-
+    const blockInfoPending = new DefaultValueProducer<BcpBlockInfo>({
+      state: BcpTransactionState.Pending,
+    });
     return {
       metadata: {
         height: undefined,
       },
+      blockInfo: new ValueAndUpdates(blockInfoPending),
       data: {
         message: message,
         txid: Encoding.fromHex(hexPadToEven(transactionHash)) as TxId,
