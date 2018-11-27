@@ -21,18 +21,6 @@ import * as codecImpl from "./generated/codecimpl";
 import { asNumber, ensure, Keyed } from "./types";
 import { encodeBnsAddress, hashFromIdentifier, isHashIdentifier, keyToAddress } from "./util";
 
-function makeAmountToBcpCoinConverter(initData: ChainData): (amount: Amount) => BcpCoin {
-  return (amount: Amount) => {
-    const tickerInfo = initData.tickers.get(amount.tokenTicker);
-    return {
-      ...amount,
-      // Better defaults?
-      tokenName: tickerInfo ? tickerInfo.tokenName : "<Unknown token>",
-      fractionalDigits: tickerInfo ? tickerInfo.fractionalDigits : 9,
-    };
-  };
-}
-
 /**
  * All the queries of immutable data we do on initialization to be reused by later calls
  *
@@ -59,9 +47,8 @@ export class Context {
   }
 
   public coin(coin: codecImpl.x.ICoin): BcpCoin {
-    const converter = makeAmountToBcpCoinConverter(this.chainData);
     const amount = decodeAmount(coin);
-    return converter(amount);
+    return this.amountToCoin(amount);
   }
 
   public swapOffer(swap: codecImpl.escrow.Escrow & Keyed): BcpAtomicSwap {
@@ -95,7 +82,6 @@ export class Context {
     if (!isHashIdentifier(counter.hashCode)) {
       throw new Error("swap not controlled by hash lock");
     }
-    const converter = makeAmountToBcpCoinConverter(this.chainData);
     return {
       kind: SwapState.Open,
       data: {
@@ -103,7 +89,7 @@ export class Context {
         sender: keyToAddress(counter.signer),
         recipient: counter.recipient,
         hashlock: hashFromIdentifier(counter.hashCode),
-        amount: counter.amount.map(converter),
+        amount: counter.amount.map(amount => this.amountToCoin(amount)),
         timeout: counter.timeout,
         memo: counter.memo,
       },
@@ -124,5 +110,15 @@ export class Context {
         data: swap.data,
       };
     }
+  }
+
+  private amountToCoin(amount: Amount): BcpCoin {
+    const tickerInfo = this.chainData.tickers.get(amount.tokenTicker);
+    return {
+      ...amount,
+      // Better defaults?
+      tokenName: tickerInfo ? tickerInfo.tokenName : "<Unknown token>",
+      fractionalDigits: tickerInfo ? tickerInfo.fractionalDigits : 9,
+    };
   }
 }

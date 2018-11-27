@@ -19,4 +19,5 @@ export declare class Context {
     swapOffer(swap: codecImpl.escrow.Escrow & Keyed): BcpAtomicSwap;
     swapOfferFromTx(tx: ConfirmedTransaction<SwapCounterTx>): OpenSwap;
     settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTx | SwapTimeoutTx): BcpAtomicSwap;
+    private amountToCoin;
 }
