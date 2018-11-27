@@ -4,6 +4,7 @@ import {
   Address,
   Amount,
   BaseTx,
+  BcpTicker,
   ChainAddressPair,
   FullSignature,
   RegisterBlockchainTx,
@@ -23,7 +24,15 @@ import {
 import { Encoding } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
-import { asNumber, BnsAddressBytes, BnsBlockchainNft, BnsUsernameNft, decodeFullSig, ensure } from "./types";
+import {
+  asNumber,
+  BnsAddressBytes,
+  BnsBlockchainNft,
+  BnsUsernameNft,
+  decodeFullSig,
+  ensure,
+  Keyed,
+} from "./types";
 import { encodeBnsAddress, isHashIdentifier } from "./util";
 
 const { fromUtf8 } = Encoding;
@@ -79,6 +88,14 @@ export function decodeUsernameNft(nft: codecImpl.username.IUsernameToken): BnsUs
       chainId: fromUtf8(ensure(pair.chainID, "details.addresses[n].chainID")) as ChainId,
       address: fromUtf8(ensure(pair.address, "details.addresses[n].address")) as Address,
     })),
+  };
+}
+
+export function decodeToken(data: codecImpl.namecoin.IToken & Keyed): BcpTicker {
+  return {
+    tokenTicker: Encoding.fromAscii(data._id) as TokenTicker,
+    tokenName: ensure(data.name),
+    fractionalDigits: ensure(data.sigFigs),
   };
 }
 

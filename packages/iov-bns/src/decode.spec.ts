@@ -2,7 +2,14 @@ import { Algorithm, ChainId, PublicKeyBytes } from "@iov/base-types";
 import { Address, BaseTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
-import { decodeAmount, decodeBlockchainNft, decodeUsernameNft, parseMsg, parseTx } from "./decode";
+import {
+  decodeAmount,
+  decodeBlockchainNft,
+  decodeToken,
+  decodeUsernameNft,
+  parseMsg,
+  parseTx,
+} from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import {
   chainId,
@@ -16,7 +23,7 @@ import {
   sendTxJson,
   signedTxBin,
 } from "./testdata";
-import { decodePrivkey, decodePubkey } from "./types";
+import { decodePrivkey, decodePubkey, Keyed } from "./types";
 
 const { fromHex, toUtf8 } = Encoding;
 
@@ -92,6 +99,20 @@ describe("Decode", () => {
     const decoded = codecImpl.crypto.PrivateKey.decode(privBin);
     const privkey = decodePrivkey(decoded);
     expect(privkey).toEqual(privJson);
+  });
+
+  it("has working decodeToken", () => {
+    const token: codecImpl.namecoin.IToken & Keyed = {
+      _id: toUtf8("TRASH"),
+      name: "Trash",
+      sigFigs: 22,
+    };
+    const ticker = decodeToken(token);
+    expect(ticker).toEqual({
+      tokenTicker: "TRASH" as TokenTicker,
+      tokenName: "Trash",
+      fractionalDigits: 22,
+    });
   });
 
   it("has working decodeAmount", () => {

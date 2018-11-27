@@ -45,7 +45,7 @@ import {
 } from "@iov/tendermint-rpc";
 
 import { bnsCodec } from "./bnscodec";
-import { decodeBlockchainNft, decodeUsernameNft } from "./decode";
+import { decodeBlockchainNft, decodeToken, decodeUsernameNft } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import { InitData, Normalize } from "./normalize";
 import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
@@ -109,7 +109,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     // inlining getAllTickers
     const res = await performQuery(tmClient, "/tokens?prefix", Uint8Array.from([]));
     const parser = createParser(codecImpl.namecoin.Token, "tkn:");
-    const data = res.results.map(parser).map(Normalize.token);
+    const data = res.results.map(parser).map(decodeToken);
 
     const toKeyValue = (t: BcpTicker): [string, BcpTicker] => [t.tokenTicker, t];
     const tickers = new Map(data.map(toKeyValue));
@@ -201,14 +201,14 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   public async getTicker(ticker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {
     const res = await this.query("/tokens", Encoding.toAscii(ticker));
     const parser = createParser(codecImpl.namecoin.Token, "tkn:");
-    const data = res.results.map(parser).map(Normalize.token);
+    const data = res.results.map(parser).map(decodeToken);
     return dummyEnvelope(data);
   }
 
   public async getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>> {
     const res = await this.query("/tokens?prefix", Uint8Array.from([]));
     const parser = createParser(codecImpl.namecoin.Token, "tkn:");
-    const data = res.results.map(parser).map(Normalize.token);
+    const data = res.results.map(parser).map(decodeToken);
     // Sort by ticker
     data.sort((a, b) => a.tokenTicker.localeCompare(b.tokenTicker));
     return dummyEnvelope(data);

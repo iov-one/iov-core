@@ -15,10 +15,8 @@ import {
   SwapIdBytes,
   SwapState,
   SwapTimeoutTx,
-  TokenTicker,
   TransactionKind,
 } from "@iov/bcp-types";
-import { Encoding } from "@iov/encoding";
 
 import { decodeAmount } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
@@ -45,14 +43,6 @@ export interface InitData {
 }
 
 export class Normalize {
-  public static token(data: codecImpl.namecoin.IToken & Keyed): BcpTicker {
-    return {
-      tokenTicker: Encoding.fromAscii(data._id) as TokenTicker,
-      tokenName: ensure(data.name),
-      fractionalDigits: ensure(data.sigFigs),
-    };
-  }
-
   public static nonce(acct: codecImpl.sigs.IUserData & Keyed): BcpNonce {
     // append the chainID to the name to universalize it
     return {
