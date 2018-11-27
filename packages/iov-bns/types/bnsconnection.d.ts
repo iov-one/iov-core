@@ -1,8 +1,7 @@
 import { Stream } from "xstream";
 import { ChainId, PostableBytes } from "@iov/base-types";
-import { Address, BcpAccount, BcpAccountQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpNonce, BcpQueryEnvelope, BcpQueryTag, BcpSwapQuery, BcpTicker, BcpTransactionResponse, BcpTxQuery, ConfirmedTransaction, TokenTicker, TxReadCodec } from "@iov/bcp-types";
-import { Client as TendermintClient, Header, StatusResponse } from "@iov/tendermint-rpc";
-import { ChainData } from "./context";
+import { Address, BcpAccount, BcpAccountQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpNonce, BcpQueryEnvelope, BcpQueryTag, BcpSwapQuery, BcpTicker, BcpTransactionResponse, BcpTxQuery, ConfirmedTransaction, TokenTicker } from "@iov/bcp-types";
+import { Header, StatusResponse } from "@iov/tendermint-rpc";
 import { BnsBlockchainNft, BnsBlockchainsQuery, BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
  * Talks directly to the BNS blockchain and exposes the
@@ -12,11 +11,16 @@ import { BnsBlockchainNft, BnsBlockchainsQuery, BnsUsernameNft, BnsUsernamesQuer
  */
 export declare class BnsConnection implements BcpAtomicSwapConnection {
     static establish(url: string): Promise<BnsConnection>;
-    protected static initialize(tmClient: TendermintClient): Promise<ChainData>;
-    protected readonly tmClient: TendermintClient;
-    protected readonly codec: TxReadCodec;
-    protected readonly chainData: ChainData;
-    constructor(tmClient: TendermintClient, codec: TxReadCodec, chainData: ChainData);
+    private static initialize;
+    private readonly tmClient;
+    private readonly codec;
+    private readonly chainData;
+    /**
+     * Private constructor to hide package private types from the public interface
+     *
+     * Use BnsConnection.establish to get a BnsConnection.
+     */
+    private constructor();
     disconnect(): void;
     /**
      * The chain ID this connection is connected to

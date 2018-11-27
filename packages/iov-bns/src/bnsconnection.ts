@@ -102,7 +102,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return new BnsConnection(tm, bnsCodec, chainData);
   }
 
-  protected static async initialize(tmClient: TendermintClient): Promise<ChainData> {
+  private static async initialize(tmClient: TendermintClient): Promise<ChainData> {
     const status = await tmClient.status();
     const chainId = status.nodeInfo.network;
 
@@ -116,11 +116,16 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return { chainId, tickers };
   }
 
-  protected readonly tmClient: TendermintClient;
-  protected readonly codec: TxReadCodec;
-  protected readonly chainData: ChainData;
+  private readonly tmClient: TendermintClient;
+  private readonly codec: TxReadCodec;
+  private readonly chainData: ChainData;
 
-  constructor(tmClient: TendermintClient, codec: TxReadCodec, chainData: ChainData) {
+  /**
+   * Private constructor to hide package private types from the public interface
+   *
+   * Use BnsConnection.establish to get a BnsConnection.
+   */
+  private constructor(tmClient: TendermintClient, codec: TxReadCodec, chainData: ChainData) {
     this.tmClient = tmClient;
     this.codec = codec;
     this.chainData = chainData;
