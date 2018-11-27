@@ -14,31 +14,23 @@ export class Serialization {
   public static serializeTransaction(unsigned: UnsignedTransaction, nonce: Nonce): Uint8Array {
     switch (unsigned.kind) {
       case TransactionKind.Send:
-        let gasPriceHex = "0x";
-        let gasLimitHex = "0x";
-        let dataHex = "0x";
-        let nonceHex = "0x";
-
         const chainIdHex = encodeQuantity(Number(unsigned.chainId));
         const valueHex = encodeQuantityString(
           Serialization.amountFromComponents(unsigned.amount.whole, unsigned.amount.fractional),
         );
-        if (nonce.toNumber() > 0) {
-          nonceHex = encodeQuantity(nonce.toNumber());
-        }
-        if (unsigned.gasPrice) {
-          gasPriceHex = encodeQuantityString(
-            Serialization.amountFromComponents(unsigned.gasPrice.whole, unsigned.gasPrice.fractional),
-          );
-        }
-        if (unsigned.gasLimit) {
-          gasLimitHex = encodeQuantityString(
-            Serialization.amountFromComponents(unsigned.gasLimit.whole, unsigned.gasLimit.fractional),
-          );
-        }
-        if (unsigned.memo) {
-          dataHex += Encoding.toHex(Encoding.toUtf8(unsigned.memo));
-        }
+        const nonceHex = nonce.toNumber() > 0 ? encodeQuantity(nonce.toNumber()) : "0x";
+        const gasPriceHex = unsigned.gasPrice
+          ? encodeQuantityString(
+              Serialization.amountFromComponents(unsigned.gasPrice.whole, unsigned.gasPrice.fractional),
+            )
+          : "0x";
+        const gasLimitHex = unsigned.gasLimit
+          ? encodeQuantityString(
+              Serialization.amountFromComponents(unsigned.gasLimit.whole, unsigned.gasLimit.fractional),
+            )
+          : "0x";
+        const dataHex = unsigned.memo ? "0x" + Encoding.toHex(Encoding.toUtf8(unsigned.memo)) : "0x";
+
         if (!isValidAddress(unsigned.recipient)) {
           throw new Error("Invalid recipient address");
         }
