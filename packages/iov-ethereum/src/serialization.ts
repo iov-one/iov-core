@@ -56,10 +56,10 @@ export class Serialization {
   public static amountFromComponents(whole: number, fractional: number): string {
     const base10BigNumber = new BN(10);
     const wholeBigNumber = new BN(whole);
-    const sigFigsBigNumber = new BN(constants.primaryTokenSigFigs);
+    const fractionalDigitsBigNumber = new BN(constants.primaryTokenFractionalDigits);
     const fractionalBigNumber = new BN(fractional);
     return base10BigNumber
-      .pow(sigFigsBigNumber)
+      .pow(fractionalDigitsBigNumber)
       .mul(wholeBigNumber)
       .add(fractionalBigNumber)
       .toString();

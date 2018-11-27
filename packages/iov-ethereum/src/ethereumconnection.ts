@@ -135,7 +135,7 @@ export class EthereumConnection implements BcpConnection {
         name: undefined,
         balance: [
           {
-            sigFigs: constants.primaryTokenSigFigs,
+            fractionalDigits: constants.primaryTokenFractionalDigits,
             tokenName: constants.primaryTokenName,
             ...Parse.ethereumAmount(decodeHexQuantityString(item.result)),
           },

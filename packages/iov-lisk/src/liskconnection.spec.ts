@@ -107,7 +107,7 @@ describe("LiskConnection", () => {
     expect(response.data.length).toEqual(1);
     expect(response.data[0].tokenTicker).toEqual("LSK");
     expect(response.data[0].tokenName).toEqual("Lisk");
-    expect(response.data[0].sigFigs).toEqual(8);
+    expect(response.data[0].fractionalDigits).toEqual(8);
   });
 
   it("produces empty result for non-existing ticker", async () => {
@@ -122,7 +122,7 @@ describe("LiskConnection", () => {
     expect(response.data.length).toEqual(1);
     expect(response.data[0].tokenTicker).toEqual("LSK");
     expect(response.data[0].tokenName).toEqual("Lisk");
-    expect(response.data[0].sigFigs).toEqual(8);
+    expect(response.data[0].fractionalDigits).toEqual(8);
   });
 
   it("can get chain ID", async () => {
@@ -147,7 +147,7 @@ describe("LiskConnection", () => {
     const account = await connection.getAccount(query);
     expect(account.data[0].address).toEqual("1349293588603668134L");
     expect(account.data[0].balance[0].tokenTicker).toEqual("LSK");
-    expect(account.data[0].balance[0].sigFigs).toEqual(8);
+    expect(account.data[0].balance[0].fractionalDigits).toEqual(8);
     expect(account.data[0].balance[0].whole).toEqual(100);
     expect(account.data[0].balance[0].fractional).toEqual(34556677);
   });
@@ -163,7 +163,7 @@ describe("LiskConnection", () => {
     const account = await connection.getAccount(query);
     expect(account.data[0].address).toEqual("1349293588603668134L");
     expect(account.data[0].balance[0].tokenTicker).toEqual("LSK");
-    expect(account.data[0].balance[0].sigFigs).toEqual(8);
+    expect(account.data[0].balance[0].fractionalDigits).toEqual(8);
     expect(account.data[0].balance[0].whole).toEqual(100);
     expect(account.data[0].balance[0].fractional).toEqual(34556677);
   });

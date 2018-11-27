@@ -60,7 +60,7 @@ describe("EthereumConnection", () => {
     const account = await connection.getAccount(query);
     expect(account.data[0].address).toEqual(address);
     expect(account.data[0].balance[0].tokenTicker).toEqual("ETH");
-    expect(account.data[0].balance[0].sigFigs).toEqual(18);
+    expect(account.data[0].balance[0].fractionalDigits).toEqual(18);
     expect(account.data[0].balance[0].whole).toEqual(whole);
     expect(account.data[0].balance[0].fractional).toEqual(fractional);
   });

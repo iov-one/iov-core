@@ -94,7 +94,7 @@ describe("RiseConnection", () => {
     expect(response.data.length).toEqual(1);
     expect(response.data[0].tokenTicker).toEqual("RISE");
     expect(response.data[0].tokenName).toEqual("RISE");
-    expect(response.data[0].sigFigs).toEqual(8);
+    expect(response.data[0].fractionalDigits).toEqual(8);
   });
 
   it("produces empty result for non-existing ticker", async () => {
@@ -109,7 +109,7 @@ describe("RiseConnection", () => {
     expect(response.data.length).toEqual(1);
     expect(response.data[0].tokenTicker).toEqual("RISE");
     expect(response.data[0].tokenName).toEqual("RISE");
-    expect(response.data[0].sigFigs).toEqual(8);
+    expect(response.data[0].fractionalDigits).toEqual(8);
   });
 
   it("can get chain ID", async () => {
@@ -131,7 +131,7 @@ describe("RiseConnection", () => {
     const account = await connection.getAccount(query);
     expect(account.data[0].address).toEqual("6472030874529564639R");
     expect(account.data[0].balance[0].tokenTicker).toEqual("RISE");
-    expect(account.data[0].balance[0].sigFigs).toEqual(8);
+    expect(account.data[0].balance[0].fractionalDigits).toEqual(8);
     expect(account.data[0].balance[0].whole).toEqual(52);
     expect(account.data[0].balance[0].fractional).toEqual(98643212);
   });
@@ -146,7 +146,7 @@ describe("RiseConnection", () => {
     const account = await connection.getAccount(query);
     expect(account.data[0].address).toEqual("6472030874529564639R");
     expect(account.data[0].balance[0].tokenTicker).toEqual("RISE");
-    expect(account.data[0].balance[0].sigFigs).toEqual(8);
+    expect(account.data[0].balance[0].fractionalDigits).toEqual(8);
     expect(account.data[0].balance[0].whole).toEqual(52);
     expect(account.data[0].balance[0].fractional).toEqual(98643212);
   });

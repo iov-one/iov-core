@@ -3,7 +3,7 @@ export declare const constants: {
     addressSuffix: string;
     primaryTokenTicker: TokenTicker;
     primaryTokenName: string;
-    primaryTokenSigFigs: number;
+    primaryTokenFractionalDigits: number;
     transactionSerializationOptions: {
         maxMemoLength: number;
     };

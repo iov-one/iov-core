@@ -32,7 +32,7 @@ function makeAmountToBcpCoinConverter(initData: InitData): (amount: Amount) => B
       ...amount,
       // Better defaults?
       tokenName: tickerInfo ? tickerInfo.tokenName : "<Unknown token>",
-      sigFigs: tickerInfo ? tickerInfo.sigFigs : 9,
+      fractionalDigits: tickerInfo ? tickerInfo.fractionalDigits : 9,
     };
   };
 }
@@ -49,7 +49,7 @@ export class Normalize {
     return {
       tokenTicker: Encoding.fromAscii(data._id) as TokenTicker,
       tokenName: ensure(data.name),
-      sigFigs: ensure(data.sigFigs),
+      fractionalDigits: ensure(data.sigFigs),
     };
   }
 
