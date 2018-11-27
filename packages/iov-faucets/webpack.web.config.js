@@ -9,9 +9,7 @@ module.exports = [
   {
     // bundle used for Karma tests
     target: target,
-    entry: glob.sync("./build/**/*.spec.js")
-      // exclude BovFaucet
-      .filter(path => !path.includes("bovfaucet")),
+    entry: glob.sync("./build/**/*.spec.js"),
     output: {
       path: distdir,
       filename: "tests.js",
