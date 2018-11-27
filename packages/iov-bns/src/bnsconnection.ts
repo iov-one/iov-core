@@ -45,7 +45,7 @@ import {
 } from "@iov/tendermint-rpc";
 
 import { bnsCodec } from "./bnscodec";
-import { decodeBlockchainNft, decodeToken, decodeUsernameNft } from "./decode";
+import { decodeBlockchainNft, decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import { InitData, Normalize } from "./normalize";
 import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
@@ -249,7 +249,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
     const res = await this.query("/auth", decodeBnsAddress(address).data);
     const parser = createParser(codecImpl.sigs.UserData, "sigs:");
-    const data = res.results.map(parser).map(Normalize.nonce);
+    const data = res.results.map(parser).map(decodeNonce);
     return dummyEnvelope(data);
   }
 

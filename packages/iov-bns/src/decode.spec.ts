@@ -1,10 +1,11 @@
 import { Algorithm, ChainId, PublicKeyBytes } from "@iov/base-types";
-import { Address, BaseTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
-import { Encoding } from "@iov/encoding";
+import { Address, BaseTx, Nonce, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Encoding, Int53 } from "@iov/encoding";
 
 import {
   decodeAmount,
   decodeBlockchainNft,
+  decodeNonce,
   decodeToken,
   decodeUsernameNft,
   parseMsg,
@@ -99,6 +100,25 @@ describe("Decode", () => {
     const decoded = codecImpl.crypto.PrivateKey.decode(privBin);
     const privkey = decodePrivkey(decoded);
     expect(privkey).toEqual(privJson);
+  });
+
+  it("has working decodeNonce", () => {
+    const user: codecImpl.sigs.IUserData & Keyed = {
+      _id: fromHex("1234ABCD0000AA0000FFFF0000AA00001234ABCD"),
+      pubkey: {
+        ed25519: fromHex("aabbccdd"),
+      },
+      sequence: 7,
+    };
+    const nonce = decodeNonce(user);
+    expect(nonce).toEqual({
+      address: "tiov1zg62hngqqz4qqq8lluqqp2sqqqfrf27dzrrmea" as Address,
+      pubkey: {
+        algo: Algorithm.Ed25519,
+        data: fromHex("aabbccdd") as PublicKeyBytes,
+      },
+      nonce: new Int53(7) as Nonce,
+    });
   });
 
   it("has working decodeToken", () => {

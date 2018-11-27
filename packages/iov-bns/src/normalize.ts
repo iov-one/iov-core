@@ -4,10 +4,8 @@ import {
   BcpAccount,
   BcpAtomicSwap,
   BcpCoin,
-  BcpNonce,
   BcpTicker,
   ConfirmedTransaction,
-  Nonce,
   OpenSwap,
   SwapClaimTx,
   SwapCounterTx,
@@ -20,7 +18,7 @@ import {
 
 import { decodeAmount } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
-import { asInt53, asNumber, decodePubkey, ensure, Keyed } from "./types";
+import { asNumber, ensure, Keyed } from "./types";
 import { encodeBnsAddress, hashFromIdentifier, isHashIdentifier, keyToAddress } from "./util";
 
 function makeAmountToBcpCoinConverter(initData: InitData): (amount: Amount) => BcpCoin {
@@ -43,15 +41,6 @@ export interface InitData {
 }
 
 export class Normalize {
-  public static nonce(acct: codecImpl.sigs.IUserData & Keyed): BcpNonce {
-    // append the chainID to the name to universalize it
-    return {
-      address: encodeBnsAddress(acct._id),
-      nonce: asInt53(acct.sequence) as Nonce,
-      pubkey: decodePubkey(ensure(acct.pubkey)),
-    };
-  }
-
   public static account(initData: InitData): (a: codecImpl.namecoin.IWallet & Keyed) => BcpAccount {
     return (acct: codecImpl.namecoin.IWallet & Keyed): BcpAccount => {
       return {

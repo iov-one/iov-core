@@ -4,9 +4,11 @@ import {
   Address,
   Amount,
   BaseTx,
+  BcpNonce,
   BcpTicker,
   ChainAddressPair,
   FullSignature,
+  Nonce,
   RegisterBlockchainTx,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
@@ -25,11 +27,13 @@ import { Encoding } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
 import {
+  asInt53,
   asNumber,
   BnsAddressBytes,
   BnsBlockchainNft,
   BnsUsernameNft,
   decodeFullSig,
+  decodePubkey,
   ensure,
   Keyed,
 } from "./types";
@@ -88,6 +92,14 @@ export function decodeUsernameNft(nft: codecImpl.username.IUsernameToken): BnsUs
       chainId: fromUtf8(ensure(pair.chainID, "details.addresses[n].chainID")) as ChainId,
       address: fromUtf8(ensure(pair.address, "details.addresses[n].address")) as Address,
     })),
+  };
+}
+
+export function decodeNonce(acct: codecImpl.sigs.IUserData & Keyed): BcpNonce {
+  return {
+    address: encodeBnsAddress(acct._id),
+    nonce: asInt53(acct.sequence) as Nonce,
+    pubkey: decodePubkey(ensure(acct.pubkey)),
   };
 }
 
