@@ -35,6 +35,7 @@ export class Serialization {
           throw new Error("Invalid recipient address");
         }
 
+        // Last 3 items are v, r and s values. Are present to encode full structure.
         return new Uint8Array(
           toRlp([
             Buffer.from(fromHex(hexPadToEven(nonceHex))),
