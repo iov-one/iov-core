@@ -14,11 +14,11 @@ import {
 import { ExtendedSecp256k1Signature, Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
-import { encodeQuantity, encodeQuantityString, hexPadToEven } from "./utils";
-
 import { isValidAddress } from "./derivation";
 import { toRlp } from "./encoding";
 import { Serialization } from "./serialization";
+import { encodeQuantity, encodeQuantityString, hexPadToEven } from "./utils";
+
 const { fromHex, toAscii, toHex } = Encoding;
 
 export function toChecksumAddress(address: string): Address {
