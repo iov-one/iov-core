@@ -1,4 +1,5 @@
 import axios from "axios";
+import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
@@ -7,12 +8,14 @@ import {
   Address,
   BcpAccount,
   BcpAccountQuery,
+  BcpBlockInfo,
   BcpConnection,
   BcpNonce,
   BcpQueryEnvelope,
   BcpQueryTag,
   BcpTicker,
   BcpTransactionResponse,
+  BcpTransactionState,
   BcpTxQuery,
   ConfirmedTransaction,
   dummyEnvelope,
@@ -22,10 +25,16 @@ import {
   TokenTicker,
 } from "@iov/bcp-types";
 import { Parse } from "@iov/dpos";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
+import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
 import { riseCodec } from "./risecodec";
+
+const { fromAscii, toAscii, toUtf8 } = Encoding;
+
+// poll every 10 seconds (block time 30s)
+const transactionStatePollInterval = 10_000;
 
 /**
  * Encodes the current date and time as a nonce
@@ -111,10 +120,38 @@ export class RiseConnection implements BcpConnection {
       throw new Error(`Expected one accepted transaction but got: ${JSON.stringify(response.data.accepted)}`);
     }
 
+    let blockInfoInterval: any;
+    const firstEvent: BcpBlockInfo = {
+      state: BcpTransactionState.Pending,
+    };
+    let lastEventSent: BcpBlockInfo = firstEvent;
+    const blockInfoProducer = new DefaultValueProducer<BcpBlockInfo>(firstEvent, {
+      onStarted: () => {
+        blockInfoInterval = setInterval(async () => {
+          const search = await this.searchTx({ hash: toAscii(transactionId) as TxId, tags: [] });
+          if (search.length > 0) {
+            const confirmedTransaction = search[0];
+            const event: BcpBlockInfo = {
+              state: BcpTransactionState.InBlock,
+              height: confirmedTransaction.height,
+              confirmations: confirmedTransaction.confirmations,
+            };
+
+            if (!equal(event, lastEventSent)) {
+              blockInfoProducer.update(event);
+              lastEventSent = event;
+            }
+          }
+        }, transactionStatePollInterval);
+      },
+      onStop: () => clearInterval(blockInfoInterval),
+    });
+
     return {
       metadata: {
         height: undefined,
       },
+      blockInfo: new ValueAndUpdates(blockInfoProducer),
       data: {
         message: "",
         txid: Encoding.toAscii(transactionId) as TxId,
@@ -212,8 +249,46 @@ export class RiseConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public searchTx(_: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    throw new Error("Not implemented");
+  public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    if (query.height || query.minHeight || query.maxHeight || query.tags.length) {
+      throw new Error("Query by height, minHeight, maxHeight, tags not supported");
+    }
+
+    if (query.hash) {
+      const transactionId = fromAscii(query.hash);
+
+      const url = this.baseUrl + `/api/transactions/get?id=${transactionId}`;
+      const result = await axios.get(url);
+      const responseBody = result.data;
+
+      if (responseBody.success !== true) {
+        switch (responseBody.error) {
+          case "Transaction not found":
+            return [];
+          default:
+            throw new Error(`RISE API error: ${responseBody.error}`);
+        }
+      }
+
+      const transactionJson = responseBody.transaction;
+      const height = new Int53(transactionJson.height);
+      const confirmations = new Int53(transactionJson.confirmations);
+
+      const transaction = riseCodec.parseBytes(
+        toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
+        this.myChainId,
+      );
+      return [
+        {
+          ...transaction,
+          height: height.toNumber(),
+          confirmations: confirmations.toNumber(),
+          txid: query.hash,
+        },
+      ];
+    } else {
+      throw new Error("Unsupported query.");
+    }
   }
 
   public listenTx(_: ReadonlyArray<BcpQueryTag>): Stream<ConfirmedTransaction> {

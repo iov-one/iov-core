@@ -1,4 +1,5 @@
 import axios from "axios";
+import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
@@ -7,12 +8,14 @@ import {
   Address,
   BcpAccount,
   BcpAccountQuery,
+  BcpBlockInfo,
   BcpConnection,
   BcpNonce,
   BcpQueryEnvelope,
   BcpQueryTag,
   BcpTicker,
   BcpTransactionResponse,
+  BcpTransactionState,
   BcpTxQuery,
   ConfirmedTransaction,
   dummyEnvelope,
@@ -22,10 +25,16 @@ import {
   TokenTicker,
 } from "@iov/bcp-types";
 import { Parse } from "@iov/dpos";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
+import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
 import { liskCodec } from "./liskcodec";
+
+const { fromAscii, toAscii, toUtf8 } = Encoding;
+
+// poll every 3 seconds (block time 10s)
+const transactionStatePollInterval = 3_000;
 
 /**
  * Encodes the current date and time as a nonce
@@ -100,10 +109,40 @@ export class LiskConnection implements BcpConnection {
       throw new Error("Did not get meta.status: true");
     }
 
+    let blockInfoInterval: any;
+    let lastEventSent: BcpBlockInfo | undefined;
+    const blockInfoProducer = new DefaultValueProducer<BcpBlockInfo>(
+      {
+        state: BcpTransactionState.Pending,
+      },
+      {
+        onStarted: () => {
+          blockInfoInterval = setInterval(async () => {
+            const search = await this.searchTx({ hash: toAscii(transactionId) as TxId, tags: [] });
+            if (search.length > 0) {
+              const confirmedTransaction = search[0];
+              const event: BcpBlockInfo = {
+                state: BcpTransactionState.InBlock,
+                height: confirmedTransaction.height,
+                confirmations: confirmedTransaction.confirmations,
+              };
+
+              if (!equal(event, lastEventSent)) {
+                blockInfoProducer.update(event);
+                lastEventSent = event;
+              }
+            }
+          }, transactionStatePollInterval);
+        },
+        onStop: () => clearInterval(blockInfoInterval),
+      },
+    );
+
     return {
       metadata: {
         height: undefined,
       },
+      blockInfo: new ValueAndUpdates(blockInfoProducer),
       data: {
         message: "",
         txid: Encoding.toAscii(transactionId) as TxId,
@@ -198,8 +237,40 @@ export class LiskConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public searchTx(_: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    throw new Error("Not implemented");
+  public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    if (query.height || query.minHeight || query.maxHeight || query.tags.length) {
+      throw new Error("Query by height, minHeight, maxHeight, tags not supported");
+    }
+
+    if (query.hash) {
+      const transactionId = fromAscii(query.hash);
+
+      const url = this.baseUrl + `/api/transactions?id=${transactionId}`;
+      const result = await axios.get(url);
+      const responseBody = result.data;
+      if (responseBody.data.length === 0) {
+        return [];
+      }
+
+      const transactionJson = responseBody.data[0];
+      const height = new Int53(transactionJson.height);
+      const confirmations = new Int53(transactionJson.confirmations);
+
+      const transaction = liskCodec.parseBytes(
+        toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
+        this.myChainId,
+      );
+      return [
+        {
+          ...transaction,
+          height: height.toNumber(),
+          confirmations: confirmations.toNumber(),
+          txid: query.hash,
+        },
+      ];
+    } else {
+      throw new Error("Unsupported query.");
+    }
   }
 
   public listenTx(_: ReadonlyArray<BcpQueryTag>): Stream<ConfirmedTransaction> {

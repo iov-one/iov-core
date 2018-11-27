@@ -27,6 +27,7 @@
   "dependencies": {
     "@iov/base-types": "^0.9.0",
     "@iov/encoding": "^0.9.0",
+    "@iov/stream": "^0.9.0",
     "type-tagger": "^1.0.0",
     "xstream": "^11.7.0"
   }

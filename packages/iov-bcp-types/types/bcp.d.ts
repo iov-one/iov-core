@@ -1,5 +1,6 @@
 import { Stream } from "xstream";
 import { ChainId, PostableBytes, PublicKeyBundle, TxId } from "@iov/base-types";
+import { ValueAndUpdates } from "@iov/stream";
 import { Address, SignedTransaction, TxCodec } from "./signables";
 import { Nonce, TokenTicker, UnsignedTransaction } from "./transactions";
 export interface BcpQueryEnvelope<T> {
@@ -37,10 +38,29 @@ export interface BcpTicker {
      */
     readonly tokenName: string;
 }
+export declare enum BcpTransactionState {
+    /** accepted by a blockchain node and in mempool */
+    Pending = 0,
+    /** successfully written in a block, but cannot yet guarantee it won't be reverted */
+    InBlock = 1
+}
+/** Information attached to a signature about its state in a block */
+export declare type BcpBlockInfo = {
+    readonly state: BcpTransactionState.Pending;
+} | {
+    readonly state: BcpTransactionState.InBlock;
+    /** block height, if the transaction is included in a block */
+    readonly height: number;
+    /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
+    readonly confirmations: number;
+};
 export interface BcpTransactionResponse {
+    /** @deprecated use blockInfo instead */
     readonly metadata: {
         readonly height?: number;
     };
+    /** Information abot the block the transaction is in */
+    readonly blockInfo: ValueAndUpdates<BcpBlockInfo>;
     readonly data: {
         readonly message: string;
         readonly txid: TxId;
@@ -49,9 +69,12 @@ export interface BcpTransactionResponse {
 }
 export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTransaction> extends SignedTransaction<T> {
     readonly height: number;
+    /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
+    readonly confirmations: number;
     readonly txid: TxId;
-    readonly result: Uint8Array;
-    readonly log: string;
+    /** Data from executing tx (result, code, tags...) */
+    readonly result?: Uint8Array;
+    readonly log?: string;
 }
 export interface BcpQueryTag {
     readonly key: string;

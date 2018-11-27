@@ -1,3 +1,4 @@
+import equal from "fast-deep-equal";
 import { Producer, Stream, Subscription } from "xstream";
 
 import { ChainId, PostableBytes, TxId } from "@iov/base-types";
@@ -7,12 +8,14 @@ import {
   BcpAccountQuery,
   BcpAtomicSwap,
   BcpAtomicSwapConnection,
+  BcpBlockInfo,
   BcpNonce,
   BcpQueryEnvelope,
   BcpQueryTag,
   BcpSwapQuery,
   BcpTicker,
   BcpTransactionResponse,
+  BcpTransactionState,
   BcpTxQuery,
   ConfirmedTransaction,
   dummyEnvelope,
@@ -29,6 +32,7 @@ import {
   TxReadCodec,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
+import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import {
   Client as TendermintClient,
   getHeaderEventHeight,
@@ -149,13 +153,42 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       const { checkTx, deliverTx } = txresp;
       throw new Error(JSON.stringify({ checkTx, deliverTx }, null, 2));
     }
+    const height = txresp.height!;
+
+    const firstEvent: BcpBlockInfo = {
+      state: BcpTransactionState.InBlock,
+      height: height,
+      confirmations: 1,
+    };
+    let blocksSubscription: Subscription;
+    let lastEventSent: BcpBlockInfo = firstEvent;
+    const blockInfoProducer = new DefaultValueProducer<BcpBlockInfo>(firstEvent, {
+      onStarted: () => {
+        blocksSubscription = this.changeBlock().subscribe({
+          next: blockHeight => {
+            const event: BcpBlockInfo = {
+              state: BcpTransactionState.InBlock,
+              height: height,
+              confirmations: blockHeight - height + 1,
+            };
+
+            if (!equal(event, lastEventSent)) {
+              blockInfoProducer.update(event);
+              lastEventSent = event;
+            }
+          },
+        });
+      },
+      onStop: () => blocksSubscription.unsubscribe(),
+    });
 
     const message = txresp.deliverTx ? txresp.deliverTx.log : txresp.checkTx.log;
     const result = txresp.deliverTx && txresp.deliverTx.data;
     return {
       metadata: {
-        height: txresp.height,
+        height: height,
       },
+      blockInfo: new ValueAndUpdates(blockInfoProducer),
       data: {
         txid: txresp.hash,
         message: message || "",
@@ -318,11 +351,13 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     // FIXME: consider making a streaming interface here, but that will break clients
     const res = await this.tmClient.txSearchAll({ query: buildTxQuery(txQuery) });
     const chainId = await this.chainId();
+    const currentHeight = await this.height();
     const mapper = ({ tx, hash, height, txResult }: TxResponse): ConfirmedTransaction => ({
-      height,
+      height: height,
+      confirmations: currentHeight - height + 1,
       txid: hash as TxId,
-      log: txResult.log || "",
-      result: txResult.data || new Uint8Array([]),
+      log: txResult.log,
+      result: txResult.data,
       ...this.codec.parseBytes(tx, chainId),
     });
     return res.txs.map(mapper);
@@ -337,10 +372,11 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
     // destructuring ftw (or is it too confusing?)
     const mapper = ({ hash, height, tx, result }: TxEvent): ConfirmedTransaction => ({
-      height,
+      height: height,
+      confirmations: 1, // assuming block height is current height when listening to events
       txid: hash as TxId,
-      log: result.log || "",
-      result: result.data || new Uint8Array([]),
+      log: result.log,
+      result: result.data,
       ...this.codec.parseBytes(tx, chainId),
     });
     return txs.map(mapper);

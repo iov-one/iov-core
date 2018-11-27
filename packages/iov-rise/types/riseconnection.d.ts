@@ -21,7 +21,7 @@ export declare class RiseConnection implements BcpConnection {
     changeBlock(): Stream<number>;
     watchAccount(_: BcpAccountQuery): Stream<BcpAccount | undefined>;
     watchNonce(_: BcpAccountQuery): Stream<BcpNonce | undefined>;
-    searchTx(_: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
+    searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
     listenTx(_: ReadonlyArray<BcpQueryTag>): Stream<ConfirmedTransaction>;
     liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction>;
 }

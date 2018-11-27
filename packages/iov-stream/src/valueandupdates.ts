@@ -1,4 +1,8 @@
-import { Listener, MemoryStream, Producer } from "xstream";
+import { MemoryStream } from "xstream";
+
+import { DefaultValueProducer } from "./defaultvalueproducer";
+
+export type SearchFunction<T> = (value: T) => boolean;
 
 /**
  * A read only wrapper around DefaultValueProducer that allows
@@ -19,11 +23,19 @@ export class ValueAndUpdates<T> {
     this.updates = MemoryStream.createWithMemory(this.producer);
   }
 
-  public waitFor(value: T): Promise<void> {
+  /**
+   * Resolves as soon as search value is found.
+   *
+   * @param search either a value or a function that must return true when found
+   */
+  public waitFor(search: SearchFunction<T> | T): Promise<void> {
+    const searchImplementation: SearchFunction<T> =
+      typeof search === "function" ? (search as SearchFunction<T>) : (value: T): boolean => value === search;
+
     return new Promise((resolve, reject) => {
       const subscription = this.updates.subscribe({
         next: newValue => {
-          if (newValue === value) {
+          if (searchImplementation(newValue)) {
             resolve();
 
             // MemoryStream.subscribe() calls next with the last value.
@@ -37,40 +49,5 @@ export class ValueAndUpdates<T> {
         },
       });
     });
-  }
-}
-
-// allows pre-producing values before anyone is listening
-export class DefaultValueProducer<T> implements Producer<T> {
-  public get value(): T {
-    return this.internalValue;
-  }
-
-  // tslint:disable-next-line:readonly-keyword
-  private internalValue: T;
-  // tslint:disable-next-line:readonly-keyword
-  private listener: Listener<T> | undefined;
-
-  constructor(value: T) {
-    this.internalValue = value;
-  }
-
-  public update(value: T): void {
-    // tslint:disable-next-line:no-object-mutation
-    this.internalValue = value;
-    if (this.listener) {
-      this.listener.next(value);
-    }
-  }
-
-  public start(listener: Listener<T>): void {
-    // tslint:disable-next-line:no-object-mutation
-    this.listener = listener;
-    listener.next(this.internalValue);
-  }
-
-  public stop(): void {
-    // tslint:disable-next-line:no-object-mutation
-    this.listener = undefined;
   }
 }

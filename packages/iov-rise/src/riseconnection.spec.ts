@@ -1,7 +1,9 @@
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes, TxId } from "@iov/base-types";
 import {
   Address,
   BcpAccountQuery,
+  BcpBlockInfo,
+  BcpTransactionState,
   SendTx,
   SignedTransaction,
   TokenTicker,
@@ -14,11 +16,15 @@ import { Ed25519Wallet } from "@iov/keycontrol";
 import { riseCodec } from "./risecodec";
 import { generateNonce, RiseConnection } from "./riseconnection";
 
-const { fromHex } = Encoding;
+const { fromHex, toAscii } = Encoding;
 const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
 
 describe("RiseConnection", () => {
   const base = "https://twallet.rise.vision";
+  const defaultKeypair = Derivation.passphraseToKeypair(
+    "squeeze frog deposit chase sudden clutch fortune spring tone have snow column",
+  );
+  const defaultRecipientAddress = "10145108642177909005R" as Address;
   const defaultSendAmount = {
     whole: 0,
     fractional: 14550000,
@@ -165,96 +171,180 @@ describe("RiseConnection", () => {
     expect(nonce.data[0].nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
   });
 
-  it("can post transaction", async () => {
-    const wallet = new Ed25519Wallet();
-    const mainIdentity = await wallet.createIdentity(
-      await Derivation.passphraseToKeypair(
-        "squeeze frog deposit chase sudden clutch fortune spring tone have snow column",
-      ),
-    );
+  describe("postTx", () => {
+    it("can post transaction", async () => {
+      const wallet = new Ed25519Wallet();
+      const mainIdentity = await wallet.createIdentity(await defaultKeypair);
 
-    const recipientAddress = "10145108642177909005R" as Address;
+      const sendTx: SendTx = {
+        kind: TransactionKind.Send,
+        chainId: riseTestnet,
+        signer: mainIdentity.pubkey,
+        recipient: defaultRecipientAddress,
+        amount: defaultSendAmount,
+      };
 
-    const sendTx: SendTx = {
-      kind: TransactionKind.Send,
-      chainId: riseTestnet,
-      signer: mainIdentity.pubkey,
-      recipient: recipientAddress,
-      amount: defaultSendAmount,
-    };
+      // Encode creation timestamp into nonce
+      const nonce = generateNonce();
+      const signingJob = riseCodec.bytesToSign(sendTx, nonce);
+      const signature = await wallet.createTransactionSignature(
+        mainIdentity,
+        signingJob.bytes,
+        signingJob.prehashType,
+        riseTestnet,
+      );
 
-    // Encode creation timestamp into nonce
-    const nonce = generateNonce();
-    const signingJob = riseCodec.bytesToSign(sendTx, nonce);
-    const signature = await wallet.createTransactionSignature(
-      mainIdentity,
-      signingJob.bytes,
-      signingJob.prehashType,
-      riseTestnet,
-    );
+      const signedTransaction: SignedTransaction = {
+        transaction: sendTx,
+        primarySignature: {
+          nonce: nonce,
+          pubkey: mainIdentity.pubkey,
+          signature: signature,
+        },
+        otherSignatures: [],
+      };
+      const bytesToPost = riseCodec.bytesToPost(signedTransaction);
 
-    const signedTransaction: SignedTransaction = {
-      transaction: sendTx,
-      primarySignature: {
-        nonce: nonce,
-        pubkey: mainIdentity.pubkey,
-        signature: signature,
-      },
-      otherSignatures: [],
-    };
-    const bytesToPost = riseCodec.bytesToPost(signedTransaction);
+      const connection = await RiseConnection.establish(base);
+      const result = await connection.postTx(bytesToPost);
+      expect(result).toBeTruthy();
+    });
 
-    const connection = await RiseConnection.establish(base);
-    const result = await connection.postTx(bytesToPost);
-    expect(result).toBeTruthy();
+    xit("can post transaction and watch confirmations", done => {
+      (async () => {
+        const wallet = new Ed25519Wallet();
+        const mainIdentity = await wallet.createIdentity(await defaultKeypair);
+
+        const sendTx: SendTx = {
+          kind: TransactionKind.Send,
+          chainId: riseTestnet,
+          signer: mainIdentity.pubkey,
+          recipient: defaultRecipientAddress,
+          amount: defaultSendAmount,
+        };
+
+        // Encode creation timestamp into nonce
+        const nonce = generateNonce();
+        const signingJob = riseCodec.bytesToSign(sendTx, nonce);
+        const signature = await wallet.createTransactionSignature(
+          mainIdentity,
+          signingJob.bytes,
+          signingJob.prehashType,
+          riseTestnet,
+        );
+
+        const signedTransaction: SignedTransaction = {
+          transaction: sendTx,
+          primarySignature: {
+            nonce: nonce,
+            pubkey: mainIdentity.pubkey,
+            signature: signature,
+          },
+          otherSignatures: [],
+        };
+        const bytesToPost = riseCodec.bytesToPost(signedTransaction);
+
+        const connection = await RiseConnection.establish(base);
+        const heightBeforeTransaction = await connection.height();
+        const result = await connection.postTx(bytesToPost);
+        expect(result).toBeTruthy();
+        expect(result.blockInfo.value.state).toEqual(BcpTransactionState.Pending);
+
+        const events = new Array<BcpBlockInfo>();
+        const subscription = result.blockInfo.updates.subscribe({
+          next: info => {
+            events.push(info);
+
+            if (events.length === 2) {
+              expect(events[0]).toEqual({ state: BcpTransactionState.Pending });
+              expect(events[1]).toEqual({
+                state: BcpTransactionState.InBlock,
+                height: heightBeforeTransaction + 1,
+                confirmations: 1,
+              });
+              subscription.unsubscribe();
+              done();
+            }
+          },
+          complete: fail,
+          error: fail,
+        });
+      })().catch(fail);
+    }, 80_000);
+
+    it("throws for transaction with corrupted signature", async () => {
+      const wallet = new Ed25519Wallet();
+      const mainIdentity = await wallet.createIdentity(await defaultKeypair);
+
+      const sendTx: SendTx = {
+        kind: TransactionKind.Send,
+        chainId: riseTestnet,
+        signer: mainIdentity.pubkey,
+        recipient: defaultRecipientAddress,
+        amount: defaultSendAmount,
+      };
+
+      // Encode creation timestamp into nonce
+      const nonce = generateNonce();
+      const signingJob = riseCodec.bytesToSign(sendTx, nonce);
+      const signature = await wallet.createTransactionSignature(
+        mainIdentity,
+        signingJob.bytes,
+        signingJob.prehashType,
+        riseTestnet,
+      );
+
+      // tslint:disable-next-line:no-bitwise
+      const corruptedSignature = signature.map((x, i) => (i === 0 ? x ^ 0x01 : x)) as SignatureBytes;
+
+      const signedTransaction: SignedTransaction = {
+        transaction: sendTx,
+        primarySignature: {
+          nonce: nonce,
+          pubkey: mainIdentity.pubkey,
+          signature: corruptedSignature,
+        },
+        otherSignatures: [],
+      };
+      const bytesToPost = riseCodec.bytesToPost(signedTransaction);
+
+      const connection = await RiseConnection.establish(base);
+      await connection
+        .postTx(bytesToPost)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/Failed to verify signature/i));
+    });
   });
 
-  it("throws for transaction with corrupted signature", async () => {
-    const wallet = new Ed25519Wallet();
-    const mainIdentity = await wallet.createIdentity(
-      await Derivation.passphraseToKeypair(
-        "squeeze frog deposit chase sudden clutch fortune spring tone have snow column",
-      ),
-    );
+  describe("searchTx", () => {
+    it("can search transaction", async () => {
+      const connection = await RiseConnection.establish(base);
 
-    const recipientAddress = "10145108642177909005R" as Address;
+      // by non-existing ID
+      {
+        const searchId = "98568736528934587";
+        const results = await connection.searchTx({ hash: toAscii(searchId) as TxId, tags: [] });
+        expect(results.length).toEqual(0);
+      }
 
-    const sendTx: SendTx = {
-      kind: TransactionKind.Send,
-      chainId: riseTestnet,
-      signer: mainIdentity.pubkey,
-      recipient: recipientAddress,
-      amount: defaultSendAmount,
-    };
+      // by existing ID (https://texplorer.rise.vision/tx/530955287567640950)
+      {
+        const searchId = "530955287567640950";
+        const results = await connection.searchTx({ hash: toAscii(searchId) as TxId, tags: [] });
+        expect(results.length).toEqual(1);
+        const result = results[0];
+        expect(result.height).toEqual(1156579);
+        expect(result.txid).toEqual(toAscii(searchId));
+        const transaction = result.transaction;
+        if (transaction.kind !== TransactionKind.Send) {
+          throw new Error("Unexpected transaction type");
+        }
+        expect(transaction.recipient).toEqual("10145108642177909005R");
+        expect(transaction.amount.whole).toEqual(0);
+        expect(transaction.amount.fractional).toEqual(14550000);
+      }
 
-    // Encode creation timestamp into nonce
-    const nonce = generateNonce();
-    const signingJob = riseCodec.bytesToSign(sendTx, nonce);
-    const signature = await wallet.createTransactionSignature(
-      mainIdentity,
-      signingJob.bytes,
-      signingJob.prehashType,
-      riseTestnet,
-    );
-
-    // tslint:disable-next-line:no-bitwise
-    const corruptedSignature = signature.map((x, i) => (i === 0 ? x ^ 0x01 : x)) as SignatureBytes;
-
-    const signedTransaction: SignedTransaction = {
-      transaction: sendTx,
-      primarySignature: {
-        nonce: nonce,
-        pubkey: mainIdentity.pubkey,
-        signature: corruptedSignature,
-      },
-      otherSignatures: [],
-    };
-    const bytesToPost = riseCodec.bytesToPost(signedTransaction);
-
-    const connection = await RiseConnection.establish(base);
-    await connection
-      .postTx(bytesToPost)
-      .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/Failed to verify signature/i));
+      connection.disconnect();
+    });
   });
 });

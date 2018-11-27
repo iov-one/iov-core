@@ -1,6 +1,7 @@
 import { Listener } from "xstream";
 
-import { DefaultValueProducer, ValueAndUpdates } from "./valueandupdates";
+import { DefaultValueProducer } from "./defaultvalueproducer";
+import { ValueAndUpdates } from "./valueandupdates";
 
 describe("ValueAndUpdates", () => {
   it("can be constructed", () => {
@@ -160,6 +161,21 @@ describe("ValueAndUpdates", () => {
     expect(vau.value).toEqual(33);
 
     await vau.waitFor(44);
+    expect(vau.value).toEqual(44);
+  });
+
+  it("can wait for search function to return true", async () => {
+    const producer = new DefaultValueProducer(11);
+    const vau = new ValueAndUpdates(producer);
+
+    setTimeout(() => producer.update(22), 10);
+    setTimeout(() => producer.update(33), 20);
+    setTimeout(() => producer.update(44), 30);
+
+    await vau.waitFor(v => v > 30);
+    expect(vau.value).toEqual(33);
+
+    await vau.waitFor(v => v > 40);
     expect(vau.value).toEqual(44);
   });
 });

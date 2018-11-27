@@ -1,4 +1,6 @@
-import { Listener, MemoryStream, Producer } from "xstream";
+import { MemoryStream } from "xstream";
+import { DefaultValueProducer } from "./defaultvalueproducer";
+export declare type SearchFunction<T> = (value: T) => boolean;
 /**
  * A read only wrapper around DefaultValueProducer that allows
  * to synchonously get the current value using the .value property
@@ -9,14 +11,10 @@ export declare class ValueAndUpdates<T> {
     readonly value: T;
     private readonly producer;
     constructor(producer: DefaultValueProducer<T>);
-    waitFor(value: T): Promise<void>;
-}
-export declare class DefaultValueProducer<T> implements Producer<T> {
-    readonly value: T;
-    private internalValue;
-    private listener;
-    constructor(value: T);
-    update(value: T): void;
-    start(listener: Listener<T>): void;
-    stop(): void;
+    /**
+     * Resolves as soon as search value is found.
+     *
+     * @param search either a value or a function that must return true when found
+     */
+    waitFor(search: SearchFunction<T> | T): Promise<void>;
 }
