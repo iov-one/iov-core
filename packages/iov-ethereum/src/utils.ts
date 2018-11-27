@@ -49,11 +49,3 @@ export function hexPadToEven(hex: string): string {
   }
   return hex.replace("0x", "");
 }
-
-export function trimLeadingZero(hex: string): string {
-  let hexInput = hex;
-  while (hexInput && hexInput.startsWith("00")) {
-    hexInput = hexInput.slice(2);
-  }
-  return hexInput;
-}

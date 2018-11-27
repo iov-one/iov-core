@@ -8,7 +8,6 @@ import {
   encodeQuantity,
   encodeQuantityString,
   hexPadToEven,
-  trimLeadingZero,
 } from "./utils";
 
 describe("Ethereum utils", () => {
@@ -140,16 +139,6 @@ describe("Ethereum utils", () => {
       expect(hexPadToEven("0x2")).toEqual("02");
       expect(hexPadToEven("0x5208")).toEqual("5208");
       expect(hexPadToEven("0x4a817c800")).toEqual("04a817c800");
-    });
-  });
-
-  describe("trimLeadingZero", () => {
-    it("transform to valid outputs", () => {
-      expect(trimLeadingZero("00")).toEqual("");
-      expect(trimLeadingZero("002")).toEqual("2");
-      expect(trimLeadingZero("0008")).toEqual("08");
-      expect(trimLeadingZero("10008")).toEqual("10008");
-      expect(trimLeadingZero("4a817c800")).toEqual("4a817c800");
     });
   });
 });
