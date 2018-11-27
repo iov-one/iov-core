@@ -2,7 +2,7 @@ import { Stream } from "xstream";
 import { ChainId, PostableBytes } from "@iov/base-types";
 import { Address, BcpAccount, BcpAccountQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpNonce, BcpQueryEnvelope, BcpQueryTag, BcpSwapQuery, BcpTicker, BcpTransactionResponse, BcpTxQuery, ConfirmedTransaction, TokenTicker, TxReadCodec } from "@iov/bcp-types";
 import { Client as TendermintClient, Header, StatusResponse } from "@iov/tendermint-rpc";
-import { InitData } from "./normalize";
+import { ChainData } from "./normalize";
 import { BnsBlockchainNft, BnsBlockchainsQuery, BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
  * Talks directly to the BNS blockchain and exposes the
@@ -12,11 +12,11 @@ import { BnsBlockchainNft, BnsBlockchainsQuery, BnsUsernameNft, BnsUsernamesQuer
  */
 export declare class BnsConnection implements BcpAtomicSwapConnection {
     static establish(url: string): Promise<BnsConnection>;
-    protected static initialize(tmClient: TendermintClient): Promise<InitData>;
+    protected static initialize(tmClient: TendermintClient): Promise<ChainData>;
     protected readonly tmClient: TendermintClient;
     protected readonly codec: TxReadCodec;
-    protected readonly initData: InitData;
-    constructor(tmClient: TendermintClient, codec: TxReadCodec, initData: InitData);
+    protected readonly chainData: ChainData;
+    constructor(tmClient: TendermintClient, codec: TxReadCodec, chainData: ChainData);
     disconnect(): void;
     /**
      * The chain ID this connection is connected to

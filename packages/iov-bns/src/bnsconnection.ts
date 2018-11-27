@@ -47,7 +47,7 @@ import {
 import { bnsCodec } from "./bnscodec";
 import { decodeBlockchainNft, decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
-import { InitData, Normalize } from "./normalize";
+import { ChainData, Normalize } from "./normalize";
 import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
 import {
   BnsBlockchainNft,
@@ -98,11 +98,11 @@ function onChange<T>(): (val: T) => boolean {
 export class BnsConnection implements BcpAtomicSwapConnection {
   public static async establish(url: string): Promise<BnsConnection> {
     const tm = await TendermintClient.connect(url);
-    const initData = await this.initialize(tm);
-    return new BnsConnection(tm, bnsCodec, initData);
+    const chainData = await this.initialize(tm);
+    return new BnsConnection(tm, bnsCodec, chainData);
   }
 
-  protected static async initialize(tmClient: TendermintClient): Promise<InitData> {
+  protected static async initialize(tmClient: TendermintClient): Promise<ChainData> {
     const status = await tmClient.status();
     const chainId = status.nodeInfo.network;
 
@@ -118,12 +118,12 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
   protected readonly tmClient: TendermintClient;
   protected readonly codec: TxReadCodec;
-  protected readonly initData: InitData;
+  protected readonly chainData: ChainData;
 
-  constructor(tmClient: TendermintClient, codec: TxReadCodec, initData: InitData) {
+  constructor(tmClient: TendermintClient, codec: TxReadCodec, chainData: ChainData) {
     this.tmClient = tmClient;
     this.codec = codec;
-    this.initData = initData;
+    this.chainData = chainData;
   }
 
   public disconnect(): void {
@@ -136,7 +136,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    * We store this info from the initialization, no need to query every time
    */
   public chainId(): ChainId {
-    return this.initData.chainId;
+    return this.chainData.chainId;
   }
 
   public async height(): Promise<number> {
@@ -227,7 +227,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     }
     const parser = createParser(codecImpl.namecoin.Wallet, "wllt:");
     const parsed = (await res).results.map(parser);
-    const data = parsed.map(Normalize.account(this.initData));
+    const data = parsed.map(Normalize.account(this.chainData));
     return dummyEnvelope(data);
   }
 
@@ -272,7 +272,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
     const res = await doQuery();
     const parser = createParser(codecImpl.escrow.Escrow, "esc:");
-    const data = res.results.map(parser).map(Normalize.swapOffer(this.initData));
+    const data = res.results.map(parser).map(Normalize.swapOffer(this.chainData));
     return dummyEnvelope(data);
   }
 
@@ -291,7 +291,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     });
 
     // tslint:disable-next-line:readonly-array
-    const offers: OpenSwap[] = setTxs.filter(isSwapOffer).map(Normalize.swapOfferFromTx(this.initData));
+    const offers: OpenSwap[] = setTxs.filter(isSwapOffer).map(Normalize.swapOfferFromTx(this.chainData));
 
     // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout
     const release: ReadonlyArray<SwapClaimTx | SwapTimeoutTx> = [...setTxs, ...delTxs]
@@ -320,7 +320,9 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const setTxs = this.liveTx({ tags: [bnsSwapQueryTags(query, true)] });
     const delTxs = this.liveTx({ tags: [bnsSwapQueryTags(query, false)] });
 
-    const offers: Stream<OpenSwap> = setTxs.filter(isSwapOffer).map(Normalize.swapOfferFromTx(this.initData));
+    const offers: Stream<OpenSwap> = setTxs
+      .filter(isSwapOffer)
+      .map(Normalize.swapOfferFromTx(this.chainData));
 
     // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout
     const releases: Stream<SwapClaimTx | SwapTimeoutTx> = Stream.merge(setTxs, delTxs)

@@ -21,7 +21,7 @@ import * as codecImpl from "./generated/codecimpl";
 import { asNumber, ensure, Keyed } from "./types";
 import { encodeBnsAddress, hashFromIdentifier, isHashIdentifier, keyToAddress } from "./util";
 
-function makeAmountToBcpCoinConverter(initData: InitData): (amount: Amount) => BcpCoin {
+function makeAmountToBcpCoinConverter(initData: ChainData): (amount: Amount) => BcpCoin {
   return (amount: Amount) => {
     const tickerInfo = initData.tickers.get(amount.tokenTicker);
     return {
@@ -33,15 +33,18 @@ function makeAmountToBcpCoinConverter(initData: InitData): (amount: Amount) => B
   };
 }
 
-// InitData is all the queries we do on initialization to be
-// reused by later calls
-export interface InitData {
+/**
+ * All the queries of immutable data we do on initialization to be reused by later calls
+ *
+ * This type is package internal and may change at any time.
+ */
+export interface ChainData {
   readonly chainId: ChainId;
   readonly tickers: Map<string, BcpTicker>;
 }
 
 export class Normalize {
-  public static account(initData: InitData): (a: codecImpl.namecoin.IWallet & Keyed) => BcpAccount {
+  public static account(initData: ChainData): (a: codecImpl.namecoin.IWallet & Keyed) => BcpAccount {
     return (acct: codecImpl.namecoin.IWallet & Keyed): BcpAccount => {
       return {
         name: typeof acct.name === "string" ? acct.name : undefined,
@@ -51,14 +54,14 @@ export class Normalize {
     };
   }
 
-  public static coin(initData: InitData): (c: codecImpl.x.ICoin) => BcpCoin {
+  public static coin(initData: ChainData): (c: codecImpl.x.ICoin) => BcpCoin {
     return (coin: codecImpl.x.ICoin): BcpCoin => {
       const amount = decodeAmount(coin);
       return makeAmountToBcpCoinConverter(initData)(amount);
     };
   }
 
-  public static swapOffer(initData: InitData): (swap: codecImpl.escrow.Escrow & Keyed) => BcpAtomicSwap {
+  public static swapOffer(initData: ChainData): (swap: codecImpl.escrow.Escrow & Keyed) => BcpAtomicSwap {
     return (swap: codecImpl.escrow.Escrow & Keyed): BcpAtomicSwap => {
       // TODO: get and check hashlock
       let hashlock: Uint8Array;
@@ -85,7 +88,7 @@ export class Normalize {
     };
   }
 
-  public static swapOfferFromTx(initData: InitData): (tx: ConfirmedTransaction<SwapCounterTx>) => OpenSwap {
+  public static swapOfferFromTx(initData: ChainData): (tx: ConfirmedTransaction<SwapCounterTx>) => OpenSwap {
     return (tx: ConfirmedTransaction<SwapCounterTx>): OpenSwap => {
       const counter: SwapCounterTx = tx.transaction;
       // TODO: do we really want errors here, or just filter them out???
