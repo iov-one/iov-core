@@ -4,7 +4,7 @@ import { ChainId, PostableBytes, PublicKeyBundle, TxId } from "@iov/base-types";
 import { ValueAndUpdates } from "@iov/stream";
 
 import { Address, SignedTransaction, TxCodec } from "./signables";
-import { Nonce, TokenTicker, UnsignedTransaction } from "./transactions";
+import { Amount, Nonce, TokenTicker, UnsignedTransaction } from "./transactions";
 
 /*
 Types defined to match
@@ -33,15 +33,12 @@ export interface BcpQueryMetadata {
   readonly limit: number;
 }
 
+export interface BcpCoin extends BcpTicker, Amount {}
+
 export interface BcpAccount {
   readonly address: Address;
   readonly name?: string;
   readonly balance: ReadonlyArray<BcpCoin>;
-}
-
-export interface BcpCoin extends BcpTicker {
-  readonly whole: number;
-  readonly fractional: number;
 }
 
 export interface BcpNonce {
