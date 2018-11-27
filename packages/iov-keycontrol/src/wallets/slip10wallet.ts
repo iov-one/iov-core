@@ -298,7 +298,16 @@ export class Slip10Wallet implements Wallet {
         signature = await Ed25519.createSignature(message, await Ed25519.makeKeypair(privkey));
         break;
       case Slip10Curve.Secp256k1:
-        signature = await Secp256k1.createSignature(message, privkey);
+        // Secp256k1 signatures come in the fixed length encoding. You
+        // probably cannot use this directly, but ExtendedSecp256k1Signature
+        // is there to parse and use. E.g.
+        //   ExtendedSecp256k1Signature.fromFixedLength(signatureBytes).toDer()
+        // or
+        //   const sig = ExtendedSecp256k1Signature.fromFixedLength(signatureBytes);
+        //   const r = sig.r();
+        //   const s = sig.s();
+        //   const recoveryParam = sig.recovery;
+        signature = (await Secp256k1.createSignature(message, privkey)).toFixedLength();
         break;
       default:
         throw new Error("Unknown curve");

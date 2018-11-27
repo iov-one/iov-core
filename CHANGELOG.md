@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.10.0
+
+Breaking changes
+
+* @iov/crpto: the new types `Secp256k1Signature` and `ExtendedSecp256k1Signature` replace DER encoded signatures in `Secp256k1`.
+* @iov/keycontrol: `Secp256k1HdWallet.createTransactionSignature` now uses the custom fixed length encoding instead of DER to allow blockchains utilizing the recovery parameter.
+
 ## 0.9.1
 
 * @iov/stream: Generalize `streamPromise` to take a promise of an iterable
