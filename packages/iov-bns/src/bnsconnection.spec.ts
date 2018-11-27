@@ -357,14 +357,14 @@ describe("BnsConnection", () => {
         const txBytes = bnsCodec.bytesToPost(signed);
         const heightBeforeTransaction = await connection.height();
         const result = await connection.postTx(txBytes);
-        expect(result.blockInfo!.value).toEqual({
+        expect(result.blockInfo.value).toEqual({
           state: BcpTransactionState.InBlock,
           height: heightBeforeTransaction + 1,
           confirmations: 1,
         });
 
         const events = new Array<BcpBlockInfo>();
-        const subscription = result.blockInfo!.updates.subscribe({
+        const subscription = result.blockInfo.updates.subscribe({
           next: info => {
             events.push(info);
 

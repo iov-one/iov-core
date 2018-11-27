@@ -248,10 +248,10 @@ describe("RiseConnection", () => {
         const heightBeforeTransaction = await connection.height();
         const result = await connection.postTx(bytesToPost);
         expect(result).toBeTruthy();
-        expect(result.blockInfo!.value.state).toEqual(BcpTransactionState.Pending);
+        expect(result.blockInfo.value.state).toEqual(BcpTransactionState.Pending);
 
         const events = new Array<BcpBlockInfo>();
-        const subscription = result.blockInfo!.updates.subscribe({
+        const subscription = result.blockInfo.updates.subscribe({
           next: info => {
             events.push(info);
 

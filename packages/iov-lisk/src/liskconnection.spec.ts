@@ -273,10 +273,10 @@ describe("LiskConnection", () => {
         const heightBeforeTransaction = await connection.height();
         const result = await connection.postTx(bytesToPost);
         expect(result).toBeTruthy();
-        expect(result.blockInfo!.value.state).toEqual(BcpTransactionState.Pending);
+        expect(result.blockInfo.value.state).toEqual(BcpTransactionState.Pending);
 
         const events = new Array<BcpBlockInfo>();
-        const subscription = result.blockInfo!.updates.subscribe({
+        const subscription = result.blockInfo.updates.subscribe({
           next: info => {
             events.push(info);
 
@@ -336,11 +336,11 @@ describe("LiskConnection", () => {
       const connection = await LiskConnection.establish(devnetBase);
       const heightBeforeTransaction = await connection.height();
       const result = await connection.postTx(bytesToPost);
-      await result.blockInfo!.waitFor(
+      await result.blockInfo.waitFor(
         info => info.state === BcpTransactionState.InBlock && info.confirmations === 4,
       );
 
-      expect(result.blockInfo!.value).toEqual({
+      expect(result.blockInfo.value).toEqual({
         state: BcpTransactionState.InBlock,
         height: heightBeforeTransaction + 1,
         confirmations: 4,
