@@ -45,9 +45,9 @@ import {
 } from "@iov/tendermint-rpc";
 
 import { bnsCodec } from "./bnscodec";
+import { ChainData, Normalize } from "./context";
 import { decodeBlockchainNft, decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
-import { ChainData, Normalize } from "./normalize";
 import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
 import {
   BnsBlockchainNft,

@@ -2,7 +2,7 @@ import { Stream } from "xstream";
 import { ChainId, PostableBytes } from "@iov/base-types";
 import { Address, BcpAccount, BcpAccountQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpNonce, BcpQueryEnvelope, BcpQueryTag, BcpSwapQuery, BcpTicker, BcpTransactionResponse, BcpTxQuery, ConfirmedTransaction, TokenTicker, TxReadCodec } from "@iov/bcp-types";
 import { Client as TendermintClient, Header, StatusResponse } from "@iov/tendermint-rpc";
-import { ChainData } from "./normalize";
+import { ChainData } from "./context";
 import { BnsBlockchainNft, BnsBlockchainsQuery, BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
  * Talks directly to the BNS blockchain and exposes the
