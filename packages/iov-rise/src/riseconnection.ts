@@ -170,7 +170,6 @@ export class RiseConnection implements BcpConnection {
       {
         tokenTicker: constants.primaryTokenTicker,
         tokenName: constants.primaryTokenName,
-        fractionalDigits: constants.primaryTokenFractionalDigits,
       },
     ];
     return dummyEnvelope(tickers);

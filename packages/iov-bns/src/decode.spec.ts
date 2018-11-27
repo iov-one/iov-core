@@ -125,13 +125,12 @@ describe("Decode", () => {
     const token: codecImpl.namecoin.IToken & Keyed = {
       _id: toUtf8("TRASH"),
       name: "Trash",
-      sigFigs: 22,
+      sigFigs: 22, // Will be ignored. It is always 9.
     };
     const ticker = decodeToken(token);
     expect(ticker).toEqual({
       tokenTicker: "TRASH" as TokenTicker,
       tokenName: "Trash",
-      fractionalDigits: 22,
     });
   });
 

@@ -107,7 +107,6 @@ export function decodeToken(data: codecImpl.namecoin.IToken & Keyed): BcpTicker 
   return {
     tokenTicker: Encoding.fromAscii(data._id) as TokenTicker,
     tokenName: ensure(data.name),
-    fractionalDigits: ensure(data.sigFigs),
   };
 }
 
@@ -115,6 +114,7 @@ export function decodeAmount(coin: codecImpl.x.ICoin): Amount {
   return {
     whole: asNumber(coin.whole),
     fractional: asNumber(coin.fractional),
+    fractionalDigits: 9, // fixed for all tickers in BNS
     tokenTicker: (coin.ticker || "") as TokenTicker,
   };
 }

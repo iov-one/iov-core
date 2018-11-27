@@ -41,6 +41,7 @@ describe("liskCodec", () => {
       amount: {
         whole: 1,
         fractional: 23456789,
+        fractionalDigits: 8,
         tokenTicker: "LSK" as TokenTicker,
       },
       recipient: "10010344879730196491L" as Address,

@@ -118,7 +118,6 @@ export class Context {
       ...amount,
       // Better defaults?
       tokenName: tickerInfo ? tickerInfo.tokenName : "<Unknown token>",
-      fractionalDigits: tickerInfo ? tickerInfo.fractionalDigits : 9,
     };
   }
 }

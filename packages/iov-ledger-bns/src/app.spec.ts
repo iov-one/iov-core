@@ -114,6 +114,7 @@ describe("Sign with ledger app", () => {
         // 1234.789 LGR
         whole: 1234,
         fractional: 789000000,
+        fractionalDigits: 9,
         tokenTicker: "LGR" as TokenTicker,
       },
       signer: sender,
@@ -159,6 +160,7 @@ describe("Sign with ledger app", () => {
         // 77.01001 PATH
         whole: 77,
         fractional: 10010000,
+        fractionalDigits: 9,
         tokenTicker: "PATH" as TokenTicker,
       },
       signer: sender,

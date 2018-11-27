@@ -77,6 +77,7 @@ describe("MultiChainSigner", () => {
         amount: {
           whole: 11000,
           fractional: 777,
+          fractionalDigits: 9,
           tokenTicker: cash,
         },
       };

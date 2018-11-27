@@ -436,6 +436,7 @@ describe("UserProfile", () => {
       amount: {
         whole: 1,
         fractional: 12,
+        fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
       },
       recipient: "AABBCC" as Address,
@@ -514,6 +515,7 @@ describe("UserProfile", () => {
       amount: {
         whole: 1,
         fractional: 12,
+        fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
       },
       recipient: "AABBCC" as Address,

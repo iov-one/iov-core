@@ -79,6 +79,7 @@ async function ensureNonceNonZero(
     amount: {
       whole: 0,
       fractional: 1,
+      fractionalDigits: 9,
       tokenTicker: cash,
     },
   };
@@ -150,15 +151,12 @@ describe("BnsConnection", () => {
 
     expect(response.data[0].tokenTicker).toEqual("ASH" as TokenTicker);
     expect(response.data[0].tokenName).toEqual("Let the Phoenix arise");
-    expect(response.data[0].fractionalDigits).toEqual(6);
 
     expect(response.data[1].tokenTicker).toEqual("BASH" as TokenTicker);
     expect(response.data[1].tokenName).toEqual("Another token of this chain");
-    expect(response.data[1].fractionalDigits).toEqual(6);
 
     expect(response.data[2].tokenTicker).toEqual("CASH" as TokenTicker);
     expect(response.data[2].tokenName).toEqual("Main token of this chain");
-    expect(response.data[2].fractionalDigits).toEqual(6);
 
     connection.disconnect();
   });
@@ -284,6 +282,7 @@ describe("BnsConnection", () => {
         amount: {
           whole: 500,
           fractional: 75000,
+          fractionalDigits: 9,
           tokenTicker: cash,
         },
       };
@@ -349,6 +348,7 @@ describe("BnsConnection", () => {
           amount: {
             whole: 500,
             fractional: 75000,
+            fractionalDigits: 9,
             tokenTicker: cash,
           },
         };
@@ -702,6 +702,7 @@ describe("BnsConnection", () => {
         amount: {
           whole: 1,
           fractional: 1,
+          fractionalDigits: 9,
           tokenTicker: cash,
         },
       };
@@ -756,6 +757,7 @@ describe("BnsConnection", () => {
         amount: {
           whole: 1,
           fractional: 1,
+          fractionalDigits: 9,
           tokenTicker: cash,
         },
       };
@@ -1074,6 +1076,7 @@ describe("BnsConnection", () => {
       amount: {
         whole: 680,
         fractional: 0,
+        fractionalDigits: 9,
         tokenTicker: cash,
       },
     };
@@ -1269,6 +1272,7 @@ describe("BnsConnection", () => {
         {
           whole: 123,
           fractional: 456000,
+          fractionalDigits: 9,
           tokenTicker: cash,
         },
       ],
@@ -1383,6 +1387,7 @@ describe("BnsConnection", () => {
         {
           whole: 21,
           fractional: 0,
+          fractionalDigits: 9,
           tokenTicker: cash,
         },
       ],

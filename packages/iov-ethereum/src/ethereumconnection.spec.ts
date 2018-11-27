@@ -93,16 +93,19 @@ describe("EthereumConnection", () => {
       amount: {
         whole: 0,
         fractional: 3445500,
+        fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
       },
       gasPrice: {
         whole: 0,
         fractional: gasPrice,
+        fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
       },
       gasLimit: {
         whole: 0,
         fractional: gasLimit,
+        fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
       },
       memo: "We \u2665 developers – iov.one",

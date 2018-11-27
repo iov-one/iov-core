@@ -118,6 +118,7 @@ export const liskCodec: TxCodec = {
         chainId: chainId,
         fee: {
           ...Parse.parseQuantity(json.fee),
+          fractionalDigits: constants.primaryTokenFractionalDigits,
           tokenTicker: constants.primaryTokenTicker,
         },
         signer: {
@@ -128,6 +129,7 @@ export const liskCodec: TxCodec = {
         kind: kind,
         amount: {
           ...Parse.parseQuantity(json.amount),
+          fractionalDigits: constants.primaryTokenFractionalDigits,
           tokenTicker: constants.primaryTokenTicker,
         },
         recipient: json.recipientId as Address,

@@ -115,6 +115,7 @@ describe("Serialization", () => {
         amount: {
           whole: 1,
           fractional: 23456789,
+          fractionalDigits: 8,
           tokenTicker: "RISE" as TokenTicker,
         },
         recipient: "10010344879730196491R" as Address,
@@ -141,6 +142,7 @@ describe("Serialization", () => {
         amount: {
           whole: 1,
           fractional: 23456789,
+          fractionalDigits: 8,
           tokenTicker: "LSK" as TokenTicker,
         },
         recipient: "10010344879730196491L" as Address,
@@ -167,6 +169,7 @@ describe("Serialization", () => {
         amount: {
           whole: 1,
           fractional: 23456789,
+          fractionalDigits: 8,
           tokenTicker: "LSK" as TokenTicker,
         },
         recipient: "10010344879730196491L" as Address,
@@ -194,6 +197,7 @@ describe("Serialization", () => {
         amount: {
           whole: 1,
           fractional: 23456789,
+          fractionalDigits: 8,
           tokenTicker: "LSK" as TokenTicker,
         },
         memo: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam",
@@ -218,6 +222,7 @@ describe("Serialization", () => {
         amount: {
           whole: 1,
           fractional: 23456789,
+          fractionalDigits: 8,
           tokenTicker: "LSK" as TokenTicker,
         },
         // ⇉ (Rightwards Paired Arrows, U+21c9) takes 2 bytes in UTF-8
@@ -243,11 +248,13 @@ describe("Serialization", () => {
         amount: {
           whole: 1,
           fractional: 23456789,
+          fractionalDigits: 8,
           tokenTicker: "XNET" as TokenTicker,
         },
         fee: {
           whole: 0,
           fractional: 0,
+          fractionalDigits: 8,
           tokenTicker: "XNET" as TokenTicker,
         },
         recipient: "10010344879730196491X" as Address,
@@ -273,6 +280,7 @@ describe("Serialization", () => {
         amount: {
           whole: 1,
           fractional: 23456789,
+          fractionalDigits: 8,
           tokenTicker: "LSK" as TokenTicker,
         },
         recipient: "10010344879730196491L" as Address,

@@ -41,6 +41,7 @@ describe("riseCodec", () => {
       amount: {
         whole: 1,
         fractional: 23456789,
+        fractionalDigits: 8,
         tokenTicker: "RISE" as TokenTicker,
       },
       recipient: "10010344879730196491R" as Address,

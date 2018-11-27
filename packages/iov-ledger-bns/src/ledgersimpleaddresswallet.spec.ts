@@ -208,6 +208,7 @@ describe("LedgerSimpleAddressWallet", () => {
         // 77.01001 PATH
         whole: 77,
         fractional: 10010000,
+        fractionalDigits: 9,
         tokenTicker: "PATH" as TokenTicker,
       },
       signer: newIdentity.pubkey,

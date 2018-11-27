@@ -1,6 +1,7 @@
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes, TxId } from "@iov/base-types";
 import {
   Address,
+  Amount,
   BcpAccountQuery,
   BcpBlockInfo,
   BcpTransactionState,
@@ -25,9 +26,10 @@ describe("RiseConnection", () => {
     "squeeze frog deposit chase sudden clutch fortune spring tone have snow column",
   );
   const defaultRecipientAddress = "10145108642177909005R" as Address;
-  const defaultSendAmount = {
+  const defaultSendAmount: Amount = {
     whole: 0,
     fractional: 14550000,
+    fractionalDigits: 8,
     tokenTicker: "RISE" as TokenTicker,
   };
 
@@ -94,7 +96,6 @@ describe("RiseConnection", () => {
     expect(response.data.length).toEqual(1);
     expect(response.data[0].tokenTicker).toEqual("RISE");
     expect(response.data[0].tokenName).toEqual("RISE");
-    expect(response.data[0].fractionalDigits).toEqual(8);
   });
 
   it("produces empty result for non-existing ticker", async () => {
@@ -109,7 +110,6 @@ describe("RiseConnection", () => {
     expect(response.data.length).toEqual(1);
     expect(response.data[0].tokenTicker).toEqual("RISE");
     expect(response.data[0].tokenName).toEqual("RISE");
-    expect(response.data[0].fractionalDigits).toEqual(8);
   });
 
   it("can get chain ID", async () => {

@@ -39,6 +39,7 @@ describe("LiskConnection", () => {
   const devnetDefaultAmount: Amount = {
     whole: 1,
     fractional: 44550000,
+    fractionalDigits: 8,
     tokenTicker: "LSK" as TokenTicker,
   };
 
@@ -107,7 +108,6 @@ describe("LiskConnection", () => {
     expect(response.data.length).toEqual(1);
     expect(response.data[0].tokenTicker).toEqual("LSK");
     expect(response.data[0].tokenName).toEqual("Lisk");
-    expect(response.data[0].fractionalDigits).toEqual(8);
   });
 
   it("produces empty result for non-existing ticker", async () => {
@@ -122,7 +122,6 @@ describe("LiskConnection", () => {
     expect(response.data.length).toEqual(1);
     expect(response.data[0].tokenTicker).toEqual("LSK");
     expect(response.data[0].tokenName).toEqual("Lisk");
-    expect(response.data[0].fractionalDigits).toEqual(8);
   });
 
   it("can get chain ID", async () => {

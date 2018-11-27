@@ -49,16 +49,19 @@ describe("Serialization", () => {
         amount: {
           whole: 20,
           fractional: 0,
+          fractionalDigits: 18,
           tokenTicker: "ETH" as TokenTicker,
         },
         gasPrice: {
           whole: 0,
           fractional: 20000000000,
+          fractionalDigits: 18,
           tokenTicker: "ETH" as TokenTicker,
         },
         gasLimit: {
           whole: 0,
           fractional: 21000,
+          fractionalDigits: 18,
           tokenTicker: "ETH" as TokenTicker,
         },
         recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
@@ -86,16 +89,19 @@ describe("Serialization", () => {
         amount: {
           whole: 20,
           fractional: 0,
+          fractionalDigits: 18,
           tokenTicker: "ETH" as TokenTicker,
         },
         gasPrice: {
           whole: 0,
           fractional: 20000000000,
+          fractionalDigits: 18,
           tokenTicker: "ETH" as TokenTicker,
         },
         gasLimit: {
           whole: 0,
           fractional: 21000,
+          fractionalDigits: 18,
           tokenTicker: "ETH" as TokenTicker,
         },
         recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
