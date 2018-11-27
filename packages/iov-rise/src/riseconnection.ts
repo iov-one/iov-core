@@ -33,6 +33,9 @@ import { riseCodec } from "./risecodec";
 
 const { fromAscii, toAscii, toUtf8 } = Encoding;
 
+// poll every 10 seconds (block time 30s)
+const transactionStatePollInterval = 10_000;
+
 /**
  * Encodes the current date and time as a nonce
  */
@@ -139,7 +142,7 @@ export class RiseConnection implements BcpConnection {
               lastEventSent = event;
             }
           }
-        }, 10000);
+        }, transactionStatePollInterval);
       },
       onStop: () => clearInterval(blockInfoInterval),
     });

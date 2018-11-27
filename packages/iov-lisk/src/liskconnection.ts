@@ -33,6 +33,9 @@ import { liskCodec } from "./liskcodec";
 
 const { fromAscii, toAscii, toUtf8 } = Encoding;
 
+// poll every 3 seconds (block time 10s)
+const transactionStatePollInterval = 3_000;
+
 /**
  * Encodes the current date and time as a nonce
  */
@@ -129,7 +132,7 @@ export class LiskConnection implements BcpConnection {
                 lastEventSent = event;
               }
             }
-          }, 3000);
+          }, transactionStatePollInterval);
         },
         onStop: () => clearInterval(blockInfoInterval),
       },
