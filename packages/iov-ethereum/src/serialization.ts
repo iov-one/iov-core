@@ -54,14 +54,14 @@ export class Serialization {
     }
   }
   public static amountFromComponents(whole: number, fractional: number): string {
-    const base10BN = new BN(10);
-    const wholeBN = new BN(whole);
-    const sigFigsBN = new BN(constants.primaryTokenSigFigs);
-    const fractionalBN = new BN(fractional);
-    return base10BN
-      .pow(sigFigsBN)
-      .mul(wholeBN)
-      .add(fractionalBN)
+    const base10BigNumber = new BN(10);
+    const wholeBigNumber = new BN(whole);
+    const sigFigsBigNumber = new BN(constants.primaryTokenSigFigs);
+    const fractionalBigNumber = new BN(fractional);
+    return base10BigNumber
+      .pow(sigFigsBigNumber)
+      .mul(wholeBigNumber)
+      .add(fractionalBigNumber)
       .toString();
   }
 }
