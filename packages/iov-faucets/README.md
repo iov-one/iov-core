@@ -9,13 +9,14 @@ Use some Testnet faucets from JavaScript.
 The basic usage of this package is:
 
 ```ts
-import { BovFaucet } from '@iov/faucets';
+import { TokenTicker } from "@iov/bcp-types";
+import { IovFaucet } from '@iov/faucets';
 
-const bovFaucet = new BovFaucet("https://faucet.friendnet-slow.iov.one/faucet");
-await bovFaucet.credit(address)
+const faucet = new IovFaucet("https://iov-faucet.yaknet.iov.one");
+await faucet.credit(address, "IOV" as TokenTicker)
 ```
 
-There is a complete example in the [@iov/core README](https://github.com/iov-one/iov-core/blob/master/packages/iov-cli/README.md#faucet-usage).
+There is a complete example in the [@iov/cli README](https://github.com/iov-one/iov-core/blob/master/packages/iov-cli/README.md#faucet-usage).
 
 ## API Documentation
 

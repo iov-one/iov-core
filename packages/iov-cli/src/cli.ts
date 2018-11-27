@@ -75,7 +75,6 @@ export function main(originalArgs: ReadonlyArray<string>): void {
   console.log(colors.yellow("    - Bech32"));
   console.log(colors.yellow("    - Encoding"));
   console.log(colors.yellow("  * from @iov/faucets"));
-  console.log(colors.yellow("    - BovFaucet"));
   console.log(colors.yellow("    - IovFaucet"));
   console.log(colors.yellow("  * helper functions"));
   console.log(colors.yellow("    - toAscii"));
@@ -112,7 +111,7 @@ export function main(originalArgs: ReadonlyArray<string>): void {
     import { bnsCodec } from '@iov/bns';
     import { Bip39, Ed25519, Ed25519Keypair, Random, Sha256, Sha512 } from '@iov/crypto';
     import { Bech32, Encoding } from '@iov/encoding';
-    import { BovFaucet, IovFaucet } from '@iov/faucets';
+    import { IovFaucet } from '@iov/faucets';
     const { toAscii, fromHex, toHex } = Encoding;
   `;
 

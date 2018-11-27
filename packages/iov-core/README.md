@@ -199,10 +199,10 @@ console.log(byName.data[0])
 If you are running the testnet faucet, just ask for some free money.
 
 ```ts
-import { BovFaucet } from "@iov/faucets";
+import { TokenTicker } from "@iov/bcp-types";
+import { IovFaucet } from "@iov/faucets";
 
-const faucet = new BovFaucet("https://faucet.friendnet-fast.iov.one/faucet");
-// You can request a given token, or omit second argument to get default
+const faucet = new IovFaucet("https://iov-faucet.yaknet.iov.one");
 await faucet.credit(addr, "IOV" as TokenTicker);
 ```
 

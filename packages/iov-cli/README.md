@@ -188,26 +188,23 @@ Error: Socket was closed, so no data can be sent anymore.
 
 ## Faucet usage
 
-When using a Testnet, you can use the BovFaucet to receive tokens:
+When using a Testnet, you can use the IovFaucet to receive tokens:
 
 ```
 > const mnemonic = Bip39.encode(await Random.getBytes(16)).asString();
 > mnemonic
 'helmet album grow detail apology thank wire chef fame core private cargo'
 > const profile = new UserProfile();
-> const wallet = Ed25519HdWallet.fromMnemonic(mnemonic);
-> profile.addWallet(wallet);
+> const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic));
 > const me = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
 
 > const signer = new MultiChainSigner(profile);
-> await signer.addChain(bnsConnector("https://bov.friendnet-slow.iov.one"));
-> const chainId = signer.chainIds()[0];
-> const connection = signer.connection(chainId);
-> const meAddress = signer.keyToAddress(chainId, me.pubkey);
+> const { connection } = await signer.addChain(bnsConnector("https://bns.yaknet.iov.one"));
+> const meAddress = signer.keyToAddress(connection.chainId(), me.pubkey);
 
-> const bovFaucet = new BovFaucet("https://faucet.friendnet-slow.iov.one/faucet");
+> const faucet = new IovFaucet("https://iov-faucet.yaknet.iov.one");
 
-> await bovFaucet.credit(meAddress)
+> await faucet.credit(meAddress, "IOV" as TokenTicker)
 > (await connection.getAccount({ address: meAddress })).data[0].balance
 [ { whole: 10,
     fractional: 0,
@@ -215,7 +212,7 @@ When using a Testnet, you can use the BovFaucet to receive tokens:
     tokenName: 'Main token of this chain',
     sigFigs: 6 } ]
 
-> await bovFaucet.credit(meAddress, "PAJA" as TokenTicker)
+> await faucet.credit(meAddress, "PAJA" as TokenTicker)
 > (await connection.getAccount({ address: meAddress })).data[0].balance
 [ { whole: 10,
     fractional: 0,
