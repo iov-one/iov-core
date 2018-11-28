@@ -136,6 +136,7 @@ describe("Ethereum utils", () => {
 
   describe("hexPadToEven", () => {
     it("transform to valid outputs", () => {
+      expect(hexPadToEven("0x")).toEqual("");
       expect(hexPadToEven("0x2")).toEqual("02");
       expect(hexPadToEven("0x5208")).toEqual("5208");
       expect(hexPadToEven("0x4a817c800")).toEqual("04a817c800");
