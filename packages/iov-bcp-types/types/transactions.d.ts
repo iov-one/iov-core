@@ -10,7 +10,7 @@ export declare type SwapIdString = string & As<"swap-id">;
 export declare type RecipientId = Address;
 export interface Amount {
     /**
-     * The quantity expressed as atimic units.
+     * The quantity expressed as atomic units.
      *
      * Convert to whole and fractional part using
      *   const whole = amount.quantity.slice(0, -amount.fractionalDigits);
