@@ -134,10 +134,40 @@ describe("Decode", () => {
     });
   });
 
-  it("has working decodeAmount", () => {
-    const decoded = codecImpl.x.Coin.decode(coinBin);
-    const amount = decodeAmount(decoded);
-    expect(amount).toEqual(coinJson);
+  describe("decodeAmount", () => {
+    it("can decode amount 3.123456789 ASH", () => {
+      const backendAmount: codecImpl.x.ICoin = {
+        whole: 3,
+        fractional: 123456789,
+        ticker: "ASH",
+      };
+      const decoded = decodeAmount(backendAmount);
+      expect(decoded).toEqual({
+        quantity: "3123456789",
+        fractionalDigits: 9,
+        tokenTicker: "ASH" as TokenTicker,
+      });
+    });
+
+    it("can decode amount 0.000000001 ASH", () => {
+      const backendAmount: codecImpl.x.ICoin = {
+        whole: 0,
+        fractional: 1,
+        ticker: "ASH",
+      };
+      const decoded = decodeAmount(backendAmount);
+      expect(decoded).toEqual({
+        quantity: "1",
+        fractionalDigits: 9,
+        tokenTicker: "ASH" as TokenTicker,
+      });
+    });
+
+    it("is compatible to test data", () => {
+      const decoded = codecImpl.x.Coin.decode(coinBin);
+      const amount = decodeAmount(decoded);
+      expect(amount).toEqual(coinJson);
+    });
   });
 
   describe("transactions", () => {
