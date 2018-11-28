@@ -1,27 +1,31 @@
 import axios from "axios";
 import { Stream } from "xstream";
 
-import { Algorithm, ChainId, PostableBytes, PublicKeyBytes } from "@iov/base-types";
+import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, TxId } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
   BcpAccountQuery,
+  BcpBlockInfo,
   BcpConnection,
   BcpNonce,
   BcpQueryEnvelope,
   BcpQueryTag,
   BcpTicker,
   BcpTransactionResponse,
+  BcpTransactionState,
   BcpTxQuery,
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
   TokenTicker,
 } from "@iov/bcp-types";
+import { Encoding } from "@iov/encoding";
+import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
 import { Parse } from "./parse";
-import { decodeHexQuantity, decodeHexQuantityNonce, decodeHexQuantityString } from "./utils";
+import { decodeHexQuantity, decodeHexQuantityNonce, decodeHexQuantityString, hexPadToEven } from "./utils";
 
 async function loadChainId(baseUrl: string): Promise<ChainId> {
   // see https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version
@@ -74,8 +78,29 @@ export class EthereumConnection implements BcpConnection {
     return decodeHexQuantity(responseBody.result);
   }
 
-  public async postTx(_: PostableBytes): Promise<BcpTransactionResponse> {
-    throw new Error("Not implemented");
+  public async postTx(bytes: PostableBytes): Promise<BcpTransactionResponse> {
+    const result = await axios.post(this.baseUrl, {
+      jsonrpc: "2.0",
+      method: "eth_sendRawTransaction",
+      params: ["0x" + Encoding.toHex(bytes)],
+      id: 5,
+    });
+    const message = result.data.error ? result.data.error.message : null;
+    const transactionHash = result.data.result ? result.data.result : "";
+    const blockInfoPending = new DefaultValueProducer<BcpBlockInfo>({
+      state: BcpTransactionState.Pending,
+    });
+    return {
+      metadata: {
+        height: undefined,
+      },
+      blockInfo: new ValueAndUpdates(blockInfoPending),
+      data: {
+        message: message,
+        txid: Encoding.fromHex(hexPadToEven(transactionHash)) as TxId,
+        result: result.data,
+      },
+    };
   }
 
   public getTicker(_: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {

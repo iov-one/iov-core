@@ -18,7 +18,7 @@ Ethereum blockchain as follows.
 ### Local test
 
 To run Ethereum tests locally, you need to install ganache and start with the following settings:
-- RPC Server: `http://127.0.0.1:7545`
+- RPC Server: `http://127.0.0.1:8545`
 - Network ID: `5777`
 - Mnemonic: `oxygen fall sure lava energy veteran enroll frown question detail include maximum`
 

@@ -1,4 +1,14 @@
-import { Address, BcpAccountQuery } from "@iov/bcp-types";
+import {
+  Address,
+  BcpAccountQuery,
+  SendTx,
+  SignedTransaction,
+  TokenTicker,
+  TransactionKind,
+} from "@iov/bcp-types";
+import { HdPaths, Secp256k1HdWallet } from "@iov/keycontrol";
+
+import { ethereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
 import { TestConfig } from "./testconfig";
 
@@ -20,6 +30,8 @@ describe("EthereumConnection", () => {
   const whole = TestConfig.whole;
   const fractional = TestConfig.fractional;
   const nonce = TestConfig.nonce;
+  const gasPrice = TestConfig.gasPrice;
+  const gasLimit = TestConfig.gasLimit;
 
   it(`can be constructed for ${base}`, () => {
     pendingWithoutEthereum();
@@ -61,5 +73,65 @@ describe("EthereumConnection", () => {
 
     expect(nonceResp.data[0].address).toEqual(address);
     expect(nonceResp.data[0].nonce).toEqual(nonce);
+  });
+
+  it("can post transaction", async () => {
+    pendingWithoutEthereum();
+
+    const wallet = Secp256k1HdWallet.fromMnemonic(
+      "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+    );
+    const mainIdentity = await wallet.createIdentity(HdPaths.bip44(60, 0, 0, 1));
+
+    const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
+
+    const sendTx: SendTx = {
+      kind: TransactionKind.Send,
+      chainId: nodeChainId,
+      signer: mainIdentity.pubkey,
+      recipient: recipientAddress,
+      amount: {
+        whole: 0,
+        fractional: 3445500,
+        tokenTicker: "ETH" as TokenTicker,
+      },
+      gasPrice: {
+        whole: 0,
+        fractional: gasPrice,
+        tokenTicker: "ETH" as TokenTicker,
+      },
+      gasLimit: {
+        whole: 0,
+        fractional: gasLimit,
+        tokenTicker: "ETH" as TokenTicker,
+      },
+      memo: "We \u2665 developers – iov.one",
+    };
+    const connection = await EthereumConnection.establish(base);
+    const senderAddress = ethereumCodec.keyToAddress(mainIdentity.pubkey);
+    const query: BcpAccountQuery = { address: senderAddress as Address };
+    const nonceResp = await connection.getNonce(query);
+    const signingJob = ethereumCodec.bytesToSign(sendTx, nonceResp.data[0].nonce);
+    const signature = await wallet.createTransactionSignature(
+      mainIdentity,
+      signingJob.bytes,
+      signingJob.prehashType,
+      nodeChainId,
+    );
+
+    const signedTransaction: SignedTransaction = {
+      transaction: sendTx,
+      primarySignature: {
+        nonce: nonceResp.data[0].nonce,
+        pubkey: mainIdentity.pubkey,
+        signature: signature,
+      },
+      otherSignatures: [],
+    };
+    const bytesToPost = ethereumCodec.bytesToPost(signedTransaction);
+
+    const result = await connection.postTx(bytesToPost);
+    expect(result).toBeTruthy();
+    expect(result.data.message).toBeNull();
   });
 });

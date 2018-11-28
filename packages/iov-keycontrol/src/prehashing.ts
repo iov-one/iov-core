@@ -1,5 +1,5 @@
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
-import { Sha256, Sha512 } from "@iov/crypto";
+import { Keccak256, Sha256, Sha512 } from "@iov/crypto";
 
 export function prehash(bytes: SignableBytes, type: PrehashType): Uint8Array {
   switch (type) {
@@ -9,6 +9,8 @@ export function prehash(bytes: SignableBytes, type: PrehashType): Uint8Array {
       return new Sha256(bytes).digest();
     case PrehashType.Sha512:
       return new Sha512(bytes).digest();
+    case PrehashType.Keccak256:
+      return new Keccak256(bytes).digest();
     default:
       throw new Error("Unknown prehash type");
   }

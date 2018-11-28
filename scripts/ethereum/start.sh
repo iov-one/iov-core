@@ -15,7 +15,7 @@ function startupGanache() {
     echo "Killing existing Ganache CLI process $GANACHE_PID"
     kill -9 "$GANACHE_PID"
   fi
-  "$REPO_ROOT/node_modules/.bin/ganache-cli" -p 7545 -i 5777 -m "$GANACHE_MNEMONIC" > /dev/null &
+  "$REPO_ROOT/node_modules/.bin/ganache-cli" -p 8545 -i 5777 -m "$GANACHE_MNEMONIC" > /dev/null &
   GANACHE_PID=$!
   echo "Started new Ganache CLI as process $GANACHE_PID"
 }

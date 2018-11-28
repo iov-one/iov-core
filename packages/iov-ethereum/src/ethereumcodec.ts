@@ -2,16 +2,24 @@ import { Algorithm, ChainId, PostableBytes, PublicKeyBundle } from "@iov/base-ty
 import {
   Address,
   Nonce,
+  PrehashType,
+  SignableBytes,
   SignedTransaction,
   SigningJob,
   TransactionIdBytes,
+  TransactionKind,
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
-import { Keccak256 } from "@iov/crypto";
+import { ExtendedSecp256k1Signature, Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
-const { toAscii, toHex } = Encoding;
+import { isValidAddress } from "./derivation";
+import { toRlp } from "./encoding";
+import { Serialization } from "./serialization";
+import { encodeQuantity, encodeQuantityString, hexPadToEven } from "./utils";
+
+const { fromHex, toAscii, toHex } = Encoding;
 
 export function toChecksumAddress(address: string): Address {
   // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md
@@ -26,10 +34,76 @@ export function toChecksumAddress(address: string): Address {
 
 export const ethereumCodec: TxCodec = {
   bytesToSign: (unsigned: UnsignedTransaction, nonce: Nonce): SigningJob => {
-    throw new Error(`Not implemented utx: ${unsigned}, nonce: ${nonce}`);
+    return {
+      bytes: Serialization.serializeTransaction(unsigned, nonce) as SignableBytes,
+      prehashType: PrehashType.Keccak256,
+    };
   },
   bytesToPost: (signed: SignedTransaction): PostableBytes => {
-    throw new Error(`Not implemented tx: ${signed}`);
+    switch (signed.transaction.kind) {
+      case TransactionKind.Send:
+        let gasPriceHex = "0x";
+        let gasLimitHex = "0x";
+        let dataHex = "0x";
+        let nonceHex = "0x";
+
+        const valueHex = encodeQuantityString(
+          Serialization.amountFromComponents(
+            signed.transaction.amount.whole,
+            signed.transaction.amount.fractional,
+          ),
+        );
+        if (signed.primarySignature.nonce.toNumber() > 0) {
+          nonceHex = encodeQuantity(signed.primarySignature.nonce.toNumber());
+        }
+        if (signed.transaction.gasPrice) {
+          gasPriceHex = encodeQuantityString(
+            Serialization.amountFromComponents(
+              signed.transaction.gasPrice.whole,
+              signed.transaction.gasPrice.fractional,
+            ),
+          );
+        }
+        if (signed.transaction.gasLimit) {
+          gasLimitHex = encodeQuantityString(
+            Serialization.amountFromComponents(
+              signed.transaction.gasLimit.whole,
+              signed.transaction.gasLimit.fractional,
+            ),
+          );
+        }
+        if (signed.transaction.memo) {
+          dataHex += Encoding.toHex(Encoding.toUtf8(signed.transaction.memo));
+        }
+        if (!isValidAddress(signed.transaction.recipient)) {
+          throw new Error("Invalid recipient address");
+        }
+        const sig = ExtendedSecp256k1Signature.fromFixedLength(signed.primarySignature.signature);
+        const r = sig.r();
+        const s = sig.s();
+        let v = sig.recovery + 27;
+        const chainId = Number(signed.transaction.chainId);
+        if (chainId > 0) {
+          v += chainId * 2 + 8;
+        }
+        const chainIdHex = encodeQuantity(v);
+        const postableTx = new Uint8Array(
+          toRlp([
+            Buffer.from(fromHex(hexPadToEven(nonceHex))),
+            Buffer.from(fromHex(hexPadToEven(gasPriceHex))),
+            Buffer.from(fromHex(hexPadToEven(gasLimitHex))),
+            Buffer.from(fromHex(hexPadToEven(signed.transaction.recipient))),
+            Buffer.from(fromHex(hexPadToEven(valueHex))),
+            Buffer.from(fromHex(hexPadToEven(dataHex))),
+            Buffer.from(fromHex(hexPadToEven(chainIdHex))),
+            Buffer.from(r),
+            Buffer.from(s),
+          ]),
+        );
+        return postableTx as PostableBytes;
+      default:
+        throw new Error("Unsupported kind of transaction");
+    }
   },
   identifier: (signed: SignedTransaction): TransactionIdBytes => {
     throw new Error(`Not implemented tx: ${signed}`);
@@ -46,7 +120,5 @@ export const ethereumCodec: TxCodec = {
     const addressString = toChecksumAddress("0x" + lastFortyChars);
     return addressString as Address;
   },
-  isValidAddress: (address: string): boolean => {
-    throw new Error(`Not implemented ${address}`);
-  },
+  isValidAddress: isValidAddress,
 };

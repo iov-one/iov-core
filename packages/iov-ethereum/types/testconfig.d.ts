@@ -9,5 +9,7 @@ export interface EthereumNetworkConfig {
     readonly whole: number;
     readonly fractional: number;
     readonly nonce: Nonce;
+    readonly gasPrice: number;
+    readonly gasLimit: number;
 }
 export declare const TestConfig: EthereumNetworkConfig;

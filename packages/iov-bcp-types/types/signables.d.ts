@@ -6,7 +6,8 @@ export declare type SignableBytes = Uint8Array & As<"signable">;
 export declare enum PrehashType {
     None = 0,
     Sha512 = 1,
-    Sha256 = 2
+    Sha256 = 2,
+    Keccak256 = 3
 }
 export interface SigningJob {
     readonly bytes: SignableBytes;
