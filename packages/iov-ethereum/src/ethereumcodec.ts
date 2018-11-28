@@ -15,7 +15,7 @@ import { ExtendedSecp256k1Signature, Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
 import { isValidAddress } from "./derivation";
-import { toRlp } from "./encoding";
+import { BlknumForkState, Eip155ChainId, eip155V, toRlp } from "./encoding";
 import { Serialization } from "./serialization";
 import { encodeQuantity, encodeQuantityString, hexPadToEven } from "./utils";
 
@@ -81,11 +81,11 @@ export const ethereumCodec: TxCodec = {
         const sig = ExtendedSecp256k1Signature.fromFixedLength(signed.primarySignature.signature);
         const r = sig.r();
         const s = sig.s();
-        let v = sig.recovery + 27;
-        const chainId = Number(signed.transaction.chainId);
-        if (chainId > 0) {
-          v += chainId * 2 + 8;
-        }
+        const chain: Eip155ChainId = {
+          forkState: BlknumForkState.Forked,
+          chainId: Number(signed.transaction.chainId),
+        };
+        const v = eip155V(chain, sig.recovery);
         const chainIdHex = encodeQuantity(v);
         const postableTx = new Uint8Array(
           toRlp([
