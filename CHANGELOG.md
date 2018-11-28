@@ -2,6 +2,10 @@
 
 ## 0.10.0
 
+* @iov/bcp-types: `BcpTransactionResponse` now contains a `blockInfo` property
+  that allows you to get block related data associated with the transactions
+  and subscribing to updates. `metadata` was deprecated in favour of `blockInfo`.
+
 Breaking changes
 
 * @iov/crpto: the new types `Secp256k1Signature` and `ExtendedSecp256k1Signature` replace DER encoded signatures in `Secp256k1`.
