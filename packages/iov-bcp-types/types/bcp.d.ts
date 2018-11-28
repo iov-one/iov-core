@@ -59,7 +59,7 @@ export interface BcpTransactionResponse {
     readonly metadata: {
         readonly height?: number;
     };
-    /** Information abot the block the transaction is in */
+    /** Information about the block the transaction is in */
     readonly blockInfo: ValueAndUpdates<BcpBlockInfo>;
     readonly data: {
         readonly message: string;
