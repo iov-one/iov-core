@@ -34,6 +34,10 @@ describe("Parse", () => {
     expect(Parse.parseQuantity("123456789")).toEqual("123456789");
   });
 
+  it("can parse quantity 0.00000023", () => {
+    expect(Parse.parseQuantity("23")).toEqual("23");
+  });
+
   it("parses timestamp 0 as epoch", () => {
     expect(Parse.fromTimestamp(0)).toEqual(new ReadonlyDate(ReadonlyDate.UTC(2016, 4, 24, 17, 0, 0, 0)));
   });
