@@ -2,6 +2,7 @@ import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } f
 import {
   AddAddressToUsernameTx,
   Address,
+  Amount,
   FullSignature,
   Nonce,
   RegisterBlockchainTx,
@@ -57,10 +58,49 @@ describe("Encode", () => {
     expect(Uint8Array.from(encoded)).toEqual(privBin);
   });
 
-  it("encodes amount", () => {
-    const amount = encodeAmount(coinJson);
-    const encoded = codecImpl.x.Coin.encode(amount).finish();
-    expect(Uint8Array.from(encoded)).toEqual(coinBin);
+  describe("encodeAmount", () => {
+    it("can encode amount 3.123456789 ASH", () => {
+      const amount: Amount = {
+        quantity: "3123456789",
+        fractionalDigits: 9,
+        tokenTicker: "ASH" as TokenTicker,
+      };
+      const encoded = encodeAmount(amount);
+      expect(encoded).toEqual({
+        whole: 3,
+        fractional: 123456789,
+        ticker: "ASH",
+      });
+    });
+
+    it("can encode amount 0.000000001 ASH", () => {
+      const amount: Amount = {
+        quantity: "1",
+        fractionalDigits: 9,
+        tokenTicker: "ASH" as TokenTicker,
+      };
+      const encoded = encodeAmount(amount);
+      expect(encoded).toEqual({
+        whole: null,
+        fractional: 1,
+        ticker: "ASH",
+      });
+    });
+
+    it("throws for encoding fractional digits other than 9", () => {
+      const amount: Amount = {
+        quantity: "1",
+        fractionalDigits: 6,
+        tokenTicker: "SMASH" as TokenTicker,
+      };
+      expect(() => encodeAmount(amount)).toThrowError(/fractional digits must be 9 but was 6/i);
+    });
+
+    it("is compatible to test data", () => {
+      const encoded = encodeAmount(coinJson);
+      const encodedBinary = Uint8Array.from(codecImpl.x.Coin.encode(encoded).finish());
+      expect(encodedBinary).toEqual(coinBin);
+    });
   });
 
   it("encodes full signature", () => {

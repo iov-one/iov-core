@@ -56,14 +56,18 @@ export function encodePrivkey(privateKey: PrivateKeyBundle): codecImpl.crypto.IP
   }
 }
 
-export function encodeAmount(amount: Amount): codecImpl.x.Coin {
+export function encodeAmount(amount: Amount): codecImpl.x.ICoin {
+  if (amount.fractionalDigits !== 9) {
+    throw new Error(`Fractional digits must be 9 but was ${amount.fractionalDigits}`);
+  }
+
   const whole = Int53.fromString(amount.quantity.slice(0, -amount.fractionalDigits) || "0");
   const fractional = Int53.fromString(amount.quantity.slice(-amount.fractionalDigits) || "0");
-  return codecImpl.x.Coin.create({
+  return {
     whole: encodeInt(whole.toNumber()),
     fractional: encodeInt(fractional.toNumber()),
     ticker: amount.tokenTicker,
-  });
+  };
 }
 
 function encodeSignature(algo: Algorithm, bytes: SignatureBytes): codecImpl.crypto.ISignature {
