@@ -8,6 +8,10 @@
 
 Breaking changes
 
+* @iov/bcp-types: An `Amount` is now a `quantity` expressed as a string, a
+  `fractionalDigits` number and a `tokenTicker`. This replaces the `whole`,
+  `fractional` pair. `BcpTicker` does not contain `sigFigs` anymore because
+  it is not needed there. `BcpCoin` is now an `Amount` and a `BcpTicker`.
 * @iov/crpto: the new types `Secp256k1Signature` and `ExtendedSecp256k1Signature` replace DER encoded signatures in `Secp256k1`.
 * @iov/faucets: Remove `BovFaucet`. Use `IovFaucet` instead.
 * @iov/keycontrol: `Secp256k1HdWallet.createTransactionSignature` now uses the custom fixed length encoding instead of DER to allow blockchains utilizing the recovery parameter.
