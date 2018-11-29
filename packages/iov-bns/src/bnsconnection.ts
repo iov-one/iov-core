@@ -33,6 +33,7 @@ import {
   Client as TendermintClient,
   getHeaderEventHeight,
   getTxEventHeight,
+  Header,
   StatusResponse,
   txCommitSuccess,
   TxEvent,
@@ -433,6 +434,22 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    */
   public changeNonce(addr: Address): Stream<number> {
     return this.changeTx([bnsNonceTag(addr)]);
+  }
+
+  public async getHeader(height: number): Promise<Header> {
+    const {blockMetas} = await this.tmClient.blockchain(height, height);
+    if (blockMetas.length < 1) {
+      throw new Error(`Header ${height} doesn't exist yet`);
+    }
+    const { header } = blockMetas[0];
+    if (header.height !== height) {
+      throw new Error(`Requested header ${height} but got ${header.height}`);
+    }
+    return header;
+  }
+
+  public watchHeaders(): Stream<Header> {
+    return this.tmClient.subscribeNewBlockHeader();
   }
 
   /**
