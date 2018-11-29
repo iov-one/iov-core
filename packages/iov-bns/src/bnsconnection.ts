@@ -437,7 +437,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   }
 
   public async getHeader(height: number): Promise<Header> {
-    const {blockMetas} = await this.tmClient.blockchain(height, height);
+    const { blockMetas } = await this.tmClient.blockchain(height, height);
     if (blockMetas.length < 1) {
       throw new Error(`Header ${height} doesn't exist yet`);
     }
