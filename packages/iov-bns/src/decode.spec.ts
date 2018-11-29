@@ -163,6 +163,21 @@ describe("Decode", () => {
       });
     });
 
+    it("can decode max amount 999999999999999.999999999 ASH", () => {
+      // https://github.com/iov-one/weave/blob/v0.9.3/x/codec.proto#L15
+      const backendAmount: codecImpl.x.ICoin = {
+        whole: 10 ** 15 - 1,
+        fractional: 10 ** 9 - 1,
+        ticker: "ASH",
+      };
+      const decoded = decodeAmount(backendAmount);
+      expect(decoded).toEqual({
+        quantity: "999999999999999999999999",
+        fractionalDigits: 9,
+        tokenTicker: "ASH" as TokenTicker,
+      });
+    });
+
     it("is compatible to test data", () => {
       const decoded = codecImpl.x.Coin.decode(coinBin);
       const amount = decodeAmount(decoded);

@@ -1,4 +1,4 @@
-import Long from "long";
+import BN = require("bn.js");
 
 import { ChainId } from "@iov/base-types";
 import {
@@ -118,9 +118,9 @@ export function decodeAmount(coin: codecImpl.x.ICoin): Amount {
   const wholeNumber = asNumber(coin.whole);
   const fractionalNumber = asNumber(coin.fractional);
 
-  const quantity = Long.fromNumber(wholeNumber)
-    .multiply(10 ** fractionalDigits)
-    .add(fractionalNumber)
+  const quantity = new BN(wholeNumber)
+    .imul(new BN(10 ** fractionalDigits))
+    .iadd(new BN(fractionalNumber))
     .toString();
 
   return {
