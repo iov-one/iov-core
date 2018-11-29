@@ -1,5 +1,8 @@
-// Definition file from https://github.com/indutny/bn.js/pull/180
-// plus Uint8Array constructor
+// Definition file from https://github.com/indutny/bn.js/pull/190
+declare module "bn.js" {
+  export = BN;
+}
+
 
 /*
  * These types are based on [1] from @ukstv and [2] from @MicahZoltu.
@@ -9,64 +12,114 @@
  * [2] https://github.com/indutny/bn.js/pull/179
  */
 
-declare module 'bn.js' {
-  type Endianness = 'le' | 'be'
 
-  class BN {
-    static isBN(b: any): boolean;
-    static min(left: BN, right: BN): BN;
-    static max(left: BN, right: BN): BN;
+declare type Endianness = 'le' | 'be'
 
-    constructor(number: number | string | number[] | Buffer | Uint8Array, base?: number | 'hex', endian?: Endianness);
-    clone(): BN;
-    copy(dest: BN): void;
-    inspect(): string;
-    toString(base?: number | 'hex', length?: number): string;
-    toNumber(): number;
-    toJSON(): string;
-    toArray(endian?: Endianness, length?: number): number[];
-    toArrayLike(constructor: Uint8ArrayConstructor, endian?: Endianness, length?: number): Uint8Array;
-    toBuffer(endian?: Endianness, length?: number): Buffer;
-    bitLength(): number;
-    zeroBits(): number;
-    byteLength(): number;
-    isNeg(): boolean;
-    isEven(): boolean;
-    isOdd(): boolean;
-    isZero(): boolean;
-    cmp(b: BN): number;
-    lt(b: BN): boolean;
-    lte(b: BN): boolean;
-    gt(b: BN): boolean;
-    gte(b: BN): boolean;
-    eq(b: BN): boolean;
+declare class BN {
+  static isBN(b: any): b is BN;
+  static min(left: BN, right: BN): BN;
+  static max(left: BN, right: BN): BN;
 
-    neg(): BN;
-    abs(): BN;
-    add(b: BN): BN;
-    sub(b: BN): BN;
-    mul(b: BN): BN;
-    sqr(): BN;
-    pow(b: BN): BN;
-    div(b: BN): BN;
-    mod(b: BN): BN;
-    divRound(b: BN): BN;
+  constructor(
+    number: number | string | number[] | Buffer | Uint8Array,
+    base?: number | 'hex',
+    endian?: Endianness);
 
-    or(b: BN): BN;
-    and(b: BN): BN;
-    xor(b: BN): BN;
-    setn(b: number): BN;
-    shln(b: number): BN;
-    shrn(b: number): BN;
-    testn(b: number): boolean;
-    maskn(b: number): BN;
-    bincn(b: number): BN;
-    notn(w: number): BN;
+  // Utilities
+  clone(): BN;
+  copy(dest: BN): void;
+  inspect(): string;
+  toString(base?: number | 'hex', length?: number): string;
+  toNumber(): number;
+  toJSON(): string;
+  toArray(endian?: Endianness, length?: number): number[];
+  toArrayLike(constructor: Uint8ArrayConstructor, endian?: Endianness, length?: number): Uint8Array;
+  toBuffer(endian?: Endianness, length?: number): Buffer;
+  bitLength(): number;
+  zeroBits(): number;
+  byteLength(): number;
+  isNeg(): boolean;
+  isEven(): boolean;
+  isOdd(): boolean;
+  isZero(): boolean;
+  cmp(b: BN): -1 | 0 | 1;
+  ucmp(b: BN): -1 | 0 | 1;
+  cmpn(b: number): -1 | 0 | 1;
+  lt(b: BN): boolean;
+  ltn(b: number): boolean;
+  lte(b: BN): boolean;
+  lten(b: number): boolean;
+  gt(b: BN): boolean;
+  gtn(b: number): boolean;
+  gte(b: BN): boolean;
+  gten(b: number): boolean;
+  eq(b: BN): boolean;
+  eqn(b: number): boolean;
 
-    gcd(b: BN): BN;
-    egcd(b: BN): { a: BN, b: BN, gcd: BN };
-    invm(b: BN): BN;
-  }
+  // Arithmetics
+  neg(): BN;
+  ineg(): BN;
+  abs(): BN;
+  iabs(): BN;
+  add(b: BN): BN;
+  iadd(b: BN): BN;
+  addn(b: number): BN;
+  iaddn(b: number): BN;
+  sub(b: BN): BN;
+  isub(b: BN): BN;
+  sub(b: number): BN;
+  isubn(b: number): BN;
+  mul(b: BN): BN;
+  imul(b: BN): BN;
+  muln(b: number): BN;
+  imuln(b: number): BN;
+  sqr(): BN;
+  isqr(): BN;
+  pow(b: BN): BN;
+  div(b: BN): BN;
+  divn(b: number): BN;
+  idivn(b: number): BN;
+  mod(b: BN): BN;
+  umod(b: BN): BN;
+  /**
+   * @deprecated use modrn.
+   */
+  modn(b: number): number;
+  modrn(b: number): number;
+  divRound(b: BN): BN;
 
-  export = BN;
+  // Bitwise operations
+  or(b: BN): BN;
+  ior(b: BN): BN;
+  uor(b: BN): BN;
+  iuor(b: BN): BN;
+  and(b: BN): BN;
+  iand(b: BN): BN;
+  uand(b: BN): BN;
+  iuand(b: BN): BN;
+  andln(b: BN): BN;
+  xor(b: BN): BN;
+  ixor(b: BN): BN;
+  uxor(b: BN): BN;
+  iuxor(b: BN): BN;
+  setn(b: number): BN;
+  shln(b: number): BN;
+  ishln(b: number): BN;
+  ushln(b: number): BN;
+  iushln(b: number): BN;
+  shrn(b: number): BN;
+  ishrn(b: number): BN;
+  ushrn(b: number): BN;
+  iushrn(b: number): BN;
+  testn(b: number): boolean;
+  maskn(b: number): BN;
+  imaskn(b: number): BN;
+  bincn(b: number): BN;
+  notn(w: number): BN;
+  inotn(w: number): BN;
+
+  // Reduction
+  gcd(b: BN): BN;
+  egcd(b: BN): { a: BN, b: BN, gcd: BN };
+  invm(b: BN): BN;
 }
