@@ -485,6 +485,7 @@ describe("BnsConnection", () => {
   });
 
   it("watches headers with same data as getHeader", async () => {
+    pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
     const headers = lastValue(connection.watchHeaders().take(2));
