@@ -474,13 +474,28 @@ describe("BnsConnection", () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
     await connection
-      .getHeader(123456)
+      .getHeader(123456789)
       .then(() => fail("must not resolve"))
-      .catch(() => 0);
+      .catch(error => expect(error).toMatch(/height 123456789 can't be greater than/i));
     await connection
       .getHeader(-3)
       .then(() => fail("must not resolve"))
-      .catch(() => 0);
+      .catch(error => expect(error).toMatch(/must be non-negative/i));
+    connection.disconnect();
+  });
+
+  it("watches headers with same data as getHeader", async () => {
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+    const headers = lastValue(connection.watchHeaders().take(2));
+    await headers.finished();
+
+    const subHeader = headers.value()!;
+    const { height } = subHeader;
+
+    const header = await connection.getHeader(height);
+    expect(header).toEqual(subHeader);
+
     connection.disconnect();
   });
 
