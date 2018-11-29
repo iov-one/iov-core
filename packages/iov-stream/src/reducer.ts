@@ -34,11 +34,19 @@ export class Reducer<T, U> {
     this.reducer = reducer;
     this.state = initState;
     this.completed = new Promise<void>((resolve, reject) => {
-      this.stream.addListener({
-        complete: () => resolve(),
-        error: (err: any) => reject(err),
+      const subscription = this.stream.subscribe({
         next: (evt: T) => {
           this.state = this.reducer(this.state, evt);
+        },
+        complete: () => {
+          resolve();
+          // this must happen after resolve, to ensure stream.subscribe() has finished
+          subscription.unsubscribe();
+        },
+        error: (err: any) => {
+          reject(err);
+          // the stream already closed on error, but unsubscribe to be safe
+          subscription.unsubscribe();
         },
       });
     });

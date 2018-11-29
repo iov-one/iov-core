@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.2
+
+* @iov/bns: Add `getHeader` and `watchHeaders` methods to access block headers
+
 ## 0.9.1
 
 * @iov/stream: Generalize `streamPromise` to take a promise of an iterable
