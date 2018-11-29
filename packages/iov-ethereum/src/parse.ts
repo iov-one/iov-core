@@ -1,19 +1,20 @@
-import { TokenTicker } from "@iov/bcp-types";
+import { Amount } from "@iov/bcp-types";
 
 import { constants } from "./constants";
 
-export interface AmountFields {
-  readonly whole: number;
-  readonly fractional: number;
-  readonly tokenTicker: TokenTicker;
-}
-
 export class Parse {
-  public static ethereumAmount(total: string): AmountFields {
-    const sigFigs = constants.primaryTokenSigFigs;
+  public static ethereumAmount(total: string): Amount {
+    if (!total.match(/^[0-9]+$/)) {
+      throw new Error("Invalid string format");
+    }
+
+    // cut leading zeros
+    const quantity = total.replace(/^0*/, "") || "0";
+
+    const fractionalDigits = constants.primaryTokenFractionalDigits;
     return {
-      whole: Number.parseInt(total.slice(0, -sigFigs).replace(/^0+/, ""), 10) || 0,
-      fractional: Number.parseInt(total.slice(-sigFigs).replace(/^0+/, ""), 10) || 0,
+      quantity: quantity,
+      fractionalDigits: fractionalDigits,
       tokenTicker: constants.primaryTokenTicker,
     };
   }

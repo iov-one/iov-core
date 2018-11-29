@@ -1,11 +1,16 @@
+import BN = require("bn.js");
+
 import { ChainId } from "@iov/base-types";
 import {
   AddAddressToUsernameTx,
   Address,
   Amount,
   BaseTx,
+  BcpNonce,
+  BcpTicker,
   ChainAddressPair,
   FullSignature,
+  Nonce,
   RegisterBlockchainTx,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
@@ -23,7 +28,17 @@ import {
 import { Encoding } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
-import { asNumber, BnsAddressBytes, BnsBlockchainNft, BnsUsernameNft, decodeFullSig, ensure } from "./types";
+import {
+  asInt53,
+  asNumber,
+  BnsAddressBytes,
+  BnsBlockchainNft,
+  BnsUsernameNft,
+  decodeFullSig,
+  decodePubkey,
+  ensure,
+  Keyed,
+} from "./types";
 import { encodeBnsAddress, isHashIdentifier } from "./util";
 
 const { fromUtf8 } = Encoding;
@@ -82,10 +97,42 @@ export function decodeUsernameNft(nft: codecImpl.username.IUsernameToken): BnsUs
   };
 }
 
-export function decodeAmount(coin: codecImpl.x.ICoin): Amount {
+export function decodeNonce(acct: codecImpl.sigs.IUserData & Keyed): BcpNonce {
   return {
-    whole: asNumber(coin.whole),
-    fractional: asNumber(coin.fractional),
+    address: encodeBnsAddress(acct._id),
+    nonce: asInt53(acct.sequence) as Nonce,
+    pubkey: decodePubkey(ensure(acct.pubkey)),
+  };
+}
+
+export function decodeToken(data: codecImpl.namecoin.IToken & Keyed): BcpTicker {
+  return {
+    tokenTicker: Encoding.fromAscii(data._id) as TokenTicker,
+    tokenName: ensure(data.name),
+  };
+}
+
+export function decodeAmount(coin: codecImpl.x.ICoin): Amount {
+  const fractionalDigits = 9; // fixed for all tickers in BNS
+
+  const wholeNumber = asNumber(coin.whole);
+  if (wholeNumber < 0) {
+    throw new Error("Component `whole` must not be negative");
+  }
+
+  const fractionalNumber = asNumber(coin.fractional);
+  if (fractionalNumber < 0) {
+    throw new Error("Component `fractional` must not be negative");
+  }
+
+  const quantity = new BN(wholeNumber)
+    .imul(new BN(10 ** fractionalDigits))
+    .iadd(new BN(fractionalNumber))
+    .toString();
+
+  return {
+    quantity: quantity,
+    fractionalDigits: fractionalDigits,
     tokenTicker: (coin.ticker || "") as TokenTicker,
   };
 }

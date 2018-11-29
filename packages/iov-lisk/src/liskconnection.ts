@@ -161,7 +161,6 @@ export class LiskConnection implements BcpConnection {
       {
         tokenTicker: constants.primaryTokenTicker,
         tokenName: constants.primaryTokenName,
-        sigFigs: constants.primaryTokenSigFigs,
       },
     ];
     return dummyEnvelope(tickers);
@@ -187,10 +186,10 @@ export class LiskConnection implements BcpConnection {
         name: undefined,
         balance: [
           {
-            sigFigs: constants.primaryTokenSigFigs,
+            quantity: Parse.parseQuantity(item.balance),
+            fractionalDigits: constants.primaryTokenFractionalDigits,
             tokenName: constants.primaryTokenName,
             tokenTicker: constants.primaryTokenTicker,
-            ...Parse.parseQuantity(item.balance),
           },
         ],
       }),

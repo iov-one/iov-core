@@ -434,8 +434,8 @@ describe("UserProfile", () => {
       signer: fakeIdentity.pubkey,
       kind: TransactionKind.Send,
       amount: {
-        whole: 1,
-        fractional: 12,
+        quantity: "1000000000000000012",
+        fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
       },
       recipient: "AABBCC" as Address,
@@ -512,8 +512,8 @@ describe("UserProfile", () => {
       signer: mainIdentity.pubkey,
       kind: TransactionKind.Send,
       amount: {
-        whole: 1,
-        fractional: 12,
+        quantity: "1000000000000000012",
+        fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
       },
       recipient: "AABBCC" as Address,

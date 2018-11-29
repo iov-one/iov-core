@@ -170,7 +170,6 @@ export class RiseConnection implements BcpConnection {
       {
         tokenTicker: constants.primaryTokenTicker,
         tokenName: constants.primaryTokenName,
-        sigFigs: constants.primaryTokenSigFigs,
       },
     ];
     return dummyEnvelope(tickers);
@@ -198,10 +197,10 @@ export class RiseConnection implements BcpConnection {
         name: undefined,
         balance: [
           {
-            sigFigs: constants.primaryTokenSigFigs,
+            quantity: Parse.parseQuantity(responseBody.balance),
+            fractionalDigits: constants.primaryTokenFractionalDigits,
             tokenName: constants.primaryTokenName,
             tokenTicker: constants.primaryTokenTicker,
-            ...Parse.parseQuantity(responseBody.balance),
           },
         ],
       },

@@ -8,11 +8,10 @@ export interface EthereumNetworkConfig {
   readonly chainId: ChainId;
   readonly minHeight: number;
   readonly address: Address;
-  readonly whole: number;
-  readonly fractional: number;
+  readonly quantity: string;
   readonly nonce: Nonce;
-  readonly gasPrice: number;
-  readonly gasLimit: number;
+  readonly gasPrice: string;
+  readonly gasLimit: string;
 }
 
 // Chain Id is from eip-155.md
@@ -26,11 +25,10 @@ const local: EthereumNetworkConfig = {
   chainId: "5777" as ChainId,
   minHeight: -1,
   address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
-  whole: 100,
-  fractional: 0,
+  quantity: "100000000000000000000",
   nonce: new Int53(0) as Nonce,
-  gasPrice: 20000000000,
-  gasLimit: 2100000,
+  gasPrice: "20000000000",
+  gasLimit: "2100000",
 };
 
 const testnetRopsten: EthereumNetworkConfig = {
@@ -39,11 +37,10 @@ const testnetRopsten: EthereumNetworkConfig = {
   chainId: "3" as ChainId,
   minHeight: 4284887,
   address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
-  whole: 2,
-  fractional: 999979000000000000,
+  quantity: "2999979000000000000",
   nonce: new Int53(1) as Nonce,
-  gasPrice: 1000000000,
-  gasLimit: 141000,
+  gasPrice: "1000000000",
+  gasLimit: "141000",
 };
 
 const testnetRinkeby: EthereumNetworkConfig = {
@@ -52,11 +49,10 @@ const testnetRinkeby: EthereumNetworkConfig = {
   chainId: "4" as ChainId,
   minHeight: 3211058,
   address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
-  whole: 0,
-  fractional: 20000000000000000,
+  quantity: "20000000000000000",
   nonce: new Int53(0) as Nonce,
-  gasPrice: 1000000000,
-  gasLimit: 141000,
+  gasPrice: "1000000000",
+  gasLimit: "141000",
 };
 
 const config = new Map<string, EthereumNetworkConfig>();

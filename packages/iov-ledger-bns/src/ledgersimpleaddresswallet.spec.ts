@@ -206,8 +206,8 @@ describe("LedgerSimpleAddressWallet", () => {
       recipient: "tiov1zg62hngqqz4qqq8lluqqp2sqqqfrf27dzrrmea" as RecipientId,
       amount: {
         // 77.01001 PATH
-        whole: 77,
-        fractional: 10010000,
+        quantity: "77010010000",
+        fractionalDigits: 9,
         tokenTicker: "PATH" as TokenTicker,
       },
       signer: newIdentity.pubkey,

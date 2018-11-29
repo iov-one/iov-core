@@ -21,7 +21,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp-types";
 import { Parse, Serialization } from "@iov/dpos";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 
 import { constants } from "./constants";
 import { isValidAddress, pubkeyToAddress } from "./derivation";
@@ -59,14 +59,10 @@ export const riseCodec: TxCodec = {
           signed.primarySignature,
           constants.transactionSerializationOptions,
         );
-        const amount = Serialization.amountFromComponents(
-          signed.transaction.amount.whole,
-          signed.transaction.amount.fractional,
-        );
 
         const postableObject = {
           type: 0,
-          amount: amount.toNumber(),
+          amount: Int53.fromString(signed.transaction.amount.quantity).toNumber(),
           recipientId: signed.transaction.recipient,
           senderId: pubkeyToAddress(signed.primarySignature.pubkey.data),
           senderPublicKey: Encoding.toHex(signed.primarySignature.pubkey.data),
@@ -115,7 +111,8 @@ export const riseCodec: TxCodec = {
       transaction: {
         chainId: chainId,
         fee: {
-          ...Parse.parseQuantity(`${json.fee}`), // `fee` is a number
+          quantity: Parse.parseQuantity(`${json.fee}`), // `fee` is a number
+          fractionalDigits: constants.primaryTokenFractionalDigits,
           tokenTicker: constants.primaryTokenTicker,
         },
         signer: {
@@ -125,7 +122,8 @@ export const riseCodec: TxCodec = {
         ttl: undefined,
         kind: kind,
         amount: {
-          ...Parse.parseQuantity(`${json.amount}`), // `amount` is a number
+          quantity: Parse.parseQuantity(`${json.amount}`), // `amount` is a number
+          fractionalDigits: constants.primaryTokenFractionalDigits,
           tokenTicker: constants.primaryTokenTicker,
         },
         recipient: json.recipientId as Address,

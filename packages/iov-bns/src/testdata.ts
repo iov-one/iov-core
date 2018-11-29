@@ -51,15 +51,15 @@ export const privBin = fromHex(
 export const address = "tiov14nqqhrewym7sjwy5ckcaslsr474hrnuek3vnr4" as Address;
 
 export const coinJson: Amount = {
-  whole: 878,
-  fractional: 1567000,
+  quantity: "878001567000",
+  fractionalDigits: 9,
   tokenTicker: "IOV" as TokenTicker,
 };
 export const coinBin = fromHex("08ee061098d25f1a03494f56");
 
-const amount = {
-  whole: 250,
-  fractional: 0,
+const amount: Amount = {
+  quantity: "250000000000",
+  fractionalDigits: 9,
   tokenTicker: "ETH" as TokenTicker,
 };
 export const chainId = "test-123" as ChainId;
@@ -121,13 +121,13 @@ const randomMsg: SendTx = {
   recipient: "tiov1qzvctjecs368fl5la074d2m8u99u64hn8q7kyn" as Address,
   memo: "One more fix!",
   amount: {
-    whole: 128,
-    fractional: 79890911,
+    quantity: "128079890911",
+    fractionalDigits: 9,
     tokenTicker: "FOO" as TokenTicker,
   },
   fee: {
-    whole: 0,
-    fractional: 5432,
+    quantity: "5432",
+    fractionalDigits: 9,
     tokenTicker: "PSQL" as TokenTicker,
   },
 };
@@ -160,8 +160,8 @@ const swapCounterMsg: SwapCounterTx = {
   timeout: 7890,
   amount: [
     {
-      whole: 128,
-      fractional: 79890911,
+      quantity: "128079890911",
+      fractionalDigits: 9,
       tokenTicker: "FOO" as TokenTicker,
     },
   ],

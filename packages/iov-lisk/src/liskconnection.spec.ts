@@ -37,8 +37,8 @@ describe("LiskConnection", () => {
     "wagon stock borrow episode laundry kitten salute link globe zero feed marble",
   );
   const devnetDefaultAmount: Amount = {
-    whole: 1,
-    fractional: 44550000,
+    quantity: "144550000",
+    fractionalDigits: 8,
     tokenTicker: "LSK" as TokenTicker,
   };
 
@@ -107,7 +107,6 @@ describe("LiskConnection", () => {
     expect(response.data.length).toEqual(1);
     expect(response.data[0].tokenTicker).toEqual("LSK");
     expect(response.data[0].tokenName).toEqual("Lisk");
-    expect(response.data[0].sigFigs).toEqual(8);
   });
 
   it("produces empty result for non-existing ticker", async () => {
@@ -122,7 +121,6 @@ describe("LiskConnection", () => {
     expect(response.data.length).toEqual(1);
     expect(response.data[0].tokenTicker).toEqual("LSK");
     expect(response.data[0].tokenName).toEqual("Lisk");
-    expect(response.data[0].sigFigs).toEqual(8);
   });
 
   it("can get chain ID", async () => {
@@ -147,9 +145,8 @@ describe("LiskConnection", () => {
     const account = await connection.getAccount(query);
     expect(account.data[0].address).toEqual("1349293588603668134L");
     expect(account.data[0].balance[0].tokenTicker).toEqual("LSK");
-    expect(account.data[0].balance[0].sigFigs).toEqual(8);
-    expect(account.data[0].balance[0].whole).toEqual(100);
-    expect(account.data[0].balance[0].fractional).toEqual(34556677);
+    expect(account.data[0].balance[0].fractionalDigits).toEqual(8);
+    expect(account.data[0].balance[0].quantity).toEqual("10034556677");
   });
 
   it("can get account from pubkey", async () => {
@@ -163,9 +160,8 @@ describe("LiskConnection", () => {
     const account = await connection.getAccount(query);
     expect(account.data[0].address).toEqual("1349293588603668134L");
     expect(account.data[0].balance[0].tokenTicker).toEqual("LSK");
-    expect(account.data[0].balance[0].sigFigs).toEqual(8);
-    expect(account.data[0].balance[0].whole).toEqual(100);
-    expect(account.data[0].balance[0].fractional).toEqual(34556677);
+    expect(account.data[0].balance[0].fractionalDigits).toEqual(8);
+    expect(account.data[0].balance[0].quantity).toEqual("10034556677");
   });
 
   it("returns empty list when getting an unused account", async () => {
@@ -418,8 +414,7 @@ describe("LiskConnection", () => {
           throw new Error("Unexpected transaction type");
         }
         expect(transaction.recipient).toEqual("1349293588603668134L");
-        expect(transaction.amount.whole).toEqual(100);
-        expect(transaction.amount.fractional).toEqual(44556677);
+        expect(transaction.amount.quantity).toEqual("10044556677");
       }
 
       connection.disconnect();

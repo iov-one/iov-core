@@ -1,6 +1,7 @@
-import { ChainId } from "@iov/base-types";
-import { SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
-import { bnsConnector, bnsFromOrToTag } from "@iov/bns";
+import { Algorithm, ChainId, PublicKeyBytes } from "@iov/base-types";
+import { Address, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { bnsCodec, bnsConnector, bnsFromOrToTag } from "@iov/bns";
+import { Random } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, LocalIdentity, UserProfile, WalletId } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";
@@ -19,6 +20,13 @@ const pendingWithoutTendermint = () => {
     pending("Set TENDERMINT_ENABLED to enable tendermint-based tests");
   }
 };
+
+async function randomBnsAddress(): Promise<Address> {
+  return bnsCodec.keyToAddress({
+    algo: Algorithm.Ed25519,
+    data: (await Random.getBytes(32)) as PublicKeyBytes,
+  });
+}
 
 describe("MultiChainSigner", () => {
   // TODO: had issues with websockets? check again later, maybe they need to close at end?
@@ -63,8 +71,7 @@ describe("MultiChainSigner", () => {
       expect(signer.chainIds().length).toEqual(1);
       const chainId = connection.chainId();
 
-      const recipient = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(4));
-      const recipientAddress = signer.keyToAddress(chainId, recipient.pubkey);
+      const recipient = await randomBnsAddress();
 
       // construct a sendtx, this mirrors the MultiChainSigner api
       const memo = `MultiChainSigner style (${Math.random()})`;
@@ -72,29 +79,26 @@ describe("MultiChainSigner", () => {
         kind: TransactionKind.Send,
         chainId,
         signer: faucet.pubkey,
-        recipient: recipientAddress,
+        recipient: recipient,
         memo: memo,
         amount: {
-          whole: 11000,
-          fractional: 777,
+          quantity: "11000000000777",
+          fractionalDigits: 9,
           tokenTicker: cash,
         },
       };
       await signer.signAndCommit(sendTx, mainWalletId);
 
       // we should be a little bit richer
-      const gotMoney = await connection.getAccount({ address: recipientAddress });
+      const gotMoney = await connection.getAccount({ address: recipient });
       expect(gotMoney).toBeTruthy();
       expect(gotMoney.data.length).toEqual(1);
       const paid = gotMoney.data[0];
       expect(paid.balance.length).toEqual(1);
-      // we may post multiple times if we have multiple tests,
-      // so just ensure at least one got in
-      expect(paid.balance[0].whole).toBeGreaterThanOrEqual(11000);
-      expect(paid.balance[0].fractional).toBeGreaterThanOrEqual(777);
+      expect(paid.balance[0].quantity).toEqual("11000000000777");
 
       // find the transaction we sent by comparing the memo
-      const results = await connection.searchTx({ tags: [bnsFromOrToTag(recipientAddress)] });
+      const results = await connection.searchTx({ tags: [bnsFromOrToTag(recipient)] });
       expect(results.length).toBeGreaterThanOrEqual(1);
       const last = results[results.length - 1];
       expect(last.transaction.kind).toEqual(TransactionKind.Send);

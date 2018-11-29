@@ -1,21 +1,12 @@
-import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
 import { Nonce } from "@iov/bcp-types";
-import { Int53 } from "@iov/encoding";
-
-export interface Quantity {
-  readonly whole: number;
-  readonly fractional: number;
-}
+import { Int53, Uint64 } from "@iov/encoding";
 
 export class Parse {
-  public static parseQuantity(str: string): Quantity {
-    const quantity = Long.fromString(str, true, 10);
-    return {
-      whole: quantity.divide(100000000).toNumber(),
-      fractional: quantity.modulo(100000000).toNumber(),
-    };
+  /** validates string to be a non-negative integer and cuts leading zeros */
+  public static parseQuantity(quantity: string): string {
+    return Uint64.fromString(quantity).toString();
   }
 
   public static fromTimestamp(timestamp: number): ReadonlyDate {

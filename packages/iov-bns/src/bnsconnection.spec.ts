@@ -1,3 +1,5 @@
+import Long from "long";
+
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import {
   AddAddressToUsernameTx,
@@ -77,8 +79,8 @@ async function ensureNonceNonZero(
     signer: identity.pubkey,
     recipient: await randomBnsAddress(),
     amount: {
-      whole: 0,
-      fractional: 1,
+      quantity: "1",
+      fractionalDigits: 9,
       tokenTicker: cash,
     },
   };
@@ -150,15 +152,12 @@ describe("BnsConnection", () => {
 
     expect(response.data[0].tokenTicker).toEqual("ASH" as TokenTicker);
     expect(response.data[0].tokenName).toEqual("Let the Phoenix arise");
-    expect(response.data[0].sigFigs).toEqual(6);
 
     expect(response.data[1].tokenTicker).toEqual("BASH" as TokenTicker);
     expect(response.data[1].tokenName).toEqual("Another token of this chain");
-    expect(response.data[1].sigFigs).toEqual(6);
 
     expect(response.data[2].tokenTicker).toEqual("CASH" as TokenTicker);
     expect(response.data[2].tokenName).toEqual("Main token of this chain");
-    expect(response.data[2].sigFigs).toEqual(6);
 
     connection.disconnect();
   });
@@ -178,7 +177,7 @@ describe("BnsConnection", () => {
     expect(addrAcct.name).toEqual("admin");
     expect(addrAcct.balance.length).toEqual(1);
     expect(addrAcct.balance[0].tokenTicker).toEqual(cash);
-    expect(addrAcct.balance[0].whole).toBeGreaterThan(1000000);
+    expect(Number.parseInt(addrAcct.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
 
     // can get the faucet by publicKey, same result
     const responseFromPubkey = await connection.getAccount({ pubkey: faucet.pubkey });
@@ -271,19 +270,18 @@ describe("BnsConnection", () => {
 
       const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
       const faucetAddr = keyToAddress(faucet.pubkey);
-      const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(2));
-      const rcptAddr = keyToAddress(rcpt.pubkey);
+      const recipient = await randomBnsAddress();
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
       const sendTx: SendTx = {
         kind: TransactionKind.Send,
         chainId,
         signer: faucet.pubkey,
-        recipient: rcptAddr,
+        recipient: recipient,
         memo: "My first payment",
         amount: {
-          whole: 500,
-          fractional: 75000,
+          quantity: "5000075000",
+          fractionalDigits: 9,
           tokenTicker: cash,
         },
       };
@@ -293,15 +291,12 @@ describe("BnsConnection", () => {
       await connection.postTx(txBytes);
 
       // we should be a little bit richer
-      const gotMoney = await connection.getAccount({ address: rcptAddr });
+      const gotMoney = await connection.getAccount({ address: recipient });
       expect(gotMoney).toBeTruthy();
       expect(gotMoney.data.length).toEqual(1);
       const paid = gotMoney.data[0];
       expect(paid.balance.length).toEqual(1);
-      // we may post multiple times if we have multiple tests,
-      // so just ensure at least one got in
-      expect(paid.balance[0].whole).toBeGreaterThanOrEqual(500);
-      expect(paid.balance[0].fractional).toBeGreaterThanOrEqual(75000);
+      expect(paid.balance[0].quantity).toEqual("5000075000");
 
       // and the nonce should go up, to be at least one
       // (worrying about replay issues)
@@ -336,19 +331,18 @@ describe("BnsConnection", () => {
 
         const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
         const faucetAddr = keyToAddress(faucet.pubkey);
-        const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(2));
-        const rcptAddr = keyToAddress(rcpt.pubkey);
+        const recipient = await randomBnsAddress();
 
         // construct a sendtx, this is normally used in the MultiChainSigner api
         const sendTx: SendTx = {
           kind: TransactionKind.Send,
           chainId,
           signer: faucet.pubkey,
-          recipient: rcptAddr,
+          recipient: recipient,
           memo: "My first payment",
           amount: {
-            whole: 500,
-            fractional: 75000,
+            quantity: "5000075000",
+            fractionalDigits: 9,
             tokenTicker: cash,
           },
         };
@@ -700,8 +694,8 @@ describe("BnsConnection", () => {
         recipient: rcptAddress,
         memo: memo,
         amount: {
-          whole: 1,
-          fractional: 1,
+          quantity: "1000000001",
+          fractionalDigits: 9,
           tokenTicker: cash,
         },
       };
@@ -754,8 +748,8 @@ describe("BnsConnection", () => {
         recipient: rcptAddress,
         memo: memo,
         amount: {
-          whole: 1,
-          fractional: 1,
+          quantity: "1000000001",
+          fractionalDigits: 9,
           tokenTicker: cash,
         },
       };
@@ -1072,8 +1066,8 @@ describe("BnsConnection", () => {
       signer: faucet.pubkey,
       recipient: rcptAddr,
       amount: {
-        whole: 680,
-        fractional: 0,
+        quantity: "68000000000",
+        fractionalDigits: 9,
         tokenTicker: cash,
       },
     };
@@ -1219,7 +1213,7 @@ describe("BnsConnection", () => {
     expect(rcptAcct.value()).toBeDefined();
     expect(rcptAcct.value()!.name).toBeUndefined();
     expect(rcptAcct.value()!.balance.length).toEqual(1);
-    expect(rcptAcct.value()!.balance[0].whole).toEqual(680);
+    expect(rcptAcct.value()!.balance[0].quantity).toEqual("68000000000");
     // but rcptNonce still undefined
     expect(rcptNonce.value()).toBeUndefined();
 
@@ -1229,7 +1223,11 @@ describe("BnsConnection", () => {
     expect(faucetAcct.value()!.balance.length).toEqual(1);
     const end = faucetAcct.value()!.balance[0];
     expect(end).not.toEqual(start);
-    expect(end.whole + 680).toEqual(start.whole);
+    expect(end.quantity).toEqual(
+      Long.fromString(start.quantity)
+        .subtract(68_000000000)
+        .toString(),
+    );
     // and faucetNonce gone up by one
     expect(faucetNonce.value()).toBeDefined();
     const finalNonce = faucetNonce.value()!.nonce;
@@ -1267,8 +1265,8 @@ describe("BnsConnection", () => {
       recipient: rcptAddr,
       amount: [
         {
-          whole: 123,
-          fractional: 456000,
+          quantity: "123000456000",
+          fractionalDigits: 9,
           tokenTicker: cash,
         },
       ],
@@ -1344,7 +1342,7 @@ describe("BnsConnection", () => {
     expect(swapData.timeout).toEqual(1000); // FIXME: timeout from tx (the next line is expected, right?)
     // expect(swapData.timeout).toEqual(loaded.height + 1000); // when tx was commited plus timeout
     expect(swapData.amount.length).toEqual(1);
-    expect(swapData.amount[0].whole).toEqual(123);
+    expect(swapData.amount[0].quantity).toEqual("123000456000");
     expect(swapData.amount[0].tokenTicker).toEqual(cash);
     expect(swapData.hashlock).toEqual(hash);
 
@@ -1381,8 +1379,8 @@ describe("BnsConnection", () => {
       recipient: rcptAddr,
       amount: [
         {
-          whole: 21,
-          fractional: 0,
+          quantity: "21000000000",
+          fractionalDigits: 9,
           tokenTicker: cash,
         },
       ],

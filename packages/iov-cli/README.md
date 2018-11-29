@@ -178,7 +178,7 @@ When you are done using a WebSocket connection, disconnect the connection
     fractional: 0,
     tokenTicker: 'CASH',
     tokenName: 'Main token of this chain',
-    sigFigs: 6 } ]
+    fractionalDigits: 6 } ]
 > connection.disconnect()
 undefined
 > (await connection.getAccount({ address: faucetAddress })).data[0].balance
@@ -210,7 +210,7 @@ When using a Testnet, you can use the IovFaucet to receive tokens:
     fractional: 0,
     tokenTicker: 'IOV',
     tokenName: 'Main token of this chain',
-    sigFigs: 6 } ]
+    fractionalDigits: 6 } ]
 
 > await faucet.credit(meAddress, "PAJA" as TokenTicker)
 > (await connection.getAccount({ address: meAddress })).data[0].balance
@@ -218,12 +218,12 @@ When using a Testnet, you can use the IovFaucet to receive tokens:
     fractional: 0,
     tokenTicker: 'IOV',
     tokenName: 'Main token of this chain',
-    sigFigs: 6 },
+    fractionalDigits: 6 },
   { whole: 10,
     fractional: 0,
     tokenTicker: 'PAJA',
     tokenName: 'Mightiest token of this chain',
-    sigFigs: 9 } ]
+    fractionalDigits: 9 } ]
 ```
 
 ## Ledger usage

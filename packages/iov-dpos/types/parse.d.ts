@@ -1,11 +1,8 @@
 import { ReadonlyDate } from "readonly-date";
 import { Nonce } from "@iov/bcp-types";
-export interface Quantity {
-    readonly whole: number;
-    readonly fractional: number;
-}
 export declare class Parse {
-    static parseQuantity(str: string): Quantity;
+    /** validates string to be a non-negative integer and cuts leading zeros */
+    static parseQuantity(quantity: string): string;
     static fromTimestamp(timestamp: number): ReadonlyDate;
     /**
      * Convert a point in time to a nonce used in the Lisk/RISE codec.

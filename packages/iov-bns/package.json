@@ -43,6 +43,7 @@
     "@iov/tendermint-rpc": "^0.9.1",
     "@types/long": "^4.0.0",
     "@types/node": "^10.3.2",
+    "bn.js": "^4.11.8",
     "fast-deep-equal": "^2.0.1",
     "long": "^4.0.0",
     "protobufjs": "^6.8.6",
