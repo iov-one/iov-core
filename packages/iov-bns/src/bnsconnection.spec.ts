@@ -396,6 +396,45 @@ describe("BnsConnection", () => {
       })().catch(fail);
     });
 
+    it("can get a valid header", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const header = await connection.getHeader(3);
+      expect(header.height).toEqual(3);
+      expect(header.appHash.length).toEqual(20);
+      connection.disconnect();
+    });
+
+    it("throws if it cannot get header", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      await connection
+        .getHeader(123456789)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/height 123456789 can't be greater than/i));
+      await connection
+        .getHeader(-3)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/must be non-negative/i));
+      connection.disconnect();
+    });
+
+    it("watches headers with same data as getHeader", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+      const headers = lastValue(connection.watchHeaders().take(2));
+      await headers.finished();
+
+      const subHeader = headers.value()!;
+      const { height } = subHeader;
+
+      const header = await connection.getHeader(height);
+      expect(header).toEqual(subHeader);
+
+      connection.disconnect();
+    });
+
     it("can register a blockchain", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
