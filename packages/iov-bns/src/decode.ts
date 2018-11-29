@@ -116,7 +116,14 @@ export function decodeAmount(coin: codecImpl.x.ICoin): Amount {
   const fractionalDigits = 9; // fixed for all tickers in BNS
 
   const wholeNumber = asNumber(coin.whole);
+  if (wholeNumber < 0) {
+    throw new Error("Component `whole` must not be negative");
+  }
+
   const fractionalNumber = asNumber(coin.fractional);
+  if (fractionalNumber < 0) {
+    throw new Error("Component `fractional` must not be negative");
+  }
 
   const quantity = new BN(wholeNumber)
     .imul(new BN(10 ** fractionalDigits))

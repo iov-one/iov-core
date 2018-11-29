@@ -183,6 +183,28 @@ describe("Decode", () => {
       const amount = decodeAmount(decoded);
       expect(amount).toEqual(coinJson);
     });
+
+    it("throws for decoding negative amount", () => {
+      // ICoin allows negative values, which are now supported client-side
+      {
+        // -3.0 ASH
+        const backendAmount: codecImpl.x.ICoin = {
+          whole: -3,
+          fractional: 0,
+          ticker: "ASH",
+        };
+        expect(() => decodeAmount(backendAmount)).toThrowError(/`whole` must not be negative/i);
+      }
+      {
+        // -0.123456789 ASH
+        const backendAmount: codecImpl.x.ICoin = {
+          whole: 0,
+          fractional: -123456789,
+          ticker: "ASH",
+        };
+        expect(() => decodeAmount(backendAmount)).toThrowError(/`fractional` must not be negative/i);
+      }
+    });
   });
 
   describe("transactions", () => {
