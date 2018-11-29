@@ -467,19 +467,21 @@ describe("BnsConnection", () => {
     const header = await connection.getHeader(3);
     expect(header.height).toEqual(3);
     expect(header.appHash.length).toEqual(20);
+    connection.disconnect();
   });
 
   it("throws if it cannot get header", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    connection
+    await connection
       .getHeader(123456)
       .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/123456 doesn't exist/i));
-    connection
+      .catch(() => 0);
+    await connection
       .getHeader(-3)
       .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/123456 doesn't exist/i));
+      .catch(() => 0);
+    connection.disconnect();
   });
 
   it("can register a blockchain", async () => {
