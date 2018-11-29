@@ -87,6 +87,21 @@ describe("Encode", () => {
       });
     });
 
+    it("can encode max amount 999999999999999.999999999 ASH", () => {
+      // https://github.com/iov-one/weave/blob/v0.9.3/x/codec.proto#L15
+      const amount: Amount = {
+        quantity: "999999999999999999999999",
+        fractionalDigits: 9,
+        tokenTicker: "ASH" as TokenTicker,
+      };
+      const encoded = encodeAmount(amount);
+      expect(encoded).toEqual({
+        whole: 10 ** 15 - 1,
+        fractional: 10 ** 9 - 1,
+        ticker: "ASH",
+      });
+    });
+
     it("throws for encoding fractional digits other than 9", () => {
       const amount: Amount = {
         quantity: "1",
