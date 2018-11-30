@@ -1,3 +1,2 @@
-import { Address, TxCodec } from "@iov/bcp-types";
-export declare function toChecksumAddress(address: string): Address;
+import { TxCodec } from "@iov/bcp-types";
 export declare const ethereumCodec: TxCodec;
