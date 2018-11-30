@@ -9,7 +9,6 @@ import {
   BcpAtomicSwap,
   BcpAtomicSwapConnection,
   BcpBlockInfo,
-  BcpNonce,
   BcpQueryEnvelope,
   BcpQueryTag,
   BcpSwapQuery,
@@ -24,6 +23,7 @@ import {
   isQueryBySwapId,
   isQueryBySwapRecipient,
   isQueryBySwapSender,
+  Nonce,
   OpenSwap,
   SwapClaimTx,
   SwapState,
@@ -238,7 +238,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return dummyEnvelope(data);
   }
 
-  public async getNonce(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>> {
+  public async getNonce(query: BcpAccountQuery): Promise<BcpQueryEnvelope<Nonce>> {
     let address: Address;
 
     if (isAddressQuery(query)) {
@@ -520,13 +520,13 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   /**
    * Gets current nonce and emits an update every time it changes
    */
-  public watchNonce(account: BcpAccountQuery): Stream<BcpNonce | undefined> {
+  public watchNonce(account: BcpAccountQuery): Stream<Nonce | undefined> {
     if (!isAddressQuery(account)) {
       throw new Error("watchNonce requires an address, not name, to watch");
     }
     // oneNonce normalizes the BcpEnvelope to just get the
     // one account we want, or undefined if nothing there
-    const oneNonce = async (): Promise<BcpNonce | undefined> => {
+    const oneNonce = async (): Promise<Nonce | undefined> => {
       const acct = await this.getNonce(account);
       return acct.data.length < 1 ? undefined : acct.data[0];
     };

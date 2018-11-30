@@ -111,14 +111,7 @@ describe("Decode", () => {
       sequence: 7,
     };
     const nonce = decodeNonce(user);
-    expect(nonce).toEqual({
-      address: "tiov1zg62hngqqz4qqq8lluqqp2sqqqfrf27dzrrmea" as Address,
-      pubkey: {
-        algo: Algorithm.Ed25519,
-        data: fromHex("aabbccdd") as PublicKeyBytes,
-      },
-      nonce: new Int53(7) as Nonce,
-    });
+    expect(nonce).toEqual(new Int53(7) as Nonce);
   });
 
   it("has working decodeToken", () => {

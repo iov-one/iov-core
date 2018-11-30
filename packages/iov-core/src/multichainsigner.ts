@@ -78,11 +78,16 @@ export class MultiChainSigner {
     return this.getChain(chainId).codec.keyToAddress(key);
   }
 
-  // getNonce will return one value for the address, 0 if not found
-  // not the ful bcp info.
+  /**
+   * Returns one value for the address, 0 if not found.
+   *
+   * This is done automatically when you use signAndCommit().
+   *
+   * @todo This is not tested. Decide if we need to expose this method.
+   */
   public async getNonce(chainId: ChainId, addr: Address): Promise<Nonce> {
     const nonce = await this.getChain(chainId).connection.getNonce({ address: addr });
-    return nonce.data.length === 0 ? (new Int53(0) as Nonce) : nonce.data[0].nonce;
+    return nonce.data.length === 0 ? (new Int53(0) as Nonce) : nonce.data[0];
   }
 
   // signAndCommit will sign the transaction given the signer specified in

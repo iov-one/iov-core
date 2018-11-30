@@ -3,14 +3,13 @@ import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
-import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, TxId } from "@iov/base-types";
+import { ChainId, PostableBytes, TxId } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
   BcpAccountQuery,
   BcpBlockInfo,
   BcpConnection,
-  BcpNonce,
   BcpQueryEnvelope,
   BcpQueryTag,
   BcpTicker,
@@ -197,31 +196,8 @@ export class LiskConnection implements BcpConnection {
     return dummyEnvelope(accounts);
   }
 
-  public getNonce(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>> {
-    if (isAddressQuery(query)) {
-      const address = query.address;
-
-      const nonce: BcpNonce = {
-        address: address,
-        // fake pubkey, we cannot always know this
-        pubkey: {
-          algo: Algorithm.Ed25519,
-          data: new Uint8Array([]) as PublicKeyBytes,
-        },
-        nonce: generateNonce(),
-      };
-
-      const out: BcpQueryEnvelope<BcpNonce> = {
-        metadata: {
-          offset: 0,
-          limit: 0,
-        },
-        data: [nonce],
-      };
-      return Promise.resolve(out);
-    } else {
-      throw new Error("Query type not supported");
-    }
+  public getNonce(_: BcpAccountQuery): Promise<BcpQueryEnvelope<Nonce>> {
+    return Promise.resolve(dummyEnvelope([generateNonce()]));
   }
 
   public changeBlock(): Stream<number> {
@@ -232,7 +208,7 @@ export class LiskConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public watchNonce(_: BcpAccountQuery): Stream<BcpNonce | undefined> {
+  public watchNonce(_: BcpAccountQuery): Stream<Nonce | undefined> {
     throw new Error("Not implemented");
   }
 

@@ -1,14 +1,13 @@
 import axios from "axios";
 import { Stream } from "xstream";
 
-import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, TxId } from "@iov/base-types";
+import { ChainId, PostableBytes, TxId } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
   BcpAccountQuery,
   BcpBlockInfo,
   BcpConnection,
-  BcpNonce,
   BcpQueryEnvelope,
   BcpQueryTag,
   BcpTicker,
@@ -18,6 +17,7 @@ import {
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
+  Nonce,
   TokenTicker,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
@@ -144,7 +144,7 @@ export class EthereumConnection implements BcpConnection {
     return dummyEnvelope(accounts);
   }
 
-  public async getNonce(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpNonce>> {
+  public async getNonce(query: BcpAccountQuery): Promise<BcpQueryEnvelope<Nonce>> {
     if (isAddressQuery(query)) {
       const address = query.address;
 
@@ -156,22 +156,12 @@ export class EthereumConnection implements BcpConnection {
         id: 4,
       });
 
-      const nonce: BcpNonce = {
-        address: address,
-        // fake pubkey, we cannot always know this
-        pubkey: {
-          algo: Algorithm.Ed25519,
-          data: new Uint8Array([]) as PublicKeyBytes,
-        },
-        nonce: decodeHexQuantityNonce(nonceResponse.data.result),
-      };
-
-      const out: BcpQueryEnvelope<BcpNonce> = {
+      const out: BcpQueryEnvelope<Nonce> = {
         metadata: {
           offset: 0,
           limit: 0,
         },
-        data: [nonce],
+        data: [decodeHexQuantityNonce(nonceResponse.data.result)],
       };
       return Promise.resolve(out);
     } else {
@@ -187,7 +177,7 @@ export class EthereumConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public watchNonce(_: BcpAccountQuery): Stream<BcpNonce | undefined> {
+  public watchNonce(_: BcpAccountQuery): Stream<Nonce | undefined> {
     throw new Error("Not implemented");
   }
 

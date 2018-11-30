@@ -69,8 +69,7 @@ describe("EthereumConnection", () => {
     const query: BcpAccountQuery = { address: address as Address };
     const nonceResp = await connection.getNonce(query);
 
-    expect(nonceResp.data[0].address).toEqual(address);
-    expect(nonceResp.data[0].nonce).toEqual(nonce);
+    expect(nonceResp.data[0]).toEqual(nonce);
   });
 
   it("can post transaction", async () => {
@@ -109,7 +108,7 @@ describe("EthereumConnection", () => {
     const senderAddress = ethereumCodec.keyToAddress(mainIdentity.pubkey);
     const query: BcpAccountQuery = { address: senderAddress as Address };
     const nonceResp = await connection.getNonce(query);
-    const signingJob = ethereumCodec.bytesToSign(sendTx, nonceResp.data[0].nonce);
+    const signingJob = ethereumCodec.bytesToSign(sendTx, nonceResp.data[0]);
     const signature = await wallet.createTransactionSignature(
       mainIdentity,
       signingJob.bytes,
@@ -120,7 +119,7 @@ describe("EthereumConnection", () => {
     const signedTransaction: SignedTransaction = {
       transaction: sendTx,
       primarySignature: {
-        nonce: nonceResp.data[0].nonce,
+        nonce: nonceResp.data[0],
         pubkey: mainIdentity.pubkey,
         signature: signature,
       },

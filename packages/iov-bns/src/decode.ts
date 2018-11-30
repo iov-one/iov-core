@@ -6,7 +6,6 @@ import {
   Address,
   Amount,
   BaseTx,
-  BcpNonce,
   BcpTicker,
   ChainAddressPair,
   FullSignature,
@@ -35,7 +34,6 @@ import {
   BnsBlockchainNft,
   BnsUsernameNft,
   decodeFullSig,
-  decodePubkey,
   ensure,
   Keyed,
 } from "./types";
@@ -97,12 +95,8 @@ export function decodeUsernameNft(nft: codecImpl.username.IUsernameToken): BnsUs
   };
 }
 
-export function decodeNonce(acct: codecImpl.sigs.IUserData & Keyed): BcpNonce {
-  return {
-    address: encodeBnsAddress(acct._id),
-    nonce: asInt53(acct.sequence) as Nonce,
-    pubkey: decodePubkey(ensure(acct.pubkey)),
-  };
+export function decodeNonce(acct: codecImpl.sigs.IUserData & Keyed): Nonce {
+  return asInt53(acct.sequence) as Nonce;
 }
 
 export function decodeToken(data: codecImpl.namecoin.IToken & Keyed): BcpTicker {

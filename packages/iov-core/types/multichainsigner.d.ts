@@ -16,6 +16,13 @@ export declare class MultiChainSigner {
         readonly connection: BcpConnection;
     }>;
     keyToAddress(chainId: ChainId, key: PublicKeyBundle): Address;
+    /**
+     * Returns one value for the address, 0 if not found.
+     *
+     * This is done automatically when you use signAndCommit().
+     *
+     * @todo This is not tested. Decide if we need to expose this method.
+     */
     getNonce(chainId: ChainId, addr: Address): Promise<Nonce>;
     signAndCommit(tx: UnsignedTransaction, walletId: WalletId): Promise<BcpTransactionResponse>;
     /**

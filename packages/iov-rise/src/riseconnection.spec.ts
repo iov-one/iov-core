@@ -160,12 +160,11 @@ describe("RiseConnection", () => {
   it("can get nonce", async () => {
     const connection = await RiseConnection.establish(base);
     const query: BcpAccountQuery = { address: "5399275477602875017R" as Address };
-    const nonce = await connection.getNonce(query);
+    const nonce = (await connection.getNonce(query)).data[0];
 
-    expect(nonce.data[0].address).toEqual("5399275477602875017R");
-    // nonce is current timestamp +/- one second
-    expect(nonce.data[0].nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
-    expect(nonce.data[0].nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
+    // nonce is current unix timestamp +/- one second
+    expect(nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
+    expect(nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
   });
 
   describe("postTx", () => {
