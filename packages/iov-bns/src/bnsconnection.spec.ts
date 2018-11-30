@@ -227,11 +227,6 @@ describe("BnsConnection", () => {
       const response2 = await connection.getNonce({ pubkey: unusedPubkey });
       expect(response2.data.length).toEqual(0);
 
-      // by name
-      const unusedValueName = "i_do_not_exist";
-      const response = await connection.getNonce({ name: unusedValueName });
-      expect(response.data.length).toEqual(0);
-
       connection.disconnect();
     });
 
@@ -251,11 +246,6 @@ describe("BnsConnection", () => {
       const response2 = await connection.getNonce({ pubkey: faucet.pubkey });
       expect(response2.data.length).toEqual(1);
       expect(response2.data[0].toNumber()).toBeGreaterThan(0);
-
-      // by name
-      const response3 = await connection.getNonce({ name: "admin" });
-      expect(response3.data.length).toEqual(1);
-      expect(response3.data[0].toNumber()).toBeGreaterThan(0);
 
       connection.disconnect();
     });

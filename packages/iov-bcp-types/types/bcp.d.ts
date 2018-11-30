@@ -106,9 +106,9 @@ export interface BcpConnection {
      * If an account is not found on the blockchain, an envelope with an empty data array is returned
      */
     readonly getAccount: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpAccount>>;
-    readonly getNonce: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<Nonce>>;
+    readonly getNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Promise<BcpQueryEnvelope<Nonce>>;
     readonly watchAccount: (account: BcpAccountQuery) => Stream<BcpAccount | undefined>;
-    readonly watchNonce: (account: BcpAccountQuery) => Stream<Nonce | undefined>;
+    readonly watchNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Stream<Nonce | undefined>;
     readonly searchTx: (query: BcpTxQuery) => Promise<ReadonlyArray<ConfirmedTransaction>>;
     readonly listenTx: (tags: ReadonlyArray<BcpQueryTag>) => Stream<ConfirmedTransaction>;
     readonly liveTx: (txQuery: BcpTxQuery) => Stream<ConfirmedTransaction>;
