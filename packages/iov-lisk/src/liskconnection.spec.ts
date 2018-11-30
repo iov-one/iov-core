@@ -178,12 +178,11 @@ describe("LiskConnection", () => {
     pendingWithoutLiskDevnet();
     const connection = await LiskConnection.establish(devnetBase);
     const query: BcpAccountQuery = { address: "6472030874529564639L" as Address };
-    const nonce = await connection.getNonce(query);
+    const nonce = (await connection.getNonce(query)).data[0];
 
-    expect(nonce.data[0].address).toEqual("6472030874529564639L");
-    // nonce is current timestamp +/- one second
-    expect(nonce.data[0].nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
-    expect(nonce.data[0].nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
+    // nonce is current unix timestamp +/- one second
+    expect(nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
+    expect(nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
   });
 
   describe("postTx", () => {

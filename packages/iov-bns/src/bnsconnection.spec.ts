@@ -6,7 +6,6 @@ import {
   Address,
   BcpAccount,
   BcpBlockInfo,
-  BcpNonce,
   BcpSwapQuery,
   BcpTransactionResponse,
   BcpTransactionState,
@@ -64,7 +63,7 @@ const cash = "CASH" as TokenTicker;
 
 async function getNonce(connection: BnsConnection, addr: Address): Promise<Nonce> {
   const data = (await connection.getNonce({ address: addr })).data;
-  return data.length === 0 ? (new Int53(0) as Nonce) : data[0].nonce;
+  return data.length === 0 ? (new Int53(0) as Nonce) : data[0];
 }
 
 async function ensureNonceNonZero(
@@ -246,17 +245,17 @@ describe("BnsConnection", () => {
       const faucetAddress = keyToAddress(faucet.pubkey);
       const response1 = await connection.getNonce({ address: faucetAddress });
       expect(response1.data.length).toEqual(1);
-      expect(response1.data[0].nonce.toNumber()).toBeGreaterThan(0);
+      expect(response1.data[0].toNumber()).toBeGreaterThan(0);
 
       // by pubkey
       const response2 = await connection.getNonce({ pubkey: faucet.pubkey });
       expect(response2.data.length).toEqual(1);
-      expect(response2.data[0].nonce.toNumber()).toBeGreaterThan(0);
+      expect(response2.data[0].toNumber()).toBeGreaterThan(0);
 
       // by name
       const response3 = await connection.getNonce({ name: "admin" });
       expect(response3.data.length).toEqual(1);
-      expect(response3.data[0].nonce.toNumber()).toBeGreaterThan(0);
+      expect(response3.data[0].toNumber()).toBeGreaterThan(0);
 
       connection.disconnect();
     });
@@ -1183,8 +1182,8 @@ describe("BnsConnection", () => {
     const faucetAcct = lastValue<BcpAccount | undefined>(connection.watchAccount({ address: faucetAddr }));
     const rcptAcct = lastValue<BcpAccount | undefined>(connection.watchAccount({ address: rcptAddr }));
 
-    const faucetNonce = lastValue<BcpNonce | undefined>(connection.watchNonce({ address: faucetAddr }));
-    const rcptNonce = lastValue<BcpNonce | undefined>(connection.watchNonce({ address: rcptAddr }));
+    const faucetNonce = lastValue<Nonce | undefined>(connection.watchNonce({ address: faucetAddr }));
+    const rcptNonce = lastValue<Nonce | undefined>(connection.watchNonce({ address: rcptAddr }));
 
     // give it a chance to get initial feed before checking and proceeding
     await sleep(100);
@@ -1200,7 +1199,7 @@ describe("BnsConnection", () => {
     expect(rcptNonce.value()).toBeUndefined();
     expect(faucetNonce.value()).toBeDefined();
     // store original nonce, this should increase after tx
-    const origNonce = faucetNonce.value()!.nonce;
+    const origNonce = faucetNonce.value()!;
     expect(origNonce.toNumber()).toBeGreaterThan(0);
 
     // send some cash
@@ -1230,7 +1229,7 @@ describe("BnsConnection", () => {
     );
     // and faucetNonce gone up by one
     expect(faucetNonce.value()).toBeDefined();
-    const finalNonce = faucetNonce.value()!.nonce;
+    const finalNonce = faucetNonce.value()!;
     expect(finalNonce.toNumber()).toEqual(origNonce.toNumber() + 1);
 
     // clean up with disconnect at the end...

@@ -41,12 +41,6 @@ export interface BcpAccount {
   readonly balance: ReadonlyArray<BcpCoin>;
 }
 
-export interface BcpNonce {
-  readonly address: Address;
-  readonly pubkey: PublicKeyBundle;
-  readonly nonce: Nonce;
-}
-
 export interface BcpTicker {
   readonly tokenTicker: TokenTicker;
   /**
@@ -193,11 +187,11 @@ export interface BcpConnection {
    * If an account is not found on the blockchain, an envelope with an empty data array is returned
    */
   readonly getAccount: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpAccount>>;
-  readonly getNonce: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpNonce>>;
+  readonly getNonce: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<Nonce>>;
 
   // these query the currenct value and update a new value every time it changes
   readonly watchAccount: (account: BcpAccountQuery) => Stream<BcpAccount | undefined>;
-  readonly watchNonce: (account: BcpAccountQuery) => Stream<BcpNonce | undefined>;
+  readonly watchNonce: (account: BcpAccountQuery) => Stream<Nonce | undefined>;
 
   // searchTx searches for all tx that match these tags and subscribes to new ones
   readonly searchTx: (query: BcpTxQuery) => Promise<ReadonlyArray<ConfirmedTransaction>>;

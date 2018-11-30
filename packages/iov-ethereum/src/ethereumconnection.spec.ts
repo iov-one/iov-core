@@ -1,3 +1,4 @@
+import { Algorithm } from "@iov/base-types";
 import {
   Address,
   BcpAccountQuery,
@@ -28,7 +29,6 @@ describe("EthereumConnection", () => {
   const minHeight = TestConfig.minHeight;
   const address = TestConfig.address;
   const quantity = TestConfig.quantity;
-  const nonce = TestConfig.nonce;
   const gasPrice = TestConfig.gasPrice;
   const gasLimit = TestConfig.gasLimit;
 
@@ -66,11 +66,22 @@ describe("EthereumConnection", () => {
   it("can get nonce", async () => {
     pendingWithoutEthereum();
     const connection = await EthereumConnection.establish(base);
-    const query: BcpAccountQuery = { address: address as Address };
-    const nonceResp = await connection.getNonce(query);
 
-    expect(nonceResp.data[0].address).toEqual(address);
-    expect(nonceResp.data[0].nonce).toEqual(nonce);
+    // by address
+    {
+      const query: BcpAccountQuery = { address: TestConfig.address as Address };
+      const nonce = (await connection.getNonce(query)).data[0];
+      expect(nonce).toEqual(TestConfig.nonce);
+    }
+
+    // by pubkey
+    {
+      const query: BcpAccountQuery = { pubkey: { algo: Algorithm.Secp256k1, data: TestConfig.pubkey } };
+      const nonce = (await connection.getNonce(query)).data[0];
+      expect(nonce).toEqual(TestConfig.nonce);
+    }
+
+    connection.disconnect();
   });
 
   it("can post transaction", async () => {
@@ -109,7 +120,7 @@ describe("EthereumConnection", () => {
     const senderAddress = ethereumCodec.keyToAddress(mainIdentity.pubkey);
     const query: BcpAccountQuery = { address: senderAddress as Address };
     const nonceResp = await connection.getNonce(query);
-    const signingJob = ethereumCodec.bytesToSign(sendTx, nonceResp.data[0].nonce);
+    const signingJob = ethereumCodec.bytesToSign(sendTx, nonceResp.data[0]);
     const signature = await wallet.createTransactionSignature(
       mainIdentity,
       signingJob.bytes,
@@ -120,7 +131,7 @@ describe("EthereumConnection", () => {
     const signedTransaction: SignedTransaction = {
       transaction: sendTx,
       primarySignature: {
-        nonce: nonceResp.data[0].nonce,
+        nonce: nonceResp.data[0],
         pubkey: mainIdentity.pubkey,
         signature: signature,
       },
