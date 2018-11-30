@@ -6,9 +6,11 @@ import {
   Address,
   BcpAccount,
   BcpAccountQuery,
+  BcpAddressQuery,
   BcpAtomicSwap,
   BcpAtomicSwapConnection,
   BcpBlockInfo,
+  BcpPubkeyQuery,
   BcpQueryEnvelope,
   BcpQueryTag,
   BcpSwapQuery,
@@ -238,22 +240,8 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return dummyEnvelope(data);
   }
 
-  public async getNonce(query: BcpAccountQuery): Promise<BcpQueryEnvelope<Nonce>> {
-    let address: Address;
-
-    if (isAddressQuery(query)) {
-      address = query.address;
-    } else if (isPubkeyQuery(query)) {
-      address = keyToAddress(query.pubkey);
-    } else {
-      const addressResult = await this.getAccount(query);
-      if (addressResult.data.length === 0) {
-        return dummyEnvelope([]);
-      } else {
-        address = addressResult.data[0].address;
-      }
-    }
-
+  public async getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<BcpQueryEnvelope<Nonce>> {
+    const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
     const res = await this.query("/auth", decodeBnsAddress(address).data);
     const parser = createParser(codecImpl.sigs.UserData, "sigs:");
     const data = res.results.map(parser).map(decodeNonce);
@@ -520,20 +508,19 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   /**
    * Gets current nonce and emits an update every time it changes
    */
-  public watchNonce(account: BcpAccountQuery): Stream<Nonce | undefined> {
-    if (!isAddressQuery(account)) {
-      throw new Error("watchNonce requires an address, not name, to watch");
-    }
+  public watchNonce(query: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce | undefined> {
+    const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
+
     // oneNonce normalizes the BcpEnvelope to just get the
     // one account we want, or undefined if nothing there
     const oneNonce = async (): Promise<Nonce | undefined> => {
-      const acct = await this.getNonce(account);
-      return acct.data.length < 1 ? undefined : acct.data[0];
+      const response = await this.getNonce(query);
+      return response.data.length < 1 ? undefined : response.data[0];
     };
 
     return Stream.merge(
       Stream.fromPromise(oneNonce()),
-      this.changeNonce(account.address)
+      this.changeNonce(address)
         .map(() => Stream.fromPromise(oneNonce()))
         .flatten(),
     );

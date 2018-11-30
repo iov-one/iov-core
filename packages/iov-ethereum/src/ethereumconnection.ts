@@ -6,8 +6,10 @@ import {
   Address,
   BcpAccount,
   BcpAccountQuery,
+  BcpAddressQuery,
   BcpBlockInfo,
   BcpConnection,
+  BcpPubkeyQuery,
   BcpQueryEnvelope,
   BcpQueryTag,
   BcpTicker,
@@ -146,16 +148,8 @@ export class EthereumConnection implements BcpConnection {
     return dummyEnvelope(accounts);
   }
 
-  public async getNonce(query: BcpAccountQuery): Promise<BcpQueryEnvelope<Nonce>> {
-    let address: Address;
-
-    if (isAddressQuery(query)) {
-      address = query.address;
-    } else if (isPubkeyQuery(query)) {
-      address = keyToAddress(query.pubkey);
-    } else {
-      throw new Error("Query type not supported");
-    }
+  public async getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<BcpQueryEnvelope<Nonce>> {
+    const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
 
     // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount
     const nonceResponse = await axios.post(this.baseUrl, {
@@ -176,7 +170,7 @@ export class EthereumConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public watchNonce(_: BcpAccountQuery): Stream<Nonce | undefined> {
+  public watchNonce(_: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce | undefined> {
     throw new Error("Not implemented");
   }
 

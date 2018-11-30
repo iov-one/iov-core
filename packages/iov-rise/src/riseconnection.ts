@@ -8,8 +8,10 @@ import {
   Address,
   BcpAccount,
   BcpAccountQuery,
+  BcpAddressQuery,
   BcpBlockInfo,
   BcpConnection,
+  BcpPubkeyQuery,
   BcpQueryEnvelope,
   BcpQueryTag,
   BcpTicker,
@@ -208,7 +210,7 @@ export class RiseConnection implements BcpConnection {
     return dummyEnvelope(accounts);
   }
 
-  public getNonce(_: BcpAccountQuery): Promise<BcpQueryEnvelope<Nonce>> {
+  public getNonce(_: BcpAddressQuery | BcpPubkeyQuery): Promise<BcpQueryEnvelope<Nonce>> {
     return Promise.resolve(dummyEnvelope([generateNonce()]));
   }
 
@@ -220,7 +222,7 @@ export class RiseConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public watchNonce(_: BcpAccountQuery): Stream<Nonce | undefined> {
+  public watchNonce(_: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce | undefined> {
     throw new Error("Not implemented");
   }
 

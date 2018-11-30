@@ -14,6 +14,8 @@ Breaking changes
   it is not needed there. `BcpCoin` is now an `Amount` and a `BcpTicker`.
 * @iov/bcp-types: Wrapper type `BcpNonce` was dropped from all interfaces
   in favour of just `Nonce`.
+* @iov/bcp-types: `BcpConnection.getNonce`/`.watchNonce` now only accept
+  `BcpAddressQuery` or `BcpPubkeyQuery` as argument type.
 * @iov/crpto: the new types `Secp256k1Signature` and `ExtendedSecp256k1Signature` replace DER encoded signatures in `Secp256k1`.
 * @iov/faucets: Remove `BovFaucet`. Use `IovFaucet` instead.
 * @iov/keycontrol: `Secp256k1HdWallet.createTransactionSignature` now uses the custom fixed length encoding instead of DER to allow blockchains utilizing the recovery parameter.

@@ -1,6 +1,6 @@
 import { Stream } from "xstream";
 import { ChainId, PostableBytes } from "@iov/base-types";
-import { Address, BcpAccount, BcpAccountQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpQueryEnvelope, BcpQueryTag, BcpSwapQuery, BcpTicker, BcpTransactionResponse, BcpTxQuery, ConfirmedTransaction, Nonce, TokenTicker } from "@iov/bcp-types";
+import { Address, BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpPubkeyQuery, BcpQueryEnvelope, BcpQueryTag, BcpSwapQuery, BcpTicker, BcpTransactionResponse, BcpTxQuery, ConfirmedTransaction, Nonce, TokenTicker } from "@iov/bcp-types";
 import { Header, StatusResponse } from "@iov/tendermint-rpc";
 import { BnsBlockchainNft, BnsBlockchainsQuery, BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
@@ -35,7 +35,7 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     getTicker(ticker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAccount(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>>;
-    getNonce(query: BcpAccountQuery): Promise<BcpQueryEnvelope<Nonce>>;
+    getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<BcpQueryEnvelope<Nonce>>;
     /**
      * All matching swaps that are open (from app state)
      */
@@ -86,7 +86,7 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     /**
      * Gets current nonce and emits an update every time it changes
      */
-    watchNonce(account: BcpAccountQuery): Stream<Nonce | undefined>;
+    watchNonce(query: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce | undefined>;
     getBlockchains(query: BnsBlockchainsQuery): Promise<ReadonlyArray<BnsBlockchainNft>>;
     getUsernames(query: BnsUsernamesQuery): Promise<ReadonlyArray<BnsUsernameNft>>;
     protected query(path: string, data: Uint8Array): Promise<QueryResponse>;
