@@ -98,14 +98,13 @@ export class MultiChainSigner {
     const chainId = tx.chainId;
     const { connection, codec } = this.getChain(chainId);
 
-    const signer = tx.signer;
-    const signerAddr = this.keyToAddress(chainId, signer);
-    const nonce = await this.getNonce(chainId, signerAddr);
+    const nonceResponse = await this.getChain(chainId).connection.getNonce({ pubkey: tx.signer });
+    const nonce = nonceResponse.data.length === 0 ? (new Int53(0) as Nonce) : nonceResponse.data[0];
 
     // We have the publickey bundle from the transaction, but need
     // a PublicIdentity to sign. Same information content, so I fake it.
     // TODO: Simon, a cleaner solution would be nicer. How?
-    const fakeId: PublicIdentity = { pubkey: signer };
+    const fakeId: PublicIdentity = { pubkey: tx.signer };
     const signed = await this.profile.signTransaction(walletId, fakeId, tx, codec, nonce);
     const txBytes = codec.bytesToPost(signed);
     const post = await connection.postTx(txBytes);
