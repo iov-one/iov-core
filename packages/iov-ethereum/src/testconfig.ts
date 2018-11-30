@@ -1,12 +1,15 @@
-import { ChainId } from "@iov/base-types";
+import { ChainId, PublicKeyBytes } from "@iov/base-types";
 import { Address, Nonce } from "@iov/bcp-types";
-import { Int53 } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
+
+const { fromHex } = Encoding;
 
 export interface EthereumNetworkConfig {
   readonly env: string;
   readonly base: string;
   readonly chainId: ChainId;
   readonly minHeight: number;
+  readonly pubkey: PublicKeyBytes;
   readonly address: Address;
   readonly quantity: string;
   readonly nonce: Nonce;
@@ -24,6 +27,9 @@ const local: EthereumNetworkConfig = {
   base: "http://localhost:8545",
   chainId: "5777" as ChainId,
   minHeight: -1,
+  pubkey: fromHex(
+    "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
+  ) as PublicKeyBytes,
   address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
   quantity: "100000000000000000000",
   nonce: new Int53(0) as Nonce,
@@ -36,6 +42,9 @@ const testnetRopsten: EthereumNetworkConfig = {
   base: "https://ropsten.infura.io/",
   chainId: "3" as ChainId,
   minHeight: 4284887,
+  pubkey: fromHex(
+    "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
+  ) as PublicKeyBytes,
   address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
   quantity: "2999979000000000000",
   nonce: new Int53(1) as Nonce,
@@ -48,6 +57,9 @@ const testnetRinkeby: EthereumNetworkConfig = {
   base: "https://rinkeby.infura.io",
   chainId: "4" as ChainId,
   minHeight: 3211058,
+  pubkey: fromHex(
+    "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
+  ) as PublicKeyBytes,
   address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
   quantity: "20000000000000000",
   nonce: new Int53(0) as Nonce,

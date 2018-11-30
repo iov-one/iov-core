@@ -1,3 +1,4 @@
+import { Algorithm } from "@iov/base-types";
 import {
   Address,
   BcpAccountQuery,
@@ -28,7 +29,6 @@ describe("EthereumConnection", () => {
   const minHeight = TestConfig.minHeight;
   const address = TestConfig.address;
   const quantity = TestConfig.quantity;
-  const nonce = TestConfig.nonce;
   const gasPrice = TestConfig.gasPrice;
   const gasLimit = TestConfig.gasLimit;
 
@@ -66,10 +66,22 @@ describe("EthereumConnection", () => {
   it("can get nonce", async () => {
     pendingWithoutEthereum();
     const connection = await EthereumConnection.establish(base);
-    const query: BcpAccountQuery = { address: address as Address };
-    const nonceResp = await connection.getNonce(query);
 
-    expect(nonceResp.data[0]).toEqual(nonce);
+    // by address
+    {
+      const query: BcpAccountQuery = { address: TestConfig.address as Address };
+      const nonce = (await connection.getNonce(query)).data[0];
+      expect(nonce).toEqual(TestConfig.nonce);
+    }
+
+    // by pubkey
+    {
+      const query: BcpAccountQuery = { pubkey: { algo: Algorithm.Secp256k1, data: TestConfig.pubkey } };
+      const nonce = (await connection.getNonce(query)).data[0];
+      expect(nonce).toEqual(TestConfig.nonce);
+    }
+
+    connection.disconnect();
   });
 
   it("can post transaction", async () => {

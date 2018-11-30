@@ -17,6 +17,7 @@ import {
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
+  isPubkeyQuery,
   Nonce,
   TokenTicker,
 } from "@iov/bcp-types";
@@ -24,6 +25,7 @@ import { Encoding } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
+import { keyToAddress } from "./derivation";
 import { Parse } from "./parse";
 import { decodeHexQuantity, decodeHexQuantityNonce, decodeHexQuantityString, hexPadToEven } from "./utils";
 
@@ -145,28 +147,25 @@ export class EthereumConnection implements BcpConnection {
   }
 
   public async getNonce(query: BcpAccountQuery): Promise<BcpQueryEnvelope<Nonce>> {
+    let address: Address;
+
     if (isAddressQuery(query)) {
-      const address = query.address;
-
-      // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount
-      const nonceResponse = await axios.post(this.baseUrl, {
-        jsonrpc: "2.0",
-        method: "eth_getTransactionCount",
-        params: [address, "latest"],
-        id: 4,
-      });
-
-      const out: BcpQueryEnvelope<Nonce> = {
-        metadata: {
-          offset: 0,
-          limit: 0,
-        },
-        data: [decodeHexQuantityNonce(nonceResponse.data.result)],
-      };
-      return Promise.resolve(out);
+      address = query.address;
+    } else if (isPubkeyQuery(query)) {
+      address = keyToAddress(query.pubkey);
     } else {
       throw new Error("Query type not supported");
     }
+
+    // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount
+    const nonceResponse = await axios.post(this.baseUrl, {
+      jsonrpc: "2.0",
+      method: "eth_getTransactionCount",
+      params: [address, "latest"],
+      id: 4,
+    });
+
+    return Promise.resolve(dummyEnvelope([decodeHexQuantityNonce(nonceResponse.data.result)]));
   }
 
   public changeBlock(): Stream<number> {
