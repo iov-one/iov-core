@@ -15,6 +15,7 @@ export interface EthereumNetworkConfig {
   readonly nonce: Nonce;
   readonly gasPrice: string;
   readonly gasLimit: string;
+  readonly waitForTx: number;
 }
 
 // Chain Id is from eip-155.md
@@ -35,6 +36,7 @@ const local: EthereumNetworkConfig = {
   nonce: new Int53(0) as Nonce,
   gasPrice: "20000000000",
   gasLimit: "2100000",
+  waitForTx: 100,
 };
 
 const testnetRopsten: EthereumNetworkConfig = {
@@ -50,6 +52,7 @@ const testnetRopsten: EthereumNetworkConfig = {
   nonce: new Int53(1) as Nonce,
   gasPrice: "1000000000",
   gasLimit: "141000",
+  waitForTx: 4000,
 };
 
 const testnetRinkeby: EthereumNetworkConfig = {
@@ -65,6 +68,7 @@ const testnetRinkeby: EthereumNetworkConfig = {
   nonce: new Int53(0) as Nonce,
   gasPrice: "1000000000",
   gasLimit: "141000",
+  waitForTx: 4000,
 };
 
 const config = new Map<string, EthereumNetworkConfig>();

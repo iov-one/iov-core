@@ -1,4 +1,4 @@
-import { Algorithm } from "@iov/base-types";
+import { Algorithm, TxId } from "@iov/base-types";
 import {
   Address,
   BcpAccountQuery,
@@ -23,6 +23,10 @@ function pendingWithoutEthereum(): void {
   }
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 describe("EthereumConnection", () => {
   const base = TestConfig.base;
   const nodeChainId = TestConfig.chainId;
@@ -31,6 +35,7 @@ describe("EthereumConnection", () => {
   const quantity = TestConfig.quantity;
   const gasPrice = TestConfig.gasPrice;
   const gasLimit = TestConfig.gasLimit;
+  const waitForTx = TestConfig.waitForTx;
 
   it(`can be constructed for ${base}`, () => {
     pendingWithoutEthereum();
@@ -84,63 +89,115 @@ describe("EthereumConnection", () => {
     connection.disconnect();
   });
 
-  it("can post transaction", async () => {
-    pendingWithoutEthereum();
+  describe("postTx", () => {
+    let postedTxId: TxId;
+    it("can post transaction", async () => {
+      pendingWithoutEthereum();
 
-    const wallet = Secp256k1HdWallet.fromMnemonic(
-      "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-    );
-    const mainIdentity = await wallet.createIdentity(HdPaths.bip44(60, 0, 0, 1));
+      const wallet = Secp256k1HdWallet.fromMnemonic(
+        "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+      );
+      const mainIdentity = await wallet.createIdentity(HdPaths.bip44(60, 0, 0, 1));
 
-    const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
+      const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 
-    const sendTx: SendTx = {
-      kind: TransactionKind.Send,
-      chainId: nodeChainId,
-      signer: mainIdentity.pubkey,
-      recipient: recipientAddress,
-      amount: {
-        quantity: "3445500",
-        fractionalDigits: 18,
-        tokenTicker: "ETH" as TokenTicker,
-      },
-      gasPrice: {
-        quantity: gasPrice,
-        fractionalDigits: 18,
-        tokenTicker: "ETH" as TokenTicker,
-      },
-      gasLimit: {
-        quantity: gasLimit,
-        fractionalDigits: 18,
-        tokenTicker: "ETH" as TokenTicker,
-      },
-      memo: "We \u2665 developers – iov.one",
-    };
-    const connection = await EthereumConnection.establish(base);
-    const senderAddress = ethereumCodec.keyToAddress(mainIdentity.pubkey);
-    const query: BcpAccountQuery = { address: senderAddress as Address };
-    const nonceResp = await connection.getNonce(query);
-    const signingJob = ethereumCodec.bytesToSign(sendTx, nonceResp.data[0]);
-    const signature = await wallet.createTransactionSignature(
-      mainIdentity,
-      signingJob.bytes,
-      signingJob.prehashType,
-      nodeChainId,
-    );
+      const sendTx: SendTx = {
+        kind: TransactionKind.Send,
+        chainId: nodeChainId,
+        signer: mainIdentity.pubkey,
+        recipient: recipientAddress,
+        amount: {
+          quantity: "3445500",
+          fractionalDigits: 18,
+          tokenTicker: "ETH" as TokenTicker,
+        },
+        gasPrice: {
+          quantity: gasPrice,
+          fractionalDigits: 18,
+          tokenTicker: "ETH" as TokenTicker,
+        },
+        gasLimit: {
+          quantity: gasLimit,
+          fractionalDigits: 18,
+          tokenTicker: "ETH" as TokenTicker,
+        },
+        memo: "We \u2665 developers – iov.one",
+      };
+      const connection = await EthereumConnection.establish(base);
+      const senderAddress = ethereumCodec.keyToAddress(mainIdentity.pubkey);
+      const query: BcpAccountQuery = { address: senderAddress as Address };
+      const nonceResp = await connection.getNonce(query);
+      const signingJob = ethereumCodec.bytesToSign(sendTx, nonceResp.data[0]);
+      const signature = await wallet.createTransactionSignature(
+        mainIdentity,
+        signingJob.bytes,
+        signingJob.prehashType,
+        nodeChainId,
+      );
 
-    const signedTransaction: SignedTransaction = {
-      transaction: sendTx,
-      primarySignature: {
-        nonce: nonceResp.data[0],
-        pubkey: mainIdentity.pubkey,
-        signature: signature,
-      },
-      otherSignatures: [],
-    };
-    const bytesToPost = ethereumCodec.bytesToPost(signedTransaction);
+      const signedTransaction: SignedTransaction = {
+        transaction: sendTx,
+        primarySignature: {
+          nonce: nonceResp.data[0],
+          pubkey: mainIdentity.pubkey,
+          signature: signature,
+        },
+        otherSignatures: [],
+      };
+      const bytesToPost = ethereumCodec.bytesToPost(signedTransaction);
 
-    const result = await connection.postTx(bytesToPost);
-    expect(result).toBeTruthy();
-    expect(result.data.message).toBeNull();
+      const result = await connection.postTx(bytesToPost);
+      postedTxId = result.data.txid;
+      expect(result).toBeTruthy();
+      expect(result.data.message).toBeNull();
+    });
+
+    it("can search previous transaction by hash", async () => {
+      pendingWithoutEthereum();
+      await sleep(waitForTx);
+      const connection = await EthereumConnection.establish(base);
+      const results = await connection.searchTx({ hash: postedTxId, tags: [] });
+      expect(results.length).toEqual(1);
+      const result = results[0];
+      expect(result.txid).toEqual(postedTxId);
+      const transaction = result.transaction;
+      if (transaction.kind !== TransactionKind.Send) {
+        throw new Error("Unexpected transaction type");
+      }
+      expect(result.transaction.kind).toEqual(TransactionKind.Send);
+      expect(transaction.recipient).toEqual("0xe137f5264b6b528244e1643a2d570b37660b7f14");
+      expect(transaction.amount.quantity).toEqual("3445500");
+      connection.disconnect();
+    });
+  });
+
+  describe("searchTx", () => {
+    it("can search non-existing transaction by hash", async () => {
+      pendingWithoutEthereum();
+      const connection = await EthereumConnection.establish(base);
+      const nonExistingId = new Uint8Array([]) as TxId;
+      const results = await connection.searchTx({ hash: nonExistingId, tags: [] });
+      expect(results.length).toEqual(0);
+      connection.disconnect();
+    });
+
+    // TODO: load ganache with db from github
+    xit("can search a transaction by hash", async () => {
+      pendingWithoutEthereum();
+      const connection = await EthereumConnection.establish(base);
+      const storedTxId = new Uint8Array([]) as TxId;
+      const results = await connection.searchTx({ hash: storedTxId, tags: [] });
+      expect(results.length).toEqual(1);
+      const result = results[0];
+      expect(result.txid).toEqual(storedTxId);
+      const transaction = result.transaction;
+      if (transaction.kind !== TransactionKind.Send) {
+        throw new Error("Unexpected transaction type");
+      }
+      expect(result.transaction.kind).toEqual(TransactionKind.Send);
+      expect(transaction.recipient).toEqual("recipient_address");
+      expect(transaction.amount.quantity).toEqual("tx_quantity");
+      connection.disconnect();
+    });
   });
 });

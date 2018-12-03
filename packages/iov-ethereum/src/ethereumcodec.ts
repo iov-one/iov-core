@@ -1,4 +1,4 @@
-import { ChainId, PostableBytes } from "@iov/base-types";
+import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import {
   Nonce,
   PrehashType,
@@ -13,10 +13,18 @@ import {
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
+import { constants } from "./constants";
 import { isValidAddress, keyToAddress } from "./derivation";
 import { BlknumForkState, Eip155ChainId, eip155V, toRlp } from "./encoding";
 import { Serialization } from "./serialization";
-import { encodeQuantity, encodeQuantityString, hexPadToEven } from "./utils";
+import {
+  decodeHexQuantity,
+  decodeHexQuantityNonce,
+  decodeHexQuantityString,
+  encodeQuantity,
+  encodeQuantityString,
+  hexPadToEven,
+} from "./utils";
 
 const { fromHex } = Encoding;
 
@@ -82,7 +90,51 @@ export const ethereumCodec: TxCodec = {
     throw new Error(`Not implemented tx: ${signed}`);
   },
   parseBytes: (bytes: PostableBytes, chainId: ChainId): SignedTransaction => {
-    throw new Error(`Not implemented bytes: ${bytes}, chainId: ${chainId}`);
+    const json = JSON.parse(Encoding.fromUtf8(bytes));
+    // signature
+    const r = Encoding.fromHex(json.r.replace("0x", ""));
+    const s = Encoding.fromHex(json.s.replace("0x", ""));
+    const v = decodeHexQuantity(json.v);
+    const signature = new Uint8Array([...r, ...s, v]) as SignatureBytes;
+
+    switch (json.type) {
+      case 0:
+        return {
+          transaction: {
+            chainId: chainId,
+            fee: {
+              quantity: decodeHexQuantityString(json.gas),
+              fractionalDigits: constants.primaryTokenFractionalDigits,
+              tokenTicker: constants.primaryTokenTicker,
+            },
+            signer: {
+              algo: Algorithm.Secp256k1,
+              data: json.from,
+            },
+            ttl: undefined,
+            kind: TransactionKind.Send,
+            amount: {
+              quantity: decodeHexQuantityString(json.value),
+              fractionalDigits: constants.primaryTokenFractionalDigits,
+              tokenTicker: constants.primaryTokenTicker,
+            },
+            recipient: json.to,
+            memo: json.input,
+          },
+          primarySignature: {
+            nonce: decodeHexQuantityNonce(json.nonce),
+            // fake pubkey, we cannot know this
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: new Uint8Array([]) as PublicKeyBytes,
+            },
+            signature: signature,
+          },
+          otherSignatures: [],
+        };
+      default:
+        throw new Error("Unsupported transaction type");
+    }
   },
   keyToAddress: keyToAddress,
   isValidAddress: isValidAddress,

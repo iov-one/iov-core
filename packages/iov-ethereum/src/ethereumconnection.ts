@@ -28,6 +28,7 @@ import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
 import { keyToAddress } from "./derivation";
+import { ethereumCodec } from "./ethereumcodec";
 import { Parse } from "./parse";
 import { decodeHexQuantity, decodeHexQuantityNonce, decodeHexQuantityString, hexPadToEven } from "./utils";
 
@@ -173,9 +174,51 @@ export class EthereumConnection implements BcpConnection {
   public watchNonce(_: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce | undefined> {
     throw new Error("Not implemented");
   }
+  public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    if (query.height || query.minHeight || query.maxHeight || query.tags.length) {
+      throw new Error("Query by height, minHeight, maxHeight, tags not supported");
+    }
 
-  public searchTx(_: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    throw new Error("Not implemented");
+    if (query.hash) {
+      const transactionHash = Encoding.toHex(query.hash);
+      const txUncodified = await axios.post(this.baseUrl, {
+        jsonrpc: "2.0",
+        method: "eth_getTransactionByHash",
+        params: ["0x" + transactionHash],
+        id: 6,
+      });
+      if (txUncodified.data.result === null || txUncodified.data.result.blockNumber === null) {
+        return [];
+      }
+      // TODO: compare myChainId with value v (missed recovery parameter)
+      const lastBlockNumber = await axios.post(this.baseUrl, {
+        jsonrpc: "2.0",
+        method: "eth_blockNumber",
+        params: [],
+        id: 7,
+      });
+      const height = decodeHexQuantity(txUncodified.data.result.blockNumber);
+      const confirmations = decodeHexQuantity(lastBlockNumber.data.result) - height;
+      const transactionJson = {
+        ...txUncodified.data.result,
+        type: 0,
+      };
+      const transaction = ethereumCodec.parseBytes(
+        Encoding.toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
+        this.myChainId,
+      );
+      const transactionId = Encoding.fromHex(hexPadToEven(txUncodified.data.result.hash)) as TxId;
+      return [
+        {
+          ...transaction,
+          height: height,
+          confirmations: confirmations,
+          txid: transactionId,
+        },
+      ];
+    } else {
+      throw new Error("Unsupported query.");
+    }
   }
 
   public listenTx(_: ReadonlyArray<BcpQueryTag>): Stream<ConfirmedTransaction> {

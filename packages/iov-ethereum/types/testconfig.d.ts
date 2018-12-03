@@ -11,5 +11,6 @@ export interface EthereumNetworkConfig {
     readonly nonce: Nonce;
     readonly gasPrice: string;
     readonly gasLimit: string;
+    readonly waitForTx: number;
 }
 export declare const TestConfig: EthereumNetworkConfig;
