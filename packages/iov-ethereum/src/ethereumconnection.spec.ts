@@ -23,6 +23,16 @@ function pendingWithoutEthereum(): void {
   }
 }
 
+function skipTestsScraper(): boolean {
+  return !process.env.ETHEREUM_SCRAPER;
+}
+
+function pendingWithoutEthereumScraper(): void {
+  if (skipTestsScraper()) {
+    return pending("Set ETHEREUM_SCRAPER to enable out-of-blockchain functionality tests");
+  }
+}
+
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -197,6 +207,21 @@ describe("EthereumConnection", () => {
       expect(result.transaction.kind).toEqual(TransactionKind.Send);
       expect(transaction.recipient).toEqual("recipient_address");
       expect(transaction.amount.quantity).toEqual("tx_quantity");
+      connection.disconnect();
+    });
+
+    it("can search a transaction by account", async () => {
+      pendingWithoutEthereum();
+      pendingWithoutEthereumScraper();
+      const connection = await EthereumConnection.establish(base);
+      const results = await connection.searchTx({
+        tags: [
+          { key: "apiLink", value: TestConfig.scraperApi },
+          { key: "account", value: TestConfig.scraperAddress },
+          { key: "parserChainId", value: TestConfig.scraperChainId },
+        ],
+      });
+      expect(results.length).toBeGreaterThan(1);
       connection.disconnect();
     });
   });

@@ -29,7 +29,7 @@ import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { constants } from "./constants";
 import { keyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
-import { Parse } from "./parse";
+import { Parse, Scraper } from "./parse";
 import { decodeHexQuantity, decodeHexQuantityNonce, decodeHexQuantityString, hexPadToEven } from "./utils";
 
 async function loadChainId(baseUrl: string): Promise<ChainId> {
@@ -175,13 +175,13 @@ export class EthereumConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    if (query.height || query.minHeight || query.maxHeight || query.tags.length) {
+    if (query.height || query.minHeight || query.maxHeight) {
       throw new Error("Query by height, minHeight, maxHeight, tags not supported");
     }
-
+    let txUncodified;
     if (query.hash) {
       const transactionHash = Encoding.toHex(query.hash);
-      const txUncodified = await axios.post(this.baseUrl, {
+      txUncodified = await axios.post(this.baseUrl, {
         jsonrpc: "2.0",
         method: "eth_getTransactionByHash",
         params: ["0x" + transactionHash],
@@ -216,6 +216,33 @@ export class EthereumConnection implements BcpConnection {
           txid: transactionId,
         },
       ];
+    } else if (query.tags[1].key === "account") {
+      const apiLink = query.tags[0].value;
+      const accountAddress = query.tags[1].value;
+      const parserChainId = query.tags[2].value as ChainId;
+      txUncodified = await axios.get(
+        `${apiLink}?module=account&action=txlist&address=${accountAddress}&startblock=0&sort=asc`,
+      );
+      if (txUncodified.data.result === null) {
+        return [];
+      }
+      const transactions: any = [];
+      for (const tx of txUncodified.data.result) {
+        if (tx.isError === "0" && tx.txreceipt_status === "1") {
+          const transaction = Scraper.parseBytesTx(
+            Encoding.toUtf8(JSON.stringify({ ...tx })) as PostableBytes,
+            parserChainId,
+          );
+          const transactionId = Encoding.fromHex(hexPadToEven(tx.hash)) as TxId;
+          transactions.push({
+            ...transaction,
+            height: tx.blockNumber,
+            confirmations: tx.confirmations,
+            txid: transactionId,
+          });
+        }
+      }
+      return transactions;
     } else {
       throw new Error("Unsupported query.");
     }
