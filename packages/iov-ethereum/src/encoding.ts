@@ -32,3 +32,11 @@ export function eip155V(chain: Eip155ChainId, recoveryParam: number): number {
   }
   throw new Error("transaction not supported before eip155 implementation");
 }
+
+export function getRecoveryParam(chain: Eip155ChainId, v: number): number {
+  if (chain.forkState === BlknumForkState.Forked && chain.chainId > 0) {
+    // chain ID available
+    return v - chain.chainId * 2 - 35;
+  }
+  throw new Error("transaction not supported before eip155 implementation");
+}

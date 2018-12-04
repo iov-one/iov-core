@@ -15,7 +15,7 @@ import { Encoding } from "@iov/encoding";
 
 import { constants } from "./constants";
 import { isValidAddress, keyToAddress } from "./derivation";
-import { BlknumForkState, Eip155ChainId, eip155V, toRlp } from "./encoding";
+import { BlknumForkState, Eip155ChainId, eip155V, getRecoveryParam, toRlp } from "./encoding";
 import { Serialization } from "./serialization";
 import {
   decodeHexQuantity,
@@ -92,10 +92,15 @@ export const ethereumCodec: TxCodec = {
   parseBytes: (bytes: PostableBytes, chainId: ChainId): SignedTransaction => {
     const json = JSON.parse(Encoding.fromUtf8(bytes));
     // signature
+    const chain: Eip155ChainId = {
+      forkState: BlknumForkState.Forked,
+      chainId: Number(chainId),
+    };
     const r = Encoding.fromHex(json.r.replace("0x", ""));
     const s = Encoding.fromHex(json.s.replace("0x", ""));
     const v = decodeHexQuantity(json.v);
-    const signature = new Uint8Array([...r, ...s, v]) as SignatureBytes;
+    const recoveryParam = getRecoveryParam(chain, v);
+    const signature = new ExtendedSecp256k1Signature(r, s, recoveryParam).toFixedLength() as SignatureBytes;
 
     switch (json.type) {
       case 0:
