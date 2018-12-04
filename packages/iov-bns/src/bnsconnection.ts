@@ -375,27 +375,30 @@ export class BnsConnection implements BcpAtomicSwapConnection {
               queue.push(value);
             }
           },
+          error: error => listener.error(error),
         });
 
-        this.searchTx(txQuery).then(history => {
-          for (const transaction of history) {
-            listener.next(transaction);
-          }
-
-          const historyIds = history.map(transaction => Encoding.toHex(transaction.txid));
-
-          let element: ConfirmedTransaction | undefined;
-          // tslint:disable-next-line:no-conditional-assignment
-          while ((element = queue.shift())) {
-            const elementId = Encoding.toHex(element.txid);
-            if (historyIds.indexOf(elementId) !== -1) {
-              // only do this for elements not already sent
-              listener.next(element);
+        this.searchTx(txQuery)
+          .then(history => {
+            for (const transaction of history) {
+              listener.next(transaction);
             }
-          }
 
-          doneSendingHistory = true;
-        });
+            const historyIds = history.map(transaction => Encoding.toHex(transaction.txid));
+
+            let element: ConfirmedTransaction | undefined;
+            // tslint:disable-next-line:no-conditional-assignment
+            while ((element = queue.shift())) {
+              const elementId = Encoding.toHex(element.txid);
+              if (historyIds.indexOf(elementId) !== -1) {
+                // only do this for elements not already sent
+                listener.next(element);
+              }
+            }
+
+            doneSendingHistory = true;
+          })
+          .catch(error => listener.error(error));
       },
       stop: () => {
         if (!updatesSubscription) {

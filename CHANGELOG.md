@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.3
+
+* @iov/bns: Add missing error propagation from `searchTx`/`listenTx` into `liveTx` stream.
+
 ## 0.9.2
 
 * @iov/bns: Add `getHeader` and `watchHeaders` methods to access block headers
