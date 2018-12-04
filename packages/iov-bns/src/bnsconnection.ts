@@ -443,7 +443,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   }
 
   public changeBlock(): Stream<number> {
-    return this.tmClient.subscribeNewBlockHeader().map(getHeaderEventHeight);
+    return this.watchHeaders().map(getHeaderEventHeight);
   }
 
   /**
