@@ -10,6 +10,7 @@ import {
   BcpAtomicSwap,
   BcpAtomicSwapConnection,
   BcpBlockInfo,
+  BcpBlockInfoInBlock,
   BcpPubkeyQuery,
   BcpQueryEnvelope,
   BcpQueryTag,
@@ -34,15 +35,14 @@ import {
   TxReadCodec,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
-import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
+import { DefaultValueProducer, toListPromise, ValueAndUpdates } from "@iov/stream";
 import {
-  broadcastTxCommitSuccess,
+  broadcastTxSyncSuccess,
   Client as TendermintClient,
   getHeaderEventHeight,
   getTxEventHeight,
   Header,
   StatusResponse,
-  TxEvent,
   TxResponse,
 } from "@iov/tendermint-rpc";
 
@@ -158,28 +158,46 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   }
 
   public async postTx(tx: PostableBytes): Promise<BcpTransactionResponse> {
-    const txresp = await this.tmClient.broadcastTxCommit({ tx });
-    if (!broadcastTxCommitSuccess(txresp)) {
-      const { checkTx, deliverTx } = txresp;
-      throw new Error(JSON.stringify({ checkTx, deliverTx }, null, 2));
+    const postResponse = await this.tmClient.broadcastTxSync({ tx });
+    if (!broadcastTxSyncSuccess(postResponse)) {
+      throw new Error(JSON.stringify(postResponse, null, 2));
     }
-    const height = txresp.height!;
+    const transactionId = postResponse.hash;
 
-    const firstEvent: BcpBlockInfo = {
-      state: BcpTransactionState.InBlock,
-      height: height,
-      confirmations: 1,
-    };
+    const firstEvent: BcpBlockInfo = { state: BcpTransactionState.Pending };
     let blocksSubscription: Subscription;
     let lastEventSent: BcpBlockInfo = firstEvent;
     const blockInfoProducer = new DefaultValueProducer<BcpBlockInfo>(firstEvent, {
-      onStarted: () => {
-        blocksSubscription = this.changeBlock().subscribe({
-          next: blockHeight => {
+      onStarted: async () => {
+        // console.log("Started producer for updates of", Encoding.toHex(trandactionId));
+
+        // we utilize liveTx to implement a _search or watch_ mechanism since we do not know
+        // if the transaction is already committed when the producer is started
+        const searchResult = await toListPromise(this.liveTx({ hash: transactionId, tags: [] }), 1);
+        const transactionHeight = searchResult[0].height;
+        const transactionResult = searchResult[0].result;
+
+        // Don't do any heavy work (like subscribing to block headers) before we got the
+        // search result. For some transactions this will never resolve.
+
+        {
+          const inBlockEvent: BcpBlockInfoInBlock = {
+            state: BcpTransactionState.InBlock,
+            height: transactionHeight,
+            confirmations: 1,
+            result: transactionResult,
+          };
+          blockInfoProducer.update(inBlockEvent);
+          lastEventSent = inBlockEvent;
+        }
+
+        blocksSubscription = this.watchHeaders().subscribe({
+          next: async blockHeader => {
             const event: BcpBlockInfo = {
               state: BcpTransactionState.InBlock,
-              height: height,
-              confirmations: blockHeight - height + 1,
+              height: transactionHeight,
+              confirmations: blockHeader.height - transactionHeight + 1,
+              result: transactionResult,
             };
 
             if (!equal(event, lastEventSent)) {
@@ -187,22 +205,24 @@ export class BnsConnection implements BcpAtomicSwapConnection {
               lastEventSent = event;
             }
           },
+          complete: () => console.error("Stream stopped producing blocks. This must not happen"),
+          error: error => console.error("Error from header watch stream:", error),
         });
       },
       onStop: () => blocksSubscription.unsubscribe(),
     });
 
-    const message = txresp.deliverTx ? txresp.deliverTx.log : txresp.checkTx.log;
-    const result = txresp.deliverTx && txresp.deliverTx.data;
+    const trandactionId = postResponse.hash;
+    const message = postResponse.log;
     return {
       metadata: {
-        height: height,
+        height: undefined,
       },
       blockInfo: new ValueAndUpdates(blockInfoProducer),
       data: {
-        txid: txresp.hash,
+        txid: trandactionId,
         message: message || "",
-        result: result || new Uint8Array([]),
+        result: new Uint8Array([]),
       },
     };
   }
@@ -364,18 +384,24 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    */
   public listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction> {
     const chainId = this.chainId();
-    const transactionStream = this.tmClient.subscribeTx(buildTxQuery(query));
-
-    return transactionStream.map((transaction: TxEvent): ConfirmedTransaction => ({
-      // Note: the transaction event does not necessarily mean the transaction made it into the block
-      // log can contain an error message. How do we handle that case?
-      height: transaction.height,
-      confirmations: 1, // assuming block height is current height when listening to events
-      txid: transaction.hash as TxId,
-      log: transaction.result.log,
-      result: transaction.result.data,
-      ...this.codec.parseBytes(transaction.tx, chainId),
-    }));
+    const rawQuery = buildTxQuery(query);
+    return this.tmClient
+      .subscribeTx(rawQuery)
+      .filter(transaction => {
+        // Filter out events of transactions that did not make it into a block (like commit error events)
+        const inBlock = transaction.result.code === 0;
+        return inBlock;
+      })
+      .map(
+        (transaction): ConfirmedTransaction => ({
+          height: transaction.height,
+          confirmations: 1, // assuming block height is current height when listening to events
+          txid: transaction.hash as TxId,
+          log: transaction.result.log,
+          result: transaction.result.data,
+          ...this.codec.parseBytes(transaction.tx, chainId),
+        }),
+      );
   }
 
   /**
