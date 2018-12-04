@@ -42,6 +42,11 @@ export declare class Client {
     subscribeNewBlockHeader(): Stream<responses.NewBlockHeaderEvent>;
     subscribeTx(tags?: ReadonlyArray<requests.QueryTag>): Stream<responses.TxEvent>;
     tx(params: requests.TxParams): Promise<responses.TxResponse>;
+    /**
+     * Search for transactions that are in a block
+     *
+     * @see https://tendermint.com/rpc/#txsearch
+     */
     txSearch(params: requests.TxSearchParams): Promise<responses.TxSearchResponse>;
     txSearchAll(params: requests.TxSearchParams): Promise<responses.TxSearchResponse>;
     validators(height?: number): Promise<responses.ValidatorsResponse>;

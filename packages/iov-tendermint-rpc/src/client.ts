@@ -142,6 +142,11 @@ export class Client {
     return this.doCall(query, this.p.encodeTx, this.r.decodeTx);
   }
 
+  /**
+   * Search for transactions that are in a block
+   *
+   * @see https://tendermint.com/rpc/#txsearch
+   */
   public async txSearch(params: requests.TxSearchParams): Promise<responses.TxSearchResponse> {
     const query: requests.TxSearchRequest = { params, method: requests.Method.TxSearch };
     const resp = await this.doCall(query, this.p.encodeTxSearch, this.r.decodeTxSearch);
