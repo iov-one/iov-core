@@ -104,7 +104,7 @@ function kvTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     const tx = buildKvTx(find, me);
 
     const txRes = await client.broadcastTxCommit({ tx });
-    expect(responses.txCommitSuccess(txRes)).toBeTruthy();
+    expect(responses.broadcastTxCommitSuccess(txRes)).toEqual(true);
     expect(txRes.height).toBeTruthy();
     const height: number = txRes.height || 0; // || 0 for type system
     expect(txRes.hash.length).not.toEqual(0);
@@ -157,7 +157,7 @@ function kvTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
       const tx = buildKvTx(find, me);
 
       const txRes = await client.broadcastTxCommit({ tx });
-      expect(responses.txCommitSuccess(txRes)).toBeTruthy();
+      expect(responses.broadcastTxCommitSuccess(txRes)).toEqual(true);
       expect(txRes.height).toBeTruthy();
       expect(txRes.hash.length).not.toEqual(0);
     };

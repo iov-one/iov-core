@@ -32,17 +32,27 @@ export interface BlockchainResponse {
     readonly lastHeight: number;
     readonly blockMetas: ReadonlyArray<BlockMeta>;
 }
-export declare type BroadcastTxAsyncResponse = BroadcastTxSyncResponse;
-export interface BroadcastTxSyncResponse extends TxData {
-    readonly hash: Uint8Array;
+/** No data in here because RPC method BroadcastTxAsync "returns right away, with no response" */
+export interface BroadcastTxAsyncResponse {
 }
+export interface BroadcastTxSyncResponse extends TxData {
+    readonly hash: TxId;
+}
+/**
+ * Returns true iff transaction made it sucessfully into the transaction pool
+ */
+export declare function broadcastTxSyncSuccess(res: BroadcastTxSyncResponse): boolean;
 export interface BroadcastTxCommitResponse {
     readonly height?: number;
     readonly hash: TxId;
     readonly checkTx: TxData;
     readonly deliverTx?: TxData;
 }
-export declare const txCommitSuccess: (res: BroadcastTxCommitResponse) => boolean;
+/**
+ * Returns true iff transaction made it sucessfully into a block
+ * (i.e. sucess in `check_tx` and `deliver_tx` field)
+ */
+export declare function broadcastTxCommitSuccess(res: BroadcastTxCommitResponse): boolean;
 export interface CommitResponse {
     readonly header: Header;
     readonly commit: Commit;

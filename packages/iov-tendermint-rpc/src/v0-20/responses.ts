@@ -188,7 +188,7 @@ export interface RpcBroadcastTxSyncResponse extends RpcTxData {
 }
 const decodeBroadcastTxSync = (data: RpcBroadcastTxSyncResponse): responses.BroadcastTxSyncResponse => ({
   ...decodeTxData(data),
-  hash: Encoding.fromHex(required(data.hash)),
+  hash: Encoding.fromHex(required(data.hash)) as TxId,
 });
 
 export interface RpcBroadcastTxCommitResponse {

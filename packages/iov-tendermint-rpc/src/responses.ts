@@ -56,9 +56,19 @@ export interface BlockchainResponse {
   readonly blockMetas: ReadonlyArray<BlockMeta>;
 }
 
-export type BroadcastTxAsyncResponse = BroadcastTxSyncResponse;
+/** No data in here because RPC method BroadcastTxAsync "returns right away, with no response" */
+export interface BroadcastTxAsyncResponse {}
+
 export interface BroadcastTxSyncResponse extends TxData {
-  readonly hash: Uint8Array;
+  readonly hash: TxId;
+}
+
+/**
+ * Returns true iff transaction made it sucessfully into the transaction pool
+ */
+export function broadcastTxSyncSuccess(res: BroadcastTxSyncResponse): boolean {
+  // code must be 0 on success
+  return res.code === 0;
 }
 
 export interface BroadcastTxCommitResponse {
@@ -68,10 +78,15 @@ export interface BroadcastTxCommitResponse {
   readonly deliverTx?: TxData;
 }
 
-// note that deliverTx may be present but empty on failure
-// code must be 0 on success
-export const txCommitSuccess = (res: BroadcastTxCommitResponse): boolean =>
-  res.checkTx.code === 0 && !!res.deliverTx && res.deliverTx.code === 0;
+/**
+ * Returns true iff transaction made it sucessfully into a block
+ * (i.e. sucess in `check_tx` and `deliver_tx` field)
+ */
+export function broadcastTxCommitSuccess(res: BroadcastTxCommitResponse): boolean {
+  // code must be 0 on success
+  // deliverTx may be present but empty on failure
+  return res.checkTx.code === 0 && !!res.deliverTx && res.deliverTx.code === 0;
+}
 
 export interface CommitResponse {
   readonly header: Header;
