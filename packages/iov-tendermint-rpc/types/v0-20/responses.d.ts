@@ -107,12 +107,6 @@ export interface RpcTxSearchResponse {
     readonly txs: ReadonlyArray<RpcTxResponse>;
     readonly total_count: number;
 }
-export interface RpcTxEvent {
-    readonly tx: Base64String;
-    readonly result: RpcTxData;
-    readonly height: number;
-    readonly index: number;
-}
 export interface RpcValidatorsResponse {
     readonly block_height: number;
     readonly validators: ReadonlyArray<RpcValidatorData>;
