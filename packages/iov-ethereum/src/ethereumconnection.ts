@@ -181,6 +181,9 @@ export class EthereumConnection implements BcpConnection {
     let txUncodified;
     if (query.hash) {
       const transactionHash = Encoding.toHex(query.hash);
+      if (transactionHash.length !== 64) {
+        throw new Error("Invalid transaction hash length");
+      }
       txUncodified = await axios.post(this.baseUrl, {
         jsonrpc: "2.0",
         method: "eth_getTransactionByHash",

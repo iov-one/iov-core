@@ -7,11 +7,13 @@ import {
   TokenTicker,
   TransactionKind,
 } from "@iov/bcp-types";
+import { Encoding } from "@iov/encoding";
 import { HdPaths, Secp256k1HdWallet } from "@iov/keycontrol";
 
 import { ethereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
 import { TestConfig } from "./testconfig";
+import { hexPadToEven } from "./utils";
 
 function skipTests(): boolean {
   return !process.env.ETHEREUM_ENABLED;
@@ -162,10 +164,24 @@ describe("EthereumConnection", () => {
   });
 
   describe("searchTx", () => {
+    it("throws error for invalid transaction hash", async () => {
+      pendingWithoutEthereum();
+      const connection = await EthereumConnection.establish(base);
+      // invalid lenght
+      const invalidHashLenght = "0x1234567890abcdef";
+      const invalidTxId = Encoding.fromHex(hexPadToEven(invalidHashLenght)) as TxId;
+      await connection
+        .searchTx({ hash: invalidTxId, tags: [] })
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/Invalid transaction hash length/));
+      connection.disconnect();
+    });
+
     it("can search non-existing transaction by hash", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(base);
-      const nonExistingId = new Uint8Array([]) as TxId;
+      const nonExistingHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
+      const nonExistingId = Encoding.fromHex(hexPadToEven(nonExistingHash)) as TxId;
       const results = await connection.searchTx({ hash: nonExistingId, tags: [] });
       expect(results.length).toEqual(0);
       connection.disconnect();
