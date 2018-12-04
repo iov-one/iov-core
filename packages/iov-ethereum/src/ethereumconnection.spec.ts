@@ -283,9 +283,9 @@ describe("EthereumConnection", () => {
       const connection = await EthereumConnection.establish(base);
       const results = await connection.searchTx({
         tags: [
-          { key: "apiLink", value: TestConfig.scraperApi },
-          { key: "account", value: TestConfig.scraperAddress },
-          { key: "parserChainId", value: TestConfig.scraperChainId },
+          { key: "apiLink", value: TestConfig.scraper!.api },
+          { key: "account", value: TestConfig.scraper!.address },
+          { key: "parserChainId", value: TestConfig.scraper!.chainId },
         ],
       });
       expect(results.length).toBeGreaterThan(1);

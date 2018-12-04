@@ -219,7 +219,11 @@ export class EthereumConnection implements BcpConnection {
           txid: transactionId,
         },
       ];
-    } else if (query.tags[0].key === "apiLink" && query.tags[1].key === "account" && query.tags[2].key === "parserChainId") {
+    } else if (
+      query.tags[0].key === "apiLink" &&
+      query.tags[1].key === "account" &&
+      query.tags[2].key === "parserChainId"
+    ) {
       const apiLink = query.tags[0].value;
       const accountAddress = query.tags[1].value;
       const parserChainId = query.tags[2].value as ChainId;
