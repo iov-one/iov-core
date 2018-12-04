@@ -100,7 +100,6 @@ describe("EthereumConnection", () => {
   });
 
   describe("postTx", () => {
-    let postedTxId: TxId;
     it("can post transaction", async () => {
       pendingWithoutEthereum();
 
@@ -157,27 +156,8 @@ describe("EthereumConnection", () => {
       const bytesToPost = ethereumCodec.bytesToPost(signedTransaction);
 
       const result = await connection.postTx(bytesToPost);
-      postedTxId = result.data.txid;
       expect(result).toBeTruthy();
       expect(result.data.message).toBeNull();
-    });
-
-    it("can search previous transaction by hash", async () => {
-      pendingWithoutEthereum();
-      await sleep(waitForTx);
-      const connection = await EthereumConnection.establish(base);
-      const results = await connection.searchTx({ hash: postedTxId, tags: [] });
-      expect(results.length).toEqual(1);
-      const result = results[0];
-      expect(result.txid).toEqual(postedTxId);
-      const transaction = result.transaction;
-      if (transaction.kind !== TransactionKind.Send) {
-        throw new Error("Unexpected transaction type");
-      }
-      expect(result.transaction.kind).toEqual(TransactionKind.Send);
-      expect(transaction.recipient).toEqual("0xe137f5264b6b528244e1643a2d570b37660b7f14");
-      expect(transaction.amount.quantity).toEqual("3445500");
-      connection.disconnect();
     });
   });
 
@@ -188,6 +168,77 @@ describe("EthereumConnection", () => {
       const nonExistingId = new Uint8Array([]) as TxId;
       const results = await connection.searchTx({ hash: nonExistingId, tags: [] });
       expect(results.length).toEqual(0);
+      connection.disconnect();
+    });
+
+    it("can search previous posted transaction by hash", async () => {
+      pendingWithoutEthereum();
+      const wallet = Secp256k1HdWallet.fromMnemonic(
+        "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+      );
+      const mainIdentity = await wallet.createIdentity(HdPaths.bip44(60, 0, 0, 1));
+
+      const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
+
+      const sendTx: SendTx = {
+        kind: TransactionKind.Send,
+        chainId: nodeChainId,
+        signer: mainIdentity.pubkey,
+        recipient: recipientAddress,
+        amount: {
+          quantity: "5445500",
+          fractionalDigits: 18,
+          tokenTicker: "ETH" as TokenTicker,
+        },
+        gasPrice: {
+          quantity: gasPrice,
+          fractionalDigits: 18,
+          tokenTicker: "ETH" as TokenTicker,
+        },
+        gasLimit: {
+          quantity: gasLimit,
+          fractionalDigits: 18,
+          tokenTicker: "ETH" as TokenTicker,
+        },
+        memo: "Search tx test" + new Date(),
+      };
+      const connection = await EthereumConnection.establish(base);
+      const senderAddress = ethereumCodec.keyToAddress(mainIdentity.pubkey);
+      const query: BcpAccountQuery = { address: senderAddress as Address };
+      const nonceResp = await connection.getNonce(query);
+      const signingJob = ethereumCodec.bytesToSign(sendTx, nonceResp.data[0]);
+      const signature = await wallet.createTransactionSignature(
+        mainIdentity,
+        signingJob.bytes,
+        signingJob.prehashType,
+        nodeChainId,
+      );
+
+      const signedTransaction: SignedTransaction = {
+        transaction: sendTx,
+        primarySignature: {
+          nonce: nonceResp.data[0],
+          pubkey: mainIdentity.pubkey,
+          signature: signature,
+        },
+        otherSignatures: [],
+      };
+      const bytesToPost = ethereumCodec.bytesToPost(signedTransaction);
+
+      const resultPost = await connection.postTx(bytesToPost);
+      const postedTxId = resultPost.data.txid;
+      await sleep(waitForTx);
+      const resultSearch = await connection.searchTx({ hash: postedTxId, tags: [] });
+      expect(resultSearch.length).toEqual(1);
+      const result = resultSearch[0];
+      expect(result.txid).toEqual(postedTxId);
+      const transaction = result.transaction;
+      if (transaction.kind !== TransactionKind.Send) {
+        throw new Error("Unexpected transaction type");
+      }
+      expect(result.transaction.kind).toEqual(TransactionKind.Send);
+      expect(transaction.recipient).toEqual("0xe137f5264b6b528244e1643a2d570b37660b7f14");
+      expect(transaction.amount.quantity).toEqual("5445500");
       connection.disconnect();
     });
 
