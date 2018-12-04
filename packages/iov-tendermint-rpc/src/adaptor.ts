@@ -70,7 +70,7 @@ export interface Responses {
 // provide a compatible adaptor if available.
 // throws an error if we don't support this version of tendermint
 export const findAdaptor = async (client: RpcClient): Promise<Adaptor> => {
-  const req = jsonRpcWith(requests.Method.STATUS);
+  const req = jsonRpcWith(requests.Method.Status);
   const response = await client.execute(req);
   const result = response.result;
 
