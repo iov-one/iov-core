@@ -364,18 +364,18 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    */
   public listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction> {
     const chainId = this.chainId();
-    const txs = this.tmClient.subscribeTx(buildTxQuery(query));
+    const transactionStream = this.tmClient.subscribeTx(buildTxQuery(query));
 
-    // destructuring ftw (or is it too confusing?)
-    const mapper = ({ hash, height, tx, result }: TxEvent): ConfirmedTransaction => ({
-      height: height,
+    return transactionStream.map((transaction: TxEvent): ConfirmedTransaction => ({
+      // Note: the transaction event does not necessarily mean the transaction made it into the block
+      // log can contain an error message. How do we handle that case?
+      height: transaction.height,
       confirmations: 1, // assuming block height is current height when listening to events
-      txid: hash as TxId,
-      log: result.log,
-      result: result.data,
-      ...this.codec.parseBytes(tx, chainId),
-    });
-    return txs.map(mapper);
+      txid: transaction.hash as TxId,
+      log: transaction.result.log,
+      result: transaction.result.data,
+      ...this.codec.parseBytes(transaction.tx, chainId),
+    }));
   }
 
   /**
