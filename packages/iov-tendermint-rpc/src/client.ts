@@ -60,16 +60,31 @@ export class Client {
     return this.doCall(query, this.p.encodeBlockchain, this.r.decodeBlockchain);
   }
 
+  /**
+   * Broadcast transaction to mempool and wait for response
+   *
+   * @see https://tendermint.com/rpc/#broadcasttxsync
+   */
   public broadcastTxSync(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxSyncResponse> {
     const query: requests.BroadcastTxRequest = { params, method: requests.Method.BROADCAST_TX_SYNC };
     return this.doCall(query, this.p.encodeBroadcastTx, this.r.decodeBroadcastTxSync);
   }
 
+  /**
+   * Broadcast transaction to mempool and do not wait for result
+   *
+   * @see https://tendermint.com/rpc/#broadcasttxasync
+   */
   public broadcastTxAsync(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxAsyncResponse> {
     const query: requests.BroadcastTxRequest = { params, method: requests.Method.BROADCAST_TX_ASYNC };
     return this.doCall(query, this.p.encodeBroadcastTx, this.r.decodeBroadcastTxAsync);
   }
 
+  /**
+   * Broadcast transaction to mempool and wait for block
+   *
+   * @see https://tendermint.com/rpc/#broadcasttxcommit
+   */
   public broadcastTxCommit(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxCommitResponse> {
     const query: requests.BroadcastTxRequest = { params, method: requests.Method.BROADCAST_TX_COMMIT };
     return this.doCall(query, this.p.encodeBroadcastTx, this.r.decodeBroadcastTxCommit);

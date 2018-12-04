@@ -2,7 +2,11 @@ import { As } from "type-tagger";
 
 import { JsonRpcRequest, jsonRpcWith } from "./common";
 
-// union type of all possible methods?
+/**
+ * RPC methods as documented in https://tendermint.com/rpc/
+ *
+ * Enum raw value must match the spelling in the "shell" example call (snake_case)
+ */
 export const enum Method {
   ABCI_INFO = "abci_info",
   ABCI_QUERY = "abci_query",

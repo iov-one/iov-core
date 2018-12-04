@@ -1,5 +1,10 @@
 import { As } from "type-tagger";
 import { JsonRpcRequest } from "./common";
+/**
+ * RPC methods as documented in https://tendermint.com/rpc/
+ *
+ * Enum raw value must match the spelling in the "shell" example call (snake_case)
+ */
 export declare const enum Method {
     ABCI_INFO = "abci_info",
     ABCI_QUERY = "abci_query",
