@@ -176,7 +176,7 @@ export class EthereumConnection implements BcpConnection {
   }
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
     if (query.height || query.minHeight || query.maxHeight) {
-      throw new Error("Query by height, minHeight, maxHeight, tags not supported");
+      throw new Error("Query by height, minHeight, maxHeight not supported");
     }
     let txUncodified;
     if (query.hash) {
@@ -219,7 +219,7 @@ export class EthereumConnection implements BcpConnection {
           txid: transactionId,
         },
       ];
-    } else if (query.tags[1].key === "account") {
+    } else if (query.tags[0].key === "apiLink" && query.tags[1].key === "account" && query.tags[2].key === "parserChainId") {
       const apiLink = query.tags[0].value;
       const accountAddress = query.tags[1].value;
       const parserChainId = query.tags[2].value as ChainId;
