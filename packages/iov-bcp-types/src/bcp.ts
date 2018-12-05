@@ -195,8 +195,10 @@ export interface BcpConnection {
 
   // searchTx searches for all tx that match these tags and subscribes to new ones
   readonly searchTx: (query: BcpTxQuery) => Promise<ReadonlyArray<ConfirmedTransaction>>;
-  // listenTx subscribes to all newly added transactions with these tags
-  readonly listenTx: (tags: ReadonlyArray<BcpQueryTag>) => Stream<ConfirmedTransaction>;
+  /**
+   * Subscribes to all newly added transactions that match the query
+   */
+  readonly listenTx: (query: BcpTxQuery) => Stream<ConfirmedTransaction>;
   // liveTx returns a stream for all historical transactions that match
   // the query, along with all new transactions arriving from listenTx
   readonly liveTx: (txQuery: BcpTxQuery) => Stream<ConfirmedTransaction>;

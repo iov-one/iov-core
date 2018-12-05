@@ -16,6 +16,8 @@ Breaking changes
   in favour of just `Nonce`.
 * @iov/bcp-types: `BcpConnection.getNonce`/`.watchNonce` now only accept
   `BcpAddressQuery` or `BcpPubkeyQuery` as argument type.
+* @iov/bcp-types: `BcpConnection.listenTx` now takes an `BcpTxQuery` argument
+  analogue to `.searchTx` and `.liveTx`.
 * @iov/crpto: the new types `Secp256k1Signature` and `ExtendedSecp256k1Signature` replace DER encoded signatures in `Secp256k1`.
 * @iov/faucets: Remove `BovFaucet`. Use `IovFaucet` instead.
 * @iov/keycontrol: `Secp256k1HdWallet.createTransactionSignature` now uses the custom fixed length encoding instead of DER to allow blockchains utilizing the recovery parameter.
