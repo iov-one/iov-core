@@ -56,7 +56,7 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     /**
      * A stream of all transactions that match the tags from the present moment on
      */
-    listenTx(tags: ReadonlyArray<BcpQueryTag>): Stream<ConfirmedTransaction>;
+    listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction>;
     /**
      * Does a search and then subscribes to all future changes.
      *

@@ -11,7 +11,6 @@ import {
   BcpConnection,
   BcpPubkeyQuery,
   BcpQueryEnvelope,
-  BcpQueryTag,
   BcpTicker,
   BcpTransactionResponse,
   BcpTransactionState,
@@ -250,7 +249,7 @@ export class EthereumConnection implements BcpConnection {
     }
   }
 
-  public listenTx(_: ReadonlyArray<BcpQueryTag>): Stream<ConfirmedTransaction> {
+  public listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
     throw new Error("Not implemented");
   }
 

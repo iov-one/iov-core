@@ -94,7 +94,7 @@ export interface SubscribeRequest {
     readonly method: Method.Subscribe;
     readonly query: {
         readonly type: SubscriptionEventType;
-        readonly tags?: ReadonlyArray<QueryTag>;
+        readonly raw?: QueryString;
     };
 }
 export declare type QueryString = string & As<"query">;
@@ -132,4 +132,8 @@ export declare class DefaultParams {
     static encodeHealth(req: HealthRequest): JsonRpcRequest;
     static encodeStatus(req: StatusRequest): JsonRpcRequest;
 }
-export declare function buildTagsQuery(tags: ReadonlyArray<QueryTag>): QueryString;
+export interface BuildQueryComponents {
+    readonly tags?: ReadonlyArray<QueryTag>;
+    readonly raw?: QueryString;
+}
+export declare function buildQuery(components: BuildQueryComponents): QueryString;

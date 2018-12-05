@@ -126,12 +126,12 @@ export class Client {
     return this.subscribe(request, this.r.decodeNewBlockHeaderEvent);
   }
 
-  public subscribeTx(tags?: ReadonlyArray<requests.QueryTag>): Stream<responses.TxEvent> {
+  public subscribeTx(query?: requests.QueryString): Stream<responses.TxEvent> {
     const request: requests.SubscribeRequest = {
       method: requests.Method.Subscribe,
       query: {
         type: requests.SubscriptionEventType.Tx,
-        tags: tags,
+        raw: query,
       },
     };
     return this.subscribe(request, this.r.decodeTxEvent);

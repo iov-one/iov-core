@@ -110,7 +110,10 @@ export interface BcpConnection {
     readonly watchAccount: (account: BcpAccountQuery) => Stream<BcpAccount | undefined>;
     readonly watchNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Stream<Nonce | undefined>;
     readonly searchTx: (query: BcpTxQuery) => Promise<ReadonlyArray<ConfirmedTransaction>>;
-    readonly listenTx: (tags: ReadonlyArray<BcpQueryTag>) => Stream<ConfirmedTransaction>;
+    /**
+     * Subscribes to all newly added transactions that match the query
+     */
+    readonly listenTx: (query: BcpTxQuery) => Stream<ConfirmedTransaction>;
     readonly liveTx: (txQuery: BcpTxQuery) => Stream<ConfirmedTransaction>;
 }
 export interface ChainConnector {
