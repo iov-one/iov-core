@@ -3,7 +3,7 @@ import { ReadonlyDate } from "readonly-date";
 
 import { Encoding } from "@iov/encoding";
 
-import { Adaptor, v0_25 } from "./adaptor";
+import { Adaptor, adatorForVersion } from "./adaptor";
 import { Client } from "./client";
 import { randomId } from "./common";
 import { buildTagsQuery, QueryTag } from "./requests";
@@ -20,8 +20,28 @@ function pendingWithoutTendermint(): void {
   }
 }
 
-// TODO: make flexible, support multiple versions, etc...
-const tendermintUrl = "localhost:12345";
+/**
+ * Tendermint instances to be tested.
+ *
+ * Testing legacy version: as a convention, the minor version number is encoded
+ * in the port 111<version>, e.g. Tendermint 0.21.0 runs on port 11121. To start
+ * a legacy version use
+ *   TENDERMINT_VERSION=0.21.0 TENDERMINT_PORT=11121 ./scripts/tendermint/start.sh
+ *
+ * When more than 1 instances of tendermint are running, stop them manually:
+ *   docker container ls | grep tendermint/tendermint
+ *   docker container kill <container id from 1st column>
+ */
+const tendermintInstances = [
+  // {
+  //   url: "localhost:11121",
+  //   version: "0.21.x",
+  // },
+  {
+    url: "localhost:12345",
+    version: "0.25.x",
+  },
+];
 
 function buildKvTx(k: string, v: string): Uint8Array {
   return Encoding.toAscii(`${k}=${v}`);
@@ -378,35 +398,39 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
   });
 }
 
-describe("Client", () => {
-  it("can connect to a given url", async () => {
-    pendingWithoutTendermint();
+for (const { url, version } of tendermintInstances) {
+  describe(`Client ${version}`, () => {
+    it("can connect to a given url", async () => {
+      pendingWithoutTendermint();
 
-    // default connection
-    const client = await Client.connect(tendermintUrl);
-    const info = await client.abciInfo();
-    expect(info).toBeTruthy();
+      // default connection
+      const client = await Client.connect(url);
+      const info = await client.abciInfo();
+      expect(info).toBeTruthy();
 
-    // http connection
-    const client2 = await Client.connect("http://" + tendermintUrl);
-    const info2 = await client2.abciInfo();
-    expect(info2).toBeTruthy();
+      // http connection
+      const client2 = await Client.connect("http://" + url);
+      const info2 = await client2.abciInfo();
+      expect(info2).toBeTruthy();
 
-    // ws connection
-    const client3 = await Client.connect("ws://" + tendermintUrl);
-    const info3 = await client3.abciInfo();
-    expect(info3).toBeTruthy();
+      // ws connection
+      const client3 = await Client.connect("ws://" + url);
+      const info3 = await client3.abciInfo();
+      expect(info3).toBeTruthy();
+    });
+
+    describe("With HttpClient", () => {
+      const adaptor = adatorForVersion(version);
+      kvTestSuite(() => new HttpClient(url), adaptor);
+    });
+
+    describe("With WebsocketClient", () => {
+      // don't print out WebSocket errors if marked pending
+      const onError = skipTests() ? () => 0 : console.log;
+      const factory = () => new WebsocketClient(url, onError);
+      const adaptor = adatorForVersion(version);
+      kvTestSuite(factory, adaptor);
+      websocketTestSuite(factory, adaptor);
+    });
   });
-
-  describe("With HttpClient: v0-25", () => {
-    kvTestSuite(() => new HttpClient(tendermintUrl), v0_25);
-  });
-
-  describe("With WebsocketClient: v0-25", () => {
-    // don't print out WebSocket errors if marked pending
-    const onError = skipTests() ? () => 0 : console.log;
-    const factory = () => new WebsocketClient(tendermintUrl, onError);
-    kvTestSuite(factory, v0_25);
-    websocketTestSuite(factory, v0_25);
-  });
-});
+}
