@@ -20,6 +20,10 @@ Breaking changes
 * @iov/faucets: Remove `BovFaucet`. Use `IovFaucet` instead.
 * @iov/keycontrol: `Secp256k1HdWallet.createTransactionSignature` now uses the custom fixed length encoding instead of DER to allow blockchains utilizing the recovery parameter.
 
+## 0.9.3
+
+* @iov/bns: Add missing error propagation from `searchTx`/`listenTx` into `liveTx` stream.
+
 ## 0.9.2
 
 * @iov/bns: Add `getHeader` and `watchHeaders` methods to access block headers
