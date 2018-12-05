@@ -22,3 +22,31 @@ export function fromListPromise<T>(promise: Promise<Iterable<T>>): Stream<T> {
 
   return Stream.create(producer);
 }
+
+/**
+ * Listens to stream and collects events. When `count` events are collected,
+ * the promise resolves with an array of events.
+ *
+ * Rejects of stream completes before `count` events are collected.
+ */
+export async function toListPromise<T>(stream: Stream<T>, count: number): Promise<ReadonlyArray<T>> {
+  if (count === 0) {
+    return [];
+  }
+
+  const events = new Array<T>();
+  return new Promise<ReadonlyArray<T>>((resolve, reject) => {
+    // take() unsubscribes from source stream automatically
+    stream.take(count).subscribe({
+      next: event => {
+        events.push(event);
+
+        if (events.length === count) {
+          resolve(events);
+        }
+      },
+      complete: () => reject("Stream completed before all events could be collected"),
+      error: error => reject(error),
+    });
+  });
+}

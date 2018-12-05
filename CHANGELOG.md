@@ -6,6 +6,8 @@
   that allows you to get block related data associated with the transactions
   and subscribing to updates. `metadata` was deprecated in favour of `blockInfo`.
 * @iov/bns: Fix encoding of `BcpTxQuery.hash` in `listenTx` and `liveTx`
+* @iov/stream: Add `toListPromise` that collects stream events and returns a
+  list when done.
 
 Breaking changes
 

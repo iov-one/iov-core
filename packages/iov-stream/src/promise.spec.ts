@@ -1,6 +1,13 @@
 // tslint:disable:readonly-array
-import { fromListPromise } from "./promise";
+
+import { Producer, Stream } from "xstream";
+
+import { fromListPromise, toListPromise } from "./promise";
 import { asArray, countStream } from "./reducer";
+
+function oneTickLater(): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve));
+}
 
 describe("promise", () => {
   describe("fromListPromise", () => {
@@ -46,6 +53,57 @@ describe("promise", () => {
       const read = asArray<string>(stream);
       await read.finished();
       expect(read.value()).toEqual(input);
+    });
+  });
+
+  describe("toListPromise", () => {
+    it("works for simple stream with more events than count", async () => {
+      const events = await toListPromise(Stream.fromArray([1, 6, 92, 2, 9]), 3);
+      expect(events).toEqual([1, 6, 92]);
+    });
+
+    it("works for simple stream with equal events and count", async () => {
+      const events = await toListPromise(Stream.fromArray([1, 6, 92, 2, 9]), 5);
+      expect(events).toEqual([1, 6, 92, 2, 9]);
+    });
+
+    it("works for simple stream with zero count", async () => {
+      const events = await toListPromise(Stream.fromArray([1, 6, 92, 2, 9]), 0);
+      expect(events).toEqual([]);
+    });
+
+    it("works for empty stream with zero count", async () => {
+      const events = await toListPromise(Stream.fromArray([]), 0);
+      expect(events).toEqual([]);
+    });
+
+    it("rejects for simple stream with less events than count", async () => {
+      await toListPromise(Stream.fromArray([1, 6, 92]), 5)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/stream completed before all events could be collected/i));
+    });
+
+    it("works for async stream", async () => {
+      let interval: NodeJS.Timeout;
+      let producerRunning = false;
+      const producer: Producer<number> = {
+        start: listener => {
+          producerRunning = true;
+          let nextElement = 0;
+          interval = setInterval(() => {
+            listener.next(nextElement++);
+          }, 20);
+        },
+        stop: () => {
+          clearInterval(interval);
+          producerRunning = false;
+        },
+      };
+
+      const events = await toListPromise(Stream.create(producer), 3);
+      expect(events).toEqual([0, 1, 2]);
+      await oneTickLater();
+      expect(producerRunning).toEqual(false);
     });
   });
 });
