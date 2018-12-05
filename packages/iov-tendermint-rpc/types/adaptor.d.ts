@@ -46,4 +46,11 @@ export interface Responses {
     readonly decodeNewBlockHeaderEvent: (response: JsonRpcEvent) => responses.NewBlockHeaderEvent;
     readonly decodeTxEvent: (response: JsonRpcEvent) => responses.TxEvent;
 }
+/**
+ * Returns an Adaptor implementation for a given tendermint version.
+ * Throws when version is not supported.
+ *
+ * @param version full Tendermint version string, e.g. "0.20.1"
+ */
+export declare function adatorForVersion(version: string): Adaptor;
 export declare function findAdaptor(client: RpcClient): Promise<Adaptor>;

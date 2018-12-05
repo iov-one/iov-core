@@ -64,6 +64,24 @@ export interface Responses {
   readonly decodeTxEvent: (response: JsonRpcEvent) => responses.TxEvent;
 }
 
+/**
+ * Returns an Adaptor implementation for a given tendermint version.
+ * Throws when version is not supported.
+ *
+ * @param version full Tendermint version string, e.g. "0.20.1"
+ */
+export function adatorForVersion(version: string): Adaptor {
+  if (version.startsWith("0.20.")) {
+    return v0_20;
+  } else if (version.startsWith("0.21.")) {
+    return v0_20;
+  } else if (version.startsWith("0.25.")) {
+    return v0_25;
+  } else {
+    throw new Error(`Unsupported tendermint version: ${version}`);
+  }
+}
+
 // findAdaptor makes a status call with the client.
 // if we cannot talk to the server or make sense of the response, throw an error
 // otherwise, grab the tendermint version from the response and
@@ -77,13 +95,5 @@ export async function findAdaptor(client: RpcClient): Promise<Adaptor> {
   if (!result || !result.node_info) {
     throw new Error("Unrecognized format for status response");
   }
-  const version: string = result.node_info.version;
-  if (version.startsWith("0.20.")) {
-    return v0_20;
-  } else if (version.startsWith("0.21.")) {
-    return v0_20;
-  } else if (version.startsWith("0.25.")) {
-    return v0_25;
-  }
-  throw new Error(`Unsupported tendermint version: ${version}`);
+  return adatorForVersion(result.node_info.version);
 }
