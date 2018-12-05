@@ -8,6 +8,12 @@ export GANACHE_MNEMONIC="oxygen fall sure lava energy veteran enroll frown quest
 export ETHEREUM_ENABLED=1
 ```
 
+### Query transactions by account
+Since this functionality is not standard in ethereum ecosystem, we provide a setup to connect with blockchain scrapers that index transactions by user account. To enable such functionality:
+```
+export ETHEREUM_SCRAPER=1
+```
+
 ## Stop
 
 ```

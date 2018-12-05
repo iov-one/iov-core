@@ -15,3 +15,4 @@ export declare type Eip155ChainId = {
     readonly chainId: number;
 };
 export declare function eip155V(chain: Eip155ChainId, recoveryParam: number): number;
+export declare function getRecoveryParam(chain: Eip155ChainId, v: number): number;

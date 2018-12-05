@@ -15,6 +15,11 @@ export interface EthereumNetworkConfig {
   readonly nonce: Nonce;
   readonly gasPrice: string;
   readonly gasLimit: string;
+  readonly waitForTx: number;
+  readonly scraper?: {
+    readonly api: string;
+    readonly address: Address;
+  };
 }
 
 // Chain Id is from eip-155.md
@@ -35,6 +40,11 @@ const local: EthereumNetworkConfig = {
   nonce: new Int53(0) as Nonce,
   gasPrice: "20000000000",
   gasLimit: "2100000",
+  waitForTx: 100,
+  scraper: {
+    api: "https://api-ropsten.etherscan.io/api",
+    address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
+  },
 };
 
 const testnetRopsten: EthereumNetworkConfig = {
@@ -50,6 +60,11 @@ const testnetRopsten: EthereumNetworkConfig = {
   nonce: new Int53(1) as Nonce,
   gasPrice: "1000000000",
   gasLimit: "141000",
+  waitForTx: 4000,
+  scraper: {
+    api: "https://api-ropsten.etherscan.io/api",
+    address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
+  },
 };
 
 const testnetRinkeby: EthereumNetworkConfig = {
@@ -65,6 +80,11 @@ const testnetRinkeby: EthereumNetworkConfig = {
   nonce: new Int53(0) as Nonce,
   gasPrice: "1000000000",
   gasLimit: "141000",
+  waitForTx: 4000,
+  scraper: {
+    api: "https://api-rinkeby.etherscan.io/api",
+    address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
+  },
 };
 
 const config = new Map<string, EthereumNetworkConfig>();
