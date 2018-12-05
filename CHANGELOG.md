@@ -24,6 +24,7 @@ Breaking changes
 * @iov/tendermint-rpc: Change type of `BroadcastTxSyncResponse.hash` to `TxId`
 * @iov/tendermint-rpc: Un-export interface `RpcTxEvent`
 * @iov/tendermint-rpc: Change all `Method` enum names to PascalCase
+* @iov/tendermint-rpc: `Client.subscribeTx` now takes a `QueryString` argument
 
 ## 0.9.3
 

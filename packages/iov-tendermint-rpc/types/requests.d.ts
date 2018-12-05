@@ -94,7 +94,7 @@ export interface SubscribeRequest {
     readonly method: Method.Subscribe;
     readonly query: {
         readonly type: SubscriptionEventType;
-        readonly tags?: ReadonlyArray<QueryTag>;
+        readonly raw?: QueryString;
     };
 }
 export declare type QueryString = string & As<"query">;

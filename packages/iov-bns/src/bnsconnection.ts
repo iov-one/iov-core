@@ -364,7 +364,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    */
   public listenTx(tags: ReadonlyArray<BcpQueryTag>): Stream<ConfirmedTransaction> {
     const chainId = this.chainId();
-    const txs = this.tmClient.subscribeTx(tags);
+    const txs = this.tmClient.subscribeTx(buildTxQuery({ tags: tags }));
 
     // destructuring ftw (or is it too confusing?)
     const mapper = ({ hash, height, tx, result }: TxEvent): ConfirmedTransaction => ({
@@ -451,7 +451,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    */
   public changeTx(tags: ReadonlyArray<BcpQueryTag>): Stream<number> {
     return this.tmClient
-      .subscribeTx(tags)
+      .subscribeTx(buildTxQuery({ tags: tags }))
       .map(getTxEventHeight)
       .filter(onChange<number>());
   }

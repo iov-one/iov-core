@@ -40,7 +40,7 @@ export declare class Client {
     status(): Promise<responses.StatusResponse>;
     subscribeNewBlock(): Stream<responses.NewBlockEvent>;
     subscribeNewBlockHeader(): Stream<responses.NewBlockHeaderEvent>;
-    subscribeTx(tags?: ReadonlyArray<requests.QueryTag>): Stream<responses.TxEvent>;
+    subscribeTx(query?: requests.QueryString): Stream<responses.TxEvent>;
     tx(params: requests.TxParams): Promise<responses.TxResponse>;
     /**
      * Search for transactions that are in a block

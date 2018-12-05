@@ -7,7 +7,7 @@ import { Encoding } from "@iov/encoding";
 import { Adaptor, adatorForVersion } from "./adaptor";
 import { Client } from "./client";
 import { randomId } from "./common";
-import { buildQuery, QueryTag } from "./requests";
+import { buildQuery } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, RpcClient, WebsocketClient } from "./rpcclient";
 
@@ -385,8 +385,8 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
     (async () => {
       const events: responses.TxEvent[] = [];
       const client = new Client(rpcFactory(), adaptor);
-      const tags: ReadonlyArray<QueryTag> = [{ key: "app.creator", value: "jae" }];
-      const stream = client.subscribeTx(tags);
+      const query = buildQuery({ tags: [{ key: "app.creator", value: "jae" }] });
+      const stream = client.subscribeTx(query);
       expect(stream).toBeTruthy();
       const subscription = stream.subscribe({
         next: event => {
