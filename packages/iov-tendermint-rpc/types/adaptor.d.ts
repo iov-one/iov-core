@@ -46,4 +46,4 @@ export interface Responses {
     readonly decodeNewBlockHeaderEvent: (response: JsonRpcEvent) => responses.NewBlockHeaderEvent;
     readonly decodeTxEvent: (response: JsonRpcEvent) => responses.TxEvent;
 }
-export declare const findAdaptor: (client: RpcClient) => Promise<Adaptor>;
+export declare function findAdaptor(client: RpcClient): Promise<Adaptor>;

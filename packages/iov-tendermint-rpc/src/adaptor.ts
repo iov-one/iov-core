@@ -69,7 +69,7 @@ export interface Responses {
 // otherwise, grab the tendermint version from the response and
 // provide a compatible adaptor if available.
 // throws an error if we don't support this version of tendermint
-export const findAdaptor = async (client: RpcClient): Promise<Adaptor> => {
+export async function findAdaptor(client: RpcClient): Promise<Adaptor> {
   const req = jsonRpcWith(requests.Method.Status);
   const response = await client.execute(req);
   const result = response.result;
@@ -86,4 +86,4 @@ export const findAdaptor = async (client: RpcClient): Promise<Adaptor> => {
     return v0_25;
   }
   throw new Error(`Unsupported tendermint version: ${version}`);
-};
+}
