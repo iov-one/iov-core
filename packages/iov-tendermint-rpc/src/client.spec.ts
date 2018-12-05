@@ -51,7 +51,7 @@ function buildKvTx(k: string, v: string): Uint8Array {
   return Encoding.toAscii(`${k}=${v}`);
 }
 
-function kvTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
+function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
   const key = randomId();
   const value = randomId();
 
@@ -429,7 +429,7 @@ for (const { url, version } of tendermintInstances) {
 
     describe("With HttpClient", () => {
       const adaptor = adatorForVersion(version);
-      kvTestSuite(() => new HttpClient(url), adaptor);
+      defaultTestSuite(() => new HttpClient(url), adaptor);
     });
 
     describe("With WebsocketClient", () => {
@@ -437,7 +437,7 @@ for (const { url, version } of tendermintInstances) {
       const onError = skipTests() ? () => 0 : console.log;
       const factory = () => new WebsocketClient(url, onError);
       const adaptor = adatorForVersion(version);
-      kvTestSuite(factory, adaptor);
+      defaultTestSuite(factory, adaptor);
       websocketTestSuite(factory, adaptor);
     });
   });
