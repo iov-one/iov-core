@@ -1,5 +1,6 @@
 // tslint:disable:no-console readonly-array
 import { ReadonlyDate } from "readonly-date";
+import { Stream } from "xstream";
 
 import { Encoding } from "@iov/encoding";
 
@@ -415,6 +416,37 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
 
       await client.broadcastTxCommit({ tx: transaction1 });
       await client.broadcastTxCommit({ tx: transaction2 });
+    })().catch(done.fail);
+  });
+
+  // This a a minimal showcase for subscribing to the same query twice
+  // See https://github.com/iov-one/iov-core/issues/581
+  xit("can subscribe twice", done => {
+    pendingWithoutTendermint();
+
+    (async () => {
+      const events: responses.NewBlockHeaderEvent[] = [];
+      const client = new Client(rpcFactory(), adaptor);
+      const stream1 = client.subscribeNewBlockHeader();
+      const stream2 = client.subscribeNewBlockHeader();
+
+      const subscription = Stream.merge(stream1, stream2).subscribe({
+        next: event => {
+          events.push(event);
+
+          // collect 2x2 events
+          if (events.length === 4) {
+            // two events per height
+            expect(new Set(events.map(e => e.height)).size).toEqual(2);
+
+            subscription.unsubscribe();
+            client.disconnect();
+            done();
+          }
+        },
+        error: done.fail,
+        complete: () => done.fail("Stream completed before we are done"),
+      });
     })().catch(done.fail);
   });
 }
