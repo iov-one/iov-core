@@ -180,6 +180,15 @@ export class DefaultParams {
   }
 }
 
-export function buildTagsQuery(tags: ReadonlyArray<QueryTag>): QueryString {
-  return tags.map(tag => `${tag.key}='${tag.value}'`).join(" AND ") as QueryString;
+export interface BuildQueryComponents {
+  readonly tags?: ReadonlyArray<QueryTag>;
+  readonly raw?: QueryString;
+}
+
+export function buildQuery(components: BuildQueryComponents): QueryString {
+  const tags = components.tags ? components.tags : [];
+  const tagComponents = tags.map(tag => `${tag.key}='${tag.value}'`);
+  const rawComponents = components.raw ? [components.raw] : [];
+
+  return [...tagComponents, ...rawComponents].join(" AND ") as QueryString;
 }

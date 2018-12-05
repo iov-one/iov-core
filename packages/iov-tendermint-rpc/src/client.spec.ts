@@ -7,7 +7,7 @@ import { Encoding } from "@iov/encoding";
 import { Adaptor, adatorForVersion } from "./adaptor";
 import { Client } from "./client";
 import { randomId } from "./common";
-import { buildTagsQuery, QueryTag } from "./requests";
+import { buildQuery, QueryTag } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, RpcClient, WebsocketClient } from "./rpcclient";
 
@@ -147,7 +147,7 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
 
     // txSearch - you must enable the indexer when running
     // tendermint, else you get empty results
-    const query = buildTagsQuery([{ key: "app.key", value: find }]);
+    const query = buildQuery({ tags: [{ key: "app.key", value: find }] });
 
     const s = await client.txSearch({ query, page: 1, per_page: 30 });
     // should find the tx
@@ -178,7 +178,7 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     const client = new Client(rpcFactory(), adaptor);
 
     const find = randomId();
-    const query = buildTagsQuery([{ key: "app.key", value: find }]);
+    const query = buildQuery({ tags: [{ key: "app.key", value: find }] });
 
     const sendTx = async () => {
       const me = randomId();
