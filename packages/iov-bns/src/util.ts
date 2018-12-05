@@ -112,7 +112,8 @@ export function buildTxQuery(query: BcpTxQuery): QueryString {
     !!query.height && `tx.height=${query.height}`,
     !!query.minHeight && `tx.height>${query.minHeight}`,
     !!query.maxHeight && `tx.height<${query.maxHeight}`,
-    !!query.hash && `tx.hash='${Encoding.toHex(query.hash)}'`,
+    // In Tendermint, hash can be lower case for search queries but must be upper case for subscribe queries
+    !!query.hash && `tx.hash='${Encoding.toHex(query.hash).toUpperCase()}'`,
   ];
   const result: string = [...tags, ...opts.filter(x => !!x)].join(" AND ");
   return result as QueryString;

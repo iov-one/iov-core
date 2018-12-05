@@ -1,6 +1,6 @@
 import Long from "long";
 
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, TxId } from "@iov/base-types";
 import {
   AddAddressToUsernameTx,
   Address,
@@ -834,6 +834,56 @@ describe("BnsConnection", () => {
       }
 
       connection.disconnect();
+    });
+  });
+
+  describe("listenTx", () => {
+    it("can listen to transactions by hash", done => {
+      pendingWithoutBnsd();
+
+      (async () => {
+        const connection = await BnsConnection.establish(bnsdTendermintUrl);
+        const chainId = await connection.chainId();
+
+        const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
+        const faucetAddress = keyToAddress(faucet.pubkey);
+
+        const memo = `Payment ${Math.random()}`;
+        const sendTx: SendTx = {
+          kind: TransactionKind.Send,
+          chainId: chainId,
+          signer: faucet.pubkey,
+          recipient: await randomBnsAddress(),
+          memo: memo,
+          amount: {
+            quantity: "1000000001",
+            fractionalDigits: 9,
+            tokenTicker: cash,
+          },
+        };
+
+        const nonce = await getNonce(connection, faucetAddress);
+        const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
+        const txId = bnsCodec.identifier(signed);
+        const heightBeforeTransaction = await connection.height();
+
+        // start listening
+        const subscription = connection.listenTx({ hash: (txId as unknown) as TxId, tags: [] }).subscribe({
+          next: event => {
+            expect(event.txid).toEqual(txId);
+            expect(event.height).toEqual(heightBeforeTransaction + 1);
+
+            subscription.unsubscribe();
+            connection.disconnect();
+            done();
+          },
+          complete: () => done.fail("Stream completed before we are done"),
+          error: done.fail,
+        });
+
+        // post transaction
+        await connection.postTx(bnsCodec.bytesToPost(signed));
+      })().catch(done.fail);
     });
   });
 
