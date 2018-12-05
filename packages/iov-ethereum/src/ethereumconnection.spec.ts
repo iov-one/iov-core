@@ -291,4 +291,25 @@ describe("EthereumConnection", () => {
       connection.disconnect();
     });
   });
+
+  describe("getHeader", () => {
+    it("can get header from block", async () => {
+      pendingWithoutEthereum();
+      const connection = await EthereumConnection.establish(base);
+      const blockHeader = await connection.getHeader(0);
+      expect(blockHeader.height).toEqual(0);
+      expect(blockHeader.totalTxs).toBeGreaterThanOrEqual(0);
+      connection.disconnect();
+    });
+
+    it("throws error from invalid block number", async () => {
+      pendingWithoutEthereum();
+      const connection = await EthereumConnection.establish(base);
+      await connection
+        .getHeader(99999999999999)
+        .then(() => fail("promise must be rejected"))
+        .catch(err => expect(err).toMatch(/Header 99999999999999 doesn't exist yet/));
+      connection.disconnect();
+    });
+  });
 });
