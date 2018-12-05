@@ -231,7 +231,8 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
           expect(event.height).toBeGreaterThan(0);
           // seems that tendermint just guarantees within the last second for timestamp
           expect(event.time.getTime()).toBeGreaterThan(testStart - 1000);
-          expect(event.time.getTime()).toBeLessThanOrEqual(ReadonlyDate.now());
+          // Tendermint clock is sometimes ahead of test clock. Add 10ms tolerance
+          expect(event.time.getTime()).toBeLessThanOrEqual(ReadonlyDate.now() + 10);
           expect(event.numTxs).toEqual(0);
           expect(event.lastBlockId).toBeTruthy();
           expect(event.totalTxs).toBeGreaterThan(0);
@@ -287,7 +288,8 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
           expect(event.header.height).toBeGreaterThan(0);
           // seems that tendermint just guarantees within the last second for timestamp
           expect(event.header.time.getTime()).toBeGreaterThan(testStart - 1000);
-          expect(event.header.time.getTime()).toBeLessThanOrEqual(ReadonlyDate.now());
+          // Tendermint clock is sometimes ahead of test clock. Add 10ms tolerance
+          expect(event.header.time.getTime()).toBeLessThanOrEqual(ReadonlyDate.now() + 10);
           expect(event.header.numTxs).toEqual(1);
           expect(event.header.lastBlockId).toBeTruthy();
           expect(event.header.totalTxs).toBeGreaterThan(0);
