@@ -52,9 +52,6 @@ function buildKvTx(k: string, v: string): Uint8Array {
 }
 
 function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
-  const key = randomId();
-  const value = randomId();
-
   it("can connect to tendermint with known version", async () => {
     pendingWithoutTendermint();
     const client = new Client(rpcFactory(), adaptor);
@@ -73,7 +70,7 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
   it("can post a transaction", async () => {
     pendingWithoutTendermint();
     const client = new Client(rpcFactory(), adaptor);
-    const tx = buildKvTx(key, value);
+    const tx = buildKvTx(randomId(), randomId());
 
     const response = await client.broadcastTxCommit({ tx: tx });
     expect(response.height).toBeGreaterThan(2);
@@ -88,15 +85,17 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     client.disconnect();
   });
 
-  // TODO: this test should not depend on "can post a transaction"
   it("can query the state", async () => {
     pendingWithoutTendermint();
     const client = new Client(rpcFactory(), adaptor);
 
+    const key = randomId();
+    const value = randomId();
+    await client.broadcastTxCommit({ tx: buildKvTx(key, value) });
+
     const binKey = Encoding.toAscii(key);
     const binValue = Encoding.toAscii(value);
     const queryParams = { path: "/key", data: binKey };
-
     const response = await client.abciQuery(queryParams);
     expect(response.key).toEqual(binKey);
     expect(response.value).toEqual(binValue);
