@@ -98,8 +98,8 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     const queryParams = { path: "/key", data: binKey };
 
     const response = await client.abciQuery(queryParams);
-    expect(new Uint8Array(response.key)).toEqual(binKey);
-    expect(new Uint8Array(response.value)).toEqual(binValue);
+    expect(response.key).toEqual(binKey);
+    expect(response.value).toEqual(binValue);
     expect(response.code).toBeFalsy();
 
     client.disconnect();
@@ -141,7 +141,7 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     // both values come from rpc, so same type (Buffer/Uint8Array)
     expect(r.hash).toEqual(hash);
     // force the type when comparing to locally generated value
-    expect(new Uint8Array(r.tx)).toEqual(tx);
+    expect(r.tx).toEqual(tx);
     expect(r.height).toEqual(height);
     expect(r.proof).toBeTruthy();
 
