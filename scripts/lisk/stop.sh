@@ -7,10 +7,13 @@ command -v shellcheck > /dev/null && shellcheck "$0"
 # Only used as long as this script runs
 TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/lisk_stop.XXXXXXXXX")
 
+# can be a branch or tag
+LISK_BRANCH="v1.2.0"
+
 (
   cd "$TMP_DIR"
   echo "Navigated to temp directory $(pwd)"
-  git clone --depth 1 --branch 1.2.0 https://github.com/LiskHQ/lisk.git
+  git clone --depth 1 --branch "$LISK_BRANCH" https://github.com/LiskHQ/lisk.git
 
   (
     cd "lisk/docker"
