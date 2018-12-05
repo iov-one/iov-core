@@ -273,10 +273,10 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
             done();
           }
         },
-        error: fail,
-        complete: () => fail("Stream must not close just because we don't listen anymore"),
+        error: done.fail,
+        complete: () => done.fail("Stream completed before we are done"),
       });
-    })().catch(fail);
+    })().catch(done.fail);
   });
 
   it("can subscribe to block events", done => {
@@ -327,8 +327,8 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
             done();
           }
         },
-        error: fail,
-        complete: () => fail("Stream must not close just because we don't listen anymore"),
+        error: done.fail,
+        complete: () => done.fail("Stream completed before we are done"),
       });
 
       const transaction1 = buildKvTx(randomId(), randomId());
@@ -336,7 +336,7 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
 
       await client.broadcastTxCommit({ tx: transaction1 });
       await client.broadcastTxCommit({ tx: transaction2 });
-    })().catch(fail);
+    })().catch(done.fail);
   });
 
   it("can subscribe to transaction events", done => {
@@ -366,8 +366,8 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
             done();
           }
         },
-        error: fail,
-        complete: () => fail("Stream must not close just because we don't listen anymore"),
+        error: done.fail,
+        complete: () => done.fail("Stream completed before we are done"),
       });
 
       const transaction1 = buildKvTx(randomId(), randomId());
@@ -375,7 +375,7 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
 
       await client.broadcastTxCommit({ tx: transaction1 });
       await client.broadcastTxCommit({ tx: transaction2 });
-    })().catch(fail);
+    })().catch(done.fail);
   });
 
   it("can subscribe to transaction events filtered by creator", done => {
@@ -406,8 +406,8 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
             done();
           }
         },
-        error: fail,
-        complete: () => fail("Stream must not close just because we don't listen anymore"),
+        error: done.fail,
+        complete: () => done.fail("Stream completed before we are done"),
       });
 
       const transaction1 = buildKvTx(randomId(), randomId());
@@ -415,7 +415,7 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
 
       await client.broadcastTxCommit({ tx: transaction1 });
       await client.broadcastTxCommit({ tx: transaction2 });
-    })().catch(fail);
+    })().catch(done.fail);
   });
 }
 
