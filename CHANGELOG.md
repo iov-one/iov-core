@@ -19,6 +19,11 @@ Breaking changes
 * @iov/crpto: the new types `Secp256k1Signature` and `ExtendedSecp256k1Signature` replace DER encoded signatures in `Secp256k1`.
 * @iov/faucets: Remove `BovFaucet`. Use `IovFaucet` instead.
 * @iov/keycontrol: `Secp256k1HdWallet.createTransactionSignature` now uses the custom fixed length encoding instead of DER to allow blockchains utilizing the recovery parameter.
+* @iov/tendermint-rpc: Rename `txCommitSuccess` to `broadcastTxCommitSuccess` and add `broadcastTxSyncSuccess`
+* @iov/tendermint-rpc: Remove all fields from `BroadcastTxAsyncResponse`
+* @iov/tendermint-rpc: Change type of `BroadcastTxSyncResponse.hash` to `TxId`
+* @iov/tendermint-rpc: Un-export interface `RpcTxEvent`
+* @iov/tendermint-rpc: Change all `Method` enum names to PascalCase
 
 ## 0.9.3
 

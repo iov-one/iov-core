@@ -191,7 +191,7 @@ export interface RpcBroadcastTxSyncResponse extends RpcTxData {
 }
 const decodeBroadcastTxSync = (data: RpcBroadcastTxSyncResponse): responses.BroadcastTxSyncResponse => ({
   ...decodeTxData(data),
-  hash: Encoding.fromHex(required(data.hash)),
+  hash: Encoding.fromHex(required(data.hash)) as TxId,
 });
 
 export interface RpcBroadcastTxCommitResponse {
@@ -282,7 +282,7 @@ const decodeTxSearch = (data: RpcTxSearchResponse): responses.TxSearchResponse =
   txs: required(data.txs).map(decodeTxResponse),
 });
 
-export interface RpcTxEvent {
+interface RpcTxEvent {
   readonly tx: Base64String;
   readonly result: RpcTxData;
   readonly height: IntegerString;

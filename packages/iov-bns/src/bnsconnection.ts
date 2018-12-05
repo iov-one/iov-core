@@ -36,12 +36,12 @@ import {
 import { Encoding } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import {
+  broadcastTxCommitSuccess,
   Client as TendermintClient,
   getHeaderEventHeight,
   getTxEventHeight,
   Header,
   StatusResponse,
-  txCommitSuccess,
   TxEvent,
   TxResponse,
 } from "@iov/tendermint-rpc";
@@ -159,7 +159,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
   public async postTx(tx: PostableBytes): Promise<BcpTransactionResponse> {
     const txresp = await this.tmClient.broadcastTxCommit({ tx });
-    if (!txCommitSuccess(txresp)) {
+    if (!broadcastTxCommitSuccess(txresp)) {
       const { checkTx, deliverTx } = txresp;
       throw new Error(JSON.stringify({ checkTx, deliverTx }, null, 2));
     }

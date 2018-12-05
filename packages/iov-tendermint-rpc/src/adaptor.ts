@@ -64,26 +64,36 @@ export interface Responses {
   readonly decodeTxEvent: (response: JsonRpcEvent) => responses.TxEvent;
 }
 
-// findAdaptor makes a status call with the client.
-// if we cannot talk to the server or make sense of the response, throw an error
-// otherwise, grab the tendermint version from the response and
-// provide a compatible adaptor if available.
-// throws an error if we don't support this version of tendermint
-export const findAdaptor = async (client: RpcClient): Promise<Adaptor> => {
-  const req = jsonRpcWith(requests.Method.STATUS);
-  const response = await client.execute(req);
-  const result = response.result;
-
-  if (!result || !result.node_info) {
-    throw new Error("Unrecognized format for status response");
-  }
-  const version: string = result.node_info.version;
+/**
+ * Returns an Adaptor implementation for a given tendermint version.
+ * Throws when version is not supported.
+ *
+ * @param version full Tendermint version string, e.g. "0.20.1"
+ */
+export function adatorForVersion(version: string): Adaptor {
   if (version.startsWith("0.20.")) {
     return v0_20;
   } else if (version.startsWith("0.21.")) {
     return v0_20;
   } else if (version.startsWith("0.25.")) {
     return v0_25;
+  } else {
+    throw new Error(`Unsupported tendermint version: ${version}`);
   }
-  throw new Error(`Unsupported tendermint version: ${version}`);
-};
+}
+
+// findAdaptor makes a status call with the client.
+// if we cannot talk to the server or make sense of the response, throw an error
+// otherwise, grab the tendermint version from the response and
+// provide a compatible adaptor if available.
+// throws an error if we don't support this version of tendermint
+export async function findAdaptor(client: RpcClient): Promise<Adaptor> {
+  const req = jsonRpcWith(requests.Method.Status);
+  const response = await client.execute(req);
+  const result = response.result;
+
+  if (!result || !result.node_info) {
+    throw new Error("Unrecognized format for status response");
+  }
+  return adatorForVersion(result.node_info.version);
+}

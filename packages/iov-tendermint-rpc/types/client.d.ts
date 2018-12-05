@@ -16,8 +16,23 @@ export declare class Client {
     block(height?: number): Promise<responses.BlockResponse>;
     blockResults(height?: number): Promise<responses.BlockResultsResponse>;
     blockchain(minHeight?: number, maxHeight?: number): Promise<responses.BlockchainResponse>;
+    /**
+     * Broadcast transaction to mempool and wait for response
+     *
+     * @see https://tendermint.com/rpc/#broadcasttxsync
+     */
     broadcastTxSync(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxSyncResponse>;
+    /**
+     * Broadcast transaction to mempool and do not wait for result
+     *
+     * @see https://tendermint.com/rpc/#broadcasttxasync
+     */
     broadcastTxAsync(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxAsyncResponse>;
+    /**
+     * Broadcast transaction to mempool and wait for block
+     *
+     * @see https://tendermint.com/rpc/#broadcasttxcommit
+     */
     broadcastTxCommit(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxCommitResponse>;
     commit(height?: number): Promise<responses.CommitResponse>;
     genesis(): Promise<responses.GenesisResponse>;
@@ -27,6 +42,11 @@ export declare class Client {
     subscribeNewBlockHeader(): Stream<responses.NewBlockHeaderEvent>;
     subscribeTx(tags?: ReadonlyArray<requests.QueryTag>): Stream<responses.TxEvent>;
     tx(params: requests.TxParams): Promise<responses.TxResponse>;
+    /**
+     * Search for transactions that are in a block
+     *
+     * @see https://tendermint.com/rpc/#txsearch
+     */
     txSearch(params: requests.TxSearchParams): Promise<responses.TxSearchResponse>;
     txSearchAll(params: requests.TxSearchParams): Promise<responses.TxSearchResponse>;
     validators(height?: number): Promise<responses.ValidatorsResponse>;

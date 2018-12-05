@@ -1,23 +1,28 @@
 import { As } from "type-tagger";
 import { JsonRpcRequest } from "./common";
+/**
+ * RPC methods as documented in https://tendermint.com/rpc/
+ *
+ * Enum raw value must match the spelling in the "shell" example call (snake_case)
+ */
 export declare const enum Method {
-    ABCI_INFO = "abci_info",
-    ABCI_QUERY = "abci_query",
-    BLOCK = "block",
-    BLOCKCHAIN = "blockchain",
-    BLOCK_RESULTS = "block_results",
-    BROADCAST_TX_ASYNC = "broadcast_tx_async",
-    BROADCAST_TX_SYNC = "broadcast_tx_sync",
-    BROADCAST_TX_COMMIT = "broadcast_tx_commit",
-    COMMIT = "commit",
-    GENESIS = "genesis",
-    HEALTH = "health",
-    STATUS = "status",
-    SUBSCRIBE = "subscribe",
-    TX = "tx",
-    TX_SEARCH = "tx_search",
-    VALIDATORS = "validators",
-    UNSUBSCRIBE = "unsubscribe"
+    AbciInfo = "abci_info",
+    AbciQuery = "abci_query",
+    Block = "block",
+    Blockchain = "blockchain",
+    BlockResults = "block_results",
+    BroadcastTxAsync = "broadcast_tx_async",
+    BroadcastTxSync = "broadcast_tx_sync",
+    BroadcastTxCommit = "broadcast_tx_commit",
+    Commit = "commit",
+    Genesis = "genesis",
+    Health = "health",
+    Status = "status",
+    Subscribe = "subscribe",
+    Tx = "tx",
+    TxSearch = "tx_search",
+    Validators = "validators",
+    Unsubscribe = "unsubscribe"
 }
 export declare type Request = AbciInfoRequest | AbciQueryRequest | BlockRequest | BlockchainRequest | BlockResultsRequest | BroadcastTxRequest | CommitRequest | GenesisRequest | HealthRequest | StatusRequest | TxRequest | TxSearchRequest | ValidatorsRequest;
 /**
@@ -31,10 +36,10 @@ export declare enum SubscriptionEventType {
     Tx = "Tx"
 }
 export interface AbciInfoRequest {
-    readonly method: Method.ABCI_INFO;
+    readonly method: Method.AbciInfo;
 }
 export interface AbciQueryRequest {
-    readonly method: Method.ABCI_QUERY;
+    readonly method: Method.AbciQuery;
     readonly params: AbciQueryParams;
 }
 export interface AbciQueryParams {
@@ -44,13 +49,13 @@ export interface AbciQueryParams {
     readonly trusted?: boolean;
 }
 export interface BlockRequest {
-    readonly method: Method.BLOCK;
+    readonly method: Method.Block;
     readonly params: {
         readonly height?: number;
     };
 }
 export interface BlockchainRequest {
-    readonly method: Method.BLOCKCHAIN;
+    readonly method: Method.Blockchain;
     readonly params: BlockchainRequestParams;
 }
 export interface BlockchainRequestParams {
@@ -58,35 +63,35 @@ export interface BlockchainRequestParams {
     readonly maxHeight?: number;
 }
 export interface BlockResultsRequest {
-    readonly method: Method.BLOCK_RESULTS;
+    readonly method: Method.BlockResults;
     readonly params: {
         readonly height?: number;
     };
 }
 export interface BroadcastTxRequest {
-    readonly method: Method.BROADCAST_TX_ASYNC | Method.BROADCAST_TX_SYNC | Method.BROADCAST_TX_COMMIT;
+    readonly method: Method.BroadcastTxAsync | Method.BroadcastTxSync | Method.BroadcastTxCommit;
     readonly params: BroadcastTxParams;
 }
 export interface BroadcastTxParams {
     readonly tx: Uint8Array;
 }
 export interface CommitRequest {
-    readonly method: Method.COMMIT;
+    readonly method: Method.Commit;
     readonly params: {
         readonly height?: number;
     };
 }
 export interface GenesisRequest {
-    readonly method: Method.GENESIS;
+    readonly method: Method.Genesis;
 }
 export interface HealthRequest {
-    readonly method: Method.HEALTH;
+    readonly method: Method.Health;
 }
 export interface StatusRequest {
-    readonly method: Method.STATUS;
+    readonly method: Method.Status;
 }
 export interface SubscribeRequest {
-    readonly method: Method.SUBSCRIBE;
+    readonly method: Method.Subscribe;
     readonly query: {
         readonly type: SubscriptionEventType;
         readonly tags?: ReadonlyArray<QueryTag>;
@@ -98,7 +103,7 @@ export interface QueryTag {
     readonly value: string;
 }
 export interface TxRequest {
-    readonly method: Method.TX;
+    readonly method: Method.Tx;
     readonly params: TxParams;
 }
 export interface TxParams {
@@ -106,7 +111,7 @@ export interface TxParams {
     readonly prove?: boolean;
 }
 export interface TxSearchRequest {
-    readonly method: Method.TX_SEARCH;
+    readonly method: Method.TxSearch;
     readonly params: TxSearchParams;
 }
 export interface TxSearchParams {
@@ -116,7 +121,7 @@ export interface TxSearchParams {
     readonly per_page?: number;
 }
 export interface ValidatorsRequest {
-    readonly method: Method.VALIDATORS;
+    readonly method: Method.Validators;
     readonly params: {
         readonly height?: number;
     };

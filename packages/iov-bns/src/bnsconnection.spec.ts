@@ -1083,8 +1083,8 @@ describe("BnsConnection", () => {
     const firstId = post.data.txid;
     expect(firstId).toBeDefined();
 
-    // hmmm... there seems to be a lag here when Travis CI is heavily loaded...
-    await sleep(50);
+    await sleep(50); // Tendermint needs some time to update search index
+
     const middleSearch = await connection.searchTx(query);
     expect(middleSearch.length).toEqual(1);
 
@@ -1095,9 +1095,8 @@ describe("BnsConnection", () => {
     const secondId = secondPost.data.txid;
     expect(secondId).toBeDefined();
 
-    // now, let's make sure it is picked up in the search
-    // hmmm... there seems to be a lag here when Travis CI is heavily loaded...
-    await sleep(50);
+    await sleep(50); // Tendermint needs some time to update search index
+
     const afterSearch = await connection.searchTx(query);
     expect(afterSearch.length).toEqual(2);
     // make sure we have unique, defined txids
