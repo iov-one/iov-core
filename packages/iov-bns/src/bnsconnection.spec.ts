@@ -664,7 +664,7 @@ describe("BnsConnection", () => {
   });
 
   describe("searchTx", () => {
-    it("can search for transactions", async () => {
+    it("can search for transactions by tags", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const chainId = await connection.chainId();
@@ -716,8 +716,48 @@ describe("BnsConnection", () => {
       connection.disconnect();
     });
 
+    it("can search for transactions by hash", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const chainId = await connection.chainId();
+
+      const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
+      const faucetAddress = keyToAddress(faucet.pubkey);
+
+      const memo = `Payment ${Math.random()}`;
+      const sendTx: SendTx = {
+        kind: TransactionKind.Send,
+        chainId: chainId,
+        signer: faucet.pubkey,
+        recipient: await randomBnsAddress(),
+        memo: memo,
+        amount: {
+          quantity: "1000000001",
+          fractionalDigits: 9,
+          tokenTicker: cash,
+        },
+      };
+
+      const nonce = await getNonce(connection, faucetAddress);
+      const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
+      const txBytes = bnsCodec.bytesToPost(signed);
+      const response = await connection.postTx(txBytes);
+      const transactionIdToSearch = response.data.txid;
+
+      await sleep(50); // Tendermint needs some time to update search index
+
+      // finds transaction using hash
+      const searchResults = await connection.searchTx({ hash: transactionIdToSearch, tags: [] });
+      expect(searchResults.length).toEqual(1);
+      expect(searchResults[0].txid).toEqual(transactionIdToSearch);
+      expect(searchResults[0].transaction.kind).toEqual(TransactionKind.Send);
+      expect((searchResults[0].transaction as SendTx).memo).toEqual(memo);
+
+      connection.disconnect();
+    });
+
     // Activate when https://github.com/tendermint/tendermint/issues/2759 is fixed
-    xit("can search for transactions (min/max height)", async () => {
+    xit("can search for transactions by minHeight/maxHeight", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const chainId = await connection.chainId();
