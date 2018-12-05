@@ -43,6 +43,10 @@ const tendermintInstances = [
   },
 ];
 
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function buildKvTx(k: string, v: string): Uint8Array {
   return Encoding.toAscii(`${k}=${v}`);
 }
@@ -165,7 +169,7 @@ function kvTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     expect(block.block.txs[0]).toEqual(tx);
   });
 
-  it("Can paginate over all txs", async () => {
+  it("can paginate over all txs", async () => {
     pendingWithoutTendermint();
     const client = new Client(rpcFactory(), adaptor);
 
@@ -186,6 +190,8 @@ function kvTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     await sendTx();
     await sendTx();
     await sendTx();
+
+    await sleep(50); // Tendermint needs some time to update search index
 
     // expect one page of results
     const s1 = await client.txSearch({ query, page: 1, per_page: 2 });
