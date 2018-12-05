@@ -1,3 +1,4 @@
+import { TxId } from "@iov/base-types";
 import { Address } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
@@ -132,6 +133,11 @@ describe("Util", () => {
     it("handles height with tags", () => {
       const query = buildTxQuery({ minHeight: 77, tags: [{ key: "some", value: "info" }] });
       expect(query).toEqual("some='info' AND tx.height>77");
+    });
+
+    it("handles hash", () => {
+      const query = buildTxQuery({ hash: new Uint8Array([0xaa, 0xbb, 0x33]) as TxId, tags: [] });
+      expect(query).toEqual("tx.hash='AABB33'");
     });
   });
 });
