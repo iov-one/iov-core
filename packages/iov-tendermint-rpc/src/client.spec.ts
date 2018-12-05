@@ -55,27 +55,22 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
   const key = randomId();
   const value = randomId();
 
-  it("Tries to connect with known version to tendermint", async () => {
+  it("can connect to tendermint with known version", async () => {
     pendingWithoutTendermint();
     const client = new Client(rpcFactory(), adaptor);
     expect(await client.abciInfo()).toBeTruthy();
+    client.disconnect();
   });
 
-  it("Tries to auto-discover tendermint", async () => {
+  it("can auto-discover tendermint version and connect", async () => {
     pendingWithoutTendermint();
     const client = await Client.detectVersion(rpcFactory());
     const info = await client.abciInfo();
     expect(info).toBeTruthy();
-  });
-
-  it("can disconnect", async () => {
-    pendingWithoutTendermint();
-    const client = await Client.detectVersion(rpcFactory());
-    await client.abciInfo();
     client.disconnect();
   });
 
-  it("Posts a transaction", async () => {
+  it("can post a transaction", async () => {
     pendingWithoutTendermint();
     const client = new Client(rpcFactory(), adaptor);
     const tx = buildKvTx(key, value);
@@ -89,9 +84,12 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     if (response.deliverTx) {
       expect(response.deliverTx.code).toBeFalsy();
     }
+
+    client.disconnect();
   });
 
-  it("Queries the state", async () => {
+  // TODO: this test should not depend on "can post a transaction"
+  it("can query the state", async () => {
     pendingWithoutTendermint();
     const client = new Client(rpcFactory(), adaptor);
 
@@ -103,9 +101,11 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     expect(new Uint8Array(response.key)).toEqual(binKey);
     expect(new Uint8Array(response.value)).toEqual(binValue);
     expect(response.code).toBeFalsy();
+
+    client.disconnect();
   });
 
-  it("Sanity check - calls don't error", async () => {
+  it("can call a bunch of methods", async () => {
     pendingWithoutTendermint();
     const client = new Client(rpcFactory(), adaptor);
 
@@ -117,9 +117,11 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     expect(await client.health()).toBeNull();
     expect(await client.status()).toBeTruthy();
     expect(await client.validators()).toBeTruthy();
+
+    client.disconnect();
   });
 
-  it("Can query a tx properly", async () => {
+  it("can query a tx properly", async () => {
     pendingWithoutTendermint();
     const client = new Client(rpcFactory(), adaptor);
 
@@ -167,9 +169,11 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     expect(block.blockMeta.header.numTxs).toEqual(1);
     expect(block.block.txs.length).toEqual(1);
     expect(block.block.txs[0]).toEqual(tx);
+
+    client.disconnect();
   });
 
-  it("can paginate over all txs", async () => {
+  it("can paginate over txSearch results", async () => {
     pendingWithoutTendermint();
     const client = new Client(rpcFactory(), adaptor);
 
@@ -211,6 +215,8 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     const [tx1, tx2, tx3] = sall.txs;
     expect(tx2.height).toEqual(tx1.height + 1);
     expect(tx3.height).toEqual(tx2.height + 1);
+
+    client.disconnect();
   });
 }
 
@@ -263,6 +269,8 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
             expect(events[1].lastCommitHash).not.toEqual(events[0].lastCommitHash);
             expect(events[1].lastResultsHash).not.toEqual(events[0].lastResultsHash);
             expect(events[1].validatorsHash).toEqual(events[0].validatorsHash);
+
+            client.disconnect();
             done();
           }
         },
@@ -315,6 +323,8 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
 
             expect(events[1].header.appHash).not.toEqual(events[0].header.appHash);
             expect(events[1].header.validatorsHash).toEqual(events[0].header.validatorsHash);
+
+            client.disconnect();
             done();
           }
         },
@@ -352,6 +362,8 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
             expect(events.length).toEqual(2);
             expect(events[1].height).toEqual(events[0].height + 1);
             expect(events[1].result.tags).not.toEqual(events[0].result.tags);
+
+            client.disconnect();
             done();
           }
         },
@@ -390,6 +402,8 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
             expect(events.length).toEqual(2);
             expect(events[1].height).toEqual(events[0].height + 1);
             expect(events[1].result.tags).not.toEqual(events[0].result.tags);
+
+            client.disconnect();
             done();
           }
         },
@@ -412,19 +426,28 @@ for (const { url, version } of tendermintInstances) {
       pendingWithoutTendermint();
 
       // default connection
-      const client = await Client.connect(url);
-      const info = await client.abciInfo();
-      expect(info).toBeTruthy();
+      {
+        const client = await Client.connect(url);
+        const info = await client.abciInfo();
+        expect(info).toBeTruthy();
+        client.disconnect();
+      }
 
       // http connection
-      const client2 = await Client.connect("http://" + url);
-      const info2 = await client2.abciInfo();
-      expect(info2).toBeTruthy();
+      {
+        const client = await Client.connect("http://" + url);
+        const info = await client.abciInfo();
+        expect(info).toBeTruthy();
+        client.disconnect();
+      }
 
       // ws connection
-      const client3 = await Client.connect("ws://" + url);
-      const info3 = await client3.abciInfo();
-      expect(info3).toBeTruthy();
+      {
+        const client = await Client.connect("ws://" + url);
+        const info = await client.abciInfo();
+        expect(info).toBeTruthy();
+        client.disconnect();
+      }
     });
 
     describe("With HttpClient", () => {
