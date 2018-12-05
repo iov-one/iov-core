@@ -285,7 +285,6 @@ describe("EthereumConnection", () => {
         tags: [
           { key: "apiLink", value: TestConfig.scraper!.api },
           { key: "account", value: TestConfig.scraper!.address },
-          { key: "parserChainId", value: TestConfig.scraper!.chainId },
         ],
       });
       expect(results.length).toBeGreaterThan(1);

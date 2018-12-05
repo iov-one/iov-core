@@ -219,14 +219,9 @@ export class EthereumConnection implements BcpConnection {
           txid: transactionId,
         },
       ];
-    } else if (
-      query.tags[0].key === "apiLink" &&
-      query.tags[1].key === "account" &&
-      query.tags[2].key === "parserChainId"
-    ) {
+    } else if (query.tags[0].key === "apiLink" && query.tags[1].key === "account") {
       const apiLink = query.tags[0].value;
       const accountAddress = query.tags[1].value;
-      const parserChainId = query.tags[2].value as ChainId;
       txUncodified = await axios.get(
         `${apiLink}?module=account&action=txlist&address=${accountAddress}&startblock=0&sort=asc`,
       );
@@ -238,7 +233,7 @@ export class EthereumConnection implements BcpConnection {
         if (tx.isError === "0" && tx.txreceipt_status === "1") {
           const transaction = Scraper.parseBytesTx(
             Encoding.toUtf8(JSON.stringify({ ...tx })) as PostableBytes,
-            parserChainId,
+            this.myChainId,
           );
           const transactionId = Encoding.fromHex(hexPadToEven(tx.hash)) as TxId;
           transactions.push({

@@ -18,7 +18,6 @@ export interface EthereumNetworkConfig {
   readonly waitForTx: number;
   readonly scraper?: {
     readonly api: string;
-    readonly chainId: ChainId;
     readonly address: Address;
   };
 }
@@ -44,7 +43,6 @@ const local: EthereumNetworkConfig = {
   waitForTx: 100,
   scraper: {
     api: "https://api-ropsten.etherscan.io/api",
-    chainId: "3" as ChainId,
     address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
   },
 };
@@ -65,7 +63,6 @@ const testnetRopsten: EthereumNetworkConfig = {
   waitForTx: 4000,
   scraper: {
     api: "https://api-ropsten.etherscan.io/api",
-    chainId: "3" as ChainId,
     address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
   },
 };
@@ -86,7 +83,6 @@ const testnetRinkeby: EthereumNetworkConfig = {
   waitForTx: 4000,
   scraper: {
     api: "https://api-rinkeby.etherscan.io/api",
-    chainId: "4" as ChainId,
     address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
   },
 };

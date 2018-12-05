@@ -14,7 +14,6 @@ export interface EthereumNetworkConfig {
     readonly waitForTx: number;
     readonly scraper?: {
         readonly api: string;
-        readonly chainId: ChainId;
         readonly address: Address;
     };
 }
