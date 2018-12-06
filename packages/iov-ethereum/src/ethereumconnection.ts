@@ -98,18 +98,26 @@ export class EthereumConnection implements BcpConnection {
       params: ["0x" + Encoding.toHex(bytes)],
       id: 5,
     });
-    const errorMessage = result.data.error ? (result.data.error.message as string) : undefined;
-    const transactionHash = result.data.result;
-    if (typeof transactionHash !== "string") {
-      throw new Error("Expected transaction ID but got something different");
+    if (result.data.error) {
+      throw new Error(result.data.error.message);
     }
+
+    const transactionResult = result.data.result;
+    if (typeof transactionResult !== "string") {
+      throw new Error("Result field was not a string");
+    }
+
+    const transactionId = transactionResult as TransactionId;
+    if (!transactionId.match(/^0x[0-9a-f]{64}$/)) {
+      throw new Error("Invalid transaction ID format");
+    }
+
     const blockInfoPending = new DefaultValueProducer<BcpBlockInfo>({
       state: BcpTransactionState.Pending,
     });
     return {
       blockInfo: new ValueAndUpdates(blockInfoPending),
-      transactionId: `0x${hexPadToEven(transactionHash)}` as TransactionId,
-      log: errorMessage,
+      transactionId: transactionId,
     };
   }
 
