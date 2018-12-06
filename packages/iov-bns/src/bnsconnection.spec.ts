@@ -1447,6 +1447,7 @@ describe("BnsConnection", () => {
     // construct a swapOfferTx, sign and post to the chain
     const chainId = await connection.chainId();
     const nonce = await getNonce(connection, keyToAddress(sender.pubkey));
+    const swapOfferTimeout = (await connection.height()) + 1000;
     const swapOfferTx: SwapOfferTx = {
       kind: TransactionKind.SwapOffer,
       chainId,
@@ -1459,7 +1460,7 @@ describe("BnsConnection", () => {
           tokenTicker: cash,
         },
       ],
-      timeout: 5000,
+      timeout: swapOfferTimeout,
       preimage,
     };
     const firstWalletId = profile.wallets.value[0].id;
