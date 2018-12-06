@@ -1491,13 +1491,11 @@ describe("BnsConnection", () => {
     return connection.postTx(txBytes);
   };
 
-  it("Get and watch atomic swap lifecycle", async () => {
+  it("can start and watch an atomic swap lifecycle", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
-
-    const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(121));
-    const rcptAddr = keyToAddress(rcpt.pubkey);
+    const { profile, faucet } = await userProfileWithFaucet();
+    const recipientAddr = await randomBnsAddress();
 
     // create the preimages for the three swaps
     const preimage1 = Encoding.toAscii("the first swap is easy");
@@ -1508,16 +1506,16 @@ describe("BnsConnection", () => {
     // const hash3 = new Sha256(preimage3).digest();
 
     // nothing to start with
-    const rcptQuery = { recipient: rcptAddr };
+    const rcptQuery = { recipient: recipientAddr };
     const initSwaps = await connection.getSwap(rcptQuery);
     expect(initSwaps.data.length).toEqual(0);
 
     // make two offers
-    const res1 = await openSwap(connection, profile, faucet, rcptAddr, preimage1);
+    const res1 = await openSwap(connection, profile, faucet, recipientAddr, preimage1);
     const id1 = res1.data.result as SwapIdBytes;
     expect(id1.length).toEqual(8);
 
-    const res2 = await openSwap(connection, profile, faucet, rcptAddr, preimage2);
+    const res2 = await openSwap(connection, profile, faucet, recipientAddr, preimage2);
     const id2 = res2.data.result as SwapIdBytes;
     expect(id2.length).toEqual(8);
 
@@ -1536,14 +1534,14 @@ describe("BnsConnection", () => {
     // start to watch
     const liveView = asArray(connection.watchSwap(rcptQuery));
 
-    const res3 = await openSwap(connection, profile, faucet, rcptAddr, preimage3);
+    const res3 = await openSwap(connection, profile, faucet, recipientAddr, preimage3);
     const id3 = res3.data.result as SwapIdBytes;
     expect(id3.length).toEqual(8);
 
     await claimSwap(connection, profile, faucet, id1, preimage1);
 
     // make sure we find two claims, one open
-    const finalSwaps = await connection.getSwap({ recipient: rcptAddr });
+    const finalSwaps = await connection.getSwap({ recipient: recipientAddr });
     expect(finalSwaps.data.length).toEqual(3);
     const [open3, claim2, claim1] = finalSwaps.data;
     expect(open3.kind).toEqual(SwapState.Open);
