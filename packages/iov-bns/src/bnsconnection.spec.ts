@@ -1318,20 +1318,14 @@ describe("BnsConnection", () => {
     const chainId = await connection.chainId();
 
     const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
-
     const faucetAddr = keyToAddress(faucet.pubkey);
     const recipientAddr = await randomBnsAddress();
-
-    // check current nonce (should be 0, but don't fail if used by other)
-    const nonce = await getNonce(connection, faucetAddr);
-
-    const preimage = Encoding.toAscii(`my top secret phrase... ${Math.random()}`);
-    const hash = new Sha256(preimage).digest();
 
     const initSwaps = await connection.getSwap({ recipient: recipientAddr });
     expect(initSwaps.data.length).toEqual(0);
 
-    // construct a sendtx, this is normally used in the MultiChainSigner api
+    const swapOfferPreimage = Encoding.toAscii(`my top secret phrase... ${Math.random()}`);
+    const swapOfferHash = new Sha256(swapOfferPreimage).digest();
     const swapOfferTimeout = (await connection.height()) + 1000;
     const swapOfferTx: SwapOfferTx = {
       kind: TransactionKind.SwapOffer,
@@ -1346,12 +1340,12 @@ describe("BnsConnection", () => {
         },
       ],
       timeout: swapOfferTimeout,
-      preimage: preimage,
+      preimage: swapOfferPreimage,
     };
 
+    const nonce = await getNonce(connection, faucetAddr);
     const signed = await profile.signTransaction(mainWalletId, faucet, swapOfferTx, bnsCodec, nonce);
-    const txBytes = bnsCodec.bytesToPost(signed);
-    const post = await connection.postTx(txBytes);
+    const post = await connection.postTx(bnsCodec.bytesToPost(signed));
     const txHeight = post.metadata.height;
     expect(txHeight).toBeTruthy();
     expect(txHeight).toBeGreaterThan(1);
@@ -1382,7 +1376,7 @@ describe("BnsConnection", () => {
     const querySwapId: BcpSwapQuery = { swapid: txResult as SwapIdBytes };
     const querySwapSender: BcpSwapQuery = { sender: faucetAddr };
     const querySwapRecipient: BcpSwapQuery = { recipient: recipientAddr };
-    const querySwapHash: BcpSwapQuery = { hashlock: hash };
+    const querySwapHash: BcpSwapQuery = { hashlock: swapOfferHash };
 
     // ----- connection.searchTx() -----
     // we should be able to find the transaction through quite a number of tag queries
@@ -1421,7 +1415,7 @@ describe("BnsConnection", () => {
     expect(swapData.amount.length).toEqual(1);
     expect(swapData.amount[0].quantity).toEqual("123000456000");
     expect(swapData.amount[0].tokenTicker).toEqual(cash);
-    expect(swapData.hashlock).toEqual(hash);
+    expect(swapData.hashlock).toEqual(swapOfferHash);
 
     // we can get the swap by the recipient
     const rcptSwap = await connection.getSwap(querySwapRecipient);
