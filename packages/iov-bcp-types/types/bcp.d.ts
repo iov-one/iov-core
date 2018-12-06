@@ -36,16 +36,18 @@ export declare enum BcpTransactionState {
     /** successfully written in a block, but cannot yet guarantee it won't be reverted */
     InBlock = 1
 }
-/** Information attached to a signature about its state in a block */
-export declare type BcpBlockInfo = {
+export interface BcpBlockInfoPending {
     readonly state: BcpTransactionState.Pending;
-} | {
+}
+export interface BcpBlockInfoInBlock {
     readonly state: BcpTransactionState.InBlock;
     /** block height, if the transaction is included in a block */
     readonly height: number;
     /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
     readonly confirmations: number;
-};
+}
+/** Information attached to a signature about its state in a block */
+export declare type BcpBlockInfo = BcpBlockInfoPending | BcpBlockInfoInBlock;
 export interface BcpTransactionResponse {
     /** @deprecated use blockInfo instead */
     readonly metadata: {

@@ -60,16 +60,20 @@ export enum BcpTransactionState {
   InBlock,
 }
 
+export interface BcpBlockInfoPending {
+  readonly state: BcpTransactionState.Pending;
+}
+
+export interface BcpBlockInfoInBlock {
+  readonly state: BcpTransactionState.InBlock;
+  /** block height, if the transaction is included in a block */
+  readonly height: number;
+  /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
+  readonly confirmations: number;
+}
+
 /** Information attached to a signature about its state in a block */
-export type BcpBlockInfo =
-  | { readonly state: BcpTransactionState.Pending }
-  | {
-      readonly state: BcpTransactionState.InBlock;
-      /** block height, if the transaction is included in a block */
-      readonly height: number;
-      /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
-      readonly confirmations: number;
-    };
+export type BcpBlockInfo = BcpBlockInfoPending | BcpBlockInfoInBlock;
 
 export interface BcpTransactionResponse {
   /** @deprecated use blockInfo instead */
