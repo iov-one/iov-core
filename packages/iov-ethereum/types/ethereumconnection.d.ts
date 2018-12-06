@@ -1,7 +1,7 @@
 import { Stream } from "xstream";
 import { ChainId, PostableBytes } from "@iov/base-types";
 import { BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpConnection, BcpPubkeyQuery, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, BcpTxQuery, ConfirmedTransaction, Nonce, TokenTicker } from "@iov/bcp-types";
-import { Header } from "./responses";
+import { BlockHeader } from "./responses";
 export declare class EthereumConnection implements BcpConnection {
     static establish(baseUrl: string): Promise<EthereumConnection>;
     private readonly baseUrl;
@@ -15,7 +15,7 @@ export declare class EthereumConnection implements BcpConnection {
     getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAccount(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>>;
     getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<BcpQueryEnvelope<Nonce>>;
-    getHeader(height: number): Promise<Header>;
+    getHeader(height: number): Promise<BlockHeader>;
     changeBlock(): Stream<number>;
     watchAccount(_: BcpAccountQuery): Stream<BcpAccount | undefined>;
     watchNonce(_: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce | undefined>;

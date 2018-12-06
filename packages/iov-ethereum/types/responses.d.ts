@@ -1,6 +1,6 @@
 import { ReadonlyDate } from "readonly-date";
 import { ChainId } from "@iov/base-types";
-export interface Header {
+export interface BlockHeader {
     readonly chainId: ChainId;
     readonly height: number;
     readonly time: ReadonlyDate;

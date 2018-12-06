@@ -30,7 +30,7 @@ import { constants } from "./constants";
 import { keyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
 import { Parse, Scraper } from "./parse";
-import { Header } from "./responses";
+import { BlockHeader } from "./responses";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
@@ -170,7 +170,7 @@ export class EthereumConnection implements BcpConnection {
     return Promise.resolve(dummyEnvelope([decodeHexQuantityNonce(nonceResponse.data.result)]));
   }
 
-  public async getHeader(height: number): Promise<Header> {
+  public async getHeader(height: number): Promise<BlockHeader> {
     const blockResponse = await axios.post(this.baseUrl, {
       jsonrpc: "2.0",
       method: "eth_getBlockByNumber",
