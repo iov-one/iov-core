@@ -137,15 +137,6 @@ describe("MultiChainSigner", () => {
     });
   });
 
-  // transforms promise so resolved->rejected and rejected->resolved
-  const expectRejected = (prom: Promise<any>): Promise<any> =>
-    prom.then(
-      () => {
-        throw new Error("expected rejection");
-      },
-      (err: any) => err,
-    );
-
   it("optionally enforces chainId", async () => {
     pendingWithoutBnsd();
     const signer = new MultiChainSigner(new UserProfile());
@@ -155,7 +146,10 @@ describe("MultiChainSigner", () => {
     const { connection } = await signer.addChain(connector);
     const chainId = connection.chainId();
     // this should error on second add to same signer
-    await expectRejected(signer.addChain(connector));
+    await signer
+      .addChain(connector)
+      .then(() => fail("must not resolve"))
+      .catch(error => expect(error).toMatch(/is already registered/i));
 
     // success if adding with proper expectedChainId
     const signer2 = new MultiChainSigner(new UserProfile());
@@ -165,6 +159,9 @@ describe("MultiChainSigner", () => {
     // error if adding with false expectedChainId
     const signer3 = new MultiChainSigner(new UserProfile());
     const invalidConnector = bnsConnector(bnsdTendermintUrl, "chain-is-not-right" as ChainId);
-    await expectRejected(signer3.addChain(invalidConnector));
+    await signer3
+      .addChain(invalidConnector)
+      .then(() => fail("must not resolve"))
+      .catch(error => expect(error).toMatch(/connected chain ID does not match/i));
   });
 });
