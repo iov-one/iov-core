@@ -141,6 +141,8 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     expect(txRes.hash.length).not.toEqual(0);
     const hash = txRes.hash;
 
+    await tendermintSearchIndexUpdated();
+
     // find by hash - does it match?
     const r = await client.tx({ hash, prove: true });
     // both values come from rpc, so same type (Buffer/Uint8Array)
