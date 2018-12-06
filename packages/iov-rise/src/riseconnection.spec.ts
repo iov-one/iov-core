@@ -10,6 +10,7 @@ import {
   SendTx,
   SignedTransaction,
   TokenTicker,
+  TransactionId,
   TransactionKind,
 } from "@iov/bcp-types";
 import { Derivation } from "@iov/dpos";
@@ -346,12 +347,12 @@ describe("RiseConnection", () => {
 
       // by existing ID (https://texplorer.rise.vision/tx/530955287567640950)
       {
-        const searchId = "530955287567640950";
+        const searchId = "530955287567640950" as TransactionId;
         const results = await connection.searchTx({ hash: toAscii(searchId) as TxId, tags: [] });
         expect(results.length).toEqual(1);
         const result = results[0];
         expect(result.height).toEqual(1156579);
-        expect(result.txid).toEqual(toAscii(searchId));
+        expect(result.transactionId).toEqual(searchId);
         const transaction = result.transaction;
         if (transaction.kind !== TransactionKind.Send) {
           throw new Error("Unexpected transaction type");

@@ -26,7 +26,7 @@ import {
   TransactionId,
 } from "@iov/bcp-types";
 import { Parse } from "@iov/dpos";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding, Int53, Uint64 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
@@ -225,9 +225,7 @@ export class RiseConnection implements BcpConnection {
     }
 
     if (query.hash) {
-      const transactionId = fromAscii(query.hash);
-
-      const url = this.baseUrl + `/api/transactions/get?id=${transactionId}`;
+      const url = this.baseUrl + `/api/transactions/get?id=${fromAscii(query.hash)}`;
       const result = await axios.get(url);
       const responseBody = result.data;
 
@@ -243,6 +241,7 @@ export class RiseConnection implements BcpConnection {
       const transactionJson = responseBody.transaction;
       const height = new Int53(transactionJson.height);
       const confirmations = new Int53(transactionJson.confirmations);
+      const transactionId = Uint64.fromString(transactionJson.id).toString() as TransactionId;
 
       const transaction = riseCodec.parseBytes(
         toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
@@ -253,7 +252,7 @@ export class RiseConnection implements BcpConnection {
           ...transaction,
           height: height.toNumber(),
           confirmations: confirmations.toNumber(),
-          txid: query.hash,
+          transactionId: transactionId,
         },
       ];
     } else {

@@ -91,7 +91,8 @@ export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTr
   readonly height: number; // the block it was written to
   /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
   readonly confirmations: number;
-  readonly txid: TxId; // a unique identifier (hash of the data)
+  /** a unique identifier (hash of the transaction) */
+  readonly transactionId: TransactionId;
   /** application specific data from executing tx (result, code, tags...) */
   readonly result?: Uint8Array;
   readonly log?: string;

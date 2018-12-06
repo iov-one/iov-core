@@ -5,6 +5,7 @@ import {
   SendTx,
   SignedTransaction,
   TokenTicker,
+  TransactionId,
   TransactionKind,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
@@ -248,7 +249,7 @@ describe("EthereumConnection", () => {
       const resultSearch = await connection.searchTx(query);
       expect(resultSearch.length).toEqual(1);
       const result = resultSearch[0];
-      expect(result.txid).toEqual(Encoding.toAscii(resultPost.transactionId.slice(2)) as TxId);
+      expect(result.transactionId).toEqual(resultPost.transactionId);
       const transaction = result.transaction;
       if (transaction.kind !== TransactionKind.Send) {
         throw new Error("Unexpected transaction type");
@@ -263,11 +264,11 @@ describe("EthereumConnection", () => {
     xit("can search a transaction by hash", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(base);
-      const storedTxId = new Uint8Array([]) as TxId;
-      const results = await connection.searchTx({ hash: storedTxId, tags: [] });
+      const storedTxId = "" as TransactionId;
+      const results = await connection.searchTx({ hash: Encoding.fromHex(storedTxId) as TxId, tags: [] });
       expect(results.length).toEqual(1);
       const result = results[0];
-      expect(result.txid).toEqual(storedTxId);
+      expect(result.transactionId).toEqual(storedTxId);
       const transaction = result.transaction;
       if (transaction.kind !== TransactionKind.Send) {
         throw new Error("Unexpected transaction type");

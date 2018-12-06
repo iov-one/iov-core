@@ -2,7 +2,7 @@ import axios from "axios";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
-import { ChainId, PostableBytes, TxId } from "@iov/base-types";
+import { ChainId, PostableBytes } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
@@ -235,13 +235,13 @@ export class EthereumConnection implements BcpConnection {
         Encoding.toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
         this.myChainId,
       );
-      const transactionId = Encoding.fromHex(hexPadToEven(txUncodified.data.result.hash)) as TxId;
+      const transactionId = `0x${hexPadToEven(txUncodified.data.result.hash)}` as TransactionId;
       return [
         {
           ...transaction,
           height: height,
           confirmations: confirmations,
-          txid: transactionId,
+          transactionId: transactionId,
         },
       ];
     } else if (query.tags[0].key === "apiLink" && query.tags[1].key === "account") {
@@ -260,12 +260,12 @@ export class EthereumConnection implements BcpConnection {
             Encoding.toUtf8(JSON.stringify({ ...tx })) as PostableBytes,
             this.myChainId,
           );
-          const transactionId = Encoding.fromHex(hexPadToEven(tx.hash)) as TxId;
+          const transactionId = `0x${hexPadToEven(tx.hash)}` as TransactionId;
           transactions.push({
             ...transaction,
             height: tx.blockNumber,
             confirmations: tx.confirmations,
-            txid: transactionId,
+            transactionId: transactionId,
           });
         }
       }

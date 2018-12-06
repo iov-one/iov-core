@@ -10,6 +10,7 @@ import {
   SendTx,
   SignedTransaction,
   TokenTicker,
+  TransactionId,
   TransactionKind,
 } from "@iov/bcp-types";
 import { Derivation } from "@iov/dpos";
@@ -422,13 +423,13 @@ describe("LiskConnection", () => {
 
       // by existing ID (from lisk/init.sh)
       {
-        const searchId = "12493173350733478622";
+        const searchId = "12493173350733478622" as TransactionId;
         const results = await connection.searchTx({ hash: toAscii(searchId) as TxId, tags: [] });
         expect(results.length).toEqual(1);
         const result = results[0];
         expect(result.height).toBeGreaterThanOrEqual(2);
         expect(result.height).toBeLessThan(100);
-        expect(result.txid).toEqual(toAscii(searchId));
+        expect(result.transactionId).toEqual(searchId);
         const transaction = result.transaction;
         if (transaction.kind !== TransactionKind.Send) {
           throw new Error("Unexpected transaction type");

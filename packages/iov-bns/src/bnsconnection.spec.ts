@@ -322,8 +322,7 @@ describe("BnsConnection", () => {
       expect(tx.kind).toEqual(sendTx.kind);
       expect(tx).toEqual(sendTx);
       // make sure we have a txid
-      expect(mine.txid).toBeDefined();
-      expect(mine.txid.length).toBeGreaterThan(0);
+      expect(mine.transactionId).toMatch(/^[0-9A-F]{40}$/);
 
       connection.disconnect();
     });
@@ -811,7 +810,7 @@ describe("BnsConnection", () => {
       const query = { hash: Encoding.fromHex(transactionIdToSearch) as TxId, tags: [] };
       const searchResults = await connection.searchTx(query);
       expect(searchResults.length).toEqual(1);
-      expect(searchResults[0].txid).toEqual(Encoding.fromHex(transactionIdToSearch) as TxId);
+      expect(searchResults[0].transactionId).toEqual(transactionIdToSearch);
       expect(searchResults[0].transaction.kind).toEqual(TransactionKind.Send);
       expect((searchResults[0].transaction as SendTx).memo).toEqual(memo);
 
@@ -935,7 +934,7 @@ describe("BnsConnection", () => {
         const query = { hash: Encoding.fromHex(transactionId) as TxId, tags: [] };
         const subscription = connection.listenTx(query).subscribe({
           next: event => {
-            expect(event.txid).toEqual(Encoding.fromHex(transactionId) as TxId);
+            expect(event.transactionId).toEqual(transactionId);
             expect(event.height).toEqual(heightBeforeTransaction + 1);
 
             subscription.unsubscribe();
@@ -1268,19 +1267,19 @@ describe("BnsConnection", () => {
     const afterSearch = await connection.searchTx(query);
     expect(afterSearch.length).toEqual(2);
     // make sure we have unique, defined txids
-    const txIds = afterSearch.map(tx => tx.txid);
-    expect(txIds.length).toEqual(2);
-    expect(txIds[0]).toEqual(Encoding.fromHex(firstId) as TxId);
-    expect(txIds[1]).toEqual(Encoding.fromHex(secondId) as TxId);
-    expect(txIds[0]).not.toEqual(txIds[1]);
+    const transactionIds = afterSearch.map(tx => tx.transactionId);
+    expect(transactionIds.length).toEqual(2);
+    expect(transactionIds[0]).toEqual(firstId);
+    expect(transactionIds[1]).toEqual(secondId);
+    expect(transactionIds[0]).not.toEqual(transactionIds[1]);
 
     // give time for all events to be processed
     await sleep(100);
     // this should grab the tx before it started, as well as the one after
     expect(live.value().length).toEqual(2);
     // make sure the txids also match
-    expect(live.value()[0].txid).toEqual(afterSearch[0].txid);
-    expect(live.value()[1].txid).toEqual(afterSearch[1].txid);
+    expect(live.value()[0].transactionId).toEqual(afterSearch[0].transactionId);
+    expect(live.value()[1].transactionId).toEqual(afterSearch[1].transactionId);
 
     connection.disconnect();
   });
@@ -1444,7 +1443,7 @@ describe("BnsConnection", () => {
     expect(search.length).toEqual(1);
     // make sure we get he same tx loaded
     const loaded = search[0];
-    expect(loaded.txid).toEqual(Encoding.fromHex(transactionId) as TxId);
+    expect(loaded.transactionId).toEqual(transactionId);
     // we never write the offer (with preimage) to a chain, only convert it to a SwapCounterTx
     // which only has the hashed data, then commit it (thus the different kind is expected)
     expect(loaded.transaction.kind).toEqual(TransactionKind.SwapCounter);
@@ -1464,19 +1463,19 @@ describe("BnsConnection", () => {
 
     const txById = await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapId)] });
     expect(txById.length).toEqual(1);
-    expect(txById[0].txid).toEqual(Encoding.fromHex(transactionId) as TxId);
+    expect(txById[0].transactionId).toEqual(transactionId);
 
     const txBySender = await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapSender)] });
     expect(txBySender.length).toBeGreaterThanOrEqual(1);
-    expect(txBySender[txBySender.length - 1].txid).toEqual(Encoding.fromHex(transactionId) as TxId);
+    expect(txBySender[txBySender.length - 1].transactionId).toEqual(transactionId);
 
     const txByRecipient = await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapRecipient)] });
     expect(txByRecipient.length).toEqual(1);
-    expect(txByRecipient[0].txid).toEqual(Encoding.fromHex(transactionId) as TxId);
+    expect(txByRecipient[0].transactionId).toEqual(transactionId);
 
     const txByHash = await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapHash)] });
     expect(txByHash.length).toEqual(1);
-    expect(txByHash[0].txid).toEqual(Encoding.fromHex(transactionId) as TxId);
+    expect(txByHash[0].transactionId).toEqual(transactionId);
 
     // ----- connection.getSwap() -------
 
