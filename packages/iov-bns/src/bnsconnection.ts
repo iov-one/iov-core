@@ -205,8 +205,8 @@ export class BnsConnection implements BcpAtomicSwapConnection {
               lastEventSent = event;
             }
           },
-          complete: () => console.error("Stream stopped producing blocks. This must not happen"),
-          error: error => console.error("Error from header watch stream:", error),
+          complete: () => blockInfoProducer.error("Block header stream stopped. This must not happen."),
+          error: error => blockInfoProducer.error(error),
         });
       },
       onStop: () => blocksSubscription.unsubscribe(),
