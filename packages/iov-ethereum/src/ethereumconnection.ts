@@ -1,4 +1,5 @@
 import axios from "axios";
+import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
 import { ChainId, PostableBytes, TxId } from "@iov/base-types";
@@ -29,7 +30,14 @@ import { constants } from "./constants";
 import { keyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
 import { Parse, Scraper } from "./parse";
-import { decodeHexQuantity, decodeHexQuantityNonce, decodeHexQuantityString, hexPadToEven } from "./utils";
+import { BlockHeader } from "./responses";
+import {
+  decodeHexQuantity,
+  decodeHexQuantityNonce,
+  decodeHexQuantityString,
+  encodeQuantity,
+  hexPadToEven,
+} from "./utils";
 
 async function loadChainId(baseUrl: string): Promise<ChainId> {
   // see https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version
@@ -160,6 +168,26 @@ export class EthereumConnection implements BcpConnection {
     });
 
     return Promise.resolve(dummyEnvelope([decodeHexQuantityNonce(nonceResponse.data.result)]));
+  }
+
+  public async getHeader(height: number): Promise<BlockHeader> {
+    const blockResponse = await axios.post(this.baseUrl, {
+      jsonrpc: "2.0",
+      method: "eth_getBlockByNumber",
+      params: [encodeQuantity(height), true],
+      id: 8,
+    });
+    if (blockResponse.data.result === null) {
+      throw new Error(`Header ${height} doesn't exist yet`);
+    }
+    const blockData = blockResponse.data.result;
+    return {
+      chainId: this.myChainId,
+      height: decodeHexQuantity(blockData.number),
+      time: new ReadonlyDate(decodeHexQuantity(blockData.timestamp) * 1000),
+      blockId: Encoding.fromHex(hexPadToEven(blockData.hash)),
+      totalTxs: blockData.transactions.length,
+    };
   }
 
   public changeBlock(): Stream<number> {
