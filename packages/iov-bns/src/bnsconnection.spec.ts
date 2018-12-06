@@ -50,7 +50,14 @@ function pendingWithoutBnsd(): void {
   }
 }
 
-const sleep = (t: number) => new Promise(resolve => setTimeout(resolve, t));
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function tendermintSearchIndexUpdated(): Promise<void> {
+  // Tendermint needs some time before a committed transaction is found in search
+  return sleep(50);
+}
 
 async function randomBnsAddress(): Promise<Address> {
   return keyToAddress({
@@ -744,7 +751,7 @@ describe("BnsConnection", () => {
       const response = await connection.postTx(txBytes);
       const transactionIdToSearch = response.data.txid;
 
-      await sleep(50); // Tendermint needs some time to update search index
+      await tendermintSearchIndexUpdated();
 
       // finds transaction using hash
       const searchResults = await connection.searchTx({ hash: transactionIdToSearch, tags: [] });
@@ -1173,7 +1180,7 @@ describe("BnsConnection", () => {
     const firstId = post.data.txid;
     expect(firstId).toBeDefined();
 
-    await sleep(50); // Tendermint needs some time to update search index
+    await tendermintSearchIndexUpdated();
 
     const middleSearch = await connection.searchTx(query);
     expect(middleSearch.length).toEqual(1);
@@ -1185,7 +1192,7 @@ describe("BnsConnection", () => {
     const secondId = secondPost.data.txid;
     expect(secondId).toBeDefined();
 
-    await sleep(50); // Tendermint needs some time to update search index
+    await tendermintSearchIndexUpdated();
 
     const afterSearch = await connection.searchTx(query);
     expect(afterSearch.length).toEqual(2);
@@ -1356,7 +1363,7 @@ describe("BnsConnection", () => {
     const txid = post.data.txid;
     expect(txid.length).toBe(20);
 
-    await sleep(50); // Tendermint needs some time to update search index
+    await tendermintSearchIndexUpdated();
 
     // now query by the txid
     const search = await connection.searchTx({ hash: txid, tags: [] });
