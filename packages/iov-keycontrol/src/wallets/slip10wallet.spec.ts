@@ -8,11 +8,6 @@ import { Slip10Wallet } from "./slip10wallet";
 
 const { fromHex } = Encoding;
 
-// Set here for Browsers until this can be configured in Karma
-// https://github.com/karma-runner/karma-jasmine/pull/211
-// tslint:disable-next-line:no-object-mutation
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 30 * 1000;
-
 describe("Slip10Wallet", () => {
   const emptyWallet = `
     {
