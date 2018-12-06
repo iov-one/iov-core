@@ -48,6 +48,11 @@ function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function tendermintSearchIndexUpdated(): Promise<void> {
+  // Tendermint needs some time before a committed transaction is found in search
+  return sleep(50);
+}
+
 function buildKvTx(k: string, v: string): Uint8Array {
   return Encoding.toAscii(`${k}=${v}`);
 }
@@ -195,7 +200,7 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     await sendTx();
     await sendTx();
 
-    await sleep(50); // Tendermint needs some time to update search index
+    await tendermintSearchIndexUpdated();
 
     // expect one page of results
     const s1 = await client.txSearch({ query, page: 1, per_page: 2 });
