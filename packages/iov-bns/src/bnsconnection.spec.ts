@@ -23,7 +23,7 @@ import {
   TransactionKind,
 } from "@iov/bcp-types";
 import { Random, Sha256 } from "@iov/crypto";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding, Int53, Uint64 } from "@iov/encoding";
 import {
   Ed25519HdWallet,
   HdPaths,
@@ -1312,7 +1312,7 @@ describe("BnsConnection", () => {
     connection.disconnect();
   });
 
-  it("Can start atomic swap", async () => {
+  it("can start atomic swap", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
     const chainId = await connection.chainId();
@@ -1320,24 +1320,24 @@ describe("BnsConnection", () => {
     const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
     const faucetAddr = keyToAddress(faucet.pubkey);
-    const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(7));
-    const rcptAddr = keyToAddress(rcpt.pubkey);
+    const recipientAddr = await randomBnsAddress();
 
     // check current nonce (should be 0, but don't fail if used by other)
     const nonce = await getNonce(connection, faucetAddr);
 
-    const preimage = Encoding.toAscii("my top secret phrase... keep it on the down low ;)");
+    const preimage = Encoding.toAscii(`my top secret phrase... ${Math.random()}`);
     const hash = new Sha256(preimage).digest();
 
-    const initSwaps = await connection.getSwap({ recipient: rcptAddr });
+    const initSwaps = await connection.getSwap({ recipient: recipientAddr });
     expect(initSwaps.data.length).toEqual(0);
 
     // construct a sendtx, this is normally used in the MultiChainSigner api
+    const swapOfferTimeout = 10_000;
     const swapOfferTx: SwapOfferTx = {
       kind: TransactionKind.SwapOffer,
       chainId,
       signer: faucet.pubkey,
-      recipient: rcptAddr,
+      recipient: recipientAddr,
       amount: [
         {
           quantity: "123000456000",
@@ -1345,8 +1345,8 @@ describe("BnsConnection", () => {
           tokenTicker: cash,
         },
       ],
-      timeout: 1000,
-      preimage,
+      timeout: swapOfferTimeout,
+      preimage: preimage,
     };
 
     const signed = await profile.signTransaction(mainWalletId, faucet, swapOfferTx, bnsCodec, nonce);
@@ -1355,11 +1355,14 @@ describe("BnsConnection", () => {
     const txHeight = post.metadata.height;
     expect(txHeight).toBeTruthy();
     expect(txHeight).toBeGreaterThan(1);
+    // the transaction result is 8 byte number assigned by the application
     const txResult = post.data.result;
-    expect(txResult.length).toBe(8);
-    expect(txResult).toEqual(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1]));
+    expect(Uint64.fromBytesBigEndian(txResult).toNumber()).toBeGreaterThanOrEqual(1);
+    expect(Uint64.fromBytesBigEndian(txResult).toNumber()).toBeLessThanOrEqual(1000);
     const txid = post.data.txid;
     expect(txid.length).toBe(20);
+
+    await sleep(50); // Tendermint needs some time to update search index
 
     // now query by the txid
     const search = await connection.searchTx({ hash: txid, tags: [] });
@@ -1378,7 +1381,7 @@ describe("BnsConnection", () => {
     // ----  prepare queries
     const querySwapId: BcpSwapQuery = { swapid: txResult as SwapIdBytes };
     const querySwapSender: BcpSwapQuery = { sender: faucetAddr };
-    const querySwapRecipient: BcpSwapQuery = { recipient: rcptAddr };
+    const querySwapRecipient: BcpSwapQuery = { recipient: recipientAddr };
     const querySwapHash: BcpSwapQuery = { hashlock: hash };
 
     // ----- connection.searchTx() -----
@@ -1389,8 +1392,8 @@ describe("BnsConnection", () => {
     expect(txById[0].txid).toEqual(txid);
 
     const txBySender = await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapSender)] });
-    expect(txBySender.length).toEqual(1);
-    expect(txBySender[0].txid).toEqual(txid);
+    expect(txBySender.length).toBeGreaterThanOrEqual(1);
+    expect(txBySender[txBySender.length - 1].txid).toEqual(txid);
 
     const txByRecipient = await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapRecipient)] });
     expect(txByRecipient.length).toEqual(1);
@@ -1413,9 +1416,8 @@ describe("BnsConnection", () => {
     const swapData = swap.data;
     expect(swapData.id).toEqual(txResult);
     expect(swapData.sender).toEqual(faucetAddr);
-    expect(swapData.recipient).toEqual(rcptAddr);
-    expect(swapData.timeout).toEqual(1000); // FIXME: timeout from tx (the next line is expected, right?)
-    // expect(swapData.timeout).toEqual(loaded.height + 1000); // when tx was commited plus timeout
+    expect(swapData.recipient).toEqual(recipientAddr);
+    expect(swapData.timeout).toEqual(swapOfferTimeout);
     expect(swapData.amount.length).toEqual(1);
     expect(swapData.amount[0].quantity).toEqual("123000456000");
     expect(swapData.amount[0].tokenTicker).toEqual(cash);
@@ -1427,9 +1429,11 @@ describe("BnsConnection", () => {
     expect(rcptSwap.data[0]).toEqual(swap);
 
     // we can also get it by the sender
-    const sendSwap = await connection.getSwap(querySwapSender);
-    expect(sendSwap.data.length).toEqual(1);
-    expect(sendSwap.data[0]).toEqual(swap);
+    const sendOpenSwapData = (await connection.getSwap(querySwapSender)).data.filter(
+      s => s.kind === SwapState.Open,
+    );
+    expect(sendOpenSwapData.length).toBeGreaterThanOrEqual(1);
+    expect(sendOpenSwapData[sendOpenSwapData.length - 1]).toEqual(swap);
 
     // we can also get it by the hash
     const hashSwap = await connection.getSwap(querySwapHash);
