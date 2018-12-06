@@ -215,14 +215,10 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const trandactionId = postResponse.hash;
     const message = postResponse.log;
     return {
-      metadata: {
-        height: undefined,
-      },
       blockInfo: new ValueAndUpdates(blockInfoProducer),
       data: {
         txid: trandactionId,
         message: message || "",
-        result: new Uint8Array([]),
       },
     };
   }

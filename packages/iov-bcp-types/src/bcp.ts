@@ -78,17 +78,11 @@ export interface BcpBlockInfoInBlock {
 export type BcpBlockInfo = BcpBlockInfoPending | BcpBlockInfoInBlock;
 
 export interface BcpTransactionResponse {
-  /** @deprecated use blockInfo instead */
-  readonly metadata: {
-    readonly height?: number;
-  };
   /** Information about the block the transaction is in */
   readonly blockInfo: ValueAndUpdates<BcpBlockInfo>;
   readonly data: {
     readonly message: string;
     readonly txid: TxId; // a unique identifier (hash of the data)
-    /** @deprecated Always empty. Use result from BcpBlockInfoInBlock instead */
-    readonly result: Uint8Array;
   };
 }
 

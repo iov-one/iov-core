@@ -103,14 +103,10 @@ export class EthereumConnection implements BcpConnection {
       state: BcpTransactionState.Pending,
     });
     return {
-      metadata: {
-        height: undefined,
-      },
       blockInfo: new ValueAndUpdates(blockInfoPending),
       data: {
         message: message,
         txid: Encoding.fromHex(hexPadToEven(transactionHash)) as TxId,
-        result: result.data,
       },
     };
   }

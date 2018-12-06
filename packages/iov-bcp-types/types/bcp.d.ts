@@ -51,17 +51,11 @@ export interface BcpBlockInfoInBlock {
 /** Information attached to a signature about its state in a block */
 export declare type BcpBlockInfo = BcpBlockInfoPending | BcpBlockInfoInBlock;
 export interface BcpTransactionResponse {
-    /** @deprecated use blockInfo instead */
-    readonly metadata: {
-        readonly height?: number;
-    };
     /** Information about the block the transaction is in */
     readonly blockInfo: ValueAndUpdates<BcpBlockInfo>;
     readonly data: {
         readonly message: string;
         readonly txid: TxId;
-        /** @deprecated Always empty. Use result from BcpBlockInfoInBlock instead */
-        readonly result: Uint8Array;
     };
 }
 export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTransaction> extends SignedTransaction<T> {

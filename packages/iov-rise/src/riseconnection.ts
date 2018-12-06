@@ -148,14 +148,10 @@ export class RiseConnection implements BcpConnection {
     });
 
     return {
-      metadata: {
-        height: undefined,
-      },
       blockInfo: new ValueAndUpdates(blockInfoProducer),
       data: {
         message: "",
         txid: Encoding.toAscii(transactionId) as TxId,
-        result: new Uint8Array([]),
       },
     };
   }
