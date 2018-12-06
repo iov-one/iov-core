@@ -20,8 +20,8 @@ describe("DefaultValueProducer", () => {
         expect(value).toEqual(42);
         done();
       },
-      error: fail,
-      complete: fail,
+      error: done.fail,
+      complete: done.fail,
     });
   });
 
@@ -40,8 +40,8 @@ describe("DefaultValueProducer", () => {
           done();
         }
       },
-      error: fail,
-      complete: fail,
+      error: done.fail,
+      complete: done.fail,
     });
 
     producer.update(43);
