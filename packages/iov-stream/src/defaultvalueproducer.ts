@@ -37,6 +37,15 @@ export class DefaultValueProducer<T> implements Producer<T> {
   }
 
   /**
+   * Produce an error
+   */
+  public error(error: any): void {
+    if (this.listener) {
+      this.listener.error(error);
+    }
+  }
+
+  /**
    * Called by the stream. Do not call this directly.
    */
   public start(listener: Listener<T>): void {

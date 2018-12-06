@@ -10,6 +10,7 @@
   list when done.
 * @iov/stream: `ValueAndUpdates.waitFor` now returns the values that matched
   the search condition.
+* @iov/stream: `DefaultValueProducerCallsbacks.error` added to produce errors.
 
 Breaking changes
 

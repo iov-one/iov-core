@@ -17,6 +17,10 @@ export declare class DefaultValueProducer<T> implements Producer<T> {
      */
     update(value: T): void;
     /**
+     * Produce an error
+     */
+    error(error: any): void;
+    /**
      * Called by the stream. Do not call this directly.
      */
     start(listener: Listener<T>): void;
