@@ -15,7 +15,7 @@ import {
   SignableBytes,
   SignedTransaction,
   SigningJob,
-  TransactionIdBytes,
+  TransactionId,
   TransactionKind,
   TxCodec,
   UnsignedTransaction,
@@ -69,7 +69,7 @@ export const riseCodec: TxCodec = {
           timestamp: riseTimestamp,
           fee: 10000000, // 0.1 RISE fixed
           signature: Encoding.toHex(signed.primarySignature.signature),
-          id: Encoding.fromAscii(id),
+          id: id,
         };
         return Encoding.toUtf8(JSON.stringify(postableObject)) as PostableBytes;
       default:
@@ -81,7 +81,7 @@ export const riseCodec: TxCodec = {
    * Transaction ID as implemented in
    * https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/transaction.cpp#L87
    */
-  identifier: (signed: SignedTransaction): TransactionIdBytes => {
+  identifier: (signed: SignedTransaction): TransactionId => {
     const creationTimestamp = signed.primarySignature.nonce.toNumber();
     const creationDate = new ReadonlyDate(creationTimestamp * 1000);
     return Serialization.transactionId(

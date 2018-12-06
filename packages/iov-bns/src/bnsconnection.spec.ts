@@ -927,13 +927,14 @@ describe("BnsConnection", () => {
 
         const nonce = await getNonce(connection, faucetAddress);
         const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
-        const txId = bnsCodec.identifier(signed);
+        const transactionId = bnsCodec.identifier(signed);
         const heightBeforeTransaction = await connection.height();
 
         // start listening
-        const subscription = connection.listenTx({ hash: (txId as unknown) as TxId, tags: [] }).subscribe({
+        const query = { hash: Encoding.fromHex(transactionId) as TxId, tags: [] };
+        const subscription = connection.listenTx(query).subscribe({
           next: event => {
-            expect(event.txid).toEqual(txId);
+            expect(event.txid).toEqual(Encoding.fromHex(transactionId) as TxId);
             expect(event.height).toEqual(heightBeforeTransaction + 1);
 
             subscription.unsubscribe();
