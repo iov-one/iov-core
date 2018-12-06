@@ -107,14 +107,19 @@ export function isSwapRelease(
 }
 
 export function buildTxQuery(query: BcpTxQuery): QueryString {
-  const tags: ReadonlyArray<string> = query.tags.map(tag => `${tag.key}='${tag.value}'`);
-  const opts: ReadonlyArray<string | false> = [
-    !!query.height && `tx.height=${query.height}`,
-    !!query.minHeight && `tx.height>${query.minHeight}`,
-    !!query.maxHeight && `tx.height<${query.maxHeight}`,
-    // In Tendermint, hash can be lower case for search queries but must be upper case for subscribe queries
-    !!query.hash && `tx.hash='${Encoding.toHex(query.hash).toUpperCase()}'`,
+  const tagComponents = query.tags.map(tag => `${tag.key}='${tag.value}'`);
+  // In Tendermint, hash can be lower case for search queries but must be upper case for subscribe queries
+  const hashComponents = query.id !== undefined ? [`tx.hash='${query.id}'`] : [];
+  const heightComponents = query.height !== undefined ? [`tx.height=${query.height}`] : [];
+  const minHeightComponents = query.minHeight !== undefined ? [`tx.height>${query.minHeight}`] : [];
+  const maxHeightComponents = query.maxHeight !== undefined ? [`tx.height<${query.maxHeight}`] : [];
+
+  const components: ReadonlyArray<string> = [
+    ...tagComponents,
+    ...hashComponents,
+    ...heightComponents,
+    ...minHeightComponents,
+    ...maxHeightComponents,
   ];
-  const result: string = [...tags, ...opts.filter(x => !!x)].join(" AND ");
-  return result as QueryString;
+  return components.join(" AND ") as QueryString;
 }

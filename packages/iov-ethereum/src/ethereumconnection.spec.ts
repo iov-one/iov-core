@@ -1,4 +1,4 @@
-import { Algorithm, TxId } from "@iov/base-types";
+import { Algorithm } from "@iov/base-types";
 import {
   Address,
   BcpAccountQuery,
@@ -8,13 +8,11 @@ import {
   TransactionId,
   TransactionKind,
 } from "@iov/bcp-types";
-import { Encoding } from "@iov/encoding";
 import { HdPaths, Secp256k1HdWallet } from "@iov/keycontrol";
 
 import { ethereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
 import { TestConfig } from "./testconfig";
-import { hexPadToEven } from "./utils";
 
 function skipTests(): boolean {
   return !process.env.ETHEREUM_ENABLED;
@@ -169,21 +167,19 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(base);
       // invalid lenght
-      const invalidHashLenght = "0x1234567890abcdef";
-      const invalidTxId = Encoding.fromHex(hexPadToEven(invalidHashLenght)) as TxId;
+      const invalidHashLenght = "0x1234567890abcdef" as TransactionId;
       await connection
-        .searchTx({ hash: invalidTxId, tags: [] })
+        .searchTx({ id: invalidHashLenght, tags: [] })
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/Invalid transaction hash length/));
+        .catch(error => expect(error).toMatch(/Invalid transaction ID format/i));
       connection.disconnect();
     });
 
     it("can search non-existing transaction by hash", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(base);
-      const nonExistingHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
-      const nonExistingId = Encoding.fromHex(hexPadToEven(nonExistingHash)) as TxId;
-      const results = await connection.searchTx({ hash: nonExistingId, tags: [] });
+      const nonExistingHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" as TransactionId;
+      const results = await connection.searchTx({ id: nonExistingHash, tags: [] });
       expect(results.length).toEqual(0);
       connection.disconnect();
     });
@@ -245,8 +241,7 @@ describe("EthereumConnection", () => {
       expect(resultPost.transactionId).toMatch(/^0x[0-9a-f]{64}$/);
       await sleep(waitForTx);
 
-      const query = { hash: Encoding.toAscii(resultPost.transactionId.slice(2)) as TxId, tags: [] };
-      const resultSearch = await connection.searchTx(query);
+      const resultSearch = await connection.searchTx({ id: resultPost.transactionId, tags: [] });
       expect(resultSearch.length).toEqual(1);
       const result = resultSearch[0];
       expect(result.transactionId).toEqual(resultPost.transactionId);
@@ -265,7 +260,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(base);
       const storedTxId = "" as TransactionId;
-      const results = await connection.searchTx({ hash: Encoding.fromHex(storedTxId) as TxId, tags: [] });
+      const results = await connection.searchTx({ id: storedTxId, tags: [] });
       expect(results.length).toEqual(1);
       const result = results[0];
       expect(result.transactionId).toEqual(storedTxId);

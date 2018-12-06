@@ -199,20 +199,20 @@ export class EthereumConnection implements BcpConnection {
   public watchNonce(_: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce | undefined> {
     throw new Error("Not implemented");
   }
+
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
     if (query.height || query.minHeight || query.maxHeight) {
       throw new Error("Query by height, minHeight, maxHeight not supported");
     }
     let txUncodified;
-    if (query.hash) {
-      const transactionHash = Encoding.toHex(query.hash);
-      if (transactionHash.length !== 64) {
-        throw new Error("Invalid transaction hash length");
+    if (query.id !== undefined) {
+      if (!query.id.match(/^0x[0-9a-f]{64}$/)) {
+        throw new Error("Invalid transaction ID format");
       }
       txUncodified = await axios.post(this.baseUrl, {
         jsonrpc: "2.0",
         method: "eth_getTransactionByHash",
-        params: ["0x" + transactionHash],
+        params: [query.id],
         id: 6,
       });
       if (txUncodified.data.result === null || txUncodified.data.result.blockNumber === null) {

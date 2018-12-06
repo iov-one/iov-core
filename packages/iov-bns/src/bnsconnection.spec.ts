@@ -1,6 +1,6 @@
 import Long from "long";
 
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, TxId } from "@iov/base-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import {
   AddAddressToUsernameTx,
   Address,
@@ -776,7 +776,7 @@ describe("BnsConnection", () => {
       connection.disconnect();
     });
 
-    it("can search for transactions by hash", async () => {
+    it("can search for transactions by ID", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const chainId = await connection.chainId();
@@ -806,9 +806,8 @@ describe("BnsConnection", () => {
 
       await tendermintSearchIndexUpdated();
 
-      // finds transaction using hash
-      const query = { hash: Encoding.fromHex(transactionIdToSearch) as TxId, tags: [] };
-      const searchResults = await connection.searchTx(query);
+      // finds transaction using id
+      const searchResults = await connection.searchTx({ id: transactionIdToSearch, tags: [] });
       expect(searchResults.length).toEqual(1);
       expect(searchResults[0].transactionId).toEqual(transactionIdToSearch);
       expect(searchResults[0].transaction.kind).toEqual(TransactionKind.Send);
@@ -931,8 +930,7 @@ describe("BnsConnection", () => {
         const heightBeforeTransaction = await connection.height();
 
         // start listening
-        const query = { hash: Encoding.fromHex(transactionId) as TxId, tags: [] };
-        const subscription = connection.listenTx(query).subscribe({
+        const subscription = connection.listenTx({ id: transactionId, tags: [] }).subscribe({
           next: event => {
             expect(event.transactionId).toEqual(transactionId);
             expect(event.height).toEqual(heightBeforeTransaction + 1);
@@ -1439,7 +1437,7 @@ describe("BnsConnection", () => {
     await tendermintSearchIndexUpdated();
 
     // now query by the txid
-    const search = await connection.searchTx({ hash: Encoding.fromHex(transactionId) as TxId, tags: [] });
+    const search = await connection.searchTx({ id: transactionId, tags: [] });
     expect(search.length).toEqual(1);
     // make sure we get he same tx loaded
     const loaded = search[0];

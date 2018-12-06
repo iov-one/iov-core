@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { ChainId, PostableBytes, PublicKeyBundle, TxId } from "@iov/base-types";
+import { ChainId, PostableBytes, PublicKeyBundle } from "@iov/base-types";
 import { ValueAndUpdates } from "@iov/stream";
 import { Address, SignedTransaction, TransactionId, TxCodec } from "./signables";
 import { Amount, Nonce, TokenTicker, UnsignedTransaction } from "./transactions";
@@ -74,7 +74,7 @@ export interface BcpQueryTag {
 }
 export interface BcpTxQuery {
     readonly tags: ReadonlyArray<BcpQueryTag>;
-    readonly hash?: TxId;
+    readonly id?: TransactionId;
     readonly height?: number;
     readonly minHeight?: number;
     readonly maxHeight?: number;

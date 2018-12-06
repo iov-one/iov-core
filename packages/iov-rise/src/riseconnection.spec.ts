@@ -1,4 +1,4 @@
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes, TxId } from "@iov/base-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import {
   Address,
   Amount,
@@ -20,7 +20,7 @@ import { Ed25519Wallet } from "@iov/keycontrol";
 import { riseCodec } from "./risecodec";
 import { generateNonce, RiseConnection } from "./riseconnection";
 
-const { fromHex, toAscii } = Encoding;
+const { fromHex } = Encoding;
 const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
 
 describe("RiseConnection", () => {
@@ -340,15 +340,15 @@ describe("RiseConnection", () => {
 
       // by non-existing ID
       {
-        const searchId = "98568736528934587";
-        const results = await connection.searchTx({ hash: toAscii(searchId) as TxId, tags: [] });
+        const searchId = "98568736528934587" as TransactionId;
+        const results = await connection.searchTx({ id: searchId, tags: [] });
         expect(results.length).toEqual(0);
       }
 
       // by existing ID (https://texplorer.rise.vision/tx/530955287567640950)
       {
         const searchId = "530955287567640950" as TransactionId;
-        const results = await connection.searchTx({ hash: toAscii(searchId) as TxId, tags: [] });
+        const results = await connection.searchTx({ id: searchId, tags: [] });
         expect(results.length).toEqual(1);
         const result = results[0];
         expect(result.height).toEqual(1156579);

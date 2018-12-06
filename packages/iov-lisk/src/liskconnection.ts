@@ -3,7 +3,7 @@ import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
-import { ChainId, PostableBytes, TxId } from "@iov/base-types";
+import { ChainId, PostableBytes } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
@@ -32,7 +32,7 @@ import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { constants } from "./constants";
 import { liskCodec } from "./liskcodec";
 
-const { fromAscii, toAscii, toUtf8 } = Encoding;
+const { toUtf8 } = Encoding;
 
 // poll every 3 seconds (block time 10s)
 const transactionStatePollInterval = 3_000;
@@ -119,7 +119,7 @@ export class LiskConnection implements BcpConnection {
       {
         onStarted: () => {
           blockInfoInterval = setInterval(async () => {
-            const search = await this.searchTx({ hash: toAscii(transactionId) as TxId, tags: [] });
+            const search = await this.searchTx({ id: transactionId, tags: [] });
             if (search.length > 0) {
               const confirmedTransaction = search[0];
               const event: BcpBlockInfo = {
@@ -212,8 +212,8 @@ export class LiskConnection implements BcpConnection {
       throw new Error("Query by height, minHeight, maxHeight, tags not supported");
     }
 
-    if (query.hash) {
-      const url = this.baseUrl + `/api/transactions?id=${fromAscii(query.hash)}`;
+    if (query.id !== undefined) {
+      const url = this.baseUrl + `/api/transactions?id=${query.id}`;
       const result = await axios.get(url);
       const responseBody = result.data;
       if (responseBody.data.length === 0) {
