@@ -102,7 +102,8 @@ export interface SwapOfferTx extends BaseTx {
   readonly kind: TransactionKind.SwapOffer;
   readonly amount: ReadonlyArray<Amount>;
   readonly recipient: RecipientId;
-  readonly timeout: number; // number of blocks in the future
+  /** absolute block height at which the offer times out */
+  readonly timeout: number;
   readonly preimage: Uint8Array;
 }
 
@@ -110,7 +111,8 @@ export interface SwapCounterTx extends BaseTx {
   readonly kind: TransactionKind.SwapCounter;
   readonly amount: ReadonlyArray<Amount>;
   readonly recipient: RecipientId;
-  readonly timeout: number; // number of blocks in the future
+  /** absolute block height at which the counter offer times out */
+  readonly timeout: number;
   readonly hashCode: Uint8Array; // pulled from the offer transaction
   readonly memo?: string;
 }
