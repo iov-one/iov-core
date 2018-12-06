@@ -1332,7 +1332,7 @@ describe("BnsConnection", () => {
     expect(initSwaps.data.length).toEqual(0);
 
     // construct a sendtx, this is normally used in the MultiChainSigner api
-    const swapOfferTimeout = 10_000;
+    const swapOfferTimeout = (await connection.height()) + 1000;
     const swapOfferTx: SwapOfferTx = {
       kind: TransactionKind.SwapOffer,
       chainId,
