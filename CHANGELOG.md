@@ -8,6 +8,8 @@
 * @iov/bns: Fix encoding of `BcpTxQuery.hash` in `listenTx` and `liveTx`
 * @iov/stream: Add `toListPromise` that collects stream events and returns a
   list when done.
+* @iov/stream: `ValueAndUpdates.waitFor` now returns the values that matched
+  the search condition.
 
 Breaking changes
 

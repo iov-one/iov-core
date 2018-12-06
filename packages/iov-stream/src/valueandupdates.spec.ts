@@ -178,4 +178,22 @@ describe("ValueAndUpdates", () => {
     await vau.waitFor(v => v > 40);
     expect(vau.value).toEqual(44);
   });
+
+  it("gets the correct return value in waitFor", async () => {
+    const producer = new DefaultValueProducer(11);
+    const vau = new ValueAndUpdates(producer);
+
+    setTimeout(() => producer.update(22), 10);
+    setTimeout(() => producer.update(33), 20);
+
+    {
+      const result = await vau.waitFor(22);
+      expect(result).toEqual(22);
+    }
+
+    {
+      const result = await vau.waitFor(v => v > 30);
+      expect(result).toEqual(33);
+    }
+  });
 });
