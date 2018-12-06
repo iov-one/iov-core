@@ -1127,6 +1127,8 @@ describe("BnsConnection", () => {
     expect(nums.length).toEqual(3);
     expect(nums[1]).toEqual(nums[0] + 1);
     expect(nums[2]).toEqual(nums[1] + 1);
+
+    connection.disconnect();
   });
 
   const sendCash = async (
@@ -1309,7 +1311,6 @@ describe("BnsConnection", () => {
     const finalNonce = faucetNonce.value()!;
     expect(finalNonce.toNumber()).toEqual(origNonce.toNumber() + 1);
 
-    // clean up with disconnect at the end...
     connection.disconnect();
   });
 
@@ -1436,6 +1437,8 @@ describe("BnsConnection", () => {
     const hashSwap = await connection.getSwap(querySwapHash);
     expect(hashSwap.data.length).toEqual(1);
     expect(hashSwap.data[0]).toEqual(swap);
+
+    connection.disconnect();
   });
 
   const openSwap = async (
@@ -1567,5 +1570,7 @@ describe("BnsConnection", () => {
     expect(vals[3].data.id).toEqual(id3);
     expect(vals[4].kind).toEqual(SwapState.Claimed);
     expect(vals[4].data.id).toEqual(id1);
+
+    connection.disconnect();
   });
 });
