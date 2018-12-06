@@ -1,4 +1,5 @@
 export { Client } from "./client";
+export { TxHash } from "./common";
 export {
   AbciInfoRequest,
   AbciQueryParams,

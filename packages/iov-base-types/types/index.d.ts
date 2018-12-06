@@ -12,4 +12,3 @@ export interface PublicKeyBundle {
 export declare type ChainId = string & As<"chain-id">;
 export declare type SignatureBytes = Uint8Array & As<"signature">;
 export declare type PostableBytes = Uint8Array & As<"postable">;
-export declare type TxId = Uint8Array & As<"txid">;

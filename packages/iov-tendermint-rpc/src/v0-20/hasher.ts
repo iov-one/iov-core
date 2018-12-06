@@ -1,9 +1,11 @@
-import { PostableBytes, TxId } from "@iov/base-types";
+import { PostableBytes } from "@iov/base-types";
 import { Ripemd160 } from "@iov/crypto";
 
-export function hashTx(tx: PostableBytes): TxId {
+import { TxHash } from "../common";
+
+export function hashTx(tx: PostableBytes): TxHash {
   const hash = new Ripemd160(prefix(tx)).update(tx).digest();
-  return hash as TxId;
+  return hash as TxHash;
 }
 
 // prefix will create a varint prefix for any number < 2^14

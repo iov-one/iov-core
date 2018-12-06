@@ -1,7 +1,8 @@
 import { ReadonlyDate } from "readonly-date";
 
-import { Algorithm, ChainId, PostableBytes, PublicKeyBundle, SignatureBytes, TxId } from "@iov/base-types";
+import { Algorithm, ChainId, PostableBytes, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
 
+import { TxHash } from "./common";
 import { IpPortString } from "./encodings";
 
 export type Response =
@@ -60,7 +61,7 @@ export interface BlockchainResponse {
 export interface BroadcastTxAsyncResponse {}
 
 export interface BroadcastTxSyncResponse extends TxData {
-  readonly hash: TxId;
+  readonly hash: TxHash;
 }
 
 /**
@@ -73,7 +74,7 @@ export function broadcastTxSyncSuccess(res: BroadcastTxSyncResponse): boolean {
 
 export interface BroadcastTxCommitResponse {
   readonly height?: number;
-  readonly hash: TxId;
+  readonly hash: TxHash;
   readonly checkTx: TxData;
   readonly deliverTx?: TxData;
 }
@@ -116,7 +117,7 @@ export interface TxResponse {
   readonly txResult: TxData;
   readonly height: number;
   readonly index: number;
-  readonly hash: TxId;
+  readonly hash: TxHash;
   readonly proof?: TxProof;
 }
 
@@ -138,7 +139,7 @@ export interface NewBlockHeaderEvent extends Header {}
 
 export interface TxEvent {
   readonly tx: PostableBytes;
-  readonly hash: TxId;
+  readonly hash: TxHash;
   readonly height: number;
   readonly index: number;
   readonly result: TxData;

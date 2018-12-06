@@ -1,5 +1,10 @@
 import { As } from "type-tagger";
 
+/**
+ * A raw tendermint transaction hash, currently 20 bytes
+ */
+export type TxHash = Uint8Array & As<"tx-hash">;
+
 export type RpcId = string & As<"rpcid">;
 
 export const rpcVersion = "2.0";
