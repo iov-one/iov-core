@@ -1313,7 +1313,7 @@ describe("BnsConnection", () => {
     const rcptNonce = lastValue<Nonce | undefined>(connection.watchNonce({ address: recipientAddr }));
 
     // give it a chance to get initial feed before checking and proceeding
-    await sleep(100);
+    await sleep(200);
 
     // make sure there are original values sent on the wire
     expect(rcptAcct.value()).toBeUndefined();
