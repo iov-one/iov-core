@@ -14,6 +14,7 @@
 
 Breaking changes
 
+* @iov/base-types: Remove `TxId` in favour of `TxHash` in @iov/tendermint-rpc.
 * @iov/bcp-types: An `Amount` is now a `quantity` expressed as a string, a
   `fractionalDigits` number and a `tokenTicker`. This replaces the `whole`,
   `fractional` pair. `BcpTicker` does not contain `sigFigs` anymore because
@@ -26,6 +27,9 @@ Breaking changes
   analogue to `.searchTx` and `.liveTx`.
 * @iov/bcp-types: `BcpTransactionResponse` was removed in favour of the new
   `PostTxResponse`.
+* @iov/bcp-types: Change binary `TransactionIdBytes` to printable
+  `TransactionId` and use in `TxCodec.identifier`, `PostTxResponse` and
+  `BcpTxQuery`.
 * @iov/bns: `BnsConnection.postTx` now resolves before a transaction is in a
   block. The field `blockInfo` of its response can be used to track the
   transaction state.
