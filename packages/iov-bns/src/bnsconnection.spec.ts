@@ -1251,18 +1251,16 @@ describe("BnsConnection", () => {
   it("can watch accounts", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
-
+    const { profile, faucet } = await userProfileWithFaucet();
     const faucetAddr = keyToAddress(faucet.pubkey);
-    const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(57));
-    const rcptAddr = keyToAddress(rcpt.pubkey);
+    const recipientAddr = await randomBnsAddress();
 
     // let's watch for all changes, capture them in a value sink
     const faucetAcct = lastValue<BcpAccount | undefined>(connection.watchAccount({ address: faucetAddr }));
-    const rcptAcct = lastValue<BcpAccount | undefined>(connection.watchAccount({ address: rcptAddr }));
+    const rcptAcct = lastValue<BcpAccount | undefined>(connection.watchAccount({ address: recipientAddr }));
 
     const faucetNonce = lastValue<Nonce | undefined>(connection.watchNonce({ address: faucetAddr }));
-    const rcptNonce = lastValue<Nonce | undefined>(connection.watchNonce({ address: rcptAddr }));
+    const rcptNonce = lastValue<Nonce | undefined>(connection.watchNonce({ address: recipientAddr }));
 
     // give it a chance to get initial feed before checking and proceeding
     await sleep(100);
@@ -1282,7 +1280,7 @@ describe("BnsConnection", () => {
     expect(origNonce.toNumber()).toBeGreaterThan(0);
 
     // send some cash
-    await sendCash(connection, profile, faucet, rcptAddr);
+    await sendCash(connection, profile, faucet, recipientAddr);
 
     // give it a chance to get updates before checking and proceeding
     await sleep(100);
