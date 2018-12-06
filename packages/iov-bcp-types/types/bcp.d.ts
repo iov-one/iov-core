@@ -45,6 +45,8 @@ export interface BcpBlockInfoInBlock {
     readonly height: number;
     /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
     readonly confirmations: number;
+    /** application specific data from executing tx (result, code, tags...) */
+    readonly result?: Uint8Array;
 }
 /** Information attached to a signature about its state in a block */
 export declare type BcpBlockInfo = BcpBlockInfoPending | BcpBlockInfoInBlock;
@@ -58,6 +60,7 @@ export interface BcpTransactionResponse {
     readonly data: {
         readonly message: string;
         readonly txid: TxId;
+        /** @deprecated Always empty. Use result from BcpBlockInfoInBlock instead */
         readonly result: Uint8Array;
     };
 }
@@ -66,7 +69,7 @@ export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTr
     /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
     readonly confirmations: number;
     readonly txid: TxId;
-    /** Data from executing tx (result, code, tags...) */
+    /** application specific data from executing tx (result, code, tags...) */
     readonly result?: Uint8Array;
     readonly log?: string;
 }
