@@ -77,7 +77,7 @@ export interface BcpBlockInfoInBlock {
 /** Information attached to a signature about its state in a block */
 export type BcpBlockInfo = BcpBlockInfoPending | BcpBlockInfoInBlock;
 
-export interface BcpTransactionResponse {
+export interface PostTxResponse {
   /** Information about the block the transaction is in */
   readonly blockInfo: ValueAndUpdates<BcpBlockInfo>;
   readonly data: {
@@ -177,7 +177,7 @@ export interface BcpConnection {
   readonly changeBlock: () => Stream<number>;
 
   // submitTx submits a signed tx as is notified on every state change
-  readonly postTx: (tx: PostableBytes) => Promise<BcpTransactionResponse>;
+  readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
 
   // one-off queries to view current state
   readonly getTicker: (ticker: TokenTicker) => Promise<BcpQueryEnvelope<BcpTicker>>;

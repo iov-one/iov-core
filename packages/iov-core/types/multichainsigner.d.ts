@@ -1,5 +1,5 @@
 import { ChainId, PublicKeyBundle } from "@iov/base-types";
-import { Address, BcpConnection, BcpTransactionResponse, ChainConnector, Nonce, UnsignedTransaction } from "@iov/bcp-types";
+import { Address, BcpConnection, ChainConnector, Nonce, PostTxResponse, UnsignedTransaction } from "@iov/bcp-types";
 import { UserProfile, WalletId } from "@iov/keycontrol";
 export declare class MultiChainSigner {
     readonly profile: UserProfile;
@@ -24,7 +24,7 @@ export declare class MultiChainSigner {
      * @todo This is not tested. Decide if we need to expose this method.
      */
     getNonce(chainId: ChainId, addr: Address): Promise<Nonce>;
-    signAndCommit(tx: UnsignedTransaction, walletId: WalletId): Promise<BcpTransactionResponse>;
+    signAndCommit(tx: UnsignedTransaction, walletId: WalletId): Promise<PostTxResponse>;
     /**
      * Throws for unknown chain ID
      */

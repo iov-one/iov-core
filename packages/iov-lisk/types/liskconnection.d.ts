@@ -1,6 +1,6 @@
 import { Stream } from "xstream";
 import { ChainId, PostableBytes } from "@iov/base-types";
-import { BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpConnection, BcpPubkeyQuery, BcpQueryEnvelope, BcpTicker, BcpTransactionResponse, BcpTxQuery, ConfirmedTransaction, Nonce, TokenTicker } from "@iov/bcp-types";
+import { BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpConnection, BcpPubkeyQuery, BcpQueryEnvelope, BcpTicker, BcpTxQuery, ConfirmedTransaction, Nonce, PostTxResponse, TokenTicker } from "@iov/bcp-types";
 /**
  * Encodes the current date and time as a nonce
  */
@@ -13,7 +13,7 @@ export declare class LiskConnection implements BcpConnection {
     disconnect(): void;
     chainId(): ChainId;
     height(): Promise<number>;
-    postTx(bytes: PostableBytes): Promise<BcpTransactionResponse>;
+    postTx(bytes: PostableBytes): Promise<PostTxResponse>;
     getTicker(searchTicker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAccount(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>>;

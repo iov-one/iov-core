@@ -16,7 +16,6 @@ import {
   BcpQueryTag,
   BcpSwapQuery,
   BcpTicker,
-  BcpTransactionResponse,
   BcpTransactionState,
   BcpTxQuery,
   ConfirmedTransaction,
@@ -28,6 +27,7 @@ import {
   isQueryBySwapSender,
   Nonce,
   OpenSwap,
+  PostTxResponse,
   SwapClaimTx,
   SwapState,
   SwapTimeoutTx,
@@ -157,7 +157,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return this.tmClient.status();
   }
 
-  public async postTx(tx: PostableBytes): Promise<BcpTransactionResponse> {
+  public async postTx(tx: PostableBytes): Promise<PostTxResponse> {
     const postResponse = await this.tmClient.broadcastTxSync({ tx });
     if (!broadcastTxSyncSuccess(postResponse)) {
       throw new Error(JSON.stringify(postResponse, null, 2));

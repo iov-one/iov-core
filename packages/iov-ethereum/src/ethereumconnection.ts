@@ -13,7 +13,6 @@ import {
   BcpPubkeyQuery,
   BcpQueryEnvelope,
   BcpTicker,
-  BcpTransactionResponse,
   BcpTransactionState,
   BcpTxQuery,
   ConfirmedTransaction,
@@ -21,6 +20,7 @@ import {
   isAddressQuery,
   isPubkeyQuery,
   Nonce,
+  PostTxResponse,
   TokenTicker,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
@@ -90,7 +90,7 @@ export class EthereumConnection implements BcpConnection {
     return decodeHexQuantity(responseBody.result);
   }
 
-  public async postTx(bytes: PostableBytes): Promise<BcpTransactionResponse> {
+  public async postTx(bytes: PostableBytes): Promise<PostTxResponse> {
     const result = await axios.post(this.baseUrl, {
       jsonrpc: "2.0",
       method: "eth_sendRawTransaction",

@@ -14,7 +14,6 @@ import {
   BcpPubkeyQuery,
   BcpQueryEnvelope,
   BcpTicker,
-  BcpTransactionResponse,
   BcpTransactionState,
   BcpTxQuery,
   ConfirmedTransaction,
@@ -22,6 +21,7 @@ import {
   isAddressQuery,
   isPubkeyQuery,
   Nonce,
+  PostTxResponse,
   TokenTicker,
 } from "@iov/bcp-types";
 import { Parse } from "@iov/dpos";
@@ -93,7 +93,7 @@ export class RiseConnection implements BcpConnection {
     return responseBody.height;
   }
 
-  public async postTx(bytes: PostableBytes): Promise<BcpTransactionResponse> {
+  public async postTx(bytes: PostableBytes): Promise<PostTxResponse> {
     const transactionId = JSON.parse(Encoding.fromUtf8(bytes)).id as string;
     if (!transactionId.match(/^[0-9]+$/)) {
       throw new Error("Invalid transaction ID");

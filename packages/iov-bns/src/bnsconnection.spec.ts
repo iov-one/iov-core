@@ -8,10 +8,10 @@ import {
   BcpBlockInfo,
   BcpBlockInfoInBlock,
   BcpSwapQuery,
-  BcpTransactionResponse,
   BcpTransactionState,
   BcpTxQuery,
   Nonce,
+  PostTxResponse,
   RegisterBlockchainTx,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
@@ -1182,7 +1182,7 @@ describe("BnsConnection", () => {
     profile: UserProfile,
     faucet: PublicIdentity,
     rcptAddr: Address,
-  ): Promise<BcpTransactionResponse> => {
+  ): Promise<PostTxResponse> => {
     // construct a sendtx, this is normally used in the MultiChainSigner api
     const chainId = await connection.chainId();
     const faucetAddr = keyToAddress(faucet.pubkey);
@@ -1494,7 +1494,7 @@ describe("BnsConnection", () => {
     sender: PublicIdentity,
     rcptAddr: Address,
     preimage: Uint8Array,
-  ): Promise<BcpTransactionResponse> => {
+  ): Promise<PostTxResponse> => {
     // construct a swapOfferTx, sign and post to the chain
     const chainId = await connection.chainId();
     const nonce = await getNonce(connection, keyToAddress(sender.pubkey));
@@ -1526,7 +1526,7 @@ describe("BnsConnection", () => {
     sender: PublicIdentity,
     swapId: SwapIdBytes,
     preimage: Uint8Array,
-  ): Promise<BcpTransactionResponse> => {
+  ): Promise<PostTxResponse> => {
     // construct a swapOfferTx, sign and post to the chain
     const chainId = await connection.chainId();
     const nonce = await getNonce(connection, keyToAddress(sender.pubkey));
