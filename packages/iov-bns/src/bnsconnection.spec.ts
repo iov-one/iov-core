@@ -1161,17 +1161,15 @@ describe("BnsConnection", () => {
   it("can get live tx feed", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
-
-    const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(62));
-    const rcptAddr = keyToAddress(rcpt.pubkey);
+    const { profile, faucet } = await userProfileWithFaucet();
+    const recipientAddress = await randomBnsAddress();
 
     // make sure that we have no tx here
-    const query: BcpTxQuery = { tags: [bnsFromOrToTag(rcptAddr)] };
+    const query: BcpTxQuery = { tags: [bnsFromOrToTag(recipientAddress)] };
     const origSearch = await connection.searchTx(query);
     expect(origSearch.length).toEqual(0);
 
-    const post = await sendCash(connection, profile, faucet, rcptAddr);
+    const post = await sendCash(connection, profile, faucet, recipientAddress);
     const firstId = post.data.txid;
     expect(firstId).toBeDefined();
 
@@ -1183,7 +1181,7 @@ describe("BnsConnection", () => {
     // live.value() maintains all transactions
     const live = asArray(connection.liveTx(query));
 
-    const secondPost = await sendCash(connection, profile, faucet, rcptAddr);
+    const secondPost = await sendCash(connection, profile, faucet, recipientAddress);
     const secondId = secondPost.data.txid;
     expect(secondId).toBeDefined();
 
