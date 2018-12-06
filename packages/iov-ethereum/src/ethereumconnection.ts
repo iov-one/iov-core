@@ -22,6 +22,7 @@ import {
   Nonce,
   PostTxResponse,
   TokenTicker,
+  TransactionId,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
@@ -98,13 +99,16 @@ export class EthereumConnection implements BcpConnection {
       id: 5,
     });
     const errorMessage = result.data.error ? (result.data.error.message as string) : undefined;
-    const transactionHash = result.data.result ? result.data.result : "";
+    const transactionHash = result.data.result;
+    if (typeof transactionHash !== "string") {
+      throw new Error("Expected transaction ID but got something different");
+    }
     const blockInfoPending = new DefaultValueProducer<BcpBlockInfo>({
       state: BcpTransactionState.Pending,
     });
     return {
       blockInfo: new ValueAndUpdates(blockInfoPending),
-      transactionId: Encoding.fromHex(hexPadToEven(transactionHash)) as TxId,
+      transactionId: `0x${hexPadToEven(transactionHash)}` as TransactionId,
       log: errorMessage,
     };
   }

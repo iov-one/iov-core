@@ -1,7 +1,7 @@
 import { Stream } from "xstream";
 import { ChainId, PostableBytes, PublicKeyBundle, TxId } from "@iov/base-types";
 import { ValueAndUpdates } from "@iov/stream";
-import { Address, SignedTransaction, TxCodec } from "./signables";
+import { Address, SignedTransaction, TransactionId, TxCodec } from "./signables";
 import { Amount, Nonce, TokenTicker, UnsignedTransaction } from "./transactions";
 export interface BcpQueryEnvelope<T> {
     readonly metadata: BcpQueryMetadata;
@@ -54,7 +54,7 @@ export interface PostTxResponse {
     /** Information about the block the transaction is in */
     readonly blockInfo: ValueAndUpdates<BcpBlockInfo>;
     /** a unique identifier (hash of the transaction) */
-    readonly transactionId: TxId;
+    readonly transactionId: TransactionId;
     /** a human readable debugging log */
     readonly log?: string;
 }

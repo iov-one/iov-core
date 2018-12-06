@@ -141,7 +141,7 @@ export class LiskConnection implements BcpConnection {
 
     return {
       blockInfo: new ValueAndUpdates(blockInfoProducer),
-      transactionId: Encoding.toAscii(transactionId) as TxId,
+      transactionId: transactionId,
     };
   }
 

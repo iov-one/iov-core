@@ -241,12 +241,14 @@ describe("EthereumConnection", () => {
       const bytesToPost = ethereumCodec.bytesToPost(signedTransaction);
 
       const resultPost = await connection.postTx(bytesToPost);
-      const postedTxId = resultPost.transactionId;
+      expect(resultPost.transactionId).toMatch(/^0x[0-9a-f]{64}$/);
       await sleep(waitForTx);
-      const resultSearch = await connection.searchTx({ hash: postedTxId, tags: [] });
+
+      const query = { hash: Encoding.toAscii(resultPost.transactionId.slice(2)) as TxId, tags: [] };
+      const resultSearch = await connection.searchTx(query);
       expect(resultSearch.length).toEqual(1);
       const result = resultSearch[0];
-      expect(result.txid).toEqual(postedTxId);
+      expect(result.txid).toEqual(Encoding.toAscii(resultPost.transactionId.slice(2)) as TxId);
       const transaction = result.transaction;
       if (transaction.kind !== TransactionKind.Send) {
         throw new Error("Unexpected transaction type");

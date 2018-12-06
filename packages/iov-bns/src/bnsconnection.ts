@@ -32,6 +32,7 @@ import {
   SwapState,
   SwapTimeoutTx,
   TokenTicker,
+  TransactionId,
   TxReadCodec,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
@@ -214,7 +215,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
     return {
       blockInfo: new ValueAndUpdates(blockInfoProducer),
-      transactionId: postResponse.hash,
+      transactionId: Encoding.toHex(postResponse.hash).toUpperCase() as TransactionId,
       log: postResponse.log,
     };
   }
