@@ -36,35 +36,34 @@ export declare enum BcpTransactionState {
     /** successfully written in a block, but cannot yet guarantee it won't be reverted */
     InBlock = 1
 }
-/** Information attached to a signature about its state in a block */
-export declare type BcpBlockInfo = {
+export interface BcpBlockInfoPending {
     readonly state: BcpTransactionState.Pending;
-} | {
+}
+export interface BcpBlockInfoInBlock {
     readonly state: BcpTransactionState.InBlock;
     /** block height, if the transaction is included in a block */
     readonly height: number;
     /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
     readonly confirmations: number;
-};
-export interface BcpTransactionResponse {
-    /** @deprecated use blockInfo instead */
-    readonly metadata: {
-        readonly height?: number;
-    };
+    /** application specific data from executing tx (result, code, tags...) */
+    readonly result?: Uint8Array;
+}
+/** Information attached to a signature about its state in a block */
+export declare type BcpBlockInfo = BcpBlockInfoPending | BcpBlockInfoInBlock;
+export interface PostTxResponse {
     /** Information about the block the transaction is in */
     readonly blockInfo: ValueAndUpdates<BcpBlockInfo>;
-    readonly data: {
-        readonly message: string;
-        readonly txid: TxId;
-        readonly result: Uint8Array;
-    };
+    /** a unique identifier (hash of the transaction) */
+    readonly transactionId: TxId;
+    /** a human readable debugging log */
+    readonly log?: string;
 }
 export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTransaction> extends SignedTransaction<T> {
     readonly height: number;
     /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
     readonly confirmations: number;
     readonly txid: TxId;
-    /** Data from executing tx (result, code, tags...) */
+    /** application specific data from executing tx (result, code, tags...) */
     readonly result?: Uint8Array;
     readonly log?: string;
 }
@@ -97,7 +96,7 @@ export interface BcpConnection {
     readonly chainId: () => ChainId;
     readonly height: () => Promise<number>;
     readonly changeBlock: () => Stream<number>;
-    readonly postTx: (tx: PostableBytes) => Promise<BcpTransactionResponse>;
+    readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
     readonly getTicker: (ticker: TokenTicker) => Promise<BcpQueryEnvelope<BcpTicker>>;
     readonly getAllTickers: () => Promise<BcpQueryEnvelope<BcpTicker>>;
     /**

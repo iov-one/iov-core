@@ -6,6 +6,11 @@
   that allows you to get block related data associated with the transactions
   and subscribing to updates. `metadata` was deprecated in favour of `blockInfo`.
 * @iov/bns: Fix encoding of `BcpTxQuery.hash` in `listenTx` and `liveTx`
+* @iov/stream: Add `toListPromise` that collects stream events and returns a
+  list when done.
+* @iov/stream: `ValueAndUpdates.waitFor` now returns the values that matched
+  the search condition.
+* @iov/stream: `DefaultValueProducerCallsbacks.error` added to produce errors.
 
 Breaking changes
 
@@ -19,9 +24,15 @@ Breaking changes
   `BcpAddressQuery` or `BcpPubkeyQuery` as argument type.
 * @iov/bcp-types: `BcpConnection.listenTx` now takes an `BcpTxQuery` argument
   analogue to `.searchTx` and `.liveTx`.
+* @iov/bcp-types: `BcpTransactionResponse` was removed in favour of the new
+  `PostTxResponse`.
+* @iov/bns: `BnsConnection.postTx` now resolves before a transaction is in a
+  block. The field `blockInfo` of its response can be used to track the
+  transaction state.
 * @iov/crpto: the new types `Secp256k1Signature` and `ExtendedSecp256k1Signature` replace DER encoded signatures in `Secp256k1`.
 * @iov/faucets: Remove `BovFaucet`. Use `IovFaucet` instead.
 * @iov/keycontrol: `Secp256k1HdWallet.createTransactionSignature` now uses the custom fixed length encoding instead of DER to allow blockchains utilizing the recovery parameter.
+* @iov/stream: `streamPromise` was renamed to `fromListPromise`.
 * @iov/tendermint-rpc: Rename `txCommitSuccess` to `broadcastTxCommitSuccess` and add `broadcastTxSyncSuccess`
 * @iov/tendermint-rpc: Remove all fields from `BroadcastTxAsyncResponse`
 * @iov/tendermint-rpc: Change type of `BroadcastTxSyncResponse.hash` to `TxId`

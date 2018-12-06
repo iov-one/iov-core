@@ -159,7 +159,7 @@ describe("EthereumConnection", () => {
 
       const result = await connection.postTx(bytesToPost);
       expect(result).toBeTruthy();
-      expect(result.data.message).toBeNull();
+      expect(result.log).toBeUndefined();
     });
   });
 
@@ -242,7 +242,7 @@ describe("EthereumConnection", () => {
       const bytesToPost = ethereumCodec.bytesToPost(signedTransaction);
 
       const resultPost = await connection.postTx(bytesToPost);
-      const postedTxId = resultPost.data.txid;
+      const postedTxId = resultPost.transactionId;
       await sleep(waitForTx);
       const resultSearch = await connection.searchTx({ hash: postedTxId, tags: [] });
       expect(resultSearch.length).toEqual(1);

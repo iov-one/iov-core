@@ -15,6 +15,7 @@ export declare class ValueAndUpdates<T> {
      * Resolves as soon as search value is found.
      *
      * @param search either a value or a function that must return true when found
+     * @returns the value of the update that caused the search match
      */
-    waitFor(search: SearchFunction<T> | T): Promise<void>;
+    waitFor(search: SearchFunction<T> | T): Promise<T>;
 }

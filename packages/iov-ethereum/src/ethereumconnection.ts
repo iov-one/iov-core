@@ -13,7 +13,6 @@ import {
   BcpPubkeyQuery,
   BcpQueryEnvelope,
   BcpTicker,
-  BcpTransactionResponse,
   BcpTransactionState,
   BcpTxQuery,
   ConfirmedTransaction,
@@ -21,6 +20,7 @@ import {
   isAddressQuery,
   isPubkeyQuery,
   Nonce,
+  PostTxResponse,
   TokenTicker,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
@@ -90,28 +90,22 @@ export class EthereumConnection implements BcpConnection {
     return decodeHexQuantity(responseBody.result);
   }
 
-  public async postTx(bytes: PostableBytes): Promise<BcpTransactionResponse> {
+  public async postTx(bytes: PostableBytes): Promise<PostTxResponse> {
     const result = await axios.post(this.baseUrl, {
       jsonrpc: "2.0",
       method: "eth_sendRawTransaction",
       params: ["0x" + Encoding.toHex(bytes)],
       id: 5,
     });
-    const message = result.data.error ? result.data.error.message : null;
+    const errorMessage = result.data.error ? (result.data.error.message as string) : undefined;
     const transactionHash = result.data.result ? result.data.result : "";
     const blockInfoPending = new DefaultValueProducer<BcpBlockInfo>({
       state: BcpTransactionState.Pending,
     });
     return {
-      metadata: {
-        height: undefined,
-      },
       blockInfo: new ValueAndUpdates(blockInfoPending),
-      data: {
-        message: message,
-        txid: Encoding.fromHex(hexPadToEven(transactionHash)) as TxId,
-        result: result.data,
-      },
+      transactionId: Encoding.fromHex(hexPadToEven(transactionHash)) as TxId,
+      log: errorMessage,
     };
   }
 

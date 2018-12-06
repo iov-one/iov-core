@@ -1,6 +1,6 @@
 import { Stream } from "xstream";
 import { ChainId, PostableBytes } from "@iov/base-types";
-import { Address, BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpPubkeyQuery, BcpQueryEnvelope, BcpQueryTag, BcpSwapQuery, BcpTicker, BcpTransactionResponse, BcpTxQuery, ConfirmedTransaction, Nonce, TokenTicker } from "@iov/bcp-types";
+import { Address, BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpPubkeyQuery, BcpQueryEnvelope, BcpQueryTag, BcpSwapQuery, BcpTicker, BcpTxQuery, ConfirmedTransaction, Nonce, PostTxResponse, TokenTicker } from "@iov/bcp-types";
 import { Header, StatusResponse } from "@iov/tendermint-rpc";
 import { BnsBlockchainNft, BnsBlockchainsQuery, BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
@@ -31,7 +31,7 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     chainId(): ChainId;
     height(): Promise<number>;
     status(): Promise<StatusResponse>;
-    postTx(tx: PostableBytes): Promise<BcpTransactionResponse>;
+    postTx(tx: PostableBytes): Promise<PostTxResponse>;
     getTicker(ticker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAccount(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>>;

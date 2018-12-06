@@ -1,5 +1,5 @@
 import { Algorithm, ChainId, PublicKeyBytes } from "@iov/base-types";
-import { Address, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Address, BcpTransactionState, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { bnsCodec, bnsConnector, bnsFromOrToTag } from "@iov/bns";
 import { Random } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, LocalIdentity, UserProfile, WalletId } from "@iov/keycontrol";
@@ -29,10 +29,8 @@ async function randomBnsAddress(): Promise<Address> {
 }
 
 describe("MultiChainSigner", () => {
-  // TODO: had issues with websockets? check again later, maybe they need to close at end?
-  // max open connections??? (but 900 by default)
-  const bnsdTendermintUrl = "http://localhost:22345";
-  const rawTendermintUrl = "http://localhost:12345";
+  const bnsdTendermintUrl = "ws://localhost:22345";
+  const rawTendermintUrl = "ws://localhost:12345";
 
   it("works with no chains", () => {
     const profile = new UserProfile();
@@ -87,7 +85,8 @@ describe("MultiChainSigner", () => {
           tokenTicker: cash,
         },
       };
-      await signer.signAndCommit(sendTx, mainWalletId);
+      const postResponse = await signer.signAndCommit(sendTx, mainWalletId);
+      await postResponse.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
 
       // we should be a little bit richer
       const gotMoney = await connection.getAccount({ address: recipient });

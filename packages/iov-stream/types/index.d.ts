@@ -1,4 +1,4 @@
 export { DefaultValueProducer, DefaultValueProducerCallsbacks } from "./defaultvalueproducer";
-export * from "./promise";
+export { fromListPromise, toListPromise } from "./promise";
 export * from "./reducer";
 export { ValueAndUpdates } from "./valueandupdates";

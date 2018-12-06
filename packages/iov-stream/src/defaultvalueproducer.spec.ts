@@ -20,8 +20,8 @@ describe("DefaultValueProducer", () => {
         expect(value).toEqual(42);
         done();
       },
-      error: fail,
-      complete: fail,
+      error: done.fail,
+      complete: done.fail,
     });
   });
 
@@ -40,13 +40,31 @@ describe("DefaultValueProducer", () => {
           done();
         }
       },
-      error: fail,
-      complete: fail,
+      error: done.fail,
+      complete: done.fail,
     });
 
     producer.update(43);
     producer.update(44);
     producer.update(45);
+  });
+
+  it("can send errors", done => {
+    const producer = new DefaultValueProducer(42);
+    const stream = Stream.createWithMemory(producer);
+
+    stream.addListener({
+      error: error => {
+        expect(error).toEqual("oh no :(");
+        done();
+      },
+      complete: () => done.fail("Stream must not complete sucessfully"),
+    });
+
+    producer.update(1);
+    producer.update(2);
+    producer.update(3);
+    producer.error("oh no :(");
   });
 
   it("calls callbacks", async () => {

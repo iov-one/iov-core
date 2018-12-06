@@ -10,12 +10,12 @@ import {
   BcpAtomicSwap,
   BcpAtomicSwapConnection,
   BcpBlockInfo,
+  BcpBlockInfoInBlock,
   BcpPubkeyQuery,
   BcpQueryEnvelope,
   BcpQueryTag,
   BcpSwapQuery,
   BcpTicker,
-  BcpTransactionResponse,
   BcpTransactionState,
   BcpTxQuery,
   ConfirmedTransaction,
@@ -27,6 +27,7 @@ import {
   isQueryBySwapSender,
   Nonce,
   OpenSwap,
+  PostTxResponse,
   SwapClaimTx,
   SwapState,
   SwapTimeoutTx,
@@ -34,15 +35,14 @@ import {
   TxReadCodec,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
-import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
+import { DefaultValueProducer, toListPromise, ValueAndUpdates } from "@iov/stream";
 import {
-  broadcastTxCommitSuccess,
+  broadcastTxSyncSuccess,
   Client as TendermintClient,
   getHeaderEventHeight,
   getTxEventHeight,
   Header,
   StatusResponse,
-  TxEvent,
   TxResponse,
 } from "@iov/tendermint-rpc";
 
@@ -157,29 +157,47 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return this.tmClient.status();
   }
 
-  public async postTx(tx: PostableBytes): Promise<BcpTransactionResponse> {
-    const txresp = await this.tmClient.broadcastTxCommit({ tx });
-    if (!broadcastTxCommitSuccess(txresp)) {
-      const { checkTx, deliverTx } = txresp;
-      throw new Error(JSON.stringify({ checkTx, deliverTx }, null, 2));
+  public async postTx(tx: PostableBytes): Promise<PostTxResponse> {
+    const postResponse = await this.tmClient.broadcastTxSync({ tx });
+    if (!broadcastTxSyncSuccess(postResponse)) {
+      throw new Error(JSON.stringify(postResponse, null, 2));
     }
-    const height = txresp.height!;
+    const transactionId = postResponse.hash;
 
-    const firstEvent: BcpBlockInfo = {
-      state: BcpTransactionState.InBlock,
-      height: height,
-      confirmations: 1,
-    };
+    const firstEvent: BcpBlockInfo = { state: BcpTransactionState.Pending };
     let blocksSubscription: Subscription;
     let lastEventSent: BcpBlockInfo = firstEvent;
     const blockInfoProducer = new DefaultValueProducer<BcpBlockInfo>(firstEvent, {
-      onStarted: () => {
-        blocksSubscription = this.changeBlock().subscribe({
-          next: blockHeight => {
+      onStarted: async () => {
+        // console.log("Started producer for updates of", Encoding.toHex(trandactionId));
+
+        // we utilize liveTx to implement a _search or watch_ mechanism since we do not know
+        // if the transaction is already committed when the producer is started
+        const searchResult = await toListPromise(this.liveTx({ hash: transactionId, tags: [] }), 1);
+        const transactionHeight = searchResult[0].height;
+        const transactionResult = searchResult[0].result;
+
+        // Don't do any heavy work (like subscribing to block headers) before we got the
+        // search result. For some transactions this will never resolve.
+
+        {
+          const inBlockEvent: BcpBlockInfoInBlock = {
+            state: BcpTransactionState.InBlock,
+            height: transactionHeight,
+            confirmations: 1,
+            result: transactionResult,
+          };
+          blockInfoProducer.update(inBlockEvent);
+          lastEventSent = inBlockEvent;
+        }
+
+        blocksSubscription = this.watchHeaders().subscribe({
+          next: async blockHeader => {
             const event: BcpBlockInfo = {
               state: BcpTransactionState.InBlock,
-              height: height,
-              confirmations: blockHeight - height + 1,
+              height: transactionHeight,
+              confirmations: blockHeader.height - transactionHeight + 1,
+              result: transactionResult,
             };
 
             if (!equal(event, lastEventSent)) {
@@ -187,23 +205,17 @@ export class BnsConnection implements BcpAtomicSwapConnection {
               lastEventSent = event;
             }
           },
+          complete: () => blockInfoProducer.error("Block header stream stopped. This must not happen."),
+          error: error => blockInfoProducer.error(error),
         });
       },
       onStop: () => blocksSubscription.unsubscribe(),
     });
 
-    const message = txresp.deliverTx ? txresp.deliverTx.log : txresp.checkTx.log;
-    const result = txresp.deliverTx && txresp.deliverTx.data;
     return {
-      metadata: {
-        height: height,
-      },
       blockInfo: new ValueAndUpdates(blockInfoProducer),
-      data: {
-        txid: txresp.hash,
-        message: message || "",
-        result: result || new Uint8Array([]),
-      },
+      transactionId: postResponse.hash,
+      log: postResponse.log,
     };
   }
 
@@ -364,18 +376,24 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    */
   public listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction> {
     const chainId = this.chainId();
-    const txs = this.tmClient.subscribeTx(buildTxQuery(query));
-
-    // destructuring ftw (or is it too confusing?)
-    const mapper = ({ hash, height, tx, result }: TxEvent): ConfirmedTransaction => ({
-      height: height,
-      confirmations: 1, // assuming block height is current height when listening to events
-      txid: hash as TxId,
-      log: result.log,
-      result: result.data,
-      ...this.codec.parseBytes(tx, chainId),
-    });
-    return txs.map(mapper);
+    const rawQuery = buildTxQuery(query);
+    return this.tmClient
+      .subscribeTx(rawQuery)
+      .filter(transaction => {
+        // Filter out events of transactions that did not make it into a block (like commit error events)
+        const inBlock = transaction.result.code === 0;
+        return inBlock;
+      })
+      .map(
+        (transaction): ConfirmedTransaction => ({
+          height: transaction.height,
+          confirmations: 1, // assuming block height is current height when listening to events
+          txid: transaction.hash as TxId,
+          log: transaction.result.log,
+          result: transaction.result.data,
+          ...this.codec.parseBytes(transaction.tx, chainId),
+        }),
+      );
   }
 
   /**
@@ -443,7 +461,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   }
 
   public changeBlock(): Stream<number> {
-    return this.tmClient.subscribeNewBlockHeader().map(getHeaderEventHeight);
+    return this.watchHeaders().map(getHeaderEventHeight);
   }
 
   /**

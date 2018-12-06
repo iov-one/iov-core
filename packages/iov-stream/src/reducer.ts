@@ -5,12 +5,6 @@ may be useful other places, and should consider to be moved.
 Reducer and related code works to maintain a current state
 materialized by reducing all events on a stream. Similar
 to ValueAndUpdate in keycontrol, but more general.
-
-streamPromise takes a promise that returns an array of items,
-and produces a stream that returns many events, one for each
-item in the resultant array. This is a minor helper function
-that is useful here eg. to streamify searchTx, but not in xstream
-library.
 */
 
 // tslint:disable:readonly-keyword

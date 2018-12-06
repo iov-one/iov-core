@@ -60,29 +60,30 @@ export enum BcpTransactionState {
   InBlock,
 }
 
-/** Information attached to a signature about its state in a block */
-export type BcpBlockInfo =
-  | { readonly state: BcpTransactionState.Pending }
-  | {
-      readonly state: BcpTransactionState.InBlock;
-      /** block height, if the transaction is included in a block */
-      readonly height: number;
-      /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
-      readonly confirmations: number;
-    };
+export interface BcpBlockInfoPending {
+  readonly state: BcpTransactionState.Pending;
+}
 
-export interface BcpTransactionResponse {
-  /** @deprecated use blockInfo instead */
-  readonly metadata: {
-    readonly height?: number;
-  };
+export interface BcpBlockInfoInBlock {
+  readonly state: BcpTransactionState.InBlock;
+  /** block height, if the transaction is included in a block */
+  readonly height: number;
+  /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
+  readonly confirmations: number;
+  /** application specific data from executing tx (result, code, tags...) */
+  readonly result?: Uint8Array;
+}
+
+/** Information attached to a signature about its state in a block */
+export type BcpBlockInfo = BcpBlockInfoPending | BcpBlockInfoInBlock;
+
+export interface PostTxResponse {
   /** Information about the block the transaction is in */
   readonly blockInfo: ValueAndUpdates<BcpBlockInfo>;
-  readonly data: {
-    readonly message: string;
-    readonly txid: TxId; // a unique identifier (hash of the data)
-    readonly result: Uint8Array;
-  };
+  /** a unique identifier (hash of the transaction) */
+  readonly transactionId: TxId;
+  /** a human readable debugging log */
+  readonly log?: string;
 }
 
 export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTransaction>
@@ -91,7 +92,7 @@ export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTr
   /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
   readonly confirmations: number;
   readonly txid: TxId; // a unique identifier (hash of the data)
-  /** Data from executing tx (result, code, tags...) */
+  /** application specific data from executing tx (result, code, tags...) */
   readonly result?: Uint8Array;
   readonly log?: string;
   // readonly tags: ReadonlyArray<Tag>;
@@ -176,7 +177,7 @@ export interface BcpConnection {
   readonly changeBlock: () => Stream<number>;
 
   // submitTx submits a signed tx as is notified on every state change
-  readonly postTx: (tx: PostableBytes) => Promise<BcpTransactionResponse>;
+  readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
 
   // one-off queries to view current state
   readonly getTicker: (ticker: TokenTicker) => Promise<BcpQueryEnvelope<BcpTicker>>;

@@ -2,9 +2,9 @@ import { ChainId, PublicKeyBundle } from "@iov/base-types";
 import {
   Address,
   BcpConnection,
-  BcpTransactionResponse,
   ChainConnector,
   Nonce,
+  PostTxResponse,
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
@@ -94,7 +94,7 @@ export class MultiChainSigner {
   // the transaction and look up the private key for this public key
   // in the given keyring.
   // It finds the nonce, signs properly, and posts the tx to the blockchain.
-  public async signAndCommit(tx: UnsignedTransaction, walletId: WalletId): Promise<BcpTransactionResponse> {
+  public async signAndCommit(tx: UnsignedTransaction, walletId: WalletId): Promise<PostTxResponse> {
     const chainId = tx.chainId;
     const { connection, codec } = this.getChain(chainId);
 

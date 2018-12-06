@@ -27,8 +27,9 @@ export class ValueAndUpdates<T> {
    * Resolves as soon as search value is found.
    *
    * @param search either a value or a function that must return true when found
+   * @returns the value of the update that caused the search match
    */
-  public waitFor(search: SearchFunction<T> | T): Promise<void> {
+  public waitFor(search: SearchFunction<T> | T): Promise<T> {
     const searchImplementation: SearchFunction<T> =
       typeof search === "function" ? (search as SearchFunction<T>) : (value: T): boolean => value === search;
 
@@ -36,7 +37,7 @@ export class ValueAndUpdates<T> {
       const subscription = this.updates.subscribe({
         next: newValue => {
           if (searchImplementation(newValue)) {
-            resolve();
+            resolve(newValue);
 
             // MemoryStream.subscribe() calls next with the last value.
             // Make async to ensure the subscription exists

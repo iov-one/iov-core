@@ -14,7 +14,6 @@ import {
   BcpPubkeyQuery,
   BcpQueryEnvelope,
   BcpTicker,
-  BcpTransactionResponse,
   BcpTransactionState,
   BcpTxQuery,
   ConfirmedTransaction,
@@ -22,6 +21,7 @@ import {
   isAddressQuery,
   isPubkeyQuery,
   Nonce,
+  PostTxResponse,
   TokenTicker,
 } from "@iov/bcp-types";
 import { Parse } from "@iov/dpos";
@@ -93,7 +93,7 @@ export class LiskConnection implements BcpConnection {
     return responseBody.data.height;
   }
 
-  public async postTx(bytes: PostableBytes): Promise<BcpTransactionResponse> {
+  public async postTx(bytes: PostableBytes): Promise<PostTxResponse> {
     const transactionId = JSON.parse(Encoding.fromUtf8(bytes)).id as string;
     if (!transactionId.match(/^[0-9]+$/)) {
       throw new Error("Invalid transaction ID");
@@ -139,15 +139,8 @@ export class LiskConnection implements BcpConnection {
     );
 
     return {
-      metadata: {
-        height: undefined,
-      },
       blockInfo: new ValueAndUpdates(blockInfoProducer),
-      data: {
-        message: "",
-        txid: Encoding.toAscii(transactionId) as TxId,
-        result: new Uint8Array([]),
-      },
+      transactionId: Encoding.toAscii(transactionId) as TxId,
     };
   }
 
