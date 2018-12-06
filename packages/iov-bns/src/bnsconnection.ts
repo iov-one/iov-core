@@ -212,14 +212,10 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       onStop: () => blocksSubscription.unsubscribe(),
     });
 
-    const trandactionId = postResponse.hash;
-    const message = postResponse.log;
     return {
       blockInfo: new ValueAndUpdates(blockInfoProducer),
-      data: {
-        txid: trandactionId,
-        message: message || "",
-      },
+      transactionId: postResponse.hash,
+      log: postResponse.log,
     };
   }
 

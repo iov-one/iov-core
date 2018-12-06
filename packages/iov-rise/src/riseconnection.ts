@@ -149,10 +149,7 @@ export class RiseConnection implements BcpConnection {
 
     return {
       blockInfo: new ValueAndUpdates(blockInfoProducer),
-      data: {
-        message: "",
-        txid: Encoding.toAscii(transactionId) as TxId,
-      },
+      transactionId: Encoding.toAscii(transactionId) as TxId,
     };
   }
 

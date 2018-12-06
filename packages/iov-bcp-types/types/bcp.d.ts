@@ -53,10 +53,10 @@ export declare type BcpBlockInfo = BcpBlockInfoPending | BcpBlockInfoInBlock;
 export interface PostTxResponse {
     /** Information about the block the transaction is in */
     readonly blockInfo: ValueAndUpdates<BcpBlockInfo>;
-    readonly data: {
-        readonly message: string;
-        readonly txid: TxId;
-    };
+    /** a unique identifier (hash of the transaction) */
+    readonly transactionId: TxId;
+    /** a human readable debugging log */
+    readonly log?: string;
 }
 export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTransaction> extends SignedTransaction<T> {
     readonly height: number;

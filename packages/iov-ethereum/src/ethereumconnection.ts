@@ -97,17 +97,15 @@ export class EthereumConnection implements BcpConnection {
       params: ["0x" + Encoding.toHex(bytes)],
       id: 5,
     });
-    const message = result.data.error ? result.data.error.message : null;
+    const errorMessage = result.data.error ? (result.data.error.message as string) : undefined;
     const transactionHash = result.data.result ? result.data.result : "";
     const blockInfoPending = new DefaultValueProducer<BcpBlockInfo>({
       state: BcpTransactionState.Pending,
     });
     return {
       blockInfo: new ValueAndUpdates(blockInfoPending),
-      data: {
-        message: message,
-        txid: Encoding.fromHex(hexPadToEven(transactionHash)) as TxId,
-      },
+      transactionId: Encoding.fromHex(hexPadToEven(transactionHash)) as TxId,
+      log: errorMessage,
     };
   }
 

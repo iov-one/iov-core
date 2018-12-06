@@ -775,7 +775,7 @@ describe("BnsConnection", () => {
       const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
-      const transactionIdToSearch = response.data.txid;
+      const transactionIdToSearch = response.transactionId;
 
       await tendermintSearchIndexUpdated();
 
@@ -1217,7 +1217,7 @@ describe("BnsConnection", () => {
 
     const post = await sendCash(connection, profile, faucet, recipientAddress);
     await post.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
-    const firstId = post.data.txid;
+    const firstId = post.transactionId;
     expect(firstId).toBeDefined();
 
     await tendermintSearchIndexUpdated();
@@ -1230,7 +1230,7 @@ describe("BnsConnection", () => {
 
     const secondPost = await sendCash(connection, profile, faucet, recipientAddress);
     await secondPost.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
-    const secondId = secondPost.data.txid;
+    const secondId = secondPost.transactionId;
     expect(secondId).toBeDefined();
 
     await tendermintSearchIndexUpdated();
@@ -1397,7 +1397,7 @@ describe("BnsConnection", () => {
     const nonce = await getNonce(connection, faucetAddr);
     const signed = await profile.signTransaction(mainWalletId, faucet, swapOfferTx, bnsCodec, nonce);
     const post = await connection.postTx(bnsCodec.bytesToPost(signed));
-    const txid = post.data.txid;
+    const txid = post.transactionId;
     expect(txid.length).toEqual(20);
 
     const blockInfo = await post.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
