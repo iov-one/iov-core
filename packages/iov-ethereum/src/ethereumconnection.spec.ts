@@ -220,8 +220,7 @@ describe("EthereumConnection", () => {
       };
       const connection = await EthereumConnection.establish(base);
       const senderAddress = ethereumCodec.keyToAddress(mainIdentity.pubkey);
-      const query: BcpAccountQuery = { address: senderAddress as Address };
-      const nonceResp = await connection.getNonce(query);
+      const nonceResp = await connection.getNonce({ address: senderAddress });
       const signingJob = ethereumCodec.bytesToSign(sendTx, nonceResp.data[0]);
       const signature = await wallet.createTransactionSignature(
         mainIdentity,
