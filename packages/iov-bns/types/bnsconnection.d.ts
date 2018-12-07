@@ -64,7 +64,6 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
      * and then continuing with live feeds
      */
     liveTx(txQuery: BcpTxQuery): Stream<ConfirmedTransaction>;
-    changeBlock(): Stream<number>;
     /**
      * Emits the blockheight for every block where a tx matching these tags is emitted
      */
@@ -79,6 +78,8 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     changeNonce(addr: Address): Stream<number>;
     getBlockHeader(height: number): Promise<BlockHeader>;
     watchBlockHeaders(): Stream<BlockHeader>;
+    /** @deprecated use watchBlockHeaders().map(header => header.height) */
+    changeBlock(): Stream<number>;
     /**
      * Gets current balance and emits an update every time it changes
      */

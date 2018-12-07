@@ -16,6 +16,7 @@ import {
   BcpTicker,
   BcpTransactionState,
   BcpTxQuery,
+  BlockHeader,
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
@@ -195,16 +196,25 @@ export class LiskConnection implements BcpConnection {
     return Promise.resolve(dummyEnvelope([generateNonce()]));
   }
 
-  public changeBlock(): Stream<number> {
-    throw new Error("Not implemented");
-  }
-
   public watchAccount(_: BcpAccountQuery): Stream<BcpAccount | undefined> {
     throw new Error("Not implemented");
   }
 
   public watchNonce(_: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce | undefined> {
     throw new Error("Not implemented");
+  }
+
+  public getBlockHeader(_: number): Promise<BlockHeader> {
+    throw new Error("Not implemented");
+  }
+
+  public watchBlockHeaders(): Stream<BlockHeader> {
+    throw new Error("Not implemented");
+  }
+
+  /** @deprecated use watchBlockHeaders().map(header => header.height) */
+  public changeBlock(): Stream<number> {
+    return this.watchBlockHeaders().map(header => header.height);
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {

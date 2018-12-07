@@ -113,8 +113,6 @@ export interface BcpConnection {
     readonly disconnect: () => void;
     readonly chainId: () => ChainId;
     readonly height: () => Promise<number>;
-    readonly changeBlock: () => Stream<number>;
-    readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
     readonly getTicker: (ticker: TokenTicker) => Promise<BcpQueryEnvelope<BcpTicker>>;
     readonly getAllTickers: () => Promise<BcpQueryEnvelope<BcpTicker>>;
     /**
@@ -126,11 +124,20 @@ export interface BcpConnection {
     readonly getNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Promise<BcpQueryEnvelope<Nonce>>;
     readonly watchAccount: (account: BcpAccountQuery) => Stream<BcpAccount | undefined>;
     readonly watchNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Stream<Nonce | undefined>;
+    readonly getBlockHeader: (height: number) => Promise<BlockHeader>;
+    readonly watchBlockHeaders: () => Stream<BlockHeader>;
+    /** @deprecated use watchBlockHeaders().map(header => header.height) */
+    readonly changeBlock: () => Stream<number>;
+    readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
     readonly searchTx: (query: BcpTxQuery) => Promise<ReadonlyArray<ConfirmedTransaction>>;
     /**
      * Subscribes to all newly added transactions that match the query
      */
     readonly listenTx: (query: BcpTxQuery) => Stream<ConfirmedTransaction>;
+    /**
+     * Returns a stream for all historical transactions that match
+     * the query, along with all new transactions arriving from listenTx
+     */
     readonly liveTx: (txQuery: BcpTxQuery) => Stream<ConfirmedTransaction>;
 }
 export interface ChainConnector {

@@ -195,8 +195,13 @@ export class EthereumConnection implements BcpConnection {
     };
   }
 
-  public changeBlock(): Stream<number> {
+  public watchBlockHeaders(): Stream<BlockHeader> {
     throw new Error("Not implemented");
+  }
+
+  /** @deprecated use watchBlockHeaders().map(header => header.height) */
+  public changeBlock(): Stream<number> {
+    return this.watchBlockHeaders().map(header => header.height);
   }
 
   public watchAccount(_: BcpAccountQuery): Stream<BcpAccount | undefined> {

@@ -461,10 +461,6 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return Stream.create(producer);
   }
 
-  public changeBlock(): Stream<number> {
-    return this.watchBlockHeaders().map(header => header.height);
-  }
-
   /**
    * Emits the blockheight for every block where a tx matching these tags is emitted
    */
@@ -532,6 +528,11 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       },
     };
     return Stream.create(producer);
+  }
+
+  /** @deprecated use watchBlockHeaders().map(header => header.height) */
+  public changeBlock(): Stream<number> {
+    return this.watchBlockHeaders().map(header => header.height);
   }
 
   /**
