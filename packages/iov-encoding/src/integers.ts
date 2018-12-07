@@ -91,6 +91,31 @@ export class Int53 {
   }
 }
 
+export class Uint53 {
+  public static fromString(str: string): Uint53 {
+    const signed = Int53.fromString(str);
+    return new Uint53(signed.toNumber());
+  }
+
+  protected readonly data: Int53;
+
+  constructor(input: number) {
+    const signed = new Int53(input);
+    if (signed.toNumber() < 0) {
+      throw new Error("Input is negative");
+    }
+    this.data = signed;
+  }
+
+  public toNumber(): number {
+    return this.data.toNumber();
+  }
+
+  public toString(): string {
+    return this.data.toString();
+  }
+}
+
 export class Uint64 {
   public static fromBytesBigEndian(bytes: ArrayLike<number>): Uint64 {
     if (bytes.length !== 8) {

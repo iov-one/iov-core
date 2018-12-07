@@ -12,6 +12,13 @@ export declare class Int53 {
     toNumber(): number;
     toString(): string;
 }
+export declare class Uint53 {
+    static fromString(str: string): Uint53;
+    protected readonly data: Int53;
+    constructor(input: number);
+    toNumber(): number;
+    toString(): string;
+}
 export declare class Uint64 {
     static fromBytesBigEndian(bytes: ArrayLike<number>): Uint64;
     static fromString(str: string): Uint64;

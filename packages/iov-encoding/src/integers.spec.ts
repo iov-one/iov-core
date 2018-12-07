@@ -1,4 +1,4 @@
-import { Int53, Uint32, Uint64 } from "./integers";
+import { Int53, Uint32, Uint53, Uint64 } from "./integers";
 
 describe("Integers", () => {
   describe("Uint32", () => {
@@ -181,6 +181,80 @@ describe("Integers", () => {
       expect(() => Int53.fromString("-9007199254740992")).toThrowError(/input not in int53 range/i);
 
       // tslint:enable:no-unused-expression
+    });
+  });
+
+  describe("Uint53", () => {
+    it("can be constructed", () => {
+      expect(new Uint53(0)).toBeTruthy();
+      expect(new Uint53(1)).toBeTruthy();
+      expect(new Uint53(1.0)).toBeTruthy();
+      expect(new Uint53(42)).toBeTruthy();
+      expect(new Uint53(1000000000)).toBeTruthy();
+      expect(new Uint53(2147483647)).toBeTruthy();
+      expect(new Uint53(2147483648)).toBeTruthy();
+      expect(new Uint53(4294967295)).toBeTruthy();
+      expect(new Uint53(9007199254740991)).toBeTruthy();
+    });
+
+    it("throws for invald numbers", () => {
+      expect(() => new Uint53(NaN)).toThrowError(/not a number/);
+
+      expect(() => new Uint53(1.1)).toThrowError(/not an integer/i);
+      expect(() => new Uint53(Number.NEGATIVE_INFINITY)).toThrowError(/not an integer/i);
+      expect(() => new Uint53(Number.POSITIVE_INFINITY)).toThrowError(/not an integer/i);
+    });
+
+    it("throws for values out of range", () => {
+      expect(() => new Uint53(Number.MIN_SAFE_INTEGER - 1)).toThrowError(/not in int53 range/);
+      expect(() => new Uint53(Number.MAX_SAFE_INTEGER + 1)).toThrowError(/not in int53 range/);
+    });
+
+    it("throws for negative inputs", () => {
+      expect(() => new Uint53(-1)).toThrowError(/is negative/);
+      expect(() => new Uint53(-42)).toThrowError(/is negative/);
+      expect(() => new Uint53(-2147483648)).toThrowError(/is negative/);
+      expect(() => new Uint53(-2147483649)).toThrowError(/is negative/);
+      expect(() => new Uint53(-9007199254740991)).toThrowError(/is negative/);
+    });
+
+    it("can convert to number", () => {
+      expect(new Uint53(0).toNumber()).toEqual(0);
+      expect(new Uint53(1).toNumber()).toEqual(1);
+      expect(new Uint53(42).toNumber()).toEqual(42);
+      expect(new Uint53(1000000000).toNumber()).toEqual(1000000000);
+      expect(new Uint53(2147483647).toNumber()).toEqual(2147483647);
+      expect(new Uint53(2147483648).toNumber()).toEqual(2147483648);
+      expect(new Uint53(4294967295).toNumber()).toEqual(4294967295);
+      expect(new Uint53(9007199254740991).toNumber()).toEqual(9007199254740991);
+    });
+
+    it("can convert to string", () => {
+      expect(new Uint53(0).toString()).toEqual("0");
+      expect(new Uint53(1).toString()).toEqual("1");
+      expect(new Uint53(42).toString()).toEqual("42");
+      expect(new Uint53(1000000000).toString()).toEqual("1000000000");
+      expect(new Uint53(2147483647).toString()).toEqual("2147483647");
+      expect(new Uint53(2147483648).toString()).toEqual("2147483648");
+      expect(new Uint53(4294967295).toString()).toEqual("4294967295");
+      expect(new Uint53(9007199254740991).toString()).toEqual("9007199254740991");
+    });
+
+    it("can be constructed from string", () => {
+      expect(Uint53.fromString("0").toString()).toEqual("0");
+      expect(Uint53.fromString("1").toString()).toEqual("1");
+      expect(Uint53.fromString("9007199254740991").toString()).toEqual("9007199254740991");
+    });
+
+    it("throws for invalid string format", () => {
+      expect(() => Uint53.fromString(" 0")).toThrowError(/invalid string format/i);
+      expect(() => Uint53.fromString("+0")).toThrowError(/invalid string format/i);
+      expect(() => Uint53.fromString("1e6")).toThrowError(/invalid string format/i);
+
+      expect(() => Uint53.fromString("-9007199254740992")).toThrowError(/input not in int53 range/i);
+      expect(() => Uint53.fromString("9007199254740992")).toThrowError(/input not in int53 range/i);
+
+      expect(() => Uint53.fromString("-1")).toThrowError(/input is negative/i);
     });
   });
 
