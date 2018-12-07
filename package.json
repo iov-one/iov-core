@@ -19,7 +19,6 @@
     "bootstrap": "lerna bootstrap",
     "format": "lerna run format",
     "lint": "lerna run lint",
-    "lint-fix": "lerna run lint-fix",
     "test": "lerna run test",
     "build": "lerna run build",
     "docs": "lerna run docs",
