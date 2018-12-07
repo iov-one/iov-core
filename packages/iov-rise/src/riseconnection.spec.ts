@@ -1,3 +1,5 @@
+import { ReadonlyDate } from "readonly-date";
+
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import {
   Address,
@@ -187,6 +189,57 @@ describe("RiseConnection", () => {
     }
 
     connection.disconnect();
+  });
+
+  describe("getHeader", () => {
+    it("throws for invalid height arguments", async () => {
+      const connection = await RiseConnection.establish(base);
+
+      // not an integer
+      await connection
+        .getBlockHeader(NaN)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+      await connection
+        .getBlockHeader(NaN)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+      await connection
+        .getBlockHeader(1.1)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+      await connection
+        .getBlockHeader(Number.POSITIVE_INFINITY)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+
+      // out of range
+      await connection
+        .getBlockHeader(Number.MAX_SAFE_INTEGER + 1)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+
+      // negative
+      await connection
+        .getBlockHeader(-1)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+
+      connection.disconnect();
+    });
+
+    it("can get genesis", async () => {
+      const connection = await RiseConnection.establish(base);
+
+      // https://github.com/RiseVision/rise-node/blob/v1.3.2/etc/testnet/genesisBlock.json
+      const header = await connection.getBlockHeader(1);
+      expect(header.id).toEqual("15399938159765211302");
+      expect(header.height).toEqual(1);
+      expect(header.time).toEqual(new ReadonlyDate(1464109200 /* lisk epoch as unix timestamp */ * 1000));
+      expect(header.transactionCount).toEqual(303);
+
+      connection.disconnect();
+    });
   });
 
   describe("postTx", () => {

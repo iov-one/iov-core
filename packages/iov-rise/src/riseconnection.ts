@@ -17,6 +17,7 @@ import {
   BcpTransactionState,
   BcpTxQuery,
   BlockHeader,
+  BlockId,
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
@@ -27,7 +28,7 @@ import {
   TransactionId,
 } from "@iov/bcp-types";
 import { Parse } from "@iov/dpos";
-import { Encoding, Int53, Uint64 } from "@iov/encoding";
+import { Encoding, Int53, Uint53, Uint64 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
@@ -216,8 +217,38 @@ export class RiseConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public getBlockHeader(_: number): Promise<BlockHeader> {
-    throw new Error("Not implemented");
+  public async getBlockHeader(height: number): Promise<BlockHeader> {
+    let integerHeight: Uint53;
+    try {
+      integerHeight = new Uint53(height);
+    } catch {
+      throw new Error("Height must be a non-negative safe integer");
+    }
+
+    const url = this.baseUrl + `/api/blocks?limit=1&height=${integerHeight.toNumber()}`;
+    const result = await axios.get(url);
+    const responseBody = result.data;
+
+    if (!responseBody.success) {
+      throw new Error(responseBody.error);
+    }
+
+    if (!responseBody.blocks || !responseBody.blocks.length || responseBody.blocks.length !== 1) {
+      throw new Error("Expected a single block result but got something different.");
+    }
+
+    const blockJson = responseBody.blocks[0];
+    const blockId = Uint64.fromString(blockJson.id).toString() as BlockId;
+    const blockHeight = new Uint53(blockJson.height).toNumber();
+    const blockTime = Parse.fromTimestamp(blockJson.timestamp);
+    const transactionCount = new Uint53(blockJson.numberOfTransactions).toNumber();
+
+    return {
+      id: blockId,
+      height: blockHeight,
+      time: blockTime,
+      transactionCount: transactionCount,
+    };
   }
 
   public watchBlockHeaders(): Stream<BlockHeader> {
