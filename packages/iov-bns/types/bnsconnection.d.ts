@@ -1,7 +1,7 @@
 import { Stream } from "xstream";
 import { ChainId, PostableBytes } from "@iov/base-types";
-import { Address, BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpPubkeyQuery, BcpQueryEnvelope, BcpQueryTag, BcpSwapQuery, BcpTicker, BcpTxQuery, ConfirmedTransaction, Nonce, PostTxResponse, TokenTicker } from "@iov/bcp-types";
-import { Header, StatusResponse } from "@iov/tendermint-rpc";
+import { Address, BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpPubkeyQuery, BcpQueryEnvelope, BcpQueryTag, BcpSwapQuery, BcpTicker, BcpTxQuery, BlockHeader, ConfirmedTransaction, Nonce, PostTxResponse, TokenTicker } from "@iov/bcp-types";
+import { StatusResponse } from "@iov/tendermint-rpc";
 import { BnsBlockchainNft, BnsBlockchainsQuery, BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
  * Talks directly to the BNS blockchain and exposes the
@@ -77,8 +77,8 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
      * A helper that triggers if the nonce every changes
      */
     changeNonce(addr: Address): Stream<number>;
-    getBlockHeader(height: number): Promise<Header>;
-    watchBlockHeaders(): Stream<Header>;
+    getBlockHeader(height: number): Promise<BlockHeader>;
+    watchBlockHeaders(): Stream<BlockHeader>;
     /**
      * Gets current balance and emits an update every time it changes
      */

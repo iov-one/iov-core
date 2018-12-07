@@ -396,7 +396,7 @@ describe("BnsConnection", () => {
         const connection = await BnsConnection.establish(bnsdTendermintUrl);
         const header = await connection.getBlockHeader(3);
         expect(header.height).toEqual(3);
-        expect(header.appHash.length).toEqual(20);
+        expect(header.id).toMatch(/^[0-9A-F]{40}$/);
         connection.disconnect();
       });
 

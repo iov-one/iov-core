@@ -18,6 +18,8 @@ import {
   BcpTicker,
   BcpTransactionState,
   BcpTxQuery,
+  BlockHeader,
+  BlockId,
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
@@ -40,9 +42,7 @@ import { DefaultValueProducer, toListPromise, ValueAndUpdates } from "@iov/strea
 import {
   broadcastTxSyncSuccess,
   Client as TendermintClient,
-  getHeaderEventHeight,
   getTxEventHeight,
-  Header,
   StatusResponse,
   TxResponse,
 } from "@iov/tendermint-rpc";
@@ -462,7 +462,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   }
 
   public changeBlock(): Stream<number> {
-    return this.watchBlockHeaders().map(getHeaderEventHeight);
+    return this.watchBlockHeaders().map(header => header.height);
   }
 
   /**
@@ -489,20 +489,49 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return this.changeTx([bnsNonceTag(addr)]);
   }
 
-  public async getBlockHeader(height: number): Promise<Header> {
+  public async getBlockHeader(height: number): Promise<BlockHeader> {
     const { blockMetas } = await this.tmClient.blockchain(height, height);
     if (blockMetas.length < 1) {
       throw new Error(`Header ${height} doesn't exist yet`);
     }
+
+    const blockId = Encoding.toHex(blockMetas[0].blockId.hash).toUpperCase() as BlockId;
     const { header } = blockMetas[0];
     if (header.height !== height) {
       throw new Error(`Requested header ${height} but got ${header.height}`);
     }
-    return header;
+
+    return {
+      id: blockId,
+      height: header.height,
+      time: header.time,
+      transactionCount: header.numTxs,
+    };
   }
 
-  public watchBlockHeaders(): Stream<Header> {
-    return this.tmClient.subscribeNewBlockHeader();
+  public watchBlockHeaders(): Stream<BlockHeader> {
+    // TODO: this implementation is crazy but currently we have no way to calculate a
+    // block ID from a block header
+
+    let headersSubscription: Subscription;
+    // create explicit producer because Steam.map() does not work with async function
+    const producer: Producer<BlockHeader> = {
+      start: listener => {
+        headersSubscription = this.tmClient.subscribeNewBlockHeader().subscribe({
+          next: header => {
+            this.getBlockHeader(header.height)
+              .then(blockHeader => listener.next(blockHeader))
+              .catch(error => listener.error(error));
+          },
+          error: error => listener.error(error),
+          complete: () => listener.error("Source stream completed"),
+        });
+      },
+      stop: () => {
+        headersSubscription.unsubscribe();
+      },
+    };
+    return Stream.create(producer);
   }
 
   /**
