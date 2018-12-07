@@ -1,3 +1,5 @@
+import { ReadonlyDate } from "readonly-date";
+
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import {
   Address,
@@ -205,6 +207,58 @@ describe("LiskConnection", () => {
     }
 
     connection.disconnect();
+  });
+
+  describe("getHeader", () => {
+    it("throws for invalid height arguments", async () => {
+      pendingWithoutLiskDevnet();
+      const connection = await LiskConnection.establish(devnetBase);
+
+      // not an integer
+      await connection
+        .getBlockHeader(NaN)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+      await connection
+        .getBlockHeader(NaN)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+      await connection
+        .getBlockHeader(1.1)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+      await connection
+        .getBlockHeader(Number.POSITIVE_INFINITY)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+
+      // out of range
+      await connection
+        .getBlockHeader(Number.MAX_SAFE_INTEGER + 1)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+
+      // negative
+      await connection
+        .getBlockHeader(-1)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+
+      connection.disconnect();
+    });
+
+    it("can get genesis", async () => {
+      pendingWithoutLiskDevnet();
+      const connection = await LiskConnection.establish(devnetBase);
+
+      const header = await connection.getBlockHeader(1);
+      expect(header.id).toEqual("6524861224470851795");
+      expect(header.height).toEqual(1);
+      expect(header.time).toEqual(new ReadonlyDate(1464109200 /* lisk epoch as unix timestamp */ * 1000));
+      expect(header.transactionCount).toEqual(103);
+
+      connection.disconnect();
+    });
   });
 
   describe("postTx", () => {
