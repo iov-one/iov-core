@@ -91,6 +91,10 @@ fold_start "update-npmipgnore"
 ./scripts/update_npmignore.sh
 fold_end
 
+fold_start "yarn-lint"
+yarn lint
+fold_end
+
 fold_start "yarn-build"
 yarn build
 fold_end
