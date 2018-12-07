@@ -12,7 +12,7 @@ import {
   SignedTransaction,
   SigningJob,
   TokenTicker,
-  TransactionIdBytes,
+  TransactionId,
   TransactionKind,
   TxCodec,
 } from "@iov/bcp-types";
@@ -457,7 +457,7 @@ describe("UserProfile", () => {
       bytesToPost: (): PostableBytes => {
         throw new Error("not implemented");
       },
-      identifier: (): TransactionIdBytes => {
+      identifier: (): TransactionId => {
         throw new Error("not implemented");
       },
       parseBytes: (): SignedTransaction => {
@@ -529,7 +529,7 @@ describe("UserProfile", () => {
       bytesToPost: (): PostableBytes => {
         throw new Error("not implemented");
       },
-      identifier: (): TransactionIdBytes => {
+      identifier: (): TransactionId => {
         throw new Error("not implemented");
       },
       parseBytes: (): SignedTransaction => {

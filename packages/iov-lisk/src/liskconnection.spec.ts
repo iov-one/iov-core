@@ -1,4 +1,4 @@
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes, TxId } from "@iov/base-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import {
   Address,
   Amount,
@@ -10,6 +10,7 @@ import {
   SendTx,
   SignedTransaction,
   TokenTicker,
+  TransactionId,
   TransactionKind,
 } from "@iov/bcp-types";
 import { Derivation } from "@iov/dpos";
@@ -19,7 +20,7 @@ import { Ed25519Wallet } from "@iov/keycontrol";
 import { liskCodec } from "./liskcodec";
 import { generateNonce, LiskConnection } from "./liskconnection";
 
-const { fromHex, toAscii } = Encoding;
+const { fromHex } = Encoding;
 
 function pendingWithoutLiskDevnet(): void {
   if (!process.env.LISK_ENABLED) {
@@ -415,20 +416,20 @@ describe("LiskConnection", () => {
 
       // by non-existing ID
       {
-        const searchId = "98568736528934587";
-        const results = await connection.searchTx({ hash: toAscii(searchId) as TxId, tags: [] });
+        const searchId = "98568736528934587" as TransactionId;
+        const results = await connection.searchTx({ id: searchId, tags: [] });
         expect(results.length).toEqual(0);
       }
 
       // by existing ID (from lisk/init.sh)
       {
-        const searchId = "12493173350733478622";
-        const results = await connection.searchTx({ hash: toAscii(searchId) as TxId, tags: [] });
+        const searchId = "12493173350733478622" as TransactionId;
+        const results = await connection.searchTx({ id: searchId, tags: [] });
         expect(results.length).toEqual(1);
         const result = results[0];
         expect(result.height).toBeGreaterThanOrEqual(2);
         expect(result.height).toBeLessThan(100);
-        expect(result.txid).toEqual(toAscii(searchId));
+        expect(result.transactionId).toEqual(searchId);
         const transaction = result.transaction;
         if (transaction.kind !== TransactionKind.Send) {
           throw new Error("Unexpected transaction type");

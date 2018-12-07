@@ -5,11 +5,10 @@ import {
   PublicKeyBundle,
   PublicKeyBytes,
   SignatureBytes,
-  TxId,
 } from "@iov/base-types";
 import { Encoding } from "@iov/encoding";
 
-import { JsonRpcEvent, JsonRpcSuccess } from "../common";
+import { JsonRpcEvent, JsonRpcSuccess, TxHash } from "../common";
 import {
   Base64,
   Base64String,
@@ -191,7 +190,7 @@ export interface RpcBroadcastTxSyncResponse extends RpcTxData {
 }
 const decodeBroadcastTxSync = (data: RpcBroadcastTxSyncResponse): responses.BroadcastTxSyncResponse => ({
   ...decodeTxData(data),
-  hash: Encoding.fromHex(required(data.hash)) as TxId,
+  hash: Encoding.fromHex(required(data.hash)) as TxHash,
 });
 
 export interface RpcBroadcastTxCommitResponse {
@@ -204,7 +203,7 @@ const decodeBroadcastTxCommit = (
   data: RpcBroadcastTxCommitResponse,
 ): responses.BroadcastTxCommitResponse => ({
   height: may(Integer.parse, data.height),
-  hash: Encoding.fromHex(required(data.hash)) as TxId,
+  hash: Encoding.fromHex(required(data.hash)) as TxHash,
   checkTx: decodeTxData(required(data.check_tx)),
   deliverTx: may(decodeTxData, data.deliver_tx),
 });
@@ -269,7 +268,7 @@ const decodeTxResponse = (data: RpcTxResponse): responses.TxResponse => ({
   txResult: decodeTxData(required(data.tx_result)),
   height: Integer.parse(required(data.height)),
   index: Integer.ensure(required(data.index)),
-  hash: Encoding.fromHex(required(data.hash)) as TxId,
+  hash: Encoding.fromHex(required(data.hash)) as TxHash,
   proof: may(decodeTxProof, data.proof),
 });
 

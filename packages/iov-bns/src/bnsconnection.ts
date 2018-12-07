@@ -1,7 +1,7 @@
 import equal from "fast-deep-equal";
 import { Producer, Stream, Subscription } from "xstream";
 
-import { ChainId, PostableBytes, TxId } from "@iov/base-types";
+import { ChainId, PostableBytes } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
@@ -32,6 +32,7 @@ import {
   SwapState,
   SwapTimeoutTx,
   TokenTicker,
+  TransactionId,
   TxReadCodec,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
@@ -162,7 +163,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     if (!broadcastTxSyncSuccess(postResponse)) {
       throw new Error(JSON.stringify(postResponse, null, 2));
     }
-    const transactionId = postResponse.hash;
+    const transactionId = Encoding.toHex(postResponse.hash).toUpperCase() as TransactionId;
 
     const firstEvent: BcpBlockInfo = { state: BcpTransactionState.Pending };
     let blocksSubscription: Subscription;
@@ -173,7 +174,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
         // we utilize liveTx to implement a _search or watch_ mechanism since we do not know
         // if the transaction is already committed when the producer is started
-        const searchResult = await toListPromise(this.liveTx({ hash: transactionId, tags: [] }), 1);
+        const searchResult = await toListPromise(this.liveTx({ id: transactionId, tags: [] }), 1);
         const transactionHeight = searchResult[0].height;
         const transactionResult = searchResult[0].result;
 
@@ -214,7 +215,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
     return {
       blockInfo: new ValueAndUpdates(blockInfoProducer),
-      transactionId: postResponse.hash,
+      transactionId: Encoding.toHex(postResponse.hash).toUpperCase() as TransactionId,
       log: postResponse.log,
     };
   }
@@ -363,7 +364,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const mapper = ({ tx, hash, height, txResult }: TxResponse): ConfirmedTransaction => ({
       height: height,
       confirmations: currentHeight - height + 1,
-      txid: hash as TxId,
+      transactionId: Encoding.toHex(hash).toUpperCase() as TransactionId,
       log: txResult.log,
       result: txResult.data,
       ...this.codec.parseBytes(tx, chainId),
@@ -388,7 +389,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
         (transaction): ConfirmedTransaction => ({
           height: transaction.height,
           confirmations: 1, // assuming block height is current height when listening to events
-          txid: transaction.hash as TxId,
+          transactionId: Encoding.toHex(transaction.hash).toUpperCase() as TransactionId,
           log: transaction.result.log,
           result: transaction.result.data,
           ...this.codec.parseBytes(transaction.tx, chainId),
@@ -433,12 +434,12 @@ export class BnsConnection implements BcpAtomicSwapConnection {
               listener.next(transaction);
             }
 
-            const historyIds = history.map(transaction => Encoding.toHex(transaction.txid));
+            const historyIds = history.map(transaction => transaction.transactionId);
 
             let element: ConfirmedTransaction | undefined;
             // tslint:disable-next-line:no-conditional-assignment
             while ((element = queue.shift())) {
-              const elementId = Encoding.toHex(element.txid);
+              const elementId = element.transactionId;
               if (historyIds.indexOf(elementId) !== -1) {
                 // only do this for elements not already sent
                 listener.next(element);

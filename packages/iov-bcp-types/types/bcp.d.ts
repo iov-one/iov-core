@@ -1,7 +1,7 @@
 import { Stream } from "xstream";
-import { ChainId, PostableBytes, PublicKeyBundle, TxId } from "@iov/base-types";
+import { ChainId, PostableBytes, PublicKeyBundle } from "@iov/base-types";
 import { ValueAndUpdates } from "@iov/stream";
-import { Address, SignedTransaction, TxCodec } from "./signables";
+import { Address, SignedTransaction, TransactionId, TxCodec } from "./signables";
 import { Amount, Nonce, TokenTicker, UnsignedTransaction } from "./transactions";
 export interface BcpQueryEnvelope<T> {
     readonly metadata: BcpQueryMetadata;
@@ -54,7 +54,7 @@ export interface PostTxResponse {
     /** Information about the block the transaction is in */
     readonly blockInfo: ValueAndUpdates<BcpBlockInfo>;
     /** a unique identifier (hash of the transaction) */
-    readonly transactionId: TxId;
+    readonly transactionId: TransactionId;
     /** a human readable debugging log */
     readonly log?: string;
 }
@@ -62,7 +62,8 @@ export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTr
     readonly height: number;
     /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
     readonly confirmations: number;
-    readonly txid: TxId;
+    /** a unique identifier (hash of the transaction) */
+    readonly transactionId: TransactionId;
     /** application specific data from executing tx (result, code, tags...) */
     readonly result?: Uint8Array;
     readonly log?: string;
@@ -73,7 +74,7 @@ export interface BcpQueryTag {
 }
 export interface BcpTxQuery {
     readonly tags: ReadonlyArray<BcpQueryTag>;
-    readonly hash?: TxId;
+    readonly id?: TransactionId;
     readonly height?: number;
     readonly minHeight?: number;
     readonly maxHeight?: number;

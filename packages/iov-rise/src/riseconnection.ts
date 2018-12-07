@@ -3,7 +3,7 @@ import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
-import { ChainId, PostableBytes, TxId } from "@iov/base-types";
+import { ChainId, PostableBytes } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
@@ -23,15 +23,16 @@ import {
   Nonce,
   PostTxResponse,
   TokenTicker,
+  TransactionId,
 } from "@iov/bcp-types";
 import { Parse } from "@iov/dpos";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding, Int53, Uint64 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
 import { riseCodec } from "./risecodec";
 
-const { fromAscii, toAscii, toUtf8 } = Encoding;
+const { toUtf8 } = Encoding;
 
 // poll every 10 seconds (block time 30s)
 const transactionStatePollInterval = 10_000;
@@ -94,7 +95,7 @@ export class RiseConnection implements BcpConnection {
   }
 
   public async postTx(bytes: PostableBytes): Promise<PostTxResponse> {
-    const transactionId = JSON.parse(Encoding.fromUtf8(bytes)).id as string;
+    const transactionId = JSON.parse(Encoding.fromUtf8(bytes)).id as TransactionId;
     if (!transactionId.match(/^[0-9]+$/)) {
       throw new Error("Invalid transaction ID");
     }
@@ -128,7 +129,7 @@ export class RiseConnection implements BcpConnection {
     const blockInfoProducer = new DefaultValueProducer<BcpBlockInfo>(firstEvent, {
       onStarted: () => {
         blockInfoInterval = setInterval(async () => {
-          const search = await this.searchTx({ hash: toAscii(transactionId) as TxId, tags: [] });
+          const search = await this.searchTx({ id: transactionId, tags: [] });
           if (search.length > 0) {
             const confirmedTransaction = search[0];
             const event: BcpBlockInfo = {
@@ -149,7 +150,7 @@ export class RiseConnection implements BcpConnection {
 
     return {
       blockInfo: new ValueAndUpdates(blockInfoProducer),
-      transactionId: Encoding.toAscii(transactionId) as TxId,
+      transactionId: transactionId,
     };
   }
 
@@ -223,10 +224,8 @@ export class RiseConnection implements BcpConnection {
       throw new Error("Query by height, minHeight, maxHeight, tags not supported");
     }
 
-    if (query.hash) {
-      const transactionId = fromAscii(query.hash);
-
-      const url = this.baseUrl + `/api/transactions/get?id=${transactionId}`;
+    if (query.id !== undefined) {
+      const url = this.baseUrl + `/api/transactions/get?id=${query.id}`;
       const result = await axios.get(url);
       const responseBody = result.data;
 
@@ -242,6 +241,7 @@ export class RiseConnection implements BcpConnection {
       const transactionJson = responseBody.transaction;
       const height = new Int53(transactionJson.height);
       const confirmations = new Int53(transactionJson.confirmations);
+      const transactionId = Uint64.fromString(transactionJson.id).toString() as TransactionId;
 
       const transaction = riseCodec.parseBytes(
         toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
@@ -252,7 +252,7 @@ export class RiseConnection implements BcpConnection {
           ...transaction,
           height: height.toNumber(),
           confirmations: confirmations.toNumber(),
-          txid: query.hash,
+          transactionId: transactionId,
         },
       ];
     } else {

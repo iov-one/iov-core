@@ -1,2 +1,3 @@
-import { PostableBytes, TxId } from "@iov/base-types";
-export declare function hashTx(tx: PostableBytes): TxId;
+import { PostableBytes } from "@iov/base-types";
+import { TxHash } from "../common";
+export declare function hashTx(tx: PostableBytes): TxHash;

@@ -2,7 +2,7 @@ import axios from "axios";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
-import { ChainId, PostableBytes, TxId } from "@iov/base-types";
+import { ChainId, PostableBytes } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
@@ -22,6 +22,7 @@ import {
   Nonce,
   PostTxResponse,
   TokenTicker,
+  TransactionId,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
@@ -97,15 +98,26 @@ export class EthereumConnection implements BcpConnection {
       params: ["0x" + Encoding.toHex(bytes)],
       id: 5,
     });
-    const errorMessage = result.data.error ? (result.data.error.message as string) : undefined;
-    const transactionHash = result.data.result ? result.data.result : "";
+    if (result.data.error) {
+      throw new Error(result.data.error.message);
+    }
+
+    const transactionResult = result.data.result;
+    if (typeof transactionResult !== "string") {
+      throw new Error("Result field was not a string");
+    }
+
+    const transactionId = transactionResult as TransactionId;
+    if (!transactionId.match(/^0x[0-9a-f]{64}$/)) {
+      throw new Error("Invalid transaction ID format");
+    }
+
     const blockInfoPending = new DefaultValueProducer<BcpBlockInfo>({
       state: BcpTransactionState.Pending,
     });
     return {
       blockInfo: new ValueAndUpdates(blockInfoPending),
-      transactionId: Encoding.fromHex(hexPadToEven(transactionHash)) as TxId,
-      log: errorMessage,
+      transactionId: transactionId,
     };
   }
 
@@ -195,20 +207,20 @@ export class EthereumConnection implements BcpConnection {
   public watchNonce(_: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce | undefined> {
     throw new Error("Not implemented");
   }
+
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
     if (query.height || query.minHeight || query.maxHeight) {
       throw new Error("Query by height, minHeight, maxHeight not supported");
     }
     let txUncodified;
-    if (query.hash) {
-      const transactionHash = Encoding.toHex(query.hash);
-      if (transactionHash.length !== 64) {
-        throw new Error("Invalid transaction hash length");
+    if (query.id !== undefined) {
+      if (!query.id.match(/^0x[0-9a-f]{64}$/)) {
+        throw new Error("Invalid transaction ID format");
       }
       txUncodified = await axios.post(this.baseUrl, {
         jsonrpc: "2.0",
         method: "eth_getTransactionByHash",
-        params: ["0x" + transactionHash],
+        params: [query.id],
         id: 6,
       });
       if (txUncodified.data.result === null || txUncodified.data.result.blockNumber === null) {
@@ -231,13 +243,13 @@ export class EthereumConnection implements BcpConnection {
         Encoding.toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
         this.myChainId,
       );
-      const transactionId = Encoding.fromHex(hexPadToEven(txUncodified.data.result.hash)) as TxId;
+      const transactionId = `0x${hexPadToEven(txUncodified.data.result.hash)}` as TransactionId;
       return [
         {
           ...transaction,
           height: height,
           confirmations: confirmations,
-          txid: transactionId,
+          transactionId: transactionId,
         },
       ];
     } else if (query.tags[0].key === "apiLink" && query.tags[1].key === "account") {
@@ -256,12 +268,12 @@ export class EthereumConnection implements BcpConnection {
             Encoding.toUtf8(JSON.stringify({ ...tx })) as PostableBytes,
             this.myChainId,
           );
-          const transactionId = Encoding.fromHex(hexPadToEven(tx.hash)) as TxId;
+          const transactionId = `0x${hexPadToEven(tx.hash)}` as TransactionId;
           transactions.push({
             ...transaction,
             height: tx.blockNumber,
             confirmations: tx.confirmations,
-            txid: transactionId,
+            transactionId: transactionId,
           });
         }
       }

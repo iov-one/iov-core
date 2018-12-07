@@ -6,7 +6,7 @@ import { Encoding, Int53 } from "@iov/encoding";
 
 import { Serialization, TransactionSerializationOptions } from "./serialization";
 
-const { fromAscii, fromHex } = Encoding;
+const { fromHex } = Encoding;
 const { serializeTransaction, toTimestamp, transactionId } = Serialization;
 
 const epochAsUnixTimestamp = 1464109200;
@@ -267,13 +267,13 @@ describe("Serialization", () => {
         otherSignatures: [],
       };
 
-      const binaryId = transactionId(
+      const id = transactionId(
         signed.transaction,
         defaultCreationDate,
         signed.primarySignature,
         liskTransactionSerializationOptions,
       );
-      expect(fromAscii(binaryId)).toEqual("15806479375328957764");
+      expect(id).toEqual("15806479375328957764");
     });
   });
 });

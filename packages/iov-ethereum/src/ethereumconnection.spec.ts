@@ -1,19 +1,18 @@
-import { Algorithm, TxId } from "@iov/base-types";
+import { Algorithm } from "@iov/base-types";
 import {
   Address,
   BcpAccountQuery,
   SendTx,
   SignedTransaction,
   TokenTicker,
+  TransactionId,
   TransactionKind,
 } from "@iov/bcp-types";
-import { Encoding } from "@iov/encoding";
 import { HdPaths, Secp256k1HdWallet } from "@iov/keycontrol";
 
 import { ethereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
 import { TestConfig } from "./testconfig";
-import { hexPadToEven } from "./utils";
 
 function skipTests(): boolean {
   return !process.env.ETHEREUM_ENABLED;
@@ -168,21 +167,19 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(base);
       // invalid lenght
-      const invalidHashLenght = "0x1234567890abcdef";
-      const invalidTxId = Encoding.fromHex(hexPadToEven(invalidHashLenght)) as TxId;
+      const invalidHashLenght = "0x1234567890abcdef" as TransactionId;
       await connection
-        .searchTx({ hash: invalidTxId, tags: [] })
+        .searchTx({ id: invalidHashLenght, tags: [] })
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/Invalid transaction hash length/));
+        .catch(error => expect(error).toMatch(/Invalid transaction ID format/i));
       connection.disconnect();
     });
 
     it("can search non-existing transaction by hash", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(base);
-      const nonExistingHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
-      const nonExistingId = Encoding.fromHex(hexPadToEven(nonExistingHash)) as TxId;
-      const results = await connection.searchTx({ hash: nonExistingId, tags: [] });
+      const nonExistingHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" as TransactionId;
+      const results = await connection.searchTx({ id: nonExistingHash, tags: [] });
       expect(results.length).toEqual(0);
       connection.disconnect();
     });
@@ -220,8 +217,7 @@ describe("EthereumConnection", () => {
       };
       const connection = await EthereumConnection.establish(base);
       const senderAddress = ethereumCodec.keyToAddress(mainIdentity.pubkey);
-      const query: BcpAccountQuery = { address: senderAddress as Address };
-      const nonceResp = await connection.getNonce(query);
+      const nonceResp = await connection.getNonce({ address: senderAddress });
       const signingJob = ethereumCodec.bytesToSign(sendTx, nonceResp.data[0]);
       const signature = await wallet.createTransactionSignature(
         mainIdentity,
@@ -242,12 +238,13 @@ describe("EthereumConnection", () => {
       const bytesToPost = ethereumCodec.bytesToPost(signedTransaction);
 
       const resultPost = await connection.postTx(bytesToPost);
-      const postedTxId = resultPost.transactionId;
+      expect(resultPost.transactionId).toMatch(/^0x[0-9a-f]{64}$/);
       await sleep(waitForTx);
-      const resultSearch = await connection.searchTx({ hash: postedTxId, tags: [] });
+
+      const resultSearch = await connection.searchTx({ id: resultPost.transactionId, tags: [] });
       expect(resultSearch.length).toEqual(1);
       const result = resultSearch[0];
-      expect(result.txid).toEqual(postedTxId);
+      expect(result.transactionId).toEqual(resultPost.transactionId);
       const transaction = result.transaction;
       if (transaction.kind !== TransactionKind.Send) {
         throw new Error("Unexpected transaction type");
@@ -262,11 +259,11 @@ describe("EthereumConnection", () => {
     xit("can search a transaction by hash", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(base);
-      const storedTxId = new Uint8Array([]) as TxId;
-      const results = await connection.searchTx({ hash: storedTxId, tags: [] });
+      const storedTxId = "" as TransactionId;
+      const results = await connection.searchTx({ id: storedTxId, tags: [] });
       expect(results.length).toEqual(1);
       const result = results[0];
-      expect(result.txid).toEqual(storedTxId);
+      expect(result.transactionId).toEqual(storedTxId);
       const transaction = result.transaction;
       if (transaction.kind !== TransactionKind.Send) {
         throw new Error("Unexpected transaction type");

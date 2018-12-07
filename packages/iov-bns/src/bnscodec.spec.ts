@@ -48,8 +48,7 @@ describe("Check codec", () => {
 
   it("generates transaction id", () => {
     const id = bnsCodec.identifier(signedTxJson);
-    expect(id).toBeTruthy();
-    expect(id.length).toBe(20);
+    expect(id).toMatch(/^[0-9A-F]{40}$/);
   });
 
   it("round trip works", () => {

@@ -1,5 +1,4 @@
-import { TxId } from "@iov/base-types";
-import { Address } from "@iov/bcp-types";
+import { Address, TransactionId } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
 import { address, hashCode, pubJson } from "./testdata";
@@ -135,8 +134,8 @@ describe("Util", () => {
       expect(query).toEqual("some='info' AND tx.height>77");
     });
 
-    it("handles hash", () => {
-      const query = buildTxQuery({ hash: new Uint8Array([0xaa, 0xbb, 0x33]) as TxId, tags: [] });
+    it("handles id", () => {
+      const query = buildTxQuery({ id: "AABB33" as TransactionId, tags: [] });
       expect(query).toEqual("tx.hash='AABB33'");
     });
   });

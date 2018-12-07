@@ -5,7 +5,7 @@ import {
   SignableBytes,
   SignedTransaction,
   SigningJob,
-  TransactionIdBytes,
+  TransactionId,
   TransactionKind,
   TxCodec,
   UnsignedTransaction,
@@ -86,7 +86,7 @@ export const ethereumCodec: TxCodec = {
         throw new Error("Unsupported kind of transaction");
     }
   },
-  identifier: (signed: SignedTransaction): TransactionIdBytes => {
+  identifier: (signed: SignedTransaction): TransactionId => {
     throw new Error(`Not implemented tx: ${signed}`);
   },
   parseBytes: (bytes: PostableBytes, chainId: ChainId): SignedTransaction => {

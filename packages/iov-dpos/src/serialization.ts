@@ -2,7 +2,7 @@
 import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
-import { FullSignature, TransactionIdBytes, TransactionKind, UnsignedTransaction } from "@iov/bcp-types";
+import { FullSignature, TransactionId, TransactionKind, UnsignedTransaction } from "@iov/bcp-types";
 import { Sha256 } from "@iov/crypto";
 import { Encoding, Uint64 } from "@iov/encoding";
 
@@ -84,10 +84,10 @@ export class Serialization {
     creationTime: ReadonlyDate,
     primarySignature: FullSignature,
     options: TransactionSerializationOptions,
-  ): TransactionIdBytes {
+  ): TransactionId {
     const serialized = Serialization.serializeTransaction(unsigned, creationTime, options);
     const hash = new Sha256(serialized).update(primarySignature.signature).digest();
     const idString = Long.fromBytesLE(Array.from(hash.slice(0, 8)), true).toString(10);
-    return Encoding.toAscii(idString) as TransactionIdBytes;
+    return idString as TransactionId;
   }
 }

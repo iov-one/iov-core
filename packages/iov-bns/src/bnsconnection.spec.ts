@@ -1,6 +1,6 @@
 import Long from "long";
 
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, TxId } from "@iov/base-types";
+import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import {
   AddAddressToUsernameTx,
   Address,
@@ -322,8 +322,7 @@ describe("BnsConnection", () => {
       expect(tx.kind).toEqual(sendTx.kind);
       expect(tx).toEqual(sendTx);
       // make sure we have a txid
-      expect(mine.txid).toBeDefined();
-      expect(mine.txid.length).toBeGreaterThan(0);
+      expect(mine.transactionId).toMatch(/^[0-9A-F]{40}$/);
 
       connection.disconnect();
     });
@@ -777,7 +776,7 @@ describe("BnsConnection", () => {
       connection.disconnect();
     });
 
-    it("can search for transactions by hash", async () => {
+    it("can search for transactions by ID", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const chainId = await connection.chainId();
@@ -807,10 +806,10 @@ describe("BnsConnection", () => {
 
       await tendermintSearchIndexUpdated();
 
-      // finds transaction using hash
-      const searchResults = await connection.searchTx({ hash: transactionIdToSearch, tags: [] });
+      // finds transaction using id
+      const searchResults = await connection.searchTx({ id: transactionIdToSearch, tags: [] });
       expect(searchResults.length).toEqual(1);
-      expect(searchResults[0].txid).toEqual(transactionIdToSearch);
+      expect(searchResults[0].transactionId).toEqual(transactionIdToSearch);
       expect(searchResults[0].transaction.kind).toEqual(TransactionKind.Send);
       expect((searchResults[0].transaction as SendTx).memo).toEqual(memo);
 
@@ -927,13 +926,13 @@ describe("BnsConnection", () => {
 
         const nonce = await getNonce(connection, faucetAddress);
         const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
-        const txId = bnsCodec.identifier(signed);
+        const transactionId = bnsCodec.identifier(signed);
         const heightBeforeTransaction = await connection.height();
 
         // start listening
-        const subscription = connection.listenTx({ hash: (txId as unknown) as TxId, tags: [] }).subscribe({
+        const subscription = connection.listenTx({ id: transactionId, tags: [] }).subscribe({
           next: event => {
-            expect(event.txid).toEqual(txId);
+            expect(event.transactionId).toEqual(transactionId);
             expect(event.height).toEqual(heightBeforeTransaction + 1);
 
             subscription.unsubscribe();
@@ -1246,7 +1245,7 @@ describe("BnsConnection", () => {
     const post = await sendCash(connection, profile, faucet, recipientAddress);
     await post.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
     const firstId = post.transactionId;
-    expect(firstId).toBeDefined();
+    expect(firstId).toMatch(/^[0-9A-F]{40}$/);
 
     await tendermintSearchIndexUpdated();
 
@@ -1259,26 +1258,26 @@ describe("BnsConnection", () => {
     const secondPost = await sendCash(connection, profile, faucet, recipientAddress);
     await secondPost.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
     const secondId = secondPost.transactionId;
-    expect(secondId).toBeDefined();
+    expect(secondId).toMatch(/^[0-9A-F]{40}$/);
 
     await tendermintSearchIndexUpdated();
 
     const afterSearch = await connection.searchTx(query);
     expect(afterSearch.length).toEqual(2);
     // make sure we have unique, defined txids
-    const txIds = afterSearch.map(tx => tx.txid);
-    expect(txIds.length).toEqual(2);
-    expect(txIds[0]).toEqual(firstId);
-    expect(txIds[1]).toEqual(secondId);
-    expect(txIds[0]).not.toEqual(txIds[1]);
+    const transactionIds = afterSearch.map(tx => tx.transactionId);
+    expect(transactionIds.length).toEqual(2);
+    expect(transactionIds[0]).toEqual(firstId);
+    expect(transactionIds[1]).toEqual(secondId);
+    expect(transactionIds[0]).not.toEqual(transactionIds[1]);
 
     // give time for all events to be processed
     await sleep(100);
     // this should grab the tx before it started, as well as the one after
     expect(live.value().length).toEqual(2);
     // make sure the txids also match
-    expect(live.value()[0].txid).toEqual(afterSearch[0].txid);
-    expect(live.value()[1].txid).toEqual(afterSearch[1].txid);
+    expect(live.value()[0].transactionId).toEqual(afterSearch[0].transactionId);
+    expect(live.value()[1].transactionId).toEqual(afterSearch[1].transactionId);
 
     connection.disconnect();
   });
@@ -1425,8 +1424,8 @@ describe("BnsConnection", () => {
     const nonce = await getNonce(connection, faucetAddr);
     const signed = await profile.signTransaction(mainWalletId, faucet, swapOfferTx, bnsCodec, nonce);
     const post = await connection.postTx(bnsCodec.bytesToPost(signed));
-    const txid = post.transactionId;
-    expect(txid.length).toEqual(20);
+    const transactionId = post.transactionId;
+    expect(transactionId).toMatch(/^[0-9A-F]{40}$/);
 
     const blockInfo = await post.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
     const txHeight = (blockInfo as BcpBlockInfoInBlock).height;
@@ -1438,11 +1437,11 @@ describe("BnsConnection", () => {
     await tendermintSearchIndexUpdated();
 
     // now query by the txid
-    const search = await connection.searchTx({ hash: txid, tags: [] });
+    const search = await connection.searchTx({ id: transactionId, tags: [] });
     expect(search.length).toEqual(1);
     // make sure we get he same tx loaded
     const loaded = search[0];
-    expect(loaded.txid).toEqual(txid);
+    expect(loaded.transactionId).toEqual(transactionId);
     // we never write the offer (with preimage) to a chain, only convert it to a SwapCounterTx
     // which only has the hashed data, then commit it (thus the different kind is expected)
     expect(loaded.transaction.kind).toEqual(TransactionKind.SwapCounter);
@@ -1462,19 +1461,19 @@ describe("BnsConnection", () => {
 
     const txById = await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapId)] });
     expect(txById.length).toEqual(1);
-    expect(txById[0].txid).toEqual(txid);
+    expect(txById[0].transactionId).toEqual(transactionId);
 
     const txBySender = await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapSender)] });
     expect(txBySender.length).toBeGreaterThanOrEqual(1);
-    expect(txBySender[txBySender.length - 1].txid).toEqual(txid);
+    expect(txBySender[txBySender.length - 1].transactionId).toEqual(transactionId);
 
     const txByRecipient = await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapRecipient)] });
     expect(txByRecipient.length).toEqual(1);
-    expect(txByRecipient[0].txid).toEqual(txid);
+    expect(txByRecipient[0].transactionId).toEqual(transactionId);
 
     const txByHash = await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapHash)] });
     expect(txByHash.length).toEqual(1);
-    expect(txByHash[0].txid).toEqual(txid);
+    expect(txByHash[0].transactionId).toEqual(transactionId);
 
     // ----- connection.getSwap() -------
 
