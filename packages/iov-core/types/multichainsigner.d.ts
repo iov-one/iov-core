@@ -19,12 +19,18 @@ export declare class MultiChainSigner {
     /**
      * Returns one value for the address, 0 if not found.
      *
-     * This is done automatically when you use signAndCommit().
+     * This is done automatically when you use signAndPost().
      *
      * @todo This is not tested. Decide if we need to expose this method.
      */
     getNonce(chainId: ChainId, addr: Address): Promise<Nonce>;
-    signAndCommit(tx: UnsignedTransaction, walletId: WalletId): Promise<PostTxResponse>;
+    /**
+     * Queries the nonce, signs the transaction and posts it to the blockchain.
+     *
+     * The transaction signer is determined by the transaction content. A lookup for
+     * the private key for the signer in the given wallet ID is done automatically.
+     */
+    signAndPost(tx: UnsignedTransaction, walletId: WalletId): Promise<PostTxResponse>;
     /**
      * Throws for unknown chain ID
      */

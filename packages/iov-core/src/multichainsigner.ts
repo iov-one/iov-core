@@ -81,7 +81,7 @@ export class MultiChainSigner {
   /**
    * Returns one value for the address, 0 if not found.
    *
-   * This is done automatically when you use signAndCommit().
+   * This is done automatically when you use signAndPost().
    *
    * @todo This is not tested. Decide if we need to expose this method.
    */
@@ -90,11 +90,13 @@ export class MultiChainSigner {
     return nonce.data.length === 0 ? (new Int53(0) as Nonce) : nonce.data[0];
   }
 
-  // signAndCommit will sign the transaction given the signer specified in
-  // the transaction and look up the private key for this public key
-  // in the given keyring.
-  // It finds the nonce, signs properly, and posts the tx to the blockchain.
-  public async signAndCommit(tx: UnsignedTransaction, walletId: WalletId): Promise<PostTxResponse> {
+  /**
+   * Queries the nonce, signs the transaction and posts it to the blockchain.
+   *
+   * The transaction signer is determined by the transaction content. A lookup for
+   * the private key for the signer in the given wallet ID is done automatically.
+   */
+  public async signAndPost(tx: UnsignedTransaction, walletId: WalletId): Promise<PostTxResponse> {
     const chainId = tx.chainId;
     const { connection, codec } = this.getChain(chainId);
 

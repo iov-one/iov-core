@@ -242,7 +242,7 @@ console.log(await signer.getNonce(chainId, addr))
 
 // we must have the private key for the signer (id1a)
 // second argument is the ID of the wallet where the private key can be found
-await signer.signAndCommit(sendTx, wallet1.id);
+await signer.signAndPost(sendTx, wallet1.id);
 
 // note that the nonce of the signer is incremented
 console.log(await signer.getNonce(chainId, addr))

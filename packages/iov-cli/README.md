@@ -89,7 +89,7 @@ const sendTx: SendTx = {
   },
 };
 ^D
-> await signer.signAndCommit(sendTx, 0);
+> await signer.signAndPost(sendTx, 0);
 > (await connection.getAccount({ address: recipientAddress })).data[0].balance;
 
 > await connection.searchTx({ tags: [bnsFromOrToTag(faucetAddress)] });
@@ -157,7 +157,7 @@ const setNameTx: SetNameTx = {
   name: "hans",
 };
 ^D
-> await signer.signAndCommit(setNameTx, wallet.id);
+> await signer.signAndPost(setNameTx, wallet.id);
 > (await connection.getAccount({ name: "hans" })).data[0]
 { name: 'hans',
   address:
