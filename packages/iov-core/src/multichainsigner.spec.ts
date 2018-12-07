@@ -85,7 +85,7 @@ describe("MultiChainSigner", () => {
           tokenTicker: cash,
         },
       };
-      const postResponse = await signer.signAndCommit(sendTx, mainWalletId);
+      const postResponse = await signer.signAndPost(sendTx, mainWalletId);
       await postResponse.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
 
       // we should be a little bit richer
