@@ -5,6 +5,8 @@
 * @iov/bcp-types: `BcpTransactionResponse` now contains a `blockInfo` property
   that allows you to get block related data associated with the transactions
   and subscribing to updates. `metadata` was deprecated in favour of `blockInfo`.
+* @iov/bcp-types: the new interfaces `getBlockHeader` and `watchBlockHeaders`
+  provide block header information.
 * @iov/bns: Fix encoding of `BcpTxQuery.hash` in `listenTx` and `liveTx`
 * @iov/stream: Add `toListPromise` that collects stream events and returns a
   list when done.
@@ -34,6 +36,8 @@ Breaking changes
 * @iov/bns: `BnsConnection.postTx` now resolves before a transaction is in a
   block. The field `blockInfo` of its response can be used to track the
   transaction state.
+* @iov/bns: `getHeader`/`watchHeaders` were removed in favour of
+  `getBlockHeader`/`watchBlockHeaders` from BCP.
 * @iov/core: Rename `MultiChainSigner.signAndCommit` -> `.signAndPost`
 * @iov/crpto: the new types `Secp256k1Signature` and `ExtendedSecp256k1Signature` replace DER encoded signatures in `Secp256k1`.
 * @iov/faucets: Remove `BovFaucet`. Use `IovFaucet` instead.
