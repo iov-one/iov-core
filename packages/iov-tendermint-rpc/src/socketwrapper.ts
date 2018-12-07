@@ -20,6 +20,13 @@ export interface SocketWrapperMessageEvent {
   readonly type: string;
 }
 
+/**
+ * A thin wrapper around isomorphic-ws' WebSocket class that adds
+ * - constant message/error/open/close handlers
+ * - explict connection via a connect() method
+ * - type support for events
+ * - handling of corner cases in the open and close behaviour
+ */
 export class SocketWrapper {
   public readonly connected: Promise<void>;
 
