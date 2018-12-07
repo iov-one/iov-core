@@ -36,14 +36,24 @@ describe("Integers", () => {
       // tslint:enable:no-unused-expression
     });
 
-    it("can convert back to number", () => {
-      expect(new Uint32(0).asNumber()).toEqual(0);
-      expect(new Uint32(1).asNumber()).toEqual(1);
-      expect(new Uint32(42).asNumber()).toEqual(42);
-      expect(new Uint32(1000000000).asNumber()).toEqual(1000000000);
-      expect(new Uint32(2147483647).asNumber()).toEqual(2147483647);
-      expect(new Uint32(2147483648).asNumber()).toEqual(2147483648);
-      expect(new Uint32(4294967295).asNumber()).toEqual(4294967295);
+    it("can convert to number", () => {
+      expect(new Uint32(0).toNumber()).toEqual(0);
+      expect(new Uint32(1).toNumber()).toEqual(1);
+      expect(new Uint32(42).toNumber()).toEqual(42);
+      expect(new Uint32(1000000000).toNumber()).toEqual(1000000000);
+      expect(new Uint32(2147483647).toNumber()).toEqual(2147483647);
+      expect(new Uint32(2147483648).toNumber()).toEqual(2147483648);
+      expect(new Uint32(4294967295).toNumber()).toEqual(4294967295);
+    });
+
+    it("can convert to string", () => {
+      expect(new Uint32(0).toString()).toEqual("0");
+      expect(new Uint32(1).toString()).toEqual("1");
+      expect(new Uint32(42).toString()).toEqual("42");
+      expect(new Uint32(1000000000).toString()).toEqual("1000000000");
+      expect(new Uint32(2147483647).toString()).toEqual("2147483647");
+      expect(new Uint32(2147483648).toString()).toEqual("2147483648");
+      expect(new Uint32(4294967295).toString()).toEqual("4294967295");
     });
 
     it("can convert to byte array", () => {
@@ -58,23 +68,23 @@ describe("Integers", () => {
 
     describe("fromBigEndianBytes", () => {
       it("can be constructed from to byte array", () => {
-        expect(Uint32.fromBigEndianBytes([0, 0, 0, 0]).asNumber()).toEqual(0);
-        expect(Uint32.fromBigEndianBytes([0, 0, 0, 1]).asNumber()).toEqual(1);
-        expect(Uint32.fromBigEndianBytes([0, 0, 0, 42]).asNumber()).toEqual(42);
-        expect(Uint32.fromBigEndianBytes([0x3b, 0x9a, 0xca, 0x00]).asNumber()).toEqual(1000000000);
-        expect(Uint32.fromBigEndianBytes([0x7f, 0xff, 0xff, 0xff]).asNumber()).toEqual(2147483647);
-        expect(Uint32.fromBigEndianBytes([0x80, 0x00, 0x00, 0x00]).asNumber()).toEqual(2147483648);
-        expect(Uint32.fromBigEndianBytes([0xff, 0xff, 0xff, 0xff]).asNumber()).toEqual(4294967295);
+        expect(Uint32.fromBigEndianBytes([0, 0, 0, 0]).toNumber()).toEqual(0);
+        expect(Uint32.fromBigEndianBytes([0, 0, 0, 1]).toNumber()).toEqual(1);
+        expect(Uint32.fromBigEndianBytes([0, 0, 0, 42]).toNumber()).toEqual(42);
+        expect(Uint32.fromBigEndianBytes([0x3b, 0x9a, 0xca, 0x00]).toNumber()).toEqual(1000000000);
+        expect(Uint32.fromBigEndianBytes([0x7f, 0xff, 0xff, 0xff]).toNumber()).toEqual(2147483647);
+        expect(Uint32.fromBigEndianBytes([0x80, 0x00, 0x00, 0x00]).toNumber()).toEqual(2147483648);
+        expect(Uint32.fromBigEndianBytes([0xff, 0xff, 0xff, 0xff]).toNumber()).toEqual(4294967295);
       });
 
       it("can be constructed from Buffer", () => {
-        expect(Uint32.fromBigEndianBytes(Buffer.from([0, 0, 0, 0])).asNumber()).toEqual(0);
-        expect(Uint32.fromBigEndianBytes(Buffer.from([0, 0, 0, 1])).asNumber()).toEqual(1);
-        expect(Uint32.fromBigEndianBytes(Buffer.from([0, 0, 0, 42])).asNumber()).toEqual(42);
-        expect(Uint32.fromBigEndianBytes(Buffer.from([0x3b, 0x9a, 0xca, 0x00])).asNumber()).toEqual(1000000000);
-        expect(Uint32.fromBigEndianBytes(Buffer.from([0x7f, 0xff, 0xff, 0xff])).asNumber()).toEqual(2147483647);
-        expect(Uint32.fromBigEndianBytes(Buffer.from([0x80, 0x00, 0x00, 0x00])).asNumber()).toEqual(2147483648);
-        expect(Uint32.fromBigEndianBytes(Buffer.from([0xff, 0xff, 0xff, 0xff])).asNumber()).toEqual(4294967295);
+        expect(Uint32.fromBigEndianBytes(Buffer.from([0, 0, 0, 0])).toNumber()).toEqual(0);
+        expect(Uint32.fromBigEndianBytes(Buffer.from([0, 0, 0, 1])).toNumber()).toEqual(1);
+        expect(Uint32.fromBigEndianBytes(Buffer.from([0, 0, 0, 42])).toNumber()).toEqual(42);
+        expect(Uint32.fromBigEndianBytes(Buffer.from([0x3b, 0x9a, 0xca, 0x00])).toNumber()).toEqual(1000000000);
+        expect(Uint32.fromBigEndianBytes(Buffer.from([0x7f, 0xff, 0xff, 0xff])).toNumber()).toEqual(2147483647);
+        expect(Uint32.fromBigEndianBytes(Buffer.from([0x80, 0x00, 0x00, 0x00])).toNumber()).toEqual(2147483648);
+        expect(Uint32.fromBigEndianBytes(Buffer.from([0xff, 0xff, 0xff, 0xff])).toNumber()).toEqual(4294967295);
       });
 
       it("throws for invalid input length", () => {
