@@ -27,8 +27,7 @@
     "move-types": "shx rm -r ./types/* && shx mv build/types/* ./types && shx rm ./types/*.spec.d.ts",
     "build": "shx rm -rf ./build && tsc && yarn move-types",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
-    "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js",
-    "pack-node": "yarn build-or-skip && webpack --mode development --config webpack.node.config.js"
+    "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
   },
   "dependencies": {
     "@iov/base-types": "^0.9.0",

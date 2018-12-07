@@ -63,7 +63,9 @@ export class MultiChainSigner {
     const chain = await connectChain(connector);
     const chainId = chain.connection.chainId();
     if (connector.expectedChainId && connector.expectedChainId !== chainId) {
-      throw new Error(`Connected to chain id ${chainId} but expected ${connector.expectedChainId}`);
+      throw new Error(
+        `Connected chain ID does not match. Got ${chainId} but expected ${connector.expectedChainId}.`,
+      );
     }
     if (this.knownChains.has(chainId)) {
       throw new Error(`Chain ${chainId} is already registered`);
