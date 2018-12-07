@@ -294,8 +294,9 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(base);
       const blockHeader = await connection.getBlockHeader(0);
+      expect(blockHeader.id).toMatch(/^0x[0-9a-f]{64}$/);
       expect(blockHeader.height).toEqual(0);
-      expect(blockHeader.totalTxs).toBeGreaterThanOrEqual(0);
+      expect(blockHeader.transactionCount).toBeGreaterThanOrEqual(0);
       connection.disconnect();
     });
 

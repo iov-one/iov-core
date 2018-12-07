@@ -1,3 +1,5 @@
+import { ReadonlyDate } from "readonly-date";
+import { As } from "type-tagger";
 import { Stream } from "xstream";
 import { ChainId, PostableBytes, PublicKeyBundle } from "@iov/base-types";
 import { ValueAndUpdates } from "@iov/stream";
@@ -93,6 +95,20 @@ export declare type BcpAccountQuery = BcpAddressQuery | BcpPubkeyQuery | BcpValu
 export declare function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery;
 export declare function isPubkeyQuery(query: BcpAccountQuery): query is BcpPubkeyQuery;
 export declare function isValueNameQuery(query: BcpAccountQuery): query is BcpValueNameQuery;
+/**
+ * A printable block ID in a blockchain-specific format.
+ *
+ * In Lisk, this is a uint64 number like 3444561236416494115 and in BNS this is an upper
+ * hex encoded 20 byte hash like 6DD2BFCD9CEFE93C64C15439C513BFD61A0225BB. Ethereum uses
+ * 0x-prefixed hashes like 0x4bd6efe48bed3ea4fd25678cc81d1ed372bb8c8654c29880889fed66130c6502
+ */
+export declare type BlockId = string & As<"block-id">;
+export interface BlockHeader {
+    readonly id: BlockId;
+    readonly height: number;
+    readonly time: ReadonlyDate;
+    readonly transactionCount: number;
+}
 export interface BcpConnection {
     readonly disconnect: () => void;
     readonly chainId: () => ChainId;

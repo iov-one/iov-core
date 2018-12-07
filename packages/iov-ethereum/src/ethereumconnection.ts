@@ -15,6 +15,7 @@ import {
   BcpTicker,
   BcpTransactionState,
   BcpTxQuery,
+  BlockHeader,
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
@@ -31,7 +32,6 @@ import { constants } from "./constants";
 import { keyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
 import { Parse, Scraper } from "./parse";
-import { BlockHeader } from "./responses";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
@@ -188,11 +188,10 @@ export class EthereumConnection implements BcpConnection {
     }
     const blockData = blockResponse.data.result;
     return {
-      chainId: this.myChainId,
+      id: blockData.hash,
       height: decodeHexQuantity(blockData.number),
       time: new ReadonlyDate(decodeHexQuantity(blockData.timestamp) * 1000),
-      blockId: Encoding.fromHex(hexPadToEven(blockData.hash)),
-      totalTxs: blockData.transactions.length,
+      transactionCount: blockData.transactions.length,
     };
   }
 
