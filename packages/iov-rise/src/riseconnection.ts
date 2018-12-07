@@ -233,8 +233,16 @@ export class RiseConnection implements BcpConnection {
       throw new Error(responseBody.error);
     }
 
-    if (!responseBody.blocks || !responseBody.blocks.length || responseBody.blocks.length !== 1) {
-      throw new Error("Expected a single block result but got something different.");
+    if (!responseBody.blocks || typeof responseBody.blocks.length !== "number") {
+      throw new Error("Expected a list of blocks but got something different.");
+    }
+
+    if (responseBody.blocks.length === 0) {
+      throw new Error("Block does not exist");
+    }
+
+    if (responseBody.blocks.length !== 1) {
+      throw new Error("Got unexpected number of block");
     }
 
     const blockJson = responseBody.blocks[0];

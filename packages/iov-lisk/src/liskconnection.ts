@@ -217,8 +217,16 @@ export class LiskConnection implements BcpConnection {
     const result = await axios.get(url);
     const responseBody = result.data;
 
-    if (!responseBody.data || !responseBody.data.length || responseBody.data.length !== 1) {
-      throw new Error("Expected a single block result but got something different.");
+    if (!responseBody.data || typeof responseBody.data.length !== "number") {
+      throw new Error("Expected a list of blocks but got something different.");
+    }
+
+    if (responseBody.data.length === 0) {
+      throw new Error("Block does not exist");
+    }
+
+    if (responseBody.data.length !== 1) {
+      throw new Error("Got unexpected number of block");
     }
 
     const blockJson = responseBody.data[0];

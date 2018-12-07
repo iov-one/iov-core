@@ -240,6 +240,17 @@ describe("RiseConnection", () => {
 
       connection.disconnect();
     });
+
+    it("rejects for non-existing block", async () => {
+      const connection = await RiseConnection.establish(base);
+
+      await connection
+        .getBlockHeader(20_000_000)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/block does not exist/i));
+
+      connection.disconnect();
+    });
   });
 
   describe("postTx", () => {
