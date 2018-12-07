@@ -176,7 +176,7 @@ export class EthereumConnection implements BcpConnection {
     return Promise.resolve(dummyEnvelope([decodeHexQuantityNonce(nonceResponse.data.result)]));
   }
 
-  public async getHeader(height: number): Promise<BlockHeader> {
+  public async getBlockHeader(height: number): Promise<BlockHeader> {
     const blockResponse = await axios.post(this.baseUrl, {
       jsonrpc: "2.0",
       method: "eth_getBlockByNumber",

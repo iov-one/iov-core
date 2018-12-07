@@ -192,7 +192,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
           lastEventSent = inBlockEvent;
         }
 
-        blocksSubscription = this.watchHeaders().subscribe({
+        blocksSubscription = this.watchBlockHeaders().subscribe({
           next: async blockHeader => {
             const event: BcpBlockInfo = {
               state: BcpTransactionState.InBlock,
@@ -462,7 +462,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   }
 
   public changeBlock(): Stream<number> {
-    return this.watchHeaders().map(getHeaderEventHeight);
+    return this.watchBlockHeaders().map(getHeaderEventHeight);
   }
 
   /**
@@ -489,7 +489,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return this.changeTx([bnsNonceTag(addr)]);
   }
 
-  public async getHeader(height: number): Promise<Header> {
+  public async getBlockHeader(height: number): Promise<Header> {
     const { blockMetas } = await this.tmClient.blockchain(height, height);
     if (blockMetas.length < 1) {
       throw new Error(`Header ${height} doesn't exist yet`);
@@ -501,7 +501,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return header;
   }
 
-  public watchHeaders(): Stream<Header> {
+  public watchBlockHeaders(): Stream<Header> {
     return this.tmClient.subscribeNewBlockHeader();
   }
 

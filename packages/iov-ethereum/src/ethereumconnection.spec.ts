@@ -289,11 +289,11 @@ describe("EthereumConnection", () => {
     });
   });
 
-  describe("getHeader", () => {
+  describe("getBlockHeader", () => {
     it("can get header from block", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(base);
-      const blockHeader = await connection.getHeader(0);
+      const blockHeader = await connection.getBlockHeader(0);
       expect(blockHeader.height).toEqual(0);
       expect(blockHeader.totalTxs).toBeGreaterThanOrEqual(0);
       connection.disconnect();
@@ -303,7 +303,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(base);
       await connection
-        .getHeader(99999999999999)
+        .getBlockHeader(99999999999999)
         .then(() => fail("promise must be rejected"))
         .catch(err => expect(err).toMatch(/Header 99999999999999 doesn't exist yet/));
       connection.disconnect();
