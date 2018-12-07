@@ -43,10 +43,6 @@ export interface RpcAbciQueryResponse {
     readonly code?: IntegerString;
     readonly log?: string;
 }
-export interface RpcBlockResponse {
-    readonly block_meta: RpcBlockMeta;
-    readonly block: RpcBlock;
-}
 export interface RpcBlockResultsResponse {
     readonly height: IntegerString;
     readonly results: {
@@ -62,10 +58,10 @@ export interface RpcBlockchainResponse {
     readonly last_height: IntegerString;
     readonly block_metas: ReadonlyArray<RpcBlockMeta>;
 }
-export declare type RpcBroadcastTxAsyncResponse = RpcBroadcastTxSyncResponse;
 export interface RpcBroadcastTxSyncResponse extends RpcTxData {
     readonly hash: HexString;
 }
+export declare type RpcBroadcastTxAsyncResponse = RpcBroadcastTxSyncResponse;
 export interface RpcBroadcastTxCommitResponse {
     readonly height?: IntegerString;
     readonly hash: HexString;
@@ -79,9 +75,6 @@ export interface RpcCommitResponse {
     };
     readonly canonical: boolean;
 }
-export interface GenesisResult {
-    readonly genesis: RpcGenesisResponse;
-}
 export interface RpcGenesisResponse {
     readonly genesis_time: DateTimeString;
     readonly chain_id: string;
@@ -89,6 +82,9 @@ export interface RpcGenesisResponse {
     readonly validators: ReadonlyArray<RpcValidatorGenesis>;
     readonly app_hash: HexString;
     readonly app_state: {};
+}
+export interface GenesisResult {
+    readonly genesis: RpcGenesisResponse;
 }
 export declare type HealthResponse = null;
 export interface RpcStatusResponse {
@@ -132,47 +128,12 @@ export interface RpcTxProof {
         readonly aunts: ReadonlyArray<Base64String>;
     };
 }
-export interface RpcBlockMeta {
-    readonly block_id: RpcBlockId;
-    readonly header: RpcHeader;
-}
 export interface RpcBlockId {
     readonly hash: HexString;
     readonly parts: {
         readonly total: IntegerString;
         readonly hash: HexString;
     };
-}
-export interface RpcBlock {
-    readonly header: RpcHeader;
-    readonly last_commit: RpcCommit;
-    readonly data: {
-        readonly txs?: ReadonlyArray<Base64String>;
-    };
-    readonly evidence?: {
-        readonly evidence?: ReadonlyArray<RpcEvidence>;
-    };
-}
-export interface RpcEvidence {
-    readonly type: string;
-    readonly validator: RpcValidatorUpdate;
-    readonly height: IntegerString;
-    readonly time: IntegerString;
-    readonly totalVotingPower: IntegerString;
-}
-export interface RpcCommit {
-    readonly block_id: RpcBlockId;
-    readonly precommits: ReadonlyArray<RpcVote>;
-}
-export interface RpcVote {
-    readonly type: number;
-    readonly validator_address: HexString;
-    readonly validator_index: IntegerString;
-    readonly height: IntegerString;
-    readonly round: IntegerString;
-    readonly timestamp: DateTimeString;
-    readonly block_id: RpcBlockId;
-    readonly signature: RpcSignature;
 }
 export interface RpcHeader {
     readonly chain_id: string;
@@ -188,6 +149,45 @@ export interface RpcHeader {
     readonly last_commit_hash: HexString;
     readonly last_results_hash: HexString;
     readonly validators_hash: HexString;
+}
+export interface RpcBlockMeta {
+    readonly block_id: RpcBlockId;
+    readonly header: RpcHeader;
+}
+export interface RpcCommit {
+    readonly block_id: RpcBlockId;
+    readonly precommits: ReadonlyArray<RpcVote>;
+}
+export interface RpcBlock {
+    readonly header: RpcHeader;
+    readonly last_commit: RpcCommit;
+    readonly data: {
+        readonly txs?: ReadonlyArray<Base64String>;
+    };
+    readonly evidence?: {
+        readonly evidence?: ReadonlyArray<RpcEvidence>;
+    };
+}
+export interface RpcBlockResponse {
+    readonly block_meta: RpcBlockMeta;
+    readonly block: RpcBlock;
+}
+export interface RpcEvidence {
+    readonly type: string;
+    readonly validator: RpcValidatorUpdate;
+    readonly height: IntegerString;
+    readonly time: IntegerString;
+    readonly totalVotingPower: IntegerString;
+}
+export interface RpcVote {
+    readonly type: number;
+    readonly validator_address: HexString;
+    readonly validator_index: IntegerString;
+    readonly height: IntegerString;
+    readonly round: IntegerString;
+    readonly timestamp: DateTimeString;
+    readonly block_id: RpcBlockId;
+    readonly signature: RpcSignature;
 }
 export interface RpcNodeInfo {
     readonly id: HexString;
