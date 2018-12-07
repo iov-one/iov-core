@@ -169,7 +169,7 @@ describe("EthereumConnection", () => {
       // invalid lenght
       const invalidHashLenght = "0x1234567890abcdef" as TransactionId;
       await connection
-        .searchTx({ id: invalidHashLenght, tags: [] })
+        .searchTx({ id: invalidHashLenght })
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(/Invalid transaction ID format/i));
       connection.disconnect();
@@ -179,7 +179,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(base);
       const nonExistingHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" as TransactionId;
-      const results = await connection.searchTx({ id: nonExistingHash, tags: [] });
+      const results = await connection.searchTx({ id: nonExistingHash });
       expect(results.length).toEqual(0);
       connection.disconnect();
     });
@@ -241,7 +241,7 @@ describe("EthereumConnection", () => {
       expect(resultPost.transactionId).toMatch(/^0x[0-9a-f]{64}$/);
       await sleep(waitForTx);
 
-      const resultSearch = await connection.searchTx({ id: resultPost.transactionId, tags: [] });
+      const resultSearch = await connection.searchTx({ id: resultPost.transactionId });
       expect(resultSearch.length).toEqual(1);
       const result = resultSearch[0];
       expect(result.transactionId).toEqual(resultPost.transactionId);
@@ -260,7 +260,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(base);
       const storedTxId = "" as TransactionId;
-      const results = await connection.searchTx({ id: storedTxId, tags: [] });
+      const results = await connection.searchTx({ id: storedTxId });
       expect(results.length).toEqual(1);
       const result = results[0];
       expect(result.transactionId).toEqual(storedTxId);

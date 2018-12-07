@@ -30,6 +30,7 @@ Breaking changes
 * @iov/bcp-types: Change binary `TransactionIdBytes` to printable
   `TransactionId` and use in `TxCodec.identifier`, `PostTxResponse` and
   `BcpTxQuery`.
+* @iov/bcp-types: `BcpTxQuery.tags` is now optional
 * @iov/bns: `BnsConnection.postTx` now resolves before a transaction is in a
   block. The field `blockInfo` of its response can be used to track the
   transaction state.

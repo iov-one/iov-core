@@ -104,7 +104,12 @@ describe("Util", () => {
   });
 
   describe("buildTxQuery", () => {
-    it("handles no tags", () => {
+    it("handles empty query", () => {
+      const query = buildTxQuery({});
+      expect(query).toEqual("");
+    });
+
+    it("handles empty tag list", () => {
       const query = buildTxQuery({ tags: [] });
       expect(query).toEqual("");
     });
@@ -120,12 +125,12 @@ describe("Util", () => {
     });
 
     it("handles height", () => {
-      const query = buildTxQuery({ height: 17, tags: [] });
+      const query = buildTxQuery({ height: 17 });
       expect(query).toEqual("tx.height=17");
     });
 
     it("handles min and max height", () => {
-      const query = buildTxQuery({ minHeight: 21, maxHeight: 111, tags: [] });
+      const query = buildTxQuery({ minHeight: 21, maxHeight: 111 });
       expect(query).toEqual("tx.height>21 AND tx.height<111");
     });
 
@@ -135,7 +140,7 @@ describe("Util", () => {
     });
 
     it("handles id", () => {
-      const query = buildTxQuery({ id: "AABB33" as TransactionId, tags: [] });
+      const query = buildTxQuery({ id: "AABB33" as TransactionId });
       expect(query).toEqual("tx.hash='AABB33'");
     });
   });

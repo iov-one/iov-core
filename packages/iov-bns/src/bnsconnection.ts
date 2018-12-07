@@ -174,7 +174,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
         // we utilize liveTx to implement a _search or watch_ mechanism since we do not know
         // if the transaction is already committed when the producer is started
-        const searchResult = await toListPromise(this.liveTx({ id: transactionId, tags: [] }), 1);
+        const searchResult = await toListPromise(this.liveTx({ id: transactionId }), 1);
         const transactionHeight = searchResult[0].height;
         const transactionResult = searchResult[0].result;
 
