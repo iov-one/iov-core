@@ -105,8 +105,9 @@ export interface BcpQueryTag {
 }
 
 export interface BcpTxQuery {
-  readonly tags: ReadonlyArray<BcpQueryTag>;
   readonly id?: TransactionId;
+  /** chain-specific key value pairs that encode a query */
+  readonly tags?: ReadonlyArray<BcpQueryTag>;
   readonly height?: number;
   readonly minHeight?: number;
   readonly maxHeight?: number;

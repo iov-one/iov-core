@@ -417,14 +417,14 @@ describe("LiskConnection", () => {
       // by non-existing ID
       {
         const searchId = "98568736528934587" as TransactionId;
-        const results = await connection.searchTx({ id: searchId, tags: [] });
+        const results = await connection.searchTx({ id: searchId });
         expect(results.length).toEqual(0);
       }
 
       // by existing ID (from lisk/init.sh)
       {
         const searchId = "12493173350733478622" as TransactionId;
-        const results = await connection.searchTx({ id: searchId, tags: [] });
+        const results = await connection.searchTx({ id: searchId });
         expect(results.length).toEqual(1);
         const result = results[0];
         expect(result.height).toBeGreaterThanOrEqual(2);

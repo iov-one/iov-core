@@ -252,7 +252,7 @@ export class EthereumConnection implements BcpConnection {
           transactionId: transactionId,
         },
       ];
-    } else if (query.tags[0].key === "apiLink" && query.tags[1].key === "account") {
+    } else if (query.tags && query.tags[0].key === "apiLink" && query.tags[1].key === "account") {
       const apiLink = query.tags[0].value;
       const accountAddress = query.tags[1].value;
       txUncodified = await axios.get(

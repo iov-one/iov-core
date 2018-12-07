@@ -341,14 +341,14 @@ describe("RiseConnection", () => {
       // by non-existing ID
       {
         const searchId = "98568736528934587" as TransactionId;
-        const results = await connection.searchTx({ id: searchId, tags: [] });
+        const results = await connection.searchTx({ id: searchId });
         expect(results.length).toEqual(0);
       }
 
       // by existing ID (https://texplorer.rise.vision/tx/530955287567640950)
       {
         const searchId = "530955287567640950" as TransactionId;
-        const results = await connection.searchTx({ id: searchId, tags: [] });
+        const results = await connection.searchTx({ id: searchId });
         expect(results.length).toEqual(1);
         const result = results[0];
         expect(result.height).toEqual(1156579);

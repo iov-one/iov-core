@@ -767,7 +767,7 @@ describe("BnsConnection", () => {
       await tendermintSearchIndexUpdated();
 
       // finds transaction using height
-      const results = await connection.searchTx({ height: txHeight, tags: [] });
+      const results = await connection.searchTx({ height: txHeight });
       expect(results.length).toBeGreaterThanOrEqual(1);
       const mostRecentResult = results[results.length - 1];
       expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
@@ -807,7 +807,7 @@ describe("BnsConnection", () => {
       await tendermintSearchIndexUpdated();
 
       // finds transaction using id
-      const searchResults = await connection.searchTx({ id: transactionIdToSearch, tags: [] });
+      const searchResults = await connection.searchTx({ id: transactionIdToSearch });
       expect(searchResults.length).toEqual(1);
       expect(searchResults[0].transactionId).toEqual(transactionIdToSearch);
       expect(searchResults[0].transaction.kind).toEqual(TransactionKind.Send);
@@ -930,7 +930,7 @@ describe("BnsConnection", () => {
         const heightBeforeTransaction = await connection.height();
 
         // start listening
-        const subscription = connection.listenTx({ id: transactionId, tags: [] }).subscribe({
+        const subscription = connection.listenTx({ id: transactionId }).subscribe({
           next: event => {
             expect(event.transactionId).toEqual(transactionId);
             expect(event.height).toEqual(heightBeforeTransaction + 1);
@@ -1437,7 +1437,7 @@ describe("BnsConnection", () => {
     await tendermintSearchIndexUpdated();
 
     // now query by the txid
-    const search = await connection.searchTx({ id: transactionId, tags: [] });
+    const search = await connection.searchTx({ id: transactionId });
     expect(search.length).toEqual(1);
     // make sure we get he same tx loaded
     const loaded = search[0];

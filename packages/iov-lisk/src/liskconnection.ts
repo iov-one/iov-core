@@ -119,7 +119,7 @@ export class LiskConnection implements BcpConnection {
       {
         onStarted: () => {
           blockInfoInterval = setInterval(async () => {
-            const search = await this.searchTx({ id: transactionId, tags: [] });
+            const search = await this.searchTx({ id: transactionId });
             if (search.length > 0) {
               const confirmedTransaction = search[0];
               const event: BcpBlockInfo = {
@@ -208,7 +208,7 @@ export class LiskConnection implements BcpConnection {
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    if (query.height || query.minHeight || query.maxHeight || query.tags.length) {
+    if (query.height || query.minHeight || query.maxHeight || query.tags) {
       throw new Error("Query by height, minHeight, maxHeight, tags not supported");
     }
 
