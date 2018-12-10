@@ -403,14 +403,16 @@ describe("BnsConnection", () => {
       it("throws if it cannot get header", async () => {
         pendingWithoutBnsd();
         const connection = await BnsConnection.establish(bnsdTendermintUrl);
-        await connection
-          .getBlockHeader(123456789)
-          .then(() => fail("must not resolve"))
-          .catch(error => expect(error).toMatch(/height 123456789 can't be greater than/i));
+
         await connection
           .getBlockHeader(-3)
           .then(() => fail("must not resolve"))
-          .catch(error => expect(error).toMatch(/must be non-negative/i));
+          .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+        await connection
+          .getBlockHeader(123_000000)
+          .then(() => fail("must not resolve"))
+          .catch(error => expect(error).toMatch(/header 123000000 doesn't exist yet/i));
+
         connection.disconnect();
       });
     });

@@ -37,7 +37,7 @@ import {
   TransactionId,
   TxReadCodec,
 } from "@iov/bcp-types";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Uint53 } from "@iov/encoding";
 import { DefaultValueProducer, toListPromise, ValueAndUpdates } from "@iov/stream";
 import {
   broadcastTxSyncSuccess,
@@ -76,6 +76,29 @@ import {
 } from "./util";
 
 const { toAscii, toHex, toUtf8 } = Encoding;
+
+// https://github.com/tendermint/tendermint/blob/v0.25.0/rpc/lib/types/types.go#L143
+const tendermintInternalError = -32603;
+
+interface TendermintRpcError {
+  readonly code: number;
+  readonly message: string;
+  readonly data: string;
+}
+
+function parseTendermintRpcError(errorString: string): TendermintRpcError {
+  const parsed = JSON.parse(errorString);
+  if (typeof parsed.code !== "number") {
+    throw new Error("Could not parse `code` property");
+  }
+  if (typeof parsed.message !== "string") {
+    throw new Error("Could not parse `message` property");
+  }
+  if (typeof parsed.data !== "string") {
+    throw new Error("Could not parse `data` property");
+  }
+  return parsed;
+}
 
 /**
  * Returns a filter that only passes when the
@@ -486,9 +509,35 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   }
 
   public async getBlockHeader(height: number): Promise<BlockHeader> {
-    const { blockMetas } = await this.tmClient.blockchain(height, height);
+    try {
+      // tslint:disable-next-line:no-unused-expression
+      new Uint53(height);
+    } catch {
+      throw new Error("Height must be a non-negative safe integer");
+    }
+
+    const { blockMetas } = await this.tmClient.blockchain(height, height).catch(originalError => {
+      let parsedError: TendermintRpcError;
+      try {
+        parsedError = parseTendermintRpcError(originalError.message);
+      } catch {
+        // we cannot parse the error
+        throw originalError;
+      }
+
+      if (
+        parsedError.code === tendermintInternalError &&
+        parsedError.data.match(new RegExp(`^min height ${height} can't be greater than max height [0-9]+$`))
+      ) {
+        // What we requested is greater than the current height
+        throw new Error(`Header ${height} doesn't exist yet`);
+      }
+
+      // we got an unknown error
+      throw originalError;
+    });
     if (blockMetas.length < 1) {
-      throw new Error(`Header ${height} doesn't exist yet`);
+      throw new Error("Received an empty list of block metas");
     }
 
     const blockId = Encoding.toHex(blockMetas[0].blockId.hash).toUpperCase() as BlockId;
