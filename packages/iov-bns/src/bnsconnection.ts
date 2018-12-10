@@ -18,6 +18,8 @@ import {
   BcpTicker,
   BcpTransactionState,
   BcpTxQuery,
+  BlockHeader,
+  BlockId,
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
@@ -35,14 +37,12 @@ import {
   TransactionId,
   TxReadCodec,
 } from "@iov/bcp-types";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Uint53 } from "@iov/encoding";
 import { DefaultValueProducer, toListPromise, ValueAndUpdates } from "@iov/stream";
 import {
   broadcastTxSyncSuccess,
   Client as TendermintClient,
-  getHeaderEventHeight,
   getTxEventHeight,
-  Header,
   StatusResponse,
   TxResponse,
 } from "@iov/tendermint-rpc";
@@ -76,6 +76,29 @@ import {
 } from "./util";
 
 const { toAscii, toHex, toUtf8 } = Encoding;
+
+// https://github.com/tendermint/tendermint/blob/v0.25.0/rpc/lib/types/types.go#L143
+const tendermintInternalError = -32603;
+
+interface TendermintRpcError {
+  readonly code: number;
+  readonly message: string;
+  readonly data: string;
+}
+
+function parseTendermintRpcError(errorString: string): TendermintRpcError {
+  const parsed = JSON.parse(errorString);
+  if (typeof parsed.code !== "number") {
+    throw new Error("Could not parse `code` property");
+  }
+  if (typeof parsed.message !== "string") {
+    throw new Error("Could not parse `message` property");
+  }
+  if (typeof parsed.data !== "string") {
+    throw new Error("Could not parse `data` property");
+  }
+  return parsed;
+}
 
 /**
  * Returns a filter that only passes when the
@@ -192,7 +215,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
           lastEventSent = inBlockEvent;
         }
 
-        blocksSubscription = this.watchHeaders().subscribe({
+        blocksSubscription = this.watchBlockHeaders().subscribe({
           next: async blockHeader => {
             const event: BcpBlockInfo = {
               state: BcpTransactionState.InBlock,
@@ -461,10 +484,6 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return Stream.create(producer);
   }
 
-  public changeBlock(): Stream<number> {
-    return this.watchHeaders().map(getHeaderEventHeight);
-  }
-
   /**
    * Emits the blockheight for every block where a tx matching these tags is emitted
    */
@@ -489,20 +508,80 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return this.changeTx([bnsNonceTag(addr)]);
   }
 
-  public async getHeader(height: number): Promise<Header> {
-    const { blockMetas } = await this.tmClient.blockchain(height, height);
-    if (blockMetas.length < 1) {
-      throw new Error(`Header ${height} doesn't exist yet`);
+  public async getBlockHeader(height: number): Promise<BlockHeader> {
+    try {
+      // tslint:disable-next-line:no-unused-expression
+      new Uint53(height);
+    } catch {
+      throw new Error("Height must be a non-negative safe integer");
     }
+
+    const { blockMetas } = await this.tmClient.blockchain(height, height).catch(originalError => {
+      let parsedError: TendermintRpcError;
+      try {
+        parsedError = parseTendermintRpcError(originalError.message);
+      } catch {
+        // we cannot parse the error
+        throw originalError;
+      }
+
+      if (
+        parsedError.code === tendermintInternalError &&
+        parsedError.data.match(new RegExp(`^min height ${height} can't be greater than max height [0-9]+$`))
+      ) {
+        // What we requested is greater than the current height
+        throw new Error(`Header ${height} doesn't exist yet`);
+      }
+
+      // we got an unknown error
+      throw originalError;
+    });
+    if (blockMetas.length < 1) {
+      throw new Error("Received an empty list of block metas");
+    }
+
+    const blockId = Encoding.toHex(blockMetas[0].blockId.hash).toUpperCase() as BlockId;
     const { header } = blockMetas[0];
     if (header.height !== height) {
       throw new Error(`Requested header ${height} but got ${header.height}`);
     }
-    return header;
+
+    return {
+      id: blockId,
+      height: header.height,
+      time: header.time,
+      transactionCount: header.numTxs,
+    };
   }
 
-  public watchHeaders(): Stream<Header> {
-    return this.tmClient.subscribeNewBlockHeader();
+  public watchBlockHeaders(): Stream<BlockHeader> {
+    // TODO: this implementation is crazy but currently we have no way to calculate a
+    // block ID from a block header
+
+    let headersSubscription: Subscription;
+    // create explicit producer because Steam.map() does not work with async function
+    const producer: Producer<BlockHeader> = {
+      start: listener => {
+        headersSubscription = this.tmClient.subscribeNewBlockHeader().subscribe({
+          next: header => {
+            this.getBlockHeader(header.height)
+              .then(blockHeader => listener.next(blockHeader))
+              .catch(error => listener.error(error));
+          },
+          error: error => listener.error(error),
+          complete: () => listener.error("Source stream completed"),
+        });
+      },
+      stop: () => {
+        headersSubscription.unsubscribe();
+      },
+    };
+    return Stream.create(producer);
+  }
+
+  /** @deprecated use watchBlockHeaders().map(header => header.height) */
+  public changeBlock(): Stream<number> {
+    return this.watchBlockHeaders().map(header => header.height);
   }
 
   /**

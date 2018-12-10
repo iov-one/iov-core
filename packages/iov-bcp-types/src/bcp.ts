@@ -1,3 +1,5 @@
+import { ReadonlyDate } from "readonly-date";
+import { As } from "type-tagger";
 import { Stream } from "xstream";
 
 import { ChainId, PostableBytes, PublicKeyBundle } from "@iov/base-types";
@@ -140,6 +142,22 @@ export function isValueNameQuery(query: BcpAccountQuery): query is BcpValueNameQ
   return (query as BcpValueNameQuery).name !== undefined;
 }
 
+/**
+ * A printable block ID in a blockchain-specific format.
+ *
+ * In Lisk, this is a uint64 number like 3444561236416494115 and in BNS this is an upper
+ * hex encoded 20 byte hash like 6DD2BFCD9CEFE93C64C15439C513BFD61A0225BB. Ethereum uses
+ * 0x-prefixed hashes like 0x4bd6efe48bed3ea4fd25678cc81d1ed372bb8c8654c29880889fed66130c6502
+ */
+export type BlockId = string & As<"block-id">;
+
+export interface BlockHeader {
+  readonly id: BlockId;
+  readonly height: number;
+  readonly time: ReadonlyDate;
+  readonly transactionCount: number;
+}
+
 // BcpConnection is a high-level interface to a blockchain node,
 // abstracted over all blockchain types and communication channel.
 // A direct connection or a proxy server should implement this.
@@ -154,36 +172,14 @@ export function isValueNameQuery(query: BcpAccountQuery): query is BcpValueNameQ
 // features like atomic swap, NFTs, etc which may be implemented by any connector
 // to enable enhanced features in the clients
 export interface BcpConnection {
+  // blockchain
   readonly disconnect: () => void;
-
-  // // headers returns all headers in that range.
-  // // If max is underfined, subscribe to all new headers
-  // // If max is defined, but higher than current height,
-  // // subscribe to all new headers until max.
-  // readonly headers: (min?: number, max?: number) => Stream<Header>;
-
-  // // block will query for one block if height is provider,
-  // // returning it immediately if available, or as soon as it
-  // // is produced, if in the future.
-  // // If not height is provided, it will get most recent block
-  // readonly block: (height?: number) => Promise<Block>;
-  // // streamBlocks starts sending a stream of blocks from now on
-  // readonly streamBlocks: () => Stream<Block>;
-
-  // chainId, and height return generic info
   readonly chainId: () => ChainId;
   readonly height: () => Promise<number>;
-
-  // these emits the new blockHeight on every block,
-  // so you can trigger a custom response
-  readonly changeBlock: () => Stream<number>;
-
-  // submitTx submits a signed tx as is notified on every state change
-  readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
-
-  // one-off queries to view current state
   readonly getTicker: (ticker: TokenTicker) => Promise<BcpQueryEnvelope<BcpTicker>>;
   readonly getAllTickers: () => Promise<BcpQueryEnvelope<BcpTicker>>;
+
+  // accounts
   /**
    * Get the current account information (e.g. balance)
    *
@@ -191,19 +187,26 @@ export interface BcpConnection {
    */
   readonly getAccount: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpAccount>>;
   readonly getNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Promise<BcpQueryEnvelope<Nonce>>;
-
-  // these query the currenct value and update a new value every time it changes
   readonly watchAccount: (account: BcpAccountQuery) => Stream<BcpAccount | undefined>;
   readonly watchNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Stream<Nonce | undefined>;
 
-  // searchTx searches for all tx that match these tags and subscribes to new ones
+  // blocks
+  readonly getBlockHeader: (height: number) => Promise<BlockHeader>;
+  readonly watchBlockHeaders: () => Stream<BlockHeader>;
+  /** @deprecated use watchBlockHeaders().map(header => header.height) */
+  readonly changeBlock: () => Stream<number>;
+
+  // transaction
+  readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
   readonly searchTx: (query: BcpTxQuery) => Promise<ReadonlyArray<ConfirmedTransaction>>;
   /**
    * Subscribes to all newly added transactions that match the query
    */
   readonly listenTx: (query: BcpTxQuery) => Stream<ConfirmedTransaction>;
-  // liveTx returns a stream for all historical transactions that match
-  // the query, along with all new transactions arriving from listenTx
+  /**
+   * Returns a stream for all historical transactions that match
+   * the query, along with all new transactions arriving from listenTx
+   */
   readonly liveTx: (txQuery: BcpTxQuery) => Stream<ConfirmedTransaction>;
 }
 

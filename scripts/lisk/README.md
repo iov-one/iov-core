@@ -1,7 +1,7 @@
 # Starting a local Lisk blockchain
 
 Starts a local Lisk blockchain with genesis block in
-https://github.com/LiskHQ/lisk/blob/1.2.0/config/devnet/genesis_block.json.
+https://github.com/LiskHQ/lisk/blob/v1.2.0/config/devnet/genesis_block.json.
 
 This account owns 100 million initial supply:
 

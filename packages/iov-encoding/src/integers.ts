@@ -3,7 +3,13 @@ import BN = require("bn.js");
 
 const uint64MaxValue = new BN("18446744073709551615", 10, "be");
 
-export class Uint32 {
+// internal interface to ensure all integer types can be used equally
+interface Integer {
+  readonly toNumber: () => number;
+  readonly toString: () => string;
+}
+
+export class Uint32 implements Integer {
   public static fromBigEndianBytes(bytes: ArrayLike<number>): Uint32 {
     if (bytes.length !== 4) {
       throw new Error("Invalid input length. Expected 4 bytes.");
@@ -50,12 +56,21 @@ export class Uint32 {
     ];
   }
 
-  public asNumber(): number {
+  public toNumber(): number {
     return this.data;
+  }
+
+  public toString(): string {
+    return this.data.toString();
+  }
+
+  /** @deprecated use toNumber() */
+  public asNumber(): number {
+    return this.toNumber();
   }
 }
 
-export class Int53 {
+export class Int53 implements Integer {
   public static fromString(str: string): Int53 {
     if (!str.match(/^\-?[0-9]+$/)) {
       throw new Error("Invalid string format");
@@ -91,7 +106,32 @@ export class Int53 {
   }
 }
 
-export class Uint64 {
+export class Uint53 implements Integer {
+  public static fromString(str: string): Uint53 {
+    const signed = Int53.fromString(str);
+    return new Uint53(signed.toNumber());
+  }
+
+  protected readonly data: Int53;
+
+  constructor(input: number) {
+    const signed = new Int53(input);
+    if (signed.toNumber() < 0) {
+      throw new Error("Input is negative");
+    }
+    this.data = signed;
+  }
+
+  public toNumber(): number {
+    return this.data.toNumber();
+  }
+
+  public toString(): string {
+    return this.data.toString();
+  }
+}
+
+export class Uint64 implements Integer {
   public static fromBytesBigEndian(bytes: ArrayLike<number>): Uint64 {
     if (bytes.length !== 8) {
       throw new Error("Invalid input length. Expected 8 bytes.");

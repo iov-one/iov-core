@@ -15,6 +15,7 @@ import {
   BcpTicker,
   BcpTransactionState,
   BcpTxQuery,
+  BlockHeader,
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
@@ -31,7 +32,6 @@ import { constants } from "./constants";
 import { keyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
 import { Parse, Scraper } from "./parse";
-import { BlockHeader } from "./responses";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
@@ -176,7 +176,7 @@ export class EthereumConnection implements BcpConnection {
     return Promise.resolve(dummyEnvelope([decodeHexQuantityNonce(nonceResponse.data.result)]));
   }
 
-  public async getHeader(height: number): Promise<BlockHeader> {
+  public async getBlockHeader(height: number): Promise<BlockHeader> {
     const blockResponse = await axios.post(this.baseUrl, {
       jsonrpc: "2.0",
       method: "eth_getBlockByNumber",
@@ -188,16 +188,20 @@ export class EthereumConnection implements BcpConnection {
     }
     const blockData = blockResponse.data.result;
     return {
-      chainId: this.myChainId,
+      id: blockData.hash,
       height: decodeHexQuantity(blockData.number),
       time: new ReadonlyDate(decodeHexQuantity(blockData.timestamp) * 1000),
-      blockId: Encoding.fromHex(hexPadToEven(blockData.hash)),
-      totalTxs: blockData.transactions.length,
+      transactionCount: blockData.transactions.length,
     };
   }
 
-  public changeBlock(): Stream<number> {
+  public watchBlockHeaders(): Stream<BlockHeader> {
     throw new Error("Not implemented");
+  }
+
+  /** @deprecated use watchBlockHeaders().map(header => header.height) */
+  public changeBlock(): Stream<number> {
+    return this.watchBlockHeaders().map(header => header.height);
   }
 
   public watchAccount(_: BcpAccountQuery): Stream<BcpAccount | undefined> {

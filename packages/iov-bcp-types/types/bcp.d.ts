@@ -1,3 +1,5 @@
+import { ReadonlyDate } from "readonly-date";
+import { As } from "type-tagger";
 import { Stream } from "xstream";
 import { ChainId, PostableBytes, PublicKeyBundle } from "@iov/base-types";
 import { ValueAndUpdates } from "@iov/stream";
@@ -93,12 +95,24 @@ export declare type BcpAccountQuery = BcpAddressQuery | BcpPubkeyQuery | BcpValu
 export declare function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery;
 export declare function isPubkeyQuery(query: BcpAccountQuery): query is BcpPubkeyQuery;
 export declare function isValueNameQuery(query: BcpAccountQuery): query is BcpValueNameQuery;
+/**
+ * A printable block ID in a blockchain-specific format.
+ *
+ * In Lisk, this is a uint64 number like 3444561236416494115 and in BNS this is an upper
+ * hex encoded 20 byte hash like 6DD2BFCD9CEFE93C64C15439C513BFD61A0225BB. Ethereum uses
+ * 0x-prefixed hashes like 0x4bd6efe48bed3ea4fd25678cc81d1ed372bb8c8654c29880889fed66130c6502
+ */
+export declare type BlockId = string & As<"block-id">;
+export interface BlockHeader {
+    readonly id: BlockId;
+    readonly height: number;
+    readonly time: ReadonlyDate;
+    readonly transactionCount: number;
+}
 export interface BcpConnection {
     readonly disconnect: () => void;
     readonly chainId: () => ChainId;
     readonly height: () => Promise<number>;
-    readonly changeBlock: () => Stream<number>;
-    readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
     readonly getTicker: (ticker: TokenTicker) => Promise<BcpQueryEnvelope<BcpTicker>>;
     readonly getAllTickers: () => Promise<BcpQueryEnvelope<BcpTicker>>;
     /**
@@ -110,11 +124,20 @@ export interface BcpConnection {
     readonly getNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Promise<BcpQueryEnvelope<Nonce>>;
     readonly watchAccount: (account: BcpAccountQuery) => Stream<BcpAccount | undefined>;
     readonly watchNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Stream<Nonce | undefined>;
+    readonly getBlockHeader: (height: number) => Promise<BlockHeader>;
+    readonly watchBlockHeaders: () => Stream<BlockHeader>;
+    /** @deprecated use watchBlockHeaders().map(header => header.height) */
+    readonly changeBlock: () => Stream<number>;
+    readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
     readonly searchTx: (query: BcpTxQuery) => Promise<ReadonlyArray<ConfirmedTransaction>>;
     /**
      * Subscribes to all newly added transactions that match the query
      */
     readonly listenTx: (query: BcpTxQuery) => Stream<ConfirmedTransaction>;
+    /**
+     * Returns a stream for all historical transactions that match
+     * the query, along with all new transactions arriving from listenTx
+     */
     readonly liveTx: (txQuery: BcpTxQuery) => Stream<ConfirmedTransaction>;
 }
 export interface ChainConnector {
