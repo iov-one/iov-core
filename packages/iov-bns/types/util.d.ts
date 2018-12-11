@@ -22,6 +22,6 @@ export declare const isHashIdentifier: (ident: Uint8Array) => ident is HashId;
 export declare const hashFromIdentifier: (ident: HashId) => Uint8Array;
 export declare const bucketKey: (bucket: string) => Uint8Array;
 export declare const indexKey: (bucket: string, index: string) => Uint8Array;
-export declare function isSwapOffer(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapCounterTx>;
+export declare function isSwapCounter(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapCounterTx>;
 export declare function isSwapRelease(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapClaimTx | SwapTimeoutTx>;
 export declare function buildTxQuery(query: BcpTxQuery): QueryString;

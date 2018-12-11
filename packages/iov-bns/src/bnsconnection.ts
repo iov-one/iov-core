@@ -70,7 +70,7 @@ import {
   buildTxQuery,
   decodeBnsAddress,
   hashIdentifier,
-  isSwapOffer,
+  isSwapCounter,
   isSwapRelease,
   keyToAddress,
 } from "./util";
@@ -322,7 +322,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     });
 
     // tslint:disable-next-line:readonly-array
-    const offers: OpenSwap[] = setTxs.filter(isSwapOffer).map(tx => this.context.swapOfferFromTx(tx));
+    const offers: OpenSwap[] = setTxs.filter(isSwapCounter).map(tx => this.context.swapOfferFromTx(tx));
 
     // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout
     const release: ReadonlyArray<SwapClaimTx | SwapTimeoutTx> = [...setTxs, ...delTxs]
@@ -351,7 +351,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const setTxs = this.liveTx({ tags: [bnsSwapQueryTags(query, true)] });
     const delTxs = this.liveTx({ tags: [bnsSwapQueryTags(query, false)] });
 
-    const offers: Stream<OpenSwap> = setTxs.filter(isSwapOffer).map(tx => this.context.swapOfferFromTx(tx));
+    const offers: Stream<OpenSwap> = setTxs.filter(isSwapCounter).map(tx => this.context.swapOfferFromTx(tx));
 
     // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout
     const releases: Stream<SwapClaimTx | SwapTimeoutTx> = Stream.merge(setTxs, delTxs)
