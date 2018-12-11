@@ -13,6 +13,7 @@
 * @iov/stream: `ValueAndUpdates.waitFor` now returns the values that matched
   the search condition.
 * @iov/stream: `DefaultValueProducerCallsbacks.error` added to produce errors.
+* @iov/tendermint-rpc: Gracefully handle duplicate subscriptions.
 
 Breaking changes
 
