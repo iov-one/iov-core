@@ -1,7 +1,7 @@
 import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
 
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
-import { Nonce, PrehashType, RecipientId, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Address, Nonce, PrehashType, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
 import { bnsCodec } from "@iov/bns";
 import { Ed25519, Sha512 } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
@@ -109,7 +109,7 @@ describe("Sign with ledger app", () => {
     const tx: SendTx = {
       kind: TransactionKind.Send,
       chainId: "test-bns-ledger" as ChainId,
-      recipient: "tiov1qy352eufqy352eufqy352eufqy352eufpralqn" as RecipientId,
+      recipient: "tiov1qy352eufqy352eufqy352eufqy352eufpralqn" as Address,
       amount: {
         // 1234.789 LGR
         quantity: "1234789000000",
@@ -154,7 +154,7 @@ describe("Sign with ledger app", () => {
     const tx: SendTx = {
       kind: TransactionKind.Send,
       chainId: "test-ledger-paths" as ChainId,
-      recipient: "tiov1zg62hngqqz4qqq8lluqqp2sqqqfrf27dzrrmea" as RecipientId,
+      recipient: "tiov1zg62hngqqz4qqq8lluqqp2sqqqfrf27dzrrmea" as Address,
       amount: {
         // 77.01001 PATH
         quantity: "77010010000",
