@@ -50,6 +50,10 @@ Breaking changes
 * @iov/tendermint-rpc: Un-export interface `RpcTxEvent`
 * @iov/tendermint-rpc: Change all `Method` enum names to PascalCase
 * @iov/tendermint-rpc: `Client.subscribeTx` now takes a `QueryString` argument
+* @iov/tendermint-rpc: Support for Tendermint version 0.20.0 and 0.21.0 is
+  deprecated and will be removed in the next version of IOV-Core. If you need
+  support for Tendermint < 0.25.0, please open an issue on Github and we'll
+  maintain it.
 
 ## 0.9.3
 
