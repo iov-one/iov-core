@@ -7,7 +7,6 @@ export declare type TtlBytes = Uint8Array & As<"ttl">;
 export declare type TokenTicker = string & As<"token-ticker">;
 export declare type SwapIdBytes = Uint8Array & As<"swap-id">;
 export declare type SwapIdString = string & As<"swap-id">;
-export declare type RecipientId = Address;
 export interface Amount {
     /**
      * The quantity expressed as atomic units.
@@ -66,7 +65,7 @@ export interface AddAddressToUsernameTx extends BaseTx {
 export interface SendTx extends BaseTx {
     readonly kind: TransactionKind.Send;
     readonly amount: Amount;
-    readonly recipient: RecipientId;
+    readonly recipient: Address;
     readonly memo?: string;
 }
 /**
@@ -81,7 +80,7 @@ export interface SetNameTx extends BaseTx {
 export interface SwapOfferTx extends BaseTx {
     readonly kind: TransactionKind.SwapOffer;
     readonly amount: ReadonlyArray<Amount>;
-    readonly recipient: RecipientId;
+    readonly recipient: Address;
     /** absolute block height at which the offer times out */
     readonly timeout: number;
     readonly preimage: Uint8Array;
@@ -89,7 +88,7 @@ export interface SwapOfferTx extends BaseTx {
 export interface SwapCounterTx extends BaseTx {
     readonly kind: TransactionKind.SwapCounter;
     readonly amount: ReadonlyArray<Amount>;
-    readonly recipient: RecipientId;
+    readonly recipient: Address;
     /** absolute block height at which the counter offer times out */
     readonly timeout: number;
     readonly hashCode: Uint8Array;
