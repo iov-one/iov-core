@@ -1,5 +1,4 @@
 import { As } from "type-tagger";
-import { JsonRpcRequest } from "./jsonrpc";
 /**
  * RPC methods as documented in https://tendermint.com/rpc/
  *
@@ -125,12 +124,6 @@ export interface ValidatorsRequest {
     readonly params: {
         readonly height?: number;
     };
-}
-export declare class DefaultParams {
-    static encodeAbciInfo(req: AbciInfoRequest): JsonRpcRequest;
-    static encodeGenesis(req: GenesisRequest): JsonRpcRequest;
-    static encodeHealth(req: HealthRequest): JsonRpcRequest;
-    static encodeStatus(req: StatusRequest): JsonRpcRequest;
 }
 export interface BuildQueryComponents {
     readonly tags?: ReadonlyArray<QueryTag>;

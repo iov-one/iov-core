@@ -1,7 +1,5 @@
 import { As } from "type-tagger";
 
-import { JsonRpcRequest, jsonRpcWith } from "./jsonrpc";
-
 /**
  * RPC methods as documented in https://tendermint.com/rpc/
  *
@@ -159,25 +157,6 @@ export interface ValidatorsRequest {
   readonly params: {
     readonly height?: number;
   };
-}
-
-// DefaultParams provides pass-through for calls with no params
-export class DefaultParams {
-  public static encodeAbciInfo(req: AbciInfoRequest): JsonRpcRequest {
-    return jsonRpcWith(req.method);
-  }
-
-  public static encodeGenesis(req: GenesisRequest): JsonRpcRequest {
-    return jsonRpcWith(req.method);
-  }
-
-  public static encodeHealth(req: HealthRequest): JsonRpcRequest {
-    return jsonRpcWith(req.method);
-  }
-
-  public static encodeStatus(req: StatusRequest): JsonRpcRequest {
-    return jsonRpcWith(req.method);
-  }
 }
 
 export interface BuildQueryComponents {
