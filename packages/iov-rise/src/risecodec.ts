@@ -10,13 +10,14 @@ import {
 } from "@iov/base-types";
 import {
   Address,
+  isSendTransaction,
   Nonce,
   PrehashType,
+  SendTransaction,
   SignableBytes,
   SignedTransaction,
   SigningJob,
   TransactionId,
-  TransactionKind,
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
@@ -49,31 +50,31 @@ export const riseCodec: TxCodec = {
    * https://app.swaggerhub.com/apis/LiskHQ/Lisk/1.0.30#/Transactions/postTransaction
    */
   bytesToPost: (signed: SignedTransaction): PostableBytes => {
-    switch (signed.transaction.kind) {
-      case TransactionKind.Send:
-        const timestamp = signed.primarySignature.nonce.toNumber();
-        const riseTimestamp = timestamp - 1464109200;
-        const id = Serialization.transactionId(
-          signed.transaction,
-          new ReadonlyDate(timestamp * 1000),
-          signed.primarySignature,
-          constants.transactionSerializationOptions,
-        );
+    const unsigned = signed.transaction;
+    if (isSendTransaction(unsigned)) {
+      const timestamp = signed.primarySignature.nonce.toNumber();
+      const riseTimestamp = timestamp - 1464109200;
+      const id = Serialization.transactionId(
+        unsigned,
+        new ReadonlyDate(timestamp * 1000),
+        signed.primarySignature,
+        constants.transactionSerializationOptions,
+      );
 
-        const postableObject = {
-          type: 0,
-          amount: Int53.fromString(signed.transaction.amount.quantity).toNumber(),
-          recipientId: signed.transaction.recipient,
-          senderId: pubkeyToAddress(signed.primarySignature.pubkey.data),
-          senderPublicKey: Encoding.toHex(signed.primarySignature.pubkey.data),
-          timestamp: riseTimestamp,
-          fee: 10000000, // 0.1 RISE fixed
-          signature: Encoding.toHex(signed.primarySignature.signature),
-          id: id,
-        };
-        return Encoding.toUtf8(JSON.stringify(postableObject)) as PostableBytes;
-      default:
-        throw new Error("Unsupported kind of transaction");
+      const postableObject = {
+        type: 0,
+        amount: Int53.fromString(unsigned.amount.quantity).toNumber(),
+        recipientId: unsigned.recipient,
+        senderId: pubkeyToAddress(signed.primarySignature.pubkey.data),
+        senderPublicKey: Encoding.toHex(signed.primarySignature.pubkey.data),
+        timestamp: riseTimestamp,
+        fee: 10000000, // 0.1 RISE fixed
+        signature: Encoding.toHex(signed.primarySignature.signature),
+        id: id,
+      };
+      return Encoding.toUtf8(JSON.stringify(postableObject)) as PostableBytes;
+    } else {
+      throw new Error("Unsupported kind of transaction");
     }
   },
 
@@ -98,35 +99,36 @@ export const riseCodec: TxCodec = {
   parseBytes: (bytes: PostableBytes, chainId: ChainId): SignedTransaction => {
     const json = JSON.parse(Encoding.fromUtf8(bytes));
 
-    let kind: TransactionKind;
+    let unsignedTransaction: SendTransaction;
     switch (json.type) {
       case 0:
-        kind = TransactionKind.Send;
+        unsignedTransaction = {
+          domain: "lisk",
+          kind: "send",
+          chainId: chainId,
+          fee: {
+            quantity: Parse.parseQuantity(`${json.fee}`), // `fee` is a number
+            fractionalDigits: constants.primaryTokenFractionalDigits,
+            tokenTicker: constants.primaryTokenTicker,
+          },
+          signer: {
+            algo: Algorithm.Ed25519,
+            data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
+          },
+          amount: {
+            quantity: Parse.parseQuantity(`${json.amount}`), // `amount` is a number
+            fractionalDigits: constants.primaryTokenFractionalDigits,
+            tokenTicker: constants.primaryTokenTicker,
+          },
+          recipient: json.recipientId as Address,
+        };
         break;
       default:
         throw new Error("Unsupported transaction type");
     }
 
     return {
-      transaction: {
-        chainId: chainId,
-        fee: {
-          quantity: Parse.parseQuantity(`${json.fee}`), // `fee` is a number
-          fractionalDigits: constants.primaryTokenFractionalDigits,
-          tokenTicker: constants.primaryTokenTicker,
-        },
-        signer: {
-          algo: Algorithm.Ed25519,
-          data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
-        },
-        kind: kind,
-        amount: {
-          quantity: Parse.parseQuantity(`${json.amount}`), // `amount` is a number
-          fractionalDigits: constants.primaryTokenFractionalDigits,
-          tokenTicker: constants.primaryTokenTicker,
-        },
-        recipient: json.recipientId as Address,
-      },
+      transaction: unsignedTransaction,
       primarySignature: {
         nonce: Parse.timeToNonce(Parse.fromTimestamp(json.timestamp)),
         pubkey: {

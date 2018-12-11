@@ -7,18 +7,14 @@ import {
   BcpTicker,
   ConfirmedTransaction,
   OpenSwap,
-  SwapClaimTx,
-  SwapCounterTx,
   SwapData,
   SwapIdBytes,
   SwapState,
-  SwapTimeoutTx,
-  TransactionKind,
 } from "@iov/bcp-types";
 
 import { decodeAmount } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
-import { asNumber, ensure, Keyed } from "./types";
+import { asNumber, ensure, Keyed, SwapClaimTx, SwapCounterTx, SwapTimeoutTx, TransactionKind } from "./types";
 import { encodeBnsAddress, hashFromIdentifier, isHashIdentifier, keyToAddress } from "./util";
 
 /**

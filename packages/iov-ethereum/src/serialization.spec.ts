@@ -1,5 +1,5 @@
 import { Algorithm, PublicKeyBytes } from "@iov/base-types";
-import { Address, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Address, SendTransaction, TokenTicker } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
 import { Serialization } from "./serialization";
@@ -15,13 +15,14 @@ describe("Serialization", () => {
         "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
       );
 
-      const tx: SendTx = {
+      const tx: SendTransaction = {
+        domain: "ethereum",
+        kind: "send",
         chainId: TestConfig.chainId,
         signer: {
           algo: Algorithm.Secp256k1,
           data: pubkey as PublicKeyBytes,
         },
-        kind: TransactionKind.Send,
         amount: {
           quantity: "20000000000000000000",
           fractionalDigits: 18,
@@ -52,13 +53,14 @@ describe("Serialization", () => {
         "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
       );
 
-      const tx: SendTx = {
+      const tx: SendTransaction = {
+        domain: "ethereum",
+        kind: "send",
         chainId: TestConfig.chainId,
         signer: {
           algo: Algorithm.Secp256k1,
           data: pubkey as PublicKeyBytes,
         },
-        kind: TransactionKind.Send,
         amount: {
           quantity: "20000000000000000000",
           fractionalDigits: 18,

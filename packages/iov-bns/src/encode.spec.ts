@@ -1,16 +1,5 @@
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
-import {
-  AddAddressToUsernameTx,
-  Address,
-  Amount,
-  FullSignature,
-  Nonce,
-  RegisterBlockchainTx,
-  RegisterUsernameTx,
-  RemoveAddressFromUsernameTx,
-  TokenTicker,
-  TransactionKind,
-} from "@iov/bcp-types";
+import { Address, Amount, FullSignature, Nonce, TokenTicker } from "@iov/bcp-types";
 import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 
@@ -24,6 +13,13 @@ import {
   encodePubkey,
 } from "./encode";
 import * as codecImpl from "./generated/codecimpl";
+import {
+  AddAddressToUsernameTx,
+  RegisterBlockchainTx,
+  RegisterUsernameTx,
+  RemoveAddressFromUsernameTx,
+  TransactionKind,
+} from "./types";
 import { appendSignBytes } from "./util";
 
 import {
@@ -141,6 +137,7 @@ describe("Encode", () => {
 
     it("works for AddAddressToUsernameTx", () => {
       const addAddress: AddAddressToUsernameTx = {
+        domain: "bns",
         kind: TransactionKind.AddAddressToUsername,
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
@@ -158,6 +155,7 @@ describe("Encode", () => {
 
     it("works for RegisterBlockchainTx", () => {
       const registerBlockchain: RegisterBlockchainTx = {
+        domain: "bns",
         kind: TransactionKind.RegisterBlockchain,
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
@@ -186,6 +184,7 @@ describe("Encode", () => {
 
     it("works for RegisterUsernameTx", () => {
       const registerUsername: RegisterUsernameTx = {
+        domain: "bns",
         kind: TransactionKind.RegisterUsername,
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
@@ -221,6 +220,7 @@ describe("Encode", () => {
 
     it("works for RemoveAddressFromUsernameTx", () => {
       const removeAddress: RemoveAddressFromUsernameTx = {
+        domain: "bns",
         kind: TransactionKind.RemoveAddressFromUsername,
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,

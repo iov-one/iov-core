@@ -1,5 +1,5 @@
 import { Algorithm, ChainId, PublicKeyBytes } from "@iov/base-types";
-import { Address, BaseTx, Nonce, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Address, Nonce, TokenTicker, UnsignedTransaction } from "@iov/bcp-types";
 import { Encoding, Int53 } from "@iov/encoding";
 
 import {
@@ -24,7 +24,15 @@ import {
   sendTxJson,
   signedTxBin,
 } from "./testdata";
-import { decodePrivkey, decodePubkey, Keyed } from "./types";
+import {
+  decodePrivkey,
+  decodePubkey,
+  isAddAddressToUsernameTx,
+  isRegisterBlockchainTx,
+  isRegisterUsernameTx,
+  isRemoveAddressFromUsernameTx,
+  Keyed,
+} from "./types";
 
 const { fromHex, toUtf8 } = Encoding;
 
@@ -221,7 +229,8 @@ describe("Decode", () => {
   });
 
   describe("parseMsg", () => {
-    const defaultBaseTx: BaseTx = {
+    const defaultBaseTx: UnsignedTransaction = {
+      domain: "bns",
       chainId: "bns-chain" as ChainId,
       signer: {
         algo: Algorithm.Ed25519,
@@ -238,7 +247,7 @@ describe("Decode", () => {
         },
       };
       const parsed = parseMsg(defaultBaseTx, transactionMessage);
-      if (parsed.kind !== TransactionKind.AddAddressToUsername) {
+      if (!isAddAddressToUsernameTx(parsed)) {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.username).toEqual("alice");
@@ -269,7 +278,7 @@ describe("Decode", () => {
         },
       };
       const parsed = parseMsg(defaultBaseTx, transactionMessage);
-      if (parsed.kind !== TransactionKind.RegisterBlockchain) {
+      if (!isRegisterBlockchainTx(parsed)) {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.chain).toEqual({
@@ -305,7 +314,7 @@ describe("Decode", () => {
         },
       };
       const parsed = parseMsg(defaultBaseTx, transactionMessage);
-      if (parsed.kind !== TransactionKind.RegisterUsername) {
+      if (!isRegisterUsernameTx(parsed)) {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.username).toEqual("bobby");
@@ -329,7 +338,7 @@ describe("Decode", () => {
         },
       };
       const parsed = parseMsg(defaultBaseTx, transactionMessage);
-      if (parsed.kind !== TransactionKind.RemoveAddressFromUsername) {
+      if (!isRemoveAddressFromUsernameTx(parsed)) {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.username).toEqual("alice");

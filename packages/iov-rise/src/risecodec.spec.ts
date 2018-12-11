@@ -6,7 +6,14 @@ import {
   PublicKeyBytes,
   SignatureBytes,
 } from "@iov/base-types";
-import { Address, Nonce, SendTx, SignedTransaction, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import {
+  Address,
+  isSendTransaction,
+  Nonce,
+  SendTransaction,
+  SignedTransaction,
+  TokenTicker,
+} from "@iov/bcp-types";
 import { Encoding, Int53 } from "@iov/encoding";
 
 import { riseCodec } from "./risecodec";
@@ -31,13 +38,14 @@ describe("riseCodec", () => {
   it("can create bytes to post", () => {
     const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
-    const tx: SendTx = {
+    const tx: SendTransaction = {
+      domain: "rise",
+      kind: "send",
       chainId: riseTestnet,
       signer: {
         algo: Algorithm.Ed25519,
         data: pubkey as PublicKeyBytes,
       },
-      kind: TransactionKind.Send,
       amount: {
         quantity: "123456789",
         fractionalDigits: 8,
@@ -99,22 +107,23 @@ describe("riseCodec", () => {
     `) as PostableBytes;
 
     const parsed = riseCodec.parseBytes(serialized, riseTestnet);
-    if (parsed.transaction.kind !== TransactionKind.Send) {
+    const unsigned = parsed.transaction;
+    if (!isSendTransaction(unsigned)) {
       throw new Error("wrong transaction kind");
     }
-    expect(parsed.transaction.fee).toBeTruthy();
-    expect(parsed.transaction.fee!.quantity).toEqual("10000000");
-    expect(parsed.transaction.fee!.fractionalDigits).toEqual(8);
-    expect(parsed.transaction.fee!.tokenTicker).toEqual("RISE");
-    expect(parsed.transaction.amount).toBeTruthy();
-    expect(parsed.transaction.amount.quantity).toEqual("144550000");
-    expect(parsed.transaction.amount.fractionalDigits).toEqual(8);
-    expect(parsed.transaction.amount.tokenTicker).toEqual("RISE");
-    expect(parsed.transaction.signer.algo).toEqual(Algorithm.Ed25519);
-    expect(parsed.transaction.signer.data).toEqual(
+    expect(unsigned.fee).toBeTruthy();
+    expect(unsigned.fee!.quantity).toEqual("10000000");
+    expect(unsigned.fee!.fractionalDigits).toEqual(8);
+    expect(unsigned.fee!.tokenTicker).toEqual("RISE");
+    expect(unsigned.amount).toBeTruthy();
+    expect(unsigned.amount.quantity).toEqual("144550000");
+    expect(unsigned.amount.fractionalDigits).toEqual(8);
+    expect(unsigned.amount.tokenTicker).toEqual("RISE");
+    expect(unsigned.signer.algo).toEqual(Algorithm.Ed25519);
+    expect(unsigned.signer.data).toEqual(
       fromHex("3e992130a22a124b38998887f4c791c8e4d4b9d7c21522f2dffea5d09b4d8679"),
     );
-    expect(parsed.transaction.recipient).toEqual("9662024034251537644R");
+    expect(unsigned.recipient).toEqual("9662024034251537644R");
 
     expect(parsed.primarySignature.nonce).toEqual(new Int53(75015345 + riseEpochAsUnixTimestamp) as Nonce);
     expect(parsed.primarySignature.pubkey.algo).toEqual(Algorithm.Ed25519);

@@ -37,26 +37,16 @@ export interface Amount {
   readonly tokenTicker: TokenTicker;
 }
 
-export interface ChainAddressPair {
-  readonly chainId: ChainId;
-  readonly address: Address;
-}
-
-export enum TransactionKind {
-  AddAddressToUsername,
-  Send,
-  /** @deprecated see SetNameTx */
-  SetName,
-  SwapOffer,
-  SwapCounter,
-  SwapClaim,
-  SwapTimeout,
-  RegisterBlockchain,
-  RegisterUsername,
-  RemoveAddressFromUsername,
-}
-
-export interface BaseTx {
+/** The basic transaction type all transactions should extend */
+export interface UnsignedTransaction {
+  /**
+   * The domain in which the concrete transaction is valid
+   *
+   * This should be used for type detection only and not be encoded somewhere.
+   * Right now we use "bns", "ethereum", "lisk" and "rise" but this could also
+   * be migrated to a Java-style package names like "io.lisk.mainnet" later on.
+   */
+  readonly domain: string;
   /** the chain on which the transaction should be valid */
   readonly chainId: ChainId;
   readonly fee?: Amount;
@@ -66,32 +56,19 @@ export interface BaseTx {
   readonly signer: PublicKeyBundle;
 }
 
-export interface AddAddressToUsernameTx extends BaseTx {
-  readonly kind: TransactionKind.AddAddressToUsername;
-  /** the username to be updated, must exist on chain */
-  readonly username: string;
-  readonly payload: ChainAddressPair;
-}
-
-export interface SendTx extends BaseTx {
-  readonly kind: TransactionKind.Send;
+export interface SendTransaction extends UnsignedTransaction {
+  readonly kind: "send";
   readonly amount: Amount;
   readonly recipient: Address;
   readonly memo?: string;
 }
 
-/**
- * Associates a simple name to an account on a weave-based blockchain.
- *
- * @deprecated will be dropped in favour of RegisterUsernameTx
- */
-export interface SetNameTx extends BaseTx {
-  readonly kind: TransactionKind.SetName;
-  readonly name: string;
+export function isSendTransaction(transaction: UnsignedTransaction): transaction is SendTransaction {
+  return (transaction as SendTransaction).kind === "send";
 }
 
-export interface SwapOfferTx extends BaseTx {
-  readonly kind: TransactionKind.SwapOffer;
+export interface SwapOfferTransaction extends UnsignedTransaction {
+  readonly kind: "swap_offer";
   readonly amount: ReadonlyArray<Amount>;
   readonly recipient: Address;
   /** absolute block height at which the offer times out */
@@ -99,8 +76,8 @@ export interface SwapOfferTx extends BaseTx {
   readonly preimage: Uint8Array;
 }
 
-export interface SwapCounterTx extends BaseTx {
-  readonly kind: TransactionKind.SwapCounter;
+export interface SwapCounterTransaction extends UnsignedTransaction {
+  readonly kind: "swap_counter";
   readonly amount: ReadonlyArray<Amount>;
   readonly recipient: Address;
   /** absolute block height at which the counter offer times out */
@@ -109,58 +86,13 @@ export interface SwapCounterTx extends BaseTx {
   readonly memo?: string;
 }
 
-export interface SwapClaimTx extends BaseTx {
-  readonly kind: TransactionKind.SwapClaim;
+export interface SwapClaimTransaction extends UnsignedTransaction {
+  readonly kind: "swap_claim";
   readonly preimage: Uint8Array;
   readonly swapId: SwapIdBytes; // pulled from the offer transaction
 }
 
-export interface SwapTimeoutTx extends BaseTx {
-  readonly kind: TransactionKind.SwapTimeout;
+export interface SwapTimeoutTransaction extends UnsignedTransaction {
+  readonly kind: "swap_timeout";
   readonly swapId: SwapIdBytes; // pulled from the offer transaction
 }
-
-export interface RegisterBlockchainTx extends BaseTx {
-  readonly kind: TransactionKind.RegisterBlockchain;
-  /**
-   * The chain to be registered
-   *
-   * Fields as defined in https://github.com/iov-one/bns-spec/blob/master/docs/data/ObjectDefinitions.rst#chain
-   */
-  readonly chain: {
-    readonly chainId: ChainId;
-    readonly name: string;
-    readonly enabled: boolean;
-    readonly production: boolean;
-
-    readonly networkId?: string;
-    readonly mainTickerId?: TokenTicker;
-  };
-  readonly codecName: string;
-  readonly codecConfig: string;
-}
-
-export interface RegisterUsernameTx extends BaseTx {
-  readonly kind: TransactionKind.RegisterUsername;
-  readonly username: string;
-  readonly addresses: ReadonlyArray<ChainAddressPair>;
-}
-
-export interface RemoveAddressFromUsernameTx extends BaseTx {
-  readonly kind: TransactionKind.RemoveAddressFromUsername;
-  /** the username to be updated, must exist on chain */
-  readonly username: string;
-  readonly payload: ChainAddressPair;
-}
-
-export type UnsignedTransaction =
-  | AddAddressToUsernameTx
-  | SendTx
-  | SetNameTx
-  | SwapOfferTx
-  | SwapCounterTx
-  | SwapClaimTx
-  | SwapTimeoutTx
-  | RegisterBlockchainTx
-  | RegisterUsernameTx
-  | RemoveAddressFromUsernameTx;

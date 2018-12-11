@@ -2,7 +2,7 @@
 import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
-import { FullSignature, TransactionId, TransactionKind, UnsignedTransaction } from "@iov/bcp-types";
+import { FullSignature, isSendTransaction, TransactionId, UnsignedTransaction } from "@iov/bcp-types";
 import { Sha256 } from "@iov/crypto";
 import { Encoding, Uint64 } from "@iov/encoding";
 
@@ -38,44 +38,43 @@ export class Serialization {
       throw new Error("Fee must not be set. It is fixed and not included in the signed content.");
     }
 
-    switch (unsigned.kind) {
-      case TransactionKind.Send:
-        const timestamp = Serialization.toTimestamp(creationTime);
-        const timestampBytes = new Uint8Array([
-          (timestamp >> 0) & 0xff,
-          (timestamp >> 8) & 0xff,
-          (timestamp >> 16) & 0xff,
-          (timestamp >> 24) & 0xff,
-        ]);
-        const amount = Uint64.fromString(unsigned.amount.quantity);
-        const fullRecipientString = unsigned.recipient;
+    if (isSendTransaction(unsigned)) {
+      const timestamp = Serialization.toTimestamp(creationTime);
+      const timestampBytes = new Uint8Array([
+        (timestamp >> 0) & 0xff,
+        (timestamp >> 8) & 0xff,
+        (timestamp >> 16) & 0xff,
+        (timestamp >> 24) & 0xff,
+      ]);
+      const amount = Uint64.fromString(unsigned.amount.quantity);
+      const fullRecipientString = unsigned.recipient;
 
-        if (!fullRecipientString.match(/^[0-9]{1,20}[A-Z]{1}$/)) {
-          throw new Error("Recipient does not match expected format");
-        }
-        const recipientNumberString = fullRecipientString.slice(0, -1);
+      if (!fullRecipientString.match(/^[0-9]{1,20}[A-Z]{1}$/)) {
+        throw new Error("Recipient does not match expected format");
+      }
+      const recipientNumberString = fullRecipientString.slice(0, -1);
 
-        if (recipientNumberString !== "0" && recipientNumberString[0] === "0") {
-          throw new Error("Recipient must not contain leading zeros");
-        }
+      if (recipientNumberString !== "0" && recipientNumberString[0] === "0") {
+        throw new Error("Recipient must not contain leading zeros");
+      }
 
-        const recipient = Long.fromString(recipientNumberString, true, 10);
+      const recipient = Long.fromString(recipientNumberString, true, 10);
 
-        const memoBytes = unsigned.memo !== undefined ? Encoding.toUtf8(unsigned.memo) : new Uint8Array([]);
-        if (memoBytes.length > options.maxMemoLength) {
-          throw new Error(`Memo length exceeds limit. Allowed: ${options.maxMemoLength} bytes`);
-        }
+      const memoBytes = unsigned.memo !== undefined ? Encoding.toUtf8(unsigned.memo) : new Uint8Array([]);
+      if (memoBytes.length > options.maxMemoLength) {
+        throw new Error(`Memo length exceeds limit. Allowed: ${options.maxMemoLength} bytes`);
+      }
 
-        return new Uint8Array([
-          0, // transaction type
-          ...timestampBytes,
-          ...unsigned.signer.data,
-          ...recipient.toBytesBE(),
-          ...amount.toBytesLittleEndian(),
-          ...memoBytes,
-        ]);
-      default:
-        throw new Error("Unsupported kind of transaction");
+      return new Uint8Array([
+        0, // transaction type
+        ...timestampBytes,
+        ...unsigned.signer.data,
+        ...recipient.toBytesBE(),
+        ...amount.toBytesLittleEndian(),
+        ...memoBytes,
+      ]);
+    } else {
+      throw new Error("Unsupported kind of transaction");
     }
   }
 
