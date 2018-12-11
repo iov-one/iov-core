@@ -1,7 +1,6 @@
 import { JsonRpcEvent, JsonRpcRequest, JsonRpcSuccess } from "./jsonrpc";
 import * as requests from "./requests";
 import * as responses from "./responses";
-import { RpcClient } from "./rpcclient";
 export declare const v0_20: Adaptor;
 export declare const v0_25: Adaptor;
 export interface Adaptor {
@@ -53,4 +52,3 @@ export interface Responses {
  * @param version full Tendermint version string, e.g. "0.20.1"
  */
 export declare function adatorForVersion(version: string): Adaptor;
-export declare function findAdaptor(client: RpcClient): Promise<Adaptor>;
