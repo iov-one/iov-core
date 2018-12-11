@@ -9,7 +9,7 @@ import { Client } from "./client";
 import { randomId } from "./jsonrpc";
 import { buildQuery } from "./requests";
 import * as responses from "./responses";
-import { HttpClient, RpcClient, WebsocketClient } from "./rpcclient";
+import { HttpClient, RpcClient, WebsocketClient } from "./rpcclients";
 
 function skipTests(): boolean {
   return !process.env.TENDERMINT_ENABLED;

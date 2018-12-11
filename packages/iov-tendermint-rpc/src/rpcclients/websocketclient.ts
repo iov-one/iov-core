@@ -1,5 +1,4 @@
 /* tslint:disable:readonly-keyword readonly-array no-object-mutation */
-import axios from "axios";
 import EventEmitter from "events";
 import { Listener, Producer, Stream } from "xstream";
 
@@ -10,101 +9,13 @@ import {
   JsonRpcResponse,
   JsonRpcSuccess,
   throwIfError,
-} from "./jsonrpc";
-import { SocketWrapper } from "./socketwrapper";
+} from "../jsonrpc";
+import { SocketWrapper } from "../socketwrapper";
 
-export interface RpcClient {
-  readonly execute: (request: JsonRpcRequest) => Promise<JsonRpcSuccess>;
-  readonly disconnect: () => void;
-}
-
-export interface RpcStreamingClient extends RpcClient {
-  readonly listen: (request: JsonRpcRequest) => Stream<JsonRpcEvent>;
-}
-
-export function instanceOfRpcStreamingClient(client: RpcClient): client is RpcStreamingClient {
-  return typeof (client as any).listen === "function";
-}
-
-export function inBrowser(): boolean {
-  return typeof window === "object";
-}
-
-function filterBadStatus(res: Response): Response {
-  if (res.status >= 400) {
-    throw new Error(`Bad status on response: ${res.status}`);
-  }
-  return res;
-}
-
-// post uses fetch in browser and axios in node,
-// was having weird issues with axios in brower
-function http(method: string, url: string, request?: any): Promise<any> {
-  if (inBrowser()) {
-    const body = request ? JSON.stringify(request) : undefined;
-    return fetch(url, { method, body })
-      .then(filterBadStatus)
-      .then(res => res.json());
-  } else {
-    return axios.request({ url, method, data: request }).then(res => res.data) as Promise<any>;
-  }
-}
+import { hasProtocol, RpcStreamingClient } from "./rpcclient";
 
 function defaultErrorHandler(error: any): never {
   throw error;
-}
-
-export function hasProtocol(url: string): boolean {
-  return url.search("://") !== -1;
-}
-
-export class HttpClient implements RpcClient {
-  protected readonly url: string;
-
-  constructor(url: string = "http://localhost:46657") {
-    // accept host.name:port and assume http protocol
-    this.url = hasProtocol(url) ? url : "http://" + url;
-  }
-
-  public disconnect(): void {
-    // nothing to be done
-  }
-
-  public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
-    // make sure we set the origin header properly, seems not to be set
-    // in karma tests....
-    const response = await http("POST", this.url, request);
-    return throwIfError(response);
-  }
-}
-
-/**
- * HttpUriClient encodes the whole request as an URI to be submitted
- * as a HTTP GET request.
- *
- * This is only meant for testing or quick status/health checks
- *
- * @see https://tendermint.github.io/slate/#uri-http
- */
-export class HttpUriClient implements RpcClient {
-  protected readonly baseUrl: string;
-
-  constructor(baseUrl: string = "http://localhost:46657") {
-    this.baseUrl = hasProtocol(baseUrl) ? baseUrl : "http://" + baseUrl;
-  }
-
-  public disconnect(): void {
-    // nothing to be done
-  }
-
-  public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
-    if (request.params && Object.keys(request.params).length !== 0) {
-      throw new Error(`HttpUriClient doesn't support passing params: ${request.params}`);
-    }
-    const url = `${this.baseUrl}/${request.method}`;
-    const response = await http("GET", url);
-    return throwIfError(response);
-  }
 }
 
 export class WebsocketClient implements RpcStreamingClient {

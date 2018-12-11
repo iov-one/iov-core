@@ -4,7 +4,7 @@ import { Adaptor, adatorForVersion, Decoder, Encoder, Params, Responses } from "
 import { JsonRpcEvent, jsonRpcWith } from "./jsonrpc";
 import * as requests from "./requests";
 import * as responses from "./responses";
-import { HttpClient, instanceOfRpcStreamingClient, RpcClient, WebsocketClient } from "./rpcclient";
+import { HttpClient, instanceOfRpcStreamingClient, RpcClient, WebsocketClient } from "./rpcclients";
 
 export class Client {
   public static connect(url: string): Promise<Client> {
