@@ -81,6 +81,14 @@ export class WebsocketClient implements RpcStreamingClient {
     return Stream.create(producer);
   }
 
+  /**
+   * Resolves as soon as websocket is connected. execute() queues requests automatically,
+   * so this should be required for testing purposes only.
+   */
+  public connected(): Promise<void> {
+    return this.socket.connected;
+  }
+
   public disconnect(): void {
     this.socket.disconnect();
   }

@@ -8,6 +8,11 @@ export declare class WebsocketClient implements RpcStreamingClient {
     constructor(baseUrl?: string, onError?: (err: any) => void);
     execute(request: JsonRpcRequest): Promise<JsonRpcSuccess>;
     listen(request: JsonRpcRequest): Stream<JsonRpcEvent>;
+    /**
+     * Resolves as soon as websocket is connected. execute() queues requests automatically,
+     * so this should be required for testing purposes only.
+     */
+    connected(): Promise<void>;
     disconnect(): void;
     protected responseForRequestId(id: string): Promise<JsonRpcResponse>;
 }

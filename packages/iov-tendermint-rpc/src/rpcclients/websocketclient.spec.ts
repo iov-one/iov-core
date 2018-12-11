@@ -67,6 +67,8 @@ describe("WebsocketClient", () => {
           // wait 1.5s and check we did not get more events
           setTimeout(() => {
             expect(events.length).toEqual(2);
+
+            client.disconnect();
             done();
           }, 1500);
         }
@@ -99,6 +101,8 @@ describe("WebsocketClient", () => {
           // wait 1.5s and check we did not get more events
           setTimeout(() => {
             expect(events.length).toEqual(2);
+
+            client.disconnect();
             done();
           }, 1500);
         }
@@ -112,16 +116,16 @@ describe("WebsocketClient", () => {
   it("can end event listening by disconnecting", done => {
     pendingWithoutTendermint();
 
-    const ws = new WebsocketClient(tendermintUrl);
+    const client = new WebsocketClient(tendermintUrl);
 
     const query = "tm.event='NewBlockHeader'";
     const req = jsonRpcWith("subscribe", { query });
-    const headers = ws.listen(req);
+    const headers = client.listen(req);
 
     // tslint:disable-next-line:readonly-array
     const receivedEvents: JsonRpcEvent[] = [];
 
-    setTimeout(() => ws.disconnect(), 1500);
+    setTimeout(() => client.disconnect(), 1500);
 
     headers.subscribe({
       error: fail,
@@ -173,11 +177,15 @@ describe("WebsocketClient", () => {
     })().catch(fail);
   });
 
-  it("cannot listen to simple requests", () => {
+  it("cannot listen to simple requests", async () => {
     pendingWithoutTendermint();
 
-    const ws = new WebsocketClient(tendermintUrl);
+    const client = new WebsocketClient(tendermintUrl);
+
     const req = jsonRpcWith(Method.Health);
-    expect(() => ws.listen(req)).toThrowError(/request method must be "subscribe"/i);
+    expect(() => client.listen(req)).toThrowError(/request method must be "subscribe"/i);
+
+    await client.connected();
+    client.disconnect();
   });
 });

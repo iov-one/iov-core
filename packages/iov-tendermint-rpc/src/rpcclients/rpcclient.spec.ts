@@ -18,23 +18,31 @@ function pendingWithoutTendermint(): void {
 describe("RpcClient", () => {
   const tendermintUrl = "localhost:12345";
 
-  it("has working instanceOfRpcStreamingClient()", () => {
+  it("has working instanceOfRpcStreamingClient()", async () => {
     pendingWithoutTendermint();
 
-    expect(instanceOfRpcStreamingClient(new HttpClient(tendermintUrl))).toEqual(false);
-    expect(instanceOfRpcStreamingClient(new WebsocketClient(tendermintUrl))).toEqual(true);
+    const httpClient = new HttpClient(tendermintUrl);
+    const wsClient = new WebsocketClient(tendermintUrl);
+
+    expect(instanceOfRpcStreamingClient(httpClient)).toEqual(false);
+    expect(instanceOfRpcStreamingClient(wsClient)).toEqual(true);
+
+    httpClient.disconnect();
+    await wsClient.connected();
+    wsClient.disconnect();
   });
 
   it("should also work with trailing slashes", async () => {
     pendingWithoutTendermint();
 
-    const status = jsonRpcWith(Method.Status);
+    const statusRequest = jsonRpcWith(Method.Status);
 
-    const http = new HttpClient(tendermintUrl + "/");
-    expect(await http.execute(status)).toBeDefined();
+    const httpClient = new HttpClient(tendermintUrl + "/");
+    expect(await httpClient.execute(statusRequest)).toBeDefined();
+    httpClient.disconnect();
 
-    const ws = new WebsocketClient(tendermintUrl + "/");
-    expect(await ws.execute(status)).toBeDefined();
-    ws.disconnect();
+    const wsClient = new WebsocketClient(tendermintUrl + "/");
+    expect(await wsClient.execute(statusRequest)).toBeDefined();
+    wsClient.disconnect();
   });
 });
