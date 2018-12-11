@@ -1,9 +1,13 @@
 import * as Long from "long";
 import { As } from "type-tagger";
 import { Algorithm, ChainId, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
-import { Address, ChainAddressPair, FullSignature, TokenTicker } from "@iov/bcp-types";
+import { Address, Amount, FullSignature, SendTransaction, SwapClaimTransaction, SwapCounterTransaction, SwapOfferTransaction, SwapTimeoutTransaction, TokenTicker, UnsignedTransaction } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
+export interface ChainAddressPair {
+    readonly chainId: ChainId;
+    readonly address: Address;
+}
 /** raw address type used to encode NFT owners */
 export declare type BnsAddressBytes = Uint8Array & As<"bns-address-bytes">;
 export interface BnsBlockchainNft {
@@ -71,3 +75,97 @@ export declare const decodeFullSig: (sig: codecImpl.sigs.IStdSignature) => FullS
 export declare const asNumber: (maybeLong: number | Long | null | undefined) => number;
 export declare function asInt53(input: Long | number | null | undefined): Int53;
 export declare const ensure: <T>(maybe: T | null | undefined, msg?: string | undefined) => T;
+/**
+ * BNS transaction kinds.
+ *
+ * Raw values are used for type detection only and can change at any time.
+ */
+export declare enum TransactionKind {
+    AddAddressToUsername = "add_address_to_username",
+    Send = "send",
+    /** @deprecated see SetNameTx */
+    SetName = "set_name",
+    SwapOffer = "swap_offer",
+    SwapCounter = "swap_counter",
+    SwapClaim = "swap_claim",
+    SwapTimeout = "swap_timeout",
+    RegisterBlockchain = "register_blockchain",
+    RegisterUsername = "register_username",
+    RemoveAddressFromUsername = "remove_address_from_username"
+}
+export interface BnsTx extends UnsignedTransaction {
+    readonly kind: TransactionKind;
+}
+export interface AddAddressToUsernameTx extends BnsTx {
+    readonly kind: TransactionKind.AddAddressToUsername;
+    /** the username to be updated, must exist on chain */
+    readonly username: string;
+    readonly payload: ChainAddressPair;
+}
+export interface SendTx extends SendTransaction, BnsTx {
+    readonly kind: TransactionKind.Send;
+    readonly amount: Amount;
+    readonly recipient: Address;
+    readonly memo?: string;
+}
+/**
+ * Associates a simple name to an account on a weave-based blockchain.
+ *
+ * @deprecated will be dropped in favour of RegisterUsernameTx
+ */
+export interface SetNameTx extends BnsTx {
+    readonly kind: TransactionKind.SetName;
+    readonly name: string;
+}
+export interface SwapOfferTx extends SwapOfferTransaction, BnsTx {
+    readonly kind: TransactionKind.SwapOffer;
+}
+export interface SwapCounterTx extends SwapCounterTransaction, BnsTx {
+    readonly kind: TransactionKind.SwapCounter;
+}
+export interface SwapClaimTx extends SwapClaimTransaction, BnsTx {
+    readonly kind: TransactionKind.SwapClaim;
+}
+export interface SwapTimeoutTx extends SwapTimeoutTransaction, BnsTx {
+    readonly kind: TransactionKind.SwapTimeout;
+}
+export interface RegisterBlockchainTx extends BnsTx {
+    readonly kind: TransactionKind.RegisterBlockchain;
+    /**
+     * The chain to be registered
+     *
+     * Fields as defined in https://github.com/iov-one/bns-spec/blob/master/docs/data/ObjectDefinitions.rst#chain
+     */
+    readonly chain: {
+        readonly chainId: ChainId;
+        readonly name: string;
+        readonly enabled: boolean;
+        readonly production: boolean;
+        readonly networkId?: string;
+        readonly mainTickerId?: TokenTicker;
+    };
+    readonly codecName: string;
+    readonly codecConfig: string;
+}
+export interface RegisterUsernameTx extends BnsTx {
+    readonly kind: TransactionKind.RegisterUsername;
+    readonly username: string;
+    readonly addresses: ReadonlyArray<ChainAddressPair>;
+}
+export interface RemoveAddressFromUsernameTx extends BnsTx {
+    readonly kind: TransactionKind.RemoveAddressFromUsername;
+    /** the username to be updated, must exist on chain */
+    readonly username: string;
+    readonly payload: ChainAddressPair;
+}
+export declare function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx;
+export declare function isAddAddressToUsernameTx(transaction: UnsignedTransaction): transaction is AddAddressToUsernameTx;
+export declare function isSendTx(transaction: UnsignedTransaction): transaction is SendTx;
+export declare function isSetNameTx(transaction: UnsignedTransaction): transaction is SetNameTx;
+export declare function isSwapOfferTx(transaction: UnsignedTransaction): transaction is SwapOfferTx;
+export declare function isSwapCounterTx(transaction: UnsignedTransaction): transaction is SwapCounterTx;
+export declare function isSwapClaimTx(transaction: UnsignedTransaction): transaction is SwapClaimTx;
+export declare function isSwapTimeoutTx(transaction: UnsignedTransaction): transaction is SwapTimeoutTx;
+export declare function isRegisterBlockchainTx(transaction: UnsignedTransaction): transaction is RegisterBlockchainTx;
+export declare function isRegisterUsernameTx(transaction: UnsignedTransaction): transaction is RegisterUsernameTx;
+export declare function isRemoveAddressFromUsernameTx(transaction: UnsignedTransaction): transaction is RemoveAddressFromUsernameTx;

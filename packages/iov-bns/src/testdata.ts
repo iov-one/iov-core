@@ -4,19 +4,22 @@ import {
   Amount,
   FullSignature,
   Nonce,
-  SendTx,
-  SetNameTx,
   SignedTransaction,
-  SwapClaimTx,
-  SwapCounterTx,
   SwapIdBytes,
-  SwapTimeoutTx,
   TokenTicker,
-  TransactionKind,
 } from "@iov/bcp-types";
 import { Encoding, Int53 } from "@iov/encoding";
 
-import { PrivateKeyBundle, PrivateKeyBytes } from "./types";
+import {
+  PrivateKeyBundle,
+  PrivateKeyBytes,
+  SendTx,
+  SetNameTx,
+  SwapClaimTx,
+  SwapCounterTx,
+  SwapTimeoutTx,
+  TransactionKind,
+} from "./types";
 import { hashId } from "./util";
 
 const { fromHex } = Encoding;
@@ -69,6 +72,7 @@ export const chainId = "test-123" as ChainId;
 export const sendTxJson: SendTx = {
   chainId,
   signer: pubJson,
+  domain: "bns",
   kind: TransactionKind.Send,
   recipient: "tiov1du9ruduytd4rerxtucserxdtcwhqkfkezjy4w0" as Address,
   memo: "Test payment",
@@ -117,6 +121,7 @@ const sig2: FullSignature = {
 const randomMsg: SendTx = {
   chainId: "foo-bar-baz" as ChainId,
   signer: pubJson,
+  domain: "bns",
   kind: TransactionKind.Send,
   recipient: "tiov1qzvctjecs368fl5la074d2m8u99u64hn8q7kyn" as Address,
   memo: "One more fix!",
@@ -140,6 +145,7 @@ export const randomTxJson: SignedTransaction = {
 const setNameMsg: SetNameTx = {
   chainId: "bns-mainnet" as ChainId,
   signer: pubJson,
+  domain: "bns",
   kind: TransactionKind.SetName,
   name: "king*iov.one",
 };
@@ -155,6 +161,7 @@ export const hashCode = Uint8Array.from([...hashId, ...fromHex("1122334455aabbcc
 const swapCounterMsg: SwapCounterTx = {
   chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
+  domain: "bns",
   kind: TransactionKind.SwapCounter,
   recipient: "tiov1zg6gtjecs368fl5la074d2m8u99u64hnhhlprg" as Address,
   timeout: 7890,
@@ -176,6 +183,7 @@ export const swapCounterTxJson: SignedTransaction = {
 const swapClaimMsg: SwapClaimTx = {
   chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
+  domain: "bns",
   kind: TransactionKind.SwapClaim,
   preimage: fromHex("00000000fffffffffff000000000"),
   swapId: fromHex("1234") as SwapIdBytes,
@@ -189,6 +197,7 @@ export const swapClaimTxJson: SignedTransaction = {
 const swapTimeoutMsg: SwapTimeoutTx = {
   chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
+  domain: "bns",
   kind: TransactionKind.SwapTimeout,
   swapId: fromHex("1234") as SwapIdBytes,
 };

@@ -7,13 +7,12 @@ import {
   Address,
   Nonce,
   PrehashType,
-  SendTx,
+  SendTransaction,
   SignableBytes,
   SignedTransaction,
   SigningJob,
   TokenTicker,
   TransactionId,
-  TransactionKind,
   TxCodec,
 } from "@iov/bcp-types";
 import { Slip10RawIndex } from "@iov/crypto";
@@ -429,10 +428,11 @@ describe("UserProfile", () => {
     const fakeIdentity = {
       pubkey: { algo: Algorithm.Ed25519, data: new Uint8Array([0xaa]) as PublicKeyBytes },
     };
-    const fakeTransaction: SendTx = {
+    const fakeTransaction: SendTransaction = {
+      domain: "ethereum",
+      kind: "send",
       chainId: "ethereum" as ChainId,
       signer: fakeIdentity.pubkey,
-      kind: TransactionKind.Send,
       amount: {
         quantity: "1000000000000000012",
         fractionalDigits: 18,
@@ -507,10 +507,11 @@ describe("UserProfile", () => {
     const mainIdentity = await keyring.getWallets()[0].createIdentity(HdPaths.simpleAddress(0));
     const profile = new UserProfile({ createdAt, keyring });
 
-    const fakeTransaction: SendTx = {
+    const fakeTransaction: SendTransaction = {
+      domain: "ethereum",
+      kind: "send",
       chainId: "ethereum" as ChainId,
       signer: mainIdentity.pubkey,
-      kind: TransactionKind.Send,
       amount: {
         quantity: "1000000000000000012",
         fractionalDigits: 18,

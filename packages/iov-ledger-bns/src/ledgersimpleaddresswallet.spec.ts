@@ -1,5 +1,5 @@
 import { Algorithm, ChainId } from "@iov/base-types";
-import { Address, Nonce, PrehashType, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Address, Nonce, PrehashType, SendTransaction, TokenTicker } from "@iov/bcp-types";
 import { bnsCodec } from "@iov/bns";
 import { Ed25519, Sha512 } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
@@ -200,8 +200,9 @@ describe("LedgerSimpleAddressWallet", () => {
 
     await wallet.canSign.waitFor(true);
 
-    const tx: SendTx = {
-      kind: TransactionKind.Send,
+    const tx: SendTransaction = {
+      domain: "bns",
+      kind: "send",
       chainId: "test-ledger-paths" as ChainId,
       recipient: "tiov1zg62hngqqz4qqq8lluqqp2sqqqfrf27dzrrmea" as Address,
       amount: {

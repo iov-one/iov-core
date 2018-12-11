@@ -9,11 +9,11 @@ import {
   BcpBlockInfo,
   BcpPubkeyQuery,
   BcpTransactionState,
-  SendTx,
+  isSendTransaction,
+  SendTransaction,
   SignedTransaction,
   TokenTicker,
   TransactionId,
-  TransactionKind,
 } from "@iov/bcp-types";
 import { Derivation } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
@@ -280,8 +280,9 @@ describe("LiskConnection", () => {
       const wallet = new Ed25519Wallet();
       const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
-      const sendTx: SendTx = {
-        kind: TransactionKind.Send,
+      const sendTx: SendTransaction = {
+        domain: "lisk",
+        kind: "send",
         chainId: devnetChainId,
         signer: mainIdentity.pubkey,
         recipient: devnetDefaultRecipient,
@@ -322,8 +323,9 @@ describe("LiskConnection", () => {
         const wallet = new Ed25519Wallet();
         const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
-        const sendTx: SendTx = {
-          kind: TransactionKind.Send,
+        const sendTx: SendTransaction = {
+          domain: "lisk",
+          kind: "send",
           chainId: devnetChainId,
           signer: mainIdentity.pubkey,
           recipient: devnetDefaultRecipient,
@@ -386,8 +388,9 @@ describe("LiskConnection", () => {
       const wallet = new Ed25519Wallet();
       const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
-      const sendTx: SendTx = {
-        kind: TransactionKind.Send,
+      const sendTx: SendTransaction = {
+        domain: "lisk",
+        kind: "send",
         chainId: devnetChainId,
         signer: mainIdentity.pubkey,
         recipient: devnetDefaultRecipient,
@@ -436,8 +439,9 @@ describe("LiskConnection", () => {
       const wallet = new Ed25519Wallet();
       const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
-      const sendTx: SendTx = {
-        kind: TransactionKind.Send,
+      const sendTx: SendTransaction = {
+        domain: "lisk",
+        kind: "send",
         chainId: devnetChainId,
         signer: mainIdentity.pubkey,
         recipient: devnetDefaultRecipient,
@@ -497,7 +501,7 @@ describe("LiskConnection", () => {
         expect(result.height).toBeLessThan(100);
         expect(result.transactionId).toEqual(searchId);
         const transaction = result.transaction;
-        if (transaction.kind !== TransactionKind.Send) {
+        if (!isSendTransaction(transaction)) {
           throw new Error("Unexpected transaction type");
         }
         expect(transaction.recipient).toEqual("1349293588603668134L");

@@ -1,7 +1,7 @@
 import { ReadonlyDate } from "readonly-date";
 
 import { Algorithm, ChainId, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
-import { Address, Nonce, SendTx, SignedTransaction, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Address, Nonce, SendTransaction, SignedTransaction, TokenTicker } from "@iov/bcp-types";
 import { Encoding, Int53 } from "@iov/encoding";
 
 import { Serialization, TransactionSerializationOptions } from "./serialization";
@@ -81,13 +81,14 @@ describe("Serialization", () => {
     it("can serialize RISE transaction of type 0 without memo", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
-      const tx: SendTx = {
+      const tx: SendTransaction = {
+        domain: "rise",
+        kind: "send",
         chainId: riseTestnet,
         signer: {
           algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
-        kind: TransactionKind.Send,
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -107,13 +108,14 @@ describe("Serialization", () => {
     it("can serialize Lisk transaction of type 0 without memo", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
-      const tx: SendTx = {
+      const tx: SendTransaction = {
+        domain: "lisk",
+        kind: "send",
         chainId: liskTestnet as ChainId,
         signer: {
           algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
-        kind: TransactionKind.Send,
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -133,13 +135,14 @@ describe("Serialization", () => {
     it("can serialize Lisk transaction of type 0 with memo", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
-      const tx: SendTx = {
+      const tx: SendTransaction = {
+        domain: "lisk",
+        kind: "send",
         chainId: liskTestnet as ChainId,
         signer: {
           algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
-        kind: TransactionKind.Send,
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -160,13 +163,14 @@ describe("Serialization", () => {
     it("fails to serialize Lisk transaction of type 0 with memo > 64 chars", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
-      const tx: SendTx = {
+      const tx: SendTransaction = {
         chainId: liskTestnet,
         signer: {
           algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
-        kind: TransactionKind.Send,
+        domain: "lisk",
+        kind: "send",
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -184,13 +188,14 @@ describe("Serialization", () => {
     it("fails to serialize Lisk transaction of type 0 with memo > 64 bytes", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
-      const tx: SendTx = {
+      const tx: SendTransaction = {
         chainId: liskTestnet,
         signer: {
           algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
-        kind: TransactionKind.Send,
+        domain: "lisk",
+        kind: "send",
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -209,13 +214,14 @@ describe("Serialization", () => {
     it("fails to serialize transaction with fee", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
-      const tx: SendTx = {
+      const tx: SendTransaction = {
         chainId: "xnet" as ChainId,
         signer: {
           algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
-        kind: TransactionKind.Send,
+        domain: "xnet",
+        kind: "send",
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -239,13 +245,14 @@ describe("Serialization", () => {
     it("can calculate ID of Lisk transaction of type 0 without memo", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
-      const tx: SendTx = {
+      const tx: SendTransaction = {
         chainId: liskTestnet as ChainId,
         signer: {
           algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
-        kind: TransactionKind.Send,
+        domain: "lisk",
+        kind: "send",
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
