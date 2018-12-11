@@ -94,7 +94,7 @@ export const hashFromIdentifier = (ident: HashId): Uint8Array => ident.slice(has
 export const bucketKey = (bucket: string) => Encoding.toAscii(`${bucket}:`);
 export const indexKey = (bucket: string, index: string) => Encoding.toAscii(`_i.${bucket}_${index}:`);
 
-export function isSwapOffer(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapCounterTx> {
+export function isSwapCounter(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapCounterTx> {
   return tx.transaction.kind === TransactionKind.SwapCounter;
 }
 
