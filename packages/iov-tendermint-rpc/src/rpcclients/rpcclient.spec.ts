@@ -1,7 +1,7 @@
 import { jsonRpcWith } from "../jsonrpc";
 import { Method } from "../requests";
 
-import { HttpClient, HttpUriClient } from "./httpclient";
+import { HttpClient } from "./httpclient";
 import { instanceOfRpcStreamingClient } from "./rpcclient";
 import { WebsocketClient } from "./websocketclient";
 
@@ -22,7 +22,6 @@ describe("RpcClient", () => {
     pendingWithoutTendermint();
 
     expect(instanceOfRpcStreamingClient(new HttpClient(tendermintUrl))).toEqual(false);
-    expect(instanceOfRpcStreamingClient(new HttpUriClient(tendermintUrl))).toEqual(false);
     expect(instanceOfRpcStreamingClient(new WebsocketClient(tendermintUrl))).toEqual(true);
   });
 
@@ -33,9 +32,6 @@ describe("RpcClient", () => {
 
     const http = new HttpClient(tendermintUrl + "/");
     expect(await http.execute(status)).toBeDefined();
-
-    const uri = new HttpUriClient(tendermintUrl + "/");
-    expect(await uri.execute(status)).toBeDefined();
 
     const ws = new WebsocketClient(tendermintUrl + "/");
     expect(await ws.execute(status)).toBeDefined();

@@ -46,32 +46,3 @@ export class HttpClient implements RpcClient {
     return throwIfError(response);
   }
 }
-
-/**
- * HttpUriClient encodes the whole request as an URI to be submitted
- * as a HTTP GET request.
- *
- * This is only meant for testing or quick status/health checks
- *
- * @see https://tendermint.github.io/slate/#uri-http
- */
-export class HttpUriClient implements RpcClient {
-  protected readonly baseUrl: string;
-
-  constructor(baseUrl: string = "http://localhost:46657") {
-    this.baseUrl = hasProtocol(baseUrl) ? baseUrl : "http://" + baseUrl;
-  }
-
-  public disconnect(): void {
-    // nothing to be done
-  }
-
-  public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
-    if (request.params && Object.keys(request.params).length !== 0) {
-      throw new Error(`HttpUriClient doesn't support passing params: ${request.params}`);
-    }
-    const url = `${this.baseUrl}/${request.method}`;
-    const response = await http("GET", url);
-    return throwIfError(response);
-  }
-}
