@@ -3,7 +3,6 @@ import { ChainId, PublicKeyBundle } from "@iov/base-types";
 import { Int53 } from "@iov/encoding";
 import { Address } from "./signables";
 export declare type Nonce = Int53 & As<"nonce">;
-export declare type TtlBytes = Uint8Array & As<"ttl">;
 export declare type TokenTicker = string & As<"token-ticker">;
 export declare type SwapIdBytes = Uint8Array & As<"swap-id">;
 export declare type SwapIdString = string & As<"swap-id">;
@@ -54,7 +53,6 @@ export interface BaseTx {
     readonly gasPrice?: Amount;
     readonly gasLimit?: Amount;
     readonly signer: PublicKeyBundle;
-    readonly ttl?: TtlBytes;
 }
 export interface AddAddressToUsernameTx extends BaseTx {
     readonly kind: TransactionKind.AddAddressToUsername;
