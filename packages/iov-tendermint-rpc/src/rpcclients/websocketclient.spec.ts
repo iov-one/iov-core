@@ -51,8 +51,8 @@ describe("WebsocketClient", () => {
     const events: JsonRpcEvent[] = [];
 
     const sub = headers.subscribe({
-      error: fail,
-      complete: () => fail("subscription should not complete"),
+      error: done.fail,
+      complete: () => done.fail("subscription should not complete"),
       next: (evt: JsonRpcEvent) => {
         events.push(evt);
         expect(evt.query).toEqual(query);
@@ -89,8 +89,8 @@ describe("WebsocketClient", () => {
     const events: JsonRpcEvent[] = [];
 
     const sub = headers.subscribe({
-      error: fail,
-      complete: () => fail("subscription should not complete"),
+      error: done.fail,
+      complete: () => done.fail("subscription should not complete"),
       next: (evt: JsonRpcEvent) => {
         events.push(evt);
         expect(evt.query).toEqual(query);
@@ -128,7 +128,7 @@ describe("WebsocketClient", () => {
     setTimeout(() => client.disconnect(), 1500);
 
     headers.subscribe({
-      error: fail,
+      error: done.fail,
       next: (event: JsonRpcEvent) => receivedEvents.push(event),
       complete: () => {
         expect(receivedEvents.length).toEqual(1);
@@ -171,10 +171,10 @@ describe("WebsocketClient", () => {
           expect(error.toString()).toMatch(/is not open/);
           done();
         },
-        next: () => fail("No event expected"),
-        complete: () => fail("Must not complete"),
+        next: () => done.fail("No event expected"),
+        complete: () => done.fail("Must not complete"),
       });
-    })().catch(fail);
+    })().catch(done.fail);
   });
 
   it("cannot listen to simple requests", async () => {
