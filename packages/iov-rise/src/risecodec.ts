@@ -119,7 +119,6 @@ export const riseCodec: TxCodec = {
           algo: Algorithm.Ed25519,
           data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
         },
-        ttl: undefined,
         kind: kind,
         amount: {
           quantity: Parse.parseQuantity(`${json.amount}`), // `amount` is a number

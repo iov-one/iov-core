@@ -116,7 +116,6 @@ export const ethereumCodec: TxCodec = {
               algo: Algorithm.Secp256k1,
               data: json.from,
             },
-            ttl: undefined,
             kind: TransactionKind.Send,
             amount: {
               quantity: decodeHexQuantityString(json.value),

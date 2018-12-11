@@ -121,7 +121,6 @@ export const liskCodec: TxCodec = {
           algo: Algorithm.Ed25519,
           data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
         },
-        ttl: undefined,
         kind: kind,
         amount: {
           quantity: Parse.parseQuantity(json.amount),

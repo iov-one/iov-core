@@ -7,9 +7,6 @@ import { Address } from "./signables";
 
 export type Nonce = Int53 & As<"nonce">;
 
-// TODO: can't we just make this a number (block height?)
-export type TtlBytes = Uint8Array & As<"ttl">;
-
 // TokenTicker should be 3-4 letters, uppercase
 export type TokenTicker = string & As<"token-ticker">;
 
@@ -67,7 +64,6 @@ export interface BaseTx {
   readonly gasLimit?: Amount;
   // signer needs to be a PublicKey as we use that to as an identifier to the Keyring for lookup
   readonly signer: PublicKeyBundle;
-  readonly ttl?: TtlBytes;
 }
 
 export interface AddAddressToUsernameTx extends BaseTx {

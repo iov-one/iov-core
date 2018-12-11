@@ -37,6 +37,7 @@ Breaking changes
   `BcpTxQuery`.
 * @iov/bcp-types: `BcpTxQuery.tags` is now optional
 * @iov/bcp-types: Remove type `RecipientId`; use `Address` instead.
+* @iov/bcp-types: Remove unused `BaseTx.ttl` and `TtlBytes`
 * @iov/bns: `BnsConnection.postTx` now resolves before a transaction is in a
   block. The field `blockInfo` of its response can be used to track the
   transaction state.

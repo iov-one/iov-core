@@ -38,7 +38,6 @@ export class Scraper {
           algo: Algorithm.Secp256k1,
           data: json.from,
         },
-        ttl: undefined,
         kind: TransactionKind.Send,
         amount: {
           quantity: json.value,
