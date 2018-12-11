@@ -56,10 +56,8 @@ export function main(originalArgs: ReadonlyArray<string>): void {
   console.log(colors.yellow("    - Nonce"));
   console.log(colors.yellow("    - UserProfile"));
   console.log(colors.yellow("    - Secp256k1HdWallet"));
-  console.log(colors.yellow("    - SendTx"));
-  console.log(colors.yellow("    - SetNameTx"));
+  console.log(colors.yellow("    - SendTransaction"));
   console.log(colors.yellow("    - TokenTicker"));
-  console.log(colors.yellow("    - TransactionKind"));
   console.log(colors.yellow("    - Wallet"));
   console.log(colors.yellow("    - WalletId"));
   console.log(colors.yellow("    - WalletImplementationIdString"));
@@ -98,10 +96,8 @@ export function main(originalArgs: ReadonlyArray<string>): void {
       MultiChainSigner,
       Nonce,
       Secp256k1HdWallet,
-      SendTx,
-      SetNameTx,
+      SendTransaction,
       TokenTicker,
-      TransactionKind,
       UserProfile,
       Wallet,
       WalletId,
