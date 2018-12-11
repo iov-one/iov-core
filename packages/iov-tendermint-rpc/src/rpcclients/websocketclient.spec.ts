@@ -1,3 +1,5 @@
+import { Stream } from "xstream";
+
 import { Integer } from "../encodings";
 import { JsonRpcEvent, jsonRpcWith } from "../jsonrpc";
 import { Method } from "../requests";
@@ -71,6 +73,42 @@ describe("WebsocketClient", () => {
             client.disconnect();
             done();
           }, 1500);
+        }
+      },
+    });
+  });
+
+  xit("can listen to the same query twice", done => {
+    pendingWithoutTendermint();
+
+    const client = new WebsocketClient(tendermintUrl);
+
+    const newBlockHeaderQuery = "tm.event='NewBlockHeader'";
+
+    // we need two requests with unique IDs
+    const request1 = jsonRpcWith("subscribe", { query: newBlockHeaderQuery });
+    const request2 = jsonRpcWith("subscribe", { query: newBlockHeaderQuery });
+    const stream1 = client.listen(request1);
+    const stream2 = client.listen(request2);
+
+    // tslint:disable-next-line:readonly-array
+    const eventHeights: any[] = [];
+
+    const subscription = Stream.merge(stream1, stream2).subscribe({
+      error: done.fail,
+      complete: () => done.fail("subscription should not complete"),
+      next: event => {
+        // height is string or number, depending on Tendermint version. But we don't care in this case
+        const height = event.data.value.header.height;
+        console.log(height);
+        eventHeights.push(height);
+
+        if (eventHeights.length === 4) {
+          expect(new Set(eventHeights).size).toEqual(2);
+
+          subscription.unsubscribe();
+          client.disconnect();
+          done();
         }
       },
     });
