@@ -1,17 +1,11 @@
 // This module exposes translators for multiple tendermint versions
 // Pick a version that matches the server to properly encode the data types
 
-import { JsonRpcEvent, JsonRpcRequest, JsonRpcSuccess, jsonRpcWith } from "./common";
+import { JsonRpcEvent, JsonRpcRequest, JsonRpcSuccess } from "./jsonrpc";
 import * as requests from "./requests";
 import * as responses from "./responses";
-import { RpcClient } from "./rpcclient";
-import { v0_20 as v0_20_ } from "./v0-20";
-import { v0_25 as v0_25_ } from "./v0-25";
-
-// tslint:disable-next-line:variable-name
-export const v0_20: Adaptor = v0_20_;
-// tslint:disable-next-line:variable-name
-export const v0_25: Adaptor = v0_25_;
+import { v0_20 } from "./v0-20";
+import { v0_25 } from "./v0-25";
 
 export interface Adaptor {
   readonly params: Params;
@@ -80,20 +74,4 @@ export function adatorForVersion(version: string): Adaptor {
   } else {
     throw new Error(`Unsupported tendermint version: ${version}`);
   }
-}
-
-// findAdaptor makes a status call with the client.
-// if we cannot talk to the server or make sense of the response, throw an error
-// otherwise, grab the tendermint version from the response and
-// provide a compatible adaptor if available.
-// throws an error if we don't support this version of tendermint
-export async function findAdaptor(client: RpcClient): Promise<Adaptor> {
-  const req = jsonRpcWith(requests.Method.Status);
-  const response = await client.execute(req);
-  const result = response.result;
-
-  if (!result || !result.node_info) {
-    throw new Error("Unrecognized format for status response");
-  }
-  return adatorForVersion(result.node_info.version);
 }

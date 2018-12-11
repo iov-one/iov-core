@@ -1,10 +1,10 @@
 import { Stream } from "xstream";
 
-import { Adaptor, Decoder, Encoder, findAdaptor, Params, Responses } from "./adaptor";
-import { JsonRpcEvent } from "./common";
+import { Adaptor, adatorForVersion, Decoder, Encoder, Params, Responses } from "./adaptor";
+import { JsonRpcEvent, jsonRpcWith } from "./jsonrpc";
 import * as requests from "./requests";
 import * as responses from "./responses";
-import { HttpClient, instanceOfRpcStreamingClient, RpcClient, WebsocketClient } from "./rpcclient";
+import { HttpClient, instanceOfRpcStreamingClient, RpcClient, WebsocketClient } from "./rpcclients";
 
 export class Client {
   public static connect(url: string): Promise<Client> {
@@ -14,8 +14,20 @@ export class Client {
   }
 
   public static async detectVersion(client: RpcClient): Promise<Client> {
-    const adaptor = await findAdaptor(client);
-    return new Client(client, adaptor);
+    const req = jsonRpcWith(requests.Method.Status);
+    const response = await client.execute(req);
+    const result = response.result;
+
+    if (!result || !result.node_info) {
+      throw new Error("Unrecognized format for status response");
+    }
+
+    const version = result.node_info.version;
+    if (typeof version !== "string") {
+      throw new Error("Unrecognized version format: must be string");
+    }
+
+    return new Client(client, adatorForVersion(version));
   }
 
   private readonly client: RpcClient;

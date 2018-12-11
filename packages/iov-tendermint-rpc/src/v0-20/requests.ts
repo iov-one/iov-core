@@ -1,12 +1,16 @@
 import { Encoding } from "@iov/encoding";
 
-import { JsonRpcRequest, jsonRpcWith } from "../common";
 import { Base64, Base64String, HexString, notEmpty } from "../encodings";
+import { JsonRpcRequest, jsonRpcWith } from "../jsonrpc";
 import * as requests from "../requests";
 
 /***** queries *****/
 
-export class Params extends requests.DefaultParams {
+export class Params {
+  public static encodeAbciInfo(req: requests.AbciInfoRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method);
+  }
+
   public static encodeAbciQuery(req: requests.AbciQueryRequest): JsonRpcRequest {
     return jsonRpcWith(req.method, encodeAbciQueryParams(req.params));
   }
@@ -29,6 +33,18 @@ export class Params extends requests.DefaultParams {
 
   public static encodeCommit(req: requests.CommitRequest): JsonRpcRequest {
     return jsonRpcWith(req.method, req.params);
+  }
+
+  public static encodeGenesis(req: requests.GenesisRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method);
+  }
+
+  public static encodeHealth(req: requests.HealthRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method);
+  }
+
+  public static encodeStatus(req: requests.StatusRequest): JsonRpcRequest {
+    return jsonRpcWith(req.method);
   }
 
   public static encodeSubscribe(req: requests.SubscribeRequest): JsonRpcRequest {

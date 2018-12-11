@@ -1,7 +1,7 @@
 import { PostableBytes } from "@iov/base-types";
 import { Sha256 } from "@iov/crypto";
 
-import { TxHash } from "../common";
+import { TxHash } from "../types";
 
 // hash is a truncated sha256 hash
 // https://github.com/tendermint/tendermint/blob/v0.25.0/types/tx.go#L19-L22

@@ -2,7 +2,7 @@ import { Stream } from "xstream";
 import { Adaptor } from "./adaptor";
 import * as requests from "./requests";
 import * as responses from "./responses";
-import { RpcClient } from "./rpcclient";
+import { RpcClient } from "./rpcclients";
 export declare class Client {
     static connect(url: string): Promise<Client>;
     static detectVersion(client: RpcClient): Promise<Client>;
