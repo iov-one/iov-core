@@ -21,9 +21,8 @@ const tendermintUrl = "localhost:12345";
 describe("WebsocketClient", () => {
   it("can make a simple call", async () => {
     pendingWithoutTendermint();
-    // don't print out WebSocket errors if marked pending
-    const onError = skipTests() ? () => 0 : console.log;
-    const client = new WebsocketClient(tendermintUrl, onError);
+
+    const client = new WebsocketClient(tendermintUrl);
 
     const healthResponse = await client.execute(jsonRpcWith(Method.Health));
     expect(healthResponse.result).toEqual({});
