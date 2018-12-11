@@ -3,7 +3,6 @@ import { As } from "type-tagger";
 export declare type Base64String = string & As<"base64">;
 export declare type HexString = string & As<"hex">;
 export declare type IntegerString = string & As<"integer">;
-export declare type IpPortString = string & As<"ipport">;
 export declare type DateTimeString = string & As<"datetime">;
 export declare function notEmpty<T>(value: T): T;
 export declare function required<T>(value: T | null | undefined): T;

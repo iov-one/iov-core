@@ -16,13 +16,13 @@ import {
   HexString,
   Integer,
   IntegerString,
-  IpPortString,
   may,
   optional,
   required,
 } from "../encodings";
-import { JsonRpcEvent, JsonRpcSuccess, TxHash } from "../jsonrpc";
+import { JsonRpcEvent, JsonRpcSuccess } from "../jsonrpc";
 import * as responses from "../responses";
+import { IpPortString, TxHash } from "../types";
 import { hashTx } from "./hasher";
 
 /*** adaptor ***/

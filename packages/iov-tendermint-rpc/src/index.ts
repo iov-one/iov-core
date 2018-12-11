@@ -1,5 +1,4 @@
 export { Client } from "./client";
-export { TxHash } from "./jsonrpc";
 export {
   AbciInfoRequest,
   AbciQueryParams,
@@ -26,3 +25,4 @@ export {
 } from "./requests";
 export * from "./responses";
 export { HttpClient, WebsocketClient } from "./rpcclient";
+export { IpPortString, TxHash } from "./types";

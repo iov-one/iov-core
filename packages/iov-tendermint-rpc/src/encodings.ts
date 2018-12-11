@@ -7,7 +7,6 @@ import { Encoding, Int53 } from "@iov/encoding";
 export type Base64String = string & As<"base64">;
 export type HexString = string & As<"hex">;
 export type IntegerString = string & As<"integer">;
-export type IpPortString = string & As<"ipport">;
 export type DateTimeString = string & As<"datetime">;
 
 interface Lengther {

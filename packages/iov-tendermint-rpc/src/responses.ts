@@ -2,8 +2,7 @@ import { ReadonlyDate } from "readonly-date";
 
 import { Algorithm, ChainId, PostableBytes, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
 
-import { IpPortString } from "./encodings";
-import { TxHash } from "./jsonrpc";
+import { IpPortString, TxHash } from "./types";
 
 export type Response =
   | AbciInfoResponse

@@ -1,6 +1,7 @@
-import { Base64String, DateTimeString, HexString, IntegerString, IpPortString } from "../encodings";
+import { Base64String, DateTimeString, HexString, IntegerString } from "../encodings";
 import { JsonRpcEvent, JsonRpcSuccess } from "../jsonrpc";
 import * as responses from "../responses";
+import { IpPortString } from "../types";
 /*** adaptor ***/
 export declare class Responses {
     static decodeAbciInfo(response: JsonRpcSuccess): responses.AbciInfoResponse;
