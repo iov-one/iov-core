@@ -42,33 +42,43 @@ export interface JsonRpcEvent {
   };
 }
 
-export const jsonRpc = (): JsonRpc => ({ jsonrpc: "2.0", id: randomId() });
-export const jsonRpcWith = (method: string, params?: {}): JsonRpcRequest => ({
-  ...jsonRpc(),
-  method,
-  params: params || {},
-});
+export function jsonRpc(): JsonRpc {
+  return { jsonrpc: "2.0", id: randomId() };
+}
 
-export const throwIfError = (resp: JsonRpcResponse): JsonRpcSuccess => {
+export function jsonRpcWith(method: string, params?: {}): JsonRpcRequest {
+  return {
+    ...jsonRpc(),
+    method: method,
+    params: params || {},
+  };
+}
+
+export function throwIfError(resp: JsonRpcResponse): JsonRpcSuccess {
   const asError = ifError(resp);
   if (asError) {
     throw asError;
   }
   return resp as JsonRpcSuccess;
-};
+}
 
-export const ifError = (resp: JsonRpcResponse): Error | undefined => {
+export function ifError(resp: JsonRpcResponse): Error | undefined {
   const asError = resp as JsonRpcError;
   if (asError.error !== undefined) {
     return new Error(JSON.stringify(asError.error));
   }
   return undefined;
-};
+}
 
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-// generate a random alphanumeric character
-export const randomChar = (): string => chars[Math.floor(Math.random() * chars.length)];
-export const randomId = (): RpcId =>
-  Array.from({ length: 12 })
+
+/** generates a random alphanumeric character  */
+export function randomChar(): string {
+  return chars[Math.floor(Math.random() * chars.length)];
+}
+
+export function randomId(): RpcId {
+  return Array.from({ length: 12 })
     .map(() => randomChar())
     .join("") as RpcId;
+}
