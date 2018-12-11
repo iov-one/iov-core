@@ -4,13 +4,8 @@
 import { JsonRpcEvent, JsonRpcRequest, JsonRpcSuccess } from "./jsonrpc";
 import * as requests from "./requests";
 import * as responses from "./responses";
-import { v0_20 as v0_20_ } from "./v0-20";
-import { v0_25 as v0_25_ } from "./v0-25";
-
-// tslint:disable-next-line:variable-name
-export const v0_20: Adaptor = v0_20_;
-// tslint:disable-next-line:variable-name
-export const v0_25: Adaptor = v0_25_;
+import { v0_20 } from "./v0-20";
+import { v0_25 } from "./v0-25";
 
 export interface Adaptor {
   readonly params: Params;
