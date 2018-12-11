@@ -78,7 +78,7 @@ describe("WebsocketClient", () => {
     });
   });
 
-  xit("can listen to the same query twice", done => {
+  it("can listen to the same query twice", done => {
     pendingWithoutTendermint();
 
     const client = new WebsocketClient(tendermintUrl);
@@ -100,7 +100,6 @@ describe("WebsocketClient", () => {
       next: event => {
         // height is string or number, depending on Tendermint version. But we don't care in this case
         const height = event.data.value.header.height;
-        console.log(height);
         eventHeights.push(height);
 
         if (eventHeights.length === 4) {

@@ -29,6 +29,12 @@ export class WebsocketClient implements RpcStreamingClient {
   private readonly url: string;
   private readonly socket: SocketWrapper;
 
+  // Lazily create streams and use the same stream when listening to the same query twice.
+  //
+  // Creating streams is cheap since producer is not started as long as nobody listens to events. Thus this
+  // map is never cleared and there is no need to do so. But unsubscribe all the subscriptions!
+  private readonly subscriptionStreams = new Map<string, Stream<JsonRpcEvent>>();
+
   constructor(baseUrl: string = "ws://localhost:46657", onError: (err: any) => void = defaultErrorHandler) {
     // accept host.name:port and assume ws protocol
     // make sure we don't end up with ...//websocket
@@ -77,8 +83,18 @@ export class WebsocketClient implements RpcStreamingClient {
     if (request.method !== "subscribe") {
       throw new Error(`Request method must be "subscribe" to start event listening`);
     }
-    const producer = new RpcEventProducer(request, this.socket, this.bridge);
-    return Stream.create(producer);
+
+    const query = (request.params as any).query;
+    if (typeof query !== "string") {
+      throw new Error("request.params.query must be a string");
+    }
+
+    if (!this.subscriptionStreams.has(query)) {
+      const producer = new RpcEventProducer(request, this.socket, this.bridge);
+      const stream = Stream.create(producer);
+      this.subscriptionStreams.set(query, stream);
+    }
+    return this.subscriptionStreams.get(query)!;
   }
 
   /**

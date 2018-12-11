@@ -426,9 +426,7 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
     })().catch(done.fail);
   });
 
-  // This a a minimal showcase for subscribing to the same query twice
-  // See https://github.com/iov-one/iov-core/issues/581
-  xit("can subscribe twice", done => {
+  it("can subscribe twice", done => {
     pendingWithoutTendermint();
 
     (async () => {
