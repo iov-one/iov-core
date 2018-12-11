@@ -8,9 +8,7 @@ export interface RpcStreamingClient extends RpcClient {
     readonly listen: (request: JsonRpcRequest) => Stream<JsonRpcEvent>;
 }
 export declare function instanceOfRpcStreamingClient(client: RpcClient): client is RpcStreamingClient;
-export declare function getWindow(): any | undefined;
 export declare function inBrowser(): boolean;
-export declare function getOriginConfig(): any;
 export declare function hasProtocol(url: string): boolean;
 export declare class HttpClient implements RpcClient {
     protected readonly url: string;

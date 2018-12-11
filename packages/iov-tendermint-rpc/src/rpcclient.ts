@@ -26,10 +26,6 @@ export function instanceOfRpcStreamingClient(client: RpcClient): client is RpcSt
   return typeof (client as any).listen === "function";
 }
 
-export function getWindow(): any | undefined {
-  return inBrowser() ? (window as any) : undefined;
-}
-
 export function inBrowser(): boolean {
   return typeof window === "object";
 }
@@ -56,13 +52,6 @@ function http(method: string, url: string, request?: any): Promise<any> {
 
 function defaultErrorHandler(error: any): never {
   throw error;
-}
-
-// make sure we set the origin header properly, seems not to be set
-// in karma tests....
-export function getOriginConfig(): any {
-  const w = getWindow();
-  return w ? { headers: { Origin: w.origin, Referer: `${w.origin}/` } } : undefined;
 }
 
 export function hasProtocol(url: string): boolean {
