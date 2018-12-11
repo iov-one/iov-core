@@ -4,7 +4,6 @@ import { As } from "type-tagger";
  */
 export declare type TxHash = Uint8Array & As<"tx-hash">;
 export declare type RpcId = string & As<"rpcid">;
-export declare const rpcVersion = "2.0";
 export interface JsonRpc {
     readonly jsonrpc: "2.0";
     readonly id: RpcId;
