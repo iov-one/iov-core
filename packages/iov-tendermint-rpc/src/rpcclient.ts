@@ -10,7 +10,7 @@ import {
   JsonRpcResponse,
   JsonRpcSuccess,
   throwIfError,
-} from "./common";
+} from "./jsonrpc";
 import { SocketWrapper } from "./socketwrapper";
 
 export interface RpcClient {

@@ -1,6 +1,6 @@
-import { jsonRpc, jsonRpcWith, randomChar, randomId } from "./common";
+import { jsonRpc, jsonRpcWith, randomChar, randomId } from "./jsonrpc";
 
-describe("Generates json rpc requests", () => {
+describe("jsonrpc", () => {
   it("Generates random chars", () => {
     const char = randomChar();
     expect(char.length).toEqual(1);

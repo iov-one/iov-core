@@ -1,7 +1,7 @@
 // This module exposes translators for multiple tendermint versions
 // Pick a version that matches the server to properly encode the data types
 
-import { JsonRpcEvent, JsonRpcRequest, JsonRpcSuccess, jsonRpcWith } from "./common";
+import { JsonRpcEvent, JsonRpcRequest, JsonRpcSuccess, jsonRpcWith } from "./jsonrpc";
 import * as requests from "./requests";
 import * as responses from "./responses";
 import { RpcClient } from "./rpcclient";

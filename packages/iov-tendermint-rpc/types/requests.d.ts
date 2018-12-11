@@ -1,5 +1,5 @@
 import { As } from "type-tagger";
-import { JsonRpcRequest } from "./common";
+import { JsonRpcRequest } from "./jsonrpc";
 /**
  * RPC methods as documented in https://tendermint.com/rpc/
  *

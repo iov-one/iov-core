@@ -1,7 +1,7 @@
 import { ReadonlyDate } from "readonly-date";
 import { Algorithm, ChainId, PostableBytes, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
-import { TxHash } from "./common";
 import { IpPortString } from "./encodings";
+import { TxHash } from "./jsonrpc";
 export declare type Response = AbciInfoResponse | AbciQueryResponse | BlockResponse | BlockResultsResponse | BlockchainResponse | BroadcastTxAsyncResponse | BroadcastTxSyncResponse | BroadcastTxCommitResponse | CommitResponse | GenesisResponse | HealthResponse | StatusResponse | TxResponse | TxSearchResponse | ValidatorsResponse;
 export interface AbciInfoResponse {
     readonly data?: string;

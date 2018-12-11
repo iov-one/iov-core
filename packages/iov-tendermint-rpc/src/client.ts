@@ -1,7 +1,7 @@
 import { Stream } from "xstream";
 
 import { Adaptor, Decoder, Encoder, findAdaptor, Params, Responses } from "./adaptor";
-import { JsonRpcEvent } from "./common";
+import { JsonRpcEvent } from "./jsonrpc";
 import * as requests from "./requests";
 import * as responses from "./responses";
 import { HttpClient, instanceOfRpcStreamingClient, RpcClient, WebsocketClient } from "./rpcclient";

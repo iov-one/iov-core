@@ -1,6 +1,6 @@
 // tslint:disable:no-console
-import { JsonRpcEvent, jsonRpcWith } from "./common";
 import { Integer } from "./encodings";
+import { JsonRpcEvent, jsonRpcWith } from "./jsonrpc";
 import { Method } from "./requests";
 import { HttpClient, HttpUriClient, instanceOfRpcStreamingClient, RpcClient, WebsocketClient } from "./rpcclient";
 

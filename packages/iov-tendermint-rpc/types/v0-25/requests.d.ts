@@ -1,4 +1,4 @@
-import { JsonRpcRequest } from "../common";
+import { JsonRpcRequest } from "../jsonrpc";
 import * as requests from "../requests";
 /***** queries *****/
 export declare class Params extends requests.DefaultParams {

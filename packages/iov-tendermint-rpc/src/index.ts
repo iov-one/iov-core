@@ -1,5 +1,5 @@
 export { Client } from "./client";
-export { TxHash } from "./common";
+export { TxHash } from "./jsonrpc";
 export {
   AbciInfoRequest,
   AbciQueryParams,

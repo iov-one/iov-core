@@ -1,5 +1,5 @@
-import { JsonRpcEvent, JsonRpcSuccess } from "../common";
 import { Base64String, DateTimeString, HexString, IntegerString, IpPortString } from "../encodings";
+import { JsonRpcEvent, JsonRpcSuccess } from "../jsonrpc";
 import * as responses from "../responses";
 /*** adaptor ***/
 export declare class Responses {

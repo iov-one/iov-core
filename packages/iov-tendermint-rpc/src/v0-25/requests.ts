@@ -1,7 +1,7 @@
 import { Encoding } from "@iov/encoding";
 
-import { JsonRpcRequest, jsonRpcWith } from "../common";
 import { Base64, Base64String, HexString, Integer, IntegerString, may, notEmpty } from "../encodings";
+import { JsonRpcRequest, jsonRpcWith } from "../jsonrpc";
 import * as requests from "../requests";
 
 /***** queries *****/

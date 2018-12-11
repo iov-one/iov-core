@@ -6,7 +6,7 @@ import { Encoding } from "@iov/encoding";
 
 import { Adaptor, adatorForVersion } from "./adaptor";
 import { Client } from "./client";
-import { randomId } from "./common";
+import { randomId } from "./jsonrpc";
 import { buildQuery } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, RpcClient, WebsocketClient } from "./rpcclient";

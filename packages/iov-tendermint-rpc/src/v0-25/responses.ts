@@ -8,7 +8,6 @@ import {
 } from "@iov/base-types";
 import { Encoding } from "@iov/encoding";
 
-import { JsonRpcEvent, JsonRpcSuccess, TxHash } from "../common";
 import {
   Base64,
   Base64String,
@@ -23,6 +22,7 @@ import {
   optional,
   required,
 } from "../encodings";
+import { JsonRpcEvent, JsonRpcSuccess, TxHash } from "../jsonrpc";
 import * as responses from "../responses";
 import { hashTx } from "./hasher";
 

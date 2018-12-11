@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { JsonRpcEvent, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccess } from "./common";
+import { JsonRpcEvent, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccess } from "./jsonrpc";
 export interface RpcClient {
     readonly execute: (request: JsonRpcRequest) => Promise<JsonRpcSuccess>;
     readonly disconnect: () => void;
