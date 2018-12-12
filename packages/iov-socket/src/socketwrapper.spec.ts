@@ -1,9 +1,6 @@
 import { SocketWrapper } from "./socketwrapper";
 
 function skipTests(): boolean {
-  // process.env is undefined in browser....
-  // but we can shim it in with webpack for the tests.
-  // good for browser tests, not so good for configuring production
   return !process.env.TENDERMINT_ENABLED;
 }
 
