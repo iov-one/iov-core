@@ -2,6 +2,8 @@
 import EventEmitter from "events";
 import { Listener, Producer, Stream } from "xstream";
 
+import { SocketWrapper } from "@iov/socket";
+
 import {
   ifError,
   JsonRpcEvent,
@@ -10,7 +12,6 @@ import {
   JsonRpcSuccess,
   throwIfError,
 } from "../jsonrpc";
-import { SocketWrapper } from "../socketwrapper";
 
 import { hasProtocol, RpcStreamingClient } from "./rpcclient";
 
