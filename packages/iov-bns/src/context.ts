@@ -14,7 +14,7 @@ import {
 
 import { decodeAmount } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
-import { asNumber, ensure, Keyed, SwapClaimTx, SwapCounterTx, SwapTimeoutTx, TransactionKind } from "./types";
+import { asNumber, ensure, Keyed, SwapClaimTx, SwapCounterTx, SwapTimeoutTx } from "./types";
 import { encodeBnsAddress, hashFromIdentifier, isHashIdentifier, keyToAddress } from "./util";
 
 /**
@@ -94,7 +94,7 @@ export class Context {
 
   // TODO: Not using the chain data. Does this belong here?
   public settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTx | SwapTimeoutTx): BcpAtomicSwap {
-    if (tx.kind === TransactionKind.SwapClaim) {
+    if (tx.kind === "swap_claim") {
       return {
         kind: SwapState.Claimed,
         data: swap.data,

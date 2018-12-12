@@ -18,7 +18,6 @@ import {
   SwapClaimTx,
   SwapCounterTx,
   SwapTimeoutTx,
-  TransactionKind,
 } from "./types";
 import { hashId } from "./util";
 
@@ -73,7 +72,7 @@ export const sendTxJson: SendTx = {
   chainId,
   signer: pubJson,
   domain: "bns",
-  kind: TransactionKind.Send,
+  kind: "send",
   recipient: "tiov1du9ruduytd4rerxtucserxdtcwhqkfkezjy4w0" as Address,
   memo: "Test payment",
   amount,
@@ -122,7 +121,7 @@ const randomMsg: SendTx = {
   chainId: "foo-bar-baz" as ChainId,
   signer: pubJson,
   domain: "bns",
-  kind: TransactionKind.Send,
+  kind: "send",
   recipient: "tiov1qzvctjecs368fl5la074d2m8u99u64hn8q7kyn" as Address,
   memo: "One more fix!",
   amount: {
@@ -146,7 +145,7 @@ const setNameMsg: SetNameTx = {
   chainId: "bns-mainnet" as ChainId,
   signer: pubJson,
   domain: "bns",
-  kind: TransactionKind.SetName,
+  kind: "set_name",
   name: "king*iov.one",
 };
 export const setNameTxJson: SignedTransaction = {
@@ -162,7 +161,7 @@ const swapCounterMsg: SwapCounterTx = {
   chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
   domain: "bns",
-  kind: TransactionKind.SwapCounter,
+  kind: "swap_counter",
   recipient: "tiov1zg6gtjecs368fl5la074d2m8u99u64hnhhlprg" as Address,
   timeout: 7890,
   amount: [
@@ -184,7 +183,7 @@ const swapClaimMsg: SwapClaimTx = {
   chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
   domain: "bns",
-  kind: TransactionKind.SwapClaim,
+  kind: "swap_claim",
   preimage: fromHex("00000000fffffffffff000000000"),
   swapId: fromHex("1234") as SwapIdBytes,
 };
@@ -198,7 +197,7 @@ const swapTimeoutMsg: SwapTimeoutTx = {
   chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
   domain: "bns",
-  kind: TransactionKind.SwapTimeout,
+  kind: "swap_timeout",
   swapId: fromHex("1234") as SwapIdBytes,
 };
 export const swapTimeoutTxJson: SignedTransaction = {

@@ -18,7 +18,6 @@ import {
   RegisterBlockchainTx,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
-  TransactionKind,
 } from "./types";
 import { appendSignBytes } from "./util";
 
@@ -138,7 +137,7 @@ describe("Encode", () => {
     it("works for AddAddressToUsernameTx", () => {
       const addAddress: AddAddressToUsernameTx = {
         domain: "bns",
-        kind: TransactionKind.AddAddressToUsername,
+        kind: "add_address_to_username",
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
         username: "alice",
@@ -156,7 +155,7 @@ describe("Encode", () => {
     it("works for RegisterBlockchainTx", () => {
       const registerBlockchain: RegisterBlockchainTx = {
         domain: "bns",
-        kind: TransactionKind.RegisterBlockchain,
+        kind: "register_blockchain",
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
         chain: {
@@ -185,7 +184,7 @@ describe("Encode", () => {
     it("works for RegisterUsernameTx", () => {
       const registerUsername: RegisterUsernameTx = {
         domain: "bns",
-        kind: TransactionKind.RegisterUsername,
+        kind: "register_username",
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
         username: "alice",
@@ -221,7 +220,7 @@ describe("Encode", () => {
     it("works for RemoveAddressFromUsernameTx", () => {
       const removeAddress: RemoveAddressFromUsernameTx = {
         domain: "bns",
-        kind: TransactionKind.RemoveAddressFromUsername,
+        kind: "remove_address_from_username",
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
         username: "alice",
