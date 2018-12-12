@@ -184,6 +184,7 @@ function parseSendTx(base: UnsignedTransaction, msg: codecImpl.cash.ISendMsg): S
     // TODO: would we want to ensure these match?
     //    src: await keyToAddress(tx.signer),
     ...base,
+    domain: "bns",
     kind: TransactionKind.Send,
     recipient: encodeBnsAddress(ensure(msg.dest, "recipient")),
     amount: decodeAmount(ensure(msg.amount)),
@@ -194,6 +195,7 @@ function parseSendTx(base: UnsignedTransaction, msg: codecImpl.cash.ISendMsg): S
 function parseSetNameTx(base: UnsignedTransaction, msg: codecImpl.namecoin.ISetWalletNameMsg): SetNameTx {
   return {
     ...base,
+    domain: "bns",
     kind: TransactionKind.SetName,
     name: ensure(msg.name, "name"),
   };
@@ -209,6 +211,7 @@ function parseSwapCounterTx(
   }
   return {
     ...base,
+    domain: "bns",
     kind: TransactionKind.SwapCounter,
     hashCode,
     recipient: encodeBnsAddress(ensure(msg.recipient, "recipient")),
@@ -224,6 +227,7 @@ function parseSwapClaimTx(
 ): SwapClaimTx {
   return {
     ...base,
+    domain: "bns",
     kind: TransactionKind.SwapClaim,
     swapId: ensure(msg.escrowId) as SwapIdBytes,
     preimage: ensure(tx.preimage),
@@ -236,6 +240,7 @@ function parseSwapTimeoutTx(
 ): SwapTimeoutTx {
   return {
     ...base,
+    domain: "bns",
     kind: TransactionKind.SwapTimeout,
     swapId: ensure(msg.escrowId) as SwapIdBytes,
   };

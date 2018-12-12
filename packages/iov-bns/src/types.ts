@@ -216,9 +216,10 @@ export enum TransactionKind {
   RemoveAddressFromUsername = "remove_address_from_username",
 }
 
-const bnsDomain = "bns";
+export type bnsDomain = "bns";
 
 export interface AddAddressToUsernameTx extends UnsignedTransaction {
+  readonly domain: bnsDomain;
   readonly kind: TransactionKind.AddAddressToUsername;
   /** the username to be updated, must exist on chain */
   readonly username: string;
@@ -226,6 +227,7 @@ export interface AddAddressToUsernameTx extends UnsignedTransaction {
 }
 
 export interface SendTx extends SendTransaction {
+  readonly domain: bnsDomain;
   readonly kind: TransactionKind.Send;
   readonly amount: Amount;
   readonly recipient: Address;
@@ -238,27 +240,33 @@ export interface SendTx extends SendTransaction {
  * @deprecated will be dropped in favour of RegisterUsernameTx
  */
 export interface SetNameTx extends UnsignedTransaction {
+  readonly domain: bnsDomain;
   readonly kind: TransactionKind.SetName;
   readonly name: string;
 }
 
 export interface SwapOfferTx extends SwapOfferTransaction {
+  readonly domain: bnsDomain;
   readonly kind: TransactionKind.SwapOffer;
 }
 
 export interface SwapCounterTx extends SwapCounterTransaction {
+  readonly domain: bnsDomain;
   readonly kind: TransactionKind.SwapCounter;
 }
 
 export interface SwapClaimTx extends SwapClaimTransaction {
+  readonly domain: bnsDomain;
   readonly kind: TransactionKind.SwapClaim;
 }
 
 export interface SwapTimeoutTx extends SwapTimeoutTransaction {
+  readonly domain: bnsDomain;
   readonly kind: TransactionKind.SwapTimeout;
 }
 
 export interface RegisterBlockchainTx extends UnsignedTransaction {
+  readonly domain: bnsDomain;
   readonly kind: TransactionKind.RegisterBlockchain;
   /**
    * The chain to be registered
@@ -279,12 +287,14 @@ export interface RegisterBlockchainTx extends UnsignedTransaction {
 }
 
 export interface RegisterUsernameTx extends UnsignedTransaction {
+  readonly domain: bnsDomain;
   readonly kind: TransactionKind.RegisterUsername;
   readonly username: string;
   readonly addresses: ReadonlyArray<ChainAddressPair>;
 }
 
 export interface RemoveAddressFromUsernameTx extends UnsignedTransaction {
+  readonly domain: bnsDomain;
   readonly kind: TransactionKind.RemoveAddressFromUsername;
   /** the username to be updated, must exist on chain */
   readonly username: string;
@@ -304,7 +314,7 @@ export type BnsTx =
   | RemoveAddressFromUsernameTx;
 
 export function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx {
-  return transaction.domain === bnsDomain;
+  return (transaction as BnsTx).domain === "bns";
 }
 
 export function isAddAddressToUsernameTx(
