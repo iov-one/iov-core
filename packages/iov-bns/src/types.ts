@@ -218,18 +218,14 @@ export enum TransactionKind {
 
 const bnsDomain = "bns";
 
-export interface BnsTx extends UnsignedTransaction {
-  readonly kind: TransactionKind;
-}
-
-export interface AddAddressToUsernameTx extends BnsTx {
+export interface AddAddressToUsernameTx extends UnsignedTransaction {
   readonly kind: TransactionKind.AddAddressToUsername;
   /** the username to be updated, must exist on chain */
   readonly username: string;
   readonly payload: ChainAddressPair;
 }
 
-export interface SendTx extends SendTransaction, BnsTx {
+export interface SendTx extends SendTransaction {
   readonly kind: TransactionKind.Send;
   readonly amount: Amount;
   readonly recipient: Address;
@@ -241,28 +237,28 @@ export interface SendTx extends SendTransaction, BnsTx {
  *
  * @deprecated will be dropped in favour of RegisterUsernameTx
  */
-export interface SetNameTx extends BnsTx {
+export interface SetNameTx extends UnsignedTransaction {
   readonly kind: TransactionKind.SetName;
   readonly name: string;
 }
 
-export interface SwapOfferTx extends SwapOfferTransaction, BnsTx {
+export interface SwapOfferTx extends SwapOfferTransaction {
   readonly kind: TransactionKind.SwapOffer;
 }
 
-export interface SwapCounterTx extends SwapCounterTransaction, BnsTx {
+export interface SwapCounterTx extends SwapCounterTransaction {
   readonly kind: TransactionKind.SwapCounter;
 }
 
-export interface SwapClaimTx extends SwapClaimTransaction, BnsTx {
+export interface SwapClaimTx extends SwapClaimTransaction {
   readonly kind: TransactionKind.SwapClaim;
 }
 
-export interface SwapTimeoutTx extends SwapTimeoutTransaction, BnsTx {
+export interface SwapTimeoutTx extends SwapTimeoutTransaction {
   readonly kind: TransactionKind.SwapTimeout;
 }
 
-export interface RegisterBlockchainTx extends BnsTx {
+export interface RegisterBlockchainTx extends UnsignedTransaction {
   readonly kind: TransactionKind.RegisterBlockchain;
   /**
    * The chain to be registered
@@ -282,18 +278,30 @@ export interface RegisterBlockchainTx extends BnsTx {
   readonly codecConfig: string;
 }
 
-export interface RegisterUsernameTx extends BnsTx {
+export interface RegisterUsernameTx extends UnsignedTransaction {
   readonly kind: TransactionKind.RegisterUsername;
   readonly username: string;
   readonly addresses: ReadonlyArray<ChainAddressPair>;
 }
 
-export interface RemoveAddressFromUsernameTx extends BnsTx {
+export interface RemoveAddressFromUsernameTx extends UnsignedTransaction {
   readonly kind: TransactionKind.RemoveAddressFromUsername;
   /** the username to be updated, must exist on chain */
   readonly username: string;
   readonly payload: ChainAddressPair;
 }
+
+export type BnsTx =
+  | AddAddressToUsernameTx
+  | SendTx
+  | SetNameTx
+  | SwapOfferTx
+  | SwapCounterTx
+  | SwapClaimTx
+  | SwapTimeoutTx
+  | RegisterBlockchainTx
+  | RegisterUsernameTx
+  | RemoveAddressFromUsernameTx;
 
 export function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx {
   return transaction.domain === bnsDomain;
