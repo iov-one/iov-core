@@ -10,6 +10,7 @@ import {
   BcpSwapQuery,
   BcpTransactionState,
   BcpTxQuery,
+  isSendTransaction,
   isSwapCounterTransaction,
   Nonce,
   PostTxResponse,
@@ -38,7 +39,6 @@ import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
 import {
   AddAddressToUsernameTx,
   BnsAddressBytes,
-  BnsTx,
   isRegisterBlockchainTx,
   isRegisterUsernameTx,
   RegisterBlockchainTx,
@@ -320,14 +320,16 @@ describe("BnsConnection", () => {
       expect(search.length).toBeGreaterThanOrEqual(1);
       // make sure we get a valid signature
       const mine = search[search.length - 1];
+      // make sure we have a txid
+      expect(mine.transactionId).toMatch(/^[0-9A-F]{40}$/);
       expect(mine.primarySignature.nonce).toEqual(nonce);
       expect(mine.primarySignature.signature.length).toBeTruthy();
       expect(mine.otherSignatures.length).toEqual(0);
-      const tx = mine.transaction as BnsTx;
-      expect(tx.kind).toEqual(sendTx.kind);
+      const tx = mine.transaction;
+      if (!isSendTransaction(tx)) {
+        throw new Error("Expected send transaction");
+      }
       expect(tx).toEqual(sendTx);
-      // make sure we have a txid
-      expect(mine.transactionId).toMatch(/^[0-9A-F]{40}$/);
 
       connection.disconnect();
     });
@@ -744,9 +746,11 @@ describe("BnsConnection", () => {
       // finds transaction using tag
       const results = await connection.searchTx({ tags: [bnsFromOrToTag(rcptAddress)] });
       expect(results.length).toBeGreaterThanOrEqual(1);
-      const mostRecentResult = results[results.length - 1];
-      expect((mostRecentResult.transaction as BnsTx).kind).toEqual("send");
-      expect((mostRecentResult.transaction as SendTransaction).memo).toEqual(memo);
+      const mostRecentResultTransaction = results[results.length - 1].transaction;
+      if (!isSendTransaction(mostRecentResultTransaction)) {
+        throw new Error("Expected send transaction");
+      }
+      expect(mostRecentResultTransaction.memo).toEqual(memo);
 
       connection.disconnect();
     });
@@ -782,9 +786,11 @@ describe("BnsConnection", () => {
       // finds transaction using height
       const results = await connection.searchTx({ height: txHeight });
       expect(results.length).toBeGreaterThanOrEqual(1);
-      const mostRecentResult = results[results.length - 1];
-      expect((mostRecentResult.transaction as BnsTx).kind).toEqual("send");
-      expect((mostRecentResult.transaction as SendTransaction).memo).toEqual(memo);
+      const mostRecentResultTransaction = results[results.length - 1].transaction;
+      if (!isSendTransaction(mostRecentResultTransaction)) {
+        throw new Error("Expected send transaction");
+      }
+      expect(mostRecentResultTransaction.memo).toEqual(memo);
 
       connection.disconnect();
     });
@@ -823,8 +829,11 @@ describe("BnsConnection", () => {
       const searchResults = await connection.searchTx({ id: transactionIdToSearch });
       expect(searchResults.length).toEqual(1);
       expect(searchResults[0].transactionId).toEqual(transactionIdToSearch);
-      expect((searchResults[0].transaction as BnsTx).kind).toEqual("send");
-      expect((searchResults[0].transaction as SendTransaction).memo).toEqual(memo);
+      const searchResultTransaction = searchResults[0].transaction;
+      if (!isSendTransaction(searchResultTransaction)) {
+        throw new Error("Expected send transaction");
+      }
+      expect(searchResultTransaction.memo).toEqual(memo);
 
       connection.disconnect();
     });
@@ -867,9 +876,11 @@ describe("BnsConnection", () => {
         // finds transaction using tag and minHeight = 1
         const results = await connection.searchTx({ tags: [bnsFromOrToTag(rcptAddress)], minHeight: 1 });
         expect(results.length).toBeGreaterThanOrEqual(1);
-        const mostRecentResult = results[results.length - 1];
-        expect((mostRecentResult.transaction as BnsTx).kind).toEqual("send");
-        expect((mostRecentResult.transaction as SendTransaction).memo).toEqual(memo);
+        const mostRecentResultTransaction = results[results.length - 1].transaction;
+        if (!isSendTransaction(mostRecentResultTransaction)) {
+          throw new Error("Expected send transaction");
+        }
+        expect(mostRecentResultTransaction.memo).toEqual(memo);
       }
 
       {
@@ -879,9 +890,11 @@ describe("BnsConnection", () => {
           minHeight: initialHeight,
         });
         expect(results.length).toBeGreaterThanOrEqual(1);
-        const mostRecentResult = results[results.length - 1];
-        expect((mostRecentResult.transaction as BnsTx).kind).toEqual("send");
-        expect((mostRecentResult.transaction as SendTransaction).memo).toEqual(memo);
+        const mostRecentResultTransaction = results[results.length - 1].transaction;
+        if (!isSendTransaction(mostRecentResultTransaction)) {
+          throw new Error("Expected send transaction");
+        }
+        expect(mostRecentResultTransaction.memo).toEqual(memo);
       }
 
       {
@@ -891,9 +904,11 @@ describe("BnsConnection", () => {
           maxHeight: 500_000_000,
         });
         expect(results.length).toBeGreaterThanOrEqual(1);
-        const mostRecentResult = results[results.length - 1];
-        expect((mostRecentResult.transaction as BnsTx).kind).toEqual("send");
-        expect((mostRecentResult.transaction as SendTransaction).memo).toEqual(memo);
+        const mostRecentResultTransaction = results[results.length - 1].transaction;
+        if (!isSendTransaction(mostRecentResultTransaction)) {
+          throw new Error("Expected send transaction");
+        }
+        expect(mostRecentResultTransaction.memo).toEqual(memo);
       }
 
       {
@@ -903,9 +918,11 @@ describe("BnsConnection", () => {
           maxHeight: initialHeight + 10,
         });
         expect(results.length).toBeGreaterThanOrEqual(1);
-        const mostRecentResult = results[results.length - 1];
-        expect((mostRecentResult.transaction as BnsTx).kind).toEqual("send");
-        expect((mostRecentResult.transaction as SendTransaction).memo).toEqual(memo);
+        const mostRecentResultTransaction = results[results.length - 1].transaction;
+        if (!isSendTransaction(mostRecentResultTransaction)) {
+          throw new Error("Expected send transaction");
+        }
+        expect(mostRecentResultTransaction.memo).toEqual(memo);
       }
 
       connection.disconnect();
