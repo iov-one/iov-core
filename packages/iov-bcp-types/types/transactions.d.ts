@@ -52,7 +52,6 @@ export interface SendTransaction extends UnsignedTransaction {
     readonly recipient: Address;
     readonly memo?: string;
 }
-export declare function isSendTransaction(transaction: UnsignedTransaction): transaction is SendTransaction;
 export interface SwapOfferTransaction extends UnsignedTransaction {
     readonly kind: "swap_offer";
     readonly amount: ReadonlyArray<Amount>;
@@ -79,3 +78,8 @@ export interface SwapTimeoutTransaction extends UnsignedTransaction {
     readonly kind: "swap_timeout";
     readonly swapId: SwapIdBytes;
 }
+export declare function isSendTransaction(transaction: UnsignedTransaction): transaction is SendTransaction;
+export declare function isSwapOfferTransaction(transaction: UnsignedTransaction): transaction is SwapOfferTransaction;
+export declare function isSwapCounterTransaction(transaction: UnsignedTransaction): transaction is SwapCounterTransaction;
+export declare function isSwapClaimTransaction(transaction: UnsignedTransaction): transaction is SwapClaimTransaction;
+export declare function isSwapTimeoutTransaction(transaction: UnsignedTransaction): transaction is SwapTimeoutTransaction;
