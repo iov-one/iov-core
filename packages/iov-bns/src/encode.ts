@@ -16,7 +16,6 @@ import {
   SwapCounterTx,
   SwapOfferTx,
   SwapTimeoutTx,
-  TransactionKind,
 } from "./types";
 import { decodeBnsAddress, keyToAddress, preimageIdentifier } from "./util";
 
@@ -105,25 +104,25 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
   }
 
   switch (tx.kind) {
-    case TransactionKind.AddAddressToUsername:
+    case "add_address_to_username":
       return buildAddAddressToUsernameTx(tx);
-    case TransactionKind.Send:
+    case "send":
       return buildSendTx(tx);
-    case TransactionKind.SetName:
+    case "set_name":
       return buildSetNameTx(tx);
-    case TransactionKind.SwapOffer:
+    case "swap_offer":
       return buildSwapOfferTx(tx);
-    case TransactionKind.SwapCounter:
+    case "swap_counter":
       return buildSwapCounterTx(tx);
-    case TransactionKind.SwapClaim:
+    case "swap_claim":
       return buildSwapClaimTx(tx);
-    case TransactionKind.SwapTimeout:
+    case "swap_timeout":
       return buildSwapTimeoutTx(tx);
-    case TransactionKind.RegisterBlockchain:
+    case "register_blockchain":
       return buildRegisterBlockchainTx(tx);
-    case TransactionKind.RegisterUsername:
+    case "register_username":
       return buildRegisterUsernameTx(tx);
-    case TransactionKind.RemoveAddressFromUsername:
+    case "remove_address_from_username":
       return buildRemoveAddressFromUsernameTx(tx);
     default:
       throw new Error("Received transacion of unsupported kind.");
@@ -164,7 +163,7 @@ function buildSwapOfferTx(tx: SwapOfferTx): codecImpl.app.ITx {
   const hashed = {
     ...tx,
     hashCode: preimageIdentifier(tx.preimage),
-    kind: TransactionKind.SwapCounter,
+    kind: "swap_counter",
   };
   return buildSwapCounterTx(hashed as SwapCounterTx);
 }

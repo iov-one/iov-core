@@ -34,7 +34,6 @@ import {
   SwapClaimTx,
   SwapCounterTx,
   SwapTimeoutTx,
-  TransactionKind,
 } from "./types";
 import { encodeBnsAddress, isHashIdentifier } from "./util";
 
@@ -170,7 +169,7 @@ function parseAddAddressToUsernameTx(
   return {
     ...base,
     domain: "bns",
-    kind: TransactionKind.AddAddressToUsername,
+    kind: "add_address_to_username",
     username: fromUtf8(ensure(msg.id, "id")),
     payload: {
       chainId: fromUtf8(ensure(msg.chainID, "chainID")) as ChainId,
@@ -185,7 +184,7 @@ function parseSendTx(base: UnsignedTransaction, msg: codecImpl.cash.ISendMsg): S
     //    src: await keyToAddress(tx.signer),
     ...base,
     domain: "bns",
-    kind: TransactionKind.Send,
+    kind: "send",
     recipient: encodeBnsAddress(ensure(msg.dest, "recipient")),
     amount: decodeAmount(ensure(msg.amount)),
     memo: msg.memo || undefined,
@@ -196,7 +195,7 @@ function parseSetNameTx(base: UnsignedTransaction, msg: codecImpl.namecoin.ISetW
   return {
     ...base,
     domain: "bns",
-    kind: TransactionKind.SetName,
+    kind: "set_name",
     name: ensure(msg.name, "name"),
   };
 }
@@ -212,7 +211,7 @@ function parseSwapCounterTx(
   return {
     ...base,
     domain: "bns",
-    kind: TransactionKind.SwapCounter,
+    kind: "swap_counter",
     hashCode,
     recipient: encodeBnsAddress(ensure(msg.recipient, "recipient")),
     timeout: asNumber(msg.timeout),
@@ -228,7 +227,7 @@ function parseSwapClaimTx(
   return {
     ...base,
     domain: "bns",
-    kind: TransactionKind.SwapClaim,
+    kind: "swap_claim",
     swapId: ensure(msg.escrowId) as SwapIdBytes,
     preimage: ensure(tx.preimage),
   };
@@ -241,7 +240,7 @@ function parseSwapTimeoutTx(
   return {
     ...base,
     domain: "bns",
-    kind: TransactionKind.SwapTimeout,
+    kind: "swap_timeout",
     swapId: ensure(msg.escrowId) as SwapIdBytes,
   };
 }
@@ -278,7 +277,7 @@ function parseRegisterBlockchainTx(
   return {
     ...base,
     domain: "bns",
-    kind: TransactionKind.RegisterBlockchain,
+    kind: "register_blockchain",
     chain: {
       chainId: chainId as ChainId,
       name: name,
@@ -310,7 +309,7 @@ function parseRegisterUsernameTx(
   return {
     ...base,
     domain: "bns",
-    kind: TransactionKind.RegisterUsername,
+    kind: "register_username",
     username: Encoding.fromUtf8(ensure(msg.id, "id")),
     addresses: addresses,
   };
@@ -323,7 +322,7 @@ function parseRemoveAddressFromUsernameTx(
   return {
     ...base,
     domain: "bns",
-    kind: TransactionKind.RemoveAddressFromUsername,
+    kind: "remove_address_from_username",
     username: fromUtf8(ensure(msg.id, "id")),
     payload: {
       chainId: fromUtf8(ensure(msg.chainID, "chainID")) as ChainId,
