@@ -2,9 +2,10 @@ import { Stream } from "xstream";
 import { JsonRpcEvent, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccess } from "../jsonrpc";
 import { RpcStreamingClient } from "./rpcclient";
 export declare class WebsocketClient implements RpcStreamingClient {
-    private readonly bridge;
     private readonly url;
     private readonly socket;
+    /** Same events as in socket.events but in the format we need */
+    private readonly jsonRpcResponseStream;
     private readonly subscriptionStreams;
     constructor(baseUrl?: string, onError?: (err: any) => void);
     execute(request: JsonRpcRequest): Promise<JsonRpcSuccess>;
