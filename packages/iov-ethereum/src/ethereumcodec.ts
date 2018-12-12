@@ -108,7 +108,7 @@ export const ethereumCodec: TxCodec = {
     switch (json.type) {
       case 0:
         unsignedTransaction = {
-          domain: "ethereum",
+          domain: "bcp",
           kind: "send",
           chainId: chainId,
           fee: {
