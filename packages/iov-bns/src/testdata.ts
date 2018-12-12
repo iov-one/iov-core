@@ -6,19 +6,15 @@ import {
   Nonce,
   SendTransaction,
   SignedTransaction,
+  SwapClaimTransaction,
+  SwapCounterTransaction,
   SwapIdBytes,
+  SwapTimeoutTransaction,
   TokenTicker,
 } from "@iov/bcp-types";
 import { Encoding, Int53 } from "@iov/encoding";
 
-import {
-  PrivateKeyBundle,
-  PrivateKeyBytes,
-  SetNameTx,
-  SwapClaimTx,
-  SwapCounterTx,
-  SwapTimeoutTx,
-} from "./types";
+import { PrivateKeyBundle, PrivateKeyBytes, SetNameTx } from "./types";
 import { hashId } from "./util";
 
 const { fromHex } = Encoding;
@@ -69,10 +65,9 @@ export const chainId = "test-123" as ChainId;
 // recipient address generated using https://github.com/nym-zone/bech32
 // bech32 -e -h tiov 6f0a3e37845b6a3c8ccbe6219199abc3ae0b26d9
 export const sendTxJson: SendTransaction = {
+  kind: "bcp/send",
   chainId,
   signer: pubJson,
-  domain: "bcp",
-  kind: "send",
   recipient: "tiov1du9ruduytd4rerxtucserxdtcwhqkfkezjy4w0" as Address,
   memo: "Test payment",
   amount,
@@ -120,8 +115,7 @@ const sig2: FullSignature = {
 const randomMsg: SendTransaction = {
   chainId: "foo-bar-baz" as ChainId,
   signer: pubJson,
-  domain: "bcp",
-  kind: "send",
+  kind: "bcp/send",
   recipient: "tiov1qzvctjecs368fl5la074d2m8u99u64hn8q7kyn" as Address,
   memo: "One more fix!",
   amount: {
@@ -144,8 +138,7 @@ export const randomTxJson: SignedTransaction = {
 const setNameMsg: SetNameTx = {
   chainId: "bns-mainnet" as ChainId,
   signer: pubJson,
-  domain: "bns",
-  kind: "set_name",
+  kind: "bns/set_name",
   name: "king*iov.one",
 };
 export const setNameTxJson: SignedTransaction = {
@@ -157,11 +150,10 @@ export const setNameTxJson: SignedTransaction = {
 export const hashCode = Uint8Array.from([...hashId, ...fromHex("1122334455aabbccddee")]);
 // recipient address generated using https://github.com/nym-zone/bech32
 // bech32 -e -h tiov 123485cb38847474fe9febfd56ab67e14bcd56f3
-const swapCounterMsg: SwapCounterTx = {
+const swapCounterMsg: SwapCounterTransaction = {
   chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
-  domain: "bns",
-  kind: "swap_counter",
+  kind: "bcp/swap_counter",
   recipient: "tiov1zg6gtjecs368fl5la074d2m8u99u64hnhhlprg" as Address,
   timeout: 7890,
   amount: [
@@ -179,11 +171,10 @@ export const swapCounterTxJson: SignedTransaction = {
   otherSignatures: [],
 };
 
-const swapClaimMsg: SwapClaimTx = {
+const swapClaimMsg: SwapClaimTransaction = {
   chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
-  domain: "bns",
-  kind: "swap_claim",
+  kind: "bcp/swap_claim",
   preimage: fromHex("00000000fffffffffff000000000"),
   swapId: fromHex("1234") as SwapIdBytes,
 };
@@ -193,11 +184,10 @@ export const swapClaimTxJson: SignedTransaction = {
   otherSignatures: [],
 };
 
-const swapTimeoutMsg: SwapTimeoutTx = {
+const swapTimeoutMsg: SwapTimeoutTransaction = {
   chainId: "swap-a-doo" as ChainId,
   signer: pubJson,
-  domain: "bns",
-  kind: "swap_timeout",
+  kind: "bcp/swap_timeout",
   swapId: fromHex("1234") as SwapIdBytes,
 };
 export const swapTimeoutTxJson: SignedTransaction = {

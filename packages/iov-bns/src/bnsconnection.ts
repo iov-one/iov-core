@@ -30,7 +30,9 @@ import {
   Nonce,
   OpenSwap,
   PostTxResponse,
+  SwapClaimTransaction,
   SwapState,
+  SwapTimeoutTransaction,
   TokenTicker,
   TransactionId,
   TxReadCodec,
@@ -62,8 +64,6 @@ import {
   isBnsUsernamesByUsernameQuery,
   Keyed,
   Result,
-  SwapClaimTx,
-  SwapTimeoutTx,
 } from "./types";
 import {
   arraysEqual,
@@ -325,7 +325,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const offers: OpenSwap[] = setTxs.filter(isBnsSwapCounter).map(tx => this.context.swapOfferFromTx(tx));
 
     // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout
-    const release: ReadonlyArray<SwapClaimTx | SwapTimeoutTx> = [...setTxs, ...delTxs]
+    const release: ReadonlyArray<SwapClaimTransaction | SwapTimeoutTransaction> = [...setTxs, ...delTxs]
       .filter(isBnsSwapRelease)
       .map(x => x.transaction);
 
@@ -356,14 +356,14 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       .map(tx => this.context.swapOfferFromTx(tx));
 
     // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout
-    const releases: Stream<SwapClaimTx | SwapTimeoutTx> = Stream.merge(setTxs, delTxs)
+    const releases: Stream<SwapClaimTransaction | SwapTimeoutTransaction> = Stream.merge(setTxs, delTxs)
       .filter(isBnsSwapRelease)
       .map(x => x.transaction);
 
     // combine them and keep track of internal state in the mapper....
     // tslint:disable-next-line:readonly-array
     const open: OpenSwap[] = [];
-    const combiner = (evt: OpenSwap | SwapClaimTx | SwapTimeoutTx): BcpAtomicSwap => {
+    const combiner = (evt: OpenSwap | SwapClaimTransaction | SwapTimeoutTransaction): BcpAtomicSwap => {
       switch (evt.kind) {
         case SwapState.Open:
           open.push(evt);

@@ -28,8 +28,7 @@ export class Scraper {
     const signature = new Uint8Array([]) as SignatureBytes;
 
     const unsigned: SendTransaction = {
-      domain: "bcp",
-      kind: "send",
+      kind: "bcp/send",
       chainId: chainId,
       fee: {
         quantity: json.gasUsed,

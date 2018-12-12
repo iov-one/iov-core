@@ -99,12 +99,11 @@ export const riseCodec: TxCodec = {
   parseBytes: (bytes: PostableBytes, chainId: ChainId): SignedTransaction => {
     const json = JSON.parse(Encoding.fromUtf8(bytes));
 
-    let unsignedTransaction: SendTransaction;
+    let unsignedTransaction: UnsignedTransaction;
     switch (json.type) {
       case 0:
-        unsignedTransaction = {
-          domain: "bcp",
-          kind: "send",
+        const send: SendTransaction = {
+          kind: "bcp/send",
           chainId: chainId,
           fee: {
             quantity: Parse.parseQuantity(`${json.fee}`), // `fee` is a number
@@ -122,6 +121,7 @@ export const riseCodec: TxCodec = {
           },
           recipient: json.recipientId as Address,
         };
+        unsignedTransaction = send;
         break;
       default:
         throw new Error("Unsupported transaction type");

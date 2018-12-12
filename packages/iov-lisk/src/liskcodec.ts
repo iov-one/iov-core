@@ -101,12 +101,11 @@ export const liskCodec: TxCodec = {
   parseBytes: (bytes: PostableBytes, chainId: ChainId): SignedTransaction => {
     const json = JSON.parse(Encoding.fromUtf8(bytes));
 
-    let unignedTransaction: SendTransaction;
+    let unignedTransaction: UnsignedTransaction;
     switch (json.type) {
       case 0:
-        unignedTransaction = {
-          domain: "bcp",
-          kind: "send",
+        const send: SendTransaction = {
+          kind: "bcp/send",
           chainId: chainId,
           fee: {
             quantity: Parse.parseQuantity(json.fee),
@@ -125,6 +124,7 @@ export const liskCodec: TxCodec = {
           recipient: json.recipientId as Address,
           memo: json.asset.data,
         };
+        unignedTransaction = send;
         break;
       default:
         throw new Error("Unsupported transaction type");

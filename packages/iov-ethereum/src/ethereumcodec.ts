@@ -107,9 +107,8 @@ export const ethereumCodec: TxCodec = {
     let unsignedTransaction: SendTransaction;
     switch (json.type) {
       case 0:
-        unsignedTransaction = {
-          domain: "bcp",
-          kind: "send",
+        const send: SendTransaction = {
+          kind: "bcp/send",
           chainId: chainId,
           fee: {
             quantity: decodeHexQuantityString(json.gas),
@@ -128,6 +127,7 @@ export const ethereumCodec: TxCodec = {
           recipient: json.to,
           memo: json.input,
         };
+        unsignedTransaction = send;
         break;
       default:
         throw new Error("Unsupported transaction type");

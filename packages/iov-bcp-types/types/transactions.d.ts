@@ -32,18 +32,15 @@ export interface Amount {
 /** The basic transaction type all transactions should extend */
 export interface UnsignedTransaction {
     /**
-     * The domain in which the concrete transaction is valid
+     * Kind describes the kind of transaction as a "<domain>/<concrete_type>" tuple.
      *
-     * This should be used for type detection only and not be encoded somewhere.
-     * Right now we use "bns", "ethereum", "lisk" and "rise" but this could also
-     * be migrated to a Java-style package names like "io.lisk.mainnet" later on.
+     * The domain acts as a namespace for the concreate type. Right now we use "bns",
+     * "ethereum", "lisk" and "rise" for chain-specific transactions. We also use the
+     * special domain "bcp" for any kind that can be supported in multiple chains.
      *
-     * We also use the special domain "bcp" for any kind that can be supported in multiple chains
-     */
-    readonly domain: string;
-    /**
-     * kind is the type of transaction (send, setName, etc)
-     * A (domain, kind) pair will uniquely define the expected shape of any transaction type
+     * This should be used for type detection only and not be encoded somewhere. It
+     * might be migrated to a Java-style package names like "io.lisk.mainnet" or
+     * other way of namespacing later on, so don't use the `kind` property as a value.
      */
     readonly kind: string;
     /** the chain on which the transaction should be valid */
@@ -54,14 +51,13 @@ export interface UnsignedTransaction {
     readonly signer: PublicKeyBundle;
 }
 export interface SendTransaction extends UnsignedTransaction {
-    readonly domain: "bcp";
-    readonly kind: "send";
+    readonly kind: "bcp/send";
     readonly amount: Amount;
     readonly recipient: Address;
     readonly memo?: string;
 }
 export interface SwapOfferTransaction extends UnsignedTransaction {
-    readonly kind: "swap_offer";
+    readonly kind: "bcp/swap_offer";
     readonly amount: ReadonlyArray<Amount>;
     readonly recipient: Address;
     /** absolute block height at which the offer times out */
@@ -69,7 +65,7 @@ export interface SwapOfferTransaction extends UnsignedTransaction {
     readonly preimage: Uint8Array;
 }
 export interface SwapCounterTransaction extends UnsignedTransaction {
-    readonly kind: "swap_counter";
+    readonly kind: "bcp/swap_counter";
     readonly amount: ReadonlyArray<Amount>;
     readonly recipient: Address;
     /** absolute block height at which the counter offer times out */
@@ -78,12 +74,12 @@ export interface SwapCounterTransaction extends UnsignedTransaction {
     readonly memo?: string;
 }
 export interface SwapClaimTransaction extends UnsignedTransaction {
-    readonly kind: "swap_claim";
+    readonly kind: "bcp/swap_claim";
     readonly preimage: Uint8Array;
     readonly swapId: SwapIdBytes;
 }
 export interface SwapTimeoutTransaction extends UnsignedTransaction {
-    readonly kind: "swap_timeout";
+    readonly kind: "bcp/swap_timeout";
     readonly swapId: SwapIdBytes;
 }
 export declare function isSendTransaction(transaction: UnsignedTransaction): transaction is SendTransaction;

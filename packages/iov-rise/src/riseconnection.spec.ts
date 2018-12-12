@@ -259,8 +259,7 @@ describe("RiseConnection", () => {
       const mainIdentity = await wallet.createIdentity(await defaultKeypair);
 
       const sendTx: SendTransaction = {
-        domain: "bcp",
-        kind: "send",
+        kind: "bcp/send",
         chainId: riseTestnet,
         signer: mainIdentity.pubkey,
         recipient: defaultRecipientAddress,
@@ -299,8 +298,7 @@ describe("RiseConnection", () => {
         const mainIdentity = await wallet.createIdentity(await defaultKeypair);
 
         const sendTx: SendTransaction = {
-          domain: "bcp",
-          kind: "send",
+          kind: "bcp/send",
           chainId: riseTestnet,
           signer: mainIdentity.pubkey,
           recipient: defaultRecipientAddress,
@@ -361,8 +359,7 @@ describe("RiseConnection", () => {
       const mainIdentity = await wallet.createIdentity(await defaultKeypair);
 
       const sendTx: SendTransaction = {
-        domain: "bcp",
-        kind: "send",
+        kind: "bcp/send",
         chainId: riseTestnet,
         signer: mainIdentity.pubkey,
         recipient: defaultRecipientAddress,

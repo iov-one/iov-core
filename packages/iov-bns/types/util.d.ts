@@ -1,8 +1,7 @@
 import { As } from "type-tagger";
 import { ChainId, PublicKeyBundle } from "@iov/base-types";
-import { Address, BcpTxQuery, ConfirmedTransaction, Nonce, SignableBytes } from "@iov/bcp-types";
+import { Address, BcpTxQuery, ConfirmedTransaction, Nonce, SignableBytes, SwapClaimTransaction, SwapCounterTransaction, SwapTimeoutTransaction } from "@iov/bcp-types";
 import { QueryString } from "@iov/tendermint-rpc";
-import { SwapClaimTx, SwapCounterTx, SwapTimeoutTx } from "./types";
 /** Encodes raw bytes into a bech32 address */
 export declare function encodeBnsAddress(bytes: Uint8Array): Address;
 /** Decodes a printable address into bech32 object */
@@ -23,6 +22,6 @@ export declare const isHashIdentifier: (ident: Uint8Array) => ident is HashId;
 export declare const hashFromIdentifier: (ident: HashId) => Uint8Array;
 export declare const bucketKey: (bucket: string) => Uint8Array;
 export declare const indexKey: (bucket: string, index: string) => Uint8Array;
-export declare function isBnsSwapCounter(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapCounterTx>;
-export declare function isBnsSwapRelease(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapClaimTx | SwapTimeoutTx>;
+export declare function isBnsSwapCounter(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapCounterTransaction>;
+export declare function isBnsSwapRelease(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapClaimTransaction | SwapTimeoutTransaction>;
 export declare function buildTxQuery(query: BcpTxQuery): QueryString;

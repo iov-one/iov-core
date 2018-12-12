@@ -75,10 +75,8 @@ export declare const decodeFullSig: (sig: codecImpl.sigs.IStdSignature) => FullS
 export declare const asNumber: (maybeLong: number | Long | null | undefined) => number;
 export declare function asInt53(input: Long | number | null | undefined): Int53;
 export declare const ensure: <T>(maybe: T | null | undefined, msg?: string | undefined) => T;
-export declare type bnsDomain = "bns";
 export interface AddAddressToUsernameTx extends UnsignedTransaction {
-    readonly domain: bnsDomain;
-    readonly kind: "add_address_to_username";
+    readonly kind: "bns/add_address_to_username";
     /** the username to be updated, must exist on chain */
     readonly username: string;
     readonly payload: ChainAddressPair;
@@ -89,29 +87,11 @@ export interface AddAddressToUsernameTx extends UnsignedTransaction {
  * @deprecated will be dropped in favour of RegisterUsernameTx
  */
 export interface SetNameTx extends UnsignedTransaction {
-    readonly domain: bnsDomain;
-    readonly kind: "set_name";
+    readonly kind: "bns/set_name";
     readonly name: string;
 }
-export interface SwapOfferTx extends SwapOfferTransaction {
-    readonly domain: bnsDomain;
-    readonly kind: "swap_offer";
-}
-export interface SwapCounterTx extends SwapCounterTransaction {
-    readonly domain: bnsDomain;
-    readonly kind: "swap_counter";
-}
-export interface SwapClaimTx extends SwapClaimTransaction {
-    readonly domain: bnsDomain;
-    readonly kind: "swap_claim";
-}
-export interface SwapTimeoutTx extends SwapTimeoutTransaction {
-    readonly domain: bnsDomain;
-    readonly kind: "swap_timeout";
-}
 export interface RegisterBlockchainTx extends UnsignedTransaction {
-    readonly domain: bnsDomain;
-    readonly kind: "register_blockchain";
+    readonly kind: "bns/register_blockchain";
     /**
      * The chain to be registered
      *
@@ -129,26 +109,20 @@ export interface RegisterBlockchainTx extends UnsignedTransaction {
     readonly codecConfig: string;
 }
 export interface RegisterUsernameTx extends UnsignedTransaction {
-    readonly domain: bnsDomain;
-    readonly kind: "register_username";
+    readonly kind: "bns/register_username";
     readonly username: string;
     readonly addresses: ReadonlyArray<ChainAddressPair>;
 }
 export interface RemoveAddressFromUsernameTx extends UnsignedTransaction {
-    readonly domain: bnsDomain;
-    readonly kind: "remove_address_from_username";
+    readonly kind: "bns/remove_address_from_username";
     /** the username to be updated, must exist on chain */
     readonly username: string;
     readonly payload: ChainAddressPair;
 }
-export declare type BnsTx = SendTransaction | AddAddressToUsernameTx | SetNameTx | SwapOfferTx | SwapCounterTx | SwapClaimTx | SwapTimeoutTx | RegisterBlockchainTx | RegisterUsernameTx | RemoveAddressFromUsernameTx;
+export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapCounterTransaction | SwapClaimTransaction | SwapTimeoutTransaction | AddAddressToUsernameTx | SetNameTx | RegisterBlockchainTx | RegisterUsernameTx | RemoveAddressFromUsernameTx;
 export declare function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx;
 export declare function isAddAddressToUsernameTx(transaction: UnsignedTransaction): transaction is AddAddressToUsernameTx;
 export declare function isSetNameTx(transaction: UnsignedTransaction): transaction is SetNameTx;
-export declare function isSwapOfferTx(transaction: UnsignedTransaction): transaction is SwapOfferTx;
-export declare function isSwapCounterTx(transaction: UnsignedTransaction): transaction is SwapCounterTx;
-export declare function isSwapClaimTx(transaction: UnsignedTransaction): transaction is SwapClaimTx;
-export declare function isSwapTimeoutTx(transaction: UnsignedTransaction): transaction is SwapTimeoutTx;
 export declare function isRegisterBlockchainTx(transaction: UnsignedTransaction): transaction is RegisterBlockchainTx;
 export declare function isRegisterUsernameTx(transaction: UnsignedTransaction): transaction is RegisterUsernameTx;
 export declare function isRemoveAddressFromUsernameTx(transaction: UnsignedTransaction): transaction is RemoveAddressFromUsernameTx;

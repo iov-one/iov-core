@@ -39,8 +39,7 @@ describe("liskCodec", () => {
     const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
     const tx: SendTransaction = {
-      domain: "bcp",
-      kind: "send",
+      kind: "bcp/send",
       chainId: liskTestnet,
       signer: {
         algo: Algorithm.Ed25519,

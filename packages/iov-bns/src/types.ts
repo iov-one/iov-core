@@ -6,6 +6,10 @@ import {
   Address,
   FullSignature,
   isSendTransaction,
+  isSwapClaimTransaction,
+  isSwapCounterTransaction,
+  isSwapOfferTransaction,
+  isSwapTimeoutTransaction,
   Nonce,
   SendTransaction,
   SwapClaimTransaction,
@@ -197,11 +201,8 @@ export const ensure = <T>(maybe: T | null | undefined, msg?: string): T => {
 
 // transactions
 
-export type bnsDomain = "bns";
-
 export interface AddAddressToUsernameTx extends UnsignedTransaction {
-  readonly domain: bnsDomain;
-  readonly kind: "add_address_to_username";
+  readonly kind: "bns/add_address_to_username";
   /** the username to be updated, must exist on chain */
   readonly username: string;
   readonly payload: ChainAddressPair;
@@ -213,34 +214,12 @@ export interface AddAddressToUsernameTx extends UnsignedTransaction {
  * @deprecated will be dropped in favour of RegisterUsernameTx
  */
 export interface SetNameTx extends UnsignedTransaction {
-  readonly domain: bnsDomain;
-  readonly kind: "set_name";
+  readonly kind: "bns/set_name";
   readonly name: string;
 }
 
-export interface SwapOfferTx extends SwapOfferTransaction {
-  readonly domain: bnsDomain;
-  readonly kind: "swap_offer";
-}
-
-export interface SwapCounterTx extends SwapCounterTransaction {
-  readonly domain: bnsDomain;
-  readonly kind: "swap_counter";
-}
-
-export interface SwapClaimTx extends SwapClaimTransaction {
-  readonly domain: bnsDomain;
-  readonly kind: "swap_claim";
-}
-
-export interface SwapTimeoutTx extends SwapTimeoutTransaction {
-  readonly domain: bnsDomain;
-  readonly kind: "swap_timeout";
-}
-
 export interface RegisterBlockchainTx extends UnsignedTransaction {
-  readonly domain: bnsDomain;
-  readonly kind: "register_blockchain";
+  readonly kind: "bns/register_blockchain";
   /**
    * The chain to be registered
    *
@@ -260,95 +239,68 @@ export interface RegisterBlockchainTx extends UnsignedTransaction {
 }
 
 export interface RegisterUsernameTx extends UnsignedTransaction {
-  readonly domain: bnsDomain;
-  readonly kind: "register_username";
+  readonly kind: "bns/register_username";
   readonly username: string;
   readonly addresses: ReadonlyArray<ChainAddressPair>;
 }
 
 export interface RemoveAddressFromUsernameTx extends UnsignedTransaction {
-  readonly domain: bnsDomain;
-  readonly kind: "remove_address_from_username";
+  readonly kind: "bns/remove_address_from_username";
   /** the username to be updated, must exist on chain */
   readonly username: string;
   readonly payload: ChainAddressPair;
 }
 
 export type BnsTx =
+  // BCP
   | SendTransaction
+  | SwapOfferTransaction
+  | SwapCounterTransaction
+  | SwapClaimTransaction
+  | SwapTimeoutTransaction
+  // BNS
   | AddAddressToUsernameTx
   | SetNameTx
-  | SwapOfferTx
-  | SwapCounterTx
-  | SwapClaimTx
-  | SwapTimeoutTx
   | RegisterBlockchainTx
   | RegisterUsernameTx
   | RemoveAddressFromUsernameTx;
 
-function contains<T>(target: T, list: ReadonlyArray<T>): boolean {
-  return list.find(x => x === target) !== undefined;
-}
-
 export function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx {
-  if (isSendTransaction(transaction)) {
+  if (
+    isSendTransaction(transaction) ||
+    isSwapOfferTransaction(transaction) ||
+    isSwapCounterTransaction(transaction) ||
+    isSwapClaimTransaction(transaction) ||
+    isSwapTimeoutTransaction(transaction)
+  ) {
     return true;
   }
-  // let's be specific here, as this is a runtime check
-  return (
-    transaction.domain === "bns" &&
-    contains(transaction.kind, [
-      "add_address_to_username",
-      "set_name",
-      "swap_offer",
-      "swap_counter",
-      "swap_claim",
-      "swap_timeout",
-      "register_blockchain",
-      "register_username",
-      "remove_address_from_username",
-    ])
-  );
+
+  return transaction.kind.startsWith("bns/");
 }
 
 export function isAddAddressToUsernameTx(
   transaction: UnsignedTransaction,
 ): transaction is AddAddressToUsernameTx {
-  return isBnsTx(transaction) && transaction.kind === "add_address_to_username";
+  return isBnsTx(transaction) && transaction.kind === "bns/add_address_to_username";
 }
 
 export function isSetNameTx(transaction: UnsignedTransaction): transaction is SetNameTx {
-  return isBnsTx(transaction) && transaction.kind === "set_name";
-}
-
-export function isSwapOfferTx(transaction: UnsignedTransaction): transaction is SwapOfferTx {
-  return isBnsTx(transaction) && transaction.kind === "swap_offer";
-}
-
-export function isSwapCounterTx(transaction: UnsignedTransaction): transaction is SwapCounterTx {
-  return isBnsTx(transaction) && transaction.kind === "swap_counter";
-}
-
-export function isSwapClaimTx(transaction: UnsignedTransaction): transaction is SwapClaimTx {
-  return isBnsTx(transaction) && transaction.kind === "swap_claim";
-}
-
-export function isSwapTimeoutTx(transaction: UnsignedTransaction): transaction is SwapTimeoutTx {
-  return isBnsTx(transaction) && transaction.kind === "swap_timeout";
+  return isBnsTx(transaction) && transaction.kind === "bns/set_name";
 }
 
 export function isRegisterBlockchainTx(
   transaction: UnsignedTransaction,
 ): transaction is RegisterBlockchainTx {
-  return isBnsTx(transaction) && transaction.kind === "register_blockchain";
+  return isBnsTx(transaction) && transaction.kind === "bns/register_blockchain";
 }
 
 export function isRegisterUsernameTx(transaction: UnsignedTransaction): transaction is RegisterUsernameTx {
-  return isBnsTx(transaction) && transaction.kind === "register_username";
+  return isBnsTx(transaction) && transaction.kind === "bns/register_username";
 }
 
 export function isRemoveAddressFromUsernameTx(
   transaction: UnsignedTransaction,
 ): transaction is RemoveAddressFromUsernameTx {
-  return isBnsTx(transaction) && transaction.kind === "remove_address_from_username";
+  return isBnsTx(transaction) && transaction.kind === "bns/remove_address_from_username";
 }

@@ -16,8 +16,7 @@ describe("Serialization", () => {
       );
 
       const tx: SendTransaction = {
-        domain: "bcp",
-        kind: "send",
+        kind: "bcp/send",
         chainId: TestConfig.chainId,
         signer: {
           algo: Algorithm.Secp256k1,
@@ -54,8 +53,7 @@ describe("Serialization", () => {
       );
 
       const tx: SendTransaction = {
-        domain: "bcp",
-        kind: "send",
+        kind: "bcp/send",
         chainId: TestConfig.chainId,
         signer: {
           algo: Algorithm.Secp256k1,

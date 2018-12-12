@@ -82,8 +82,7 @@ describe("Serialization", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
       const tx: SendTransaction = {
-        domain: "bcp",
-        kind: "send",
+        kind: "bcp/send",
         chainId: riseTestnet,
         signer: {
           algo: Algorithm.Ed25519,
@@ -109,8 +108,7 @@ describe("Serialization", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
       const tx: SendTransaction = {
-        domain: "bcp",
-        kind: "send",
+        kind: "bcp/send",
         chainId: liskTestnet as ChainId,
         signer: {
           algo: Algorithm.Ed25519,
@@ -136,8 +134,7 @@ describe("Serialization", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
       const tx: SendTransaction = {
-        domain: "bcp",
-        kind: "send",
+        kind: "bcp/send",
         chainId: liskTestnet as ChainId,
         signer: {
           algo: Algorithm.Ed25519,
@@ -169,8 +166,7 @@ describe("Serialization", () => {
           algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
-        domain: "bcp",
-        kind: "send",
+        kind: "bcp/send",
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -194,8 +190,7 @@ describe("Serialization", () => {
           algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
-        domain: "bcp",
-        kind: "send",
+        kind: "bcp/send",
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -220,8 +215,7 @@ describe("Serialization", () => {
           algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
-        domain: "bcp",
-        kind: "send",
+        kind: "bcp/send",
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -251,8 +245,7 @@ describe("Serialization", () => {
           algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
-        domain: "bcp",
-        kind: "send",
+        kind: "bcp/send",
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,

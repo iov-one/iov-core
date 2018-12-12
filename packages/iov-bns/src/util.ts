@@ -2,18 +2,22 @@ import Long from "long";
 import { As } from "type-tagger";
 
 import { Algorithm, ChainId, PublicKeyBundle } from "@iov/base-types";
-import { Address, BcpTxQuery, ConfirmedTransaction, Nonce, SignableBytes } from "@iov/bcp-types";
+import {
+  Address,
+  BcpTxQuery,
+  ConfirmedTransaction,
+  isSwapClaimTransaction,
+  isSwapCounterTransaction,
+  isSwapTimeoutTransaction,
+  Nonce,
+  SignableBytes,
+  SwapClaimTransaction,
+  SwapCounterTransaction,
+  SwapTimeoutTransaction,
+} from "@iov/bcp-types";
 import { Sha256 } from "@iov/crypto";
 import { Bech32, Encoding } from "@iov/encoding";
 import { QueryString } from "@iov/tendermint-rpc";
-import {
-  isSwapClaimTx,
-  isSwapCounterTx,
-  isSwapTimeoutTx,
-  SwapClaimTx,
-  SwapCounterTx,
-  SwapTimeoutTx,
-} from "./types";
 
 /** Encodes raw bytes into a bech32 address */
 export function encodeBnsAddress(bytes: Uint8Array): Address {
@@ -92,16 +96,18 @@ export const hashFromIdentifier = (ident: HashId): Uint8Array => ident.slice(has
 export const bucketKey = (bucket: string) => Encoding.toAscii(`${bucket}:`);
 export const indexKey = (bucket: string, index: string) => Encoding.toAscii(`_i.${bucket}_${index}:`);
 
-export function isBnsSwapCounter(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapCounterTx> {
+export function isBnsSwapCounter(
+  tx: ConfirmedTransaction,
+): tx is ConfirmedTransaction<SwapCounterTransaction> {
   const unsigned = tx.transaction;
-  return isSwapCounterTx(unsigned);
+  return isSwapCounterTransaction(unsigned);
 }
 
 export function isBnsSwapRelease(
   tx: ConfirmedTransaction,
-): tx is ConfirmedTransaction<SwapClaimTx | SwapTimeoutTx> {
+): tx is ConfirmedTransaction<SwapClaimTransaction | SwapTimeoutTransaction> {
   const unsigned = tx.transaction;
-  return isSwapClaimTx(unsigned) || isSwapTimeoutTx(unsigned);
+  return isSwapClaimTransaction(unsigned) || isSwapTimeoutTransaction(unsigned);
 }
 
 export function buildTxQuery(query: BcpTxQuery): QueryString {

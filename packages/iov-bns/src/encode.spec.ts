@@ -136,8 +136,7 @@ describe("Encode", () => {
 
     it("works for AddAddressToUsernameTx", () => {
       const addAddress: AddAddressToUsernameTx = {
-        domain: "bns",
-        kind: "add_address_to_username",
+        kind: "bns/add_address_to_username",
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
         username: "alice",
@@ -154,8 +153,7 @@ describe("Encode", () => {
 
     it("works for RegisterBlockchainTx", () => {
       const registerBlockchain: RegisterBlockchainTx = {
-        domain: "bns",
-        kind: "register_blockchain",
+        kind: "bns/register_blockchain",
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
         chain: {
@@ -183,8 +181,7 @@ describe("Encode", () => {
 
     it("works for RegisterUsernameTx", () => {
       const registerUsername: RegisterUsernameTx = {
-        domain: "bns",
-        kind: "register_username",
+        kind: "bns/register_username",
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
         username: "alice",
@@ -219,8 +216,7 @@ describe("Encode", () => {
 
     it("works for RemoveAddressFromUsernameTx", () => {
       const removeAddress: RemoveAddressFromUsernameTx = {
-        domain: "bns",
-        kind: "remove_address_from_username",
+        kind: "bns/remove_address_from_username",
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
         username: "alice",

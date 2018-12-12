@@ -281,8 +281,7 @@ describe("LiskConnection", () => {
       const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
       const sendTx: SendTransaction = {
-        domain: "bcp",
-        kind: "send",
+        kind: "bcp/send",
         chainId: devnetChainId,
         signer: mainIdentity.pubkey,
         recipient: devnetDefaultRecipient,
@@ -324,8 +323,7 @@ describe("LiskConnection", () => {
         const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
         const sendTx: SendTransaction = {
-          domain: "bcp",
-          kind: "send",
+          kind: "bcp/send",
           chainId: devnetChainId,
           signer: mainIdentity.pubkey,
           recipient: devnetDefaultRecipient,
@@ -389,8 +387,7 @@ describe("LiskConnection", () => {
       const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
       const sendTx: SendTransaction = {
-        domain: "bcp",
-        kind: "send",
+        kind: "bcp/send",
         chainId: devnetChainId,
         signer: mainIdentity.pubkey,
         recipient: devnetDefaultRecipient,
@@ -440,8 +437,7 @@ describe("LiskConnection", () => {
       const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
       const sendTx: SendTransaction = {
-        domain: "bcp",
-        kind: "send",
+        kind: "bcp/send",
         chainId: devnetChainId,
         signer: mainIdentity.pubkey,
         recipient: devnetDefaultRecipient,

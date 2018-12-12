@@ -40,18 +40,15 @@ export interface Amount {
 /** The basic transaction type all transactions should extend */
 export interface UnsignedTransaction {
   /**
-   * The domain in which the concrete transaction is valid
+   * Kind describes the kind of transaction as a "<domain>/<concrete_type>" tuple.
    *
-   * This should be used for type detection only and not be encoded somewhere.
-   * Right now we use "bns", "ethereum", "lisk" and "rise" but this could also
-   * be migrated to a Java-style package names like "io.lisk.mainnet" later on.
+   * The domain acts as a namespace for the concreate type. Right now we use "bns",
+   * "ethereum", "lisk" and "rise" for chain-specific transactions. We also use the
+   * special domain "bcp" for any kind that can be supported in multiple chains.
    *
-   * We also use the special domain "bcp" for any kind that can be supported in multiple chains
-   */
-  readonly domain: string;
-  /**
-   * kind is the type of transaction (send, setName, etc)
-   * A (domain, kind) pair will uniquely define the expected shape of any transaction type
+   * This should be used for type detection only and not be encoded somewhere. It
+   * might be migrated to a Java-style package names like "io.lisk.mainnet" or
+   * other way of namespacing later on, so don't use the `kind` property as a value.
    */
   readonly kind: string;
   /** the chain on which the transaction should be valid */
@@ -64,15 +61,14 @@ export interface UnsignedTransaction {
 }
 
 export interface SendTransaction extends UnsignedTransaction {
-  readonly domain: "bcp";
-  readonly kind: "send";
+  readonly kind: "bcp/send";
   readonly amount: Amount;
   readonly recipient: Address;
   readonly memo?: string;
 }
 
 export interface SwapOfferTransaction extends UnsignedTransaction {
-  readonly kind: "swap_offer";
+  readonly kind: "bcp/swap_offer";
   readonly amount: ReadonlyArray<Amount>;
   readonly recipient: Address;
   /** absolute block height at which the offer times out */
@@ -81,7 +77,7 @@ export interface SwapOfferTransaction extends UnsignedTransaction {
 }
 
 export interface SwapCounterTransaction extends UnsignedTransaction {
-  readonly kind: "swap_counter";
+  readonly kind: "bcp/swap_counter";
   readonly amount: ReadonlyArray<Amount>;
   readonly recipient: Address;
   /** absolute block height at which the counter offer times out */
@@ -91,40 +87,40 @@ export interface SwapCounterTransaction extends UnsignedTransaction {
 }
 
 export interface SwapClaimTransaction extends UnsignedTransaction {
-  readonly kind: "swap_claim";
+  readonly kind: "bcp/swap_claim";
   readonly preimage: Uint8Array;
   readonly swapId: SwapIdBytes; // pulled from the offer transaction
 }
 
 export interface SwapTimeoutTransaction extends UnsignedTransaction {
-  readonly kind: "swap_timeout";
+  readonly kind: "bcp/swap_timeout";
   readonly swapId: SwapIdBytes; // pulled from the offer transaction
 }
 
 export function isSendTransaction(transaction: UnsignedTransaction): transaction is SendTransaction {
-  return transaction.domain === "bcp" && transaction.kind === "send";
+  return (transaction as SendTransaction).kind === "bcp/send";
 }
 
 export function isSwapOfferTransaction(
   transaction: UnsignedTransaction,
 ): transaction is SwapOfferTransaction {
-  return (transaction as SwapOfferTransaction).kind === "swap_offer";
+  return (transaction as SwapOfferTransaction).kind === "bcp/swap_offer";
 }
 
 export function isSwapCounterTransaction(
   transaction: UnsignedTransaction,
 ): transaction is SwapCounterTransaction {
-  return (transaction as SwapCounterTransaction).kind === "swap_counter";
+  return (transaction as SwapCounterTransaction).kind === "bcp/swap_counter";
 }
 
 export function isSwapClaimTransaction(
   transaction: UnsignedTransaction,
 ): transaction is SwapClaimTransaction {
-  return (transaction as SwapClaimTransaction).kind === "swap_claim";
+  return (transaction as SwapClaimTransaction).kind === "bcp/swap_claim";
 }
 
 export function isSwapTimeoutTransaction(
   transaction: UnsignedTransaction,
 ): transaction is SwapTimeoutTransaction {
-  return (transaction as SwapTimeoutTransaction).kind === "swap_timeout";
+  return (transaction as SwapTimeoutTransaction).kind === "bcp/swap_timeout";
 }

@@ -9,7 +9,10 @@ import {
   Nonce,
   SendTransaction,
   SignedTransaction,
+  SwapClaimTransaction,
+  SwapCounterTransaction,
   SwapIdBytes,
+  SwapTimeoutTransaction,
   TokenTicker,
   UnsignedTransaction,
 } from "@iov/bcp-types";
@@ -31,9 +34,6 @@ import {
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
   SetNameTx,
-  SwapClaimTx,
-  SwapCounterTx,
-  SwapTimeoutTx,
 } from "./types";
 import { encodeBnsAddress, isHashIdentifier } from "./util";
 
@@ -168,8 +168,7 @@ function parseAddAddressToUsernameTx(
 ): AddAddressToUsernameTx {
   return {
     ...base,
-    domain: "bns",
-    kind: "add_address_to_username",
+    kind: "bns/add_address_to_username",
     username: fromUtf8(ensure(msg.id, "id")),
     payload: {
       chainId: fromUtf8(ensure(msg.chainID, "chainID")) as ChainId,
@@ -183,8 +182,7 @@ function parseSendTransaction(base: UnsignedTransaction, msg: codecImpl.cash.ISe
     // TODO: would we want to ensure these match?
     //    src: await keyToAddress(tx.signer),
     ...base,
-    domain: "bcp",
-    kind: "send",
+    kind: "bcp/send",
     recipient: encodeBnsAddress(ensure(msg.dest, "recipient")),
     amount: decodeAmount(ensure(msg.amount)),
     memo: msg.memo || undefined,
@@ -194,8 +192,7 @@ function parseSendTransaction(base: UnsignedTransaction, msg: codecImpl.cash.ISe
 function parseSetNameTx(base: UnsignedTransaction, msg: codecImpl.namecoin.ISetWalletNameMsg): SetNameTx {
   return {
     ...base,
-    domain: "bns",
-    kind: "set_name",
+    kind: "bns/set_name",
     name: ensure(msg.name, "name"),
   };
 }
@@ -203,15 +200,14 @@ function parseSetNameTx(base: UnsignedTransaction, msg: codecImpl.namecoin.ISetW
 function parseSwapCounterTx(
   base: UnsignedTransaction,
   msg: codecImpl.escrow.ICreateEscrowMsg,
-): SwapCounterTx {
+): SwapCounterTransaction {
   const hashCode = ensure(msg.arbiter, "arbiter");
   if (!isHashIdentifier(hashCode)) {
     throw new Error("escrow not controlled by hashlock");
   }
   return {
     ...base,
-    domain: "bns",
-    kind: "swap_counter",
+    kind: "bcp/swap_counter",
     hashCode,
     recipient: encodeBnsAddress(ensure(msg.recipient, "recipient")),
     timeout: asNumber(msg.timeout),
@@ -223,11 +219,10 @@ function parseSwapClaimTx(
   base: UnsignedTransaction,
   msg: codecImpl.escrow.IReturnEscrowMsg,
   tx: codecImpl.app.ITx,
-): SwapClaimTx {
+): SwapClaimTransaction {
   return {
     ...base,
-    domain: "bns",
-    kind: "swap_claim",
+    kind: "bcp/swap_claim",
     swapId: ensure(msg.escrowId) as SwapIdBytes,
     preimage: ensure(tx.preimage),
   };
@@ -236,18 +231,16 @@ function parseSwapClaimTx(
 function parseSwapTimeoutTx(
   base: UnsignedTransaction,
   msg: codecImpl.escrow.IReturnEscrowMsg,
-): SwapTimeoutTx {
+): SwapTimeoutTransaction {
   return {
     ...base,
-    domain: "bns",
-    kind: "swap_timeout",
+    kind: "bcp/swap_timeout",
     swapId: ensure(msg.escrowId) as SwapIdBytes,
   };
 }
 
 function parseBaseTx(tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId): UnsignedTransaction {
   const base: UnsignedTransaction = {
-    domain: "",
     kind: "",
     chainId: chainId,
     signer: sig.pubkey,
@@ -277,8 +270,7 @@ function parseRegisterBlockchainTx(
   const codecConfig = ensure(iov.codecConfig, "details.iov.codecConfig");
   return {
     ...base,
-    domain: "bns",
-    kind: "register_blockchain",
+    kind: "bns/register_blockchain",
     chain: {
       chainId: chainId as ChainId,
       name: name,
@@ -309,8 +301,7 @@ function parseRegisterUsernameTx(
 
   return {
     ...base,
-    domain: "bns",
-    kind: "register_username",
+    kind: "bns/register_username",
     username: Encoding.fromUtf8(ensure(msg.id, "id")),
     addresses: addresses,
   };
@@ -322,8 +313,7 @@ function parseRemoveAddressFromUsernameTx(
 ): RemoveAddressFromUsernameTx {
   return {
     ...base,
-    domain: "bns",
-    kind: "remove_address_from_username",
+    kind: "bns/remove_address_from_username",
     username: fromUtf8(ensure(msg.id, "id")),
     payload: {
       chainId: fromUtf8(ensure(msg.chainID, "chainID")) as ChainId,
