@@ -6,7 +6,14 @@ import { Address, BcpTxQuery, ConfirmedTransaction, Nonce, SignableBytes } from 
 import { Sha256 } from "@iov/crypto";
 import { Bech32, Encoding } from "@iov/encoding";
 import { QueryString } from "@iov/tendermint-rpc";
-import { isBnsTx, SwapClaimTx, SwapCounterTx, SwapTimeoutTx, TransactionKind } from "./types";
+import {
+  isSwapClaimTx,
+  isSwapCounterTx,
+  isSwapTimeoutTx,
+  SwapClaimTx,
+  SwapCounterTx,
+  SwapTimeoutTx,
+} from "./types";
 
 /** Encodes raw bytes into a bech32 address */
 export function encodeBnsAddress(bytes: Uint8Array): Address {
@@ -87,17 +94,14 @@ export const indexKey = (bucket: string, index: string) => Encoding.toAscii(`_i.
 
 export function isBnsSwapCounter(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapCounterTx> {
   const unsigned = tx.transaction;
-  return isBnsTx(unsigned) && unsigned.kind === TransactionKind.SwapCounter;
+  return isSwapCounterTx(unsigned);
 }
 
 export function isBnsSwapRelease(
   tx: ConfirmedTransaction,
 ): tx is ConfirmedTransaction<SwapClaimTx | SwapTimeoutTx> {
   const unsigned = tx.transaction;
-  if (!isBnsTx(unsigned)) {
-    return false;
-  }
-  return unsigned.kind === TransactionKind.SwapClaim || unsigned.kind === TransactionKind.SwapTimeout;
+  return isSwapClaimTx(unsigned) || isSwapTimeoutTx(unsigned);
 }
 
 export function buildTxQuery(query: BcpTxQuery): QueryString {
