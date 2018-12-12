@@ -145,8 +145,10 @@ describe("WebsocketClient", () => {
       },
     });
 
-    const startusResponse = client.execute(jsonRpcWith(Method.Status));
-    expect(startusResponse).toBeTruthy();
+    client
+      .execute(jsonRpcWith(Method.Status))
+      .then(startusResponse => expect(startusResponse).toBeTruthy())
+      .catch(done.fail);
   });
 
   it("can end event listening by disconnecting", done => {
@@ -184,7 +186,7 @@ describe("WebsocketClient", () => {
 
     await client
       .execute(jsonRpcWith(Method.Health))
-      .then(fail)
+      .then(() => fail("must not resolve"))
       .catch(error => expect(error).toMatch(/is not open/i));
   });
 
