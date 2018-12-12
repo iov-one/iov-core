@@ -4,3 +4,4 @@ export {
   SocketWrapperErrorEvent,
   SocketWrapperMessageEvent,
 } from "./socketwrapper";
+export { StreamingSocket } from "./streamingsocket";
