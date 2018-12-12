@@ -31,8 +31,14 @@ export class StreamingSocket {
       () => {
         // socket opened
       },
-      () => {
-        // socked closed
+      closeEvent => {
+        if (this.eventProducerListener) {
+          if (closeEvent.wasClean) {
+            this.eventProducerListener.complete();
+          } else {
+            this.eventProducerListener.error("Socket was closed unclean");
+          }
+        }
       },
     );
     this.connected = this.socket.connected;

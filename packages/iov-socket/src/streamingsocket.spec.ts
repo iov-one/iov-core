@@ -49,4 +49,25 @@ describe("StreamingSocket", () => {
 
     socket.disconnect();
   });
+
+  it("completes stream when disconnected", done => {
+    pendingWithoutTendermint();
+
+    const socket = new StreamingSocket(tendermintSocketUrl);
+    const subscription = socket.events.subscribe({
+      complete: () => {
+        subscription.unsubscribe();
+        done();
+      },
+    });
+
+    (async () => {
+      socket.connect();
+      await socket.connected;
+      socket.send("aabbccdd");
+      socket.send("whatever");
+      socket.send("lalala");
+      socket.disconnect();
+    })().catch(done.fail);
+  });
 });
