@@ -105,7 +105,7 @@ export const liskCodec: TxCodec = {
     switch (json.type) {
       case 0:
         unignedTransaction = {
-          domain: "lisk",
+          domain: "bcp",
           kind: "send",
           chainId: chainId,
           fee: {

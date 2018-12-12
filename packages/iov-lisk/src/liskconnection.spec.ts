@@ -281,7 +281,7 @@ describe("LiskConnection", () => {
       const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
       const sendTx: SendTransaction = {
-        domain: "lisk",
+        domain: "bcp",
         kind: "send",
         chainId: devnetChainId,
         signer: mainIdentity.pubkey,
@@ -324,7 +324,7 @@ describe("LiskConnection", () => {
         const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
         const sendTx: SendTransaction = {
-          domain: "lisk",
+          domain: "bcp",
           kind: "send",
           chainId: devnetChainId,
           signer: mainIdentity.pubkey,
@@ -389,7 +389,7 @@ describe("LiskConnection", () => {
       const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
       const sendTx: SendTransaction = {
-        domain: "lisk",
+        domain: "bcp",
         kind: "send",
         chainId: devnetChainId,
         signer: mainIdentity.pubkey,
@@ -440,7 +440,7 @@ describe("LiskConnection", () => {
       const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
 
       const sendTx: SendTransaction = {
-        domain: "lisk",
+        domain: "bcp",
         kind: "send",
         chainId: devnetChainId,
         signer: mainIdentity.pubkey,
