@@ -182,9 +182,8 @@ describe("WebsocketClient", () => {
 
     client.disconnect();
 
-    const req = jsonRpcWith(Method.Health);
     await client
-      .execute(req)
+      .execute(jsonRpcWith(Method.Health))
       .then(fail)
       .catch(error => expect(error).toMatch(/is not open/i));
   });
