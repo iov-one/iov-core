@@ -5,17 +5,7 @@ import { Encoding, Int53 } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
 import {
   AddAddressToUsernameTx,
-  isAddAddressToUsernameTx,
   isBnsTx,
-  isRegisterBlockchainTx,
-  isRegisterUsernameTx,
-  isRemoveAddressFromUsernameTx,
-  isSendTx,
-  isSetNameTx,
-  isSwapClaimTx,
-  isSwapCounterTx,
-  isSwapOfferTx,
-  isSwapTimeoutTx,
   PrivateKeyBundle,
   RegisterBlockchainTx,
   RegisterUsernameTx,
@@ -114,28 +104,29 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
     throw new Error("Transaction is not a BNS transaction");
   }
 
-  if (isAddAddressToUsernameTx(tx)) {
-    return buildAddAddressToUsernameTx(tx);
-  } else if (isRegisterBlockchainTx(tx)) {
-    return buildRegisterBlockchainTx(tx);
-  } else if (isRegisterUsernameTx(tx)) {
-    return buildRegisterUsernameTx(tx);
-  } else if (isRemoveAddressFromUsernameTx(tx)) {
-    return buildRemoveAddressFromUsernameTx(tx);
-  } else if (isSendTx(tx)) {
-    return buildSendTx(tx);
-  } else if (isSetNameTx(tx)) {
-    return buildSetNameTx(tx);
-  } else if (isSwapClaimTx(tx)) {
-    return buildSwapClaimTx(tx);
-  } else if (isSwapCounterTx(tx)) {
-    return buildSwapCounterTx(tx);
-  } else if (isSwapOfferTx(tx)) {
-    return buildSwapOfferTx(tx);
-  } else if (isSwapTimeoutTx(tx)) {
-    return buildSwapTimeoutTx(tx);
-  } else {
-    throw new Error("Received transacion of unsupported kind.");
+  switch (tx.kind) {
+    case TransactionKind.AddAddressToUsername:
+      return buildAddAddressToUsernameTx(tx);
+    case TransactionKind.Send:
+      return buildSendTx(tx);
+    case TransactionKind.SetName:
+      return buildSetNameTx(tx);
+    case TransactionKind.SwapOffer:
+      return buildSwapOfferTx(tx);
+    case TransactionKind.SwapCounter:
+      return buildSwapCounterTx(tx);
+    case TransactionKind.SwapClaim:
+      return buildSwapClaimTx(tx);
+    case TransactionKind.SwapTimeout:
+      return buildSwapTimeoutTx(tx);
+    case TransactionKind.RegisterBlockchain:
+      return buildRegisterBlockchainTx(tx);
+    case TransactionKind.RegisterUsername:
+      return buildRegisterUsernameTx(tx);
+    case TransactionKind.RemoveAddressFromUsername:
+      return buildRemoveAddressFromUsernameTx(tx);
+    default:
+      throw new Error("Received transacion of unsupported kind.");
   }
 }
 
