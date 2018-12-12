@@ -44,7 +44,7 @@ script:
 branches:
   only:
   - master
-  - 0.9
+  - decentralize-transaction-types
 
 notifications:
   email: false
