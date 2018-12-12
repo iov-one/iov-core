@@ -429,7 +429,7 @@ describe("UserProfile", () => {
       pubkey: { algo: Algorithm.Ed25519, data: new Uint8Array([0xaa]) as PublicKeyBytes },
     };
     const fakeTransaction: SendTransaction = {
-      domain: "ethereum",
+      domain: "bcp",
       kind: "send",
       chainId: "ethereum" as ChainId,
       signer: fakeIdentity.pubkey,
@@ -508,7 +508,7 @@ describe("UserProfile", () => {
     const profile = new UserProfile({ createdAt, keyring });
 
     const fakeTransaction: SendTransaction = {
-      domain: "ethereum",
+      domain: "bcp",
       kind: "send",
       chainId: "ethereum" as ChainId,
       signer: mainIdentity.pubkey,

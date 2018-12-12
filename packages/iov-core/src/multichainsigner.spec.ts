@@ -74,7 +74,7 @@ describe("MultiChainSigner", () => {
       // construct a sendtx, this mirrors the MultiChainSigner api
       const memo = `MultiChainSigner style (${Math.random()})`;
       const sendTx: SendTransaction = {
-        domain: "bns",
+        domain: "bcp",
         kind: "send",
         chainId,
         signer: faucet.pubkey,

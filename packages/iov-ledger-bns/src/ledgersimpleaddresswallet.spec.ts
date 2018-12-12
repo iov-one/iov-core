@@ -201,7 +201,7 @@ describe("LedgerSimpleAddressWallet", () => {
     await wallet.canSign.waitFor(true);
 
     const tx: SendTransaction = {
-      domain: "bns",
+      domain: "bcp",
       kind: "send",
       chainId: "test-ledger-paths" as ChainId,
       recipient: "tiov1zg62hngqqz4qqq8lluqqp2sqqqfrf27dzrrmea" as Address,
