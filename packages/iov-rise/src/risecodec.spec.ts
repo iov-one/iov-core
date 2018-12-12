@@ -39,7 +39,7 @@ describe("riseCodec", () => {
     const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
     const tx: SendTransaction = {
-      domain: "rise",
+      domain: "bcp",
       kind: "send",
       chainId: riseTestnet,
       signer: {

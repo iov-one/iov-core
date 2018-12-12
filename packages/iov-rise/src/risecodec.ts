@@ -103,7 +103,7 @@ export const riseCodec: TxCodec = {
     switch (json.type) {
       case 0:
         unsignedTransaction = {
-          domain: "lisk",
+          domain: "bcp",
           kind: "send",
           chainId: chainId,
           fee: {
