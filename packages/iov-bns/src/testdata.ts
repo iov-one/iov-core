@@ -4,6 +4,7 @@ import {
   Amount,
   FullSignature,
   Nonce,
+  SendTransaction,
   SignedTransaction,
   SwapIdBytes,
   TokenTicker,
@@ -13,7 +14,6 @@ import { Encoding, Int53 } from "@iov/encoding";
 import {
   PrivateKeyBundle,
   PrivateKeyBytes,
-  SendTx,
   SetNameTx,
   SwapClaimTx,
   SwapCounterTx,
@@ -68,10 +68,10 @@ export const chainId = "test-123" as ChainId;
 // the sender in this tx is the above pubkey, pubkey->address should match
 // recipient address generated using https://github.com/nym-zone/bech32
 // bech32 -e -h tiov 6f0a3e37845b6a3c8ccbe6219199abc3ae0b26d9
-export const sendTxJson: SendTx = {
+export const sendTxJson: SendTransaction = {
   chainId,
   signer: pubJson,
-  domain: "bns",
+  domain: "bcp",
   kind: "send",
   recipient: "tiov1du9ruduytd4rerxtucserxdtcwhqkfkezjy4w0" as Address,
   memo: "Test payment",
@@ -117,10 +117,10 @@ const sig2: FullSignature = {
 };
 // recipient address generated using https://github.com/nym-zone/bech32
 // bech32 -e -h tiov 009985cb38847474fe9febfd56ab67e14bcd56f3
-const randomMsg: SendTx = {
+const randomMsg: SendTransaction = {
   chainId: "foo-bar-baz" as ChainId,
   signer: pubJson,
-  domain: "bns",
+  domain: "bcp",
   kind: "send",
   recipient: "tiov1qzvctjecs368fl5la074d2m8u99u64hn8q7kyn" as Address,
   memo: "One more fix!",

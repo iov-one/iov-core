@@ -12,6 +12,7 @@ import {
   BcpTxQuery,
   Nonce,
   PostTxResponse,
+  SendTransaction,
   SwapIdBytes,
   SwapState,
   TokenTicker,
@@ -40,7 +41,6 @@ import {
   RegisterBlockchainTx,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
-  SendTx,
   SwapClaimTx,
   SwapCounterTx,
   SwapOfferTx,
@@ -86,8 +86,8 @@ async function ensureNonceNonZero(
   identity: PublicIdentity,
 ): Promise<void> {
   const nonce = await getNonce(connection, keyToAddress(identity.pubkey));
-  const sendTx: SendTx = {
-    domain: "bns",
+  const sendTx: SendTransaction = {
+    domain: "bcp",
     kind: "send",
     chainId: await connection.chainId(),
     signer: identity.pubkey,
@@ -284,8 +284,8 @@ describe("BnsConnection", () => {
       const recipient = await randomBnsAddress();
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
-      const sendTx: SendTx = {
-        domain: "bns",
+      const sendTx: SendTransaction = {
+        domain: "bcp",
         kind: "send",
         chainId,
         signer: faucet.pubkey,
@@ -346,8 +346,8 @@ describe("BnsConnection", () => {
         const recipient = await randomBnsAddress();
 
         // construct a sendtx, this is normally used in the MultiChainSigner api
-        const sendTx: SendTx = {
-          domain: "bns",
+        const sendTx: SendTransaction = {
+          domain: "bcp",
           kind: "send",
           chainId,
           signer: faucet.pubkey,
@@ -735,8 +735,8 @@ describe("BnsConnection", () => {
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
       const memo = `Payment ${Math.random()}`;
-      const sendTx: SendTx = {
-        domain: "bns",
+      const sendTx: SendTransaction = {
+        domain: "bcp",
         kind: "send",
         chainId: chainId,
         signer: faucet.pubkey,
@@ -757,7 +757,7 @@ describe("BnsConnection", () => {
       expect(results.length).toBeGreaterThanOrEqual(1);
       const mostRecentResult = results[results.length - 1];
       expect((mostRecentResult.transaction as BnsTx).kind).toEqual("send");
-      expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+      expect((mostRecentResult.transaction as SendTransaction).memo).toEqual(memo);
 
       connection.disconnect();
     });
@@ -773,8 +773,8 @@ describe("BnsConnection", () => {
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
       const memo = `Payment ${Math.random()}`;
-      const sendTx: SendTx = {
-        domain: "bns",
+      const sendTx: SendTransaction = {
+        domain: "bcp",
         kind: "send",
         chainId: chainId,
         signer: faucet.pubkey,
@@ -796,7 +796,7 @@ describe("BnsConnection", () => {
       expect(results.length).toBeGreaterThanOrEqual(1);
       const mostRecentResult = results[results.length - 1];
       expect((mostRecentResult.transaction as BnsTx).kind).toEqual("send");
-      expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+      expect((mostRecentResult.transaction as SendTransaction).memo).toEqual(memo);
 
       connection.disconnect();
     });
@@ -810,8 +810,8 @@ describe("BnsConnection", () => {
       const faucetAddress = keyToAddress(faucet.pubkey);
 
       const memo = `Payment ${Math.random()}`;
-      const sendTx: SendTx = {
-        domain: "bns",
+      const sendTx: SendTransaction = {
+        domain: "bcp",
         kind: "send",
         chainId: chainId,
         signer: faucet.pubkey,
@@ -837,7 +837,7 @@ describe("BnsConnection", () => {
       expect(searchResults.length).toEqual(1);
       expect(searchResults[0].transactionId).toEqual(transactionIdToSearch);
       expect((searchResults[0].transaction as BnsTx).kind).toEqual("send");
-      expect((searchResults[0].transaction as SendTx).memo).toEqual(memo);
+      expect((searchResults[0].transaction as SendTransaction).memo).toEqual(memo);
 
       connection.disconnect();
     });
@@ -856,8 +856,8 @@ describe("BnsConnection", () => {
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
       const memo = `Payment ${Math.random()}`;
-      const sendTx: SendTx = {
-        domain: "bns",
+      const sendTx: SendTransaction = {
+        domain: "bcp",
         kind: "send",
         chainId: chainId,
         signer: faucet.pubkey,
@@ -883,7 +883,7 @@ describe("BnsConnection", () => {
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResult = results[results.length - 1];
         expect((mostRecentResult.transaction as BnsTx).kind).toEqual("send");
-        expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+        expect((mostRecentResult.transaction as SendTransaction).memo).toEqual(memo);
       }
 
       {
@@ -895,7 +895,7 @@ describe("BnsConnection", () => {
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResult = results[results.length - 1];
         expect((mostRecentResult.transaction as BnsTx).kind).toEqual("send");
-        expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+        expect((mostRecentResult.transaction as SendTransaction).memo).toEqual(memo);
       }
 
       {
@@ -907,7 +907,7 @@ describe("BnsConnection", () => {
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResult = results[results.length - 1];
         expect((mostRecentResult.transaction as BnsTx).kind).toEqual("send");
-        expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+        expect((mostRecentResult.transaction as SendTransaction).memo).toEqual(memo);
       }
 
       {
@@ -919,7 +919,7 @@ describe("BnsConnection", () => {
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResult = results[results.length - 1];
         expect((mostRecentResult.transaction as BnsTx).kind).toEqual("send");
-        expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+        expect((mostRecentResult.transaction as SendTransaction).memo).toEqual(memo);
       }
 
       connection.disconnect();
@@ -938,8 +938,8 @@ describe("BnsConnection", () => {
         const faucetAddress = keyToAddress(faucet.pubkey);
 
         const memo = `Payment ${Math.random()}`;
-        const sendTx: SendTx = {
-          domain: "bns",
+        const sendTx: SendTransaction = {
+          domain: "bcp",
           kind: "send",
           chainId: chainId,
           signer: faucet.pubkey,
@@ -1246,8 +1246,8 @@ describe("BnsConnection", () => {
     const chainId = await connection.chainId();
     const faucetAddr = keyToAddress(faucet.pubkey);
     const nonce = await getNonce(connection, faucetAddr);
-    const sendTx: SendTx = {
-      domain: "bns",
+    const sendTx: SendTransaction = {
+      domain: "bcp",
       kind: "send",
       chainId,
       signer: faucet.pubkey,

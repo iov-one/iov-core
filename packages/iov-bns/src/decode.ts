@@ -7,6 +7,7 @@ import {
   BcpTicker,
   FullSignature,
   Nonce,
+  SendTransaction,
   SignedTransaction,
   SwapIdBytes,
   TokenTicker,
@@ -29,7 +30,6 @@ import {
   RegisterBlockchainTx,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
-  SendTx,
   SetNameTx,
   SwapClaimTx,
   SwapCounterTx,
@@ -143,7 +143,7 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): Unsi
   if (tx.addUsernameAddressNftMsg) {
     return parseAddAddressToUsernameTx(base, tx.addUsernameAddressNftMsg);
   } else if (tx.sendMsg) {
-    return parseSendTx(base, tx.sendMsg);
+    return parseSendTransaction(base, tx.sendMsg);
   } else if (tx.setNameMsg) {
     return parseSetNameTx(base, tx.setNameMsg);
   } else if (tx.createEscrowMsg) {
@@ -178,12 +178,12 @@ function parseAddAddressToUsernameTx(
   };
 }
 
-function parseSendTx(base: UnsignedTransaction, msg: codecImpl.cash.ISendMsg): SendTx {
+function parseSendTransaction(base: UnsignedTransaction, msg: codecImpl.cash.ISendMsg): SendTransaction {
   return {
     // TODO: would we want to ensure these match?
     //    src: await keyToAddress(tx.signer),
     ...base,
-    domain: "bns",
+    domain: "bcp",
     kind: "send",
     recipient: encodeBnsAddress(ensure(msg.dest, "recipient")),
     amount: decodeAmount(ensure(msg.amount)),
@@ -247,7 +247,8 @@ function parseSwapTimeoutTx(
 
 function parseBaseTx(tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId): UnsignedTransaction {
   const base: UnsignedTransaction = {
-    domain: "bns",
+    domain: "",
+    kind: "",
     chainId: chainId,
     signer: sig.pubkey,
   };
