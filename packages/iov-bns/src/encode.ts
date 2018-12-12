@@ -1,5 +1,11 @@
 import { Algorithm, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
-import { Amount, FullSignature, SignedTransaction, UnsignedTransaction } from "@iov/bcp-types";
+import {
+  Amount,
+  FullSignature,
+  SendTransaction,
+  SignedTransaction,
+  UnsignedTransaction,
+} from "@iov/bcp-types";
 import { Encoding, Int53 } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
@@ -10,7 +16,6 @@ import {
   RegisterBlockchainTx,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
-  SendTx,
   SetNameTx,
   SwapClaimTx,
   SwapCounterTx,
@@ -107,7 +112,7 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
     case "add_address_to_username":
       return buildAddAddressToUsernameTx(tx);
     case "send":
-      return buildSendTx(tx);
+      return buildSendTransaction(tx);
     case "set_name":
       return buildSetNameTx(tx);
     case "swap_offer":
@@ -139,7 +144,7 @@ function buildAddAddressToUsernameTx(tx: AddAddressToUsernameTx): codecImpl.app.
   };
 }
 
-function buildSendTx(tx: SendTx): codecImpl.app.ITx {
+function buildSendTransaction(tx: SendTransaction): codecImpl.app.ITx {
   return {
     sendMsg: codecImpl.cash.SendMsg.create({
       src: decodeBnsAddress(keyToAddress(tx.signer)).data,

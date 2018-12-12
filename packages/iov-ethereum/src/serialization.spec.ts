@@ -16,7 +16,7 @@ describe("Serialization", () => {
       );
 
       const tx: SendTransaction = {
-        domain: "ethereum",
+        domain: "bcp",
         kind: "send",
         chainId: TestConfig.chainId,
         signer: {
@@ -54,7 +54,7 @@ describe("Serialization", () => {
       );
 
       const tx: SendTransaction = {
-        domain: "ethereum",
+        domain: "bcp",
         kind: "send",
         chainId: TestConfig.chainId,
         signer: {

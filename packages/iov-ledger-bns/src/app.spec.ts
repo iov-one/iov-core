@@ -107,7 +107,7 @@ describe("Sign with ledger app", () => {
     };
 
     const tx: SendTransaction = {
-      domain: "bns",
+      domain: "bcp",
       kind: "send",
       chainId: "test-bns-ledger" as ChainId,
       recipient: "tiov1qy352eufqy352eufqy352eufqy352eufpralqn" as Address,
@@ -153,7 +153,7 @@ describe("Sign with ledger app", () => {
     };
 
     const tx: SendTransaction = {
-      domain: "bns",
+      domain: "bcp",
       kind: "send",
       chainId: "test-ledger-paths" as ChainId,
       recipient: "tiov1zg62hngqqz4qqq8lluqqp2sqqqfrf27dzrrmea" as Address,

@@ -82,7 +82,7 @@ describe("Serialization", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
       const tx: SendTransaction = {
-        domain: "rise",
+        domain: "bcp",
         kind: "send",
         chainId: riseTestnet,
         signer: {
@@ -109,7 +109,7 @@ describe("Serialization", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
       const tx: SendTransaction = {
-        domain: "lisk",
+        domain: "bcp",
         kind: "send",
         chainId: liskTestnet as ChainId,
         signer: {
@@ -136,7 +136,7 @@ describe("Serialization", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
       const tx: SendTransaction = {
-        domain: "lisk",
+        domain: "bcp",
         kind: "send",
         chainId: liskTestnet as ChainId,
         signer: {
@@ -169,7 +169,7 @@ describe("Serialization", () => {
           algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
-        domain: "lisk",
+        domain: "bcp",
         kind: "send",
         amount: {
           quantity: "123456789",
@@ -194,7 +194,7 @@ describe("Serialization", () => {
           algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
-        domain: "lisk",
+        domain: "bcp",
         kind: "send",
         amount: {
           quantity: "123456789",
@@ -220,7 +220,7 @@ describe("Serialization", () => {
           algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
-        domain: "xnet",
+        domain: "bcp",
         kind: "send",
         amount: {
           quantity: "123456789",
@@ -251,7 +251,7 @@ describe("Serialization", () => {
           algo: Algorithm.Ed25519,
           data: pubkey as PublicKeyBytes,
         },
-        domain: "lisk",
+        domain: "bcp",
         kind: "send",
         amount: {
           quantity: "123456789",

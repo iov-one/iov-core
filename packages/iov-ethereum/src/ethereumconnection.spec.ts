@@ -112,7 +112,7 @@ describe("EthereumConnection", () => {
       const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 
       const sendTx: SendTransaction = {
-        domain: "ethereum",
+        domain: "bcp",
         kind: "send",
         chainId: nodeChainId,
         signer: mainIdentity.pubkey,
@@ -195,7 +195,7 @@ describe("EthereumConnection", () => {
       const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 
       const sendTx: SendTransaction = {
-        domain: "ethereum",
+        domain: "bcp",
         kind: "send",
         chainId: nodeChainId,
         signer: mainIdentity.pubkey,

@@ -230,7 +230,9 @@ describe("Decode", () => {
 
   describe("parseMsg", () => {
     const defaultBaseTx: UnsignedTransaction = {
-      domain: "bns",
+      // these two should be overriden by parseMsg
+      domain: "",
+      kind: "",
       chainId: "bns-chain" as ChainId,
       signer: {
         algo: Algorithm.Ed25519,

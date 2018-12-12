@@ -1,7 +1,7 @@
 import * as Long from "long";
 import { As } from "type-tagger";
 import { Algorithm, ChainId, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
-import { Address, Amount, FullSignature, SendTransaction, SwapClaimTransaction, SwapCounterTransaction, SwapOfferTransaction, SwapTimeoutTransaction, TokenTicker, UnsignedTransaction } from "@iov/bcp-types";
+import { Address, FullSignature, SendTransaction, SwapClaimTransaction, SwapCounterTransaction, SwapOfferTransaction, SwapTimeoutTransaction, TokenTicker, UnsignedTransaction } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
 export interface ChainAddressPair {
@@ -83,13 +83,6 @@ export interface AddAddressToUsernameTx extends UnsignedTransaction {
     readonly username: string;
     readonly payload: ChainAddressPair;
 }
-export interface SendTx extends SendTransaction {
-    readonly domain: bnsDomain;
-    readonly kind: "send";
-    readonly amount: Amount;
-    readonly recipient: Address;
-    readonly memo?: string;
-}
 /**
  * Associates a simple name to an account on a weave-based blockchain.
  *
@@ -148,10 +141,9 @@ export interface RemoveAddressFromUsernameTx extends UnsignedTransaction {
     readonly username: string;
     readonly payload: ChainAddressPair;
 }
-export declare type BnsTx = AddAddressToUsernameTx | SendTx | SetNameTx | SwapOfferTx | SwapCounterTx | SwapClaimTx | SwapTimeoutTx | RegisterBlockchainTx | RegisterUsernameTx | RemoveAddressFromUsernameTx;
+export declare type BnsTx = SendTransaction | AddAddressToUsernameTx | SetNameTx | SwapOfferTx | SwapCounterTx | SwapClaimTx | SwapTimeoutTx | RegisterBlockchainTx | RegisterUsernameTx | RemoveAddressFromUsernameTx;
 export declare function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx;
 export declare function isAddAddressToUsernameTx(transaction: UnsignedTransaction): transaction is AddAddressToUsernameTx;
-export declare function isSendTx(transaction: UnsignedTransaction): transaction is SendTx;
 export declare function isSetNameTx(transaction: UnsignedTransaction): transaction is SetNameTx;
 export declare function isSwapOfferTx(transaction: UnsignedTransaction): transaction is SwapOfferTx;
 export declare function isSwapCounterTx(transaction: UnsignedTransaction): transaction is SwapCounterTx;

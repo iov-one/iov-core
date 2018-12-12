@@ -4,8 +4,8 @@ import { As } from "type-tagger";
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import {
   Address,
-  Amount,
   FullSignature,
+  isSendTransaction,
   Nonce,
   SendTransaction,
   SwapClaimTransaction,
@@ -207,14 +207,6 @@ export interface AddAddressToUsernameTx extends UnsignedTransaction {
   readonly payload: ChainAddressPair;
 }
 
-export interface SendTx extends SendTransaction {
-  readonly domain: bnsDomain;
-  readonly kind: "send";
-  readonly amount: Amount;
-  readonly recipient: Address;
-  readonly memo?: string;
-}
-
 /**
  * Associates a simple name to an account on a weave-based blockchain.
  *
@@ -283,8 +275,8 @@ export interface RemoveAddressFromUsernameTx extends UnsignedTransaction {
 }
 
 export type BnsTx =
+  | SendTransaction
   | AddAddressToUsernameTx
-  | SendTx
   | SetNameTx
   | SwapOfferTx
   | SwapCounterTx
@@ -294,18 +286,35 @@ export type BnsTx =
   | RegisterUsernameTx
   | RemoveAddressFromUsernameTx;
 
+function contains<T>(target: T, list: ReadonlyArray<T>): boolean {
+  return list.find(x => x === target) !== undefined;
+}
+
 export function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx {
-  return (transaction as BnsTx).domain === "bns";
+  if (isSendTransaction(transaction)) {
+    return true;
+  }
+  // let's be specific here, as this is a runtime check
+  return (
+    transaction.domain === "bns" &&
+    contains(transaction.kind, [
+      "add_address_to_username",
+      "set_name",
+      "swap_offer",
+      "swap_counter",
+      "swap_claim",
+      "swap_timeout",
+      "register_blockchain",
+      "register_username",
+      "remove_address_from_username",
+    ])
+  );
 }
 
 export function isAddAddressToUsernameTx(
   transaction: UnsignedTransaction,
 ): transaction is AddAddressToUsernameTx {
   return isBnsTx(transaction) && transaction.kind === "add_address_to_username";
-}
-
-export function isSendTx(transaction: UnsignedTransaction): transaction is SendTx {
-  return isBnsTx(transaction) && transaction.kind === "send";
 }
 
 export function isSetNameTx(transaction: UnsignedTransaction): transaction is SetNameTx {

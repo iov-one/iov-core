@@ -45,8 +45,15 @@ export interface UnsignedTransaction {
    * This should be used for type detection only and not be encoded somewhere.
    * Right now we use "bns", "ethereum", "lisk" and "rise" but this could also
    * be migrated to a Java-style package names like "io.lisk.mainnet" later on.
+   *
+   * We also use the special domain "bcp" for any kind that can be supported in multiple chains
    */
   readonly domain: string;
+  /**
+   * kind is the type of transaction (send, setName, etc)
+   * A (domain, kind) pair will uniquely define the expected shape of any transaction type
+   */
+  readonly kind: string;
   /** the chain on which the transaction should be valid */
   readonly chainId: ChainId;
   readonly fee?: Amount;
@@ -57,6 +64,7 @@ export interface UnsignedTransaction {
 }
 
 export interface SendTransaction extends UnsignedTransaction {
+  readonly domain: "bcp";
   readonly kind: "send";
   readonly amount: Amount;
   readonly recipient: Address;
@@ -94,7 +102,7 @@ export interface SwapTimeoutTransaction extends UnsignedTransaction {
 }
 
 export function isSendTransaction(transaction: UnsignedTransaction): transaction is SendTransaction {
-  return (transaction as SendTransaction).kind === "send";
+  return transaction.domain === "bcp" && transaction.kind === "send";
 }
 
 export function isSwapOfferTransaction(
