@@ -1,5 +1,3 @@
-import WebSocket from "isomorphic-ws";
-
 import { SocketWrapper } from "./socketwrapper";
 
 function skipTests(): boolean {
@@ -70,15 +68,15 @@ describe("SocketWrapper", () => {
   it("can send events when connected", done => {
     pendingWithoutTendermint();
 
-    const responses = new Array<WebSocket.Data>();
+    const responseMessages = new Array<string>();
 
     const socket = new SocketWrapper(
       tendermintSocketUrl,
       response => {
         expect(response.type).toEqual("message");
-        responses.push(response.data);
+        responseMessages.push(response.data);
 
-        if (responses.length === 3) {
+        if (responseMessages.length === 3) {
           socket.disconnect();
         }
       },
@@ -89,7 +87,7 @@ describe("SocketWrapper", () => {
         socket.send("lalala");
       },
       () => {
-        expect(responses.length).toEqual(3);
+        expect(responseMessages.length).toEqual(3);
         done();
       },
     );
