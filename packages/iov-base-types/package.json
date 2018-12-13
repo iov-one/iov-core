@@ -1,6 +1,6 @@
 {
   "name": "@iov/base-types",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "The most fundamental types used in IOV products",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",

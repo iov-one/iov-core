@@ -1,6 +1,6 @@
 {
   "name": "@iov/bcp-types",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "General types for IOV projects",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -24,9 +24,9 @@
     "test": "echo \"Info: no test specified\""
   },
   "dependencies": {
-    "@iov/base-types": "^0.9.0",
-    "@iov/encoding": "^0.9.0",
-    "@iov/stream": "^0.9.0",
+    "@iov/base-types": "^0.10.0",
+    "@iov/encoding": "^0.10.0",
+    "@iov/stream": "^0.10.0",
     "type-tagger": "^1.0.0",
     "xstream": "^11.7.0"
   }
