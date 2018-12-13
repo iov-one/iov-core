@@ -45,7 +45,12 @@ export async function toListPromise<T>(stream: Stream<T>, count: number): Promis
           resolve(events);
         }
       },
-      complete: () => reject("Stream completed before all events could be collected"),
+      complete: () => {
+        reject(
+          `Stream completed before all events could be collected. ` +
+            `Collected ${events.length}, expected ${count}`,
+        );
+      },
       error: error => reject(error),
     });
   });
