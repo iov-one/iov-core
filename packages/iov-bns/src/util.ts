@@ -96,14 +96,14 @@ export const hashFromIdentifier = (ident: HashId): Uint8Array => ident.slice(has
 export const bucketKey = (bucket: string) => Encoding.toAscii(`${bucket}:`);
 export const indexKey = (bucket: string, index: string) => Encoding.toAscii(`_i.${bucket}_${index}:`);
 
-export function isBnsSwapCounter(
+export function isConfirmedWithSwapCounterTransaction(
   tx: ConfirmedTransaction,
 ): tx is ConfirmedTransaction<SwapCounterTransaction> {
   const unsigned = tx.transaction;
   return isSwapCounterTransaction(unsigned);
 }
 
-export function isBnsSwapRelease(
+export function isConfirmedWithSwapClaimOrTimeoutTransaction(
   tx: ConfirmedTransaction,
 ): tx is ConfirmedTransaction<SwapClaimTransaction | SwapTimeoutTransaction> {
   const unsigned = tx.transaction;
