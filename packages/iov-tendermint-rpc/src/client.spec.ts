@@ -293,6 +293,9 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
 
     const testStart = ReadonlyDate.now();
 
+    const transactionData1 = buildKvTx(randomId(), randomId());
+    const transactionData2 = buildKvTx(randomId(), randomId());
+
     (async () => {
       const events: responses.NewBlockEvent[] = [];
       const client = new Client(rpcFactory(), adaptor);
@@ -322,16 +325,21 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
           events.push(event);
 
           if (events.length === 2) {
-            subscription.unsubscribe();
-            expect(events.length).toEqual(2);
+            // Block header
             expect(events[1].header.height).toEqual(events[0].header.height + 1);
             expect(events[1].header.chainId).toEqual(events[0].header.chainId);
             expect(events[1].header.time.getTime()).toBeGreaterThan(events[0].header.time.getTime());
             expect(events[1].header.totalTxs).toEqual(events[0].header.totalTxs + 1);
-
             expect(events[1].header.appHash).not.toEqual(events[0].header.appHash);
             expect(events[1].header.validatorsHash).toEqual(events[0].header.validatorsHash);
 
+            // Block body
+            expect(events[0].txs.length).toEqual(1);
+            expect(events[1].txs.length).toEqual(1);
+            expect(events[0].txs[0]).toEqual(transactionData1);
+            expect(events[1].txs[0]).toEqual(transactionData2);
+
+            subscription.unsubscribe();
             client.disconnect();
             done();
           }
@@ -340,11 +348,8 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
         complete: () => done.fail("Stream completed before we are done"),
       });
 
-      const transaction1 = buildKvTx(randomId(), randomId());
-      const transaction2 = buildKvTx(randomId(), randomId());
-
-      await client.broadcastTxCommit({ tx: transaction1 });
-      await client.broadcastTxCommit({ tx: transaction2 });
+      await client.broadcastTxCommit({ tx: transactionData1 });
+      await client.broadcastTxCommit({ tx: transactionData2 });
     })().catch(done.fail);
   });
 
@@ -390,6 +395,9 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
   it("can subscribe to transaction events filtered by creator", done => {
     pendingWithoutTendermint();
 
+    const transactionData1 = buildKvTx(randomId(), randomId());
+    const transactionData2 = buildKvTx(randomId(), randomId());
+
     (async () => {
       const events: responses.TxEvent[] = [];
       const client = new Client(rpcFactory(), adaptor);
@@ -406,11 +414,15 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
           events.push(event);
 
           if (events.length === 2) {
-            subscription.unsubscribe();
-            expect(events.length).toEqual(2);
+            // Meta
             expect(events[1].height).toEqual(events[0].height + 1);
             expect(events[1].result.tags).not.toEqual(events[0].result.tags);
 
+            // Content
+            expect(events[0].tx).toEqual(transactionData1);
+            expect(events[1].tx).toEqual(transactionData2);
+
+            subscription.unsubscribe();
             client.disconnect();
             done();
           }
@@ -419,11 +431,8 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
         complete: () => done.fail("Stream completed before we are done"),
       });
 
-      const transaction1 = buildKvTx(randomId(), randomId());
-      const transaction2 = buildKvTx(randomId(), randomId());
-
-      await client.broadcastTxCommit({ tx: transaction1 });
-      await client.broadcastTxCommit({ tx: transaction2 });
+      await client.broadcastTxCommit({ tx: transactionData1 });
+      await client.broadcastTxCommit({ tx: transactionData2 });
     })().catch(done.fail);
   });
 
