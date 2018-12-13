@@ -1,5 +1,7 @@
 import { Stream } from "xstream";
 
+import { toListPromise } from "@iov/stream";
+
 import { Integer } from "../encodings";
 import { JsonRpcEvent, jsonRpcWith } from "../jsonrpc";
 import { Method } from "../requests";
@@ -77,7 +79,7 @@ describe("WebsocketClient", () => {
     });
   });
 
-  it("can listen to the same query twice", done => {
+  it("can listen to the same query twice", async () => {
     pendingWithoutTendermint();
 
     const client = new WebsocketClient(tendermintUrl);
@@ -90,26 +92,16 @@ describe("WebsocketClient", () => {
     const stream1 = client.listen(request1);
     const stream2 = client.listen(request2);
 
-    // tslint:disable-next-line:readonly-array
-    const eventHeights: any[] = [];
-
-    const subscription = Stream.merge(stream1, stream2).subscribe({
-      error: done.fail,
-      complete: () => done.fail("subscription should not complete"),
-      next: event => {
+    const eventHeights = await toListPromise(
+      Stream.merge(stream1, stream2).map(event => {
         // height is string or number, depending on Tendermint version. But we don't care in this case
-        const height = event.data.value.header.height;
-        eventHeights.push(height);
+        return event.data.value.header.height;
+      }),
+      4,
+    );
+    expect(new Set(eventHeights).size).toEqual(2);
 
-        if (eventHeights.length === 4) {
-          expect(new Set(eventHeights).size).toEqual(2);
-
-          subscription.unsubscribe();
-          client.disconnect();
-          done();
-        }
-      },
-    });
+    client.disconnect();
   });
 
   it("can execute commands while listening to events", done => {
@@ -145,8 +137,10 @@ describe("WebsocketClient", () => {
       },
     });
 
-    const startusResponse = client.execute(jsonRpcWith(Method.Status));
-    expect(startusResponse).toBeTruthy();
+    client
+      .execute(jsonRpcWith(Method.Status))
+      .then(startusResponse => expect(startusResponse).toBeTruthy())
+      .catch(done.fail);
   });
 
   it("can end event listening by disconnecting", done => {
@@ -182,10 +176,9 @@ describe("WebsocketClient", () => {
 
     client.disconnect();
 
-    const req = jsonRpcWith(Method.Health);
     await client
-      .execute(req)
-      .then(fail)
+      .execute(jsonRpcWith(Method.Health))
+      .then(() => fail("must not resolve"))
       .catch(error => expect(error).toMatch(/is not open/i));
   });
 

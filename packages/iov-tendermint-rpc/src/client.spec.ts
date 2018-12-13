@@ -288,143 +288,151 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
     })().catch(done.fail);
   });
 
-  it("can subscribe to block events", done => {
+  it("can subscribe to block events", async () => {
     pendingWithoutTendermint();
 
     const testStart = ReadonlyDate.now();
 
-    (async () => {
-      const events: responses.NewBlockEvent[] = [];
-      const client = new Client(rpcFactory(), adaptor);
-      const stream = client.subscribeNewBlock();
-      expect(stream).toBeTruthy();
-      const subscription = stream.subscribe({
-        next: event => {
-          expect(event.header.chainId).toMatch(/^[-a-zA-Z0-9]{3,30}$/);
-          expect(event.header.height).toBeGreaterThan(0);
-          // seems that tendermint just guarantees within the last second for timestamp
-          expect(event.header.time.getTime()).toBeGreaterThan(testStart - 1000);
-          // Tendermint clock is sometimes ahead of test clock. Add 10ms tolerance
-          expect(event.header.time.getTime()).toBeLessThanOrEqual(ReadonlyDate.now() + 10);
-          expect(event.header.numTxs).toEqual(1);
-          expect(event.header.lastBlockId).toBeTruthy();
-          expect(event.header.totalTxs).toBeGreaterThan(0);
+    const transactionData1 = buildKvTx(randomId(), randomId());
+    const transactionData2 = buildKvTx(randomId(), randomId());
 
-          // merkle roots for proofs
-          expect(event.header.appHash).toBeTruthy();
-          expect(event.header.consensusHash).toBeTruthy();
-          expect(event.header.dataHash).toBeTruthy();
-          expect(event.header.evidenceHash).toBeTruthy();
-          expect(event.header.lastCommitHash).toBeTruthy();
-          expect(event.header.lastResultsHash).toBeTruthy();
-          expect(event.header.validatorsHash).toBeTruthy();
+    const events: responses.NewBlockEvent[] = [];
+    const client = new Client(rpcFactory(), adaptor);
+    const stream = client.subscribeNewBlock();
+    const subscription = stream.subscribe({
+      next: event => {
+        expect(event.header.chainId).toMatch(/^[-a-zA-Z0-9]{3,30}$/);
+        expect(event.header.height).toBeGreaterThan(0);
+        // seems that tendermint just guarantees within the last second for timestamp
+        expect(event.header.time.getTime()).toBeGreaterThan(testStart - 1000);
+        // Tendermint clock is sometimes ahead of test clock. Add 10ms tolerance
+        expect(event.header.time.getTime()).toBeLessThanOrEqual(ReadonlyDate.now() + 10);
+        expect(event.header.numTxs).toEqual(1);
+        expect(event.header.lastBlockId).toBeTruthy();
+        expect(event.header.totalTxs).toBeGreaterThan(0);
 
-          events.push(event);
+        // merkle roots for proofs
+        expect(event.header.appHash).toBeTruthy();
+        expect(event.header.consensusHash).toBeTruthy();
+        expect(event.header.dataHash).toBeTruthy();
+        expect(event.header.evidenceHash).toBeTruthy();
+        expect(event.header.lastCommitHash).toBeTruthy();
+        expect(event.header.lastResultsHash).toBeTruthy();
+        expect(event.header.validatorsHash).toBeTruthy();
 
-          if (events.length === 2) {
-            subscription.unsubscribe();
-            expect(events.length).toEqual(2);
-            expect(events[1].header.height).toEqual(events[0].header.height + 1);
-            expect(events[1].header.chainId).toEqual(events[0].header.chainId);
-            expect(events[1].header.time.getTime()).toBeGreaterThan(events[0].header.time.getTime());
-            expect(events[1].header.totalTxs).toEqual(events[0].header.totalTxs + 1);
+        events.push(event);
 
-            expect(events[1].header.appHash).not.toEqual(events[0].header.appHash);
-            expect(events[1].header.validatorsHash).toEqual(events[0].header.validatorsHash);
+        if (events.length === 2) {
+          subscription.unsubscribe();
+        }
+      },
+      error: fail,
+    });
 
-            client.disconnect();
-            done();
-          }
-        },
-        error: done.fail,
-        complete: () => done.fail("Stream completed before we are done"),
-      });
+    await client.broadcastTxCommit({ tx: transactionData1 });
+    await client.broadcastTxCommit({ tx: transactionData2 });
 
-      const transaction1 = buildKvTx(randomId(), randomId());
-      const transaction2 = buildKvTx(randomId(), randomId());
+    // wait for events to be processed
+    await sleep(100);
 
-      await client.broadcastTxCommit({ tx: transaction1 });
-      await client.broadcastTxCommit({ tx: transaction2 });
-    })().catch(done.fail);
+    expect(events.length).toEqual(2);
+    // Block header
+    expect(events[1].header.height).toEqual(events[0].header.height + 1);
+    expect(events[1].header.chainId).toEqual(events[0].header.chainId);
+    expect(events[1].header.time.getTime()).toBeGreaterThan(events[0].header.time.getTime());
+    expect(events[1].header.totalTxs).toEqual(events[0].header.totalTxs + 1);
+    expect(events[1].header.appHash).not.toEqual(events[0].header.appHash);
+    expect(events[1].header.validatorsHash).toEqual(events[0].header.validatorsHash);
+    // Block body
+    expect(events[0].txs.length).toEqual(1);
+    expect(events[1].txs.length).toEqual(1);
+    expect(events[0].txs[0]).toEqual(transactionData1);
+    expect(events[1].txs[0]).toEqual(transactionData2);
+
+    client.disconnect();
   });
 
-  it("can subscribe to transaction events", done => {
+  it("can subscribe to transaction events", async () => {
     pendingWithoutTendermint();
 
-    (async () => {
-      const events: responses.TxEvent[] = [];
-      const client = new Client(rpcFactory(), adaptor);
-      const stream = client.subscribeTx();
-      expect(stream).toBeTruthy();
-      const subscription = stream.subscribe({
-        next: event => {
-          expect(event.height).toBeGreaterThan(0);
-          expect(event.index).toEqual(0);
-          expect(event.result).toBeTruthy();
-          expect(event.tx.length).toBeGreaterThan(10);
+    const events: responses.TxEvent[] = [];
+    const client = new Client(rpcFactory(), adaptor);
+    const stream = client.subscribeTx();
+    const subscription = stream.subscribe({
+      next: event => {
+        expect(event.height).toBeGreaterThan(0);
+        expect(event.index).toEqual(0);
+        expect(event.result).toBeTruthy();
 
-          events.push(event);
+        events.push(event);
 
-          if (events.length === 2) {
-            subscription.unsubscribe();
-            expect(events.length).toEqual(2);
-            expect(events[1].height).toEqual(events[0].height + 1);
-            expect(events[1].result.tags).not.toEqual(events[0].result.tags);
+        if (events.length === 2) {
+          subscription.unsubscribe();
+        }
+      },
+      error: fail,
+    });
 
-            client.disconnect();
-            done();
-          }
-        },
-        error: done.fail,
-        complete: () => done.fail("Stream completed before we are done"),
-      });
+    const transactionData1 = buildKvTx(randomId(), randomId());
+    const transactionData2 = buildKvTx(randomId(), randomId());
 
-      const transaction1 = buildKvTx(randomId(), randomId());
-      const transaction2 = buildKvTx(randomId(), randomId());
+    await client.broadcastTxCommit({ tx: transactionData1 });
+    await client.broadcastTxCommit({ tx: transactionData2 });
 
-      await client.broadcastTxCommit({ tx: transaction1 });
-      await client.broadcastTxCommit({ tx: transaction2 });
-    })().catch(done.fail);
+    // wait for events to be processed
+    await sleep(100);
+
+    expect(events.length).toEqual(2);
+    // Meta
+    expect(events[1].height).toEqual(events[0].height + 1);
+    expect(events[1].result.tags).not.toEqual(events[0].result.tags);
+    // Content
+    expect(events[0].tx).toEqual(transactionData1);
+    expect(events[1].tx).toEqual(transactionData2);
+
+    client.disconnect();
   });
 
-  it("can subscribe to transaction events filtered by creator", done => {
+  it("can subscribe to transaction events filtered by creator", async () => {
     pendingWithoutTendermint();
 
-    (async () => {
-      const events: responses.TxEvent[] = [];
-      const client = new Client(rpcFactory(), adaptor);
-      const query = buildQuery({ tags: [{ key: "app.creator", value: "jae" }] });
-      const stream = client.subscribeTx(query);
-      expect(stream).toBeTruthy();
-      const subscription = stream.subscribe({
-        next: event => {
-          expect(event.height).toBeGreaterThan(0);
-          expect(event.index).toEqual(0);
-          expect(event.result).toBeTruthy();
-          expect(event.tx.length).toBeGreaterThan(10);
+    const transactionData1 = buildKvTx(randomId(), randomId());
+    const transactionData2 = buildKvTx(randomId(), randomId());
 
-          events.push(event);
+    const events: responses.TxEvent[] = [];
+    const client = new Client(rpcFactory(), adaptor);
+    const query = buildQuery({ tags: [{ key: "app.creator", value: "jae" }] });
+    const stream = client.subscribeTx(query);
+    expect(stream).toBeTruthy();
+    const subscription = stream.subscribe({
+      next: event => {
+        expect(event.height).toBeGreaterThan(0);
+        expect(event.index).toEqual(0);
+        expect(event.result).toBeTruthy();
+        events.push(event);
 
-          if (events.length === 2) {
-            subscription.unsubscribe();
-            expect(events.length).toEqual(2);
-            expect(events[1].height).toEqual(events[0].height + 1);
-            expect(events[1].result.tags).not.toEqual(events[0].result.tags);
+        if (events.length === 2) {
+          subscription.unsubscribe();
+        }
+      },
+      error: fail,
+    });
 
-            client.disconnect();
-            done();
-          }
-        },
-        error: done.fail,
-        complete: () => done.fail("Stream completed before we are done"),
-      });
+    await client.broadcastTxCommit({ tx: transactionData1 });
+    await client.broadcastTxCommit({ tx: transactionData2 });
 
-      const transaction1 = buildKvTx(randomId(), randomId());
-      const transaction2 = buildKvTx(randomId(), randomId());
+    // wait for events to be processed
+    await sleep(100);
 
-      await client.broadcastTxCommit({ tx: transaction1 });
-      await client.broadcastTxCommit({ tx: transaction2 });
-    })().catch(done.fail);
+    expect(events.length).toEqual(2);
+    // Meta
+    expect(events[1].height).toEqual(events[0].height + 1);
+    expect(events[1].result.tags).not.toEqual(events[0].result.tags);
+    // Content
+    expect(events[0].tx).toEqual(transactionData1);
+    expect(events[1].tx).toEqual(transactionData2);
+
+    client.disconnect();
   });
 
   it("can unsubscribe and re-subscribe to the same stream", async () => {
@@ -460,33 +468,18 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
     client.disconnect();
   });
 
-  it("can subscribe twice", done => {
+  it("can subscribe twice", async () => {
     pendingWithoutTendermint();
 
-    (async () => {
-      const events: responses.NewBlockHeaderEvent[] = [];
-      const client = new Client(rpcFactory(), adaptor);
-      const stream1 = client.subscribeNewBlockHeader();
-      const stream2 = client.subscribeNewBlockHeader();
+    const client = new Client(rpcFactory(), adaptor);
+    const stream1 = client.subscribeNewBlockHeader();
+    const stream2 = client.subscribeNewBlockHeader();
 
-      const subscription = Stream.merge(stream1, stream2).subscribe({
-        next: event => {
-          events.push(event);
+    const events = await toListPromise(Stream.merge(stream1, stream2), 4);
 
-          // collect 2x2 events
-          if (events.length === 4) {
-            // two events per height
-            expect(new Set(events.map(e => e.height)).size).toEqual(2);
+    expect(new Set(events.map(e => e.height)).size).toEqual(2);
 
-            subscription.unsubscribe();
-            client.disconnect();
-            done();
-          }
-        },
-        error: done.fail,
-        complete: () => done.fail("Stream completed before we are done"),
-      });
-    })().catch(done.fail);
+    client.disconnect();
   });
 }
 

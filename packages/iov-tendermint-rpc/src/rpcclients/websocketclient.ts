@@ -1,6 +1,8 @@
 /* tslint:disable:readonly-keyword readonly-array no-object-mutation */
-import EventEmitter from "events";
-import { Listener, Producer, Stream } from "xstream";
+import { Listener, Producer, Stream, Subscription } from "xstream";
+
+import { SocketWrapperMessageEvent, StreamingSocket } from "@iov/socket";
+import { toListPromise } from "@iov/stream";
 
 import {
   ifError,
@@ -10,7 +12,6 @@ import {
   JsonRpcSuccess,
   throwIfError,
 } from "../jsonrpc";
-import { SocketWrapper } from "../socketwrapper";
 
 import { hasProtocol, RpcStreamingClient } from "./rpcclient";
 
@@ -18,16 +19,21 @@ function defaultErrorHandler(error: any): never {
   throw error;
 }
 
-export class WebsocketClient implements RpcStreamingClient {
-  // Used to distribute socket events to interested listeners. Event types:
-  // "<id>"        response messages to the request with <id>
-  // "<id>#event"  events following the subscription request with <id>
-  // "close"       when the socket has been closed in a more or less clean way
-  // "error"       when an error occured
-  private readonly bridge: EventEmitter;
+function toJsonRpcResponse(message: SocketWrapperMessageEvent): JsonRpcResponse {
+  // this should never happen, but I want an alert if it does
+  if (message.type !== "message") {
+    throw new Error(`Unexcepted message type on websocket: ${message.type}`);
+  }
 
+  const jsonRpcEvent: JsonRpcResponse = JSON.parse(message.data);
+  return jsonRpcEvent;
+}
+
+export class WebsocketClient implements RpcStreamingClient {
   private readonly url: string;
-  private readonly socket: SocketWrapper;
+  private readonly socket: StreamingSocket;
+  /** Same events as in socket.events but in the format we need */
+  private readonly jsonRpcResponseStream: Stream<JsonRpcResponse>;
 
   // Lazily create streams and use the same stream when listening to the same query twice.
   //
@@ -42,41 +48,27 @@ export class WebsocketClient implements RpcStreamingClient {
     const cleanBaseUrl = hasProtocol(baseUrl) ? baseUrl : "ws://" + baseUrl;
     this.url = cleanBaseUrl + path;
 
-    this.bridge = new EventEmitter();
-    this.bridge.on("error", onError);
+    this.socket = new StreamingSocket(this.url);
 
-    this.socket = new SocketWrapper(
-      this.url,
-      message => {
-        // this should never happen, but I want an alert if it does
-        if (message.type !== "message") {
-          this.bridge.emit("error", `Unexcepted message type on websocket: ${message.type}`);
-        }
-        const data = JSON.parse(message.data.toString());
-        this.bridge.emit(data.id, data);
+    const errorSubscription = this.socket.events.subscribe({
+      error: error => {
+        onError(error);
+        errorSubscription.unsubscribe();
       },
-      error => this.bridge.emit("error", error),
-      () => 0,
-      closeEvent => {
-        if (closeEvent.wasClean) {
-          this.bridge.emit("close");
-        } else {
-          const debug = `clean: ${closeEvent.wasClean}, code: ${closeEvent.code}`;
-          this.bridge.emit("error", `Websocket closed (${debug})`);
-        }
-      },
-    );
+    });
+
+    this.jsonRpcResponseStream = this.socket.events.map(toJsonRpcResponse);
+
     this.socket.connect();
   }
 
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
-    const responsePromise = this.responseForRequestId(request.id).then(throwIfError);
-
+    const pendingResponse = this.responseForRequestId(request.id);
     await this.socket.connected;
-    await this.socket.send(JSON.stringify(request));
+    const pendingSend = this.socket.send(JSON.stringify(request));
 
-    const response = await responsePromise;
-    return response;
+    const response = (await Promise.all([pendingResponse, pendingSend]))[0];
+    return throwIfError(response);
   }
 
   public listen(request: JsonRpcRequest): Stream<JsonRpcEvent> {
@@ -90,7 +82,7 @@ export class WebsocketClient implements RpcStreamingClient {
     }
 
     if (!this.subscriptionStreams.has(query)) {
-      const producer = new RpcEventProducer(request, this.socket, this.bridge);
+      const producer = new RpcEventProducer(request, this.socket);
       const stream = Stream.create(producer);
       this.subscriptionStreams.set(query, stream);
     }
@@ -110,51 +102,22 @@ export class WebsocketClient implements RpcStreamingClient {
   }
 
   protected responseForRequestId(id: string): Promise<JsonRpcResponse> {
-    return new Promise((resolve, reject) => {
-      // only one of the two listeners should fire, and it will
-      // deregister the other so as not to cause a leak.
-
-      const good = {
-        eventName: id,
-        listener: (data: JsonRpcResponse) => {
-          unregisterGoodAndBad();
-          resolve(data);
-        },
-      };
-
-      const bad = {
-        eventName: "error",
-        listener: (error: any) => {
-          unregisterGoodAndBad();
-          reject(error);
-        },
-      };
-
-      const unregisterGoodAndBad = () => {
-        this.bridge.removeListener(good.eventName, good.listener);
-        this.bridge.removeListener(bad.eventName, bad.listener);
-      };
-
-      // this will fire on a response (success or error)
-      this.bridge.once(good.eventName, good.listener);
-      // this will fire in case the websocket errors/disconnects
-      this.bridge.once(bad.eventName, bad.listener);
-    });
+    return toListPromise(this.jsonRpcResponseStream.filter(r => r.id === id), 1).then(
+      responseList => responseList[0],
+    );
   }
 }
 
 class RpcEventProducer implements Producer<JsonRpcEvent> {
   private readonly request: JsonRpcRequest;
-  private readonly socket: SocketWrapper;
-  private readonly bridge: EventEmitter;
+  private readonly socket: StreamingSocket;
 
   private running: boolean = false;
-  private subscriptions: EventEmitter[] = [];
+  private subscriptions: Subscription[] = [];
 
-  constructor(request: JsonRpcRequest, socket: SocketWrapper, bridge: EventEmitter) {
+  constructor(request: JsonRpcRequest, socket: StreamingSocket) {
     this.request = request;
     this.socket = socket;
-    this.bridge = bridge;
   }
 
   /**
@@ -190,47 +153,58 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
   }
 
   protected connectToClient(listener: Listener<JsonRpcEvent>): void {
+    const responseStream = this.socket.events.map(toJsonRpcResponse);
+
     // this should unsubscribe itself, so doesn't need to be removed explicitly
-    const idSubscription = this.bridge.once(this.request.id, data => {
-      const err = ifError(data);
-      if (err) {
-        this.closeSubscriptions();
-        listener.error(err);
-      }
-    });
+    const idSubscription = responseStream
+      .filter(response => response.id === this.request.id)
+      .subscribe({
+        next: response => {
+          const err = ifError(response);
+          if (err) {
+            this.closeSubscriptions();
+            listener.error(err);
+          }
+          idSubscription.unsubscribe();
+        },
+      });
 
     // this will fire on a response (success or error)
     // Tendermint adds an "#event" suffix for events that follow a previous subscription
     // https://github.com/tendermint/tendermint/blob/v0.23.0/rpc/core/events.go#L107
-    const idEventSubscription = this.bridge.on(this.request.id + "#event", data => {
-      const err = ifError(data);
-      if (err) {
-        this.closeSubscriptions();
-        listener.error(err);
-      } else {
-        const result = (data as JsonRpcSuccess).result;
-        listener.next(result as JsonRpcEvent);
-      }
-    });
+    const idEventSubscription = responseStream
+      .filter(response => response.id === `${this.request.id}#event`)
+      .subscribe({
+        next: response => {
+          const err = ifError(response);
+          if (err) {
+            this.closeSubscriptions();
+            listener.error(err);
+          } else {
+            const result = (response as JsonRpcSuccess).result;
+            listener.next(result as JsonRpcEvent);
+          }
+        },
+      });
 
     // this will fire in case the websocket disconnects cleanly
-    const closeSubscription = this.bridge.once("close", () => {
-      this.closeSubscriptions();
-      listener.complete();
+    const nonResponseSubscription = responseStream.subscribe({
+      error: error => {
+        this.closeSubscriptions();
+        listener.error(error);
+      },
+      complete: () => {
+        this.closeSubscriptions();
+        listener.complete();
+      },
     });
 
-    // this will fire in case the websocket errors/disconnects
-    const errorSubscription = this.bridge.once("error", err => {
-      this.closeSubscriptions();
-      listener.error(err);
-    });
-
-    this.subscriptions.push(idSubscription, idEventSubscription, closeSubscription, errorSubscription);
+    this.subscriptions.push(idSubscription, idEventSubscription, nonResponseSubscription);
   }
 
   protected closeSubscriptions(): void {
     for (const subscription of this.subscriptions) {
-      subscription.removeAllListeners();
+      subscription.unsubscribe();
     }
     // clear unused subscriptions
     this.subscriptions = [];
