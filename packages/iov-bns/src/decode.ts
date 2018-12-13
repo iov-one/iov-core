@@ -2,40 +2,38 @@ import BN = require("bn.js");
 
 import { ChainId } from "@iov/base-types";
 import {
-  AddAddressToUsernameTx,
   Address,
   Amount,
-  BaseTx,
   BcpTicker,
-  ChainAddressPair,
   FullSignature,
   Nonce,
-  RegisterBlockchainTx,
-  RegisterUsernameTx,
-  RemoveAddressFromUsernameTx,
-  SendTx,
-  SetNameTx,
+  SendTransaction,
   SignedTransaction,
-  SwapClaimTx,
-  SwapCounterTx,
+  SwapClaimTransaction,
+  SwapCounterTransaction,
   SwapIdBytes,
-  SwapTimeoutTx,
+  SwapTimeoutTransaction,
   TokenTicker,
-  TransactionKind,
   UnsignedTransaction,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
 import {
+  AddAddressToUsernameTx,
   asInt53,
   asNumber,
   BnsAddressBytes,
   BnsBlockchainNft,
   BnsUsernameNft,
+  ChainAddressPair,
   decodeFullSig,
   ensure,
   Keyed,
+  RegisterBlockchainTx,
+  RegisterUsernameTx,
+  RemoveAddressFromUsernameTx,
+  SetNameTx,
 } from "./types";
 import { encodeBnsAddress, isHashIdentifier } from "./util";
 
@@ -141,11 +139,11 @@ export function parseTx(tx: codecImpl.app.ITx, chainId: ChainId): SignedTransact
   };
 }
 
-export function parseMsg(base: BaseTx, tx: codecImpl.app.ITx): UnsignedTransaction {
+export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): UnsignedTransaction {
   if (tx.addUsernameAddressNftMsg) {
     return parseAddAddressToUsernameTx(base, tx.addUsernameAddressNftMsg);
   } else if (tx.sendMsg) {
-    return parseSendTx(base, tx.sendMsg);
+    return parseSendTransaction(base, tx.sendMsg);
   } else if (tx.setNameMsg) {
     return parseSetNameTx(base, tx.setNameMsg);
   } else if (tx.createEscrowMsg) {
@@ -165,12 +163,12 @@ export function parseMsg(base: BaseTx, tx: codecImpl.app.ITx): UnsignedTransacti
 }
 
 function parseAddAddressToUsernameTx(
-  base: BaseTx,
+  base: UnsignedTransaction,
   msg: codecImpl.username.IAddChainAddressMsg,
 ): AddAddressToUsernameTx {
   return {
     ...base,
-    kind: TransactionKind.AddAddressToUsername,
+    kind: "bns/add_address_to_username",
     username: fromUtf8(ensure(msg.id, "id")),
     payload: {
       chainId: fromUtf8(ensure(msg.chainID, "chainID")) as ChainId,
@@ -179,65 +177,72 @@ function parseAddAddressToUsernameTx(
   };
 }
 
-function parseSendTx(base: BaseTx, msg: codecImpl.cash.ISendMsg): SendTx {
+function parseSendTransaction(base: UnsignedTransaction, msg: codecImpl.cash.ISendMsg): SendTransaction {
   return {
     // TODO: would we want to ensure these match?
     //    src: await keyToAddress(tx.signer),
-    kind: TransactionKind.Send,
+    ...base,
+    kind: "bcp/send",
     recipient: encodeBnsAddress(ensure(msg.dest, "recipient")),
     amount: decodeAmount(ensure(msg.amount)),
     memo: msg.memo || undefined,
-    ...base,
   };
 }
 
-function parseSetNameTx(base: BaseTx, msg: codecImpl.namecoin.ISetWalletNameMsg): SetNameTx {
+function parseSetNameTx(base: UnsignedTransaction, msg: codecImpl.namecoin.ISetWalletNameMsg): SetNameTx {
   return {
-    kind: TransactionKind.SetName,
-    name: ensure(msg.name, "name"),
     ...base,
+    kind: "bns/set_name",
+    name: ensure(msg.name, "name"),
   };
 }
 
-function parseSwapCounterTx(base: BaseTx, msg: codecImpl.escrow.ICreateEscrowMsg): SwapCounterTx {
+function parseSwapCounterTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.escrow.ICreateEscrowMsg,
+): SwapCounterTransaction {
   const hashCode = ensure(msg.arbiter, "arbiter");
   if (!isHashIdentifier(hashCode)) {
     throw new Error("escrow not controlled by hashlock");
   }
   return {
-    kind: TransactionKind.SwapCounter,
+    ...base,
+    kind: "bcp/swap_counter",
     hashCode,
     recipient: encodeBnsAddress(ensure(msg.recipient, "recipient")),
     timeout: asNumber(msg.timeout),
     amount: (msg.amount || []).map(decodeAmount),
-    ...base,
   };
 }
 
 function parseSwapClaimTx(
-  base: BaseTx,
+  base: UnsignedTransaction,
   msg: codecImpl.escrow.IReturnEscrowMsg,
   tx: codecImpl.app.ITx,
-): SwapClaimTx {
+): SwapClaimTransaction {
   return {
-    kind: TransactionKind.SwapClaim,
+    ...base,
+    kind: "bcp/swap_claim",
     swapId: ensure(msg.escrowId) as SwapIdBytes,
     preimage: ensure(tx.preimage),
-    ...base,
   };
 }
 
-function parseSwapTimeoutTx(base: BaseTx, msg: codecImpl.escrow.IReturnEscrowMsg): SwapTimeoutTx {
+function parseSwapTimeoutTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.escrow.IReturnEscrowMsg,
+): SwapTimeoutTransaction {
   return {
-    kind: TransactionKind.SwapTimeout,
-    swapId: ensure(msg.escrowId) as SwapIdBytes,
     ...base,
+    kind: "bcp/swap_timeout",
+    swapId: ensure(msg.escrowId) as SwapIdBytes,
   };
 }
 
-function parseBaseTx(tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId): BaseTx {
-  const base: BaseTx = {
-    chainId,
+function parseBaseTx(tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId): UnsignedTransaction {
+  const base: UnsignedTransaction = {
+    kind: "",
+    chainId: chainId,
     signer: sig.pubkey,
   };
   if (tx.fees && tx.fees.fees) {
@@ -247,7 +252,7 @@ function parseBaseTx(tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId
 }
 
 function parseRegisterBlockchainTx(
-  base: BaseTx,
+  base: UnsignedTransaction,
   msg: codecImpl.blockchain.IIssueTokenMsg,
 ): RegisterBlockchainTx {
   const details = ensure(msg.details, "details");
@@ -265,7 +270,7 @@ function parseRegisterBlockchainTx(
   const codecConfig = ensure(iov.codecConfig, "details.iov.codecConfig");
   return {
     ...base,
-    kind: TransactionKind.RegisterBlockchain,
+    kind: "bns/register_blockchain",
     chain: {
       chainId: chainId as ChainId,
       name: name,
@@ -280,7 +285,10 @@ function parseRegisterBlockchainTx(
   };
 }
 
-function parseRegisterUsernameTx(base: BaseTx, msg: codecImpl.username.IIssueTokenMsg): RegisterUsernameTx {
+function parseRegisterUsernameTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.username.IIssueTokenMsg,
+): RegisterUsernameTx {
   const chainAddresses = ensure(ensure(msg.details, "details").addresses, "details.addresses");
   const addresses = chainAddresses.map(
     (chainAddress): ChainAddressPair => {
@@ -292,20 +300,20 @@ function parseRegisterUsernameTx(base: BaseTx, msg: codecImpl.username.IIssueTok
   );
 
   return {
-    kind: TransactionKind.RegisterUsername,
+    ...base,
+    kind: "bns/register_username",
     username: Encoding.fromUtf8(ensure(msg.id, "id")),
     addresses: addresses,
-    ...base,
   };
 }
 
 function parseRemoveAddressFromUsernameTx(
-  base: BaseTx,
+  base: UnsignedTransaction,
   msg: codecImpl.username.IRemoveChainAddressMsg,
 ): RemoveAddressFromUsernameTx {
   return {
     ...base,
-    kind: TransactionKind.RemoveAddressFromUsername,
+    kind: "bns/remove_address_from_username",
     username: fromUtf8(ensure(msg.id, "id")),
     payload: {
       chainId: fromUtf8(ensure(msg.chainID, "chainID")) as ChainId,

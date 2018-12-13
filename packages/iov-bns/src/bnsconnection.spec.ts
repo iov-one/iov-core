@@ -2,7 +2,6 @@ import Long from "long";
 
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import {
-  AddAddressToUsernameTx,
   Address,
   Amount,
   BcpAccount,
@@ -11,18 +10,16 @@ import {
   BcpSwapQuery,
   BcpTransactionState,
   BcpTxQuery,
+  isSendTransaction,
+  isSwapCounterTransaction,
   Nonce,
   PostTxResponse,
-  RegisterBlockchainTx,
-  RegisterUsernameTx,
-  RemoveAddressFromUsernameTx,
-  SendTx,
-  SwapClaimTx,
+  SendTransaction,
+  SwapClaimTransaction,
   SwapIdBytes,
-  SwapOfferTx,
+  SwapOfferTransaction,
   SwapState,
   TokenTicker,
-  TransactionKind,
 } from "@iov/bcp-types";
 import { Random, Sha256 } from "@iov/crypto";
 import { Encoding, Int53, Uint64 } from "@iov/encoding";
@@ -39,7 +36,15 @@ import { asArray, lastValue } from "@iov/stream";
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
 import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
-import { BnsAddressBytes } from "./types";
+import {
+  AddAddressToUsernameTx,
+  BnsAddressBytes,
+  isRegisterBlockchainTx,
+  isRegisterUsernameTx,
+  RegisterBlockchainTx,
+  RegisterUsernameTx,
+  RemoveAddressFromUsernameTx,
+} from "./types";
 import { decodeBnsAddress, keyToAddress } from "./util";
 
 function skipTests(): boolean {
@@ -81,8 +86,8 @@ async function ensureNonceNonZero(
   identity: PublicIdentity,
 ): Promise<void> {
   const nonce = await getNonce(connection, keyToAddress(identity.pubkey));
-  const sendTx: SendTx = {
-    kind: TransactionKind.Send,
+  const sendTx: SendTransaction = {
+    kind: "bcp/send",
     chainId: await connection.chainId(),
     signer: identity.pubkey,
     recipient: await randomBnsAddress(),
@@ -278,8 +283,8 @@ describe("BnsConnection", () => {
       const recipient = await randomBnsAddress();
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
-      const sendTx: SendTx = {
-        kind: TransactionKind.Send,
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
         chainId,
         signer: faucet.pubkey,
         recipient: recipient,
@@ -315,14 +320,16 @@ describe("BnsConnection", () => {
       expect(search.length).toBeGreaterThanOrEqual(1);
       // make sure we get a valid signature
       const mine = search[search.length - 1];
+      // make sure we have a txid
+      expect(mine.transactionId).toMatch(/^[0-9A-F]{40}$/);
       expect(mine.primarySignature.nonce).toEqual(nonce);
       expect(mine.primarySignature.signature.length).toBeTruthy();
       expect(mine.otherSignatures.length).toEqual(0);
       const tx = mine.transaction;
-      expect(tx.kind).toEqual(sendTx.kind);
+      if (!isSendTransaction(tx)) {
+        throw new Error("Expected send transaction");
+      }
       expect(tx).toEqual(sendTx);
-      // make sure we have a txid
-      expect(mine.transactionId).toMatch(/^[0-9A-F]{40}$/);
 
       connection.disconnect();
     });
@@ -339,8 +346,8 @@ describe("BnsConnection", () => {
         const recipient = await randomBnsAddress();
 
         // construct a sendtx, this is normally used in the MultiChainSigner api
-        const sendTx: SendTx = {
-          kind: TransactionKind.Send,
+        const sendTx: SendTransaction = {
+          kind: "bcp/send",
           chainId,
           signer: faucet.pubkey,
           recipient: recipient,
@@ -448,7 +455,7 @@ describe("BnsConnection", () => {
       // Create and send registration
       const chainId = `wonderland_${Math.random()}` as ChainId;
       const registration: RegisterBlockchainTx = {
-        kind: TransactionKind.RegisterBlockchain,
+        kind: "bns/register_blockchain",
         chainId: registryChainId,
         signer: identity.pubkey,
         chain: {
@@ -470,10 +477,11 @@ describe("BnsConnection", () => {
       // Find registration transaction
       const searchResult = await connection.searchTx({ tags: [bnsNonceTag(identityAddress)] });
       expect(searchResult.length).toEqual(1);
-      if (searchResult[0].transaction.kind !== TransactionKind.RegisterBlockchain) {
+      const firstSearchResult = searchResult[0].transaction;
+      if (!isRegisterBlockchainTx(firstSearchResult)) {
         throw new Error("Unexpected transaction kind");
       }
-      expect(searchResult[0].transaction.chain).toEqual({
+      expect(firstSearchResult.chain).toEqual({
         chainId: chainId,
         production: false,
         enabled: true,
@@ -481,8 +489,8 @@ describe("BnsConnection", () => {
         networkId: "7rg047g4h",
         mainTickerId: undefined,
       });
-      expect(searchResult[0].transaction.codecName).toEqual("wonderland_rules");
-      expect(searchResult[0].transaction.codecConfig).toEqual(`{ "any" : [ "json", "content" ] }`);
+      expect(firstSearchResult.codecName).toEqual("wonderland_rules");
+      expect(firstSearchResult.codecConfig).toEqual(`{ "any" : [ "json", "content" ] }`);
 
       connection.disconnect();
     });
@@ -500,7 +508,7 @@ describe("BnsConnection", () => {
       const address = keyToAddress(identity.pubkey);
       const username = `testuser_${Math.random()}`;
       const registration: RegisterUsernameTx = {
-        kind: TransactionKind.RegisterUsername,
+        kind: "bns/register_username",
         chainId: registryChainId,
         signer: identity.pubkey,
         addresses: [
@@ -520,11 +528,12 @@ describe("BnsConnection", () => {
       // Find registration transaction
       const searchResult = await connection.searchTx({ tags: [bnsNonceTag(address)] });
       expect(searchResult.length).toEqual(1);
-      if (searchResult[0].transaction.kind !== TransactionKind.RegisterUsername) {
+      const firstSearchResultTransaction = searchResult[0].transaction;
+      if (!isRegisterUsernameTx(firstSearchResultTransaction)) {
         throw new Error("Unexpected transaction kind");
       }
-      expect(searchResult[0].transaction.username).toEqual(username);
-      expect(searchResult[0].transaction.addresses.length).toEqual(0);
+      expect(firstSearchResultTransaction.username).toEqual(username);
+      expect(firstSearchResultTransaction.addresses.length).toEqual(0);
 
       connection.disconnect();
     });
@@ -542,7 +551,7 @@ describe("BnsConnection", () => {
       // Create and send registration
       const username = `testuser_${Math.random()}`;
       const usernameRegistration: RegisterUsernameTx = {
-        kind: TransactionKind.RegisterUsername,
+        kind: "bns/register_username",
         chainId: registryChainId,
         signer: identity.pubkey,
         username: username,
@@ -566,7 +575,7 @@ describe("BnsConnection", () => {
       // Register a blockchain
       const chainId = `wonderland_${Math.random()}` as ChainId;
       const blockchainRegistration: RegisterBlockchainTx = {
-        kind: TransactionKind.RegisterBlockchain,
+        kind: "bns/register_blockchain",
         chainId: registryChainId,
         signer: identity.pubkey,
         chain: {
@@ -597,7 +606,7 @@ describe("BnsConnection", () => {
       // Add address
       const address = `testaddress_${Math.random()}` as Address;
       const addAddress: AddAddressToUsernameTx = {
-        kind: TransactionKind.AddAddressToUsername,
+        kind: "bns/add_address_to_username",
         chainId: registryChainId,
         signer: identity.pubkey,
         username: username,
@@ -624,7 +633,7 @@ describe("BnsConnection", () => {
       // Adding second address for the same chain fails
       const address2 = `testaddress2_${Math.random()}` as Address;
       const addAddress2: AddAddressToUsernameTx = {
-        kind: TransactionKind.AddAddressToUsername,
+        kind: "bns/add_address_to_username",
         chainId: registryChainId,
         signer: identity.pubkey,
         username: username,
@@ -656,7 +665,7 @@ describe("BnsConnection", () => {
 
       // Remove address
       const removeAddress: RemoveAddressFromUsernameTx = {
-        kind: TransactionKind.RemoveAddressFromUsername,
+        kind: "bns/remove_address_from_username",
         chainId: registryChainId,
         signer: identity.pubkey,
         username: username,
@@ -718,8 +727,8 @@ describe("BnsConnection", () => {
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
       const memo = `Payment ${Math.random()}`;
-      const sendTx: SendTx = {
-        kind: TransactionKind.Send,
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
         chainId: chainId,
         signer: faucet.pubkey,
         recipient: rcptAddress,
@@ -737,9 +746,11 @@ describe("BnsConnection", () => {
       // finds transaction using tag
       const results = await connection.searchTx({ tags: [bnsFromOrToTag(rcptAddress)] });
       expect(results.length).toBeGreaterThanOrEqual(1);
-      const mostRecentResult = results[results.length - 1];
-      expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
-      expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+      const mostRecentResultTransaction = results[results.length - 1].transaction;
+      if (!isSendTransaction(mostRecentResultTransaction)) {
+        throw new Error("Expected send transaction");
+      }
+      expect(mostRecentResultTransaction.memo).toEqual(memo);
 
       connection.disconnect();
     });
@@ -755,8 +766,8 @@ describe("BnsConnection", () => {
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
       const memo = `Payment ${Math.random()}`;
-      const sendTx: SendTx = {
-        kind: TransactionKind.Send,
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
         chainId: chainId,
         signer: faucet.pubkey,
         recipient: rcptAddress,
@@ -775,9 +786,11 @@ describe("BnsConnection", () => {
       // finds transaction using height
       const results = await connection.searchTx({ height: txHeight });
       expect(results.length).toBeGreaterThanOrEqual(1);
-      const mostRecentResult = results[results.length - 1];
-      expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
-      expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+      const mostRecentResultTransaction = results[results.length - 1].transaction;
+      if (!isSendTransaction(mostRecentResultTransaction)) {
+        throw new Error("Expected send transaction");
+      }
+      expect(mostRecentResultTransaction.memo).toEqual(memo);
 
       connection.disconnect();
     });
@@ -791,8 +804,8 @@ describe("BnsConnection", () => {
       const faucetAddress = keyToAddress(faucet.pubkey);
 
       const memo = `Payment ${Math.random()}`;
-      const sendTx: SendTx = {
-        kind: TransactionKind.Send,
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
         chainId: chainId,
         signer: faucet.pubkey,
         recipient: await randomBnsAddress(),
@@ -816,8 +829,11 @@ describe("BnsConnection", () => {
       const searchResults = await connection.searchTx({ id: transactionIdToSearch });
       expect(searchResults.length).toEqual(1);
       expect(searchResults[0].transactionId).toEqual(transactionIdToSearch);
-      expect(searchResults[0].transaction.kind).toEqual(TransactionKind.Send);
-      expect((searchResults[0].transaction as SendTx).memo).toEqual(memo);
+      const searchResultTransaction = searchResults[0].transaction;
+      if (!isSendTransaction(searchResultTransaction)) {
+        throw new Error("Expected send transaction");
+      }
+      expect(searchResultTransaction.memo).toEqual(memo);
 
       connection.disconnect();
     });
@@ -836,8 +852,8 @@ describe("BnsConnection", () => {
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
       const memo = `Payment ${Math.random()}`;
-      const sendTx: SendTx = {
-        kind: TransactionKind.Send,
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
         chainId: chainId,
         signer: faucet.pubkey,
         recipient: rcptAddress,
@@ -860,9 +876,11 @@ describe("BnsConnection", () => {
         // finds transaction using tag and minHeight = 1
         const results = await connection.searchTx({ tags: [bnsFromOrToTag(rcptAddress)], minHeight: 1 });
         expect(results.length).toBeGreaterThanOrEqual(1);
-        const mostRecentResult = results[results.length - 1];
-        expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
-        expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+        const mostRecentResultTransaction = results[results.length - 1].transaction;
+        if (!isSendTransaction(mostRecentResultTransaction)) {
+          throw new Error("Expected send transaction");
+        }
+        expect(mostRecentResultTransaction.memo).toEqual(memo);
       }
 
       {
@@ -872,9 +890,11 @@ describe("BnsConnection", () => {
           minHeight: initialHeight,
         });
         expect(results.length).toBeGreaterThanOrEqual(1);
-        const mostRecentResult = results[results.length - 1];
-        expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
-        expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+        const mostRecentResultTransaction = results[results.length - 1].transaction;
+        if (!isSendTransaction(mostRecentResultTransaction)) {
+          throw new Error("Expected send transaction");
+        }
+        expect(mostRecentResultTransaction.memo).toEqual(memo);
       }
 
       {
@@ -884,9 +904,11 @@ describe("BnsConnection", () => {
           maxHeight: 500_000_000,
         });
         expect(results.length).toBeGreaterThanOrEqual(1);
-        const mostRecentResult = results[results.length - 1];
-        expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
-        expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+        const mostRecentResultTransaction = results[results.length - 1].transaction;
+        if (!isSendTransaction(mostRecentResultTransaction)) {
+          throw new Error("Expected send transaction");
+        }
+        expect(mostRecentResultTransaction.memo).toEqual(memo);
       }
 
       {
@@ -896,9 +918,11 @@ describe("BnsConnection", () => {
           maxHeight: initialHeight + 10,
         });
         expect(results.length).toBeGreaterThanOrEqual(1);
-        const mostRecentResult = results[results.length - 1];
-        expect(mostRecentResult.transaction.kind).toEqual(TransactionKind.Send);
-        expect((mostRecentResult.transaction as SendTx).memo).toEqual(memo);
+        const mostRecentResultTransaction = results[results.length - 1].transaction;
+        if (!isSendTransaction(mostRecentResultTransaction)) {
+          throw new Error("Expected send transaction");
+        }
+        expect(mostRecentResultTransaction.memo).toEqual(memo);
       }
 
       connection.disconnect();
@@ -917,8 +941,8 @@ describe("BnsConnection", () => {
         const faucetAddress = keyToAddress(faucet.pubkey);
 
         const memo = `Payment ${Math.random()}`;
-        const sendTx: SendTx = {
-          kind: TransactionKind.Send,
+        const sendTx: SendTransaction = {
+          kind: "bcp/send",
           chainId: chainId,
           signer: faucet.pubkey,
           recipient: await randomBnsAddress(),
@@ -969,7 +993,7 @@ describe("BnsConnection", () => {
       // Register blockchain
       const chainId = `wonderland_${Math.random()}` as ChainId;
       const blockchainRegistration: RegisterBlockchainTx = {
-        kind: TransactionKind.RegisterBlockchain,
+        kind: "bns/register_blockchain",
         chainId: registryChainId,
         signer: identity.pubkey,
         chain: {
@@ -1039,7 +1063,7 @@ describe("BnsConnection", () => {
       // Register username
       const username = `testuser_${Math.random()}`;
       const registration: RegisterUsernameTx = {
-        kind: TransactionKind.RegisterUsername,
+        kind: "bns/register_username",
         chainId: registryChainId,
         signer: identity.pubkey,
         addresses: [],
@@ -1097,7 +1121,7 @@ describe("BnsConnection", () => {
       // Register blockchain
       const chainId = `wonderland_${Math.random()}` as ChainId;
       const blockchainRegistration: RegisterBlockchainTx = {
-        kind: TransactionKind.RegisterBlockchain,
+        kind: "bns/register_blockchain",
         chainId: registryChainId,
         signer: identity.pubkey,
         chain: {
@@ -1128,7 +1152,7 @@ describe("BnsConnection", () => {
       // Register username
       const username = `testuser_${Math.random()}`;
       const usernameRegistration: RegisterUsernameTx = {
-        kind: TransactionKind.RegisterUsername,
+        kind: "bns/register_username",
         chainId: registryChainId,
         signer: identity.pubkey,
         addresses: [
@@ -1220,8 +1244,8 @@ describe("BnsConnection", () => {
     const chainId = await connection.chainId();
     const faucetAddr = keyToAddress(faucet.pubkey);
     const nonce = await getNonce(connection, faucetAddr);
-    const sendTx: SendTx = {
-      kind: TransactionKind.Send,
+    const sendTx: SendTransaction = {
+      kind: "bcp/send",
       chainId,
       signer: faucet.pubkey,
       recipient: rcptAddr,
@@ -1411,8 +1435,8 @@ describe("BnsConnection", () => {
     const swapOfferPreimage = Encoding.toAscii(`my top secret phrase... ${Math.random()}`);
     const swapOfferHash = new Sha256(swapOfferPreimage).digest();
     const swapOfferTimeout = (await connection.height()) + 1000;
-    const swapOfferTx: SwapOfferTx = {
-      kind: TransactionKind.SwapOffer,
+    const swapOfferTx: SwapOfferTransaction = {
+      kind: "bcp/swap_offer",
       chainId,
       signer: faucet.pubkey,
       recipient: recipientAddr,
@@ -1448,13 +1472,16 @@ describe("BnsConnection", () => {
     // make sure we get he same tx loaded
     const loaded = search[0];
     expect(loaded.transactionId).toEqual(transactionId);
-    // we never write the offer (with preimage) to a chain, only convert it to a SwapCounterTx
-    // which only has the hashed data, then commit it (thus the different kind is expected)
-    expect(loaded.transaction.kind).toEqual(TransactionKind.SwapCounter);
-    expect((loaded.transaction as SwapOfferTx).recipient).toEqual(swapOfferTx.recipient);
     // make sure it also stored a result
     expect(loaded.result).toEqual(txResult);
     expect(loaded.height).toEqual(txHeight);
+    // we never write the offer (with preimage) to a chain, only convert it to a SwapCounterTx
+    // which only has the hashed data, then commit it (thus the different kind is expected)
+    const loadedTransaction = loaded.transaction;
+    if (!isSwapCounterTransaction(loadedTransaction)) {
+      throw new Error("Wrong transaction type");
+    }
+    expect(loadedTransaction.recipient).toEqual(swapOfferTx.recipient);
 
     // ----  prepare queries
     const querySwapId: BcpSwapQuery = { swapid: txResult as SwapIdBytes };
@@ -1532,8 +1559,8 @@ describe("BnsConnection", () => {
     const chainId = await connection.chainId();
     const nonce = await getNonce(connection, keyToAddress(sender.pubkey));
     const swapOfferTimeout = (await connection.height()) + 1000;
-    const swapOfferTx: SwapOfferTx = {
-      kind: TransactionKind.SwapOffer,
+    const swapOfferTx: SwapOfferTransaction = {
+      kind: "bcp/swap_offer",
       chainId,
       signer: sender.pubkey,
       recipient: rcptAddr,
@@ -1563,8 +1590,8 @@ describe("BnsConnection", () => {
     // construct a swapOfferTx, sign and post to the chain
     const chainId = await connection.chainId();
     const nonce = await getNonce(connection, keyToAddress(sender.pubkey));
-    const swapClaimTx: SwapClaimTx = {
-      kind: TransactionKind.SwapClaim,
+    const swapClaimTx: SwapClaimTransaction = {
+      kind: "bcp/swap_claim",
       chainId,
       signer: sender.pubkey,
       swapId,

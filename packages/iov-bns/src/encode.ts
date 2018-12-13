@@ -1,25 +1,27 @@
 import { Algorithm, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
 import {
-  AddAddressToUsernameTx,
   Amount,
   FullSignature,
-  RegisterBlockchainTx,
-  RegisterUsernameTx,
-  RemoveAddressFromUsernameTx,
-  SendTx,
-  SetNameTx,
+  SendTransaction,
   SignedTransaction,
-  SwapClaimTx,
-  SwapCounterTx,
-  SwapOfferTx,
-  SwapTimeoutTx,
-  TransactionKind,
+  SwapClaimTransaction,
+  SwapCounterTransaction,
+  SwapOfferTransaction,
+  SwapTimeoutTransaction,
   UnsignedTransaction,
 } from "@iov/bcp-types";
 import { Encoding, Int53 } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
-import { PrivateKeyBundle } from "./types";
+import {
+  AddAddressToUsernameTx,
+  isBnsTx,
+  PrivateKeyBundle,
+  RegisterBlockchainTx,
+  RegisterUsernameTx,
+  RemoveAddressFromUsernameTx,
+  SetNameTx,
+} from "./types";
 import { decodeBnsAddress, keyToAddress, preimageIdentifier } from "./util";
 
 const { toUtf8 } = Encoding;
@@ -102,26 +104,32 @@ export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.app.ITx {
 }
 
 export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
+  if (!isBnsTx(tx)) {
+    throw new Error("Transaction is not a BNS transaction");
+  }
+
   switch (tx.kind) {
-    case TransactionKind.AddAddressToUsername:
-      return buildAddAddressToUsernameTx(tx);
-    case TransactionKind.Send:
-      return buildSendTx(tx);
-    case TransactionKind.SetName:
-      return buildSetNameTx(tx);
-    case TransactionKind.SwapOffer:
+    // BCP
+    case "bcp/send":
+      return buildSendTransaction(tx);
+    case "bcp/swap_offer":
       return buildSwapOfferTx(tx);
-    case TransactionKind.SwapCounter:
+    case "bcp/swap_counter":
       return buildSwapCounterTx(tx);
-    case TransactionKind.SwapClaim:
+    case "bcp/swap_claim":
       return buildSwapClaimTx(tx);
-    case TransactionKind.SwapTimeout:
+    case "bcp/swap_timeout":
       return buildSwapTimeoutTx(tx);
-    case TransactionKind.RegisterBlockchain:
+    // BNS
+    case "bns/add_address_to_username":
+      return buildAddAddressToUsernameTx(tx);
+    case "bns/set_name":
+      return buildSetNameTx(tx);
+    case "bns/register_blockchain":
       return buildRegisterBlockchainTx(tx);
-    case TransactionKind.RegisterUsername:
+    case "bns/register_username":
       return buildRegisterUsernameTx(tx);
-    case TransactionKind.RemoveAddressFromUsername:
+    case "bns/remove_address_from_username":
       return buildRemoveAddressFromUsernameTx(tx);
     default:
       throw new Error("Received transacion of unsupported kind.");
@@ -138,7 +146,7 @@ function buildAddAddressToUsernameTx(tx: AddAddressToUsernameTx): codecImpl.app.
   };
 }
 
-function buildSendTx(tx: SendTx): codecImpl.app.ITx {
+function buildSendTransaction(tx: SendTransaction): codecImpl.app.ITx {
   return {
     sendMsg: codecImpl.cash.SendMsg.create({
       src: decodeBnsAddress(keyToAddress(tx.signer)).data,
@@ -158,16 +166,20 @@ function buildSetNameTx(tx: SetNameTx): codecImpl.app.ITx {
   };
 }
 
-function buildSwapOfferTx(tx: SwapOfferTx): codecImpl.app.ITx {
-  const hashed = {
-    ...tx,
+function buildSwapOfferTx(tx: SwapOfferTransaction): codecImpl.app.ITx {
+  const hashed: SwapCounterTransaction = {
+    kind: "bcp/swap_counter",
+    chainId: tx.chainId,
+    signer: tx.signer,
+    recipient: tx.recipient,
+    amount: tx.amount,
+    timeout: tx.timeout,
     hashCode: preimageIdentifier(tx.preimage),
-    kind: TransactionKind.SwapCounter,
   };
-  return buildSwapCounterTx(hashed as SwapCounterTx);
+  return buildSwapCounterTx(hashed);
 }
 
-function buildSwapCounterTx(tx: SwapCounterTx): codecImpl.app.ITx {
+function buildSwapCounterTx(tx: SwapCounterTransaction): codecImpl.app.ITx {
   return {
     createEscrowMsg: codecImpl.escrow.CreateEscrowMsg.create({
       src: decodeBnsAddress(keyToAddress(tx.signer)).data,
@@ -180,7 +192,7 @@ function buildSwapCounterTx(tx: SwapCounterTx): codecImpl.app.ITx {
   };
 }
 
-function buildSwapClaimTx(tx: SwapClaimTx): codecImpl.app.ITx {
+function buildSwapClaimTx(tx: SwapClaimTransaction): codecImpl.app.ITx {
   return {
     releaseEscrowMsg: codecImpl.escrow.ReleaseEscrowMsg.create({
       escrowId: tx.swapId,
@@ -189,7 +201,7 @@ function buildSwapClaimTx(tx: SwapClaimTx): codecImpl.app.ITx {
   };
 }
 
-function buildSwapTimeoutTx(tx: SwapTimeoutTx): codecImpl.app.ITx {
+function buildSwapTimeoutTx(tx: SwapTimeoutTransaction): codecImpl.app.ITx {
   return {
     returnEscrowMsg: codecImpl.escrow.ReturnEscrowMsg.create({
       escrowId: tx.swapId,

@@ -1,5 +1,5 @@
 import { ChainId } from "@iov/base-types";
-import { Amount, BaseTx, BcpTicker, Nonce, SignedTransaction, UnsignedTransaction } from "@iov/bcp-types";
+import { Amount, BcpTicker, Nonce, SignedTransaction, UnsignedTransaction } from "@iov/bcp-types";
 import * as codecImpl from "./generated/codecimpl";
 import { BnsBlockchainNft, BnsUsernameNft, Keyed } from "./types";
 export declare function decodeBlockchainNft(nft: codecImpl.blockchain.IBlockchainToken): BnsBlockchainNft;
@@ -8,4 +8,4 @@ export declare function decodeNonce(acct: codecImpl.sigs.IUserData & Keyed): Non
 export declare function decodeToken(data: codecImpl.namecoin.IToken & Keyed): BcpTicker;
 export declare function decodeAmount(coin: codecImpl.x.ICoin): Amount;
 export declare function parseTx(tx: codecImpl.app.ITx, chainId: ChainId): SignedTransaction;
-export declare function parseMsg(base: BaseTx, tx: codecImpl.app.ITx): UnsignedTransaction;
+export declare function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): UnsignedTransaction;

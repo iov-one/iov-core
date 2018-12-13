@@ -76,20 +76,20 @@ $ iov-cli
 > const recipientAddress = signer.keyToAddress(chainId, recipient.pubkey);
 
 > .editor
-const sendTx: SendTx = {
-  kind: TransactionKind.Send,
+const sendTx: SendTransaction = {
+  kind: "bcp/send",
   chainId: chainId,
   signer: faucet.pubkey,
   recipient: recipientAddress,
   memo: "My first transaction",
   amount: {
-    whole: 11000,
-    fractional: 777,
+    quantity: "33123456789",
+    fractionalDigits: 9,
     tokenTicker: "CASH" as TokenTicker,
   },
 };
 ^D
-> await signer.signAndPost(sendTx, 0);
+> await signer.signAndPost(sendTx, wallet.id);
 > (await connection.getAccount({ address: recipientAddress })).data[0].balance;
 
 > await connection.searchTx({ tags: [bnsFromOrToTag(faucetAddress)] });
@@ -151,7 +151,7 @@ transactions associated from above
 ```
 > .editor
 const setNameTx: SetNameTx = {
-  kind: TransactionKind.SetName,
+  kind: "bns/set_name",
   chainId: chainId,
   signer: recipient.pubkey,
   name: "hans",
@@ -174,11 +174,10 @@ When you are done using a WebSocket connection, disconnect the connection
 
 ```
 > (await connection.getAccount({ address: faucetAddress })).data[0].balance
-[ { whole: 123456789,
-    fractional: 0,
+[ { quantity: '123456755876543211',
+    fractionalDigits: 9,
     tokenTicker: 'CASH',
-    tokenName: 'Main token of this chain',
-    fractionalDigits: 6 } ]
+    tokenName: 'Main token of this chain' } ]
 > connection.disconnect()
 undefined
 > (await connection.getAccount({ address: faucetAddress })).data[0].balance

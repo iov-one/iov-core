@@ -4,6 +4,7 @@ export { BnsConnection } from "./bnsconnection";
 export { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
 export {
   BnsAddressBytes,
+  // NFTs
   BnsBlockchainNft,
   BnsBlockchainsByChainIdQuery,
   BnsBlockchainsQuery,
@@ -12,4 +13,11 @@ export {
   BnsUsernamesByUsernameQuery,
   BnsUsernamesQuery,
   BnsUsernameNft,
+  // transactions
+  BnsTx,
+  AddAddressToUsernameTx,
+  SetNameTx,
+  RegisterBlockchainTx,
+  RegisterUsernameTx,
+  RemoveAddressFromUsernameTx,
 } from "./types";

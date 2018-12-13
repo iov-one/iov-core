@@ -9,11 +9,11 @@ import {
   BcpBlockInfo,
   BcpPubkeyQuery,
   BcpTransactionState,
-  SendTx,
+  isSendTransaction,
+  SendTransaction,
   SignedTransaction,
   TokenTicker,
   TransactionId,
-  TransactionKind,
 } from "@iov/bcp-types";
 import { Derivation } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
@@ -258,8 +258,8 @@ describe("RiseConnection", () => {
       const wallet = new Ed25519Wallet();
       const mainIdentity = await wallet.createIdentity(await defaultKeypair);
 
-      const sendTx: SendTx = {
-        kind: TransactionKind.Send,
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
         chainId: riseTestnet,
         signer: mainIdentity.pubkey,
         recipient: defaultRecipientAddress,
@@ -297,8 +297,8 @@ describe("RiseConnection", () => {
         const wallet = new Ed25519Wallet();
         const mainIdentity = await wallet.createIdentity(await defaultKeypair);
 
-        const sendTx: SendTx = {
-          kind: TransactionKind.Send,
+        const sendTx: SendTransaction = {
+          kind: "bcp/send",
           chainId: riseTestnet,
           signer: mainIdentity.pubkey,
           recipient: defaultRecipientAddress,
@@ -358,8 +358,8 @@ describe("RiseConnection", () => {
       const wallet = new Ed25519Wallet();
       const mainIdentity = await wallet.createIdentity(await defaultKeypair);
 
-      const sendTx: SendTx = {
-        kind: TransactionKind.Send,
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
         chainId: riseTestnet,
         signer: mainIdentity.pubkey,
         recipient: defaultRecipientAddress,
@@ -418,7 +418,7 @@ describe("RiseConnection", () => {
         expect(result.height).toEqual(1156579);
         expect(result.transactionId).toEqual(searchId);
         const transaction = result.transaction;
-        if (transaction.kind !== TransactionKind.Send) {
+        if (!isSendTransaction(transaction)) {
           throw new Error("Unexpected transaction type");
         }
         expect(transaction.recipient).toEqual("10145108642177909005R");

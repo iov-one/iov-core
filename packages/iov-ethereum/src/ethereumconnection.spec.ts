@@ -2,11 +2,11 @@ import { Algorithm } from "@iov/base-types";
 import {
   Address,
   BcpAccountQuery,
-  SendTx,
+  isSendTransaction,
+  SendTransaction,
   SignedTransaction,
   TokenTicker,
   TransactionId,
-  TransactionKind,
 } from "@iov/bcp-types";
 import { HdPaths, Secp256k1HdWallet } from "@iov/keycontrol";
 
@@ -111,8 +111,8 @@ describe("EthereumConnection", () => {
 
       const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 
-      const sendTx: SendTx = {
-        kind: TransactionKind.Send,
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
         chainId: nodeChainId,
         signer: mainIdentity.pubkey,
         recipient: recipientAddress,
@@ -193,8 +193,8 @@ describe("EthereumConnection", () => {
 
       const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 
-      const sendTx: SendTx = {
-        kind: TransactionKind.Send,
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
         chainId: nodeChainId,
         signer: mainIdentity.pubkey,
         recipient: recipientAddress,
@@ -246,10 +246,9 @@ describe("EthereumConnection", () => {
       const result = resultSearch[0];
       expect(result.transactionId).toEqual(resultPost.transactionId);
       const transaction = result.transaction;
-      if (transaction.kind !== TransactionKind.Send) {
+      if (!isSendTransaction(transaction)) {
         throw new Error("Unexpected transaction type");
       }
-      expect(result.transaction.kind).toEqual(TransactionKind.Send);
       expect(transaction.recipient).toEqual("0xe137f5264b6b528244e1643a2d570b37660b7f14");
       expect(transaction.amount.quantity).toEqual("5445500");
       connection.disconnect();
@@ -265,10 +264,9 @@ describe("EthereumConnection", () => {
       const result = results[0];
       expect(result.transactionId).toEqual(storedTxId);
       const transaction = result.transaction;
-      if (transaction.kind !== TransactionKind.Send) {
+      if (!isSendTransaction(transaction)) {
         throw new Error("Unexpected transaction type");
       }
-      expect(result.transaction.kind).toEqual(TransactionKind.Send);
       expect(transaction.recipient).toEqual("recipient_address");
       expect(transaction.amount.quantity).toEqual("tx_quantity");
       connection.disconnect();

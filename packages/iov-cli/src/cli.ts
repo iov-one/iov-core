@@ -44,6 +44,7 @@ export function main(originalArgs: ReadonlyArray<string>): void {
   console.log(colors.yellow("    - Long"));
   console.log(colors.yellow("  * from @iov/bns"));
   console.log(colors.yellow("    - bnsCodec"));
+  console.log(colors.yellow("    - SetNameTx"));
   console.log(colors.yellow("  * from @iov/core"));
   console.log(colors.yellow("    - Address"));
   console.log(colors.yellow("    - bnsConnector"));
@@ -56,10 +57,8 @@ export function main(originalArgs: ReadonlyArray<string>): void {
   console.log(colors.yellow("    - Nonce"));
   console.log(colors.yellow("    - UserProfile"));
   console.log(colors.yellow("    - Secp256k1HdWallet"));
-  console.log(colors.yellow("    - SendTx"));
-  console.log(colors.yellow("    - SetNameTx"));
+  console.log(colors.yellow("    - SendTransaction"));
   console.log(colors.yellow("    - TokenTicker"));
-  console.log(colors.yellow("    - TransactionKind"));
   console.log(colors.yellow("    - Wallet"));
   console.log(colors.yellow("    - WalletId"));
   console.log(colors.yellow("    - WalletImplementationIdString"));
@@ -98,17 +97,18 @@ export function main(originalArgs: ReadonlyArray<string>): void {
       MultiChainSigner,
       Nonce,
       Secp256k1HdWallet,
-      SendTx,
-      SetNameTx,
+      SendTransaction,
       TokenTicker,
-      TransactionKind,
       UserProfile,
       Wallet,
       WalletId,
       WalletImplementationIdString,
       WalletSerializationString,
     } from "@iov/core";
-    import { bnsCodec } from '@iov/bns';
+    import {
+      bnsCodec,
+      SetNameTx,
+    } from '@iov/bns';
     import { Bip39, Ed25519, Ed25519Keypair, Random, Sha256, Sha512 } from '@iov/crypto';
     import { Bech32, Encoding } from '@iov/encoding';
     import { IovFaucet } from '@iov/faucets';

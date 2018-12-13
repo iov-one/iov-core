@@ -2,10 +2,32 @@ import * as Long from "long";
 import { As } from "type-tagger";
 
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
-import { Address, ChainAddressPair, FullSignature, Nonce, TokenTicker } from "@iov/bcp-types";
+import {
+  Address,
+  FullSignature,
+  isSendTransaction,
+  isSwapClaimTransaction,
+  isSwapCounterTransaction,
+  isSwapOfferTransaction,
+  isSwapTimeoutTransaction,
+  Nonce,
+  SendTransaction,
+  SwapClaimTransaction,
+  SwapCounterTransaction,
+  SwapOfferTransaction,
+  SwapTimeoutTransaction,
+  TokenTicker,
+  UnsignedTransaction,
+} from "@iov/bcp-types";
+
 import { Int53 } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
+
+export interface ChainAddressPair {
+  readonly chainId: ChainId;
+  readonly address: Address;
+}
 
 // NFTs
 
@@ -176,3 +198,109 @@ export const ensure = <T>(maybe: T | null | undefined, msg?: string): T => {
   }
   return maybe;
 };
+
+// transactions
+
+export interface AddAddressToUsernameTx extends UnsignedTransaction {
+  readonly kind: "bns/add_address_to_username";
+  /** the username to be updated, must exist on chain */
+  readonly username: string;
+  readonly payload: ChainAddressPair;
+}
+
+/**
+ * Associates a simple name to an account on a weave-based blockchain.
+ *
+ * @deprecated will be dropped in favour of RegisterUsernameTx
+ */
+export interface SetNameTx extends UnsignedTransaction {
+  readonly kind: "bns/set_name";
+  readonly name: string;
+}
+
+export interface RegisterBlockchainTx extends UnsignedTransaction {
+  readonly kind: "bns/register_blockchain";
+  /**
+   * The chain to be registered
+   *
+   * Fields as defined in https://github.com/iov-one/bns-spec/blob/master/docs/data/ObjectDefinitions.rst#chain
+   */
+  readonly chain: {
+    readonly chainId: ChainId;
+    readonly name: string;
+    readonly enabled: boolean;
+    readonly production: boolean;
+
+    readonly networkId?: string;
+    readonly mainTickerId?: TokenTicker;
+  };
+  readonly codecName: string;
+  readonly codecConfig: string;
+}
+
+export interface RegisterUsernameTx extends UnsignedTransaction {
+  readonly kind: "bns/register_username";
+  readonly username: string;
+  readonly addresses: ReadonlyArray<ChainAddressPair>;
+}
+
+export interface RemoveAddressFromUsernameTx extends UnsignedTransaction {
+  readonly kind: "bns/remove_address_from_username";
+  /** the username to be updated, must exist on chain */
+  readonly username: string;
+  readonly payload: ChainAddressPair;
+}
+
+export type BnsTx =
+  // BCP
+  | SendTransaction
+  | SwapOfferTransaction
+  | SwapCounterTransaction
+  | SwapClaimTransaction
+  | SwapTimeoutTransaction
+  // BNS
+  | AddAddressToUsernameTx
+  | SetNameTx
+  | RegisterBlockchainTx
+  | RegisterUsernameTx
+  | RemoveAddressFromUsernameTx;
+
+export function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx {
+  if (
+    isSendTransaction(transaction) ||
+    isSwapOfferTransaction(transaction) ||
+    isSwapCounterTransaction(transaction) ||
+    isSwapClaimTransaction(transaction) ||
+    isSwapTimeoutTransaction(transaction)
+  ) {
+    return true;
+  }
+
+  return transaction.kind.startsWith("bns/");
+}
+
+export function isAddAddressToUsernameTx(
+  transaction: UnsignedTransaction,
+): transaction is AddAddressToUsernameTx {
+  return isBnsTx(transaction) && transaction.kind === "bns/add_address_to_username";
+}
+
+export function isSetNameTx(transaction: UnsignedTransaction): transaction is SetNameTx {
+  return isBnsTx(transaction) && transaction.kind === "bns/set_name";
+}
+
+export function isRegisterBlockchainTx(
+  transaction: UnsignedTransaction,
+): transaction is RegisterBlockchainTx {
+  return isBnsTx(transaction) && transaction.kind === "bns/register_blockchain";
+}
+
+export function isRegisterUsernameTx(transaction: UnsignedTransaction): transaction is RegisterUsernameTx {
+  return isBnsTx(transaction) && transaction.kind === "bns/register_username";
+}
+
+export function isRemoveAddressFromUsernameTx(
+  transaction: UnsignedTransaction,
+): transaction is RemoveAddressFromUsernameTx {
+  return isBnsTx(transaction) && transaction.kind === "bns/remove_address_from_username";
+}

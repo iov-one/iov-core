@@ -6,12 +6,14 @@ import {
   Address,
   BcpTxQuery,
   ConfirmedTransaction,
+  isSwapClaimTransaction,
+  isSwapCounterTransaction,
+  isSwapTimeoutTransaction,
   Nonce,
   SignableBytes,
-  SwapClaimTx,
-  SwapCounterTx,
-  SwapTimeoutTx,
-  TransactionKind,
+  SwapClaimTransaction,
+  SwapCounterTransaction,
+  SwapTimeoutTransaction,
 } from "@iov/bcp-types";
 import { Sha256 } from "@iov/crypto";
 import { Bech32, Encoding } from "@iov/encoding";
@@ -94,16 +96,18 @@ export const hashFromIdentifier = (ident: HashId): Uint8Array => ident.slice(has
 export const bucketKey = (bucket: string) => Encoding.toAscii(`${bucket}:`);
 export const indexKey = (bucket: string, index: string) => Encoding.toAscii(`_i.${bucket}_${index}:`);
 
-export function isSwapOffer(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapCounterTx> {
-  return tx.transaction.kind === TransactionKind.SwapCounter;
+export function isConfirmedWithSwapCounterTransaction(
+  tx: ConfirmedTransaction,
+): tx is ConfirmedTransaction<SwapCounterTransaction> {
+  const unsigned = tx.transaction;
+  return isSwapCounterTransaction(unsigned);
 }
 
-export function isSwapRelease(
+export function isConfirmedWithSwapClaimOrTimeoutTransaction(
   tx: ConfirmedTransaction,
-): tx is ConfirmedTransaction<SwapClaimTx | SwapTimeoutTx> {
-  return (
-    tx.transaction.kind === TransactionKind.SwapClaim || tx.transaction.kind === TransactionKind.SwapTimeout
-  );
+): tx is ConfirmedTransaction<SwapClaimTransaction | SwapTimeoutTransaction> {
+  const unsigned = tx.transaction;
+  return isSwapClaimTransaction(unsigned) || isSwapTimeoutTransaction(unsigned);
 }
 
 export function buildTxQuery(query: BcpTxQuery): QueryString {

@@ -1,16 +1,5 @@
 import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
-import {
-  AddAddressToUsernameTx,
-  Address,
-  Amount,
-  FullSignature,
-  Nonce,
-  RegisterBlockchainTx,
-  RegisterUsernameTx,
-  RemoveAddressFromUsernameTx,
-  TokenTicker,
-  TransactionKind,
-} from "@iov/bcp-types";
+import { Address, Amount, FullSignature, Nonce, TokenTicker } from "@iov/bcp-types";
 import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 
@@ -24,6 +13,12 @@ import {
   encodePubkey,
 } from "./encode";
 import * as codecImpl from "./generated/codecimpl";
+import {
+  AddAddressToUsernameTx,
+  RegisterBlockchainTx,
+  RegisterUsernameTx,
+  RemoveAddressFromUsernameTx,
+} from "./types";
 import { appendSignBytes } from "./util";
 
 import {
@@ -141,7 +136,7 @@ describe("Encode", () => {
 
     it("works for AddAddressToUsernameTx", () => {
       const addAddress: AddAddressToUsernameTx = {
-        kind: TransactionKind.AddAddressToUsername,
+        kind: "bns/add_address_to_username",
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
         username: "alice",
@@ -158,7 +153,7 @@ describe("Encode", () => {
 
     it("works for RegisterBlockchainTx", () => {
       const registerBlockchain: RegisterBlockchainTx = {
-        kind: TransactionKind.RegisterBlockchain,
+        kind: "bns/register_blockchain",
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
         chain: {
@@ -186,7 +181,7 @@ describe("Encode", () => {
 
     it("works for RegisterUsernameTx", () => {
       const registerUsername: RegisterUsernameTx = {
-        kind: TransactionKind.RegisterUsername,
+        kind: "bns/register_username",
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
         username: "alice",
@@ -221,7 +216,7 @@ describe("Encode", () => {
 
     it("works for RemoveAddressFromUsernameTx", () => {
       const removeAddress: RemoveAddressFromUsernameTx = {
-        kind: TransactionKind.RemoveAddressFromUsername,
+        kind: "bns/remove_address_from_username",
         chainId: "registry-chain" as ChainId,
         signer: defaultSigner,
         username: "alice",

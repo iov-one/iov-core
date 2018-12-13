@@ -1,5 +1,5 @@
 import { Algorithm, ChainId, PublicKeyBytes } from "@iov/base-types";
-import { Address, BcpTransactionState, SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types";
+import { Address, BcpTransactionState, isSendTransaction, SendTransaction, TokenTicker } from "@iov/bcp-types";
 import { bnsCodec, bnsConnector, bnsFromOrToTag } from "@iov/bns";
 import { Random } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, LocalIdentity, UserProfile, WalletId } from "@iov/keycontrol";
@@ -73,8 +73,8 @@ describe("MultiChainSigner", () => {
 
       // construct a sendtx, this mirrors the MultiChainSigner api
       const memo = `MultiChainSigner style (${Math.random()})`;
-      const sendTx: SendTx = {
-        kind: TransactionKind.Send,
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
         chainId,
         signer: faucet.pubkey,
         recipient: recipient,
@@ -99,9 +99,11 @@ describe("MultiChainSigner", () => {
       // find the transaction we sent by comparing the memo
       const results = await connection.searchTx({ tags: [bnsFromOrToTag(recipient)] });
       expect(results.length).toBeGreaterThanOrEqual(1);
-      const last = results[results.length - 1];
-      expect(last.transaction.kind).toEqual(TransactionKind.Send);
-      expect((last.transaction as SendTx).memo).toEqual(memo);
+      const last = results[results.length - 1].transaction;
+      if (!isSendTransaction(last)) {
+        throw new Error("Unexpected transaction kind");
+      }
+      expect(last.memo).toEqual(memo);
     });
 
     it("can add two chains", async () => {

@@ -1,5 +1,5 @@
 import { ChainId, PublicKeyBundle } from "@iov/base-types";
-import { Address, Amount, FullSignature, SendTx, SignedTransaction } from "@iov/bcp-types";
+import { Address, Amount, FullSignature, SendTransaction, SignedTransaction } from "@iov/bcp-types";
 import { PrivateKeyBundle } from "./types";
 export declare const pubJson: PublicKeyBundle;
 export declare const pubBin: Uint8Array;
@@ -9,7 +9,7 @@ export declare const address: Address;
 export declare const coinJson: Amount;
 export declare const coinBin: Uint8Array;
 export declare const chainId: ChainId;
-export declare const sendTxJson: SendTx;
+export declare const sendTxJson: SendTransaction;
 export declare const sendTxBin: Uint8Array;
 export declare const signBytes: Uint8Array;
 export declare const sig: FullSignature;

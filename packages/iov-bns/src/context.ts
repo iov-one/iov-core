@@ -7,13 +7,12 @@ import {
   BcpTicker,
   ConfirmedTransaction,
   OpenSwap,
-  SwapClaimTx,
-  SwapCounterTx,
+  SwapClaimTransaction,
+  SwapCounterTransaction,
   SwapData,
   SwapIdBytes,
   SwapState,
-  SwapTimeoutTx,
-  TransactionKind,
+  SwapTimeoutTransaction,
 } from "@iov/bcp-types";
 
 import { decodeAmount } from "./decode";
@@ -76,8 +75,8 @@ export class Context {
     };
   }
 
-  public swapOfferFromTx(tx: ConfirmedTransaction<SwapCounterTx>): OpenSwap {
-    const counter: SwapCounterTx = tx.transaction;
+  public swapOfferFromTx(tx: ConfirmedTransaction<SwapCounterTransaction>): OpenSwap {
+    const counter: SwapCounterTransaction = tx.transaction;
     // TODO: do we really want errors here, or just filter them out???
     if (!isHashIdentifier(counter.hashCode)) {
       throw new Error("swap not controlled by hash lock");
@@ -97,8 +96,8 @@ export class Context {
   }
 
   // TODO: Not using the chain data. Does this belong here?
-  public settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTx | SwapTimeoutTx): BcpAtomicSwap {
-    if (tx.kind === TransactionKind.SwapClaim) {
+  public settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTransaction | SwapTimeoutTransaction): BcpAtomicSwap {
+    if (tx.kind === "bcp/swap_claim") {
       return {
         kind: SwapState.Claimed,
         data: swap.data,

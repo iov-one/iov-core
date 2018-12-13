@@ -1,5 +1,5 @@
 import { ChainId } from "@iov/base-types";
-import { BcpAccount, BcpAtomicSwap, BcpCoin, BcpTicker, ConfirmedTransaction, OpenSwap, SwapClaimTx, SwapCounterTx, SwapTimeoutTx } from "@iov/bcp-types";
+import { BcpAccount, BcpAtomicSwap, BcpCoin, BcpTicker, ConfirmedTransaction, OpenSwap, SwapClaimTransaction, SwapCounterTransaction, SwapTimeoutTransaction } from "@iov/bcp-types";
 import * as codecImpl from "./generated/codecimpl";
 import { Keyed } from "./types";
 /**
@@ -17,7 +17,7 @@ export declare class Context {
     account(acct: codecImpl.namecoin.IWallet & Keyed): BcpAccount;
     coin(coin: codecImpl.x.ICoin): BcpCoin;
     swapOffer(swap: codecImpl.escrow.Escrow & Keyed): BcpAtomicSwap;
-    swapOfferFromTx(tx: ConfirmedTransaction<SwapCounterTx>): OpenSwap;
-    settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTx | SwapTimeoutTx): BcpAtomicSwap;
+    swapOfferFromTx(tx: ConfirmedTransaction<SwapCounterTransaction>): OpenSwap;
+    settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTransaction | SwapTimeoutTransaction): BcpAtomicSwap;
     private amountToCoin;
 }
