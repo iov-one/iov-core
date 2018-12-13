@@ -460,33 +460,18 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
     client.disconnect();
   });
 
-  it("can subscribe twice", done => {
+  it("can subscribe twice", async () => {
     pendingWithoutTendermint();
 
-    (async () => {
-      const events: responses.NewBlockHeaderEvent[] = [];
-      const client = new Client(rpcFactory(), adaptor);
-      const stream1 = client.subscribeNewBlockHeader();
-      const stream2 = client.subscribeNewBlockHeader();
+    const client = new Client(rpcFactory(), adaptor);
+    const stream1 = client.subscribeNewBlockHeader();
+    const stream2 = client.subscribeNewBlockHeader();
 
-      const subscription = Stream.merge(stream1, stream2).subscribe({
-        next: event => {
-          events.push(event);
+    const events = await toListPromise(Stream.merge(stream1, stream2), 4);
 
-          // collect 2x2 events
-          if (events.length === 4) {
-            // two events per height
-            expect(new Set(events.map(e => e.height)).size).toEqual(2);
+    expect(new Set(events.map(e => e.height)).size).toEqual(2);
 
-            subscription.unsubscribe();
-            client.disconnect();
-            done();
-          }
-        },
-        error: done.fail,
-        complete: () => done.fail("Stream completed before we are done"),
-      });
-    })().catch(done.fail);
+    client.disconnect();
   });
 }
 
