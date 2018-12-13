@@ -8,6 +8,8 @@
 * @iov/bcp-types: the new interfaces `getBlockHeader` and `watchBlockHeaders`
   provide block header information.
 * @iov/bns: Fix encoding of `BcpTxQuery.hash` in `listenTx` and `liveTx`
+* @iov/socket: New package with wrappers around WebSockets: `SocketWrapper`
+  and `StreamingSocket` used by tendermint-rpc and Ethereum.
 * @iov/stream: Add `toListPromise` that collects stream events and returns a
   list when done.
 * @iov/stream: `ValueAndUpdates.waitFor` now returns the values that matched
