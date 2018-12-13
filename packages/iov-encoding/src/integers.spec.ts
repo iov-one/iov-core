@@ -81,10 +81,18 @@ describe("Integers", () => {
         expect(Uint32.fromBigEndianBytes(Buffer.from([0, 0, 0, 0])).toNumber()).toEqual(0);
         expect(Uint32.fromBigEndianBytes(Buffer.from([0, 0, 0, 1])).toNumber()).toEqual(1);
         expect(Uint32.fromBigEndianBytes(Buffer.from([0, 0, 0, 42])).toNumber()).toEqual(42);
-        expect(Uint32.fromBigEndianBytes(Buffer.from([0x3b, 0x9a, 0xca, 0x00])).toNumber()).toEqual(1000000000);
-        expect(Uint32.fromBigEndianBytes(Buffer.from([0x7f, 0xff, 0xff, 0xff])).toNumber()).toEqual(2147483647);
-        expect(Uint32.fromBigEndianBytes(Buffer.from([0x80, 0x00, 0x00, 0x00])).toNumber()).toEqual(2147483648);
-        expect(Uint32.fromBigEndianBytes(Buffer.from([0xff, 0xff, 0xff, 0xff])).toNumber()).toEqual(4294967295);
+        expect(Uint32.fromBigEndianBytes(Buffer.from([0x3b, 0x9a, 0xca, 0x00])).toNumber()).toEqual(
+          1000000000,
+        );
+        expect(Uint32.fromBigEndianBytes(Buffer.from([0x7f, 0xff, 0xff, 0xff])).toNumber()).toEqual(
+          2147483647,
+        );
+        expect(Uint32.fromBigEndianBytes(Buffer.from([0x80, 0x00, 0x00, 0x00])).toNumber()).toEqual(
+          2147483648,
+        );
+        expect(Uint32.fromBigEndianBytes(Buffer.from([0xff, 0xff, 0xff, 0xff])).toNumber()).toEqual(
+          4294967295,
+        );
       });
 
       it("throws for invalid input length", () => {
@@ -97,8 +105,12 @@ describe("Integers", () => {
         expect(() => Uint32.fromBigEndianBytes([0, 0, 0, -1])).toThrowError(/Invalid value in byte/);
         expect(() => Uint32.fromBigEndianBytes([0, 0, 0, 256])).toThrowError(/Invalid value in byte/);
         expect(() => Uint32.fromBigEndianBytes([0, 0, 0, NaN])).toThrowError(/Invalid value in byte/);
-        expect(() => Uint32.fromBigEndianBytes([0, 0, 0, Number.NEGATIVE_INFINITY])).toThrowError(/Invalid value in byte/);
-        expect(() => Uint32.fromBigEndianBytes([0, 0, 0, Number.POSITIVE_INFINITY])).toThrowError(/Invalid value in byte/);
+        expect(() => Uint32.fromBigEndianBytes([0, 0, 0, Number.NEGATIVE_INFINITY])).toThrowError(
+          /Invalid value in byte/,
+        );
+        expect(() => Uint32.fromBigEndianBytes([0, 0, 0, Number.POSITIVE_INFINITY])).toThrowError(
+          /Invalid value in byte/,
+        );
       });
     });
   });
@@ -282,16 +294,30 @@ describe("Integers", () => {
     it("throws for wrong number of bytes", () => {
       expect(() => Uint64.fromBytesBigEndian([])).toThrowError(/invalid input length/i);
       expect(() => Uint64.fromBytesBigEndian([0x00])).toThrowError(/invalid input length/i);
-      expect(() => Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])).toThrowError(/invalid input length/i);
-      expect(() => Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])).toThrowError(/invalid input length/i);
+      expect(() => Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])).toThrowError(
+        /invalid input length/i,
+      );
+      expect(() =>
+        Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+      ).toThrowError(/invalid input length/i);
     });
 
     it("throws for wrong byte value", () => {
-      expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, 256])).toThrowError(/invalid value in byte/i);
-      expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, -1])).toThrowError(/invalid value in byte/i);
-      expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, Number.NEGATIVE_INFINITY])).toThrowError(/invalid value in byte/i);
-      expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, Number.POSITIVE_INFINITY])).toThrowError(/invalid value in byte/i);
-      expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, Number.NaN])).toThrowError(/invalid value in byte/i);
+      expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, 256])).toThrowError(
+        /invalid value in byte/i,
+      );
+      expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, -1])).toThrowError(
+        /invalid value in byte/i,
+      );
+      expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, Number.NEGATIVE_INFINITY])).toThrowError(
+        /invalid value in byte/i,
+      );
+      expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, Number.POSITIVE_INFINITY])).toThrowError(
+        /invalid value in byte/i,
+      );
+      expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, Number.NaN])).toThrowError(
+        /invalid value in byte/i,
+      );
     });
 
     it("can be constructed from string", () => {
@@ -345,7 +371,9 @@ describe("Integers", () => {
       // not an integer
       expect(() => Uint64.fromNumber(Number.NEGATIVE_INFINITY)).toThrowError(/input is not a safe integer/i);
       expect(() => Uint64.fromNumber(Number.POSITIVE_INFINITY)).toThrowError(/input is not a safe integer/i);
-      expect(() => Uint64.fromNumber(Number.MAX_SAFE_INTEGER + 1)).toThrowError(/input is not a safe integer/i);
+      expect(() => Uint64.fromNumber(Number.MAX_SAFE_INTEGER + 1)).toThrowError(
+        /input is not a safe integer/i,
+      );
 
       // negative integer
       expect(() => Uint64.fromNumber(-1)).toThrowError(/input is negative/i);
@@ -353,19 +381,39 @@ describe("Integers", () => {
     });
 
     it("can export bytes (big endian)", () => {
-      expect(Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]).toBytesBigEndian()).toEqual([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
-      expect(Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]).toBytesBigEndian()).toEqual([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]);
-      expect(Uint64.fromBytesBigEndian([0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]).toBytesBigEndian()).toEqual([0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
-      expect(Uint64.fromBytesBigEndian([0xab, 0x22, 0xbc, 0x5f, 0xa9, 0x20, 0x4e, 0x0d]).toBytesBigEndian()).toEqual([0xab, 0x22, 0xbc, 0x5f, 0xa9, 0x20, 0x4e, 0x0d]);
-      expect(Uint64.fromBytesBigEndian([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]).toBytesBigEndian()).toEqual([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]);
+      expect(
+        Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]).toBytesBigEndian(),
+      ).toEqual([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
+      expect(
+        Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]).toBytesBigEndian(),
+      ).toEqual([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]);
+      expect(
+        Uint64.fromBytesBigEndian([0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]).toBytesBigEndian(),
+      ).toEqual([0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
+      expect(
+        Uint64.fromBytesBigEndian([0xab, 0x22, 0xbc, 0x5f, 0xa9, 0x20, 0x4e, 0x0d]).toBytesBigEndian(),
+      ).toEqual([0xab, 0x22, 0xbc, 0x5f, 0xa9, 0x20, 0x4e, 0x0d]);
+      expect(
+        Uint64.fromBytesBigEndian([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]).toBytesBigEndian(),
+      ).toEqual([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]);
     });
 
     it("can export bytes (little endian)", () => {
-      expect(Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]).toBytesLittleEndian()).toEqual([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
-      expect(Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]).toBytesLittleEndian()).toEqual([0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
-      expect(Uint64.fromBytesBigEndian([0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]).toBytesLittleEndian()).toEqual([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]);
-      expect(Uint64.fromBytesBigEndian([0xab, 0x22, 0xbc, 0x5f, 0xa9, 0x20, 0x4e, 0x0d]).toBytesLittleEndian()).toEqual([0x0d, 0x4e, 0x20, 0xa9, 0x5f, 0xbc, 0x22, 0xab]);
-      expect(Uint64.fromBytesBigEndian([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]).toBytesLittleEndian()).toEqual([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]);
+      expect(
+        Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]).toBytesLittleEndian(),
+      ).toEqual([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
+      expect(
+        Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]).toBytesLittleEndian(),
+      ).toEqual([0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
+      expect(
+        Uint64.fromBytesBigEndian([0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]).toBytesLittleEndian(),
+      ).toEqual([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]);
+      expect(
+        Uint64.fromBytesBigEndian([0xab, 0x22, 0xbc, 0x5f, 0xa9, 0x20, 0x4e, 0x0d]).toBytesLittleEndian(),
+      ).toEqual([0x0d, 0x4e, 0x20, 0xa9, 0x5f, 0xbc, 0x22, 0xab]);
+      expect(
+        Uint64.fromBytesBigEndian([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]).toBytesLittleEndian(),
+      ).toEqual([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]);
     });
 
     it("can export strings", () => {
