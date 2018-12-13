@@ -35,8 +35,8 @@ console.log((await connection.getAccount({ address: mainAddress })).data[0].bala
 
 const recipientAddress = "6076671634347365051L" as Address;
 
-const sendTx: SendTx = {
-  kind: TransactionKind.Send,
+const sendTx: SendTransaction = {
+  kind: "bcp/send",
   chainId: chainId,
   signer: mainIdentity.pubkey,
   recipient: recipientAddress,
@@ -69,8 +69,8 @@ const mainIdentity = await wallet.createIdentity(await passphraseToKeypair("oxyg
 
 const recipientAddress = "6076671634347365051L" as Address;
 
-const sendTx: SendTx = {
-  kind: TransactionKind.Send,
+const sendTx: SendTransaction = {
+  kind: "bcp/send",
   chainId: liskTestnet,
   signer: mainIdentity.pubkey,
   recipient: recipientAddress,

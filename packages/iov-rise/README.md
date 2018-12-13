@@ -36,8 +36,8 @@ console.log((await connection.getAccount({ address: mainAddress })).data[0].bala
 
 const recipientAddress = "4278021116091793760R" as Address;
 
-const sendTx: SendTx = {
-  kind: TransactionKind.Send,
+const sendTx: SendTransaction = {
+  kind: "bcp/send",
   chainId: chainId,
   signer: mainIdentity.pubkey,
   recipient: recipientAddress,
@@ -70,8 +70,8 @@ const mainAddress = riseCodec.keyToAddress(mainIdentity.pubkey);
 
 const recipientAddress = "10145108642177909005R" as Address;
 
-const sendTx: SendTx = {
-  kind: TransactionKind.Send,
+const sendTx: SendTransaction = {
+  kind: "bcp/send",
   chainId: riseTestnet,
   signer: mainIdentity.pubkey,
   recipient: recipientAddress,

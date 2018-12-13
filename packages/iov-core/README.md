@@ -222,10 +222,10 @@ console.log(yours); // should show empty array for data
 Send a transaction to second id:
 
 ```ts
-import { SendTx, TokenTicker, TransactionKind } from "@iov/bcp-types"
+import { SendTransaction, TokenTicker } from "@iov/bcp-types"
 
-const sendTx: SendTx = {
-  kind: TransactionKind.Send,
+const sendTx: SendTransaction = {
+  kind: "bcp/send",
   chainId: chainId,
   signer: id1a.pubkey,  // this account must have money
   recipient: addr2,
@@ -258,7 +258,7 @@ Now, query the transaction history:
 ```ts
 const history = await connection.searchTx({ tags: [bnsFromOrToTag(addr2)] }));
 console.log(history);
-const first = history[0].transaction as SendTx;
+const first = history[0].transaction as SendTransaction;
 console.log(first.amount);
 // address of recipient
 console.log(toHex(first.recipient));
