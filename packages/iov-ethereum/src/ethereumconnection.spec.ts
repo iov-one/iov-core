@@ -376,6 +376,7 @@ describe("EthereumConnection", () => {
                 expect(header).toEqual(events[1]);
                 subscription.unsubscribe();
                 // unwatchHeader
+                connection.unwatchBlockHeaders();
                 connection.disconnect();
                 done();
               });

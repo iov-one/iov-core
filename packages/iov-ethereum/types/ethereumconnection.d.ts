@@ -18,6 +18,7 @@ export declare class EthereumConnection implements BcpConnection {
     getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<BcpQueryEnvelope<Nonce>>;
     getBlockHeader(height: number): Promise<BlockHeader>;
     watchBlockHeaders(): Stream<BlockHeader>;
+    unwatchBlockHeaders(): void;
     /** @deprecated use watchBlockHeaders().map(header => header.height) */
     changeBlock(): Stream<number>;
     watchAccount(_: BcpAccountQuery): Stream<BcpAccount | undefined>;
