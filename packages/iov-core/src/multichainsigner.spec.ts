@@ -1,5 +1,11 @@
 import { Algorithm, ChainId, PublicKeyBytes } from "@iov/base-types";
-import { Address, BcpTransactionState, isSendTransaction, SendTransaction, TokenTicker } from "@iov/bcp-types";
+import {
+  Address,
+  BcpTransactionState,
+  isSendTransaction,
+  SendTransaction,
+  TokenTicker,
+} from "@iov/bcp-types";
 import { bnsCodec, bnsConnector, bnsFromOrToTag } from "@iov/bns";
 import { Random } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, LocalIdentity, UserProfile, WalletId } from "@iov/keycontrol";

@@ -8,7 +8,9 @@ describe("Encoding", () => {
     expect(Encoding.toHex(new Uint8Array([0x10]))).toEqual("10");
     expect(Encoding.toHex(new Uint8Array([0x11]))).toEqual("11");
     expect(Encoding.toHex(new Uint8Array([0x11, 0x22, 0x33]))).toEqual("112233");
-    expect(Encoding.toHex(new Uint8Array([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]))).toEqual("0123456789abcdef");
+    expect(Encoding.toHex(new Uint8Array([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]))).toEqual(
+      "0123456789abcdef",
+    );
   });
 
   it("decodes from hex", () => {
@@ -19,7 +21,9 @@ describe("Encoding", () => {
     expect(Encoding.fromHex("10")).toEqual(new Uint8Array([0x10]));
     expect(Encoding.fromHex("11")).toEqual(new Uint8Array([0x11]));
     expect(Encoding.fromHex("112233")).toEqual(new Uint8Array([0x11, 0x22, 0x33]));
-    expect(Encoding.fromHex("0123456789abcdef")).toEqual(new Uint8Array([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]));
+    expect(Encoding.fromHex("0123456789abcdef")).toEqual(
+      new Uint8Array([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]),
+    );
 
     // capital letters
     expect(Encoding.fromHex("AA")).toEqual(new Uint8Array([0xaa]));
@@ -101,7 +105,9 @@ describe("Encoding", () => {
   it("encodes to ascii", () => {
     expect(Encoding.toAscii("")).toEqual(new Uint8Array([]));
     expect(Encoding.toAscii("abc")).toEqual(new Uint8Array([0x61, 0x62, 0x63]));
-    expect(Encoding.toAscii(" ?=-n|~+-*/\\")).toEqual(new Uint8Array([0x20, 0x3f, 0x3d, 0x2d, 0x6e, 0x7c, 0x7e, 0x2b, 0x2d, 0x2a, 0x2f, 0x5c]));
+    expect(Encoding.toAscii(" ?=-n|~+-*/\\")).toEqual(
+      new Uint8Array([0x20, 0x3f, 0x3d, 0x2d, 0x6e, 0x7c, 0x7e, 0x2b, 0x2d, 0x2a, 0x2f, 0x5c]),
+    );
 
     expect(() => Encoding.toAscii("ö")).toThrow();
     expect(() => Encoding.toAscii("ß")).toThrow();
@@ -110,7 +116,11 @@ describe("Encoding", () => {
   it("decodes from ascii", () => {
     expect(Encoding.fromAscii(new Uint8Array([]))).toEqual("");
     expect(Encoding.fromAscii(new Uint8Array([0x61, 0x62, 0x63]))).toEqual("abc");
-    expect(Encoding.fromAscii(new Uint8Array([0x20, 0x3f, 0x3d, 0x2d, 0x6e, 0x7c, 0x7e, 0x2b, 0x2d, 0x2a, 0x2f, 0x5c]))).toEqual(" ?=-n|~+-*/\\");
+    expect(
+      Encoding.fromAscii(
+        new Uint8Array([0x20, 0x3f, 0x3d, 0x2d, 0x6e, 0x7c, 0x7e, 0x2b, 0x2d, 0x2a, 0x2f, 0x5c]),
+      ),
+    ).toEqual(" ?=-n|~+-*/\\");
 
     expect(() => Encoding.fromAscii(new Uint8Array([0x00]))).toThrow();
     expect(() => Encoding.fromAscii(new Uint8Array([0x7f]))).toThrow();
@@ -121,13 +131,19 @@ describe("Encoding", () => {
     it("encodes ascii strings", () => {
       expect(Encoding.toUtf8("")).toEqual(new Uint8Array([]));
       expect(Encoding.toUtf8("abc")).toEqual(new Uint8Array([0x61, 0x62, 0x63]));
-      expect(Encoding.toUtf8(" ?=-n|~+-*/\\")).toEqual(new Uint8Array([0x20, 0x3f, 0x3d, 0x2d, 0x6e, 0x7c, 0x7e, 0x2b, 0x2d, 0x2a, 0x2f, 0x5c]));
+      expect(Encoding.toUtf8(" ?=-n|~+-*/\\")).toEqual(
+        new Uint8Array([0x20, 0x3f, 0x3d, 0x2d, 0x6e, 0x7c, 0x7e, 0x2b, 0x2d, 0x2a, 0x2f, 0x5c]),
+      );
     });
 
     it("decodes ascii string", () => {
       expect(Encoding.fromUtf8(new Uint8Array([]))).toEqual("");
       expect(Encoding.fromUtf8(new Uint8Array([0x61, 0x62, 0x63]))).toEqual("abc");
-      expect(Encoding.fromUtf8(new Uint8Array([0x20, 0x3f, 0x3d, 0x2d, 0x6e, 0x7c, 0x7e, 0x2b, 0x2d, 0x2a, 0x2f, 0x5c]))).toEqual(" ?=-n|~+-*/\\");
+      expect(
+        Encoding.fromUtf8(
+          new Uint8Array([0x20, 0x3f, 0x3d, 0x2d, 0x6e, 0x7c, 0x7e, 0x2b, 0x2d, 0x2a, 0x2f, 0x5c]),
+        ),
+      ).toEqual(" ?=-n|~+-*/\\");
     });
 
     it("encodes null character", () => {
@@ -177,100 +193,202 @@ describe("Encoding", () => {
   describe("RFC3339", () => {
     it("parses dates with different time zones", () => {
       // time zone +/- 0
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+00:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-00:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+00:00")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-00:00")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13)),
+      );
 
       // time zone positive (full hours)
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+01:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 - 1, 12, 13)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+02:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 - 2, 12, 13)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+03:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 - 3, 12, 13)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+11:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 - 11, 12, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+01:00")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11 - 1, 12, 13)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+02:00")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11 - 2, 12, 13)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+03:00")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11 - 3, 12, 13)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+11:00")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11 - 11, 12, 13)),
+      );
 
       // time zone negative (full hours)
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-01:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 + 1, 12, 13)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-02:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 + 2, 12, 13)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-03:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 + 3, 12, 13)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-11:00")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 + 11, 12, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-01:00")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11 + 1, 12, 13)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-02:00")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11 + 2, 12, 13)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-03:00")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11 + 3, 12, 13)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-11:00")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11 + 11, 12, 13)),
+      );
 
       // time zone positive (minutes only)
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+00:01")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12 - 1, 13)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+00:30")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12 - 30, 13)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+00:45")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12 - 45, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+00:01")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12 - 1, 13)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+00:30")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12 - 30, 13)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+00:45")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12 - 45, 13)),
+      );
 
       // time zone negative (minutes only)
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-00:01")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12 + 1, 13)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-00:30")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12 + 30, 13)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-00:45")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12 + 45, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-00:01")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12 + 1, 13)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-00:30")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12 + 30, 13)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-00:45")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12 + 45, 13)),
+      );
 
       // time zone positive (hours and minutes)
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+01:01")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 - 1, 12 - 1, 13)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+04:30")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 - 4, 12 - 30, 13)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+10:20")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 - 10, 12 - 20, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+01:01")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11 - 1, 12 - 1, 13)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+04:30")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11 - 4, 12 - 30, 13)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13+10:20")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11 - 10, 12 - 20, 13)),
+      );
 
       // time zone negative (hours and minutes)
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-01:01")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 + 1, 12 + 1, 13)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-04:30")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 + 4, 12 + 30, 13)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-10:20")).toEqual(new Date(Date.UTC(2002, 9, 2, 11 + 10, 12 + 20, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-01:01")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11 + 1, 12 + 1, 13)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-04:30")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11 + 4, 12 + 30, 13)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13-10:20")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11 + 10, 12 + 20, 13)),
+      );
     });
 
     it("parses dates with milliseconds", () => {
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.000Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.123Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 123)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.999Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 999)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.000Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.123Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 123)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.999Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 999)),
+      );
     });
 
     it("parses dates with low precision fractional seconds", () => {
       // 1 digit
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.0Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.1Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 100)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.9Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 900)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.0Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.1Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 100)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.9Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 900)),
+      );
 
       // 2 digit
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.00Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.12Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 120)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.99Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 990)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.00Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.12Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 120)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.99Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 990)),
+      );
     });
 
     it("parses dates with high precision fractional seconds", () => {
       // everything after the 3rd digit is truncated
 
       // 4 digits
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.0000Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.1234Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 123)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.9999Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 999)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.0000Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.1234Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 123)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.9999Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 999)),
+      );
 
       // 5 digits
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.00000Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.12345Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 123)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.99999Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 999)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.00000Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.12345Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 123)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.99999Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 999)),
+      );
 
       // 6 digits
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.000000Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.123456Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 123)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.999999Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 999)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.000000Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.123456Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 123)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.999999Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 999)),
+      );
 
       // 7 digits
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.0000000Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.1234567Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 123)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.9999999Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 999)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.0000000Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.1234567Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 123)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.9999999Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 999)),
+      );
 
       // 8 digits
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.00000000Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.12345678Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 123)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.99999999Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 999)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.00000000Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.12345678Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 123)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.99999999Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 999)),
+      );
 
       // 9 digits
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.000000000Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.123456789Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 123)));
-      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.999999999Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 999)));
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.000000000Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 0)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.123456789Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 123)),
+      );
+      expect(Encoding.fromRfc3339("2002-10-02T11:12:13.999999999Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 999)),
+      );
     });
 
     it("accepts space separators", () => {
       // https://tools.ietf.org/html/rfc3339#section-5.6
       // Applications using this syntax may choose, for the sake of readability,
       // to specify a full-date and full-time separated by (say) a space character.
-      expect(Encoding.fromRfc3339("2002-10-02 11:12:13Z")).toEqual(new Date(Date.UTC(2002, 9, 2, 11, 12, 13)));
+      expect(Encoding.fromRfc3339("2002-10-02 11:12:13Z")).toEqual(
+        new Date(Date.UTC(2002, 9, 2, 11, 12, 13)),
+      );
     });
 
     it("throws for invalid format", () => {
@@ -309,7 +427,9 @@ describe("Encoding", () => {
 
     it("encodes dates", () => {
       expect(Encoding.toRfc3339(new Date(Date.UTC(0, 0, 1, 0, 0, 0)))).toEqual("1900-01-01T00:00:00.000Z");
-      expect(Encoding.toRfc3339(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 456)))).toEqual("2002-10-02T11:12:13.456Z");
+      expect(Encoding.toRfc3339(new Date(Date.UTC(2002, 9, 2, 11, 12, 13, 456)))).toEqual(
+        "2002-10-02T11:12:13.456Z",
+      );
     });
   });
 });
@@ -324,6 +444,9 @@ describe("Bech32", () => {
   });
 
   it("decodes", () => {
-    expect(Bech32.decode("eth1n48g2mjh9ezz7zjtya37wtgg5r5emr0drkwlgw")).toEqual({ prefix: "eth", data: ethAddressRaw });
+    expect(Bech32.decode("eth1n48g2mjh9ezz7zjtya37wtgg5r5emr0drkwlgw")).toEqual({
+      prefix: "eth",
+      data: ethAddressRaw,
+    });
   });
 });
