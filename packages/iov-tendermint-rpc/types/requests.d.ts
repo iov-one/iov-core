@@ -4,7 +4,7 @@ import { As } from "type-tagger";
  *
  * Enum raw value must match the spelling in the "shell" example call (snake_case)
  */
-export declare const enum Method {
+export declare enum Method {
     AbciInfo = "abci_info",
     AbciQuery = "abci_query",
     Block = "block",

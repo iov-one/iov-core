@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.1
+
+* @iov/tendermint-rpc: convert `const enum`s to `enum`s in public interface to
+  allow callers to use `--isolatedModules`.
+
 ## 0.10.0
 
 * @iov/bcp-types: `BcpTransactionResponse` now contains a `blockInfo` property
