@@ -43,11 +43,11 @@ function sleep(ms: number): Promise<void> {
 
 describe("EthereumConnection", () => {
   const base = TestConfig.base;
-  const ws = TestConfig.webSocket;
+  const wsUrl = TestConfig.webSocketUrl;
   const nodeChainId = TestConfig.chainId;
   const minHeight = TestConfig.minHeight;
   const address = TestConfig.address;
-  const quantity = TestConfig.quantity;
+  const testQuantity = TestConfig.quantity;
   const gasPrice = TestConfig.gasPrice;
   const gasLimit = TestConfig.gasLimit;
   const waitForTx = TestConfig.waitForTx;
@@ -63,6 +63,7 @@ describe("EthereumConnection", () => {
     const connection = await EthereumConnection.establish(base, undefined);
     const chainId = connection.chainId();
     expect(chainId).toEqual(nodeChainId);
+    connection.disconnect();
   });
 
   it("can get height", async () => {
@@ -70,6 +71,7 @@ describe("EthereumConnection", () => {
     const connection = await EthereumConnection.establish(base, undefined);
     const height = await connection.height();
     expect(height).toBeGreaterThan(minHeight);
+    connection.disconnect();
   });
 
   it("can get account from address", async () => {
@@ -80,7 +82,8 @@ describe("EthereumConnection", () => {
     expect(account.data[0].address).toEqual(address);
     expect(account.data[0].balance[0].tokenTicker).toEqual("ETH");
     expect(account.data[0].balance[0].fractionalDigits).toEqual(18);
-    expect(account.data[0].balance[0].quantity).toEqual(quantity);
+    expect(account.data[0].balance[0].quantity).toEqual(testQuantity);
+    connection.disconnect();
   });
 
   it("can get nonce", async () => {
@@ -100,6 +103,7 @@ describe("EthereumConnection", () => {
       const nonce = (await connection.getNonce(query)).data[0];
       expect(nonce).toEqual(TestConfig.nonce);
     }
+    connection.disconnect();
   });
 
   describe("postTx", () => {
@@ -161,6 +165,7 @@ describe("EthereumConnection", () => {
       const result = await connection.postTx(bytesToPost);
       expect(result).toBeTruthy();
       expect(result.log).toBeUndefined();
+      connection.disconnect();
     });
   });
 
@@ -174,6 +179,7 @@ describe("EthereumConnection", () => {
         .searchTx({ id: invalidHashLenght })
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(/Invalid transaction ID format/i));
+      connection.disconnect();
     });
 
     it("can search non-existing transaction by hash", async () => {
@@ -182,6 +188,7 @@ describe("EthereumConnection", () => {
       const nonExistingHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" as TransactionId;
       const results = await connection.searchTx({ id: nonExistingHash });
       expect(results.length).toEqual(0);
+      connection.disconnect();
     });
 
     it("can search previous posted transaction by hash", async () => {
@@ -251,6 +258,7 @@ describe("EthereumConnection", () => {
       }
       expect(transaction.recipient).toEqual("0xe137f5264b6b528244e1643a2d570b37660b7f14");
       expect(transaction.amount.quantity).toEqual("5445500");
+      connection.disconnect();
     });
 
     // TODO: load ganache with db from github
@@ -281,6 +289,7 @@ describe("EthereumConnection", () => {
         ],
       });
       expect(results.length).toBeGreaterThan(1);
+      connection.disconnect();
     });
   });
 
@@ -292,6 +301,7 @@ describe("EthereumConnection", () => {
       expect(blockHeader.id).toMatch(/^0x[0-9a-f]{64}$/);
       expect(blockHeader.height).toEqual(0);
       expect(blockHeader.transactionCount).toBeGreaterThanOrEqual(0);
+      connection.disconnect();
     });
 
     it("throws error from invalid block number", async () => {
@@ -301,11 +311,16 @@ describe("EthereumConnection", () => {
         .getBlockHeader(99999999999999)
         .then(() => fail("promise must be rejected"))
         .catch(err => expect(err).toMatch(/Header 99999999999999 doesn't exist yet/));
+      connection.disconnect();
     });
   });
 
   describe("feed", () => {
-    async function postTransaction(amount: string, memo: string): Promise<PostTxResponse> {
+    async function postTransaction(
+      quantity: string,
+      memo: string,
+      connection: EthereumConnection,
+    ): Promise<PostTxResponse> {
       const wallet = Secp256k1HdWallet.fromMnemonic(
         "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
       );
@@ -319,7 +334,7 @@ describe("EthereumConnection", () => {
         signer: mainIdentity.pubkey,
         recipient: recipientAddress,
         amount: {
-          quantity: amount,
+          quantity: quantity,
           fractionalDigits: 18,
           tokenTicker: "ETH" as TokenTicker,
         },
@@ -335,7 +350,6 @@ describe("EthereumConnection", () => {
         },
         memo: memo,
       };
-      const connection = await EthereumConnection.establish(base, ws);
       const senderAddress = ethereumCodec.keyToAddress(mainIdentity.pubkey);
       const nonceResp = await connection.getNonce({ address: senderAddress });
       const signingJob = ethereumCodec.bytesToSign(sendTx, nonceResp.data[0]);
@@ -362,9 +376,9 @@ describe("EthereumConnection", () => {
     }
 
     describe("watchBlockHeaders", () => {
-      it("watches headers with same data as getBlockHeader", async done => {
+      it("watches headers with same data as getBlockHeader", async () => {
         pendingWithoutEthereum();
-        const connection = await EthereumConnection.establish(base, ws);
+        const connection = await EthereumConnection.establish(base, wsUrl);
         const events = new Array<BlockHeader>();
 
         const subscription = connection.watchBlockHeaders().subscribe({
@@ -375,19 +389,17 @@ describe("EthereumConnection", () => {
               connection.getBlockHeader(info.height).then(header => {
                 expect(header).toEqual(events[1]);
                 subscription.unsubscribe();
-                // unwatchHeader
-                connection.unwatchBlockHeaders();
-                connection.disconnect();
-                done();
               });
             }
           },
-          complete: done.fail,
-          error: done.fail,
+          complete: fail,
+          error: fail,
         });
         // post transactions
-        await postTransaction("5445500", "watch header test 1-" + new Date());
-        await postTransaction("5445500", "watch header test 2-" + new Date());
+        await postTransaction("5445500", "watch header test 1-" + new Date(), connection);
+        await postTransaction("5445500", "watch header test 2-" + new Date(), connection);
+        await sleep(waitForTx * 2);
+        connection.disconnect();
       });
     });
   });

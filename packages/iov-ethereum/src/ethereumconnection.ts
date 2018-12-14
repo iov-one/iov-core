@@ -48,7 +48,7 @@ interface WsListener {
 
 const wsListeners = new Array<WsListener>();
 
-function getListenerBySubscription(subscription: string): any {
+function getListenerBySubscription(subscription: string): WsListener | undefined {
   return wsListeners.find(listener => listener.subscription === subscription);
 }
 
@@ -60,7 +60,7 @@ function addToListeners(id: string, subscription: string): void {
   wsListeners.push({ id: id, subscription: subscription });
 }
 
-function getListenerById(id: string): any {
+function getListenerById(id: string): WsListener | undefined {
   return wsListeners.find(listener => listener.id === id);
 }
 
@@ -84,22 +84,20 @@ async function loadChainId(baseUrl: string): Promise<ChainId> {
 export class EthereumConnection implements BcpConnection {
   public static async establish(baseUrl: string, wsUrl: string | undefined): Promise<EthereumConnection> {
     const chainId = await loadChainId(baseUrl);
-    let socketStream;
-    if (wsUrl) {
-      socketStream = new StreamingSocket(wsUrl);
-      socketStream.connect();
-      await socketStream.connected;
-    }
-    return new EthereumConnection(baseUrl, chainId, socketStream);
+
+    return new EthereumConnection(baseUrl, chainId, wsUrl);
   }
 
   private readonly baseUrl: string;
   private readonly myChainId: ChainId;
   private readonly socket: StreamingSocket | undefined;
 
-  constructor(baseUrl: string, chainId: ChainId, socketStream: StreamingSocket | undefined) {
+  constructor(baseUrl: string, chainId: ChainId, wsUrl: string | undefined) {
     this.baseUrl = baseUrl;
-    this.socket = socketStream;
+    if (wsUrl) {
+      this.socket = new StreamingSocket(wsUrl);
+      this.socket.connect();
+    }
 
     if (!chainId.match(/^[0-9]+$/)) {
       // see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#specification
@@ -109,7 +107,9 @@ export class EthereumConnection implements BcpConnection {
   }
 
   public disconnect(): void {
-    this.socket!.disconnect();
+    if (this.socket) {
+      this.socket.disconnect();
+    }
   }
 
   public chainId(): ChainId {
@@ -233,19 +233,18 @@ export class EthereumConnection implements BcpConnection {
   }
 
   public watchBlockHeaders(): Stream<BlockHeader> {
-    // see https://github.com/ethereum/go-ethereum/wiki/RPC-PUB-SUB#newheads
-    this.socket!.send(
-      JSON.stringify({
-        id: "watchBlockHeaders",
-        jsonrpc: "2.0",
-        method: "eth_subscribe",
-        params: ["newHeads", { includeTransactions: true }],
-      }),
-    );
-
     let headersSubscription: Subscription;
     const producer: Producer<BlockHeader> = {
       start: listener => {
+        // see https://github.com/ethereum/go-ethereum/wiki/RPC-PUB-SUB#newheads
+        this.socketSend(
+          JSON.stringify({
+            id: "watchBlockHeaders",
+            jsonrpc: "2.0",
+            method: "eth_subscribe",
+            params: ["newHeads", { includeTransactions: true }],
+          }),
+        );
         headersSubscription = this.socket!.events.subscribe({
           next: header => {
             const blockHeaderJson = JSON.parse(header.data);
@@ -273,22 +272,19 @@ export class EthereumConnection implements BcpConnection {
       },
       stop: () => {
         headersSubscription.unsubscribe();
+        // see https://github.com/ethereum/go-ethereum/wiki/RPC-PUB-SUB#cancel-subscription
+        const listener = getListenerById("watchBlockHeaders");
+        this.socketSend(
+          JSON.stringify({
+            id: "watchBlockHeaders",
+            jsonrpc: "2.0",
+            method: "eth_unsubscribe",
+            params: [listener!.subscription],
+          }),
+        );
       },
     };
     return Stream.create(producer);
-  }
-
-  public unwatchBlockHeaders(): void {
-    // see https://github.com/ethereum/go-ethereum/wiki/RPC-PUB-SUB#cancel-subscription
-    const listener = getListenerById("watchBlockHeaders");
-    this.socket!.send(
-      JSON.stringify({
-        id: "watchBlockHeaders",
-        jsonrpc: "2.0",
-        method: "eth_unsubscribe",
-        params: [listener.subscription],
-      }),
-    );
   }
 
   /** @deprecated use watchBlockHeaders().map(header => header.height) */
@@ -385,5 +381,13 @@ export class EthereumConnection implements BcpConnection {
 
   public liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
     throw new Error("Not implemented");
+  }
+
+  private async socketSend(data: string): Promise<void> {
+    if (!this.socket) {
+      throw new Error("No socket available");
+    }
+    await this.socket.connected;
+    await this.socket.send(data);
   }
 }

@@ -1,13 +1,12 @@
 import { Stream } from "xstream";
 import { ChainId, PostableBytes } from "@iov/base-types";
 import { BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpConnection, BcpPubkeyQuery, BcpQueryEnvelope, BcpTicker, BcpTxQuery, BlockHeader, ConfirmedTransaction, Nonce, PostTxResponse, TokenTicker } from "@iov/bcp-types";
-import { StreamingSocket } from "@iov/socket";
 export declare class EthereumConnection implements BcpConnection {
     static establish(baseUrl: string, wsUrl: string | undefined): Promise<EthereumConnection>;
     private readonly baseUrl;
     private readonly myChainId;
     private readonly socket;
-    constructor(baseUrl: string, chainId: ChainId, socketStream: StreamingSocket | undefined);
+    constructor(baseUrl: string, chainId: ChainId, wsUrl: string | undefined);
     disconnect(): void;
     chainId(): ChainId;
     height(): Promise<number>;
@@ -18,7 +17,6 @@ export declare class EthereumConnection implements BcpConnection {
     getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<BcpQueryEnvelope<Nonce>>;
     getBlockHeader(height: number): Promise<BlockHeader>;
     watchBlockHeaders(): Stream<BlockHeader>;
-    unwatchBlockHeaders(): void;
     /** @deprecated use watchBlockHeaders().map(header => header.height) */
     changeBlock(): Stream<number>;
     watchAccount(_: BcpAccountQuery): Stream<BcpAccount | undefined>;
@@ -26,4 +24,5 @@ export declare class EthereumConnection implements BcpConnection {
     searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
     listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction>;
     liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction>;
+    private socketSend;
 }
