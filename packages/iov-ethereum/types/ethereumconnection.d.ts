@@ -2,10 +2,11 @@ import { Stream } from "xstream";
 import { ChainId, PostableBytes } from "@iov/base-types";
 import { BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpConnection, BcpPubkeyQuery, BcpQueryEnvelope, BcpTicker, BcpTxQuery, BlockHeader, ConfirmedTransaction, Nonce, PostTxResponse, TokenTicker } from "@iov/bcp-types";
 export declare class EthereumConnection implements BcpConnection {
-    static establish(baseUrl: string): Promise<EthereumConnection>;
+    static establish(baseUrl: string, wsUrl: string | undefined): Promise<EthereumConnection>;
     private readonly baseUrl;
     private readonly myChainId;
-    constructor(baseUrl: string, chainId: ChainId);
+    private readonly socket;
+    constructor(baseUrl: string, chainId: ChainId, wsUrl: string | undefined);
     disconnect(): void;
     chainId(): ChainId;
     height(): Promise<number>;
@@ -23,4 +24,5 @@ export declare class EthereumConnection implements BcpConnection {
     searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
     listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction>;
     liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction>;
+    private socketSend;
 }

@@ -7,6 +7,7 @@ const { fromHex } = Encoding;
 export interface EthereumNetworkConfig {
   readonly env: string;
   readonly base: string;
+  readonly webSocketUrl: string;
   readonly chainId: ChainId;
   readonly minHeight: number;
   readonly pubkey: PublicKeyBytes;
@@ -30,6 +31,7 @@ const env = process.env.ETH_ENV || "";
 const local: EthereumNetworkConfig = {
   env: "local",
   base: "http://localhost:8545",
+  webSocketUrl: "ws://localhost:8545",
   chainId: "5777" as ChainId,
   minHeight: -1,
   pubkey: fromHex(
@@ -50,6 +52,7 @@ const local: EthereumNetworkConfig = {
 const testnetRopsten: EthereumNetworkConfig = {
   env: "ropsten",
   base: "https://ropsten.infura.io/",
+  webSocketUrl: "wss://ropsten.infura.io/ws",
   chainId: "3" as ChainId,
   minHeight: 4284887,
   pubkey: fromHex(
@@ -70,6 +73,7 @@ const testnetRopsten: EthereumNetworkConfig = {
 const testnetRinkeby: EthereumNetworkConfig = {
   env: "rinkeby",
   base: "https://rinkeby.infura.io",
+  webSocketUrl: "wss://rinkeby.infura.io/ws",
   chainId: "4" as ChainId,
   minHeight: 3211058,
   pubkey: fromHex(

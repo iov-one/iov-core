@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ReadonlyDate } from "readonly-date";
-import { Stream } from "xstream";
+import { Producer, Stream, Subscription } from "xstream";
 
 import { ChainId, PostableBytes } from "@iov/base-types";
 import {
@@ -26,6 +26,7 @@ import {
   TransactionId,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
+import { StreamingSocket } from "@iov/socket";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
@@ -40,6 +41,34 @@ import {
   hexPadToEven,
 } from "./utils";
 
+interface WsListener {
+  readonly id?: string;
+  readonly subscription?: string;
+}
+
+const wsListeners = new Array<WsListener>();
+
+function getListenerBySubscription(subscription: string): WsListener | undefined {
+  return wsListeners.find(listener => listener.subscription === subscription);
+}
+
+function addToListeners(id: string, subscription: string): void {
+  const index = wsListeners.findIndex(listener => listener.id === id);
+  if (index !== -1) {
+    throw new Error(`Listener ${id} already initialized with subscription ${subscription}`);
+  }
+  wsListeners.push({ id: id, subscription: subscription });
+}
+
+function getListenerById(id: string): WsListener | undefined {
+  return wsListeners.find(listener => listener.id === id);
+}
+
+function removeFromListeners(id: string): void {
+  const index = wsListeners.findIndex(listener => listener.id === id);
+  wsListeners.splice(index, 1);
+}
+
 async function loadChainId(baseUrl: string): Promise<ChainId> {
   // see https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version
   const result = await axios.post(baseUrl, {
@@ -53,16 +82,22 @@ async function loadChainId(baseUrl: string): Promise<ChainId> {
 }
 
 export class EthereumConnection implements BcpConnection {
-  public static async establish(baseUrl: string): Promise<EthereumConnection> {
+  public static async establish(baseUrl: string, wsUrl: string | undefined): Promise<EthereumConnection> {
     const chainId = await loadChainId(baseUrl);
-    return new EthereumConnection(baseUrl, chainId);
+
+    return new EthereumConnection(baseUrl, chainId, wsUrl);
   }
 
   private readonly baseUrl: string;
   private readonly myChainId: ChainId;
+  private readonly socket: StreamingSocket | undefined;
 
-  constructor(baseUrl: string, chainId: ChainId) {
+  constructor(baseUrl: string, chainId: ChainId, wsUrl: string | undefined) {
     this.baseUrl = baseUrl;
+    if (wsUrl) {
+      this.socket = new StreamingSocket(wsUrl);
+      this.socket.connect();
+    }
 
     if (!chainId.match(/^[0-9]+$/)) {
       // see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#specification
@@ -72,7 +107,9 @@ export class EthereumConnection implements BcpConnection {
   }
 
   public disconnect(): void {
-    // no-op
+    if (this.socket) {
+      this.socket.disconnect();
+    }
   }
 
   public chainId(): ChainId {
@@ -196,7 +233,58 @@ export class EthereumConnection implements BcpConnection {
   }
 
   public watchBlockHeaders(): Stream<BlockHeader> {
-    throw new Error("Not implemented");
+    let headersSubscription: Subscription;
+    const producer: Producer<BlockHeader> = {
+      start: listener => {
+        // see https://github.com/ethereum/go-ethereum/wiki/RPC-PUB-SUB#newheads
+        this.socketSend(
+          JSON.stringify({
+            id: "watchBlockHeaders",
+            jsonrpc: "2.0",
+            method: "eth_subscribe",
+            params: ["newHeads", { includeTransactions: true }],
+          }),
+        );
+        headersSubscription = this.socket!.events.subscribe({
+          next: header => {
+            const blockHeaderJson = JSON.parse(header.data);
+            if (blockHeaderJson.method === "eth_subscription") {
+              const listening = getListenerBySubscription(blockHeaderJson.params.subscription);
+              if (listening) {
+                // Missed transaction count in newHeads subscription
+                this.getBlockHeader(decodeHexQuantity(blockHeaderJson.params.result.number))
+                  .then(blockHeader => listener.next(blockHeader))
+                  .catch(error => listener.error(error));
+              }
+            } else if (blockHeaderJson.id) {
+              // This is the response from eth server when subscribing to an event
+              // store eth subscription id to unsubscribe later
+              if (typeof blockHeaderJson.result === "string") {
+                addToListeners(blockHeaderJson.id, blockHeaderJson.result);
+              } else if (blockHeaderJson.result === true) {
+                removeFromListeners(blockHeaderJson.id);
+              }
+            }
+          },
+          error: error => listener.error(error),
+          complete: () => listener.error("Source stream completed"),
+        });
+      },
+      stop: () => {
+        headersSubscription.unsubscribe();
+        // see https://github.com/ethereum/go-ethereum/wiki/RPC-PUB-SUB#cancel-subscription
+        const listener = getListenerById("watchBlockHeaders");
+        this.socketSend(
+          JSON.stringify({
+            id: "watchBlockHeaders",
+            jsonrpc: "2.0",
+            method: "eth_unsubscribe",
+            params: [listener!.subscription],
+          }),
+        );
+      },
+    };
+    return Stream.create(producer);
   }
 
   /** @deprecated use watchBlockHeaders().map(header => header.height) */
@@ -293,5 +381,13 @@ export class EthereumConnection implements BcpConnection {
 
   public liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
     throw new Error("Not implemented");
+  }
+
+  private async socketSend(data: string): Promise<void> {
+    if (!this.socket) {
+      throw new Error("No socket available");
+    }
+    await this.socket.connected;
+    await this.socket.send(data);
   }
 }
