@@ -426,7 +426,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       transactionId: Encoding.toHex(hash).toUpperCase() as TransactionId,
       log: txResult.log,
       result: txResult.data,
-      ...this.codec.parseBytes(tx, chainId),
+      ...this.codec.parseBytes(new Uint8Array(tx) as PostableBytes, chainId),
     });
     return res.txs.map(mapper);
   }
@@ -451,7 +451,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
           transactionId: Encoding.toHex(transaction.hash).toUpperCase() as TransactionId,
           log: transaction.result.log,
           result: transaction.result.data,
-          ...this.codec.parseBytes(transaction.tx, chainId),
+          ...this.codec.parseBytes(new Uint8Array(transaction.tx) as PostableBytes, chainId),
         }),
       );
   }

@@ -1,6 +1,6 @@
 import { ReadonlyDate } from "readonly-date";
-import { ChainId, PostableBytes } from "@iov/base-types";
-import { IpPortString, TxHash, ValidatorPubkey, ValidatorSignature } from "./types";
+import { ChainId } from "@iov/base-types";
+import { IpPortString, TxBytes, TxHash, ValidatorPubkey, ValidatorSignature } from "./types";
 export declare type Response = AbciInfoResponse | AbciQueryResponse | BlockResponse | BlockResultsResponse | BlockchainResponse | BroadcastTxAsyncResponse | BroadcastTxSyncResponse | BroadcastTxCommitResponse | CommitResponse | GenesisResponse | HealthResponse | StatusResponse | TxResponse | TxSearchResponse | ValidatorsResponse;
 export interface AbciInfoResponse {
     readonly data?: string;
@@ -73,7 +73,7 @@ export interface StatusResponse {
     readonly validatorInfo: Validator;
 }
 export interface TxResponse {
-    readonly tx: PostableBytes;
+    readonly tx: TxBytes;
     readonly txResult: TxData;
     readonly height: number;
     readonly index: number;
@@ -93,7 +93,7 @@ export interface NewBlockEvent extends Block {
 export interface NewBlockHeaderEvent extends Header {
 }
 export interface TxEvent {
-    readonly tx: PostableBytes;
+    readonly tx: TxBytes;
     readonly hash: TxHash;
     readonly height: number;
     readonly index: number;

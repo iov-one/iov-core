@@ -3,6 +3,9 @@
 
 import { As } from "type-tagger";
 
+/** Raw transaction bytes */
+export type TxBytes = Uint8Array & As<"tx-bytes">;
+
 /**
  * A raw tendermint transaction hash, currently 20 bytes
  */

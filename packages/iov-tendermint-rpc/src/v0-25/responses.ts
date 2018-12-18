@@ -1,4 +1,4 @@
-import { ChainId, PostableBytes } from "@iov/base-types";
+import { ChainId } from "@iov/base-types";
 import { Encoding } from "@iov/encoding";
 
 import {
@@ -16,7 +16,7 @@ import {
 } from "../encodings";
 import { JsonRpcEvent, JsonRpcSuccess } from "../jsonrpc";
 import * as responses from "../responses";
-import { IpPortString, TxHash, ValidatorPubkey, ValidatorSignature } from "../types";
+import { IpPortString, TxBytes, TxHash, ValidatorPubkey, ValidatorSignature } from "../types";
 import { hashTx } from "./hasher";
 
 /*** adaptor ***/
@@ -277,7 +277,7 @@ export interface RpcTxResponse {
 
 function decodeTxResponse(data: RpcTxResponse): responses.TxResponse {
   return {
-    tx: Base64.decode(required(data.tx)) as PostableBytes,
+    tx: Base64.decode(required(data.tx)) as TxBytes,
     txResult: decodeTxData(required(data.tx_result)),
     height: Integer.parse(required(data.height)),
     index: Integer.ensure(required(data.index)),
@@ -306,9 +306,9 @@ interface RpcTxEvent {
 }
 
 function decodeTxEvent(data: RpcTxEvent): responses.TxEvent {
-  const tx = Base64.decode(required(data.tx)) as PostableBytes;
+  const tx = Base64.decode(required(data.tx)) as TxBytes;
   return {
-    tx,
+    tx: tx,
     hash: hashTx(tx),
     result: decodeTxData(data.result),
     height: Integer.parse(required(data.height)),
