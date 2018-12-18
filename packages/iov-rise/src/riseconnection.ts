@@ -185,8 +185,12 @@ export class RiseConnection implements BcpConnection {
     if (result.data.error) {
       return dummyEnvelope([]);
     }
-    const responseBody = result.data.account;
-    const responsePublicKey: unknown = responseBody.publicKey;
+    const responseBalance: unknown = result.data.account.balance;
+    const responsePublicKey: unknown = result.data.account.publicKey;
+
+    if (typeof responseBalance !== "string") {
+      throw new Error("Unexpected type for .balance property in response");
+    }
 
     const pubkey: PublicKeyBundle | undefined =
       typeof responsePublicKey === "string" && responsePublicKey
@@ -203,7 +207,7 @@ export class RiseConnection implements BcpConnection {
         name: undefined,
         balance: [
           {
-            quantity: Parse.parseQuantity(responseBody.balance),
+            quantity: Parse.parseQuantity(responseBalance),
             fractionalDigits: constants.primaryTokenFractionalDigits,
             tokenName: constants.primaryTokenName,
             tokenTicker: constants.primaryTokenTicker,
