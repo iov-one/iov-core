@@ -1,7 +1,7 @@
 import { Address, TransactionId } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
-import { address, hashCode, pubJson } from "./testdata";
+import { address, hashCode, pubJson } from "./testdata.spec";
 import {
   arraysEqual,
   buildTxQuery,

@@ -1,6 +1,7 @@
-import { ChainId, PostableBytes } from "@iov/base-types";
 import {
+  ChainId,
   Nonce,
+  PostableBytes,
   PrehashType,
   SignedTransaction,
   SigningJob,

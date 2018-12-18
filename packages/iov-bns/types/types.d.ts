@@ -1,7 +1,6 @@
 import * as Long from "long";
 import { As } from "type-tagger";
-import { Algorithm, ChainId, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
-import { Address, FullSignature, SendTransaction, SwapClaimTransaction, SwapCounterTransaction, SwapOfferTransaction, SwapTimeoutTransaction, TokenTicker, UnsignedTransaction } from "@iov/bcp-types";
+import { Address, Algorithm, ChainId, FullSignature, PublicKeyBundle, SendTransaction, SignatureBytes, SwapClaimTransaction, SwapCounterTransaction, SwapOfferTransaction, SwapTimeoutTransaction, TokenTicker, UnsignedTransaction } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
 export interface ChainAddressPair {
@@ -70,7 +69,7 @@ export interface Decoder<T extends {}> {
 }
 export declare function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PublicKeyBundle;
 export declare function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivateKeyBundle;
-export declare const decodeSignature: (signature: codecImpl.crypto.ISignature) => SignatureBytes;
+export declare function decodeSignature(signature: codecImpl.crypto.ISignature): SignatureBytes;
 export declare const decodeFullSig: (sig: codecImpl.sigs.IStdSignature) => FullSignature;
 export declare const asNumber: (maybeLong: number | Long | null | undefined) => number;
 export declare function asInt53(input: Long | number | null | undefined): Int53;

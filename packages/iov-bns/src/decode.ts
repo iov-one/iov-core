@@ -1,10 +1,10 @@
 import BN = require("bn.js");
 
-import { ChainId } from "@iov/base-types";
 import {
   Address,
   Amount,
   BcpTicker,
+  ChainId,
   FullSignature,
   Nonce,
   SendTransaction,

@@ -1,10 +1,14 @@
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import {
   Address,
+  Algorithm,
   Amount,
+  ChainId,
   FullSignature,
   Nonce,
+  PublicKeyBundle,
+  PublicKeyBytes,
   SendTransaction,
+  SignatureBytes,
   SignedTransaction,
   SwapClaimTransaction,
   SwapCounterTransaction,
@@ -60,13 +64,13 @@ const amount: Amount = {
   fractionalDigits: 9,
   tokenTicker: "ETH" as TokenTicker,
 };
-export const chainId = "test-123" as ChainId;
+export const chainId = "test-1234" as ChainId;
 // the sender in this tx is the above pubkey, pubkey->address should match
 // recipient address generated using https://github.com/nym-zone/bech32
 // bech32 -e -h tiov 6f0a3e37845b6a3c8ccbe6219199abc3ae0b26d9
 export const sendTxJson: SendTransaction = {
   kind: "bcp/send",
-  chainId,
+  chainId: chainId,
   signer: pubJson,
   recipient: "tiov1du9ruduytd4rerxtucserxdtcwhqkfkezjy4w0" as Address,
   memo: "Test payment",

@@ -1,7 +1,6 @@
 import equal from "fast-deep-equal";
 import { Producer, Stream, Subscription } from "xstream";
 
-import { ChainId, PostableBytes, PublicKeyBundle } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
@@ -20,6 +19,7 @@ import {
   BcpTxQuery,
   BlockHeader,
   BlockId,
+  ChainId,
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
@@ -29,7 +29,9 @@ import {
   isQueryBySwapSender,
   Nonce,
   OpenSwap,
+  PostableBytes,
   PostTxResponse,
+  PublicKeyBundle,
   SwapClaimTransaction,
   SwapState,
   SwapTimeoutTransaction,

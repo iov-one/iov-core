@@ -1,8 +1,8 @@
 import Long from "long";
 
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import {
   Address,
+  Algorithm,
   Amount,
   BcpAccount,
   BcpBlockInfo,
@@ -10,10 +10,13 @@ import {
   BcpSwapQuery,
   BcpTransactionState,
   BcpTxQuery,
+  ChainId,
   isSendTransaction,
   isSwapCounterTransaction,
   Nonce,
   PostTxResponse,
+  PublicKeyBundle,
+  PublicKeyBytes,
   SendTransaction,
   SwapClaimTransaction,
   SwapIdBytes,

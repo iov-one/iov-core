@@ -1,15 +1,17 @@
 import Long from "long";
 import { As } from "type-tagger";
 
-import { Algorithm, ChainId, PublicKeyBundle } from "@iov/base-types";
 import {
   Address,
+  Algorithm,
   BcpTxQuery,
+  ChainId,
   ConfirmedTransaction,
   isSwapClaimTransaction,
   isSwapCounterTransaction,
   isSwapTimeoutTransaction,
   Nonce,
+  PublicKeyBundle,
   SignableBytes,
   SwapClaimTransaction,
   SwapCounterTransaction,
@@ -61,7 +63,7 @@ export function isValidAddress(address: string): boolean {
 const signCodev1: Uint8Array = Uint8Array.from([0, 0xca, 0xfe, 0]);
 
 // append chainID and nonce to the raw tx bytes to prepare for signing
-export const appendSignBytes = (bz: Uint8Array, chainId: ChainId, nonce: Nonce) => {
+export function appendSignBytes(bz: Uint8Array, chainId: ChainId, nonce: Nonce): SignableBytes {
   if (chainId.length > 255) {
     throw new Error("chainId must not exceed a length of 255 characters");
   }
@@ -72,7 +74,7 @@ export const appendSignBytes = (bz: Uint8Array, chainId: ChainId, nonce: Nonce) 
     ...Long.fromNumber(nonce.toNumber()).toBytesBE(),
     ...bz,
   ]) as SignableBytes;
-};
+}
 
 // tendermint hash (will be) first 20 bytes of sha256
 // probably only works after 0.21, but no need to import ripemd160 now

@@ -35,7 +35,6 @@
     "protoc": "./scripts/weave.sh && yarn pack-proto && yarn define-proto && yarn format && yarn store-codec-version"
   },
   "dependencies": {
-    "@iov/base-types": "^0.10.0",
     "@iov/bcp-types": "^0.10.2",
     "@iov/crypto": "^0.10.1",
     "@iov/encoding": "^0.10.1",

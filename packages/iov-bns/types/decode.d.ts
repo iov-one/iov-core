@@ -1,5 +1,4 @@
-import { ChainId } from "@iov/base-types";
-import { Amount, BcpTicker, Nonce, SignedTransaction, UnsignedTransaction } from "@iov/bcp-types";
+import { Amount, BcpTicker, ChainId, Nonce, SignedTransaction, UnsignedTransaction } from "@iov/bcp-types";
 import * as codecImpl from "./generated/codecimpl";
 import { BnsBlockchainNft, BnsUsernameNft, Keyed } from "./types";
 export declare function decodeBlockchainNft(nft: codecImpl.blockchain.IBlockchainToken): BnsBlockchainNft;

@@ -1,9 +1,10 @@
 import * as Long from "long";
 import { As } from "type-tagger";
 
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import {
   Address,
+  Algorithm,
+  ChainId,
   FullSignature,
   isSendTransaction,
   isSwapClaimTransaction,
@@ -11,7 +12,10 @@ import {
   isSwapOfferTransaction,
   isSwapTimeoutTransaction,
   Nonce,
+  PublicKeyBundle,
+  PublicKeyBytes,
   SendTransaction,
+  SignatureBytes,
   SwapClaimTransaction,
   SwapCounterTransaction,
   SwapOfferTransaction,
@@ -158,13 +162,13 @@ export function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): Private
   }
 }
 
-export const decodeSignature = (signature: codecImpl.crypto.ISignature): SignatureBytes => {
+export function decodeSignature(signature: codecImpl.crypto.ISignature): SignatureBytes {
   if (signature.ed25519) {
     return signature.ed25519 as SignatureBytes;
   } else {
     throw new Error("Unknown private key algorithm");
   }
-};
+}
 
 export const decodeFullSig = (sig: codecImpl.sigs.IStdSignature): FullSignature => ({
   nonce: asInt53(sig.sequence) as Nonce,
