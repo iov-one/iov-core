@@ -3,7 +3,8 @@ import { As } from "type-tagger";
 import { Stream } from "xstream";
 import { ChainId, PostableBytes, PublicKeyBundle } from "@iov/base-types";
 import { ValueAndUpdates } from "@iov/stream";
-import { Address, SignedTransaction, TransactionId, TxCodec } from "./signables";
+import { TxCodec } from "./codec";
+import { Address, SignedTransaction, TransactionId } from "./signables";
 import { Amount, Nonce, TokenTicker, UnsignedTransaction } from "./transactions";
 export interface BcpQueryEnvelope<T> {
     readonly metadata: BcpQueryMetadata;
