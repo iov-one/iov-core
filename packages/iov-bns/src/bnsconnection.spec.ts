@@ -80,30 +80,6 @@ async function getNonce(connection: BnsConnection, addr: Address): Promise<Nonce
   return data.length === 0 ? (new Int53(0) as Nonce) : data[0];
 }
 
-async function ensureNonceNonZero(
-  connection: BnsConnection,
-  profile: UserProfile,
-  identity: PublicIdentity,
-): Promise<void> {
-  const nonce = await getNonce(connection, keyToAddress(identity.pubkey));
-  const sendTx: SendTransaction = {
-    kind: "bcp/send",
-    chainId: await connection.chainId(),
-    signer: identity.pubkey,
-    recipient: await randomBnsAddress(),
-    amount: {
-      quantity: "1",
-      fractionalDigits: 9,
-      tokenTicker: cash,
-    },
-  };
-  const firstWalletId = profile.wallets.value[0].id;
-  const signed = await profile.signTransaction(firstWalletId, identity, sendTx, bnsCodec, nonce);
-  const txBytes = bnsCodec.bytesToPost(signed);
-  const response = await connection.postTx(txBytes);
-  await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
-}
-
 describe("BnsConnection", () => {
   // the first key generated from this mneumonic produces the given address
   // this account has money in the genesis file (setup in docker)
@@ -130,6 +106,25 @@ describe("BnsConnection", () => {
     profile.addWallet(wallet);
     const faucet = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
     return { profile, mainWalletId: wallet.id, faucet };
+  }
+
+  async function ensureNonceNonZero(
+    connection: BnsConnection,
+    profile: UserProfile,
+    identity: PublicIdentity,
+  ): Promise<void> {
+    const sendTx: SendTransaction = {
+      kind: "bcp/send",
+      chainId: await connection.chainId(),
+      signer: identity.pubkey,
+      recipient: await randomBnsAddress(),
+      amount: defaultAmount,
+    };
+    const firstWalletId = profile.wallets.value[0].id;
+    const nonce = await getNonce(connection, keyToAddress(identity.pubkey));
+    const signed = await profile.signTransaction(firstWalletId, identity, sendTx, bnsCodec, nonce);
+    const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+    await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
   }
 
   async function ensureBalanceNonZero(connection: BnsConnection, address: Address): Promise<void> {
@@ -202,8 +197,8 @@ describe("BnsConnection", () => {
     it("can get account by address, publicKey and name", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-
-      const { faucet } = await userProfileWithFaucet();
+      const { profile, faucet } = await userProfileWithFaucet();
+      await ensureNonceNonZero(connection, profile, faucet);
       const faucetAddress = keyToAddress(faucet.pubkey);
 
       // can get the faucet by address (there is money)
