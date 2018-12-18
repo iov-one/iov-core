@@ -182,67 +182,69 @@ describe("BnsConnection", () => {
     connection.disconnect();
   });
 
-  it("can get account by address, publicKey and name", async () => {
-    pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
+  describe("getAccount", () => {
+    it("can get account by address, publicKey and name", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
-    const { faucet } = await userProfileWithFaucet();
-    const faucetAddress = keyToAddress(faucet.pubkey);
+      const { faucet } = await userProfileWithFaucet();
+      const faucetAddress = keyToAddress(faucet.pubkey);
 
-    // can get the faucet by address (there is money)
-    const responseFromAddress = await connection.getAccount({ address: faucetAddress });
-    expect(responseFromAddress.data.length).toEqual(1);
-    {
-      const account = responseFromAddress.data[0];
-      expect(account.address).toEqual(faucetAddress);
-      expect(account.pubkey).toEqual(faucet.pubkey);
-      expect(account.name).toEqual("admin");
-      expect(account.balance.length).toEqual(1);
-      expect(account.balance[0].tokenTicker).toEqual(cash);
-      expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
-    }
+      // can get the faucet by address (there is money)
+      const responseFromAddress = await connection.getAccount({ address: faucetAddress });
+      expect(responseFromAddress.data.length).toEqual(1);
+      {
+        const account = responseFromAddress.data[0];
+        expect(account.address).toEqual(faucetAddress);
+        expect(account.pubkey).toEqual(faucet.pubkey);
+        expect(account.name).toEqual("admin");
+        expect(account.balance.length).toEqual(1);
+        expect(account.balance[0].tokenTicker).toEqual(cash);
+        expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
+      }
 
-    // can get the faucet by publicKey, same result
-    const responseFromPubkey = await connection.getAccount({ pubkey: faucet.pubkey });
-    expect(responseFromPubkey.data.length).toEqual(1);
-    {
-      const account = responseFromPubkey.data[0];
-      expect(account.address).toEqual(faucetAddress);
-      expect(account.pubkey).toEqual(faucet.pubkey);
-      expect(account.name).toEqual("admin");
-      expect(account.balance.length).toEqual(1);
-      expect(account.balance[0].tokenTicker).toEqual(cash);
-      expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
-    }
+      // can get the faucet by publicKey, same result
+      const responseFromPubkey = await connection.getAccount({ pubkey: faucet.pubkey });
+      expect(responseFromPubkey.data.length).toEqual(1);
+      {
+        const account = responseFromPubkey.data[0];
+        expect(account.address).toEqual(faucetAddress);
+        expect(account.pubkey).toEqual(faucet.pubkey);
+        expect(account.name).toEqual("admin");
+        expect(account.balance.length).toEqual(1);
+        expect(account.balance[0].tokenTicker).toEqual(cash);
+        expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
+      }
 
-    // can get the faucet by name, same result
-    const responseFromName = await connection.getAccount({ name: "admin" });
-    expect(responseFromName.data.length).toEqual(1);
-    {
-      const account = responseFromName.data[0];
-      expect(account.address).toEqual(faucetAddress);
-      expect(account.pubkey).toEqual(faucet.pubkey);
-      expect(account.name).toEqual("admin");
-      expect(account.balance.length).toEqual(1);
-      expect(account.balance[0].tokenTicker).toEqual(cash);
-      expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
-    }
+      // can get the faucet by name, same result
+      const responseFromName = await connection.getAccount({ name: "admin" });
+      expect(responseFromName.data.length).toEqual(1);
+      {
+        const account = responseFromName.data[0];
+        expect(account.address).toEqual(faucetAddress);
+        expect(account.pubkey).toEqual(faucet.pubkey);
+        expect(account.name).toEqual("admin");
+        expect(account.balance.length).toEqual(1);
+        expect(account.balance[0].tokenTicker).toEqual(cash);
+        expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
+      }
 
-    connection.disconnect();
-  });
+      connection.disconnect();
+    });
 
-  it("returns empty list when getting an unused account", async () => {
-    pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    // unusedAddress generated using https://github.com/nym-zone/bech32
-    // bech32 -e -h tiov 010101020202030303040404050505050A0A0A0A
-    const unusedAddress = "tiov1qyqszqszqgpsxqcyqszq2pg9q59q5zs2fx9n6s" as Address;
-    const response = await connection.getAccount({ address: unusedAddress });
-    expect(response).toBeTruthy();
-    expect(response.data).toBeTruthy();
-    expect(response.data.length).toEqual(0);
+    it("returns empty list when getting an unused account", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      // unusedAddress generated using https://github.com/nym-zone/bech32
+      // bech32 -e -h tiov 010101020202030303040404050505050A0A0A0A
+      const unusedAddress = "tiov1qyqszqszqgpsxqcyqszq2pg9q59q5zs2fx9n6s" as Address;
+      const response = await connection.getAccount({ address: unusedAddress });
+      expect(response).toBeTruthy();
+      expect(response.data).toBeTruthy();
+      expect(response.data.length).toEqual(0);
 
-    connection.disconnect();
+      connection.disconnect();
+    });
   });
 
   describe("getNonce", () => {
