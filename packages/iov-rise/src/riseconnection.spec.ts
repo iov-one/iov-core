@@ -186,7 +186,7 @@ describe("RiseConnection", () => {
     // by address
     {
       const query: BcpAddressQuery = { address: "5399275477602875017R" as Address };
-      const nonce = (await connection.getNonce(query)).data[0];
+      const nonce = await connection.getNonce(query);
       // nonce is current unix timestamp +/- one second
       expect(nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
       expect(nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
@@ -200,7 +200,7 @@ describe("RiseConnection", () => {
           data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PublicKeyBytes,
         },
       };
-      const nonce = (await connection.getNonce(query)).data[0];
+      const nonce = await connection.getNonce(query);
       // nonce is current unix timestamp +/- one second
       expect(nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
       expect(nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);

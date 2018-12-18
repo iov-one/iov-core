@@ -22,7 +22,7 @@ import {
   TokenTicker,
 } from "@iov/bcp-types";
 import { Random, Sha256 } from "@iov/crypto";
-import { Encoding, Int53, Uint64 } from "@iov/encoding";
+import { Encoding, Uint64 } from "@iov/encoding";
 import {
   Ed25519HdWallet,
   HdPaths,
@@ -75,11 +75,6 @@ async function randomBnsAddress(): Promise<Address> {
 
 const cash = "CASH" as TokenTicker;
 
-async function getNonce(connection: BnsConnection, addr: Address): Promise<Nonce> {
-  const data = (await connection.getNonce({ address: addr })).data;
-  return data.length === 0 ? (new Int53(0) as Nonce) : data[0];
-}
-
 describe("BnsConnection", () => {
   // the first key generated from this mneumonic produces the given address
   // this account has money in the genesis file (setup in docker)
@@ -121,7 +116,7 @@ describe("BnsConnection", () => {
       amount: defaultAmount,
     };
     const firstWalletId = profile.wallets.value[0].id;
-    const nonce = await getNonce(connection, keyToAddress(identity.pubkey));
+    const nonce = await connection.getNonce({ pubkey: identity.pubkey });
     const signed = await profile.signTransaction(firstWalletId, identity, sendTx, bnsCodec, nonce);
     const response = await connection.postTx(bnsCodec.bytesToPost(signed));
     await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
@@ -137,7 +132,7 @@ describe("BnsConnection", () => {
       recipient: address,
       amount: defaultAmount,
     };
-    const nonce = await getNonce(connection, keyToAddress(faucet.pubkey));
+    const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
     const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
     const response = await connection.postTx(bnsCodec.bytesToPost(signed));
     await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
@@ -283,8 +278,8 @@ describe("BnsConnection", () => {
 
       // by address
       const unusedAddress = "tiov1qyqszqszqgpsxqcyqszq2pg9q59q5zs2fx9n6s" as Address;
-      const response1 = await connection.getNonce({ address: unusedAddress });
-      expect(response1.data.length).toEqual(0);
+      const nonce1 = await connection.getNonce({ address: unusedAddress });
+      expect(nonce1.toNumber()).toEqual(0);
 
       // by pubkey
       const unusedPubkey: PublicKeyBundle = {
@@ -293,8 +288,8 @@ describe("BnsConnection", () => {
           "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
         ) as PublicKeyBytes,
       };
-      const response2 = await connection.getNonce({ pubkey: unusedPubkey });
-      expect(response2.data.length).toEqual(0);
+      const nonce2 = await connection.getNonce({ pubkey: unusedPubkey });
+      expect(nonce2.toNumber()).toEqual(0);
 
       connection.disconnect();
     });
@@ -307,14 +302,12 @@ describe("BnsConnection", () => {
 
       // by address
       const faucetAddress = keyToAddress(faucet.pubkey);
-      const response1 = await connection.getNonce({ address: faucetAddress });
-      expect(response1.data.length).toEqual(1);
-      expect(response1.data[0].toNumber()).toBeGreaterThan(0);
+      const nonce1 = await connection.getNonce({ address: faucetAddress });
+      expect(nonce1.toNumber()).toBeGreaterThan(0);
 
       // by pubkey
-      const response2 = await connection.getNonce({ pubkey: faucet.pubkey });
-      expect(response2.data.length).toEqual(1);
-      expect(response2.data[0].toNumber()).toBeGreaterThan(0);
+      const nonce2 = await connection.getNonce({ pubkey: faucet.pubkey });
+      expect(nonce2.toNumber()).toBeGreaterThan(0);
 
       connection.disconnect();
     });
@@ -343,7 +336,7 @@ describe("BnsConnection", () => {
           tokenTicker: cash,
         },
       };
-      const nonce = await getNonce(connection, faucetAddr);
+      const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
       const txBytes = bnsCodec.bytesToPost(signed);
       const response = await connection.postTx(txBytes);
@@ -359,7 +352,7 @@ describe("BnsConnection", () => {
 
       // and the nonce should go up, to be at least one
       // (worrying about replay issues)
-      const fNonce = await getNonce(connection, faucetAddr);
+      const fNonce = await connection.getNonce({ pubkey: faucet.pubkey });
       expect(fNonce.toNumber()).toBeGreaterThanOrEqual(1);
 
       // now verify we can query the same tx back
@@ -390,7 +383,6 @@ describe("BnsConnection", () => {
         const chainId = await connection.chainId();
 
         const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
-        const faucetAddr = keyToAddress(faucet.pubkey);
         const recipient = await randomBnsAddress();
 
         // construct a sendtx, this is normally used in the MultiChainSigner api
@@ -406,7 +398,7 @@ describe("BnsConnection", () => {
             tokenTicker: cash,
           },
         };
-        const nonce = await getNonce(connection, faucetAddr);
+        const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
         const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
         const heightBeforeTransaction = await connection.height();
         const result = await connection.postTx(bnsCodec.bytesToPost(signed));
@@ -516,7 +508,7 @@ describe("BnsConnection", () => {
         codecName: "wonderland_rules",
         codecConfig: `{ "any" : [ "json", "content" ] }`,
       };
-      const nonce = await getNonce(connection, identityAddress);
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
       const signed = await profile.signTransaction(wallet.id, identity, registration, bnsCodec, nonce);
       const txBytes = bnsCodec.bytesToPost(signed);
       const response = await connection.postTx(txBytes);
@@ -567,7 +559,7 @@ describe("BnsConnection", () => {
         ],
         username: username,
       };
-      const nonce = await getNonce(connection, address);
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
       const signed = await profile.signTransaction(wallet.id, identity, registration, bnsCodec, nonce);
       const txBytes = bnsCodec.bytesToPost(signed);
       const response = await connection.postTx(txBytes);
@@ -594,7 +586,6 @@ describe("BnsConnection", () => {
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
-      const identityAddress = keyToAddress(identity.pubkey);
 
       // Create and send registration
       const username = `testuser_${Math.random()}`;
@@ -613,7 +604,7 @@ describe("BnsConnection", () => {
               identity,
               usernameRegistration,
               bnsCodec,
-              await getNonce(connection, identityAddress),
+              await connection.getNonce({ pubkey: identity.pubkey }),
             ),
           ),
         );
@@ -644,7 +635,7 @@ describe("BnsConnection", () => {
               identity,
               blockchainRegistration,
               bnsCodec,
-              await getNonce(connection, identityAddress),
+              await connection.getNonce({ pubkey: identity.pubkey }),
             ),
           ),
         );
@@ -671,7 +662,7 @@ describe("BnsConnection", () => {
               identity,
               addAddress,
               bnsCodec,
-              await getNonce(connection, identityAddress),
+              await connection.getNonce({ pubkey: identity.pubkey }),
             ),
           ),
         );
@@ -698,7 +689,7 @@ describe("BnsConnection", () => {
               identity,
               addAddress2,
               bnsCodec,
-              await getNonce(connection, identityAddress),
+              await connection.getNonce({ pubkey: identity.pubkey }),
             ),
           ),
         );
@@ -730,7 +721,7 @@ describe("BnsConnection", () => {
               identity,
               removeAddress,
               bnsCodec,
-              await getNonce(connection, identityAddress),
+              await connection.getNonce({ pubkey: identity.pubkey }),
             ),
           ),
         );
@@ -746,7 +737,7 @@ describe("BnsConnection", () => {
               identity,
               removeAddress,
               bnsCodec,
-              await getNonce(connection, identityAddress),
+              await connection.getNonce({ pubkey: identity.pubkey }),
             ),
           ),
         );
@@ -770,7 +761,6 @@ describe("BnsConnection", () => {
       const chainId = await connection.chainId();
 
       const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
-      const faucetAddress = keyToAddress(faucet.pubkey);
       const rcptAddress = await randomBnsAddress();
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
@@ -784,7 +774,7 @@ describe("BnsConnection", () => {
         amount: defaultAmount,
       };
 
-      const nonce = await getNonce(connection, faucetAddress);
+      const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
@@ -809,7 +799,6 @@ describe("BnsConnection", () => {
       const chainId = await connection.chainId();
 
       const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
-      const faucetAddress = keyToAddress(faucet.pubkey);
       const rcptAddress = await randomBnsAddress();
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
@@ -823,7 +812,7 @@ describe("BnsConnection", () => {
         amount: defaultAmount,
       };
 
-      const nonce = await getNonce(connection, faucetAddress);
+      const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       const blockInfo = await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
@@ -849,7 +838,6 @@ describe("BnsConnection", () => {
       const chainId = await connection.chainId();
 
       const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
-      const faucetAddress = keyToAddress(faucet.pubkey);
 
       const memo = `Payment ${Math.random()}`;
       const sendTx: SendTransaction = {
@@ -865,7 +853,7 @@ describe("BnsConnection", () => {
         },
       };
 
-      const nonce = await getNonce(connection, faucetAddress);
+      const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
@@ -894,7 +882,6 @@ describe("BnsConnection", () => {
       const initialHeight = await connection.height();
 
       const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
-      const faucetAddress = keyToAddress(faucet.pubkey);
       const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(68));
       const rcptAddress = keyToAddress(rcpt.pubkey);
 
@@ -913,7 +900,7 @@ describe("BnsConnection", () => {
         },
       };
 
-      const nonce = await getNonce(connection, faucetAddress);
+      const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
@@ -986,7 +973,6 @@ describe("BnsConnection", () => {
         const chainId = await connection.chainId();
 
         const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
-        const faucetAddress = keyToAddress(faucet.pubkey);
 
         const memo = `Payment ${Math.random()}`;
         const sendTx: SendTransaction = {
@@ -1002,7 +988,7 @@ describe("BnsConnection", () => {
           },
         };
 
-        const nonce = await getNonce(connection, faucetAddress);
+        const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
         const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
         const transactionId = bnsCodec.identifier(signed);
         const heightBeforeTransaction = await connection.height();
@@ -1062,7 +1048,7 @@ describe("BnsConnection", () => {
               identity,
               blockchainRegistration,
               bnsCodec,
-              await getNonce(connection, identityAddress),
+              await connection.getNonce({ pubkey: identity.pubkey }),
             ),
           ),
         );
@@ -1117,7 +1103,7 @@ describe("BnsConnection", () => {
         addresses: [],
         username: username,
       };
-      const nonce = await getNonce(connection, identityAddress);
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
       const signed = await profile.signTransaction(wallet.id, identity, registration, bnsCodec, nonce);
       {
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
@@ -1190,7 +1176,7 @@ describe("BnsConnection", () => {
               identity,
               blockchainRegistration,
               bnsCodec,
-              await getNonce(connection, identityAddress),
+              await connection.getNonce({ pubkey: identity.pubkey }),
             ),
           ),
         );
@@ -1219,7 +1205,7 @@ describe("BnsConnection", () => {
               identity,
               usernameRegistration,
               bnsCodec,
-              await getNonce(connection, identityAddress),
+              await connection.getNonce({ pubkey: identity.pubkey }),
             ),
           ),
         );
@@ -1290,8 +1276,6 @@ describe("BnsConnection", () => {
   ): Promise<PostTxResponse> => {
     // construct a sendtx, this is normally used in the MultiChainSigner api
     const chainId = await connection.chainId();
-    const faucetAddr = keyToAddress(faucet.pubkey);
-    const nonce = await getNonce(connection, faucetAddr);
     const sendTx: SendTransaction = {
       kind: "bcp/send",
       chainId,
@@ -1304,6 +1288,7 @@ describe("BnsConnection", () => {
       },
     };
     const firstWalletId = profile.wallets.value[0].id;
+    const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
     const signed = await profile.signTransaction(firstWalletId, faucet, sendTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     return connection.postTx(txBytes);
@@ -1414,8 +1399,8 @@ describe("BnsConnection", () => {
     const faucetAcct = lastValue<BcpAccount | undefined>(connection.watchAccount({ address: faucetAddr }));
     const rcptAcct = lastValue<BcpAccount | undefined>(connection.watchAccount({ address: recipientAddr }));
 
-    const faucetNonce = lastValue<Nonce | undefined>(connection.watchNonce({ address: faucetAddr }));
-    const rcptNonce = lastValue<Nonce | undefined>(connection.watchNonce({ address: recipientAddr }));
+    const faucetNonce = lastValue<Nonce>(connection.watchNonce({ address: faucetAddr }));
+    const rcptNonce = lastValue<Nonce>(connection.watchNonce({ address: recipientAddr }));
 
     // give it a chance to get initial feed before checking and proceeding
     await sleep(200);
@@ -1499,7 +1484,7 @@ describe("BnsConnection", () => {
       preimage: swapOfferPreimage,
     };
 
-    const nonce = await getNonce(connection, faucetAddr);
+    const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
     const signed = await profile.signTransaction(mainWalletId, faucet, swapOfferTx, bnsCodec, nonce);
     const post = await connection.postTx(bnsCodec.bytesToPost(signed));
     const transactionId = post.transactionId;
@@ -1605,7 +1590,6 @@ describe("BnsConnection", () => {
   ): Promise<PostTxResponse> => {
     // construct a swapOfferTx, sign and post to the chain
     const chainId = await connection.chainId();
-    const nonce = await getNonce(connection, keyToAddress(sender.pubkey));
     const swapOfferTimeout = (await connection.height()) + 1000;
     const swapOfferTx: SwapOfferTransaction = {
       kind: "bcp/swap_offer",
@@ -1623,6 +1607,7 @@ describe("BnsConnection", () => {
       preimage,
     };
     const firstWalletId = profile.wallets.value[0].id;
+    const nonce = await connection.getNonce({ pubkey: sender.pubkey });
     const signed = await profile.signTransaction(firstWalletId, sender, swapOfferTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     return connection.postTx(txBytes);
@@ -1637,7 +1622,6 @@ describe("BnsConnection", () => {
   ): Promise<PostTxResponse> => {
     // construct a swapOfferTx, sign and post to the chain
     const chainId = await connection.chainId();
-    const nonce = await getNonce(connection, keyToAddress(sender.pubkey));
     const swapClaimTx: SwapClaimTransaction = {
       kind: "bcp/swap_claim",
       chainId,
@@ -1646,6 +1630,7 @@ describe("BnsConnection", () => {
       preimage,
     };
     const firstWalletId = profile.wallets.value[0].id;
+    const nonce = await connection.getNonce({ pubkey: sender.pubkey });
     const signed = await profile.signTransaction(firstWalletId, sender, swapClaimTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     return connection.postTx(txBytes);

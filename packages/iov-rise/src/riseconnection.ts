@@ -219,15 +219,15 @@ export class RiseConnection implements BcpConnection {
     return dummyEnvelope(accounts);
   }
 
-  public getNonce(_: BcpAddressQuery | BcpPubkeyQuery): Promise<BcpQueryEnvelope<Nonce>> {
-    return Promise.resolve(dummyEnvelope([generateNonce()]));
+  public getNonce(_: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {
+    return Promise.resolve(generateNonce());
   }
 
   public watchAccount(_: BcpAccountQuery): Stream<BcpAccount | undefined> {
     throw new Error("Not implemented");
   }
 
-  public watchNonce(_: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce | undefined> {
+  public watchNonce(_: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce> {
     throw new Error("Not implemented");
   }
 

@@ -193,9 +193,14 @@ export interface BcpConnection {
    * If an account is not found on the blockchain, an envelope with an empty data array is returned
    */
   readonly getAccount: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpAccount>>;
-  readonly getNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Promise<BcpQueryEnvelope<Nonce>>;
+  /**
+   * Get a nonce for the next transaction signature.
+   *
+   * Implementation defines a default value if blockchain does not provide a nonce.
+   */
+  readonly getNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Promise<Nonce>;
   readonly watchAccount: (account: BcpAccountQuery) => Stream<BcpAccount | undefined>;
-  readonly watchNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Stream<Nonce | undefined>;
+  readonly watchNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Stream<Nonce>;
 
   // blocks
   readonly getBlockHeader: (height: number) => Promise<BlockHeader>;

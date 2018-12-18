@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.0
+
+* @iov/bcp-type: `BcpConnection.getNonce` and `.watchNonce` now return
+  `Promise<Nonce>`/`Stream<Nonce>` and implementations set a default value on
+  their own.
+
 ## 0.10.2
 
 * @iov/bcp-types: Add `BcpAccount.pubkey` and implement in Lisk, RISE and BNS.
