@@ -132,6 +132,22 @@ describe("BnsConnection", () => {
     return { profile, mainWalletId: wallet.id, faucet };
   }
 
+  async function ensureBalanceNonZero(connection: BnsConnection, address: Address): Promise<void> {
+    const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
+
+    const sendTx: SendTransaction = {
+      kind: "bcp/send",
+      chainId: await connection.chainId(),
+      signer: faucet.pubkey,
+      recipient: address,
+      amount: defaultAmount,
+    };
+    const nonce = await getNonce(connection, keyToAddress(faucet.pubkey));
+    const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
+    const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+    await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+  }
+
   it("Generate proper faucet address", async () => {
     const { faucet } = await userProfileWithFaucet();
     const addr = keyToAddress(faucet.pubkey);
@@ -227,6 +243,24 @@ describe("BnsConnection", () => {
         expect(account.balance.length).toEqual(1);
         expect(account.balance[0].tokenTicker).toEqual(cash);
         expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
+      }
+
+      connection.disconnect();
+    });
+
+    it("returns empty pubkey and name when getting an account with no outgoing transactions", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const newAddress = await randomBnsAddress();
+      await ensureBalanceNonZero(connection, newAddress);
+
+      const response = await connection.getAccount({ address: newAddress });
+      expect(response.data.length).toEqual(1);
+      {
+        const account = response.data[0];
+        expect(account.address).toEqual(newAddress);
+        expect(account.pubkey).toBeUndefined();
+        expect(account.name).toBeUndefined();
       }
 
       connection.disconnect();
