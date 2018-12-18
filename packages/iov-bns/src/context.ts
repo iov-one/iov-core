@@ -1,7 +1,7 @@
 import { ChainId } from "@iov/base-types";
 import {
+  Address,
   Amount,
-  BcpAccount,
   BcpAtomicSwap,
   BcpCoin,
   BcpTicker,
@@ -30,6 +30,13 @@ export interface ChainData {
   readonly tickers: Map<string, BcpTicker>;
 }
 
+/** Like BcpAccount but with no pubkey. Keep compatible to BcpAccount! */
+export interface WalletData {
+  readonly address: Address;
+  readonly name?: string;
+  readonly balance: ReadonlyArray<BcpCoin>;
+}
+
 export class Context {
   private readonly chainData: ChainData;
 
@@ -37,7 +44,7 @@ export class Context {
     this.chainData = chainData;
   }
 
-  public account(acct: codecImpl.namecoin.IWallet & Keyed): BcpAccount {
+  public wallet(acct: codecImpl.namecoin.IWallet & Keyed): WalletData {
     return {
       name: typeof acct.name === "string" ? acct.name : undefined,
       address: encodeBnsAddress(acct._id),

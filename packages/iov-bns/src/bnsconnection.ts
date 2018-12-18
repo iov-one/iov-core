@@ -1,7 +1,7 @@
 import equal from "fast-deep-equal";
 import { Producer, Stream, Subscription } from "xstream";
 
-import { ChainId, PostableBytes } from "@iov/base-types";
+import { ChainId, PostableBytes, PublicKeyBundle } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
@@ -57,6 +57,7 @@ import {
   BnsBlockchainsQuery,
   BnsUsernameNft,
   BnsUsernamesQuery,
+  decodePubkey,
   Decoder,
   isBnsBlockchainsByChainIdQuery,
   isBnsUsernamesByChainAndAddressQuery,
@@ -269,10 +270,34 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     } else {
       response = await this.query("/wallets/name", Encoding.toAscii(account.name));
     }
+
     const parser = createParser(codecImpl.namecoin.Wallet, "wllt:");
-    const wallets = response.results.map(parser);
-    const data = wallets.map(wallet => this.context.account(wallet));
-    return dummyEnvelope(data);
+    const walletDatas = response.results.map(parser).map(iwallet => this.context.wallet(iwallet));
+
+    if (walletDatas.length === 0) {
+      return dummyEnvelope([]);
+    }
+    const walletData = walletDatas[0];
+
+    const walletAddress = walletData.address;
+
+    let pubkey: PublicKeyBundle | undefined;
+    if (isPubkeyQuery(account)) {
+      pubkey = account.pubkey;
+    } else {
+      const res = await this.query("/auth", decodeBnsAddress(walletAddress).data);
+      const userDataParser = createParser(codecImpl.sigs.UserData, "sigs:");
+      const ipubkeys = res.results.map(userDataParser).map(ud => ud.pubkey);
+      const ipubkey = ipubkeys.length >= 1 ? ipubkeys[0] : undefined;
+      pubkey = ipubkey ? decodePubkey(ipubkey) : undefined;
+    }
+
+    return dummyEnvelope([
+      {
+        ...walletData,
+        pubkey: pubkey,
+      },
+    ]);
   }
 
   public async getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<BcpQueryEnvelope<Nonce>> {

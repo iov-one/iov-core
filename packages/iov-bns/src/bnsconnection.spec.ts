@@ -187,29 +187,46 @@ describe("BnsConnection", () => {
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
     const { faucet } = await userProfileWithFaucet();
-    const faucetAddr = keyToAddress(faucet.pubkey);
+    const faucetAddress = keyToAddress(faucet.pubkey);
 
     // can get the faucet by address (there is money)
-    const responseFromAddress = await connection.getAccount({ address: faucetAddr });
+    const responseFromAddress = await connection.getAccount({ address: faucetAddress });
     expect(responseFromAddress.data.length).toEqual(1);
-    const addrAcct = responseFromAddress.data[0];
-    expect(addrAcct.address).toEqual(faucetAddr);
-    expect(addrAcct.name).toEqual("admin");
-    expect(addrAcct.balance.length).toEqual(1);
-    expect(addrAcct.balance[0].tokenTicker).toEqual(cash);
-    expect(Number.parseInt(addrAcct.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
+    {
+      const account = responseFromAddress.data[0];
+      expect(account.address).toEqual(faucetAddress);
+      expect(account.pubkey).toEqual(faucet.pubkey);
+      expect(account.name).toEqual("admin");
+      expect(account.balance.length).toEqual(1);
+      expect(account.balance[0].tokenTicker).toEqual(cash);
+      expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
+    }
 
     // can get the faucet by publicKey, same result
     const responseFromPubkey = await connection.getAccount({ pubkey: faucet.pubkey });
     expect(responseFromPubkey.data.length).toEqual(1);
-    const pubkeyAcct = responseFromPubkey.data[0];
-    expect(pubkeyAcct).toEqual(addrAcct);
+    {
+      const account = responseFromPubkey.data[0];
+      expect(account.address).toEqual(faucetAddress);
+      expect(account.pubkey).toEqual(faucet.pubkey);
+      expect(account.name).toEqual("admin");
+      expect(account.balance.length).toEqual(1);
+      expect(account.balance[0].tokenTicker).toEqual(cash);
+      expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
+    }
 
     // can get the faucet by name, same result
     const responseFromName = await connection.getAccount({ name: "admin" });
     expect(responseFromName.data.length).toEqual(1);
-    const nameAcct = responseFromName.data[0];
-    expect(nameAcct).toEqual(addrAcct);
+    {
+      const account = responseFromName.data[0];
+      expect(account.address).toEqual(faucetAddress);
+      expect(account.pubkey).toEqual(faucet.pubkey);
+      expect(account.name).toEqual("admin");
+      expect(account.balance.length).toEqual(1);
+      expect(account.balance[0].tokenTicker).toEqual(cash);
+      expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
+    }
 
     connection.disconnect();
   });
