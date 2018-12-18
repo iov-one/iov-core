@@ -1,4 +1,4 @@
 export * from "./atomicswap";
-export * from "./bcp";
+export * from "./connection";
 export * from "./signables";
 export * from "./transactions";

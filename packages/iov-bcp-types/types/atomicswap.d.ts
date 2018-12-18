@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { BcpCoin, BcpConnection, BcpQueryEnvelope } from "./bcp";
+import { BcpCoin, BcpConnection, BcpQueryEnvelope } from "./connection";
 import { Address } from "./signables";
 import { SwapIdBytes } from "./transactions";
 export declare enum SwapState {
