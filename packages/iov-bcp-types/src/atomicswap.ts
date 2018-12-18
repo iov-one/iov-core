@@ -1,8 +1,7 @@
 import { Stream } from "xstream";
 
 import { BcpCoin, BcpConnection, BcpQueryEnvelope } from "./connection";
-import { Address } from "./signables";
-import { SwapIdBytes } from "./transactions";
+import { Address, SwapIdBytes } from "./transactions";
 
 export enum SwapState {
   Open = "open",

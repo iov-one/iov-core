@@ -1,6 +1,5 @@
 import { ChainId, PostableBytes, PublicKeyBundle } from "@iov/base-types";
-import { Address, SignedTransaction, SigningJob, TransactionId } from "./signables";
-import { Nonce, UnsignedTransaction } from "./transactions";
+import { Address, Nonce, SignedTransaction, SigningJob, TransactionId, UnsignedTransaction } from "./transactions";
 export interface TxReadCodec {
     /** parseBytes will recover bytes from the blockchain into a format we can use */
     readonly parseBytes: (bytes: PostableBytes, chainId: ChainId) => SignedTransaction;
