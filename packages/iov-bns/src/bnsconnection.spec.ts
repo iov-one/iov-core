@@ -80,30 +80,6 @@ async function getNonce(connection: BnsConnection, addr: Address): Promise<Nonce
   return data.length === 0 ? (new Int53(0) as Nonce) : data[0];
 }
 
-async function ensureNonceNonZero(
-  connection: BnsConnection,
-  profile: UserProfile,
-  identity: PublicIdentity,
-): Promise<void> {
-  const nonce = await getNonce(connection, keyToAddress(identity.pubkey));
-  const sendTx: SendTransaction = {
-    kind: "bcp/send",
-    chainId: await connection.chainId(),
-    signer: identity.pubkey,
-    recipient: await randomBnsAddress(),
-    amount: {
-      quantity: "1",
-      fractionalDigits: 9,
-      tokenTicker: cash,
-    },
-  };
-  const firstWalletId = profile.wallets.value[0].id;
-  const signed = await profile.signTransaction(firstWalletId, identity, sendTx, bnsCodec, nonce);
-  const txBytes = bnsCodec.bytesToPost(signed);
-  const response = await connection.postTx(txBytes);
-  await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
-}
-
 describe("BnsConnection", () => {
   // the first key generated from this mneumonic produces the given address
   // this account has money in the genesis file (setup in docker)
@@ -130,6 +106,41 @@ describe("BnsConnection", () => {
     profile.addWallet(wallet);
     const faucet = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
     return { profile, mainWalletId: wallet.id, faucet };
+  }
+
+  async function ensureNonceNonZero(
+    connection: BnsConnection,
+    profile: UserProfile,
+    identity: PublicIdentity,
+  ): Promise<void> {
+    const sendTx: SendTransaction = {
+      kind: "bcp/send",
+      chainId: await connection.chainId(),
+      signer: identity.pubkey,
+      recipient: await randomBnsAddress(),
+      amount: defaultAmount,
+    };
+    const firstWalletId = profile.wallets.value[0].id;
+    const nonce = await getNonce(connection, keyToAddress(identity.pubkey));
+    const signed = await profile.signTransaction(firstWalletId, identity, sendTx, bnsCodec, nonce);
+    const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+    await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+  }
+
+  async function ensureBalanceNonZero(connection: BnsConnection, address: Address): Promise<void> {
+    const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
+
+    const sendTx: SendTransaction = {
+      kind: "bcp/send",
+      chainId: await connection.chainId(),
+      signer: faucet.pubkey,
+      recipient: address,
+      amount: defaultAmount,
+    };
+    const nonce = await getNonce(connection, keyToAddress(faucet.pubkey));
+    const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
+    const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+    await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
   }
 
   it("Generate proper faucet address", async () => {
@@ -182,50 +193,87 @@ describe("BnsConnection", () => {
     connection.disconnect();
   });
 
-  it("can get account by address, publicKey and name", async () => {
-    pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
+  describe("getAccount", () => {
+    it("can get account by address, publicKey and name", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const { profile, faucet } = await userProfileWithFaucet();
+      await ensureNonceNonZero(connection, profile, faucet);
+      const faucetAddress = keyToAddress(faucet.pubkey);
 
-    const { faucet } = await userProfileWithFaucet();
-    const faucetAddr = keyToAddress(faucet.pubkey);
+      // can get the faucet by address (there is money)
+      const responseFromAddress = await connection.getAccount({ address: faucetAddress });
+      expect(responseFromAddress.data.length).toEqual(1);
+      {
+        const account = responseFromAddress.data[0];
+        expect(account.address).toEqual(faucetAddress);
+        expect(account.pubkey).toEqual(faucet.pubkey);
+        expect(account.name).toEqual("admin");
+        expect(account.balance.length).toEqual(1);
+        expect(account.balance[0].tokenTicker).toEqual(cash);
+        expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
+      }
 
-    // can get the faucet by address (there is money)
-    const responseFromAddress = await connection.getAccount({ address: faucetAddr });
-    expect(responseFromAddress.data.length).toEqual(1);
-    const addrAcct = responseFromAddress.data[0];
-    expect(addrAcct.address).toEqual(faucetAddr);
-    expect(addrAcct.name).toEqual("admin");
-    expect(addrAcct.balance.length).toEqual(1);
-    expect(addrAcct.balance[0].tokenTicker).toEqual(cash);
-    expect(Number.parseInt(addrAcct.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
+      // can get the faucet by publicKey, same result
+      const responseFromPubkey = await connection.getAccount({ pubkey: faucet.pubkey });
+      expect(responseFromPubkey.data.length).toEqual(1);
+      {
+        const account = responseFromPubkey.data[0];
+        expect(account.address).toEqual(faucetAddress);
+        expect(account.pubkey).toEqual(faucet.pubkey);
+        expect(account.name).toEqual("admin");
+        expect(account.balance.length).toEqual(1);
+        expect(account.balance[0].tokenTicker).toEqual(cash);
+        expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
+      }
 
-    // can get the faucet by publicKey, same result
-    const responseFromPubkey = await connection.getAccount({ pubkey: faucet.pubkey });
-    expect(responseFromPubkey.data.length).toEqual(1);
-    const pubkeyAcct = responseFromPubkey.data[0];
-    expect(pubkeyAcct).toEqual(addrAcct);
+      // can get the faucet by name, same result
+      const responseFromName = await connection.getAccount({ name: "admin" });
+      expect(responseFromName.data.length).toEqual(1);
+      {
+        const account = responseFromName.data[0];
+        expect(account.address).toEqual(faucetAddress);
+        expect(account.pubkey).toEqual(faucet.pubkey);
+        expect(account.name).toEqual("admin");
+        expect(account.balance.length).toEqual(1);
+        expect(account.balance[0].tokenTicker).toEqual(cash);
+        expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
+      }
 
-    // can get the faucet by name, same result
-    const responseFromName = await connection.getAccount({ name: "admin" });
-    expect(responseFromName.data.length).toEqual(1);
-    const nameAcct = responseFromName.data[0];
-    expect(nameAcct).toEqual(addrAcct);
+      connection.disconnect();
+    });
 
-    connection.disconnect();
-  });
+    it("returns empty pubkey and name when getting an account with no outgoing transactions", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const newAddress = await randomBnsAddress();
+      await ensureBalanceNonZero(connection, newAddress);
 
-  it("returns empty list when getting an unused account", async () => {
-    pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    // unusedAddress generated using https://github.com/nym-zone/bech32
-    // bech32 -e -h tiov 010101020202030303040404050505050A0A0A0A
-    const unusedAddress = "tiov1qyqszqszqgpsxqcyqszq2pg9q59q5zs2fx9n6s" as Address;
-    const response = await connection.getAccount({ address: unusedAddress });
-    expect(response).toBeTruthy();
-    expect(response.data).toBeTruthy();
-    expect(response.data.length).toEqual(0);
+      const response = await connection.getAccount({ address: newAddress });
+      expect(response.data.length).toEqual(1);
+      {
+        const account = response.data[0];
+        expect(account.address).toEqual(newAddress);
+        expect(account.pubkey).toBeUndefined();
+        expect(account.name).toBeUndefined();
+      }
 
-    connection.disconnect();
+      connection.disconnect();
+    });
+
+    it("returns empty list when getting an unused account", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      // unusedAddress generated using https://github.com/nym-zone/bech32
+      // bech32 -e -h tiov 010101020202030303040404050505050A0A0A0A
+      const unusedAddress = "tiov1qyqszqszqgpsxqcyqszq2pg9q59q5zs2fx9n6s" as Address;
+      const response = await connection.getAccount({ address: unusedAddress });
+      expect(response).toBeTruthy();
+      expect(response.data).toBeTruthy();
+      expect(response.data.length).toEqual(0);
+
+      connection.disconnect();
+    });
   });
 
   describe("getNonce", () => {

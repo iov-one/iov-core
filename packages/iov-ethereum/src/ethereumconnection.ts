@@ -187,6 +187,7 @@ export class EthereumConnection implements BcpConnection {
     const accounts: ReadonlyArray<BcpAccount> = [responseBody].map(
       (item: any): BcpAccount => ({
         address: address,
+        pubkey: undefined, // TODO: get from a transaction sent by this address
         name: undefined,
         balance: [
           {

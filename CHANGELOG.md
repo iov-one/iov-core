@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.2
+
+* @iov/bcp-types: Add `BcpAccount.pubkey` and implement in Lisk, RISE and BNS.
+
 ## 0.10.1
 
 * @iov/tendermint-rpc: convert `const enum`s to `enum`s in public interface to

@@ -18,6 +18,13 @@ export interface BcpCoin extends BcpTicker, Amount {
 }
 export interface BcpAccount {
     readonly address: Address;
+    /**
+     * The public key, if available.
+     *
+     * - Always available if the full pubkey is encoded in the address (e.g. nano, Substrate/Polkadot)
+     * - Available after first transaction sent (e.g. Lisk, Tendermint, Ethereum)
+     */
+    readonly pubkey?: PublicKeyBundle;
     readonly name?: string;
     readonly balance: ReadonlyArray<BcpCoin>;
 }

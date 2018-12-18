@@ -3,7 +3,7 @@ import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
-import { ChainId, PostableBytes } from "@iov/base-types";
+import { Algorithm, ChainId, PostableBytes, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
@@ -185,15 +185,29 @@ export class RiseConnection implements BcpConnection {
     if (result.data.error) {
       return dummyEnvelope([]);
     }
-    const responseBody = result.data.account;
+    const responseBalance: unknown = result.data.account.balance;
+    const responsePublicKey: unknown = result.data.account.publicKey;
+
+    if (typeof responseBalance !== "string") {
+      throw new Error("Unexpected type for .balance property in response");
+    }
+
+    const pubkey: PublicKeyBundle | undefined =
+      typeof responsePublicKey === "string" && responsePublicKey
+        ? {
+            algo: Algorithm.Ed25519,
+            data: Encoding.fromHex(responsePublicKey) as PublicKeyBytes,
+          }
+        : undefined;
 
     const accounts: ReadonlyArray<BcpAccount> = [
       {
         address: address,
+        pubkey: pubkey,
         name: undefined,
         balance: [
           {
-            quantity: Parse.parseQuantity(responseBody.balance),
+            quantity: Parse.parseQuantity(responseBalance),
             fractionalDigits: constants.primaryTokenFractionalDigits,
             tokenName: constants.primaryTokenName,
             tokenTicker: constants.primaryTokenTicker,

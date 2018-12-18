@@ -44,6 +44,15 @@ curl -X POST -H "Content-type: application/json" -d '{"type":0,"amount":"1000000
 // 1349293588603668134L now owns 100.34556677 LSK
 ```
 
+The account 2222222L has no keypair and only receives funds.
+
+```
+// Send 1.4455 LSK to 2222222L
+curl -X POST -H "Content-type: application/json" -d '{"type":0,"amount":"144550000","recipientId":"2222222L","senderPublicKey":"c094ebee7ec0c50ebee32918655e089f6e1a604b83bcaa760293c61e0f18ab6f","timestamp":81017778,"fee":"10000000","asset":{},"signature":"3be0019dce1bd0c5586720d3e6b6355cac291d8c236e832f4fe68ea3f0926dd3d4e84f72e083cbc301a55cef0237fc5732b0f0516fd4c4b6345a6e71b9f7e800","id":"14104830969050871842"}' http://localhost:4000/api/transactions
+
+// 2222222L now exists in the accounts list
+```
+
 ## Stop
 
 From repo root:
