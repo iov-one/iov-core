@@ -30,7 +30,7 @@ describe("RiseConnection", () => {
   const defaultKeypair = Derivation.passphraseToKeypair(
     "squeeze frog deposit chase sudden clutch fortune spring tone have snow column",
   );
-  const defaultRecipientAddress = "10145108642177909005R" as Address;
+  const defaultRecipientAddress = "123R" as Address; // address with no keypair
   const defaultSendAmount: Amount = {
     quantity: "14550000",
     fractionalDigits: 8,
@@ -129,37 +129,55 @@ describe("RiseConnection", () => {
     expect(height).toBeLessThan(4000000);
   });
 
-  it("can get account from address", async () => {
-    const connection = await RiseConnection.establish(base);
-    const query: BcpAccountQuery = { address: "6472030874529564639R" as Address };
-    const account = await connection.getAccount(query);
-    expect(account.data[0].address).toEqual("6472030874529564639R");
-    expect(account.data[0].balance[0].tokenTicker).toEqual("RISE");
-    expect(account.data[0].balance[0].fractionalDigits).toEqual(8);
-    expect(account.data[0].balance[0].quantity).toEqual("5298643212");
-  });
+  describe("getAccount", () => {
+    it("can get account from address", async () => {
+      const connection = await RiseConnection.establish(base);
+      const query: BcpAccountQuery = { address: "6472030874529564639R" as Address };
+      const response = await connection.getAccount(query);
 
-  it("can get account from pubkey", async () => {
-    const connection = await RiseConnection.establish(base);
-    const pubkey: PublicKeyBundle = {
-      algo: Algorithm.Ed25519,
-      data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PublicKeyBytes,
-    };
-    const query: BcpAccountQuery = { pubkey: pubkey };
-    const account = await connection.getAccount(query);
-    expect(account.data[0].address).toEqual("6472030874529564639R");
-    expect(account.data[0].balance[0].tokenTicker).toEqual("RISE");
-    expect(account.data[0].balance[0].fractionalDigits).toEqual(8);
-    expect(account.data[0].balance[0].quantity).toEqual("5298643212");
-  });
+      const expectedPubkey: PublicKeyBundle = {
+        algo: Algorithm.Ed25519,
+        data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PublicKeyBytes,
+      };
+      expect(response.data[0].address).toEqual("6472030874529564639R");
+      expect(response.data[0].pubkey).toEqual(expectedPubkey);
+      expect(response.data[0].balance[0].tokenTicker).toEqual("RISE");
+      expect(response.data[0].balance[0].fractionalDigits).toEqual(8);
+      expect(response.data[0].balance[0].quantity).toEqual("5298643212");
+    });
 
-  it("returns empty list when getting an unused account", async () => {
-    const unusedAddress = "5648777643193648871R" as Address;
-    const connection = await RiseConnection.establish(base);
-    const response = await connection.getAccount({ address: unusedAddress });
-    expect(response).toBeTruthy();
-    expect(response.data).toBeTruthy();
-    expect(response.data.length).toEqual(0);
+    it("can get account from pubkey", async () => {
+      const connection = await RiseConnection.establish(base);
+      const pubkey: PublicKeyBundle = {
+        algo: Algorithm.Ed25519,
+        data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PublicKeyBytes,
+      };
+      const query: BcpAccountQuery = { pubkey: pubkey };
+      const response = await connection.getAccount(query);
+
+      const expectedPubkey = pubkey;
+      expect(response.data[0].address).toEqual("6472030874529564639R");
+      expect(response.data[0].pubkey).toEqual(expectedPubkey);
+      expect(response.data[0].balance[0].tokenTicker).toEqual("RISE");
+      expect(response.data[0].balance[0].fractionalDigits).toEqual(8);
+      expect(response.data[0].balance[0].quantity).toEqual("5298643212");
+    });
+
+    it("returns undefined pubkey for account with no outgoing transactions", async () => {
+      const connection = await RiseConnection.establish(base);
+      const response = await connection.getAccount({ address: defaultRecipientAddress });
+      expect(response.data[0].address).toEqual(defaultRecipientAddress);
+      expect(response.data[0].pubkey).toBeUndefined();
+    });
+
+    it("returns empty list when getting an unused account", async () => {
+      const unusedAddress = "5648777643193648871R" as Address;
+      const connection = await RiseConnection.establish(base);
+      const response = await connection.getAccount({ address: unusedAddress });
+      expect(response).toBeTruthy();
+      expect(response.data).toBeTruthy();
+      expect(response.data.length).toEqual(0);
+    });
   });
 
   it("can get nonce", async () => {

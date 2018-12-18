@@ -3,7 +3,7 @@ import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
-import { ChainId, PostableBytes } from "@iov/base-types";
+import { Algorithm, ChainId, PostableBytes, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
@@ -186,10 +186,20 @@ export class RiseConnection implements BcpConnection {
       return dummyEnvelope([]);
     }
     const responseBody = result.data.account;
+    const responsePublicKey: unknown = responseBody.publicKey;
+
+    const pubkey: PublicKeyBundle | undefined =
+      typeof responsePublicKey === "string" && responsePublicKey
+        ? {
+            algo: Algorithm.Ed25519,
+            data: Encoding.fromHex(responsePublicKey) as PublicKeyBytes,
+          }
+        : undefined;
 
     const accounts: ReadonlyArray<BcpAccount> = [
       {
         address: address,
+        pubkey: pubkey,
         name: undefined,
         balance: [
           {
