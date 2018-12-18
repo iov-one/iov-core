@@ -1,4 +1,3 @@
-import { ChainId } from "@iov/base-types";
 import { Encoding } from "@iov/encoding";
 
 import {
@@ -224,7 +223,7 @@ export interface RpcGenesisResponse {
 }
 const decodeGenesis = (data: RpcGenesisResponse): responses.GenesisResponse => ({
   genesisTime: DateTime.decode(required(data.genesis_time)),
-  chainId: required(data.chain_id) as ChainId,
+  chainId: required(data.chain_id),
   consensusParams: decodeConsensusParams(data.consensus_params),
   validators: required(data.validators).map(decodeValidatorGenesis),
   appHash: Encoding.fromHex(required(data.app_hash)),
@@ -444,7 +443,7 @@ export interface RpcHeader {
   readonly validators_hash: HexString;
 }
 const decodeHeader = (data: RpcHeader): responses.Header => ({
-  chainId: required(data.chain_id) as ChainId,
+  chainId: required(data.chain_id),
   height: required(data.height),
   time: DateTime.decode(required(data.time)),
   numTxs: required(data.num_txs),
@@ -480,7 +479,7 @@ export interface RpcNodeInfo {
 const decodeNodeInfo = (data: RpcNodeInfo): responses.NodeInfo => ({
   id: Encoding.fromHex(required(data.id)),
   listenAddr: required(data.listen_addr),
-  network: required(data.network) as ChainId,
+  network: required(data.network),
   version: required(data.version),
   channels: required(data.channels),
   moniker: required(data.moniker),

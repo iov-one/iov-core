@@ -131,7 +131,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
   private static async initialize(tmClient: TendermintClient): Promise<ChainData> {
     const status = await tmClient.status();
-    const chainId = status.nodeInfo.network;
+    const chainId = status.nodeInfo.network as ChainId;
 
     // inlining getAllTickers
     const res = await performQuery(tmClient, "/tokens?prefix", Uint8Array.from([]));

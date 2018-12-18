@@ -1,7 +1,5 @@
 import { ReadonlyDate } from "readonly-date";
 
-import { ChainId } from "@iov/base-types";
-
 import { IpPortString, TxBytes, TxHash, ValidatorPubkey, ValidatorSignature } from "./types";
 
 export type Response =
@@ -96,7 +94,7 @@ export interface CommitResponse {
 
 export interface GenesisResponse {
   readonly genesisTime: ReadonlyDate;
-  readonly chainId: ChainId;
+  readonly chainId: string;
   readonly consensusParams: ConsensusParams;
   readonly validators: ReadonlyArray<Validator>;
   readonly appHash: Uint8Array;
@@ -226,7 +224,7 @@ export interface Vote {
 }
 
 export interface Header {
-  readonly chainId: ChainId;
+  readonly chainId: string;
   readonly height: number;
   readonly time: ReadonlyDate;
   readonly numTxs: number;
@@ -246,7 +244,7 @@ export interface Header {
 export interface NodeInfo {
   readonly id: Uint8Array;
   readonly listenAddr: IpPortString;
-  readonly network: ChainId;
+  readonly network: string;
   readonly version: string;
   readonly channels: string; // ???
   readonly moniker: string;
