@@ -1410,14 +1410,13 @@ describe("BnsConnection", () => {
     expect(faucetAcct.value()).toBeDefined();
     expect(faucetAcct.value()!.name).toEqual("admin");
     expect(faucetAcct.value()!.balance.length).toEqual(1);
-    const start = faucetAcct.value()!.balance[0];
+    const faucetStartBalance = faucetAcct.value()!.balance[0];
 
-    // make sure original nonces make sense
-    expect(rcptNonce.value()).toBeUndefined();
-    expect(faucetNonce.value()).toBeDefined();
     // store original nonce, this should increase after tx
-    const origNonce = faucetNonce.value()!;
-    expect(origNonce.toNumber()).toBeGreaterThan(0);
+    const originalRecipientNonce = rcptNonce.value()!;
+    const originalFaucetNonce = faucetNonce.value()!;
+    expect(originalRecipientNonce.toNumber()).toBeGreaterThanOrEqual(0);
+    expect(originalFaucetNonce.toNumber()).toBeGreaterThanOrEqual(0);
 
     // send some cash
     const post = await sendCash(connection, profile, faucet, recipientAddr);
@@ -1431,24 +1430,23 @@ describe("BnsConnection", () => {
     expect(rcptAcct.value()!.name).toBeUndefined();
     expect(rcptAcct.value()!.balance.length).toEqual(1);
     expect(rcptAcct.value()!.balance[0].quantity).toEqual("68000000000");
-    // but rcptNonce still undefined
-    expect(rcptNonce.value()).toBeUndefined();
+    // rcptNonce unchanged
+    expect(rcptNonce.value()!).toEqual(originalRecipientNonce);
 
     // facuetAcct should have gone down a bit
     expect(faucetAcct.value()).toBeDefined();
     expect(faucetAcct.value()!.name).toEqual("admin");
     expect(faucetAcct.value()!.balance.length).toEqual(1);
-    const end = faucetAcct.value()!.balance[0];
-    expect(end).not.toEqual(start);
-    expect(end.quantity).toEqual(
-      Long.fromString(start.quantity)
+    const faucetEndBalance = faucetAcct.value()!.balance[0];
+    expect(faucetEndBalance).not.toEqual(faucetStartBalance);
+    expect(faucetEndBalance.quantity).toEqual(
+      Long.fromString(faucetStartBalance.quantity)
         .subtract(68_000000000)
         .toString(),
     );
     // and faucetNonce gone up by one
-    expect(faucetNonce.value()).toBeDefined();
-    const finalNonce = faucetNonce.value()!;
-    expect(finalNonce.toNumber()).toEqual(origNonce.toNumber() + 1);
+    const finalFaucetNonce = faucetNonce.value()!;
+    expect(finalFaucetNonce.toNumber()).toEqual(originalFaucetNonce.toNumber() + 1);
 
     connection.disconnect();
   });
