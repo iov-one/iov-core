@@ -177,13 +177,19 @@ export class LiskConnection implements BcpConnection {
 
     // here we are expecting 0 or 1 results
     const accounts: ReadonlyArray<BcpAccount> = responseBody.data.map(
-      (item: any): BcpAccount => {
-        const jsonPubkey = item.publicKey;
+      (responseItem: any): BcpAccount => {
+        const itemBalance: unknown = responseItem.balance;
+        const itemPubkey: unknown = responseItem.publicKey;
+
+        if (typeof itemBalance !== "string") {
+          throw new Error("Unexpected type for .balance property in response");
+        }
+
         const pubkey: PublicKeyBundle | undefined =
-          typeof jsonPubkey === "string" && jsonPubkey
+          typeof itemPubkey === "string" && itemPubkey
             ? {
                 algo: Algorithm.Ed25519,
-                data: Encoding.fromHex(jsonPubkey) as PublicKeyBytes,
+                data: Encoding.fromHex(itemPubkey) as PublicKeyBytes,
               }
             : undefined;
 
@@ -193,7 +199,7 @@ export class LiskConnection implements BcpConnection {
           name: undefined,
           balance: [
             {
-              quantity: Parse.parseQuantity(item.balance),
+              quantity: Parse.parseQuantity(itemBalance),
               fractionalDigits: constants.primaryTokenFractionalDigits,
               tokenName: constants.primaryTokenName,
               tokenTicker: constants.primaryTokenTicker,
