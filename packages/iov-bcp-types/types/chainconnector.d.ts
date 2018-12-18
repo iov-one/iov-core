@@ -1,6 +1,6 @@
-import { ChainId } from "@iov/base-types";
 import { TxCodec } from "./codec";
 import { BcpConnection } from "./connection";
+import { ChainId } from "./transactions";
 export interface ChainConnector {
     readonly client: () => Promise<BcpConnection>;
     readonly codec: TxCodec;

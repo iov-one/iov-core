@@ -1,13 +1,17 @@
-import { ChainId, PostableBytes, PublicKeyBundle } from "@iov/base-types";
+import { As } from "type-tagger";
 
 import {
   Address,
+  ChainId,
   Nonce,
+  PublicKeyBundle,
   SignedTransaction,
   SigningJob,
   TransactionId,
   UnsignedTransaction,
 } from "./transactions";
+
+export type PostableBytes = Uint8Array & As<"postable">;
 
 export interface TxReadCodec {
   /** parseBytes will recover bytes from the blockchain into a format we can use */

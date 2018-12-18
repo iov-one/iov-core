@@ -24,7 +24,6 @@
     "test": "echo \"Info: no test specified\""
   },
   "dependencies": {
-    "@iov/base-types": "^0.10.0",
     "@iov/encoding": "^0.10.1",
     "@iov/stream": "^0.10.1",
     "type-tagger": "^1.0.0",

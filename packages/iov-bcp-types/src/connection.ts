@@ -2,13 +2,15 @@ import { ReadonlyDate } from "readonly-date";
 import { As } from "type-tagger";
 import { Stream } from "xstream";
 
-import { ChainId, PostableBytes, PublicKeyBundle } from "@iov/base-types";
 import { ValueAndUpdates } from "@iov/stream";
 
+import { PostableBytes } from "./codec";
 import {
   Address,
   Amount,
+  ChainId,
   Nonce,
+  PublicKeyBundle,
   SignedTransaction,
   TokenTicker,
   TransactionId,

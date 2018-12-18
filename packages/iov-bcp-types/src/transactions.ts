@@ -1,7 +1,22 @@
 import { As } from "type-tagger";
 
-import { ChainId, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
 import { Int53 } from "@iov/encoding";
+
+export enum Algorithm {
+  Ed25519 = "ed25519",
+  Secp256k1 = "secp256k1",
+}
+
+export type PublicKeyBytes = Uint8Array & As<"public-key">;
+export interface PublicKeyBundle {
+  readonly algo: Algorithm;
+  readonly data: PublicKeyBytes;
+}
+
+export type SignatureBytes = Uint8Array & As<"signature">;
+
+/** Used to differentiate a blockchain. Should be alphanumeric or -_/ and unique */
+export type ChainId = string & As<"chain-id">;
 
 export type Nonce = Int53 & As<"nonce">;
 
