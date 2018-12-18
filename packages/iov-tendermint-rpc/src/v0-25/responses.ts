@@ -1,11 +1,4 @@
-import {
-  Algorithm,
-  ChainId,
-  PostableBytes,
-  PublicKeyBundle,
-  PublicKeyBytes,
-  SignatureBytes,
-} from "@iov/base-types";
+import { ChainId, PostableBytes } from "@iov/base-types";
 import { Encoding } from "@iov/encoding";
 
 import {
@@ -23,7 +16,7 @@ import {
 } from "../encodings";
 import { JsonRpcEvent, JsonRpcSuccess } from "../jsonrpc";
 import * as responses from "../responses";
-import { IpPortString, TxHash } from "../types";
+import { IpPortString, TxHash, ValidatorPubkey, ValidatorSignature } from "../types";
 import { hashTx } from "./hasher";
 
 /*** adaptor ***/
@@ -693,12 +686,12 @@ export interface RpcPubkey {
   readonly value: Base64String;
 }
 
-function decodePubkey(data: RpcPubkey): PublicKeyBundle {
+function decodePubkey(data: RpcPubkey): ValidatorPubkey {
   if (data.type === "tendermint/PubKeyEd25519") {
     // go-amino special code
     return {
-      algo: Algorithm.Ed25519,
-      data: Base64.decode(required(data.value)) as PublicKeyBytes,
+      algorithm: "ed25519",
+      data: Base64.decode(required(data.value)),
     };
   }
   throw new Error(`unknown pubkey type: ${data.type}`);
@@ -706,9 +699,9 @@ function decodePubkey(data: RpcPubkey): PublicKeyBundle {
 
 export type RpcSignature = Base64String;
 
-function decodeSignature(data: RpcSignature): responses.VoteSignatureBundle {
+function decodeSignature(data: RpcSignature): ValidatorSignature {
   return {
-    algo: Algorithm.Ed25519,
-    signature: Base64.decode(required(data)) as SignatureBytes,
+    algorithm: "ed25519",
+    data: Base64.decode(required(data)),
   };
 }

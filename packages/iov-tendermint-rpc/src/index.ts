@@ -25,4 +25,11 @@ export {
 } from "./requests";
 export * from "./responses";
 export { HttpClient, WebsocketClient } from "./rpcclients"; // TODO: Why do we export those outside of this package?
-export { IpPortString, TxHash } from "./types";
+export {
+  IpPortString,
+  TxHash,
+  ValidatorEd25519Pubkey,
+  ValidatorEd25519Signature,
+  ValidatorPubkey,
+  ValidatorSignature,
+} from "./types";

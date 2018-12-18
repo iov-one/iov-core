@@ -1,8 +1,8 @@
 import { ReadonlyDate } from "readonly-date";
 
-import { Algorithm, ChainId, PostableBytes, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
+import { ChainId, PostableBytes } from "@iov/base-types";
 
-import { IpPortString, TxHash } from "./types";
+import { IpPortString, TxHash, ValidatorPubkey, ValidatorSignature } from "./types";
 
 export type Response =
   | AbciInfoResponse
@@ -214,11 +214,6 @@ export enum VoteType {
   PRECOMMIT = 2,
 }
 
-export interface VoteSignatureBundle {
-  readonly algo: Algorithm;
-  readonly signature: SignatureBytes;
-}
-
 export interface Vote {
   readonly type: VoteType;
   readonly validatorAddress: Uint8Array;
@@ -227,7 +222,7 @@ export interface Vote {
   readonly round: number;
   readonly timestamp: ReadonlyDate;
   readonly blockId: BlockId;
-  readonly signature: VoteSignatureBundle;
+  readonly signature: ValidatorSignature;
 }
 
 export interface Header {
@@ -269,7 +264,7 @@ export interface SyncInfo {
 // this is in status
 export interface Validator {
   readonly address?: Uint8Array;
-  readonly pubkey: PublicKeyBundle;
+  readonly pubkey: ValidatorPubkey;
   readonly votingPower: number;
   readonly accum?: number;
   readonly name?: string;
