@@ -3,7 +3,7 @@ import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
-import { ChainId, PostableBytes } from "@iov/base-types";
+import { Algorithm, ChainId, PostableBytes, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
@@ -177,18 +177,30 @@ export class LiskConnection implements BcpConnection {
 
     // here we are expecting 0 or 1 results
     const accounts: ReadonlyArray<BcpAccount> = responseBody.data.map(
-      (item: any): BcpAccount => ({
-        address: address,
-        name: undefined,
-        balance: [
-          {
-            quantity: Parse.parseQuantity(item.balance),
-            fractionalDigits: constants.primaryTokenFractionalDigits,
-            tokenName: constants.primaryTokenName,
-            tokenTicker: constants.primaryTokenTicker,
-          },
-        ],
-      }),
+      (item: any): BcpAccount => {
+        const jsonPubkey = item.publicKey;
+        const pubkey: PublicKeyBundle | undefined =
+          typeof jsonPubkey === "string" && jsonPubkey
+            ? {
+                algo: Algorithm.Ed25519,
+                data: Encoding.fromHex(jsonPubkey) as PublicKeyBytes,
+              }
+            : undefined;
+
+        return {
+          address: address,
+          pubkey: pubkey,
+          name: undefined,
+          balance: [
+            {
+              quantity: Parse.parseQuantity(item.balance),
+              fractionalDigits: constants.primaryTokenFractionalDigits,
+              tokenName: constants.primaryTokenName,
+              tokenTicker: constants.primaryTokenTicker,
+            },
+          ],
+        };
+      },
     );
     return dummyEnvelope(accounts);
   }

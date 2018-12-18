@@ -37,7 +37,7 @@ describe("LiskConnection", () => {
   // a local devnet
   const devnetBase = "http://localhost:4000";
   const devnetChainId = "198f2b61a8eb95fbeed58b8216780b68f697f26b849acf00c8c93bb9b24f783d" as ChainId;
-  const devnetDefaultRecipient = "16313739661670634666L" as Address;
+  const devnetDefaultRecipient = "2222222L" as Address; // random address with no keypair
   const devnetDefaultKeypair = Derivation.passphraseToKeypair(
     "wagon stock borrow episode laundry kitten salute link globe zero feed marble",
   );
@@ -143,40 +143,60 @@ describe("LiskConnection", () => {
     expect(height).toBeLessThan(10000000);
   });
 
-  it("can get account from address", async () => {
-    pendingWithoutLiskDevnet();
-    const connection = await LiskConnection.establish(devnetBase);
-    const query: BcpAccountQuery = { address: "1349293588603668134L" as Address };
-    const account = await connection.getAccount(query);
-    expect(account.data[0].address).toEqual("1349293588603668134L");
-    expect(account.data[0].balance[0].tokenTicker).toEqual("LSK");
-    expect(account.data[0].balance[0].fractionalDigits).toEqual(8);
-    expect(account.data[0].balance[0].quantity).toEqual("10034556677");
-  });
+  describe("getAccount", () => {
+    it("can get account from address", async () => {
+      pendingWithoutLiskDevnet();
+      const connection = await LiskConnection.establish(devnetBase);
+      const query: BcpAccountQuery = { address: "1349293588603668134L" as Address };
+      const account = await connection.getAccount(query);
 
-  it("can get account from pubkey", async () => {
-    pendingWithoutLiskDevnet();
-    const connection = await LiskConnection.establish(devnetBase);
-    const pubkey: PublicKeyBundle = {
-      algo: Algorithm.Ed25519,
-      data: fromHex("e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6") as PublicKeyBytes,
-    };
-    const query: BcpAccountQuery = { pubkey: pubkey };
-    const account = await connection.getAccount(query);
-    expect(account.data[0].address).toEqual("1349293588603668134L");
-    expect(account.data[0].balance[0].tokenTicker).toEqual("LSK");
-    expect(account.data[0].balance[0].fractionalDigits).toEqual(8);
-    expect(account.data[0].balance[0].quantity).toEqual("10034556677");
-  });
+      const expectedPubkey: PublicKeyBundle = {
+        algo: Algorithm.Ed25519,
+        data: fromHex("e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6") as PublicKeyBytes,
+      };
+      expect(account.data[0].address).toEqual("1349293588603668134L");
+      expect(account.data[0].pubkey).toEqual(expectedPubkey);
+      expect(account.data[0].balance[0].tokenTicker).toEqual("LSK");
+      expect(account.data[0].balance[0].fractionalDigits).toEqual(8);
+      expect(account.data[0].balance[0].quantity).toEqual("10034556677");
+    });
 
-  it("returns empty list when getting an unused account", async () => {
-    pendingWithoutLiskDevnet();
-    const unusedAddress = "5648777643193648871L" as Address;
-    const connection = await LiskConnection.establish(devnetBase);
-    const response = await connection.getAccount({ address: unusedAddress });
-    expect(response).toBeTruthy();
-    expect(response.data).toBeTruthy();
-    expect(response.data.length).toEqual(0);
+    it("can get account from pubkey", async () => {
+      pendingWithoutLiskDevnet();
+      const connection = await LiskConnection.establish(devnetBase);
+      const pubkey: PublicKeyBundle = {
+        algo: Algorithm.Ed25519,
+        data: fromHex("e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6") as PublicKeyBytes,
+      };
+      const query: BcpAccountQuery = { pubkey: pubkey };
+      const account = await connection.getAccount(query);
+
+      const expectedPubkey = pubkey;
+      expect(account.data[0].address).toEqual("1349293588603668134L");
+      expect(account.data[0].pubkey).toEqual(expectedPubkey);
+      expect(account.data[0].balance[0].tokenTicker).toEqual("LSK");
+      expect(account.data[0].balance[0].fractionalDigits).toEqual(8);
+      expect(account.data[0].balance[0].quantity).toEqual("10034556677");
+    });
+
+    it("returns empty list when getting an unused account", async () => {
+      pendingWithoutLiskDevnet();
+      const unusedAddress = "5648777643193648871L" as Address;
+      const connection = await LiskConnection.establish(devnetBase);
+      const response = await connection.getAccount({ address: unusedAddress });
+      expect(response).toBeTruthy();
+      expect(response.data).toBeTruthy();
+      expect(response.data.length).toEqual(0);
+    });
+
+    it("returns undefined pubkey for receive only address", async () => {
+      pendingWithoutLiskDevnet();
+      const connection = await LiskConnection.establish(devnetBase);
+      const response = await connection.getAccount({ address: devnetDefaultRecipient });
+      expect(response.data.length).toEqual(1);
+      expect(response.data[0].address).toEqual(devnetDefaultRecipient);
+      expect(response.data[0].pubkey).toBeUndefined();
+    });
   });
 
   it("can get nonce", async () => {
