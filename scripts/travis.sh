@@ -57,13 +57,12 @@ if command -v docker > /dev/null ; then
   # Wait until API is ready and run in background because script waits for
   # blocks and takes some time but will be ready before tests start
   (sleep 20 && ./scripts/lisk/init.sh ) &
-fi
 
-fold_start "ethereum-start"
-export GANACHE_MNEMONIC="oxygen fall sure lava energy veteran enroll frown question detail include maximum"
-./scripts/ethereum/start.sh
-export ETHEREUM_ENABLED=1
-fold_end
+  fold_start "ethereum-start"
+  ./scripts/ethereum/start.sh
+  export ETHEREUM_ENABLED=1
+  fold_end
+fi
 
 #
 # Start faucet
@@ -197,15 +196,18 @@ fi
 #
 # Cleanup
 #
-fold_start "ethereum-stop"
-unset ETHEREUM_ENABLED
-./scripts/ethereum/stop.sh
-fold_end
 
 if [[ ! -z ${FAUCET_ENABLED:-} ]]; then
   fold_start "faucet-stop"
   unset FAUCET_ENABLED
   ./scripts/iov_faucet_stop.sh
+  fold_end
+fi
+
+if [[ ! -z ${ETHEREUM_ENABLED:-} ]]; then
+  fold_start "ethereum-stop"
+  unset ETHEREUM_ENABLED
+  ./scripts/ethereum/stop.sh
   fold_end
 fi
 
