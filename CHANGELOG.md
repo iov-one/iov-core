@@ -3,6 +3,7 @@
 ## 0.10.2
 
 * @iov/bcp-types: Add `BcpAccount.pubkey` and implement in Lisk, RISE and BNS.
+* @iov/core: `MultiChainSigner.getNonce` was deprecated.
 
 ## 0.10.1
 
