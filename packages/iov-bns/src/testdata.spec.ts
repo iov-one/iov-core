@@ -64,7 +64,7 @@ const amount: Amount = {
   fractionalDigits: 9,
   tokenTicker: "ETH" as TokenTicker,
 };
-export const chainId = "test-1234" as ChainId;
+export const chainId = "test-123" as ChainId;
 // the sender in this tx is the above pubkey, pubkey->address should match
 // recipient address generated using https://github.com/nym-zone/bech32
 // bech32 -e -h tiov 6f0a3e37845b6a3c8ccbe6219199abc3ae0b26d9
