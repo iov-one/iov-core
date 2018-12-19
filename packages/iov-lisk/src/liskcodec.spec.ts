@@ -1,16 +1,14 @@
 import {
+  Address,
   Algorithm,
   ChainId,
+  isSendTransaction,
+  Nonce,
   PostableBytes,
   PublicKeyBundle,
   PublicKeyBytes,
-  SignatureBytes,
-} from "@iov/base-types";
-import {
-  Address,
-  isSendTransaction,
-  Nonce,
   SendTransaction,
+  SignatureBytes,
   SignedTransaction,
   TokenTicker,
 } from "@iov/bcp-types";
