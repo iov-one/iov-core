@@ -85,7 +85,7 @@ export class MultiChainSigner {
    *
    * This is done automatically when you use signAndPost().
    *
-   * @todo This is not tested. Decide if we need to expose this method.
+   * @deprecated will be removed in 0.11. See https://github.com/iov-one/iov-core/issues/620
    */
   public async getNonce(chainId: ChainId, addr: Address): Promise<Nonce> {
     const nonce = await this.getChain(chainId).connection.getNonce({ address: addr });
@@ -99,17 +99,16 @@ export class MultiChainSigner {
    * the private key for the signer in the given wallet ID is done automatically.
    */
   public async signAndPost(tx: UnsignedTransaction, walletId: WalletId): Promise<PostTxResponse> {
-    const chainId = tx.chainId;
-    const { connection, codec } = this.getChain(chainId);
+    const { connection, codec } = this.getChain(tx.chainId);
 
-    const nonceResponse = await this.getChain(chainId).connection.getNonce({ pubkey: tx.signer });
+    const nonceResponse = await connection.getNonce({ pubkey: tx.signer });
     const nonce = nonceResponse.data.length === 0 ? (new Int53(0) as Nonce) : nonceResponse.data[0];
 
-    // We have the publickey bundle from the transaction, but need
-    // a PublicIdentity to sign. Same information content, so I fake it.
-    // TODO: Simon, a cleaner solution would be nicer. How?
-    const fakeId: PublicIdentity = { pubkey: tx.signer };
-    const signed = await this.profile.signTransaction(walletId, fakeId, tx, codec, nonce);
+    const signingIdentity: PublicIdentity = {
+      pubkey: tx.signer,
+      // TODO: add chainId (https://github.com/iov-one/iov-core/issues/621)
+    };
+    const signed = await this.profile.signTransaction(walletId, signingIdentity, tx, codec, nonce);
     const txBytes = codec.bytesToPost(signed);
     const post = await connection.postTx(txBytes);
     return post;

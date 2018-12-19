@@ -21,7 +21,7 @@ export declare class MultiChainSigner {
      *
      * This is done automatically when you use signAndPost().
      *
-     * @todo This is not tested. Decide if we need to expose this method.
+     * @deprecated will be removed in 0.11. See https://github.com/iov-one/iov-core/issues/620
      */
     getNonce(chainId: ChainId, addr: Address): Promise<Nonce>;
     /**
