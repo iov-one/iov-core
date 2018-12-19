@@ -35,7 +35,7 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     getTicker(ticker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAccount(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>>;
-    getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<BcpQueryEnvelope<Nonce>>;
+    getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce>;
     /**
      * All matching swaps that are open (from app state)
      */
@@ -87,7 +87,7 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     /**
      * Gets current nonce and emits an update every time it changes
      */
-    watchNonce(query: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce | undefined>;
+    watchNonce(query: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce>;
     getBlockchains(query: BnsBlockchainsQuery): Promise<ReadonlyArray<BnsBlockchainNft>>;
     getUsernames(query: BnsUsernamesQuery): Promise<ReadonlyArray<BnsUsernameNft>>;
     protected query(path: string, data: Uint8Array): Promise<QueryResponse>;

@@ -8,7 +8,6 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
-import { Int53 } from "@iov/encoding";
 import { PublicIdentity, UserProfile, WalletId } from "@iov/keycontrol";
 
 /**
@@ -89,7 +88,7 @@ export class MultiChainSigner {
    */
   public async getNonce(chainId: ChainId, addr: Address): Promise<Nonce> {
     const nonce = await this.getChain(chainId).connection.getNonce({ address: addr });
-    return nonce.data.length === 0 ? (new Int53(0) as Nonce) : nonce.data[0];
+    return nonce;
   }
 
   /**
@@ -101,8 +100,7 @@ export class MultiChainSigner {
   public async signAndPost(tx: UnsignedTransaction, walletId: WalletId): Promise<PostTxResponse> {
     const { connection, codec } = this.getChain(tx.chainId);
 
-    const nonceResponse = await connection.getNonce({ pubkey: tx.signer });
-    const nonce = nonceResponse.data.length === 0 ? (new Int53(0) as Nonce) : nonceResponse.data[0];
+    const nonce = await connection.getNonce({ pubkey: tx.signer });
 
     const signingIdentity: PublicIdentity = {
       pubkey: tx.signer,

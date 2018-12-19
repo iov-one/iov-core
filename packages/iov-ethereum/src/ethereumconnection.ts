@@ -200,7 +200,7 @@ export class EthereumConnection implements BcpConnection {
     return dummyEnvelope(accounts);
   }
 
-  public async getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<BcpQueryEnvelope<Nonce>> {
+  public async getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {
     const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
 
     // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount
@@ -211,7 +211,7 @@ export class EthereumConnection implements BcpConnection {
       id: 4,
     });
 
-    return Promise.resolve(dummyEnvelope([decodeHexQuantityNonce(nonceResponse.data.result)]));
+    return decodeHexQuantityNonce(nonceResponse.data.result);
   }
 
   public async getBlockHeader(height: number): Promise<BlockHeader> {
@@ -297,7 +297,7 @@ export class EthereumConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public watchNonce(_: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce | undefined> {
+  public watchNonce(_: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce> {
     throw new Error("Not implemented");
   }
 

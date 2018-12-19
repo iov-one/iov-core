@@ -37,7 +37,7 @@ import {
   TransactionId,
   TxReadCodec,
 } from "@iov/bcp-types";
-import { Encoding, Uint53 } from "@iov/encoding";
+import { Encoding, Int53, Uint53 } from "@iov/encoding";
 import { DefaultValueProducer, toListPromise, ValueAndUpdates } from "@iov/stream";
 import {
   broadcastTxSyncSuccess,
@@ -300,12 +300,20 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     ]);
   }
 
-  public async getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<BcpQueryEnvelope<Nonce>> {
+  public async getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {
     const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
-    const res = await this.query("/auth", decodeBnsAddress(address).data);
+    const response = await this.query("/auth", decodeBnsAddress(address).data);
     const parser = createParser(codecImpl.sigs.UserData, "sigs:");
-    const data = res.results.map(parser).map(decodeNonce);
-    return dummyEnvelope(data);
+    const nonces = response.results.map(parser).map(decodeNonce);
+
+    switch (nonces.length) {
+      case 0:
+        return new Int53(0) as Nonce;
+      case 1:
+        return nonces[0];
+      default:
+        throw new Error(`Got unexpected number of nonce results: ${nonces.length}`);
+    }
   }
 
   /**
@@ -637,22 +645,15 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   /**
    * Gets current nonce and emits an update every time it changes
    */
-  public watchNonce(query: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce | undefined> {
+  public watchNonce(query: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce> {
     const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
 
-    // oneNonce normalizes the BcpEnvelope to just get the
-    // one account we want, or undefined if nothing there
-    const oneNonce = async (): Promise<Nonce | undefined> => {
-      const response = await this.getNonce(query);
-      return response.data.length < 1 ? undefined : response.data[0];
-    };
+    const currentStream = Stream.fromPromise(this.getNonce(query));
+    const updatesStream = this.changeNonce(address)
+      .map(() => Stream.fromPromise(this.getNonce(query)))
+      .flatten();
 
-    return Stream.merge(
-      Stream.fromPromise(oneNonce()),
-      this.changeNonce(address)
-        .map(() => Stream.fromPromise(oneNonce()))
-        .flatten(),
-    );
+    return Stream.merge(currentStream, updatesStream);
   }
 
   public async getBlockchains(query: BnsBlockchainsQuery): Promise<ReadonlyArray<BnsBlockchainNft>> {

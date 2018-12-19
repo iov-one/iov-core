@@ -206,7 +206,7 @@ describe("LiskConnection", () => {
     // by address
     {
       const query: BcpAddressQuery = { address: "6472030874529564639L" as Address };
-      const nonce = (await connection.getNonce(query)).data[0];
+      const nonce = await connection.getNonce(query);
       // nonce is current unix timestamp +/- one second
       expect(nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
       expect(nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
@@ -220,7 +220,7 @@ describe("LiskConnection", () => {
           data: fromHex("e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6") as PublicKeyBytes,
         },
       };
-      const nonce = (await connection.getNonce(query)).data[0];
+      const nonce = await connection.getNonce(query);
       // nonce is current unix timestamp +/- one second
       expect(nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
       expect(nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
