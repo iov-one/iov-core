@@ -1,6 +1,6 @@
-import { Algorithm } from "@iov/base-types";
 import {
   Address,
+  Algorithm,
   BcpAccountQuery,
   BlockHeader,
   isSendTransaction,

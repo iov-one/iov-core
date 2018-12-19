@@ -1,5 +1,13 @@
-import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
-import { Amount, SendTransaction, SignedTransaction } from "@iov/bcp-types";
+import {
+  Algorithm,
+  Amount,
+  ChainId,
+  PostableBytes,
+  PublicKeyBytes,
+  SendTransaction,
+  SignatureBytes,
+  SignedTransaction,
+} from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
 import { constants } from "./constants";

@@ -1,5 +1,4 @@
-import { ChainId, PostableBytes } from "@iov/base-types";
-import { Amount, SignedTransaction } from "@iov/bcp-types";
+import { Amount, ChainId, PostableBytes, SignedTransaction } from "@iov/bcp-types";
 export declare class Parse {
     static ethereumAmount(total: string): Amount;
 }

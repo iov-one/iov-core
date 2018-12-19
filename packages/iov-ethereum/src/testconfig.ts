@@ -1,5 +1,4 @@
-import { ChainId, PublicKeyBytes } from "@iov/base-types";
-import { Address, Nonce } from "@iov/bcp-types";
+import { Address, ChainId, Nonce, PublicKeyBytes } from "@iov/bcp-types";
 import { Encoding, Int53 } from "@iov/encoding";
 
 const { fromHex } = Encoding;
