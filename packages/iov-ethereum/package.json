@@ -1,6 +1,6 @@
 {
   "name": "@iov/ethereum",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "Transaction codec and client to communicate with the Ethereum blockchain",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -32,10 +32,10 @@
   },
   "dependencies": {
     "@iov/base-types": "^0.10.0",
-    "@iov/bcp-types": "^0.10.1",
+    "@iov/bcp-types": "^0.10.2",
     "@iov/crypto": "^0.10.1",
     "@iov/encoding": "^0.10.1",
-    "@iov/keycontrol": "^0.10.1",
+    "@iov/keycontrol": "^0.10.2",
     "@types/long": "^4.0.0",
     "axios": "^0.18.0",
     "bn.js": "^4.11.8",
