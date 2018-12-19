@@ -312,7 +312,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       case 1:
         return nonces[0];
       default:
-        throw new Error(`Got unuxpected number of nonce results: ${nonces.length}`);
+        throw new Error(`Got unexpected number of nonce results: ${nonces.length}`);
     }
   }
 
