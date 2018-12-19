@@ -37,5 +37,8 @@
     "@iov/keycontrol": "^0.10.2",
     "@types/long": "^4.0.0",
     "long": "^4.0.0"
+  },
+  "devDependencies": {
+    "@iov/ethereum": "^0.10.2"
   }
 }
