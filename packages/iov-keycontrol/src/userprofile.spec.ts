@@ -2,13 +2,17 @@ import levelup from "levelup";
 import MemDownConstructor from "memdown";
 import { ReadonlyDate } from "readonly-date";
 
-import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import {
   Address,
+  Algorithm,
+  ChainId,
   Nonce,
+  PostableBytes,
   PrehashType,
+  PublicKeyBytes,
   SendTransaction,
   SignableBytes,
+  SignatureBytes,
   SignedTransaction,
   SigningJob,
   TokenTicker,

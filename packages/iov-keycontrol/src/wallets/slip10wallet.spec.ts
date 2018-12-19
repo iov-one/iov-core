@@ -1,5 +1,4 @@
-import { Algorithm, ChainId } from "@iov/base-types";
-import { PrehashType, SignableBytes } from "@iov/bcp-types";
+import { Algorithm, ChainId, PrehashType, SignableBytes } from "@iov/bcp-types";
 import { Sha256, Sha512, Slip10Curve, Slip10RawIndex } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
