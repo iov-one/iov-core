@@ -1,4 +1,4 @@
-import { Address, BcpConnection, ChainConnector, ChainId, Nonce, PostTxResponse, PublicKeyBundle, UnsignedTransaction } from "@iov/bcp-types";
+import { Address, BcpConnection, ChainConnector, ChainId, PostTxResponse, PublicKeyBundle, UnsignedTransaction } from "@iov/bcp-types";
 import { UserProfile, WalletId } from "@iov/keycontrol";
 export declare class MultiChainSigner {
     readonly profile: UserProfile;
@@ -15,14 +15,6 @@ export declare class MultiChainSigner {
         readonly connection: BcpConnection;
     }>;
     keyToAddress(chainId: ChainId, key: PublicKeyBundle): Address;
-    /**
-     * Returns one value for the address, 0 if not found.
-     *
-     * This is done automatically when you use signAndPost().
-     *
-     * @deprecated will be removed in 0.11. See https://github.com/iov-one/iov-core/issues/620
-     */
-    getNonce(chainId: ChainId, addr: Address): Promise<Nonce>;
     /**
      * Queries the nonce, signs the transaction and posts it to the blockchain.
      *
