@@ -1,7 +1,16 @@
 import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
 
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
-import { Address, Nonce, PrehashType, SendTransaction, TokenTicker } from "@iov/bcp-types";
+import {
+  Address,
+  Algorithm,
+  ChainId,
+  Nonce,
+  PrehashType,
+  PublicKeyBundle,
+  PublicKeyBytes,
+  SendTransaction,
+  TokenTicker,
+} from "@iov/bcp-types";
 import { bnsCodec } from "@iov/bns";
 import { Ed25519, Sha512 } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";

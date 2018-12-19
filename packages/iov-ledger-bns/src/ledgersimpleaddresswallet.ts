@@ -1,8 +1,15 @@
 // tslint:disable:readonly-array
 import PseudoRandom from "random-js";
 
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
-import { PrehashType, SignableBytes } from "@iov/bcp-types";
+import {
+  Algorithm,
+  ChainId,
+  PrehashType,
+  PublicKeyBundle,
+  PublicKeyBytes,
+  SignableBytes,
+  SignatureBytes,
+} from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 import {
   Keyring,
