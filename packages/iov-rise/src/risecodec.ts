@@ -1,20 +1,18 @@
 import { ReadonlyDate } from "readonly-date";
 
 import {
+  Address,
   Algorithm,
   ChainId,
-  PostableBytes,
-  PublicKeyBundle,
-  PublicKeyBytes,
-  SignatureBytes,
-} from "@iov/base-types";
-import {
-  Address,
   isSendTransaction,
   Nonce,
+  PostableBytes,
   PrehashType,
+  PublicKeyBundle,
+  PublicKeyBytes,
   SendTransaction,
   SignableBytes,
+  SignatureBytes,
   SignedTransaction,
   SigningJob,
   TransactionId,
