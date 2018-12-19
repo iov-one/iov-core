@@ -2,22 +2,22 @@
 set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
-# get this files directory regardless of pwd when we run it
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-REPO_ROOT="$SCRIPT_DIR/../.."
+# Choose from https://hub.docker.com/r/trufflesuite/ganache-cli/tags
+VERSION="v6.2.4"
+PORT="8545"
+GANACHE_MNEMONIC="oxygen fall sure lava energy veteran enroll frown question detail include maximum"
 
-function startupGanache() {
-  # shellcheck disable=SC2009
-  GANACHE_SEARCH=$(ps -ef | grep "[g]anache" || true)
-  GANACHE_PID=$(echo "${GANACHE_SEARCH}" | awk '{print $2}')
-  if [ "$GANACHE_PID" != "" ]
-  then
-    echo "Killing existing Ganache CLI process $GANACHE_PID"
-    kill -9 "$GANACHE_PID"
-  fi
-  "$REPO_ROOT/node_modules/.bin/ganache-cli" -p 8545 -i 5777 -m "$GANACHE_MNEMONIC" > /dev/null &
-  GANACHE_PID=$!
-  echo "Started new Ganache CLI as process $GANACHE_PID"
-}
+TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/ganache.XXXXXXXXX")
+chmod 777 "${TMP_DIR}"
+echo "Using temporary dir $TMP_DIR"
+LOGFILE="$TMP_DIR/ganache.log"
 
-startupGanache
+docker pull "trufflesuite/ganache-cli:${VERSION}"
+
+docker run -d \
+  -p "${PORT}:8545" \
+  "trufflesuite/ganache-cli:${VERSION}" \
+  -p 8545 --networkId 5777 --mnemonic "$GANACHE_MNEMONIC" \
+  > "$LOGFILE" &
+
+echo "ganache-cli running and logging into $LOGFILE"
