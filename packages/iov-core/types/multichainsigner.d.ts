@@ -1,5 +1,4 @@
-import { ChainId, PublicKeyBundle } from "@iov/base-types";
-import { Address, BcpConnection, ChainConnector, Nonce, PostTxResponse, UnsignedTransaction } from "@iov/bcp-types";
+import { Address, BcpConnection, ChainConnector, ChainId, Nonce, PostTxResponse, PublicKeyBundle, UnsignedTransaction } from "@iov/bcp-types";
 import { UserProfile, WalletId } from "@iov/keycontrol";
 export declare class MultiChainSigner {
     readonly profile: UserProfile;
