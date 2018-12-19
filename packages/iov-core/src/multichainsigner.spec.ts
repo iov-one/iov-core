@@ -128,7 +128,7 @@ describe("MultiChainSigner", () => {
       const bovId = signer.chainIds()[0];
 
       // add a ethereum chain
-      await signer.addChain(ethereumConnector(httpEthereumUrl));
+      await signer.addChain(ethereumConnector(httpEthereumUrl, undefined));
       const ethId = signer.chainIds()[1];
       const twoChains = signer.chainIds();
       // it should store both chains
