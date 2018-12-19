@@ -6082,10 +6082,10 @@ ripemd160@^2.0.0, ripemd160@^2.0.1, ripemd160@^2.0.2:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-rlp@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/rlp/-/rlp-2.1.0.tgz#e4f9886d5a982174f314543831e36e1a658460f9"
-  integrity sha512-93U7IKH5j7nmXFVg19MeNBGzQW5uXW1pmCuKY8veeKIhYTE32C2d0mOegfiIAfXcHOKJjjPlJisn8iHDF5AezA==
+rlp@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/rlp/-/rlp-2.2.0.tgz#b10686964e99c67f9b256a303868e2d39bb7660d"
+  integrity sha512-rGDIOeKPYj82rgml9Fpi28dU9n2JYyqTXaBeCLTT9rk9+Ry+/l7oDgVuHcKYDSJ6WZfa2mD16fRWPpNzk0kTHw==
   dependencies:
     safe-buffer "^5.1.1"
 

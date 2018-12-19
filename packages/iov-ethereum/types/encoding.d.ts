@@ -1,3 +1,8 @@
+/**
+ * Encode as RLP (Recursive Length Prefix)
+ *
+ * @param data an RLPInput (see https://github.com/ethereumjs/rlp/issues/58)
+ */
 export declare function toRlp(data: any): Uint8Array;
 /** changes with each chain */
 export declare enum BlknumForkState {

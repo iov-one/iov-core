@@ -1,11 +1,13 @@
 import * as rlp from "rlp";
 
-import { safeBufferValues } from "./safebufferhelpers";
-
-// data: rlp.EncodeInput error
+/**
+ * Encode as RLP (Recursive Length Prefix)
+ *
+ * @param data an RLPInput (see https://github.com/ethereumjs/rlp/issues/58)
+ */
 export function toRlp(data: any): Uint8Array {
   const dataBuffer = rlp.encode(data);
-  return Uint8Array.from(safeBufferValues(dataBuffer));
+  return Uint8Array.from(dataBuffer);
 }
 
 /** changes with each chain */
