@@ -8,8 +8,16 @@ import {
 } from "@iov/bcp-types";
 import { bnsCodec, bnsConnector, bnsFromOrToTag } from "@iov/bns";
 import { Random } from "@iov/crypto";
+import { Encoding } from "@iov/encoding";
 import { ethereumConnector } from "@iov/ethereum";
-import { Ed25519HdWallet, HdPaths, LocalIdentity, UserProfile, WalletId } from "@iov/keycontrol";
+import {
+  Ed25519HdWallet,
+  HdPaths,
+  LocalIdentity,
+  PublicIdentity,
+  UserProfile,
+  WalletId,
+} from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";
 
@@ -145,9 +153,17 @@ describe("MultiChainSigner", () => {
       expect(acct.data.length).toBe(1);
       expect(acct.data[0].balance.length).toBe(1);
 
-      const faucetAddr2 = signer.keyToAddress(ethId, faucet.pubkey);
+      const ganacheMainIdentity: PublicIdentity = {
+        pubkey: {
+          algo: Algorithm.Secp256k1,
+          data: Encoding.fromHex(
+            "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
+          ) as PublicKeyBytes,
+        },
+      };
+      const ganacheAddr = signer.keyToAddress(ethId, ganacheMainIdentity.pubkey);
       const connection2 = signer.connection(ethId);
-      const acct2 = await connection2.getAccount({ address: faucetAddr2 });
+      const acct2 = await connection2.getAccount({ address: ganacheAddr });
       expect(acct2).toBeTruthy();
       expect(acct2.data.length).toBe(1);
       expect(acct2.data[0].balance.length).toBe(1);
