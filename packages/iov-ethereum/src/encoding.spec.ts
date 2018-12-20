@@ -2,7 +2,12 @@ import { BlknumForkState, Eip155ChainId, eip155V, getRecoveryParam } from "./enc
 
 describe("Ethereum encoding", () => {
   describe("eip155V", () => {
-    it("verify valid inputs", () => {
+    it("works for inputs before fork", () => {
+      expect(eip155V({ forkState: BlknumForkState.Before }, 0)).toEqual(27);
+      expect(eip155V({ forkState: BlknumForkState.Before }, 1)).toEqual(28);
+    });
+
+    it("works for inputs after fork", () => {
       // Ganache test
       let afterForkChain: Eip155ChainId;
       afterForkChain = { forkState: BlknumForkState.Forked, chainId: 5777 };
@@ -62,22 +67,13 @@ describe("Ethereum encoding", () => {
       expect(eip155V(afterForkChain, 0)).toEqual(2709);
       expect(eip155V(afterForkChain, 1)).toEqual(2710);
     });
-    it("error for invalid inputs", () => {
-      // before eip155 implementation
-      const previousForkChain: Eip155ChainId = { forkState: BlknumForkState.Before };
-      expect(() => eip155V(previousForkChain, 0)).toThrowError(
-        /transaction not supported before eip155 implementation/,
-      );
-      expect(() => eip155V(previousForkChain, 1)).toThrowError(
-        /transaction not supported before eip155 implementation/,
-      );
-      // after eip155 implementation but chain id 0
+
+    it("errors for chain ID 0 after fork", () => {
+      // Chain ID must be a number from
+      // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids
       const invalidChain: Eip155ChainId = { forkState: BlknumForkState.Forked, chainId: 0 };
       expect(() => eip155V(invalidChain, 0)).toThrowError(
-        /transaction not supported before eip155 implementation/,
-      );
-      expect(() => eip155V(invalidChain, 1)).toThrowError(
-        /transaction not supported before eip155 implementation/,
+        /chain ID must be > 0 after eip155 implementation/i,
       );
     });
   });

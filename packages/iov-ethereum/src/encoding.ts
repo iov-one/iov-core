@@ -2,10 +2,8 @@ import * as rlp from "rlp";
 
 /**
  * Encode as RLP (Recursive Length Prefix)
- *
- * @param data an RLPInput (see https://github.com/ethereumjs/rlp/issues/58)
  */
-export function toRlp(data: any): Uint8Array {
+export function toRlp(data: rlp.Input): Uint8Array {
   const dataBuffer = rlp.encode(data);
   return Uint8Array.from(dataBuffer);
 }
@@ -28,11 +26,15 @@ export type Eip155ChainId =
     };
 
 export function eip155V(chain: Eip155ChainId, recoveryParam: number): number {
-  if (chain.forkState === BlknumForkState.Forked && chain.chainId > 0) {
+  if (chain.forkState === BlknumForkState.Forked) {
+    if (chain.chainId === 0) {
+      throw new Error("Chain ID must be > 0 after eip155 implementation");
+    }
     // chain ID available
     return chain.chainId * 2 + recoveryParam + 35;
+  } else {
+    return recoveryParam + 27;
   }
-  throw new Error("transaction not supported before eip155 implementation");
 }
 
 export function getRecoveryParam(chain: Eip155ChainId, v: number): number {
