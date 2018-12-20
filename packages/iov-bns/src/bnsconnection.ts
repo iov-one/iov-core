@@ -1,7 +1,6 @@
 import equal from "fast-deep-equal";
 import { Producer, Stream, Subscription } from "xstream";
 
-import { ChainId, PostableBytes, PublicKeyBundle } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
@@ -20,6 +19,7 @@ import {
   BcpTxQuery,
   BlockHeader,
   BlockId,
+  ChainId,
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
@@ -29,7 +29,9 @@ import {
   isQueryBySwapSender,
   Nonce,
   OpenSwap,
+  PostableBytes,
   PostTxResponse,
+  PublicKeyBundle,
   SwapClaimTransaction,
   SwapState,
   SwapTimeoutTransaction,
@@ -131,7 +133,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
   private static async initialize(tmClient: TendermintClient): Promise<ChainData> {
     const status = await tmClient.status();
-    const chainId = status.nodeInfo.network;
+    const chainId = status.nodeInfo.network as ChainId;
 
     // inlining getAllTickers
     const res = await performQuery(tmClient, "/tokens?prefix", Uint8Array.from([]));
@@ -426,7 +428,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       transactionId: Encoding.toHex(hash).toUpperCase() as TransactionId,
       log: txResult.log,
       result: txResult.data,
-      ...this.codec.parseBytes(tx, chainId),
+      ...this.codec.parseBytes(new Uint8Array(tx) as PostableBytes, chainId),
     });
     return res.txs.map(mapper);
   }
@@ -451,7 +453,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
           transactionId: Encoding.toHex(transaction.hash).toUpperCase() as TransactionId,
           log: transaction.result.log,
           result: transaction.result.data,
-          ...this.codec.parseBytes(transaction.tx, chainId),
+          ...this.codec.parseBytes(new Uint8Array(transaction.tx) as PostableBytes, chainId),
         }),
       );
   }

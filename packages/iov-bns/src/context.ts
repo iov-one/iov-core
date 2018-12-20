@@ -1,10 +1,10 @@
-import { ChainId } from "@iov/base-types";
 import {
   Address,
   Amount,
   BcpAtomicSwap,
   BcpCoin,
   BcpTicker,
+  ChainId,
   ConfirmedTransaction,
   OpenSwap,
   SwapClaimTransaction,

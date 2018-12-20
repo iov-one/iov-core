@@ -1,5 +1,4 @@
-import { Algorithm, PublicKeyBytes } from "@iov/base-types";
-import { Address, SendTransaction, TokenTicker } from "@iov/bcp-types";
+import { Address, Algorithm, PublicKeyBytes, SendTransaction, TokenTicker } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
 import { Serialization } from "./serialization";

@@ -1,5 +1,4 @@
-import { PublicKeyBundle } from "@iov/base-types";
-import { Amount, FullSignature, SignedTransaction, UnsignedTransaction } from "@iov/bcp-types";
+import { Amount, FullSignature, PublicKeyBundle, SignedTransaction, UnsignedTransaction } from "@iov/bcp-types";
 import * as codecImpl from "./generated/codecimpl";
 import { PrivateKeyBundle } from "./types";
 export declare function encodePubkey(publicKey: PublicKeyBundle): codecImpl.crypto.IPublicKey;

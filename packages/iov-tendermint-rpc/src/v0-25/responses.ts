@@ -1,11 +1,3 @@
-import {
-  Algorithm,
-  ChainId,
-  PostableBytes,
-  PublicKeyBundle,
-  PublicKeyBytes,
-  SignatureBytes,
-} from "@iov/base-types";
 import { Encoding } from "@iov/encoding";
 
 import {
@@ -23,7 +15,7 @@ import {
 } from "../encodings";
 import { JsonRpcEvent, JsonRpcSuccess } from "../jsonrpc";
 import * as responses from "../responses";
-import { IpPortString, TxHash } from "../types";
+import { IpPortString, TxBytes, TxHash, ValidatorPubkey, ValidatorSignature } from "../types";
 import { hashTx } from "./hasher";
 
 /*** adaptor ***/
@@ -248,7 +240,7 @@ export interface GenesisResult {
 function decodeGenesis(data: RpcGenesisResponse): responses.GenesisResponse {
   return {
     genesisTime: DateTime.decode(required(data.genesis_time)),
-    chainId: required(data.chain_id) as ChainId,
+    chainId: required(data.chain_id),
     consensusParams: decodeConsensusParams(data.consensus_params),
     validators: required(data.validators).map(decodeValidatorGenesis),
     appHash: Encoding.fromHex(required(data.app_hash)),
@@ -284,7 +276,7 @@ export interface RpcTxResponse {
 
 function decodeTxResponse(data: RpcTxResponse): responses.TxResponse {
   return {
-    tx: Base64.decode(required(data.tx)) as PostableBytes,
+    tx: Base64.decode(required(data.tx)) as TxBytes,
     txResult: decodeTxData(required(data.tx_result)),
     height: Integer.parse(required(data.height)),
     index: Integer.ensure(required(data.index)),
@@ -313,9 +305,9 @@ interface RpcTxEvent {
 }
 
 function decodeTxEvent(data: RpcTxEvent): responses.TxEvent {
-  const tx = Base64.decode(required(data.tx)) as PostableBytes;
+  const tx = Base64.decode(required(data.tx)) as TxBytes;
   return {
-    tx,
+    tx: tx,
     hash: hashTx(tx),
     result: decodeTxData(data.result),
     height: Integer.parse(required(data.height)),
@@ -429,7 +421,7 @@ export interface RpcHeader {
 
 function decodeHeader(data: RpcHeader): responses.Header {
   return {
-    chainId: required(data.chain_id) as ChainId,
+    chainId: required(data.chain_id),
     height: Integer.parse(required(data.height)),
     time: DateTime.decode(required(data.time)),
     numTxs: Integer.parse(required(data.num_txs)),
@@ -570,7 +562,7 @@ function decodeNodeInfo(data: RpcNodeInfo): responses.NodeInfo {
   return {
     id: Encoding.fromHex(required(data.id)),
     listenAddr: required(data.listen_addr),
-    network: required(data.network) as ChainId,
+    network: required(data.network),
     version: required(data.version),
     channels: required(data.channels),
     moniker: required(data.moniker),
@@ -693,12 +685,12 @@ export interface RpcPubkey {
   readonly value: Base64String;
 }
 
-function decodePubkey(data: RpcPubkey): PublicKeyBundle {
+function decodePubkey(data: RpcPubkey): ValidatorPubkey {
   if (data.type === "tendermint/PubKeyEd25519") {
     // go-amino special code
     return {
-      algo: Algorithm.Ed25519,
-      data: Base64.decode(required(data.value)) as PublicKeyBytes,
+      algorithm: "ed25519",
+      data: Base64.decode(required(data.value)),
     };
   }
   throw new Error(`unknown pubkey type: ${data.type}`);
@@ -706,9 +698,9 @@ function decodePubkey(data: RpcPubkey): PublicKeyBundle {
 
 export type RpcSignature = Base64String;
 
-function decodeSignature(data: RpcSignature): responses.VoteSignatureBundle {
+function decodeSignature(data: RpcSignature): ValidatorSignature {
   return {
-    algo: Algorithm.Ed25519,
-    signature: Base64.decode(required(data)) as SignatureBytes,
+    algorithm: "ed25519",
+    data: Base64.decode(required(data)),
   };
 }

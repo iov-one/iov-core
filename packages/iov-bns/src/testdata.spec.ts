@@ -1,10 +1,14 @@
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import {
   Address,
+  Algorithm,
   Amount,
+  ChainId,
   FullSignature,
   Nonce,
+  PublicKeyBundle,
+  PublicKeyBytes,
   SendTransaction,
+  SignatureBytes,
   SignedTransaction,
   SwapClaimTransaction,
   SwapCounterTransaction,
@@ -66,7 +70,7 @@ export const chainId = "test-123" as ChainId;
 // bech32 -e -h tiov 6f0a3e37845b6a3c8ccbe6219199abc3ae0b26d9
 export const sendTxJson: SendTransaction = {
   kind: "bcp/send",
-  chainId,
+  chainId: chainId,
   signer: pubJson,
   recipient: "tiov1du9ruduytd4rerxtucserxdtcwhqkfkezjy4w0" as Address,
   memo: "Test payment",

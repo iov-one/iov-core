@@ -1,7 +1,7 @@
 import { Address, TokenTicker } from "@iov/bcp-types";
 
 import { IovFaucet } from "./iovfaucet";
-import { randomBnsAddress } from "./utils";
+import { randomBnsAddress } from "./utils.spec";
 
 function pendingWithoutFaucet(): void {
   if (!process.env.FAUCET_ENABLED) {

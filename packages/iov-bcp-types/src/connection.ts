@@ -2,11 +2,20 @@ import { ReadonlyDate } from "readonly-date";
 import { As } from "type-tagger";
 import { Stream } from "xstream";
 
-import { ChainId, PostableBytes, PublicKeyBundle } from "@iov/base-types";
 import { ValueAndUpdates } from "@iov/stream";
 
-import { Address, SignedTransaction, TransactionId, TxCodec } from "./signables";
-import { Amount, Nonce, TokenTicker, UnsignedTransaction } from "./transactions";
+import { PostableBytes } from "./codec";
+import {
+  Address,
+  Amount,
+  ChainId,
+  Nonce,
+  PublicKeyBundle,
+  SignedTransaction,
+  TokenTicker,
+  TransactionId,
+  UnsignedTransaction,
+} from "./transactions";
 
 /*
 Types defined to match
@@ -220,10 +229,4 @@ export interface BcpConnection {
    * the query, along with all new transactions arriving from listenTx
    */
   readonly liveTx: (txQuery: BcpTxQuery) => Stream<ConfirmedTransaction>;
-}
-
-export interface ChainConnector {
-  readonly client: () => Promise<BcpConnection>;
-  readonly codec: TxCodec;
-  readonly expectedChainId?: ChainId;
 }

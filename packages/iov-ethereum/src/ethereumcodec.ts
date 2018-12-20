@@ -1,10 +1,14 @@
-import { Algorithm, ChainId, PostableBytes, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import {
+  Algorithm,
+  ChainId,
   isSendTransaction,
   Nonce,
+  PostableBytes,
   PrehashType,
+  PublicKeyBytes,
   SendTransaction,
   SignableBytes,
+  SignatureBytes,
   SignedTransaction,
   SigningJob,
   TransactionId,

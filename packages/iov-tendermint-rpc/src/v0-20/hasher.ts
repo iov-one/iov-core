@@ -1,9 +1,8 @@
-import { PostableBytes } from "@iov/base-types";
 import { Ripemd160 } from "@iov/crypto";
 
-import { TxHash } from "../types";
+import { TxBytes, TxHash } from "../types";
 
-export function hashTx(tx: PostableBytes): TxHash {
+export function hashTx(tx: TxBytes): TxHash {
   const hash = new Ripemd160(prefix(tx)).update(tx).digest();
   return hash as TxHash;
 }

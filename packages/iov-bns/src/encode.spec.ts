@@ -1,5 +1,15 @@
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
-import { Address, Amount, FullSignature, Nonce, TokenTicker } from "@iov/bcp-types";
+import {
+  Address,
+  Algorithm,
+  Amount,
+  ChainId,
+  FullSignature,
+  Nonce,
+  PublicKeyBundle,
+  PublicKeyBytes,
+  SignatureBytes,
+  TokenTicker,
+} from "@iov/bcp-types";
 import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 
@@ -34,7 +44,7 @@ import {
   signBytes,
   signedTxBin,
   signedTxJson,
-} from "./testdata";
+} from "./testdata.spec";
 
 const { fromHex, toAscii, toUtf8 } = Encoding;
 

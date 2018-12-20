@@ -1,5 +1,4 @@
-import { ChainId } from "@iov/base-types";
-import { ChainConnector } from "@iov/bcp-types";
+import { ChainConnector, ChainId } from "@iov/bcp-types";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";

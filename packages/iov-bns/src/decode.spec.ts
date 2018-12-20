@@ -1,5 +1,12 @@
-import { Algorithm, ChainId, PublicKeyBytes } from "@iov/base-types";
-import { Address, Nonce, TokenTicker, UnsignedTransaction } from "@iov/bcp-types";
+import {
+  Address,
+  Algorithm,
+  ChainId,
+  Nonce,
+  PublicKeyBytes,
+  TokenTicker,
+  UnsignedTransaction,
+} from "@iov/bcp-types";
 import { Encoding, Int53 } from "@iov/encoding";
 
 import {
@@ -23,7 +30,7 @@ import {
   sendTxBin,
   sendTxJson,
   signedTxBin,
-} from "./testdata";
+} from "./testdata.spec";
 import {
   decodePrivkey,
   decodePubkey,

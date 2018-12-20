@@ -1,5 +1,4 @@
-import { PostableBytes } from "@iov/base-types";
-import { PrehashType, SignedTransaction } from "@iov/bcp-types";
+import { PostableBytes, PrehashType, SignedTransaction } from "@iov/bcp-types";
 import { Ed25519, Sha512 } from "@iov/crypto";
 
 import { bnsCodec } from "./bnscodec";
@@ -15,7 +14,7 @@ import {
   swapClaimTxJson,
   swapCounterTxJson,
   swapTimeoutTxJson,
-} from "./testdata";
+} from "./testdata.spec";
 
 describe("Check codec", () => {
   it("properly encodes transactions", () => {

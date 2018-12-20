@@ -1,10 +1,11 @@
-import { ChainId, PublicKeyBundle } from "@iov/base-types";
 import {
   Address,
   BcpConnection,
   ChainConnector,
+  ChainId,
   Nonce,
   PostTxResponse,
+  PublicKeyBundle,
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";

@@ -1,8 +1,10 @@
-import { Algorithm, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
 import {
+  Algorithm,
   Amount,
   FullSignature,
+  PublicKeyBundle,
   SendTransaction,
+  SignatureBytes,
   SignedTransaction,
   SwapClaimTransaction,
   SwapCounterTransaction,

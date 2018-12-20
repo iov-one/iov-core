@@ -2,7 +2,6 @@ import axios from "axios";
 import { ReadonlyDate } from "readonly-date";
 import { Producer, Stream, Subscription } from "xstream";
 
-import { ChainId, PostableBytes } from "@iov/base-types";
 import {
   Address,
   BcpAccount,
@@ -16,11 +15,13 @@ import {
   BcpTransactionState,
   BcpTxQuery,
   BlockHeader,
+  ChainId,
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
   isPubkeyQuery,
   Nonce,
+  PostableBytes,
   PostTxResponse,
   TokenTicker,
   TransactionId,

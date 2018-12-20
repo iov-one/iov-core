@@ -6,6 +6,13 @@
   `Promise<Nonce>`/`Stream<Nonce>` and implementations set a default value on
   their own.
 
+Breaking changes
+
+* @iov/tendermint-rpc: Changed some interfaces to remove dependency on
+  base-types. `PostableBytes` -> `TxBytes`, `PublicKeyBundle` ->
+  `ValidatorPubkey`, `ChainId` -> `string`.
+* @iov/base-types: Package removed and all its types are now in @iov/bcp-types.
+
 ## 0.10.2
 
 * @iov/bcp-types: Add `BcpAccount.pubkey` and implement in Lisk, RISE and BNS.

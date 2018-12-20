@@ -1,8 +1,10 @@
-import { Algorithm, ChainId, PublicKeyBytes } from "@iov/base-types";
 import {
   Address,
+  Algorithm,
   BcpTransactionState,
+  ChainId,
   isSendTransaction,
+  PublicKeyBytes,
   SendTransaction,
   TokenTicker,
 } from "@iov/bcp-types";

@@ -3,9 +3,9 @@ import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
-import { Algorithm, ChainId, PostableBytes, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import {
   Address,
+  Algorithm,
   BcpAccount,
   BcpAccountQuery,
   BcpAddressQuery,
@@ -18,12 +18,16 @@ import {
   BcpTxQuery,
   BlockHeader,
   BlockId,
+  ChainId,
   ConfirmedTransaction,
   dummyEnvelope,
   isAddressQuery,
   isPubkeyQuery,
   Nonce,
+  PostableBytes,
   PostTxResponse,
+  PublicKeyBundle,
+  PublicKeyBytes,
   TokenTicker,
   TransactionId,
 } from "@iov/bcp-types";

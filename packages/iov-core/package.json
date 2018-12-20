@@ -30,7 +30,6 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
   },
   "dependencies": {
-    "@iov/base-types": "^0.10.0",
     "@iov/bcp-types": "^0.10.2",
     "@iov/bns": "^0.10.2",
     "@iov/encoding": "^0.10.1",

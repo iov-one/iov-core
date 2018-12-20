@@ -1,5 +1,4 @@
-import { ChainId } from "@iov/base-types";
-import { ChainConnector } from "@iov/bcp-types";
+import { ChainConnector, ChainId } from "@iov/bcp-types";
 /**
  * A helper to connect to a ethereum-based chain at a given url
  */

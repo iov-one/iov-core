@@ -1,16 +1,20 @@
 import { ReadonlyDate } from "readonly-date";
 
-import { Algorithm, ChainId, PublicKeyBundle, PublicKeyBytes, SignatureBytes } from "@iov/base-types";
 import {
   Address,
+  Algorithm,
   Amount,
   BcpAccountQuery,
   BcpAddressQuery,
   BcpBlockInfo,
   BcpPubkeyQuery,
   BcpTransactionState,
+  ChainId,
   isSendTransaction,
+  PublicKeyBundle,
+  PublicKeyBytes,
   SendTransaction,
+  SignatureBytes,
   SignedTransaction,
   TokenTicker,
   TransactionId,

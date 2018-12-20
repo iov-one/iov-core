@@ -1,6 +1,5 @@
 import { ReadonlyDate } from "readonly-date";
-import { Algorithm, ChainId, PostableBytes, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
-import { IpPortString, TxHash } from "./types";
+import { IpPortString, TxBytes, TxHash, ValidatorPubkey, ValidatorSignature } from "./types";
 export declare type Response = AbciInfoResponse | AbciQueryResponse | BlockResponse | BlockResultsResponse | BlockchainResponse | BroadcastTxAsyncResponse | BroadcastTxSyncResponse | BroadcastTxCommitResponse | CommitResponse | GenesisResponse | HealthResponse | StatusResponse | TxResponse | TxSearchResponse | ValidatorsResponse;
 export interface AbciInfoResponse {
     readonly data?: string;
@@ -60,7 +59,7 @@ export interface CommitResponse {
 }
 export interface GenesisResponse {
     readonly genesisTime: ReadonlyDate;
-    readonly chainId: ChainId;
+    readonly chainId: string;
     readonly consensusParams: ConsensusParams;
     readonly validators: ReadonlyArray<Validator>;
     readonly appHash: Uint8Array;
@@ -73,7 +72,7 @@ export interface StatusResponse {
     readonly validatorInfo: Validator;
 }
 export interface TxResponse {
-    readonly tx: PostableBytes;
+    readonly tx: TxBytes;
     readonly txResult: TxData;
     readonly height: number;
     readonly index: number;
@@ -93,7 +92,7 @@ export interface NewBlockEvent extends Block {
 export interface NewBlockHeaderEvent extends Header {
 }
 export interface TxEvent {
-    readonly tx: PostableBytes;
+    readonly tx: TxBytes;
     readonly hash: TxHash;
     readonly height: number;
     readonly index: number;
@@ -157,10 +156,6 @@ export declare enum VoteType {
     PREVOTE = 1,
     PRECOMMIT = 2
 }
-export interface VoteSignatureBundle {
-    readonly algo: Algorithm;
-    readonly signature: SignatureBytes;
-}
 export interface Vote {
     readonly type: VoteType;
     readonly validatorAddress: Uint8Array;
@@ -169,10 +164,10 @@ export interface Vote {
     readonly round: number;
     readonly timestamp: ReadonlyDate;
     readonly blockId: BlockId;
-    readonly signature: VoteSignatureBundle;
+    readonly signature: ValidatorSignature;
 }
 export interface Header {
-    readonly chainId: ChainId;
+    readonly chainId: string;
     readonly height: number;
     readonly time: ReadonlyDate;
     readonly numTxs: number;
@@ -189,7 +184,7 @@ export interface Header {
 export interface NodeInfo {
     readonly id: Uint8Array;
     readonly listenAddr: IpPortString;
-    readonly network: ChainId;
+    readonly network: string;
     readonly version: string;
     readonly channels: string;
     readonly moniker: string;
@@ -204,7 +199,7 @@ export interface SyncInfo {
 }
 export interface Validator {
     readonly address?: Uint8Array;
-    readonly pubkey: PublicKeyBundle;
+    readonly pubkey: ValidatorPubkey;
     readonly votingPower: number;
     readonly accum?: number;
     readonly name?: string;

@@ -1,5 +1,4 @@
-import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
-import { Address } from "@iov/bcp-types";
+import { Address, Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/bcp-types";
 import { bnsCodec } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 
