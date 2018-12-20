@@ -14,6 +14,8 @@ Breaking changes
 * @iov/base-types: Package removed and all its types are now in @iov/bcp-types.
 * @iov/core: Remove `MultiChainSigner.getNonce`. If you really need this, use
   `signer.connection(chainId).getNonce({ address: addr })` instead.
+* @iov/core: Removed BNS re-exports `bnsConnector`, `bnsFromOrToTag`,
+  `bnsNonceTag`, `bnsSwapQueryTags`. Import them from @iov/bns.
 
 ## 0.10.2
 

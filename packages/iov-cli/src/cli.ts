@@ -44,11 +44,11 @@ export function main(originalArgs: ReadonlyArray<string>): void {
   console.log(colors.yellow("    - Long"));
   console.log(colors.yellow("  * from @iov/bns"));
   console.log(colors.yellow("    - bnsCodec"));
+  console.log(colors.yellow("    - bnsConnector"));
+  console.log(colors.yellow("    - bnsFromOrToTag"));
   console.log(colors.yellow("    - SetNameTx"));
   console.log(colors.yellow("  * from @iov/core"));
   console.log(colors.yellow("    - Address"));
-  console.log(colors.yellow("    - bnsConnector"));
-  console.log(colors.yellow("    - bnsFromOrToTag"));
   console.log(colors.yellow("    - ChainId"));
   console.log(colors.yellow("    - Ed25519HdWallet"));
   console.log(colors.yellow("    - HdPaths"));
@@ -87,9 +87,13 @@ export function main(originalArgs: ReadonlyArray<string>): void {
     import * as https from 'https';
     import Long from "long";
     import {
-      Address,
+      bnsCodec,
       bnsConnector,
       bnsFromOrToTag,
+      SetNameTx,
+    } from '@iov/bns';
+    import {
+      Address,
       ChainId,
       Ed25519HdWallet,
       HdPaths,
@@ -105,10 +109,6 @@ export function main(originalArgs: ReadonlyArray<string>): void {
       WalletImplementationIdString,
       WalletSerializationString,
     } from "@iov/core";
-    import {
-      bnsCodec,
-      SetNameTx,
-    } from '@iov/bns';
     import { Bip39, Ed25519, Ed25519Keypair, Random, Sha256, Sha512 } from '@iov/crypto';
     import { Bech32, Encoding } from '@iov/encoding';
     import { IovFaucet } from '@iov/faucets';

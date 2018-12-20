@@ -25,6 +25,7 @@
     "iov-cli": "bin/iov-cli"
   },
   "dependencies": {
+    "@iov/bns": "^0.10.2",
     "@iov/core": "^0.10.2",
     "@iov/faucets": "^0.10.2",
     "argparse": "^1.0.10",
