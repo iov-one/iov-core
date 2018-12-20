@@ -3,7 +3,6 @@ import {
   BcpConnection,
   ChainConnector,
   ChainId,
-  Nonce,
   PostTxResponse,
   PublicKeyBundle,
   TxCodec,
@@ -78,18 +77,6 @@ export class MultiChainSigner {
 
   public keyToAddress(chainId: ChainId, key: PublicKeyBundle): Address {
     return this.getChain(chainId).codec.keyToAddress(key);
-  }
-
-  /**
-   * Returns one value for the address, 0 if not found.
-   *
-   * This is done automatically when you use signAndPost().
-   *
-   * @deprecated will be removed in 0.11. See https://github.com/iov-one/iov-core/issues/620
-   */
-  public async getNonce(chainId: ChainId, addr: Address): Promise<Nonce> {
-    const nonce = await this.getChain(chainId).connection.getNonce({ address: addr });
-    return nonce;
   }
 
   /**

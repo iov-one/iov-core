@@ -12,6 +12,8 @@ Breaking changes
   base-types. `PostableBytes` -> `TxBytes`, `PublicKeyBundle` ->
   `ValidatorPubkey`, `ChainId` -> `string`.
 * @iov/base-types: Package removed and all its types are now in @iov/bcp-types.
+* @iov/core: Remove `MultiChainSigner.getNonce`. If you really need this, use
+  `signer.connection(chainId).getNonce({ address: addr })` instead.
 
 ## 0.10.2
 
