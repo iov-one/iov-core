@@ -60,8 +60,8 @@ and calculate chain-specific addresses from public keys,
 even if bcp-proxy will handle translating all reads.
 */
 export class MultiChainSigner {
-  public readonly profile: Profile;
   private readonly knownChains: Map<string, Chain>;
+  private readonly profile: Profile;
 
   // initialize a write with a userProfile with secret info,
   // chains we want to connect to added with addChain (to keep async out of constructor)

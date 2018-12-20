@@ -10,8 +10,8 @@ export interface Profile {
     readonly appendSignature: (id: WalletId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
 }
 export declare class MultiChainSigner {
-    readonly profile: Profile;
     private readonly knownChains;
+    private readonly profile;
     constructor(profile: Profile);
     chainIds(): ReadonlyArray<ChainId>;
     connection(chainId: ChainId): BcpConnection;
