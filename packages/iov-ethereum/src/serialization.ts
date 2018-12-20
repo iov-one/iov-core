@@ -74,15 +74,15 @@ export class Serialization {
           : { forkState: BlknumForkState.Before };
       const v = eip155V(chain, sig.recovery);
       const postableTx = toRlp([
-        Buffer.from(fromHex(hexPadToEven(nonceHex))),
-        Buffer.from(fromHex(hexPadToEven(gasPriceHex))),
-        Buffer.from(fromHex(hexPadToEven(gasLimitHex))),
-        Buffer.from(fromHex(hexPadToEven(unsigned.recipient))),
-        Buffer.from(fromHex(hexPadToEven(valueHex))),
-        Buffer.from(fromHex(hexPadToEven(dataHex))),
-        Buffer.from(fromHex(hexPadToEven(encodeQuantity(v)))),
-        Buffer.from(r),
-        Buffer.from(s),
+        fromHex(hexPadToEven(nonceHex)),
+        fromHex(hexPadToEven(gasPriceHex)),
+        fromHex(hexPadToEven(gasLimitHex)),
+        fromHex(hexPadToEven(unsigned.recipient)),
+        fromHex(hexPadToEven(valueHex)),
+        fromHex(hexPadToEven(dataHex)),
+        fromHex(hexPadToEven(encodeQuantity(v))),
+        r,
+        s,
       ]);
       return postableTx;
     } else {
