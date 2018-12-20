@@ -1,8 +1,9 @@
-import { isSendTransaction, Nonce, UnsignedTransaction } from "@iov/bcp-types";
+import { isSendTransaction, Nonce, SignedTransaction, UnsignedTransaction } from "@iov/bcp-types";
+import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
 import { isValidAddress } from "./derivation";
-import { toRlp } from "./encoding";
+import { BlknumForkState, Eip155ChainId, eip155V, toRlp } from "./encoding";
 import { encodeQuantity, encodeQuantityString, hexPadToEven } from "./utils";
 
 const { fromHex } = Encoding;
@@ -35,6 +36,59 @@ export class Serialization {
           Buffer.from([]),
         ]),
       );
+    } else {
+      throw new Error("Unsupported kind of transaction");
+    }
+  }
+
+  public static serializeSignedTransaction(signed: SignedTransaction): Uint8Array {
+    const unsigned = signed.transaction;
+
+    if (isSendTransaction(unsigned)) {
+      let gasPriceHex = "0x";
+      let gasLimitHex = "0x";
+      let dataHex = "0x";
+      let nonceHex = "0x";
+
+      const valueHex = encodeQuantityString(unsigned.amount.quantity);
+      if (signed.primarySignature.nonce.toNumber() > 0) {
+        nonceHex = encodeQuantity(signed.primarySignature.nonce.toNumber());
+      }
+      if (unsigned.gasPrice) {
+        gasPriceHex = encodeQuantityString(unsigned.gasPrice.quantity);
+      }
+      if (unsigned.gasLimit) {
+        gasLimitHex = encodeQuantityString(unsigned.gasLimit.quantity);
+      }
+      if (unsigned.memo) {
+        dataHex += Encoding.toHex(Encoding.toUtf8(unsigned.memo));
+      }
+      if (!isValidAddress(unsigned.recipient)) {
+        throw new Error("Invalid recipient address");
+      }
+      const sig = ExtendedSecp256k1Signature.fromFixedLength(signed.primarySignature.signature);
+      const r = sig.r();
+      const s = sig.s();
+      const chainId = Number(unsigned.chainId);
+      const chain: Eip155ChainId =
+        chainId > 0
+          ? { forkState: BlknumForkState.Forked, chainId: chainId }
+          : { forkState: BlknumForkState.Before };
+      const v = eip155V(chain, sig.recovery);
+      const postableTx = new Uint8Array(
+        toRlp([
+          Buffer.from(fromHex(hexPadToEven(nonceHex))),
+          Buffer.from(fromHex(hexPadToEven(gasPriceHex))),
+          Buffer.from(fromHex(hexPadToEven(gasLimitHex))),
+          Buffer.from(fromHex(hexPadToEven(unsigned.recipient))),
+          Buffer.from(fromHex(hexPadToEven(valueHex))),
+          Buffer.from(fromHex(hexPadToEven(dataHex))),
+          Buffer.from(fromHex(hexPadToEven(encodeQuantity(v)))),
+          Buffer.from(r),
+          Buffer.from(s),
+        ]),
+      );
+      return postableTx;
     } else {
       throw new Error("Unsupported kind of transaction");
     }

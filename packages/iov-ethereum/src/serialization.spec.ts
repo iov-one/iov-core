@@ -1,10 +1,21 @@
-import { Address, Algorithm, PublicKeyBytes, SendTransaction, TokenTicker } from "@iov/bcp-types";
-import { Encoding } from "@iov/encoding";
+import {
+  Address,
+  Algorithm,
+  ChainId,
+  Nonce,
+  PublicKeyBytes,
+  SendTransaction,
+  SignatureBytes,
+  SignedTransaction,
+  TokenTicker,
+} from "@iov/bcp-types";
+import { ExtendedSecp256k1Signature } from "@iov/crypto";
+import { Encoding, Int53 } from "@iov/encoding";
 
 import { Serialization } from "./serialization";
 import { TestConfig } from "./testconfig";
 
-const { serializeTransaction } = Serialization;
+const { serializeSignedTransaction, serializeTransaction } = Serialization;
 const { fromHex } = Encoding;
 
 describe("Serialization", () => {
@@ -83,6 +94,61 @@ describe("Serialization", () => {
           "f8b7808504a817c8008252089443aa18faae961c23715735682dc75662d90f4dde8901158e460913d00000b887546865206e696365206d656d6f20492061747461636820746f2074686174206d6f6e657920666f72207468652077686f6c6520776f726c6420746f20726561642c20416e642063616e20656e636f6465206173206d756368206461746120617320796f752077616e742c20616e6420756e69636f64652073796d626f6c73206c696b6520e29da48216918080",
         ),
       );
+    });
+
+    describe("serializeSignedTransaction", () => {
+      it("can serialize pre-eip155 transaction compatible to external vectors", () => {
+        // Data from
+        // https://github.com/ethereum/tests/blob/v6.0.0-beta.3/TransactionTests/ttSignature/SenderTest.json
+        // https://github.com/ethereum/tests/blob/v6.0.0-beta.3/src/TransactionTestsFiller/ttSignature/SenderTestFiller.json
+
+        const signed: SignedTransaction<SendTransaction> = {
+          transaction: {
+            kind: "bcp/send",
+            chainId: "0" as ChainId,
+            signer: {
+              algo: Algorithm.Secp256k1,
+              data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
+            },
+            amount: {
+              quantity: "10",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
+            gasPrice: {
+              quantity: "1",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
+            gasLimit: {
+              quantity: "21000",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
+            recipient: "0x095E7BAea6a6c7c4c2DfeB977eFac326aF552d87" as Address,
+          },
+          primarySignature: {
+            nonce: new Int53(0) as Nonce,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
+            },
+            signature: new ExtendedSecp256k1Signature(
+              fromHex("48b55bfa915ac795c431978d8a6a992b628d557da5ff759b307d495a36649353"),
+              fromHex("1fffd310ac743f371de3b9f7f9cb56c0b28ad43601b4ab949f53faa07bd2c804"),
+              0,
+            ).toFixedLength() as SignatureBytes,
+          },
+          otherSignatures: [],
+        };
+
+        const serializedTx = serializeSignedTransaction(signed);
+        expect(serializedTx).toEqual(
+          fromHex(
+            "f85f800182520894095e7baea6a6c7c4c2dfeb977efac326af552d870a801ba048b55bfa915ac795c431978d8a6a992b628d557da5ff759b307d495a36649353a01fffd310ac743f371de3b9f7f9cb56c0b28ad43601b4ab949f53faa07bd2c804",
+          ),
+        );
+      });
     });
   });
 });

@@ -1,7 +1,6 @@
 import {
   Algorithm,
   ChainId,
-  isSendTransaction,
   Nonce,
   PostableBytes,
   PrehashType,
@@ -20,18 +19,9 @@ import { Encoding } from "@iov/encoding";
 
 import { constants } from "./constants";
 import { isValidAddress, keyToAddress } from "./derivation";
-import { BlknumForkState, Eip155ChainId, eip155V, getRecoveryParam, toRlp } from "./encoding";
+import { BlknumForkState, Eip155ChainId, getRecoveryParam } from "./encoding";
 import { Serialization } from "./serialization";
-import {
-  decodeHexQuantity,
-  decodeHexQuantityNonce,
-  decodeHexQuantityString,
-  encodeQuantity,
-  encodeQuantityString,
-  hexPadToEven,
-} from "./utils";
-
-const { fromHex } = Encoding;
+import { decodeHexQuantity, decodeHexQuantityNonce, decodeHexQuantityString } from "./utils";
 
 export const ethereumCodec: TxCodec = {
   bytesToSign: (unsigned: UnsignedTransaction, nonce: Nonce): SigningJob => {
@@ -41,56 +31,7 @@ export const ethereumCodec: TxCodec = {
     };
   },
   bytesToPost: (signed: SignedTransaction): PostableBytes => {
-    const unsigned = signed.transaction;
-
-    if (isSendTransaction(unsigned)) {
-      let gasPriceHex = "0x";
-      let gasLimitHex = "0x";
-      let dataHex = "0x";
-      let nonceHex = "0x";
-
-      const valueHex = encodeQuantityString(unsigned.amount.quantity);
-      if (signed.primarySignature.nonce.toNumber() > 0) {
-        nonceHex = encodeQuantity(signed.primarySignature.nonce.toNumber());
-      }
-      if (unsigned.gasPrice) {
-        gasPriceHex = encodeQuantityString(unsigned.gasPrice.quantity);
-      }
-      if (unsigned.gasLimit) {
-        gasLimitHex = encodeQuantityString(unsigned.gasLimit.quantity);
-      }
-      if (unsigned.memo) {
-        dataHex += Encoding.toHex(Encoding.toUtf8(unsigned.memo));
-      }
-      if (!isValidAddress(unsigned.recipient)) {
-        throw new Error("Invalid recipient address");
-      }
-      const sig = ExtendedSecp256k1Signature.fromFixedLength(signed.primarySignature.signature);
-      const r = sig.r();
-      const s = sig.s();
-      const chain: Eip155ChainId = {
-        forkState: BlknumForkState.Forked,
-        chainId: Number(unsigned.chainId),
-      };
-      const v = eip155V(chain, sig.recovery);
-      const chainIdHex = encodeQuantity(v);
-      const postableTx = new Uint8Array(
-        toRlp([
-          fromHex(hexPadToEven(nonceHex)),
-          fromHex(hexPadToEven(gasPriceHex)),
-          fromHex(hexPadToEven(gasLimitHex)),
-          fromHex(hexPadToEven(unsigned.recipient)),
-          fromHex(hexPadToEven(valueHex)),
-          fromHex(hexPadToEven(dataHex)),
-          fromHex(hexPadToEven(chainIdHex)),
-          r,
-          s,
-        ]),
-      );
-      return postableTx as PostableBytes;
-    } else {
-      throw new Error("Unsupported kind of transaction");
-    }
+    return Serialization.serializeSignedTransaction(signed) as PostableBytes;
   },
   identifier: (signed: SignedTransaction): TransactionId => {
     throw new Error(`Not implemented tx: ${signed}`);
