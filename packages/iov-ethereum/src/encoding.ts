@@ -2,10 +2,8 @@ import * as rlp from "rlp";
 
 /**
  * Encode as RLP (Recursive Length Prefix)
- *
- * @param data an RLPInput (see https://github.com/ethereumjs/rlp/issues/58)
  */
-export function toRlp(data: any): Uint8Array {
+export function toRlp(data: rlp.Input): Uint8Array {
   const dataBuffer = rlp.encode(data);
   return Uint8Array.from(dataBuffer);
 }
