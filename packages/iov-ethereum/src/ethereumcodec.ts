@@ -76,15 +76,15 @@ export const ethereumCodec: TxCodec = {
       const chainIdHex = encodeQuantity(v);
       const postableTx = new Uint8Array(
         toRlp([
-          Buffer.from(fromHex(hexPadToEven(nonceHex))),
-          Buffer.from(fromHex(hexPadToEven(gasPriceHex))),
-          Buffer.from(fromHex(hexPadToEven(gasLimitHex))),
-          Buffer.from(fromHex(hexPadToEven(unsigned.recipient))),
-          Buffer.from(fromHex(hexPadToEven(valueHex))),
-          Buffer.from(fromHex(hexPadToEven(dataHex))),
-          Buffer.from(fromHex(hexPadToEven(chainIdHex))),
-          Buffer.from(r),
-          Buffer.from(s),
+          fromHex(hexPadToEven(nonceHex)),
+          fromHex(hexPadToEven(gasPriceHex)),
+          fromHex(hexPadToEven(gasLimitHex)),
+          fromHex(hexPadToEven(unsigned.recipient)),
+          fromHex(hexPadToEven(valueHex)),
+          fromHex(hexPadToEven(dataHex)),
+          fromHex(hexPadToEven(chainIdHex)),
+          r,
+          s,
         ]),
       );
       return postableTx as PostableBytes;
