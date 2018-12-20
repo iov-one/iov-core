@@ -23,19 +23,17 @@ export class Serialization {
       }
 
       // Last 3 items are v, r and s values. Are present to encode full structure.
-      return new Uint8Array(
-        toRlp([
-          Buffer.from(fromHex(hexPadToEven(nonceHex))),
-          Buffer.from(fromHex(hexPadToEven(gasPriceHex))),
-          Buffer.from(fromHex(hexPadToEven(gasLimitHex))),
-          Buffer.from(fromHex(hexPadToEven(unsigned.recipient))),
-          Buffer.from(fromHex(hexPadToEven(valueHex))),
-          Buffer.from(fromHex(hexPadToEven(dataHex))),
-          Buffer.from(fromHex(hexPadToEven(chainIdHex))),
-          Buffer.from([]),
-          Buffer.from([]),
-        ]),
-      );
+      return toRlp([
+        Buffer.from(fromHex(hexPadToEven(nonceHex))),
+        Buffer.from(fromHex(hexPadToEven(gasPriceHex))),
+        Buffer.from(fromHex(hexPadToEven(gasLimitHex))),
+        Buffer.from(fromHex(hexPadToEven(unsigned.recipient))),
+        Buffer.from(fromHex(hexPadToEven(valueHex))),
+        Buffer.from(fromHex(hexPadToEven(dataHex))),
+        Buffer.from(fromHex(hexPadToEven(chainIdHex))),
+        Buffer.from([]),
+        Buffer.from([]),
+      ]);
     } else {
       throw new Error("Unsupported kind of transaction");
     }
@@ -75,19 +73,17 @@ export class Serialization {
           ? { forkState: BlknumForkState.Forked, chainId: chainId }
           : { forkState: BlknumForkState.Before };
       const v = eip155V(chain, sig.recovery);
-      const postableTx = new Uint8Array(
-        toRlp([
-          Buffer.from(fromHex(hexPadToEven(nonceHex))),
-          Buffer.from(fromHex(hexPadToEven(gasPriceHex))),
-          Buffer.from(fromHex(hexPadToEven(gasLimitHex))),
-          Buffer.from(fromHex(hexPadToEven(unsigned.recipient))),
-          Buffer.from(fromHex(hexPadToEven(valueHex))),
-          Buffer.from(fromHex(hexPadToEven(dataHex))),
-          Buffer.from(fromHex(hexPadToEven(encodeQuantity(v)))),
-          Buffer.from(r),
-          Buffer.from(s),
-        ]),
-      );
+      const postableTx = toRlp([
+        Buffer.from(fromHex(hexPadToEven(nonceHex))),
+        Buffer.from(fromHex(hexPadToEven(gasPriceHex))),
+        Buffer.from(fromHex(hexPadToEven(gasLimitHex))),
+        Buffer.from(fromHex(hexPadToEven(unsigned.recipient))),
+        Buffer.from(fromHex(hexPadToEven(valueHex))),
+        Buffer.from(fromHex(hexPadToEven(dataHex))),
+        Buffer.from(fromHex(hexPadToEven(encodeQuantity(v)))),
+        Buffer.from(r),
+        Buffer.from(s),
+      ]);
       return postableTx;
     } else {
       throw new Error("Unsupported kind of transaction");
