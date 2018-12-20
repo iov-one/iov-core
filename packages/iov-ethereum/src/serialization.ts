@@ -9,7 +9,7 @@ import { encodeQuantity, encodeQuantityString, hexPadToEven } from "./utils";
 const { fromHex } = Encoding;
 
 export class Serialization {
-  public static serializeTransaction(unsigned: UnsignedTransaction, nonce: Nonce): Uint8Array {
+  public static serializeUnsignedTransaction(unsigned: UnsignedTransaction, nonce: Nonce): Uint8Array {
     if (isSendTransaction(unsigned)) {
       const chainIdHex = encodeQuantity(Number(unsigned.chainId));
       const valueHex = encodeQuantityString(unsigned.amount.quantity);

@@ -26,7 +26,7 @@ import { decodeHexQuantity, decodeHexQuantityNonce, decodeHexQuantityString } fr
 export const ethereumCodec: TxCodec = {
   bytesToSign: (unsigned: UnsignedTransaction, nonce: Nonce): SigningJob => {
     return {
-      bytes: Serialization.serializeTransaction(unsigned, nonce) as SignableBytes,
+      bytes: Serialization.serializeUnsignedTransaction(unsigned, nonce) as SignableBytes,
       prehashType: PrehashType.Keccak256,
     };
   },
