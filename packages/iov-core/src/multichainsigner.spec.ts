@@ -8,7 +8,16 @@ import {
 } from "@iov/bcp-types";
 import { bnsCodec, bnsConnector, bnsFromOrToTag } from "@iov/bns";
 import { Random } from "@iov/crypto";
-import { Ed25519HdWallet, HdPaths, LocalIdentity, UserProfile, WalletId } from "@iov/keycontrol";
+import { Encoding } from "@iov/encoding";
+import { ethereumConnector } from "@iov/ethereum";
+import {
+  Ed25519HdWallet,
+  HdPaths,
+  LocalIdentity,
+  PublicIdentity,
+  UserProfile,
+  WalletId,
+} from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";
 
@@ -21,9 +30,9 @@ function pendingWithoutBnsd(): void {
   }
 }
 
-const pendingWithoutTendermint = () => {
-  if (!process.env.TENDERMINT_ENABLED) {
-    pending("Set TENDERMINT_ENABLED to enable tendermint-based tests");
+const pendingWithoutEthereum = () => {
+  if (!process.env.ETHEREUM_ENABLED) {
+    pending("Set ETHEREUM_ENABLED to enable ethereum-based tests");
   }
 };
 
@@ -36,7 +45,7 @@ async function randomBnsAddress(): Promise<Address> {
 
 describe("MultiChainSigner", () => {
   const bnsdTendermintUrl = "ws://localhost:22345";
-  const rawTendermintUrl = "ws://localhost:12345";
+  const httpEthereumUrl = "http://localhost:8545";
 
   it("works with no chains", () => {
     const profile = new UserProfile();
@@ -115,7 +124,7 @@ describe("MultiChainSigner", () => {
     it("can add two chains", async () => {
       // this requires both chains to check
       pendingWithoutBnsd();
-      pendingWithoutTendermint();
+      pendingWithoutEthereum();
 
       const { profile, faucet } = await userProfileWithFaucet();
       const signer = new MultiChainSigner(profile);
@@ -126,8 +135,9 @@ describe("MultiChainSigner", () => {
       expect(signer.chainIds().length).toEqual(1);
       const bovId = signer.chainIds()[0];
 
-      // add a raw tendermint chain (don't query, it will fail)
-      await signer.addChain(bnsConnector(rawTendermintUrl));
+      // add a ethereum chain
+      await signer.addChain(ethereumConnector(httpEthereumUrl, undefined));
+      const ethId = signer.chainIds()[1];
       const twoChains = signer.chainIds();
       // it should store both chains
       expect(twoChains.length).toEqual(2);
@@ -142,6 +152,21 @@ describe("MultiChainSigner", () => {
       expect(acct).toBeTruthy();
       expect(acct.data.length).toBe(1);
       expect(acct.data[0].balance.length).toBe(1);
+
+      const ganacheMainIdentity: PublicIdentity = {
+        pubkey: {
+          algo: Algorithm.Secp256k1,
+          data: Encoding.fromHex(
+            "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
+          ) as PublicKeyBytes,
+        },
+      };
+      const ganacheAddr = signer.keyToAddress(ethId, ganacheMainIdentity.pubkey);
+      const connection2 = signer.connection(ethId);
+      const acct2 = await connection2.getAccount({ address: ganacheAddr });
+      expect(acct2).toBeTruthy();
+      expect(acct2.data.length).toBe(1);
+      expect(acct2.data[0].balance.length).toBe(1);
     });
   });
 
