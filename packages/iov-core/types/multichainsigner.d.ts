@@ -1,9 +1,18 @@
-import { Address, BcpConnection, ChainConnector, ChainId, PostTxResponse, PublicKeyBundle, UnsignedTransaction } from "@iov/bcp-types";
-import { UserProfile, WalletId } from "@iov/keycontrol";
+import { Address, BcpConnection, ChainConnector, ChainId, Nonce, PostTxResponse, PublicKeyBundle, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
+import { PublicIdentity, WalletId } from "@iov/keycontrol";
+/**
+ * TransactionSigner is just the methods on `UserProfile` that we need in `MultiChainSigner`.
+ * By only requiring this interface, we allow the use of other implementations with custom
+ * logic for key derivation, etc.
+ */
+export interface Profile {
+    readonly signTransaction: (id: WalletId, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
+    readonly appendSignature: (id: WalletId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
+}
 export declare class MultiChainSigner {
-    readonly profile: UserProfile;
     private readonly knownChains;
-    constructor(profile: UserProfile);
+    private readonly profile;
+    constructor(profile: Profile);
     chainIds(): ReadonlyArray<ChainId>;
     connection(chainId: ChainId): BcpConnection;
     /**

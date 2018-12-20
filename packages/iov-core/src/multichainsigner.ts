@@ -3,12 +3,14 @@ import {
   BcpConnection,
   ChainConnector,
   ChainId,
+  Nonce,
   PostTxResponse,
   PublicKeyBundle,
+  SignedTransaction,
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
-import { PublicIdentity, UserProfile, WalletId } from "@iov/keycontrol";
+import { PublicIdentity, WalletId } from "@iov/keycontrol";
 
 /**
  * An internal helper to pass around the tuple
@@ -28,6 +30,29 @@ async function connectChain(x: ChainConnector): Promise<Chain> {
   };
 }
 
+/**
+ * TransactionSigner is just the methods on `UserProfile` that we need in `MultiChainSigner`.
+ * By only requiring this interface, we allow the use of other implementations with custom
+ * logic for key derivation, etc.
+ */
+export interface Profile {
+  readonly signTransaction: (
+    id: WalletId,
+    identity: PublicIdentity,
+    transaction: UnsignedTransaction,
+    codec: TxCodec,
+    nonce: Nonce,
+  ) => Promise<SignedTransaction>;
+
+  readonly appendSignature: (
+    id: WalletId,
+    identity: PublicIdentity,
+    originalTransaction: SignedTransaction,
+    codec: TxCodec,
+    nonce: Nonce,
+  ) => Promise<SignedTransaction>;
+}
+
 /*
 MultiChainSigner handles all private key material, as well as connections to multiple chains.
 It must have a codec along with each chain to properly encode the transactions,
@@ -35,12 +60,12 @@ and calculate chain-specific addresses from public keys,
 even if bcp-proxy will handle translating all reads.
 */
 export class MultiChainSigner {
-  public readonly profile: UserProfile;
   private readonly knownChains: Map<string, Chain>;
+  private readonly profile: Profile;
 
   // initialize a write with a userProfile with secret info,
   // chains we want to connect to added with addChain (to keep async out of constructor)
-  constructor(profile: UserProfile) {
+  constructor(profile: Profile) {
     this.profile = profile;
     this.knownChains = new Map<string, Chain>();
   }
