@@ -31,13 +31,13 @@
   },
   "dependencies": {
     "@iov/bcp-types": "^0.10.2",
-    "@iov/bns": "^0.10.2",
     "@iov/encoding": "^0.10.1",
     "@iov/keycontrol": "^0.10.2",
     "@types/long": "^4.0.0",
     "long": "^4.0.0"
   },
   "devDependencies": {
+    "@iov/bns": "^0.10.2",
     "@iov/ethereum": "^0.10.2"
   }
 }
