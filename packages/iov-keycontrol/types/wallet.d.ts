@@ -35,7 +35,13 @@ export interface Wallet {
      * To clear the label, set it to undefined.
      */
     readonly setLabel: (label: string | undefined) => void;
-    readonly createIdentity: (options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number) => Promise<LocalIdentity>;
+    /**
+     * Creates a new identity in the wallet.
+     *
+     * The identity is bound to one chain ID to encourage using different
+     * keypairs on different chains.
+     */
+    readonly createIdentity: (chainId: ChainId, options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number) => Promise<LocalIdentity>;
     readonly setIdentityLabel: (identity: PublicIdentity, label: string | undefined) => void;
     readonly getIdentities: () => ReadonlyArray<LocalIdentity>;
     readonly canSign: ValueAndUpdates<boolean>;

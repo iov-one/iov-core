@@ -63,6 +63,7 @@ describe("MultiChainSigner", () => {
     // this account has money in the genesis file (setup in docker)
     const mnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
     const cash = "CASH" as TokenTicker;
+    const bnsChain = "chain123" as ChainId;
 
     async function userProfileWithFaucet(): Promise<{
       readonly profile: UserProfile;
@@ -72,7 +73,7 @@ describe("MultiChainSigner", () => {
       const wallet = Ed25519HdWallet.fromMnemonic(mnemonic);
       const profile = new UserProfile();
       profile.addWallet(wallet);
-      const faucet = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+      const faucet = await profile.createIdentity(wallet.id, bnsChain, HdPaths.simpleAddress(0));
       return { profile, mainWalletId: wallet.id, faucet };
     }
 

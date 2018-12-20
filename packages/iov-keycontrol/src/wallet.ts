@@ -52,8 +52,14 @@ export interface Wallet {
    */
   readonly setLabel: (label: string | undefined) => void;
 
-  // createIdentity will create one new identity
+  /**
+   * Creates a new identity in the wallet.
+   *
+   * The identity is bound to one chain ID to encourage using different
+   * keypairs on different chains.
+   */
   readonly createIdentity: (
+    chainId: ChainId,
     options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number,
   ) => Promise<LocalIdentity>;
 

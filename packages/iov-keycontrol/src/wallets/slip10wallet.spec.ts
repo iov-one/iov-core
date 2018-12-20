@@ -8,6 +8,7 @@ import { Slip10Wallet } from "./slip10wallet";
 const { fromHex } = Encoding;
 
 describe("Slip10Wallet", () => {
+  const defaultChain = "chain123" as ChainId;
   const emptyWallet = `
     {
       "formatVersion": 1,
@@ -84,9 +85,9 @@ describe("Slip10Wallet", () => {
     ];
 
     for (const wallet of emptyWallets) {
-      const newIdentity1 = await wallet.createIdentity([Slip10RawIndex.hardened(0)]);
-      const newIdentity2 = await wallet.createIdentity([Slip10RawIndex.hardened(1)]);
-      const newIdentity3 = await wallet.createIdentity([
+      const newIdentity1 = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(0)]);
+      const newIdentity2 = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(1)]);
+      const newIdentity3 = await wallet.createIdentity(defaultChain, [
         Slip10RawIndex.hardened(1),
         Slip10RawIndex.hardened(0),
       ]);
@@ -133,9 +134,9 @@ describe("Slip10Wallet", () => {
     ];
 
     for (const wallet of emptyWallets) {
-      await wallet.createIdentity(defaultPath);
+      await wallet.createIdentity(defaultChain, defaultPath);
       await wallet
-        .createIdentity(defaultPath)
+        .createIdentity(defaultChain, defaultPath)
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(/ID collision/i));
     }
@@ -156,9 +157,9 @@ describe("Slip10Wallet", () => {
     ];
 
     for (const wallet of emptyWallets) {
-      const newIdentity1 = await wallet.createIdentity([Slip10RawIndex.hardened(0)]);
-      const newIdentity2 = await wallet.createIdentity([Slip10RawIndex.hardened(1)]);
-      const newIdentity3 = await wallet.createIdentity([
+      const newIdentity1 = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(0)]);
+      const newIdentity2 = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(1)]);
+      const newIdentity3 = await wallet.createIdentity(defaultChain, [
         Slip10RawIndex.hardened(1),
         Slip10RawIndex.hardened(0),
       ]);
@@ -194,7 +195,7 @@ describe("Slip10Wallet", () => {
     );
 
     // m/44'/0'/7'/1/0
-    const address0 = await wallet.createIdentity([
+    const address0 = await wallet.createIdentity(defaultChain, [
       Slip10RawIndex.hardened(44),
       Slip10RawIndex.hardened(0),
       Slip10RawIndex.hardened(7),
@@ -208,7 +209,7 @@ describe("Slip10Wallet", () => {
     );
 
     // m/44'/0'/7'/1/1
-    const address1 = await wallet.createIdentity([
+    const address1 = await wallet.createIdentity(defaultChain, [
       Slip10RawIndex.hardened(44),
       Slip10RawIndex.hardened(0),
       Slip10RawIndex.hardened(7),
@@ -222,7 +223,7 @@ describe("Slip10Wallet", () => {
     );
 
     // m/44'/0'/7'/1/2
-    const address2 = await wallet.createIdentity([
+    const address2 = await wallet.createIdentity(defaultChain, [
       Slip10RawIndex.hardened(44),
       Slip10RawIndex.hardened(0),
       Slip10RawIndex.hardened(7),
@@ -249,7 +250,7 @@ describe("Slip10Wallet", () => {
     );
 
     // m/44'/148'/0'
-    const address0 = await wallet.createIdentity([
+    const address0 = await wallet.createIdentity(defaultChain, [
       Slip10RawIndex.hardened(44),
       Slip10RawIndex.hardened(148),
       Slip10RawIndex.hardened(0),
@@ -259,7 +260,7 @@ describe("Slip10Wallet", () => {
     );
 
     // m/44'/148'/1'
-    const address1 = await wallet.createIdentity([
+    const address1 = await wallet.createIdentity(defaultChain, [
       Slip10RawIndex.hardened(44),
       Slip10RawIndex.hardened(148),
       Slip10RawIndex.hardened(1),
@@ -269,7 +270,7 @@ describe("Slip10Wallet", () => {
     );
 
     // m/44'/148'/2'
-    const address2 = await wallet.createIdentity([
+    const address2 = await wallet.createIdentity(defaultChain, [
       Slip10RawIndex.hardened(44),
       Slip10RawIndex.hardened(148),
       Slip10RawIndex.hardened(2),
@@ -281,7 +282,7 @@ describe("Slip10Wallet", () => {
 
   it("can set, change and unset an identity label", async () => {
     const wallet = new Slip10Wallet(emptyWallet);
-    const newIdentity = await wallet.createIdentity([Slip10RawIndex.hardened(0)]);
+    const newIdentity = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(0)]);
     const originalId = newIdentity.id;
     expect(wallet.getIdentities()[0].label).toBeUndefined();
 
@@ -299,7 +300,7 @@ describe("Slip10Wallet", () => {
 
   it("can sign", async () => {
     const wallet = new Slip10Wallet(emptyWallet);
-    const newIdentity = await wallet.createIdentity([Slip10RawIndex.hardened(0)]);
+    const newIdentity = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(0)]);
 
     expect(wallet.canSign.value).toEqual(true);
 
@@ -312,7 +313,7 @@ describe("Slip10Wallet", () => {
 
   it("can sign with different prehash types", async () => {
     const wallet = new Slip10Wallet(emptyWallet);
-    const mainIdentity = await wallet.createIdentity([Slip10RawIndex.hardened(0)]);
+    const mainIdentity = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(0)]);
 
     const transactionBytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
     const chainId = "some-chain" as ChainId;
@@ -346,7 +347,7 @@ describe("Slip10Wallet", () => {
 
   it("produces correct data for prehash signatures", async () => {
     const wallet = new Slip10Wallet(emptyWallet);
-    const mainIdentity = await wallet.createIdentity([Slip10RawIndex.hardened(0)]);
+    const mainIdentity = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(0)]);
     const chainId = "some-chain" as ChainId;
 
     const bytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
@@ -402,9 +403,12 @@ describe("Slip10Wallet", () => {
     wallet.setLabel("wallet with 3 identities");
     const originalId = wallet.id;
     expect(originalId).toBeTruthy();
-    const identity1 = await wallet.createIdentity([Slip10RawIndex.hardened(0)]);
-    const identity2 = await wallet.createIdentity([Slip10RawIndex.hardened(1)]);
-    const identity3 = await wallet.createIdentity([Slip10RawIndex.hardened(2), Slip10RawIndex.hardened(0)]);
+    const identity1 = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(0)]);
+    const identity2 = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(1)]);
+    const identity3 = await wallet.createIdentity(defaultChain, [
+      Slip10RawIndex.hardened(2),
+      Slip10RawIndex.hardened(0),
+    ]);
     wallet.setIdentityLabel(identity1, undefined);
     wallet.setIdentityLabel(identity2, "");
     wallet.setIdentityLabel(identity3, "foo");
@@ -557,9 +561,9 @@ describe("Slip10Wallet", () => {
 
   it("can serialize and restore a full wallet", async () => {
     const original = new Slip10Wallet(emptyWallet);
-    const identity1 = await original.createIdentity([Slip10RawIndex.hardened(0)]);
-    const identity2 = await original.createIdentity([Slip10RawIndex.hardened(1)]);
-    const identity3 = await original.createIdentity([Slip10RawIndex.hardened(2)]);
+    const identity1 = await original.createIdentity(defaultChain, [Slip10RawIndex.hardened(0)]);
+    const identity2 = await original.createIdentity(defaultChain, [Slip10RawIndex.hardened(1)]);
+    const identity3 = await original.createIdentity(defaultChain, [Slip10RawIndex.hardened(2)]);
     original.setIdentityLabel(identity1, undefined);
     original.setIdentityLabel(identity2, "");
     original.setIdentityLabel(identity3, "foo");

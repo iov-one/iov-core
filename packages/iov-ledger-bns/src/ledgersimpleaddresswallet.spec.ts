@@ -19,6 +19,8 @@ import { LedgerState } from "./statetracker";
 const { toHex } = Encoding;
 
 describe("LedgerSimpleAddressWallet", () => {
+  const defaultChain = "chain123" as ChainId;
+
   it("can be constructed", () => {
     const wallet = new LedgerSimpleAddressWallet();
     expect(wallet).toBeTruthy();
@@ -59,7 +61,7 @@ describe("LedgerSimpleAddressWallet", () => {
 
     const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
-    const newIdentity = await wallet.createIdentity(0);
+    const newIdentity = await wallet.createIdentity(defaultChain, 0);
     expect(newIdentity).toBeTruthy();
     expect(newIdentity.pubkey.algo).toEqual(Algorithm.Ed25519);
     expect(newIdentity.pubkey.data.length).toEqual(32);
@@ -71,7 +73,7 @@ describe("LedgerSimpleAddressWallet", () => {
 
     const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
-    const newIdentity = await wallet.createIdentity(0);
+    const newIdentity = await wallet.createIdentity(defaultChain, 0);
 
     expect(wallet.getIdentities().length).toEqual(1);
 
@@ -87,11 +89,11 @@ describe("LedgerSimpleAddressWallet", () => {
 
     const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
-    const newIdentity1 = await wallet.createIdentity(0);
-    const newIdentity2 = await wallet.createIdentity(1);
-    const newIdentity3 = await wallet.createIdentity(2);
-    const newIdentity4 = await wallet.createIdentity(3);
-    const newIdentity5 = await wallet.createIdentity(4);
+    const newIdentity1 = await wallet.createIdentity(defaultChain, 0);
+    const newIdentity2 = await wallet.createIdentity(defaultChain, 1);
+    const newIdentity3 = await wallet.createIdentity(defaultChain, 2);
+    const newIdentity4 = await wallet.createIdentity(defaultChain, 3);
+    const newIdentity5 = await wallet.createIdentity(defaultChain, 4);
 
     // all pubkeys must be different
     const pubkeySet = new Set(
@@ -118,9 +120,9 @@ describe("LedgerSimpleAddressWallet", () => {
 
     const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
-    await wallet.createIdentity(0);
+    await wallet.createIdentity(defaultChain, 0);
     await wallet
-      .createIdentity(0)
+      .createIdentity(defaultChain, 0)
       .then(() => fail("must not resolve"))
       .catch(error => expect(error).toMatch(/Identity Index collision/i));
   });
@@ -130,7 +132,7 @@ describe("LedgerSimpleAddressWallet", () => {
 
     const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
-    const newIdentity = await wallet.createIdentity(0);
+    const newIdentity = await wallet.createIdentity(defaultChain, 0);
     expect(wallet.getIdentities()[0].label).toBeUndefined();
 
     wallet.setIdentityLabel(newIdentity, "foo");
@@ -203,7 +205,7 @@ describe("LedgerSimpleAddressWallet", () => {
 
     const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
-    const newIdentity = await wallet.createIdentity(0);
+    const newIdentity = await wallet.createIdentity(defaultChain, 0);
 
     await wallet.canSign.waitFor(true);
 
@@ -252,9 +254,9 @@ describe("LedgerSimpleAddressWallet", () => {
     const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
     wallet.setLabel("wallet with 3 identities");
-    const identity1 = await wallet.createIdentity(0);
-    const identity2 = await wallet.createIdentity(1);
-    const identity3 = await wallet.createIdentity(2);
+    const identity1 = await wallet.createIdentity(defaultChain, 0);
+    const identity2 = await wallet.createIdentity(defaultChain, 1);
+    const identity3 = await wallet.createIdentity(defaultChain, 2);
     wallet.setIdentityLabel(identity1, undefined);
     wallet.setIdentityLabel(identity2, "");
     wallet.setIdentityLabel(identity3, "foo");
@@ -347,9 +349,9 @@ describe("LedgerSimpleAddressWallet", () => {
 
     const original = new LedgerSimpleAddressWallet();
     original.startDeviceTracking();
-    const identity1 = await original.createIdentity(0);
-    const identity2 = await original.createIdentity(1);
-    const identity3 = await original.createIdentity(2);
+    const identity1 = await original.createIdentity(defaultChain, 0);
+    const identity2 = await original.createIdentity(defaultChain, 1);
+    const identity3 = await original.createIdentity(defaultChain, 2);
     original.stopDeviceTracking();
     original.setIdentityLabel(identity1, undefined);
     original.setIdentityLabel(identity2, "");

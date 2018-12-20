@@ -39,7 +39,7 @@ export declare class LedgerSimpleAddressWallet implements Wallet {
      */
     stopDeviceTracking(): void;
     setLabel(label: string | undefined): void;
-    createIdentity(options: unknown): Promise<LocalIdentity>;
+    createIdentity(chainId: ChainId, options: unknown): Promise<LocalIdentity>;
     setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
     getIdentities(): ReadonlyArray<LocalIdentity>;
     createTransactionSignature(identity: PublicIdentity, transactionBytes: SignableBytes, prehashType: PrehashType, _: ChainId): Promise<SignatureBytes>;

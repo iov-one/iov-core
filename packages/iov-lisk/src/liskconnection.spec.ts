@@ -302,7 +302,7 @@ describe("LiskConnection", () => {
       pendingWithoutLiskDevnet();
 
       const wallet = new Ed25519Wallet();
-      const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
+      const mainIdentity = await wallet.createIdentity(devnetChainId, await devnetDefaultKeypair);
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
@@ -344,7 +344,7 @@ describe("LiskConnection", () => {
 
       (async () => {
         const wallet = new Ed25519Wallet();
-        const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
+        const mainIdentity = await wallet.createIdentity(devnetChainId, await devnetDefaultKeypair);
 
         const sendTx: SendTransaction = {
           kind: "bcp/send",
@@ -408,7 +408,7 @@ describe("LiskConnection", () => {
       pendingWithoutLiskDevnet();
 
       const wallet = new Ed25519Wallet();
-      const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
+      const mainIdentity = await wallet.createIdentity(devnetChainId, await devnetDefaultKeypair);
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
@@ -458,7 +458,7 @@ describe("LiskConnection", () => {
       pendingWithoutLiskDevnet();
 
       const wallet = new Ed25519Wallet();
-      const mainIdentity = await wallet.createIdentity(await devnetDefaultKeypair);
+      const mainIdentity = await wallet.createIdentity(devnetChainId, await devnetDefaultKeypair);
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",

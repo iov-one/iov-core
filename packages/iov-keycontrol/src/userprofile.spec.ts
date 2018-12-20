@@ -31,6 +31,7 @@ import { Ed25519HdWallet, Secp256k1HdWallet } from "./wallets";
 const { fromHex } = Encoding;
 
 describe("UserProfile", () => {
+  const defaultChain = "chain123" as ChainId;
   const defaultEncryptionPassword = "my super str0ng and super long password";
 
   it("can be constructed without arguments", () => {
@@ -247,9 +248,9 @@ describe("UserProfile", () => {
     expect(profile.wallets.value.map(i => i.label)).toEqual(["first", "second"]);
 
     // make some new ids
-    await profile.createIdentity(id1, HdPaths.simpleAddress(0));
-    const key = await profile.createIdentity(id2, HdPaths.simpleAddress(0));
-    await profile.createIdentity(id2, HdPaths.simpleAddress(1));
+    await profile.createIdentity(id1, defaultChain, HdPaths.simpleAddress(0));
+    const key = await profile.createIdentity(id2, defaultChain, HdPaths.simpleAddress(0));
+    await profile.createIdentity(id2, defaultChain, HdPaths.simpleAddress(1));
     expect(profile.getIdentities(id1).length).toEqual(1);
     expect(profile.getIdentities(id2).length).toEqual(2);
 
@@ -288,7 +289,7 @@ describe("UserProfile", () => {
     expect(profile.getIdentities(newWallet.id).length).toEqual(0);
 
     // manipulate wallet reference that has been added before
-    await newWallet.createIdentity(HdPaths.simpleAddress(0));
+    await newWallet.createIdentity(defaultChain, HdPaths.simpleAddress(0));
     expect(newWallet.getIdentities().length).toEqual(1);
 
     // nothing hapenned to the profile
@@ -304,7 +305,7 @@ describe("UserProfile", () => {
     );
 
     const path = [Slip10RawIndex.hardened(0), Slip10RawIndex.normal(0)];
-    const identityFromPath = await profile.createIdentity(wallet.id, path);
+    const identityFromPath = await profile.createIdentity(wallet.id, defaultChain, path);
 
     expect(identityFromPath.pubkey.data).toEqual(
       fromHex(
@@ -487,7 +488,7 @@ describe("UserProfile", () => {
       /wallet of id 'bar' does not exist in keyring/i,
     );
     await profile
-      .createIdentity(walletId, HdPaths.simpleAddress(0))
+      .createIdentity(walletId, defaultChain, HdPaths.simpleAddress(0))
       .then(() => fail("Promise must not resolve"))
       .catch(error => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
     await profile
@@ -507,7 +508,7 @@ describe("UserProfile", () => {
       "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash",
     );
     keyring.add(wallet);
-    const mainIdentity = await keyring.getWallets()[0].createIdentity(HdPaths.simpleAddress(0));
+    const mainIdentity = await keyring.getWallets()[0].createIdentity(defaultChain, HdPaths.simpleAddress(0));
     const profile = new UserProfile({ createdAt, keyring });
 
     const fakeTransaction: SendTransaction = {

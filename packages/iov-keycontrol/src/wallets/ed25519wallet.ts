@@ -134,6 +134,7 @@ export class Ed25519Wallet implements Wallet {
           throw new Error("This keyring only supports ed25519 private keys");
         }
         const identity = this.buildLocalIdentity(
+          "" as ChainId, // FIXME: implement
           keypair.pubkey as PublicKeyBytes,
           record.localIdentity.label,
         );
@@ -155,13 +156,13 @@ export class Ed25519Wallet implements Wallet {
     this.labelProducer.update(label);
   }
 
-  public async createIdentity(options: unknown): Promise<LocalIdentity> {
+  public async createIdentity(chainId: ChainId, options: unknown): Promise<LocalIdentity> {
     if (!(options instanceof Ed25519Keypair)) {
       throw new Error("Ed25519.createIdentity requires a keypair argument");
     }
     const keypair = options;
 
-    const newIdentity = this.buildLocalIdentity(keypair.pubkey as PublicKeyBytes, undefined);
+    const newIdentity = this.buildLocalIdentity(chainId, keypair.pubkey as PublicKeyBytes, undefined);
 
     if (this.identities.find(i => i.id === newIdentity.id)) {
       throw new Error(
@@ -246,7 +247,7 @@ export class Ed25519Wallet implements Wallet {
     return privkey;
   }
 
-  private buildLocalIdentity(bytes: PublicKeyBytes, label: string | undefined): LocalIdentity {
+  private buildLocalIdentity(_: ChainId, bytes: PublicKeyBytes, label: string | undefined): LocalIdentity {
     const pubkey: PublicKeyBundle = {
       algo: Algorithm.Ed25519,
       data: bytes,

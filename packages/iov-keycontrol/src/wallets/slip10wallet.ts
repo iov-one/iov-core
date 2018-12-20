@@ -39,6 +39,7 @@ interface PubkeySerialization {
 }
 
 interface LocalIdentitySerialization {
+  // TODO: Add chainId
   readonly pubkey: PubkeySerialization;
   readonly label?: string;
 }
@@ -199,6 +200,7 @@ export class Slip10Wallet implements Wallet {
       }
 
       const identity = this.buildLocalIdentity(
+        "" as ChainId, // FIXME: insert chainID here
         Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
         record.localIdentity.label,
       );
@@ -216,7 +218,7 @@ export class Slip10Wallet implements Wallet {
     this.labelProducer.update(label);
   }
 
-  public async createIdentity(options: unknown): Promise<LocalIdentity> {
+  public async createIdentity(chainId: ChainId, options: unknown): Promise<LocalIdentity> {
     if (!isPath(options)) {
       throw new Error("Did not get the correct argument type. Expected array of Slip10RawIndex");
     }
@@ -243,7 +245,7 @@ export class Slip10Wallet implements Wallet {
         throw new Error("Unknown curve");
     }
 
-    const newIdentity = this.buildLocalIdentity(pubkeyBytes, undefined);
+    const newIdentity = this.buildLocalIdentity(chainId, pubkeyBytes, undefined);
 
     if (this.identities.find(i => i.id === newIdentity.id)) {
       throw new Error(
@@ -376,13 +378,14 @@ export class Slip10Wallet implements Wallet {
     return derivationResult.privkey;
   }
 
-  private buildLocalIdentity(bytes: PublicKeyBytes, label: string | undefined): LocalIdentity {
+  private buildLocalIdentity(_: ChainId, bytes: PublicKeyBytes, label: string | undefined): LocalIdentity {
     const algorithm = Slip10Wallet.algorithmFromCurve(this.curve);
     const pubkey: PublicKeyBundle = {
       algo: algorithm,
       data: bytes,
     };
     return {
+      // TODO: add chainID
       pubkey,
       label,
       id: Slip10Wallet.identityId({ pubkey }),

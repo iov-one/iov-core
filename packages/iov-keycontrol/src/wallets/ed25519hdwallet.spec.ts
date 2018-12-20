@@ -7,6 +7,8 @@ import { Ed25519HdWallet } from "./ed25519hdwallet";
 const { fromHex, toAscii } = Encoding;
 
 describe("Ed25519HdWallet", () => {
+  const defaultChain = "chain123" as ChainId;
+
   it("returns the concrete type when creating from entropy", () => {
     const wallet = Ed25519HdWallet.fromEntropy(
       fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"),
@@ -35,7 +37,7 @@ describe("Ed25519HdWallet", () => {
     );
 
     // m/44'/148'/0'
-    const identity0 = await wallet.createIdentity([
+    const identity0 = await wallet.createIdentity(defaultChain, [
       Slip10RawIndex.hardened(44),
       Slip10RawIndex.hardened(148),
       Slip10RawIndex.hardened(0),
@@ -45,7 +47,7 @@ describe("Ed25519HdWallet", () => {
     );
 
     // m/44'/148'/1'
-    const identity1 = await wallet.createIdentity([
+    const identity1 = await wallet.createIdentity(defaultChain, [
       Slip10RawIndex.hardened(44),
       Slip10RawIndex.hardened(148),
       Slip10RawIndex.hardened(1),
@@ -55,7 +57,7 @@ describe("Ed25519HdWallet", () => {
     );
 
     // m/44'/148'/2'
-    const identity2 = await wallet.createIdentity([
+    const identity2 = await wallet.createIdentity(defaultChain, [
       Slip10RawIndex.hardened(44),
       Slip10RawIndex.hardened(148),
       Slip10RawIndex.hardened(2),
@@ -71,7 +73,7 @@ describe("Ed25519HdWallet", () => {
     );
     // m/44'/148'/0'
     // pubkey: e3726830a0b60cb5f52c844cffcd4eed65eba5c155e89b26411562724e71e544
-    const mainIdentity = await wallet.createIdentity([
+    const mainIdentity = await wallet.createIdentity(defaultChain, [
       Slip10RawIndex.hardened(44),
       Slip10RawIndex.hardened(148),
       Slip10RawIndex.hardened(0),

@@ -88,6 +88,7 @@ describe("BnsConnection", () => {
 
   const bnsdTendermintUrl = "ws://localhost:22345";
 
+  const defaultChain = "chain123" as ChainId;
   const defaultAmount: Amount = {
     quantity: "1000000001",
     fractionalDigits: 9,
@@ -102,7 +103,7 @@ describe("BnsConnection", () => {
     const wallet = Ed25519HdWallet.fromMnemonic(mnemonic);
     const profile = new UserProfile();
     profile.addWallet(wallet);
-    const faucet = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+    const faucet = await profile.createIdentity(wallet.id, defaultChain, HdPaths.simpleAddress(0));
     return { profile, mainWalletId: wallet.id, faucet };
   }
 
@@ -492,7 +493,7 @@ describe("BnsConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-      const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+      const identity = await profile.createIdentity(wallet.id, defaultChain, HdPaths.simpleAddress(0));
       const identityAddress = keyToAddress(identity.pubkey);
 
       // Create and send registration
@@ -545,7 +546,7 @@ describe("BnsConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-      const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+      const identity = await profile.createIdentity(wallet.id, defaultChain, HdPaths.simpleAddress(0));
 
       // Create and send registration
       const address = keyToAddress(identity.pubkey);
@@ -588,7 +589,7 @@ describe("BnsConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-      const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+      const identity = await profile.createIdentity(wallet.id, defaultChain, HdPaths.simpleAddress(0));
 
       // Create and send registration
       const username = `testuser_${Math.random()}`;
@@ -885,7 +886,7 @@ describe("BnsConnection", () => {
       const initialHeight = await connection.height();
 
       const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
-      const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(68));
+      const rcpt = await profile.createIdentity(mainWalletId, defaultChain, HdPaths.simpleAddress(68));
       const rcptAddress = keyToAddress(rcpt.pubkey);
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
@@ -1024,7 +1025,7 @@ describe("BnsConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-      const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+      const identity = await profile.createIdentity(wallet.id, defaultChain, HdPaths.simpleAddress(0));
       const identityAddress = keyToAddress(identity.pubkey);
 
       // Register blockchain
@@ -1094,7 +1095,7 @@ describe("BnsConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-      const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+      const identity = await profile.createIdentity(wallet.id, defaultChain, HdPaths.simpleAddress(0));
       const identityAddress = keyToAddress(identity.pubkey);
 
       // Register username
@@ -1152,7 +1153,7 @@ describe("BnsConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-      const identity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
+      const identity = await profile.createIdentity(wallet.id, defaultChain, HdPaths.simpleAddress(0));
       const identityAddress = keyToAddress(identity.pubkey);
 
       // Register blockchain
@@ -1354,7 +1355,7 @@ describe("BnsConnection", () => {
     const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
 
     const faucetAddr = keyToAddress(faucet.pubkey);
-    const rcpt = await profile.createIdentity(mainWalletId, HdPaths.simpleAddress(87));
+    const rcpt = await profile.createIdentity(mainWalletId, defaultChain, HdPaths.simpleAddress(87));
     const rcptAddr = keyToAddress(rcpt.pubkey);
 
     // let's watch for all changes, capture them in arrays

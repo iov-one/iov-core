@@ -16,7 +16,7 @@ export declare class Ed25519Wallet implements Wallet {
     private readonly labelProducer;
     constructor(data?: WalletSerializationString);
     setLabel(label: string | undefined): void;
-    createIdentity(options: unknown): Promise<LocalIdentity>;
+    createIdentity(chainId: ChainId, options: unknown): Promise<LocalIdentity>;
     setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
     getIdentities(): ReadonlyArray<LocalIdentity>;
     createTransactionSignature(identity: PublicIdentity, transactionBytes: SignableBytes, prehashType: PrehashType, _: ChainId): Promise<SignatureBytes>;

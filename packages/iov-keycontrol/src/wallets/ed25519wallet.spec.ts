@@ -8,6 +8,7 @@ import { Ed25519Wallet } from "./ed25519wallet";
 const { fromHex, toHex } = Encoding;
 
 describe("Ed25519Wallet", () => {
+  const defaultChain = "chain123" as ChainId;
   const defaultKeypair = new Ed25519Keypair(
     fromHex("9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60"),
     fromHex("d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"),
@@ -37,7 +38,7 @@ describe("Ed25519Wallet", () => {
 
   it("can create an identity", async () => {
     const wallet = new Ed25519Wallet();
-    const newIdentity = await wallet.createIdentity(defaultKeypair);
+    const newIdentity = await wallet.createIdentity(defaultChain, defaultKeypair);
     expect(newIdentity).toBeTruthy();
     expect(newIdentity.pubkey.algo).toEqual(Algorithm.Ed25519);
     expect(newIdentity.pubkey.data).toEqual(defaultKeypair.pubkey);
@@ -63,10 +64,10 @@ describe("Ed25519Wallet", () => {
     );
 
     const wallet = new Ed25519Wallet();
-    const newIdentity1 = await wallet.createIdentity(keypair1);
-    const newIdentity2 = await wallet.createIdentity(keypair2);
-    const newIdentity3 = await wallet.createIdentity(keypair3);
-    const newIdentity4 = await wallet.createIdentity(keypair4);
+    const newIdentity1 = await wallet.createIdentity(defaultChain, keypair1);
+    const newIdentity2 = await wallet.createIdentity(defaultChain, keypair2);
+    const newIdentity3 = await wallet.createIdentity(defaultChain, keypair3);
+    const newIdentity4 = await wallet.createIdentity(defaultChain, keypair4);
 
     // all pubkeys must be different
     const pubkeySet = new Set(
@@ -95,17 +96,17 @@ describe("Ed25519Wallet", () => {
     // Same keypair leads to the same identity identifier, so we don't support it
 
     const wallet = new Ed25519Wallet();
-    await wallet.createIdentity(defaultKeypair);
+    await wallet.createIdentity(defaultChain, defaultKeypair);
 
     await wallet
-      .createIdentity(defaultKeypair)
+      .createIdentity(defaultChain, defaultKeypair)
       .then(() => fail("must not resolve"))
       .catch(error => expect(error).toMatch(/ID collision/i));
   });
 
   it("can set, change and unset an identity label", async () => {
     const wallet = new Ed25519Wallet();
-    const newIdentity = await wallet.createIdentity(defaultKeypair);
+    const newIdentity = await wallet.createIdentity(defaultChain, defaultKeypair);
     expect(wallet.getIdentities()[0].label).toBeUndefined();
 
     wallet.setIdentityLabel(newIdentity, "foo");
@@ -123,7 +124,7 @@ describe("Ed25519Wallet", () => {
     const originalId = wallet.id;
     expect(originalId).toMatch(/^[a-zA-Z0-9]+$/);
 
-    const id1 = await wallet.createIdentity(defaultKeypair);
+    const id1 = await wallet.createIdentity(defaultChain, defaultKeypair);
     expect(id1).toBeTruthy();
     expect(wallet.id).toEqual(originalId); // id must not change with use
 
@@ -135,7 +136,7 @@ describe("Ed25519Wallet", () => {
 
   it("can sign", async () => {
     const wallet = new Ed25519Wallet();
-    const newIdentity = await wallet.createIdentity(defaultKeypair);
+    const newIdentity = await wallet.createIdentity(defaultChain, defaultKeypair);
 
     expect(wallet.canSign.value).toEqual(true);
 
@@ -148,7 +149,7 @@ describe("Ed25519Wallet", () => {
 
   it("can sign with different prehash types", async () => {
     const wallet = new Ed25519Wallet();
-    const mainIdentity = await wallet.createIdentity(defaultKeypair);
+    const mainIdentity = await wallet.createIdentity(defaultChain, defaultKeypair);
 
     const transactionBytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
     const chainId = "some-chain" as ChainId;
@@ -182,7 +183,7 @@ describe("Ed25519Wallet", () => {
 
   it("produces correct data for prehash signatures", async () => {
     const wallet = new Ed25519Wallet();
-    const mainIdentity = await wallet.createIdentity(defaultKeypair);
+    const mainIdentity = await wallet.createIdentity(defaultChain, defaultKeypair);
     const chainId = "some-chain" as ChainId;
 
     const bytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
@@ -214,6 +215,7 @@ describe("Ed25519Wallet", () => {
     {
       const wallet = new Ed25519Wallet();
       await wallet.createIdentity(
+        defaultChain,
         Ed25519Keypair.fromLibsodiumPrivkey(
           fromHex(
             "0000000000000000aaaaaaaaaaaaaaaa1111111111111111dddddddddddddddd7777777777777777bbbbbbbbbbbbbbbb5555555555555555ffffffffffffffff",
@@ -228,6 +230,7 @@ describe("Ed25519Wallet", () => {
       // multiple keys are sorted by hex value
       const wallet = new Ed25519Wallet();
       await wallet.createIdentity(
+        defaultChain,
         Ed25519Keypair.fromLibsodiumPrivkey(
           fromHex(
             "e79d85cdde2d416d6805bcbf561b707423af94effb528472c3cda80eef4609a796d810bed70594cb593a6bab9eabe88d6c9d9e3b0955fcd33cb097a6172bac40",
@@ -235,6 +238,7 @@ describe("Ed25519Wallet", () => {
         ),
       );
       await wallet.createIdentity(
+        defaultChain,
         Ed25519Keypair.fromLibsodiumPrivkey(
           fromHex(
             "0000000000000000aaaaaaaaaaaaaaaa1111111111111111dddddddddddddddd7777777777777777bbbbbbbbbbbbbbbb5555555555555555ffffffffffffffff",
@@ -263,9 +267,9 @@ describe("Ed25519Wallet", () => {
 
     const wallet = new Ed25519Wallet();
     wallet.setLabel("wallet with 3 identities");
-    const identity1 = await wallet.createIdentity(keypair1);
-    const identity2 = await wallet.createIdentity(keypair2);
-    const identity3 = await wallet.createIdentity(keypair3);
+    const identity1 = await wallet.createIdentity(defaultChain, keypair1);
+    const identity2 = await wallet.createIdentity(defaultChain, keypair2);
+    const identity3 = await wallet.createIdentity(defaultChain, keypair3);
     wallet.setIdentityLabel(identity1, undefined);
     wallet.setIdentityLabel(identity2, "");
     wallet.setIdentityLabel(identity3, "foo");
@@ -363,9 +367,9 @@ describe("Ed25519Wallet", () => {
     );
 
     const original = new Ed25519Wallet();
-    const identity1 = await original.createIdentity(keypair1);
-    const identity2 = await original.createIdentity(keypair2);
-    const identity3 = await original.createIdentity(keypair3);
+    const identity1 = await original.createIdentity(defaultChain, keypair1);
+    const identity2 = await original.createIdentity(defaultChain, keypair2);
+    const identity3 = await original.createIdentity(defaultChain, keypair3);
     original.setIdentityLabel(identity1, undefined);
     original.setIdentityLabel(identity2, "");
     original.setIdentityLabel(identity3, "foo");

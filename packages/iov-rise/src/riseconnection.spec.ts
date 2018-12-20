@@ -278,7 +278,7 @@ describe("RiseConnection", () => {
   describe("postTx", () => {
     it("can post transaction", async () => {
       const wallet = new Ed25519Wallet();
-      const mainIdentity = await wallet.createIdentity(await defaultKeypair);
+      const mainIdentity = await wallet.createIdentity(riseTestnet, await defaultKeypair);
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
@@ -317,7 +317,7 @@ describe("RiseConnection", () => {
     xit("can post transaction and watch confirmations", done => {
       (async () => {
         const wallet = new Ed25519Wallet();
-        const mainIdentity = await wallet.createIdentity(await defaultKeypair);
+        const mainIdentity = await wallet.createIdentity(riseTestnet, await defaultKeypair);
 
         const sendTx: SendTransaction = {
           kind: "bcp/send",
@@ -378,7 +378,7 @@ describe("RiseConnection", () => {
 
     it("throws for transaction with corrupted signature", async () => {
       const wallet = new Ed25519Wallet();
-      const mainIdentity = await wallet.createIdentity(await defaultKeypair);
+      const mainIdentity = await wallet.createIdentity(riseTestnet, await defaultKeypair);
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",

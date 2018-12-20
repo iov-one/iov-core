@@ -148,6 +148,7 @@ export class LedgerSimpleAddressWallet implements Wallet {
       // identities
       for (const record of decodedData.identities) {
         const identity = this.buildLocalIdentity(
+          "" as ChainId, // FIXME: implement
           Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
           record.localIdentity.label,
         );
@@ -190,7 +191,7 @@ export class LedgerSimpleAddressWallet implements Wallet {
     this.labelProducer.update(label);
   }
 
-  public async createIdentity(options: unknown): Promise<LocalIdentity> {
+  public async createIdentity(chainId: ChainId, options: unknown): Promise<LocalIdentity> {
     if (typeof options !== "number") {
       throw new Error("Expected numeric argument");
     }
@@ -205,7 +206,7 @@ export class LedgerSimpleAddressWallet implements Wallet {
     const transport = await connectToFirstLedger();
 
     const pubkey = await getPublicKeyWithIndex(transport, index);
-    const newIdentity = this.buildLocalIdentity(pubkey as PublicKeyBytes, undefined);
+    const newIdentity = this.buildLocalIdentity(chainId, pubkey as PublicKeyBytes, undefined);
 
     if (this.identities.find(i => i.id === newIdentity.id)) {
       throw new Error(
@@ -300,7 +301,7 @@ export class LedgerSimpleAddressWallet implements Wallet {
     return out;
   }
 
-  private buildLocalIdentity(bytes: PublicKeyBytes, label: string | undefined): LocalIdentity {
+  private buildLocalIdentity(_: ChainId, bytes: PublicKeyBytes, label: string | undefined): LocalIdentity {
     const pubkey: PublicKeyBundle = {
       algo: Algorithm.Ed25519, // hardcoded until we support more curves in the ledger app
       data: bytes,

@@ -2,7 +2,14 @@ import { AbstractLevelDOWN } from "abstract-leveldown";
 import { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
 
-import { FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
+import {
+  ChainId,
+  FullSignature,
+  Nonce,
+  SignedTransaction,
+  TxCodec,
+  UnsignedTransaction,
+} from "@iov/bcp-types";
 import { Argon2id, Argon2idOptions, Slip10RawIndex } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
@@ -156,13 +163,19 @@ export class UserProfile {
     this.walletsProducer.update(this.walletInfos());
   }
 
-  /** Creates an identitiy in the wallet with the given ID in the primary keyring */
+  /**
+   * Creates an identitiy in the wallet with the given ID in the primary keyring
+   *
+   * The identity is bound to one chain ID to encourage using different
+   * keypairs on different chains.
+   */
   public async createIdentity(
     id: WalletId,
+    chainId: ChainId,
     options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number,
   ): Promise<LocalIdentity> {
     const wallet = this.findWalletInPrimaryKeyring(id);
-    return wallet.createIdentity(options);
+    return wallet.createIdentity(chainId, options);
   }
 
   /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
