@@ -24,15 +24,15 @@ export class Serialization {
 
       // Last 3 items are v, r and s values. Are present to encode full structure.
       return toRlp([
-        Buffer.from(fromHex(hexPadToEven(nonceHex))),
-        Buffer.from(fromHex(hexPadToEven(gasPriceHex))),
-        Buffer.from(fromHex(hexPadToEven(gasLimitHex))),
-        Buffer.from(fromHex(hexPadToEven(unsigned.recipient))),
-        Buffer.from(fromHex(hexPadToEven(valueHex))),
-        Buffer.from(fromHex(hexPadToEven(dataHex))),
-        Buffer.from(fromHex(hexPadToEven(chainIdHex))),
-        Buffer.from([]),
-        Buffer.from([]),
+        fromHex(hexPadToEven(nonceHex)),
+        fromHex(hexPadToEven(gasPriceHex)),
+        fromHex(hexPadToEven(gasLimitHex)),
+        fromHex(hexPadToEven(unsigned.recipient)),
+        fromHex(hexPadToEven(valueHex)),
+        fromHex(hexPadToEven(dataHex)),
+        fromHex(hexPadToEven(chainIdHex)),
+        new Uint8Array([]),
+        new Uint8Array([]),
       ]);
     } else {
       throw new Error("Unsupported kind of transaction");
