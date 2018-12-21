@@ -82,7 +82,7 @@ export function main(originalArgs: ReadonlyArray<string>): void {
 
   let init = `
     import leveldown = require('leveldown');
-    import levelup = require('levelup');
+    import levelup from "levelup";
     import * as http from 'http';
     import * as https from 'https';
     import Long from "long";
