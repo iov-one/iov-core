@@ -104,7 +104,7 @@ export class MultiChainSigner {
    * Calculate an address in a blockchain-specific way
    */
   public identityToAddress(identity: PublicIdentity): Address {
-    return this.getChain(identity.chainId).codec.keyToAddress(identity.pubkey);
+    return this.getChain(identity.chainId).codec.identityToAddress(identity);
   }
 
   /**

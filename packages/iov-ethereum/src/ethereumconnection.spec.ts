@@ -140,7 +140,7 @@ describe("EthereumConnection", () => {
         memo: "We \u2665 developers – iov.one",
       };
       const connection = await EthereumConnection.establish(base, undefined);
-      const senderAddress = ethereumCodec.keyToAddress(mainIdentity.pubkey);
+      const senderAddress = ethereumCodec.identityToAddress(mainIdentity);
       const query: BcpAccountQuery = { address: senderAddress as Address };
       const nonce = await connection.getNonce(query);
       const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
@@ -222,7 +222,7 @@ describe("EthereumConnection", () => {
         memo: "Search tx test" + new Date(),
       };
       const connection = await EthereumConnection.establish(base, undefined);
-      const senderAddress = ethereumCodec.keyToAddress(mainIdentity.pubkey);
+      const senderAddress = ethereumCodec.identityToAddress(mainIdentity);
       const nonce = await connection.getNonce({ address: senderAddress });
       const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
       const signature = await wallet.createTransactionSignature(
@@ -348,7 +348,7 @@ describe("EthereumConnection", () => {
         },
         memo: memo,
       };
-      const senderAddress = ethereumCodec.keyToAddress(mainIdentity.pubkey);
+      const senderAddress = ethereumCodec.identityToAddress(mainIdentity);
       const nonce = await connection.getNonce({ address: senderAddress });
       const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
       const signature = await wallet.createTransactionSignature(

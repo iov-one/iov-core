@@ -1,11 +1,11 @@
 import { As } from "type-tagger";
-import { Address, ChainId, Nonce, PublicKeyBundle, SignedTransaction, SigningJob, TransactionId, UnsignedTransaction } from "./transactions";
+import { Address, ChainId, Nonce, PublicIdentity, SignedTransaction, SigningJob, TransactionId, UnsignedTransaction } from "./transactions";
 export declare type PostableBytes = Uint8Array & As<"postable">;
 export interface TxReadCodec {
     /** parseBytes will recover bytes from the blockchain into a format we can use */
     readonly parseBytes: (bytes: PostableBytes, chainId: ChainId) => SignedTransaction;
-    /** chain-dependent way to calculate address from key */
-    readonly keyToAddress: (key: PublicKeyBundle) => Address;
+    /** chain-dependent way to calculate address from a public key */
+    readonly identityToAddress: (identity: PublicIdentity) => Address;
     /** chain-dependent validation of address */
     readonly isValidAddress: (address: string) => boolean;
 }

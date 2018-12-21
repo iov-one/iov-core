@@ -1,4 +1,4 @@
-import { Address, TransactionId } from "@iov/bcp-types";
+import { Address, ChainId, TransactionId } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
 import { address, hashCode, pubJson } from "./testdata.spec";
@@ -7,16 +7,16 @@ import {
   buildTxQuery,
   decodeBnsAddress,
   encodeBnsAddress,
+  identityToAddress,
   isHashIdentifier,
   isValidAddress,
-  keyToAddress,
 } from "./util";
 
 const { fromHex } = Encoding;
 
 describe("Util", () => {
-  it("has working keyToAddress", () => {
-    const calculatedAddress = keyToAddress(pubJson);
+  it("has working identityToAddress", () => {
+    const calculatedAddress = identityToAddress({ chainId: "testnet123" as ChainId, pubkey: pubJson });
     expect(calculatedAddress).toEqual(address);
   });
 
@@ -79,7 +79,7 @@ describe("Util", () => {
     // raw data generated using https://github.com/nym-zone/bech32
     // bech32 -e -h tiov f6cade229408c93a2a8d181d62efce46ff60d210
     const raw = fromHex("f6cade229408c93a2a8d181d62efce46ff60d210");
-    expect(encodeBnsAddress(raw)).toEqual("tiov17m9dug55pryn525drqwk9m7wgmlkp5ss4j2mky");
+    expect(encodeBnsAddress("tiov", raw)).toEqual("tiov17m9dug55pryn525drqwk9m7wgmlkp5ss4j2mky");
   });
 
   it("has working decodeBnsAddress", () => {
@@ -91,7 +91,7 @@ describe("Util", () => {
 
   it("isValidAddress checks valid addresses", () => {
     const good = "tiov17m9dug55pryn525drqwk9m7wgmlkp5ss4j2mky";
-    const good2 = encodeBnsAddress(fromHex("1234567890abcdef1234567890abcdef12345678"));
+    const good2 = encodeBnsAddress("tiov", fromHex("1234567890abcdef1234567890abcdef12345678"));
     const bad = "ti17m9dug55pryn525drqwk9m7wgmlkp5ss4j2m1"; // bad size
     const bad2 = "tiov17m9dug55pryn525drqwk9m7wgmlkp5ss4j2m12"; // bad checksum
     const bad3 = "btc17m9dug55pryn525drqwk9m7wgmlkp5ss4j2mky"; // bad prefix

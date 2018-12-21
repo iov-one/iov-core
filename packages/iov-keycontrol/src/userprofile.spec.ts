@@ -469,7 +469,7 @@ describe("UserProfile", () => {
       parseBytes: (): SignedTransaction => {
         throw new Error("not implemented");
       },
-      keyToAddress: (): Address => {
+      identityToAddress: (): Address => {
         throw new Error("not implemented");
       },
       isValidAddress: (): boolean => {
@@ -541,7 +541,7 @@ describe("UserProfile", () => {
       parseBytes: (): SignedTransaction => {
         throw new Error("not implemented");
       },
-      keyToAddress: (): Address => {
+      identityToAddress: (): Address => {
         throw new Error("not implemented");
       },
       isValidAddress: (): boolean => {

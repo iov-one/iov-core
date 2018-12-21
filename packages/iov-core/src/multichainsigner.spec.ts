@@ -10,7 +10,7 @@ import {
   TokenTicker,
 } from "@iov/bcp-types";
 import { bnsCodec, bnsConnector, bnsFromOrToTag } from "@iov/bns";
-import { Random } from "@iov/crypto";
+import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { ethereumConnector } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, LocalIdentity, UserProfile, WalletId } from "@iov/keycontrol";
@@ -33,10 +33,15 @@ const pendingWithoutEthereum = () => {
 };
 
 async function randomBnsAddress(): Promise<Address> {
-  return bnsCodec.keyToAddress({
-    algo: Algorithm.Ed25519,
-    data: (await Random.getBytes(32)) as PublicKeyBytes,
-  });
+  const rawKeypair = await Ed25519.makeKeypair(await Random.getBytes(32));
+  const randomIdentity: PublicIdentity = {
+    chainId: "some-testnet" as ChainId,
+    pubkey: {
+      algo: Algorithm.Ed25519,
+      data: rawKeypair.pubkey as PublicKeyBytes,
+    },
+  };
+  return bnsCodec.identityToAddress(randomIdentity);
 }
 
 describe("MultiChainSigner", () => {

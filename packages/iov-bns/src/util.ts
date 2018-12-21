@@ -11,6 +11,7 @@ import {
   isSwapCounterTransaction,
   isSwapTimeoutTransaction,
   Nonce,
+  PublicIdentity,
   PublicKeyBundle,
   SignableBytes,
   SwapClaimTransaction,
@@ -21,9 +22,15 @@ import { Sha256 } from "@iov/crypto";
 import { Bech32, Encoding } from "@iov/encoding";
 import { QueryString } from "@iov/tendermint-rpc";
 
+const bnsMainnetChainId = "PLEASE_INSERT_HERE_WHEN_GENESIS_EXISTS" as ChainId;
+
+export function addressPrefix(chainId: ChainId): "iov" | "tiov" {
+  return chainId === bnsMainnetChainId ? "iov" : "tiov";
+}
+
 /** Encodes raw bytes into a bech32 address */
-export function encodeBnsAddress(bytes: Uint8Array): Address {
-  return Bech32.encode("tiov", bytes) as Address;
+export function encodeBnsAddress(prefix: "iov" | "tiov", bytes: Uint8Array): Address {
+  return Bech32.encode(prefix, bytes) as Address;
 }
 
 /** Decodes a printable address into bech32 object */
@@ -46,9 +53,10 @@ function keyToIdentifier(key: PublicKeyBundle): Uint8Array {
   return Uint8Array.from([...algoToPrefix(key.algo), ...key.data]);
 }
 
-export function keyToAddress(key: PublicKeyBundle): Address {
-  const bytes = new Sha256(keyToIdentifier(key)).digest().slice(0, 20);
-  return encodeBnsAddress(bytes);
+export function identityToAddress(identity: PublicIdentity): Address {
+  const prefix = addressPrefix(identity.chainId);
+  const bytes = new Sha256(keyToIdentifier(identity.pubkey)).digest().slice(0, 20);
+  return encodeBnsAddress(prefix, bytes);
 }
 
 export function isValidAddress(address: string): boolean {

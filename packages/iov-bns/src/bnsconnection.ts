@@ -73,9 +73,9 @@ import {
   buildTxQuery,
   decodeBnsAddress,
   hashIdentifier,
+  identityToAddress,
   isConfirmedWithSwapClaimOrTimeoutTransaction,
   isConfirmedWithSwapCounterTransaction,
-  keyToAddress,
 } from "./util";
 
 const { toAscii, toHex, toUtf8 } = Encoding;
@@ -262,15 +262,18 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return dummyEnvelope(data);
   }
 
-  public async getAccount(account: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>> {
+  public async getAccount(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>> {
     let response: QueryResponse;
-    if (isAddressQuery(account)) {
-      response = await this.query("/wallets", decodeBnsAddress(account.address).data);
-    } else if (isPubkeyQuery(account)) {
-      const address = bnsCodec.keyToAddress(account.pubkey);
+    if (isAddressQuery(query)) {
+      response = await this.query("/wallets", decodeBnsAddress(query.address).data);
+    } else if (isPubkeyQuery(query)) {
+      const address = bnsCodec.identityToAddress({
+        chainId: this.chainId(),
+        pubkey: query.pubkey,
+      });
       response = await this.query("/wallets", decodeBnsAddress(address).data);
     } else {
-      response = await this.query("/wallets/name", Encoding.toAscii(account.name));
+      response = await this.query("/wallets/name", Encoding.toAscii(query.name));
     }
 
     const parser = createParser(codecImpl.namecoin.Wallet, "wllt:");
@@ -284,8 +287,8 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const walletAddress = walletData.address;
 
     let pubkey: PublicKeyBundle | undefined;
-    if (isPubkeyQuery(account)) {
-      pubkey = account.pubkey;
+    if (isPubkeyQuery(query)) {
+      pubkey = query.pubkey;
     } else {
       const res = await this.query("/auth", decodeBnsAddress(walletAddress).data);
       const userDataParser = createParser(codecImpl.sigs.UserData, "sigs:");
@@ -303,7 +306,9 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   }
 
   public async getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {
-    const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
+    const address = isPubkeyQuery(query)
+      ? identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey })
+      : query.address;
     const response = await this.query("/auth", decodeBnsAddress(address).data);
     const parser = createParser(codecImpl.sigs.UserData, "sigs:");
     const nonces = response.results.map(parser).map(decodeNonce);
@@ -648,7 +653,9 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    * Gets current nonce and emits an update every time it changes
    */
   public watchNonce(query: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce> {
-    const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
+    const address = isPubkeyQuery(query)
+      ? identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey })
+      : query.address;
 
     const currentStream = Stream.fromPromise(this.getNonce(query));
     const updatesStream = this.changeNonce(address)

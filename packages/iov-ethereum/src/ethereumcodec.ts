@@ -1,9 +1,11 @@
 import {
+  Address,
   Algorithm,
   ChainId,
   Nonce,
   PostableBytes,
   PrehashType,
+  PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   SignableBytes,
@@ -92,6 +94,8 @@ export const ethereumCodec: TxCodec = {
       otherSignatures: [],
     };
   },
-  keyToAddress: keyToAddress,
+  identityToAddress: (identity: PublicIdentity): Address => {
+    return keyToAddress(identity.pubkey);
+  },
   isValidAddress: isValidAddress,
 };

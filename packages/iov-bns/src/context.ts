@@ -7,6 +7,7 @@ import {
   ChainId,
   ConfirmedTransaction,
   OpenSwap,
+  PublicIdentity,
   SwapClaimTransaction,
   SwapCounterTransaction,
   SwapData,
@@ -18,7 +19,13 @@ import {
 import { decodeAmount } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import { asNumber, ensure, Keyed } from "./types";
-import { encodeBnsAddress, hashFromIdentifier, isHashIdentifier, keyToAddress } from "./util";
+import {
+  addressPrefix,
+  encodeBnsAddress,
+  hashFromIdentifier,
+  identityToAddress,
+  isHashIdentifier,
+} from "./util";
 
 /**
  * All the queries of immutable data we do on initialization to be reused by later calls
@@ -47,7 +54,7 @@ export class Context {
   public wallet(acct: codecImpl.namecoin.IWallet & Keyed): WalletData {
     return {
       name: typeof acct.name === "string" ? acct.name : undefined,
-      address: encodeBnsAddress(acct._id),
+      address: encodeBnsAddress(addressPrefix(this.chainData.chainId), acct._id),
       balance: ensure(acct.coins).map(c => this.coin(c)),
     };
   }
@@ -68,8 +75,8 @@ export class Context {
 
     const data: SwapData = {
       id: swap._id as SwapIdBytes,
-      sender: encodeBnsAddress(ensure(swap.sender)),
-      recipient: encodeBnsAddress(ensure(swap.recipient)),
+      sender: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.sender)),
+      recipient: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.recipient)),
       hashlock,
       amount: ensure(swap.amount).map(coin => this.coin(coin)),
       timeout: asNumber(swap.timeout),
@@ -83,21 +90,25 @@ export class Context {
   }
 
   public swapOfferFromTx(tx: ConfirmedTransaction<SwapCounterTransaction>): OpenSwap {
-    const counter: SwapCounterTransaction = tx.transaction;
+    const counterTransaction: SwapCounterTransaction = tx.transaction;
     // TODO: do we really want errors here, or just filter them out???
-    if (!isHashIdentifier(counter.hashCode)) {
+    if (!isHashIdentifier(counterTransaction.hashCode)) {
       throw new Error("swap not controlled by hash lock");
     }
+    const transactionCreator: PublicIdentity = {
+      chainId: counterTransaction.chainId,
+      pubkey: counterTransaction.signer,
+    };
     return {
       kind: SwapState.Open,
       data: {
         id: tx.result as SwapIdBytes,
-        sender: keyToAddress(counter.signer),
-        recipient: counter.recipient,
-        hashlock: hashFromIdentifier(counter.hashCode),
-        amount: counter.amount.map(amount => this.amountToCoin(amount)),
-        timeout: counter.timeout,
-        memo: counter.memo,
+        sender: identityToAddress(transactionCreator),
+        recipient: counterTransaction.recipient,
+        hashlock: hashFromIdentifier(counterTransaction.hashCode),
+        amount: counterTransaction.amount.map(amount => this.amountToCoin(amount)),
+        timeout: counterTransaction.timeout,
+        memo: counterTransaction.memo,
       },
     };
   }

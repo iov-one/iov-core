@@ -35,7 +35,7 @@ import {
   RemoveAddressFromUsernameTx,
   SetNameTx,
 } from "./types";
-import { encodeBnsAddress, isHashIdentifier } from "./util";
+import { addressPrefix, encodeBnsAddress, isHashIdentifier } from "./util";
 
 const { fromUtf8 } = Encoding;
 
@@ -178,12 +178,13 @@ function parseAddAddressToUsernameTx(
 }
 
 function parseSendTransaction(base: UnsignedTransaction, msg: codecImpl.cash.ISendMsg): SendTransaction {
+  const prefix = addressPrefix(base.chainId);
   return {
     // TODO: would we want to ensure these match?
     //    src: await keyToAddress(tx.signer),
     ...base,
     kind: "bcp/send",
-    recipient: encodeBnsAddress(ensure(msg.dest, "recipient")),
+    recipient: encodeBnsAddress(prefix, ensure(msg.dest, "recipient")),
     amount: decodeAmount(ensure(msg.amount)),
     memo: msg.memo || undefined,
   };
@@ -205,11 +206,12 @@ function parseSwapCounterTx(
   if (!isHashIdentifier(hashCode)) {
     throw new Error("escrow not controlled by hashlock");
   }
+  const prefix = addressPrefix(base.chainId);
   return {
     ...base,
     kind: "bcp/swap_counter",
     hashCode,
-    recipient: encodeBnsAddress(ensure(msg.recipient, "recipient")),
+    recipient: encodeBnsAddress(prefix, ensure(msg.recipient, "recipient")),
     timeout: asNumber(msg.timeout),
     amount: (msg.amount || []).map(decodeAmount),
   };

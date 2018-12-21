@@ -42,7 +42,7 @@ import {
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
 } from "./types";
-import { decodeBnsAddress, keyToAddress } from "./util";
+import { decodeBnsAddress, encodeBnsAddress, identityToAddress } from "./util";
 
 function skipTests(): boolean {
   return !process.env.BNSD_ENABLED;
@@ -64,10 +64,7 @@ function tendermintSearchIndexUpdated(): Promise<void> {
 }
 
 async function randomBnsAddress(): Promise<Address> {
-  return keyToAddress({
-    algo: Algorithm.Ed25519,
-    data: (await Random.getBytes(32)) as PublicKeyBytes,
-  });
+  return encodeBnsAddress("tiov", await Random.getBytes(20));
 }
 
 const cash = "CASH" as TokenTicker;
@@ -140,7 +137,7 @@ describe("BnsConnection", () => {
 
   it("Generate proper faucet address", async () => {
     const { faucet } = await userProfileWithFaucet(defaultChain);
-    const addr = keyToAddress(faucet.pubkey);
+    const addr = identityToAddress(faucet);
     expect(addr).toEqual(defaultFaucetAddress);
   });
 
@@ -194,7 +191,7 @@ describe("BnsConnection", () => {
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
       await ensureNonceNonZero(connection, profile, faucet);
-      const faucetAddress = keyToAddress(faucet.pubkey);
+      const faucetAddress = identityToAddress(faucet);
 
       // can get the faucet by address (there is money)
       const responseFromAddress = await connection.getAccount({ address: faucetAddress });
@@ -301,7 +298,7 @@ describe("BnsConnection", () => {
       await ensureNonceNonZero(connection, profile, faucet);
 
       // by address
-      const faucetAddress = keyToAddress(faucet.pubkey);
+      const faucetAddress = identityToAddress(faucet);
       const nonce1 = await connection.getNonce({ address: faucetAddress });
       expect(nonce1.toNumber()).toBeGreaterThan(0);
 
@@ -320,7 +317,7 @@ describe("BnsConnection", () => {
       const chainId = connection.chainId();
 
       const { profile, mainWalletId, faucet } = await userProfileWithFaucet(chainId);
-      const faucetAddr = keyToAddress(faucet.pubkey);
+      const faucetAddr = identityToAddress(faucet);
       const recipient = await randomBnsAddress();
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
@@ -490,7 +487,7 @@ describe("BnsConnection", () => {
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
-      const identityAddress = keyToAddress(identity.pubkey);
+      const identityAddress = identityToAddress(identity);
 
       // Create and send registration
       const chainId = `wonderland_${Math.random()}` as ChainId;
@@ -545,7 +542,7 @@ describe("BnsConnection", () => {
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
 
       // Create and send registration
-      const address = keyToAddress(identity.pubkey);
+      const address = identityToAddress(identity);
       const username = `testuser_${Math.random()}`;
       const registration: RegisterUsernameTx = {
         kind: "bns/register_username",
@@ -883,7 +880,7 @@ describe("BnsConnection", () => {
 
       const { profile, mainWalletId, faucet } = await userProfileWithFaucet(chainId);
       const rcpt = await profile.createIdentity(mainWalletId, defaultChain, HdPaths.simpleAddress(68));
-      const rcptAddress = keyToAddress(rcpt.pubkey);
+      const rcptAddress = identityToAddress(rcpt);
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
       const memo = `Payment ${Math.random()}`;
@@ -1022,7 +1019,7 @@ describe("BnsConnection", () => {
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
-      const identityAddress = keyToAddress(identity.pubkey);
+      const identityAddress = identityToAddress(identity);
 
       // Register blockchain
       const chainId = `wonderland_${Math.random()}` as ChainId;
@@ -1092,7 +1089,7 @@ describe("BnsConnection", () => {
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
-      const identityAddress = keyToAddress(identity.pubkey);
+      const identityAddress = identityToAddress(identity);
 
       // Register username
       const username = `testuser_${Math.random()}`;
@@ -1150,7 +1147,7 @@ describe("BnsConnection", () => {
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
-      const identityAddress = keyToAddress(identity.pubkey);
+      const identityAddress = identityToAddress(identity);
 
       // Register blockchain
       const chainId = `wonderland_${Math.random()}` as ChainId;
@@ -1350,9 +1347,9 @@ describe("BnsConnection", () => {
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
     const { profile, mainWalletId, faucet } = await userProfileWithFaucet(connection.chainId());
 
-    const faucetAddr = keyToAddress(faucet.pubkey);
+    const faucetAddr = identityToAddress(faucet);
     const rcpt = await profile.createIdentity(mainWalletId, defaultChain, HdPaths.simpleAddress(87));
-    const rcptAddr = keyToAddress(rcpt.pubkey);
+    const rcptAddr = identityToAddress(rcpt);
 
     // let's watch for all changes, capture them in arrays
     const balanceFaucet = asArray(connection.changeBalance(faucetAddr));
@@ -1392,7 +1389,7 @@ describe("BnsConnection", () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
     const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
-    const faucetAddr = keyToAddress(faucet.pubkey);
+    const faucetAddr = identityToAddress(faucet);
     const recipientAddr = await randomBnsAddress();
 
     // let's watch for all changes, capture them in a value sink
@@ -1457,7 +1454,7 @@ describe("BnsConnection", () => {
     const chainId = connection.chainId();
 
     const { profile, mainWalletId, faucet } = await userProfileWithFaucet(chainId);
-    const faucetAddr = keyToAddress(faucet.pubkey);
+    const faucetAddr = identityToAddress(faucet);
     const recipientAddr = await randomBnsAddress();
 
     const initSwaps = await connection.getSwap({ recipient: recipientAddr });
