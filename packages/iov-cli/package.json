@@ -1,6 +1,6 @@
 {
   "name": "@iov/cli",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "description": "Command line interface for iov core",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -25,7 +25,7 @@
     "iov-cli": "bin/iov-cli"
   },
   "dependencies": {
-    "@iov/core": "^0.10.2",
+    "@iov/core": "^0.10.3",
     "@iov/faucets": "^0.10.2",
     "argparse": "^1.0.10",
     "babylon": "^6.18.0",
