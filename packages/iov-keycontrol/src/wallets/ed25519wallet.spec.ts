@@ -141,8 +141,7 @@ describe("Ed25519Wallet", () => {
     expect(wallet.canSign.value).toEqual(true);
 
     const tx = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
-    const chainId = "some-chain" as ChainId;
-    const signature = await wallet.createTransactionSignature(newIdentity, tx, PrehashType.None, chainId);
+    const signature = await wallet.createTransactionSignature(newIdentity, tx, PrehashType.None);
     expect(signature).toBeTruthy();
     expect(signature.length).toEqual(64);
   });
@@ -152,25 +151,21 @@ describe("Ed25519Wallet", () => {
     const mainIdentity = await wallet.createIdentity(defaultChain, defaultKeypair);
 
     const transactionBytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
-    const chainId = "some-chain" as ChainId;
 
     const signaturePrehashNone = await wallet.createTransactionSignature(
       mainIdentity,
       transactionBytes,
       PrehashType.None,
-      chainId,
     );
     const signaturePrehashSha256 = await wallet.createTransactionSignature(
       mainIdentity,
       transactionBytes,
       PrehashType.Sha256,
-      chainId,
     );
     const signaturePrehashSha512 = await wallet.createTransactionSignature(
       mainIdentity,
       transactionBytes,
       PrehashType.Sha512,
-      chainId,
     );
     expect(signaturePrehashNone.length).toEqual(64);
     expect(signaturePrehashSha256.length).toEqual(64);
@@ -184,7 +179,6 @@ describe("Ed25519Wallet", () => {
   it("produces correct data for prehash signatures", async () => {
     const wallet = new Ed25519Wallet();
     const mainIdentity = await wallet.createIdentity(defaultChain, defaultKeypair);
-    const chainId = "some-chain" as ChainId;
 
     const bytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
     const bytesSha256 = new Sha256(bytes).digest();
@@ -194,19 +188,17 @@ describe("Ed25519Wallet", () => {
       mainIdentity,
       bytesSha256 as SignableBytes,
       PrehashType.None,
-      chainId,
     );
     const expectedSha512 = await wallet.createTransactionSignature(
       mainIdentity,
       bytesSha512 as SignableBytes,
       PrehashType.None,
-      chainId,
     );
 
-    expect(await wallet.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha256, chainId)).toEqual(
+    expect(await wallet.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha256)).toEqual(
       expectedSha256,
     );
-    expect(await wallet.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha512, chainId)).toEqual(
+    expect(await wallet.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha512)).toEqual(
       expectedSha512,
     );
   });
@@ -426,15 +418,14 @@ describe("Ed25519Wallet", () => {
 
     // privkeys match
     const tx = new Uint8Array([]) as SignableBytes;
-    const chainId = "" as ChainId;
-    expect(await original.createTransactionSignature(identity1, tx, PrehashType.None, chainId)).toEqual(
-      await restored.createTransactionSignature(identity1, tx, PrehashType.None, chainId),
+    expect(await original.createTransactionSignature(identity1, tx, PrehashType.None)).toEqual(
+      await restored.createTransactionSignature(identity1, tx, PrehashType.None),
     );
-    expect(await original.createTransactionSignature(identity2, tx, PrehashType.None, chainId)).toEqual(
-      await restored.createTransactionSignature(identity2, tx, PrehashType.None, chainId),
+    expect(await original.createTransactionSignature(identity2, tx, PrehashType.None)).toEqual(
+      await restored.createTransactionSignature(identity2, tx, PrehashType.None),
     );
-    expect(await original.createTransactionSignature(identity3, tx, PrehashType.None, chainId)).toEqual(
-      await restored.createTransactionSignature(identity3, tx, PrehashType.None, chainId),
+    expect(await original.createTransactionSignature(identity3, tx, PrehashType.None)).toEqual(
+      await restored.createTransactionSignature(identity3, tx, PrehashType.None),
     );
   });
 

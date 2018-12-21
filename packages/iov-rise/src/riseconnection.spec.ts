@@ -295,7 +295,6 @@ describe("RiseConnection", () => {
         mainIdentity,
         signingJob.bytes,
         signingJob.prehashType,
-        riseTestnet,
       );
 
       const signedTransaction: SignedTransaction = {
@@ -334,7 +333,6 @@ describe("RiseConnection", () => {
           mainIdentity,
           signingJob.bytes,
           signingJob.prehashType,
-          riseTestnet,
         );
 
         const signedTransaction: SignedTransaction = {
@@ -395,7 +393,6 @@ describe("RiseConnection", () => {
         mainIdentity,
         signingJob.bytes,
         signingJob.prehashType,
-        riseTestnet,
       );
 
       // tslint:disable-next-line:no-bitwise

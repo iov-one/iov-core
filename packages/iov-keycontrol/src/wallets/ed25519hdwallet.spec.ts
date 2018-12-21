@@ -80,12 +80,7 @@ describe("Ed25519HdWallet", () => {
     ]);
 
     const data = toAscii("foo bar") as SignableBytes;
-    const signature = await wallet.createTransactionSignature(
-      mainIdentity,
-      data,
-      PrehashType.None,
-      "" as ChainId,
-    );
+    const signature = await wallet.createTransactionSignature(mainIdentity, data, PrehashType.None);
 
     const valid = await Ed25519.verifySignature(
       signature,

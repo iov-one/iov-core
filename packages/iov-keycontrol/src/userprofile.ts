@@ -203,7 +203,7 @@ export class UserProfile {
     const signature: FullSignature = {
       pubkey: identity.pubkey,
       nonce: nonce,
-      signature: await wallet.createTransactionSignature(identity, bytes, prehashType, transaction.chainId),
+      signature: await wallet.createTransactionSignature(identity, bytes, prehashType),
     };
 
     return {
@@ -226,12 +226,7 @@ export class UserProfile {
     const newSignature: FullSignature = {
       pubkey: identity.pubkey,
       nonce: nonce,
-      signature: await wallet.createTransactionSignature(
-        identity,
-        bytes,
-        prehashType,
-        originalTransaction.transaction.chainId,
-      ),
+      signature: await wallet.createTransactionSignature(identity, bytes, prehashType),
     };
 
     return {

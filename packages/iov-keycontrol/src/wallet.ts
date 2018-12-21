@@ -80,17 +80,16 @@ export interface Wallet {
   // for deserialization purpose
   readonly implementationId: WalletImplementationIdString;
 
-  // createTransactionSignature will return a detached signature for the signable bytes
-  // with the private key that matches the given PublicIdentity.
-  // If a matching PublicIdentity is not present in this keyring, throws an Error
-  //
-  // We provide chainID explicitly (which should be in tx as well), to help
-  // an implementation to do checks (such as ledger to switch apps)
+  /**
+   * Created a detached signature for the signable bytes
+   * with the private key that matches the given PublicIdentity.
+   *
+   * If a matching PublicIdentity is not present in this wallet, an error is thrown.
+   */
   readonly createTransactionSignature: (
     identity: PublicIdentity,
     transactionBytes: SignableBytes,
     prehash: PrehashType,
-    chainId: ChainId,
   ) => Promise<SignatureBytes>;
 
   /**

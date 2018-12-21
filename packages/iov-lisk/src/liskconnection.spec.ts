@@ -320,7 +320,6 @@ describe("LiskConnection", () => {
         mainIdentity,
         signingJob.bytes,
         signingJob.prehashType,
-        devnetChainId,
       );
 
       const signedTransaction: SignedTransaction = {
@@ -362,7 +361,6 @@ describe("LiskConnection", () => {
           mainIdentity,
           signingJob.bytes,
           signingJob.prehashType,
-          devnetChainId,
         );
 
         const signedTransaction: SignedTransaction = {
@@ -426,7 +424,6 @@ describe("LiskConnection", () => {
         mainIdentity,
         signingJob.bytes,
         signingJob.prehashType,
-        devnetChainId,
       );
 
       const signedTransaction: SignedTransaction = {
@@ -476,7 +473,6 @@ describe("LiskConnection", () => {
         mainIdentity,
         signingJob.bytes,
         signingJob.prehashType,
-        devnetChainId,
       );
 
       // tslint:disable-next-line:no-bitwise

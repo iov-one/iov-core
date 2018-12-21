@@ -125,12 +125,7 @@ describe("Secp256k1HdWallet", () => {
     ]);
 
     const data = toAscii("foo bar") as SignableBytes;
-    const signatureBytes = await wallet.createTransactionSignature(
-      mainIdentity,
-      data,
-      PrehashType.Sha256,
-      "" as ChainId,
-    );
+    const signatureBytes = await wallet.createTransactionSignature(mainIdentity, data, PrehashType.Sha256);
 
     const valid = await Secp256k1.verifySignature(
       ExtendedSecp256k1Signature.fromFixedLength(signatureBytes),

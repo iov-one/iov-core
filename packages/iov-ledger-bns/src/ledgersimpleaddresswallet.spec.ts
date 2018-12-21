@@ -224,7 +224,7 @@ describe("LedgerSimpleAddressWallet", () => {
     const nonce = new Int53(5) as Nonce;
     const { bytes, prehashType } = bnsCodec.bytesToSign(tx, nonce);
 
-    const signature = await wallet.createTransactionSignature(newIdentity, bytes, prehashType, tx.chainId);
+    const signature = await wallet.createTransactionSignature(newIdentity, bytes, prehashType);
     expect(signature).toBeTruthy();
     expect(signature.length).toEqual(64);
 

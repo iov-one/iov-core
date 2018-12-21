@@ -148,7 +148,6 @@ describe("EthereumConnection", () => {
         mainIdentity,
         signingJob.bytes,
         signingJob.prehashType,
-        nodeChainId,
       );
 
       const signedTransaction: SignedTransaction = {
@@ -230,7 +229,6 @@ describe("EthereumConnection", () => {
         mainIdentity,
         signingJob.bytes,
         signingJob.prehashType,
-        nodeChainId,
       );
 
       const signedTransaction: SignedTransaction = {
@@ -357,7 +355,6 @@ describe("EthereumConnection", () => {
         mainIdentity,
         signingJob.bytes,
         signingJob.prehashType,
-        nodeChainId,
       );
 
       const signedTransaction: SignedTransaction = {

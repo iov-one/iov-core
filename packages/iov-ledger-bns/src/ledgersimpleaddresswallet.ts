@@ -248,7 +248,6 @@ export class LedgerSimpleAddressWallet implements Wallet {
     identity: PublicIdentity,
     transactionBytes: SignableBytes,
     prehashType: PrehashType,
-    _: ChainId,
   ): Promise<SignatureBytes> {
     if (prehashType !== PrehashType.Sha512) {
       throw new Error("Only prehash typer sha512 is supported on the Ledger");

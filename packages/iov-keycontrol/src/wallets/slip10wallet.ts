@@ -286,7 +286,6 @@ export class Slip10Wallet implements Wallet {
     identity: PublicIdentity,
     transactionBytes: SignableBytes,
     prehashType: PrehashType,
-    _: ChainId,
   ): Promise<SignatureBytes> {
     // validate curve/prehash combination
     switch (this.curve) {

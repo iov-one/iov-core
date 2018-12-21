@@ -203,7 +203,6 @@ export class Ed25519Wallet implements Wallet {
     identity: PublicIdentity,
     transactionBytes: SignableBytes,
     prehashType: PrehashType,
-    _: ChainId,
   ): Promise<SignatureBytes> {
     const privkey = this.privateKeyForIdentity(identity);
     const signature = await Ed25519.createSignature(prehash(transactionBytes, prehashType), privkey);
