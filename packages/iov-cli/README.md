@@ -69,11 +69,11 @@ $ iov-cli
 > const chainId = signer.chainIds()[0];
 > const connection = signer.connection(chainId);
 
-> const faucetAddress = signer.keyToAddress(chainId, faucet.pubkey);
+> const faucetAddress = signer.identityToAddress(faucet);
 > (await connection.getAccount({ address: faucetAddress })).data[0].balance
 
 > const recipient = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(1));
-> const recipientAddress = signer.keyToAddress(chainId, recipient.pubkey);
+> const recipientAddress = signer.identityToAddress(recipient);
 
 > .editor
 const sendTx: SendTransaction = {

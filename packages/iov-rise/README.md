@@ -30,7 +30,7 @@ await signer.addChain(riseConnector("https://twallet.rise.vision"));
 const chainId = signer.chainIds()[0];
 const connection = signer.connection(chainId);
 
-const mainAddress = signer.keyToAddress(chainId, mainIdentity.pubkey);
+const mainAddress = signer.identityToAddress(mainIdentity);
 console.log("Sender address: " + mainAddress);
 console.log((await connection.getAccount({ address: mainAddress })).data[0].balance);
 
@@ -66,7 +66,7 @@ const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbece
 
 const wallet = new Ed25519Wallet();
 const mainIdentity = await wallet.createIdentity(await passphraseToKeypair("squeeze frog deposit chase sudden clutch fortune spring tone have snow column"));
-const mainAddress = riseCodec.keyToAddress(mainIdentity.pubkey);
+const mainAddress = riseCodec.identityToAddress(mainIdentity);
 
 const recipientAddress = "10145108642177909005R" as Address;
 
@@ -122,8 +122,8 @@ async function deriveAddress(wallet, a): Promise<Address> {
   // (see https://github.com/trezor/trezor-core/tree/master/docs/coins for account based derivation
   // paths and https://github.com/satoshilabs/slips/blob/master/slip-0044.md for RISE coin type)
   const path = [Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(1120), Slip10RawIndex.hardened(a)]
-  const pubkey = (await wallet.createIdentity(path)).pubkey;
-  return riseCodec.keyToAddress(pubkey);
+  const identity = await wallet.createIdentity(path);
+  return riseCodec.identityToAddress(identity);
 }
 
 async function getBalance(searchAddress: Address): Promise<any> {

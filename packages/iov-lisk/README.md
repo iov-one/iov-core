@@ -30,7 +30,7 @@ await signer.addChain(liskConnector("https://testnet.lisk.io"));
 const chainId = signer.chainIds()[0];
 const connection = signer.connection(chainId);
 
-const mainAddress = signer.keyToAddress(chainId, mainIdentity.pubkey);
+const mainAddress = signer.identityToAddress(mainIdentity);
 console.log((await connection.getAccount({ address: mainAddress })).data[0].balance);
 
 const recipientAddress = "6076671634347365051L" as Address;

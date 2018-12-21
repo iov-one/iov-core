@@ -152,7 +152,7 @@ to use the chain-dependent `TxCodec` to generate it. In our case, bnsCodec:
 ```ts
 import { bnsCodec } from '@iov/bns';
 
-const addr = bnsCodec.keyToAddress(id1a.pubkey);
+const addr = bnsCodec.identityToAddress(id1a);
 console.log(toHex(addr));
 ```
 
@@ -213,7 +213,7 @@ const mine = await connection.getAccount({ address: addr });
 console.log(mine); // should show non-empty array for data
 console.log(mine.data[0]);
 
-const addr2 = bnsCodec.keyToAddress(id2.pubkey);
+const addr2 = bnsCodec.identityToAddress(id2);
 console.log(toHex(addr2));
 let yours = await connection.getAccount({ address: addr2 });
 console.log(yours); // should show empty array for data
@@ -265,7 +265,7 @@ console.log(toHex(first.recipient));
 // public key of sender
 console.log(toHex(first.signer.data));
 // address of sender
-const sender = bnsCodec.keyToAddress(first.signer);
+const sender = bnsCodec.identityToAddress(first);
 console.log(toHex(sender));
 ```
 
