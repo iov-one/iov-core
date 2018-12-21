@@ -27,6 +27,8 @@ build/
 dist/
 docs/
 
+selftest_userprofile_db/
+
 # .npmignore additions
 !build/
 karma.conf.js

@@ -82,7 +82,7 @@ export function main(originalArgs: ReadonlyArray<string>): void {
 
   let init = `
     import leveldown = require('leveldown');
-    import levelup = require('levelup');
+    import levelup from "levelup";
     import * as http from 'http';
     import * as https from 'https';
     import Long from "long";
@@ -121,6 +121,13 @@ export function main(originalArgs: ReadonlyArray<string>): void {
       const hash = new Sha512(new Uint8Array([])).digest();
       const hexHash = toHex(hash);
       export class NewDummyClass {};
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
+      const db = levelup(leveldown('./selftest_userprofile_db'));
+      await profile.storeIn(db, "secret passwd");
+      const profileFromDb = await UserProfile.loadFrom(db, "secret passwd");
+
       console.log("Done testing, will exit now.");
       process.exit(0);
     `;

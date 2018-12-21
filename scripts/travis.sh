@@ -124,6 +124,17 @@ fold_start "commandline-tests"
 yarn test
 fold_end
 
+#
+# CLI selftest
+#
+
+fold_start "iov-cli-selftest"
+(
+  cd packages/iov-cli
+  yarn test-bin
+)
+fold_end
+
 # Test in browsers
 
 fold_start "test-chrome"

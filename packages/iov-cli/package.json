@@ -1,6 +1,6 @@
 {
   "name": "@iov/cli",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "description": "Command line interface for iov core",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -18,7 +18,7 @@
     "build": "tsc",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
     "test-node": "node jasmine-testrunner.js",
-    "test-bin": "yarn build && ./bin/iov-cli",
+    "test-bin": "yarn build-or-skip && ./bin/iov-cli --selftest",
     "test": "yarn build-or-skip && yarn test-node"
   },
   "bin": {
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@iov/bns": "^0.10.2",
-    "@iov/core": "^0.10.2",
+    "@iov/core": "^0.10.3",
     "@iov/faucets": "^0.10.2",
     "argparse": "^1.0.10",
     "babylon": "^6.18.0",

@@ -17,6 +17,10 @@ Breaking changes
 * @iov/core: Removed BNS re-exports `bnsConnector`, `bnsFromOrToTag`,
   `bnsNonceTag`, `bnsSwapQueryTags`. Import them from @iov/bns.
 
+## 0.10.3
+
+* @iov/cli: Fix levelup import
+
 ## 0.10.2
 
 * @iov/bcp-types: Add `BcpAccount.pubkey` and implement in Lisk, RISE and BNS.

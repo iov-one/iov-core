@@ -25,7 +25,7 @@ functions and experimentally in the [@iov/cli](https://github.com/iov-one/iov-co
 (All imports are done for you in the REPL as well, so you can skip the import
 statements. They are provided for guidance when integrating into your own codebase).
 
-Before starting, either run from source in `../iov-cli` via `yarn test-bin`
+Before starting, either run from source in `../iov-cli` via `yarn build && ./bin/iov-cli`
 or install from npm via `npm install -g @iov/cli; iov-cli`.
 Inside the cli the remaining code should work verbatim.
 
