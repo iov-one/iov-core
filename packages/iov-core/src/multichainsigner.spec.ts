@@ -63,29 +63,29 @@ describe("MultiChainSigner", () => {
     // this account has money in the genesis file (setup in docker)
     const mnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
     const cash = "CASH" as TokenTicker;
-    const bnsChain = "chain123" as ChainId;
 
-    async function userProfileWithFaucet(): Promise<{
-      readonly profile: UserProfile;
+    async function addWalletWithFaucet(
+      profile: UserProfile,
+      chainId: ChainId,
+    ): Promise<{
       readonly mainWalletId: WalletId;
       readonly faucet: LocalIdentity;
     }> {
-      const wallet = Ed25519HdWallet.fromMnemonic(mnemonic);
-      const profile = new UserProfile();
-      profile.addWallet(wallet);
-      const faucet = await profile.createIdentity(wallet.id, bnsChain, HdPaths.simpleAddress(0));
-      return { profile, mainWalletId: wallet.id, faucet };
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic));
+      const faucet = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(0));
+      return { mainWalletId: wallet.id, faucet };
     }
 
     it("can send transaction", async () => {
       pendingWithoutBnsd();
 
-      const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
-
+      const profile = new UserProfile();
       const signer = new MultiChainSigner(profile);
       const { connection } = await signer.addChain(bnsConnector(bnsdTendermintUrl));
       expect(signer.chainIds().length).toEqual(1);
       const chainId = connection.chainId();
+
+      const { mainWalletId, faucet } = await addWalletWithFaucet(profile, chainId);
 
       const recipient = await randomBnsAddress();
 
@@ -129,7 +129,7 @@ describe("MultiChainSigner", () => {
       pendingWithoutBnsd();
       pendingWithoutEthereum();
 
-      const { profile, faucet } = await userProfileWithFaucet();
+      const profile = new UserProfile();
       const signer = new MultiChainSigner(profile);
       expect(signer.chainIds().length).toEqual(0);
 
@@ -137,6 +137,7 @@ describe("MultiChainSigner", () => {
       await signer.addChain(bnsConnector(bnsdTendermintUrl));
       expect(signer.chainIds().length).toEqual(1);
       const bovId = signer.chainIds()[0];
+      const { faucet } = await addWalletWithFaucet(profile, bovId);
 
       // add a ethereum chain
       await signer.addChain(ethereumConnector(httpEthereumUrl, undefined));
