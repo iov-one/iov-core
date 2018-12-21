@@ -4,6 +4,7 @@ import {
   BcpTransactionState,
   ChainId,
   isSendTransaction,
+  PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   TokenTicker,
@@ -12,14 +13,7 @@ import { bnsCodec, bnsConnector, bnsFromOrToTag } from "@iov/bns";
 import { Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { ethereumConnector } from "@iov/ethereum";
-import {
-  Ed25519HdWallet,
-  HdPaths,
-  LocalIdentity,
-  PublicIdentity,
-  UserProfile,
-  WalletId,
-} from "@iov/keycontrol";
+import { Ed25519HdWallet, HdPaths, LocalIdentity, UserProfile, WalletId } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";
 

@@ -15,6 +15,7 @@ import {
   isSwapCounterTransaction,
   Nonce,
   PostTxResponse,
+  PublicIdentity,
   PublicKeyBundle,
   PublicKeyBytes,
   SendTransaction,
@@ -26,14 +27,7 @@ import {
 } from "@iov/bcp-types";
 import { Random, Sha256 } from "@iov/crypto";
 import { Encoding, Uint64 } from "@iov/encoding";
-import {
-  Ed25519HdWallet,
-  HdPaths,
-  LocalIdentity,
-  PublicIdentity,
-  UserProfile,
-  WalletId,
-} from "@iov/keycontrol";
+import { Ed25519HdWallet, HdPaths, LocalIdentity, UserProfile, WalletId } from "@iov/keycontrol";
 import { asArray, lastValue } from "@iov/stream";
 
 import { bnsCodec } from "./bnscodec";

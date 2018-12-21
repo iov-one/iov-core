@@ -1,11 +1,11 @@
 import { AbstractLevelDOWN } from "abstract-leveldown";
 import { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
-import { ChainId, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
+import { ChainId, Nonce, PublicIdentity, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
 import { Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { Keyring } from "./keyring";
-import { LocalIdentity, PublicIdentity, Wallet, WalletId } from "./wallet";
+import { LocalIdentity, Wallet, WalletId } from "./wallet";
 import { Ed25519Wallet } from "./wallets";
 export interface UserProfileOptions {
     readonly createdAt: ReadonlyDate;

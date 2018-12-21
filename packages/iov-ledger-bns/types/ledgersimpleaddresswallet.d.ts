@@ -1,5 +1,5 @@
-import { ChainId, PrehashType, SignableBytes, SignatureBytes } from "@iov/bcp-types";
-import { LocalIdentity, PublicIdentity, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "@iov/keycontrol";
+import { ChainId, PrehashType, PublicIdentity, SignableBytes, SignatureBytes } from "@iov/bcp-types";
+import { LocalIdentity, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "@iov/keycontrol";
 import { ValueAndUpdates } from "@iov/stream";
 import { LedgerState } from "./statetracker";
 export declare class LedgerSimpleAddressWallet implements Wallet {

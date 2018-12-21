@@ -1,5 +1,5 @@
-import { Address, BcpConnection, ChainConnector, ChainId, Nonce, PostTxResponse, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
-import { PublicIdentity, WalletId } from "@iov/keycontrol";
+import { Address, BcpConnection, ChainConnector, ChainId, Nonce, PostTxResponse, PublicIdentity, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
+import { WalletId } from "@iov/keycontrol";
 /**
  * TransactionSigner is just the methods on `UserProfile` that we need in `MultiChainSigner`.
  * By only requiring this interface, we allow the use of other implementations with custom

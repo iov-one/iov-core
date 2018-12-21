@@ -6,6 +6,7 @@ import {
   ChainId,
   FullSignature,
   Nonce,
+  PublicIdentity,
   SignedTransaction,
   TxCodec,
   UnsignedTransaction,
@@ -17,7 +18,7 @@ import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { Keyring } from "./keyring";
 import { EncryptedKeyring, KeyringEncryptor } from "./keyringencryptor";
 import { DatabaseUtils } from "./utils";
-import { LocalIdentity, PublicIdentity, Wallet, WalletId } from "./wallet";
+import { LocalIdentity, Wallet, WalletId } from "./wallet";
 import { Ed25519Wallet } from "./wallets";
 
 const { toAscii, fromBase64, toBase64, toRfc3339, fromRfc3339 } = Encoding;

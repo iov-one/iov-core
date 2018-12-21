@@ -8,15 +8,22 @@ export enum Algorithm {
 }
 
 export type PublicKeyBytes = Uint8Array & As<"public-key">;
+
 export interface PublicKeyBundle {
   readonly algo: Algorithm;
   readonly data: PublicKeyBytes;
 }
 
-export type SignatureBytes = Uint8Array & As<"signature">;
-
 /** Used to differentiate a blockchain. Should be alphanumeric or -_/ and unique */
 export type ChainId = string & As<"chain-id">;
+
+/** a public key we can identify with on a blockchain */
+export interface PublicIdentity {
+  readonly chainId: ChainId;
+  readonly pubkey: PublicKeyBundle;
+}
+
+export type SignatureBytes = Uint8Array & As<"signature">;
 
 export type Nonce = Int53 & As<"nonce">;
 

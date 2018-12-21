@@ -1,6 +1,6 @@
-import { ChainId, PrehashType, SignableBytes, SignatureBytes } from "@iov/bcp-types";
+import { ChainId, PrehashType, PublicIdentity, SignableBytes, SignatureBytes } from "@iov/bcp-types";
 import { ValueAndUpdates } from "@iov/stream";
-import { LocalIdentity, PublicIdentity, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "../wallet";
+import { LocalIdentity, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "../wallet";
 export declare class Ed25519Wallet implements Wallet {
     private static readonly idPool;
     private static readonly idsPrng;

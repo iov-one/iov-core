@@ -5,11 +5,12 @@ import {
   ChainId,
   Nonce,
   PostTxResponse,
+  PublicIdentity,
   SignedTransaction,
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
-import { PublicIdentity, WalletId } from "@iov/keycontrol";
+import { WalletId } from "@iov/keycontrol";
 
 /**
  * An internal helper to pass around the tuple

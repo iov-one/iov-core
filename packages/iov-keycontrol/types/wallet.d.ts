@@ -1,14 +1,9 @@
 import { As } from "type-tagger";
-import { ChainId, PrehashType, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/bcp-types";
+import { ChainId, PrehashType, PublicIdentity, SignableBytes, SignatureBytes } from "@iov/bcp-types";
 import { Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { Ed25519Wallet } from "./wallets";
 export declare type LocalIdentityId = string & As<"local-identity-id">;
-/** a public key we can identify with on a blockchain */
-export interface PublicIdentity {
-    readonly chainId: ChainId;
-    readonly pubkey: PublicKeyBundle;
-}
 /**
  * a local version of a PublicIdentity that contains
  * additional local information

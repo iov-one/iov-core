@@ -4,6 +4,7 @@ import {
   Algorithm,
   ChainId,
   PrehashType,
+  PublicIdentity,
   PublicKeyBytes,
   SignableBytes,
   SignatureBytes,
@@ -25,7 +26,6 @@ import { prehash } from "../prehashing";
 import {
   LocalIdentity,
   LocalIdentityId,
-  PublicIdentity,
   Wallet,
   WalletId,
   WalletImplementationIdString,
