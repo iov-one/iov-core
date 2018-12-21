@@ -515,7 +515,7 @@ describe("UserProfile", () => {
 
     const fakeTransaction: SendTransaction = {
       kind: "bcp/send",
-      chainId: "ethereum" as ChainId,
+      chainId: defaultChain,
       signer: mainIdentity.pubkey,
       amount: {
         quantity: "1000000000000000012",
