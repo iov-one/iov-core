@@ -45,6 +45,7 @@ branches:
   only:
   - master
   - 0.9
+  - 0.10
 
 notifications:
   email: false
