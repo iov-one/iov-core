@@ -180,8 +180,6 @@ function parseAddAddressToUsernameTx(
 function parseSendTransaction(base: UnsignedTransaction, msg: codecImpl.cash.ISendMsg): SendTransaction {
   const prefix = addressPrefix(base.chainId);
   return {
-    // TODO: would we want to ensure these match?
-    //    src: await keyToAddress(tx.signer),
     ...base,
     kind: "bcp/send",
     recipient: encodeBnsAddress(prefix, ensure(msg.dest, "recipient")),
