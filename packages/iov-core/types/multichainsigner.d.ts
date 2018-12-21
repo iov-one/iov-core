@@ -1,4 +1,4 @@
-import { Address, BcpConnection, ChainConnector, ChainId, Nonce, PostTxResponse, PublicKeyBundle, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
+import { Address, BcpConnection, ChainConnector, ChainId, Nonce, PostTxResponse, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
 import { PublicIdentity, WalletId } from "@iov/keycontrol";
 /**
  * TransactionSigner is just the methods on `UserProfile` that we need in `MultiChainSigner`.
@@ -23,7 +23,10 @@ export declare class MultiChainSigner {
     addChain(connector: ChainConnector): Promise<{
         readonly connection: BcpConnection;
     }>;
-    keyToAddress(chainId: ChainId, key: PublicKeyBundle): Address;
+    /**
+     * Calculate an address in a blockchain-specific way
+     */
+    identityToAddress(identity: PublicIdentity): Address;
     /**
      * Queries the nonce, signs the transaction and posts it to the blockchain.
      *

@@ -5,7 +5,6 @@ import {
   ChainId,
   Nonce,
   PostTxResponse,
-  PublicKeyBundle,
   SignedTransaction,
   TxCodec,
   UnsignedTransaction,
@@ -100,8 +99,11 @@ export class MultiChainSigner {
     };
   }
 
-  public keyToAddress(chainId: ChainId, key: PublicKeyBundle): Address {
-    return this.getChain(chainId).codec.keyToAddress(key);
+  /**
+   * Calculate an address in a blockchain-specific way
+   */
+  public identityToAddress(identity: PublicIdentity): Address {
+    return this.getChain(identity.chainId).codec.keyToAddress(identity.pubkey);
   }
 
   /**

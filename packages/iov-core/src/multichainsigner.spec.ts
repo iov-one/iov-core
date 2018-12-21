@@ -149,7 +149,7 @@ describe("MultiChainSigner", () => {
       expect(twoChains[0]).not.toEqual(twoChains[1]);
 
       // make sure we can query with multiple registered chains
-      const faucetAddr = signer.keyToAddress(bovId, faucet.pubkey);
+      const faucetAddr = signer.identityToAddress(faucet);
       const connection = signer.connection(bovId);
       const acct = await connection.getAccount({ address: faucetAddr });
       expect(acct).toBeTruthy();
@@ -165,7 +165,7 @@ describe("MultiChainSigner", () => {
           ) as PublicKeyBytes,
         },
       };
-      const ganacheAddr = signer.keyToAddress(ethereumChainId, ganacheMainIdentity.pubkey);
+      const ganacheAddr = signer.identityToAddress(ganacheMainIdentity);
       const connection2 = signer.connection(ethereumChainId);
       const acct2 = await connection2.getAccount({ address: ganacheAddr });
       expect(acct2).toBeTruthy();
