@@ -12,10 +12,19 @@ Breaking changes
   base-types. `PostableBytes` -> `TxBytes`, `PublicKeyBundle` ->
   `ValidatorPubkey`, `ChainId` -> `string`.
 * @iov/base-types: Package removed and all its types are now in @iov/bcp-types.
+* @iov/bcp-types: Convert `TxReadCodec.keyToAddress` into
+  `identityToAddress(identity: PublicIdentity)`
 * @iov/core: Remove `MultiChainSigner.getNonce`. If you really need this, use
   `signer.connection(chainId).getNonce({ address: addr })` instead.
 * @iov/core: Removed BNS re-exports `bnsConnector`, `bnsFromOrToTag`,
   `bnsNonceTag`, `bnsSwapQueryTags`. Import them from @iov/bns.
+* @iov/core: Convert `MultiChainSigner.keyToAddress` into
+  `identityToAddress(identity: PublicIdentity)`
+* @iov/keycontrol: Move `PublicIdentity` into @iov/bcp-types; add `chainId`
+* @iov/keycontrol: Add chain ID argument to `UserProfile.createIdentity` and
+  `Wallet.createIdentity`
+* @iov/keycontrol: Remove redundant chainId parameter from
+  `Wallet.createTransactionSignature`
 
 ## 0.10.3
 
