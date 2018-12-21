@@ -267,10 +267,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     if (isAddressQuery(query)) {
       response = await this.query("/wallets", decodeBnsAddress(query.address).data);
     } else if (isPubkeyQuery(query)) {
-      const address = bnsCodec.identityToAddress({
-        chainId: this.chainId(),
-        pubkey: query.pubkey,
-      });
+      const address = identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey });
       response = await this.query("/wallets", decodeBnsAddress(address).data);
     } else {
       response = await this.query("/wallets/name", Encoding.toAscii(query.name));
