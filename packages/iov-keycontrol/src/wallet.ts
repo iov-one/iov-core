@@ -10,6 +10,7 @@ export type LocalIdentityId = string & As<"local-identity-id">;
 
 /** a public key we can identify with on a blockchain */
 export interface PublicIdentity {
+  readonly chainId: ChainId;
   readonly pubkey: PublicKeyBundle;
 }
 

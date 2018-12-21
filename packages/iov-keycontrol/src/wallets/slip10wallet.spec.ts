@@ -11,7 +11,7 @@ describe("Slip10Wallet", () => {
   const defaultChain = "chain123" as ChainId;
   const emptyWallet = `
     {
-      "formatVersion": 1,
+      "formatVersion": 2,
       "id": "aX7hg93h9goHf",
       "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
       "curve": "ed25519 seed",
@@ -21,7 +21,7 @@ describe("Slip10Wallet", () => {
 
   const emptySecp256k1Wallet = `
     {
-      "formatVersion": 1,
+      "formatVersion": 2,
       "id": "2h3487euib4h",
       "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
       "curve": "Bitcoin seed",
@@ -459,7 +459,7 @@ describe("Slip10Wallet", () => {
       // empty
       const wallet = new Slip10Wallet(`
         {
-          "formatVersion": 1,
+          "formatVersion": 2,
           "id": "eMpTy",
           "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
           "curve": "ed25519 seed",
@@ -475,13 +475,14 @@ describe("Slip10Wallet", () => {
       // one element
       const serialized = `
         {
-          "formatVersion": 1,
+          "formatVersion": 2,
           "id": "1elemenT",
           "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
           "curve": "ed25519 seed",
           "identities": [
             {
               "localIdentity": {
+                "chainId": "xnet",
                 "pubkey": {
                   "algo": "ed25519",
                   "data": "aabbccdd"
@@ -497,6 +498,7 @@ describe("Slip10Wallet", () => {
       expect(wallet).toBeTruthy();
       expect(wallet.id).toEqual("1elemenT");
       expect(wallet.getIdentities().length).toEqual(1);
+      expect(wallet.getIdentities()[0].chainId).toEqual("xnet");
       expect(wallet.getIdentities()[0].pubkey.algo).toEqual("ed25519");
       expect(wallet.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
       expect(wallet.getIdentities()[0].label).toEqual("foo");
@@ -506,13 +508,14 @@ describe("Slip10Wallet", () => {
       // two elements
       const serialized = `
         {
-          "formatVersion": 1,
+          "formatVersion": 2,
           "id": "2elemeNT",
           "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
           "curve": "ed25519 seed",
           "identities": [
             {
               "localIdentity": {
+                "chainId": "xnet",
                 "pubkey": {
                   "algo": "ed25519",
                   "data": "aabbccdd"
@@ -523,6 +526,7 @@ describe("Slip10Wallet", () => {
             },
             {
               "localIdentity": {
+                "chainId": "ynet",
                 "pubkey": {
                   "algo": "ed25519",
                   "data": "ddccbbaa"
@@ -537,9 +541,11 @@ describe("Slip10Wallet", () => {
       expect(wallet).toBeTruthy();
       expect(wallet.id).toEqual("2elemeNT");
       expect(wallet.getIdentities().length).toEqual(2);
+      expect(wallet.getIdentities()[0].chainId).toEqual("xnet");
       expect(wallet.getIdentities()[0].pubkey.algo).toEqual("ed25519");
       expect(wallet.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
       expect(wallet.getIdentities()[0].label).toEqual("foo");
+      expect(wallet.getIdentities()[1].chainId).toEqual("ynet");
       expect(wallet.getIdentities()[1].pubkey.algo).toEqual("ed25519");
       expect(wallet.getIdentities()[1].pubkey.data).toEqual(Encoding.fromHex("ddccbbaa"));
       expect(wallet.getIdentities()[1].label).toEqual("bar");

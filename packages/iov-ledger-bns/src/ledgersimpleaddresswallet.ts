@@ -5,7 +5,6 @@ import {
   Algorithm,
   ChainId,
   PrehashType,
-  PublicKeyBundle,
   PublicKeyBytes,
   SignableBytes,
   SignatureBytes,
@@ -33,6 +32,7 @@ interface PubkeySerialization {
 }
 
 interface LocalIdentitySerialization {
+  readonly chainId: string;
   readonly pubkey: PubkeySerialization;
   readonly label?: string;
 }
@@ -60,6 +60,12 @@ function deserialize(data: WalletSerializationString): LedgerSimpleAddressWallet
   // Case distinctions / migrations based on formatVersion go here
   switch (formatVersion) {
     case 1:
+      throw new Error(
+        "Wallet format version 1 detected. " +
+          "No automatic migration is possible from that format since it is missing chain IDs in identities. " +
+          "Use IOV-Core 0.9 or 0.10 to export the secret and re-create wallet in IOV-Core 0.11+.",
+      );
+    case 2:
       break;
     default:
       throw new Error(`Got unsupported format version: '${formatVersion}'`);
@@ -148,7 +154,7 @@ export class LedgerSimpleAddressWallet implements Wallet {
       // identities
       for (const record of decodedData.identities) {
         const identity = this.buildLocalIdentity(
-          "" as ChainId, // FIXME: implement
+          record.localIdentity.chainId as ChainId,
           Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
           record.localIdentity.label,
         );
@@ -267,13 +273,14 @@ export class LedgerSimpleAddressWallet implements Wallet {
 
   public serialize(): WalletSerializationString {
     const out: LedgerSimpleAddressWalletSerialization = {
-      formatVersion: 1,
+      formatVersion: 2,
       label: this.label.value,
       id: this.id,
       identities: this.identities.map(identity => {
         const simpleAddressIndex = this.simpleAddressIndex(identity);
         return {
           localIdentity: {
+            chainId: identity.chainId,
             pubkey: {
               algo: identity.pubkey.algo,
               data: Encoding.toHex(identity.pubkey.data),
@@ -301,15 +308,26 @@ export class LedgerSimpleAddressWallet implements Wallet {
     return out;
   }
 
-  private buildLocalIdentity(_: ChainId, bytes: PublicKeyBytes, label: string | undefined): LocalIdentity {
-    const pubkey: PublicKeyBundle = {
-      algo: Algorithm.Ed25519, // hardcoded until we support more curves in the ledger app
-      data: bytes,
+  private buildLocalIdentity(
+    chainId: ChainId,
+    bytes: PublicKeyBytes,
+    label: string | undefined,
+  ): LocalIdentity {
+    if (!chainId) {
+      throw new Error("Got empty chain ID when tying to build a local identity.");
+    }
+
+    const publicIdentity: PublicIdentity = {
+      chainId: chainId,
+      pubkey: {
+        algo: Algorithm.Ed25519, // hardcoded until we support more curves in the ledger app
+        data: bytes,
+      },
     };
     return {
-      pubkey,
+      ...publicIdentity,
       label,
-      id: LedgerSimpleAddressWallet.identityId({ pubkey }),
+      id: LedgerSimpleAddressWallet.identityId(publicIdentity),
     };
   }
 }

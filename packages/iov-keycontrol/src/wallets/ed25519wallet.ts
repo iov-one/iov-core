@@ -4,7 +4,6 @@ import {
   Algorithm,
   ChainId,
   PrehashType,
-  PublicKeyBundle,
   PublicKeyBytes,
   SignableBytes,
   SignatureBytes,
@@ -30,6 +29,7 @@ interface PubkeySerialization {
 }
 
 interface LocalIdentitySerialization {
+  readonly chainId: string;
   readonly pubkey: PubkeySerialization;
   readonly label?: string;
 }
@@ -57,6 +57,12 @@ function deserialize(data: WalletSerializationString): Ed25519WalletSerializatio
   // Case distinctions / migrations based on formatVersion go here
   switch (formatVersion) {
     case 1:
+      throw new Error(
+        "Wallet format version 1 detected. " +
+          "No automatic migration is possible from that format since it is missing chain IDs in identities. " +
+          "Use IOV-Core 0.9 or 0.10 to export the secret and re-create wallet in IOV-Core 0.11+.",
+      );
+    case 2:
       break;
     default:
       throw new Error(`Got unsupported format version: '${formatVersion}'`);
@@ -134,7 +140,7 @@ export class Ed25519Wallet implements Wallet {
           throw new Error("This keyring only supports ed25519 private keys");
         }
         const identity = this.buildLocalIdentity(
-          "" as ChainId, // FIXME: implement
+          record.localIdentity.chainId as ChainId,
           keypair.pubkey as PublicKeyBytes,
           record.localIdentity.label,
         );
@@ -213,13 +219,14 @@ export class Ed25519Wallet implements Wallet {
 
   public serialize(): WalletSerializationString {
     const out: Ed25519WalletSerialization = {
-      formatVersion: 1,
+      formatVersion: 2,
       id: this.id,
       label: this.label.value,
       identities: this.identities.map(identity => {
         const keypair = this.privateKeyForIdentity(identity);
         return {
           localIdentity: {
+            chainId: identity.chainId,
             pubkey: {
               algo: identity.pubkey.algo,
               data: Encoding.toHex(identity.pubkey.data),
@@ -247,15 +254,26 @@ export class Ed25519Wallet implements Wallet {
     return privkey;
   }
 
-  private buildLocalIdentity(_: ChainId, bytes: PublicKeyBytes, label: string | undefined): LocalIdentity {
-    const pubkey: PublicKeyBundle = {
-      algo: Algorithm.Ed25519,
-      data: bytes,
+  private buildLocalIdentity(
+    chainId: ChainId,
+    bytes: PublicKeyBytes,
+    label: string | undefined,
+  ): LocalIdentity {
+    if (!chainId) {
+      throw new Error("Got empty chain ID when tying to build a local identity.");
+    }
+
+    const publicIdentity: PublicIdentity = {
+      chainId: chainId,
+      pubkey: {
+        algo: Algorithm.Ed25519,
+        data: bytes,
+      },
     };
     return {
-      pubkey,
-      label,
-      id: Ed25519Wallet.identityId({ pubkey }),
+      ...publicIdentity,
+      label: label,
+      id: Ed25519Wallet.identityId(publicIdentity),
     };
   }
 }

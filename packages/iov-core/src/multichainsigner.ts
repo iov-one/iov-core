@@ -116,8 +116,8 @@ export class MultiChainSigner {
     const nonce = await connection.getNonce({ pubkey: tx.signer });
 
     const signingIdentity: PublicIdentity = {
+      chainId: tx.chainId,
       pubkey: tx.signer,
-      // TODO: add chainId (https://github.com/iov-one/iov-core/issues/621)
     };
     const signed = await this.profile.signTransaction(walletId, signingIdentity, tx, codec, nonce);
     const txBytes = codec.bytesToPost(signed);

@@ -309,7 +309,7 @@ describe("Ed25519Wallet", () => {
     {
       // empty
       const wallet = new Ed25519Wallet(
-        '{ "formatVersion": 1, "id": "h4g9q37hg9q", "identities": [] }' as WalletSerializationString,
+        '{ "formatVersion": 2, "id": "h4g9q37hg9q", "identities": [] }' as WalletSerializationString,
       );
       expect(wallet).toBeTruthy();
       expect(wallet.id).toEqual("h4g9q37hg9q");
@@ -319,12 +319,27 @@ describe("Ed25519Wallet", () => {
 
     {
       // one element
-      const serialized = '{ "formatVersion": 1, "id": "h4g9q37hg9q", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}] }' as WalletSerializationString;
+      const serialized = `
+        {
+          "formatVersion": 2,
+          "id": "h4g9q37hg9q",
+          "identities": [
+            {
+              "localIdentity": {
+                "chainId": "foonet",
+                "pubkey": { "algo": "ed25519", "data": "aabbccdd" },
+                "label": "foo"
+              },
+              "privkey": "223322112233aabb"
+            }
+          ]
+        }` as WalletSerializationString;
       const wallet = new Ed25519Wallet(serialized);
       expect(wallet).toBeTruthy();
       expect(wallet.id).toEqual("h4g9q37hg9q");
       expect(wallet.label.value).toBeUndefined();
       expect(wallet.getIdentities().length).toEqual(1);
+      expect(wallet.getIdentities()[0].chainId).toEqual("foonet");
       expect(wallet.getIdentities()[0].pubkey.algo).toEqual("ed25519");
       expect(wallet.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
       expect(wallet.getIdentities()[0].label).toEqual("foo");
@@ -332,15 +347,40 @@ describe("Ed25519Wallet", () => {
 
     {
       // two elements
-      const serialized = '{ "formatVersion": 1, "id": "h4g9q37hg9q", "label": "2 keys", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "privkey": "ddddeeee"}] }' as WalletSerializationString;
+      const serialized = `
+        {
+          "formatVersion": 2,
+          "id": "h4g9q37hg9q",
+          "label": "2 keys",
+          "identities": [
+            {
+              "localIdentity": {
+                "chainId": "xnet",
+                "pubkey": { "algo": "ed25519", "data": "aabbccdd" },
+                "label": "foo"
+              },
+              "privkey": "223322112233aabb"
+            },
+            {
+              "localIdentity": {
+                "chainId": "ynet",
+                "pubkey": { "algo": "ed25519", "data": "ddccbbaa" },
+                "label": "bar"
+              },
+              "privkey": "ddddeeee"
+            }
+          ]
+        }` as WalletSerializationString;
       const wallet = new Ed25519Wallet(serialized);
       expect(wallet).toBeTruthy();
       expect(wallet.id).toEqual("h4g9q37hg9q");
       expect(wallet.label.value).toEqual("2 keys");
       expect(wallet.getIdentities().length).toEqual(2);
+      expect(wallet.getIdentities()[0].chainId).toEqual("xnet");
       expect(wallet.getIdentities()[0].pubkey.algo).toEqual("ed25519");
       expect(wallet.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
       expect(wallet.getIdentities()[0].label).toEqual("foo");
+      expect(wallet.getIdentities()[1].chainId).toEqual("ynet");
       expect(wallet.getIdentities()[1].pubkey.algo).toEqual("ed25519");
       expect(wallet.getIdentities()[1].pubkey.data).toEqual(Encoding.fromHex("ddccbbaa"));
       expect(wallet.getIdentities()[1].label).toEqual("bar");

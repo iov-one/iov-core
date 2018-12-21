@@ -430,12 +430,14 @@ describe("UserProfile", () => {
   it("throws for non-existing wallet id", async () => {
     const profile = new UserProfile();
 
+    const fakeChain = "ethereum" as ChainId;
     const fakeIdentity = {
+      chainId: fakeChain,
       pubkey: { algo: Algorithm.Ed25519, data: new Uint8Array([0xaa]) as PublicKeyBytes },
     };
     const fakeTransaction: SendTransaction = {
       kind: "bcp/send",
-      chainId: "ethereum" as ChainId,
+      chainId: fakeChain,
       signer: fakeIdentity.pubkey,
       amount: {
         quantity: "1000000000000000012",

@@ -140,7 +140,7 @@ describe("MultiChainSigner", () => {
 
       // add a ethereum chain
       await signer.addChain(ethereumConnector(httpEthereumUrl, undefined));
-      const ethId = signer.chainIds()[1];
+      const ethereumChainId = signer.chainIds()[1];
       const twoChains = signer.chainIds();
       // it should store both chains
       expect(twoChains.length).toEqual(2);
@@ -157,6 +157,7 @@ describe("MultiChainSigner", () => {
       expect(acct.data[0].balance.length).toBe(1);
 
       const ganacheMainIdentity: PublicIdentity = {
+        chainId: ethereumChainId,
         pubkey: {
           algo: Algorithm.Secp256k1,
           data: Encoding.fromHex(
@@ -164,8 +165,8 @@ describe("MultiChainSigner", () => {
           ) as PublicKeyBytes,
         },
       };
-      const ganacheAddr = signer.keyToAddress(ethId, ganacheMainIdentity.pubkey);
-      const connection2 = signer.connection(ethId);
+      const ganacheAddr = signer.keyToAddress(ethereumChainId, ganacheMainIdentity.pubkey);
+      const connection2 = signer.connection(ethereumChainId);
       const acct2 = await connection2.getAccount({ address: ganacheAddr });
       expect(acct2).toBeTruthy();
       expect(acct2.data.length).toBe(1);

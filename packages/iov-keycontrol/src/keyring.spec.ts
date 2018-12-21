@@ -124,7 +124,7 @@ describe("Keyring", () => {
         "wallets": [
           {
             "implementationId": "ed25519-hd",
-            "data": "{\\"formatVersion\\":1,\\"id\\":\\"f49h7gh34\\",\\"secret\\":\\"side ripple bachelor banner word swear buzz try situate rent desk carry scorpion uphold undo account pumpkin throw\\",\\"curve\\":\\"ed25519 seed\\",\\"identities\\":[]}"
+            "data": "{\\"formatVersion\\":2,\\"id\\":\\"f49h7gh34\\",\\"secret\\":\\"side ripple bachelor banner word swear buzz try situate rent desk carry scorpion uphold undo account pumpkin throw\\",\\"curve\\":\\"ed25519 seed\\",\\"identities\\":[]}"
           }
         ]
       }` as KeyringSerializationString);
@@ -135,7 +135,7 @@ describe("Keyring", () => {
 
   it("can deserialize one ed25519 wallet", () => {
     const keyring = new Keyring(
-      '{"formatVersion": 1, "wallets": [{"implementationId":"ed25519", "data":"{ \\"formatVersion\\": 1, \\"id\\": \\"n3u04gh03h\\", \\"identities\\":[{\\"localIdentity\\": { \\"pubkey\\": { \\"algo\\": \\"ed25519\\", \\"data\\": \\"aabbccdd\\" }, \\"nickname\\": \\"foo\\" }, \\"privkey\\": \\"223322112233aabb\\"}] }"}]}' as KeyringSerializationString,
+      '{"formatVersion": 1, "wallets": [{"implementationId":"ed25519", "data":"{ \\"formatVersion\\": 2, \\"id\\": \\"n3u04gh03h\\", \\"identities\\":[{\\"localIdentity\\": { \\"chainId\\": \\"barnet\\", \\"pubkey\\": { \\"algo\\": \\"ed25519\\", \\"data\\": \\"aabbccdd\\" }, \\"nickname\\": \\"foo\\" }, \\"privkey\\": \\"223322112233aabb\\"}] }"}]}' as KeyringSerializationString,
     );
 
     expect(keyring.getWallets().length).toEqual(1);
