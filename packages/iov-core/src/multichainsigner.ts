@@ -5,12 +5,12 @@ import {
   ChainId,
   Nonce,
   PostTxResponse,
-  PublicKeyBundle,
+  PublicIdentity,
   SignedTransaction,
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
-import { PublicIdentity, WalletId } from "@iov/keycontrol";
+import { WalletId } from "@iov/keycontrol";
 
 /**
  * An internal helper to pass around the tuple
@@ -100,8 +100,11 @@ export class MultiChainSigner {
     };
   }
 
-  public keyToAddress(chainId: ChainId, key: PublicKeyBundle): Address {
-    return this.getChain(chainId).codec.keyToAddress(key);
+  /**
+   * Calculate an address in a blockchain-specific way
+   */
+  public identityToAddress(identity: PublicIdentity): Address {
+    return this.getChain(identity.chainId).codec.identityToAddress(identity);
   }
 
   /**
@@ -116,8 +119,8 @@ export class MultiChainSigner {
     const nonce = await connection.getNonce({ pubkey: tx.signer });
 
     const signingIdentity: PublicIdentity = {
+      chainId: tx.chainId,
       pubkey: tx.signer,
-      // TODO: add chainId (https://github.com/iov-one/iov-core/issues/621)
     };
     const signed = await this.profile.signTransaction(walletId, signingIdentity, tx, codec, nonce);
     const txBytes = codec.bytesToPost(signed);

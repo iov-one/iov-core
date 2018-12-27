@@ -14,7 +14,7 @@ import { Encoding } from "@iov/encoding";
 import { parseTx } from "./decode";
 import { buildSignedTx, buildUnsignedTx } from "./encode";
 import * as codecImpl from "./generated/codecimpl";
-import { appendSignBytes, isValidAddress, keyToAddress, tendermintHash } from "./util";
+import { appendSignBytes, identityToAddress, isValidAddress, tendermintHash } from "./util";
 
 export const bnsCodec: TxCodec = {
   // these are the bytes we create to add a signature
@@ -47,6 +47,6 @@ export const bnsCodec: TxCodec = {
     return parseTx(parsed, chainId);
   },
 
-  keyToAddress: keyToAddress,
+  identityToAddress: identityToAddress,
   isValidAddress: isValidAddress,
 };

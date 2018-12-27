@@ -7,6 +7,8 @@ import { Secp256k1HdWallet } from "./secp256k1hdwallet";
 const { fromHex, toAscii } = Encoding;
 
 describe("Secp256k1HdWallet", () => {
+  const defaultChain = "chain123" as ChainId;
+
   it("returns the concrete type when creating from entropy", () => {
     const wallet = Secp256k1HdWallet.fromEntropy(
       fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"),
@@ -33,7 +35,10 @@ describe("Secp256k1HdWallet", () => {
     );
     {
       // m/0'/0
-      const identity = await wallet.createIdentity([Slip10RawIndex.hardened(0), Slip10RawIndex.normal(0)]);
+      const identity = await wallet.createIdentity(defaultChain, [
+        Slip10RawIndex.hardened(0),
+        Slip10RawIndex.normal(0),
+      ]);
       expect(identity.pubkey.data).toEqual(
         fromHex(
           "04a7a8d79df7857bf25a3a389b0ecea83c5272181d2c062346b1c64e258589fce0f48fe3900d52ef9a034a35e671329bb65441d8e010484d3e4817578550448e99",
@@ -42,7 +47,10 @@ describe("Secp256k1HdWallet", () => {
     }
     {
       // m/0'/1
-      const identity = await wallet.createIdentity([Slip10RawIndex.hardened(0), Slip10RawIndex.normal(1)]);
+      const identity = await wallet.createIdentity(defaultChain, [
+        Slip10RawIndex.hardened(0),
+        Slip10RawIndex.normal(1),
+      ]);
       expect(identity.pubkey.data).toEqual(
         fromHex(
           "04ec5fd84554de89c53fcd0670f534930c6ec0cbe761d43a98f6557422e16d25612d2d379d9a9ffff69b1764377a98d772ad00ea38220ec318265cebbd5bda2a66",
@@ -51,7 +59,7 @@ describe("Secp256k1HdWallet", () => {
     }
     {
       // m/0'/1/0
-      const identity = await wallet.createIdentity([
+      const identity = await wallet.createIdentity(defaultChain, [
         Slip10RawIndex.hardened(0),
         Slip10RawIndex.normal(1),
         Slip10RawIndex.normal(0),
@@ -64,7 +72,7 @@ describe("Secp256k1HdWallet", () => {
     }
     {
       // m/0'/1/1
-      const identity = await wallet.createIdentity([
+      const identity = await wallet.createIdentity(defaultChain, [
         Slip10RawIndex.hardened(0),
         Slip10RawIndex.normal(1),
         Slip10RawIndex.normal(1),
@@ -77,7 +85,7 @@ describe("Secp256k1HdWallet", () => {
     }
     {
       // m/0'/1/1/0'
-      const identity = await wallet.createIdentity([
+      const identity = await wallet.createIdentity(defaultChain, [
         Slip10RawIndex.hardened(0),
         Slip10RawIndex.normal(1),
         Slip10RawIndex.normal(1),
@@ -91,7 +99,7 @@ describe("Secp256k1HdWallet", () => {
     }
     {
       // m/0'/1/1/1'
-      const identity = await wallet.createIdentity([
+      const identity = await wallet.createIdentity(defaultChain, [
         Slip10RawIndex.hardened(0),
         Slip10RawIndex.normal(1),
         Slip10RawIndex.normal(1),
@@ -111,15 +119,13 @@ describe("Secp256k1HdWallet", () => {
     );
     // m/0'/0
     // pubkey: 04a7a8d79df7857bf25a3a389b0ecea83c5272181d2c062346b1c64e258589fce0f48fe3900d52ef9a034a35e671329bb65441d8e010484d3e4817578550448e99
-    const mainIdentity = await wallet.createIdentity([Slip10RawIndex.hardened(0), Slip10RawIndex.normal(0)]);
+    const mainIdentity = await wallet.createIdentity(defaultChain, [
+      Slip10RawIndex.hardened(0),
+      Slip10RawIndex.normal(0),
+    ]);
 
     const data = toAscii("foo bar") as SignableBytes;
-    const signatureBytes = await wallet.createTransactionSignature(
-      mainIdentity,
-      data,
-      PrehashType.Sha256,
-      "" as ChainId,
-    );
+    const signatureBytes = await wallet.createTransactionSignature(mainIdentity, data, PrehashType.Sha256);
 
     const valid = await Secp256k1.verifySignature(
       ExtendedSecp256k1Signature.fromFixedLength(signatureBytes),

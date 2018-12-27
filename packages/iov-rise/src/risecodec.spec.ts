@@ -5,7 +5,7 @@ import {
   isSendTransaction,
   Nonce,
   PostableBytes,
-  PublicKeyBundle,
+  PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   SignatureBytes,
@@ -26,11 +26,14 @@ const defaultCreationTimestamp = new Int53(865708731 + riseEpochAsUnixTimestamp)
 describe("riseCodec", () => {
   it("derives addresses properly", () => {
     // https://texplorer.rise.vision/address/10145108642177909005R
-    const pubkey: PublicKeyBundle = {
-      algo: Algorithm.Ed25519,
-      data: fromHex("34770ce843a01d975773ba2557b6643b32fe088818d343df2c32cbb89b286b3f") as PublicKeyBytes,
+    const identity: PublicIdentity = {
+      chainId: riseTestnet,
+      pubkey: {
+        algo: Algorithm.Ed25519,
+        data: fromHex("34770ce843a01d975773ba2557b6643b32fe088818d343df2c32cbb89b286b3f") as PublicKeyBytes,
+      },
     };
-    expect(riseCodec.keyToAddress(pubkey)).toEqual("10145108642177909005R");
+    expect(riseCodec.identityToAddress(identity)).toEqual("10145108642177909005R");
   });
 
   it("can create bytes to post", () => {

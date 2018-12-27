@@ -5,7 +5,7 @@ import {
   isSendTransaction,
   Nonce,
   PostableBytes,
-  PublicKeyBundle,
+  PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   SignatureBytes,
@@ -26,11 +26,14 @@ const defaultCreationTimestamp = new Int53(865708731 + liskEpochAsUnixTimestamp)
 describe("liskCodec", () => {
   it("derives addresses properly", () => {
     // https://testnet-explorer.lisk.io/address/6076671634347365051L
-    const pubkey: PublicKeyBundle = {
-      algo: Algorithm.Ed25519,
-      data: fromHex("f4852b270f76dc8b49bfa88de5906e81d3b001d23852f0e74ba60cac7180a184") as PublicKeyBytes,
+    const identity: PublicIdentity = {
+      chainId: liskTestnet,
+      pubkey: {
+        algo: Algorithm.Ed25519,
+        data: fromHex("f4852b270f76dc8b49bfa88de5906e81d3b001d23852f0e74ba60cac7180a184") as PublicKeyBytes,
+      },
     };
-    expect(liskCodec.keyToAddress(pubkey)).toEqual("6076671634347365051L");
+    expect(liskCodec.identityToAddress(identity)).toEqual("6076671634347365051L");
   });
 
   it("can create bytes to post", () => {

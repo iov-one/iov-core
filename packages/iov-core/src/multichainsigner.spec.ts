@@ -4,22 +4,16 @@ import {
   BcpTransactionState,
   ChainId,
   isSendTransaction,
+  PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   TokenTicker,
 } from "@iov/bcp-types";
 import { bnsCodec, bnsConnector, bnsFromOrToTag } from "@iov/bns";
-import { Random } from "@iov/crypto";
+import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { ethereumConnector } from "@iov/ethereum";
-import {
-  Ed25519HdWallet,
-  HdPaths,
-  LocalIdentity,
-  PublicIdentity,
-  UserProfile,
-  WalletId,
-} from "@iov/keycontrol";
+import { Ed25519HdWallet, HdPaths, LocalIdentity, UserProfile, WalletId } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";
 
@@ -39,10 +33,15 @@ const pendingWithoutEthereum = () => {
 };
 
 async function randomBnsAddress(): Promise<Address> {
-  return bnsCodec.keyToAddress({
-    algo: Algorithm.Ed25519,
-    data: (await Random.getBytes(32)) as PublicKeyBytes,
-  });
+  const rawKeypair = await Ed25519.makeKeypair(await Random.getBytes(32));
+  const randomIdentity: PublicIdentity = {
+    chainId: "some-testnet" as ChainId,
+    pubkey: {
+      algo: Algorithm.Ed25519,
+      data: rawKeypair.pubkey as PublicKeyBytes,
+    },
+  };
+  return bnsCodec.identityToAddress(randomIdentity);
 }
 
 describe("MultiChainSigner", () => {
@@ -64,27 +63,28 @@ describe("MultiChainSigner", () => {
     const mnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
     const cash = "CASH" as TokenTicker;
 
-    async function userProfileWithFaucet(): Promise<{
-      readonly profile: UserProfile;
+    async function addWalletWithFaucet(
+      profile: UserProfile,
+      chainId: ChainId,
+    ): Promise<{
       readonly mainWalletId: WalletId;
       readonly faucet: LocalIdentity;
     }> {
-      const wallet = Ed25519HdWallet.fromMnemonic(mnemonic);
-      const profile = new UserProfile();
-      profile.addWallet(wallet);
-      const faucet = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
-      return { profile, mainWalletId: wallet.id, faucet };
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic));
+      const faucet = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(0));
+      return { mainWalletId: wallet.id, faucet };
     }
 
     it("can send transaction", async () => {
       pendingWithoutBnsd();
 
-      const { profile, mainWalletId, faucet } = await userProfileWithFaucet();
-
+      const profile = new UserProfile();
       const signer = new MultiChainSigner(profile);
       const { connection } = await signer.addChain(bnsConnector(bnsdTendermintUrl));
       expect(signer.chainIds().length).toEqual(1);
       const chainId = connection.chainId();
+
+      const { mainWalletId, faucet } = await addWalletWithFaucet(profile, chainId);
 
       const recipient = await randomBnsAddress();
 
@@ -128,7 +128,7 @@ describe("MultiChainSigner", () => {
       pendingWithoutBnsd();
       pendingWithoutEthereum();
 
-      const { profile, faucet } = await userProfileWithFaucet();
+      const profile = new UserProfile();
       const signer = new MultiChainSigner(profile);
       expect(signer.chainIds().length).toEqual(0);
 
@@ -136,10 +136,11 @@ describe("MultiChainSigner", () => {
       await signer.addChain(bnsConnector(bnsdTendermintUrl));
       expect(signer.chainIds().length).toEqual(1);
       const bovId = signer.chainIds()[0];
+      const { faucet } = await addWalletWithFaucet(profile, bovId);
 
       // add a ethereum chain
       await signer.addChain(ethereumConnector(httpEthereumUrl, undefined));
-      const ethId = signer.chainIds()[1];
+      const ethereumChainId = signer.chainIds()[1];
       const twoChains = signer.chainIds();
       // it should store both chains
       expect(twoChains.length).toEqual(2);
@@ -148,7 +149,7 @@ describe("MultiChainSigner", () => {
       expect(twoChains[0]).not.toEqual(twoChains[1]);
 
       // make sure we can query with multiple registered chains
-      const faucetAddr = signer.keyToAddress(bovId, faucet.pubkey);
+      const faucetAddr = signer.identityToAddress(faucet);
       const connection = signer.connection(bovId);
       const acct = await connection.getAccount({ address: faucetAddr });
       expect(acct).toBeTruthy();
@@ -156,6 +157,7 @@ describe("MultiChainSigner", () => {
       expect(acct.data[0].balance.length).toBe(1);
 
       const ganacheMainIdentity: PublicIdentity = {
+        chainId: ethereumChainId,
         pubkey: {
           algo: Algorithm.Secp256k1,
           data: Encoding.fromHex(
@@ -163,8 +165,8 @@ describe("MultiChainSigner", () => {
           ) as PublicKeyBytes,
         },
       };
-      const ganacheAddr = signer.keyToAddress(ethId, ganacheMainIdentity.pubkey);
-      const connection2 = signer.connection(ethId);
+      const ganacheAddr = signer.identityToAddress(ganacheMainIdentity);
+      const connection2 = signer.connection(ethereumChainId);
       const acct2 = await connection2.getAccount({ address: ganacheAddr });
       expect(acct2).toBeTruthy();
       expect(acct2.data.length).toBe(1);

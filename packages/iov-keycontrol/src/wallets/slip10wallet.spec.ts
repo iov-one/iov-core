@@ -8,9 +8,10 @@ import { Slip10Wallet } from "./slip10wallet";
 const { fromHex } = Encoding;
 
 describe("Slip10Wallet", () => {
+  const defaultChain = "chain123" as ChainId;
   const emptyWallet = `
     {
-      "formatVersion": 1,
+      "formatVersion": 2,
       "id": "aX7hg93h9goHf",
       "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
       "curve": "ed25519 seed",
@@ -20,7 +21,7 @@ describe("Slip10Wallet", () => {
 
   const emptySecp256k1Wallet = `
     {
-      "formatVersion": 1,
+      "formatVersion": 2,
       "id": "2h3487euib4h",
       "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
       "curve": "Bitcoin seed",
@@ -84,9 +85,9 @@ describe("Slip10Wallet", () => {
     ];
 
     for (const wallet of emptyWallets) {
-      const newIdentity1 = await wallet.createIdentity([Slip10RawIndex.hardened(0)]);
-      const newIdentity2 = await wallet.createIdentity([Slip10RawIndex.hardened(1)]);
-      const newIdentity3 = await wallet.createIdentity([
+      const newIdentity1 = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(0)]);
+      const newIdentity2 = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(1)]);
+      const newIdentity3 = await wallet.createIdentity(defaultChain, [
         Slip10RawIndex.hardened(1),
         Slip10RawIndex.hardened(0),
       ]);
@@ -115,8 +116,19 @@ describe("Slip10Wallet", () => {
     }
   });
 
-  it("throws when adding the creating path twice", async () => {
-    // Same path leads to the same identity identifier, so we don't support it
+  it("can create different identities with the same keypair", async () => {
+    const wallet = new Slip10Wallet(emptyWallet);
+    await wallet.createIdentity("chain1" as ChainId, [Slip10RawIndex.hardened(0)]);
+    await wallet.createIdentity("chain2" as ChainId, [Slip10RawIndex.hardened(0)]);
+
+    const identities = wallet.getIdentities();
+    expect(identities.length).toEqual(2);
+    expect(identities[0].chainId).toEqual("chain1");
+    expect(identities[1].chainId).toEqual("chain2");
+    expect(identities[0].pubkey).toEqual(identities[1].pubkey);
+  });
+
+  it("throws when adding the same identity twice", async () => {
     const defaultPath = [Slip10RawIndex.hardened(0)];
 
     const emptyWallets = [
@@ -133,9 +145,9 @@ describe("Slip10Wallet", () => {
     ];
 
     for (const wallet of emptyWallets) {
-      await wallet.createIdentity(defaultPath);
+      await wallet.createIdentity(defaultChain, defaultPath);
       await wallet
-        .createIdentity(defaultPath)
+        .createIdentity(defaultChain, defaultPath)
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(/ID collision/i));
     }
@@ -156,9 +168,9 @@ describe("Slip10Wallet", () => {
     ];
 
     for (const wallet of emptyWallets) {
-      const newIdentity1 = await wallet.createIdentity([Slip10RawIndex.hardened(0)]);
-      const newIdentity2 = await wallet.createIdentity([Slip10RawIndex.hardened(1)]);
-      const newIdentity3 = await wallet.createIdentity([
+      const newIdentity1 = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(0)]);
+      const newIdentity2 = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(1)]);
+      const newIdentity3 = await wallet.createIdentity(defaultChain, [
         Slip10RawIndex.hardened(1),
         Slip10RawIndex.hardened(0),
       ]);
@@ -194,7 +206,7 @@ describe("Slip10Wallet", () => {
     );
 
     // m/44'/0'/7'/1/0
-    const address0 = await wallet.createIdentity([
+    const address0 = await wallet.createIdentity(defaultChain, [
       Slip10RawIndex.hardened(44),
       Slip10RawIndex.hardened(0),
       Slip10RawIndex.hardened(7),
@@ -208,7 +220,7 @@ describe("Slip10Wallet", () => {
     );
 
     // m/44'/0'/7'/1/1
-    const address1 = await wallet.createIdentity([
+    const address1 = await wallet.createIdentity(defaultChain, [
       Slip10RawIndex.hardened(44),
       Slip10RawIndex.hardened(0),
       Slip10RawIndex.hardened(7),
@@ -222,7 +234,7 @@ describe("Slip10Wallet", () => {
     );
 
     // m/44'/0'/7'/1/2
-    const address2 = await wallet.createIdentity([
+    const address2 = await wallet.createIdentity(defaultChain, [
       Slip10RawIndex.hardened(44),
       Slip10RawIndex.hardened(0),
       Slip10RawIndex.hardened(7),
@@ -249,7 +261,7 @@ describe("Slip10Wallet", () => {
     );
 
     // m/44'/148'/0'
-    const address0 = await wallet.createIdentity([
+    const address0 = await wallet.createIdentity(defaultChain, [
       Slip10RawIndex.hardened(44),
       Slip10RawIndex.hardened(148),
       Slip10RawIndex.hardened(0),
@@ -259,7 +271,7 @@ describe("Slip10Wallet", () => {
     );
 
     // m/44'/148'/1'
-    const address1 = await wallet.createIdentity([
+    const address1 = await wallet.createIdentity(defaultChain, [
       Slip10RawIndex.hardened(44),
       Slip10RawIndex.hardened(148),
       Slip10RawIndex.hardened(1),
@@ -269,7 +281,7 @@ describe("Slip10Wallet", () => {
     );
 
     // m/44'/148'/2'
-    const address2 = await wallet.createIdentity([
+    const address2 = await wallet.createIdentity(defaultChain, [
       Slip10RawIndex.hardened(44),
       Slip10RawIndex.hardened(148),
       Slip10RawIndex.hardened(2),
@@ -281,7 +293,7 @@ describe("Slip10Wallet", () => {
 
   it("can set, change and unset an identity label", async () => {
     const wallet = new Slip10Wallet(emptyWallet);
-    const newIdentity = await wallet.createIdentity([Slip10RawIndex.hardened(0)]);
+    const newIdentity = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(0)]);
     const originalId = newIdentity.id;
     expect(wallet.getIdentities()[0].label).toBeUndefined();
 
@@ -299,41 +311,36 @@ describe("Slip10Wallet", () => {
 
   it("can sign", async () => {
     const wallet = new Slip10Wallet(emptyWallet);
-    const newIdentity = await wallet.createIdentity([Slip10RawIndex.hardened(0)]);
+    const newIdentity = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(0)]);
 
     expect(wallet.canSign.value).toEqual(true);
 
     const tx = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
-    const chainId = "some-chain" as ChainId;
-    const signature = await wallet.createTransactionSignature(newIdentity, tx, PrehashType.None, chainId);
+    const signature = await wallet.createTransactionSignature(newIdentity, tx, PrehashType.None);
     expect(signature).toBeTruthy();
     expect(signature.length).toEqual(64);
   });
 
   it("can sign with different prehash types", async () => {
     const wallet = new Slip10Wallet(emptyWallet);
-    const mainIdentity = await wallet.createIdentity([Slip10RawIndex.hardened(0)]);
+    const mainIdentity = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(0)]);
 
     const transactionBytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
-    const chainId = "some-chain" as ChainId;
 
     const signaturePrehashNone = await wallet.createTransactionSignature(
       mainIdentity,
       transactionBytes,
       PrehashType.None,
-      chainId,
     );
     const signaturePrehashSha256 = await wallet.createTransactionSignature(
       mainIdentity,
       transactionBytes,
       PrehashType.Sha256,
-      chainId,
     );
     const signaturePrehashSha512 = await wallet.createTransactionSignature(
       mainIdentity,
       transactionBytes,
       PrehashType.Sha512,
-      chainId,
     );
     expect(signaturePrehashNone.length).toEqual(64);
     expect(signaturePrehashSha256.length).toEqual(64);
@@ -346,8 +353,7 @@ describe("Slip10Wallet", () => {
 
   it("produces correct data for prehash signatures", async () => {
     const wallet = new Slip10Wallet(emptyWallet);
-    const mainIdentity = await wallet.createIdentity([Slip10RawIndex.hardened(0)]);
-    const chainId = "some-chain" as ChainId;
+    const mainIdentity = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(0)]);
 
     const bytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
     const bytesSha256 = new Sha256(bytes).digest();
@@ -357,19 +363,17 @@ describe("Slip10Wallet", () => {
       mainIdentity,
       bytesSha256 as SignableBytes,
       PrehashType.None,
-      chainId,
     );
     const expectedSha512 = await wallet.createTransactionSignature(
       mainIdentity,
       bytesSha512 as SignableBytes,
       PrehashType.None,
-      chainId,
     );
 
-    expect(await wallet.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha256, chainId)).toEqual(
+    expect(await wallet.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha256)).toEqual(
       expectedSha256,
     );
-    expect(await wallet.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha512, chainId)).toEqual(
+    expect(await wallet.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha512)).toEqual(
       expectedSha512,
     );
   });
@@ -402,9 +406,12 @@ describe("Slip10Wallet", () => {
     wallet.setLabel("wallet with 3 identities");
     const originalId = wallet.id;
     expect(originalId).toBeTruthy();
-    const identity1 = await wallet.createIdentity([Slip10RawIndex.hardened(0)]);
-    const identity2 = await wallet.createIdentity([Slip10RawIndex.hardened(1)]);
-    const identity3 = await wallet.createIdentity([Slip10RawIndex.hardened(2), Slip10RawIndex.hardened(0)]);
+    const identity1 = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(0)]);
+    const identity2 = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(1)]);
+    const identity3 = await wallet.createIdentity(defaultChain, [
+      Slip10RawIndex.hardened(2),
+      Slip10RawIndex.hardened(0),
+    ]);
     wallet.setIdentityLabel(identity1, undefined);
     wallet.setIdentityLabel(identity2, "");
     wallet.setIdentityLabel(identity3, "foo");
@@ -455,7 +462,7 @@ describe("Slip10Wallet", () => {
       // empty
       const wallet = new Slip10Wallet(`
         {
-          "formatVersion": 1,
+          "formatVersion": 2,
           "id": "eMpTy",
           "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
           "curve": "ed25519 seed",
@@ -471,13 +478,14 @@ describe("Slip10Wallet", () => {
       // one element
       const serialized = `
         {
-          "formatVersion": 1,
+          "formatVersion": 2,
           "id": "1elemenT",
           "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
           "curve": "ed25519 seed",
           "identities": [
             {
               "localIdentity": {
+                "chainId": "xnet",
                 "pubkey": {
                   "algo": "ed25519",
                   "data": "aabbccdd"
@@ -493,6 +501,7 @@ describe("Slip10Wallet", () => {
       expect(wallet).toBeTruthy();
       expect(wallet.id).toEqual("1elemenT");
       expect(wallet.getIdentities().length).toEqual(1);
+      expect(wallet.getIdentities()[0].chainId).toEqual("xnet");
       expect(wallet.getIdentities()[0].pubkey.algo).toEqual("ed25519");
       expect(wallet.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
       expect(wallet.getIdentities()[0].label).toEqual("foo");
@@ -502,13 +511,14 @@ describe("Slip10Wallet", () => {
       // two elements
       const serialized = `
         {
-          "formatVersion": 1,
+          "formatVersion": 2,
           "id": "2elemeNT",
           "secret": "rhythm they leave position crowd cart pilot student razor indoor gesture thrive",
           "curve": "ed25519 seed",
           "identities": [
             {
               "localIdentity": {
+                "chainId": "xnet",
                 "pubkey": {
                   "algo": "ed25519",
                   "data": "aabbccdd"
@@ -519,6 +529,7 @@ describe("Slip10Wallet", () => {
             },
             {
               "localIdentity": {
+                "chainId": "ynet",
                 "pubkey": {
                   "algo": "ed25519",
                   "data": "ddccbbaa"
@@ -533,9 +544,11 @@ describe("Slip10Wallet", () => {
       expect(wallet).toBeTruthy();
       expect(wallet.id).toEqual("2elemeNT");
       expect(wallet.getIdentities().length).toEqual(2);
+      expect(wallet.getIdentities()[0].chainId).toEqual("xnet");
       expect(wallet.getIdentities()[0].pubkey.algo).toEqual("ed25519");
       expect(wallet.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
       expect(wallet.getIdentities()[0].label).toEqual("foo");
+      expect(wallet.getIdentities()[1].chainId).toEqual("ynet");
       expect(wallet.getIdentities()[1].pubkey.algo).toEqual("ed25519");
       expect(wallet.getIdentities()[1].pubkey.data).toEqual(Encoding.fromHex("ddccbbaa"));
       expect(wallet.getIdentities()[1].label).toEqual("bar");
@@ -557,9 +570,9 @@ describe("Slip10Wallet", () => {
 
   it("can serialize and restore a full wallet", async () => {
     const original = new Slip10Wallet(emptyWallet);
-    const identity1 = await original.createIdentity([Slip10RawIndex.hardened(0)]);
-    const identity2 = await original.createIdentity([Slip10RawIndex.hardened(1)]);
-    const identity3 = await original.createIdentity([Slip10RawIndex.hardened(2)]);
+    const identity1 = await original.createIdentity(defaultChain, [Slip10RawIndex.hardened(0)]);
+    const identity2 = await original.createIdentity(defaultChain, [Slip10RawIndex.hardened(1)]);
+    const identity3 = await original.createIdentity(defaultChain, [Slip10RawIndex.hardened(2)]);
     original.setIdentityLabel(identity1, undefined);
     original.setIdentityLabel(identity2, "");
     original.setIdentityLabel(identity3, "foo");
@@ -573,15 +586,14 @@ describe("Slip10Wallet", () => {
 
     // privkeys match
     const tx = new Uint8Array([]) as SignableBytes;
-    const chainId = "" as ChainId;
-    expect(await original.createTransactionSignature(identity1, tx, PrehashType.None, chainId)).toEqual(
-      await restored.createTransactionSignature(identity1, tx, PrehashType.None, chainId),
+    expect(await original.createTransactionSignature(identity1, tx, PrehashType.None)).toEqual(
+      await restored.createTransactionSignature(identity1, tx, PrehashType.None),
     );
-    expect(await original.createTransactionSignature(identity2, tx, PrehashType.None, chainId)).toEqual(
-      await restored.createTransactionSignature(identity2, tx, PrehashType.None, chainId),
+    expect(await original.createTransactionSignature(identity2, tx, PrehashType.None)).toEqual(
+      await restored.createTransactionSignature(identity2, tx, PrehashType.None),
     );
-    expect(await original.createTransactionSignature(identity3, tx, PrehashType.None, chainId)).toEqual(
-      await restored.createTransactionSignature(identity3, tx, PrehashType.None, chainId),
+    expect(await original.createTransactionSignature(identity3, tx, PrehashType.None)).toEqual(
+      await restored.createTransactionSignature(identity3, tx, PrehashType.None),
     );
   });
 

@@ -113,7 +113,7 @@ describe("EthereumConnection", () => {
       const wallet = Secp256k1HdWallet.fromMnemonic(
         "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
       );
-      const mainIdentity = await wallet.createIdentity(HdPaths.bip44(60, 0, 0, 1));
+      const mainIdentity = await wallet.createIdentity(nodeChainId, HdPaths.bip44(60, 0, 0, 1));
 
       const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 
@@ -140,7 +140,7 @@ describe("EthereumConnection", () => {
         memo: "We \u2665 developers – iov.one",
       };
       const connection = await EthereumConnection.establish(base, undefined);
-      const senderAddress = ethereumCodec.keyToAddress(mainIdentity.pubkey);
+      const senderAddress = ethereumCodec.identityToAddress(mainIdentity);
       const query: BcpAccountQuery = { address: senderAddress as Address };
       const nonce = await connection.getNonce(query);
       const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
@@ -148,7 +148,6 @@ describe("EthereumConnection", () => {
         mainIdentity,
         signingJob.bytes,
         signingJob.prehashType,
-        nodeChainId,
       );
 
       const signedTransaction: SignedTransaction = {
@@ -196,7 +195,7 @@ describe("EthereumConnection", () => {
       const wallet = Secp256k1HdWallet.fromMnemonic(
         "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
       );
-      const mainIdentity = await wallet.createIdentity(HdPaths.bip44(60, 0, 0, 1));
+      const mainIdentity = await wallet.createIdentity(nodeChainId, HdPaths.bip44(60, 0, 0, 1));
 
       const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 
@@ -223,14 +222,13 @@ describe("EthereumConnection", () => {
         memo: "Search tx test" + new Date(),
       };
       const connection = await EthereumConnection.establish(base, undefined);
-      const senderAddress = ethereumCodec.keyToAddress(mainIdentity.pubkey);
+      const senderAddress = ethereumCodec.identityToAddress(mainIdentity);
       const nonce = await connection.getNonce({ address: senderAddress });
       const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
       const signature = await wallet.createTransactionSignature(
         mainIdentity,
         signingJob.bytes,
         signingJob.prehashType,
-        nodeChainId,
       );
 
       const signedTransaction: SignedTransaction = {
@@ -324,7 +322,7 @@ describe("EthereumConnection", () => {
       const wallet = Secp256k1HdWallet.fromMnemonic(
         "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
       );
-      const mainIdentity = await wallet.createIdentity(HdPaths.bip44(60, 0, 0, 1));
+      const mainIdentity = await wallet.createIdentity(nodeChainId, HdPaths.bip44(60, 0, 0, 1));
 
       const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 
@@ -350,14 +348,13 @@ describe("EthereumConnection", () => {
         },
         memo: memo,
       };
-      const senderAddress = ethereumCodec.keyToAddress(mainIdentity.pubkey);
+      const senderAddress = ethereumCodec.identityToAddress(mainIdentity);
       const nonce = await connection.getNonce({ address: senderAddress });
       const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
       const signature = await wallet.createTransactionSignature(
         mainIdentity,
         signingJob.bytes,
         signingJob.prehashType,
-        nodeChainId,
       );
 
       const signedTransaction: SignedTransaction = {

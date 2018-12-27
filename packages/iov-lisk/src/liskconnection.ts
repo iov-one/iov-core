@@ -36,6 +36,7 @@ import { Encoding, Int53, Uint53, Uint64 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
+import { pubkeyToAddress } from "./derivation";
 import { liskCodec } from "./liskcodec";
 
 const { toUtf8 } = Encoding;
@@ -171,7 +172,7 @@ export class LiskConnection implements BcpConnection {
     if (isAddressQuery(query)) {
       address = query.address;
     } else if (isPubkeyQuery(query)) {
-      address = liskCodec.keyToAddress(query.pubkey);
+      address = pubkeyToAddress(query.pubkey.data);
     } else {
       throw new Error("Query type not supported");
     }

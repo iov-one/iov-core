@@ -9,9 +9,14 @@ export interface PublicKeyBundle {
     readonly algo: Algorithm;
     readonly data: PublicKeyBytes;
 }
-export declare type SignatureBytes = Uint8Array & As<"signature">;
 /** Used to differentiate a blockchain. Should be alphanumeric or -_/ and unique */
 export declare type ChainId = string & As<"chain-id">;
+/** a public key we can identify with on a blockchain */
+export interface PublicIdentity {
+    readonly chainId: ChainId;
+    readonly pubkey: PublicKeyBundle;
+}
+export declare type SignatureBytes = Uint8Array & As<"signature">;
 export declare type Nonce = Int53 & As<"nonce">;
 export declare type TokenTicker = string & As<"token-ticker">;
 export declare type SwapIdBytes = Uint8Array & As<"swap-id">;

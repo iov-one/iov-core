@@ -43,13 +43,19 @@ $ iov-cli
 
 ```
 > const profile = new UserProfile();
-> const wallet = Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script")
-> profile.addWallet(wallet)
+> const signer = new MultiChainSigner(profile);
+> const { connection } = await signer.addChain(bnsConnector("ws://localhost:22345"));
+> const chainId = connection.chainId();
+
+> chainId
+'test-chain-esuZ1V'
+
+> const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic("degree tackle suggest window test behind mesh extra cover prepare oak script"));
 
 > profile.getIdentities(wallet.id)
 []
 
-> const faucet = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0))
+> const faucet = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(0))
 
 > faucet.pubkey
 { algo: 'ed25519',
@@ -61,19 +67,18 @@ $ iov-cli
 > profile.setIdentityLabel(wallet.id, faucet, "blockchain of value faucet")
 
 > profile.getIdentities(wallet.id)
-[ { pubkey: { algo: 'ed25519', data: [Uint8Array] },
-    label: 'blockchain of value faucet' } ]
+[ { chainId: 'test-chain-esuZ1V',
+    pubkey: { algo: 'ed25519', data: [Uint8Array] },
+    label: 'blockchain of value faucet',
+    id: 'ed25519|533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898' } ]
 
-> const signer = new MultiChainSigner(profile);
-> await signer.addChain(bnsConnector("ws://localhost:22345"));
-> const chainId = signer.chainIds()[0];
-> const connection = signer.connection(chainId);
-
-> const faucetAddress = signer.keyToAddress(chainId, faucet.pubkey);
+> const faucetAddress = signer.identityToAddress(faucet);
+> faucetAddress
+'tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f'
 > (await connection.getAccount({ address: faucetAddress })).data[0].balance
 
-> const recipient = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(1));
-> const recipientAddress = signer.keyToAddress(chainId, recipient.pubkey);
+> const recipient = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(1));
+> const recipientAddress = signer.identityToAddress(recipient);
 
 > .editor
 const sendTx: SendTransaction = {

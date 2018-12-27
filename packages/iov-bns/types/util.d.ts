@@ -1,14 +1,15 @@
 import { As } from "type-tagger";
-import { Address, BcpTxQuery, ChainId, ConfirmedTransaction, Nonce, PublicKeyBundle, SignableBytes, SwapClaimTransaction, SwapCounterTransaction, SwapTimeoutTransaction } from "@iov/bcp-types";
+import { Address, BcpTxQuery, ChainId, ConfirmedTransaction, Nonce, PublicIdentity, SignableBytes, SwapClaimTransaction, SwapCounterTransaction, SwapTimeoutTransaction } from "@iov/bcp-types";
 import { QueryString } from "@iov/tendermint-rpc";
+export declare function addressPrefix(chainId: ChainId): "iov" | "tiov";
 /** Encodes raw bytes into a bech32 address */
-export declare function encodeBnsAddress(bytes: Uint8Array): Address;
+export declare function encodeBnsAddress(prefix: "iov" | "tiov", bytes: Uint8Array): Address;
 /** Decodes a printable address into bech32 object */
 export declare function decodeBnsAddress(address: Address): {
     readonly prefix: string;
     readonly data: Uint8Array;
 };
-export declare function keyToAddress(key: PublicKeyBundle): Address;
+export declare function identityToAddress(identity: PublicIdentity): Address;
 export declare function isValidAddress(address: string): boolean;
 export declare function appendSignBytes(bz: Uint8Array, chainId: ChainId, nonce: Nonce): SignableBytes;
 export declare const tendermintHash: (data: Uint8Array) => Uint8Array;

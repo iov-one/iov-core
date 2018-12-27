@@ -8,7 +8,7 @@ import {
   Nonce,
   PostableBytes,
   PrehashType,
-  PublicKeyBundle,
+  PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   SignableBytes,
@@ -142,8 +142,8 @@ export const riseCodec: TxCodec = {
   /**
    * Address string, e.g. 10145108642177909005R
    */
-  keyToAddress: (pubkey: PublicKeyBundle): Address => {
-    return pubkeyToAddress(pubkey.data) as Address;
+  identityToAddress: (identity: PublicIdentity): Address => {
+    return pubkeyToAddress(identity.pubkey.data) as Address;
   },
 
   isValidAddress: isValidAddress,

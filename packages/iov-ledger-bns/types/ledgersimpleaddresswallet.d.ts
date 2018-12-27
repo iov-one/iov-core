@@ -1,5 +1,5 @@
-import { ChainId, PrehashType, SignableBytes, SignatureBytes } from "@iov/bcp-types";
-import { LocalIdentity, PublicIdentity, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "@iov/keycontrol";
+import { ChainId, PrehashType, PublicIdentity, SignableBytes, SignatureBytes } from "@iov/bcp-types";
+import { LocalIdentity, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "@iov/keycontrol";
 import { ValueAndUpdates } from "@iov/stream";
 import { LedgerState } from "./statetracker";
 export declare class LedgerSimpleAddressWallet implements Wallet {
@@ -39,10 +39,10 @@ export declare class LedgerSimpleAddressWallet implements Wallet {
      */
     stopDeviceTracking(): void;
     setLabel(label: string | undefined): void;
-    createIdentity(options: unknown): Promise<LocalIdentity>;
+    createIdentity(chainId: ChainId, options: unknown): Promise<LocalIdentity>;
     setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
     getIdentities(): ReadonlyArray<LocalIdentity>;
-    createTransactionSignature(identity: PublicIdentity, transactionBytes: SignableBytes, prehashType: PrehashType, _: ChainId): Promise<SignatureBytes>;
+    createTransactionSignature(identity: PublicIdentity, transactionBytes: SignableBytes, prehashType: PrehashType): Promise<SignatureBytes>;
     printableSecret(): string;
     serialize(): WalletSerializationString;
     clone(): Wallet;

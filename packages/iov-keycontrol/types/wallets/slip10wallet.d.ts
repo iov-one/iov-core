@@ -1,7 +1,7 @@
-import { ChainId, PrehashType, SignableBytes, SignatureBytes } from "@iov/bcp-types";
+import { ChainId, PrehashType, PublicIdentity, SignableBytes, SignatureBytes } from "@iov/bcp-types";
 import { Slip10Curve } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
-import { LocalIdentity, PublicIdentity, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "../wallet";
+import { LocalIdentity, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "../wallet";
 interface Slip10WalletConstructor {
     new (data: WalletSerializationString): Slip10Wallet;
 }
@@ -25,10 +25,10 @@ export declare class Slip10Wallet implements Wallet {
     private readonly labelProducer;
     constructor(data: WalletSerializationString);
     setLabel(label: string | undefined): void;
-    createIdentity(options: unknown): Promise<LocalIdentity>;
+    createIdentity(chainId: ChainId, options: unknown): Promise<LocalIdentity>;
     setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
     getIdentities(): ReadonlyArray<LocalIdentity>;
-    createTransactionSignature(identity: PublicIdentity, transactionBytes: SignableBytes, prehashType: PrehashType, _: ChainId): Promise<SignatureBytes>;
+    createTransactionSignature(identity: PublicIdentity, transactionBytes: SignableBytes, prehashType: PrehashType): Promise<SignatureBytes>;
     printableSecret(): string;
     serialize(): WalletSerializationString;
     clone(): Slip10Wallet;

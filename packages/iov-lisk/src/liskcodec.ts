@@ -8,7 +8,7 @@ import {
   Nonce,
   PostableBytes,
   PrehashType,
-  PublicKeyBundle,
+  PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   SignableBytes,
@@ -151,8 +151,8 @@ export const liskCodec: TxCodec = {
    * 2. some addresses exceed the uint64 range (e.g. "19961131544040416558L")
    * These are bugs we have to deal with.
    */
-  keyToAddress: (pubkey: PublicKeyBundle): Address => {
-    return pubkeyToAddress(pubkey.data);
+  identityToAddress: (identity: PublicIdentity): Address => {
+    return pubkeyToAddress(identity.pubkey.data);
   },
 
   isValidAddress: isValidAddress,

@@ -1,13 +1,9 @@
 import { As } from "type-tagger";
-import { ChainId, PrehashType, PublicKeyBundle, SignableBytes, SignatureBytes } from "@iov/bcp-types";
+import { ChainId, PrehashType, PublicIdentity, SignableBytes, SignatureBytes } from "@iov/bcp-types";
 import { Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { Ed25519Wallet } from "./wallets";
 export declare type LocalIdentityId = string & As<"local-identity-id">;
-/** a public key we can identify with on a blockchain */
-export interface PublicIdentity {
-    readonly pubkey: PublicKeyBundle;
-}
 /**
  * a local version of a PublicIdentity that contains
  * additional local information
@@ -35,12 +31,24 @@ export interface Wallet {
      * To clear the label, set it to undefined.
      */
     readonly setLabel: (label: string | undefined) => void;
-    readonly createIdentity: (options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number) => Promise<LocalIdentity>;
+    /**
+     * Creates a new identity in the wallet.
+     *
+     * The identity is bound to one chain ID to encourage using different
+     * keypairs on different chains.
+     */
+    readonly createIdentity: (chainId: ChainId, options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number) => Promise<LocalIdentity>;
     readonly setIdentityLabel: (identity: PublicIdentity, label: string | undefined) => void;
     readonly getIdentities: () => ReadonlyArray<LocalIdentity>;
     readonly canSign: ValueAndUpdates<boolean>;
     readonly implementationId: WalletImplementationIdString;
-    readonly createTransactionSignature: (identity: PublicIdentity, transactionBytes: SignableBytes, prehash: PrehashType, chainId: ChainId) => Promise<SignatureBytes>;
+    /**
+     * Created a detached signature for the signable bytes
+     * with the private key that matches the given PublicIdentity.
+     *
+     * If a matching PublicIdentity is not present in this wallet, an error is thrown.
+     */
+    readonly createTransactionSignature: (identity: PublicIdentity, transactionBytes: SignableBytes, prehash: PrehashType) => Promise<SignatureBytes>;
     /**
      * Exposes the secret data of this wallet in a printable format for
      * backup purposes.

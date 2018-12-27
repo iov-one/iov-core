@@ -8,6 +8,7 @@ import { Ed25519Wallet } from "./ed25519wallet";
 const { fromHex, toHex } = Encoding;
 
 describe("Ed25519Wallet", () => {
+  const defaultChain = "chain123" as ChainId;
   const defaultKeypair = new Ed25519Keypair(
     fromHex("9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60"),
     fromHex("d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"),
@@ -37,7 +38,7 @@ describe("Ed25519Wallet", () => {
 
   it("can create an identity", async () => {
     const wallet = new Ed25519Wallet();
-    const newIdentity = await wallet.createIdentity(defaultKeypair);
+    const newIdentity = await wallet.createIdentity(defaultChain, defaultKeypair);
     expect(newIdentity).toBeTruthy();
     expect(newIdentity.pubkey.algo).toEqual(Algorithm.Ed25519);
     expect(newIdentity.pubkey.data).toEqual(defaultKeypair.pubkey);
@@ -63,10 +64,10 @@ describe("Ed25519Wallet", () => {
     );
 
     const wallet = new Ed25519Wallet();
-    const newIdentity1 = await wallet.createIdentity(keypair1);
-    const newIdentity2 = await wallet.createIdentity(keypair2);
-    const newIdentity3 = await wallet.createIdentity(keypair3);
-    const newIdentity4 = await wallet.createIdentity(keypair4);
+    const newIdentity1 = await wallet.createIdentity(defaultChain, keypair1);
+    const newIdentity2 = await wallet.createIdentity(defaultChain, keypair2);
+    const newIdentity3 = await wallet.createIdentity(defaultChain, keypair3);
+    const newIdentity4 = await wallet.createIdentity(defaultChain, keypair4);
 
     // all pubkeys must be different
     const pubkeySet = new Set(
@@ -91,21 +92,35 @@ describe("Ed25519Wallet", () => {
     expect(newIdentity4.label).toEqual(lastIdentity.label);
   });
 
-  it("throws when adding the same keypair twice", async () => {
-    // Same keypair leads to the same identity identifier, so we don't support it
-
+  it("can create different identities with the same keypair", async () => {
     const wallet = new Ed25519Wallet();
-    await wallet.createIdentity(defaultKeypair);
+    const keypair = new Ed25519Keypair(
+      fromHex("9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60"),
+      fromHex("d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"),
+    );
+    await wallet.createIdentity("chain1" as ChainId, keypair);
+    await wallet.createIdentity("chain2" as ChainId, keypair);
+
+    const identities = wallet.getIdentities();
+    expect(identities.length).toEqual(2);
+    expect(identities[0].chainId).toEqual("chain1");
+    expect(identities[1].chainId).toEqual("chain2");
+    expect(identities[0].pubkey).toEqual(identities[1].pubkey);
+  });
+
+  it("throws when adding the same identity twice", async () => {
+    const wallet = new Ed25519Wallet();
+    await wallet.createIdentity(defaultChain, defaultKeypair);
 
     await wallet
-      .createIdentity(defaultKeypair)
+      .createIdentity(defaultChain, defaultKeypair)
       .then(() => fail("must not resolve"))
       .catch(error => expect(error).toMatch(/ID collision/i));
   });
 
   it("can set, change and unset an identity label", async () => {
     const wallet = new Ed25519Wallet();
-    const newIdentity = await wallet.createIdentity(defaultKeypair);
+    const newIdentity = await wallet.createIdentity(defaultChain, defaultKeypair);
     expect(wallet.getIdentities()[0].label).toBeUndefined();
 
     wallet.setIdentityLabel(newIdentity, "foo");
@@ -123,7 +138,7 @@ describe("Ed25519Wallet", () => {
     const originalId = wallet.id;
     expect(originalId).toMatch(/^[a-zA-Z0-9]+$/);
 
-    const id1 = await wallet.createIdentity(defaultKeypair);
+    const id1 = await wallet.createIdentity(defaultChain, defaultKeypair);
     expect(id1).toBeTruthy();
     expect(wallet.id).toEqual(originalId); // id must not change with use
 
@@ -135,41 +150,36 @@ describe("Ed25519Wallet", () => {
 
   it("can sign", async () => {
     const wallet = new Ed25519Wallet();
-    const newIdentity = await wallet.createIdentity(defaultKeypair);
+    const newIdentity = await wallet.createIdentity(defaultChain, defaultKeypair);
 
     expect(wallet.canSign.value).toEqual(true);
 
     const tx = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
-    const chainId = "some-chain" as ChainId;
-    const signature = await wallet.createTransactionSignature(newIdentity, tx, PrehashType.None, chainId);
+    const signature = await wallet.createTransactionSignature(newIdentity, tx, PrehashType.None);
     expect(signature).toBeTruthy();
     expect(signature.length).toEqual(64);
   });
 
   it("can sign with different prehash types", async () => {
     const wallet = new Ed25519Wallet();
-    const mainIdentity = await wallet.createIdentity(defaultKeypair);
+    const mainIdentity = await wallet.createIdentity(defaultChain, defaultKeypair);
 
     const transactionBytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
-    const chainId = "some-chain" as ChainId;
 
     const signaturePrehashNone = await wallet.createTransactionSignature(
       mainIdentity,
       transactionBytes,
       PrehashType.None,
-      chainId,
     );
     const signaturePrehashSha256 = await wallet.createTransactionSignature(
       mainIdentity,
       transactionBytes,
       PrehashType.Sha256,
-      chainId,
     );
     const signaturePrehashSha512 = await wallet.createTransactionSignature(
       mainIdentity,
       transactionBytes,
       PrehashType.Sha512,
-      chainId,
     );
     expect(signaturePrehashNone.length).toEqual(64);
     expect(signaturePrehashSha256.length).toEqual(64);
@@ -182,8 +192,7 @@ describe("Ed25519Wallet", () => {
 
   it("produces correct data for prehash signatures", async () => {
     const wallet = new Ed25519Wallet();
-    const mainIdentity = await wallet.createIdentity(defaultKeypair);
-    const chainId = "some-chain" as ChainId;
+    const mainIdentity = await wallet.createIdentity(defaultChain, defaultKeypair);
 
     const bytes = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
     const bytesSha256 = new Sha256(bytes).digest();
@@ -193,19 +202,17 @@ describe("Ed25519Wallet", () => {
       mainIdentity,
       bytesSha256 as SignableBytes,
       PrehashType.None,
-      chainId,
     );
     const expectedSha512 = await wallet.createTransactionSignature(
       mainIdentity,
       bytesSha512 as SignableBytes,
       PrehashType.None,
-      chainId,
     );
 
-    expect(await wallet.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha256, chainId)).toEqual(
+    expect(await wallet.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha256)).toEqual(
       expectedSha256,
     );
-    expect(await wallet.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha512, chainId)).toEqual(
+    expect(await wallet.createTransactionSignature(mainIdentity, bytes, PrehashType.Sha512)).toEqual(
       expectedSha512,
     );
   });
@@ -214,6 +221,7 @@ describe("Ed25519Wallet", () => {
     {
       const wallet = new Ed25519Wallet();
       await wallet.createIdentity(
+        defaultChain,
         Ed25519Keypair.fromLibsodiumPrivkey(
           fromHex(
             "0000000000000000aaaaaaaaaaaaaaaa1111111111111111dddddddddddddddd7777777777777777bbbbbbbbbbbbbbbb5555555555555555ffffffffffffffff",
@@ -228,6 +236,7 @@ describe("Ed25519Wallet", () => {
       // multiple keys are sorted by hex value
       const wallet = new Ed25519Wallet();
       await wallet.createIdentity(
+        defaultChain,
         Ed25519Keypair.fromLibsodiumPrivkey(
           fromHex(
             "e79d85cdde2d416d6805bcbf561b707423af94effb528472c3cda80eef4609a796d810bed70594cb593a6bab9eabe88d6c9d9e3b0955fcd33cb097a6172bac40",
@@ -235,6 +244,7 @@ describe("Ed25519Wallet", () => {
         ),
       );
       await wallet.createIdentity(
+        defaultChain,
         Ed25519Keypair.fromLibsodiumPrivkey(
           fromHex(
             "0000000000000000aaaaaaaaaaaaaaaa1111111111111111dddddddddddddddd7777777777777777bbbbbbbbbbbbbbbb5555555555555555ffffffffffffffff",
@@ -263,9 +273,9 @@ describe("Ed25519Wallet", () => {
 
     const wallet = new Ed25519Wallet();
     wallet.setLabel("wallet with 3 identities");
-    const identity1 = await wallet.createIdentity(keypair1);
-    const identity2 = await wallet.createIdentity(keypair2);
-    const identity3 = await wallet.createIdentity(keypair3);
+    const identity1 = await wallet.createIdentity(defaultChain, keypair1);
+    const identity2 = await wallet.createIdentity(defaultChain, keypair2);
+    const identity3 = await wallet.createIdentity(defaultChain, keypair3);
     wallet.setIdentityLabel(identity1, undefined);
     wallet.setIdentityLabel(identity2, "");
     wallet.setIdentityLabel(identity3, "foo");
@@ -305,7 +315,7 @@ describe("Ed25519Wallet", () => {
     {
       // empty
       const wallet = new Ed25519Wallet(
-        '{ "formatVersion": 1, "id": "h4g9q37hg9q", "identities": [] }' as WalletSerializationString,
+        '{ "formatVersion": 2, "id": "h4g9q37hg9q", "identities": [] }' as WalletSerializationString,
       );
       expect(wallet).toBeTruthy();
       expect(wallet.id).toEqual("h4g9q37hg9q");
@@ -315,12 +325,27 @@ describe("Ed25519Wallet", () => {
 
     {
       // one element
-      const serialized = '{ "formatVersion": 1, "id": "h4g9q37hg9q", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}] }' as WalletSerializationString;
+      const serialized = `
+        {
+          "formatVersion": 2,
+          "id": "h4g9q37hg9q",
+          "identities": [
+            {
+              "localIdentity": {
+                "chainId": "foonet",
+                "pubkey": { "algo": "ed25519", "data": "aabbccdd" },
+                "label": "foo"
+              },
+              "privkey": "223322112233aabb"
+            }
+          ]
+        }` as WalletSerializationString;
       const wallet = new Ed25519Wallet(serialized);
       expect(wallet).toBeTruthy();
       expect(wallet.id).toEqual("h4g9q37hg9q");
       expect(wallet.label.value).toBeUndefined();
       expect(wallet.getIdentities().length).toEqual(1);
+      expect(wallet.getIdentities()[0].chainId).toEqual("foonet");
       expect(wallet.getIdentities()[0].pubkey.algo).toEqual("ed25519");
       expect(wallet.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
       expect(wallet.getIdentities()[0].label).toEqual("foo");
@@ -328,15 +353,40 @@ describe("Ed25519Wallet", () => {
 
     {
       // two elements
-      const serialized = '{ "formatVersion": 1, "id": "h4g9q37hg9q", "label": "2 keys", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "privkey": "223322112233aabb"}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "privkey": "ddddeeee"}] }' as WalletSerializationString;
+      const serialized = `
+        {
+          "formatVersion": 2,
+          "id": "h4g9q37hg9q",
+          "label": "2 keys",
+          "identities": [
+            {
+              "localIdentity": {
+                "chainId": "xnet",
+                "pubkey": { "algo": "ed25519", "data": "aabbccdd" },
+                "label": "foo"
+              },
+              "privkey": "223322112233aabb"
+            },
+            {
+              "localIdentity": {
+                "chainId": "ynet",
+                "pubkey": { "algo": "ed25519", "data": "ddccbbaa" },
+                "label": "bar"
+              },
+              "privkey": "ddddeeee"
+            }
+          ]
+        }` as WalletSerializationString;
       const wallet = new Ed25519Wallet(serialized);
       expect(wallet).toBeTruthy();
       expect(wallet.id).toEqual("h4g9q37hg9q");
       expect(wallet.label.value).toEqual("2 keys");
       expect(wallet.getIdentities().length).toEqual(2);
+      expect(wallet.getIdentities()[0].chainId).toEqual("xnet");
       expect(wallet.getIdentities()[0].pubkey.algo).toEqual("ed25519");
       expect(wallet.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
       expect(wallet.getIdentities()[0].label).toEqual("foo");
+      expect(wallet.getIdentities()[1].chainId).toEqual("ynet");
       expect(wallet.getIdentities()[1].pubkey.algo).toEqual("ed25519");
       expect(wallet.getIdentities()[1].pubkey.data).toEqual(Encoding.fromHex("ddccbbaa"));
       expect(wallet.getIdentities()[1].label).toEqual("bar");
@@ -363,9 +413,9 @@ describe("Ed25519Wallet", () => {
     );
 
     const original = new Ed25519Wallet();
-    const identity1 = await original.createIdentity(keypair1);
-    const identity2 = await original.createIdentity(keypair2);
-    const identity3 = await original.createIdentity(keypair3);
+    const identity1 = await original.createIdentity(defaultChain, keypair1);
+    const identity2 = await original.createIdentity(defaultChain, keypair2);
+    const identity3 = await original.createIdentity(defaultChain, keypair3);
     original.setIdentityLabel(identity1, undefined);
     original.setIdentityLabel(identity2, "");
     original.setIdentityLabel(identity3, "foo");
@@ -382,15 +432,14 @@ describe("Ed25519Wallet", () => {
 
     // privkeys match
     const tx = new Uint8Array([]) as SignableBytes;
-    const chainId = "" as ChainId;
-    expect(await original.createTransactionSignature(identity1, tx, PrehashType.None, chainId)).toEqual(
-      await restored.createTransactionSignature(identity1, tx, PrehashType.None, chainId),
+    expect(await original.createTransactionSignature(identity1, tx, PrehashType.None)).toEqual(
+      await restored.createTransactionSignature(identity1, tx, PrehashType.None),
     );
-    expect(await original.createTransactionSignature(identity2, tx, PrehashType.None, chainId)).toEqual(
-      await restored.createTransactionSignature(identity2, tx, PrehashType.None, chainId),
+    expect(await original.createTransactionSignature(identity2, tx, PrehashType.None)).toEqual(
+      await restored.createTransactionSignature(identity2, tx, PrehashType.None),
     );
-    expect(await original.createTransactionSignature(identity3, tx, PrehashType.None, chainId)).toEqual(
-      await restored.createTransactionSignature(identity3, tx, PrehashType.None, chainId),
+    expect(await original.createTransactionSignature(identity3, tx, PrehashType.None)).toEqual(
+      await restored.createTransactionSignature(identity3, tx, PrehashType.None),
     );
   });
 

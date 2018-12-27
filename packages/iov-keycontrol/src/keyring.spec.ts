@@ -1,3 +1,4 @@
+import { ChainId } from "@iov/bcp-types";
 import { Ed25519, Ed25519Keypair, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
@@ -12,6 +13,8 @@ async function makeRandomEd25519Keypair(): Promise<Ed25519Keypair> {
 }
 
 describe("Keyring", () => {
+  const defaultChain = "chain123" as ChainId;
+
   it("can be constructed", () => {
     const keyring = new Keyring();
     expect(keyring).toBeTruthy();
@@ -121,7 +124,7 @@ describe("Keyring", () => {
         "wallets": [
           {
             "implementationId": "ed25519-hd",
-            "data": "{\\"formatVersion\\":1,\\"id\\":\\"f49h7gh34\\",\\"secret\\":\\"side ripple bachelor banner word swear buzz try situate rent desk carry scorpion uphold undo account pumpkin throw\\",\\"curve\\":\\"ed25519 seed\\",\\"identities\\":[]}"
+            "data": "{\\"formatVersion\\":2,\\"id\\":\\"f49h7gh34\\",\\"secret\\":\\"side ripple bachelor banner word swear buzz try situate rent desk carry scorpion uphold undo account pumpkin throw\\",\\"curve\\":\\"ed25519 seed\\",\\"identities\\":[]}"
           }
         ]
       }` as KeyringSerializationString);
@@ -132,7 +135,7 @@ describe("Keyring", () => {
 
   it("can deserialize one ed25519 wallet", () => {
     const keyring = new Keyring(
-      '{"formatVersion": 1, "wallets": [{"implementationId":"ed25519", "data":"{ \\"formatVersion\\": 1, \\"id\\": \\"n3u04gh03h\\", \\"identities\\":[{\\"localIdentity\\": { \\"pubkey\\": { \\"algo\\": \\"ed25519\\", \\"data\\": \\"aabbccdd\\" }, \\"nickname\\": \\"foo\\" }, \\"privkey\\": \\"223322112233aabb\\"}] }"}]}' as KeyringSerializationString,
+      '{"formatVersion": 1, "wallets": [{"implementationId":"ed25519", "data":"{ \\"formatVersion\\": 2, \\"id\\": \\"n3u04gh03h\\", \\"identities\\":[{\\"localIdentity\\": { \\"chainId\\": \\"barnet\\", \\"pubkey\\": { \\"algo\\": \\"ed25519\\", \\"data\\": \\"aabbccdd\\" }, \\"nickname\\": \\"foo\\" }, \\"privkey\\": \\"223322112233aabb\\"}] }"}]}' as KeyringSerializationString,
     );
 
     expect(keyring.getWallets().length).toEqual(1);
@@ -141,19 +144,19 @@ describe("Keyring", () => {
 
   it("can serialize and deserialize multiple wallets", async () => {
     const wallet1 = Ed25519HdWallet.fromEntropy(fromHex("c7f74844892fd7b707e74fc9b6c8ef917c13ddbb380cadbc"));
-    const i1a = await wallet1.createIdentity(HdPaths.simpleAddress(0));
+    const i1a = await wallet1.createIdentity(defaultChain, HdPaths.simpleAddress(0));
     const wallet2 = new Ed25519Wallet();
-    const i2a = await wallet2.createIdentity(await makeRandomEd25519Keypair());
-    const i2b = await wallet2.createIdentity(await makeRandomEd25519Keypair());
+    const i2a = await wallet2.createIdentity(defaultChain, await makeRandomEd25519Keypair());
+    const i2b = await wallet2.createIdentity(defaultChain, await makeRandomEd25519Keypair());
     const wallet3 = Ed25519HdWallet.fromEntropy(fromHex("2a7e3f902279af82138f14f871badf8d92b33713eb6c7193"));
-    const i3a = await wallet3.createIdentity(HdPaths.simpleAddress(0));
-    const i3b = await wallet3.createIdentity(HdPaths.simpleAddress(1));
-    const i3c = await wallet3.createIdentity(HdPaths.simpleAddress(2));
+    const i3a = await wallet3.createIdentity(defaultChain, HdPaths.simpleAddress(0));
+    const i3b = await wallet3.createIdentity(defaultChain, HdPaths.simpleAddress(1));
+    const i3c = await wallet3.createIdentity(defaultChain, HdPaths.simpleAddress(2));
     const wallet4 = new Ed25519Wallet();
-    const i4a = await wallet4.createIdentity(await makeRandomEd25519Keypair());
-    const i4b = await wallet4.createIdentity(await makeRandomEd25519Keypair());
-    const i4c = await wallet4.createIdentity(await makeRandomEd25519Keypair());
-    const i4d = await wallet4.createIdentity(await makeRandomEd25519Keypair());
+    const i4a = await wallet4.createIdentity(defaultChain, await makeRandomEd25519Keypair());
+    const i4b = await wallet4.createIdentity(defaultChain, await makeRandomEd25519Keypair());
+    const i4c = await wallet4.createIdentity(defaultChain, await makeRandomEd25519Keypair());
+    const i4d = await wallet4.createIdentity(defaultChain, await makeRandomEd25519Keypair());
 
     const keyring = new Keyring();
     keyring.add(wallet1);

@@ -4,7 +4,7 @@ import {
   Algorithm,
   ChainId,
   PrehashType,
-  PublicKeyBundle,
+  PublicIdentity,
   PublicKeyBytes,
   SignableBytes,
   SignatureBytes,
@@ -26,7 +26,6 @@ import { prehash } from "../prehashing";
 import {
   LocalIdentity,
   LocalIdentityId,
-  PublicIdentity,
   Wallet,
   WalletId,
   WalletImplementationIdString,
@@ -39,6 +38,7 @@ interface PubkeySerialization {
 }
 
 interface LocalIdentitySerialization {
+  readonly chainId: string;
   readonly pubkey: PubkeySerialization;
   readonly label?: string;
 }
@@ -79,6 +79,12 @@ function deserialize(data: WalletSerializationString): Slip10WalletSerialization
   // Case distinctions / migrations based on formatVersion go here
   switch (formatVersion) {
     case 1:
+      throw new Error(
+        "Wallet format version 1 detected. " +
+          "No automatic migration is possible from that format since it is missing chain IDs in identities. " +
+          "Use IOV-Core 0.9 or 0.10 to export the secret and re-create wallet in IOV-Core 0.11+.",
+      );
+    case 2:
       break;
     default:
       throw new Error(`Got unsupported format version: '${formatVersion}'`);
@@ -114,7 +120,7 @@ export class Slip10Wallet implements Wallet {
     cls: Slip10WalletConstructor = Slip10Wallet,
   ): Slip10Wallet {
     const data: Slip10WalletSerialization = {
-      formatVersion: 1,
+      formatVersion: 2,
       id: Slip10Wallet.generateId(),
       secret: mnemonicString,
       curve: curve,
@@ -134,7 +140,7 @@ export class Slip10Wallet implements Wallet {
   }
 
   private static identityId(identity: PublicIdentity): LocalIdentityId {
-    const id = identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
+    const id = [identity.chainId, identity.pubkey.algo, Encoding.toHex(identity.pubkey.data)].join("|");
     return id as LocalIdentityId;
   }
 
@@ -199,6 +205,7 @@ export class Slip10Wallet implements Wallet {
       }
 
       const identity = this.buildLocalIdentity(
+        record.localIdentity.chainId as ChainId,
         Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
         record.localIdentity.label,
       );
@@ -216,7 +223,7 @@ export class Slip10Wallet implements Wallet {
     this.labelProducer.update(label);
   }
 
-  public async createIdentity(options: unknown): Promise<LocalIdentity> {
+  public async createIdentity(chainId: ChainId, options: unknown): Promise<LocalIdentity> {
     if (!isPath(options)) {
       throw new Error("Did not get the correct argument type. Expected array of Slip10RawIndex");
     }
@@ -243,7 +250,7 @@ export class Slip10Wallet implements Wallet {
         throw new Error("Unknown curve");
     }
 
-    const newIdentity = this.buildLocalIdentity(pubkeyBytes, undefined);
+    const newIdentity = this.buildLocalIdentity(chainId, pubkeyBytes, undefined);
 
     if (this.identities.find(i => i.id === newIdentity.id)) {
       throw new Error(
@@ -279,7 +286,6 @@ export class Slip10Wallet implements Wallet {
     identity: PublicIdentity,
     transactionBytes: SignableBytes,
     prehashType: PrehashType,
-    _: ChainId,
   ): Promise<SignatureBytes> {
     // validate curve/prehash combination
     switch (this.curve) {
@@ -332,6 +338,7 @@ export class Slip10Wallet implements Wallet {
         const privkeyPath = this.privkeyPathForIdentity(identity);
         return {
           localIdentity: {
+            chainId: identity.chainId,
             pubkey: {
               algo: identity.pubkey.algo,
               data: Encoding.toHex(identity.pubkey.data),
@@ -344,7 +351,7 @@ export class Slip10Wallet implements Wallet {
     );
 
     const out: Slip10WalletSerialization = {
-      formatVersion: 1,
+      formatVersion: 2,
       id: this.id,
       secret: this.secret.asString(),
       curve: this.curve,
@@ -376,16 +383,27 @@ export class Slip10Wallet implements Wallet {
     return derivationResult.privkey;
   }
 
-  private buildLocalIdentity(bytes: PublicKeyBytes, label: string | undefined): LocalIdentity {
+  private buildLocalIdentity(
+    chainId: ChainId,
+    bytes: PublicKeyBytes,
+    label: string | undefined,
+  ): LocalIdentity {
+    if (!chainId) {
+      throw new Error("Got empty chain ID when tying to build a local identity.");
+    }
+
     const algorithm = Slip10Wallet.algorithmFromCurve(this.curve);
-    const pubkey: PublicKeyBundle = {
-      algo: algorithm,
-      data: bytes,
+    const publicIdentity: PublicIdentity = {
+      chainId: chainId,
+      pubkey: {
+        algo: algorithm,
+        data: bytes,
+      },
     };
     return {
-      pubkey,
-      label,
-      id: Slip10Wallet.identityId({ pubkey }),
+      ...publicIdentity,
+      label: label,
+      id: Slip10Wallet.identityId(publicIdentity),
     };
   }
 }

@@ -19,6 +19,8 @@ import { LedgerState } from "./statetracker";
 const { toHex } = Encoding;
 
 describe("LedgerSimpleAddressWallet", () => {
+  const defaultChain = "chain123" as ChainId;
+
   it("can be constructed", () => {
     const wallet = new LedgerSimpleAddressWallet();
     expect(wallet).toBeTruthy();
@@ -59,7 +61,7 @@ describe("LedgerSimpleAddressWallet", () => {
 
     const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
-    const newIdentity = await wallet.createIdentity(0);
+    const newIdentity = await wallet.createIdentity(defaultChain, 0);
     expect(newIdentity).toBeTruthy();
     expect(newIdentity.pubkey.algo).toEqual(Algorithm.Ed25519);
     expect(newIdentity.pubkey.data.length).toEqual(32);
@@ -71,7 +73,7 @@ describe("LedgerSimpleAddressWallet", () => {
 
     const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
-    const newIdentity = await wallet.createIdentity(0);
+    const newIdentity = await wallet.createIdentity(defaultChain, 0);
 
     expect(wallet.getIdentities().length).toEqual(1);
 
@@ -87,11 +89,11 @@ describe("LedgerSimpleAddressWallet", () => {
 
     const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
-    const newIdentity1 = await wallet.createIdentity(0);
-    const newIdentity2 = await wallet.createIdentity(1);
-    const newIdentity3 = await wallet.createIdentity(2);
-    const newIdentity4 = await wallet.createIdentity(3);
-    const newIdentity5 = await wallet.createIdentity(4);
+    const newIdentity1 = await wallet.createIdentity(defaultChain, 0);
+    const newIdentity2 = await wallet.createIdentity(defaultChain, 1);
+    const newIdentity3 = await wallet.createIdentity(defaultChain, 2);
+    const newIdentity4 = await wallet.createIdentity(defaultChain, 3);
+    const newIdentity5 = await wallet.createIdentity(defaultChain, 4);
 
     // all pubkeys must be different
     const pubkeySet = new Set(
@@ -113,16 +115,33 @@ describe("LedgerSimpleAddressWallet", () => {
     wallet.stopDeviceTracking();
   });
 
+  it("can create different identities with the same keypair", async () => {
+    pendingWithoutLedger();
+
+    const wallet = new LedgerSimpleAddressWallet();
+    wallet.startDeviceTracking();
+    await wallet.createIdentity("chain1" as ChainId, 0);
+    await wallet.createIdentity("chain2" as ChainId, 0);
+
+    const identities = wallet.getIdentities();
+    expect(identities.length).toEqual(2);
+    expect(identities[0].chainId).toEqual("chain1");
+    expect(identities[1].chainId).toEqual("chain2");
+    expect(identities[0].pubkey).toEqual(identities[1].pubkey);
+    wallet.stopDeviceTracking();
+  });
+
   it("throws when adding the same identity index twice", async () => {
     pendingWithoutLedger();
 
     const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
-    await wallet.createIdentity(0);
+    await wallet.createIdentity(defaultChain, 0);
     await wallet
-      .createIdentity(0)
+      .createIdentity(defaultChain, 0)
       .then(() => fail("must not resolve"))
       .catch(error => expect(error).toMatch(/Identity Index collision/i));
+    wallet.stopDeviceTracking();
   });
 
   it("can set, change and unset an identity label", async () => {
@@ -130,7 +149,7 @@ describe("LedgerSimpleAddressWallet", () => {
 
     const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
-    const newIdentity = await wallet.createIdentity(0);
+    const newIdentity = await wallet.createIdentity(defaultChain, 0);
     expect(wallet.getIdentities()[0].label).toBeUndefined();
 
     wallet.setIdentityLabel(newIdentity, "foo");
@@ -203,7 +222,7 @@ describe("LedgerSimpleAddressWallet", () => {
 
     const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
-    const newIdentity = await wallet.createIdentity(0);
+    const newIdentity = await wallet.createIdentity(defaultChain, 0);
 
     await wallet.canSign.waitFor(true);
 
@@ -222,7 +241,7 @@ describe("LedgerSimpleAddressWallet", () => {
     const nonce = new Int53(5) as Nonce;
     const { bytes, prehashType } = bnsCodec.bytesToSign(tx, nonce);
 
-    const signature = await wallet.createTransactionSignature(newIdentity, bytes, prehashType, tx.chainId);
+    const signature = await wallet.createTransactionSignature(newIdentity, bytes, prehashType);
     expect(signature).toBeTruthy();
     expect(signature.length).toEqual(64);
 
@@ -252,9 +271,9 @@ describe("LedgerSimpleAddressWallet", () => {
     const wallet = new LedgerSimpleAddressWallet();
     wallet.startDeviceTracking();
     wallet.setLabel("wallet with 3 identities");
-    const identity1 = await wallet.createIdentity(0);
-    const identity2 = await wallet.createIdentity(1);
-    const identity3 = await wallet.createIdentity(2);
+    const identity1 = await wallet.createIdentity(defaultChain, 0);
+    const identity2 = await wallet.createIdentity(defaultChain, 1);
+    const identity3 = await wallet.createIdentity(defaultChain, 2);
     wallet.setIdentityLabel(identity1, undefined);
     wallet.setIdentityLabel(identity2, "");
     wallet.setIdentityLabel(identity3, "foo");
@@ -301,9 +320,13 @@ describe("LedgerSimpleAddressWallet", () => {
   it("can deserialize", () => {
     {
       // empty
-      const wallet = new LedgerSimpleAddressWallet(
-        '{ "formatVersion": 1, "id": "7g97g98huhdd7", "identities": [] }' as WalletSerializationString,
-      );
+      const serialized = `
+        {
+          "formatVersion": 2,
+          "id": "7g97g98huhdd7",
+          "identities": []
+        }` as WalletSerializationString;
+      const wallet = new LedgerSimpleAddressWallet(serialized);
       expect(wallet).toBeTruthy();
       expect(wallet.id).toEqual("7g97g98huhdd7");
       expect(wallet.getIdentities().length).toEqual(0);
@@ -311,11 +334,26 @@ describe("LedgerSimpleAddressWallet", () => {
 
     {
       // one element
-      const serialized = '{ "formatVersion": 1, "id": "7g97g98huhdd7", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}] }' as WalletSerializationString;
+      const serialized = `
+        {
+          "formatVersion": 2,
+          "id": "7g97g98huhdd7",
+          "identities": [
+            {
+              "localIdentity": {
+                "chainId": "bns123",
+                "pubkey": { "algo": "ed25519", "data": "aabbccdd" },
+                "label": "foo"
+              },
+              "simpleAddressIndex": 7
+            }
+          ]
+        }` as WalletSerializationString;
       const wallet = new LedgerSimpleAddressWallet(serialized);
       expect(wallet).toBeTruthy();
       expect(wallet.id).toEqual("7g97g98huhdd7");
       expect(wallet.getIdentities().length).toEqual(1);
+      expect(wallet.getIdentities()[0].chainId).toEqual("bns123");
       expect(wallet.getIdentities()[0].pubkey.algo).toEqual("ed25519");
       expect(wallet.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
       expect(wallet.getIdentities()[0].label).toEqual("foo");
@@ -323,14 +361,38 @@ describe("LedgerSimpleAddressWallet", () => {
 
     {
       // two elements
-      const serialized = '{ "formatVersion": 1, "id": "7g97g98huhdd7", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}, {"localIdentity": { "pubkey": { "algo": "ed25519", "data": "ddccbbaa" }, "label": "bar" }, "simpleAddressIndex": 23}] }' as WalletSerializationString;
+      const serialized = `
+        {
+          "formatVersion": 2,
+          "id": "7g97g98huhdd7",
+          "identities": [
+            {
+              "localIdentity": {
+                "chainId": "bns123",
+                "pubkey": { "algo": "ed25519", "data": "aabbccdd" },
+                "label": "foo"
+              },
+              "simpleAddressIndex": 7
+            },
+            {
+              "localIdentity": {
+                "chainId": "bns123",
+                "pubkey": { "algo": "ed25519", "data": "ddccbbaa" },
+                "label": "bar"
+              },
+              "simpleAddressIndex": 23
+            }
+          ]
+        }` as WalletSerializationString;
       const wallet = new LedgerSimpleAddressWallet(serialized);
       expect(wallet).toBeTruthy();
       expect(wallet.id).toEqual("7g97g98huhdd7");
       expect(wallet.getIdentities().length).toEqual(2);
+      expect(wallet.getIdentities()[0].chainId).toEqual("bns123");
       expect(wallet.getIdentities()[0].pubkey.algo).toEqual("ed25519");
       expect(wallet.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
       expect(wallet.getIdentities()[0].label).toEqual("foo");
+      expect(wallet.getIdentities()[1].chainId).toEqual("bns123");
       expect(wallet.getIdentities()[1].pubkey.algo).toEqual("ed25519");
       expect(wallet.getIdentities()[1].pubkey.data).toEqual(Encoding.fromHex("ddccbbaa"));
       expect(wallet.getIdentities()[1].label).toEqual("bar");
@@ -347,9 +409,9 @@ describe("LedgerSimpleAddressWallet", () => {
 
     const original = new LedgerSimpleAddressWallet();
     original.startDeviceTracking();
-    const identity1 = await original.createIdentity(0);
-    const identity2 = await original.createIdentity(1);
-    const identity3 = await original.createIdentity(2);
+    const identity1 = await original.createIdentity(defaultChain, 0);
+    const identity2 = await original.createIdentity(defaultChain, 1);
+    const identity3 = await original.createIdentity(defaultChain, 2);
     original.stopDeviceTracking();
     original.setIdentityLabel(identity1, undefined);
     original.setIdentityLabel(identity2, "");
@@ -365,7 +427,21 @@ describe("LedgerSimpleAddressWallet", () => {
   });
 
   it("can be cloned", () => {
-    const oneIdentitySerialization = '{ "formatVersion": 1, "id": "4h03vb03uhu", "identities": [{"localIdentity": { "pubkey": { "algo": "ed25519", "data": "aabbccdd" }, "label": "foo" }, "simpleAddressIndex": 7}] }' as WalletSerializationString;
+    const oneIdentitySerialization = `
+      {
+        "formatVersion": 2,
+        "id": "4h03vb03uhu",
+        "identities": [
+          {
+            "localIdentity": {
+              "chainId": "xnet",
+              "pubkey": { "algo": "ed25519", "data": "aabbccdd" },
+              "label": "foo"
+            },
+            "simpleAddressIndex": 7
+          }
+        ]
+      }` as WalletSerializationString;
     const original = new LedgerSimpleAddressWallet(oneIdentitySerialization);
     const clone = original.clone();
     expect(clone).not.toBe(original);

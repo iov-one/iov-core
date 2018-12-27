@@ -4,7 +4,7 @@ import {
   Address,
   ChainId,
   Nonce,
-  PublicKeyBundle,
+  PublicIdentity,
   SignedTransaction,
   SigningJob,
   TransactionId,
@@ -16,8 +16,8 @@ export type PostableBytes = Uint8Array & As<"postable">;
 export interface TxReadCodec {
   /** parseBytes will recover bytes from the blockchain into a format we can use */
   readonly parseBytes: (bytes: PostableBytes, chainId: ChainId) => SignedTransaction;
-  /** chain-dependent way to calculate address from key */
-  readonly keyToAddress: (key: PublicKeyBundle) => Address;
+  /** chain-dependent way to calculate address from a public key */
+  readonly identityToAddress: (identity: PublicIdentity) => Address;
   /** chain-dependent validation of address */
   readonly isValidAddress: (address: string) => boolean;
 }

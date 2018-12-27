@@ -4,7 +4,6 @@ export { UserProfile, WalletInfo } from "./userprofile";
 export {
   LocalIdentity,
   LocalIdentityId,
-  PublicIdentity,
   Wallet,
   WalletId,
   WalletImplementationIdString,
