@@ -141,6 +141,7 @@ describe("LedgerSimpleAddressWallet", () => {
       .createIdentity(defaultChain, 0)
       .then(() => fail("must not resolve"))
       .catch(error => expect(error).toMatch(/Identity Index collision/i));
+    wallet.stopDeviceTracking();
   });
 
   it("can set, change and unset an identity label", async () => {
