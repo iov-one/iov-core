@@ -44,8 +44,7 @@ module.exports = function(config) {
 
     browserNoActivityTimeout: 30000,
 
-    // Continuous Integration mode
-    // if true, Karma captures browsers, runs the tests and exits
-    singleRun: true,
+    // Keep brower open for debugging. This is overridden by yarn scripts
+    singleRun: false,
   });
 };
