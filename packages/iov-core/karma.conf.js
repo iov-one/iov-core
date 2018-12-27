@@ -11,6 +11,13 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'dist/web/tests.js',
+      {
+        pattern: 'dist/web/worker.js',
+        included: false,
+        served: true,
+        watched: false,
+        nocache: true
+      },
     ],
 
     client: {

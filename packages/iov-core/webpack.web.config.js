@@ -18,6 +18,15 @@ module.exports = [
     }
   },
   {
+    // bundle for WebWorker tests
+    target: target,
+    entry: "./build/worker/index.js",
+    output: {
+      path: distdir,
+      filename: "worker.js",
+    }
+  },
+  {
     // bundle used for Karma tests
     target: target,
     entry: glob.sync("./build/**/*.spec.js"),
