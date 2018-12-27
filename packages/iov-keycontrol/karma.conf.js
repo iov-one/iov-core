@@ -42,8 +42,7 @@ module.exports = function(config) {
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: ['Firefox'],
 
-    // Continuous Integration mode
-    // if true, Karma captures browsers, runs the tests and exits
-    singleRun: true,
+    // Keep brower open for debugging. This is overridden by yarn scripts
+    singleRun: false,
   });
 };
