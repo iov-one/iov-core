@@ -93,7 +93,7 @@ export class Ed25519Wallet implements Wallet {
   }
 
   private static identityId(identity: PublicIdentity): LocalIdentityId {
-    const id = identity.pubkey.algo + "|" + Encoding.toHex(identity.pubkey.data);
+    const id = [identity.chainId, identity.pubkey.algo, Encoding.toHex(identity.pubkey.data)].join("|");
     return id as LocalIdentityId;
   }
 

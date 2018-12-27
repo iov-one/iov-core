@@ -92,9 +92,23 @@ describe("Ed25519Wallet", () => {
     expect(newIdentity4.label).toEqual(lastIdentity.label);
   });
 
-  it("throws when adding the same keypair twice", async () => {
-    // Same keypair leads to the same identity identifier, so we don't support it
+  it("can create different identities with the same keypair", async () => {
+    const wallet = new Ed25519Wallet();
+    const keypair = new Ed25519Keypair(
+      fromHex("9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60"),
+      fromHex("d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"),
+    );
+    await wallet.createIdentity("chain1" as ChainId, keypair);
+    await wallet.createIdentity("chain2" as ChainId, keypair);
 
+    const identities = wallet.getIdentities();
+    expect(identities.length).toEqual(2);
+    expect(identities[0].chainId).toEqual("chain1");
+    expect(identities[1].chainId).toEqual("chain2");
+    expect(identities[0].pubkey).toEqual(identities[1].pubkey);
+  });
+
+  it("throws when adding the same identity twice", async () => {
     const wallet = new Ed25519Wallet();
     await wallet.createIdentity(defaultChain, defaultKeypair);
 

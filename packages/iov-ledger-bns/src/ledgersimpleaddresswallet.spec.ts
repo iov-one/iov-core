@@ -115,6 +115,22 @@ describe("LedgerSimpleAddressWallet", () => {
     wallet.stopDeviceTracking();
   });
 
+  it("can create different identities with the same keypair", async () => {
+    pendingWithoutLedger();
+
+    const wallet = new LedgerSimpleAddressWallet();
+    wallet.startDeviceTracking();
+    await wallet.createIdentity("chain1" as ChainId, 0);
+    await wallet.createIdentity("chain2" as ChainId, 0);
+
+    const identities = wallet.getIdentities();
+    expect(identities.length).toEqual(2);
+    expect(identities[0].chainId).toEqual("chain1");
+    expect(identities[1].chainId).toEqual("chain2");
+    expect(identities[0].pubkey).toEqual(identities[1].pubkey);
+    wallet.stopDeviceTracking();
+  });
+
   it("throws when adding the same identity index twice", async () => {
     pendingWithoutLedger();
 

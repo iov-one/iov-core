@@ -116,8 +116,19 @@ describe("Slip10Wallet", () => {
     }
   });
 
-  it("throws when adding the creating path twice", async () => {
-    // Same path leads to the same identity identifier, so we don't support it
+  it("can create different identities with the same keypair", async () => {
+    const wallet = new Slip10Wallet(emptyWallet);
+    await wallet.createIdentity("chain1" as ChainId, [Slip10RawIndex.hardened(0)]);
+    await wallet.createIdentity("chain2" as ChainId, [Slip10RawIndex.hardened(0)]);
+
+    const identities = wallet.getIdentities();
+    expect(identities.length).toEqual(2);
+    expect(identities[0].chainId).toEqual("chain1");
+    expect(identities[1].chainId).toEqual("chain2");
+    expect(identities[0].pubkey).toEqual(identities[1].pubkey);
+  });
+
+  it("throws when adding the same identity twice", async () => {
     const defaultPath = [Slip10RawIndex.hardened(0)];
 
     const emptyWallets = [
