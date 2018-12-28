@@ -24,7 +24,7 @@ import { ServerCore } from "../servercore";
 interface RpcCallGetIdentities {
   readonly name: "getIdentities";
   readonly reason: string;
-  readonly chainId: ChainId;
+  readonly chainIds: ReadonlyArray<ChainId>;
 }
 
 interface RpcCallSignAndPost {
@@ -38,23 +38,30 @@ type RpcCall = RpcCallGetIdentities | RpcCallSignAndPost;
 class ParamsError extends Error {}
 class MethodNotFoundError extends Error {}
 
+function isArrayOfStrings(array: ReadonlyArray<any>): array is ReadonlyArray<string> {
+  return array.every(element => typeof element === "string");
+}
+
 function parseRpcCall(data: JsonRpcRequest): RpcCall {
   const params: ReadonlyArray<unknown> = data.params;
 
   switch (data.method) {
     case "getIdentities": {
       const reason = params[0];
-      const chainId = params[1];
+      const chainIds = params[1];
       if (typeof reason !== "string") {
         throw new ParamsError("1st parameter (reason) must be a string");
       }
-      if (typeof chainId !== "string") {
-        throw new ParamsError("2nd parameter (chainId) must be a string");
+      if (!Array.isArray(chainIds)) {
+        throw new ParamsError("2nd parameter (chainIds) must be an array");
+      }
+      if (!isArrayOfStrings(chainIds)) {
+        throw new ParamsError("Found non-string element in chainIds array");
       }
       return {
         name: "getIdentities",
         reason: reason,
-        chainId: chainId as ChainId,
+        chainIds: chainIds,
       };
     }
     case "signAndPost": {
@@ -139,7 +146,7 @@ async function main(): Promise<void> {
           response = {
             jsonrpc: "2.0",
             id: request.id,
-            result: await serverCore.getIdentities(call.reason, call.chainId),
+            result: await serverCore.getIdentities(call.reason, call.chainIds),
           };
           break;
         case "signAndPost":

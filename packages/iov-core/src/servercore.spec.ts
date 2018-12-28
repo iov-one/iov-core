@@ -81,11 +81,14 @@ describe("ServerCore", () => {
     const signer = new MultiChainSigner(profile);
     const core = new ServerCore(profile, signer);
 
-    const ynetIdentities = await core.getIdentities("Login to XY service", ynet);
+    const ynetIdentities = await core.getIdentities("Login to XY service", [ynet]);
     expect(ynetIdentities).toEqual([idA0, idB1]);
 
-    const xnetIdentities = await core.getIdentities("Login to XY service", xnet);
+    const xnetIdentities = await core.getIdentities("Login to XY service", [xnet]);
     expect(xnetIdentities).toEqual([idA1, idB0, idB2]);
+
+    const xnetOrYnetIdentities = await core.getIdentities("Login to XY service", [xnet, ynet]);
+    expect(xnetOrYnetIdentities).toEqual([idA0, idA1, idB0, idB1, idB2]);
   });
 
   it("can sign and post", async () => {
@@ -107,7 +110,7 @@ describe("ServerCore", () => {
 
     const core = new ServerCore(profile, signer);
 
-    const identities = await core.getIdentities("Please select signer", bnsChain);
+    const identities = await core.getIdentities("Please select signer", [bnsChain]);
     const signingIdentity = identities[0];
     const send: SendTransaction = {
       kind: "bcp/send",

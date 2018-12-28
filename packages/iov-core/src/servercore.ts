@@ -21,8 +21,13 @@ export class ServerCore {
     this.profile = profile;
   }
 
-  public async getIdentities(_: string, chainId: ChainId): Promise<ReadonlyArray<PublicIdentity>> {
-    const matchingIdentities = this.allIdentities().filter(identity => identity.chainId === chainId);
+  public async getIdentities(
+    _: string,
+    chainIds: ReadonlyArray<ChainId>,
+  ): Promise<ReadonlyArray<PublicIdentity>> {
+    const matchingIdentities = this.allIdentities().filter(identity => {
+      return chainIds.some(chainId => identity.chainId === chainId);
+    });
 
     // TODO: ask user for permission and allow selection of identities
 
