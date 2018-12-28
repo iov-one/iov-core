@@ -24,7 +24,11 @@ module.exports = [
       filename: "tests.js",
     },
     plugins: [
-      new webpack.EnvironmentPlugin(['BNSD_ENABLED', 'TENDERMINT_ENABLED']),
+      new webpack.EnvironmentPlugin([
+        'BNSD_ENABLED',
+        'TENDERMINT_ENABLED',
+        'ETHEREUM_ENABLED',
+      ]),
     ],
   },
 ];

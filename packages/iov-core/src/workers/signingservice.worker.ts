@@ -4,6 +4,7 @@
 
 import { ChainId, UnsignedTransaction } from "@iov/bcp-types";
 import { bnsConnector } from "@iov/bns";
+import { ethereumConnector } from "@iov/ethereum";
 import {
   jsonRpcCodeInvalidParams,
   jsonRpcCodeInvalidRequest,
@@ -15,7 +16,7 @@ import {
   parseJsonRpcId,
   parseJsonRpcRequest,
 } from "@iov/jsonrpc";
-import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
+import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "../multichainsigner";
 import { ServerCore } from "../servercore";
@@ -77,17 +78,27 @@ function parseRpcCall(data: JsonRpcRequest): RpcCall {
 }
 
 const bnsdUrl = "ws://localhost:22345";
-const defaultMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
+const bnsdFaucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
+const ethereumUrl = "http://localhost:8545";
+const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
 
 async function main(): Promise<void> {
   const profile = new UserProfile();
-  const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
+  const ed25519Wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(bnsdFaucetMnemonic));
+  const secp256k1Wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(ganacheMnemonic));
   const signer = new MultiChainSigner(profile);
-  const { connection } = await signer.addChain(bnsConnector(bnsdUrl));
-  const chainId = connection.chainId();
-  const serverCore = new ServerCore(profile, signer);
+
+  const bnsdConnection = (await signer.addChain(bnsConnector(bnsdUrl))).connection;
+  const bnsdChainId = bnsdConnection.chainId();
+  const ethereumConnection = (await signer.addChain(ethereumConnector(ethereumUrl, undefined))).connection;
+  const ethereumChainId = ethereumConnection.chainId();
+
   // faucet identity
-  await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(0));
+  await profile.createIdentity(ed25519Wallet.id, bnsdChainId, HdPaths.simpleAddress(0));
+  // ganache second identity
+  await profile.createIdentity(secp256k1Wallet.id, ethereumChainId, HdPaths.bip44(60, 0, 0, 1));
+
+  const serverCore = new ServerCore(profile, signer);
 
   async function handleRequest(event: any): Promise<JsonRpcResponse | JsonRpcErrorResponse> {
     let request: JsonRpcRequest;
