@@ -62,7 +62,13 @@ export class ServerCore {
     // tslint:disable-next-line:readonly-array
     const out: PublicIdentity[] = [];
     for (const wallet of this.profile.wallets.value) {
-      out.push(...this.profile.getIdentities(wallet.id));
+      const localIdentities = this.profile.getIdentities(wallet.id);
+      out.push(
+        ...localIdentities.map(local => ({
+          chainId: local.chainId,
+          pubkey: local.pubkey,
+        })),
+      );
     }
     return out;
   }
