@@ -1,17 +1,19 @@
+/// <reference lib="dom" />
+
 import { JsonRpcClient } from "./jsonrpcclient";
 
 describe("JsonRpcClient", () => {
-  const workerKarmaUrl = "/base/dist/web/worker.js";
+  const dummyserviceKarmaUrl = "/base/dist/web/dummyservice.worker.js";
 
   it("can be constructed with a Worker", () => {
-    const worker = new Worker(workerKarmaUrl);
+    const worker = new Worker(dummyserviceKarmaUrl);
     const client = new JsonRpcClient(worker);
     expect(client).toBeTruthy();
     worker.terminate();
   });
 
   it("can communicate with worker", async () => {
-    const worker = new Worker(workerKarmaUrl);
+    const worker = new Worker(dummyserviceKarmaUrl);
 
     const client = new JsonRpcClient(worker);
     const response = await client.run({
@@ -22,6 +24,7 @@ describe("JsonRpcClient", () => {
     });
     expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
+    expect(response.result).toEqual(`Called getIdentities("Who are you?")`);
 
     worker.terminate();
   });

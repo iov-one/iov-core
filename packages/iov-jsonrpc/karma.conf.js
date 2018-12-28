@@ -12,7 +12,7 @@ module.exports = function(config) {
     files: [
       'dist/web/tests.js',
       {
-        pattern: 'dist/web/signingservice.worker.js',
+        pattern: 'dist/web/dummyservice.worker.js',
         included: false,
         served: true,
         watched: false,

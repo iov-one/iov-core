@@ -9,10 +9,10 @@ module.exports = [
   {
     // bundle for WebWorker tests
     target: target,
-    entry: "./build/workers/signingservice.worker.js",
+    entry: "./build/workers/dummyservice.worker.js",
     output: {
       path: distdir,
-      filename: "signingservice.worker.js",
+      filename: "dummyservice.worker.js",
     }
   },
   {
@@ -24,7 +24,7 @@ module.exports = [
       filename: "tests.js",
     },
     plugins: [
-      new webpack.EnvironmentPlugin(['BNSD_ENABLED', 'TENDERMINT_ENABLED']),
+      new webpack.EnvironmentPlugin([]),
     ],
   },
 ];
