@@ -25,6 +25,12 @@ function pendingWithoutBnsd(): void {
   }
 }
 
+function pendingWithoutWorker(): void {
+  if (typeof Worker === "undefined") {
+    pending("Environment without WebWorker support detected. Marked as pending.");
+  }
+}
+
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -55,6 +61,7 @@ describe("signingservice.worker", () => {
 
   it("communicate with service", async () => {
     pendingWithoutBnsd();
+    pendingWithoutWorker();
 
     const bnsChain = (await bnsConnector(bnsdUrl).client()).chainId();
 
@@ -83,6 +90,7 @@ describe("signingservice.worker", () => {
 
   it("send a signing request to service", async () => {
     pendingWithoutBnsd();
+    pendingWithoutWorker();
 
     const bnsConnection = await bnsConnector(bnsdUrl).client();
 

@@ -2,10 +2,18 @@
 
 import { JsonRpcClient } from "./jsonrpcclient";
 
+function pendingWithoutWorker(): void {
+  if (typeof Worker === "undefined") {
+    pending("Environment without WebWorker support detected. Marked as pending.");
+  }
+}
+
 describe("JsonRpcClient", () => {
   const dummyserviceKarmaUrl = "/base/dist/web/dummyservice.worker.js";
 
   it("can be constructed with a Worker", () => {
+    pendingWithoutWorker();
+
     const worker = new Worker(dummyserviceKarmaUrl);
     const client = new JsonRpcClient(worker);
     expect(client).toBeTruthy();
@@ -13,6 +21,8 @@ describe("JsonRpcClient", () => {
   });
 
   it("can communicate with worker", async () => {
+    pendingWithoutWorker();
+
     const worker = new Worker(dummyserviceKarmaUrl);
 
     const client = new JsonRpcClient(worker);
