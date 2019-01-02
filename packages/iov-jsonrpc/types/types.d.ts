@@ -1,3 +1,4 @@
+import { JsonCompatibleValue } from "./jsoncompatibledictionary";
 export interface JsonRpcRequest {
     readonly jsonrpc: "2.0";
     readonly id: number;
@@ -9,17 +10,18 @@ export interface JsonRpcResponse {
     readonly id: number;
     readonly result: any;
 }
+export interface JsonRpcError {
+    readonly code: number;
+    readonly message: string;
+    readonly data?: JsonCompatibleValue;
+}
 /**
  * And error object as described in https://www.jsonrpc.org/specification#error_object
  */
 export interface JsonRpcErrorResponse {
     readonly jsonrpc: "2.0";
     readonly id: number | null;
-    readonly error: {
-        readonly code: number;
-        readonly message: string;
-        readonly data?: any;
-    };
+    readonly error: JsonRpcError;
 }
 export declare function isJsonRpcErrorResponse(response: JsonRpcResponse | JsonRpcErrorResponse): response is JsonRpcErrorResponse;
 export declare const jsonRpcCodeParseError = -32700;

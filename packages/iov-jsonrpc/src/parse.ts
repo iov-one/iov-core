@@ -1,6 +1,16 @@
-import { JsonRpcErrorResponse, JsonRpcRequest, JsonRpcResponse } from "./types";
+import {
+  isJsonCompatibleDictionary,
+  isJsonCompatibleValue,
+  JsonCompatibleDictionary,
+  JsonCompatibleValue,
+} from "./jsoncompatibledictionary";
+import { JsonRpcError, JsonRpcErrorResponse, JsonRpcRequest, JsonRpcResponse } from "./types";
 
-export function parseJsonRpcId(data: any): number | null {
+export function parseJsonRpcId(data: unknown): number | null {
+  if (!isJsonCompatibleDictionary(data)) {
+    throw new Error("Data must be JSON compatible dictionary");
+  }
+
   const id = data.id;
   if (typeof id !== "number") {
     return null;
@@ -8,9 +18,9 @@ export function parseJsonRpcId(data: any): number | null {
   return id;
 }
 
-export function parseJsonRpcRequest(data: any): JsonRpcRequest {
-  if (typeof data !== "object" || data === null) {
-    throw new Error("Data must be a non-null object");
+export function parseJsonRpcRequest(data: unknown): JsonRpcRequest {
+  if (!isJsonCompatibleDictionary(data)) {
+    throw new Error("Data must be JSON compatible dictionary");
   }
 
   if (data.jsonrpc !== "2.0") {
@@ -40,9 +50,35 @@ export function parseJsonRpcRequest(data: any): JsonRpcRequest {
   };
 }
 
-export function parseJsonRpcError(data: any): JsonRpcErrorResponse | undefined {
-  if (typeof data !== "object" || data === null) {
-    throw new Error("Data must be a non-null object");
+function parseError(error: JsonCompatibleDictionary): JsonRpcError {
+  if (typeof error.code !== "number") {
+    throw new Error("Error property 'code' is not a number");
+  }
+
+  if (typeof error.message !== "string") {
+    throw new Error("Error property 'message' is not a string");
+  }
+
+  let maybeUndefinedData: JsonCompatibleValue | undefined;
+
+  if (error.data === undefined) {
+    maybeUndefinedData = undefined;
+  } else if (isJsonCompatibleValue(error.data)) {
+    maybeUndefinedData = error.data;
+  } else {
+    throw new Error("Error property 'data' is defined but not a JSON compatible value.");
+  }
+
+  return {
+    code: error.code,
+    message: error.message,
+    data: maybeUndefinedData,
+  };
+}
+
+export function parseJsonRpcError(data: unknown): JsonRpcErrorResponse | undefined {
+  if (!isJsonCompatibleDictionary(data)) {
+    throw new Error("Data must be JSON compatible dictionary");
   }
 
   if (data.jsonrpc !== "2.0") {
@@ -54,21 +90,24 @@ export function parseJsonRpcError(data: any): JsonRpcErrorResponse | undefined {
     throw new Error("Invalid id field");
   }
 
-  const error = data.error;
-  if (typeof error === "undefined") {
+  if (typeof data.error === "undefined") {
     return undefined;
+  }
+
+  if (!isJsonCompatibleDictionary(data.error)) {
+    throw new Error("Property 'error' is defined but not a JSON compatible dictionary");
   }
 
   return {
     jsonrpc: "2.0",
     id: id,
-    error: error,
+    error: parseError(data.error),
   };
 }
 
-export function parseJsonRpcResponse(data: any): JsonRpcResponse {
-  if (typeof data !== "object" || data === null) {
-    throw new Error("Data must be a non-null object");
+export function parseJsonRpcResponse(data: unknown): JsonRpcResponse {
+  if (!isJsonCompatibleDictionary(data)) {
+    throw new Error("Data must be JSON compatible dictionary");
   }
 
   if (data.jsonrpc !== "2.0") {
