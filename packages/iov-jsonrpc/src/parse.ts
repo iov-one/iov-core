@@ -9,8 +9,8 @@ export function parseJsonRpcId(data: any): number | null {
 }
 
 export function parseJsonRpcRequest(data: any): JsonRpcRequest {
-  if (typeof data !== "object") {
-    throw new Error("Data must be an object");
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Data must be a non-null object");
   }
 
   if (data.jsonrpc !== "2.0") {
@@ -41,8 +41,8 @@ export function parseJsonRpcRequest(data: any): JsonRpcRequest {
 }
 
 export function parseJsonRpcError(data: any): JsonRpcErrorResponse | undefined {
-  if (typeof data !== "object") {
-    throw new Error("Data must be an object");
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Data must be a non-null object");
   }
 
   if (data.jsonrpc !== "2.0") {
@@ -67,8 +67,8 @@ export function parseJsonRpcError(data: any): JsonRpcErrorResponse | undefined {
 }
 
 export function parseJsonRpcResponse(data: any): JsonRpcResponse {
-  if (typeof data !== "object") {
-    throw new Error("Data must be an object");
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Data must be a non-null object");
   }
 
   if (data.jsonrpc !== "2.0") {
