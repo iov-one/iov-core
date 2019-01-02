@@ -9,6 +9,7 @@ export {
 } from "./jsoncompatibledictionary";
 export { parseJsonRpcId, parseJsonRpcRequest, parseJsonRpcResponse, parseJsonRpcError } from "./parse";
 export {
+  isJsonRpcErrorResponse,
   JsonRpcRequest,
   JsonRpcErrorResponse,
   JsonRpcResponse,
