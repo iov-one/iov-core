@@ -1,16 +1,13 @@
-import { ChainId, PublicIdentity, TransactionId, UnsignedTransaction } from "@iov/bcp-types";
+import {
+  ChainId,
+  PublicIdentity,
+  publicIdentityEquals,
+  TransactionId,
+  UnsignedTransaction,
+} from "@iov/bcp-types";
 import { UserProfile, WalletId } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";
-
-function publicIdentityEquals(left: PublicIdentity, right: PublicIdentity): boolean {
-  return (
-    left.chainId === right.chainId &&
-    left.pubkey.algo === right.pubkey.algo &&
-    left.pubkey.data.length === right.pubkey.data.length &&
-    left.pubkey.data.every((value, index) => value === right.pubkey.data[index])
-  );
-}
 
 export class ServerCore {
   private readonly signer: MultiChainSigner;
