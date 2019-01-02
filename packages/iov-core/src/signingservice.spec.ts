@@ -80,7 +80,7 @@ describe("signingservice.worker", () => {
     pendingWithoutBnsd();
     pendingWithoutWorker();
 
-    const bnsChain = (await bnsConnector(bnsdUrl).client()).chainId();
+    const bnsConnection = await bnsConnector(bnsdUrl).client();
 
     const worker = new Worker(signingserviceKarmaUrl);
     await sleep(signingserviceBootTime);
@@ -92,20 +92,21 @@ describe("signingservice.worker", () => {
       method: "getIdentities",
       params: {
         reason: "Who are you?",
-        chainIds: [bnsChain],
+        chainIds: [bnsConnection.chainId()],
       },
     });
     expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
     expect(response.result).toEqual(jasmine.any(Array));
     expect((response.result as ReadonlyArray<any>).length).toEqual(1);
-    expect(response.result[0].chainId).toEqual(bnsChain);
+    expect(response.result[0].chainId).toEqual(bnsConnection.chainId());
     expect(response.result[0].pubkey.algo).toEqual("ed25519");
     expect(response.result[0].pubkey.data).toEqual(
       fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
     );
 
     worker.terminate();
+    bnsConnection.disconnect();
   });
 
   it("can get ethereum identities", async () => {
@@ -139,7 +140,7 @@ describe("signingservice.worker", () => {
     pendingWithoutEthereum();
     pendingWithoutWorker();
 
-    const bnsChain = (await bnsConnector(bnsdUrl).client()).chainId();
+    const bnsConnection = await bnsConnector(bnsdUrl).client();
 
     const worker = new Worker(signingserviceKarmaUrl);
     await sleep(signingserviceBootTime);
@@ -151,14 +152,14 @@ describe("signingservice.worker", () => {
       method: "getIdentities",
       params: {
         reason: "Who are you?",
-        chainIds: [ganacheChainId, bnsChain],
+        chainIds: [ganacheChainId, bnsConnection.chainId()],
       },
     });
     expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
     expect(response.result).toEqual(jasmine.any(Array));
     expect((response.result as ReadonlyArray<any>).length).toEqual(2);
-    expect(response.result[0].chainId).toEqual(bnsChain);
+    expect(response.result[0].chainId).toEqual(bnsConnection.chainId());
     expect(response.result[0].pubkey.algo).toEqual("ed25519");
     expect(response.result[0].pubkey.data).toEqual(
       fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
@@ -166,6 +167,7 @@ describe("signingservice.worker", () => {
     expect(response.result[1]).toEqual(ganacheSecondIdentity);
 
     worker.terminate();
+    bnsConnection.disconnect();
   });
 
   it("send a signing request to service", async () => {
@@ -216,5 +218,6 @@ describe("signingservice.worker", () => {
     expect(transactionSearch[0].transaction).toEqual(send);
 
     worker.terminate();
+    bnsConnection.disconnect();
   });
 });
