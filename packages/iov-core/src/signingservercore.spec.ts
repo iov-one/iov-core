@@ -54,6 +54,7 @@ describe("SigningServerCore", () => {
     const signer = new MultiChainSigner(profile);
     const core = new SigningServerCore(profile, signer);
     expect(core).toBeTruthy();
+    core.shutdown();
   });
 
   it("can get identities", async () => {
@@ -89,6 +90,8 @@ describe("SigningServerCore", () => {
 
     const xnetOrYnetIdentities = await core.getIdentities("Login to XY service", [xnet, ynet]);
     expect(xnetOrYnetIdentities).toEqual([idA0, idA1, idB0, idB1, idB2]);
+
+    core.shutdown();
   });
 
   it("can sign and post", async () => {
@@ -121,5 +124,7 @@ describe("SigningServerCore", () => {
     };
     const transactionId = await core.signAndPost("Please sign now", send);
     expect(transactionId).toBeTruthy();
+
+    core.shutdown();
   });
 });

@@ -64,8 +64,7 @@ async function makeJsonRpcSigningServer(): Promise<JsonRpcSigningServer> {
   // ganache second identity
   await profile.createIdentity(secp256k1Wallet.id, ethereumChainId, HdPaths.bip44(60, 0, 0, 1));
 
-  const server = new JsonRpcSigningServer(new SigningServerCore(profile, signer));
-  return server;
+  return new JsonRpcSigningServer(new SigningServerCore(profile, signer));
 }
 
 describe("JsonRpcSigningServer", () => {
@@ -114,6 +113,7 @@ describe("JsonRpcSigningServer", () => {
       fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
     );
 
+    server.shutdown();
     bnsConnection.disconnect();
   });
 
@@ -140,6 +140,8 @@ describe("JsonRpcSigningServer", () => {
     expect(response.result).toEqual(jasmine.any(Array));
     expect((response.result as ReadonlyArray<any>).length).toEqual(1);
     expect(response.result[0]).toEqual(ganacheSecondIdentity);
+
+    server.shutdown();
   });
 
   it("can get BNS or Ethereum identities", async () => {
@@ -172,6 +174,7 @@ describe("JsonRpcSigningServer", () => {
     );
     expect(response.result[1]).toEqual(ganacheSecondIdentity);
 
+    server.shutdown();
     bnsConnection.disconnect();
   });
 
@@ -224,6 +227,7 @@ describe("JsonRpcSigningServer", () => {
     expect(transactionSearch[0].transactionId).toEqual(transactionId);
     expect(transactionSearch[0].transaction).toEqual(send);
 
+    server.shutdown();
     bnsConnection.disconnect();
   });
 });

@@ -60,6 +60,15 @@ export class SigningServerCore {
     return response.transactionId;
   }
 
+  /**
+   * Call this to free ressources when server is not needed anymore
+   */
+  public shutdown(): void {
+    for (const chainId of this.signer.chainIds()) {
+      this.signer.connection(chainId).disconnect();
+    }
+  }
+
   private allIdentities(): ReadonlyArray<PublicIdentity> {
     // tslint:disable-next-line:readonly-array
     const out: PublicIdentity[] = [];

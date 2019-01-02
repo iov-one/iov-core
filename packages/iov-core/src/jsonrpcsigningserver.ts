@@ -174,4 +174,11 @@ export class JsonRpcSigningServer {
       return errorResponse;
     }
   }
+
+  /**
+   * Call this to free ressources when server is not needed anymore
+   */
+  public shutdown(): void {
+    this.core.shutdown();
+  }
 }

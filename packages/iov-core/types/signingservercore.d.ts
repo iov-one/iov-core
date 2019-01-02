@@ -7,5 +7,9 @@ export declare class SigningServerCore {
     constructor(profile: UserProfile, signer: MultiChainSigner);
     getIdentities(_: string, chainIds: ReadonlyArray<ChainId>): Promise<ReadonlyArray<PublicIdentity>>;
     signAndPost(_: string, transaction: UnsignedTransaction): Promise<TransactionId>;
+    /**
+     * Call this to free ressources when server is not needed anymore
+     */
+    shutdown(): void;
     private allIdentities;
 }

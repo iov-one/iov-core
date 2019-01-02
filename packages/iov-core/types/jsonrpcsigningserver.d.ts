@@ -15,4 +15,8 @@ export declare class JsonRpcSigningServer {
      * 3. convert result to JSON-RPC format
      */
     handleChecked(request: JsonRpcRequest): Promise<JsonRpcResponse | JsonRpcErrorResponse>;
+    /**
+     * Call this to free ressources when server is not needed anymore
+     */
+    shutdown(): void;
 }
