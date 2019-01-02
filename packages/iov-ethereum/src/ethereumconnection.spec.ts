@@ -104,6 +104,7 @@ describe("EthereumConnection", () => {
     pendingWithoutEthereum();
     const connection = new EthereumConnection(testConfig.base, testConfig.chainId);
     expect(connection).toBeTruthy();
+    connection.disconnect();
   });
 
   it("can get chain ID", async () => {
