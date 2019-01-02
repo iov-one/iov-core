@@ -6,6 +6,7 @@ import { ChainId, UnsignedTransaction } from "@iov/bcp-types";
 import { bnsConnector } from "@iov/bns";
 import { ethereumConnector } from "@iov/ethereum";
 import {
+  isJsonCompatibleDictionary,
   jsonRpcCodeInvalidParams,
   jsonRpcCodeInvalidRequest,
   jsonRpcCodeMethodNotFound,
@@ -43,12 +44,14 @@ function isArrayOfStrings(array: ReadonlyArray<any>): array is ReadonlyArray<str
 }
 
 function parseRpcCall(data: JsonRpcRequest): RpcCall {
-  const params: ReadonlyArray<unknown> = data.params;
+  if (!isJsonCompatibleDictionary(data.params)) {
+    throw new Error("Request params are only supported as dictionary");
+  }
 
   switch (data.method) {
     case "getIdentities": {
-      const reason = params[0];
-      const chainIds = params[1];
+      const reason = data.params.reason;
+      const chainIds = data.params.chainIds;
       if (typeof reason !== "string") {
         throw new ParamsError("1st parameter (reason) must be a string");
       }
@@ -65,8 +68,8 @@ function parseRpcCall(data: JsonRpcRequest): RpcCall {
       };
     }
     case "signAndPost": {
-      const reason = params[0];
-      const transaction = params[1];
+      const reason = data.params.reason;
+      const transaction = data.params.transaction;
       if (typeof reason !== "string") {
         throw new ParamsError("1st parameter (reason) must be a string");
       }
@@ -76,7 +79,7 @@ function parseRpcCall(data: JsonRpcRequest): RpcCall {
       return {
         name: "signAndPost",
         reason: reason,
-        transaction: transaction as UnsignedTransaction,
+        transaction: (transaction as unknown) as UnsignedTransaction,
       };
     }
     default:

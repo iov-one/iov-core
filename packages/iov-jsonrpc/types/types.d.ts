@@ -1,9 +1,9 @@
-import { JsonCompatibleValue } from "./jsoncompatibledictionary";
+import { JsonCompatibleArray, JsonCompatibleDictionary, JsonCompatibleValue } from "./jsoncompatibledictionary";
 export interface JsonRpcRequest {
     readonly jsonrpc: "2.0";
     readonly id: number;
     readonly method: string;
-    readonly params: ReadonlyArray<any>;
+    readonly params: JsonCompatibleArray | JsonCompatibleDictionary;
 }
 export interface JsonRpcResponse {
     readonly jsonrpc: "2.0";

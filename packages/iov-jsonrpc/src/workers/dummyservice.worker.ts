@@ -2,6 +2,7 @@
 
 // for testing only
 
+import { isJsonCompatibleDictionary } from "../jsoncompatibledictionary";
 import { parseJsonRpcId, parseJsonRpcRequest } from "../parse";
 import { jsonRpcCodeInvalidRequest, JsonRpcErrorResponse, JsonRpcRequest, JsonRpcResponse } from "../types";
 
@@ -22,17 +23,24 @@ function handleRequest(event: MessageEvent): JsonRpcResponse | JsonRpcErrorRespo
     return errorResponse;
   }
 
-  const paramsString = request.params
-    .map(p => {
-      if (typeof p === "number") {
-        return p;
-      } else if (typeof p === "string") {
-        return `"${p}"`;
-      } else {
-        return p.toString();
-      }
-    })
-    .join(", ");
+  let paramsString: string;
+  if (isJsonCompatibleDictionary(request.params)) {
+    paramsString = JSON.stringify(request.params);
+  } else {
+    paramsString = request.params
+      .map(p => {
+        if (typeof p === "number") {
+          return p;
+        } else if (p === null) {
+          return `null`;
+        } else if (typeof p === "string") {
+          return `"${p}"`;
+        } else {
+          return p.toString();
+        }
+      })
+      .join(", ");
+  }
 
   const response: JsonRpcResponse = {
     jsonrpc: "2.0",

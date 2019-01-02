@@ -1,4 +1,5 @@
 import {
+  isJsonCompatibleArray,
   isJsonCompatibleDictionary,
   isJsonCompatibleValue,
   JsonCompatibleDictionary,
@@ -37,8 +38,7 @@ export function parseJsonRpcRequest(data: unknown): JsonRpcRequest {
     throw new Error("Invalid method field");
   }
 
-  const params = data.params;
-  if (!Array.isArray(params)) {
+  if (!isJsonCompatibleArray(data.params) && !isJsonCompatibleDictionary(data.params)) {
     throw new Error("Invalid params field");
   }
 
@@ -46,7 +46,7 @@ export function parseJsonRpcRequest(data: unknown): JsonRpcRequest {
     jsonrpc: "2.0",
     id: id,
     method: method,
-    params: params,
+    params: data.params,
   };
 }
 

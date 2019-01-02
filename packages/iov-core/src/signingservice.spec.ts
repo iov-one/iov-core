@@ -16,6 +16,7 @@ import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { JsonRpcClient } from "@iov/jsonrpc";
 import { toListPromise } from "@iov/stream";
+import { JsonCompatibleDictionary } from "../../iov-jsonrpc/types/jsoncompatibledictionary";
 
 const { fromHex } = Encoding;
 
@@ -90,7 +91,10 @@ describe("signingservice.worker", () => {
       jsonrpc: "2.0",
       id: 123,
       method: "getIdentities",
-      params: ["Who are you?", [bnsChain]],
+      params: {
+        reason: "Who are you?",
+        chainIds: [bnsChain],
+      },
     });
     expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
@@ -118,7 +122,10 @@ describe("signingservice.worker", () => {
       jsonrpc: "2.0",
       id: 123,
       method: "getIdentities",
-      params: ["Who are you?", [ganacheChainId]],
+      params: {
+        reason: "Who are you?",
+        chainIds: [ganacheChainId],
+      },
     });
     expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
@@ -143,7 +150,10 @@ describe("signingservice.worker", () => {
       jsonrpc: "2.0",
       id: 123,
       method: "getIdentities",
-      params: ["Who are you?", [ganacheChainId, bnsChain]],
+      params: {
+        reason: "Who are you?",
+        chainIds: [ganacheChainId, bnsChain],
+      },
     });
     expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
@@ -174,7 +184,10 @@ describe("signingservice.worker", () => {
       jsonrpc: "2.0",
       id: 1,
       method: "getIdentities",
-      params: ["Who are you?", [bnsConnection.chainId()]],
+      params: {
+        reason: "Who are you?",
+        chainIds: [bnsConnection.chainId()],
+      },
     });
     const signer: PublicIdentity = identitiesResponse.result[0];
 
@@ -191,7 +204,10 @@ describe("signingservice.worker", () => {
       jsonrpc: "2.0",
       id: 2,
       method: "signAndPost",
-      params: ["Please sign", send],
+      params: {
+        reason: "Please sign",
+        transaction: (send as unknown) as JsonCompatibleDictionary,
+      },
     });
     const transactionId: TransactionId = signAndPostResponse.result;
     expect(transactionId).toMatch(/^[0-9A-F]+$/);
