@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 
-/// A proof-of-work RPC server for the out pf process signer
+// A proof-of-work RPC server implementation for the out of process signer.
+// This file belongs to the test code but is compiled separately to be usable in a WebWorker.
 
 import { bnsConnector } from "@iov/bns";
 import { ethereumConnector } from "@iov/ethereum";
