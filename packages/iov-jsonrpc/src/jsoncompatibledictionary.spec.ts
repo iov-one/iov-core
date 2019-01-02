@@ -1,4 +1,8 @@
-import { isJsonCompatibleDictionary, isJsonCompatibleValue } from "./jsoncompatibledictionary";
+import {
+  isJsonCompatibleArray,
+  isJsonCompatibleDictionary,
+  isJsonCompatibleValue,
+} from "./jsoncompatibledictionary";
 
 describe("jsoncompatibledictionary", () => {
   function sum(a: number, b: number): number {
@@ -44,6 +48,36 @@ describe("jsoncompatibledictionary", () => {
 
     it("returns true for empty dicts", () => {
       expect(isJsonCompatibleValue({})).toEqual(true);
+    });
+  });
+
+  describe("isJsonCompatibleArray", () => {
+    it("returns false for primitive types", () => {
+      expect(isJsonCompatibleArray(null)).toEqual(false);
+      expect(isJsonCompatibleArray(undefined)).toEqual(false);
+      expect(isJsonCompatibleArray(0)).toEqual(false);
+      expect(isJsonCompatibleArray(1)).toEqual(false);
+      expect(isJsonCompatibleArray("abc")).toEqual(false);
+      expect(isJsonCompatibleArray(true)).toEqual(false);
+      expect(isJsonCompatibleArray(false)).toEqual(false);
+    });
+
+    it("returns true for arrays", () => {
+      expect(isJsonCompatibleArray([1, 2, 3])).toEqual(true);
+      expect(isJsonCompatibleArray([1, "2", true, null])).toEqual(true);
+      expect(isJsonCompatibleArray([1, "2", true, null, [1, "2", true, null]])).toEqual(true);
+      expect(isJsonCompatibleArray([{ a: 123 }])).toEqual(true);
+    });
+
+    it("returns false for dicts", () => {
+      expect(isJsonCompatibleArray({ a: 123 })).toEqual(false);
+      expect(isJsonCompatibleArray({ a: "abc" })).toEqual(false);
+      expect(isJsonCompatibleArray({ a: true })).toEqual(false);
+      expect(isJsonCompatibleArray({ a: null })).toEqual(false);
+    });
+
+    it("returns false for functions", () => {
+      expect(isJsonCompatibleArray(sum)).toEqual(false);
     });
   });
 

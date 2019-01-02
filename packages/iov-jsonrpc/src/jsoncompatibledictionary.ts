@@ -23,25 +23,33 @@ export interface JsonCompatibleDictionary {
 }
 
 export function isJsonCompatibleValue(value: unknown): value is JsonCompatibleValue {
-  if (Array.isArray(value)) {
-    for (const item of value) {
-      if (!isJsonCompatibleValue(item)) {
-        return false;
-      }
-    }
-    // all items okay
-    return true;
-  } else if (
+  if (
     typeof value === "string" ||
     typeof value === "number" ||
     typeof value === "boolean" ||
     value === null ||
+    isJsonCompatibleArray(value) ||
     isJsonCompatibleDictionary(value)
   ) {
     return true;
   } else {
     return false;
   }
+}
+
+export function isJsonCompatibleArray(value: unknown): value is JsonCompatibleArray {
+  if (!Array.isArray(value)) {
+    return false;
+  }
+
+  for (const item of value) {
+    if (!isJsonCompatibleValue(item)) {
+      return false;
+    }
+  }
+
+  // all items okay
+  return true;
 }
 
 export function isJsonCompatibleDictionary(data: unknown): data is JsonCompatibleDictionary {

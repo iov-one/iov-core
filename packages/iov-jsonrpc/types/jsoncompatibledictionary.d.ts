@@ -14,4 +14,5 @@ export interface JsonCompatibleDictionary {
     readonly [key: string]: JsonCompatibleValue | ReadonlyArray<JsonCompatibleValue>;
 }
 export declare function isJsonCompatibleValue(value: unknown): value is JsonCompatibleValue;
+export declare function isJsonCompatibleArray(value: unknown): value is JsonCompatibleArray;
 export declare function isJsonCompatibleDictionary(data: unknown): data is JsonCompatibleDictionary;
