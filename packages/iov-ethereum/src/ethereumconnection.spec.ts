@@ -102,13 +102,13 @@ async function postTransaction(
 describe("EthereumConnection", () => {
   it("can be constructed", () => {
     pendingWithoutEthereum();
-    const connection = new EthereumConnection(testConfig.base, testConfig.chainId, undefined);
+    const connection = new EthereumConnection(testConfig.base, testConfig.chainId);
     expect(connection).toBeTruthy();
   });
 
   it("can get chain ID", async () => {
     pendingWithoutEthereum();
-    const connection = await EthereumConnection.establish(testConfig.base, undefined);
+    const connection = await EthereumConnection.establish(testConfig.base);
     const chainId = connection.chainId();
     expect(chainId).toEqual(testConfig.chainId);
     connection.disconnect();
@@ -116,7 +116,7 @@ describe("EthereumConnection", () => {
 
   it("can get height", async () => {
     pendingWithoutEthereum();
-    const connection = await EthereumConnection.establish(testConfig.base, undefined);
+    const connection = await EthereumConnection.establish(testConfig.base);
     const height = await connection.height();
     expect(height).toBeGreaterThan(testConfig.minHeight);
     connection.disconnect();
@@ -124,7 +124,7 @@ describe("EthereumConnection", () => {
 
   it("can get account from address", async () => {
     pendingWithoutEthereum();
-    const connection = await EthereumConnection.establish(testConfig.base, undefined);
+    const connection = await EthereumConnection.establish(testConfig.base);
     const query: BcpAccountQuery = { address: testConfig.address as Address };
     const account = await connection.getAccount(query);
     expect(account.data[0].address).toEqual(testConfig.address);
@@ -136,7 +136,7 @@ describe("EthereumConnection", () => {
 
   it("can get nonce", async () => {
     pendingWithoutEthereum();
-    const connection = await EthereumConnection.establish(testConfig.base, undefined);
+    const connection = await EthereumConnection.establish(testConfig.base);
 
     // by address
     {
@@ -187,7 +187,7 @@ describe("EthereumConnection", () => {
         },
         memo: "We \u2665 developers – iov.one",
       };
-      const connection = await EthereumConnection.establish(testConfig.base, undefined);
+      const connection = await EthereumConnection.establish(testConfig.base);
       const senderAddress = ethereumCodec.identityToAddress(secondIdentity);
       const query: BcpAccountQuery = { address: senderAddress as Address };
       const nonce = await connection.getNonce(query);
@@ -219,7 +219,7 @@ describe("EthereumConnection", () => {
   describe("searchTx", () => {
     it("throws error for invalid transaction hash", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, undefined);
+      const connection = await EthereumConnection.establish(testConfig.base);
       // invalid lenght
       const invalidHashLenght = "0x1234567890abcdef" as TransactionId;
       await connection
@@ -231,7 +231,7 @@ describe("EthereumConnection", () => {
 
     it("can search non-existing transaction by hash", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, undefined);
+      const connection = await EthereumConnection.establish(testConfig.base);
       const nonExistingHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" as TransactionId;
       const results = await connection.searchTx({ id: nonExistingHash });
       expect(results.length).toEqual(0);
@@ -269,7 +269,7 @@ describe("EthereumConnection", () => {
         },
         memo: "Search tx test" + new Date(),
       };
-      const connection = await EthereumConnection.establish(testConfig.base, undefined);
+      const connection = await EthereumConnection.establish(testConfig.base);
       const senderAddress = ethereumCodec.identityToAddress(secondIdentity);
       const nonce = await connection.getNonce({ address: senderAddress });
       const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
@@ -310,7 +310,7 @@ describe("EthereumConnection", () => {
     // TODO: load ganache with db from github
     xit("can search a transaction by hash", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, undefined);
+      const connection = await EthereumConnection.establish(testConfig.base);
       const storedTxId = "" as TransactionId;
       const results = await connection.searchTx({ id: storedTxId });
       expect(results.length).toEqual(1);
@@ -327,7 +327,7 @@ describe("EthereumConnection", () => {
     it("can search a transaction by account", async () => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
-      const connection = await EthereumConnection.establish(testConfig.base, undefined);
+      const connection = await EthereumConnection.establish(testConfig.base);
       const results = await connection.searchTx({
         tags: [
           { key: "apiLink", value: testConfig.scraper!.apiUrl },
@@ -342,7 +342,7 @@ describe("EthereumConnection", () => {
   describe("getBlockHeader", () => {
     it("can get header from block", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, undefined);
+      const connection = await EthereumConnection.establish(testConfig.base);
       const blockHeader = await connection.getBlockHeader(0);
       expect(blockHeader.id).toMatch(/^0x[0-9a-f]{64}$/);
       expect(blockHeader.height).toEqual(0);
@@ -352,7 +352,7 @@ describe("EthereumConnection", () => {
 
     it("throws error from invalid block number", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, undefined);
+      const connection = await EthereumConnection.establish(testConfig.base);
       await connection
         .getBlockHeader(99999999999999)
         .then(() => fail("promise must be rejected"))
@@ -364,7 +364,7 @@ describe("EthereumConnection", () => {
   describe("watchBlockHeaders", () => {
     it("watches headers with same data as getBlockHeader", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.webSocketUrl);
+      const connection = await EthereumConnection.establish(testConfig.base, { wsUrl: testConfig.wsUrl });
       const events = new Array<BlockHeader>();
 
       const subscription = connection.watchBlockHeaders().subscribe({

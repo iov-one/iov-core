@@ -1,11 +1,14 @@
 import { Stream } from "xstream";
 import { BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpConnection, BcpPubkeyQuery, BcpQueryEnvelope, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, Nonce, PostableBytes, PostTxResponse, TokenTicker } from "@iov/bcp-types";
+export interface EthereumConnectionOptions {
+    readonly wsUrl?: string;
+}
 export declare class EthereumConnection implements BcpConnection {
-    static establish(baseUrl: string, wsUrl: string | undefined): Promise<EthereumConnection>;
+    static establish(baseUrl: string, options?: EthereumConnectionOptions): Promise<EthereumConnection>;
     private readonly baseUrl;
     private readonly myChainId;
     private readonly socket;
-    constructor(baseUrl: string, chainId: ChainId, wsUrl: string | undefined);
+    constructor(baseUrl: string, chainId: ChainId, options?: EthereumConnectionOptions);
     disconnect(): void;
     chainId(): ChainId;
     height(): Promise<number>;

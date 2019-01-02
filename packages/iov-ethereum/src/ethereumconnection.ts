@@ -85,21 +85,28 @@ async function loadChainId(baseUrl: string): Promise<ChainId> {
   return toBcpChainId(numericChainId.toNumber());
 }
 
+export interface EthereumConnectionOptions {
+  readonly wsUrl?: string;
+}
+
 export class EthereumConnection implements BcpConnection {
-  public static async establish(baseUrl: string, wsUrl: string | undefined): Promise<EthereumConnection> {
+  public static async establish(
+    baseUrl: string,
+    options?: EthereumConnectionOptions,
+  ): Promise<EthereumConnection> {
     const chainId = await loadChainId(baseUrl);
 
-    return new EthereumConnection(baseUrl, chainId, wsUrl);
+    return new EthereumConnection(baseUrl, chainId, options);
   }
 
   private readonly baseUrl: string;
   private readonly myChainId: ChainId;
   private readonly socket: StreamingSocket | undefined;
 
-  constructor(baseUrl: string, chainId: ChainId, wsUrl: string | undefined) {
+  constructor(baseUrl: string, chainId: ChainId, options?: EthereumConnectionOptions) {
     this.baseUrl = baseUrl;
-    if (wsUrl) {
-      this.socket = new StreamingSocket(wsUrl);
+    if (options && options.wsUrl) {
+      this.socket = new StreamingSocket(options.wsUrl);
       this.socket.connect();
     }
     this.myChainId = chainId;

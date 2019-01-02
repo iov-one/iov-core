@@ -2,7 +2,7 @@ import { Address, ChainId, Nonce, PublicKeyBytes } from "@iov/bcp-types";
 export interface EthereumNetworkConfig {
     readonly env: string;
     readonly base: string;
-    readonly webSocketUrl: string;
+    readonly wsUrl: string;
     readonly chainId: ChainId;
     readonly minHeight: number;
     readonly pubkey: PublicKeyBytes;
