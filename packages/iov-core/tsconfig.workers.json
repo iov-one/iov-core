@@ -8,9 +8,6 @@
     "lib": ["es6"]
   },
   "include": [
-    "src/**/*"
-  ],
-  "exclude": [
     "src/workers/**/*"
   ]
 }

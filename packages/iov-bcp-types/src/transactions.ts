@@ -23,6 +23,23 @@ export interface PublicIdentity {
   readonly pubkey: PublicKeyBundle;
 }
 
+/**
+ * Compares two objects that conform to the PublicIdentity interface for equality.
+ * This can also be used to compare pairs of derived types like LocalIdentity/PublicIdentity
+ * or LocalIdentity/LocalIdentity in which case all non-PublicIdentity fields are ignored.
+ *
+ * @param left the left hand side of the comparison
+ * @param right the right hand side of the comparison
+ */
+export function publicIdentityEquals(left: PublicIdentity, right: PublicIdentity): boolean {
+  return (
+    left.chainId === right.chainId &&
+    left.pubkey.algo === right.pubkey.algo &&
+    left.pubkey.data.length === right.pubkey.data.length &&
+    left.pubkey.data.every((value, index) => value === right.pubkey.data[index])
+  );
+}
+
 export type SignatureBytes = Uint8Array & As<"signature">;
 
 export type Nonce = Int53 & As<"nonce">;

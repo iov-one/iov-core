@@ -1,14 +1,14 @@
 {
-  "name": "@iov/core",
-  "version": "0.10.3",
-  "description": "Central entry point into iov core monorepo, pulling together all modules",
+  "name": "@iov/jsonrpc",
+  "version": "0.10.2",
+  "description": "Framework for implementing a JSON-RPC 2.0 API",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
   "main": "build/index.js",
   "types": "types/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-core"
+    "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-jsonrpc"
   },
   "publishConfig": {
     "access": "public"
@@ -30,15 +30,7 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
   },
   "dependencies": {
-    "@iov/bcp-types": "^0.10.2",
-    "@iov/encoding": "^0.10.1",
-    "@iov/jsonrpc": "^0.10.2",
-    "@iov/keycontrol": "^0.10.2",
-    "@types/long": "^4.0.0",
-    "long": "^4.0.0"
-  },
-  "devDependencies": {
-    "@iov/bns": "^0.10.2",
-    "@iov/ethereum": "^0.10.2"
+    "@iov/stream": "^0.10.1",
+    "xstream": "^11.7.0"
   }
 }
