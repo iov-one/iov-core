@@ -3,7 +3,7 @@ import { Stream } from "xstream";
 import { DefaultValueProducer } from "./defaultvalueproducer";
 
 function oneTickLater(): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve));
+  return new Promise(resolve => setTimeout(resolve, 0));
 }
 
 describe("DefaultValueProducer", () => {
