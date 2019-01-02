@@ -15,6 +15,7 @@ import { HdPaths, Secp256k1HdWallet } from "@iov/keycontrol";
 
 import { ethereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
+import { scraperAddressTag } from "./tags";
 import { testConfig } from "./testconfig";
 
 function skipTests(): boolean {
@@ -328,13 +329,10 @@ describe("EthereumConnection", () => {
     it("can search a transaction by account", async () => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
-      const connection = await EthereumConnection.establish(testConfig.base);
-      const results = await connection.searchTx({
-        tags: [
-          { key: "apiLink", value: testConfig.scraper!.apiUrl },
-          { key: "account", value: testConfig.scraper!.address },
-        ],
+      const connection = await EthereumConnection.establish(testConfig.base, {
+        scraperApiUrl: testConfig.scraper!.apiUrl,
       });
+      const results = await connection.searchTx({ tags: [scraperAddressTag(testConfig.scraper!.address)] });
       expect(results.length).toBeGreaterThan(1);
       connection.disconnect();
     });

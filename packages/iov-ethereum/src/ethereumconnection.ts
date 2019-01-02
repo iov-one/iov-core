@@ -34,6 +34,7 @@ import { constants } from "./constants";
 import { keyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
 import { Parse, Scraper } from "./parse";
+import { findScraperAddress } from "./tags";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
@@ -87,6 +88,8 @@ async function loadChainId(baseUrl: string): Promise<ChainId> {
 
 export interface EthereumConnectionOptions {
   readonly wsUrl?: string;
+  /** URL to an Etherscan compatible scraper API */
+  readonly scraperApiUrl?: string;
 }
 
 export class EthereumConnection implements BcpConnection {
@@ -102,12 +105,19 @@ export class EthereumConnection implements BcpConnection {
   private readonly baseUrl: string;
   private readonly myChainId: ChainId;
   private readonly socket: StreamingSocket | undefined;
+  private readonly scraperApiUrl: string | undefined;
 
   constructor(baseUrl: string, chainId: ChainId, options?: EthereumConnectionOptions) {
     this.baseUrl = baseUrl;
-    if (options && options.wsUrl) {
-      this.socket = new StreamingSocket(options.wsUrl);
-      this.socket.connect();
+    if (options) {
+      if (options.wsUrl) {
+        this.socket = new StreamingSocket(options.wsUrl);
+        this.socket.connect();
+      }
+
+      if (options.scraperApiUrl) {
+        this.scraperApiUrl = options.scraperApiUrl;
+      }
     }
     this.myChainId = chainId;
   }
@@ -351,12 +361,18 @@ export class EthereumConnection implements BcpConnection {
           transactionId: transactionId,
         },
       ];
-    } else if (query.tags && query.tags[0].key === "apiLink" && query.tags[1].key === "account") {
-      const apiLink = query.tags[0].value;
-      const accountAddress = query.tags[1].value;
+    } else if (query.tags) {
+      if (!this.scraperApiUrl) {
+        throw new Error("No scraper API URL specified. Cannot search for transactions by tags.");
+      }
+
+      const address = findScraperAddress(query.tags);
+      if (!address) {
+        throw new Error("No matching search tag found to query transactions");
+      }
 
       const responseBody = (await axios.get(
-        `${apiLink}?module=account&action=txlist&address=${accountAddress}&startblock=0&sort=asc`,
+        `${this.scraperApiUrl}?module=account&action=txlist&address=${address}&startblock=0&sort=asc`,
       )).data;
       if (responseBody.result === null) {
         return [];
