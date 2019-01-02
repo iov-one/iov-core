@@ -352,6 +352,8 @@ describe("BnsConnection", () => {
       const fNonce = await connection.getNonce({ pubkey: faucet.pubkey });
       expect(fNonce.toNumber()).toBeGreaterThanOrEqual(1);
 
+      await tendermintSearchIndexUpdated();
+
       // now verify we can query the same tx back
       const txQuery = { tags: [bnsFromOrToTag(faucetAddr)] };
       const search = await connection.searchTx(txQuery);
@@ -511,6 +513,8 @@ describe("BnsConnection", () => {
       const response = await connection.postTx(txBytes);
       await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
 
+      await tendermintSearchIndexUpdated();
+
       // Find registration transaction
       const searchResult = await connection.searchTx({ tags: [bnsNonceTag(identityAddress)] });
       expect(searchResult.length).toEqual(1);
@@ -561,6 +565,8 @@ describe("BnsConnection", () => {
       const txBytes = bnsCodec.bytesToPost(signed);
       const response = await connection.postTx(txBytes);
       await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+
+      await tendermintSearchIndexUpdated();
 
       // Find registration transaction
       const searchResult = await connection.searchTx({ tags: [bnsNonceTag(address)] });
