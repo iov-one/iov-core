@@ -311,38 +311,38 @@ export class EthereumConnection implements BcpConnection {
     if (query.height || query.minHeight || query.maxHeight) {
       throw new Error("Query by height, minHeight, maxHeight not supported");
     }
-    let txUncodified;
+
     if (query.id !== undefined) {
       if (!query.id.match(/^0x[0-9a-f]{64}$/)) {
         throw new Error("Invalid transaction ID format");
       }
-      txUncodified = await axios.post(this.baseUrl, {
+      const transactionsResponseBody = (await axios.post(this.baseUrl, {
         jsonrpc: "2.0",
         method: "eth_getTransactionByHash",
         params: [query.id],
         id: 6,
-      });
-      if (txUncodified.data.result === null || txUncodified.data.result.blockNumber === null) {
+      })).data;
+      if (transactionsResponseBody.result === null || transactionsResponseBody.result.blockNumber === null) {
         return [];
       }
       // TODO: compare myChainId with value v (missed recovery parameter)
-      const lastBlockNumber = await axios.post(this.baseUrl, {
+      const lastBlockNumberResponseBody = (await axios.post(this.baseUrl, {
         jsonrpc: "2.0",
         method: "eth_blockNumber",
         params: [],
         id: 7,
-      });
-      const height = decodeHexQuantity(txUncodified.data.result.blockNumber);
-      const confirmations = decodeHexQuantity(lastBlockNumber.data.result) - height;
+      })).data;
+      const height = decodeHexQuantity(transactionsResponseBody.result.blockNumber);
+      const confirmations = decodeHexQuantity(lastBlockNumberResponseBody.result) - height;
       const transactionJson = {
-        ...txUncodified.data.result,
+        ...transactionsResponseBody.result,
         type: 0,
       };
       const transaction = ethereumCodec.parseBytes(
         Encoding.toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
         this.myChainId,
       );
-      const transactionId = `0x${hexPadToEven(txUncodified.data.result.hash)}` as TransactionId;
+      const transactionId = `0x${hexPadToEven(transactionsResponseBody.result.hash)}` as TransactionId;
       return [
         {
           ...transaction,
@@ -354,14 +354,15 @@ export class EthereumConnection implements BcpConnection {
     } else if (query.tags && query.tags[0].key === "apiLink" && query.tags[1].key === "account") {
       const apiLink = query.tags[0].value;
       const accountAddress = query.tags[1].value;
-      txUncodified = await axios.get(
+
+      const responseBody = (await axios.get(
         `${apiLink}?module=account&action=txlist&address=${accountAddress}&startblock=0&sort=asc`,
-      );
-      if (txUncodified.data.result === null) {
+      )).data;
+      if (responseBody.result === null) {
         return [];
       }
       const transactions: any = [];
-      for (const tx of txUncodified.data.result) {
+      for (const tx of responseBody.result) {
         if (tx.isError === "0" && tx.txreceipt_status === "1") {
           const transaction = Scraper.parseBytesTx(
             Encoding.toUtf8(JSON.stringify({ ...tx })) as PostableBytes,
