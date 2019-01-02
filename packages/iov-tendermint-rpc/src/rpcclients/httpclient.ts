@@ -3,25 +3,28 @@ import axios from "axios";
 import { JsonRpcRequest, JsonRpcSuccess, throwIfError } from "../jsonrpc";
 import { hasProtocol, RpcClient } from "./rpcclient";
 
-function inBrowser(): boolean {
-  return typeof window === "object";
-}
+// Global symbols in some environments
+// https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch
+declare const fetch: any | undefined;
 
-function filterBadStatus(res: Response): Response {
+function filterBadStatus(res: any): any {
   if (res.status >= 400) {
     throw new Error(`Bad status on response: ${res.status}`);
   }
   return res;
 }
 
-// post uses fetch in browser and axios in node,
-// was having weird issues with axios in brower
-function http(method: string, url: string, request?: any): Promise<any> {
-  if (inBrowser()) {
+/**
+ * Helper to work around missing CORS support in Tendermint (https://github.com/tendermint/tendermint/pull/2800)
+ *
+ * For some reason, fetch does not complain about missing server-side CORS support.
+ */
+function http(method: "POST", url: string, request?: any): Promise<any> {
+  if (typeof fetch !== "undefined") {
     const body = request ? JSON.stringify(request) : undefined;
     return fetch(url, { method, body })
       .then(filterBadStatus)
-      .then(res => res.json());
+      .then((res: any) => res.json());
   } else {
     return axios.request({ url, method, data: request }).then(res => res.data) as Promise<any>;
   }
@@ -40,8 +43,6 @@ export class HttpClient implements RpcClient {
   }
 
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
-    // make sure we set the origin header properly, seems not to be set
-    // in karma tests....
     const response = await http("POST", this.url, request);
     return throwIfError(response);
   }
