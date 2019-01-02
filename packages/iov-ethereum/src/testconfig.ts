@@ -16,10 +16,13 @@ export interface EthereumNetworkConfig {
   readonly gasPrice: string;
   readonly gasLimit: string;
   readonly waitForTx: number;
-  readonly scraper?: {
-    readonly api: string;
-    readonly address: Address;
-  };
+  readonly scraper:
+    | {
+        readonly apiUrl: string;
+        /** Account to query using the above API URL */
+        readonly address: Address;
+      }
+    | undefined;
 }
 
 // Chain Id is from eip-155.md
@@ -42,10 +45,7 @@ const local: EthereumNetworkConfig = {
   gasPrice: "20000000000",
   gasLimit: "2100000",
   waitForTx: 100,
-  scraper: {
-    api: "https://api-ropsten.etherscan.io/api",
-    address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
-  },
+  scraper: undefined,
 };
 
 const testnetRopsten: EthereumNetworkConfig = {
@@ -64,7 +64,7 @@ const testnetRopsten: EthereumNetworkConfig = {
   gasLimit: "141000",
   waitForTx: 4000,
   scraper: {
-    api: "https://api-ropsten.etherscan.io/api",
+    apiUrl: "https://api-ropsten.etherscan.io/api",
     address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
   },
 };
@@ -85,7 +85,7 @@ const testnetRinkeby: EthereumNetworkConfig = {
   gasLimit: "141000",
   waitForTx: 4000,
   scraper: {
-    api: "https://api-rinkeby.etherscan.io/api",
+    apiUrl: "https://api-rinkeby.etherscan.io/api",
     address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
   },
 };
@@ -95,4 +95,4 @@ config.set("local", local);
 config.set("testnetRopsten", testnetRopsten);
 config.set("testnetRinkeby", testnetRinkeby);
 
-export const TestConfig = config.get(env) || local;
+export const testConfig = config.get(env) || local;

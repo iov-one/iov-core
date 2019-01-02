@@ -12,9 +12,10 @@ export interface EthereumNetworkConfig {
     readonly gasPrice: string;
     readonly gasLimit: string;
     readonly waitForTx: number;
-    readonly scraper?: {
-        readonly api: string;
+    readonly scraper: {
+        readonly apiUrl: string;
+        /** Account to query using the above API URL */
         readonly address: Address;
-    };
+    } | undefined;
 }
-export declare const TestConfig: EthereumNetworkConfig;
+export declare const testConfig: EthereumNetworkConfig;
