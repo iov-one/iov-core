@@ -14,9 +14,8 @@ import {
 import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { JsonRpcClient } from "@iov/jsonrpc";
+import { JsonCompatibleDictionary, JsonRpcClient } from "@iov/jsonrpc";
 import { toListPromise } from "@iov/stream";
-import { JsonCompatibleDictionary } from "../../iov-jsonrpc/types/jsoncompatibledictionary";
 
 const { fromHex } = Encoding;
 
