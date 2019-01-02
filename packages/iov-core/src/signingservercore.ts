@@ -9,7 +9,7 @@ import { UserProfile, WalletId } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";
 
-export class ServerCore {
+export class SigningServerCore {
   private readonly signer: MultiChainSigner;
   private readonly profile: UserProfile;
 

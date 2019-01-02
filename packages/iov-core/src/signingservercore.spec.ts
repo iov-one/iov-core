@@ -13,7 +13,7 @@ import { Ed25519, Random } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, LocalIdentity, UserProfile } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";
-import { ServerCore } from "./servercore";
+import { SigningServerCore } from "./signingservercore";
 
 function pendingWithoutBnsd(): void {
   if (!process.env.BNSD_ENABLED) {
@@ -40,7 +40,7 @@ function copyToPublic(local: LocalIdentity): PublicIdentity {
   };
 }
 
-describe("ServerCore", () => {
+describe("SigningServerCore", () => {
   const bnsdUrl = "ws://localhost:22345";
 
   const defaultAmount: Amount = {
@@ -52,7 +52,7 @@ describe("ServerCore", () => {
   it("can be constructed", () => {
     const profile = new UserProfile();
     const signer = new MultiChainSigner(profile);
-    const core = new ServerCore(profile, signer);
+    const core = new SigningServerCore(profile, signer);
     expect(core).toBeTruthy();
   });
 
@@ -79,7 +79,7 @@ describe("ServerCore", () => {
     const idB2 = copyToPublic(await profile.createIdentity(walletB.id, xnet, HdPaths.simpleAddress(2)));
 
     const signer = new MultiChainSigner(profile);
-    const core = new ServerCore(profile, signer);
+    const core = new SigningServerCore(profile, signer);
 
     const ynetIdentities = await core.getIdentities("Login to XY service", [ynet]);
     expect(ynetIdentities).toEqual([idA0, idB1]);
@@ -108,7 +108,7 @@ describe("ServerCore", () => {
       await profile.createIdentity(wallet.id, bnsChain, HdPaths.simpleAddress(0));
     }
 
-    const core = new ServerCore(profile, signer);
+    const core = new SigningServerCore(profile, signer);
 
     const identities = await core.getIdentities("Please select signer", [bnsChain]);
     const signingIdentity = identities[0];

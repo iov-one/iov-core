@@ -20,7 +20,7 @@ import {
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "../multichainsigner";
-import { ServerCore } from "../servercore";
+import { SigningServerCore } from "../signingservercore";
 
 interface RpcCallGetIdentities {
   readonly name: "getIdentities";
@@ -108,7 +108,7 @@ async function main(): Promise<void> {
   // ganache second identity
   await profile.createIdentity(secp256k1Wallet.id, ethereumChainId, HdPaths.bip44(60, 0, 0, 1));
 
-  const serverCore = new ServerCore(profile, signer);
+  const serverCore = new SigningServerCore(profile, signer);
 
   async function handleRequest(event: any): Promise<JsonRpcResponse | JsonRpcErrorResponse> {
     let request: JsonRpcRequest;
