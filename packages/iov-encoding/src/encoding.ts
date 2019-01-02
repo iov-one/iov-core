@@ -2,6 +2,12 @@ import * as base64js from "base64-js";
 import * as bech32 from "bech32";
 import { ReadonlyDate } from "readonly-date";
 
+// Global symbols in some environments
+// https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder
+// https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder
+declare const TextEncoder: any | undefined;
+declare const TextDecoder: any | undefined;
+
 export class Encoding {
   public static toHex(data: Uint8Array): string {
     let out: string = "";

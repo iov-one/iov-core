@@ -6,7 +6,7 @@ import { fromListPromise, toListPromise } from "./promise";
 import { asArray, countStream } from "./reducer";
 
 function oneTickLater(): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve));
+  return new Promise(resolve => setTimeout(resolve, 0));
 }
 
 describe("promise", () => {
