@@ -7,7 +7,7 @@ export interface EthereumConnectionOptions {
 }
 export declare class EthereumConnection implements BcpConnection {
     static establish(baseUrl: string, options?: EthereumConnectionOptions): Promise<EthereumConnection>;
-    private readonly baseUrl;
+    private readonly rpcClient;
     private readonly myChainId;
     private readonly socket;
     private readonly scraperApiUrl;

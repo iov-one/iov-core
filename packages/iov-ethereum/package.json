@@ -34,6 +34,7 @@
     "@iov/bcp-types": "^0.10.2",
     "@iov/crypto": "^0.10.1",
     "@iov/encoding": "^0.10.1",
+    "@iov/jsonrpc": "^0.10.2",
     "@iov/keycontrol": "^0.10.2",
     "@types/long": "^4.0.0",
     "axios": "^0.18.0",

@@ -27,12 +27,14 @@ import {
   TransactionId,
 } from "@iov/bcp-types";
 import { Encoding, Uint53 } from "@iov/encoding";
+import { isJsonRpcErrorResponse } from "@iov/jsonrpc";
 import { StreamingSocket } from "@iov/socket";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
 import { keyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
+import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { Parse, Scraper } from "./parse";
 import { findScraperAddress } from "./tags";
 import {
@@ -74,15 +76,17 @@ function removeFromListeners(id: string): void {
 
 async function loadChainId(baseUrl: string): Promise<ChainId> {
   // see https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version
-  const result = await axios.post(baseUrl, {
+  const response = await new HttpJsonRpcClient(baseUrl).run({
     jsonrpc: "2.0",
     method: "net_version",
     params: [],
     id: 1,
   });
-  const responseBody = result.data;
+  if (isJsonRpcErrorResponse(response)) {
+    throw new Error(JSON.stringify(response.error));
+  }
 
-  const numericChainId = Uint53.fromString(responseBody.result);
+  const numericChainId = Uint53.fromString(response.result);
   return toBcpChainId(numericChainId.toNumber());
 }
 
@@ -102,13 +106,15 @@ export class EthereumConnection implements BcpConnection {
     return new EthereumConnection(baseUrl, chainId, options);
   }
 
-  private readonly baseUrl: string;
+  private readonly rpcClient: HttpJsonRpcClient;
   private readonly myChainId: ChainId;
   private readonly socket: StreamingSocket | undefined;
   private readonly scraperApiUrl: string | undefined;
 
   constructor(baseUrl: string, chainId: ChainId, options?: EthereumConnectionOptions) {
-    this.baseUrl = baseUrl;
+    this.rpcClient = new HttpJsonRpcClient(baseUrl);
+    this.myChainId = chainId;
+
     if (options) {
       if (options.wsUrl) {
         this.socket = new StreamingSocket(options.wsUrl);
@@ -119,7 +125,6 @@ export class EthereumConnection implements BcpConnection {
         this.scraperApiUrl = options.scraperApiUrl;
       }
     }
-    this.myChainId = chainId;
   }
 
   public disconnect(): void {
@@ -134,28 +139,31 @@ export class EthereumConnection implements BcpConnection {
 
   public async height(): Promise<number> {
     // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_blocknumber
-    const result = await axios.post(this.baseUrl, {
+    const response = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_blockNumber",
       params: [],
       id: 2,
     });
-    const responseBody = result.data;
-    return decodeHexQuantity(responseBody.result);
+    if (isJsonRpcErrorResponse(response)) {
+      throw new Error(JSON.stringify(response.error));
+    }
+
+    return decodeHexQuantity(response.result);
   }
 
   public async postTx(bytes: PostableBytes): Promise<PostTxResponse> {
-    const result = await axios.post(this.baseUrl, {
+    const response = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_sendRawTransaction",
       params: ["0x" + Encoding.toHex(bytes)],
       id: 5,
     });
-    if (result.data.error) {
-      throw new Error(result.data.error.message);
+    if (isJsonRpcErrorResponse(response)) {
+      throw new Error(JSON.stringify(response.error));
     }
 
-    const transactionResult = result.data.result;
+    const transactionResult = response.result;
     if (typeof transactionResult !== "string") {
       throw new Error("Result field was not a string");
     }
@@ -191,16 +199,18 @@ export class EthereumConnection implements BcpConnection {
     }
 
     // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance
-    const confirmedBalance = await axios.post(this.baseUrl, {
+    const response = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_getBalance",
       params: [address, "latest"],
       id: 3,
     });
-    const responseBody = confirmedBalance.data;
+    if (isJsonRpcErrorResponse(response)) {
+      throw new Error(JSON.stringify(response.error));
+    }
 
     // here we are expecting 0 or 1 results
-    const accounts: ReadonlyArray<BcpAccount> = [responseBody].map(
+    const accounts: ReadonlyArray<BcpAccount> = [response.result].map(
       (item: any): BcpAccount => ({
         address: address,
         pubkey: undefined, // TODO: get from a transaction sent by this address
@@ -208,7 +218,7 @@ export class EthereumConnection implements BcpConnection {
         balance: [
           {
             tokenName: constants.primaryTokenName,
-            ...Parse.ethereumAmount(decodeHexQuantityString(item.result)),
+            ...Parse.ethereumAmount(decodeHexQuantityString(item)),
           },
         ],
       }),
@@ -220,27 +230,35 @@ export class EthereumConnection implements BcpConnection {
     const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
 
     // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount
-    const nonceResponse = await axios.post(this.baseUrl, {
+    const response = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_getTransactionCount",
       params: [address, "latest"],
       id: 4,
     });
+    if (isJsonRpcErrorResponse(response)) {
+      throw new Error(JSON.stringify(response.error));
+    }
 
-    return decodeHexQuantityNonce(nonceResponse.data.result);
+    return decodeHexQuantityNonce(response.result);
   }
 
   public async getBlockHeader(height: number): Promise<BlockHeader> {
-    const blockResponse = await axios.post(this.baseUrl, {
+    const response = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_getBlockByNumber",
       params: [encodeQuantity(height), true],
       id: 8,
     });
-    if (blockResponse.data.result === null) {
+    if (isJsonRpcErrorResponse(response)) {
+      throw new Error(JSON.stringify(response.error));
+    }
+
+    if (response.result === null) {
       throw new Error(`Header ${height} doesn't exist yet`);
     }
-    const blockData = blockResponse.data.result;
+
+    const blockData = response.result;
     return {
       id: blockData.hash,
       height: decodeHexQuantity(blockData.number),
@@ -326,37 +344,49 @@ export class EthereumConnection implements BcpConnection {
       if (!query.id.match(/^0x[0-9a-f]{64}$/)) {
         throw new Error("Invalid transaction ID format");
       }
-      const transactionsResponseBody = (await axios.post(this.baseUrl, {
+
+      const transactionsResponse = await this.rpcClient.run({
         jsonrpc: "2.0",
         method: "eth_getTransactionByHash",
         params: [query.id],
         id: 6,
-      })).data;
-      if (transactionsResponseBody.result === null || transactionsResponseBody.result.blockNumber === null) {
+      });
+      if (isJsonRpcErrorResponse(transactionsResponse)) {
+        throw new Error(JSON.stringify(transactionsResponse.error));
+      }
+
+      if (transactionsResponse.result === null || transactionsResponse.result.blockNumber === null) {
         return [];
       }
+      const transactionHeight = decodeHexQuantity(transactionsResponse.result.blockNumber);
+
       // TODO: compare myChainId with value v (missed recovery parameter)
-      const lastBlockNumberResponseBody = (await axios.post(this.baseUrl, {
+      const lastBlockNumberResponse = await this.rpcClient.run({
         jsonrpc: "2.0",
         method: "eth_blockNumber",
         params: [],
         id: 7,
-      })).data;
-      const height = decodeHexQuantity(transactionsResponseBody.result.blockNumber);
-      const confirmations = decodeHexQuantity(lastBlockNumberResponseBody.result) - height;
+      });
+      if (isJsonRpcErrorResponse(lastBlockNumberResponse)) {
+        throw new Error(JSON.stringify(lastBlockNumberResponse.error));
+      }
+
+      const currentHeight = decodeHexQuantity(lastBlockNumberResponse.result);
+
+      const confirmations = currentHeight - transactionHeight;
       const transactionJson = {
-        ...transactionsResponseBody.result,
+        ...transactionsResponse.result,
         type: 0,
       };
       const transaction = ethereumCodec.parseBytes(
         Encoding.toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
         this.myChainId,
       );
-      const transactionId = `0x${hexPadToEven(transactionsResponseBody.result.hash)}` as TransactionId;
+      const transactionId = `0x${hexPadToEven(transactionsResponse.result.hash)}` as TransactionId;
       return [
         {
           ...transaction,
-          height: height,
+          height: transactionHeight,
           confirmations: confirmations,
           transactionId: transactionId,
         },
