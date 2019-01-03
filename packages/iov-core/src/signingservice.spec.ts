@@ -1,5 +1,7 @@
 /// <reference lib="dom" />
 
+import { Producer, Stream } from "xstream";
+
 import {
   Address,
   Algorithm,
@@ -14,7 +16,14 @@ import {
 import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { JsonCompatibleDictionary, JsonRpcClient } from "@iov/jsonrpc";
+import {
+  JsonCompatibleDictionary,
+  JsonRpcClient,
+  JsonRpcResponse,
+  parseJsonRpcError,
+  parseJsonRpcResponse,
+  SimpleMessagingConnection,
+} from "@iov/jsonrpc";
 import { toListPromise } from "@iov/stream";
 
 const { fromHex } = Encoding;
@@ -53,6 +62,33 @@ async function randomBnsAddress(): Promise<Address> {
   return bnsCodec.identityToAddress(randomIdentity);
 }
 
+function makeSimpleMessagingConnection(worker: Worker): SimpleMessagingConnection {
+  const producer: Producer<JsonRpcResponse> = {
+    start: listener => {
+      // tslint:disable-next-line:no-object-mutation
+      worker.onmessage = event => {
+        // console.log("Got message from connection", event);
+        const responseError = parseJsonRpcError(event.data);
+        if (responseError) {
+          listener.next(responseError);
+        } else {
+          const response = parseJsonRpcResponse(event.data);
+          listener.next(response);
+        }
+      };
+    },
+    stop: () => {
+      // tslint:disable-next-line:no-object-mutation
+      worker.onmessage = null;
+    },
+  };
+
+  return {
+    responseStream: Stream.create(producer),
+    sendRequest: request => worker.postMessage(request),
+  };
+}
+
 describe("signingservice.worker", () => {
   const bnsdUrl = "ws://localhost:22345";
   const signingserviceKarmaUrl = "/base/dist/web/signingservice.worker.js";
@@ -85,7 +121,7 @@ describe("signingservice.worker", () => {
     const worker = new Worker(signingserviceKarmaUrl);
     await sleep(signingserviceBootTime);
 
-    const client = new JsonRpcClient(worker);
+    const client = new JsonRpcClient(makeSimpleMessagingConnection(worker));
     const response = await client.run({
       jsonrpc: "2.0",
       id: 123,
@@ -117,7 +153,7 @@ describe("signingservice.worker", () => {
     const worker = new Worker(signingserviceKarmaUrl);
     await sleep(signingserviceBootTime);
 
-    const client = new JsonRpcClient(worker);
+    const client = new JsonRpcClient(makeSimpleMessagingConnection(worker));
     const response = await client.run({
       jsonrpc: "2.0",
       id: 123,
@@ -145,7 +181,7 @@ describe("signingservice.worker", () => {
     const worker = new Worker(signingserviceKarmaUrl);
     await sleep(signingserviceBootTime);
 
-    const client = new JsonRpcClient(worker);
+    const client = new JsonRpcClient(makeSimpleMessagingConnection(worker));
     const response = await client.run({
       jsonrpc: "2.0",
       id: 123,
@@ -179,7 +215,7 @@ describe("signingservice.worker", () => {
     const worker = new Worker(signingserviceKarmaUrl);
     await sleep(signingserviceBootTime);
 
-    const client = new JsonRpcClient(worker);
+    const client = new JsonRpcClient(makeSimpleMessagingConnection(worker));
 
     const identitiesResponse = await client.run({
       jsonrpc: "2.0",

@@ -4,9 +4,15 @@
 
 import { isJsonCompatibleDictionary } from "../jsoncompatibledictionary";
 import { parseJsonRpcId, parseJsonRpcRequest } from "../parse";
-import { jsonRpcCodeInvalidRequest, JsonRpcErrorResponse, JsonRpcRequest, JsonRpcResponse } from "../types";
+import {
+  jsonRpcCodeInvalidRequest,
+  JsonRpcErrorResponse,
+  JsonRpcRequest,
+  JsonRpcResponse,
+  JsonRpcSuccessResponse,
+} from "../types";
 
-function handleRequest(event: MessageEvent): JsonRpcResponse | JsonRpcErrorResponse {
+function handleRequest(event: MessageEvent): JsonRpcResponse {
   let request: JsonRpcRequest;
   try {
     request = parseJsonRpcRequest(event.data);
@@ -42,7 +48,7 @@ function handleRequest(event: MessageEvent): JsonRpcResponse | JsonRpcErrorRespo
       .join(", ");
   }
 
-  const response: JsonRpcResponse = {
+  const response: JsonRpcSuccessResponse = {
     jsonrpc: "2.0",
     id: request.id,
     result: `Called ${request.method}(${paramsString})`,

@@ -1,4 +1,4 @@
-export { JsonRpcClient } from "./jsonrpcclient";
+export { JsonRpcClient, SimpleMessagingConnection } from "./jsonrpcclient";
 export {
   JsonCompatibleArray,
   JsonCompatibleDictionary,
@@ -13,6 +13,7 @@ export {
   JsonRpcRequest,
   JsonRpcErrorResponse,
   JsonRpcResponse,
+  JsonRpcSuccessResponse,
   jsonRpcCodeInternalError,
   jsonRpcCodeInvalidParams,
   jsonRpcCodeInvalidRequest,
