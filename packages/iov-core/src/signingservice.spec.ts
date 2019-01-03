@@ -59,7 +59,7 @@ describe("signingservice.worker", () => {
   // time to wait until service is initialized and conected to chain
   const signingserviceBootTime = 1_500;
 
-  const ganacheChainId = "5777" as ChainId;
+  const ganacheChainId = "ethereum-eip155-5777" as ChainId;
   const ganacheSecondIdentity: PublicIdentity = {
     chainId: ganacheChainId,
     pubkey: {

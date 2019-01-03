@@ -1,4 +1,4 @@
-import { Nonce } from "@iov/bcp-types";
+import { ChainId, Nonce } from "@iov/bcp-types";
 import { Int53 } from "@iov/encoding";
 
 import {
@@ -7,7 +7,9 @@ import {
   decodeHexQuantityString,
   encodeQuantity,
   encodeQuantityString,
+  fromBcpChainId,
   hexPadToEven,
+  toBcpChainId,
 } from "./utils";
 
 describe("Ethereum utils", () => {
@@ -140,6 +142,57 @@ describe("Ethereum utils", () => {
       expect(hexPadToEven("0x2")).toEqual("02");
       expect(hexPadToEven("0x5208")).toEqual("5208");
       expect(hexPadToEven("0x4a817c800")).toEqual("04a817c800");
+    });
+  });
+
+  describe("toBcpChainId", () => {
+    it("works for simple values", () => {
+      expect(toBcpChainId(1)).toEqual("ethereum-eip155-1");
+      expect(toBcpChainId(2)).toEqual("ethereum-eip155-2");
+      expect(toBcpChainId(314158)).toEqual("ethereum-eip155-314158");
+
+      // 0 must be supported to work with pre-eip155 test vectors
+      expect(toBcpChainId(0)).toEqual("ethereum-eip155-0");
+    });
+
+    it("throws for values less than 0", () => {
+      expect(() => toBcpChainId(-1)).toThrowError();
+    });
+  });
+
+  describe("fromBcpChainId", () => {
+    it("works for simple values", () => {
+      expect(fromBcpChainId("ethereum-eip155-1" as ChainId)).toEqual(1);
+      expect(fromBcpChainId("ethereum-eip155-2" as ChainId)).toEqual(2);
+      expect(fromBcpChainId("ethereum-eip155-314158" as ChainId)).toEqual(314158);
+
+      // 0 must be supported to work with pre-eip155 test vectors
+      expect(fromBcpChainId("ethereum-eip155-0" as ChainId)).toEqual(0);
+    });
+
+    it("throws for invalid prefix", () => {
+      expect(() => fromBcpChainId("ethereum-1" as ChainId)).toThrowError(/Expected chain ID to start with/i);
+      expect(() => fromBcpChainId("eip155-1" as ChainId)).toThrowError(/Expected chain ID to start with/i);
+      expect(() => fromBcpChainId("1" as ChainId)).toThrowError(/Expected chain ID to start with/i);
+
+      expect(() => fromBcpChainId("Ethereum-eip155-1" as ChainId)).toThrowError(
+        /Expected chain ID to start with/i,
+      );
+    });
+
+    it("throws for invalid number", () => {
+      expect(() => fromBcpChainId("ethereum-eip155-a" as ChainId)).toThrowError(
+        /Invalid format of EIP155 chain ID/i,
+      );
+      expect(() => fromBcpChainId("ethereum-eip155--1" as ChainId)).toThrowError(
+        /Invalid format of EIP155 chain ID/i,
+      );
+      expect(() => fromBcpChainId("ethereum-eip155-01" as ChainId)).toThrowError(
+        /Invalid format of EIP155 chain ID/i,
+      );
+      expect(() => fromBcpChainId("ethereum-eip155-1.1" as ChainId)).toThrowError(
+        /Invalid format of EIP155 chain ID/i,
+      );
     });
   });
 });

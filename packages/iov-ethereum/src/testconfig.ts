@@ -31,7 +31,7 @@ const local: EthereumNetworkConfig = {
   env: "local",
   base: "http://localhost:8545",
   webSocketUrl: "ws://localhost:8545",
-  chainId: "5777" as ChainId,
+  chainId: "ethereum-eip155-5777" as ChainId,
   minHeight: -1,
   pubkey: fromHex(
     "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
@@ -52,7 +52,7 @@ const testnetRopsten: EthereumNetworkConfig = {
   env: "ropsten",
   base: "https://ropsten.infura.io/",
   webSocketUrl: "wss://ropsten.infura.io/ws",
-  chainId: "3" as ChainId,
+  chainId: "ethereum-eip155-3" as ChainId,
   minHeight: 4284887,
   pubkey: fromHex(
     "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
@@ -73,7 +73,7 @@ const testnetRinkeby: EthereumNetworkConfig = {
   env: "rinkeby",
   base: "https://rinkeby.infura.io",
   webSocketUrl: "wss://rinkeby.infura.io/ws",
-  chainId: "4" as ChainId,
+  chainId: "ethereum-eip155-4" as ChainId,
   minHeight: 3211058,
   pubkey: fromHex(
     "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",

@@ -26,7 +26,7 @@ import {
   TokenTicker,
   TransactionId,
 } from "@iov/bcp-types";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Uint53 } from "@iov/encoding";
 import { StreamingSocket } from "@iov/socket";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
@@ -40,6 +40,7 @@ import {
   decodeHexQuantityString,
   encodeQuantity,
   hexPadToEven,
+  toBcpChainId,
 } from "./utils";
 
 interface WsListener {
@@ -79,7 +80,9 @@ async function loadChainId(baseUrl: string): Promise<ChainId> {
     id: 1,
   });
   const responseBody = result.data;
-  return responseBody.result;
+
+  const numericChainId = Uint53.fromString(responseBody.result);
+  return toBcpChainId(numericChainId.toNumber());
 }
 
 export class EthereumConnection implements BcpConnection {
@@ -98,11 +101,6 @@ export class EthereumConnection implements BcpConnection {
     if (wsUrl) {
       this.socket = new StreamingSocket(wsUrl);
       this.socket.connect();
-    }
-
-    if (!chainId.match(/^[0-9]+$/)) {
-      // see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#specification
-      throw new Error("Ethereum chain ID must be a string of numbers.");
     }
     this.myChainId = chainId;
   }

@@ -4,14 +4,14 @@ import { Encoding } from "@iov/encoding";
 
 import { isValidAddress } from "./derivation";
 import { BlknumForkState, Eip155ChainId, eip155V, toRlp } from "./encoding";
-import { encodeQuantity, encodeQuantityString, hexPadToEven } from "./utils";
+import { encodeQuantity, encodeQuantityString, fromBcpChainId, hexPadToEven } from "./utils";
 
 const { fromHex } = Encoding;
 
 export class Serialization {
   public static serializeUnsignedTransaction(unsigned: UnsignedTransaction, nonce: Nonce): Uint8Array {
     if (isSendTransaction(unsigned)) {
-      const chainIdHex = encodeQuantity(Number(unsigned.chainId));
+      const chainIdHex = encodeQuantity(fromBcpChainId(unsigned.chainId));
       const valueHex = encodeQuantityString(unsigned.amount.quantity);
       const nonceHex = nonce.toNumber() > 0 ? encodeQuantity(nonce.toNumber()) : "0x";
       const gasPriceHex = unsigned.gasPrice ? encodeQuantityString(unsigned.gasPrice.quantity) : "0x";
@@ -67,7 +67,7 @@ export class Serialization {
       const sig = ExtendedSecp256k1Signature.fromFixedLength(signed.primarySignature.signature);
       const r = sig.r();
       const s = sig.s();
-      const chainId = Number(unsigned.chainId);
+      const chainId = fromBcpChainId(unsigned.chainId);
       const chain: Eip155ChainId =
         chainId > 0
           ? { forkState: BlknumForkState.Forked, chainId: chainId }
