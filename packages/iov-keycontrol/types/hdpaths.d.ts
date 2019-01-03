@@ -15,6 +15,31 @@ export declare class HdPaths {
      */
     static bip44(coinType: number, account: number, change: number, address: number): ReadonlyArray<Slip10RawIndex>;
     /**
+     * BIP44-like HD paths for account based coins
+     *
+     * This is following Trezor's recommendation that
+     * > If the coin is UTXO-based the path should have all five parts,
+     * > precisely as defined in BIP-32. If it is account-based we follow
+     * > Stellar's SEP-0005 - paths have only three parts 44'/c'/a'.
+     *
+     * Example paths to use this for
+     *
+     *     m/44'/234'/a'   IOV
+     *     m/44'/134'/a'   Lisk
+     *     m/44'/1120'/a'  RISE
+     *     m/44'/148'/a'   Stellar
+     *
+     * This is called "BIP44-like" because it follows the idea of BIP44 but is not
+     * compatible to the 5 component BIP44 standard.
+     */
+    static bip44Like(coinType: number, account: number): ReadonlyArray<Slip10RawIndex>;
+    /**
+     * An IOV HD path in the form m/44'/234'/a'
+     *
+     * @param account The account index statring at 0
+     */
+    static iov(account: number): ReadonlyArray<Slip10RawIndex>;
+    /**
      * The default MetaMask derivation path
      *
      * What MetaMask calls the account is a BIP44 address index: m/44'/60'/0'/0/<account>
