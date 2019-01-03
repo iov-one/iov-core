@@ -5,7 +5,7 @@ import {
   JsonCompatibleDictionary,
   JsonCompatibleValue,
 } from "./jsoncompatibledictionary";
-import { JsonRpcError, JsonRpcErrorResponse, JsonRpcRequest, JsonRpcResponse } from "./types";
+import { JsonRpcError, JsonRpcErrorResponse, JsonRpcRequest, JsonRpcSuccessResponse } from "./types";
 
 export function parseJsonRpcId(data: unknown): number | null {
   if (!isJsonCompatibleDictionary(data)) {
@@ -105,7 +105,7 @@ export function parseJsonRpcError(data: unknown): JsonRpcErrorResponse | undefin
   };
 }
 
-export function parseJsonRpcResponse(data: unknown): JsonRpcResponse {
+export function parseJsonRpcResponse(data: unknown): JsonRpcSuccessResponse {
   if (!isJsonCompatibleDictionary(data)) {
     throw new Error("Data must be JSON compatible dictionary");
   }

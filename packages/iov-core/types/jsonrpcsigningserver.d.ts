@@ -1,4 +1,4 @@
-import { JsonRpcErrorResponse, JsonRpcRequest, JsonRpcResponse } from "@iov/jsonrpc";
+import { JsonRpcErrorResponse, JsonRpcRequest, JsonRpcSuccessResponse } from "@iov/jsonrpc";
 import { SigningServerCore } from "./signingservercore";
 /**
  * A transport-agnostic JSON-RPC wrapper around SigningServerCore
@@ -6,7 +6,7 @@ import { SigningServerCore } from "./signingservercore";
 export declare class JsonRpcSigningServer {
     private readonly core;
     constructor(core: SigningServerCore);
-    handleUnchecked(request: unknown): Promise<JsonRpcResponse | JsonRpcErrorResponse>;
+    handleUnchecked(request: unknown): Promise<JsonRpcSuccessResponse | JsonRpcErrorResponse>;
     /**
      * Handles a checked JsonRpcRequest
      *
@@ -14,7 +14,7 @@ export declare class JsonRpcSigningServer {
      * 2. call SigningServerCore
      * 3. convert result to JSON-RPC format
      */
-    handleChecked(request: JsonRpcRequest): Promise<JsonRpcResponse | JsonRpcErrorResponse>;
+    handleChecked(request: JsonRpcRequest): Promise<JsonRpcSuccessResponse | JsonRpcErrorResponse>;
     /**
      * Call this to free ressources when server is not needed anymore
      */

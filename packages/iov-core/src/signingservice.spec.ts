@@ -20,7 +20,7 @@ import {
   JsonCompatibleDictionary,
   JsonRpcClient,
   JsonRpcErrorResponse,
-  JsonRpcResponse,
+  JsonRpcSuccessResponse,
   parseJsonRpcError,
   parseJsonRpcResponse,
   SimpleMessagingConnection,
@@ -64,7 +64,7 @@ async function randomBnsAddress(): Promise<Address> {
 }
 
 function makeSimpleMessagingConnection(worker: Worker): SimpleMessagingConnection {
-  const producer: Producer<JsonRpcResponse | JsonRpcErrorResponse> = {
+  const producer: Producer<JsonRpcSuccessResponse | JsonRpcErrorResponse> = {
     start: listener => {
       // tslint:disable-next-line:no-object-mutation
       worker.onmessage = event => {

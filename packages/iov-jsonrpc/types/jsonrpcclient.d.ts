@@ -1,11 +1,11 @@
 import { Stream } from "xstream";
-import { JsonRpcErrorResponse, JsonRpcRequest, JsonRpcResponse } from "./types";
+import { JsonRpcErrorResponse, JsonRpcRequest, JsonRpcSuccessResponse } from "./types";
 export interface SimpleMessagingConnection {
-    readonly responseStream: Stream<JsonRpcResponse | JsonRpcErrorResponse>;
+    readonly responseStream: Stream<JsonRpcSuccessResponse | JsonRpcErrorResponse>;
     readonly sendRequest: (request: JsonRpcRequest) => void;
 }
 export declare class JsonRpcClient {
     private readonly connection;
     constructor(connection: SimpleMessagingConnection);
-    run(request: JsonRpcRequest): Promise<JsonRpcResponse>;
+    run(request: JsonRpcRequest): Promise<JsonRpcSuccessResponse>;
 }

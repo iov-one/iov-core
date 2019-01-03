@@ -12,7 +12,7 @@ export {
   isJsonRpcErrorResponse,
   JsonRpcRequest,
   JsonRpcErrorResponse,
-  JsonRpcResponse,
+  JsonRpcSuccessResponse,
   jsonRpcCodeInternalError,
   jsonRpcCodeInvalidParams,
   jsonRpcCodeInvalidRequest,

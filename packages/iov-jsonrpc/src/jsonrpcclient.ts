@@ -2,10 +2,15 @@ import { Stream } from "xstream";
 
 import { toListPromise } from "@iov/stream";
 
-import { isJsonRpcErrorResponse, JsonRpcErrorResponse, JsonRpcRequest, JsonRpcResponse } from "./types";
+import {
+  isJsonRpcErrorResponse,
+  JsonRpcErrorResponse,
+  JsonRpcRequest,
+  JsonRpcSuccessResponse,
+} from "./types";
 
 export interface SimpleMessagingConnection {
-  readonly responseStream: Stream<JsonRpcResponse | JsonRpcErrorResponse>;
+  readonly responseStream: Stream<JsonRpcSuccessResponse | JsonRpcErrorResponse>;
   readonly sendRequest: (request: JsonRpcRequest) => void;
 }
 
@@ -16,7 +21,7 @@ export class JsonRpcClient {
     this.connection = connection;
   }
 
-  public async run(request: JsonRpcRequest): Promise<JsonRpcResponse> {
+  public async run(request: JsonRpcRequest): Promise<JsonRpcSuccessResponse> {
     const filteredStream = this.connection.responseStream.filter(r => r.id === request.id);
     const pendingResponses = toListPromise(filteredStream, 1);
     this.connection.sendRequest(request);
