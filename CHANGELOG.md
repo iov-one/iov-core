@@ -5,6 +5,7 @@
 * @iov/bcp-type: `BcpConnection.getNonce` and `.watchNonce` now return
   `Promise<Nonce>`/`Stream<Nonce>` and implementations set a default value on
   their own.
+* @iov/keycontrol: Add `HdPaths.bip44Like` and `HdPaths.iov`
 
 Breaking changes
 

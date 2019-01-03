@@ -20,6 +20,30 @@ describe("HdPaths", () => {
     ]);
   });
 
+  it("has working bip44Like implementation", () => {
+    // m/44'/33'/22'
+    expect(HdPaths.bip44Like(33, 22)).toEqual([
+      Slip10RawIndex.hardened(44),
+      Slip10RawIndex.hardened(33),
+      Slip10RawIndex.hardened(22),
+    ]);
+  });
+
+  it("has working iov implementation", () => {
+    // m/44'/234'/0'
+    expect(HdPaths.iov(0)).toEqual([
+      Slip10RawIndex.hardened(44),
+      Slip10RawIndex.hardened(234),
+      Slip10RawIndex.hardened(0),
+    ]);
+    // m/44'/234'/1'
+    expect(HdPaths.iov(1)).toEqual([
+      Slip10RawIndex.hardened(44),
+      Slip10RawIndex.hardened(234),
+      Slip10RawIndex.hardened(1),
+    ]);
+  });
+
   it("has working MetaMask 'HD Key Tree' implementation", () => {
     // m/44'/60'/0'/0/0
     expect(HdPaths.metamaskHdKeyTree(0)).toEqual([
