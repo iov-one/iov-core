@@ -48,7 +48,7 @@ async function randomBnsAddress(): Promise<Address> {
 
 const bnsdUrl = "ws://localhost:22345";
 const bnsdFaucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
-const ethereumChainId = "5777" as ChainId;
+const ethereumChainId = "ethereum-eip155-5777" as ChainId;
 const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
 
 async function makeJsonRpcSigningServer(): Promise<JsonRpcSigningServer> {

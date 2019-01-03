@@ -105,7 +105,7 @@ describe("Serialization", () => {
         const signed: SignedTransaction<SendTransaction> = {
           transaction: {
             kind: "bcp/send",
-            chainId: "0" as ChainId,
+            chainId: "ethereum-eip155-0" as ChainId,
             signer: {
               algo: Algorithm.Secp256k1,
               data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization

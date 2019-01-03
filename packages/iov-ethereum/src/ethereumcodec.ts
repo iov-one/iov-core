@@ -23,7 +23,7 @@ import { constants } from "./constants";
 import { isValidAddress, keyToAddress } from "./derivation";
 import { BlknumForkState, Eip155ChainId, getRecoveryParam } from "./encoding";
 import { Serialization } from "./serialization";
-import { decodeHexQuantity, decodeHexQuantityNonce, decodeHexQuantityString } from "./utils";
+import { decodeHexQuantity, decodeHexQuantityNonce, decodeHexQuantityString, fromBcpChainId } from "./utils";
 
 export const ethereumCodec: TxCodec = {
   bytesToSign: (unsigned: UnsignedTransaction, nonce: Nonce): SigningJob => {
@@ -43,7 +43,7 @@ export const ethereumCodec: TxCodec = {
     // signature
     const chain: Eip155ChainId = {
       forkState: BlknumForkState.Forked,
-      chainId: Number(chainId),
+      chainId: fromBcpChainId(chainId),
     };
     const r = Encoding.fromHex(json.r.replace("0x", ""));
     const s = Encoding.fromHex(json.s.replace("0x", ""));
