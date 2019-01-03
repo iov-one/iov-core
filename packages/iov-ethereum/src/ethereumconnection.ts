@@ -194,6 +194,8 @@ export class EthereumConnection implements BcpConnection {
     let address: Address;
     if (isAddressQuery(query)) {
       address = query.address;
+    } else if (isPubkeyQuery(query)) {
+      address = keyToAddress(query.pubkey);
     } else {
       throw new Error("Query type not supported");
     }
