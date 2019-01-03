@@ -26,6 +26,7 @@ Breaking changes
 * @iov/keycontrol: Remove redundant chainId parameter from
   `Wallet.createTransactionSignature`
 * @iov/tendermint-rpc: Remove support for Tendermint 0.20 and 0.21
+* @iov/crypto: Remove support for ripemd160
 
 ## 0.10.3
 

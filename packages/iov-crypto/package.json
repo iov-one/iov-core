@@ -37,7 +37,6 @@
     "js-sha3": "^0.8.0",
     "libsodium-wrappers": "^0.7.3",
     "pbkdf2": "^3.0.16",
-    "ripemd160": "^2.0.2",
     "sha.js": "^2.4.11",
     "type-tagger": "^1.0.0",
     "unorm": "^1.4.1"
