@@ -1,4 +1,4 @@
-export { JsonRpcClient } from "./jsonrpcclient";
+export { JsonRpcClient, SimpleMessagingConnection } from "./jsonrpcclient";
 export {
   JsonCompatibleArray,
   JsonCompatibleDictionary,

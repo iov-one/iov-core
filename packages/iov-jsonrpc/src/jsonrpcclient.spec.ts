@@ -1,11 +1,42 @@
 /// <reference lib="dom" />
 
-import { JsonRpcClient } from "./jsonrpcclient";
+import { Producer, Stream } from "xstream";
+
+import { JsonRpcClient, SimpleMessagingConnection } from "./jsonrpcclient";
+import { parseJsonRpcError, parseJsonRpcResponse } from "./parse";
+import { JsonRpcErrorResponse, JsonRpcResponse } from "./types";
 
 function pendingWithoutWorker(): void {
   if (typeof Worker === "undefined") {
     pending("Environment without WebWorker support detected. Marked as pending.");
   }
+}
+
+function makeSimpleMessagingConnection(worker: Worker): SimpleMessagingConnection {
+  const producer: Producer<JsonRpcResponse | JsonRpcErrorResponse> = {
+    start: listener => {
+      // tslint:disable-next-line:no-object-mutation
+      worker.onmessage = event => {
+        // console.log("Got message from connection", event);
+        const responseError = parseJsonRpcError(event.data);
+        if (responseError) {
+          listener.next(responseError);
+        } else {
+          const response = parseJsonRpcResponse(event.data);
+          listener.next(response);
+        }
+      };
+    },
+    stop: () => {
+      // tslint:disable-next-line:no-object-mutation
+      worker.onmessage = null;
+    },
+  };
+
+  return {
+    responseStream: Stream.create(producer),
+    sendRequest: request => worker.postMessage(request),
+  };
 }
 
 describe("JsonRpcClient", () => {
@@ -15,7 +46,7 @@ describe("JsonRpcClient", () => {
     pendingWithoutWorker();
 
     const worker = new Worker(dummyserviceKarmaUrl);
-    const client = new JsonRpcClient(worker);
+    const client = new JsonRpcClient(makeSimpleMessagingConnection(worker));
     expect(client).toBeTruthy();
     worker.terminate();
   });
@@ -25,7 +56,7 @@ describe("JsonRpcClient", () => {
 
     const worker = new Worker(dummyserviceKarmaUrl);
 
-    const client = new JsonRpcClient(worker);
+    const client = new JsonRpcClient(makeSimpleMessagingConnection(worker));
     const response = await client.run({
       jsonrpc: "2.0",
       id: 123,
@@ -44,7 +75,7 @@ describe("JsonRpcClient", () => {
 
     const worker = new Worker(dummyserviceKarmaUrl);
 
-    const client = new JsonRpcClient(worker);
+    const client = new JsonRpcClient(makeSimpleMessagingConnection(worker));
     const response = await client.run({
       jsonrpc: "2.0",
       id: 123,
