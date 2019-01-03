@@ -1,4 +1,4 @@
-import { ChainId, UnsignedTransaction } from "@iov/bcp-types";
+import { ChainId, isUnsignedTransaction, UnsignedTransaction } from "@iov/bcp-types";
 import {
   isJsonCompatibleDictionary,
   jsonRpcCodeInvalidParams,
@@ -66,10 +66,13 @@ function parseRpcCall(data: JsonRpcRequest): RpcCall {
       if (typeof transaction !== "object") {
         throw new ParamsError("2nd parameter (transaction) must be an object");
       }
+      if (!isUnsignedTransaction(transaction)) {
+        throw new ParamsError("2nd parameter (transaction) does not look like an unsigned transaction");
+      }
       return {
         name: "signAndPost",
         reason: reason,
-        transaction: (transaction as unknown) as UnsignedTransaction,
+        transaction: transaction,
       };
     }
     default:

@@ -14,6 +14,16 @@ export interface PublicKeyBundle {
   readonly data: PublicKeyBytes;
 }
 
+export function isPublicKeyBundle(data: any): data is PublicKeyBundle {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    ((data as PublicKeyBundle).algo === Algorithm.Ed25519 ||
+      (data as PublicKeyBundle).algo === Algorithm.Secp256k1) &&
+    (data as PublicKeyBundle).data instanceof Uint8Array
+  );
+}
+
 /** Used to differentiate a blockchain. Should be alphanumeric or -_/ and unique */
 export type ChainId = string & As<"chain-id">;
 
@@ -121,6 +131,16 @@ export interface Amount {
   readonly tokenTicker: TokenTicker;
 }
 
+export function isAmount(data: any): data is Amount {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    typeof (data as Amount).quantity === "string" &&
+    typeof (data as Amount).fractionalDigits === "number" &&
+    typeof (data as Amount).tokenTicker === "string"
+  );
+}
+
 /** The basic transaction type all transactions should extend */
 export interface UnsignedTransaction {
   /**
@@ -142,6 +162,21 @@ export interface UnsignedTransaction {
   readonly gasLimit?: Amount;
   // signer needs to be a PublicKey as we use that to as an identifier to the Keyring for lookup
   readonly signer: PublicKeyBundle;
+}
+
+export function isUnsignedTransaction(data: any): data is UnsignedTransaction {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    typeof (data as UnsignedTransaction).kind === "string" &&
+    typeof (data as UnsignedTransaction).chainId === "string" &&
+    ((data as UnsignedTransaction).fee === undefined || isAmount((data as UnsignedTransaction).fee)) &&
+    ((data as UnsignedTransaction).gasPrice === undefined ||
+      isAmount((data as UnsignedTransaction).gasPrice)) &&
+    ((data as UnsignedTransaction).gasLimit === undefined ||
+      isAmount((data as UnsignedTransaction).gasLimit)) &&
+    isPublicKeyBundle((data as UnsignedTransaction).signer)
+  );
 }
 
 export interface SendTransaction extends UnsignedTransaction {

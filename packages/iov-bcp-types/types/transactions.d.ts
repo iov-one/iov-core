@@ -9,6 +9,7 @@ export interface PublicKeyBundle {
     readonly algo: Algorithm;
     readonly data: PublicKeyBytes;
 }
+export declare function isPublicKeyBundle(data: any): data is PublicKeyBundle;
 /** Used to differentiate a blockchain. Should be alphanumeric or -_/ and unique */
 export declare type ChainId = string & As<"chain-id">;
 /** a public key we can identify with on a blockchain */
@@ -87,6 +88,7 @@ export interface Amount {
     readonly fractionalDigits: number;
     readonly tokenTicker: TokenTicker;
 }
+export declare function isAmount(data: any): data is Amount;
 /** The basic transaction type all transactions should extend */
 export interface UnsignedTransaction {
     /**
@@ -108,6 +110,7 @@ export interface UnsignedTransaction {
     readonly gasLimit?: Amount;
     readonly signer: PublicKeyBundle;
 }
+export declare function isUnsignedTransaction(data: any): data is UnsignedTransaction;
 export interface SendTransaction extends UnsignedTransaction {
     readonly kind: "bcp/send";
     readonly amount: Amount;
