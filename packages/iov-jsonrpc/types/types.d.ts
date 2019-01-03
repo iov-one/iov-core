@@ -23,7 +23,8 @@ export interface JsonRpcErrorResponse {
     readonly id: number | null;
     readonly error: JsonRpcError;
 }
-export declare function isJsonRpcErrorResponse(response: JsonRpcSuccessResponse | JsonRpcErrorResponse): response is JsonRpcErrorResponse;
+export declare type JsonRpcResponse = JsonRpcSuccessResponse | JsonRpcErrorResponse;
+export declare function isJsonRpcErrorResponse(response: JsonRpcResponse): response is JsonRpcErrorResponse;
 export declare const jsonRpcCodeParseError = -32700;
 export declare const jsonRpcCodeInvalidRequest = -32600;
 export declare const jsonRpcCodeMethodNotFound = -32601;

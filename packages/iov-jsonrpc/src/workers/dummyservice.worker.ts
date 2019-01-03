@@ -8,10 +8,11 @@ import {
   jsonRpcCodeInvalidRequest,
   JsonRpcErrorResponse,
   JsonRpcRequest,
+  JsonRpcResponse,
   JsonRpcSuccessResponse,
 } from "../types";
 
-function handleRequest(event: MessageEvent): JsonRpcSuccessResponse | JsonRpcErrorResponse {
+function handleRequest(event: MessageEvent): JsonRpcResponse {
   let request: JsonRpcRequest;
   try {
     request = parseJsonRpcRequest(event.data);

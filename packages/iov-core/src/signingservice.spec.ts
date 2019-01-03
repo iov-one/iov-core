@@ -19,8 +19,7 @@ import { Encoding } from "@iov/encoding";
 import {
   JsonCompatibleDictionary,
   JsonRpcClient,
-  JsonRpcErrorResponse,
-  JsonRpcSuccessResponse,
+  JsonRpcResponse,
   parseJsonRpcError,
   parseJsonRpcResponse,
   SimpleMessagingConnection,
@@ -64,7 +63,7 @@ async function randomBnsAddress(): Promise<Address> {
 }
 
 function makeSimpleMessagingConnection(worker: Worker): SimpleMessagingConnection {
-  const producer: Producer<JsonRpcSuccessResponse | JsonRpcErrorResponse> = {
+  const producer: Producer<JsonRpcResponse> = {
     start: listener => {
       // tslint:disable-next-line:no-object-mutation
       worker.onmessage = event => {

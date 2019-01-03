@@ -32,9 +32,9 @@ export interface JsonRpcErrorResponse {
   readonly error: JsonRpcError;
 }
 
-export function isJsonRpcErrorResponse(
-  response: JsonRpcSuccessResponse | JsonRpcErrorResponse,
-): response is JsonRpcErrorResponse {
+export type JsonRpcResponse = JsonRpcSuccessResponse | JsonRpcErrorResponse;
+
+export function isJsonRpcErrorResponse(response: JsonRpcResponse): response is JsonRpcErrorResponse {
   return typeof (response as JsonRpcErrorResponse).error === "object";
 }
 

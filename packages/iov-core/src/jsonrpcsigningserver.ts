@@ -7,6 +7,7 @@ import {
   jsonRpcCodeServerErrorDefault,
   JsonRpcErrorResponse,
   JsonRpcRequest,
+  JsonRpcResponse,
   JsonRpcSuccessResponse,
   parseJsonRpcId,
   parseJsonRpcRequest,
@@ -90,7 +91,7 @@ export class JsonRpcSigningServer {
     this.core = core;
   }
 
-  public async handleUnchecked(request: unknown): Promise<JsonRpcSuccessResponse | JsonRpcErrorResponse> {
+  public async handleUnchecked(request: unknown): Promise<JsonRpcResponse> {
     let checkedRequest: JsonRpcRequest;
     try {
       checkedRequest = parseJsonRpcRequest(request);
@@ -117,9 +118,7 @@ export class JsonRpcSigningServer {
    * 2. call SigningServerCore
    * 3. convert result to JSON-RPC format
    */
-  public async handleChecked(
-    request: JsonRpcRequest,
-  ): Promise<JsonRpcSuccessResponse | JsonRpcErrorResponse> {
+  public async handleChecked(request: JsonRpcRequest): Promise<JsonRpcResponse> {
     let call: RpcCall;
     try {
       call = parseRpcCall(request);

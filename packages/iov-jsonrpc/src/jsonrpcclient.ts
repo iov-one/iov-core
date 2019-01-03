@@ -2,15 +2,10 @@ import { Stream } from "xstream";
 
 import { toListPromise } from "@iov/stream";
 
-import {
-  isJsonRpcErrorResponse,
-  JsonRpcErrorResponse,
-  JsonRpcRequest,
-  JsonRpcSuccessResponse,
-} from "./types";
+import { isJsonRpcErrorResponse, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccessResponse } from "./types";
 
 export interface SimpleMessagingConnection {
-  readonly responseStream: Stream<JsonRpcSuccessResponse | JsonRpcErrorResponse>;
+  readonly responseStream: Stream<JsonRpcResponse>;
   readonly sendRequest: (request: JsonRpcRequest) => void;
 }
 
