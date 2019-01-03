@@ -5,6 +5,9 @@
 * @iov/bcp-type: `BcpConnection.getNonce` and `.watchNonce` now return
   `Promise<Nonce>`/`Stream<Nonce>` and implementations set a default value on
   their own.
+* @iov/jsonrpc: Add new package for type-safe JSON-RPC 2.0 interfaces and
+  response parsers. This is used for out-of-process signing and can be reused
+  in @iov/ethereum and @iov/tendermint-rpc later on.
 * @iov/keycontrol: Add `HdPaths.bip44Like` and `HdPaths.iov`
 
 Breaking changes
