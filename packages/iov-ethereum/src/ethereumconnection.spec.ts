@@ -124,16 +124,19 @@ describe("EthereumConnection", () => {
     connection.disconnect();
   });
 
-  it("can get account from address", async () => {
-    pendingWithoutEthereum();
-    const connection = await EthereumConnection.establish(testConfig.base);
-    const query: BcpAccountQuery = { address: testConfig.address as Address };
-    const account = await connection.getAccount(query);
-    expect(account.data[0].address).toEqual(testConfig.address);
-    expect(account.data[0].balance[0].tokenTicker).toEqual("ETH");
-    expect(account.data[0].balance[0].fractionalDigits).toEqual(18);
-    expect(account.data[0].balance[0].quantity).toEqual(testConfig.quantity);
-    connection.disconnect();
+  describe("getAccount", () => {
+    it("can get account from address", async () => {
+      pendingWithoutEthereum();
+      const connection = await EthereumConnection.establish(testConfig.base);
+      const query: BcpAccountQuery = { address: testConfig.address as Address };
+      const account = await connection.getAccount(query);
+      expect(account.data[0].address).toEqual(testConfig.address);
+      expect(account.data[0].balance[0]).toEqual({
+        ...testConfig.expectedBalance,
+        tokenName: "Ethereum",
+      });
+      connection.disconnect();
+    });
   });
 
   it("can get nonce", async () => {

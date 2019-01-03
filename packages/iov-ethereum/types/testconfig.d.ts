@@ -1,4 +1,4 @@
-import { Address, ChainId, Nonce, PublicKeyBytes } from "@iov/bcp-types";
+import { Address, Amount, ChainId, Nonce, PublicKeyBytes } from "@iov/bcp-types";
 export interface EthereumNetworkConfig {
     readonly env: string;
     readonly base: string;
@@ -7,7 +7,8 @@ export interface EthereumNetworkConfig {
     readonly minHeight: number;
     readonly pubkey: PublicKeyBytes;
     readonly address: Address;
-    readonly quantity: string;
+    /** expected balance tor the `address` */
+    readonly expectedBalance: Amount;
     readonly nonce: Nonce;
     readonly gasPrice: string;
     readonly gasLimit: string;

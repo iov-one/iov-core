@@ -1,4 +1,4 @@
-import { Address, ChainId, Nonce, PublicKeyBytes } from "@iov/bcp-types";
+import { Address, Amount, ChainId, Nonce, PublicKeyBytes, TokenTicker } from "@iov/bcp-types";
 import { Encoding, Int53 } from "@iov/encoding";
 
 const { fromHex } = Encoding;
@@ -11,7 +11,8 @@ export interface EthereumNetworkConfig {
   readonly minHeight: number;
   readonly pubkey: PublicKeyBytes;
   readonly address: Address;
-  readonly quantity: string;
+  /** expected balance tor the `address` */
+  readonly expectedBalance: Amount;
   readonly nonce: Nonce;
   readonly gasPrice: string;
   readonly gasLimit: string;
@@ -40,7 +41,11 @@ const local: EthereumNetworkConfig = {
     "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
   ) as PublicKeyBytes,
   address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
-  quantity: "100000000000000000000",
+  expectedBalance: {
+    quantity: "100000000000000000000",
+    fractionalDigits: 18,
+    tokenTicker: "ETH" as TokenTicker,
+  },
   nonce: new Int53(0) as Nonce,
   gasPrice: "20000000000",
   gasLimit: "2100000",
@@ -58,7 +63,11 @@ const testnetRopsten: EthereumNetworkConfig = {
     "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
   ) as PublicKeyBytes,
   address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
-  quantity: "2999979000000000000",
+  expectedBalance: {
+    quantity: "2999979000000000000",
+    fractionalDigits: 18,
+    tokenTicker: "ETH" as TokenTicker,
+  },
   nonce: new Int53(1) as Nonce,
   gasPrice: "1000000000",
   gasLimit: "141000",
@@ -79,7 +88,11 @@ const testnetRinkeby: EthereumNetworkConfig = {
     "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
   ) as PublicKeyBytes,
   address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
-  quantity: "20000000000000000",
+  expectedBalance: {
+    quantity: "20000000000000000",
+    fractionalDigits: 18,
+    tokenTicker: "ETH" as TokenTicker,
+  },
   nonce: new Int53(0) as Nonce,
   gasPrice: "1000000000",
   gasLimit: "141000",
