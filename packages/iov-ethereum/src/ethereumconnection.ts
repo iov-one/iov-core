@@ -209,21 +209,20 @@ export class EthereumConnection implements BcpConnection {
       throw new Error(JSON.stringify(response.error));
     }
 
-    // here we are expecting 0 or 1 results
-    const accounts: ReadonlyArray<BcpAccount> = [response.result].map(
-      (item: any): BcpAccount => ({
-        address: address,
-        pubkey: undefined, // TODO: get from a transaction sent by this address
-        name: undefined,
-        balance: [
-          {
-            tokenName: constants.primaryTokenName,
-            ...Parse.ethereumAmount(decodeHexQuantityString(item)),
-          },
-        ],
-      }),
-    );
-    return dummyEnvelope(accounts);
+    // eth_getBalance always returns one result. Balance is 0x0 if account does not exist.
+
+    const account: BcpAccount = {
+      address: address,
+      pubkey: undefined, // TODO: get from a transaction sent by this address
+      name: undefined,
+      balance: [
+        {
+          tokenName: constants.primaryTokenName,
+          ...Parse.ethereumAmount(decodeHexQuantityString(response.result)),
+        },
+      ],
+    };
+    return dummyEnvelope([account]);
   }
 
   public async getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {

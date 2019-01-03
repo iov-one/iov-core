@@ -1,4 +1,13 @@
-import { Address, Amount, ChainId, Nonce, PublicKeyBytes, TokenTicker } from "@iov/bcp-types";
+import {
+  Address,
+  Algorithm,
+  Amount,
+  ChainId,
+  Nonce,
+  PublicKeyBundle,
+  PublicKeyBytes,
+  TokenTicker,
+} from "@iov/bcp-types";
 import { Encoding, Int53 } from "@iov/encoding";
 
 const { fromHex } = Encoding;
@@ -24,6 +33,10 @@ export interface EthereumNetworkConfig {
         readonly address: Address;
       }
     | undefined;
+  /** An pubkey not used on this network */
+  readonly unusedPubkey: PublicKeyBundle;
+  /** The address that belongs to `unusedPubkey` */
+  readonly unusedAddress: Address;
 }
 
 // Chain Id is from eip-155.md
@@ -51,6 +64,13 @@ const local: EthereumNetworkConfig = {
   gasLimit: "2100000",
   waitForTx: 100,
   scraper: undefined,
+  unusedPubkey: {
+    algo: Algorithm.Secp256k1,
+    data: fromHex(
+      "049555be4c5136102e1645f9ce53475b2fed172078de78d3b7d0befed14f5471a077123dd459624055c93f85c0d8f99d9178b79b151f597f714ac759bca9dd3cb1",
+    ) as PublicKeyBytes,
+  },
+  unusedAddress: "0x52dF0e01583E12978B0885C5836c9683f22b0618" as Address,
 };
 
 const testnetRopsten: EthereumNetworkConfig = {
@@ -76,6 +96,13 @@ const testnetRopsten: EthereumNetworkConfig = {
     apiUrl: "https://api-ropsten.etherscan.io/api",
     address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
   },
+  unusedPubkey: {
+    algo: Algorithm.Secp256k1,
+    data: fromHex(
+      "049555be4c5136102e1645f9ce53475b2fed172078de78d3b7d0befed14f5471a077123dd459624055c93f85c0d8f99d9178b79b151f597f714ac759bca9dd3cb1",
+    ) as PublicKeyBytes,
+  },
+  unusedAddress: "0x52dF0e01583E12978B0885C5836c9683f22b0618" as Address,
 };
 
 const testnetRinkeby: EthereumNetworkConfig = {
@@ -101,6 +128,13 @@ const testnetRinkeby: EthereumNetworkConfig = {
     apiUrl: "https://api-rinkeby.etherscan.io/api",
     address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
   },
+  unusedPubkey: {
+    algo: Algorithm.Secp256k1,
+    data: fromHex(
+      "049555be4c5136102e1645f9ce53475b2fed172078de78d3b7d0befed14f5471a077123dd459624055c93f85c0d8f99d9178b79b151f597f714ac759bca9dd3cb1",
+    ) as PublicKeyBytes,
+  },
+  unusedAddress: "0x52dF0e01583E12978B0885C5836c9683f22b0618" as Address,
 };
 
 const config = new Map<string, EthereumNetworkConfig>();
