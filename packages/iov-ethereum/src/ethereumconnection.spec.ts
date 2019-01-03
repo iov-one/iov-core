@@ -1,6 +1,5 @@
 import {
   Address,
-  Algorithm,
   BcpAccountQuery,
   BlockHeader,
   isSendTransaction,
@@ -164,8 +163,7 @@ describe("EthereumConnection", () => {
 
     // by pubkey
     {
-      const query: BcpAccountQuery = { pubkey: { algo: Algorithm.Secp256k1, data: testConfig.pubkey } };
-      const nonce = await connection.getNonce(query);
+      const nonce = await connection.getNonce({ pubkey: testConfig.pubkey });
       expect(nonce).toEqual(testConfig.nonce);
     }
     connection.disconnect();
