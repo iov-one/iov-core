@@ -84,10 +84,6 @@ export function appendSignBytes(bz: Uint8Array, chainId: ChainId, nonce: Nonce):
   ]) as SignableBytes;
 }
 
-// tendermint hash (will be) first 20 bytes of sha256
-// probably only works after 0.21, but no need to import ripemd160 now
-export const tendermintHash = (data: Uint8Array) => new Sha256(data).digest().slice(0, 20);
-
 export const arraysEqual = (a: Uint8Array, b: Uint8Array): boolean =>
   a.length === b.length && a.every((n: number, i: number): boolean => n === b[i]);
 
