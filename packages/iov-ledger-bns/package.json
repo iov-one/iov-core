@@ -36,6 +36,7 @@
     "@ledgerhq/hw-transport-node-hid": "^4.22.0",
     "@types/node-hid": "^0.7.0",
     "@types/random-js": "^1.0.31",
+    "babel-runtime": "^6",
     "node-hid": "^0.7.3",
     "random-js": "^1.0.8"
   },
