@@ -12,7 +12,6 @@ export declare function decodeBnsAddress(address: Address): {
 export declare function identityToAddress(identity: PublicIdentity): Address;
 export declare function isValidAddress(address: string): boolean;
 export declare function appendSignBytes(bz: Uint8Array, chainId: ChainId, nonce: Nonce): SignableBytes;
-export declare const tendermintHash: (data: Uint8Array) => Uint8Array;
 export declare const arraysEqual: (a: Uint8Array, b: Uint8Array) => boolean;
 export declare type HashId = Uint8Array & As<"hashid">;
 export declare const hashId: Uint8Array;

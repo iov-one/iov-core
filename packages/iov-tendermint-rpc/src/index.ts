@@ -1,3 +1,6 @@
+// exported to access version-specific hashing
+export { v0_25 } from "./v0-25";
+
 export { Client } from "./client";
 export {
   AbciInfoRequest,

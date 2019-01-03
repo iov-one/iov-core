@@ -4,12 +4,13 @@
 import { JsonRpcEvent, JsonRpcRequest, JsonRpcSuccess } from "./jsonrpc";
 import * as requests from "./requests";
 import * as responses from "./responses";
-import { v0_20 } from "./v0-20";
+import { TxBytes, TxHash } from "./types";
 import { v0_25 } from "./v0-25";
 
 export interface Adaptor {
   readonly params: Params;
   readonly responses: Responses;
+  readonly hashTx: (tx: TxBytes) => TxHash;
 }
 
 // Encoder is a generic that matches all methods of Params
@@ -65,11 +66,7 @@ export interface Responses {
  * @param version full Tendermint version string, e.g. "0.20.1"
  */
 export function adatorForVersion(version: string): Adaptor {
-  if (version.startsWith("0.20.")) {
-    return v0_20;
-  } else if (version.startsWith("0.21.")) {
-    return v0_20;
-  } else if (version.startsWith("0.25.")) {
+  if (version.startsWith("0.25.")) {
     return v0_25;
   } else {
     throw new Error(`Unsupported tendermint version: ${version}`);
