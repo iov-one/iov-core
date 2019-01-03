@@ -1,4 +1,3 @@
-export { v0_20 } from "./v0-20";
 export { v0_25 } from "./v0-25";
 export { Client } from "./client";
 export { AbciInfoRequest, AbciQueryParams, AbciQueryRequest, BlockRequest, BlockchainRequest, BlockResultsRequest, BroadcastTxRequest, BroadcastTxParams, CommitRequest, GenesisRequest, HealthRequest, Method, Request, QueryString, QueryTag, StatusRequest, SubscriptionEventType, TxParams, TxRequest, TxSearchParams, TxSearchRequest, ValidatorsRequest, } from "./requests";
