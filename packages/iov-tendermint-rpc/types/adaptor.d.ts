@@ -1,9 +1,11 @@
 import { JsonRpcEvent, JsonRpcRequest, JsonRpcSuccess } from "./jsonrpc";
 import * as requests from "./requests";
 import * as responses from "./responses";
+import { TxBytes, TxHash } from "./types";
 export interface Adaptor {
     readonly params: Params;
     readonly responses: Responses;
+    readonly hashTx: (tx: TxBytes) => TxHash;
 }
 export declare type Encoder<T extends requests.Request> = (req: T) => JsonRpcRequest;
 export declare type Decoder<T extends responses.Response> = (res: JsonRpcSuccess) => T;

@@ -4,12 +4,14 @@
 import { JsonRpcEvent, JsonRpcRequest, JsonRpcSuccess } from "./jsonrpc";
 import * as requests from "./requests";
 import * as responses from "./responses";
+import { TxBytes, TxHash } from "./types";
 import { v0_20 } from "./v0-20";
 import { v0_25 } from "./v0-25";
 
 export interface Adaptor {
   readonly params: Params;
   readonly responses: Responses;
+  readonly hashTx: (tx: TxBytes) => TxHash;
 }
 
 // Encoder is a generic that matches all methods of Params

@@ -1,4 +1,5 @@
 import { Adaptor } from "../adaptor";
+import { hashTx } from "./hasher";
 import { Params } from "./requests";
 import { Responses } from "./responses";
 
@@ -11,4 +12,5 @@ import { Responses } from "./responses";
 export const v0_20: Adaptor = {
   params: Params,
   responses: Responses,
+  hashTx: hashTx,
 };
