@@ -10,8 +10,13 @@ for tendermint v0.22+.
 In fact, the simplest possible user of the module is to assume it does everything
 automatically, and call:
 
-```
-const client = await Client.connect('wss://bov.wolfnet.iov.one');
+```ts
+import { Client } from "@iov/tendermint-rpc";
+
+const client = await Client.connect("wss://bov.yaknet.iov.one");
+
+const genesis = await client.genesis();
+const status = await client.status();
 ```
 
 ## Supported Tendermint versions
