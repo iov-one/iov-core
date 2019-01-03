@@ -42,8 +42,7 @@ function parseRpcCall(data: JsonRpcRequest): RpcCall {
 
   switch (data.method) {
     case "getIdentities": {
-      const reason = data.params.reason;
-      const chainIds = data.params.chainIds;
+      const { reason, chainIds } = data.params;
       if (typeof reason !== "string") {
         throw new ParamsError("1st parameter (reason) must be a string");
       }
@@ -60,8 +59,7 @@ function parseRpcCall(data: JsonRpcRequest): RpcCall {
       };
     }
     case "signAndPost": {
-      const reason = data.params.reason;
-      const transaction = data.params.transaction;
+      const { reason, transaction } = data.params;
       if (typeof reason !== "string") {
         throw new ParamsError("1st parameter (reason) must be a string");
       }
