@@ -16,7 +16,7 @@ import { HdPaths, Secp256k1HdWallet } from "@iov/keycontrol";
 import { ethereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
 import { scraperAddressTag } from "./tags";
-import { testConfig } from "./testconfig";
+import { testConfig } from "./testconfig.spec";
 
 function skipTests(): boolean {
   return !process.env.ETHEREUM_ENABLED;

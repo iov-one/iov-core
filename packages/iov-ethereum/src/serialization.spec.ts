@@ -13,7 +13,7 @@ import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 
 import { Serialization } from "./serialization";
-import { testConfig } from "./testconfig";
+import { testConfig } from "./testconfig.spec";
 
 const { serializeSignedTransaction, serializeUnsignedTransaction } = Serialization;
 const { fromHex } = Encoding;
