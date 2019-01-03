@@ -40,7 +40,7 @@ import {
   TxReadCodec,
 } from "@iov/bcp-types";
 import { Encoding, Int53, Uint53 } from "@iov/encoding";
-import { DefaultValueProducer, toListPromise, ValueAndUpdates } from "@iov/stream";
+import { concat, DefaultValueProducer, toListPromise, ValueAndUpdates } from "@iov/stream";
 import {
   broadcastTxSyncSuccess,
   Client as TendermintClient,
@@ -638,7 +638,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       return acct.data.length < 1 ? undefined : acct.data[0];
     };
 
-    return Stream.merge(
+    return concat(
       Stream.fromPromise(oneAccount()),
       this.changeBalance(account.address)
         .map(() => Stream.fromPromise(oneAccount()))
@@ -659,7 +659,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       .map(() => Stream.fromPromise(this.getNonce(query)))
       .flatten();
 
-    return Stream.merge(currentStream, updatesStream);
+    return concat(currentStream, updatesStream);
   }
 
   public async getBlockchains(query: BnsBlockchainsQuery): Promise<ReadonlyArray<BnsBlockchainNft>> {
