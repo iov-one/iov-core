@@ -1,5 +1,3 @@
-/// <reference lib="dom" />
-
 import {
   Address,
   Algorithm,
@@ -14,8 +12,13 @@ import {
 import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { JsonCompatibleDictionary, JsonRpcClient } from "@iov/jsonrpc";
+import { isJsonRpcErrorResponse, JsonCompatibleDictionary } from "@iov/jsonrpc";
+import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
+
+import { JsonRpcSigningServer } from "./jsonrpcsigningserver";
+import { MultiChainSigner } from "./multichainsigner";
+import { SigningServerCore } from "./signingservercore";
 
 const { fromHex } = Encoding;
 
@@ -31,16 +34,6 @@ function pendingWithoutEthereum(): void {
   }
 }
 
-function pendingWithoutWorker(): void {
-  if (typeof Worker === "undefined") {
-    pending("Environment without WebWorker support detected. Marked as pending.");
-  }
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 async function randomBnsAddress(): Promise<Address> {
   const rawKeypair = await Ed25519.makeKeypair(await Random.getBytes(32));
   const randomIdentity: PublicIdentity = {
@@ -53,15 +46,30 @@ async function randomBnsAddress(): Promise<Address> {
   return bnsCodec.identityToAddress(randomIdentity);
 }
 
-describe("signingservice.worker", () => {
-  const bnsdUrl = "ws://localhost:22345";
-  const signingserviceKarmaUrl = "/base/dist/web/signingservice.worker.js";
-  // time to wait until service is initialized and conected to chain
-  const signingserviceBootTime = 1_500;
+const bnsdUrl = "ws://localhost:22345";
+const bnsdFaucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
+const ethereumChainId = "5777" as ChainId;
+const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
 
-  const ganacheChainId = "5777" as ChainId;
+async function makeJsonRpcSigningServer(): Promise<JsonRpcSigningServer> {
+  const profile = new UserProfile();
+  const ed25519Wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(bnsdFaucetMnemonic));
+  const secp256k1Wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(ganacheMnemonic));
+  const signer = new MultiChainSigner(profile);
+
+  const bnsConnection = (await signer.addChain(bnsConnector(bnsdUrl))).connection;
+
+  // faucet identity
+  await profile.createIdentity(ed25519Wallet.id, bnsConnection.chainId(), HdPaths.simpleAddress(0));
+  // ganache second identity
+  await profile.createIdentity(secp256k1Wallet.id, ethereumChainId, HdPaths.bip44(60, 0, 0, 1));
+
+  return new JsonRpcSigningServer(new SigningServerCore(profile, signer));
+}
+
+describe("JsonRpcSigningServer", () => {
   const ganacheSecondIdentity: PublicIdentity = {
-    chainId: ganacheChainId,
+    chainId: ethereumChainId,
     pubkey: {
       algo: Algorithm.Secp256k1,
       data: Encoding.fromHex(
@@ -78,15 +86,12 @@ describe("signingservice.worker", () => {
 
   it("can get bnsd identities", async () => {
     pendingWithoutBnsd();
-    pendingWithoutWorker();
 
     const bnsConnection = await bnsConnector(bnsdUrl).client();
 
-    const worker = new Worker(signingserviceKarmaUrl);
-    await sleep(signingserviceBootTime);
+    const server = await makeJsonRpcSigningServer();
 
-    const client = new JsonRpcClient(worker);
-    const response = await client.run({
+    const response = await server.handleUnchecked({
       jsonrpc: "2.0",
       id: 123,
       method: "getIdentities",
@@ -97,6 +102,9 @@ describe("signingservice.worker", () => {
     });
     expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
+    if (isJsonRpcErrorResponse(response)) {
+      throw new Error("Response must not be an error");
+    }
     expect(response.result).toEqual(jasmine.any(Array));
     expect((response.result as ReadonlyArray<any>).length).toEqual(1);
     expect(response.result[0].chainId).toEqual(bnsConnection.chainId());
@@ -105,58 +113,58 @@ describe("signingservice.worker", () => {
       fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
     );
 
-    worker.terminate();
+    server.shutdown();
     bnsConnection.disconnect();
   });
 
   it("can get ethereum identities", async () => {
     pendingWithoutBnsd();
     pendingWithoutEthereum();
-    pendingWithoutWorker();
 
-    const worker = new Worker(signingserviceKarmaUrl);
-    await sleep(signingserviceBootTime);
+    const server = await makeJsonRpcSigningServer();
 
-    const client = new JsonRpcClient(worker);
-    const response = await client.run({
+    const response = await server.handleChecked({
       jsonrpc: "2.0",
       id: 123,
       method: "getIdentities",
       params: {
         reason: "Who are you?",
-        chainIds: [ganacheChainId],
+        chainIds: [ethereumChainId],
       },
     });
     expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
+    if (isJsonRpcErrorResponse(response)) {
+      throw new Error("Response must not be an error");
+    }
     expect(response.result).toEqual(jasmine.any(Array));
     expect((response.result as ReadonlyArray<any>).length).toEqual(1);
     expect(response.result[0]).toEqual(ganacheSecondIdentity);
 
-    worker.terminate();
+    server.shutdown();
   });
 
   it("can get BNS or Ethereum identities", async () => {
     pendingWithoutEthereum();
-    pendingWithoutWorker();
 
     const bnsConnection = await bnsConnector(bnsdUrl).client();
 
-    const worker = new Worker(signingserviceKarmaUrl);
-    await sleep(signingserviceBootTime);
+    const server = await makeJsonRpcSigningServer();
 
-    const client = new JsonRpcClient(worker);
-    const response = await client.run({
+    const response = await server.handleChecked({
       jsonrpc: "2.0",
       id: 123,
       method: "getIdentities",
       params: {
         reason: "Who are you?",
-        chainIds: [ganacheChainId, bnsConnection.chainId()],
+        chainIds: [ethereumChainId, bnsConnection.chainId()],
       },
     });
     expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
+    if (isJsonRpcErrorResponse(response)) {
+      throw new Error("Response must not be an error");
+    }
     expect(response.result).toEqual(jasmine.any(Array));
     expect((response.result as ReadonlyArray<any>).length).toEqual(2);
     expect(response.result[0].chainId).toEqual(bnsConnection.chainId());
@@ -166,22 +174,18 @@ describe("signingservice.worker", () => {
     );
     expect(response.result[1]).toEqual(ganacheSecondIdentity);
 
-    worker.terminate();
+    server.shutdown();
     bnsConnection.disconnect();
   });
 
   it("send a signing request to service", async () => {
     pendingWithoutBnsd();
-    pendingWithoutWorker();
 
     const bnsConnection = await bnsConnector(bnsdUrl).client();
 
-    const worker = new Worker(signingserviceKarmaUrl);
-    await sleep(signingserviceBootTime);
+    const server = await makeJsonRpcSigningServer();
 
-    const client = new JsonRpcClient(worker);
-
-    const identitiesResponse = await client.run({
+    const identitiesResponse = await server.handleChecked({
       jsonrpc: "2.0",
       id: 1,
       method: "getIdentities",
@@ -190,6 +194,9 @@ describe("signingservice.worker", () => {
         chainIds: [bnsConnection.chainId()],
       },
     });
+    if (isJsonRpcErrorResponse(identitiesResponse)) {
+      throw new Error("Response must not be an error");
+    }
     const signer: PublicIdentity = identitiesResponse.result[0];
 
     const send: SendTransaction = {
@@ -201,7 +208,7 @@ describe("signingservice.worker", () => {
       recipient: await randomBnsAddress(),
     };
 
-    const signAndPostResponse = await client.run({
+    const signAndPostResponse = await server.handleChecked({
       jsonrpc: "2.0",
       id: 2,
       method: "signAndPost",
@@ -210,6 +217,9 @@ describe("signingservice.worker", () => {
         transaction: (send as unknown) as JsonCompatibleDictionary,
       },
     });
+    if (isJsonRpcErrorResponse(signAndPostResponse)) {
+      throw new Error("Response must not be an error");
+    }
     const transactionId: TransactionId = signAndPostResponse.result;
     expect(transactionId).toMatch(/^[0-9A-F]+$/);
 
@@ -217,7 +227,7 @@ describe("signingservice.worker", () => {
     expect(transactionSearch[0].transactionId).toEqual(transactionId);
     expect(transactionSearch[0].transaction).toEqual(send);
 
-    worker.terminate();
+    server.shutdown();
     bnsConnection.disconnect();
   });
 });

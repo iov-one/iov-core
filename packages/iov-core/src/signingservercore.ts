@@ -9,7 +9,7 @@ import { UserProfile, WalletId } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";
 
-export class ServerCore {
+export class SigningServerCore {
   private readonly signer: MultiChainSigner;
   private readonly profile: UserProfile;
 
@@ -58,6 +58,15 @@ export class ServerCore {
 
     const response = await this.signer.signAndPost(transaction, walletId);
     return response.transactionId;
+  }
+
+  /**
+   * Call this to free ressources when server is not needed anymore
+   */
+  public shutdown(): void {
+    for (const chainId of this.signer.chainIds()) {
+      this.signer.connection(chainId).disconnect();
+    }
   }
 
   private allIdentities(): ReadonlyArray<PublicIdentity> {

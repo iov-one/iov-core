@@ -12,4 +12,6 @@ export {
   WalletSerializationString,
 } from "@iov/keycontrol";
 
+export { JsonRpcSigningServer } from "./jsonrpcsigningserver";
 export { MultiChainSigner } from "./multichainsigner";
+export { SigningServerCore } from "./signingservercore";
