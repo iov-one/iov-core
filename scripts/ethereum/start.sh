@@ -3,7 +3,7 @@ set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
 # Choose from https://hub.docker.com/r/trufflesuite/ganache-cli/tags
-VERSION="v6.2.4"
+VERSION="v6.2.5"
 PORT="8545"
 GANACHE_MNEMONIC="oxygen fall sure lava energy veteran enroll frown question detail include maximum"
 

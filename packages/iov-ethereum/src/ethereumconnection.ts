@@ -27,13 +27,16 @@ import {
   TransactionId,
 } from "@iov/bcp-types";
 import { Encoding, Uint53 } from "@iov/encoding";
+import { isJsonRpcErrorResponse } from "@iov/jsonrpc";
 import { StreamingSocket } from "@iov/socket";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
 import { keyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
+import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { Parse, Scraper } from "./parse";
+import { findScraperAddress } from "./tags";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
@@ -73,36 +76,55 @@ function removeFromListeners(id: string): void {
 
 async function loadChainId(baseUrl: string): Promise<ChainId> {
   // see https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version
-  const result = await axios.post(baseUrl, {
+  const response = await new HttpJsonRpcClient(baseUrl).run({
     jsonrpc: "2.0",
     method: "net_version",
     params: [],
     id: 1,
   });
-  const responseBody = result.data;
+  if (isJsonRpcErrorResponse(response)) {
+    throw new Error(JSON.stringify(response.error));
+  }
 
-  const numericChainId = Uint53.fromString(responseBody.result);
+  const numericChainId = Uint53.fromString(response.result);
   return toBcpChainId(numericChainId.toNumber());
 }
 
+export interface EthereumConnectionOptions {
+  readonly wsUrl?: string;
+  /** URL to an Etherscan compatible scraper API */
+  readonly scraperApiUrl?: string;
+}
+
 export class EthereumConnection implements BcpConnection {
-  public static async establish(baseUrl: string, wsUrl: string | undefined): Promise<EthereumConnection> {
+  public static async establish(
+    baseUrl: string,
+    options?: EthereumConnectionOptions,
+  ): Promise<EthereumConnection> {
     const chainId = await loadChainId(baseUrl);
 
-    return new EthereumConnection(baseUrl, chainId, wsUrl);
+    return new EthereumConnection(baseUrl, chainId, options);
   }
 
-  private readonly baseUrl: string;
+  private readonly rpcClient: HttpJsonRpcClient;
   private readonly myChainId: ChainId;
   private readonly socket: StreamingSocket | undefined;
+  private readonly scraperApiUrl: string | undefined;
 
-  constructor(baseUrl: string, chainId: ChainId, wsUrl: string | undefined) {
-    this.baseUrl = baseUrl;
-    if (wsUrl) {
-      this.socket = new StreamingSocket(wsUrl);
-      this.socket.connect();
-    }
+  constructor(baseUrl: string, chainId: ChainId, options?: EthereumConnectionOptions) {
+    this.rpcClient = new HttpJsonRpcClient(baseUrl);
     this.myChainId = chainId;
+
+    if (options) {
+      if (options.wsUrl) {
+        this.socket = new StreamingSocket(options.wsUrl);
+        this.socket.connect();
+      }
+
+      if (options.scraperApiUrl) {
+        this.scraperApiUrl = options.scraperApiUrl;
+      }
+    }
   }
 
   public disconnect(): void {
@@ -117,28 +139,31 @@ export class EthereumConnection implements BcpConnection {
 
   public async height(): Promise<number> {
     // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_blocknumber
-    const result = await axios.post(this.baseUrl, {
+    const response = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_blockNumber",
       params: [],
       id: 2,
     });
-    const responseBody = result.data;
-    return decodeHexQuantity(responseBody.result);
+    if (isJsonRpcErrorResponse(response)) {
+      throw new Error(JSON.stringify(response.error));
+    }
+
+    return decodeHexQuantity(response.result);
   }
 
   public async postTx(bytes: PostableBytes): Promise<PostTxResponse> {
-    const result = await axios.post(this.baseUrl, {
+    const response = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_sendRawTransaction",
       params: ["0x" + Encoding.toHex(bytes)],
       id: 5,
     });
-    if (result.data.error) {
-      throw new Error(result.data.error.message);
+    if (isJsonRpcErrorResponse(response)) {
+      throw new Error(JSON.stringify(response.error));
     }
 
-    const transactionResult = result.data.result;
+    const transactionResult = response.result;
     if (typeof transactionResult !== "string") {
       throw new Error("Result field was not a string");
     }
@@ -169,61 +194,72 @@ export class EthereumConnection implements BcpConnection {
     let address: Address;
     if (isAddressQuery(query)) {
       address = query.address;
+    } else if (isPubkeyQuery(query)) {
+      address = keyToAddress(query.pubkey);
     } else {
       throw new Error("Query type not supported");
     }
 
     // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance
-    const confirmedBalance = await axios.post(this.baseUrl, {
+    const response = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_getBalance",
       params: [address, "latest"],
       id: 3,
     });
-    const responseBody = confirmedBalance.data;
+    if (isJsonRpcErrorResponse(response)) {
+      throw new Error(JSON.stringify(response.error));
+    }
 
-    // here we are expecting 0 or 1 results
-    const accounts: ReadonlyArray<BcpAccount> = [responseBody].map(
-      (item: any): BcpAccount => ({
-        address: address,
-        pubkey: undefined, // TODO: get from a transaction sent by this address
-        name: undefined,
-        balance: [
-          {
-            tokenName: constants.primaryTokenName,
-            ...Parse.ethereumAmount(decodeHexQuantityString(item.result)),
-          },
-        ],
-      }),
-    );
-    return dummyEnvelope(accounts);
+    // eth_getBalance always returns one result. Balance is 0x0 if account does not exist.
+
+    const account: BcpAccount = {
+      address: address,
+      pubkey: undefined, // TODO: get from a transaction sent by this address
+      name: undefined,
+      balance: [
+        {
+          tokenName: constants.primaryTokenName,
+          ...Parse.ethereumAmount(decodeHexQuantityString(response.result)),
+        },
+      ],
+    };
+    return dummyEnvelope([account]);
   }
 
   public async getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {
     const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
 
     // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount
-    const nonceResponse = await axios.post(this.baseUrl, {
+    const response = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_getTransactionCount",
       params: [address, "latest"],
       id: 4,
     });
+    if (isJsonRpcErrorResponse(response)) {
+      throw new Error(JSON.stringify(response.error));
+    }
 
-    return decodeHexQuantityNonce(nonceResponse.data.result);
+    return decodeHexQuantityNonce(response.result);
   }
 
   public async getBlockHeader(height: number): Promise<BlockHeader> {
-    const blockResponse = await axios.post(this.baseUrl, {
+    const response = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_getBlockByNumber",
       params: [encodeQuantity(height), true],
       id: 8,
     });
-    if (blockResponse.data.result === null) {
+    if (isJsonRpcErrorResponse(response)) {
+      throw new Error(JSON.stringify(response.error));
+    }
+
+    if (response.result === null) {
       throw new Error(`Header ${height} doesn't exist yet`);
     }
-    const blockData = blockResponse.data.result;
+
+    const blockData = response.result;
     return {
       id: blockData.hash,
       height: decodeHexQuantity(blockData.number),
@@ -304,57 +340,76 @@ export class EthereumConnection implements BcpConnection {
     if (query.height || query.minHeight || query.maxHeight) {
       throw new Error("Query by height, minHeight, maxHeight not supported");
     }
-    let txUncodified;
+
     if (query.id !== undefined) {
       if (!query.id.match(/^0x[0-9a-f]{64}$/)) {
         throw new Error("Invalid transaction ID format");
       }
-      txUncodified = await axios.post(this.baseUrl, {
+
+      const transactionsResponse = await this.rpcClient.run({
         jsonrpc: "2.0",
         method: "eth_getTransactionByHash",
         params: [query.id],
         id: 6,
       });
-      if (txUncodified.data.result === null || txUncodified.data.result.blockNumber === null) {
+      if (isJsonRpcErrorResponse(transactionsResponse)) {
+        throw new Error(JSON.stringify(transactionsResponse.error));
+      }
+
+      if (transactionsResponse.result === null || transactionsResponse.result.blockNumber === null) {
         return [];
       }
+      const transactionHeight = decodeHexQuantity(transactionsResponse.result.blockNumber);
+
       // TODO: compare myChainId with value v (missed recovery parameter)
-      const lastBlockNumber = await axios.post(this.baseUrl, {
+      const lastBlockNumberResponse = await this.rpcClient.run({
         jsonrpc: "2.0",
         method: "eth_blockNumber",
         params: [],
         id: 7,
       });
-      const height = decodeHexQuantity(txUncodified.data.result.blockNumber);
-      const confirmations = decodeHexQuantity(lastBlockNumber.data.result) - height;
+      if (isJsonRpcErrorResponse(lastBlockNumberResponse)) {
+        throw new Error(JSON.stringify(lastBlockNumberResponse.error));
+      }
+
+      const currentHeight = decodeHexQuantity(lastBlockNumberResponse.result);
+
+      const confirmations = currentHeight - transactionHeight;
       const transactionJson = {
-        ...txUncodified.data.result,
+        ...transactionsResponse.result,
         type: 0,
       };
       const transaction = ethereumCodec.parseBytes(
         Encoding.toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
         this.myChainId,
       );
-      const transactionId = `0x${hexPadToEven(txUncodified.data.result.hash)}` as TransactionId;
+      const transactionId = `0x${hexPadToEven(transactionsResponse.result.hash)}` as TransactionId;
       return [
         {
           ...transaction,
-          height: height,
+          height: transactionHeight,
           confirmations: confirmations,
           transactionId: transactionId,
         },
       ];
-    } else if (query.tags && query.tags[0].key === "apiLink" && query.tags[1].key === "account") {
-      const apiLink = query.tags[0].value;
-      const accountAddress = query.tags[1].value;
-      txUncodified = await axios.get(
-        `${apiLink}?module=account&action=txlist&address=${accountAddress}&startblock=0&sort=asc`,
-      );
-      if (txUncodified.data.result === null) {
+    } else if (query.tags) {
+      if (!this.scraperApiUrl) {
+        throw new Error("No scraper API URL specified. Cannot search for transactions by tags.");
+      }
+
+      const address = findScraperAddress(query.tags);
+      if (!address) {
+        throw new Error("No matching search tag found to query transactions");
+      }
+
+      const responseBody = (await axios.get(
+        `${this.scraperApiUrl}?module=account&action=txlist&address=${address}&startblock=0&sort=asc`,
+      )).data;
+      if (responseBody.result === null) {
         return [];
       }
       const transactions: any = [];
-      for (const tx of txUncodified.data.result) {
+      for (const tx of responseBody.result) {
         if (tx.isError === "0" && tx.txreceipt_status === "1") {
           const transaction = Scraper.parseBytesTx(
             Encoding.toUtf8(JSON.stringify({ ...tx })) as PostableBytes,
