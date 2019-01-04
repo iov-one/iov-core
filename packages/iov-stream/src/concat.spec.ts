@@ -86,22 +86,6 @@ describe("concat", () => {
     });
   });
 
-  it("changes output order when order of streams switch", done => {
-    const stream1 = Stream.of("1", "2", "3");
-    const stream2 = Stream.of("a", "b", "c");
-    const concatenatedStream = concat(stream2, stream1);
-    const expected = ["a", "b", "c", "1", "2", "3"];
-
-    concatenatedStream.addListener({
-      next: value => expect(value).toEqual(expected.shift()!),
-      complete: () => {
-        expect(expected.length).toEqual(0);
-        done();
-      },
-      error: done.fail,
-    });
-  });
-
   it("should concat two asynchronous short streams together", done => {
     const stream1 = Stream.periodic(25).take(3);
     const stream2 = Stream.periodic(50).take(2);
