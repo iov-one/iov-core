@@ -4,7 +4,7 @@ import { Producer, Stream } from "xstream";
 import { concat } from "./concat";
 
 function producerIsStopped(): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, 5));
+  return new Promise(resolve => setTimeout(resolve, 50));
 }
 
 describe("concat", () => {
@@ -136,13 +136,16 @@ describe("concat", () => {
   });
 
   it("unsubscribes and re-subscribes from source streams", done => {
+    // For browsers and CI, clocks and runtimes are very unreliable.
+    // Especialls Mac+Firefox on Travis is makes big trouble. Thus we need huge intervals.
+    const intervalDuration = 1000;
     const producerActiveLog = new Array<boolean>();
 
     let producerInterval: NodeJS.Timeout;
     let producerValue = 0;
     const loggingProducer: Producer<string> = {
       start: listener => {
-        producerInterval = setInterval(() => listener.next(`event${producerValue++}`), 25);
+        producerInterval = setInterval(() => listener.next(`event${producerValue++}`), intervalDuration);
         producerActiveLog.push(true);
       },
       stop: () => {
@@ -171,7 +174,7 @@ describe("concat", () => {
       subscription.unsubscribe();
       await producerIsStopped();
       expect(producerActiveLog).toEqual([true, false]);
-    }, 90);
+    }, 3.75 * intervalDuration);
 
     // re-subscribe
     setTimeout(() => {
@@ -194,7 +197,7 @@ describe("concat", () => {
 
         expect(expected.length).toEqual(0);
         done();
-      }, 90);
-    }, 200);
+      }, 3.75 * intervalDuration);
+    }, 6 * intervalDuration);
   });
 });
