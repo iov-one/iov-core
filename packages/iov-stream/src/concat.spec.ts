@@ -156,9 +156,9 @@ describe("concat", () => {
 
     let producerInterval: NodeJS.Timeout;
     let producerValue = 0;
-    const loggingProducer: Producer<number> = {
+    const loggingProducer: Producer<string> = {
       start: listener => {
-        producerInterval = setInterval(() => listener.next(producerValue++), 25);
+        producerInterval = setInterval(() => listener.next(`event${producerValue++}`), 25);
         producerActiveLog.push(true);
       },
       stop: () => {
@@ -169,7 +169,7 @@ describe("concat", () => {
 
     const stream1 = Stream.create(loggingProducer);
     const concatenatedStream = concat(stream1);
-    const expected = [0, 1, 2, 3, 4, 5];
+    const expected = ["event0", "event1", "event2", "event3", "event4", "event5"];
 
     expect(producerActiveLog).toEqual([]);
 
