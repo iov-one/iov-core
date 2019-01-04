@@ -198,45 +198,47 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     let lastEventSent: BcpBlockInfo = firstEvent;
     const blockInfoProducer = new DefaultValueProducer<BcpBlockInfo>(firstEvent, {
       onStarted: async () => {
-        // console.log("Started producer for updates of", Encoding.toHex(trandactionId));
+        try {
+          // we utilize liveTx to implement a _search or watch_ mechanism since we do not know
+          // if the transaction is already committed when the producer is started
+          const searchResult = await toListPromise(this.liveTx({ id: transactionId }), 1);
+          const transactionHeight = searchResult[0].height;
+          const transactionResult = searchResult[0].result;
 
-        // we utilize liveTx to implement a _search or watch_ mechanism since we do not know
-        // if the transaction is already committed when the producer is started
-        const searchResult = await toListPromise(this.liveTx({ id: transactionId }), 1);
-        const transactionHeight = searchResult[0].height;
-        const transactionResult = searchResult[0].result;
+          // Don't do any heavy work (like subscribing to block headers) before we got the
+          // search result. For some transactions this will never resolve.
 
-        // Don't do any heavy work (like subscribing to block headers) before we got the
-        // search result. For some transactions this will never resolve.
-
-        {
-          const inBlockEvent: BcpBlockInfoInBlock = {
-            state: BcpTransactionState.InBlock,
-            height: transactionHeight,
-            confirmations: 1,
-            result: transactionResult,
-          };
-          blockInfoProducer.update(inBlockEvent);
-          lastEventSent = inBlockEvent;
-        }
-
-        blockHeadersSubscription = this.watchBlockHeaders().subscribe({
-          next: async blockHeader => {
-            const event: BcpBlockInfo = {
+          {
+            const inBlockEvent: BcpBlockInfoInBlock = {
               state: BcpTransactionState.InBlock,
               height: transactionHeight,
-              confirmations: blockHeader.height - transactionHeight + 1,
+              confirmations: 1,
               result: transactionResult,
             };
+            blockInfoProducer.update(inBlockEvent);
+            lastEventSent = inBlockEvent;
+          }
 
-            if (!equal(event, lastEventSent)) {
-              blockInfoProducer.update(event);
-              lastEventSent = event;
-            }
-          },
-          complete: () => blockInfoProducer.error("Block header stream stopped. This must not happen."),
-          error: error => blockInfoProducer.error(error),
-        });
+          blockHeadersSubscription = this.watchBlockHeaders().subscribe({
+            next: async blockHeader => {
+              const event: BcpBlockInfo = {
+                state: BcpTransactionState.InBlock,
+                height: transactionHeight,
+                confirmations: blockHeader.height - transactionHeight + 1,
+                result: transactionResult,
+              };
+
+              if (!equal(event, lastEventSent)) {
+                blockInfoProducer.update(event);
+                lastEventSent = event;
+              }
+            },
+            complete: () => blockInfoProducer.error("Block header stream stopped. This must not happen."),
+            error: error => blockInfoProducer.error(error),
+          });
+        } catch (error) {
+          blockInfoProducer.error(error);
+        }
       },
       onStop: () => {
         if (blockHeadersSubscription) {
