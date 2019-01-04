@@ -3,7 +3,7 @@ import { Producer, Stream } from "xstream";
 
 import { concat } from "./concat";
 
-function waitForUnsubscription(): Promise<void> {
+function producerIsStopped(): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, 5));
 }
 
@@ -185,7 +185,7 @@ describe("concat", () => {
     setTimeout(async () => {
       expect(producerActiveLog).toEqual([true]);
       subscription.unsubscribe();
-      await waitForUnsubscription();
+      await producerIsStopped();
       expect(producerActiveLog).toEqual([true, false]);
     }, 90);
 
@@ -205,7 +205,7 @@ describe("concat", () => {
       setTimeout(async () => {
         expect(producerActiveLog).toEqual([true, false, true]);
         subscription2.unsubscribe();
-        await waitForUnsubscription();
+        await producerIsStopped();
         expect(producerActiveLog).toEqual([true, false, true, false]);
 
         expect(expected.length).toEqual(0);
