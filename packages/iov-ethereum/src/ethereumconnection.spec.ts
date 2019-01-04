@@ -132,7 +132,7 @@ describe("EthereumConnection", () => {
       expect(account.data[0].address).toEqual(testConfig.address);
       expect(account.data[0].balance[0]).toEqual({
         ...testConfig.expectedBalance,
-        tokenName: "Ethereum",
+        tokenName: "Ether",
       });
       connection.disconnect();
     });
@@ -144,7 +144,7 @@ describe("EthereumConnection", () => {
       expect(account.data[0].address).toEqual(testConfig.address);
       expect(account.data[0].balance[0]).toEqual({
         ...testConfig.expectedBalance,
-        tokenName: "Ethereum",
+        tokenName: "Ether",
       });
       connection.disconnect();
     });
