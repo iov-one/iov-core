@@ -191,8 +191,10 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     }
     const transactionId = Encoding.toHex(postResponse.hash).toUpperCase() as TransactionId;
 
+    // can be undefined as we cannot guarantee it assigned before the caller unsubscribes from the stream
+    let blockHeadersSubscription: Subscription | undefined;
+
     const firstEvent: BcpBlockInfo = { state: BcpTransactionState.Pending };
-    let blocksSubscription: Subscription;
     let lastEventSent: BcpBlockInfo = firstEvent;
     const blockInfoProducer = new DefaultValueProducer<BcpBlockInfo>(firstEvent, {
       onStarted: async () => {
@@ -218,7 +220,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
           lastEventSent = inBlockEvent;
         }
 
-        blocksSubscription = this.watchBlockHeaders().subscribe({
+        blockHeadersSubscription = this.watchBlockHeaders().subscribe({
           next: async blockHeader => {
             const event: BcpBlockInfo = {
               state: BcpTransactionState.InBlock,
@@ -236,7 +238,11 @@ export class BnsConnection implements BcpAtomicSwapConnection {
           error: error => blockInfoProducer.error(error),
         });
       },
-      onStop: () => blocksSubscription.unsubscribe(),
+      onStop: () => {
+        if (blockHeadersSubscription) {
+          blockHeadersSubscription.unsubscribe();
+        }
+      },
     });
 
     return {
