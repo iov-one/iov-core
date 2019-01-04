@@ -40,7 +40,7 @@ import {
   TxReadCodec,
 } from "@iov/bcp-types";
 import { Encoding, Int53, Uint53 } from "@iov/encoding";
-import { concat, DefaultValueProducer, toListPromise, ValueAndUpdates } from "@iov/stream";
+import { concat, DefaultValueProducer, fromListPromise, toListPromise, ValueAndUpdates } from "@iov/stream";
 import {
   broadcastTxSyncSuccess,
   Client as TendermintClient,
@@ -467,61 +467,17 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    * and then continuing with live feeds
    */
   public liveTx(txQuery: BcpTxQuery): Stream<ConfirmedTransaction> {
-    let updatesSubscription: Subscription | undefined;
+    const historyStream = fromListPromise(this.searchTx(txQuery));
+    const updatesStream = this.listenTx(txQuery);
+    const combinedStream = concat(historyStream, updatesStream);
 
-    const producer: Producer<ConfirmedTransaction> = {
-      start: listener => {
-        // called as soon as anyone subscribes to the stream
+    // remove duplicates
+    const alreadySent = new Set<TransactionId>();
+    const deduplicatedStream = combinedStream
+      .filter(ct => !alreadySent.has(ct.transactionId))
+      .debug(ct => alreadySent.add(ct.transactionId));
 
-        // 1. subscribe to updates before queying history to ensure we don't miss something; store updates in queue
-        // 2. when history is there, send history and process queue
-        // 3. skip queue and send updates directly
-
-        let doneSendingHistory = false;
-        const queue = new Array<ConfirmedTransaction>();
-
-        updatesSubscription = this.listenTx(txQuery).subscribe({
-          next: value => {
-            if (doneSendingHistory) {
-              listener.next(value);
-            } else {
-              queue.push(value);
-            }
-          },
-          error: error => listener.error(error),
-        });
-
-        this.searchTx(txQuery)
-          .then(history => {
-            for (const transaction of history) {
-              listener.next(transaction);
-            }
-
-            const historyIds = history.map(transaction => transaction.transactionId);
-
-            let element: ConfirmedTransaction | undefined;
-            // tslint:disable-next-line:no-conditional-assignment
-            while ((element = queue.shift())) {
-              const elementId = element.transactionId;
-              if (historyIds.indexOf(elementId) !== -1) {
-                // only do this for elements not already sent
-                listener.next(element);
-              }
-            }
-
-            doneSendingHistory = true;
-          })
-          .catch(error => listener.error(error));
-      },
-      stop: () => {
-        if (!updatesSubscription) {
-          throw new Error("stop() was clled before start(). This is not expected to happen.");
-        }
-        updatesSubscription.unsubscribe();
-      },
-    };
-
-    return Stream.create(producer);
+    return deduplicatedStream;
   }
 
   /**
