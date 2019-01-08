@@ -9,7 +9,7 @@ import {
   TokenTicker,
   TransactionId,
 } from "@iov/bcp-types";
-import { HdPaths, Secp256k1HdWallet } from "@iov/keycontrol";
+import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 // import { lastValue } from "@iov/stream";
 
 import { ethereumCodec } from "./ethereumcodec";
@@ -189,10 +189,17 @@ describe("EthereumConnection", () => {
     it("can post transaction", async () => {
       pendingWithoutEthereum();
 
-      const wallet = Secp256k1HdWallet.fromMnemonic(
-        "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(
+        Secp256k1HdWallet.fromMnemonic(
+          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+        ),
       );
-      const secondIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.bip44(60, 0, 0, 1));
+      const secondIdentity = await profile.createIdentity(
+        wallet.id,
+        testConfig.chainId,
+        HdPaths.bip44(60, 0, 0, 1),
+      );
 
       const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 
@@ -214,23 +221,8 @@ describe("EthereumConnection", () => {
       const senderAddress = ethereumCodec.identityToAddress(secondIdentity);
       const query: BcpAccountQuery = { address: senderAddress as Address };
       const nonce = await connection.getNonce(query);
-      const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
-      const signature = await wallet.createTransactionSignature(
-        secondIdentity,
-        signingJob.bytes,
-        signingJob.prehashType,
-      );
-
-      const signedTransaction: SignedTransaction = {
-        transaction: sendTx,
-        primarySignature: {
-          nonce: nonce,
-          pubkey: secondIdentity.pubkey,
-          signature: signature,
-        },
-        otherSignatures: [],
-      };
-      const bytesToPost = ethereumCodec.bytesToPost(signedTransaction);
+      const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
+      const bytesToPost = ethereumCodec.bytesToPost(signed);
 
       const result = await connection.postTx(bytesToPost);
       expect(result).toBeTruthy();
@@ -263,10 +255,18 @@ describe("EthereumConnection", () => {
 
     it("can search previous posted transaction by hash", async () => {
       pendingWithoutEthereum();
-      const wallet = Secp256k1HdWallet.fromMnemonic(
-        "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(
+        Secp256k1HdWallet.fromMnemonic(
+          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+        ),
       );
-      const secondIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.bip44(60, 0, 0, 1));
+      const secondIdentity = await profile.createIdentity(
+        wallet.id,
+        testConfig.chainId,
+        HdPaths.bip44(60, 0, 0, 1),
+      );
 
       const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 
@@ -287,23 +287,8 @@ describe("EthereumConnection", () => {
       const connection = await EthereumConnection.establish(testConfig.base);
       const senderAddress = ethereumCodec.identityToAddress(secondIdentity);
       const nonce = await connection.getNonce({ address: senderAddress });
-      const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
-      const signature = await wallet.createTransactionSignature(
-        secondIdentity,
-        signingJob.bytes,
-        signingJob.prehashType,
-      );
-
-      const signedTransaction: SignedTransaction = {
-        transaction: sendTx,
-        primarySignature: {
-          nonce: nonce,
-          pubkey: secondIdentity.pubkey,
-          signature: signature,
-        },
-        otherSignatures: [],
-      };
-      const bytesToPost = ethereumCodec.bytesToPost(signedTransaction);
+      const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
+      const bytesToPost = ethereumCodec.bytesToPost(signed);
 
       const resultPost = await connection.postTx(bytesToPost);
       expect(resultPost.transactionId).toMatch(/^0x[0-9a-f]{64}$/);
