@@ -1,6 +1,5 @@
 import {
   Address,
-  BcpAccountQuery,
   BlockHeader,
   isSendTransaction,
   PostTxResponse,
@@ -119,8 +118,7 @@ describe("EthereumConnection", () => {
     it("can get account from address", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(testConfig.base);
-      const query: BcpAccountQuery = { address: testConfig.address as Address };
-      const account = await connection.getAccount(query);
+      const account = await connection.getAccount({ address: testConfig.address as Address });
       expect(account.data[0].address).toEqual(testConfig.address);
       expect(account.data[0].balance[0]).toEqual({
         ...testConfig.expectedBalance,
@@ -172,8 +170,7 @@ describe("EthereumConnection", () => {
 
     // by address
     {
-      const query: BcpAccountQuery = { address: testConfig.address as Address };
-      const nonce = await connection.getNonce(query);
+      const nonce = await connection.getNonce({ address: testConfig.address as Address });
       expect(nonce).toEqual(testConfig.nonce);
     }
 
@@ -219,8 +216,7 @@ describe("EthereumConnection", () => {
       };
       const connection = await EthereumConnection.establish(testConfig.base);
       const senderAddress = ethereumCodec.identityToAddress(secondIdentity);
-      const query: BcpAccountQuery = { address: senderAddress as Address };
-      const nonce = await connection.getNonce(query);
+      const nonce = await connection.getNonce({ address: senderAddress as Address });
       const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
       const bytesToPost = ethereumCodec.bytesToPost(signed);
 
