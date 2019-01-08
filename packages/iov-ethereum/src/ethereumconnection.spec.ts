@@ -337,6 +337,7 @@ describe("EthereumConnection", () => {
       expect(resultSearch.length).toEqual(1);
       const result = resultSearch[0];
       expect(result.transactionId).toEqual(resultPost.transactionId);
+      expect(result.confirmations).toEqual(1);
       const transaction = result.transaction;
       if (!isSendTransaction(transaction)) {
         throw new Error("Unexpected transaction type");

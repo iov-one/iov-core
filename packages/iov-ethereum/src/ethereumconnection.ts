@@ -374,7 +374,7 @@ export class EthereumConnection implements BcpConnection {
 
       const currentHeight = decodeHexQuantity(lastBlockNumberResponse.result);
 
-      const confirmations = currentHeight - transactionHeight;
+      const confirmations = currentHeight - transactionHeight + 1;
       const transactionJson = {
         ...transactionsResponse.result,
         type: 0,
