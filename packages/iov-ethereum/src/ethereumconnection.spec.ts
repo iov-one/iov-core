@@ -1,5 +1,6 @@
 import {
   Address,
+  BcpTransactionState,
   BlockHeader,
   isSendTransaction,
   PostTxResponse,
@@ -9,7 +10,7 @@ import {
   TransactionId,
 } from "@iov/bcp-types";
 import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
-// import { lastValue } from "@iov/stream";
+import { toListPromise } from "@iov/stream";
 
 import { ethereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
@@ -223,8 +224,67 @@ describe("EthereumConnection", () => {
       const result = await connection.postTx(bytesToPost);
       expect(result).toBeTruthy();
       expect(result.log).toBeUndefined();
+
+      // we need to wait here such that the following tests query an updated nonce
+      await result.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+
       connection.disconnect();
-    });
+    }, 30_000);
+
+    it("can post transaction and watch confirmations", async () => {
+      pendingWithoutEthereum();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(
+        Secp256k1HdWallet.fromMnemonic(
+          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+        ),
+      );
+      const secondIdentity = await profile.createIdentity(
+        wallet.id,
+        testConfig.chainId,
+        HdPaths.bip44(60, 0, 0, 1),
+      );
+
+      const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
+
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
+        chainId: testConfig.chainId,
+        signer: secondIdentity.pubkey,
+        recipient: recipientAddress,
+        amount: {
+          quantity: "3445500",
+          fractionalDigits: 18,
+          tokenTicker: "ETH" as TokenTicker,
+        },
+        gasPrice: testConfig.gasPrice,
+        gasLimit: testConfig.gasLimit,
+        memo: "We \u2665 developers – iov.one",
+      };
+      const connection = await EthereumConnection.establish(testConfig.base);
+      const senderAddress = ethereumCodec.identityToAddress(secondIdentity);
+      const nonce = await connection.getNonce({ address: senderAddress as Address });
+      const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
+      const bytesToPost = ethereumCodec.bytesToPost(signed);
+
+      const heightBeforeTransaction = await connection.height();
+      const result = await connection.postTx(bytesToPost);
+      expect(result).toBeTruthy();
+      expect(result.blockInfo.value.state).toEqual(BcpTransactionState.Pending);
+
+      const events = await toListPromise(result.blockInfo.updates, 2);
+
+      expect(events[0]).toEqual({ state: BcpTransactionState.Pending });
+
+      // In Ropsten and Rinkerby, the currentHeight can be less than transactionHeight.
+      // Is there some caching for RPC calls happening? Ignore for now.
+      expect(events[1]).toEqual({
+        state: BcpTransactionState.InBlock,
+        height: heightBeforeTransaction + 1,
+        confirmations: 1,
+      });
+    }, 30_000);
   });
 
   describe("searchTx", () => {
