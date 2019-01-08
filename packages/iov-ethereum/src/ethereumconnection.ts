@@ -388,19 +388,7 @@ export class EthereumConnection implements BcpConnection {
       }
       const transactionHeight = decodeHexQuantity(transactionsResponse.result.blockNumber);
 
-      // TODO: compare myChainId with value v (missed recovery parameter)
-      const lastBlockNumberResponse = await this.rpcClient.run({
-        jsonrpc: "2.0",
-        method: "eth_blockNumber",
-        params: [],
-        id: 7,
-      });
-      if (isJsonRpcErrorResponse(lastBlockNumberResponse)) {
-        throw new Error(JSON.stringify(lastBlockNumberResponse.error));
-      }
-
-      const currentHeight = decodeHexQuantity(lastBlockNumberResponse.result);
-
+      const currentHeight = await this.height();
       const confirmations = currentHeight - transactionHeight + 1;
       const transactionJson = {
         ...transactionsResponse.result,
