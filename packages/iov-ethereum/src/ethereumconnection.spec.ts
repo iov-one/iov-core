@@ -63,16 +63,8 @@ async function postTransaction(
       fractionalDigits: 18,
       tokenTicker: "ETH" as TokenTicker,
     },
-    gasPrice: {
-      quantity: testConfig.gasPrice,
-      fractionalDigits: 18,
-      tokenTicker: "ETH" as TokenTicker,
-    },
-    gasLimit: {
-      quantity: testConfig.gasLimit,
-      fractionalDigits: 18,
-      tokenTicker: "ETH" as TokenTicker,
-    },
+    gasPrice: testConfig.gasPrice,
+    gasLimit: testConfig.gasLimit,
     memo: memo,
   };
   const senderAddress = ethereumCodec.identityToAddress(mainIdentity);
@@ -214,16 +206,8 @@ describe("EthereumConnection", () => {
           fractionalDigits: 18,
           tokenTicker: "ETH" as TokenTicker,
         },
-        gasPrice: {
-          quantity: testConfig.gasPrice,
-          fractionalDigits: 18,
-          tokenTicker: "ETH" as TokenTicker,
-        },
-        gasLimit: {
-          quantity: testConfig.gasLimit,
-          fractionalDigits: 18,
-          tokenTicker: "ETH" as TokenTicker,
-        },
+        gasPrice: testConfig.gasPrice,
+        gasLimit: testConfig.gasLimit,
         memo: "We \u2665 developers – iov.one",
       };
       const connection = await EthereumConnection.establish(testConfig.base);
@@ -296,16 +280,8 @@ describe("EthereumConnection", () => {
           fractionalDigits: 18,
           tokenTicker: "ETH" as TokenTicker,
         },
-        gasPrice: {
-          quantity: testConfig.gasPrice,
-          fractionalDigits: 18,
-          tokenTicker: "ETH" as TokenTicker,
-        },
-        gasLimit: {
-          quantity: testConfig.gasLimit,
-          fractionalDigits: 18,
-          tokenTicker: "ETH" as TokenTicker,
-        },
+        gasPrice: testConfig.gasPrice,
+        gasLimit: testConfig.gasLimit,
         memo: "Search tx test" + new Date(),
       };
       const connection = await EthereumConnection.establish(testConfig.base);

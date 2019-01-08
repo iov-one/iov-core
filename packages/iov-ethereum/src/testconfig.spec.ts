@@ -23,8 +23,8 @@ export interface EthereumNetworkConfig {
   /** expected balance tor the `address` */
   readonly expectedBalance: Amount;
   readonly nonce: Nonce;
-  readonly gasPrice: string;
-  readonly gasLimit: string;
+  readonly gasPrice: Amount;
+  readonly gasLimit: Amount;
   readonly waitForTx: number;
   readonly scraper:
     | {
@@ -63,8 +63,16 @@ const local: EthereumNetworkConfig = {
     tokenTicker: "ETH" as TokenTicker,
   },
   nonce: new Int53(0) as Nonce,
-  gasPrice: "20000000000",
-  gasLimit: "2100000",
+  gasPrice: {
+    quantity: "20000000000",
+    fractionalDigits: 18,
+    tokenTicker: "ETH" as TokenTicker,
+  },
+  gasLimit: {
+    quantity: "2100000",
+    fractionalDigits: 18,
+    tokenTicker: "ETH" as TokenTicker,
+  },
   waitForTx: 100, // by default, ganache will instantly mine a new block for every transaction
   scraper: undefined,
   unusedPubkey: {
@@ -95,8 +103,16 @@ const testnetRopsten: EthereumNetworkConfig = {
     tokenTicker: "ETH" as TokenTicker,
   },
   nonce: new Int53(1) as Nonce,
-  gasPrice: "1000000000",
-  gasLimit: "141000",
+  gasPrice: {
+    quantity: "1000000000",
+    fractionalDigits: 18,
+    tokenTicker: "ETH" as TokenTicker,
+  },
+  gasLimit: {
+    quantity: "141000",
+    fractionalDigits: 18,
+    tokenTicker: "ETH" as TokenTicker,
+  },
   waitForTx: 4000,
   scraper: {
     apiUrl: "https://api-ropsten.etherscan.io/api",
@@ -130,8 +146,16 @@ const testnetRinkeby: EthereumNetworkConfig = {
     tokenTicker: "ETH" as TokenTicker,
   },
   nonce: new Int53(0) as Nonce,
-  gasPrice: "1000000000",
-  gasLimit: "141000",
+  gasPrice: {
+    quantity: "1000000000",
+    fractionalDigits: 18,
+    tokenTicker: "ETH" as TokenTicker,
+  },
+  gasLimit: {
+    quantity: "141000",
+    fractionalDigits: 18,
+    tokenTicker: "ETH" as TokenTicker,
+  },
   waitForTx: 4000,
   scraper: {
     apiUrl: "https://api-rinkeby.etherscan.io/api",
