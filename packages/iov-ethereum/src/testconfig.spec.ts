@@ -65,7 +65,7 @@ const local: EthereumNetworkConfig = {
   nonce: new Int53(0) as Nonce,
   gasPrice: "20000000000",
   gasLimit: "2100000",
-  waitForTx: 100,
+  waitForTx: 100, // by default, ganache will instantly mine a new block for every transaction
   scraper: undefined,
   unusedPubkey: {
     algo: Algorithm.Secp256k1,
