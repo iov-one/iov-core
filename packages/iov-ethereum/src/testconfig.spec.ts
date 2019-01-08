@@ -49,7 +49,7 @@ const local: EthereumNetworkConfig = {
   base: "http://localhost:8545",
   wsUrl: "ws://localhost:8545",
   chainId: "ethereum-eip155-5777" as ChainId,
-  minHeight: -1,
+  minHeight: 0, // ganache does not auto-generate a genesis block
   pubkey: {
     algo: Algorithm.Secp256k1,
     data: fromHex(

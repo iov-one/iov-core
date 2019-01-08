@@ -111,7 +111,7 @@ describe("EthereumConnection", () => {
     pendingWithoutEthereum();
     const connection = await EthereumConnection.establish(testConfig.base);
     const height = await connection.height();
-    expect(height).toBeGreaterThan(testConfig.minHeight);
+    expect(height).toBeGreaterThanOrEqual(testConfig.minHeight);
     connection.disconnect();
   });
 
