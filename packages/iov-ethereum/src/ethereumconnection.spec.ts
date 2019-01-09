@@ -1,10 +1,13 @@
 import {
   Address,
   Algorithm,
+  Amount,
   BcpBlockInfoInBlock,
   BcpTransactionState,
   BlockHeader,
+  ConfirmedTransaction,
   isSendTransaction,
+  Nonce,
   PostTxResponse,
   PublicKeyBytes,
   SendTransaction,
@@ -13,6 +16,7 @@ import {
   TransactionId,
 } from "@iov/bcp-types";
 import { Random, Secp256k1 } from "@iov/crypto";
+import { Int53 } from "@iov/encoding";
 import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 
@@ -104,6 +108,12 @@ async function postTransaction(
 }
 
 describe("EthereumConnection", () => {
+  const defaultAmount: Amount = {
+    quantity: "5445500",
+    fractionalDigits: 18,
+    tokenTicker: "ETH" as TokenTicker,
+  };
+
   it("can be constructed", () => {
     pendingWithoutEthereum();
     const connection = new EthereumConnection(testConfig.base, testConfig.chainId);
@@ -542,6 +552,113 @@ describe("EthereumConnection", () => {
 
       connection.disconnect();
     }, 50_000);
+  });
+
+  describe("listenTx", () => {
+    it("can can listen to transactions", done => {
+      pendingWithoutEthereum();
+      pendingWithoutEthereumScraper();
+
+      (async () => {
+        const connection = await EthereumConnection.establish(testConfig.base, {
+          scraperApiUrl: testConfig.scraper!.apiUrl,
+        });
+
+        const recipientAddress = await randomAddress();
+
+        // setup listener
+        const events = new Array<ConfirmedTransaction>();
+        const subscription = connection.listenTx({ tags: [scraperAddressTag(recipientAddress)] }).subscribe({
+          next: event => {
+            events.push(event);
+
+            if (!isSendTransaction(event.transaction)) {
+              throw new Error("Unexpected transaction type");
+            }
+            expect(event.transaction.recipient).toEqual(recipientAddress);
+
+            if (events.length === 3) {
+              // This assumes we get two transactions into one block
+              // A == B < C
+              expect(events[0].height).toEqual(events[1].height);
+              expect(events[2].height).toBeGreaterThan(events[1].height);
+
+              subscription.unsubscribe();
+              connection.disconnect();
+              done();
+            }
+          },
+        });
+
+        // send transactions
+
+        const profile = new UserProfile();
+        const wallet = profile.addWallet(
+          Secp256k1HdWallet.fromMnemonic(
+            "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+          ),
+        );
+        const sender = await profile.createIdentity(
+          wallet.id,
+          testConfig.chainId,
+          HdPaths.bip44(60, 0, 0, 1),
+        );
+
+        const sendA: SendTransaction = {
+          kind: "bcp/send",
+          chainId: testConfig.chainId,
+          signer: sender.pubkey,
+          recipient: recipientAddress,
+          amount: defaultAmount,
+          gasPrice: testConfig.gasPrice,
+          gasLimit: testConfig.gasLimit,
+          memo: `listenTx() test A ${Math.random()}`,
+        };
+
+        const sendB: SendTransaction = {
+          kind: "bcp/send",
+          chainId: testConfig.chainId,
+          signer: sender.pubkey,
+          recipient: recipientAddress,
+          amount: defaultAmount,
+          gasPrice: testConfig.gasPrice,
+          gasLimit: testConfig.gasLimit,
+          memo: `listenTx() test B ${Math.random()}`,
+        };
+
+        const sendC: SendTransaction = {
+          kind: "bcp/send",
+          chainId: testConfig.chainId,
+          signer: sender.pubkey,
+          recipient: recipientAddress,
+          amount: defaultAmount,
+          gasPrice: testConfig.gasPrice,
+          gasLimit: testConfig.gasLimit,
+          memo: `listenTx() test C ${Math.random()}`,
+        };
+
+        const nonceA = await connection.getNonce({ pubkey: sender.pubkey });
+        const nonceB = new Int53(nonceA.toNumber() + 1) as Nonce;
+        const nonceC = new Int53(nonceA.toNumber() + 2) as Nonce;
+
+        const signedA = await profile.signTransaction(wallet.id, sender, sendA, ethereumCodec, nonceA);
+        const signedB = await profile.signTransaction(wallet.id, sender, sendB, ethereumCodec, nonceB);
+        const signedC = await profile.signTransaction(wallet.id, sender, sendC, ethereumCodec, nonceC);
+        const bytesToPostA = ethereumCodec.bytesToPost(signedA);
+        const bytesToPostB = ethereumCodec.bytesToPost(signedB);
+        const bytesToPostC = ethereumCodec.bytesToPost(signedC);
+
+        // Post A and B
+        const postResultA = await connection.postTx(bytesToPostA);
+        await connection.postTx(bytesToPostB);
+
+        // Wait for a block
+        await postResultA.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+
+        // Post C
+        await connection.postTx(bytesToPostC);
+      })().catch(done.fail);
+    }, 60_000);
   });
 
   describe("getBlockHeader", () => {

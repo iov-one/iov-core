@@ -397,8 +397,49 @@ export class EthereumConnection implements BcpConnection {
     }
   }
 
-  public listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
-    throw new Error("Not implemented");
+  public listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction> {
+    if (query.id !== undefined) {
+      throw new Error(
+        "listenTx() is not implemented for ID queries because block heights are not always in sync this would give you unrelyable results. What you probably want to use is liveTx() that will find your transaction ID either in history or in updates.",
+      );
+    } else if (query.tags) {
+      const address = findScraperAddress(query.tags);
+      if (!address) {
+        throw new Error("No matching search tag found to query transactions");
+      }
+
+      let pollInterval: NodeJS.Timeout | undefined;
+      const producer: Producer<ConfirmedTransaction> = {
+        start: async listener => {
+          const currentHeight = await this.height();
+          let minHeight = Math.max(query.minHeight || 0, currentHeight + 1);
+          const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
+
+          const poll = async (): Promise<void> => {
+            const result = await this.searchTransactionsByAddress(address, minHeight, maxHeight);
+            for (const item of result) {
+              listener.next(item);
+              if (item.height >= minHeight) {
+                // we assume we got all matching transactions from block `item.height` now
+                minHeight = item.height + 1;
+              }
+            }
+          };
+
+          poll();
+          pollInterval = setInterval(poll, 4_000);
+        },
+        stop: () => {
+          if (pollInterval) {
+            clearInterval(pollInterval);
+            pollInterval = undefined;
+          }
+        },
+      };
+      return Stream.create(producer);
+    } else {
+      throw new Error("Unsupported query.");
+    }
   }
 
   public liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
