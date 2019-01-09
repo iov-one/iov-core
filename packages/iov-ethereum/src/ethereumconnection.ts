@@ -305,7 +305,7 @@ export class EthereumConnection implements BcpConnection {
             id: "watchBlockHeaders",
             jsonrpc: "2.0",
             method: "eth_subscribe",
-            params: ["newHeads", { includeTransactions: true }],
+            params: ["newHeads", {}],
           }),
         );
         headersSubscription = this.socket!.events.subscribe({
@@ -314,10 +314,16 @@ export class EthereumConnection implements BcpConnection {
             if (blockHeaderJson.method === "eth_subscription") {
               const listening = getListenerBySubscription(blockHeaderJson.params.subscription);
               if (listening) {
-                // Missed transaction count in newHeads subscription
-                this.getBlockHeader(decodeHexQuantity(blockHeaderJson.params.result.number))
-                  .then(blockHeader => listener.next(blockHeader))
-                  .catch(error => listener.error(error));
+                // Give node time to store the new block and make it available via the HTTP API.
+                // Try to reduce delay as soon as subscriptions and eth_getBlockByNumber use the same connection.
+                setTimeout(() => {
+                  // Missed transaction count in newHeads subscription
+                  // It should be available but there is a bug in including transactions
+                  // https://github.com/ethereum/go-ethereum/issues/15804#issuecomment-369344133
+                  this.getBlockHeader(decodeHexQuantity(blockHeaderJson.params.result.number))
+                    .then(blockHeader => listener.next(blockHeader))
+                    .catch(error => listener.error(error));
+                }, 3_000);
               }
             } else if (blockHeaderJson.id) {
               // This is the response from eth server when subscribing to an event
@@ -364,8 +370,8 @@ export class EthereumConnection implements BcpConnection {
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    if (query.height || query.minHeight || query.maxHeight) {
-      throw new Error("Query by height, minHeight, maxHeight not supported");
+    if (query.height) {
+      throw new Error("Query by height not supported");
     }
 
     if (query.id !== undefined) {
@@ -373,80 +379,73 @@ export class EthereumConnection implements BcpConnection {
         throw new Error("Invalid transaction ID format");
       }
 
-      const transactionsResponse = await this.rpcClient.run({
-        jsonrpc: "2.0",
-        method: "eth_getTransactionByHash",
-        params: [query.id],
-        id: 6,
-      });
-      if (isJsonRpcErrorResponse(transactionsResponse)) {
-        throw new Error(JSON.stringify(transactionsResponse.error));
+      if (query.minHeight !== undefined) {
+        throw new Error("Min height is not supported for queries by transaction ID");
       }
 
-      if (transactionsResponse.result === null || transactionsResponse.result.blockNumber === null) {
-        return [];
+      if (query.maxHeight !== undefined) {
+        throw new Error("Max height is not supported for queries by transaction ID");
       }
-      const transactionHeight = decodeHexQuantity(transactionsResponse.result.blockNumber);
 
-      const currentHeight = await this.height();
-      const confirmations = currentHeight - transactionHeight + 1;
-      const transactionJson = {
-        ...transactionsResponse.result,
-        type: 0,
-      };
-      const transaction = ethereumCodec.parseBytes(
-        Encoding.toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
-        this.myChainId,
-      );
-      const transactionId = `0x${hexPadToEven(transactionsResponse.result.hash)}` as TransactionId;
-      return [
-        {
-          ...transaction,
-          height: transactionHeight,
-          confirmations: confirmations,
-          transactionId: transactionId,
-        },
-      ];
+      return this.searchTransactionsById(query.id);
     } else if (query.tags) {
-      if (!this.scraperApiUrl) {
-        throw new Error("No scraper API URL specified. Cannot search for transactions by tags.");
-      }
+      const minHeight = query.minHeight || 0;
+      const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
 
       const address = findScraperAddress(query.tags);
       if (!address) {
         throw new Error("No matching search tag found to query transactions");
       }
 
-      const responseBody = (await axios.get(
-        `${this.scraperApiUrl}?module=account&action=txlist&address=${address}&startblock=0&sort=asc`,
-      )).data;
-      if (responseBody.result === null) {
-        return [];
-      }
-      const transactions: any = [];
-      for (const tx of responseBody.result) {
-        if (tx.isError === "0" && tx.txreceipt_status === "1") {
-          const transaction = Scraper.parseBytesTx(
-            Encoding.toUtf8(JSON.stringify({ ...tx })) as PostableBytes,
-            this.myChainId,
-          );
-          const transactionId = `0x${hexPadToEven(tx.hash)}` as TransactionId;
-          transactions.push({
-            ...transaction,
-            height: tx.blockNumber,
-            confirmations: tx.confirmations,
-            transactionId: transactionId,
-          });
-        }
-      }
-      return transactions;
+      return this.searchTransactionsByAddress(address, minHeight, maxHeight);
     } else {
       throw new Error("Unsupported query.");
     }
   }
 
-  public listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
-    throw new Error("Not implemented");
+  public listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction> {
+    if (query.id !== undefined) {
+      throw new Error(
+        "listenTx() is not implemented for ID queries because block heights are not always in sync this would give you unrelyable results. What you probably want to use is liveTx() that will find your transaction ID either in history or in updates.",
+      );
+    } else if (query.tags) {
+      const address = findScraperAddress(query.tags);
+      if (!address) {
+        throw new Error("No matching search tag found to query transactions");
+      }
+
+      let pollInterval: NodeJS.Timeout | undefined;
+      const producer: Producer<ConfirmedTransaction> = {
+        start: async listener => {
+          const currentHeight = await this.height();
+          let minHeight = Math.max(query.minHeight || 0, currentHeight + 1);
+          const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
+
+          const poll = async (): Promise<void> => {
+            const result = await this.searchTransactionsByAddress(address, minHeight, maxHeight);
+            for (const item of result) {
+              listener.next(item);
+              if (item.height >= minHeight) {
+                // we assume we got all matching transactions from block `item.height` now
+                minHeight = item.height + 1;
+              }
+            }
+          };
+
+          poll();
+          pollInterval = setInterval(poll, 4_000);
+        },
+        stop: () => {
+          if (pollInterval) {
+            clearInterval(pollInterval);
+            pollInterval = undefined;
+          }
+        },
+      };
+      return Stream.create(producer);
+    } else {
+      throw new Error("Unsupported query.");
+    }
   }
 
   public liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
@@ -459,5 +458,85 @@ export class EthereumConnection implements BcpConnection {
     }
     await this.socket.connected;
     await this.socket.send(data);
+  }
+
+  private async searchTransactionsById(id: TransactionId): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    const transactionsResponse = await this.rpcClient.run({
+      jsonrpc: "2.0",
+      method: "eth_getTransactionByHash",
+      params: [id],
+      id: 6,
+    });
+    if (isJsonRpcErrorResponse(transactionsResponse)) {
+      throw new Error(JSON.stringify(transactionsResponse.error));
+    }
+
+    if (transactionsResponse.result === null || transactionsResponse.result.blockNumber === null) {
+      return [];
+    }
+    const transactionHeight = decodeHexQuantity(transactionsResponse.result.blockNumber);
+
+    const currentHeight = await this.height();
+    const confirmations = currentHeight - transactionHeight + 1;
+    const transactionJson = {
+      ...transactionsResponse.result,
+      type: 0,
+    };
+    const transaction = ethereumCodec.parseBytes(
+      Encoding.toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
+      this.myChainId,
+    );
+    const transactionId = `0x${hexPadToEven(transactionsResponse.result.hash)}` as TransactionId;
+    return [
+      {
+        ...transaction,
+        height: transactionHeight,
+        confirmations: confirmations,
+        transactionId: transactionId,
+      },
+    ];
+  }
+
+  private async searchTransactionsByAddress(
+    address: Address,
+    minHeight: number,
+    maxHeight: number,
+  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    if (maxHeight < minHeight) {
+      return [];
+    }
+
+    if (!this.scraperApiUrl) {
+      throw new Error("No scraper API URL specified. Cannot search for transactions by tags.");
+    }
+
+    // API: https://etherscan.io/apis#accounts
+    const responseBody = (await axios.get(this.scraperApiUrl, {
+      params: {
+        module: "account",
+        action: "txlist",
+        address: address,
+        startblock: minHeight,
+        endblock: maxHeight,
+        sort: "asc",
+      },
+    })).data;
+    if (responseBody.result === null) {
+      return [];
+    }
+    const transactions: any = [];
+    for (const tx of responseBody.result) {
+      if (tx.isError === "0" && tx.txreceipt_status === "1") {
+        const transaction = Scraper.parseBytesTx(tx, this.myChainId);
+        const transactionId = `0x${hexPadToEven(tx.hash)}` as TransactionId;
+        transactions.push({
+          ...transaction,
+          height: Uint53.fromString(tx.blockNumber).toNumber(),
+          confirmations: tx.confirmations,
+          transactionId: transactionId,
+        });
+      }
+    }
+    return transactions;
   }
 }
