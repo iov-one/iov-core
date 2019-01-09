@@ -371,7 +371,7 @@ describe("EthereumConnection", () => {
       if (!isSendTransaction(transaction)) {
         throw new Error("Unexpected transaction type");
       }
-      expect(transaction.recipient).toEqual("0xe137f5264b6b528244e1643a2d570b37660b7f14");
+      expect(transaction.recipient).toEqual(recipientAddress);
       expect(transaction.amount.quantity).toEqual("5445500");
       connection.disconnect();
     }, 30_000);
