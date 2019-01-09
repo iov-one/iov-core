@@ -58,11 +58,7 @@ async function randomAddress(): Promise<Address> {
   });
 }
 
-async function postTransaction(
-  quantity: string,
-  memo: string,
-  connection: EthereumConnection,
-): Promise<PostTxResponse> {
+async function postTransaction(quantity: string, connection: EthereumConnection): Promise<PostTxResponse> {
   const wallet = Secp256k1HdWallet.fromMnemonic(
     "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
   );
@@ -82,7 +78,7 @@ async function postTransaction(
     },
     gasPrice: testConfig.gasPrice,
     gasLimit: testConfig.gasLimit,
-    memo: memo,
+    memo: `Some text ${Math.random()}`,
   };
   const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
   const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
@@ -705,8 +701,8 @@ describe("EthereumConnection", () => {
       });
 
       // post transactions
-      await postTransaction("5445500", "watch header test 1-" + new Date(), connection);
-      await postTransaction("5445500", "watch header test 2-" + new Date(), connection);
+      await postTransaction("5445500", connection);
+      await postTransaction("5445500", connection);
       await sleep(testConfig.waitForTx * 2);
       connection.disconnect();
     });
