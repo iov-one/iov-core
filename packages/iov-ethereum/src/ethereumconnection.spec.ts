@@ -361,7 +361,7 @@ describe("EthereumConnection", () => {
 
       const resultPost = await connection.postTx(bytesToPost);
       expect(resultPost.transactionId).toMatch(/^0x[0-9a-f]{64}$/);
-      await sleep(testConfig.waitForTx);
+      await resultPost.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
 
       const resultSearch = await connection.searchTx({ id: resultPost.transactionId });
       expect(resultSearch.length).toEqual(1);
@@ -375,7 +375,7 @@ describe("EthereumConnection", () => {
       expect(transaction.recipient).toEqual("0xe137f5264b6b528244e1643a2d570b37660b7f14");
       expect(transaction.amount.quantity).toEqual("5445500");
       connection.disconnect();
-    });
+    }, 30_000);
 
     // TODO: load ganache with db from github
     xit("can search a transaction by hash", async () => {
