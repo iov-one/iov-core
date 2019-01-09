@@ -28,7 +28,7 @@ export declare class EthereumConnection implements BcpConnection {
     watchNonce(_: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce>;
     searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
     listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction>;
-    liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction>;
+    liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction>;
     private socketSend;
     private searchTransactionsById;
     private searchTransactionsByAddress;

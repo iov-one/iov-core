@@ -29,7 +29,7 @@ import {
 import { Encoding, Uint53 } from "@iov/encoding";
 import { isJsonRpcErrorResponse } from "@iov/jsonrpc";
 import { StreamingSocket } from "@iov/socket";
-import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
+import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
 import { keyToAddress } from "./derivation";
@@ -45,6 +45,10 @@ import {
   hexPadToEven,
   toBcpChainId,
 } from "./utils";
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 interface WsListener {
   readonly id?: string;
@@ -448,8 +452,63 @@ export class EthereumConnection implements BcpConnection {
     }
   }
 
-  public liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
-    throw new Error("Not implemented");
+  public liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction> {
+    if (query.id !== undefined) {
+      const searchId = query.id;
+      const resultPromise = new Promise<ConfirmedTransaction>(async (resolve, reject) => {
+        try {
+          while (true) {
+            const searchResult = await this.searchTransactionsById(searchId);
+            if (searchResult.length > 0) {
+              resolve(searchResult[0]);
+            } else {
+              await sleep(4_000);
+            }
+          }
+        } catch (error) {
+          reject(error);
+        }
+      });
+
+      // concat never() because we want non-completing streams consistently
+      return concat(Stream.fromPromise(resultPromise), Stream.never());
+    } else if (query.tags) {
+      const address = findScraperAddress(query.tags);
+      if (!address) {
+        throw new Error("No matching search tag found to query transactions");
+      }
+
+      let pollInterval: NodeJS.Timeout | undefined;
+      const producer: Producer<ConfirmedTransaction> = {
+        start: listener => {
+          let minHeight = query.minHeight || 0;
+          const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
+
+          const poll = async (): Promise<void> => {
+            const result = await this.searchTransactionsByAddress(address, minHeight, maxHeight);
+            for (const item of result) {
+              listener.next(item);
+              if (item.height >= minHeight) {
+                // we assume we got all matching transactions from block `item.height` now
+                minHeight = item.height + 1;
+              }
+            }
+          };
+
+          poll();
+          pollInterval = setInterval(poll, 4_000);
+        },
+        stop: () => {
+          if (pollInterval) {
+            clearInterval(pollInterval);
+            pollInterval = undefined;
+          }
+        },
+      };
+      return Stream.create(producer);
+    } else {
+      throw new Error("Unsupported query.");
+    }
   }
 
   private async socketSend(data: string): Promise<void> {
