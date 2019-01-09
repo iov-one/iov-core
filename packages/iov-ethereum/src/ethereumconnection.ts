@@ -364,8 +364,8 @@ export class EthereumConnection implements BcpConnection {
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    if (query.height || query.maxHeight) {
-      throw new Error("Query by height, maxHeight not supported");
+    if (query.height) {
+      throw new Error("Query by height not supported");
     }
 
     if (query.id !== undefined) {
@@ -375,6 +375,10 @@ export class EthereumConnection implements BcpConnection {
 
       if (query.minHeight !== undefined) {
         throw new Error("Min height is not supported for queries by transaction ID");
+      }
+
+      if (query.maxHeight !== undefined) {
+        throw new Error("Max height is not supported for queries by transaction ID");
       }
 
       const transactionsResponse = await this.rpcClient.run({
@@ -417,18 +421,25 @@ export class EthereumConnection implements BcpConnection {
       }
 
       const minHeight = query.minHeight || 0;
+      const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
 
       const address = findScraperAddress(query.tags);
       if (!address) {
         throw new Error("No matching search tag found to query transactions");
       }
 
+      if (maxHeight < minHeight) {
+        return [];
+      }
+
+      // API: https://etherscan.io/apis#accounts
       const responseBody = (await axios.get(this.scraperApiUrl, {
         params: {
           module: "account",
           action: "txlist",
           address: address,
           startblock: minHeight,
+          endblock: maxHeight,
           sort: "asc",
         },
       })).data;

@@ -405,7 +405,7 @@ describe("EthereumConnection", () => {
       connection.disconnect();
     });
 
-    it("can search transactions by account and minHeight", async () => {
+    it("can search transactions by account and minHeight/maxHeight", async () => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
 
@@ -479,6 +479,67 @@ describe("EthereumConnection", () => {
       {
         const resultSearch = await connection.searchTx({
           minHeight: transactionHeight + 1,
+          tags: [scraperAddressTag(recipientAddress)],
+        });
+        expect(resultSearch.length).toEqual(0);
+      }
+
+      // max height less than transaction height
+      {
+        const resultSearch = await connection.searchTx({
+          maxHeight: transactionHeight - 1,
+          tags: [scraperAddressTag(recipientAddress)],
+        });
+        expect(resultSearch.length).toEqual(0);
+      }
+
+      // max height equals transaction height
+      {
+        const resultSearch = await connection.searchTx({
+          maxHeight: transactionHeight,
+          tags: [scraperAddressTag(recipientAddress)],
+        });
+        expect(resultSearch.length).toEqual(1);
+        expect(resultSearch[0].transactionId).toEqual(transactionId);
+      }
+
+      // max height greater than transaction height
+      {
+        const resultSearch = await connection.searchTx({
+          maxHeight: transactionHeight + 1,
+          tags: [scraperAddressTag(recipientAddress)],
+        });
+        expect(resultSearch.length).toEqual(1);
+        expect(resultSearch[0].transactionId).toEqual(transactionId);
+      }
+
+      // min height less than max height
+      {
+        const resultSearch = await connection.searchTx({
+          minHeight: transactionHeight - 1,
+          maxHeight: transactionHeight + 1,
+          tags: [scraperAddressTag(recipientAddress)],
+        });
+        expect(resultSearch.length).toEqual(1);
+        expect(resultSearch[0].transactionId).toEqual(transactionId);
+      }
+
+      // min height equal to max height
+      {
+        const resultSearch = await connection.searchTx({
+          minHeight: transactionHeight,
+          maxHeight: transactionHeight,
+          tags: [scraperAddressTag(recipientAddress)],
+        });
+        expect(resultSearch.length).toEqual(1);
+        expect(resultSearch[0].transactionId).toEqual(transactionId);
+      }
+
+      // min height greater than max height
+      {
+        const resultSearch = await connection.searchTx({
+          minHeight: transactionHeight,
+          maxHeight: transactionHeight - 1,
           tags: [scraperAddressTag(recipientAddress)],
         });
         expect(resultSearch.length).toEqual(0);
