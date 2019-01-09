@@ -1,17 +1,22 @@
 import {
   Address,
+  Algorithm,
+  BcpBlockInfoInBlock,
   BcpTransactionState,
   BlockHeader,
   isSendTransaction,
   PostTxResponse,
+  PublicKeyBytes,
   SendTransaction,
   SignedTransaction,
   TokenTicker,
   TransactionId,
 } from "@iov/bcp-types";
+import { Random, Secp256k1 } from "@iov/crypto";
 import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 
+import { keyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
 import { scraperAddressTag } from "./tags";
@@ -39,6 +44,14 @@ function pendingWithoutEthereumScraper(): void {
 
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function randomAddress(): Promise<Address> {
+  const keypair = await Secp256k1.makeKeypair(await Random.getBytes(32));
+  return keyToAddress({
+    algo: Algorithm.Secp256k1,
+    data: keypair.pubkey as PublicKeyBytes,
+  });
 }
 
 async function postTransaction(
@@ -391,6 +404,88 @@ describe("EthereumConnection", () => {
       expect(results.length).toBeGreaterThan(1);
       connection.disconnect();
     });
+
+    it("can search transactions by account and minHeight", async () => {
+      pendingWithoutEthereum();
+      pendingWithoutEthereumScraper();
+
+      const connection = await EthereumConnection.establish(testConfig.base, {
+        scraperApiUrl: testConfig.scraper!.apiUrl,
+      });
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(
+        Secp256k1HdWallet.fromMnemonic(
+          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+        ),
+      );
+      const secondIdentity = await profile.createIdentity(
+        wallet.id,
+        testConfig.chainId,
+        HdPaths.bip44(60, 0, 0, 1),
+      );
+
+      const recipientAddress = await randomAddress();
+
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
+        chainId: testConfig.chainId,
+        signer: secondIdentity.pubkey,
+        recipient: recipientAddress,
+        amount: {
+          quantity: "5445500",
+          fractionalDigits: 18,
+          tokenTicker: "ETH" as TokenTicker,
+        },
+        gasPrice: testConfig.gasPrice,
+        gasLimit: testConfig.gasLimit,
+        memo: `Search tx test ${new Date()}`,
+      };
+      const senderAddress = ethereumCodec.identityToAddress(secondIdentity);
+      const nonce = await connection.getNonce({ address: senderAddress });
+      const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
+      const bytesToPost = ethereumCodec.bytesToPost(signed);
+
+      const resultPost = await connection.postTx(bytesToPost);
+      const transactionId = resultPost.transactionId;
+      const transactionHeight = ((await resultPost.blockInfo.waitFor(
+        info => info.state === BcpTransactionState.InBlock,
+      )) as BcpBlockInfoInBlock).height;
+
+      // Random delay to give scraper a chance to receive and process the new block
+      await sleep(25_000);
+
+      // min height less than transaction height
+      {
+        const resultSearch = await connection.searchTx({
+          minHeight: transactionHeight - 1,
+          tags: [scraperAddressTag(recipientAddress)],
+        });
+        expect(resultSearch.length).toEqual(1);
+        expect(resultSearch[0].transactionId).toEqual(transactionId);
+      }
+
+      // min height equals transaction height
+      {
+        const resultSearch = await connection.searchTx({
+          minHeight: transactionHeight,
+          tags: [scraperAddressTag(recipientAddress)],
+        });
+        expect(resultSearch.length).toEqual(1);
+        expect(resultSearch[0].transactionId).toEqual(transactionId);
+      }
+
+      // min height greater than transaction height
+      {
+        const resultSearch = await connection.searchTx({
+          minHeight: transactionHeight + 1,
+          tags: [scraperAddressTag(recipientAddress)],
+        });
+        expect(resultSearch.length).toEqual(0);
+      }
+
+      connection.disconnect();
+    }, 50_000);
   });
 
   describe("getBlockHeader", () => {

@@ -364,13 +364,17 @@ export class EthereumConnection implements BcpConnection {
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    if (query.height || query.minHeight || query.maxHeight) {
-      throw new Error("Query by height, minHeight, maxHeight not supported");
+    if (query.height || query.maxHeight) {
+      throw new Error("Query by height, maxHeight not supported");
     }
 
     if (query.id !== undefined) {
       if (!query.id.match(/^0x[0-9a-f]{64}$/)) {
         throw new Error("Invalid transaction ID format");
+      }
+
+      if (query.minHeight !== undefined) {
+        throw new Error("Min height is not supported for queries by transaction ID");
       }
 
       const transactionsResponse = await this.rpcClient.run({
@@ -412,14 +416,22 @@ export class EthereumConnection implements BcpConnection {
         throw new Error("No scraper API URL specified. Cannot search for transactions by tags.");
       }
 
+      const minHeight = query.minHeight || 0;
+
       const address = findScraperAddress(query.tags);
       if (!address) {
         throw new Error("No matching search tag found to query transactions");
       }
 
-      const responseBody = (await axios.get(
-        `${this.scraperApiUrl}?module=account&action=txlist&address=${address}&startblock=0&sort=asc`,
-      )).data;
+      const responseBody = (await axios.get(this.scraperApiUrl, {
+        params: {
+          module: "account",
+          action: "txlist",
+          address: address,
+          startblock: minHeight,
+          sort: "asc",
+        },
+      })).data;
       if (responseBody.result === null) {
         return [];
       }
