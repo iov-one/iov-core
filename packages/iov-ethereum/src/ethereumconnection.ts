@@ -484,7 +484,7 @@ export class EthereumConnection implements BcpConnection {
         const transactionId = `0x${hexPadToEven(tx.hash)}` as TransactionId;
         transactions.push({
           ...transaction,
-          height: tx.blockNumber,
+          height: Uint53.fromString(tx.blockNumber).toNumber(),
           confirmations: tx.confirmations,
           transactionId: transactionId,
         });
