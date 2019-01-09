@@ -9,6 +9,7 @@ import {
   isSendTransaction,
   Nonce,
   PostTxResponse,
+  PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   SignedTransaction,
@@ -17,7 +18,7 @@ import {
 } from "@iov/bcp-types";
 import { Random, Secp256k1 } from "@iov/crypto";
 import { Int53 } from "@iov/encoding";
-import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
+import { HdPaths, Secp256k1HdWallet, UserProfile, Wallet } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 
 import { keyToAddress } from "./derivation";
@@ -58,18 +59,19 @@ async function randomAddress(): Promise<Address> {
   });
 }
 
-async function postTransaction(quantity: string, connection: EthereumConnection): Promise<PostTxResponse> {
-  const wallet = Secp256k1HdWallet.fromMnemonic(
-    "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-  );
-  const mainIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.bip44(60, 0, 0, 1));
-
+async function postTransaction(
+  wallet: Wallet,
+  sender: PublicIdentity,
+  nonce: Nonce,
+  quantity: string,
+  connection: EthereumConnection,
+): Promise<PostTxResponse> {
   const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 
   const sendTx: SendTransaction = {
     kind: "bcp/send",
     chainId: testConfig.chainId,
-    signer: mainIdentity.pubkey,
+    signer: sender.pubkey,
     recipient: recipientAddress,
     amount: {
       quantity: quantity,
@@ -80,19 +82,14 @@ async function postTransaction(quantity: string, connection: EthereumConnection)
     gasLimit: testConfig.gasLimit,
     memo: `Some text ${Math.random()}`,
   };
-  const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
   const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
-  const signature = await wallet.createTransactionSignature(
-    mainIdentity,
-    signingJob.bytes,
-    signingJob.prehashType,
-  );
+  const signature = await wallet.createTransactionSignature(sender, signingJob.bytes, signingJob.prehashType);
 
   const signedTransaction: SignedTransaction = {
     transaction: sendTx,
     primarySignature: {
       nonce: nonce,
-      pubkey: mainIdentity.pubkey,
+      pubkey: sender.pubkey,
       signature: signature,
     },
     otherSignatures: [],
@@ -680,31 +677,49 @@ describe("EthereumConnection", () => {
   });
 
   describe("watchBlockHeaders", () => {
-    it("watches headers with same data as getBlockHeader", async () => {
+    it("watches headers with same data as getBlockHeader", done => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, { wsUrl: testConfig.wsUrl });
-      const events = new Array<BlockHeader>();
 
-      const subscription = connection.watchBlockHeaders().subscribe({
-        next: info => {
-          events.push(info);
-          if (events.length === 2) {
-            expect(events[0].height).toEqual(events[1].height - 1);
-            connection.getBlockHeader(info.height).then(header => {
-              expect(header).toEqual(events[1]);
-              subscription.unsubscribe();
-            });
-          }
-        },
-        complete: fail,
-        error: fail,
-      });
+      (async () => {
+        const connection = await EthereumConnection.establish(testConfig.base, { wsUrl: testConfig.wsUrl });
+        const events = new Array<BlockHeader>();
 
-      // post transactions
-      await postTransaction("5445500", connection);
-      await postTransaction("5445500", connection);
-      await sleep(testConfig.waitForTx * 2);
-      connection.disconnect();
-    });
+        const subscription = connection.watchBlockHeaders().subscribe({
+          next: async event => {
+            try {
+              // check this event
+              const header = await connection.getBlockHeader(event.height);
+              expect(header).toEqual(event);
+
+              // add event
+              events.push(event);
+
+              // sum up events
+              if (events.length === 2) {
+                expect(events[0].height).toEqual(events[1].height - 1);
+                subscription.unsubscribe();
+                connection.disconnect();
+                done();
+              }
+            } catch (error) {
+              done.fail(error);
+            }
+          },
+          complete: done.fail,
+          error: done.fail,
+        });
+
+        // post transactions
+        const wallet = Secp256k1HdWallet.fromMnemonic(
+          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+        );
+        const mainIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.bip44(60, 0, 0, 1));
+
+        const nonceA = await connection.getNonce({ pubkey: mainIdentity.pubkey });
+        const nonceB = new Int53(nonceA.toNumber() + 1) as Nonce;
+        await postTransaction(wallet, mainIdentity, nonceA, "5445500", connection);
+        await postTransaction(wallet, mainIdentity, nonceB, "5445500", connection);
+      })().catch(done.fail);
+    }, 45_000);
   });
 });
