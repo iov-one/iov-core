@@ -70,7 +70,9 @@ export const ethereumCodec: TxCodec = {
           },
           signer: {
             algo: Algorithm.Secp256k1,
-            data: json.from,
+            // Only sender address available directly. We probably need to calculate
+            // this from the ECDSA signature and recovery parameter
+            data: new Uint8Array([]) as PublicKeyBytes,
           },
           amount: {
             quantity: decodeHexQuantityString(json.value),
