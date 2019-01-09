@@ -314,12 +314,16 @@ export class EthereumConnection implements BcpConnection {
             if (blockHeaderJson.method === "eth_subscription") {
               const listening = getListenerBySubscription(blockHeaderJson.params.subscription);
               if (listening) {
-                // Missed transaction count in newHeads subscription
-                // It should be available but there is a bug in including transactions
-                // https://github.com/ethereum/go-ethereum/issues/15804#issuecomment-369344133
-                this.getBlockHeader(decodeHexQuantity(blockHeaderJson.params.result.number))
-                  .then(blockHeader => listener.next(blockHeader))
-                  .catch(error => listener.error(error));
+                // Give node time to store the new block and make it available via the HTTP API.
+                // Try to reduce delay as soon as subscriptions and eth_getBlockByNumber use the same connection.
+                setTimeout(() => {
+                  // Missed transaction count in newHeads subscription
+                  // It should be available but there is a bug in including transactions
+                  // https://github.com/ethereum/go-ethereum/issues/15804#issuecomment-369344133
+                  this.getBlockHeader(decodeHexQuantity(blockHeaderJson.params.result.number))
+                    .then(blockHeader => listener.next(blockHeader))
+                    .catch(error => listener.error(error));
+                }, 3_000);
               }
             } else if (blockHeaderJson.id) {
               // This is the response from eth server when subscribing to an event
