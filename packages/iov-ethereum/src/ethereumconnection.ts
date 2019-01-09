@@ -305,7 +305,7 @@ export class EthereumConnection implements BcpConnection {
             id: "watchBlockHeaders",
             jsonrpc: "2.0",
             method: "eth_subscribe",
-            params: ["newHeads", { includeTransactions: true }],
+            params: ["newHeads", {}],
           }),
         );
         headersSubscription = this.socket!.events.subscribe({
@@ -315,6 +315,8 @@ export class EthereumConnection implements BcpConnection {
               const listening = getListenerBySubscription(blockHeaderJson.params.subscription);
               if (listening) {
                 // Missed transaction count in newHeads subscription
+                // It should be available but there is a bug in including transactions
+                // https://github.com/ethereum/go-ethereum/issues/15804#issuecomment-369344133
                 this.getBlockHeader(decodeHexQuantity(blockHeaderJson.params.result.number))
                   .then(blockHeader => listener.next(blockHeader))
                   .catch(error => listener.error(error));
