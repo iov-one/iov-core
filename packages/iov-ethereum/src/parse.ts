@@ -2,15 +2,17 @@ import {
   Algorithm,
   Amount,
   ChainId,
-  PostableBytes,
+  Nonce,
   PublicKeyBytes,
   SendTransaction,
   SignatureBytes,
   SignedTransaction,
 } from "@iov/bcp-types";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 
 import { constants } from "./constants";
+import { toChecksumAddress } from "./derivation";
+import { hexPadToEven } from "./utils";
 
 export class Parse {
   public static ethereumAmount(total: string): Amount {
@@ -31,10 +33,7 @@ export class Parse {
 }
 
 export class Scraper {
-  public static parseBytesTx(bytes: PostableBytes, chainId: ChainId): SignedTransaction {
-    const json = JSON.parse(Encoding.fromUtf8(bytes));
-    const signature = new Uint8Array([]) as SignatureBytes;
-
+  public static parseBytesTx(json: any, chainId: ChainId): SignedTransaction {
     const unsigned: SendTransaction = {
       kind: "bcp/send",
       chainId: chainId,
@@ -45,27 +44,28 @@ export class Scraper {
       },
       signer: {
         algo: Algorithm.Secp256k1,
-        data: json.from,
+        // we only have the address available, not the pubkey
+        data: new Uint8Array([]) as PublicKeyBytes,
       },
       amount: {
         quantity: json.value,
         fractionalDigits: constants.primaryTokenFractionalDigits,
         tokenTicker: constants.primaryTokenTicker,
       },
-      recipient: json.to,
-      memo: json.input,
+      recipient: toChecksumAddress(json.to),
+      memo: Encoding.fromUtf8(Encoding.fromHex(hexPadToEven(json.input))),
     };
 
     return {
       transaction: unsigned,
       primarySignature: {
-        nonce: json.nonce,
-        // fake pubkey, we cannot know this
+        nonce: Int53.fromString(json.nonce) as Nonce,
+        // fake pubkey and signature, we cannot know this
         pubkey: {
           algo: Algorithm.Secp256k1,
           data: new Uint8Array([]) as PublicKeyBytes,
         },
-        signature: signature,
+        signature: new Uint8Array([]) as SignatureBytes,
       },
       otherSignatures: [],
     };

@@ -480,10 +480,7 @@ export class EthereumConnection implements BcpConnection {
     const transactions: any = [];
     for (const tx of responseBody.result) {
       if (tx.isError === "0" && tx.txreceipt_status === "1") {
-        const transaction = Scraper.parseBytesTx(
-          Encoding.toUtf8(JSON.stringify({ ...tx })) as PostableBytes,
-          this.myChainId,
-        );
+        const transaction = Scraper.parseBytesTx(tx, this.myChainId);
         const transactionId = `0x${hexPadToEven(tx.hash)}` as TransactionId;
         transactions.push({
           ...transaction,
