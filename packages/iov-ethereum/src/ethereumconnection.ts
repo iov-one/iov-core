@@ -173,9 +173,36 @@ export class EthereumConnection implements BcpConnection {
       throw new Error("Invalid transaction ID format");
     }
 
-    const blockInfoPending = new DefaultValueProducer<BcpBlockInfo>({
-      state: BcpTransactionState.Pending,
-    });
+    // 12-15 seconds average block time
+    const pollIntervalMs = 4_000;
+
+    let pollInterval: NodeJS.Timeout | undefined;
+    const blockInfoPending = new DefaultValueProducer<BcpBlockInfo>(
+      {
+        state: BcpTransactionState.Pending,
+      },
+      {
+        onStarted: () => {
+          pollInterval = setInterval(async () => {
+            const searchResult = await this.searchTx({ id: transactionId });
+            if (searchResult.length === 0) {
+              return;
+            }
+
+            const confirmedTransaction = searchResult[0];
+
+            blockInfoPending.update({
+              state: BcpTransactionState.InBlock,
+              height: confirmedTransaction.height,
+              confirmations: confirmedTransaction.confirmations,
+            });
+          }, pollIntervalMs);
+        },
+        onStop: () => {
+          clearInterval(pollInterval!);
+        },
+      },
+    );
     return {
       blockInfo: new ValueAndUpdates(blockInfoPending),
       transactionId: transactionId,
@@ -361,19 +388,7 @@ export class EthereumConnection implements BcpConnection {
       }
       const transactionHeight = decodeHexQuantity(transactionsResponse.result.blockNumber);
 
-      // TODO: compare myChainId with value v (missed recovery parameter)
-      const lastBlockNumberResponse = await this.rpcClient.run({
-        jsonrpc: "2.0",
-        method: "eth_blockNumber",
-        params: [],
-        id: 7,
-      });
-      if (isJsonRpcErrorResponse(lastBlockNumberResponse)) {
-        throw new Error(JSON.stringify(lastBlockNumberResponse.error));
-      }
-
-      const currentHeight = decodeHexQuantity(lastBlockNumberResponse.result);
-
+      const currentHeight = await this.height();
       const confirmations = currentHeight - transactionHeight + 1;
       const transactionJson = {
         ...transactionsResponse.result,
