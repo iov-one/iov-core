@@ -80,8 +80,7 @@ async function postTransaction(
     gasLimit: testConfig.gasLimit,
     memo: memo,
   };
-  const senderAddress = ethereumCodec.identityToAddress(mainIdentity);
-  const nonce = await connection.getNonce({ address: senderAddress });
+  const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
   const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
   const signature = await wallet.createTransactionSignature(
     mainIdentity,
@@ -229,8 +228,7 @@ describe("EthereumConnection", () => {
         memo: "We \u2665 developers – iov.one",
       };
       const connection = await EthereumConnection.establish(testConfig.base);
-      const senderAddress = ethereumCodec.identityToAddress(secondIdentity);
-      const nonce = await connection.getNonce({ address: senderAddress as Address });
+      const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
       const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
       const bytesToPost = ethereumCodec.bytesToPost(signed);
 
@@ -276,8 +274,7 @@ describe("EthereumConnection", () => {
         memo: "We \u2665 developers – iov.one",
       };
       const connection = await EthereumConnection.establish(testConfig.base);
-      const senderAddress = ethereumCodec.identityToAddress(secondIdentity);
-      const nonce = await connection.getNonce({ address: senderAddress as Address });
+      const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
       const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
       const bytesToPost = ethereumCodec.bytesToPost(signed);
 
@@ -354,8 +351,7 @@ describe("EthereumConnection", () => {
         memo: "Search tx test" + new Date(),
       };
       const connection = await EthereumConnection.establish(testConfig.base);
-      const senderAddress = ethereumCodec.identityToAddress(secondIdentity);
-      const nonce = await connection.getNonce({ address: senderAddress });
+      const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
       const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
       const bytesToPost = ethereumCodec.bytesToPost(signed);
 
@@ -441,8 +437,7 @@ describe("EthereumConnection", () => {
         gasLimit: testConfig.gasLimit,
         memo: `Search tx test ${new Date()}`,
       };
-      const senderAddress = ethereumCodec.identityToAddress(secondIdentity);
-      const nonce = await connection.getNonce({ address: senderAddress });
+      const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
       const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
       const bytesToPost = ethereumCodec.bytesToPost(signed);
 
