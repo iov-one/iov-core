@@ -344,14 +344,10 @@ describe("EthereumConnection", () => {
         chainId: testConfig.chainId,
         signer: secondIdentity.pubkey,
         recipient: recipientAddress,
-        amount: {
-          quantity: "5445500",
-          fractionalDigits: 18,
-          tokenTicker: "ETH" as TokenTicker,
-        },
+        amount: defaultAmount,
         gasPrice: testConfig.gasPrice,
         gasLimit: testConfig.gasLimit,
-        memo: "Search tx test" + new Date(),
+        memo: `Search tx test ${Math.random()}`,
       };
       const connection = await EthereumConnection.establish(testConfig.base);
       const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
