@@ -347,7 +347,7 @@ describe("EthereumConnection", () => {
         const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
         await postTransaction(wallet, secondIdentity, nonce, recipient, connection);
       })().catch(done.fail);
-    }, 40_000);
+    }, 90_000);
   });
 
   describe("searchTx", () => {
