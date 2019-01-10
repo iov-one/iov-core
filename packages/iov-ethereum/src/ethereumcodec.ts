@@ -20,7 +20,7 @@ import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
 import { constants } from "./constants";
-import { isValidAddress, keyToAddress } from "./derivation";
+import { isValidAddress, keyToAddress, toChecksumAddress } from "./derivation";
 import { BlknumForkState, Eip155ChainId, getRecoveryParam } from "./encoding";
 import { Serialization } from "./serialization";
 import {
@@ -70,14 +70,16 @@ export const ethereumCodec: TxCodec = {
           },
           signer: {
             algo: Algorithm.Secp256k1,
-            data: json.from,
+            // Only sender address available directly. We probably need to calculate
+            // this from the ECDSA signature and recovery parameter
+            data: new Uint8Array([]) as PublicKeyBytes,
           },
           amount: {
             quantity: decodeHexQuantityString(json.value),
             fractionalDigits: constants.primaryTokenFractionalDigits,
             tokenTicker: constants.primaryTokenTicker,
           },
-          recipient: json.to,
+          recipient: toChecksumAddress(json.to),
           memo: json.input,
         };
         unsignedTransaction = send;
