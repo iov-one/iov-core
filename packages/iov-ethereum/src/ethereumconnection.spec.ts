@@ -2,6 +2,7 @@ import {
   Address,
   Algorithm,
   Amount,
+  BcpAccount,
   BcpBlockInfoInBlock,
   BcpTransactionState,
   BlockHeader,
@@ -296,6 +297,57 @@ describe("EthereumConnection", () => {
         confirmations: 1,
       });
     }, 30_000);
+  });
+
+  describe("watchAccount", () => {
+    it("can watch an account", done => {
+      pendingWithoutEthereum();
+      pendingWithoutEthereumScraper();
+
+      (async () => {
+        const connection = await EthereumConnection.establish(testConfig.base, {
+          scraperApiUrl: testConfig.scraper!.apiUrl,
+        });
+
+        const recipient = await randomAddress();
+
+        // setup watching
+        const events = new Array<BcpAccount>();
+        const subscription = connection.watchAccount({ address: recipient }).subscribe({
+          next: event => {
+            if (!event) {
+              subscription.unsubscribe();
+              connection.disconnect();
+              done.fail("Received event undefined, which is not expected in Ethereum");
+              return;
+            }
+            events.push(event);
+
+            expect(event.address).toEqual(recipient);
+            expect(event.balance.length).toEqual(1);
+            expect(event.balance[0].fractionalDigits).toEqual(18);
+            expect(event.balance[0].tokenTicker).toEqual("ETH");
+
+            if (events.length === 2) {
+              expect(events[0].balance[0].quantity).toEqual("0");
+              expect(events[1].balance[0].quantity).toEqual(defaultAmount.quantity);
+
+              subscription.unsubscribe();
+              connection.disconnect();
+              done();
+            }
+          },
+        });
+
+        // post transactions
+        const wallet = Secp256k1HdWallet.fromMnemonic(
+          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+        );
+        const secondIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.bip44(60, 0, 0, 1));
+        const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
+        await postTransaction(wallet, secondIdentity, nonce, recipient, connection);
+      })().catch(done.fail);
+    }, 40_000);
   });
 
   describe("searchTx", () => {

@@ -36,7 +36,7 @@ import { keyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { Parse, Scraper } from "./parse";
-import { findScraperAddress } from "./tags";
+import { findScraperAddress, scraperAddressTag } from "./tags";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
@@ -365,8 +365,31 @@ export class EthereumConnection implements BcpConnection {
     return this.watchBlockHeaders().map(header => header.height);
   }
 
-  public watchAccount(_: BcpAccountQuery): Stream<BcpAccount | undefined> {
-    throw new Error("Not implemented");
+  public watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined> {
+    let address: Address;
+    if (isAddressQuery(query)) {
+      address = query.address;
+    } else if (isPubkeyQuery(query)) {
+      address = keyToAddress(query.pubkey);
+    } else {
+      throw new Error("unsupported query type");
+    }
+
+    const getAccount = async (): Promise<BcpAccount | undefined> => {
+      const result = await this.getAccount({ address: address });
+      if (result.data.length > 0) {
+        return result.data[0];
+      } else {
+        return undefined;
+      }
+    };
+
+    const initialDataStream = Stream.fromPromise(getAccount());
+    const updatesStream = this.listenTx({ tags: [scraperAddressTag(address)] })
+      .map(_ => Stream.fromPromise(getAccount()))
+      .flatten();
+
+    return concat(initialDataStream, updatesStream);
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
