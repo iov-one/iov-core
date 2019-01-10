@@ -594,7 +594,7 @@ describe("EthereumConnection", () => {
   });
 
   describe("listenTx", () => {
-    it("can can listen to transactions", done => {
+    it("can listen to transactions", done => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
 
