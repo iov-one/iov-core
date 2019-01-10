@@ -13,7 +13,6 @@ import {
   ChainId,
   isSendTransaction,
   isSwapCounterTransaction,
-  Nonce,
   PostTxResponse,
   PublicIdentity,
   PublicKeyBundle,
@@ -1402,9 +1401,6 @@ describe("BnsConnection", () => {
     const faucetAcct = lastValue<BcpAccount | undefined>(connection.watchAccount({ address: faucetAddr }));
     const rcptAcct = lastValue<BcpAccount | undefined>(connection.watchAccount({ address: recipientAddr }));
 
-    const faucetNonce = lastValue<Nonce>(connection.watchNonce({ address: faucetAddr }));
-    const rcptNonce = lastValue<Nonce>(connection.watchNonce({ address: recipientAddr }));
-
     // give it a chance to get initial feed before checking and proceeding
     await sleep(200);
 
@@ -1414,12 +1410,6 @@ describe("BnsConnection", () => {
     expect(faucetAcct.value()!.name).toEqual("admin");
     expect(faucetAcct.value()!.balance.length).toEqual(1);
     const faucetStartBalance = faucetAcct.value()!.balance[0];
-
-    // store original nonce, this should increase after tx
-    const originalRecipientNonce = rcptNonce.value()!;
-    const originalFaucetNonce = faucetNonce.value()!;
-    expect(originalRecipientNonce.toNumber()).toBeGreaterThanOrEqual(0);
-    expect(originalFaucetNonce.toNumber()).toBeGreaterThanOrEqual(0);
 
     // send some cash
     const post = await sendCash(connection, profile, faucet, recipientAddr);
@@ -1433,8 +1423,6 @@ describe("BnsConnection", () => {
     expect(rcptAcct.value()!.name).toBeUndefined();
     expect(rcptAcct.value()!.balance.length).toEqual(1);
     expect(rcptAcct.value()!.balance[0].quantity).toEqual("68000000000");
-    // rcptNonce unchanged
-    expect(rcptNonce.value()!).toEqual(originalRecipientNonce);
 
     // facuetAcct should have gone down a bit
     expect(faucetAcct.value()).toBeDefined();
@@ -1447,9 +1435,6 @@ describe("BnsConnection", () => {
         .subtract(68_000000000)
         .toString(),
     );
-    // and faucetNonce gone up by one
-    const finalFaucetNonce = faucetNonce.value()!;
-    expect(finalFaucetNonce.toNumber()).toEqual(originalFaucetNonce.toNumber() + 1);
 
     connection.disconnect();
   });

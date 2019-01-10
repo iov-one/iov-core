@@ -369,10 +369,6 @@ export class EthereumConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public watchNonce(_: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce> {
-    throw new Error("Not implemented");
-  }
-
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
     if (query.height) {
       throw new Error("Query by height not supported");

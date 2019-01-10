@@ -224,10 +224,6 @@ export class LiskConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public watchNonce(_: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce> {
-    throw new Error("Not implemented");
-  }
-
   public async getBlockHeader(height: number): Promise<BlockHeader> {
     let integerHeight: Uint53;
     try {
