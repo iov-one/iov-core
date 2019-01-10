@@ -940,13 +940,13 @@ describe("EthereumConnection", () => {
         const wallet = Secp256k1HdWallet.fromMnemonic(
           "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
         );
-        const mainIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.bip44(60, 0, 0, 1));
+        const secondIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.bip44(60, 0, 0, 1));
 
-        const nonceA = await connection.getNonce({ pubkey: mainIdentity.pubkey });
+        const nonceA = await connection.getNonce({ pubkey: secondIdentity.pubkey });
         const nonceB = new Int53(nonceA.toNumber() + 1) as Nonce;
         const recipient = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
-        await postTransaction(wallet, mainIdentity, nonceA, recipient, connection);
-        await postTransaction(wallet, mainIdentity, nonceB, recipient, connection);
+        await postTransaction(wallet, secondIdentity, nonceA, recipient, connection);
+        await postTransaction(wallet, secondIdentity, nonceB, recipient, connection);
       })().catch(done.fail);
     }, 45_000);
   });
