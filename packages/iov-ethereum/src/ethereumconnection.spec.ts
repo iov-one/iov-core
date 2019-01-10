@@ -59,53 +59,52 @@ async function randomAddress(): Promise<Address> {
   });
 }
 
-async function postTransaction(
-  wallet: Wallet,
-  sender: PublicIdentity,
-  nonce: Nonce,
-  quantity: string,
-  connection: EthereumConnection,
-): Promise<PostTxResponse> {
-  const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
-
-  const sendTx: SendTransaction = {
-    kind: "bcp/send",
-    chainId: testConfig.chainId,
-    signer: sender.pubkey,
-    recipient: recipientAddress,
-    amount: {
-      quantity: quantity,
-      fractionalDigits: 18,
-      tokenTicker: "ETH" as TokenTicker,
-    },
-    gasPrice: testConfig.gasPrice,
-    gasLimit: testConfig.gasLimit,
-    memo: `Some text ${Math.random()}`,
-  };
-  const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
-  const signature = await wallet.createTransactionSignature(sender, signingJob.bytes, signingJob.prehashType);
-
-  const signedTransaction: SignedTransaction = {
-    transaction: sendTx,
-    primarySignature: {
-      nonce: nonce,
-      pubkey: sender.pubkey,
-      signature: signature,
-    },
-    otherSignatures: [],
-  };
-  const bytesToPost = ethereumCodec.bytesToPost(signedTransaction);
-
-  const resultPost = await connection.postTx(bytesToPost);
-  return resultPost;
-}
-
 describe("EthereumConnection", () => {
   const defaultAmount: Amount = {
     quantity: "5445500",
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   };
+
+  async function postTransaction(
+    wallet: Wallet,
+    sender: PublicIdentity,
+    nonce: Nonce,
+    connection: EthereumConnection,
+  ): Promise<PostTxResponse> {
+    const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
+
+    const sendTx: SendTransaction = {
+      kind: "bcp/send",
+      chainId: testConfig.chainId,
+      signer: sender.pubkey,
+      recipient: recipientAddress,
+      amount: defaultAmount,
+      gasPrice: testConfig.gasPrice,
+      gasLimit: testConfig.gasLimit,
+      memo: `Some text ${Math.random()}`,
+    };
+    const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
+    const signature = await wallet.createTransactionSignature(
+      sender,
+      signingJob.bytes,
+      signingJob.prehashType,
+    );
+
+    const signedTransaction: SignedTransaction = {
+      transaction: sendTx,
+      primarySignature: {
+        nonce: nonce,
+        pubkey: sender.pubkey,
+        signature: signature,
+      },
+      otherSignatures: [],
+    };
+    const bytesToPost = ethereumCodec.bytesToPost(signedTransaction);
+
+    const resultPost = await connection.postTx(bytesToPost);
+    return resultPost;
+  }
 
   it("can be constructed", () => {
     pendingWithoutEthereum();
@@ -946,8 +945,8 @@ describe("EthereumConnection", () => {
 
         const nonceA = await connection.getNonce({ pubkey: mainIdentity.pubkey });
         const nonceB = new Int53(nonceA.toNumber() + 1) as Nonce;
-        await postTransaction(wallet, mainIdentity, nonceA, "5445500", connection);
-        await postTransaction(wallet, mainIdentity, nonceB, "5445500", connection);
+        await postTransaction(wallet, mainIdentity, nonceA, connection);
+        await postTransaction(wallet, mainIdentity, nonceB, connection);
       })().catch(done.fail);
     }, 45_000);
   });
