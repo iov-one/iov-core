@@ -210,12 +210,18 @@ export class EthereumConnection implements BcpConnection {
     };
   }
 
-  public getTicker(_: TokenTicker): Promise<BcpTicker | undefined> {
-    throw new Error("Not implemented");
+  public async getTicker(searchTicker: TokenTicker): Promise<BcpTicker | undefined> {
+    return (await this.getAllTickers()).find(t => t.tokenTicker === searchTicker);
   }
 
-  public getAllTickers(): Promise<ReadonlyArray<BcpTicker>> {
-    throw new Error("Not implemented");
+  public async getAllTickers(): Promise<ReadonlyArray<BcpTicker>> {
+    return [
+      {
+        tokenTicker: constants.primaryTokenTicker,
+        tokenName: constants.primaryTokenName,
+        fractionalDigits: constants.primaryTokenFractionalDigits,
+      },
+    ];
   }
 
   public async getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined> {
