@@ -195,7 +195,7 @@ export interface BcpConnection {
   readonly disconnect: () => void;
   readonly chainId: () => ChainId;
   readonly height: () => Promise<number>;
-  readonly getTicker: (ticker: TokenTicker) => Promise<BcpQueryEnvelope<BcpTicker>>;
+  readonly getTicker: (ticker: TokenTicker) => Promise<BcpTicker | undefined>;
   readonly getAllTickers: () => Promise<ReadonlyArray<BcpTicker>>;
 
   // accounts

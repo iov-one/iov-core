@@ -253,11 +253,18 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     };
   }
 
-  public async getTicker(ticker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {
+  public async getTicker(ticker: TokenTicker): Promise<BcpTicker | undefined> {
     const res = await this.query("/tokens", Encoding.toAscii(ticker));
     const parser = createParser(codecImpl.namecoin.Token, "tkn:");
     const data = res.results.map(parser).map(decodeToken);
-    return dummyEnvelope(data);
+    switch (data.length) {
+      case 0:
+        return undefined;
+      case 1:
+        return data[0];
+      default:
+        throw new Error("Received unexpected number of tickers");
+    }
   }
 
   public async getAllTickers(): Promise<ReadonlyArray<BcpTicker>> {

@@ -100,16 +100,16 @@ describe("RiseConnection", () => {
 
   it("can get existing ticker", async () => {
     const connection = new RiseConnection(base, riseTestnet);
-    const response = await connection.getTicker("RISE" as TokenTicker);
-    expect(response.data.length).toEqual(1);
-    expect(response.data[0].tokenTicker).toEqual("RISE");
-    expect(response.data[0].tokenName).toEqual("RISE");
+    const ticker = await connection.getTicker("RISE" as TokenTicker);
+    expect(ticker).toBeDefined();
+    expect(ticker!.tokenTicker).toEqual("RISE");
+    expect(ticker!.tokenName).toEqual("RISE");
   });
 
   it("produces empty result for non-existing ticker", async () => {
     const connection = new RiseConnection(base, riseTestnet);
-    const response = await connection.getTicker("ETH" as TokenTicker);
-    expect(response.data.length).toEqual(0);
+    const ticker = await connection.getTicker("ETH" as TokenTicker);
+    expect(ticker).toBeUndefined();
   });
 
   it("can get all tickers", async () => {

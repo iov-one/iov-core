@@ -10,7 +10,6 @@ import {
   BcpBlockInfo,
   BcpConnection,
   BcpPubkeyQuery,
-  BcpQueryEnvelope,
   BcpTicker,
   BcpTransactionState,
   BcpTxQuery,
@@ -211,7 +210,7 @@ export class EthereumConnection implements BcpConnection {
     };
   }
 
-  public getTicker(_: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {
+  public getTicker(_: TokenTicker): Promise<BcpTicker | undefined> {
     throw new Error("Not implemented");
   }
 

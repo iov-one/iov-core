@@ -31,7 +31,7 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     height(): Promise<number>;
     status(): Promise<StatusResponse>;
     postTx(tx: PostableBytes): Promise<PostTxResponse>;
-    getTicker(ticker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>>;
+    getTicker(ticker: TokenTicker): Promise<BcpTicker | undefined>;
     getAllTickers(): Promise<ReadonlyArray<BcpTicker>>;
     getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined>;
     getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce>;

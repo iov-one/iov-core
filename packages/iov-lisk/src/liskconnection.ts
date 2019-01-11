@@ -11,7 +11,6 @@ import {
   BcpBlockInfo,
   BcpConnection,
   BcpPubkeyQuery,
-  BcpQueryEnvelope,
   BcpTicker,
   BcpTransactionState,
   BcpTxQuery,
@@ -19,7 +18,6 @@ import {
   BlockId,
   ChainId,
   ConfirmedTransaction,
-  dummyEnvelope,
   isPubkeyQuery,
   Nonce,
   PostableBytes,
@@ -150,9 +148,9 @@ export class LiskConnection implements BcpConnection {
     };
   }
 
-  public async getTicker(searchTicker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {
-    const results = (await this.getAllTickers()).filter(t => t.tokenTicker === searchTicker);
-    return dummyEnvelope(results);
+  public async getTicker(searchTicker: TokenTicker): Promise<BcpTicker | undefined> {
+    const results = (await this.getAllTickers()).find(t => t.tokenTicker === searchTicker);
+    return results;
   }
 
   public async getAllTickers(): Promise<ReadonlyArray<BcpTicker>> {
