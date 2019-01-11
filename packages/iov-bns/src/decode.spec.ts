@@ -139,6 +139,7 @@ describe("Decode", () => {
     expect(ticker).toEqual({
       tokenTicker: "TRASH" as TokenTicker,
       tokenName: "Trash",
+      fractionalDigits: 9,
     });
   });
 

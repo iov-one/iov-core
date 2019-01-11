@@ -160,6 +160,7 @@ export class LiskConnection implements BcpConnection {
       {
         tokenTicker: constants.primaryTokenTicker,
         tokenName: constants.primaryTokenName,
+        fractionalDigits: constants.primaryTokenFractionalDigits,
       },
     ];
     return dummyEnvelope(tickers);
