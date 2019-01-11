@@ -4,7 +4,6 @@ import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
 import {
-  Address,
   Algorithm,
   BcpAccount,
   BcpAccountQuery,
@@ -21,7 +20,6 @@ import {
   ChainId,
   ConfirmedTransaction,
   dummyEnvelope,
-  isAddressQuery,
   isPubkeyQuery,
   Nonce,
   PostableBytes,
@@ -168,14 +166,8 @@ export class LiskConnection implements BcpConnection {
   }
 
   public async getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined> {
-    let address: Address;
-    if (isAddressQuery(query)) {
-      address = query.address;
-    } else if (isPubkeyQuery(query)) {
-      address = pubkeyToAddress(query.pubkey.data);
-    } else {
-      throw new Error("Query type not supported");
-    }
+    const address = isPubkeyQuery(query) ? pubkeyToAddress(query.pubkey.data) : query.address;
+
     const url = this.baseUrl + `/api/accounts?address=${address}`;
     const result = await axios.get(url);
     const responseBody = result.data;

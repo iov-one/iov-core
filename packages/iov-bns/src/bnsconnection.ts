@@ -271,16 +271,11 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   }
 
   public async getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined> {
-    let response: QueryResponse;
-    if (isAddressQuery(query)) {
-      response = await this.query("/wallets", decodeBnsAddress(query.address).data);
-    } else if (isPubkeyQuery(query)) {
-      const address = identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey });
-      response = await this.query("/wallets", decodeBnsAddress(address).data);
-    } else {
-      response = await this.query("/wallets/name", Encoding.toAscii(query.name));
-    }
+    const address = isPubkeyQuery(query)
+      ? identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey })
+      : query.address;
 
+    const response = await this.query("/wallets", decodeBnsAddress(address).data);
     const parser = createParser(codecImpl.namecoin.Wallet, "wllt:");
     const walletDatas = response.results.map(parser).map(iwallet => this.context.wallet(iwallet));
 

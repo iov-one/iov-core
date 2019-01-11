@@ -218,19 +218,6 @@ describe("BnsConnection", () => {
         expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
       }
 
-      // can get the faucet by name, same result
-      const responseFromName = await connection.getAccount({ name: "admin" });
-      expect(responseFromName).toBeDefined();
-      {
-        const account = responseFromName!;
-        expect(account.address).toEqual(faucetAddress);
-        expect(account.pubkey).toEqual(faucet.pubkey);
-        expect(account.name).toEqual("admin");
-        expect(account.balance.length).toEqual(1);
-        expect(account.balance[0].tokenTicker).toEqual(cash);
-        expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
-      }
-
       connection.disconnect();
     });
 
