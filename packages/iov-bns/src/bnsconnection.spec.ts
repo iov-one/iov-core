@@ -105,8 +105,7 @@ describe("BnsConnection", () => {
   ): Promise<void> {
     const sendTx: SendTransaction = {
       kind: "bcp/send",
-      chainId: await connection.chainId(),
-      signer: identity.pubkey,
+      creator: identity,
       recipient: await randomBnsAddress(),
       amount: defaultAmount,
     };
@@ -122,8 +121,7 @@ describe("BnsConnection", () => {
 
     const sendTx: SendTransaction = {
       kind: "bcp/send",
-      chainId: await connection.chainId(),
-      signer: faucet.pubkey,
+      creator: faucet,
       recipient: address,
       amount: defaultAmount,
     };
@@ -305,8 +303,7 @@ describe("BnsConnection", () => {
       // construct a sendtx, this is normally used in the MultiChainSigner api
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        chainId,
-        signer: faucet.pubkey,
+        creator: faucet,
         recipient: recipient,
         memo: "My first payment",
         amount: {
@@ -368,8 +365,7 @@ describe("BnsConnection", () => {
         // construct a sendtx, this is normally used in the MultiChainSigner api
         const sendTx: SendTransaction = {
           kind: "bcp/send",
-          chainId,
-          signer: faucet.pubkey,
+          creator: faucet,
           recipient: recipient,
           memo: "My first payment",
           amount: {
@@ -485,8 +481,7 @@ describe("BnsConnection", () => {
       const chainId = `wonderland_${Math.random()}` as ChainId;
       const registration: RegisterBlockchainTx = {
         kind: "bns/register_blockchain",
-        chainId: registryChainId,
-        signer: identity.pubkey,
+        creator: identity,
         chain: {
           chainId: chainId,
           production: false,
@@ -540,8 +535,7 @@ describe("BnsConnection", () => {
       const username = `testuser_${Math.random()}`;
       const registration: RegisterUsernameTx = {
         kind: "bns/register_username",
-        chainId: registryChainId,
-        signer: identity.pubkey,
+        creator: identity,
         addresses: [
           // TODO: Re-enable when there are pre-registered blockchains for testing
           // (https://github.com/iov-one/weave/issues/184)
@@ -584,8 +578,7 @@ describe("BnsConnection", () => {
       const username = `testuser_${Math.random()}`;
       const usernameRegistration: RegisterUsernameTx = {
         kind: "bns/register_username",
-        chainId: registryChainId,
-        signer: identity.pubkey,
+        creator: identity,
         username: username,
         addresses: [],
       };
@@ -608,8 +601,7 @@ describe("BnsConnection", () => {
       const chainId = `wonderland_${Math.random()}` as ChainId;
       const blockchainRegistration: RegisterBlockchainTx = {
         kind: "bns/register_blockchain",
-        chainId: registryChainId,
-        signer: identity.pubkey,
+        creator: identity,
         chain: {
           chainId: chainId,
           networkId: "7rg047g4h",
@@ -639,8 +631,7 @@ describe("BnsConnection", () => {
       const address = `testaddress_${Math.random()}` as Address;
       const addAddress: AddAddressToUsernameTx = {
         kind: "bns/add_address_to_username",
-        chainId: registryChainId,
-        signer: identity.pubkey,
+        creator: identity,
         username: username,
         payload: {
           chainId: chainId,
@@ -666,8 +657,7 @@ describe("BnsConnection", () => {
       const address2 = `testaddress2_${Math.random()}` as Address;
       const addAddress2: AddAddressToUsernameTx = {
         kind: "bns/add_address_to_username",
-        chainId: registryChainId,
-        signer: identity.pubkey,
+        creator: identity,
         username: username,
         payload: {
           chainId: chainId,
@@ -698,8 +688,7 @@ describe("BnsConnection", () => {
       // Remove address
       const removeAddress: RemoveAddressFromUsernameTx = {
         kind: "bns/remove_address_from_username",
-        chainId: registryChainId,
-        signer: identity.pubkey,
+        creator: identity,
         username: username,
         payload: {
           chainId: chainId,
@@ -760,8 +749,7 @@ describe("BnsConnection", () => {
       const memo = `Payment ${Math.random()}`;
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        chainId: chainId,
-        signer: faucet.pubkey,
+        creator: faucet,
         recipient: rcptAddress,
         memo: memo,
         amount: defaultAmount,
@@ -798,8 +786,7 @@ describe("BnsConnection", () => {
       const memo = `Payment ${Math.random()}`;
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        chainId: chainId,
-        signer: faucet.pubkey,
+        creator: faucet,
         recipient: rcptAddress,
         memo: memo,
         amount: defaultAmount,
@@ -835,8 +822,7 @@ describe("BnsConnection", () => {
       const memo = `Payment ${Math.random()}`;
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        chainId: chainId,
-        signer: faucet.pubkey,
+        creator: faucet,
         recipient: await randomBnsAddress(),
         memo: memo,
         amount: {
@@ -882,8 +868,7 @@ describe("BnsConnection", () => {
       const memo = `Payment ${Math.random()}`;
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        chainId: chainId,
-        signer: faucet.pubkey,
+        creator: faucet,
         recipient: rcptAddress,
         memo: memo,
         amount: {
@@ -970,8 +955,7 @@ describe("BnsConnection", () => {
         const memo = `Payment ${Math.random()}`;
         const sendTx: SendTransaction = {
           kind: "bcp/send",
-          chainId: chainId,
-          signer: faucet.pubkey,
+          creator: faucet,
           recipient: await randomBnsAddress(),
           memo: memo,
           amount: {
@@ -1021,8 +1005,7 @@ describe("BnsConnection", () => {
       const chainId = `wonderland_${Math.random()}` as ChainId;
       const blockchainRegistration: RegisterBlockchainTx = {
         kind: "bns/register_blockchain",
-        chainId: registryChainId,
-        signer: identity.pubkey,
+        creator: identity,
         chain: {
           chainId: chainId,
           production: false,
@@ -1091,8 +1074,7 @@ describe("BnsConnection", () => {
       const username = `testuser_${Math.random()}`;
       const registration: RegisterUsernameTx = {
         kind: "bns/register_username",
-        chainId: registryChainId,
-        signer: identity.pubkey,
+        creator: identity,
         addresses: [],
         username: username,
       };
@@ -1149,8 +1131,7 @@ describe("BnsConnection", () => {
       const chainId = `wonderland_${Math.random()}` as ChainId;
       const blockchainRegistration: RegisterBlockchainTx = {
         kind: "bns/register_blockchain",
-        chainId: registryChainId,
-        signer: identity.pubkey,
+        creator: identity,
         chain: {
           chainId: chainId,
           production: false,
@@ -1180,8 +1161,7 @@ describe("BnsConnection", () => {
       const username = `testuser_${Math.random()}`;
       const usernameRegistration: RegisterUsernameTx = {
         kind: "bns/register_username",
-        chainId: registryChainId,
-        signer: identity.pubkey,
+        creator: identity,
         addresses: [
           {
             address: "12345678912345W" as Address,
@@ -1268,11 +1248,9 @@ describe("BnsConnection", () => {
     rcptAddr: Address,
   ): Promise<PostTxResponse> => {
     // construct a sendtx, this is normally used in the MultiChainSigner api
-    const chainId = await connection.chainId();
     const sendTx: SendTransaction = {
       kind: "bcp/send",
-      chainId,
-      signer: faucet.pubkey,
+      creator: faucet,
       recipient: rcptAddr,
       amount: {
         quantity: "68000000000",
@@ -1450,8 +1428,7 @@ describe("BnsConnection", () => {
     const swapOfferTimeout = (await connection.height()) + 1000;
     const swapOfferTx: SwapOfferTransaction = {
       kind: "bcp/swap_offer",
-      chainId,
-      signer: faucet.pubkey,
+      creator: faucet,
       recipient: recipientAddr,
       amount: [
         {
@@ -1564,17 +1541,15 @@ describe("BnsConnection", () => {
   const openSwap = async (
     connection: BnsConnection,
     profile: UserProfile,
-    sender: PublicIdentity,
+    creator: PublicIdentity,
     rcptAddr: Address,
     preimage: Uint8Array,
   ): Promise<PostTxResponse> => {
     // construct a swapOfferTx, sign and post to the chain
-    const chainId = await connection.chainId();
     const swapOfferTimeout = (await connection.height()) + 1000;
     const swapOfferTx: SwapOfferTransaction = {
       kind: "bcp/swap_offer",
-      chainId,
-      signer: sender.pubkey,
+      creator: creator,
       recipient: rcptAddr,
       amount: [
         {
@@ -1587,8 +1562,8 @@ describe("BnsConnection", () => {
       preimage,
     };
     const firstWalletId = profile.wallets.value[0].id;
-    const nonce = await connection.getNonce({ pubkey: sender.pubkey });
-    const signed = await profile.signTransaction(firstWalletId, sender, swapOfferTx, bnsCodec, nonce);
+    const nonce = await connection.getNonce({ pubkey: creator.pubkey });
+    const signed = await profile.signTransaction(firstWalletId, creator, swapOfferTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     return connection.postTx(txBytes);
   };
@@ -1596,22 +1571,20 @@ describe("BnsConnection", () => {
   const claimSwap = async (
     connection: BnsConnection,
     profile: UserProfile,
-    sender: PublicIdentity,
+    creator: PublicIdentity,
     swapId: SwapIdBytes,
     preimage: Uint8Array,
   ): Promise<PostTxResponse> => {
     // construct a swapOfferTx, sign and post to the chain
-    const chainId = await connection.chainId();
     const swapClaimTx: SwapClaimTransaction = {
       kind: "bcp/swap_claim",
-      chainId,
-      signer: sender.pubkey,
+      creator: creator,
       swapId,
       preimage,
     };
     const firstWalletId = profile.wallets.value[0].id;
-    const nonce = await connection.getNonce({ pubkey: sender.pubkey });
-    const signed = await profile.signTransaction(firstWalletId, sender, swapClaimTx, bnsCodec, nonce);
+    const nonce = await connection.getNonce({ pubkey: creator.pubkey });
+    const signed = await profile.signTransaction(firstWalletId, creator, swapClaimTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     return connection.postTx(txBytes);
   };

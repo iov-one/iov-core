@@ -41,10 +41,12 @@ describe("riseCodec", () => {
 
     const tx: SendTransaction = {
       kind: "bcp/send",
-      chainId: riseTestnet,
-      signer: {
-        algo: Algorithm.Ed25519,
-        data: pubkey as PublicKeyBytes,
+      creator: {
+        chainId: riseTestnet,
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: pubkey as PublicKeyBytes,
+        },
       },
       amount: {
         quantity: "123456789",
@@ -119,8 +121,9 @@ describe("riseCodec", () => {
     expect(unsigned.amount.quantity).toEqual("144550000");
     expect(unsigned.amount.fractionalDigits).toEqual(8);
     expect(unsigned.amount.tokenTicker).toEqual("RISE");
-    expect(unsigned.signer.algo).toEqual(Algorithm.Ed25519);
-    expect(unsigned.signer.data).toEqual(
+    expect(unsigned.creator.chainId).toEqual(riseTestnet);
+    expect(unsigned.creator.pubkey.algo).toEqual(Algorithm.Ed25519);
+    expect(unsigned.creator.pubkey.data).toEqual(
       fromHex("3e992130a22a124b38998887f4c791c8e4d4b9d7c21522f2dffea5d09b4d8679"),
     );
     expect(unsigned.recipient).toEqual("9662024034251537644R");

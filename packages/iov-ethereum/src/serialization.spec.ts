@@ -26,10 +26,12 @@ describe("Serialization", () => {
 
       const tx: SendTransaction = {
         kind: "bcp/send",
-        chainId: "ethereum-eip155-5777" as ChainId,
-        signer: {
-          algo: Algorithm.Secp256k1,
-          data: pubkey as PublicKeyBytes,
+        creator: {
+          chainId: "ethereum-eip155-5777" as ChainId,
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: pubkey as PublicKeyBytes,
+          },
         },
         amount: {
           quantity: "20000000000000000000",
@@ -64,10 +66,12 @@ describe("Serialization", () => {
 
       const tx: SendTransaction = {
         kind: "bcp/send",
-        chainId: "ethereum-eip155-5777" as ChainId,
-        signer: {
-          algo: Algorithm.Secp256k1,
-          data: pubkey as PublicKeyBytes,
+        creator: {
+          chainId: "ethereum-eip155-5777" as ChainId,
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: pubkey as PublicKeyBytes,
+          },
         },
         amount: {
           quantity: "20000000000000000000",
@@ -106,10 +110,12 @@ describe("Serialization", () => {
         const signed: SignedTransaction<SendTransaction> = {
           transaction: {
             kind: "bcp/send",
-            chainId: "ethereum-eip155-0" as ChainId,
-            signer: {
-              algo: Algorithm.Secp256k1,
-              data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
+            creator: {
+              chainId: "ethereum-eip155-0" as ChainId,
+              pubkey: {
+                algo: Algorithm.Secp256k1,
+                data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
+              },
             },
             amount: {
               quantity: "10",

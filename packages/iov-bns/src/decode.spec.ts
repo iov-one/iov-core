@@ -239,10 +239,12 @@ describe("Decode", () => {
   describe("parseMsg", () => {
     const defaultBaseTx: UnsignedTransaction = {
       kind: "", // this should be overriden by parseMsg
-      chainId: "bns-chain" as ChainId,
-      signer: {
-        algo: Algorithm.Ed25519,
-        data: Encoding.fromHex("aabbccdd") as PublicKeyBytes,
+      creator: {
+        chainId: "bns-chain" as ChainId,
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: Encoding.fromHex("aabbccdd") as PublicKeyBytes,
+        },
       },
     };
 

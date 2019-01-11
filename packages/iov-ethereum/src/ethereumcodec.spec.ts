@@ -39,15 +39,17 @@ describe("ethereumCodec", () => {
       expect(ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-4" as ChainId)).toEqual({
         transaction: {
           kind: "bcp/send",
-          chainId: "ethereum-eip155-4" as ChainId,
+          creator: {
+            chainId: "ethereum-eip155-4" as ChainId,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: new Uint8Array([]) as PublicKeyBytes,
+            },
+          },
           fee: {
             quantity: "141000",
             fractionalDigits: 18,
             tokenTicker: "ETH" as TokenTicker,
-          },
-          signer: {
-            algo: Algorithm.Secp256k1,
-            data: new Uint8Array([]) as PublicKeyBytes,
           },
           amount: {
             quantity: "5445500",

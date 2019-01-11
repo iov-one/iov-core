@@ -76,8 +76,7 @@ describe("EthereumConnection", () => {
   ): Promise<PostTxResponse> {
     const sendTx: SendTransaction = {
       kind: "bcp/send",
-      chainId: testConfig.chainId,
-      signer: sender.pubkey,
+      creator: sender,
       recipient: recipient,
       amount: defaultAmount,
       gasPrice: testConfig.gasPrice,
@@ -253,8 +252,7 @@ describe("EthereumConnection", () => {
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        chainId: testConfig.chainId,
-        signer: secondIdentity.pubkey,
+        creator: secondIdentity,
         recipient: recipientAddress,
         amount: {
           quantity: "3445500",
@@ -299,8 +297,7 @@ describe("EthereumConnection", () => {
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        chainId: testConfig.chainId,
-        signer: secondIdentity.pubkey,
+        creator: secondIdentity,
         recipient: recipientAddress,
         amount: {
           quantity: "3445500",
@@ -424,8 +421,7 @@ describe("EthereumConnection", () => {
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        chainId: testConfig.chainId,
-        signer: secondIdentity.pubkey,
+        creator: secondIdentity,
         recipient: recipientAddress,
         amount: defaultAmount,
         gasPrice: testConfig.gasPrice,
@@ -507,8 +503,7 @@ describe("EthereumConnection", () => {
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        chainId: testConfig.chainId,
-        signer: secondIdentity.pubkey,
+        creator: secondIdentity,
         recipient: recipientAddress,
         amount: {
           quantity: "5445500",
@@ -678,8 +673,7 @@ describe("EthereumConnection", () => {
 
         const sendA: SendTransaction = {
           kind: "bcp/send",
-          chainId: testConfig.chainId,
-          signer: sender.pubkey,
+          creator: sender,
           recipient: recipientAddress,
           amount: defaultAmount,
           gasPrice: testConfig.gasPrice,
@@ -689,8 +683,7 @@ describe("EthereumConnection", () => {
 
         const sendB: SendTransaction = {
           kind: "bcp/send",
-          chainId: testConfig.chainId,
-          signer: sender.pubkey,
+          creator: sender,
           recipient: recipientAddress,
           amount: defaultAmount,
           gasPrice: testConfig.gasPrice,
@@ -700,8 +693,7 @@ describe("EthereumConnection", () => {
 
         const sendC: SendTransaction = {
           kind: "bcp/send",
-          chainId: testConfig.chainId,
-          signer: sender.pubkey,
+          creator: sender,
           recipient: recipientAddress,
           amount: defaultAmount,
           gasPrice: testConfig.gasPrice,
@@ -761,8 +753,7 @@ describe("EthereumConnection", () => {
 
         const sendA: SendTransaction = {
           kind: "bcp/send",
-          chainId: testConfig.chainId,
-          signer: sender.pubkey,
+          creator: sender,
           recipient: recipientAddress,
           amount: defaultAmount,
           gasPrice: testConfig.gasPrice,
@@ -772,8 +763,7 @@ describe("EthereumConnection", () => {
 
         const sendB: SendTransaction = {
           kind: "bcp/send",
-          chainId: testConfig.chainId,
-          signer: sender.pubkey,
+          creator: sender,
           recipient: recipientAddress,
           amount: defaultAmount,
           gasPrice: testConfig.gasPrice,
@@ -783,8 +773,7 @@ describe("EthereumConnection", () => {
 
         const sendC: SendTransaction = {
           kind: "bcp/send",
-          chainId: testConfig.chainId,
-          signer: sender.pubkey,
+          creator: sender,
           recipient: recipientAddress,
           amount: defaultAmount,
           gasPrice: testConfig.gasPrice,
@@ -863,8 +852,7 @@ describe("EthereumConnection", () => {
         const recipientAddress = await randomAddress();
         const send: SendTransaction = {
           kind: "bcp/send",
-          chainId: testConfig.chainId,
-          signer: sender.pubkey,
+          creator: sender,
           recipient: recipientAddress,
           amount: defaultAmount,
           gasPrice: testConfig.gasPrice,
@@ -929,8 +917,7 @@ describe("EthereumConnection", () => {
 
         const send: SendTransaction = {
           kind: "bcp/send",
-          chainId: testConfig.chainId,
-          signer: sender.pubkey,
+          creator: sender,
           recipient: recipientAddress,
           amount: defaultAmount,
           gasPrice: testConfig.gasPrice,

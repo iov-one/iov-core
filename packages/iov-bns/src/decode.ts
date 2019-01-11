@@ -184,7 +184,7 @@ function parseAddAddressToUsernameTx(
 }
 
 function parseSendTransaction(base: UnsignedTransaction, msg: codecImpl.cash.ISendMsg): SendTransaction {
-  const prefix = addressPrefix(base.chainId);
+  const prefix = addressPrefix(base.creator.chainId);
   return {
     ...base,
     kind: "bcp/send",
@@ -210,7 +210,7 @@ function parseSwapCounterTx(
   if (!isHashIdentifier(hashCode)) {
     throw new Error("escrow not controlled by hashlock");
   }
-  const prefix = addressPrefix(base.chainId);
+  const prefix = addressPrefix(base.creator.chainId);
   return {
     ...base,
     kind: "bcp/swap_counter",
@@ -248,8 +248,10 @@ function parseSwapTimeoutTx(
 function parseBaseTx(tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId): UnsignedTransaction {
   const base: UnsignedTransaction = {
     kind: "",
-    chainId: chainId,
-    signer: sig.pubkey,
+    creator: {
+      chainId: chainId,
+      pubkey: sig.pubkey,
+    },
   };
   if (tx.fees && tx.fees.fees) {
     return { ...base, fee: decodeAmount(tx.fees.fees) };

@@ -276,8 +276,7 @@ describe("RiseConnection", () => {
         for (const _ of [0, 1]) {
           const sendTx: SendTransaction = {
             kind: "bcp/send",
-            chainId: riseTestnet,
-            signer: mainIdentity.pubkey,
+            creator: mainIdentity,
             recipient: recipient,
             amount: defaultSendAmount,
           };
@@ -376,8 +375,7 @@ describe("RiseConnection", () => {
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        chainId: riseTestnet,
-        signer: mainIdentity.pubkey,
+        creator: mainIdentity,
         recipient: defaultRecipientAddress,
         amount: defaultSendAmount,
       };
@@ -414,8 +412,7 @@ describe("RiseConnection", () => {
 
         const sendTx: SendTransaction = {
           kind: "bcp/send",
-          chainId: riseTestnet,
-          signer: mainIdentity.pubkey,
+          creator: mainIdentity,
           recipient: defaultRecipientAddress,
           amount: defaultSendAmount,
         };
@@ -474,8 +471,7 @@ describe("RiseConnection", () => {
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        chainId: riseTestnet,
-        signer: mainIdentity.pubkey,
+        creator: mainIdentity,
         recipient: defaultRecipientAddress,
         amount: defaultSendAmount,
       };
@@ -577,7 +573,7 @@ describe("RiseConnection", () => {
           }
           expect(
             transaction.recipient === searchAddress ||
-              pubkeyToAddress(transaction.signer.data) === searchAddress,
+              riseCodec.identityToAddress(transaction.creator) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -594,7 +590,7 @@ describe("RiseConnection", () => {
           }
           expect(
             transaction.recipient === searchAddress ||
-              pubkeyToAddress(transaction.signer.data) === searchAddress,
+              riseCodec.identityToAddress(transaction.creator) === searchAddress,
           ).toEqual(true);
         }
       }

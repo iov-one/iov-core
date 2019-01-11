@@ -70,8 +70,10 @@ export const chainId = "test-123" as ChainId;
 // bech32 -e -h tiov 6f0a3e37845b6a3c8ccbe6219199abc3ae0b26d9
 export const sendTxJson: SendTransaction = {
   kind: "bcp/send",
-  chainId: chainId,
-  signer: pubJson,
+  creator: {
+    chainId: chainId,
+    pubkey: pubJson,
+  },
   recipient: "tiov1du9ruduytd4rerxtucserxdtcwhqkfkezjy4w0" as Address,
   memo: "Test payment",
   amount,
@@ -117,8 +119,10 @@ const sig2: FullSignature = {
 // recipient address generated using https://github.com/nym-zone/bech32
 // bech32 -e -h tiov 009985cb38847474fe9febfd56ab67e14bcd56f3
 const randomMsg: SendTransaction = {
-  chainId: "foo-bar-baz" as ChainId,
-  signer: pubJson,
+  creator: {
+    chainId: "foo-bar-baz" as ChainId,
+    pubkey: pubJson,
+  },
   kind: "bcp/send",
   recipient: "tiov1qzvctjecs368fl5la074d2m8u99u64hn8q7kyn" as Address,
   memo: "One more fix!",
@@ -140,8 +144,10 @@ export const randomTxJson: SignedTransaction = {
 };
 
 const setNameMsg: SetNameTx = {
-  chainId: "bns-mainnet" as ChainId,
-  signer: pubJson,
+  creator: {
+    chainId: "bns-mainnet" as ChainId,
+    pubkey: pubJson,
+  },
   kind: "bns/set_name",
   name: "king*iov.one",
 };
@@ -155,8 +161,10 @@ export const hashCode = Uint8Array.from([...hashId, ...fromHex("1122334455aabbcc
 // recipient address generated using https://github.com/nym-zone/bech32
 // bech32 -e -h tiov 123485cb38847474fe9febfd56ab67e14bcd56f3
 const swapCounterMsg: SwapCounterTransaction = {
-  chainId: "swap-a-doo" as ChainId,
-  signer: pubJson,
+  creator: {
+    chainId: "swap-a-doo" as ChainId,
+    pubkey: pubJson,
+  },
   kind: "bcp/swap_counter",
   recipient: "tiov1zg6gtjecs368fl5la074d2m8u99u64hnhhlprg" as Address,
   timeout: 7890,
@@ -176,8 +184,10 @@ export const swapCounterTxJson: SignedTransaction = {
 };
 
 const swapClaimMsg: SwapClaimTransaction = {
-  chainId: "swap-a-doo" as ChainId,
-  signer: pubJson,
+  creator: {
+    chainId: "swap-a-doo" as ChainId,
+    pubkey: pubJson,
+  },
   kind: "bcp/swap_claim",
   preimage: fromHex("00000000fffffffffff000000000"),
   swapId: fromHex("1234") as SwapIdBytes,
@@ -189,8 +199,10 @@ export const swapClaimTxJson: SignedTransaction = {
 };
 
 const swapTimeoutMsg: SwapTimeoutTransaction = {
-  chainId: "swap-a-doo" as ChainId,
-  signer: pubJson,
+  creator: {
+    chainId: "swap-a-doo" as ChainId,
+    pubkey: pubJson,
+  },
   kind: "bcp/swap_timeout",
   swapId: fromHex("1234") as SwapIdBytes,
 };

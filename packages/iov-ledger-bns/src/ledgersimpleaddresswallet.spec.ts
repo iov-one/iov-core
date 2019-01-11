@@ -225,7 +225,7 @@ describe("LedgerSimpleAddressWallet", () => {
 
     const tx: SendTransaction = {
       kind: "bcp/send",
-      chainId: "test-ledger-paths" as ChainId,
+      creator: newIdentity,
       recipient: "tiov1zg62hngqqz4qqq8lluqqp2sqqqfrf27dzrrmea" as Address,
       amount: {
         // 77.01001 PATH
@@ -233,7 +233,6 @@ describe("LedgerSimpleAddressWallet", () => {
         fractionalDigits: 9,
         tokenTicker: "PATH" as TokenTicker,
       },
-      signer: newIdentity.pubkey,
     };
     const nonce = new Int53(5) as Nonce;
     const { bytes, prehashType } = bnsCodec.bytesToSign(tx, nonce);

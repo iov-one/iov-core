@@ -110,8 +110,7 @@ describe("SigningServerCore", () => {
     const signingIdentity = identities[0];
     const send: SendTransaction = {
       kind: "bcp/send",
-      chainId: signingIdentity.chainId,
-      signer: signingIdentity.pubkey,
+      creator: signingIdentity,
       amount: defaultAmount,
       recipient: await randomBnsAddress(),
     };

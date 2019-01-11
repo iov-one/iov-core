@@ -5,7 +5,7 @@ import {
   ChainId,
   FullSignature,
   Nonce,
-  PublicKeyBundle,
+  PublicIdentity,
   PublicKeyBytes,
   SignatureBytes,
   TokenTicker,
@@ -139,16 +139,18 @@ describe("Encode", () => {
   });
 
   describe("buildMsg", () => {
-    const defaultSigner: PublicKeyBundle = {
-      algo: Algorithm.Ed25519,
-      data: fromHex("00112233445566778899aa") as PublicKeyBytes,
+    const defaultCreator: PublicIdentity = {
+      chainId: "registry-chain" as ChainId,
+      pubkey: {
+        algo: Algorithm.Ed25519,
+        data: fromHex("00112233445566778899aa") as PublicKeyBytes,
+      },
     };
 
     it("works for AddAddressToUsernameTx", () => {
       const addAddress: AddAddressToUsernameTx = {
         kind: "bns/add_address_to_username",
-        chainId: "registry-chain" as ChainId,
-        signer: defaultSigner,
+        creator: defaultCreator,
         username: "alice",
         payload: {
           chainId: "other-land" as ChainId,
@@ -164,8 +166,7 @@ describe("Encode", () => {
     it("works for RegisterBlockchainTx", () => {
       const registerBlockchain: RegisterBlockchainTx = {
         kind: "bns/register_blockchain",
-        chainId: "registry-chain" as ChainId,
-        signer: defaultSigner,
+        creator: defaultCreator,
         chain: {
           chainId: "wonderland" as ChainId,
           production: false,
@@ -192,8 +193,7 @@ describe("Encode", () => {
     it("works for RegisterUsernameTx", () => {
       const registerUsername: RegisterUsernameTx = {
         kind: "bns/register_username",
-        chainId: "registry-chain" as ChainId,
-        signer: defaultSigner,
+        creator: defaultCreator,
         username: "alice",
         addresses: [
           {
@@ -227,8 +227,7 @@ describe("Encode", () => {
     it("works for RemoveAddressFromUsernameTx", () => {
       const removeAddress: RemoveAddressFromUsernameTx = {
         kind: "bns/remove_address_from_username",
-        chainId: "registry-chain" as ChainId,
-        signer: defaultSigner,
+        creator: defaultCreator,
         username: "alice",
         payload: {
           chainId: "other-land" as ChainId,
@@ -279,7 +278,7 @@ describe("Ensure crypto", () => {
 
     const tx = buildUnsignedTx(sendTxJson);
     const encoded = codecImpl.app.Tx.encode(tx).finish();
-    const toSign = appendSignBytes(encoded, sendTxJson.chainId, sig.nonce);
+    const toSign = appendSignBytes(encoded, sendTxJson.creator.chainId, sig.nonce);
     expect(toSign).toEqual(signBytes);
 
     // make sure we can validate this signature (our signBytes are correct)

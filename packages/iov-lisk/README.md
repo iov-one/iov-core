@@ -37,8 +37,7 @@ const recipientAddress = "6076671634347365051L" as Address;
 
 const sendTx: SendTransaction = {
   kind: "bcp/send",
-  chainId: chainId,
-  signer: mainIdentity.pubkey,
+  creator: mainIdentity,
   recipient: recipientAddress,
   memo: "We ❤️ developers – iov.one",
   amount: {
@@ -71,8 +70,7 @@ const recipientAddress = "6076671634347365051L" as Address;
 
 const sendTx: SendTransaction = {
   kind: "bcp/send",
-  chainId: liskTestnet,
-  signer: mainIdentity.pubkey,
+  creator: mainIdentity,
   recipient: recipientAddress,
   memo: "We ❤️ developers – iov.one",
   amount: {

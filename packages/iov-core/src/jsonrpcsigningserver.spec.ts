@@ -201,8 +201,7 @@ describe("JsonRpcSigningServer", () => {
 
     const send: SendTransaction = {
       kind: "bcp/send",
-      chainId: bnsConnection.chainId(),
-      signer: signer.pubkey,
+      creator: signer,
       memo: `Hello ${Math.random()}`,
       amount: defaultAmount,
       recipient: await randomBnsAddress(),

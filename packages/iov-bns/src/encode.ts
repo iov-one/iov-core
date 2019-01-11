@@ -2,7 +2,6 @@ import {
   Algorithm,
   Amount,
   FullSignature,
-  PublicIdentity,
   PublicKeyBundle,
   SendTransaction,
   SignatureBytes,
@@ -150,13 +149,9 @@ function buildAddAddressToUsernameTx(tx: AddAddressToUsernameTx): codecImpl.app.
 }
 
 function buildSendTransaction(tx: SendTransaction): codecImpl.app.ITx {
-  const creatorIdentity: PublicIdentity = {
-    chainId: tx.chainId,
-    pubkey: tx.signer,
-  };
   return {
     sendMsg: codecImpl.cash.SendMsg.create({
-      src: decodeBnsAddress(identityToAddress(creatorIdentity)).data,
+      src: decodeBnsAddress(identityToAddress(tx.creator)).data,
       dest: decodeBnsAddress(tx.recipient).data,
       amount: encodeAmount(tx.amount),
       memo: tx.memo,
@@ -165,13 +160,9 @@ function buildSendTransaction(tx: SendTransaction): codecImpl.app.ITx {
 }
 
 function buildSetNameTx(tx: SetNameTx): codecImpl.app.ITx {
-  const creatorIdentity: PublicIdentity = {
-    chainId: tx.chainId,
-    pubkey: tx.signer,
-  };
   return {
     setNameMsg: codecImpl.namecoin.SetWalletNameMsg.create({
-      address: decodeBnsAddress(identityToAddress(creatorIdentity)).data,
+      address: decodeBnsAddress(identityToAddress(tx.creator)).data,
       name: tx.name,
     }),
   };
@@ -180,8 +171,7 @@ function buildSetNameTx(tx: SetNameTx): codecImpl.app.ITx {
 function buildSwapOfferTx(tx: SwapOfferTransaction): codecImpl.app.ITx {
   const hashed: SwapCounterTransaction = {
     kind: "bcp/swap_counter",
-    chainId: tx.chainId,
-    signer: tx.signer,
+    creator: tx.creator,
     recipient: tx.recipient,
     amount: tx.amount,
     timeout: tx.timeout,
@@ -191,13 +181,9 @@ function buildSwapOfferTx(tx: SwapOfferTransaction): codecImpl.app.ITx {
 }
 
 function buildSwapCounterTx(tx: SwapCounterTransaction): codecImpl.app.ITx {
-  const creatorIdentity: PublicIdentity = {
-    chainId: tx.chainId,
-    pubkey: tx.signer,
-  };
   return {
     createEscrowMsg: codecImpl.escrow.CreateEscrowMsg.create({
-      src: decodeBnsAddress(identityToAddress(creatorIdentity)).data,
+      src: decodeBnsAddress(identityToAddress(tx.creator)).data,
       arbiter: tx.hashCode,
       recipient: decodeBnsAddress(tx.recipient).data,
       amount: tx.amount.map(encodeAmount),
@@ -225,14 +211,10 @@ function buildSwapTimeoutTx(tx: SwapTimeoutTransaction): codecImpl.app.ITx {
 }
 
 function buildRegisterBlockchainTx(tx: RegisterBlockchainTx): codecImpl.app.ITx {
-  const creatorIdentity: PublicIdentity = {
-    chainId: tx.chainId,
-    pubkey: tx.signer,
-  };
   return {
     issueBlockchainNftMsg: codecImpl.blockchain.IssueTokenMsg.create({
       id: toUtf8(tx.chain.chainId),
-      owner: decodeBnsAddress(identityToAddress(creatorIdentity)).data,
+      owner: decodeBnsAddress(identityToAddress(tx.creator)).data,
       approvals: undefined,
       details: codecImpl.blockchain.TokenDetails.create({
         chain: codecImpl.blockchain.Chain.create({
@@ -253,10 +235,6 @@ function buildRegisterBlockchainTx(tx: RegisterBlockchainTx): codecImpl.app.ITx 
 }
 
 function buildRegisterUsernameTx(tx: RegisterUsernameTx): codecImpl.app.ITx {
-  const creatorIdentity: PublicIdentity = {
-    chainId: tx.chainId,
-    pubkey: tx.signer,
-  };
   const chainAddresses = tx.addresses.map(
     (pair): codecImpl.username.IChainAddress => {
       return {
@@ -268,7 +246,7 @@ function buildRegisterUsernameTx(tx: RegisterUsernameTx): codecImpl.app.ITx {
   return {
     issueUsernameNftMsg: codecImpl.username.IssueTokenMsg.create({
       id: Encoding.toUtf8(tx.username),
-      owner: decodeBnsAddress(identityToAddress(creatorIdentity)).data,
+      owner: decodeBnsAddress(identityToAddress(tx.creator)).data,
       approvals: undefined,
       details: codecImpl.username.TokenDetails.create({
         addresses: chainAddresses,

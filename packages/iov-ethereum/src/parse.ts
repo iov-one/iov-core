@@ -36,16 +36,18 @@ export class Scraper {
   public static parseBytesTx(json: any, chainId: ChainId): SignedTransaction {
     const unsigned: SendTransaction = {
       kind: "bcp/send",
-      chainId: chainId,
+      creator: {
+        chainId: chainId,
+        pubkey: {
+          algo: Algorithm.Secp256k1,
+          // we only have the address available, not the pubkey
+          data: new Uint8Array([]) as PublicKeyBytes,
+        },
+      },
       fee: {
         quantity: json.gasUsed,
         fractionalDigits: constants.primaryTokenFractionalDigits,
         tokenTicker: constants.primaryTokenTicker,
-      },
-      signer: {
-        algo: Algorithm.Secp256k1,
-        // we only have the address available, not the pubkey
-        data: new Uint8Array([]) as PublicKeyBytes,
       },
       amount: {
         quantity: json.value,

@@ -25,7 +25,7 @@ export const bnsCodec: TxCodec = {
     const built = buildUnsignedTx(tx);
     const bz = codecImpl.app.Tx.encode(built).finish();
     // now we want to append the nonce and chainID
-    const bytes = appendSignBytes(bz, tx.chainId, nonce);
+    const bytes = appendSignBytes(bz, tx.creator.chainId, nonce);
     return { bytes, prehashType: PrehashType.Sha512 };
   },
 

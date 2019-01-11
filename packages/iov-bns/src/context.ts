@@ -7,7 +7,6 @@ import {
   ChainId,
   ConfirmedTransaction,
   OpenSwap,
-  PublicIdentity,
   SwapClaimTransaction,
   SwapCounterTransaction,
   SwapData,
@@ -95,15 +94,11 @@ export class Context {
     if (!isHashIdentifier(counterTransaction.hashCode)) {
       throw new Error("swap not controlled by hash lock");
     }
-    const transactionCreator: PublicIdentity = {
-      chainId: counterTransaction.chainId,
-      pubkey: counterTransaction.signer,
-    };
     return {
       kind: SwapState.Open,
       data: {
         id: tx.result as SwapIdBytes,
-        sender: identityToAddress(transactionCreator),
+        sender: identityToAddress(counterTransaction.creator),
         recipient: counterTransaction.recipient,
         hashlock: hashFromIdentifier(counterTransaction.hashCode),
         amount: counterTransaction.amount.map(amount => this.amountToCoin(amount)),

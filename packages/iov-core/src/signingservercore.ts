@@ -32,15 +32,10 @@ export class SigningServerCore {
   }
 
   public async signAndPost(_: string, transaction: UnsignedTransaction): Promise<TransactionId> {
-    const transactionCreator: PublicIdentity = {
-      chainId: transaction.chainId,
-      pubkey: transaction.signer,
-    };
-
     let walletId: WalletId;
     const wallets = this.profile.wallets.value.filter(wallet => {
       const firstMatchIndex = this.profile.getIdentities(wallet.id).findIndex(identity => {
-        return publicIdentityEquals(identity, transactionCreator);
+        return publicIdentityEquals(identity, transaction.creator);
       });
       return firstMatchIndex !== -1;
     });
