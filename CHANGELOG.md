@@ -4,6 +4,7 @@
 
 * @iov/bcp-type: `BcpConnection.getNonce` now returns a `Promise<Nonce>` and
   implementations set a default value on their own.
+* @iov/bcp-type: Expose `publicKeyBundleEquals`
 * @iov/jsonrpc: Add new package for type-safe JSON-RPC 2.0 interfaces and
   response parsers. This is used for out-of-process signing and can be reused
   in @iov/ethereum and @iov/tendermint-rpc later on.
