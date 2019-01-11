@@ -91,16 +91,12 @@ export interface BcpTxQuery {
 export interface BcpAddressQuery {
     readonly address: Address;
 }
-export interface BcpValueNameQuery {
-    readonly name: string;
-}
 export interface BcpPubkeyQuery {
     readonly pubkey: PublicKeyBundle;
 }
-export declare type BcpAccountQuery = BcpAddressQuery | BcpPubkeyQuery | BcpValueNameQuery;
+export declare type BcpAccountQuery = BcpAddressQuery | BcpPubkeyQuery;
 export declare function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery;
 export declare function isPubkeyQuery(query: BcpAccountQuery): query is BcpPubkeyQuery;
-export declare function isValueNameQuery(query: BcpAccountQuery): query is BcpValueNameQuery;
 /**
  * A printable block ID in a blockchain-specific format.
  *

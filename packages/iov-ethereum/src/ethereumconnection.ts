@@ -17,7 +17,6 @@ import {
   BlockHeader,
   ChainId,
   ConfirmedTransaction,
-  isAddressQuery,
   isPubkeyQuery,
   Nonce,
   PostableBytes,
@@ -221,14 +220,7 @@ export class EthereumConnection implements BcpConnection {
   }
 
   public async getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined> {
-    let address: Address;
-    if (isAddressQuery(query)) {
-      address = query.address;
-    } else if (isPubkeyQuery(query)) {
-      address = keyToAddress(query.pubkey);
-    } else {
-      throw new Error("Query type not supported");
-    }
+    const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
 
     // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance
     const response = await this.rpcClient.run({
@@ -365,14 +357,7 @@ export class EthereumConnection implements BcpConnection {
   }
 
   public watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined> {
-    let address: Address;
-    if (isAddressQuery(query)) {
-      address = query.address;
-    } else if (isPubkeyQuery(query)) {
-      address = keyToAddress(query.pubkey);
-    } else {
-      throw new Error("unsupported query type");
-    }
+    const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
 
     const initialDataStream = Stream.fromPromise(this.getAccount({ address: address }));
     const updatesStream = this.listenTx({ tags: [scraperAddressTag(address)] })

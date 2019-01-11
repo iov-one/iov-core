@@ -22,7 +22,6 @@ import {
   ChainId,
   ConfirmedTransaction,
   dummyEnvelope,
-  isAddressQuery,
   isPubkeyQuery,
   isQueryBySwapId,
   isQueryBySwapRecipient,
@@ -271,16 +270,11 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   }
 
   public async getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined> {
-    let response: QueryResponse;
-    if (isAddressQuery(query)) {
-      response = await this.query("/wallets", decodeBnsAddress(query.address).data);
-    } else if (isPubkeyQuery(query)) {
-      const address = identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey });
-      response = await this.query("/wallets", decodeBnsAddress(address).data);
-    } else {
-      response = await this.query("/wallets/name", Encoding.toAscii(query.name));
-    }
+    const address = isPubkeyQuery(query)
+      ? identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey })
+      : query.address;
 
+    const response = await this.query("/wallets", decodeBnsAddress(address).data);
     const parser = createParser(codecImpl.namecoin.Wallet, "wllt:");
     const walletDatas = response.results.map(parser).map(iwallet => this.context.wallet(iwallet));
 
@@ -590,13 +584,13 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    * Gets current balance and emits an update every time it changes
    */
   public watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined> {
-    if (!isAddressQuery(query)) {
-      throw new Error("watchAccount requires an address, not name, to watch");
-    }
+    const address = isPubkeyQuery(query)
+      ? identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey })
+      : query.address;
 
     return concat(
       Stream.fromPromise(this.getAccount(query)),
-      this.changeBalance(query.address)
+      this.changeBalance(address)
         .map(() => Stream.fromPromise(this.getAccount(query)))
         .flatten(),
     );

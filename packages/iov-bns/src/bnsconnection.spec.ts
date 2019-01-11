@@ -218,19 +218,6 @@ describe("BnsConnection", () => {
         expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
       }
 
-      // can get the faucet by name, same result
-      const responseFromName = await connection.getAccount({ name: "admin" });
-      expect(responseFromName).toBeDefined();
-      {
-        const account = responseFromName!;
-        expect(account.address).toEqual(faucetAddress);
-        expect(account.pubkey).toEqual(faucet.pubkey);
-        expect(account.name).toEqual("admin");
-        expect(account.balance.length).toEqual(1);
-        expect(account.balance[0].tokenTicker).toEqual(cash);
-        expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
-      }
-
       connection.disconnect();
     });
 
@@ -1390,12 +1377,15 @@ describe("BnsConnection", () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
     const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
-    const faucetAddr = identityToAddress(faucet);
     const recipientAddr = await randomBnsAddress();
 
+    // watch account by pubkey and by address
+    const faucetAccountStream = connection.watchAccount({ pubkey: faucet.pubkey });
+    const recipientAccountStream = connection.watchAccount({ address: recipientAddr });
+
     // let's watch for all changes, capture them in a value sink
-    const faucetAcct = lastValue<BcpAccount | undefined>(connection.watchAccount({ address: faucetAddr }));
-    const rcptAcct = lastValue<BcpAccount | undefined>(connection.watchAccount({ address: recipientAddr }));
+    const faucetAcct = lastValue<BcpAccount | undefined>(faucetAccountStream);
+    const rcptAcct = lastValue<BcpAccount | undefined>(recipientAccountStream);
 
     // give it a chance to get initial feed before checking and proceeding
     await sleep(200);
