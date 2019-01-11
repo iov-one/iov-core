@@ -114,10 +114,10 @@ describe("RiseConnection", () => {
 
   it("can get all tickers", async () => {
     const connection = new RiseConnection(base, riseTestnet);
-    const response = await connection.getAllTickers();
-    expect(response.data.length).toEqual(1);
-    expect(response.data[0].tokenTicker).toEqual("RISE");
-    expect(response.data[0].tokenName).toEqual("RISE");
+    const tickers = await connection.getAllTickers();
+    expect(tickers.length).toEqual(1);
+    expect(tickers[0].tokenTicker).toEqual("RISE");
+    expect(tickers[0].tokenName).toEqual("RISE");
   });
 
   it("can get chain ID", async () => {

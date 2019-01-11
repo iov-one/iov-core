@@ -260,13 +260,13 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return dummyEnvelope(data);
   }
 
-  public async getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>> {
+  public async getAllTickers(): Promise<ReadonlyArray<BcpTicker>> {
     const res = await this.query("/tokens?prefix", Uint8Array.from([]));
     const parser = createParser(codecImpl.namecoin.Token, "tkn:");
     const data = res.results.map(parser).map(decodeToken);
     // Sort by ticker
     data.sort((a, b) => a.tokenTicker.localeCompare(b.tokenTicker));
-    return dummyEnvelope(data);
+    return data;
   }
 
   public async getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined> {

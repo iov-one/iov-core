@@ -25,6 +25,8 @@ Breaking changes
   `BcpAccount | undefined` to better represent the one-or-none result.
 * @iov/bcp-types: Remove `BcpValueNameQuery` from `.getAccount` and `.watchAccount`
   as we're migrating from wallet nicknames to username NFTs.
+* @iov/bcp-types: Convert `BcpQueryEnvelope` to `ReadonlyArray` in return
+  type of `BcpConnection.getAllTickers`.
 * @iov/core: Remove `MultiChainSigner.getNonce`. If you really need this, use
   `signer.connection(chainId).getNonce({ address: addr })` instead.
 * @iov/core: Removed BNS re-exports `bnsConnector`, `bnsFromOrToTag`,

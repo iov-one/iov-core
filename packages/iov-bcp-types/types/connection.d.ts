@@ -126,7 +126,7 @@ export interface BcpConnection {
     readonly chainId: () => ChainId;
     readonly height: () => Promise<number>;
     readonly getTicker: (ticker: TokenTicker) => Promise<BcpQueryEnvelope<BcpTicker>>;
-    readonly getAllTickers: () => Promise<BcpQueryEnvelope<BcpTicker>>;
+    readonly getAllTickers: () => Promise<ReadonlyArray<BcpTicker>>;
     /**
      * Get the current account information (e.g. balance)
      *

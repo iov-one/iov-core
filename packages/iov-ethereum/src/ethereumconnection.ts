@@ -215,7 +215,7 @@ export class EthereumConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>> {
+  public getAllTickers(): Promise<ReadonlyArray<BcpTicker>> {
     throw new Error("Not implemented");
   }
 

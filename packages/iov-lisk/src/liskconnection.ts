@@ -151,19 +151,18 @@ export class LiskConnection implements BcpConnection {
   }
 
   public async getTicker(searchTicker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>> {
-    const results = (await this.getAllTickers()).data.filter(t => t.tokenTicker === searchTicker);
+    const results = (await this.getAllTickers()).filter(t => t.tokenTicker === searchTicker);
     return dummyEnvelope(results);
   }
 
-  public async getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>> {
-    const tickers: ReadonlyArray<BcpTicker> = [
+  public async getAllTickers(): Promise<ReadonlyArray<BcpTicker>> {
+    return [
       {
         tokenTicker: constants.primaryTokenTicker,
         tokenName: constants.primaryTokenName,
         fractionalDigits: constants.primaryTokenFractionalDigits,
       },
     ];
-    return dummyEnvelope(tickers);
   }
 
   public async getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined> {
