@@ -80,7 +80,7 @@ export const ethereumCodec: TxCodec = {
             tokenTicker: constants.primaryTokenTicker,
           },
           recipient: toChecksumAddress(json.to),
-          memo: json.input,
+          memo: Encoding.fromUtf8(Encoding.fromHex(hexPadToEven(json.input))),
         };
         unsignedTransaction = send;
         break;
