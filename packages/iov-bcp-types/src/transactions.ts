@@ -50,6 +50,15 @@ export interface PublicIdentity {
   readonly pubkey: PublicKeyBundle;
 }
 
+export function isPublicIdentity(data: any): data is PublicIdentity {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    typeof (data as PublicIdentity).chainId === "string" &&
+    isPublicKeyBundle((data as PublicIdentity).pubkey)
+  );
+}
+
 /**
  * Compares two objects that conform to the PublicIdentity interface for equality.
  * This can also be used to compare pairs of derived types like LocalIdentity/PublicIdentity

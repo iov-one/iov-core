@@ -27,6 +27,7 @@ export interface PublicIdentity {
     readonly chainId: ChainId;
     readonly pubkey: PublicKeyBundle;
 }
+export declare function isPublicIdentity(data: any): data is PublicIdentity;
 /**
  * Compares two objects that conform to the PublicIdentity interface for equality.
  * This can also be used to compare pairs of derived types like LocalIdentity/PublicIdentity
