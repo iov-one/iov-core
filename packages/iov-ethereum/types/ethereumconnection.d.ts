@@ -24,8 +24,7 @@ export declare class EthereumConnection implements BcpConnection {
     watchBlockHeaders(): Stream<BlockHeader>;
     /** @deprecated use watchBlockHeaders().map(header => header.height) */
     changeBlock(): Stream<number>;
-    watchAccount(_: BcpAccountQuery): Stream<BcpAccount | undefined>;
-    watchNonce(_: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce>;
+    watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined>;
     searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
     listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction>;
     liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction>;

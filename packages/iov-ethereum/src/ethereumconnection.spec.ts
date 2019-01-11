@@ -2,6 +2,7 @@ import {
   Address,
   Algorithm,
   Amount,
+  BcpAccount,
   BcpBlockInfoInBlock,
   BcpTransactionState,
   BlockHeader,
@@ -59,53 +60,51 @@ async function randomAddress(): Promise<Address> {
   });
 }
 
-async function postTransaction(
-  wallet: Wallet,
-  sender: PublicIdentity,
-  nonce: Nonce,
-  quantity: string,
-  connection: EthereumConnection,
-): Promise<PostTxResponse> {
-  const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
-
-  const sendTx: SendTransaction = {
-    kind: "bcp/send",
-    chainId: testConfig.chainId,
-    signer: sender.pubkey,
-    recipient: recipientAddress,
-    amount: {
-      quantity: quantity,
-      fractionalDigits: 18,
-      tokenTicker: "ETH" as TokenTicker,
-    },
-    gasPrice: testConfig.gasPrice,
-    gasLimit: testConfig.gasLimit,
-    memo: `Some text ${Math.random()}`,
-  };
-  const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
-  const signature = await wallet.createTransactionSignature(sender, signingJob.bytes, signingJob.prehashType);
-
-  const signedTransaction: SignedTransaction = {
-    transaction: sendTx,
-    primarySignature: {
-      nonce: nonce,
-      pubkey: sender.pubkey,
-      signature: signature,
-    },
-    otherSignatures: [],
-  };
-  const bytesToPost = ethereumCodec.bytesToPost(signedTransaction);
-
-  const resultPost = await connection.postTx(bytesToPost);
-  return resultPost;
-}
-
 describe("EthereumConnection", () => {
   const defaultAmount: Amount = {
     quantity: "5445500",
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   };
+
+  async function postTransaction(
+    wallet: Wallet,
+    sender: PublicIdentity,
+    nonce: Nonce,
+    recipient: Address,
+    connection: EthereumConnection,
+  ): Promise<PostTxResponse> {
+    const sendTx: SendTransaction = {
+      kind: "bcp/send",
+      chainId: testConfig.chainId,
+      signer: sender.pubkey,
+      recipient: recipient,
+      amount: defaultAmount,
+      gasPrice: testConfig.gasPrice,
+      gasLimit: testConfig.gasLimit,
+      memo: `Some text ${Math.random()}`,
+    };
+    const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
+    const signature = await wallet.createTransactionSignature(
+      sender,
+      signingJob.bytes,
+      signingJob.prehashType,
+    );
+
+    const signedTransaction: SignedTransaction = {
+      transaction: sendTx,
+      primarySignature: {
+        nonce: nonce,
+        pubkey: sender.pubkey,
+        signature: signature,
+      },
+      otherSignatures: [],
+    };
+    const bytesToPost = ethereumCodec.bytesToPost(signedTransaction);
+
+    const resultPost = await connection.postTx(bytesToPost);
+    return resultPost;
+  }
 
   it("can be constructed", () => {
     pendingWithoutEthereum();
@@ -298,6 +297,57 @@ describe("EthereumConnection", () => {
         confirmations: 1,
       });
     }, 30_000);
+  });
+
+  describe("watchAccount", () => {
+    it("can watch an account", done => {
+      pendingWithoutEthereum();
+      pendingWithoutEthereumScraper();
+
+      (async () => {
+        const connection = await EthereumConnection.establish(testConfig.base, {
+          scraperApiUrl: testConfig.scraper!.apiUrl,
+        });
+
+        const recipient = await randomAddress();
+
+        // setup watching
+        const events = new Array<BcpAccount>();
+        const subscription = connection.watchAccount({ address: recipient }).subscribe({
+          next: event => {
+            if (!event) {
+              subscription.unsubscribe();
+              connection.disconnect();
+              done.fail("Received event undefined, which is not expected in Ethereum");
+              return;
+            }
+            events.push(event);
+
+            expect(event.address).toEqual(recipient);
+            expect(event.balance.length).toEqual(1);
+            expect(event.balance[0].fractionalDigits).toEqual(18);
+            expect(event.balance[0].tokenTicker).toEqual("ETH");
+
+            if (events.length === 2) {
+              expect(events[0].balance[0].quantity).toEqual("0");
+              expect(events[1].balance[0].quantity).toEqual(defaultAmount.quantity);
+
+              subscription.unsubscribe();
+              connection.disconnect();
+              done();
+            }
+          },
+        });
+
+        // post transactions
+        const wallet = Secp256k1HdWallet.fromMnemonic(
+          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+        );
+        const secondIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.bip44(60, 0, 0, 1));
+        const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
+        await postTransaction(wallet, secondIdentity, nonce, recipient, connection);
+      })().catch(done.fail);
+    }, 90_000);
   });
 
   describe("searchTx", () => {
@@ -544,7 +594,7 @@ describe("EthereumConnection", () => {
   });
 
   describe("listenTx", () => {
-    it("can can listen to transactions", done => {
+    it("can listen to transactions", done => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
 
@@ -942,12 +992,13 @@ describe("EthereumConnection", () => {
         const wallet = Secp256k1HdWallet.fromMnemonic(
           "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
         );
-        const mainIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.bip44(60, 0, 0, 1));
+        const secondIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.bip44(60, 0, 0, 1));
 
-        const nonceA = await connection.getNonce({ pubkey: mainIdentity.pubkey });
+        const nonceA = await connection.getNonce({ pubkey: secondIdentity.pubkey });
         const nonceB = new Int53(nonceA.toNumber() + 1) as Nonce;
-        await postTransaction(wallet, mainIdentity, nonceA, "5445500", connection);
-        await postTransaction(wallet, mainIdentity, nonceB, "5445500", connection);
+        const recipient = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
+        await postTransaction(wallet, secondIdentity, nonceA, recipient, connection);
+        await postTransaction(wallet, secondIdentity, nonceB, recipient, connection);
       })().catch(done.fail);
     }, 45_000);
   });

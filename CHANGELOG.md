@@ -2,9 +2,8 @@
 
 ## 0.11.0
 
-* @iov/bcp-type: `BcpConnection.getNonce` and `.watchNonce` now return
-  `Promise<Nonce>`/`Stream<Nonce>` and implementations set a default value on
-  their own.
+* @iov/bcp-type: `BcpConnection.getNonce` now returns a `Promise<Nonce>` and
+  implementations set a default value on their own.
 * @iov/jsonrpc: Add new package for type-safe JSON-RPC 2.0 interfaces and
   response parsers. This is used for out-of-process signing and can be reused
   in @iov/ethereum and @iov/tendermint-rpc later on.
@@ -19,6 +18,7 @@ Breaking changes
 * @iov/base-types: Package removed and all its types are now in @iov/bcp-types.
 * @iov/bcp-types: Convert `TxReadCodec.keyToAddress` into
   `identityToAddress(identity: PublicIdentity)`
+* @iov/bcp-types: `BcpConnection.watchNonce` and all its implementations were removed
 * @iov/core: Remove `MultiChainSigner.getNonce`. If you really need this, use
   `signer.connection(chainId).getNonce({ address: addr })` instead.
 * @iov/core: Removed BNS re-exports `bnsConnector`, `bnsFromOrToTag`,

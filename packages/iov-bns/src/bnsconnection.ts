@@ -610,22 +610,6 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     );
   }
 
-  /**
-   * Gets current nonce and emits an update every time it changes
-   */
-  public watchNonce(query: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce> {
-    const address = isPubkeyQuery(query)
-      ? identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey })
-      : query.address;
-
-    const currentStream = Stream.fromPromise(this.getNonce(query));
-    const updatesStream = this.changeNonce(address)
-      .map(() => Stream.fromPromise(this.getNonce(query)))
-      .flatten();
-
-    return concat(currentStream, updatesStream);
-  }
-
   public async getBlockchains(query: BnsBlockchainsQuery): Promise<ReadonlyArray<BnsBlockchainNft>> {
     // https://github.com/iov-one/weave/blob/v0.9.2/x/nft/username/handler_test.go#L207
     let results: ReadonlyArray<Result>;

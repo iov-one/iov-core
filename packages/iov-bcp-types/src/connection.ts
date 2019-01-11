@@ -209,7 +209,6 @@ export interface BcpConnection {
    */
   readonly getNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Promise<Nonce>;
   readonly watchAccount: (account: BcpAccountQuery) => Stream<BcpAccount | undefined>;
-  readonly watchNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Stream<Nonce>;
 
   // blocks
   readonly getBlockHeader: (height: number) => Promise<BlockHeader>;

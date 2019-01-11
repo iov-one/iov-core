@@ -83,10 +83,6 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
      * Gets current balance and emits an update every time it changes
      */
     watchAccount(account: BcpAccountQuery): Stream<BcpAccount | undefined>;
-    /**
-     * Gets current nonce and emits an update every time it changes
-     */
-    watchNonce(query: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce>;
     getBlockchains(query: BnsBlockchainsQuery): Promise<ReadonlyArray<BnsBlockchainNft>>;
     getUsernames(query: BnsUsernamesQuery): Promise<ReadonlyArray<BnsUsernameNft>>;
     protected query(path: string, data: Uint8Array): Promise<QueryResponse>;
