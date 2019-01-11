@@ -15,7 +15,7 @@ export declare class RiseConnection implements BcpConnection {
     postTx(bytes: PostableBytes): Promise<PostTxResponse>;
     getTicker(searchTicker: TokenTicker): Promise<BcpQueryEnvelope<BcpTicker>>;
     getAllTickers(): Promise<BcpQueryEnvelope<BcpTicker>>;
-    getAccount(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>>;
+    getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined>;
     getNonce(_: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce>;
     watchAccount(_: BcpAccountQuery): Stream<BcpAccount | undefined>;
     getBlockHeader(height: number): Promise<BlockHeader>;

@@ -167,7 +167,7 @@ export class LiskConnection implements BcpConnection {
     return dummyEnvelope(tickers);
   }
 
-  public async getAccount(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>> {
+  public async getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined> {
     let address: Address;
     if (isAddressQuery(query)) {
       address = query.address;
@@ -213,7 +213,7 @@ export class LiskConnection implements BcpConnection {
         };
       },
     );
-    return dummyEnvelope(accounts);
+    return accounts.length > 0 ? accounts[0] : undefined;
   }
 
   public getNonce(_: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {

@@ -194,9 +194,9 @@ describe("BnsConnection", () => {
 
       // can get the faucet by address (there is money)
       const responseFromAddress = await connection.getAccount({ address: faucetAddress });
-      expect(responseFromAddress.data.length).toEqual(1);
+      expect(responseFromAddress).toBeDefined();
       {
-        const account = responseFromAddress.data[0];
+        const account = responseFromAddress!;
         expect(account.address).toEqual(faucetAddress);
         expect(account.pubkey).toEqual(faucet.pubkey);
         expect(account.name).toEqual("admin");
@@ -207,9 +207,9 @@ describe("BnsConnection", () => {
 
       // can get the faucet by publicKey, same result
       const responseFromPubkey = await connection.getAccount({ pubkey: faucet.pubkey });
-      expect(responseFromPubkey.data.length).toEqual(1);
+      expect(responseFromPubkey).toBeDefined();
       {
-        const account = responseFromPubkey.data[0];
+        const account = responseFromPubkey!;
         expect(account.address).toEqual(faucetAddress);
         expect(account.pubkey).toEqual(faucet.pubkey);
         expect(account.name).toEqual("admin");
@@ -220,9 +220,9 @@ describe("BnsConnection", () => {
 
       // can get the faucet by name, same result
       const responseFromName = await connection.getAccount({ name: "admin" });
-      expect(responseFromName.data.length).toEqual(1);
+      expect(responseFromName).toBeDefined();
       {
-        const account = responseFromName.data[0];
+        const account = responseFromName!;
         expect(account.address).toEqual(faucetAddress);
         expect(account.pubkey).toEqual(faucet.pubkey);
         expect(account.name).toEqual("admin");
@@ -241,9 +241,9 @@ describe("BnsConnection", () => {
       await ensureBalanceNonZero(connection, newAddress);
 
       const response = await connection.getAccount({ address: newAddress });
-      expect(response.data.length).toEqual(1);
+      expect(response).toBeDefined();
       {
-        const account = response.data[0];
+        const account = response!;
         expect(account.address).toEqual(newAddress);
         expect(account.pubkey).toBeUndefined();
         expect(account.name).toBeUndefined();
@@ -259,10 +259,7 @@ describe("BnsConnection", () => {
       // bech32 -e -h tiov 010101020202030303040404050505050A0A0A0A
       const unusedAddress = "tiov1qyqszqszqgpsxqcyqszq2pg9q59q5zs2fx9n6s" as Address;
       const response = await connection.getAccount({ address: unusedAddress });
-      expect(response).toBeTruthy();
-      expect(response.data).toBeTruthy();
-      expect(response.data.length).toEqual(0);
-
+      expect(response).toBeUndefined();
       connection.disconnect();
     });
   });
@@ -339,10 +336,9 @@ describe("BnsConnection", () => {
       await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
 
       // we should be a little bit richer
-      const gotMoney = await connection.getAccount({ address: recipient });
-      expect(gotMoney).toBeTruthy();
-      expect(gotMoney.data.length).toEqual(1);
-      const paid = gotMoney.data[0];
+      const updatedAccount = await connection.getAccount({ address: recipient });
+      expect(updatedAccount).toBeDefined();
+      const paid = updatedAccount!;
       expect(paid.balance.length).toEqual(1);
       expect(paid.balance[0].quantity).toEqual("5000075000");
 

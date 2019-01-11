@@ -199,9 +199,9 @@ export interface BcpConnection {
   /**
    * Get the current account information (e.g. balance)
    *
-   * If an account is not found on the blockchain, an envelope with an empty data array is returned
+   * If an account is not found on the blockchain, this returns undefined.
    */
-  readonly getAccount: (account: BcpAccountQuery) => Promise<BcpQueryEnvelope<BcpAccount>>;
+  readonly getAccount: (query: BcpAccountQuery) => Promise<BcpAccount | undefined>;
   /**
    * Get a nonce for the next transaction signature.
    *

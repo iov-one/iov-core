@@ -270,7 +270,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return dummyEnvelope(data);
   }
 
-  public async getAccount(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>> {
+  public async getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined> {
     let response: QueryResponse;
     if (isAddressQuery(query)) {
       response = await this.query("/wallets", decodeBnsAddress(query.address).data);
@@ -285,7 +285,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const walletDatas = response.results.map(parser).map(iwallet => this.context.wallet(iwallet));
 
     if (walletDatas.length === 0) {
-      return dummyEnvelope([]);
+      return undefined;
     }
     const walletData = walletDatas[0];
 
@@ -302,12 +302,10 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       pubkey = ipubkey ? decodePubkey(ipubkey) : undefined;
     }
 
-    return dummyEnvelope([
-      {
-        ...walletData,
-        pubkey: pubkey,
-      },
-    ]);
+    return {
+      ...walletData,
+      pubkey: pubkey,
+    };
   }
 
   public async getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {
@@ -591,21 +589,15 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   /**
    * Gets current balance and emits an update every time it changes
    */
-  public watchAccount(account: BcpAccountQuery): Stream<BcpAccount | undefined> {
-    if (!isAddressQuery(account)) {
+  public watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined> {
+    if (!isAddressQuery(query)) {
       throw new Error("watchAccount requires an address, not name, to watch");
     }
-    // oneAccount normalizes the BcpEnvelope to just get the
-    // one account we want, or undefined if nothing there
-    const oneAccount = async (): Promise<BcpAccount | undefined> => {
-      const acct = await this.getAccount(account);
-      return acct.data.length < 1 ? undefined : acct.data[0];
-    };
 
     return concat(
-      Stream.fromPromise(oneAccount()),
-      this.changeBalance(account.address)
-        .map(() => Stream.fromPromise(oneAccount()))
+      Stream.fromPromise(this.getAccount(query)),
+      this.changeBalance(query.address)
+        .map(() => Stream.fromPromise(this.getAccount(query)))
         .flatten(),
     );
   }
