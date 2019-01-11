@@ -22,7 +22,6 @@ import {
   ChainId,
   ConfirmedTransaction,
   dummyEnvelope,
-  isAddressQuery,
   isPubkeyQuery,
   isQueryBySwapId,
   isQueryBySwapRecipient,
@@ -585,13 +584,13 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    * Gets current balance and emits an update every time it changes
    */
   public watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined> {
-    if (!isAddressQuery(query)) {
-      throw new Error("watchAccount requires an address, not name, to watch");
-    }
+    const address = isPubkeyQuery(query)
+      ? identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey })
+      : query.address;
 
     return concat(
       Stream.fromPromise(this.getAccount(query)),
-      this.changeBalance(query.address)
+      this.changeBalance(address)
         .map(() => Stream.fromPromise(this.getAccount(query)))
         .flatten(),
     );

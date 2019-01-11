@@ -1377,12 +1377,15 @@ describe("BnsConnection", () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
     const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
-    const faucetAddr = identityToAddress(faucet);
     const recipientAddr = await randomBnsAddress();
 
+    // watch account by pubkey and by address
+    const faucetAccountStream = connection.watchAccount({ pubkey: faucet.pubkey });
+    const recipientAccountStream = connection.watchAccount({ address: recipientAddr });
+
     // let's watch for all changes, capture them in a value sink
-    const faucetAcct = lastValue<BcpAccount | undefined>(connection.watchAccount({ address: faucetAddr }));
-    const rcptAcct = lastValue<BcpAccount | undefined>(connection.watchAccount({ address: recipientAddr }));
+    const faucetAcct = lastValue<BcpAccount | undefined>(faucetAccountStream);
+    const rcptAcct = lastValue<BcpAccount | undefined>(recipientAccountStream);
 
     // give it a chance to get initial feed before checking and proceeding
     await sleep(200);
