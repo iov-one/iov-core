@@ -134,8 +134,9 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(testConfig.base);
       const account = await connection.getAccount({ address: testConfig.address as Address });
-      expect(account.data[0].address).toEqual(testConfig.address);
-      expect(account.data[0].balance[0]).toEqual({
+      expect(account).toBeDefined();
+      expect(account!.address).toEqual(testConfig.address);
+      expect(account!.balance[0]).toEqual({
         ...testConfig.expectedBalance,
         tokenName: "Ether",
       });
@@ -146,8 +147,9 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(testConfig.base);
       const account = await connection.getAccount({ pubkey: testConfig.pubkey });
-      expect(account.data[0].address).toEqual(testConfig.address);
-      expect(account.data[0].balance[0]).toEqual({
+      expect(account).toBeDefined();
+      expect(account!.address).toEqual(testConfig.address);
+      expect(account!.balance[0]).toEqual({
         ...testConfig.expectedBalance,
         tokenName: "Ether",
       });
@@ -160,8 +162,8 @@ describe("EthereumConnection", () => {
       const account = await connection.getAccount({ address: testConfig.unusedAddress });
 
       // At the moment we cannot distinguish between unused account and balance 0
-      expect(account.data.length).toEqual(1);
-      expect(account.data[0].balance[0].quantity).toEqual("0");
+      expect(account).toBeDefined();
+      expect(account!.balance[0].quantity).toEqual("0");
 
       connection.disconnect();
     });
@@ -172,8 +174,8 @@ describe("EthereumConnection", () => {
       const account = await connection.getAccount({ pubkey: testConfig.unusedPubkey });
 
       // At the moment we cannot distinguish between unused account and balance 0
-      expect(account.data.length).toEqual(1);
-      expect(account.data[0].balance[0].quantity).toEqual("0");
+      expect(account).toBeDefined();
+      expect(account!.balance[0].quantity).toEqual("0");
 
       connection.disconnect();
     });

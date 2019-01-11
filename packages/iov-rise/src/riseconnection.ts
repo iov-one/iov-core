@@ -176,7 +176,7 @@ export class RiseConnection implements BcpConnection {
     return dummyEnvelope(tickers);
   }
 
-  public async getAccount(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>> {
+  public async getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined> {
     let address: Address;
     if (isAddressQuery(query)) {
       address = query.address;
@@ -188,7 +188,7 @@ export class RiseConnection implements BcpConnection {
     const url = this.baseUrl + `/api/accounts?address=${address}`;
     const result = await axios.get(url);
     if (result.data.error) {
-      return dummyEnvelope([]);
+      return undefined;
     }
     const responseBalance: unknown = result.data.account.balance;
     const responsePublicKey: unknown = result.data.account.publicKey;
@@ -205,23 +205,19 @@ export class RiseConnection implements BcpConnection {
           }
         : undefined;
 
-    const accounts: ReadonlyArray<BcpAccount> = [
-      {
-        address: address,
-        pubkey: pubkey,
-        name: undefined,
-        balance: [
-          {
-            quantity: Parse.parseQuantity(responseBalance),
-            fractionalDigits: constants.primaryTokenFractionalDigits,
-            tokenName: constants.primaryTokenName,
-            tokenTicker: constants.primaryTokenTicker,
-          },
-        ],
-      },
-    ];
-
-    return dummyEnvelope(accounts);
+    return {
+      address: address,
+      pubkey: pubkey,
+      name: undefined,
+      balance: [
+        {
+          quantity: Parse.parseQuantity(responseBalance),
+          fractionalDigits: constants.primaryTokenFractionalDigits,
+          tokenName: constants.primaryTokenName,
+          tokenTicker: constants.primaryTokenTicker,
+        },
+      ],
+    };
   }
 
   public getNonce(_: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {

@@ -106,12 +106,10 @@ describe("MultiChainSigner", () => {
       await postResponse.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
 
       // we should be a little bit richer
-      const gotMoney = await connection.getAccount({ address: recipient });
-      expect(gotMoney).toBeTruthy();
-      expect(gotMoney.data.length).toEqual(1);
-      const paid = gotMoney.data[0];
-      expect(paid.balance.length).toEqual(1);
-      expect(paid.balance[0].quantity).toEqual("11000000000777");
+      const updatedAccount = await connection.getAccount({ address: recipient });
+      expect(updatedAccount).toBeDefined();
+      expect(updatedAccount!.balance.length).toEqual(1);
+      expect(updatedAccount!.balance[0].quantity).toEqual("11000000000777");
 
       // find the transaction we sent by comparing the memo
       const results = await connection.searchTx({ tags: [bnsFromOrToTag(recipient)] });
@@ -151,10 +149,9 @@ describe("MultiChainSigner", () => {
       // make sure we can query with multiple registered chains
       const faucetAddr = signer.identityToAddress(faucet);
       const connection = signer.connection(bovId);
-      const acct = await connection.getAccount({ address: faucetAddr });
-      expect(acct).toBeTruthy();
-      expect(acct.data.length).toBe(1);
-      expect(acct.data[0].balance.length).toBe(1);
+      const account = await connection.getAccount({ address: faucetAddr });
+      expect(account).toBeDefined();
+      expect(account!.balance.length).toEqual(1);
 
       const ganacheMainIdentity: PublicIdentity = {
         chainId: ethereumChainId,
@@ -167,10 +164,9 @@ describe("MultiChainSigner", () => {
       };
       const ganacheAddr = signer.identityToAddress(ganacheMainIdentity);
       const connection2 = signer.connection(ethereumChainId);
-      const acct2 = await connection2.getAccount({ address: ganacheAddr });
-      expect(acct2).toBeTruthy();
-      expect(acct2.data.length).toBe(1);
-      expect(acct2.data[0].balance.length).toBe(1);
+      const account2 = await connection2.getAccount({ address: ganacheAddr });
+      expect(account2).toBeDefined();
+      expect(account2!.balance.length).toEqual(1);
     });
   });
 

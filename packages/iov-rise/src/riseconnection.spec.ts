@@ -143,11 +143,11 @@ describe("RiseConnection", () => {
         algo: Algorithm.Ed25519,
         data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PublicKeyBytes,
       };
-      expect(response.data[0].address).toEqual("6472030874529564639R");
-      expect(response.data[0].pubkey).toEqual(expectedPubkey);
-      expect(response.data[0].balance[0].tokenTicker).toEqual("RISE");
-      expect(response.data[0].balance[0].fractionalDigits).toEqual(8);
-      expect(response.data[0].balance[0].quantity).toEqual("5298643212");
+      expect(response!.address).toEqual("6472030874529564639R");
+      expect(response!.pubkey).toEqual(expectedPubkey);
+      expect(response!.balance[0].tokenTicker).toEqual("RISE");
+      expect(response!.balance[0].fractionalDigits).toEqual(8);
+      expect(response!.balance[0].quantity).toEqual("5298643212");
     });
 
     it("can get account from pubkey", async () => {
@@ -160,27 +160,25 @@ describe("RiseConnection", () => {
       const response = await connection.getAccount(query);
 
       const expectedPubkey = pubkey;
-      expect(response.data[0].address).toEqual("6472030874529564639R");
-      expect(response.data[0].pubkey).toEqual(expectedPubkey);
-      expect(response.data[0].balance[0].tokenTicker).toEqual("RISE");
-      expect(response.data[0].balance[0].fractionalDigits).toEqual(8);
-      expect(response.data[0].balance[0].quantity).toEqual("5298643212");
+      expect(response!.address).toEqual("6472030874529564639R");
+      expect(response!.pubkey).toEqual(expectedPubkey);
+      expect(response!.balance[0].tokenTicker).toEqual("RISE");
+      expect(response!.balance[0].fractionalDigits).toEqual(8);
+      expect(response!.balance[0].quantity).toEqual("5298643212");
     });
 
     it("returns undefined pubkey for account with no outgoing transactions", async () => {
       const connection = await RiseConnection.establish(base);
       const response = await connection.getAccount({ address: defaultRecipientAddress });
-      expect(response.data[0].address).toEqual(defaultRecipientAddress);
-      expect(response.data[0].pubkey).toBeUndefined();
+      expect(response!.address).toEqual(defaultRecipientAddress);
+      expect(response!.pubkey).toBeUndefined();
     });
 
     it("returns empty list when getting an unused account", async () => {
       const unusedAddress = "5648777643193648871R" as Address;
       const connection = await RiseConnection.establish(base);
       const response = await connection.getAccount({ address: unusedAddress });
-      expect(response).toBeTruthy();
-      expect(response.data).toBeTruthy();
-      expect(response.data.length).toEqual(0);
+      expect(response).toBeUndefined();
     });
   });
 

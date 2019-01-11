@@ -19,6 +19,8 @@ Breaking changes
 * @iov/bcp-types: Convert `TxReadCodec.keyToAddress` into
   `identityToAddress(identity: PublicIdentity)`
 * @iov/bcp-types: `BcpConnection.watchNonce` and all its implementations were removed
+* @iov/bcp-types: return type of `BcpConnection.getAccount` was changed to
+  `BcpAccount | undefined` to better represent the one-or-none result.
 * @iov/core: Remove `MultiChainSigner.getNonce`. If you really need this, use
   `signer.connection(chainId).getNonce({ address: addr })` instead.
 * @iov/core: Removed BNS re-exports `bnsConnector`, `bnsFromOrToTag`,

@@ -17,7 +17,6 @@ import {
   BlockHeader,
   ChainId,
   ConfirmedTransaction,
-  dummyEnvelope,
   isAddressQuery,
   isPubkeyQuery,
   Nonce,
@@ -221,7 +220,7 @@ export class EthereumConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public async getAccount(query: BcpAccountQuery): Promise<BcpQueryEnvelope<BcpAccount>> {
+  public async getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined> {
     let address: Address;
     if (isAddressQuery(query)) {
       address = query.address;
@@ -255,7 +254,7 @@ export class EthereumConnection implements BcpConnection {
         },
       ],
     };
-    return dummyEnvelope([account]);
+    return account;
   }
 
   public async getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {
@@ -375,18 +374,9 @@ export class EthereumConnection implements BcpConnection {
       throw new Error("unsupported query type");
     }
 
-    const getAccount = async (): Promise<BcpAccount | undefined> => {
-      const result = await this.getAccount({ address: address });
-      if (result.data.length > 0) {
-        return result.data[0];
-      } else {
-        return undefined;
-      }
-    };
-
-    const initialDataStream = Stream.fromPromise(getAccount());
+    const initialDataStream = Stream.fromPromise(this.getAccount({ address: address }));
     const updatesStream = this.listenTx({ tags: [scraperAddressTag(address)] })
-      .map(_ => Stream.fromPromise(getAccount()))
+      .map(_ => Stream.fromPromise(this.getAccount({ address: address })))
       .flatten();
 
     return concat(initialDataStream, updatesStream);
