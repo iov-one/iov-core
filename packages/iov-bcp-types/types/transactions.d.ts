@@ -10,6 +10,16 @@ export interface PublicKeyBundle {
     readonly data: PublicKeyBytes;
 }
 export declare function isPublicKeyBundle(data: any): data is PublicKeyBundle;
+/**
+ * Compares two objects that conform to the PublicKeyBundle interface for equality.
+ *
+ * This can also be used to compare pairs of derived types in which case all
+ * non-PublicKeyBundle fields are ignored.
+ *
+ * @param left the left hand side of the comparison
+ * @param right the right hand side of the comparison
+ */
+export declare function publicKeyBundleEquals(left: PublicKeyBundle, right: PublicKeyBundle): boolean;
 /** Used to differentiate a blockchain. Should be alphanumeric or -_/ and unique */
 export declare type ChainId = string & As<"chain-id">;
 /** a public key we can identify with on a blockchain */

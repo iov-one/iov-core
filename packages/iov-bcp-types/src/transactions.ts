@@ -24,6 +24,23 @@ export function isPublicKeyBundle(data: any): data is PublicKeyBundle {
   );
 }
 
+/**
+ * Compares two objects that conform to the PublicKeyBundle interface for equality.
+ *
+ * This can also be used to compare pairs of derived types in which case all
+ * non-PublicKeyBundle fields are ignored.
+ *
+ * @param left the left hand side of the comparison
+ * @param right the right hand side of the comparison
+ */
+export function publicKeyBundleEquals(left: PublicKeyBundle, right: PublicKeyBundle): boolean {
+  return (
+    left.algo === right.algo &&
+    left.data.length === right.data.length &&
+    left.data.every((value, index) => value === right.data[index])
+  );
+}
+
 /** Used to differentiate a blockchain. Should be alphanumeric or -_/ and unique */
 export type ChainId = string & As<"chain-id">;
 
@@ -42,12 +59,7 @@ export interface PublicIdentity {
  * @param right the right hand side of the comparison
  */
 export function publicIdentityEquals(left: PublicIdentity, right: PublicIdentity): boolean {
-  return (
-    left.chainId === right.chainId &&
-    left.pubkey.algo === right.pubkey.algo &&
-    left.pubkey.data.length === right.pubkey.data.length &&
-    left.pubkey.data.every((value, index) => value === right.pubkey.data[index])
-  );
+  return left.chainId === right.chainId && publicKeyBundleEquals(left.pubkey, right.pubkey);
 }
 
 export type SignatureBytes = Uint8Array & As<"signature">;
