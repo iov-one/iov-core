@@ -129,6 +129,40 @@ describe("EthereumConnection", () => {
     connection.disconnect();
   });
 
+  describe("getTicker", () => {
+    it("can get existing ticker", async () => {
+      pendingWithoutEthereum();
+      const connection = await EthereumConnection.establish(testConfig.base);
+      const ticker = await connection.getTicker("ETH" as TokenTicker);
+      expect(ticker).toBeDefined();
+      expect(ticker!.tokenTicker).toEqual("ETH");
+      expect(ticker!.tokenName).toEqual("Ether");
+      expect(ticker!.fractionalDigits).toEqual(18);
+      connection.disconnect();
+    });
+
+    it("produces empty result for non-existing ticker", async () => {
+      pendingWithoutEthereum();
+      const connection = await EthereumConnection.establish(testConfig.base);
+      const ticker = await connection.getTicker("ALX" as TokenTicker);
+      expect(ticker).toBeUndefined();
+      connection.disconnect();
+    });
+  });
+
+  describe("getTickers", () => {
+    it("can get all tickers", async () => {
+      pendingWithoutEthereum();
+      const connection = await EthereumConnection.establish(testConfig.base);
+      const tickers = await connection.getAllTickers();
+      expect(tickers.length).toEqual(1);
+      expect(tickers[0].tokenTicker).toEqual("ETH");
+      expect(tickers[0].tokenName).toEqual("Ether");
+      expect(tickers[0].fractionalDigits).toEqual(18);
+      connection.disconnect();
+    });
+  });
+
   describe("getAccount", () => {
     it("can get account from address", async () => {
       pendingWithoutEthereum();

@@ -101,6 +101,7 @@ export function decodeToken(data: codecImpl.namecoin.IToken & Keyed): BcpTicker 
   return {
     tokenTicker: Encoding.fromAscii(data._id) as TokenTicker,
     tokenName: ensure(data.name),
+    fractionalDigits: 9, // fixed for all weave tokens
   };
 }
 

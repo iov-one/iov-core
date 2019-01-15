@@ -5,6 +5,7 @@
 * @iov/bcp-type: `BcpConnection.getNonce` now returns a `Promise<Nonce>` and
   implementations set a default value on their own.
 * @iov/bcp-type: Expose `publicKeyBundleEquals`
+* @iov/bcp-types: Add `fractionalDigits` to `BcpTicker`
 * @iov/jsonrpc: Add new package for type-safe JSON-RPC 2.0 interfaces and
   response parsers. This is used for out-of-process signing and can be reused
   in @iov/ethereum and @iov/tendermint-rpc later on.
@@ -24,6 +25,10 @@ Breaking changes
   `BcpAccount | undefined` to better represent the one-or-none result.
 * @iov/bcp-types: Remove `BcpValueNameQuery` from `.getAccount` and `.watchAccount`
   as we're migrating from wallet nicknames to username NFTs.
+* @iov/bcp-types: Convert `BcpQueryEnvelope` to `ReadonlyArray` in return
+  type of `BcpConnection.getAllTickers`.
+* @iov/bcp-types: Convert `BcpQueryEnvelope` to `BcpTicker | undefined` in return
+  type of `BcpConnection.getTicker`.
 * @iov/core: Remove `MultiChainSigner.getNonce`. If you really need this, use
   `signer.connection(chainId).getNonce({ address: addr })` instead.
 * @iov/core: Removed BNS re-exports `bnsConnector`, `bnsFromOrToTag`,

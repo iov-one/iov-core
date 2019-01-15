@@ -112,24 +112,24 @@ describe("LiskConnection", () => {
 
   it("can get existing ticker", async () => {
     const connection = new LiskConnection(dummynetBase, dummynetChainId);
-    const response = await connection.getTicker("LSK" as TokenTicker);
-    expect(response.data.length).toEqual(1);
-    expect(response.data[0].tokenTicker).toEqual("LSK");
-    expect(response.data[0].tokenName).toEqual("Lisk");
+    const ticker = await connection.getTicker("LSK" as TokenTicker);
+    expect(ticker).toBeDefined();
+    expect(ticker!.tokenTicker).toEqual("LSK");
+    expect(ticker!.tokenName).toEqual("Lisk");
   });
 
   it("produces empty result for non-existing ticker", async () => {
     const connection = new LiskConnection(dummynetBase, dummynetChainId);
-    const response = await connection.getTicker("ETH" as TokenTicker);
-    expect(response.data.length).toEqual(0);
+    const ticker = await connection.getTicker("ETH" as TokenTicker);
+    expect(ticker).toBeUndefined();
   });
 
   it("can get all tickers", async () => {
     const connection = new LiskConnection(dummynetBase, dummynetChainId);
-    const response = await connection.getAllTickers();
-    expect(response.data.length).toEqual(1);
-    expect(response.data[0].tokenTicker).toEqual("LSK");
-    expect(response.data[0].tokenName).toEqual("Lisk");
+    const tickers = await connection.getAllTickers();
+    expect(tickers.length).toEqual(1);
+    expect(tickers[0].tokenTicker).toEqual("LSK");
+    expect(tickers[0].tokenName).toEqual("Lisk");
   });
 
   it("can get chain ID", async () => {

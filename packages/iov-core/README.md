@@ -178,7 +178,7 @@ List the tickers on the network:
 const connection = signer.connection(chainId);
 
 const tickers = await connection.getAllTickers();
-console.log(tickers.data);
+console.log(tickers);
 ```
 
 Query the testnet for some existing genesis accounts:

@@ -131,7 +131,7 @@ export interface Amount {
    */
   readonly quantity: string;
   /**
-   * The number of fractionl digits the token supports.
+   * The number of fractional digits the token supports.
    *
    * A quantity is expressed as atomic units. 10^fractionalDigits of those
    * atomic units make up 1 token.

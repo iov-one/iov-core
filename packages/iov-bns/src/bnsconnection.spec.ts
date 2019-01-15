@@ -169,17 +169,17 @@ describe("BnsConnection", () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
-    const response = await connection.getAllTickers();
-    expect(response.data.length).toEqual(3);
+    const tickers = await connection.getAllTickers();
+    expect(tickers.length).toEqual(3);
 
-    expect(response.data[0].tokenTicker).toEqual("ASH" as TokenTicker);
-    expect(response.data[0].tokenName).toEqual("Let the Phoenix arise");
+    expect(tickers[0].tokenTicker).toEqual("ASH" as TokenTicker);
+    expect(tickers[0].tokenName).toEqual("Let the Phoenix arise");
 
-    expect(response.data[1].tokenTicker).toEqual("BASH" as TokenTicker);
-    expect(response.data[1].tokenName).toEqual("Another token of this chain");
+    expect(tickers[1].tokenTicker).toEqual("BASH" as TokenTicker);
+    expect(tickers[1].tokenName).toEqual("Another token of this chain");
 
-    expect(response.data[2].tokenTicker).toEqual("CASH" as TokenTicker);
-    expect(response.data[2].tokenName).toEqual("Main token of this chain");
+    expect(tickers[2].tokenTicker).toEqual("CASH" as TokenTicker);
+    expect(tickers[2].tokenName).toEqual("Main token of this chain");
 
     connection.disconnect();
   });
