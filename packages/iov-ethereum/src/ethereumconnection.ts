@@ -1,4 +1,5 @@
 import axios from "axios";
+import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
 import { Producer, Stream, Subscription } from "xstream";
 
@@ -33,7 +34,7 @@ import { keyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { Parse, Scraper } from "./parse";
-import { findScraperAddress, scraperAddressTag } from "./tags";
+import { findScraperAddress } from "./tags";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
@@ -353,12 +354,36 @@ export class EthereumConnection implements BcpConnection {
   public watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined> {
     const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
 
-    const initialDataStream = Stream.fromPromise(this.getAccount({ address: address }));
-    const updatesStream = this.listenTx({ tags: [scraperAddressTag(address)] })
-      .map(_ => Stream.fromPromise(this.getAccount({ address: address })))
-      .flatten();
+    let pollInterval: NodeJS.Timeout | undefined;
+    let lastEvent: any = {}; // use non-undefined init value ensure undefined is sent as an event
 
-    return concat(initialDataStream, updatesStream);
+    const producer: Producer<BcpAccount | undefined> = {
+      start: listener => {
+        const poll = async () => {
+          try {
+            const event = await this.getAccount({ address: address });
+            if (!equal(event, lastEvent)) {
+              listener.next(event);
+              lastEvent = event;
+            }
+          } catch (error) {
+            // it would be nice to be able to detect and ignore network errors here
+            listener.error(error);
+          }
+        };
+
+        setInterval(poll, 5_000);
+        poll();
+      },
+      stop: () => {
+        if (pollInterval) {
+          clearInterval(pollInterval);
+          pollInterval = undefined;
+        }
+      },
+    };
+
+    return Stream.create(producer);
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
