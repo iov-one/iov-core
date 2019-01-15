@@ -27,7 +27,7 @@ import {
 import { Random, Sha256 } from "@iov/crypto";
 import { Encoding, Uint64 } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol";
-import { asArray, lastValue } from "@iov/stream";
+import { asArray, lastValue, toListPromise } from "@iov/stream";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
@@ -449,14 +449,23 @@ describe("BnsConnection", () => {
         pendingWithoutBnsd();
         const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
-        const headers = lastValue(connection.watchBlockHeaders().take(2));
-        await headers.finished();
+        const headers = await toListPromise(connection.watchBlockHeaders(), 2);
 
-        const subHeader = headers.value()!;
-        const { height } = subHeader;
+        const lastHeight = headers[headers.length - 1].height;
+        const headerFromGet = await connection.getBlockHeader(lastHeight);
 
-        const header = await connection.getBlockHeader(height);
-        expect(header).toEqual(subHeader);
+        // first header
+        expect(headers[0].height).toEqual(headerFromGet.height - 1);
+        // expect(headers[0].id).not.toEqual(headerFromGet.id);
+        expect(headers[0].transactionCount).toBeGreaterThanOrEqual(0);
+        expect(headers[0].time.getTime()).toBeGreaterThan(headerFromGet.time.getTime() - 1200);
+        expect(headers[0].time.getTime()).toBeLessThan(headerFromGet.time.getTime() + 1200);
+
+        // second header
+        expect(headers[1].height).toEqual(headerFromGet.height);
+        // expect(headers[1].id).toEqual(headerFromGet.id);
+        expect(headers[1].transactionCount).toEqual(headerFromGet.transactionCount);
+        expect(headers[1].time).toEqual(headerFromGet.time);
 
         connection.disconnect();
       });
