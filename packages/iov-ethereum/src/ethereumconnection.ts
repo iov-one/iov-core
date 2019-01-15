@@ -328,12 +328,18 @@ export class EthereumConnection implements BcpConnection {
           throw new Error("Subscrition ID not set. This should not happen.");
         }
         // see https://github.com/ethereum/go-ethereum/wiki/RPC-PUB-SUB#cancel-subscription
-        this.socketSend({
-          id: 11,
-          jsonrpc: "2.0",
-          method: "eth_unsubscribe",
-          params: [subscriptionId],
-        });
+        this.socketSend(
+          {
+            id: 11,
+            jsonrpc: "2.0",
+            method: "eth_unsubscribe",
+            params: [subscriptionId],
+          },
+          // Calling unsubscribe() and disconnect() leads to this stop callback being
+          // called after disconneting (due to the async nature of xstream's Producer
+          // stop callbacks). Thus we may not be able to send eth_unsubscribe anymore.
+          true,
+        );
       },
     };
     return Stream.create(producer);
@@ -493,13 +499,20 @@ export class EthereumConnection implements BcpConnection {
     }
   }
 
-  private async socketSend(request: JsonRpcRequest): Promise<void> {
+  private async socketSend(request: JsonRpcRequest, ignoreNetworkError: boolean = false): Promise<void> {
     if (!this.socket) {
       throw new Error("No socket available");
     }
     await this.socket.connected;
     const data = JSON.stringify(request);
-    await this.socket.send(data);
+
+    try {
+      await this.socket.send(data);
+    } catch (error) {
+      if (!ignoreNetworkError) {
+        throw error;
+      }
+    }
   }
 
   private async searchTransactionsById(id: TransactionId): Promise<ReadonlyArray<ConfirmedTransaction>> {
