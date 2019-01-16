@@ -210,34 +210,38 @@ describe("LiskConnection", () => {
     });
   });
 
-  it("can get nonce", async () => {
-    pendingWithoutLiskDevnet();
-    const connection = await LiskConnection.establish(devnetBase);
+  describe("getNonce", () => {
+    it("can get nonce", async () => {
+      pendingWithoutLiskDevnet();
+      const connection = await LiskConnection.establish(devnetBase);
 
-    // by address
-    {
-      const query: BcpAddressQuery = { address: "6472030874529564639L" as Address };
-      const nonce = await connection.getNonce(query);
-      // nonce is current unix timestamp +/- one second
-      expect(nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
-      expect(nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
-    }
+      // by address
+      {
+        const query: BcpAddressQuery = { address: "6472030874529564639L" as Address };
+        const nonce = await connection.getNonce(query);
+        // nonce is current unix timestamp +/- one second
+        expect(nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
+        expect(nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
+      }
 
-    // by pubkey
-    {
-      const query: BcpPubkeyQuery = {
-        pubkey: {
-          algo: Algorithm.Ed25519,
-          data: fromHex("e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6") as PublicKeyBytes,
-        },
-      };
-      const nonce = await connection.getNonce(query);
-      // nonce is current unix timestamp +/- one second
-      expect(nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
-      expect(nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
-    }
+      // by pubkey
+      {
+        const query: BcpPubkeyQuery = {
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: fromHex(
+              "e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6",
+            ) as PublicKeyBytes,
+          },
+        };
+        const nonce = await connection.getNonce(query);
+        // nonce is current unix timestamp +/- one second
+        expect(nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
+        expect(nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
+      }
 
-    connection.disconnect();
+      connection.disconnect();
+    });
   });
 
   describe("watchAccount", () => {
