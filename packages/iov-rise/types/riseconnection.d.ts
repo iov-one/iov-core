@@ -17,6 +17,7 @@ export declare class RiseConnection implements BcpConnection {
     getAllTickers(): Promise<ReadonlyArray<BcpTicker>>;
     getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined>;
     getNonce(_: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce>;
+    getNonces(_: BcpAddressQuery | BcpPubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>>;
     watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined>;
     getBlockHeader(height: number): Promise<BlockHeader>;
     watchBlockHeaders(): Stream<BlockHeader>;

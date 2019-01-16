@@ -214,6 +214,11 @@ export class RiseConnection implements BcpConnection {
     return Promise.resolve(generateNonce());
   }
 
+  public async getNonces(_: BcpAddressQuery | BcpPubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>> {
+    const checkedCount = new Uint53(count).toNumber();
+    return Array.from({ length: checkedCount }).map(_1 => generateNonce());
+  }
+
   public watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined> {
     let lastEvent: any = {}; // default to a dummy value to ensure an initial undefined event is sent
     let pollInternal: NodeJS.Timeout | undefined;
