@@ -212,8 +212,8 @@ export class LiskConnection implements BcpConnection {
     return accounts.length > 0 ? accounts[0] : undefined;
   }
 
-  public getNonce(_: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {
-    return Promise.resolve(generateNonce());
+  public async getNonce(_: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {
+    return generateNonce();
   }
 
   public watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined> {
