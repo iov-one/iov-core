@@ -18,7 +18,6 @@ import {
   TransactionId,
 } from "@iov/bcp-types";
 import { Random, Secp256k1 } from "@iov/crypto";
-import { Int53 } from "@iov/encoding";
 import { HdPaths, Secp256k1HdWallet, UserProfile, Wallet } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 
@@ -750,9 +749,7 @@ describe("EthereumConnection", () => {
           memo: `listenTx() test C ${Math.random()}`,
         };
 
-        const nonceA = await connection.getNonce({ pubkey: sender.pubkey });
-        const nonceB = new Int53(nonceA.toNumber() + 1) as Nonce;
-        const nonceC = new Int53(nonceA.toNumber() + 2) as Nonce;
+        const [nonceA, nonceB, nonceC] = await connection.getNonces({ pubkey: sender.pubkey }, 3);
 
         const signedA = await profile.signTransaction(wallet.id, sender, sendA, ethereumCodec, nonceA);
         const signedB = await profile.signTransaction(wallet.id, sender, sendB, ethereumCodec, nonceB);
@@ -830,9 +827,7 @@ describe("EthereumConnection", () => {
           memo: `liveTx() test C ${Math.random()}`,
         };
 
-        const nonceA = await connection.getNonce({ pubkey: sender.pubkey });
-        const nonceB = new Int53(nonceA.toNumber() + 1) as Nonce;
-        const nonceC = new Int53(nonceA.toNumber() + 2) as Nonce;
+        const [nonceA, nonceB, nonceC] = await connection.getNonces({ pubkey: sender.pubkey }, 3);
 
         const signedA = await profile.signTransaction(wallet.id, sender, sendA, ethereumCodec, nonceA);
         const signedB = await profile.signTransaction(wallet.id, sender, sendB, ethereumCodec, nonceB);
@@ -1063,8 +1058,7 @@ describe("EthereumConnection", () => {
         );
         const secondIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.bip44(60, 0, 0, 1));
 
-        const nonceA = await connection.getNonce({ pubkey: secondIdentity.pubkey });
-        const nonceB = new Int53(nonceA.toNumber() + 1) as Nonce;
+        const [nonceA, nonceB] = await connection.getNonces({ pubkey: secondIdentity.pubkey }, 2);
         const recipient = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
         await postTransaction(wallet, secondIdentity, nonceA, recipient, connection);
         await postTransaction(wallet, secondIdentity, nonceB, recipient, connection);
