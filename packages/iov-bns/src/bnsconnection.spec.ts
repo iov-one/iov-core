@@ -249,7 +249,7 @@ describe("BnsConnection", () => {
   });
 
   describe("getNonce", () => {
-    it("can query empty nonce from unused account by address, pubkey and name", async () => {
+    it("can query empty nonce from unused account by address and pubkey", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
@@ -271,7 +271,7 @@ describe("BnsConnection", () => {
       connection.disconnect();
     });
 
-    it("can query nonce from faucet by address, pubkey and name", async () => {
+    it("can query nonce from faucet by address and pubkey", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
