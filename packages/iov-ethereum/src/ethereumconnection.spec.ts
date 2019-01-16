@@ -214,22 +214,24 @@ describe("EthereumConnection", () => {
     });
   });
 
-  it("can get nonce", async () => {
-    pendingWithoutEthereum();
-    const connection = await EthereumConnection.establish(testConfig.base);
+  describe("getNonce", () => {
+    it("can get nonce", async () => {
+      pendingWithoutEthereum();
+      const connection = await EthereumConnection.establish(testConfig.base);
 
-    // by address
-    {
-      const nonce = await connection.getNonce({ address: testConfig.address });
-      expect(nonce).toEqual(testConfig.nonce);
-    }
+      // by address
+      {
+        const nonce = await connection.getNonce({ address: testConfig.address });
+        expect(nonce).toEqual(testConfig.nonce);
+      }
 
-    // by pubkey
-    {
-      const nonce = await connection.getNonce({ pubkey: testConfig.pubkey });
-      expect(nonce).toEqual(testConfig.nonce);
-    }
-    connection.disconnect();
+      // by pubkey
+      {
+        const nonce = await connection.getNonce({ pubkey: testConfig.pubkey });
+        expect(nonce).toEqual(testConfig.nonce);
+      }
+      connection.disconnect();
+    });
   });
 
   describe("postTx", () => {
