@@ -10,7 +10,7 @@ import {
 } from "@iov/bcp-types";
 import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
-import { Ed25519HdWallet, HdPaths, LocalIdentity, UserProfile } from "@iov/keycontrol";
+import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";
 import { SigningServerCore } from "./signingservercore";
@@ -31,13 +31,6 @@ async function randomBnsAddress(): Promise<Address> {
     },
   };
   return bnsCodec.identityToAddress(randomIdentity);
-}
-
-function copyToPublic(local: LocalIdentity): PublicIdentity {
-  return {
-    chainId: local.chainId,
-    pubkey: local.pubkey,
-  };
 }
 
 describe("SigningServerCore", () => {
@@ -67,17 +60,17 @@ describe("SigningServerCore", () => {
         "option diagram plastic million educate they arrow fat comic excite abandon green",
       ),
     );
-    const idA0 = copyToPublic(await profile.createIdentity(walletA.id, ynet, HdPaths.simpleAddress(0)));
-    const idA1 = copyToPublic(await profile.createIdentity(walletA.id, xnet, HdPaths.simpleAddress(1)));
+    const idA0 = await profile.createIdentity(walletA.id, ynet, HdPaths.simpleAddress(0));
+    const idA1 = await profile.createIdentity(walletA.id, xnet, HdPaths.simpleAddress(1));
 
     const walletB = profile.addWallet(
       Ed25519HdWallet.fromMnemonic(
         "add critic turtle frown attract shop answer cook social wagon humble power",
       ),
     );
-    const idB0 = copyToPublic(await profile.createIdentity(walletB.id, xnet, HdPaths.simpleAddress(0)));
-    const idB1 = copyToPublic(await profile.createIdentity(walletB.id, ynet, HdPaths.simpleAddress(1)));
-    const idB2 = copyToPublic(await profile.createIdentity(walletB.id, xnet, HdPaths.simpleAddress(2)));
+    const idB0 = await profile.createIdentity(walletB.id, xnet, HdPaths.simpleAddress(0));
+    const idB1 = await profile.createIdentity(walletB.id, ynet, HdPaths.simpleAddress(1));
+    const idB2 = await profile.createIdentity(walletB.id, xnet, HdPaths.simpleAddress(2));
 
     const signer = new MultiChainSigner(profile);
     const core = new SigningServerCore(profile, signer);

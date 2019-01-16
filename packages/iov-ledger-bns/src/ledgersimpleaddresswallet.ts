@@ -1,5 +1,6 @@
 // tslint:disable:readonly-array
 import PseudoRandom from "random-js";
+import { As } from "type-tagger";
 
 import {
   Algorithm,
@@ -13,8 +14,6 @@ import {
 import { Encoding } from "@iov/encoding";
 import {
   Keyring,
-  LocalIdentity,
-  LocalIdentityId,
   Wallet,
   WalletId,
   WalletImplementationIdString,
@@ -85,6 +84,8 @@ function deserialize(data: WalletSerializationString): LedgerSimpleAddressWallet
   return doc;
 }
 
+type IdentityId = string & As<"identity-id">;
+
 export class LedgerSimpleAddressWallet implements Wallet {
   public static readonly implementationId = "ledger-simpleaddress" as WalletImplementationIdString;
 
@@ -107,9 +108,9 @@ export class LedgerSimpleAddressWallet implements Wallet {
     return code as WalletId;
   }
 
-  private static identityId(identity: PublicIdentity): LocalIdentityId {
+  private static identityId(identity: PublicIdentity): IdentityId {
     const id = [identity.chainId, identity.pubkey.algo, Encoding.toHex(identity.pubkey.data)].join("|");
-    return id as LocalIdentityId;
+    return id as IdentityId;
   }
 
   public readonly id: WalletId;
@@ -118,13 +119,15 @@ export class LedgerSimpleAddressWallet implements Wallet {
   public readonly implementationId = LedgerSimpleAddressWallet.implementationId;
   public readonly deviceState: ValueAndUpdates<LedgerState>;
 
+  // wallet
   private readonly deviceTracker = new StateTracker();
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
   private readonly canSignProducer: DefaultValueProducer<boolean>;
-  private readonly identities: LocalIdentity[];
 
-  // the `i` from https://github.com/iov-one/iov-core/blob/master/docs/KeyBase.md#simple-addresses
-  private readonly simpleAddressIndices: Map<string, number>;
+  // identities
+  private readonly identities: PublicIdentity[];
+  private readonly labels: Map<IdentityId, string | undefined>;
+  private readonly simpleAddressIndices: Map<IdentityId, number>;
 
   constructor(data?: WalletSerializationString) {
     this.canSignProducer = new DefaultValueProducer(false);
@@ -139,8 +142,9 @@ export class LedgerSimpleAddressWallet implements Wallet {
 
     let id: WalletId;
     let label: string | undefined;
-    const identities: LocalIdentity[] = [];
-    const simpleAddressIndices = new Map<string, number>();
+    const identities: PublicIdentity[] = [];
+    const simpleAddressIndices = new Map<IdentityId, number>();
+    const labels = new Map<IdentityId, string | undefined>();
 
     if (data) {
       const decodedData = deserialize(data);
@@ -153,13 +157,13 @@ export class LedgerSimpleAddressWallet implements Wallet {
 
       // identities
       for (const record of decodedData.identities) {
-        const identity = this.buildLocalIdentity(
+        const identity = this.buildIdentity(
           record.localIdentity.chainId as ChainId,
           Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
-          record.localIdentity.label,
         );
         identities.push(identity);
-        simpleAddressIndices.set(identity.id, record.simpleAddressIndex);
+        simpleAddressIndices.set(LedgerSimpleAddressWallet.identityId(identity), record.simpleAddressIndex);
+        labels.set(LedgerSimpleAddressWallet.identityId(identity), record.localIdentity.label);
       }
     } else {
       id = LedgerSimpleAddressWallet.generateId();
@@ -170,6 +174,7 @@ export class LedgerSimpleAddressWallet implements Wallet {
     this.label = new ValueAndUpdates(this.labelProducer);
     this.identities = identities;
     this.simpleAddressIndices = simpleAddressIndices;
+    this.labels = labels;
   }
 
   /**
@@ -197,7 +202,7 @@ export class LedgerSimpleAddressWallet implements Wallet {
     this.labelProducer.update(label);
   }
 
-  public async createIdentity(chainId: ChainId, options: unknown): Promise<LocalIdentity> {
+  public async createIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity> {
     if (typeof options !== "number") {
       throw new Error("Expected numeric argument");
     }
@@ -212,16 +217,18 @@ export class LedgerSimpleAddressWallet implements Wallet {
     const transport = await connectToFirstLedger();
 
     const pubkey = await getPublicKeyWithIndex(transport, index);
-    const newIdentity = this.buildLocalIdentity(chainId, pubkey as PublicKeyBytes, undefined);
+    const newIdentity = this.buildIdentity(chainId, pubkey as PublicKeyBytes);
+    const newIdentityId = LedgerSimpleAddressWallet.identityId(newIdentity);
 
-    if (this.identities.find(i => i.id === newIdentity.id)) {
+    if (this.identities.find(i => LedgerSimpleAddressWallet.identityId(i) === newIdentityId)) {
       throw new Error(
         "Identity Index collision: this happens when you try to create multiple identities with the same index in the same wallet.",
       );
     }
 
     this.identities.push(newIdentity);
-    this.simpleAddressIndices.set(newIdentity.id, index);
+    this.simpleAddressIndices.set(newIdentityId, index);
+    this.labels.set(newIdentityId, undefined);
 
     return newIdentity;
   }
@@ -233,15 +240,22 @@ export class LedgerSimpleAddressWallet implements Wallet {
       throw new Error("identity with id '" + identityId + "' not found");
     }
 
-    // tslint:disable-next-line:no-object-mutation
-    this.identities[index] = {
-      ...this.identities[index],
-      label: label,
-    };
+    this.labels.set(identityId, label);
   }
 
-  public getIdentities(): ReadonlyArray<LocalIdentity> {
-    return this.identities;
+  public getIdentityLabel(identity: PublicIdentity): string | undefined {
+    const identityId = LedgerSimpleAddressWallet.identityId(identity);
+    const index = this.identities.findIndex(i => LedgerSimpleAddressWallet.identityId(i) === identityId);
+    if (index === -1) {
+      throw new Error("identity with id '" + identityId + "' not found");
+    }
+
+    return this.labels.get(identityId);
+  }
+
+  public getIdentities(): ReadonlyArray<PublicIdentity> {
+    // copy array to avoid internal updates to affect caller and vice versa
+    return [...this.identities];
   }
 
   public async createTransactionSignature(
@@ -277,6 +291,7 @@ export class LedgerSimpleAddressWallet implements Wallet {
       id: this.id,
       identities: this.identities.map(identity => {
         const simpleAddressIndex = this.simpleAddressIndex(identity);
+        const label = this.getIdentityLabel(identity);
         return {
           localIdentity: {
             chainId: identity.chainId,
@@ -284,7 +299,7 @@ export class LedgerSimpleAddressWallet implements Wallet {
               algo: identity.pubkey.algo,
               data: Encoding.toHex(identity.pubkey.data),
             },
-            label: identity.label,
+            label: label,
           },
           simpleAddressIndex: simpleAddressIndex,
         };
@@ -307,11 +322,7 @@ export class LedgerSimpleAddressWallet implements Wallet {
     return out;
   }
 
-  private buildLocalIdentity(
-    chainId: ChainId,
-    bytes: PublicKeyBytes,
-    label: string | undefined,
-  ): LocalIdentity {
+  private buildIdentity(chainId: ChainId, bytes: PublicKeyBytes): PublicIdentity {
     if (!chainId) {
       throw new Error("Got empty chain ID when tying to build a local identity.");
     }
@@ -323,10 +334,6 @@ export class LedgerSimpleAddressWallet implements Wallet {
         data: bytes,
       },
     };
-    return {
-      ...publicIdentity,
-      label,
-      id: LedgerSimpleAddressWallet.identityId(publicIdentity),
-    };
+    return publicIdentity;
   }
 }

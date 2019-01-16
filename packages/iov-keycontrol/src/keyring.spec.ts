@@ -181,7 +181,7 @@ describe("Keyring", () => {
     expect(keyring.getWallets()[3]).toEqual(jasmine.any(Ed25519Wallet));
     expect(keyring.getWallets()[3].getIdentities().length).toEqual(4);
 
-    // compare wallet content (via LocalIdentity equality)
+    // compare wallet content (via PublicIdentity equality)
 
     expect(keyring.getWallets()[0].getIdentities()[0]).toEqual(i1a);
 

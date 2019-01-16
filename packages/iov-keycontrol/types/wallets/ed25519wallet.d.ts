@@ -1,6 +1,6 @@
 import { ChainId, PrehashType, PublicIdentity, SignableBytes, SignatureBytes } from "@iov/bcp-types";
 import { ValueAndUpdates } from "@iov/stream";
-import { LocalIdentity, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "../wallet";
+import { Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "../wallet";
 export declare class Ed25519Wallet implements Wallet {
     private static readonly idPool;
     private static readonly idsPrng;
@@ -11,18 +11,20 @@ export declare class Ed25519Wallet implements Wallet {
     readonly canSign: ValueAndUpdates<boolean>;
     readonly implementationId: WalletImplementationIdString;
     readonly id: WalletId;
+    private readonly labelProducer;
     private readonly identities;
     private readonly privkeys;
-    private readonly labelProducer;
+    private readonly labels;
     constructor(data?: WalletSerializationString);
     setLabel(label: string | undefined): void;
-    createIdentity(chainId: ChainId, options: unknown): Promise<LocalIdentity>;
+    createIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity>;
     setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
-    getIdentities(): ReadonlyArray<LocalIdentity>;
+    getIdentityLabel(identity: PublicIdentity): string | undefined;
+    getIdentities(): ReadonlyArray<PublicIdentity>;
     createTransactionSignature(identity: PublicIdentity, transactionBytes: SignableBytes, prehashType: PrehashType): Promise<SignatureBytes>;
     printableSecret(): string;
     serialize(): WalletSerializationString;
     clone(): Ed25519Wallet;
     private privateKeyForIdentity;
-    private buildLocalIdentity;
+    private buildIdentity;
 }

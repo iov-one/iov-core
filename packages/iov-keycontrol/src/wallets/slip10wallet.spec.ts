@@ -97,9 +97,6 @@ describe("Slip10Wallet", () => {
         [newIdentity1, newIdentity2, newIdentity3].map(i => Encoding.toHex(i.pubkey.data)),
       );
       expect(pubkeySet.size).toEqual(3);
-      // all localidentity.ids must be different
-      const idSet = new Set([newIdentity1, newIdentity2, newIdentity3].map(i => i.id));
-      expect(idSet.size).toEqual(3);
 
       expect(newIdentity1.pubkey.data).not.toEqual(newIdentity2.pubkey.data);
       expect(newIdentity2.pubkey.data).not.toEqual(newIdentity3.pubkey.data);
@@ -180,9 +177,6 @@ describe("Slip10Wallet", () => {
         [newIdentity1, newIdentity2, newIdentity3].map(i => Encoding.toHex(i.pubkey.data)),
       );
       expect(pubkeySet.size).toEqual(3);
-      // all localidentity.ids must be different
-      const idSet = new Set([newIdentity1, newIdentity2, newIdentity3].map(i => i.id));
-      expect(idSet.size).toEqual(3);
 
       const identities = wallet.getIdentities();
       expect(identities.length).toEqual(3);
@@ -294,19 +288,17 @@ describe("Slip10Wallet", () => {
   it("can set, change and unset an identity label", async () => {
     const wallet = new Slip10Wallet(emptyWallet);
     const newIdentity = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(0)]);
-    const originalId = newIdentity.id;
-    expect(wallet.getIdentities()[0].label).toBeUndefined();
+
+    expect(wallet.getIdentityLabel(newIdentity)).toBeUndefined();
 
     wallet.setIdentityLabel(newIdentity, "foo");
-    expect(wallet.getIdentities()[0].label).toEqual("foo");
+    expect(wallet.getIdentityLabel(newIdentity)).toEqual("foo");
 
     wallet.setIdentityLabel(newIdentity, "bar");
-    expect(wallet.getIdentities()[0].label).toEqual("bar");
+    expect(wallet.getIdentityLabel(newIdentity)).toEqual("bar");
 
     wallet.setIdentityLabel(newIdentity, undefined);
-    expect(wallet.getIdentities()[0].label).toBeUndefined();
-    const finalId = wallet.getIdentities()[0].id;
-    expect(finalId).toEqual(originalId);
+    expect(wallet.getIdentityLabel(newIdentity)).toBeUndefined();
   });
 
   it("can sign", async () => {
@@ -501,10 +493,11 @@ describe("Slip10Wallet", () => {
       expect(wallet).toBeTruthy();
       expect(wallet.id).toEqual("1elemenT");
       expect(wallet.getIdentities().length).toEqual(1);
-      expect(wallet.getIdentities()[0].chainId).toEqual("xnet");
-      expect(wallet.getIdentities()[0].pubkey.algo).toEqual("ed25519");
-      expect(wallet.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
-      expect(wallet.getIdentities()[0].label).toEqual("foo");
+      const firstIdentity = wallet.getIdentities()[0];
+      expect(firstIdentity.chainId).toEqual("xnet");
+      expect(firstIdentity.pubkey.algo).toEqual("ed25519");
+      expect(firstIdentity.pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
+      expect(wallet.getIdentityLabel(firstIdentity)).toEqual("foo");
     }
 
     {
@@ -544,14 +537,16 @@ describe("Slip10Wallet", () => {
       expect(wallet).toBeTruthy();
       expect(wallet.id).toEqual("2elemeNT");
       expect(wallet.getIdentities().length).toEqual(2);
-      expect(wallet.getIdentities()[0].chainId).toEqual("xnet");
-      expect(wallet.getIdentities()[0].pubkey.algo).toEqual("ed25519");
-      expect(wallet.getIdentities()[0].pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
-      expect(wallet.getIdentities()[0].label).toEqual("foo");
-      expect(wallet.getIdentities()[1].chainId).toEqual("ynet");
-      expect(wallet.getIdentities()[1].pubkey.algo).toEqual("ed25519");
-      expect(wallet.getIdentities()[1].pubkey.data).toEqual(Encoding.fromHex("ddccbbaa"));
-      expect(wallet.getIdentities()[1].label).toEqual("bar");
+      const firstIdentity = wallet.getIdentities()[0];
+      const secondIdentity = wallet.getIdentities()[1];
+      expect(firstIdentity.chainId).toEqual("xnet");
+      expect(firstIdentity.pubkey.algo).toEqual("ed25519");
+      expect(firstIdentity.pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
+      expect(wallet.getIdentityLabel(firstIdentity)).toEqual("foo");
+      expect(secondIdentity.chainId).toEqual("ynet");
+      expect(secondIdentity.pubkey.algo).toEqual("ed25519");
+      expect(secondIdentity.pubkey.data).toEqual(Encoding.fromHex("ddccbbaa"));
+      expect(wallet.getIdentityLabel(secondIdentity)).toEqual("bar");
     }
   });
 

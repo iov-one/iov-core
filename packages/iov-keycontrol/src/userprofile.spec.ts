@@ -228,35 +228,35 @@ describe("UserProfile", () => {
       "perfect clump orphan margin memory amazing morning use snap skate erosion civil",
     );
     profile.addWallet(wallet1);
-    const id1 = wallet1.id;
 
     // make sure we can query the ids if we didn't save them from creation
-    expect(profile.wallets.value.map(i => i.id)).toEqual([id1]);
+    expect(profile.wallets.value.map(i => i.id)).toEqual([wallet1.id]);
 
     const wallet2 = Ed25519HdWallet.fromMnemonic(
       "degree tackle suggest window test behind mesh extra cover prepare oak script",
     );
     profile.addWallet(wallet2);
-    const id2 = wallet2.id;
 
     // make sure we can query the ids if we didn't save them from creation
-    expect(profile.wallets.value.map(i => i.id)).toEqual([id1, id2]);
+    expect(profile.wallets.value.map(i => i.id)).toEqual([wallet1.id, wallet2.id]);
 
     // set the labels
-    profile.setWalletLabel(id1, "first");
-    profile.setWalletLabel(id2, "second");
+    profile.setWalletLabel(wallet1.id, "first");
+    profile.setWalletLabel(wallet2.id, "second");
     expect(profile.wallets.value.map(i => i.label)).toEqual(["first", "second"]);
 
     // make some new ids
-    await profile.createIdentity(id1, defaultChain, HdPaths.simpleAddress(0));
-    const key = await profile.createIdentity(id2, defaultChain, HdPaths.simpleAddress(0));
-    await profile.createIdentity(id2, defaultChain, HdPaths.simpleAddress(1));
-    expect(profile.getIdentities(id1).length).toEqual(1);
-    expect(profile.getIdentities(id2).length).toEqual(2);
+    await profile.createIdentity(wallet1.id, defaultChain, HdPaths.simpleAddress(0));
+    const key = await profile.createIdentity(wallet2.id, defaultChain, HdPaths.simpleAddress(0));
+    await profile.createIdentity(wallet2.id, defaultChain, HdPaths.simpleAddress(1));
+    expect(profile.getIdentities(wallet1.id).length).toEqual(1);
+    expect(profile.getIdentities(wallet2.id).length).toEqual(2);
 
     // set an identity label
-    profile.setIdentityLabel(id2, key, "foobar");
-    const labels = profile.getIdentities(id2).map(x => x.label);
+    profile.setIdentityLabel(wallet2.id, key, "foobar");
+    const labels = profile.getIdentities(wallet2.id).map(identity => {
+      return profile.getIdentityLabel(wallet2.id, identity);
+    });
     expect(labels).toEqual(["foobar", undefined]);
   });
 
