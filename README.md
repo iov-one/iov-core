@@ -25,6 +25,15 @@ prototypes with the current state.
 We are actively building out multiple clients on top of this library and shaking out usability
 issues in the API.
 
+## Users
+
+The following projects use IOV-Core (add yourself via a PR):
+
+| Project                                                 | Tech stack / JavaScript environments |
+|---------------------------------------------------------|--------------------------------------|
+| [TokenFinder](https://github.com/iov-one/token-finder)  | TypeScript / React / Browsers        |
+| [iov-faucet](https://github.com/iov-one/iov-faucet)     | TypeScript / NodeJS 10               |
+
 ## Compatibility
 
 The compiled code from this package, which is published on npm, should work on any modern (2018)
