@@ -244,6 +244,61 @@ describe("LiskConnection", () => {
     });
   });
 
+  describe("getNonces", () => {
+    it("can get 0/1/2 nonces", async () => {
+      pendingWithoutLiskDevnet();
+      const connection = await LiskConnection.establish(devnetBase);
+
+      const addressQuery: BcpAddressQuery = { address: "6472030874529564639L" as Address };
+      const pubkeyQuery: BcpPubkeyQuery = {
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: fromHex("e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6") as PublicKeyBytes,
+        },
+      };
+
+      // by address, 0 nonces
+      {
+        const nonces = await connection.getNonces(addressQuery, 0);
+        expect(nonces.length).toEqual(0);
+      }
+
+      // by address, 1 nonces
+      {
+        const nonces = await connection.getNonces(addressQuery, 1);
+        expect(nonces.length).toEqual(1);
+      }
+
+      // by address, 2 nonces
+      {
+        const nonces = await connection.getNonces(addressQuery, 2);
+        expect(nonces.length).toEqual(2);
+        expect(nonces[1].toNumber()).toEqual(nonces[0].toNumber());
+      }
+
+      // by pubkey, 0 nonces
+      {
+        const nonces = await connection.getNonces(pubkeyQuery, 0);
+        expect(nonces.length).toEqual(0);
+      }
+
+      // by pubkey, 1 nonces
+      {
+        const nonces = await connection.getNonces(pubkeyQuery, 1);
+        expect(nonces.length).toEqual(1);
+      }
+
+      // by pubkey, 2 nonces
+      {
+        const nonces = await connection.getNonces(pubkeyQuery, 2);
+        expect(nonces.length).toEqual(2);
+        expect(nonces[1].toNumber()).toEqual(nonces[0].toNumber());
+      }
+
+      connection.disconnect();
+    });
+  });
+
   describe("watchAccount", () => {
     it("can watch account by address", done => {
       pendingWithoutLiskDevnet();
