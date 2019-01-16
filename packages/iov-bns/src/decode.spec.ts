@@ -7,7 +7,7 @@ import {
   TokenTicker,
   UnsignedTransaction,
 } from "@iov/bcp-types";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Bech32, Encoding, Int53 } from "@iov/encoding";
 
 import {
   decodeAmount,
@@ -65,9 +65,9 @@ describe("Decode", () => {
         },
       },
     };
-    const decoded = decodeBlockchainNft(nft);
+    const decoded = decodeBlockchainNft(nft, "bns-testchain" as ChainId);
     expect(decoded.id).toEqual("alice");
-    expect(decoded.owner).toEqual(fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"));
+    expect(decoded.owner).toEqual(Bech32.encode("tiov", fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472")));
     expect(decoded.chain).toEqual({
       chainId: "wonderland" as ChainId,
       networkId: "7rg047g4h",
@@ -95,9 +95,9 @@ describe("Decode", () => {
         ],
       },
     };
-    const decoded = decodeUsernameNft(nft);
+    const decoded = decodeUsernameNft(nft, "bns-testchain" as ChainId);
     expect(decoded.id).toEqual("alice");
-    expect(decoded.owner).toEqual(fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"));
+    expect(decoded.owner).toEqual(Bech32.encode("tiov", fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472")));
     expect(decoded.addresses.length).toEqual(1);
     expect(decoded.addresses[0]).toEqual({
       chainId: "wonderland" as ChainId,

@@ -33,16 +33,11 @@ export interface ChainAddressPair {
   readonly address: Address;
 }
 
-// NFTs
-
-/** raw address type used to encode NFT owners */
-export type BnsAddressBytes = Uint8Array & As<"bns-address-bytes">;
-
 // blockchain NFT
 
 export interface BnsBlockchainNft {
   readonly id: string;
-  readonly owner: BnsAddressBytes;
+  readonly owner: Address;
   /**
    * The registered chain information
    *
@@ -76,7 +71,7 @@ export function isBnsBlockchainsByChainIdQuery(
 
 export interface BnsUsernameNft {
   readonly id: string;
-  readonly owner: BnsAddressBytes;
+  readonly owner: Address;
   readonly addresses: ReadonlyArray<ChainAddressPair>;
 }
 
