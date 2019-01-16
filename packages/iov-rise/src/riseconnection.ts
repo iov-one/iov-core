@@ -210,8 +210,8 @@ export class RiseConnection implements BcpConnection {
     };
   }
 
-  public getNonce(_: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {
-    return Promise.resolve(generateNonce());
+  public async getNonce(_: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {
+    return generateNonce();
   }
 
   public async getNonces(_: BcpAddressQuery | BcpPubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>> {
