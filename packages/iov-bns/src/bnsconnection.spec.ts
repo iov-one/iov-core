@@ -290,6 +290,55 @@ describe("BnsConnection", () => {
     });
   });
 
+  describe("getNonces", () => {
+    it("can get 0/1/2 nonces", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const { faucet } = await userProfileWithFaucet(connection.chainId());
+      const faucetAddress = identityToAddress(faucet);
+
+      // by address, 0 nonces
+      {
+        const nonces = await connection.getNonces({ address: faucetAddress }, 0);
+        expect(nonces.length).toEqual(0);
+      }
+
+      // by address, 1 nonces
+      {
+        const nonces = await connection.getNonces({ address: faucetAddress }, 1);
+        expect(nonces.length).toEqual(1);
+      }
+
+      // by address, 2 nonces
+      {
+        const nonces = await connection.getNonces({ address: faucetAddress }, 2);
+        expect(nonces.length).toEqual(2);
+        expect(nonces[1].toNumber()).toEqual(nonces[0].toNumber() + 1);
+      }
+
+      // by pubkey, 0 nonces
+      {
+        const nonces = await connection.getNonces({ pubkey: faucet.pubkey }, 0);
+        expect(nonces.length).toEqual(0);
+      }
+
+      // by pubkey, 1 nonces
+      {
+        const nonces = await connection.getNonces({ pubkey: faucet.pubkey }, 1);
+        expect(nonces.length).toEqual(1);
+      }
+
+      // by pubkey, 2 nonces
+      {
+        const nonces = await connection.getNonces({ pubkey: faucet.pubkey }, 2);
+        expect(nonces.length).toEqual(2);
+        expect(nonces[1].toNumber()).toEqual(nonces[0].toNumber() + 1);
+      }
+
+      connection.disconnect();
+    });
+  });
+
   describe("postTx", () => {
     it("can send transaction", async () => {
       pendingWithoutBnsd();

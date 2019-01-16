@@ -327,6 +327,26 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     }
   }
 
+  public async getNonces(
+    query: BcpAddressQuery | BcpPubkeyQuery,
+    count: number,
+  ): Promise<ReadonlyArray<Nonce>> {
+    const checkedCount = new Uint53(count).toNumber();
+    switch (checkedCount) {
+      case 0:
+        return [];
+      default:
+        // uint53 > 0
+        const out = new Array<Nonce>();
+        const firstNonce = await this.getNonce(query);
+        out.push(firstNonce);
+        for (let index = 1; index < checkedCount; index++) {
+          out.push(new Int53(firstNonce.toNumber() + index) as Nonce);
+        }
+        return out;
+    }
+  }
+
   /**
    * All matching swaps that are open (from app state)
    */
