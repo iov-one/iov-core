@@ -613,7 +613,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     }
 
     const parser = createParser(codecImpl.blockchain.BlockchainToken, "bchnft:");
-    const nfts = results.map(parser).map(decodeBlockchainNft);
+    const nfts = results.map(parser).map(nft => decodeBlockchainNft(nft, this.chainId()));
     return nfts;
   }
 
@@ -633,7 +633,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     }
 
     const parser = createParser(codecImpl.username.UsernameToken, "usrnft:");
-    const nfts = results.map(parser).map(decodeUsernameNft);
+    const nfts = results.map(parser).map(nft => decodeUsernameNft(nft, this.chainId()));
     return nfts;
   }
 

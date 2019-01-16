@@ -3,7 +3,6 @@ export { bnsConnector } from "./bnsconnector";
 export { BnsConnection } from "./bnsconnection";
 export { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
 export {
-  BnsAddressBytes,
   // NFTs
   BnsBlockchainNft,
   BnsBlockchainsByChainIdQuery,

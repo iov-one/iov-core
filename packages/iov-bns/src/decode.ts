@@ -23,7 +23,6 @@ import {
   AddAddressToUsernameTx,
   asInt53,
   asNumber,
-  BnsAddressBytes,
   BnsBlockchainNft,
   BnsUsernameNft,
   ChainAddressPair,
@@ -39,10 +38,13 @@ import { addressPrefix, encodeBnsAddress, isHashIdentifier } from "./util";
 
 const { fromUtf8 } = Encoding;
 
-export function decodeBlockchainNft(nft: codecImpl.blockchain.IBlockchainToken): BnsBlockchainNft {
+export function decodeBlockchainNft(
+  nft: codecImpl.blockchain.IBlockchainToken,
+  registryChainId: ChainId,
+): BnsBlockchainNft {
   const base = ensure(nft.base, "base");
   const id = ensure(base.id, "base.id");
-  const owner = ensure(base.owner, "base.owner");
+  const rawOwnerAddress = ensure(base.owner, "base.owner");
 
   const details = ensure(nft.details, "details");
 
@@ -60,7 +62,7 @@ export function decodeBlockchainNft(nft: codecImpl.blockchain.IBlockchainToken):
 
   return {
     id: fromUtf8(id),
-    owner: owner as BnsAddressBytes,
+    owner: encodeBnsAddress(addressPrefix(registryChainId), rawOwnerAddress),
     chain: {
       chainId: chainId as ChainId,
       name: name,
@@ -75,17 +77,20 @@ export function decodeBlockchainNft(nft: codecImpl.blockchain.IBlockchainToken):
   };
 }
 
-export function decodeUsernameNft(nft: codecImpl.username.IUsernameToken): BnsUsernameNft {
+export function decodeUsernameNft(
+  nft: codecImpl.username.IUsernameToken,
+  registryChainId: ChainId,
+): BnsUsernameNft {
   const base = ensure(nft.base, "base");
   const id = ensure(base.id, "base.id");
-  const owner = ensure(base.owner, "base.owner");
+  const rawOwnerAddress = ensure(base.owner, "base.owner");
 
   const details = ensure(nft.details, "details");
   const addresses = ensure(details.addresses, "details.addresses");
 
   return {
     id: fromUtf8(id),
-    owner: owner as BnsAddressBytes,
+    owner: encodeBnsAddress(addressPrefix(registryChainId), rawOwnerAddress),
     addresses: addresses.map(pair => ({
       chainId: fromUtf8(ensure(pair.chainID, "details.addresses[n].chainID")) as ChainId,
       address: fromUtf8(ensure(pair.address, "details.addresses[n].address")) as Address,

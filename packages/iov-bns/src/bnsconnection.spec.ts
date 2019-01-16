@@ -34,14 +34,13 @@ import { BnsConnection } from "./bnsconnection";
 import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
 import {
   AddAddressToUsernameTx,
-  BnsAddressBytes,
   isRegisterBlockchainTx,
   isRegisterUsernameTx,
   RegisterBlockchainTx,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
 } from "./types";
-import { decodeBnsAddress, encodeBnsAddress, identityToAddress } from "./util";
+import { encodeBnsAddress, identityToAddress } from "./util";
 
 function skipTests(): boolean {
   return !process.env.BNSD_ENABLED;
@@ -1045,7 +1044,7 @@ describe("BnsConnection", () => {
         const results = await connection.getBlockchains({ chainId: chainId });
         expect(results.length).toEqual(1);
         expect(results[0].id).toEqual(chainId);
-        expect(results[0].owner).toEqual(decodeBnsAddress(identityAddress).data as BnsAddressBytes);
+        expect(results[0].owner).toEqual(identityAddress);
         expect(results[0].chain).toEqual({
           chainId: chainId,
           production: false,
@@ -1101,7 +1100,7 @@ describe("BnsConnection", () => {
         expect(results.length).toEqual(1);
         expect(results[0]).toEqual({
           id: username,
-          owner: decodeBnsAddress(identityAddress).data as BnsAddressBytes,
+          owner: identityAddress,
           addresses: [],
         });
       }
@@ -1206,7 +1205,7 @@ describe("BnsConnection", () => {
         expect(results.length).toEqual(1);
         expect(results[0]).toEqual({
           id: username,
-          owner: decodeBnsAddress(identityAddress).data as BnsAddressBytes,
+          owner: identityAddress,
           addresses: [
             {
               chainId: chainId,
