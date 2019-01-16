@@ -234,6 +234,53 @@ describe("EthereumConnection", () => {
     });
   });
 
+  describe("getNonces", () => {
+    it("can get 0/1/2 nonces", async () => {
+      pendingWithoutEthereum();
+      const connection = await EthereumConnection.establish(testConfig.base);
+
+      // by address, 0 nonces
+      {
+        const nonces = await connection.getNonces({ address: testConfig.address }, 0);
+        expect(nonces.length).toEqual(0);
+      }
+
+      // by address, 1 nonces
+      {
+        const nonces = await connection.getNonces({ address: testConfig.address }, 1);
+        expect(nonces.length).toEqual(1);
+      }
+
+      // by address, 2 nonces
+      {
+        const nonces = await connection.getNonces({ address: testConfig.address }, 2);
+        expect(nonces.length).toEqual(2);
+        expect(nonces[1].toNumber()).toEqual(nonces[0].toNumber() + 1);
+      }
+
+      // by pubkey, 0 nonces
+      {
+        const nonces = await connection.getNonces({ pubkey: testConfig.pubkey }, 0);
+        expect(nonces.length).toEqual(0);
+      }
+
+      // by pubkey, 1 nonces
+      {
+        const nonces = await connection.getNonces({ pubkey: testConfig.pubkey }, 1);
+        expect(nonces.length).toEqual(1);
+      }
+
+      // by pubkey, 2 nonces
+      {
+        const nonces = await connection.getNonces({ pubkey: testConfig.pubkey }, 2);
+        expect(nonces.length).toEqual(2);
+        expect(nonces[1].toNumber()).toEqual(nonces[0].toNumber() + 1);
+      }
+
+      connection.disconnect();
+    });
+  });
+
   describe("postTx", () => {
     it("can post transaction", async () => {
       pendingWithoutEthereum();
