@@ -212,6 +212,16 @@ export interface BcpConnection {
    * Implementation defines a default value if blockchain does not provide a nonce.
    */
   readonly getNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Promise<Nonce>;
+  /**
+   * Get multiple nonces at once to sign multiple transactions
+   *
+   * This avoids querying the blockchain for every nonce and removes the need to
+   * wait for blocks before getting updated nonces.
+   */
+  readonly getNonces: (
+    query: BcpAddressQuery | BcpPubkeyQuery,
+    count: number,
+  ) => Promise<ReadonlyArray<Nonce>>;
 
   // blocks
   readonly getBlockHeader: (height: number) => Promise<BlockHeader>;
