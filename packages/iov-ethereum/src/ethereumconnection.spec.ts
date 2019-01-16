@@ -166,7 +166,7 @@ describe("EthereumConnection", () => {
     it("can get account from address", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(testConfig.base);
-      const account = await connection.getAccount({ address: testConfig.address as Address });
+      const account = await connection.getAccount({ address: testConfig.address });
       expect(account).toBeDefined();
       expect(account!.address).toEqual(testConfig.address);
       expect(account!.balance[0]).toEqual({
@@ -220,7 +220,7 @@ describe("EthereumConnection", () => {
 
     // by address
     {
-      const nonce = await connection.getNonce({ address: testConfig.address as Address });
+      const nonce = await connection.getNonce({ address: testConfig.address });
       expect(nonce).toEqual(testConfig.nonce);
     }
 
