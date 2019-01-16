@@ -338,12 +338,9 @@ describe("EthereumConnection", () => {
   describe("watchAccount", () => {
     it("can watch an account", done => {
       pendingWithoutEthereum();
-      pendingWithoutEthereumScraper();
 
       (async () => {
-        const connection = await EthereumConnection.establish(testConfig.base, {
-          scraperApiUrl: testConfig.scraper!.apiUrl,
-        });
+        const connection = await EthereumConnection.establish(testConfig.base);
 
         const recipient = await randomAddress();
 

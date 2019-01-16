@@ -39,6 +39,7 @@
     "@types/long": "^4.0.0",
     "axios": "^0.18.0",
     "bn.js": "^4.11.8",
+    "fast-deep-equal": "^2.0.1",
     "long": "^4.0.0",
     "readonly-date": "^1.0.0",
     "rlp": "^2.2.1",
