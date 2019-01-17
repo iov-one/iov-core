@@ -30,6 +30,8 @@ Breaking changes
 * @iov/bcp-types: Convert `BcpQueryEnvelope` to `BcpTicker | undefined` in return
   type of `BcpConnection.getTicker`.
 * @iov/bns: Convert `.owner` in `BnsUsernameNft` and `BnsBlockchainNft` to `Address`
+* @iov/bns: In `BncConnection.watchBlockHeaders`, the block header events
+  temporarily contain a dummy `id` string until ID calculation is implemented
 * @iov/core: Remove `MultiChainSigner.getNonce`. If you really need this, use
   `signer.connection(chainId).getNonce({ address: addr })` instead.
 * @iov/core: Removed BNS re-exports `bnsConnector`, `bnsFromOrToTag`,

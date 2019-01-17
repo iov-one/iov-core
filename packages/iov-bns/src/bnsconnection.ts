@@ -1,5 +1,5 @@
 import equal from "fast-deep-equal";
-import { Producer, Stream, Subscription } from "xstream";
+import { Stream, Subscription } from "xstream";
 
 import {
   Address,
@@ -558,28 +558,20 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   }
 
   public watchBlockHeaders(): Stream<BlockHeader> {
-    // TODO: this implementation is crazy but currently we have no way to calculate a
-    // block ID from a block header
+    // TODO: ID unavailable because
+    // - we cannot trivially calculate it https://github.com/iov-one/iov-core/issues/618 and
+    // - want to avoid an extra query to the node which causes issues when trying to send to a disconnected socket
+    // Leave it a dummy as long as no application strictly requires the ID
+    const dummyBlockId = "block ID not implemented for Tendermint" as BlockId;
 
-    let headersSubscription: Subscription;
-    // create explicit producer because Steam.map() does not work with async function
-    const producer: Producer<BlockHeader> = {
-      start: listener => {
-        headersSubscription = this.tmClient.subscribeNewBlockHeader().subscribe({
-          next: header => {
-            this.getBlockHeader(header.height)
-              .then(blockHeader => listener.next(blockHeader))
-              .catch(error => listener.error(error));
-          },
-          error: error => listener.error(error),
-          complete: () => listener.error("Source stream completed"),
-        });
-      },
-      stop: () => {
-        headersSubscription.unsubscribe();
-      },
-    };
-    return Stream.create(producer);
+    return this.tmClient.subscribeNewBlockHeader().map(tmHeader => {
+      return {
+        id: dummyBlockId,
+        height: tmHeader.height,
+        time: tmHeader.time,
+        transactionCount: tmHeader.numTxs,
+      };
+    });
   }
 
   /** @deprecated use watchBlockHeaders().map(header => header.height) */
