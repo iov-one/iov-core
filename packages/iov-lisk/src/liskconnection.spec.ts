@@ -229,7 +229,7 @@ describe("LiskConnection", () => {
     connection.disconnect();
   });
 
-  describe("getHeader", () => {
+  describe("getBlockHeader", () => {
     it("throws for invalid height arguments", async () => {
       pendingWithoutLiskDevnet();
       const connection = await LiskConnection.establish(devnetBase);

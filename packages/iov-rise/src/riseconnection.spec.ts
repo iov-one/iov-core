@@ -209,7 +209,7 @@ describe("RiseConnection", () => {
     connection.disconnect();
   });
 
-  describe("getHeader", () => {
+  describe("getBlockHeader", () => {
     it("throws for invalid height arguments", async () => {
       const connection = await RiseConnection.establish(base);
 
