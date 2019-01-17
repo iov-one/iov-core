@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.4
+
+* @iov/lisk: Implement `LiskConnection.watchAccount`
+* @iov/rise: Implement `RiseConnection.watchAccount`
+
 ## 0.10.3
 
 * @iov/cli: Fix levelup import

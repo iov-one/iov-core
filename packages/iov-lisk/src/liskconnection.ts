@@ -1,7 +1,7 @@
 import axios from "axios";
 import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
-import { Stream } from "xstream";
+import { Producer, Stream } from "xstream";
 
 import { Algorithm, ChainId, PostableBytes, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import {
@@ -215,8 +215,46 @@ export class LiskConnection implements BcpConnection {
     return Promise.resolve(dummyEnvelope([generateNonce()]));
   }
 
-  public watchAccount(_: BcpAccountQuery): Stream<BcpAccount | undefined> {
-    throw new Error("Not implemented");
+  public watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined> {
+    let lastEvent: any = {}; // default to a dummy value to ensure an initial undefined event is sent
+    let pollInternal: NodeJS.Timeout | undefined;
+    const producer: Producer<BcpAccount | undefined> = {
+      start: listener => {
+        const poll = async () => {
+          try {
+            const resultData = (await this.getAccount(query)).data;
+            let event: BcpAccount | undefined;
+            switch (resultData.length) {
+              case 0:
+                event = undefined;
+                break;
+              case 1:
+                event = resultData[0];
+                break;
+              default:
+                throw new Error("Got unexpected number of elements");
+            }
+            if (!equal(event, lastEvent)) {
+              listener.next(event);
+              lastEvent = event;
+            }
+          } catch (error) {
+            listener.error(error);
+          }
+        };
+
+        pollInternal = setInterval(poll, 5_000);
+        poll();
+      },
+      stop: () => {
+        if (pollInternal) {
+          clearInterval(pollInternal);
+          pollInternal = undefined;
+        }
+      },
+    };
+
+    return Stream.create(producer);
   }
 
   public watchNonce(_: BcpAddressQuery | BcpPubkeyQuery): Stream<Nonce | undefined> {
