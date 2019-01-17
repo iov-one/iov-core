@@ -5,7 +5,7 @@ import { ChainId, Nonce, PublicIdentity, SignedTransaction, TxCodec, UnsignedTra
 import { Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { Keyring } from "./keyring";
-import { LocalIdentity, Wallet, WalletId } from "./wallet";
+import { Wallet, WalletId } from "./wallet";
 import { Ed25519Wallet } from "./wallets";
 export interface UserProfileOptions {
     readonly createdAt: ReadonlyDate;
@@ -48,11 +48,16 @@ export declare class UserProfile {
      * The identity is bound to one chain ID to encourage using different
      * keypairs on different chains.
      */
-    createIdentity(id: WalletId, chainId: ChainId, options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number): Promise<LocalIdentity>;
+    createIdentity(id: WalletId, chainId: ChainId, options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number): Promise<PublicIdentity>;
     /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
     setIdentityLabel(id: WalletId, identity: PublicIdentity, label: string | undefined): void;
+    /**
+     * Gets the local label of one of the identities in the wallet with the given ID
+     * in the primary keyring
+     */
+    getIdentityLabel(id: WalletId, identity: PublicIdentity): string | undefined;
     /** Get identities of the wallet with the given ID in the primary keyring  */
-    getIdentities(id: WalletId): ReadonlyArray<LocalIdentity>;
+    getIdentities(id: WalletId): ReadonlyArray<PublicIdentity>;
     signTransaction(id: WalletId, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
     appendSignature(id: WalletId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
     /**

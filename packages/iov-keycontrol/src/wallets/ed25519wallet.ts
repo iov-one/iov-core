@@ -1,4 +1,5 @@
 import PseudoRandom from "random-js";
+import { As } from "type-tagger";
 
 import {
   Algorithm,
@@ -14,14 +15,7 @@ import { Encoding } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { prehash } from "../prehashing";
-import {
-  LocalIdentity,
-  LocalIdentityId,
-  Wallet,
-  WalletId,
-  WalletImplementationIdString,
-  WalletSerializationString,
-} from "../wallet";
+import { Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "../wallet";
 
 interface PubkeySerialization {
   readonly algo: string;
@@ -82,6 +76,8 @@ function deserialize(data: WalletSerializationString): Ed25519WalletSerializatio
   return doc;
 }
 
+type IdentityId = string & As<"identity-id">;
+
 export class Ed25519Wallet implements Wallet {
   private static readonly idPool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   private static readonly idsPrng: PseudoRandom.Engine = PseudoRandom.engines.mt19937().autoSeed();
@@ -92,9 +88,9 @@ export class Ed25519Wallet implements Wallet {
     return code as WalletId;
   }
 
-  private static identityId(identity: PublicIdentity): LocalIdentityId {
+  private static identityId(identity: PublicIdentity): IdentityId {
     const id = [identity.chainId, identity.pubkey.algo, Encoding.toHex(identity.pubkey.data)].join("|");
-    return id as LocalIdentityId;
+    return id as IdentityId;
   }
 
   private static algorithmFromString(input: string): Algorithm {
@@ -113,15 +109,20 @@ export class Ed25519Wallet implements Wallet {
   public readonly implementationId = "ed25519" as WalletImplementationIdString;
   public readonly id: WalletId;
 
-  private readonly identities: LocalIdentity[];
-  private readonly privkeys: Map<string, Ed25519Keypair>;
+  // wallet
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
+
+  // identities
+  private readonly identities: PublicIdentity[];
+  private readonly privkeys: Map<IdentityId, Ed25519Keypair>;
+  private readonly labels: Map<IdentityId, string | undefined>;
 
   constructor(data?: WalletSerializationString) {
     let id: WalletId;
     let label: string | undefined;
-    const identities: LocalIdentity[] = [];
-    const privkeys = new Map<string, Ed25519Keypair>();
+    const identities: PublicIdentity[] = [];
+    const privkeys = new Map<IdentityId, Ed25519Keypair>();
+    const labels = new Map<IdentityId, string | undefined>();
 
     if (data) {
       const decodedData = deserialize(data);
@@ -139,13 +140,13 @@ export class Ed25519Wallet implements Wallet {
         if (Ed25519Wallet.algorithmFromString(record.localIdentity.pubkey.algo) !== Algorithm.Ed25519) {
           throw new Error("This keyring only supports ed25519 private keys");
         }
-        const identity = this.buildLocalIdentity(
+        const identity = this.buildIdentity(
           record.localIdentity.chainId as ChainId,
           keypair.pubkey as PublicKeyBytes,
-          record.localIdentity.label,
         );
         identities.push(identity);
-        privkeys.set(identity.id, keypair);
+        privkeys.set(Ed25519Wallet.identityId(identity), keypair);
+        labels.set(Ed25519Wallet.identityId(identity), record.localIdentity.label);
       }
     } else {
       id = Ed25519Wallet.generateId();
@@ -153,6 +154,7 @@ export class Ed25519Wallet implements Wallet {
 
     this.identities = identities;
     this.privkeys = privkeys;
+    this.labels = labels;
     this.labelProducer = new DefaultValueProducer<string | undefined>(label);
     this.label = new ValueAndUpdates(this.labelProducer);
     this.id = id;
@@ -162,21 +164,23 @@ export class Ed25519Wallet implements Wallet {
     this.labelProducer.update(label);
   }
 
-  public async createIdentity(chainId: ChainId, options: unknown): Promise<LocalIdentity> {
+  public async createIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity> {
     if (!(options instanceof Ed25519Keypair)) {
       throw new Error("Ed25519.createIdentity requires a keypair argument");
     }
     const keypair = options;
 
-    const newIdentity = this.buildLocalIdentity(chainId, keypair.pubkey as PublicKeyBytes, undefined);
+    const newIdentity = this.buildIdentity(chainId, keypair.pubkey as PublicKeyBytes);
+    const newIdentityId = Ed25519Wallet.identityId(newIdentity);
 
-    if (this.identities.find(i => i.id === newIdentity.id)) {
+    if (this.identities.find(i => Ed25519Wallet.identityId(i) === newIdentityId)) {
       throw new Error(
         "Identity ID collision: this happens when you try to create multiple identities with the same keypair in the same wallet.",
       );
     }
 
-    this.privkeys.set(newIdentity.id, keypair);
+    this.privkeys.set(newIdentityId, keypair);
+    this.labels.set(newIdentityId, undefined);
     this.identities.push(newIdentity);
     return newIdentity;
   }
@@ -188,15 +192,22 @@ export class Ed25519Wallet implements Wallet {
       throw new Error("identity with id '" + identityId + "' not found");
     }
 
-    // tslint:disable-next-line:no-object-mutation
-    this.identities[index] = {
-      ...this.identities[index],
-      label: label,
-    };
+    this.labels.set(identityId, label);
   }
 
-  public getIdentities(): ReadonlyArray<LocalIdentity> {
-    return this.identities;
+  public getIdentityLabel(identity: PublicIdentity): string | undefined {
+    const identityId = Ed25519Wallet.identityId(identity);
+    const index = this.identities.findIndex(i => Ed25519Wallet.identityId(i) === identityId);
+    if (index === -1) {
+      throw new Error("identity with id '" + identityId + "' not found");
+    }
+
+    return this.labels.get(identityId);
+  }
+
+  public getIdentities(): ReadonlyArray<PublicIdentity> {
+    // copy array to avoid internal updates to affect caller and vice versa
+    return [...this.identities];
   }
 
   public async createTransactionSignature(
@@ -223,6 +234,7 @@ export class Ed25519Wallet implements Wallet {
       label: this.label.value,
       identities: this.identities.map(identity => {
         const keypair = this.privateKeyForIdentity(identity);
+        const label = this.getIdentityLabel(identity);
         return {
           localIdentity: {
             chainId: identity.chainId,
@@ -230,7 +242,7 @@ export class Ed25519Wallet implements Wallet {
               algo: identity.pubkey.algo,
               data: Encoding.toHex(identity.pubkey.data),
             },
-            label: identity.label,
+            label: label,
           },
           privkey: Encoding.toHex(keypair.privkey),
         };
@@ -253,11 +265,7 @@ export class Ed25519Wallet implements Wallet {
     return privkey;
   }
 
-  private buildLocalIdentity(
-    chainId: ChainId,
-    bytes: PublicKeyBytes,
-    label: string | undefined,
-  ): LocalIdentity {
+  private buildIdentity(chainId: ChainId, bytes: PublicKeyBytes): PublicIdentity {
     if (!chainId) {
       throw new Error("Got empty chain ID when tying to build a local identity.");
     }
@@ -269,10 +277,6 @@ export class Ed25519Wallet implements Wallet {
         data: bytes,
       },
     };
-    return {
-      ...publicIdentity,
-      label: label,
-      id: Ed25519Wallet.identityId(publicIdentity),
-    };
+    return publicIdentity;
   }
 }

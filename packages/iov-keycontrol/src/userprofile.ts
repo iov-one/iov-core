@@ -18,7 +18,7 @@ import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { Keyring } from "./keyring";
 import { EncryptedKeyring, KeyringEncryptor } from "./keyringencryptor";
 import { DatabaseUtils } from "./utils";
-import { LocalIdentity, Wallet, WalletId } from "./wallet";
+import { Wallet, WalletId } from "./wallet";
 import { Ed25519Wallet } from "./wallets";
 
 const { toAscii, fromBase64, toBase64, toRfc3339, fromRfc3339 } = Encoding;
@@ -174,7 +174,7 @@ export class UserProfile {
     id: WalletId,
     chainId: ChainId,
     options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number,
-  ): Promise<LocalIdentity> {
+  ): Promise<PublicIdentity> {
     const wallet = this.findWalletInPrimaryKeyring(id);
     return wallet.createIdentity(chainId, options);
   }
@@ -185,8 +185,17 @@ export class UserProfile {
     wallet.setIdentityLabel(identity, label);
   }
 
+  /**
+   * Gets the local label of one of the identities in the wallet with the given ID
+   * in the primary keyring
+   */
+  public getIdentityLabel(id: WalletId, identity: PublicIdentity): string | undefined {
+    const wallet = this.findWalletInPrimaryKeyring(id);
+    return wallet.getIdentityLabel(identity);
+  }
+
   /** Get identities of the wallet with the given ID in the primary keyring  */
-  public getIdentities(id: WalletId): ReadonlyArray<LocalIdentity> {
+  public getIdentities(id: WalletId): ReadonlyArray<PublicIdentity> {
     const wallet = this.findWalletInPrimaryKeyring(id);
     return wallet.getIdentities();
   }

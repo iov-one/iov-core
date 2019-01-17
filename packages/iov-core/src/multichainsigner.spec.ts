@@ -13,7 +13,7 @@ import { bnsCodec, bnsConnector, bnsFromOrToTag } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { ethereumConnector } from "@iov/ethereum";
-import { Ed25519HdWallet, HdPaths, LocalIdentity, UserProfile, WalletId } from "@iov/keycontrol";
+import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";
 
@@ -68,7 +68,7 @@ describe("MultiChainSigner", () => {
       chainId: ChainId,
     ): Promise<{
       readonly mainWalletId: WalletId;
-      readonly faucet: LocalIdentity;
+      readonly faucet: PublicIdentity;
     }> {
       const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic));
       const faucet = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(0));

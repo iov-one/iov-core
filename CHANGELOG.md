@@ -41,6 +41,8 @@ Breaking changes
   `Wallet.createIdentity`
 * @iov/keycontrol: Remove redundant chainId parameter from
   `Wallet.createTransactionSignature`
+* @iov/keycontrol: Remove `LocalIdentity`/`LocalIdentityId` and create
+  `UserProdile.getIdentityLabel` to provide labels
 * @iov/tendermint-rpc: Remove support for Tendermint 0.20 and 0.21
 * @iov/crypto: Remove support for ripemd160
 

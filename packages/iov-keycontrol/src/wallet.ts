@@ -6,21 +6,6 @@ import { ValueAndUpdates } from "@iov/stream";
 
 import { Ed25519Wallet } from "./wallets";
 
-export type LocalIdentityId = string & As<"local-identity-id">;
-
-/**
- * a local version of a PublicIdentity that contains
- * additional local information
- */
-export interface LocalIdentity extends PublicIdentity {
-  // immutible id string based on pubkey
-  readonly id: LocalIdentityId;
-
-  // An optional, local label.
-  // This is not exposed to other people or other devices. Use BNS registration for that.
-  readonly label?: string;
-}
-
 export type WalletId = string & As<"wallet-id">;
 export type WalletImplementationIdString = string & As<"wallet-implementation-id">;
 export type WalletSerializationString = string & As<"wallet-serialization">;
@@ -56,14 +41,23 @@ export interface Wallet {
   readonly createIdentity: (
     chainId: ChainId,
     options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number,
-  ) => Promise<LocalIdentity>;
+  ) => Promise<PublicIdentity>;
 
-  // Sets a local label associated with the public identity to be displayed in the UI.
-  // To clear a label, set it to undefined
+  /**
+   * Sets a local label associated with the public identity to be displayed in the UI.
+   * To clear a label, set it to undefined
+   */
   readonly setIdentityLabel: (identity: PublicIdentity, label: string | undefined) => void;
 
-  // getIdentities returns all identities currently registered
-  readonly getIdentities: () => ReadonlyArray<LocalIdentity>;
+  /**
+   * Gets a local label associated with the public identity to be displayed in the UI.
+   */
+  readonly getIdentityLabel: (identity: PublicIdentity) => string | undefined;
+
+  /**
+   * Returns all identities currently registered
+   */
+  readonly getIdentities: () => ReadonlyArray<PublicIdentity>;
 
   // canSign flag means the private key material is currently accessible.
   // If a hardware ledger is not plugged in, we may see the public keys,

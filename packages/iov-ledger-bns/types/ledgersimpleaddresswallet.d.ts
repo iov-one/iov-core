@@ -1,5 +1,5 @@
 import { ChainId, PrehashType, PublicIdentity, SignableBytes, SignatureBytes } from "@iov/bcp-types";
-import { LocalIdentity, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "@iov/keycontrol";
+import { Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "@iov/keycontrol";
 import { ValueAndUpdates } from "@iov/stream";
 import { LedgerState } from "./statetracker";
 export declare class LedgerSimpleAddressWallet implements Wallet {
@@ -21,6 +21,7 @@ export declare class LedgerSimpleAddressWallet implements Wallet {
     private readonly labelProducer;
     private readonly canSignProducer;
     private readonly identities;
+    private readonly labels;
     private readonly simpleAddressIndices;
     constructor(data?: WalletSerializationString);
     /**
@@ -39,13 +40,14 @@ export declare class LedgerSimpleAddressWallet implements Wallet {
      */
     stopDeviceTracking(): void;
     setLabel(label: string | undefined): void;
-    createIdentity(chainId: ChainId, options: unknown): Promise<LocalIdentity>;
+    createIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity>;
     setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
-    getIdentities(): ReadonlyArray<LocalIdentity>;
+    getIdentityLabel(identity: PublicIdentity): string | undefined;
+    getIdentities(): ReadonlyArray<PublicIdentity>;
     createTransactionSignature(identity: PublicIdentity, transactionBytes: SignableBytes, prehashType: PrehashType): Promise<SignatureBytes>;
     printableSecret(): string;
     serialize(): WalletSerializationString;
     clone(): Wallet;
     private simpleAddressIndex;
-    private buildLocalIdentity;
+    private buildIdentity;
 }

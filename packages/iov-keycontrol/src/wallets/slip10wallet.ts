@@ -1,4 +1,5 @@
 import PseudoRandom from "random-js";
+import { As } from "type-tagger";
 
 import {
   Algorithm,
@@ -23,14 +24,7 @@ import { Encoding } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { prehash } from "../prehashing";
-import {
-  LocalIdentity,
-  LocalIdentityId,
-  Wallet,
-  WalletId,
-  WalletImplementationIdString,
-  WalletSerializationString,
-} from "../wallet";
+import { Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "../wallet";
 
 interface PubkeySerialization {
   readonly algo: string;
@@ -104,6 +98,8 @@ function deserialize(data: WalletSerializationString): Slip10WalletSerialization
   return doc;
 }
 
+type IdentityId = string & As<"identity-id">;
+
 export class Slip10Wallet implements Wallet {
   public static fromEntropyWithCurve(
     curve: Slip10Curve,
@@ -139,9 +135,9 @@ export class Slip10Wallet implements Wallet {
     return code as WalletId;
   }
 
-  private static identityId(identity: PublicIdentity): LocalIdentityId {
+  private static identityId(identity: PublicIdentity): IdentityId {
     const id = [identity.chainId, identity.pubkey.algo, Encoding.toHex(identity.pubkey.data)].join("|");
-    return id as LocalIdentityId;
+    return id as IdentityId;
   }
 
   private static algorithmFromCurve(curve: Slip10Curve): Algorithm {
@@ -171,11 +167,15 @@ export class Slip10Wallet implements Wallet {
   public readonly implementationId = "override me!" as WalletImplementationIdString;
   public readonly id: WalletId;
 
+  // wallet
   private readonly secret: EnglishMnemonic;
   private readonly curve: Slip10Curve;
-  private readonly identities: LocalIdentity[];
-  private readonly privkeyPaths: Map<string, ReadonlyArray<Slip10RawIndex>>;
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
+
+  // identities
+  private readonly identities: PublicIdentity[];
+  private readonly privkeyPaths: Map<IdentityId, ReadonlyArray<Slip10RawIndex>>;
+  private readonly labels: Map<IdentityId, string | undefined>;
 
   constructor(data: WalletSerializationString) {
     const decodedData = deserialize(data);
@@ -194,8 +194,9 @@ export class Slip10Wallet implements Wallet {
     this.label = new ValueAndUpdates(this.labelProducer);
 
     // identities
-    const identities: LocalIdentity[] = [];
-    const privkeyPaths = new Map<string, ReadonlyArray<Slip10RawIndex>>();
+    const identities: PublicIdentity[] = [];
+    const privkeyPaths = new Map<IdentityId, ReadonlyArray<Slip10RawIndex>>();
+    const labels = new Map<IdentityId, string | undefined>();
     for (const record of decodedData.identities) {
       const algorithm = Slip10Wallet.algorithmFromString(record.localIdentity.pubkey.algo);
       if (algorithm !== Slip10Wallet.algorithmFromCurve(this.curve)) {
@@ -204,26 +205,28 @@ export class Slip10Wallet implements Wallet {
         );
       }
 
-      const identity = this.buildLocalIdentity(
+      const identity = this.buildIdentity(
         record.localIdentity.chainId as ChainId,
         Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
-        record.localIdentity.label,
       );
-      const privkeyPath: ReadonlyArray<Slip10RawIndex> = record.privkeyPath.map(n => new Slip10RawIndex(n));
 
+      const privkeyPath: ReadonlyArray<Slip10RawIndex> = record.privkeyPath.map(n => new Slip10RawIndex(n));
+      privkeyPaths.set(Slip10Wallet.identityId(identity), privkeyPath);
+      labels.set(Slip10Wallet.identityId(identity), record.localIdentity.label);
       identities.push(identity);
-      privkeyPaths.set(identity.id, privkeyPath);
     }
 
     this.identities = identities;
+
     this.privkeyPaths = privkeyPaths;
+    this.labels = labels;
   }
 
   public setLabel(label: string | undefined): void {
     this.labelProducer.update(label);
   }
 
-  public async createIdentity(chainId: ChainId, options: unknown): Promise<LocalIdentity> {
+  public async createIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity> {
     if (!isPath(options)) {
       throw new Error("Did not get the correct argument type. Expected array of Slip10RawIndex");
     }
@@ -250,15 +253,17 @@ export class Slip10Wallet implements Wallet {
         throw new Error("Unknown curve");
     }
 
-    const newIdentity = this.buildLocalIdentity(chainId, pubkeyBytes, undefined);
+    const newIdentity = this.buildIdentity(chainId, pubkeyBytes);
+    const newIdentityId = Slip10Wallet.identityId(newIdentity);
 
-    if (this.identities.find(i => i.id === newIdentity.id)) {
+    if (this.identities.find(i => Slip10Wallet.identityId(i) === newIdentityId)) {
       throw new Error(
         "Identity ID collision: this happens when you try to create multiple identities with the same path in the same wallet.",
       );
     }
 
-    this.privkeyPaths.set(newIdentity.id, path);
+    this.privkeyPaths.set(newIdentityId, path);
+    this.labels.set(newIdentityId, undefined);
     this.identities.push(newIdentity);
 
     return newIdentity;
@@ -270,16 +275,22 @@ export class Slip10Wallet implements Wallet {
     if (index === -1) {
       throw new Error("identity with id '" + identityId + "' not found");
     }
-
-    // tslint:disable-next-line:no-object-mutation
-    this.identities[index] = {
-      ...this.identities[index],
-      label: label,
-    };
+    this.labels.set(identityId, label);
   }
 
-  public getIdentities(): ReadonlyArray<LocalIdentity> {
-    return this.identities;
+  public getIdentityLabel(identity: PublicIdentity): string | undefined {
+    const identityId = Slip10Wallet.identityId(identity);
+    const index = this.identities.findIndex(i => Slip10Wallet.identityId(i) === identityId);
+    if (index === -1) {
+      throw new Error("identity with id '" + identityId + "' not found");
+    }
+
+    return this.labels.get(identityId);
+  }
+
+  public getIdentities(): ReadonlyArray<PublicIdentity> {
+    // copy array to avoid internal updates to affect caller and vice versa
+    return [...this.identities];
   }
 
   public async createTransactionSignature(
@@ -335,6 +346,7 @@ export class Slip10Wallet implements Wallet {
   public serialize(): WalletSerializationString {
     const serializedIdentities = this.identities.map(
       (identity): IdentitySerialization => {
+        const label = this.getIdentityLabel(identity);
         const privkeyPath = this.privkeyPathForIdentity(identity);
         return {
           localIdentity: {
@@ -343,7 +355,7 @@ export class Slip10Wallet implements Wallet {
               algo: identity.pubkey.algo,
               data: Encoding.toHex(identity.pubkey.data),
             },
-            label: identity.label,
+            label: label,
           },
           privkeyPath: privkeyPath.map(rawIndex => rawIndex.asNumber()),
         };
@@ -383,11 +395,7 @@ export class Slip10Wallet implements Wallet {
     return derivationResult.privkey;
   }
 
-  private buildLocalIdentity(
-    chainId: ChainId,
-    bytes: PublicKeyBytes,
-    label: string | undefined,
-  ): LocalIdentity {
+  private buildIdentity(chainId: ChainId, bytes: PublicKeyBytes): PublicIdentity {
     if (!chainId) {
       throw new Error("Got empty chain ID when tying to build a local identity.");
     }
@@ -400,10 +408,6 @@ export class Slip10Wallet implements Wallet {
         data: bytes,
       },
     };
-    return {
-      ...publicIdentity,
-      label: label,
-      id: Slip10Wallet.identityId(publicIdentity),
-    };
+    return publicIdentity;
   }
 }

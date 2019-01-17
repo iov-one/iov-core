@@ -1,7 +1,7 @@
 import { ChainId, PrehashType, PublicIdentity, SignableBytes, SignatureBytes } from "@iov/bcp-types";
 import { Slip10Curve } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
-import { LocalIdentity, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "../wallet";
+import { Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "../wallet";
 interface Slip10WalletConstructor {
     new (data: WalletSerializationString): Slip10Wallet;
 }
@@ -20,20 +20,22 @@ export declare class Slip10Wallet implements Wallet {
     readonly id: WalletId;
     private readonly secret;
     private readonly curve;
+    private readonly labelProducer;
     private readonly identities;
     private readonly privkeyPaths;
-    private readonly labelProducer;
+    private readonly labels;
     constructor(data: WalletSerializationString);
     setLabel(label: string | undefined): void;
-    createIdentity(chainId: ChainId, options: unknown): Promise<LocalIdentity>;
+    createIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity>;
     setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
-    getIdentities(): ReadonlyArray<LocalIdentity>;
+    getIdentityLabel(identity: PublicIdentity): string | undefined;
+    getIdentities(): ReadonlyArray<PublicIdentity>;
     createTransactionSignature(identity: PublicIdentity, transactionBytes: SignableBytes, prehashType: PrehashType): Promise<SignatureBytes>;
     printableSecret(): string;
     serialize(): WalletSerializationString;
     clone(): Slip10Wallet;
     private privkeyPathForIdentity;
     private privkeyForIdentity;
-    private buildLocalIdentity;
+    private buildIdentity;
 }
 export {};
