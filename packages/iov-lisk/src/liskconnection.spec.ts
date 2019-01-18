@@ -594,7 +594,9 @@ describe("LiskConnection", () => {
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(/failed with status code 409/i));
     });
+  });
 
+  describe("searchTx", () => {
     it("can search transaction", async () => {
       pendingWithoutLiskDevnet();
       const connection = await LiskConnection.establish(devnetBase);
