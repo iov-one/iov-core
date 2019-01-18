@@ -3,7 +3,9 @@
 ## 0.10.4
 
 * @iov/lisk: Implement `LiskConnection.watchAccount`
+* @iov/lisk: Support search by address tag in `LiskConnection.searchTx`
 * @iov/rise: Implement `RiseConnection.watchAccount`
+* @iov/rise: Support search by address tag in `RiseConnection.searchTx`
 
 ## 0.10.3
 
