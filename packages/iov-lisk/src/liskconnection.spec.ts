@@ -18,7 +18,7 @@ import {
   TransactionId,
 } from "@iov/bcp-types";
 import { Random } from "@iov/crypto";
-import { Derivation } from "@iov/dpos";
+import { Derivation, dposFromOrToTag } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet } from "@iov/keycontrol";
 
@@ -594,8 +594,10 @@ describe("LiskConnection", () => {
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(/failed with status code 409/i));
     });
+  });
 
-    it("can search transaction", async () => {
+  describe("searchTx", () => {
+    it("can search transactions by ID", async () => {
       pendingWithoutLiskDevnet();
       const connection = await LiskConnection.establish(devnetBase);
 
@@ -621,6 +623,54 @@ describe("LiskConnection", () => {
         }
         expect(transaction.recipient).toEqual("1349293588603668134L");
         expect(transaction.amount.quantity).toEqual("10044556677");
+      }
+
+      connection.disconnect();
+    });
+
+    it("can search transactions by address", async () => {
+      pendingWithoutLiskDevnet();
+      const connection = await LiskConnection.establish(devnetBase);
+
+      // by non-existing address
+      {
+        const unusedAddress = await randomAddress();
+        const results = await connection.searchTx({ tags: [dposFromOrToTag(unusedAddress)] });
+        expect(results.length).toEqual(0);
+      }
+
+      // by recipient address (from lisk/init.sh)
+      {
+        const searchAddress = "1349293588603668134L" as Address;
+        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)] });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        for (const result of results) {
+          const transaction = result.transaction;
+          if (!isSendTransaction(transaction)) {
+            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
+          }
+          expect(
+            transaction.recipient === searchAddress ||
+              liskCodec.keyToAddress(transaction.signer) === searchAddress,
+          ).toEqual(true);
+        }
+      }
+
+      // by sender address (from lisk/init.sh)
+      {
+        const searchAddress = "16313739661670634666L" as Address;
+        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)] });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        for (const result of results) {
+          const transaction = result.transaction;
+          if (!isSendTransaction(transaction)) {
+            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
+          }
+          expect(
+            transaction.recipient === searchAddress ||
+              liskCodec.keyToAddress(transaction.signer) === searchAddress,
+          ).toEqual(true);
+        }
       }
 
       connection.disconnect();

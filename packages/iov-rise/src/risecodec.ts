@@ -124,7 +124,7 @@ export const riseCodec: TxCodec = {
         unsignedTransaction = send;
         break;
       default:
-        throw new Error("Unsupported transaction type");
+        throw new Error(`Transaction parsing failed. Unsupported transaction type: ${json.type}`);
     }
 
     return {
