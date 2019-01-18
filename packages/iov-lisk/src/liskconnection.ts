@@ -309,15 +309,25 @@ export class LiskConnection implements BcpConnection {
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    if (query.height || query.minHeight || query.maxHeight) {
-      throw new Error("Query by height, minHeight, maxHeight not supported");
+    if (query.height) {
+      throw new Error("Query by height not supported");
     }
 
-    const searchAddress = findDposAddress(query.tags || []);
     if (query.id !== undefined) {
-      return this.searchTransactions({ id: query.id });
-    } else if (searchAddress) {
-      return this.searchTransactions({ senderIdOrRecipientId: searchAddress });
+      if (query.tags) {
+        throw new Error("Query by tags not supported in ID query");
+      }
+      return this.searchTransactions({ id: query.id }, query.minHeight, query.maxHeight);
+    } else if (query.tags) {
+      const searchAddress = findDposAddress(query.tags || []);
+      if (!searchAddress) {
+        throw new Error("Only address tag is supported");
+      }
+      return this.searchTransactions(
+        { senderIdOrRecipientId: searchAddress },
+        query.minHeight,
+        query.maxHeight,
+      );
     } else {
       throw new Error("Unsupported query.");
     }
@@ -331,15 +341,31 @@ export class LiskConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  private async searchTransactions(searchParams: any): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  private async searchTransactions(
+    searchParams: any,
+    minHeight: number | undefined,
+    maxHeight: number | undefined,
+  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
     const result = await axios.get(`${this.baseUrl}/api/transactions`, {
       params: searchParams,
     });
     const responseBody = result.data;
     return responseBody.data
       .filter((transactionJson: any) => {
-        // other transaction types cannot be parsed
-        return transactionJson.type === 0;
+        if (transactionJson.type !== 0) {
+          // other transaction types cannot be parsed
+          return false;
+        }
+
+        if (minHeight !== undefined && transactionJson.height < minHeight) {
+          return false;
+        }
+
+        if (maxHeight !== undefined && transactionJson.height > maxHeight) {
+          return false;
+        }
+
+        return true;
       })
       .map((transactionJson: any) => {
         const height = new Uint53(transactionJson.height);

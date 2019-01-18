@@ -675,5 +675,136 @@ describe("LiskConnection", () => {
 
       connection.disconnect();
     });
+
+    it("can search transactions by address and minHeight/maxHeight", async () => {
+      pendingWithoutLiskDevnet();
+      const connection = await LiskConnection.establish(devnetBase);
+
+      // by recipient address (from lisk/init.sh)
+      const searchAddress = "1349293588603668134L" as Address;
+
+      // minHeight = 2
+      {
+        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)], minHeight: 2 });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        for (const result of results) {
+          expect(result.height).toBeGreaterThanOrEqual(2);
+          const transaction = result.transaction;
+          if (!isSendTransaction(transaction)) {
+            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
+          }
+          expect(
+            transaction.recipient === searchAddress ||
+              liskCodec.keyToAddress(transaction.signer) === searchAddress,
+          ).toEqual(true);
+        }
+      }
+
+      // maxHeight = 100
+      {
+        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)], maxHeight: 100 });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        for (const result of results) {
+          expect(result.height).toBeLessThanOrEqual(100);
+          const transaction = result.transaction;
+          if (!isSendTransaction(transaction)) {
+            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
+          }
+          expect(
+            transaction.recipient === searchAddress ||
+              liskCodec.keyToAddress(transaction.signer) === searchAddress,
+          ).toEqual(true);
+        }
+      }
+
+      // minHeight = 2 and maxHeight = 100
+      {
+        const results = await connection.searchTx({
+          tags: [dposFromOrToTag(searchAddress)],
+          minHeight: 2,
+          maxHeight: 100,
+        });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        for (const result of results) {
+          expect(result.height).toBeGreaterThanOrEqual(2);
+          expect(result.height).toBeLessThanOrEqual(100);
+          const transaction = result.transaction;
+          if (!isSendTransaction(transaction)) {
+            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
+          }
+          expect(
+            transaction.recipient === searchAddress ||
+              liskCodec.keyToAddress(transaction.signer) === searchAddress,
+          ).toEqual(true);
+        }
+      }
+
+      // minHeight > maxHeight
+      {
+        const results = await connection.searchTx({
+          tags: [dposFromOrToTag(searchAddress)],
+          minHeight: 100,
+          maxHeight: 99,
+        });
+        expect(results.length).toEqual(0);
+      }
+
+      connection.disconnect();
+    });
+
+    it("can search transactions by ID and minHeight/maxHeight", async () => {
+      pendingWithoutLiskDevnet();
+      const connection = await LiskConnection.establish(devnetBase);
+
+      // by recipient address (from lisk/init.sh)
+      const searchId = "12493173350733478622" as TransactionId;
+
+      // minHeight = 2
+      {
+        const results = await connection.searchTx({ id: searchId, minHeight: 2 });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        for (const result of results) {
+          expect(result.transactionId).toEqual(searchId);
+          expect(result.height).toBeGreaterThanOrEqual(2);
+        }
+      }
+
+      // maxHeight = 100
+      {
+        const results = await connection.searchTx({ id: searchId, maxHeight: 100 });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        for (const result of results) {
+          expect(result.transactionId).toEqual(searchId);
+          expect(result.height).toBeLessThanOrEqual(100);
+        }
+      }
+
+      // minHeight = 2 and maxHeight = 100
+      {
+        const results = await connection.searchTx({
+          id: searchId,
+          minHeight: 2,
+          maxHeight: 100,
+        });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        for (const result of results) {
+          expect(result.transactionId).toEqual(searchId);
+          expect(result.height).toBeGreaterThanOrEqual(2);
+          expect(result.height).toBeLessThanOrEqual(100);
+        }
+      }
+
+      // minHeight > maxHeight
+      {
+        const results = await connection.searchTx({
+          id: searchId,
+          minHeight: 100,
+          maxHeight: 99,
+        });
+        expect(results.length).toEqual(0);
+      }
+
+      connection.disconnect();
+    });
   });
 });
