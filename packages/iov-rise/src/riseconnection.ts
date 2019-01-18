@@ -326,36 +326,7 @@ export class RiseConnection implements BcpConnection {
     }
 
     if (query.id !== undefined) {
-      const url = this.baseUrl + `/api/transactions/get?id=${query.id}`;
-      const result = await axios.get(url);
-      const responseBody = result.data;
-
-      if (responseBody.success !== true) {
-        switch (responseBody.error) {
-          case "Transaction not found":
-            return [];
-          default:
-            throw new Error(`RISE API error: ${responseBody.error}`);
-        }
-      }
-
-      const transactionJson = responseBody.transaction;
-      const height = new Int53(transactionJson.height);
-      const confirmations = new Int53(transactionJson.confirmations);
-      const transactionId = Uint64.fromString(transactionJson.id).toString() as TransactionId;
-
-      const transaction = riseCodec.parseBytes(
-        toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
-        this.myChainId,
-      );
-      return [
-        {
-          ...transaction,
-          height: height.toNumber(),
-          confirmations: confirmations.toNumber(),
-          transactionId: transactionId,
-        },
-      ];
+      return this.searchTransactions({ id: query.id });
     } else {
       throw new Error("Unsupported query.");
     }
@@ -367,5 +338,43 @@ export class RiseConnection implements BcpConnection {
 
   public liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
     throw new Error("Not implemented");
+  }
+
+  private async searchTransactions(searchParams: any): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    const result = await axios.get(`${this.baseUrl}/api/transactions/get`, {
+      params: searchParams,
+    });
+    const responseBody = result.data;
+
+    if (responseBody.success !== true) {
+      switch (responseBody.error) {
+        case "Transaction not found":
+          return [];
+        default:
+          throw new Error(`RISE API error: ${responseBody.error}`);
+      }
+    }
+
+    const transactionsJson = responseBody.transaction
+      ? [responseBody.transaction]
+      : responseBody.transactions;
+
+    return transactionsJson.map((transactionJson: any) => {
+      const height = new Int53(transactionJson.height);
+      const confirmations = new Int53(transactionJson.confirmations);
+      const transactionId = Uint64.fromString(transactionJson.id).toString() as TransactionId;
+
+      const transaction = riseCodec.parseBytes(
+        toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
+        this.myChainId,
+      );
+
+      return {
+        ...transaction,
+        height: height.toNumber(),
+        confirmations: confirmations.toNumber(),
+        transactionId: transactionId,
+      };
+    });
   }
 }

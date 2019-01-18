@@ -27,4 +27,5 @@ export declare class RiseConnection implements BcpConnection {
     searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
     listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction>;
     liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction>;
+    private searchTransactions;
 }
