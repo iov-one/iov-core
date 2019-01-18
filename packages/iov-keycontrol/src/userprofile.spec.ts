@@ -22,7 +22,7 @@ import { HdPaths } from "./hdpaths";
 import { Keyring } from "./keyring";
 import { UserProfile } from "./userprofile";
 import { WalletId } from "./wallet";
-import { Ed25519HdWallet, Secp256k1HdWallet } from "./wallets";
+import { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./wallets";
 
 const { fromHex } = Encoding;
 
@@ -137,30 +137,28 @@ describe("UserProfile", () => {
     }
   });
 
-  it("can add wallets", () => {
+  it("can add different kinds of wallets", () => {
     const profile = new UserProfile();
     const wallet1 = Ed25519HdWallet.fromMnemonic(
       "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash",
     );
-    const wallet2 = Ed25519HdWallet.fromMnemonic(
+    const wallet2 = Secp256k1HdWallet.fromMnemonic(
       "perfect clump orphan margin memory amazing morning use snap skate erosion civil",
     );
-    const wallet3 = Ed25519HdWallet.fromMnemonic(
-      "degree tackle suggest window test behind mesh extra cover prepare oak script",
-    );
+    const wallet3 = new Ed25519Wallet();
     expect(profile.wallets.value.length).toEqual(0);
     expect(profile.wallets.value.map(i => i.label)).toEqual([]);
     profile.addWallet(wallet1);
     expect(profile.wallets.value.length).toEqual(1);
     expect(profile.wallets.value.map(i => i.label)).toEqual([undefined]);
-    expect(profile.getIdentities(wallet1.id)).toBeTruthy();
+    expect(profile.getIdentities(wallet1.id)).toEqual([]);
     profile.addWallet(wallet2);
     profile.addWallet(wallet3);
     expect(profile.wallets.value.length).toEqual(3);
     expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined, undefined]);
-    expect(profile.getIdentities(wallet1.id)).toBeTruthy();
-    expect(profile.getIdentities(wallet2.id)).toBeTruthy();
-    expect(profile.getIdentities(wallet3.id)).toBeTruthy();
+    expect(profile.getIdentities(wallet1.id)).toEqual([]);
+    expect(profile.getIdentities(wallet2.id)).toEqual([]);
+    expect(profile.getIdentities(wallet3.id)).toEqual([]);
   });
 
   it("returns wallet info when adding wallet", () => {
