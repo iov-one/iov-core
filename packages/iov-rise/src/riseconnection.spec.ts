@@ -18,7 +18,7 @@ import {
   TransactionId,
 } from "@iov/bcp-types";
 import { Random } from "@iov/crypto";
-import { Derivation } from "@iov/dpos";
+import { Derivation, dposFromOrToTag } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet } from "@iov/keycontrol";
 
@@ -514,7 +514,7 @@ describe("RiseConnection", () => {
   });
 
   describe("searchTx", () => {
-    it("can search transaction", async () => {
+    it("can search transactions by ID", async () => {
       const connection = await RiseConnection.establish(base);
 
       // by non-existing ID
@@ -542,5 +542,66 @@ describe("RiseConnection", () => {
 
       connection.disconnect();
     });
+
+    it("can search transactions by address", async () => {
+      const connection = await RiseConnection.establish(base);
+
+      // by non-existing address
+      {
+        const unusedAddress = await randomAddress();
+        const results = await connection.searchTx({ tags: [dposFromOrToTag(unusedAddress)] });
+        expect(results.length).toEqual(0);
+      }
+
+      // by recipient address (https://texplorer.rise.vision/address/123R)
+      {
+        const searchAddress = "123R" as Address;
+        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)] });
+        expect(results.length).toBeGreaterThanOrEqual(874);
+        for (const result of results) {
+          const transaction = result.transaction;
+          if (!isSendTransaction(transaction)) {
+            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
+          }
+          expect(transaction.recipient === searchAddress).toEqual(true);
+        }
+      }
+
+      // by sender address (https://texplorer.rise.vision/address/13640984096060415228R)
+      {
+        const searchAddress = "13640984096060415228R" as Address;
+        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)] });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        for (const result of results) {
+          const transaction = result.transaction;
+          if (!isSendTransaction(transaction)) {
+            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
+          }
+          expect(
+            transaction.recipient === searchAddress ||
+              riseCodec.keyToAddress(transaction.signer) === searchAddress,
+          ).toEqual(true);
+        }
+      }
+
+      // by sender address with vote transaction (https://texplorer.rise.vision/address/471759806304061958R)
+      {
+        const searchAddress = "471759806304061958R" as Address;
+        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)] });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        for (const result of results) {
+          const transaction = result.transaction;
+          if (!isSendTransaction(transaction)) {
+            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
+          }
+          expect(
+            transaction.recipient === searchAddress ||
+              riseCodec.keyToAddress(transaction.signer) === searchAddress,
+          ).toEqual(true);
+        }
+      }
+
+      connection.disconnect();
+    }, 30_000);
   });
 });
