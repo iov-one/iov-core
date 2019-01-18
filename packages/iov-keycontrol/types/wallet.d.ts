@@ -1,9 +1,8 @@
 import { As } from "type-tagger";
 import { ChainId, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
-import { Slip10RawIndex } from "@iov/crypto";
+import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
-import { Ed25519Wallet } from "./wallets";
 export declare type LocalIdentityId = string & As<"local-identity-id">;
 /** a public key we can identify with on a blockchain */
 export interface PublicIdentity {
@@ -36,7 +35,7 @@ export interface Wallet {
      * To clear the label, set it to undefined.
      */
     readonly setLabel: (label: string | undefined) => void;
-    readonly createIdentity: (options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number) => Promise<LocalIdentity>;
+    readonly createIdentity: (options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number) => Promise<LocalIdentity>;
     readonly setIdentityLabel: (identity: PublicIdentity, label: string | undefined) => void;
     readonly getIdentities: () => ReadonlyArray<LocalIdentity>;
     readonly canSign: ValueAndUpdates<boolean>;

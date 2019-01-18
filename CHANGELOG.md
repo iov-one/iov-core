@@ -6,6 +6,8 @@
 * @iov/lisk: Support search by address tag in `LiskConnection.searchTx`
 * @iov/rise: Implement `RiseConnection.watchAccount`
 * @iov/rise: Support search by address tag in `RiseConnection.searchTx`
+* @iov/keycontrol: Fix parameter type of `UserProfile.createIdentity` to allow
+  creating identities using `Ed25519Keypair`.
 
 ## 0.10.3
 

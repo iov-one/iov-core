@@ -15,7 +15,7 @@ import {
   TransactionId,
   TxCodec,
 } from "@iov/bcp-types";
-import { Slip10RawIndex } from "@iov/crypto";
+import { Ed25519, Slip10RawIndex } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 
 import { HdPaths } from "./hdpaths";
@@ -289,22 +289,68 @@ describe("UserProfile", () => {
     expect(profile.getIdentities(newWallet.id).length).toEqual(0);
   });
 
-  it("can create identities with options", async () => {
-    const profile = new UserProfile();
-    const wallet = profile.addWallet(
-      Secp256k1HdWallet.fromMnemonic(
-        "special sign fit simple patrol salute grocery chicken wheat radar tonight ceiling",
-      ),
-    );
+  describe("createIdentity", () => {
+    it("can create Ed25519HdWallet identities with options", async () => {
+      // Test 1 from https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md#test-cases
+      //
+      // Stellar public keys can be converted to raw ed25519 pubkeys as follows
+      // $ yarn add stellar-sdk
+      // $ node
+      // > Keypair.fromPublicKey("GDRXE2BQUC3AZNPVFSCEZ76NJ3WWL25FYFK6RGZGIEKWE4SOOHSUJUJ6").rawPublicKey().toString("hex")
 
-    const path = [Slip10RawIndex.hardened(0), Slip10RawIndex.normal(0)];
-    const identityFromPath = await profile.createIdentity(wallet.id, path);
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(
+        Ed25519HdWallet.fromMnemonic(
+          "illness spike retreat truth genius clock brain pass fit cave bargain toe",
+        ),
+      );
 
-    expect(identityFromPath.pubkey.data).toEqual(
-      fromHex(
-        "04a7a8d79df7857bf25a3a389b0ecea83c5272181d2c062346b1c64e258589fce0f48fe3900d52ef9a034a35e671329bb65441d8e010484d3e4817578550448e99",
-      ),
-    );
+      // m/44'/148'/0'
+      const identity = await profile.createIdentity(wallet.id, [
+        Slip10RawIndex.hardened(44),
+        Slip10RawIndex.hardened(148),
+        Slip10RawIndex.hardened(0),
+      ]);
+
+      expect(identity.pubkey.data).toEqual(
+        fromHex("e3726830a0b60cb5f52c844cffcd4eed65eba5c155e89b26411562724e71e544"),
+      );
+    });
+
+    it("can create Secp256k1HdWallet identities with options", async () => {
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(
+        Secp256k1HdWallet.fromMnemonic(
+          "special sign fit simple patrol salute grocery chicken wheat radar tonight ceiling",
+        ),
+      );
+
+      const identity = await profile.createIdentity(wallet.id, [
+        Slip10RawIndex.hardened(0),
+        Slip10RawIndex.normal(0),
+      ]);
+
+      expect(identity.pubkey.data).toEqual(
+        fromHex(
+          "04a7a8d79df7857bf25a3a389b0ecea83c5272181d2c062346b1c64e258589fce0f48fe3900d52ef9a034a35e671329bb65441d8e010484d3e4817578550448e99",
+        ),
+      );
+    });
+
+    it("can create Ed25519Wallet identities with options", async () => {
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(new Ed25519Wallet());
+
+      // TEST 1 from https://tools.ietf.org/html/rfc8032#section-7.1)
+      const keypair = await Ed25519.makeKeypair(
+        fromHex("9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60"),
+      );
+      const identity = await profile.createIdentity(wallet.id, keypair);
+
+      expect(identity.pubkey.data).toEqual(
+        fromHex("d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"),
+      );
+    });
   });
 
   it("can export a printable secret for a wallet", () => {
