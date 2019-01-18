@@ -27,7 +27,7 @@ import {
   TokenTicker,
   TransactionId,
 } from "@iov/bcp-types";
-import { Parse } from "@iov/dpos";
+import { findDposAddress, Parse } from "@iov/dpos";
 import { Encoding, Int53, Uint53, Uint64 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
@@ -309,15 +309,39 @@ export class LiskConnection implements BcpConnection {
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    if (query.height || query.minHeight || query.maxHeight || query.tags) {
-      throw new Error("Query by height, minHeight, maxHeight, tags not supported");
+    if (query.height || query.minHeight || query.maxHeight) {
+      throw new Error("Query by height, minHeight, maxHeight not supported");
     }
 
+    const searchAddress = findDposAddress(query.tags || []);
     if (query.id !== undefined) {
-      const url = this.baseUrl + `/api/transactions?id=${query.id}`;
-      const result = await axios.get(url);
-      const responseBody = result.data;
-      return responseBody.data.map((transactionJson: any) => {
+      return this.searchTransactions({ id: query.id });
+    } else if (searchAddress) {
+      return this.searchTransactions({ senderIdOrRecipientId: searchAddress });
+    } else {
+      throw new Error("Unsupported query.");
+    }
+  }
+
+  public listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
+    throw new Error("Not implemented");
+  }
+
+  public liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
+    throw new Error("Not implemented");
+  }
+
+  private async searchTransactions(searchParams: any): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    const result = await axios.get(`${this.baseUrl}/api/transactions`, {
+      params: searchParams,
+    });
+    const responseBody = result.data;
+    return responseBody.data
+      .filter((transactionJson: any) => {
+        // other transaction types cannot be parsed
+        return transactionJson.type === 0;
+      })
+      .map((transactionJson: any) => {
         const height = new Uint53(transactionJson.height);
         const confirmations = new Int53(transactionJson.confirmations);
         const transactionId = Uint64.fromString(transactionJson.id).toString() as TransactionId;
@@ -332,16 +356,5 @@ export class LiskConnection implements BcpConnection {
           transactionId: transactionId,
         };
       });
-    } else {
-      throw new Error("Unsupported query.");
-    }
-  }
-
-  public listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
-    throw new Error("Not implemented");
-  }
-
-  public liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
-    throw new Error("Not implemented");
   }
 }
