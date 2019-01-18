@@ -11,6 +11,7 @@ import {
   BcpBlockInfo,
   BcpPubkeyQuery,
   BcpTransactionState,
+  ConfirmedTransaction,
   isSendTransaction,
   SendTransaction,
   SignedTransaction,
@@ -20,7 +21,7 @@ import {
 import { Random } from "@iov/crypto";
 import { Derivation, dposFromOrToTag } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
-import { Ed25519Wallet } from "@iov/keycontrol";
+import { Ed25519Wallet, UserProfile } from "@iov/keycontrol";
 
 import { pubkeyToAddress } from "./derivation";
 import { liskCodec } from "./liskcodec";
@@ -675,5 +676,326 @@ describe("LiskConnection", () => {
 
       connection.disconnect();
     });
+
+    it("can search transactions by address and minHeight/maxHeight", async () => {
+      pendingWithoutLiskDevnet();
+      const connection = await LiskConnection.establish(devnetBase);
+
+      // by recipient address (from lisk/init.sh)
+      const searchAddress = "1349293588603668134L" as Address;
+
+      // minHeight = 2
+      {
+        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)], minHeight: 2 });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        for (const result of results) {
+          expect(result.height).toBeGreaterThanOrEqual(2);
+          const transaction = result.transaction;
+          if (!isSendTransaction(transaction)) {
+            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
+          }
+          expect(
+            transaction.recipient === searchAddress ||
+              liskCodec.keyToAddress(transaction.signer) === searchAddress,
+          ).toEqual(true);
+        }
+      }
+
+      // maxHeight = 100
+      {
+        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)], maxHeight: 100 });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        for (const result of results) {
+          expect(result.height).toBeLessThanOrEqual(100);
+          const transaction = result.transaction;
+          if (!isSendTransaction(transaction)) {
+            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
+          }
+          expect(
+            transaction.recipient === searchAddress ||
+              liskCodec.keyToAddress(transaction.signer) === searchAddress,
+          ).toEqual(true);
+        }
+      }
+
+      // minHeight = 2 and maxHeight = 100
+      {
+        const results = await connection.searchTx({
+          tags: [dposFromOrToTag(searchAddress)],
+          minHeight: 2,
+          maxHeight: 100,
+        });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        for (const result of results) {
+          expect(result.height).toBeGreaterThanOrEqual(2);
+          expect(result.height).toBeLessThanOrEqual(100);
+          const transaction = result.transaction;
+          if (!isSendTransaction(transaction)) {
+            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
+          }
+          expect(
+            transaction.recipient === searchAddress ||
+              liskCodec.keyToAddress(transaction.signer) === searchAddress,
+          ).toEqual(true);
+        }
+      }
+
+      // minHeight > maxHeight
+      {
+        const results = await connection.searchTx({
+          tags: [dposFromOrToTag(searchAddress)],
+          minHeight: 100,
+          maxHeight: 99,
+        });
+        expect(results.length).toEqual(0);
+      }
+
+      connection.disconnect();
+    });
+
+    it("can search transactions by ID and minHeight/maxHeight", async () => {
+      pendingWithoutLiskDevnet();
+      const connection = await LiskConnection.establish(devnetBase);
+
+      // by recipient address (from lisk/init.sh)
+      const searchId = "12493173350733478622" as TransactionId;
+
+      // minHeight = 2
+      {
+        const results = await connection.searchTx({ id: searchId, minHeight: 2 });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        for (const result of results) {
+          expect(result.transactionId).toEqual(searchId);
+          expect(result.height).toBeGreaterThanOrEqual(2);
+        }
+      }
+
+      // maxHeight = 100
+      {
+        const results = await connection.searchTx({ id: searchId, maxHeight: 100 });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        for (const result of results) {
+          expect(result.transactionId).toEqual(searchId);
+          expect(result.height).toBeLessThanOrEqual(100);
+        }
+      }
+
+      // minHeight = 2 and maxHeight = 100
+      {
+        const results = await connection.searchTx({
+          id: searchId,
+          minHeight: 2,
+          maxHeight: 100,
+        });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        for (const result of results) {
+          expect(result.transactionId).toEqual(searchId);
+          expect(result.height).toBeGreaterThanOrEqual(2);
+          expect(result.height).toBeLessThanOrEqual(100);
+        }
+      }
+
+      // minHeight > maxHeight
+      {
+        const results = await connection.searchTx({
+          id: searchId,
+          minHeight: 100,
+          maxHeight: 99,
+        });
+        expect(results.length).toEqual(0);
+      }
+
+      connection.disconnect();
+    });
+  });
+
+  describe("liveTx", () => {
+    it("can listen to transactions by recipient address (transactions in history and updates)", done => {
+      pendingWithoutLiskDevnet();
+
+      (async () => {
+        const connection = await LiskConnection.establish(devnetBase);
+
+        const recipientAddress = await randomAddress();
+
+        // send transactions
+
+        const profile = new UserProfile();
+        const wallet = profile.addWallet(new Ed25519Wallet());
+        const sender = await profile.createIdentity(wallet.id, await devnetDefaultKeypair);
+
+        const sendA: SendTransaction = {
+          kind: "bcp/send",
+          chainId: devnetChainId,
+          signer: sender.pubkey,
+          recipient: recipientAddress,
+          amount: devnetDefaultAmount,
+          memo: `liveTx() test A ${Math.random()}`,
+        };
+
+        const sendB: SendTransaction = {
+          kind: "bcp/send",
+          chainId: devnetChainId,
+          signer: sender.pubkey,
+          recipient: recipientAddress,
+          amount: devnetDefaultAmount,
+          memo: `liveTx() test B ${Math.random()}`,
+        };
+
+        const sendC: SendTransaction = {
+          kind: "bcp/send",
+          chainId: devnetChainId,
+          signer: sender.pubkey,
+          recipient: recipientAddress,
+          amount: devnetDefaultAmount,
+          memo: `liveTx() test C ${Math.random()}`,
+        };
+
+        const nonceA = (await connection.getNonce({ pubkey: sender.pubkey })).data[0];
+        const nonceB = (await connection.getNonce({ pubkey: sender.pubkey })).data[0];
+        const nonceC = (await connection.getNonce({ pubkey: sender.pubkey })).data[0];
+
+        const signedA = await profile.signTransaction(wallet.id, sender, sendA, liskCodec, nonceA);
+        const signedB = await profile.signTransaction(wallet.id, sender, sendB, liskCodec, nonceB);
+        const signedC = await profile.signTransaction(wallet.id, sender, sendC, liskCodec, nonceC);
+        const bytesToPostA = liskCodec.bytesToPost(signedA);
+        const bytesToPostB = liskCodec.bytesToPost(signedB);
+        const bytesToPostC = liskCodec.bytesToPost(signedC);
+
+        // Post A and B
+        const postResultA = await connection.postTx(bytesToPostA);
+        await connection.postTx(bytesToPostB);
+
+        // Wait for a block
+        await postResultA.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+
+        // setup listener after A and B are in block
+        const events = new Array<ConfirmedTransaction>();
+        const subscription = connection.liveTx({ tags: [dposFromOrToTag(recipientAddress)] }).subscribe({
+          next: event => {
+            events.push(event);
+
+            if (!isSendTransaction(event.transaction)) {
+              throw new Error("Unexpected transaction type");
+            }
+            expect(event.transaction.recipient).toEqual(recipientAddress);
+
+            if (events.length === 3) {
+              // This assumes we get two transactions into one block
+              // A == B < C
+              expect(events[0].height).toEqual(events[1].height);
+              expect(events[2].height).toBeGreaterThan(events[1].height);
+
+              subscription.unsubscribe();
+              connection.disconnect();
+              done();
+            }
+          },
+        });
+
+        // Post C
+        await connection.postTx(bytesToPostC);
+      })().catch(done.fail);
+    }, 60_000);
+
+    it("can listen to transactions by ID (transaction in history)", done => {
+      pendingWithoutLiskDevnet();
+
+      (async () => {
+        const connection = await LiskConnection.establish(devnetBase);
+
+        const profile = new UserProfile();
+        const wallet = profile.addWallet(new Ed25519Wallet());
+        const sender = await profile.createIdentity(wallet.id, await devnetDefaultKeypair);
+
+        const recipientAddress = await randomAddress();
+        const send: SendTransaction = {
+          kind: "bcp/send",
+          chainId: devnetChainId,
+          signer: sender.pubkey,
+          recipient: recipientAddress,
+          amount: devnetDefaultAmount,
+          memo: `liveTx() test ${Math.random()}`,
+        };
+
+        const nonce = (await connection.getNonce({ pubkey: sender.pubkey })).data[0];
+        const signed = await profile.signTransaction(wallet.id, sender, send, liskCodec, nonce);
+        const bytesToPost = liskCodec.bytesToPost(signed);
+
+        const postResult = await connection.postTx(bytesToPost);
+        const transactionId = postResult.transactionId;
+
+        // Wait for a block
+        await postResult.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+
+        // setup listener after transaction is in block
+        const events = new Array<ConfirmedTransaction>();
+        const subscription = connection.liveTx({ id: transactionId }).subscribe({
+          next: event => {
+            events.push(event);
+
+            if (!isSendTransaction(event.transaction)) {
+              throw new Error("Unexpected transaction type");
+            }
+            expect(event.transaction.recipient).toEqual(recipientAddress);
+            expect(event.transactionId).toEqual(transactionId);
+
+            subscription.unsubscribe();
+            connection.disconnect();
+            done();
+          },
+        });
+      })().catch(done.fail);
+    }, 30_000);
+
+    it("can listen to transactions by ID (transaction in updates)", done => {
+      pendingWithoutLiskDevnet();
+
+      (async () => {
+        const connection = await LiskConnection.establish(devnetBase);
+
+        const recipientAddress = await randomAddress();
+
+        // send transactions
+
+        const profile = new UserProfile();
+        const wallet = profile.addWallet(new Ed25519Wallet());
+        const sender = await profile.createIdentity(wallet.id, await devnetDefaultKeypair);
+
+        const send: SendTransaction = {
+          kind: "bcp/send",
+          chainId: devnetChainId,
+          signer: sender.pubkey,
+          recipient: recipientAddress,
+          amount: devnetDefaultAmount,
+          memo: `liveTx() test ${Math.random()}`,
+        };
+
+        const nonce = (await connection.getNonce({ pubkey: sender.pubkey })).data[0];
+        const signed = await profile.signTransaction(wallet.id, sender, send, liskCodec, nonce);
+        const bytesToPost = liskCodec.bytesToPost(signed);
+
+        const postResult = await connection.postTx(bytesToPost);
+        const transactionId = postResult.transactionId;
+
+        // setup listener before transaction is in block
+        const events = new Array<ConfirmedTransaction>();
+        const subscription = connection.liveTx({ id: transactionId }).subscribe({
+          next: event => {
+            events.push(event);
+
+            if (!isSendTransaction(event.transaction)) {
+              throw new Error("Unexpected transaction type");
+            }
+            expect(event.transaction.recipient).toEqual(recipientAddress);
+            expect(event.transactionId).toEqual(transactionId);
+
+            subscription.unsubscribe();
+            connection.disconnect();
+            done();
+          },
+        });
+      })().catch(done.fail);
+    }, 30_000);
   });
 });

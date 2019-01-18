@@ -26,6 +26,6 @@ export declare class LiskConnection implements BcpConnection {
     changeBlock(): Stream<number>;
     searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
     listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction>;
-    liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction>;
+    liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction>;
     private searchTransactions;
 }
