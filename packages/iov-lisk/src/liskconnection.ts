@@ -317,27 +317,21 @@ export class LiskConnection implements BcpConnection {
       const url = this.baseUrl + `/api/transactions?id=${query.id}`;
       const result = await axios.get(url);
       const responseBody = result.data;
-      if (responseBody.data.length === 0) {
-        return [];
-      }
-
-      const transactionJson = responseBody.data[0];
-      const height = new Int53(transactionJson.height);
-      const confirmations = new Int53(transactionJson.confirmations);
-      const transactionId = Uint64.fromString(transactionJson.id).toString() as TransactionId;
-
-      const transaction = liskCodec.parseBytes(
-        toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
-        this.myChainId,
-      );
-      return [
-        {
+      return responseBody.data.map((transactionJson: any) => {
+        const height = new Uint53(transactionJson.height);
+        const confirmations = new Int53(transactionJson.confirmations);
+        const transactionId = Uint64.fromString(transactionJson.id).toString() as TransactionId;
+        const transaction = liskCodec.parseBytes(
+          toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
+          this.myChainId,
+        );
+        return {
           ...transaction,
           height: height.toNumber(),
           confirmations: confirmations.toNumber(),
           transactionId: transactionId,
-        },
-      ];
+        };
+      });
     } else {
       throw new Error("Unsupported query.");
     }
