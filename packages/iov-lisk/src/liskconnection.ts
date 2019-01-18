@@ -346,6 +346,10 @@ export class LiskConnection implements BcpConnection {
     minHeight: number | undefined,
     maxHeight: number | undefined,
   ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    if (minHeight !== undefined && maxHeight !== undefined && minHeight > maxHeight) {
+      return [];
+    }
+
     const result = await axios.get(`${this.baseUrl}/api/transactions`, {
       params: searchParams,
     });
