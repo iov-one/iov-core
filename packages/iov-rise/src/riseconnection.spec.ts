@@ -1,9 +1,11 @@
+import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
 import {
   Address,
   Algorithm,
   Amount,
+  BcpAccount,
   BcpAccountQuery,
   BcpAddressQuery,
   BcpBlockInfo,
@@ -19,15 +21,22 @@ import {
   TokenTicker,
   TransactionId,
 } from "@iov/bcp-types";
-import { Derivation } from "@iov/dpos";
+import { Random } from "@iov/crypto";
+import { Derivation, dposFromOrToTag } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet } from "@iov/keycontrol";
 
+import { pubkeyToAddress } from "./derivation";
 import { riseCodec } from "./risecodec";
 import { generateNonce, RiseConnection } from "./riseconnection";
 
 const { fromHex } = Encoding;
 const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
+
+async function randomAddress(): Promise<Address> {
+  const pubkey = await Random.getBytes(32);
+  return pubkeyToAddress(pubkey);
+}
 
 describe("RiseConnection", () => {
   const base = "https://twallet.rise.vision";
@@ -211,7 +220,94 @@ describe("RiseConnection", () => {
     connection.disconnect();
   });
 
-  describe("getHeader", () => {
+  describe("watchAccount", () => {
+    it("can watch account by address", done => {
+      (async () => {
+        const connection = await RiseConnection.establish(base);
+
+        const recipient = await randomAddress();
+
+        const events = new Array<BcpAccount | undefined>();
+        const subscription = connection.watchAccount({ address: recipient }).subscribe({
+          next: event => {
+            events.push(event);
+
+            if (events.length === 3) {
+              const [event1, event2, event3] = events;
+
+              expect(event1).toBeUndefined();
+
+              if (!event2) {
+                throw new Error("Second event must not be undefined");
+              }
+              expect(event2.address).toEqual(recipient);
+              expect(event2.name).toBeUndefined();
+              expect(event2.pubkey).toBeUndefined();
+              expect(event2.balance.length).toEqual(1);
+              expect(event2.balance[0].quantity).toEqual(defaultSendAmount.quantity);
+              expect(event2.balance[0].tokenTicker).toEqual(defaultSendAmount.tokenTicker);
+
+              if (!event3) {
+                throw new Error("Second event must not be undefined");
+              }
+              expect(event3.address).toEqual(recipient);
+              expect(event3.name).toBeUndefined();
+              expect(event3.pubkey).toBeUndefined();
+              expect(event3.balance.length).toEqual(1);
+              expect(event3.balance[0].quantity).toEqual(
+                Long.fromString(defaultSendAmount.quantity)
+                  .multiply(2)
+                  .toString(),
+              );
+              expect(event3.balance[0].tokenTicker).toEqual(defaultSendAmount.tokenTicker);
+
+              subscription.unsubscribe();
+              connection.disconnect();
+              done();
+            }
+          },
+          complete: done.fail,
+          error: done.fail,
+        });
+
+        const wallet = new Ed25519Wallet();
+        const mainIdentity = await wallet.createIdentity(riseTestnet, await defaultKeypair);
+
+        for (const _ of [0, 1]) {
+          const sendTx: SendTransaction = {
+            kind: "bcp/send",
+            chainId: riseTestnet,
+            signer: mainIdentity.pubkey,
+            recipient: recipient,
+            amount: defaultSendAmount,
+          };
+
+          const nonce = generateNonce();
+          const signingJob = riseCodec.bytesToSign(sendTx, nonce);
+          const signature = await wallet.createTransactionSignature(
+            mainIdentity,
+            signingJob.bytes,
+            signingJob.prehashType,
+          );
+
+          const signedTransaction: SignedTransaction = {
+            transaction: sendTx,
+            primarySignature: {
+              nonce: nonce,
+              pubkey: mainIdentity.pubkey,
+              signature: signature,
+            },
+            otherSignatures: [],
+          };
+
+          const result = await connection.postTx(riseCodec.bytesToPost(signedTransaction));
+          await result.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+        }
+      })().catch(done.fail);
+    }, 90_000);
+  });
+
+  describe("getBlockHeader", () => {
     it("throws for invalid height arguments", async () => {
       const connection = await RiseConnection.establish(base);
 
@@ -416,7 +512,7 @@ describe("RiseConnection", () => {
   });
 
   describe("searchTx", () => {
-    it("can search transaction", async () => {
+    it("can search transactions by ID", async () => {
       const connection = await RiseConnection.establish(base);
 
       // by non-existing ID
@@ -444,5 +540,66 @@ describe("RiseConnection", () => {
 
       connection.disconnect();
     });
+
+    it("can search transactions by address", async () => {
+      const connection = await RiseConnection.establish(base);
+
+      // by non-existing address
+      {
+        const unusedAddress = await randomAddress();
+        const results = await connection.searchTx({ tags: [dposFromOrToTag(unusedAddress)] });
+        expect(results.length).toEqual(0);
+      }
+
+      // by recipient address (https://texplorer.rise.vision/address/123R)
+      {
+        const searchAddress = "123R" as Address;
+        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)] });
+        expect(results.length).toBeGreaterThanOrEqual(874);
+        for (const result of results) {
+          const transaction = result.transaction;
+          if (!isSendTransaction(transaction)) {
+            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
+          }
+          expect(transaction.recipient === searchAddress).toEqual(true);
+        }
+      }
+
+      // by sender address (https://texplorer.rise.vision/address/13640984096060415228R)
+      {
+        const searchAddress = "13640984096060415228R" as Address;
+        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)] });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        for (const result of results) {
+          const transaction = result.transaction;
+          if (!isSendTransaction(transaction)) {
+            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
+          }
+          expect(
+            transaction.recipient === searchAddress ||
+              pubkeyToAddress(transaction.signer.data) === searchAddress,
+          ).toEqual(true);
+        }
+      }
+
+      // by sender address with vote transaction (https://texplorer.rise.vision/address/471759806304061958R)
+      {
+        const searchAddress = "471759806304061958R" as Address;
+        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)] });
+        expect(results.length).toBeGreaterThanOrEqual(1);
+        for (const result of results) {
+          const transaction = result.transaction;
+          if (!isSendTransaction(transaction)) {
+            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
+          }
+          expect(
+            transaction.recipient === searchAddress ||
+              pubkeyToAddress(transaction.signer.data) === searchAddress,
+          ).toEqual(true);
+        }
+      }
+
+      connection.disconnect();
+    }, 60_000);
   });
 });

@@ -11,7 +11,7 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
-import { Argon2id, Argon2idOptions, Slip10RawIndex } from "@iov/crypto";
+import { Argon2id, Argon2idOptions, Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
@@ -19,7 +19,6 @@ import { Keyring } from "./keyring";
 import { EncryptedKeyring, KeyringEncryptor } from "./keyringencryptor";
 import { DatabaseUtils } from "./utils";
 import { Wallet, WalletId } from "./wallet";
-import { Ed25519Wallet } from "./wallets";
 
 const { toAscii, fromBase64, toBase64, toRfc3339, fromRfc3339 } = Encoding;
 
@@ -173,7 +172,7 @@ export class UserProfile {
   public async createIdentity(
     id: WalletId,
     chainId: ChainId,
-    options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number,
+    options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number,
   ): Promise<PublicIdentity> {
     const wallet = this.findWalletInPrimaryKeyring(id);
     return wallet.createIdentity(chainId, options);

@@ -1,7 +1,9 @@
 import axios from "axios";
 import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
-import { Stream } from "xstream";
+import { Producer, Stream } from "xstream";
+// tslint:disable-next-line:no-submodule-imports
+import xstreamConcat from "xstream/extra/concat";
 
 import {
   Algorithm,
@@ -27,8 +29,8 @@ import {
   TokenTicker,
   TransactionId,
 } from "@iov/bcp-types";
-import { Parse } from "@iov/dpos";
-import { Encoding, Int53, Uint53, Uint64 } from "@iov/encoding";
+import { dposFromOrToTag, findDposAddress, Parse } from "@iov/dpos";
+import { Encoding, Uint53, Uint64 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
@@ -46,6 +48,10 @@ const transactionStatePollInterval = 3_000;
 export function generateNonce(): Nonce {
   const now = new ReadonlyDate(ReadonlyDate.now());
   return Parse.timeToNonce(now);
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function checkAndNormalizeUrl(url: string): string {
@@ -210,8 +216,35 @@ export class LiskConnection implements BcpConnection {
     return Promise.resolve(generateNonce());
   }
 
-  public watchAccount(_: BcpAccountQuery): Stream<BcpAccount | undefined> {
-    throw new Error("Not implemented");
+  public watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined> {
+    let lastEvent: any = {}; // default to a dummy value to ensure an initial undefined event is sent
+    let pollInternal: NodeJS.Timeout | undefined;
+    const producer: Producer<BcpAccount | undefined> = {
+      start: listener => {
+        const poll = async () => {
+          try {
+            const event = await this.getAccount(query);
+            if (!equal(event, lastEvent)) {
+              listener.next(event);
+              lastEvent = event;
+            }
+          } catch (error) {
+            listener.error(error);
+          }
+        };
+
+        pollInternal = setInterval(poll, 5_000);
+        poll();
+      },
+      stop: () => {
+        if (pollInternal) {
+          clearInterval(pollInternal);
+          pollInternal = undefined;
+        }
+      },
+    };
+
+    return Stream.create(producer);
   }
 
   public async getBlockHeader(height: number): Promise<BlockHeader> {
@@ -262,35 +295,25 @@ export class LiskConnection implements BcpConnection {
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    if (query.height || query.minHeight || query.maxHeight || query.tags) {
-      throw new Error("Query by height, minHeight, maxHeight, tags not supported");
+    if (query.height) {
+      throw new Error("Query by height not supported");
     }
 
     if (query.id !== undefined) {
-      const url = this.baseUrl + `/api/transactions?id=${query.id}`;
-      const result = await axios.get(url);
-      const responseBody = result.data;
-      if (responseBody.data.length === 0) {
-        return [];
+      if (query.tags) {
+        throw new Error("Query by tags not supported in ID query");
       }
-
-      const transactionJson = responseBody.data[0];
-      const height = new Int53(transactionJson.height);
-      const confirmations = new Int53(transactionJson.confirmations);
-      const transactionId = Uint64.fromString(transactionJson.id).toString() as TransactionId;
-
-      const transaction = liskCodec.parseBytes(
-        toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
-        this.myChainId,
+      return this.searchTransactions({ id: query.id }, query.minHeight, query.maxHeight);
+    } else if (query.tags) {
+      const searchAddress = findDposAddress(query.tags || []);
+      if (!searchAddress) {
+        throw new Error("Only address tag is supported");
+      }
+      return this.searchTransactions(
+        { senderIdOrRecipientId: searchAddress },
+        query.minHeight,
+        query.maxHeight,
       );
-      return [
-        {
-          ...transaction,
-          height: height.toNumber(),
-          confirmations: confirmations.toNumber(),
-          transactionId: transactionId,
-        },
-      ];
     } else {
       throw new Error("Unsupported query.");
     }
@@ -300,7 +323,113 @@ export class LiskConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
-    throw new Error("Not implemented");
+  public liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction> {
+    if (query.id !== undefined) {
+      const searchId = query.id;
+      const resultPromise = new Promise<ConfirmedTransaction>(async (resolve, reject) => {
+        try {
+          while (true) {
+            const searchResult = await this.searchTx({ id: searchId });
+            if (searchResult.length > 0) {
+              resolve(searchResult[0]);
+            } else {
+              await sleep(4_000);
+            }
+          }
+        } catch (error) {
+          reject(error);
+        }
+      });
+
+      // concat never() because we want non-completing streams consistently
+      return xstreamConcat(Stream.fromPromise(resultPromise), Stream.never());
+    } else if (query.tags) {
+      const address = findDposAddress(query.tags);
+      if (!address) {
+        throw new Error("No matching search tag found to query transactions");
+      }
+
+      let pollInterval: NodeJS.Timeout | undefined;
+      const producer: Producer<ConfirmedTransaction> = {
+        start: listener => {
+          let minHeight = query.minHeight || 0;
+          const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
+
+          const poll = async (): Promise<void> => {
+            const result = await this.searchTx({
+              tags: [dposFromOrToTag(address)],
+              minHeight: minHeight,
+              maxHeight: maxHeight,
+            });
+            for (const item of result) {
+              listener.next(item);
+              if (item.height >= minHeight) {
+                // we assume we got all matching transactions from block `item.height` now
+                minHeight = item.height + 1;
+              }
+            }
+          };
+
+          poll();
+          pollInterval = setInterval(poll, 4_000);
+        },
+        stop: () => {
+          if (pollInterval) {
+            clearInterval(pollInterval);
+            pollInterval = undefined;
+          }
+        },
+      };
+      return Stream.create(producer);
+    } else {
+      throw new Error("Unsupported query.");
+    }
+  }
+
+  private async searchTransactions(
+    searchParams: any,
+    minHeight: number | undefined,
+    maxHeight: number | undefined,
+  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    if (minHeight !== undefined && maxHeight !== undefined && minHeight > maxHeight) {
+      return [];
+    }
+
+    const result = await axios.get(`${this.baseUrl}/api/transactions`, {
+      params: searchParams,
+    });
+    const responseBody = result.data;
+    return responseBody.data
+      .filter((transactionJson: any) => {
+        if (transactionJson.type !== 0) {
+          // other transaction types cannot be parsed
+          return false;
+        }
+
+        if (minHeight !== undefined && transactionJson.height < minHeight) {
+          return false;
+        }
+
+        if (maxHeight !== undefined && transactionJson.height > maxHeight) {
+          return false;
+        }
+
+        return true;
+      })
+      .map((transactionJson: any) => {
+        const height = new Uint53(transactionJson.height);
+        const confirmations = new Uint53(transactionJson.confirmations);
+        const transactionId = Uint64.fromString(transactionJson.id).toString() as TransactionId;
+        const transaction = liskCodec.parseBytes(
+          toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
+          this.myChainId,
+        );
+        return {
+          ...transaction,
+          height: height.toNumber(),
+          confirmations: confirmations.toNumber(),
+          transactionId: transactionId,
+        };
+      });
   }
 }

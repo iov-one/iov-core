@@ -1,10 +1,8 @@
 import { As } from "type-tagger";
 
 import { ChainId, PrehashType, PublicIdentity, SignableBytes, SignatureBytes } from "@iov/bcp-types";
-import { Slip10RawIndex } from "@iov/crypto";
+import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
-
-import { Ed25519Wallet } from "./wallets";
 
 export type WalletId = string & As<"wallet-id">;
 export type WalletImplementationIdString = string & As<"wallet-implementation-id">;
@@ -40,7 +38,7 @@ export interface Wallet {
    */
   readonly createIdentity: (
     chainId: ChainId,
-    options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number,
+    options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number,
   ) => Promise<PublicIdentity>;
 
   /**

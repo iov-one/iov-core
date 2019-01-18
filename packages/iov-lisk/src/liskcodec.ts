@@ -125,7 +125,7 @@ export const liskCodec: TxCodec = {
         unignedTransaction = send;
         break;
       default:
-        throw new Error("Unsupported transaction type");
+        throw new Error(`Transaction parsing failed. Unsupported transaction type: ${json.type}`);
     }
 
     return {

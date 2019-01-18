@@ -48,6 +48,17 @@ Breaking changes
 * @iov/tendermint-rpc: Remove support for Tendermint 0.20 and 0.21
 * @iov/crypto: Remove support for ripemd160
 
+## 0.10.4
+
+* @iov/lisk: Implement `LiskConnection.watchAccount`
+* @iov/lisk: Support search by address tag in `LiskConnection.searchTx`
+* @iov/lisk: Support search by minHeight/maxHeight in `LiskConnection.searchTx`
+* @iov/lisk: Implement `LiskConnection.liveTx`
+* @iov/rise: Implement `RiseConnection.watchAccount`
+* @iov/rise: Support search by address tag in `RiseConnection.searchTx`
+* @iov/keycontrol: Fix parameter type of `UserProfile.createIdentity` to allow
+  creating identities using `Ed25519Keypair`.
+
 ## 0.10.3
 
 * @iov/cli: Fix levelup import

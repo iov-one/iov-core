@@ -1,7 +1,7 @@
 import axios from "axios";
 import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
-import { Stream } from "xstream";
+import { Producer, Stream } from "xstream";
 
 import {
   Algorithm,
@@ -27,8 +27,8 @@ import {
   TokenTicker,
   TransactionId,
 } from "@iov/bcp-types";
-import { Parse } from "@iov/dpos";
-import { Encoding, Int53, Uint53, Uint64 } from "@iov/encoding";
+import { findDposAddress, Parse } from "@iov/dpos";
+import { Encoding, Uint53, Uint64 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
@@ -214,8 +214,35 @@ export class RiseConnection implements BcpConnection {
     return Promise.resolve(generateNonce());
   }
 
-  public watchAccount(_: BcpAccountQuery): Stream<BcpAccount | undefined> {
-    throw new Error("Not implemented");
+  public watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined> {
+    let lastEvent: any = {}; // default to a dummy value to ensure an initial undefined event is sent
+    let pollInternal: NodeJS.Timeout | undefined;
+    const producer: Producer<BcpAccount | undefined> = {
+      start: listener => {
+        const poll = async () => {
+          try {
+            const event = await this.getAccount(query);
+            if (!equal(event, lastEvent)) {
+              listener.next(event);
+              lastEvent = event;
+            }
+          } catch (error) {
+            listener.error(error);
+          }
+        };
+
+        pollInternal = setInterval(poll, 5_000);
+        poll();
+      },
+      stop: () => {
+        if (pollInternal) {
+          clearInterval(pollInternal);
+          pollInternal = undefined;
+        }
+      },
+    };
+
+    return Stream.create(producer);
   }
 
   public async getBlockHeader(height: number): Promise<BlockHeader> {
@@ -270,41 +297,20 @@ export class RiseConnection implements BcpConnection {
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    if (query.height || query.minHeight || query.maxHeight || query.tags) {
+    if (query.height || query.minHeight || query.maxHeight) {
       throw new Error("Query by height, minHeight, maxHeight, tags not supported");
     }
 
+    const searchAddress = findDposAddress(query.tags || []);
     if (query.id !== undefined) {
-      const url = this.baseUrl + `/api/transactions/get?id=${query.id}`;
-      const result = await axios.get(url);
-      const responseBody = result.data;
-
-      if (responseBody.success !== true) {
-        switch (responseBody.error) {
-          case "Transaction not found":
-            return [];
-          default:
-            throw new Error(`RISE API error: ${responseBody.error}`);
-        }
-      }
-
-      const transactionJson = responseBody.transaction;
-      const height = new Int53(transactionJson.height);
-      const confirmations = new Int53(transactionJson.confirmations);
-      const transactionId = Uint64.fromString(transactionJson.id).toString() as TransactionId;
-
-      const transaction = riseCodec.parseBytes(
-        toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
-        this.myChainId,
-      );
-      return [
-        {
-          ...transaction,
-          height: height.toNumber(),
-          confirmations: confirmations.toNumber(),
-          transactionId: transactionId,
-        },
-      ];
+      const result = await this.searchSingleTransaction({ id: query.id });
+      return result ? [result] : [];
+    } else if (searchAddress) {
+      return this.searchTransactions({
+        recipientId: searchAddress,
+        senderId: searchAddress,
+        limit: 1000,
+      });
     } else {
       throw new Error("Unsupported query.");
     }
@@ -316,5 +322,72 @@ export class RiseConnection implements BcpConnection {
 
   public liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
     throw new Error("Not implemented");
+  }
+
+  private async searchSingleTransaction(searchParams: any): Promise<ConfirmedTransaction | undefined> {
+    const result = await axios.get(`${this.baseUrl}/api/transactions/get`, {
+      params: searchParams,
+    });
+    const responseBody = result.data;
+
+    if (responseBody.success !== true) {
+      switch (responseBody.error) {
+        case "Transaction not found":
+          return undefined;
+        default:
+          throw new Error(`RISE API error: ${responseBody.error}`);
+      }
+    }
+
+    const transactionJson = responseBody.transaction;
+    const height = new Uint53(transactionJson.height);
+    const confirmations = new Uint53(transactionJson.confirmations);
+    const transactionId = Uint64.fromString(transactionJson.id).toString() as TransactionId;
+
+    const transaction = riseCodec.parseBytes(
+      toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
+      this.myChainId,
+    );
+
+    return {
+      ...transaction,
+      height: height.toNumber(),
+      confirmations: confirmations.toNumber(),
+      transactionId: transactionId,
+    };
+  }
+
+  private async searchTransactions(searchParams: any): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    const result = await axios.get(`${this.baseUrl}/api/transactions`, {
+      params: searchParams,
+    });
+    const responseBody = result.data;
+
+    if (responseBody.success !== true) {
+      throw new Error(`RISE API error: ${responseBody.error}`);
+    }
+
+    return responseBody.transactions
+      .filter((transactionJson: any) => {
+        // other transaction types cannot be parsed
+        return transactionJson.type === 0;
+      })
+      .map((transactionJson: any) => {
+        const height = new Uint53(transactionJson.height);
+        const confirmations = new Uint53(transactionJson.confirmations);
+        const transactionId = Uint64.fromString(transactionJson.id).toString() as TransactionId;
+
+        const transaction = riseCodec.parseBytes(
+          toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
+          this.myChainId,
+        );
+
+        return {
+          ...transaction,
+          height: height.toNumber(),
+          confirmations: confirmations.toNumber(),
+          transactionId: transactionId,
+        };
+      });
   }
 }

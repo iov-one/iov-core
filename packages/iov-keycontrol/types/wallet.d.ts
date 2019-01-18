@@ -1,8 +1,7 @@
 import { As } from "type-tagger";
 import { ChainId, PrehashType, PublicIdentity, SignableBytes, SignatureBytes } from "@iov/bcp-types";
-import { Slip10RawIndex } from "@iov/crypto";
+import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
-import { Ed25519Wallet } from "./wallets";
 export declare type WalletId = string & As<"wallet-id">;
 export declare type WalletImplementationIdString = string & As<"wallet-implementation-id">;
 export declare type WalletSerializationString = string & As<"wallet-serialization">;
@@ -28,7 +27,7 @@ export interface Wallet {
      * The identity is bound to one chain ID to encourage using different
      * keypairs on different chains.
      */
-    readonly createIdentity: (chainId: ChainId, options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number) => Promise<PublicIdentity>;
+    readonly createIdentity: (chainId: ChainId, options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number) => Promise<PublicIdentity>;
     /**
      * Sets a local label associated with the public identity to be displayed in the UI.
      * To clear a label, set it to undefined

@@ -17,7 +17,7 @@ export declare class RiseConnection implements BcpConnection {
     getAllTickers(): Promise<ReadonlyArray<BcpTicker>>;
     getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined>;
     getNonce(_: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce>;
-    watchAccount(_: BcpAccountQuery): Stream<BcpAccount | undefined>;
+    watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined>;
     getBlockHeader(height: number): Promise<BlockHeader>;
     watchBlockHeaders(): Stream<BlockHeader>;
     /** @deprecated use watchBlockHeaders().map(header => header.height) */
@@ -25,4 +25,6 @@ export declare class RiseConnection implements BcpConnection {
     searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
     listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction>;
     liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction>;
+    private searchSingleTransaction;
+    private searchTransactions;
 }
