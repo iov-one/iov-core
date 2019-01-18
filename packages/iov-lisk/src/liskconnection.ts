@@ -2,6 +2,8 @@ import axios from "axios";
 import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
 import { Producer, Stream } from "xstream";
+// tslint:disable-next-line:no-submodule-imports
+import xstreamConcat from "xstream/extra/concat";
 
 import { Algorithm, ChainId, PostableBytes, PublicKeyBundle, PublicKeyBytes } from "@iov/base-types";
 import {
@@ -27,7 +29,7 @@ import {
   TokenTicker,
   TransactionId,
 } from "@iov/bcp-types";
-import { findDposAddress, Parse } from "@iov/dpos";
+import { dposFromOrToTag, findDposAddress, Parse } from "@iov/dpos";
 import { Encoding, Uint53, Uint64 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
@@ -45,6 +47,10 @@ const transactionStatePollInterval = 3_000;
 export function generateNonce(): Nonce {
   const now = new ReadonlyDate(ReadonlyDate.now());
   return Parse.timeToNonce(now);
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function checkAndNormalizeUrl(url: string): string {
@@ -337,8 +343,67 @@ export class LiskConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
-    throw new Error("Not implemented");
+  public liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction> {
+    if (query.id !== undefined) {
+      const searchId = query.id;
+      const resultPromise = new Promise<ConfirmedTransaction>(async (resolve, reject) => {
+        try {
+          while (true) {
+            const searchResult = await this.searchTx({ id: searchId });
+            if (searchResult.length > 0) {
+              resolve(searchResult[0]);
+            } else {
+              await sleep(4_000);
+            }
+          }
+        } catch (error) {
+          reject(error);
+        }
+      });
+
+      // concat never() because we want non-completing streams consistently
+      return xstreamConcat(Stream.fromPromise(resultPromise), Stream.never());
+    } else if (query.tags) {
+      const address = findDposAddress(query.tags);
+      if (!address) {
+        throw new Error("No matching search tag found to query transactions");
+      }
+
+      let pollInterval: NodeJS.Timeout | undefined;
+      const producer: Producer<ConfirmedTransaction> = {
+        start: listener => {
+          let minHeight = query.minHeight || 0;
+          const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
+
+          const poll = async (): Promise<void> => {
+            const result = await this.searchTx({
+              tags: [dposFromOrToTag(address)],
+              minHeight: minHeight,
+              maxHeight: maxHeight,
+            });
+            for (const item of result) {
+              listener.next(item);
+              if (item.height >= minHeight) {
+                // we assume we got all matching transactions from block `item.height` now
+                minHeight = item.height + 1;
+              }
+            }
+          };
+
+          poll();
+          pollInterval = setInterval(poll, 4_000);
+        },
+        stop: () => {
+          if (pollInterval) {
+            clearInterval(pollInterval);
+            pollInterval = undefined;
+          }
+        },
+      };
+      return Stream.create(producer);
+    } else {
+      throw new Error("Unsupported query.");
+    }
   }
 
   private async searchTransactions(
