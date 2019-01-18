@@ -28,7 +28,7 @@ import {
   TransactionId,
 } from "@iov/bcp-types";
 import { findDposAddress, Parse } from "@iov/dpos";
-import { Encoding, Int53, Uint53, Uint64 } from "@iov/encoding";
+import { Encoding, Uint53, Uint64 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
@@ -343,7 +343,7 @@ export class LiskConnection implements BcpConnection {
       })
       .map((transactionJson: any) => {
         const height = new Uint53(transactionJson.height);
-        const confirmations = new Int53(transactionJson.confirmations);
+        const confirmations = new Uint53(transactionJson.confirmations);
         const transactionId = Uint64.fromString(transactionJson.id).toString() as TransactionId;
         const transaction = liskCodec.parseBytes(
           toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
