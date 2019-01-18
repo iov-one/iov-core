@@ -2,10 +2,8 @@ import { As } from "type-tagger";
 
 import { ChainId, PublicKeyBundle, SignatureBytes } from "@iov/base-types";
 import { PrehashType, SignableBytes } from "@iov/bcp-types";
-import { Slip10RawIndex } from "@iov/crypto";
+import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
-
-import { Ed25519Wallet } from "./wallets";
 
 export type LocalIdentityId = string & As<"local-identity-id">;
 
@@ -55,7 +53,7 @@ export interface Wallet {
 
   // createIdentity will create one new identity
   readonly createIdentity: (
-    options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number,
+    options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number,
   ) => Promise<LocalIdentity>;
 
   // Sets a local label associated with the public identity to be displayed in the UI.

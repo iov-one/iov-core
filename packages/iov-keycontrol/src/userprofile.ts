@@ -3,7 +3,7 @@ import { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
 
 import { FullSignature, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
-import { Argon2id, Argon2idOptions, Slip10RawIndex } from "@iov/crypto";
+import { Argon2id, Argon2idOptions, Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
@@ -11,7 +11,6 @@ import { Keyring } from "./keyring";
 import { EncryptedKeyring, KeyringEncryptor } from "./keyringencryptor";
 import { DatabaseUtils } from "./utils";
 import { LocalIdentity, PublicIdentity, Wallet, WalletId } from "./wallet";
-import { Ed25519Wallet } from "./wallets";
 
 const { toAscii, fromBase64, toBase64, toRfc3339, fromRfc3339 } = Encoding;
 
@@ -159,7 +158,7 @@ export class UserProfile {
   /** Creates an identitiy in the wallet with the given ID in the primary keyring */
   public async createIdentity(
     id: WalletId,
-    options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number,
+    options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number,
   ): Promise<LocalIdentity> {
     const wallet = this.findWalletInPrimaryKeyring(id);
     return wallet.createIdentity(options);

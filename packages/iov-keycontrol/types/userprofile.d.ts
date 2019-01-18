@@ -2,11 +2,10 @@ import { AbstractLevelDOWN } from "abstract-leveldown";
 import { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
 import { Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
-import { Slip10RawIndex } from "@iov/crypto";
+import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { Keyring } from "./keyring";
 import { LocalIdentity, PublicIdentity, Wallet, WalletId } from "./wallet";
-import { Ed25519Wallet } from "./wallets";
 export interface UserProfileOptions {
     readonly createdAt: ReadonlyDate;
     readonly keyring: Keyring;
@@ -43,7 +42,7 @@ export declare class UserProfile {
     /** Sets the label of the wallet with the given ID in the primary keyring  */
     setWalletLabel(id: WalletId, label: string | undefined): void;
     /** Creates an identitiy in the wallet with the given ID in the primary keyring */
-    createIdentity(id: WalletId, options: Ed25519Wallet | ReadonlyArray<Slip10RawIndex> | number): Promise<LocalIdentity>;
+    createIdentity(id: WalletId, options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number): Promise<LocalIdentity>;
     /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
     setIdentityLabel(id: WalletId, identity: PublicIdentity, label: string | undefined): void;
     /** Get identities of the wallet with the given ID in the primary keyring  */
