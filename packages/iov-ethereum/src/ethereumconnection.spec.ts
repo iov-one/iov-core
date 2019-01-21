@@ -221,13 +221,13 @@ describe("EthereumConnection", () => {
       // by address
       {
         const nonce = await connection.getNonce({ address: testConfig.address });
-        expect(nonce).toEqual(testConfig.nonce);
+        expect(nonce).toEqual(testConfig.expectedNonce);
       }
 
       // by pubkey
       {
         const nonce = await connection.getNonce({ pubkey: testConfig.pubkey });
-        expect(nonce).toEqual(testConfig.nonce);
+        expect(nonce).toEqual(testConfig.expectedNonce);
       }
       connection.disconnect();
     });
