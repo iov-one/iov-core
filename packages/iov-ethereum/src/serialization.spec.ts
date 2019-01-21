@@ -100,62 +100,62 @@ describe("Serialization", () => {
         ),
       );
     });
+  });
 
-    describe("serializeSignedTransaction", () => {
-      it("can serialize pre-eip155 transaction compatible to external vectors", () => {
-        // Data from
-        // https://github.com/ethereum/tests/blob/v6.0.0-beta.3/TransactionTests/ttSignature/SenderTest.json
-        // https://github.com/ethereum/tests/blob/v6.0.0-beta.3/src/TransactionTestsFiller/ttSignature/SenderTestFiller.json
+  describe("serializeSignedTransaction", () => {
+    it("can serialize pre-eip155 transaction compatible to external vectors", () => {
+      // Data from
+      // https://github.com/ethereum/tests/blob/v6.0.0-beta.3/TransactionTests/ttSignature/SenderTest.json
+      // https://github.com/ethereum/tests/blob/v6.0.0-beta.3/src/TransactionTestsFiller/ttSignature/SenderTestFiller.json
 
-        const signed: SignedTransaction<SendTransaction> = {
-          transaction: {
-            kind: "bcp/send",
-            creator: {
-              chainId: "ethereum-eip155-0" as ChainId,
-              pubkey: {
-                algo: Algorithm.Secp256k1,
-                data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
-              },
-            },
-            amount: {
-              quantity: "10",
-              fractionalDigits: 18,
-              tokenTicker: "ETH" as TokenTicker,
-            },
-            gasPrice: {
-              quantity: "1",
-              fractionalDigits: 18,
-              tokenTicker: "ETH" as TokenTicker,
-            },
-            gasLimit: {
-              quantity: "21000",
-              fractionalDigits: 18,
-              tokenTicker: "ETH" as TokenTicker,
-            },
-            recipient: "0x095E7BAea6a6c7c4c2DfeB977eFac326aF552d87" as Address,
-          },
-          primarySignature: {
-            nonce: new Int53(0) as Nonce,
+      const signed: SignedTransaction<SendTransaction> = {
+        transaction: {
+          kind: "bcp/send",
+          creator: {
+            chainId: "ethereum-eip155-0" as ChainId,
             pubkey: {
               algo: Algorithm.Secp256k1,
               data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
             },
-            signature: new ExtendedSecp256k1Signature(
-              fromHex("48b55bfa915ac795c431978d8a6a992b628d557da5ff759b307d495a36649353"),
-              fromHex("1fffd310ac743f371de3b9f7f9cb56c0b28ad43601b4ab949f53faa07bd2c804"),
-              0,
-            ).toFixedLength() as SignatureBytes,
           },
-          otherSignatures: [],
-        };
+          amount: {
+            quantity: "10",
+            fractionalDigits: 18,
+            tokenTicker: "ETH" as TokenTicker,
+          },
+          gasPrice: {
+            quantity: "1",
+            fractionalDigits: 18,
+            tokenTicker: "ETH" as TokenTicker,
+          },
+          gasLimit: {
+            quantity: "21000",
+            fractionalDigits: 18,
+            tokenTicker: "ETH" as TokenTicker,
+          },
+          recipient: "0x095E7BAea6a6c7c4c2DfeB977eFac326aF552d87" as Address,
+        },
+        primarySignature: {
+          nonce: new Int53(0) as Nonce,
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
+          },
+          signature: new ExtendedSecp256k1Signature(
+            fromHex("48b55bfa915ac795c431978d8a6a992b628d557da5ff759b307d495a36649353"),
+            fromHex("1fffd310ac743f371de3b9f7f9cb56c0b28ad43601b4ab949f53faa07bd2c804"),
+            0,
+          ).toFixedLength() as SignatureBytes,
+        },
+        otherSignatures: [],
+      };
 
-        const serializedTx = serializeSignedTransaction(signed);
-        expect(serializedTx).toEqual(
-          fromHex(
-            "f85f800182520894095e7baea6a6c7c4c2dfeb977efac326af552d870a801ba048b55bfa915ac795c431978d8a6a992b628d557da5ff759b307d495a36649353a01fffd310ac743f371de3b9f7f9cb56c0b28ad43601b4ab949f53faa07bd2c804",
-          ),
-        );
-      });
+      const serializedTx = serializeSignedTransaction(signed);
+      expect(serializedTx).toEqual(
+        fromHex(
+          "f85f800182520894095e7baea6a6c7c4c2dfeb977efac326af552d870a801ba048b55bfa915ac795c431978d8a6a992b628d557da5ff759b307d495a36649353a01fffd310ac743f371de3b9f7f9cb56c0b28ad43601b4ab949f53faa07bd2c804",
+        ),
+      );
     });
   });
 });
