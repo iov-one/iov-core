@@ -24,7 +24,7 @@ import {
   TokenTicker,
   TransactionId,
 } from "@iov/bcp-types";
-import { Encoding, Uint53 } from "@iov/encoding";
+import { Encoding, Int53, Uint53 } from "@iov/encoding";
 import { isJsonRpcErrorResponse, JsonRpcRequest } from "@iov/jsonrpc";
 import { StreamingSocket } from "@iov/socket";
 import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
@@ -242,6 +242,26 @@ export class EthereumConnection implements BcpConnection {
     }
 
     return decodeHexQuantityNonce(response.result);
+  }
+
+  public async getNonces(
+    query: BcpAddressQuery | BcpPubkeyQuery,
+    count: number,
+  ): Promise<ReadonlyArray<Nonce>> {
+    const checkedCount = new Uint53(count).toNumber();
+    switch (checkedCount) {
+      case 0:
+        return [];
+      default:
+        // uint53 > 0
+        const out = new Array<Nonce>();
+        const firstNonce = await this.getNonce(query);
+        out.push(firstNonce);
+        for (let index = 1; index < checkedCount; index++) {
+          out.push(new Int53(firstNonce.toNumber() + index) as Nonce);
+        }
+        return out;
+    }
   }
 
   public async getBlockHeader(height: number): Promise<BlockHeader> {

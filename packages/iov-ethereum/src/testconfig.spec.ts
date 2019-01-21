@@ -20,9 +20,10 @@ export interface EthereumNetworkConfig {
   readonly minHeight: number;
   readonly pubkey: PublicKeyBundle;
   readonly address: Address;
-  /** expected balance tor the `address` */
+  /** expected balance for the `address` */
   readonly expectedBalance: Amount;
-  readonly nonce: Nonce;
+  /** expected nonce for the `address` */
+  readonly expectedNonce: Nonce;
   readonly gasPrice: Amount;
   readonly gasLimit: Amount;
   readonly waitForTx: number;
@@ -62,7 +63,7 @@ const local: EthereumNetworkConfig = {
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   },
-  nonce: new Int53(0) as Nonce,
+  expectedNonce: new Int53(0) as Nonce,
   gasPrice: {
     quantity: "20000000000",
     fractionalDigits: 18,
@@ -102,7 +103,7 @@ const testnetRopsten: EthereumNetworkConfig = {
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   },
-  nonce: new Int53(1) as Nonce,
+  expectedNonce: new Int53(1) as Nonce,
   gasPrice: {
     quantity: "1000000000",
     fractionalDigits: 18,
@@ -145,7 +146,7 @@ const testnetRinkeby: EthereumNetworkConfig = {
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   },
-  nonce: new Int53(0) as Nonce,
+  expectedNonce: new Int53(0) as Nonce,
   gasPrice: {
     quantity: "1000000000",
     fractionalDigits: 18,

@@ -30,7 +30,7 @@ import {
   TransactionId,
 } from "@iov/bcp-types";
 import { dposFromOrToTag, findDposAddress, Parse } from "@iov/dpos";
-import { Encoding, Uint53, Uint64 } from "@iov/encoding";
+import { Encoding, Int53, Uint53, Uint64 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
@@ -212,8 +212,18 @@ export class LiskConnection implements BcpConnection {
     return accounts.length > 0 ? accounts[0] : undefined;
   }
 
-  public getNonce(_: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {
-    return Promise.resolve(generateNonce());
+  public async getNonce(_: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {
+    return generateNonce();
+  }
+
+  public async getNonces(_: BcpAddressQuery | BcpPubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>> {
+    const checkedCount = new Uint53(count).toNumber();
+    // use unique nonces to ensure the same transaction content leads to a different transaction ID
+    // [now-3, now-2, now-1, now] for 4 nonces
+    const lastNonce = generateNonce().toNumber();
+    return Array.from({ length: checkedCount }).map((_1, index) => {
+      return new Int53(lastNonce - (checkedCount - 1 - index)) as Nonce;
+    });
   }
 
   public watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined> {

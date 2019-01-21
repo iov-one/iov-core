@@ -191,33 +191,125 @@ describe("RiseConnection", () => {
     });
   });
 
-  it("can get nonce", async () => {
-    const connection = await RiseConnection.establish(base);
+  describe("getNonce", () => {
+    it("can get nonce", async () => {
+      const connection = await RiseConnection.establish(base);
 
-    // by address
-    {
-      const query: BcpAddressQuery = { address: "5399275477602875017R" as Address };
-      const nonce = await connection.getNonce(query);
-      // nonce is current unix timestamp +/- one second
-      expect(nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
-      expect(nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
-    }
+      // by address
+      {
+        const query: BcpAddressQuery = { address: "5399275477602875017R" as Address };
+        const nonce = await connection.getNonce(query);
+        // nonce is current unix timestamp +/- 300ms
+        expect(nonce.toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonce.toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+      }
 
-    // by pubkey
-    {
-      const query: BcpPubkeyQuery = {
+      // by pubkey
+      {
+        const query: BcpPubkeyQuery = {
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: fromHex(
+              "ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735",
+            ) as PublicKeyBytes,
+          },
+        };
+        const nonce = await connection.getNonce(query);
+        // nonce is current unix timestamp +/- 300ms
+        expect(nonce.toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonce.toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+      }
+
+      connection.disconnect();
+    });
+  });
+
+  describe("getNonces", () => {
+    it("can get 0/1/2/3 nonces", async () => {
+      const connection = await RiseConnection.establish(base);
+
+      const addressQuery: BcpAddressQuery = { address: "5399275477602875017R" as Address };
+      const pubkeyQuery: BcpPubkeyQuery = {
         pubkey: {
           algo: Algorithm.Ed25519,
           data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PublicKeyBytes,
         },
       };
-      const nonce = await connection.getNonce(query);
-      // nonce is current unix timestamp +/- one second
-      expect(nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
-      expect(nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
-    }
 
-    connection.disconnect();
+      // by address, 0 nonces
+      {
+        const nonces = await connection.getNonces(addressQuery, 0);
+        expect(nonces.length).toEqual(0);
+      }
+
+      // by address, 1 nonces
+      {
+        const nonces = await connection.getNonces(addressQuery, 1);
+        expect(nonces.length).toEqual(1);
+        // last nonce is current unix timestamp +/- 300ms
+        expect(nonces[0].toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonces[0].toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+      }
+
+      // by address, 2 nonces
+      {
+        const nonces = await connection.getNonces(addressQuery, 2);
+        expect(nonces.length).toEqual(2);
+        // last nonce is current unix timestamp +/- 300ms
+        expect(nonces[1].toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonces[1].toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+        expect(nonces[0].toNumber()).toEqual(nonces[1].toNumber() - 1);
+      }
+
+      // by address, 3 nonces
+      {
+        const nonces = await connection.getNonces(addressQuery, 3);
+        expect(nonces.length).toEqual(3);
+        // last nonce is current unix timestamp +/- 300ms
+        expect(nonces[2].toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonces[2].toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+        expect(nonces[1].toNumber()).toEqual(nonces[2].toNumber() - 1);
+        expect(nonces[0].toNumber()).toEqual(nonces[1].toNumber() - 1);
+      }
+
+      // by pubkey, 0 nonces
+      {
+        const nonces = await connection.getNonces(pubkeyQuery, 0);
+        expect(nonces.length).toEqual(0);
+      }
+
+      // by pubkey, 1 nonces
+      {
+        const nonces = await connection.getNonces(pubkeyQuery, 1);
+        expect(nonces.length).toEqual(1);
+        // last nonce is current unix timestamp +/- 300ms
+        expect(nonces[0].toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonces[0].toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+      }
+
+      // by pubkey, 2 nonces
+      {
+        const nonces = await connection.getNonces(pubkeyQuery, 2);
+        expect(nonces.length).toEqual(2);
+        // last nonce is current unix timestamp +/- 300ms
+        expect(nonces[1].toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonces[1].toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+        expect(nonces[0].toNumber()).toEqual(nonces[1].toNumber() - 1);
+      }
+
+      // by pubkey, 3 nonces
+      {
+        const nonces = await connection.getNonces(pubkeyQuery, 3);
+        expect(nonces.length).toEqual(3);
+        // last nonce is current unix timestamp +/- 300ms
+        expect(nonces[2].toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonces[2].toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+        expect(nonces[1].toNumber()).toEqual(nonces[2].toNumber() - 1);
+        expect(nonces[0].toNumber()).toEqual(nonces[1].toNumber() - 1);
+      }
+
+      connection.disconnect();
+    });
   });
 
   describe("watchAccount", () => {

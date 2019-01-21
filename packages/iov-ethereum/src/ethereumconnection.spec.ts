@@ -18,7 +18,6 @@ import {
   TransactionId,
 } from "@iov/bcp-types";
 import { Random, Secp256k1 } from "@iov/crypto";
-import { Int53 } from "@iov/encoding";
 import { HdPaths, Secp256k1HdWallet, UserProfile, Wallet } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 
@@ -166,7 +165,7 @@ describe("EthereumConnection", () => {
     it("can get account from address", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(testConfig.base);
-      const account = await connection.getAccount({ address: testConfig.address as Address });
+      const account = await connection.getAccount({ address: testConfig.address });
       expect(account).toBeDefined();
       expect(account!.address).toEqual(testConfig.address);
       expect(account!.balance[0]).toEqual({
@@ -214,22 +213,75 @@ describe("EthereumConnection", () => {
     });
   });
 
-  it("can get nonce", async () => {
-    pendingWithoutEthereum();
-    const connection = await EthereumConnection.establish(testConfig.base);
+  describe("getNonce", () => {
+    it("can get nonce", async () => {
+      pendingWithoutEthereum();
+      const connection = await EthereumConnection.establish(testConfig.base);
 
-    // by address
-    {
-      const nonce = await connection.getNonce({ address: testConfig.address as Address });
-      expect(nonce).toEqual(testConfig.nonce);
-    }
+      // by address
+      {
+        const nonce = await connection.getNonce({ address: testConfig.address });
+        expect(nonce).toEqual(testConfig.expectedNonce);
+      }
 
-    // by pubkey
-    {
-      const nonce = await connection.getNonce({ pubkey: testConfig.pubkey });
-      expect(nonce).toEqual(testConfig.nonce);
-    }
-    connection.disconnect();
+      // by pubkey
+      {
+        const nonce = await connection.getNonce({ pubkey: testConfig.pubkey });
+        expect(nonce).toEqual(testConfig.expectedNonce);
+      }
+      connection.disconnect();
+    });
+  });
+
+  describe("getNonces", () => {
+    it("can get 0/1/2 nonces", async () => {
+      pendingWithoutEthereum();
+      const connection = await EthereumConnection.establish(testConfig.base);
+
+      // by address, 0 nonces
+      {
+        const nonces = await connection.getNonces({ address: testConfig.address }, 0);
+        expect(nonces.length).toEqual(0);
+      }
+
+      // by address, 1 nonces
+      {
+        const nonces = await connection.getNonces({ address: testConfig.address }, 1);
+        expect(nonces.length).toEqual(1);
+        expect(nonces[0].toNumber()).toEqual(testConfig.expectedNonce.toNumber());
+      }
+
+      // by address, 2 nonces
+      {
+        const nonces = await connection.getNonces({ address: testConfig.address }, 2);
+        expect(nonces.length).toEqual(2);
+        expect(nonces[0].toNumber()).toEqual(testConfig.expectedNonce.toNumber());
+        expect(nonces[1].toNumber()).toEqual(testConfig.expectedNonce.toNumber() + 1);
+      }
+
+      // by pubkey, 0 nonces
+      {
+        const nonces = await connection.getNonces({ pubkey: testConfig.pubkey }, 0);
+        expect(nonces.length).toEqual(0);
+      }
+
+      // by pubkey, 1 nonces
+      {
+        const nonces = await connection.getNonces({ pubkey: testConfig.pubkey }, 1);
+        expect(nonces.length).toEqual(1);
+        expect(nonces[0].toNumber()).toEqual(testConfig.expectedNonce.toNumber());
+      }
+
+      // by pubkey, 2 nonces
+      {
+        const nonces = await connection.getNonces({ pubkey: testConfig.pubkey }, 2);
+        expect(nonces.length).toEqual(2);
+        expect(nonces[0].toNumber()).toEqual(testConfig.expectedNonce.toNumber());
+        expect(nonces[1].toNumber()).toEqual(testConfig.expectedNonce.toNumber() + 1);
+      }
+
+      connection.disconnect();
+    });
   });
 
   describe("postTx", () => {
@@ -701,9 +753,7 @@ describe("EthereumConnection", () => {
           memo: `listenTx() test C ${Math.random()}`,
         };
 
-        const nonceA = await connection.getNonce({ pubkey: sender.pubkey });
-        const nonceB = new Int53(nonceA.toNumber() + 1) as Nonce;
-        const nonceC = new Int53(nonceA.toNumber() + 2) as Nonce;
+        const [nonceA, nonceB, nonceC] = await connection.getNonces({ pubkey: sender.pubkey }, 3);
 
         const signedA = await profile.signTransaction(wallet.id, sender, sendA, ethereumCodec, nonceA);
         const signedB = await profile.signTransaction(wallet.id, sender, sendB, ethereumCodec, nonceB);
@@ -781,9 +831,7 @@ describe("EthereumConnection", () => {
           memo: `liveTx() test C ${Math.random()}`,
         };
 
-        const nonceA = await connection.getNonce({ pubkey: sender.pubkey });
-        const nonceB = new Int53(nonceA.toNumber() + 1) as Nonce;
-        const nonceC = new Int53(nonceA.toNumber() + 2) as Nonce;
+        const [nonceA, nonceB, nonceC] = await connection.getNonces({ pubkey: sender.pubkey }, 3);
 
         const signedA = await profile.signTransaction(wallet.id, sender, sendA, ethereumCodec, nonceA);
         const signedB = await profile.signTransaction(wallet.id, sender, sendB, ethereumCodec, nonceB);
@@ -1014,8 +1062,7 @@ describe("EthereumConnection", () => {
         );
         const secondIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.bip44(60, 0, 0, 1));
 
-        const nonceA = await connection.getNonce({ pubkey: secondIdentity.pubkey });
-        const nonceB = new Int53(nonceA.toNumber() + 1) as Nonce;
+        const [nonceA, nonceB] = await connection.getNonces({ pubkey: secondIdentity.pubkey }, 2);
         const recipient = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
         await postTransaction(wallet, secondIdentity, nonceA, recipient, connection);
         await postTransaction(wallet, secondIdentity, nonceB, recipient, connection);

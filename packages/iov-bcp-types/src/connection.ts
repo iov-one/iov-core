@@ -205,13 +205,23 @@ export interface BcpConnection {
    * If an account is not found on the blockchain, this returns undefined.
    */
   readonly getAccount: (query: BcpAccountQuery) => Promise<BcpAccount | undefined>;
+  readonly watchAccount: (account: BcpAccountQuery) => Stream<BcpAccount | undefined>;
   /**
    * Get a nonce for the next transaction signature.
    *
    * Implementation defines a default value if blockchain does not provide a nonce.
    */
   readonly getNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Promise<Nonce>;
-  readonly watchAccount: (account: BcpAccountQuery) => Stream<BcpAccount | undefined>;
+  /**
+   * Get multiple nonces at once to sign multiple transactions
+   *
+   * This avoids querying the blockchain for every nonce and removes the need to
+   * wait for blocks before getting updated nonces.
+   */
+  readonly getNonces: (
+    query: BcpAddressQuery | BcpPubkeyQuery,
+    count: number,
+  ) => Promise<ReadonlyArray<Nonce>>;
 
   // blocks
   readonly getBlockHeader: (height: number) => Promise<BlockHeader>;

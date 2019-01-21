@@ -35,6 +35,7 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     getAllTickers(): Promise<ReadonlyArray<BcpTicker>>;
     getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined>;
     getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce>;
+    getNonces(query: BcpAddressQuery | BcpPubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>>;
     /**
      * All matching swaps that are open (from app state)
      */

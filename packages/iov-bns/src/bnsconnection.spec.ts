@@ -249,7 +249,7 @@ describe("BnsConnection", () => {
   });
 
   describe("getNonce", () => {
-    it("can query empty nonce from unused account by address, pubkey and name", async () => {
+    it("can query empty nonce from unused account by address and pubkey", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
@@ -271,7 +271,7 @@ describe("BnsConnection", () => {
       connection.disconnect();
     });
 
-    it("can query nonce from faucet by address, pubkey and name", async () => {
+    it("can query nonce from faucet by address and pubkey", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
@@ -285,6 +285,55 @@ describe("BnsConnection", () => {
       // by pubkey
       const nonce2 = await connection.getNonce({ pubkey: faucet.pubkey });
       expect(nonce2.toNumber()).toBeGreaterThan(0);
+
+      connection.disconnect();
+    });
+  });
+
+  describe("getNonces", () => {
+    it("can get 0/1/2 nonces", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const { faucet } = await userProfileWithFaucet(connection.chainId());
+      const faucetAddress = identityToAddress(faucet);
+
+      // by address, 0 nonces
+      {
+        const nonces = await connection.getNonces({ address: faucetAddress }, 0);
+        expect(nonces.length).toEqual(0);
+      }
+
+      // by address, 1 nonces
+      {
+        const nonces = await connection.getNonces({ address: faucetAddress }, 1);
+        expect(nonces.length).toEqual(1);
+      }
+
+      // by address, 2 nonces
+      {
+        const nonces = await connection.getNonces({ address: faucetAddress }, 2);
+        expect(nonces.length).toEqual(2);
+        expect(nonces[1].toNumber()).toEqual(nonces[0].toNumber() + 1);
+      }
+
+      // by pubkey, 0 nonces
+      {
+        const nonces = await connection.getNonces({ pubkey: faucet.pubkey }, 0);
+        expect(nonces.length).toEqual(0);
+      }
+
+      // by pubkey, 1 nonces
+      {
+        const nonces = await connection.getNonces({ pubkey: faucet.pubkey }, 1);
+        expect(nonces.length).toEqual(1);
+      }
+
+      // by pubkey, 2 nonces
+      {
+        const nonces = await connection.getNonces({ pubkey: faucet.pubkey }, 2);
+        expect(nonces.length).toEqual(2);
+        expect(nonces[1].toNumber()).toEqual(nonces[0].toNumber() + 1);
+      }
 
       connection.disconnect();
     });
