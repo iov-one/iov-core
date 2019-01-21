@@ -199,9 +199,9 @@ describe("RiseConnection", () => {
       {
         const query: BcpAddressQuery = { address: "5399275477602875017R" as Address };
         const nonce = await connection.getNonce(query);
-        // nonce is current unix timestamp +/- one second
-        expect(nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
-        expect(nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
+        // nonce is current unix timestamp +/- 300ms
+        expect(nonce.toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonce.toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
       }
 
       // by pubkey
@@ -215,9 +215,9 @@ describe("RiseConnection", () => {
           },
         };
         const nonce = await connection.getNonce(query);
-        // nonce is current unix timestamp +/- one second
-        expect(nonce.toNumber()).toBeGreaterThanOrEqual(Date.now() / 1000 - 1);
-        expect(nonce.toNumber()).toBeLessThanOrEqual(Date.now() / 1000 + 1);
+        // nonce is current unix timestamp +/- 300ms
+        expect(nonce.toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonce.toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
       }
 
       connection.disconnect();
