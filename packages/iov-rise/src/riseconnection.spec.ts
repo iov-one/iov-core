@@ -225,7 +225,7 @@ describe("RiseConnection", () => {
   });
 
   describe("getNonces", () => {
-    it("can get 0/1/2 nonces", async () => {
+    it("can get 0/1/2/3 nonces", async () => {
       const connection = await RiseConnection.establish(base);
 
       const addressQuery: BcpAddressQuery = { address: "5399275477602875017R" as Address };
@@ -246,13 +246,30 @@ describe("RiseConnection", () => {
       {
         const nonces = await connection.getNonces(addressQuery, 1);
         expect(nonces.length).toEqual(1);
+        // last nonce is current unix timestamp +/- 300ms
+        expect(nonces[0].toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonces[0].toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
       }
 
       // by address, 2 nonces
       {
         const nonces = await connection.getNonces(addressQuery, 2);
         expect(nonces.length).toEqual(2);
-        expect(nonces[1].toNumber()).toEqual(nonces[0].toNumber());
+        // last nonce is current unix timestamp +/- 300ms
+        expect(nonces[1].toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonces[1].toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+        expect(nonces[0].toNumber()).toEqual(nonces[1].toNumber() - 1);
+      }
+
+      // by address, 3 nonces
+      {
+        const nonces = await connection.getNonces(addressQuery, 3);
+        expect(nonces.length).toEqual(3);
+        // last nonce is current unix timestamp +/- 300ms
+        expect(nonces[2].toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonces[2].toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+        expect(nonces[1].toNumber()).toEqual(nonces[2].toNumber() - 1);
+        expect(nonces[0].toNumber()).toEqual(nonces[1].toNumber() - 1);
       }
 
       // by pubkey, 0 nonces
@@ -265,13 +282,30 @@ describe("RiseConnection", () => {
       {
         const nonces = await connection.getNonces(pubkeyQuery, 1);
         expect(nonces.length).toEqual(1);
+        // last nonce is current unix timestamp +/- 300ms
+        expect(nonces[0].toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonces[0].toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
       }
 
       // by pubkey, 2 nonces
       {
         const nonces = await connection.getNonces(pubkeyQuery, 2);
         expect(nonces.length).toEqual(2);
-        expect(nonces[1].toNumber()).toEqual(nonces[0].toNumber());
+        // last nonce is current unix timestamp +/- 300ms
+        expect(nonces[1].toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonces[1].toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+        expect(nonces[0].toNumber()).toEqual(nonces[1].toNumber() - 1);
+      }
+
+      // by pubkey, 3 nonces
+      {
+        const nonces = await connection.getNonces(pubkeyQuery, 3);
+        expect(nonces.length).toEqual(3);
+        // last nonce is current unix timestamp +/- 300ms
+        expect(nonces[2].toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonces[2].toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+        expect(nonces[1].toNumber()).toEqual(nonces[2].toNumber() - 1);
+        expect(nonces[0].toNumber()).toEqual(nonces[1].toNumber() - 1);
       }
 
       connection.disconnect();
