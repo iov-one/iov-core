@@ -62,17 +62,19 @@ export const ethereumCodec: TxCodec = {
       case 0:
         const send: SendTransaction = {
           kind: "bcp/send",
-          chainId: chainId,
+          creator: {
+            chainId: chainId,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              // Only sender address available directly. We probably need to calculate
+              // this from the ECDSA signature and recovery parameter
+              data: new Uint8Array([]) as PublicKeyBytes,
+            },
+          },
           fee: {
             quantity: decodeHexQuantityString(json.gas),
             fractionalDigits: constants.primaryTokenFractionalDigits,
             tokenTicker: constants.primaryTokenTicker,
-          },
-          signer: {
-            algo: Algorithm.Secp256k1,
-            // Only sender address available directly. We probably need to calculate
-            // this from the ECDSA signature and recovery parameter
-            data: new Uint8Array([]) as PublicKeyBytes,
           },
           amount: {
             quantity: decodeHexQuantityString(json.value),

@@ -226,8 +226,7 @@ import { SendTransaction, TokenTicker } from "@iov/bcp-types"
 
 const sendTx: SendTransaction = {
   kind: "bcp/send",
-  chainId: chainId,
-  signer: id1a.pubkey,  // this account must have money
+  creator: id1a, // this account must have money
   recipient: addr2,
   memo: "My first transaction",
   amount: { // 10.11 IOV (9 sig figs in tx codec)

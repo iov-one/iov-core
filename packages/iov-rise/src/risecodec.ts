@@ -102,15 +102,17 @@ export const riseCodec: TxCodec = {
       case 0:
         const send: SendTransaction = {
           kind: "bcp/send",
-          chainId: chainId,
+          creator: {
+            chainId: chainId,
+            pubkey: {
+              algo: Algorithm.Ed25519,
+              data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
+            },
+          },
           fee: {
             quantity: Parse.parseQuantity(`${json.fee}`), // `fee` is a number
             fractionalDigits: constants.primaryTokenFractionalDigits,
             tokenTicker: constants.primaryTokenTicker,
-          },
-          signer: {
-            algo: Algorithm.Ed25519,
-            data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
           },
           amount: {
             quantity: Parse.parseQuantity(`${json.amount}`), // `amount` is a number

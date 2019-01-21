@@ -114,15 +114,11 @@ export class MultiChainSigner {
    * the private key for the signer in the given wallet ID is done automatically.
    */
   public async signAndPost(tx: UnsignedTransaction, walletId: WalletId): Promise<PostTxResponse> {
-    const { connection, codec } = this.getChain(tx.chainId);
+    const { connection, codec } = this.getChain(tx.creator.chainId);
 
-    const nonce = await connection.getNonce({ pubkey: tx.signer });
+    const nonce = await connection.getNonce({ pubkey: tx.creator.pubkey });
 
-    const signingIdentity: PublicIdentity = {
-      chainId: tx.chainId,
-      pubkey: tx.signer,
-    };
-    const signed = await this.profile.signTransaction(walletId, signingIdentity, tx, codec, nonce);
+    const signed = await this.profile.signTransaction(walletId, tx.creator, tx, codec, nonce);
     const txBytes = codec.bytesToPost(signed);
     const post = await connection.postTx(txBytes);
     return post;

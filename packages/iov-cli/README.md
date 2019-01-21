@@ -83,8 +83,7 @@ $ iov-cli
 > .editor
 const sendTx: SendTransaction = {
   kind: "bcp/send",
-  chainId: chainId,
-  signer: faucet.pubkey,
+  creator: faucet,
   recipient: recipientAddress,
   memo: "My first transaction",
   amount: {
@@ -157,8 +156,7 @@ transactions associated from above
 > .editor
 const setNameTx: SetNameTx = {
   kind: "bns/set_name",
-  chainId: chainId,
-  signer: recipient.pubkey,
+  creator: recipient,
   name: "hans",
 };
 ^D

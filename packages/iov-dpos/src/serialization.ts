@@ -68,7 +68,7 @@ export class Serialization {
       return new Uint8Array([
         0, // transaction type
         ...timestampBytes,
-        ...unsigned.signer.data,
+        ...unsigned.creator.pubkey.data,
         ...recipient.toBytesBE(),
         ...amount.toBytesLittleEndian(),
         ...memoBytes,

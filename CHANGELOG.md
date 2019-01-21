@@ -29,6 +29,7 @@ Breaking changes
   type of `BcpConnection.getAllTickers`.
 * @iov/bcp-types: Convert `BcpQueryEnvelope` to `BcpTicker | undefined` in return
   type of `BcpConnection.getTicker`.
+* @iov/bcp-types: Migrate `UnsignedTransaction.chainId` and `.signer` into `.creator`
 * @iov/bns: Convert `.owner` in `BnsUsernameNft` and `BnsBlockchainNft` to `Address`
 * @iov/bns: In `BncConnection.watchBlockHeaders`, the block header events
   temporarily contain a dummy `id` string until ID calculation is implemented

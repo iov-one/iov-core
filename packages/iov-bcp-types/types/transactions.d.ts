@@ -27,6 +27,7 @@ export interface PublicIdentity {
     readonly chainId: ChainId;
     readonly pubkey: PublicKeyBundle;
 }
+export declare function isPublicIdentity(data: any): data is PublicIdentity;
 /**
  * Compares two objects that conform to the PublicIdentity interface for equality.
  * This can also be used to compare pairs of derived types like LocalIdentity/PublicIdentity
@@ -113,12 +114,15 @@ export interface UnsignedTransaction {
      * other way of namespacing later on, so don't use the `kind` property as a value.
      */
     readonly kind: string;
-    /** the chain on which the transaction should be valid */
-    readonly chainId: ChainId;
+    /**
+     * The creator of the transaction.
+     *
+     * This implicitly fixes the chain ID this transaction can be used on.
+     */
+    readonly creator: PublicIdentity;
     readonly fee?: Amount;
     readonly gasPrice?: Amount;
     readonly gasLimit?: Amount;
-    readonly signer: PublicKeyBundle;
 }
 export declare function isUnsignedTransaction(data: any): data is UnsignedTransaction;
 export interface SendTransaction extends UnsignedTransaction {

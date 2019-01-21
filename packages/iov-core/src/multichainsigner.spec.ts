@@ -92,8 +92,7 @@ describe("MultiChainSigner", () => {
       const memo = `MultiChainSigner style (${Math.random()})`;
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        chainId,
-        signer: faucet.pubkey,
+        creator: faucet,
         recipient: recipient,
         memo: memo,
         amount: {

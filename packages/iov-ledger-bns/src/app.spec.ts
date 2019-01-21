@@ -6,7 +6,7 @@ import {
   ChainId,
   Nonce,
   PrehashType,
-  PublicKeyBundle,
+  PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   TokenTicker,
@@ -110,14 +110,17 @@ describe("Sign with ledger app", () => {
     const pubkey = await getPublicKeyWithIndex(transport!, 0);
     expect(pubkey.length).toEqual(32);
 
-    const sender: PublicKeyBundle = {
-      algo: Algorithm.Ed25519,
-      data: pubkey as PublicKeyBytes,
+    const sender: PublicIdentity = {
+      chainId: "test-bns-ledger" as ChainId,
+      pubkey: {
+        algo: Algorithm.Ed25519,
+        data: pubkey as PublicKeyBytes,
+      },
     };
 
     const tx: SendTransaction = {
       kind: "bcp/send",
-      chainId: "test-bns-ledger" as ChainId,
+      creator: sender,
       recipient: "tiov1qy352eufqy352eufqy352eufqy352eufpralqn" as Address,
       amount: {
         // 1234.789 LGR
@@ -125,7 +128,6 @@ describe("Sign with ledger app", () => {
         fractionalDigits: 9,
         tokenTicker: "LGR" as TokenTicker,
       },
-      signer: sender,
       memo: "Hi Mom!",
     };
     const nonce = new Int53(123) as Nonce;
@@ -155,14 +157,17 @@ describe("Sign with ledger app", () => {
     const pubkey = await getPublicKeyWithIndex(transport!, simpleAddressIndex);
     expect(pubkey.length).toEqual(32);
 
-    const sender: PublicKeyBundle = {
-      algo: Algorithm.Ed25519,
-      data: pubkey as PublicKeyBytes,
+    const sender: PublicIdentity = {
+      chainId: "test-ledger-paths" as ChainId,
+      pubkey: {
+        algo: Algorithm.Ed25519,
+        data: pubkey as PublicKeyBytes,
+      },
     };
 
     const tx: SendTransaction = {
       kind: "bcp/send",
-      chainId: "test-ledger-paths" as ChainId,
+      creator: sender,
       recipient: "tiov1zg62hngqqz4qqq8lluqqp2sqqqfrf27dzrrmea" as Address,
       amount: {
         // 77.01001 PATH
@@ -170,7 +175,6 @@ describe("Sign with ledger app", () => {
         fractionalDigits: 9,
         tokenTicker: "PATH" as TokenTicker,
       },
-      signer: sender,
     };
     const nonce = new Int53(5) as Nonce;
     const { bytes, prehashType } = bnsCodec.bytesToSign(tx, nonce);

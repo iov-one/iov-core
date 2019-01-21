@@ -115,15 +115,17 @@ describe("Scraper", () => {
     }
     expect(unsigned).toEqual({
       kind: "bcp/send",
-      chainId: "ethereum-eip155-4" as ChainId,
+      creator: {
+        chainId: "ethereum-eip155-4" as ChainId,
+        pubkey: {
+          algo: Algorithm.Secp256k1,
+          data: new Uint8Array([]) as PublicKeyBytes, // unknown
+        },
+      },
       fee: {
         quantity: "23380",
         fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
-      },
-      signer: {
-        algo: Algorithm.Secp256k1,
-        data: new Uint8Array([]) as PublicKeyBytes, // unknown
       },
       amount: {
         quantity: "5445500",

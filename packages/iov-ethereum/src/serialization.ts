@@ -11,7 +11,7 @@ const { fromHex } = Encoding;
 export class Serialization {
   public static serializeUnsignedTransaction(unsigned: UnsignedTransaction, nonce: Nonce): Uint8Array {
     if (isSendTransaction(unsigned)) {
-      const chainIdHex = encodeQuantity(fromBcpChainId(unsigned.chainId));
+      const chainIdHex = encodeQuantity(fromBcpChainId(unsigned.creator.chainId));
       const valueHex = encodeQuantityString(unsigned.amount.quantity);
       const nonceHex = nonce.toNumber() > 0 ? encodeQuantity(nonce.toNumber()) : "0x";
       const gasPriceHex = unsigned.gasPrice ? encodeQuantityString(unsigned.gasPrice.quantity) : "0x";
@@ -67,7 +67,7 @@ export class Serialization {
       const sig = ExtendedSecp256k1Signature.fromFixedLength(signed.primarySignature.signature);
       const r = sig.r();
       const s = sig.s();
-      const chainId = fromBcpChainId(unsigned.chainId);
+      const chainId = fromBcpChainId(unsigned.creator.chainId);
       const chain: Eip155ChainId =
         chainId > 0
           ? { forkState: BlknumForkState.Forked, chainId: chainId }

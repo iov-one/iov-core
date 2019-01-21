@@ -298,8 +298,7 @@ describe("LiskConnection", () => {
         for (const _ of [0, 1]) {
           const sendTx: SendTransaction = {
             kind: "bcp/send",
-            chainId: devnetChainId,
-            signer: mainIdentity.pubkey,
+            creator: mainIdentity,
             recipient: recipient,
             amount: devnetDefaultAmount,
           };
@@ -402,8 +401,7 @@ describe("LiskConnection", () => {
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        chainId: devnetChainId,
-        signer: mainIdentity.pubkey,
+        creator: mainIdentity,
         recipient: devnetDefaultRecipient,
         memo: `We ❤️ developers – iov.one ${Math.random()}`,
         amount: devnetDefaultAmount,
@@ -443,8 +441,7 @@ describe("LiskConnection", () => {
 
         const sendTx: SendTransaction = {
           kind: "bcp/send",
-          chainId: devnetChainId,
-          signer: mainIdentity.pubkey,
+          creator: mainIdentity,
           recipient: devnetDefaultRecipient,
           memo: `We ❤️ developers – iov.one ${Math.random()}`,
           amount: devnetDefaultAmount,
@@ -506,8 +503,7 @@ describe("LiskConnection", () => {
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        chainId: devnetChainId,
-        signer: mainIdentity.pubkey,
+        creator: mainIdentity,
         recipient: devnetDefaultRecipient,
         memo: `We ❤️ developers – iov.one ${Math.random()}`,
         amount: devnetDefaultAmount,
@@ -555,8 +551,7 @@ describe("LiskConnection", () => {
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        chainId: devnetChainId,
-        signer: mainIdentity.pubkey,
+        creator: mainIdentity,
         recipient: devnetDefaultRecipient,
         memo: "We ❤️ developers – iov.one",
         amount: devnetDefaultAmount,
@@ -648,7 +643,7 @@ describe("LiskConnection", () => {
           }
           expect(
             transaction.recipient === searchAddress ||
-              pubkeyToAddress(transaction.signer.data) === searchAddress,
+              liskCodec.identityToAddress(transaction.creator) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -665,7 +660,7 @@ describe("LiskConnection", () => {
           }
           expect(
             transaction.recipient === searchAddress ||
-              pubkeyToAddress(transaction.signer.data) === searchAddress,
+              liskCodec.identityToAddress(transaction.creator) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -692,7 +687,7 @@ describe("LiskConnection", () => {
           }
           expect(
             transaction.recipient === searchAddress ||
-              pubkeyToAddress(transaction.signer.data) === searchAddress,
+              liskCodec.identityToAddress(transaction.creator) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -709,7 +704,7 @@ describe("LiskConnection", () => {
           }
           expect(
             transaction.recipient === searchAddress ||
-              pubkeyToAddress(transaction.signer.data) === searchAddress,
+              liskCodec.identityToAddress(transaction.creator) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -731,7 +726,7 @@ describe("LiskConnection", () => {
           }
           expect(
             transaction.recipient === searchAddress ||
-              pubkeyToAddress(transaction.signer.data) === searchAddress,
+              liskCodec.identityToAddress(transaction.creator) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -822,8 +817,7 @@ describe("LiskConnection", () => {
 
         const sendA: SendTransaction = {
           kind: "bcp/send",
-          chainId: devnetChainId,
-          signer: sender.pubkey,
+          creator: sender,
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
           memo: `liveTx() test A ${Math.random()}`,
@@ -831,8 +825,7 @@ describe("LiskConnection", () => {
 
         const sendB: SendTransaction = {
           kind: "bcp/send",
-          chainId: devnetChainId,
-          signer: sender.pubkey,
+          creator: sender,
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
           memo: `liveTx() test B ${Math.random()}`,
@@ -840,8 +833,7 @@ describe("LiskConnection", () => {
 
         const sendC: SendTransaction = {
           kind: "bcp/send",
-          chainId: devnetChainId,
-          signer: sender.pubkey,
+          creator: sender,
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
           memo: `liveTx() test C ${Math.random()}`,
@@ -907,8 +899,7 @@ describe("LiskConnection", () => {
         const recipientAddress = await randomAddress();
         const send: SendTransaction = {
           kind: "bcp/send",
-          chainId: devnetChainId,
-          signer: sender.pubkey,
+          creator: sender,
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
           memo: `liveTx() test ${Math.random()}`,
@@ -960,8 +951,7 @@ describe("LiskConnection", () => {
 
         const send: SendTransaction = {
           kind: "bcp/send",
-          chainId: devnetChainId,
-          signer: sender.pubkey,
+          creator: sender,
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
           memo: `liveTx() test ${Math.random()}`,

@@ -50,6 +50,15 @@ export interface PublicIdentity {
   readonly pubkey: PublicKeyBundle;
 }
 
+export function isPublicIdentity(data: any): data is PublicIdentity {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    typeof (data as PublicIdentity).chainId === "string" &&
+    isPublicKeyBundle((data as PublicIdentity).pubkey)
+  );
+}
+
 /**
  * Compares two objects that conform to the PublicIdentity interface for equality.
  * This can also be used to compare pairs of derived types like LocalIdentity/PublicIdentity
@@ -167,13 +176,15 @@ export interface UnsignedTransaction {
    * other way of namespacing later on, so don't use the `kind` property as a value.
    */
   readonly kind: string;
-  /** the chain on which the transaction should be valid */
-  readonly chainId: ChainId;
+  /**
+   * The creator of the transaction.
+   *
+   * This implicitly fixes the chain ID this transaction can be used on.
+   */
+  readonly creator: PublicIdentity;
   readonly fee?: Amount;
   readonly gasPrice?: Amount;
   readonly gasLimit?: Amount;
-  // signer needs to be a PublicKey as we use that to as an identifier to the Keyring for lookup
-  readonly signer: PublicKeyBundle;
 }
 
 export function isUnsignedTransaction(data: any): data is UnsignedTransaction {
@@ -181,13 +192,11 @@ export function isUnsignedTransaction(data: any): data is UnsignedTransaction {
     typeof data === "object" &&
     data !== null &&
     typeof (data as UnsignedTransaction).kind === "string" &&
-    typeof (data as UnsignedTransaction).chainId === "string" &&
+    isPublicIdentity((data as UnsignedTransaction).creator) &&
     ((data as UnsignedTransaction).fee === undefined || isAmount((data as UnsignedTransaction).fee)) &&
     ((data as UnsignedTransaction).gasPrice === undefined ||
       isAmount((data as UnsignedTransaction).gasPrice)) &&
-    ((data as UnsignedTransaction).gasLimit === undefined ||
-      isAmount((data as UnsignedTransaction).gasLimit)) &&
-    isPublicKeyBundle((data as UnsignedTransaction).signer)
+    ((data as UnsignedTransaction).gasLimit === undefined || isAmount((data as UnsignedTransaction).gasLimit))
   );
 }
 

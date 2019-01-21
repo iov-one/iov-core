@@ -92,10 +92,12 @@ describe("Serialization", () => {
 
       const tx: SendTransaction = {
         kind: "bcp/send",
-        chainId: riseTestnet,
-        signer: {
-          algo: Algorithm.Ed25519,
-          data: pubkey as PublicKeyBytes,
+        creator: {
+          chainId: riseTestnet,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: pubkey as PublicKeyBytes,
+          },
         },
         amount: {
           quantity: "123456789",
@@ -118,10 +120,12 @@ describe("Serialization", () => {
 
       const tx: SendTransaction = {
         kind: "bcp/send",
-        chainId: liskTestnet as ChainId,
-        signer: {
-          algo: Algorithm.Ed25519,
-          data: pubkey as PublicKeyBytes,
+        creator: {
+          chainId: liskTestnet,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: pubkey as PublicKeyBytes,
+          },
         },
         amount: {
           quantity: "123456789",
@@ -144,10 +148,12 @@ describe("Serialization", () => {
 
       const tx: SendTransaction = {
         kind: "bcp/send",
-        chainId: liskTestnet as ChainId,
-        signer: {
-          algo: Algorithm.Ed25519,
-          data: pubkey as PublicKeyBytes,
+        creator: {
+          chainId: liskTestnet,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: pubkey as PublicKeyBytes,
+          },
         },
         amount: {
           quantity: "123456789",
@@ -170,12 +176,14 @@ describe("Serialization", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
       const tx: SendTransaction = {
-        chainId: liskTestnet,
-        signer: {
-          algo: Algorithm.Ed25519,
-          data: pubkey as PublicKeyBytes,
-        },
         kind: "bcp/send",
+        creator: {
+          chainId: liskTestnet,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: pubkey as PublicKeyBytes,
+          },
+        },
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -194,12 +202,14 @@ describe("Serialization", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
       const tx: SendTransaction = {
-        chainId: liskTestnet,
-        signer: {
-          algo: Algorithm.Ed25519,
-          data: pubkey as PublicKeyBytes,
-        },
         kind: "bcp/send",
+        creator: {
+          chainId: liskTestnet,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: pubkey as PublicKeyBytes,
+          },
+        },
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -219,12 +229,14 @@ describe("Serialization", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
       const tx: SendTransaction = {
-        chainId: "xnet" as ChainId,
-        signer: {
-          algo: Algorithm.Ed25519,
-          data: pubkey as PublicKeyBytes,
-        },
         kind: "bcp/send",
+        creator: {
+          chainId: "xnet" as ChainId,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: pubkey as PublicKeyBytes,
+          },
+        },
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -249,12 +261,14 @@ describe("Serialization", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
       const tx: SendTransaction = {
-        chainId: liskTestnet as ChainId,
-        signer: {
-          algo: Algorithm.Ed25519,
-          data: pubkey as PublicKeyBytes,
-        },
         kind: "bcp/send",
+        creator: {
+          chainId: liskTestnet,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: pubkey as PublicKeyBytes,
+          },
+        },
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,

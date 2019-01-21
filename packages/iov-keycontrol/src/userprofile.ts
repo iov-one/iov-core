@@ -7,6 +7,7 @@ import {
   FullSignature,
   Nonce,
   PublicIdentity,
+  publicIdentityEquals,
   SignedTransaction,
   TxCodec,
   UnsignedTransaction,
@@ -209,11 +210,8 @@ export class UserProfile {
     // identity and the pair (transaction.chainId, transaction.signer) are redundant
     // but we keep both in the interface to be consistent with appendSignature() where
     // the original transaction creator is not the signer
-    if (identity.chainId !== transaction.chainId) {
-      throw new Error("Signing identity's chainId does not match the transaction's chainId");
-    }
-    if (identity.pubkey !== transaction.signer) {
-      throw new Error("Signing identity's pubkey does not match the transaction's signer");
+    if (!publicIdentityEquals(identity, transaction.creator)) {
+      throw new Error("Signing identity does not match the transaction creator");
     }
 
     const wallet = this.findWalletInPrimaryKeyring(id);
@@ -239,7 +237,7 @@ export class UserProfile {
     codec: TxCodec,
     nonce: Nonce,
   ): Promise<SignedTransaction> {
-    if (identity.chainId !== originalTransaction.transaction.chainId) {
+    if (identity.chainId !== originalTransaction.transaction.creator.chainId) {
       throw new Error("Signing identity's chainId does not match the transaction's chainId");
     }
 

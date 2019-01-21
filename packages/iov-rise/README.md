@@ -38,8 +38,7 @@ const recipientAddress = "4278021116091793760R" as Address;
 
 const sendTx: SendTransaction = {
   kind: "bcp/send",
-  chainId: chainId,
-  signer: mainIdentity.pubkey,
+  creator: mainIdentity,
   recipient: recipientAddress,
   amount: {
     whole: 1,
@@ -72,8 +71,7 @@ const recipientAddress = "10145108642177909005R" as Address;
 
 const sendTx: SendTransaction = {
   kind: "bcp/send",
-  chainId: riseTestnet,
-  signer: mainIdentity.pubkey,
+  creator: mainIdentity,
   recipient: recipientAddress,
   amount: {
     whole: 1,
