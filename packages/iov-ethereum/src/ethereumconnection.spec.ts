@@ -248,13 +248,15 @@ describe("EthereumConnection", () => {
       {
         const nonces = await connection.getNonces({ address: testConfig.address }, 1);
         expect(nonces.length).toEqual(1);
+        expect(nonces[0].toNumber()).toEqual(testConfig.expectedNonce.toNumber());
       }
 
       // by address, 2 nonces
       {
         const nonces = await connection.getNonces({ address: testConfig.address }, 2);
         expect(nonces.length).toEqual(2);
-        expect(nonces[1].toNumber()).toEqual(nonces[0].toNumber() + 1);
+        expect(nonces[0].toNumber()).toEqual(testConfig.expectedNonce.toNumber());
+        expect(nonces[1].toNumber()).toEqual(testConfig.expectedNonce.toNumber() + 1);
       }
 
       // by pubkey, 0 nonces
@@ -267,13 +269,15 @@ describe("EthereumConnection", () => {
       {
         const nonces = await connection.getNonces({ pubkey: testConfig.pubkey }, 1);
         expect(nonces.length).toEqual(1);
+        expect(nonces[0].toNumber()).toEqual(testConfig.expectedNonce.toNumber());
       }
 
       // by pubkey, 2 nonces
       {
         const nonces = await connection.getNonces({ pubkey: testConfig.pubkey }, 2);
         expect(nonces.length).toEqual(2);
-        expect(nonces[1].toNumber()).toEqual(nonces[0].toNumber() + 1);
+        expect(nonces[0].toNumber()).toEqual(testConfig.expectedNonce.toNumber());
+        expect(nonces[1].toNumber()).toEqual(testConfig.expectedNonce.toNumber() + 1);
       }
 
       connection.disconnect();
