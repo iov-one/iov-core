@@ -401,6 +401,81 @@ describe("BnsConnection", () => {
       connection.disconnect();
     });
 
+    it("reports errors on post (CheckTx)", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      try {
+        const chainId = connection.chainId();
+
+        const { profile, mainWalletId, faucet } = await userProfileWithFaucet(chainId);
+        const recipient = await randomBnsAddress();
+
+        // memo too long will trigger failure in CheckTx (validation of message)
+        const sendTx: SendTransaction = {
+          kind: "bcp/send",
+          creator: faucet,
+          recipient: recipient,
+          memo: "too long".repeat(100),
+          amount: {
+            quantity: "1000000000",
+            fractionalDigits: 9,
+            tokenTicker: cash,
+          },
+        };
+        const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
+        const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
+        const txBytes = bnsCodec.bytesToPost(signed);
+        // this should throw an error on post (TODO: use expectAsync)
+        // await expectAsync(connection.postTx(txBytes)).toBeRejected();
+        try {
+          await connection.postTx(txBytes);
+          fail("This should throw an error");
+        } catch (err) {
+          expect(err).toBeDefined();
+        }
+      } finally {
+        connection.disconnect();
+      }
+    });
+
+    it("reports errors on post (DeliverTx)", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      try {
+        const chainId = connection.chainId();
+
+        const { profile, mainWalletId, faucet } = await userProfileWithFaucet(chainId);
+        const faucetAddr = identityToAddress(faucet);
+        // this will never have tokens, but can try to sign
+        const empty = await profile.createIdentity(mainWalletId, chainId, HdPaths.simpleAddress(1234));
+
+        // empty account will trigger a failure in DeliverTx, when we try to move money
+        const sendTx: SendTransaction = {
+          kind: "bcp/send",
+          creator: empty,
+          recipient: faucetAddr,
+          memo: "Sending from empty",
+          amount: {
+            quantity: "1000000000",
+            fractionalDigits: 9,
+            tokenTicker: cash,
+          },
+        };
+        const nonce = await connection.getNonce({ pubkey: empty.pubkey });
+        const signed = await profile.signTransaction(mainWalletId, empty, sendTx, bnsCodec, nonce);
+        const txBytes = bnsCodec.bytesToPost(signed);
+        const response = await connection.postTx(txBytes);
+        // TODO: fix this
+        await sleep(2000);
+        const val = response.blockInfo.value;
+        console.log(val);
+        expect(val.state).toEqual(BcpTransactionState.InBlock);
+        // await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+      } finally {
+        connection.disconnect();
+      }
+    });
+
     it("can post transaction and watch confirmations", done => {
       pendingWithoutBnsd();
 
