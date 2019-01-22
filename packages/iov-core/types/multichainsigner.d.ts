@@ -28,12 +28,21 @@ export declare class MultiChainSigner {
      */
     identityToAddress(identity: PublicIdentity): Address;
     /**
+     * A chain-dependent validation of address
+     */
+    isValidAddress(chainId: ChainId, address: string): boolean;
+    /**
      * Queries the nonce, signs the transaction and posts it to the blockchain.
      *
      * The transaction signer is determined by the transaction content. A lookup for
      * the private key for the signer in the given wallet ID is done automatically.
      */
     signAndPost(tx: UnsignedTransaction, walletId: WalletId): Promise<PostTxResponse>;
+    /**
+     * Call this to free ressources when signer is not needed anymore.
+     * This disconnects all chains and other housekeeping if necessary.
+     */
+    shutdown(): void;
     /**
      * Throws for unknown chain ID
      */

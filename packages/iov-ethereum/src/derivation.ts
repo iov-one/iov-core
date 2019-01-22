@@ -5,7 +5,12 @@ import { Encoding } from "@iov/encoding";
 const { toAscii, toHex } = Encoding;
 
 export function isValidAddress(address: string): boolean {
-  if (address.match(/^0x[a-fA-F0-9]+$/) && address.length === 42) {
+  if (!address.match(/^0x[a-fA-F0-9]{40}$/)) {
+    return false;
+  }
+
+  const isChecksummed = !address.match(/^0x[a-f0-9]{40}$/);
+  if (isChecksummed) {
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md
     const addressLower = address.toLowerCase().replace("0x", "") as Address;
     const addressHash = toHex(new Keccak256(toAscii(addressLower)).digest());
@@ -18,8 +23,9 @@ export function isValidAddress(address: string): boolean {
       }
     }
     return true;
+  } else {
+    return true;
   }
-  return false;
 }
 
 export function toChecksumAddress(address: string): Address {

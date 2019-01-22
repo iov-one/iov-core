@@ -108,6 +108,13 @@ export class MultiChainSigner {
   }
 
   /**
+   * A chain-dependent validation of address
+   */
+  public isValidAddress(chainId: ChainId, address: string): boolean {
+    return this.getChain(chainId).codec.isValidAddress(address);
+  }
+
+  /**
    * Queries the nonce, signs the transaction and posts it to the blockchain.
    *
    * The transaction signer is determined by the transaction content. A lookup for
@@ -122,6 +129,16 @@ export class MultiChainSigner {
     const txBytes = codec.bytesToPost(signed);
     const post = await connection.postTx(txBytes);
     return post;
+  }
+
+  /**
+   * Call this to free ressources when signer is not needed anymore.
+   * This disconnects all chains and other housekeeping if necessary.
+   */
+  public shutdown(): void {
+    for (const chainId of this.chainIds()) {
+      this.connection(chainId).disconnect();
+    }
   }
 
   /**

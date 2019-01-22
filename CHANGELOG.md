@@ -10,6 +10,8 @@
   response parsers. This is used for out-of-process signing and can be reused
   in @iov/ethereum and @iov/tendermint-rpc later on.
 * @iov/keycontrol: Add `HdPaths.bip44Like` and `HdPaths.iov`
+* @iov/iov-core: Add `MultiChainSigner.shutdown` to shutdown the signer.
+* @iov/iov-core: Add `MultiChainSigner.isValidAddress` for chain-specific address input validation.
 * @iov/stream: Add an implementation of `concat` that buffers stream events
 
 Breaking changes
