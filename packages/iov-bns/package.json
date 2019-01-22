@@ -41,7 +41,7 @@
     "@iov/stream": "^0.10.4",
     "@iov/tendermint-rpc": "^0.10.4",
     "@types/long": "^4.0.0",
-    "@types/node": "^10.3.2",
+    "@types/node": "^10.12.18",
     "bn.js": "^4.11.8",
     "fast-deep-equal": "^2.0.1",
     "long": "^4.0.0",
