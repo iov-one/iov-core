@@ -133,7 +133,7 @@ describe("Serialization", () => {
             fractionalDigits: 18,
             tokenTicker: "ETH" as TokenTicker,
           },
-          recipient: "0x095E7BAea6a6c7c4c2DfeB977eFac326aF552d87" as Address,
+          recipient: "0x095e7baea6a6c7c4c2dfeb977efac326af552d87" as Address,
         },
         primarySignature: {
           nonce: new Int53(0) as Nonce,

@@ -7,7 +7,13 @@ const { fromHex } = Encoding;
 
 describe("derivation", () => {
   describe("isValidAddress", () => {
-    it("should check valid addresses", () => {
+    it("should accept non-checksummed addresses (all lower)", () => {
+      expect(isValidAddress("0x0000000000000000000000000000000000000000")).toEqual(true);
+      expect(isValidAddress("0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")).toEqual(true);
+      expect(isValidAddress("0x095e7baea6a6c7c4c2dfeb977efac326af552d87")).toEqual(true);
+    });
+
+    it("should accept valid checksummed addresses", () => {
       // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md#test-cases
       expect(isValidAddress("0x52908400098527886E0F7030069857D2E4169EE7")).toEqual(true);
       expect(isValidAddress("0x8617E340B3D01FA5F11F306F4090FD50E238070D")).toEqual(true);
@@ -20,6 +26,15 @@ describe("derivation", () => {
     });
 
     it("rejects malformed addresses", () => {
+      // to short
+      expect(isValidAddress("0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b9")).toEqual(false);
+      // to long
+      expect(isValidAddress("0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b91234")).toEqual(false);
+      // not starting with 0x
+      expect(isValidAddress("D1220A0cf47c7B9Be7A2E6BA89F429762e7b91234")).toEqual(false);
+    });
+
+    it("rejects addresses with invalid checksum", () => {
       // changed some letters from previous test from upper to lowercase and vice versa
       expect(isValidAddress("0x52908400098527886E0F7030069857D2E4169ee7")).toEqual(false);
       expect(isValidAddress("0x8617E340B3D01FA5F11F306F4090FD50e238070d")).toEqual(false);
@@ -29,12 +44,6 @@ describe("derivation", () => {
       expect(isValidAddress("0xfB6916095ca1df60bB79Ce92cE3Ea74c37C5D359")).toEqual(false);
       expect(isValidAddress("0xdbF03B407c01E7cD3CBea99509d93f8DDDC8C6fb")).toEqual(false);
       expect(isValidAddress("0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b9ADB")).toEqual(false);
-      // to short
-      expect(isValidAddress("0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b9")).toEqual(false);
-      // to long
-      expect(isValidAddress("0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b91234")).toEqual(false);
-      // not starting with 0x
-      expect(isValidAddress("D1220A0cf47c7B9Be7A2E6BA89F429762e7b91234")).toEqual(false);
     });
   });
 
