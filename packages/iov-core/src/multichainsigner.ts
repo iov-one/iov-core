@@ -125,6 +125,16 @@ export class MultiChainSigner {
   }
 
   /**
+   * Call this to free ressources when signer is not needed anymore.
+   * This disconnects all chains and other housekeeping if necessary.
+   */
+  public shutdown(): void {
+    for (const chainId of this.chainIds()) {
+      this.connection(chainId).disconnect();
+    }
+  }
+
+  /**
    * Throws for unknown chain ID
    */
   private getChain(chainId: ChainId): Chain {

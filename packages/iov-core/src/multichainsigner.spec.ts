@@ -53,6 +53,7 @@ describe("MultiChainSigner", () => {
     const signer = new MultiChainSigner(profile);
     expect(signer).toBeTruthy();
     expect(signer.chainIds().length).toEqual(0);
+    signer.shutdown();
   });
 
   // This uses setup from iov-bns...
@@ -118,6 +119,8 @@ describe("MultiChainSigner", () => {
         throw new Error("Unexpected transaction kind");
       }
       expect(last.memo).toEqual(memo);
+
+      signer.shutdown();
     });
 
     it("can add two chains", async () => {
@@ -166,6 +169,8 @@ describe("MultiChainSigner", () => {
       const account2 = await connection2.getAccount({ address: ganacheAddr });
       expect(account2).toBeDefined();
       expect(account2!.balance.length).toEqual(1);
+
+      signer.shutdown();
     });
   });
 
@@ -195,5 +200,9 @@ describe("MultiChainSigner", () => {
       .addChain(invalidConnector)
       .then(() => fail("must not resolve"))
       .catch(error => expect(error).toMatch(/connected chain ID does not match/i));
+
+    signer.shutdown();
+    signer2.shutdown();
+    signer3.shutdown();
   });
 });

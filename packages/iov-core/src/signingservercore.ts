@@ -59,9 +59,7 @@ export class SigningServerCore {
    * Call this to free ressources when server is not needed anymore
    */
   public shutdown(): void {
-    for (const chainId of this.signer.chainIds()) {
-      this.signer.connection(chainId).disconnect();
-    }
+    this.signer.shutdown();
   }
 
   private allIdentities(): ReadonlyArray<PublicIdentity> {

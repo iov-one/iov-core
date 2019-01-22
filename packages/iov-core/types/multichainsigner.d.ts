@@ -35,6 +35,11 @@ export declare class MultiChainSigner {
      */
     signAndPost(tx: UnsignedTransaction, walletId: WalletId): Promise<PostTxResponse>;
     /**
+     * Call this to free ressources when signer is not needed anymore.
+     * This disconnects all chains and other housekeeping if necessary.
+     */
+    shutdown(): void;
+    /**
      * Throws for unknown chain ID
      */
     private getChain;
