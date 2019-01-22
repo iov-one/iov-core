@@ -43,6 +43,6 @@
     "random-js": "^1.0.8",
     "readonly-date": "^1.0.0",
     "type-tagger": "^1.0.0",
-    "xstream": "^11.4.0"
+    "xstream": "^11.10.0"
   }
 }
