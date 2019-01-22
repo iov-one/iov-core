@@ -36,13 +36,13 @@
     "@iov/stream": "^0.10.4",
     "@types/abstract-leveldown": "^5.0.1",
     "@types/levelup": "^3.1.0",
-    "@types/node": "^9.6.6",
+    "@types/node": "^10.12.18",
     "@types/random-js": "^1.0.31",
     "levelup": "^3.1.0",
     "long": "^4.0.0",
     "random-js": "^1.0.8",
     "readonly-date": "^1.0.0",
     "type-tagger": "^1.0.0",
-    "xstream": "^11.4.0"
+    "xstream": "^11.10.0"
   }
 }

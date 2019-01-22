@@ -27,6 +27,6 @@
     "@iov/encoding": "^0.10.4",
     "@iov/stream": "^0.10.4",
     "type-tagger": "^1.0.0",
-    "xstream": "^11.7.0"
+    "xstream": "^11.10.0"
   }
 }

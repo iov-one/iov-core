@@ -36,6 +36,6 @@
     "axios": "^0.18.0",
     "readonly-date": "^1.0.0",
     "type-tagger": "^1.0.0",
-    "xstream": "^11.7.0"
+    "xstream": "^11.10.0"
   }
 }

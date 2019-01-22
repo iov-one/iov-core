@@ -31,6 +31,6 @@
   },
   "dependencies": {
     "@iov/stream": "^0.10.1",
-    "xstream": "^11.7.0"
+    "xstream": "^11.10.0"
   }
 }

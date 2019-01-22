@@ -41,6 +41,6 @@
     "fast-deep-equal": "^2.0.1",
     "long": "^4.0.0",
     "readonly-date": "^1.0.0",
-    "xstream": "^11.7.0"
+    "xstream": "^11.10.0"
   }
 }
