@@ -205,4 +205,40 @@ describe("MultiChainSigner", () => {
     signer2.shutdown();
     signer3.shutdown();
   });
+
+  describe("isValidAddress", () => {
+    it("can use isValidAddress for BNS and Ethereum", async () => {
+      pendingWithoutBnsd();
+      pendingWithoutEthereum();
+
+      const signer = new MultiChainSigner(new UserProfile());
+
+      const bnsConnection = (await signer.addChain(bnsConnector(bnsdTendermintUrl))).connection;
+      const ethereumConnection = (await signer.addChain(ethereumConnector(httpEthereumUrl, undefined)))
+        .connection;
+
+      const bnsChainId = bnsConnection.chainId();
+      const ethereumChainId = ethereumConnection.chainId();
+
+      // valid
+      expect(signer.isValidAddress(bnsChainId, "tiov142424242424242424242424242424242vmucnv")).toEqual(true);
+      expect(signer.isValidAddress(ethereumChainId, "0x890b61ca61fa5b5336bb3ec142fa0da250592337")).toEqual(
+        true,
+      );
+
+      // invalid
+      expect(signer.isValidAddress(bnsChainId, "")).toEqual(false);
+      expect(signer.isValidAddress(ethereumChainId, "")).toEqual(false);
+      expect(signer.isValidAddress(bnsChainId, "123")).toEqual(false);
+      expect(signer.isValidAddress(ethereumChainId, "123")).toEqual(false);
+
+      // wrong chains
+      expect(signer.isValidAddress(ethereumChainId, "tiov142424242424242424242424242424242vmucnv")).toEqual(
+        false,
+      );
+      expect(signer.isValidAddress(bnsChainId, "0x890b61ca61fa5b5336bb3ec142fa0da250592337")).toEqual(false);
+
+      signer.shutdown();
+    });
+  });
 });

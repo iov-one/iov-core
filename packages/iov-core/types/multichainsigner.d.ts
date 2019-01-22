@@ -28,6 +28,10 @@ export declare class MultiChainSigner {
      */
     identityToAddress(identity: PublicIdentity): Address;
     /**
+     * A chain-dependent validation of address
+     */
+    isValidAddress(chainId: ChainId, address: string): boolean;
+    /**
      * Queries the nonce, signs the transaction and posts it to the blockchain.
      *
      * The transaction signer is determined by the transaction content. A lookup for
