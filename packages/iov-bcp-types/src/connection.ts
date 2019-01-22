@@ -135,6 +135,8 @@ export interface BcpQueryTag {
 
 export interface BcpTxQuery {
   readonly id?: TransactionId;
+  /** transaction from or to this address */
+  readonly address?: Address;
   /** chain-specific key value pairs that encode a query */
   readonly tags?: ReadonlyArray<BcpQueryTag>;
   readonly height?: number;

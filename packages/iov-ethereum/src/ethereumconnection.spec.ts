@@ -24,7 +24,6 @@ import { toListPromise } from "@iov/stream";
 import { keyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
-import { scraperAddressTag } from "./tags";
 import { testConfig } from "./testconfig.spec";
 
 function skipTests(): boolean {
@@ -526,7 +525,7 @@ describe("EthereumConnection", () => {
       const connection = await EthereumConnection.establish(testConfig.base, {
         scraperApiUrl: testConfig.scraper!.apiUrl,
       });
-      const results = await connection.searchTx({ tags: [scraperAddressTag(testConfig.scraper!.address)] });
+      const results = await connection.searchTx({ address: testConfig.scraper!.address });
       expect(results.length).toBeGreaterThan(1);
       connection.disconnect();
     });
@@ -583,7 +582,7 @@ describe("EthereumConnection", () => {
       {
         const resultSearch = await connection.searchTx({
           minHeight: transactionHeight - 1,
-          tags: [scraperAddressTag(recipientAddress)],
+          address: recipientAddress,
         });
         expect(resultSearch.length).toEqual(1);
         expect(resultSearch[0].transactionId).toEqual(transactionId);
@@ -593,7 +592,7 @@ describe("EthereumConnection", () => {
       {
         const resultSearch = await connection.searchTx({
           minHeight: transactionHeight,
-          tags: [scraperAddressTag(recipientAddress)],
+          address: recipientAddress,
         });
         expect(resultSearch.length).toEqual(1);
         expect(resultSearch[0].transactionId).toEqual(transactionId);
@@ -603,7 +602,7 @@ describe("EthereumConnection", () => {
       {
         const resultSearch = await connection.searchTx({
           minHeight: transactionHeight + 1,
-          tags: [scraperAddressTag(recipientAddress)],
+          address: recipientAddress,
         });
         expect(resultSearch.length).toEqual(0);
       }
@@ -612,7 +611,7 @@ describe("EthereumConnection", () => {
       {
         const resultSearch = await connection.searchTx({
           maxHeight: transactionHeight - 1,
-          tags: [scraperAddressTag(recipientAddress)],
+          address: recipientAddress,
         });
         expect(resultSearch.length).toEqual(0);
       }
@@ -621,7 +620,7 @@ describe("EthereumConnection", () => {
       {
         const resultSearch = await connection.searchTx({
           maxHeight: transactionHeight,
-          tags: [scraperAddressTag(recipientAddress)],
+          address: recipientAddress,
         });
         expect(resultSearch.length).toEqual(1);
         expect(resultSearch[0].transactionId).toEqual(transactionId);
@@ -631,7 +630,7 @@ describe("EthereumConnection", () => {
       {
         const resultSearch = await connection.searchTx({
           maxHeight: transactionHeight + 1,
-          tags: [scraperAddressTag(recipientAddress)],
+          address: recipientAddress,
         });
         expect(resultSearch.length).toEqual(1);
         expect(resultSearch[0].transactionId).toEqual(transactionId);
@@ -642,7 +641,7 @@ describe("EthereumConnection", () => {
         const resultSearch = await connection.searchTx({
           minHeight: transactionHeight - 1,
           maxHeight: transactionHeight + 1,
-          tags: [scraperAddressTag(recipientAddress)],
+          address: recipientAddress,
         });
         expect(resultSearch.length).toEqual(1);
         expect(resultSearch[0].transactionId).toEqual(transactionId);
@@ -653,7 +652,7 @@ describe("EthereumConnection", () => {
         const resultSearch = await connection.searchTx({
           minHeight: transactionHeight,
           maxHeight: transactionHeight,
-          tags: [scraperAddressTag(recipientAddress)],
+          address: recipientAddress,
         });
         expect(resultSearch.length).toEqual(1);
         expect(resultSearch[0].transactionId).toEqual(transactionId);
@@ -664,7 +663,7 @@ describe("EthereumConnection", () => {
         const resultSearch = await connection.searchTx({
           minHeight: transactionHeight,
           maxHeight: transactionHeight - 1,
-          tags: [scraperAddressTag(recipientAddress)],
+          address: recipientAddress,
         });
         expect(resultSearch.length).toEqual(0);
       }
@@ -687,7 +686,7 @@ describe("EthereumConnection", () => {
 
         // setup listener
         const events = new Array<ConfirmedTransaction>();
-        const subscription = connection.listenTx({ tags: [scraperAddressTag(recipientAddress)] }).subscribe({
+        const subscription = connection.listenTx({ address: recipientAddress }).subscribe({
           next: event => {
             events.push(event);
 
@@ -849,7 +848,7 @@ describe("EthereumConnection", () => {
 
         // setup listener after A and B are in block
         const events = new Array<ConfirmedTransaction>();
-        const subscription = connection.liveTx({ tags: [scraperAddressTag(recipientAddress)] }).subscribe({
+        const subscription = connection.liveTx({ address: recipientAddress }).subscribe({
           next: event => {
             events.push(event);
 

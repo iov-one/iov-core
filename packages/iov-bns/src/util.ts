@@ -116,7 +116,15 @@ export function isConfirmedWithSwapClaimOrTimeoutTransaction(
   return isSwapClaimTransaction(unsigned) || isSwapTimeoutTransaction(unsigned);
 }
 
+function bnsFromOrToTag(addr: Address): string {
+  const id = Uint8Array.from([...Encoding.toAscii("wllt:"), ...decodeBnsAddress(addr).data]);
+  const key = Encoding.toHex(id).toUpperCase();
+  const value = "s"; // "s" for "set"
+  return `${key}='${value}'`;
+}
+
 export function buildTxQuery(query: BcpTxQuery): QueryString {
+  const addressConponents = query.address !== undefined ? [bnsFromOrToTag(query.address)] : [];
   const tagComponents = query.tags !== undefined ? query.tags.map(tag => `${tag.key}='${tag.value}'`) : [];
   // In Tendermint, hash can be lower case for search queries but must be upper case for subscribe queries
   const hashComponents = query.id !== undefined ? [`tx.hash='${query.id}'`] : [];
@@ -125,6 +133,7 @@ export function buildTxQuery(query: BcpTxQuery): QueryString {
   const maxHeightComponents = query.maxHeight !== undefined ? [`tx.height<${query.maxHeight}`] : [];
 
   const components: ReadonlyArray<string> = [
+    ...addressConponents,
     ...tagComponents,
     ...hashComponents,
     ...heightComponents,

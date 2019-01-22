@@ -12,7 +12,6 @@ import {
   BcpBlockInfoInBlock,
   BcpPubkeyQuery,
   BcpQueryEnvelope,
-  BcpQueryTag,
   BcpSwapQuery,
   BcpTicker,
   BcpTransactionState,
@@ -52,7 +51,7 @@ import { bnsCodec } from "./bnscodec";
 import { ChainData, Context } from "./context";
 import { decodeBlockchainNft, decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
-import { bnsFromOrToTag, bnsNonceTag, bnsSwapQueryTags } from "./tags";
+import { bnsNonceTag, bnsSwapQueryTags } from "./tags";
 import {
   BnsBlockchainNft,
   BnsBlockchainsQuery,
@@ -510,9 +509,9 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   /**
    * Emits the blockheight for every block where a tx matching these tags is emitted
    */
-  public changeTx(tags: ReadonlyArray<BcpQueryTag>): Stream<number> {
+  public changeTx(query: BcpTxQuery): Stream<number> {
     return this.tmClient
-      .subscribeTx(buildTxQuery({ tags: tags }))
+      .subscribeTx(buildTxQuery(query))
       .map(getTxEventHeight)
       .filter(onChange<number>());
   }
@@ -521,14 +520,14 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    * A helper that triggers if the balance ever changes
    */
   public changeBalance(addr: Address): Stream<number> {
-    return this.changeTx([bnsFromOrToTag(addr)]);
+    return this.changeTx({ address: addr });
   }
 
   /**
    * A helper that triggers if the nonce every changes
    */
   public changeNonce(addr: Address): Stream<number> {
-    return this.changeTx([bnsNonceTag(addr)]);
+    return this.changeTx({ tags: [bnsNonceTag(addr)] });
   }
 
   public async getBlockHeader(height: number): Promise<BlockHeader> {

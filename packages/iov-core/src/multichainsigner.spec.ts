@@ -9,7 +9,7 @@ import {
   SendTransaction,
   TokenTicker,
 } from "@iov/bcp-types";
-import { bnsCodec, bnsConnector, bnsFromOrToTag } from "@iov/bns";
+import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { ethereumConnector } from "@iov/ethereum";
@@ -112,7 +112,7 @@ describe("MultiChainSigner", () => {
       expect(updatedAccount!.balance[0].quantity).toEqual("11000000000777");
 
       // find the transaction we sent by comparing the memo
-      const results = await connection.searchTx({ tags: [bnsFromOrToTag(recipient)] });
+      const results = await connection.searchTx({ address: recipient });
       expect(results.length).toBeGreaterThanOrEqual(1);
       const last = results[results.length - 1].transaction;
       if (!isSendTransaction(last)) {

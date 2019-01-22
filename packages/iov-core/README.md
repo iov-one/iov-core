@@ -255,7 +255,7 @@ console.log(yours.data[0]); // should show non-empty array for data
 Now, query the transaction history:
 
 ```ts
-const history = await connection.searchTx({ tags: [bnsFromOrToTag(addr2)] }));
+const history = await connection.searchTx({ address: addr2 });
 console.log(history);
 const first = history[0].transaction as SendTransaction;
 console.log(first.amount);
