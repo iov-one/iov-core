@@ -720,10 +720,10 @@
   resolved "https://registry.yarnpkg.com/@types/highlight.js/-/highlight.js-9.12.3.tgz#b672cfaac25cbbc634a0fd92c515f66faa18dbca"
   integrity sha512-pGF/zvYOACZ/gLGWdQH8zSwteQS1epp68yRcVLJMgUck/MjEn/FBYmPub9pXT8C1e4a8YZfHo1CKyV8q1vKUnQ==
 
-"@types/jasmine@^3.3":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-3.3.0.tgz#6b0e4b0192367d77e438ff660ccc4487c9602e7b"
-  integrity sha512-0VU8WsYEOYmoxVtUuafB66/+9G8gMdGAC3dhCE/CMpjXgNIz9fwC6g41kRlNxFgpQI/uX/aWNLArNg7KmeFYvw==
+"@types/jasmine@^3.3.7":
+  version "3.3.7"
+  resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-3.3.7.tgz#52f2bfe8d2995d4756585d2328c97fbb0fec66e3"
+  integrity sha512-TuXyEBYWWrjBZAC4h3YY5NcrgC9HaLO5FogvkY5FOfAyjrk3wWABoH/3p7ooFfA8BHjc2BeQCDvvQBLb+9q1rA==
 
 "@types/levelup@^3.1.0":
   version "3.1.0"
