@@ -124,6 +124,10 @@ export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTr
   readonly transactionId: TransactionId;
   /** application specific data from executing tx (result, code, tags...) */
   readonly result?: Uint8Array;
+  /**
+   * Application specific logging output in an arbitrary text format that
+   * may change at any time.
+   */
   readonly log?: string;
   // readonly tags: ReadonlyArray<Tag>;
 }
