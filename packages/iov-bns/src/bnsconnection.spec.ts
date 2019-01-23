@@ -339,6 +339,60 @@ describe("BnsConnection", () => {
     });
   });
 
+  describe("getBlockHeader", () => {
+    it("can get a valid header", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const header = await connection.getBlockHeader(3);
+      expect(header.height).toEqual(3);
+      expect(header.id).toMatch(/^[0-9A-F]{40}$/);
+      connection.disconnect();
+    });
+
+    it("throws if it cannot get header", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+      await connection
+        .getBlockHeader(-3)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+      await connection
+        .getBlockHeader(123_000000)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/header 123000000 doesn't exist yet/i));
+
+      connection.disconnect();
+    });
+  });
+
+  describe("watchBlockHeaders", () => {
+    it("watches headers with same data as getBlockHeader", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+      const headers = await toListPromise(connection.watchBlockHeaders(), 2);
+
+      const lastHeight = headers[headers.length - 1].height;
+      const headerFromGet = await connection.getBlockHeader(lastHeight);
+
+      // first header
+      expect(headers[0].height).toEqual(headerFromGet.height - 1);
+      // expect(headers[0].id).not.toEqual(headerFromGet.id);
+      expect(headers[0].transactionCount).toBeGreaterThanOrEqual(0);
+      expect(headers[0].time.getTime()).toBeGreaterThan(headerFromGet.time.getTime() - 1200);
+      expect(headers[0].time.getTime()).toBeLessThan(headerFromGet.time.getTime() + 1200);
+
+      // second header
+      expect(headers[1].height).toEqual(headerFromGet.height);
+      // expect(headers[1].id).toEqual(headerFromGet.id);
+      expect(headers[1].transactionCount).toEqual(headerFromGet.transactionCount);
+      expect(headers[1].time).toEqual(headerFromGet.time);
+
+      connection.disconnect();
+    });
+  });
+
   describe("postTx", () => {
     it("can send transaction", async () => {
       pendingWithoutBnsd();
@@ -459,60 +513,6 @@ describe("BnsConnection", () => {
           error: done.fail,
         });
       })().catch(done.fail);
-    });
-
-    describe("getBlockHeader", () => {
-      it("can get a valid header", async () => {
-        pendingWithoutBnsd();
-        const connection = await BnsConnection.establish(bnsdTendermintUrl);
-        const header = await connection.getBlockHeader(3);
-        expect(header.height).toEqual(3);
-        expect(header.id).toMatch(/^[0-9A-F]{40}$/);
-        connection.disconnect();
-      });
-
-      it("throws if it cannot get header", async () => {
-        pendingWithoutBnsd();
-        const connection = await BnsConnection.establish(bnsdTendermintUrl);
-
-        await connection
-          .getBlockHeader(-3)
-          .then(() => fail("must not resolve"))
-          .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
-        await connection
-          .getBlockHeader(123_000000)
-          .then(() => fail("must not resolve"))
-          .catch(error => expect(error).toMatch(/header 123000000 doesn't exist yet/i));
-
-        connection.disconnect();
-      });
-    });
-
-    describe("watchBlockHeaders", () => {
-      it("watches headers with same data as getBlockHeader", async () => {
-        pendingWithoutBnsd();
-        const connection = await BnsConnection.establish(bnsdTendermintUrl);
-
-        const headers = await toListPromise(connection.watchBlockHeaders(), 2);
-
-        const lastHeight = headers[headers.length - 1].height;
-        const headerFromGet = await connection.getBlockHeader(lastHeight);
-
-        // first header
-        expect(headers[0].height).toEqual(headerFromGet.height - 1);
-        // expect(headers[0].id).not.toEqual(headerFromGet.id);
-        expect(headers[0].transactionCount).toBeGreaterThanOrEqual(0);
-        expect(headers[0].time.getTime()).toBeGreaterThan(headerFromGet.time.getTime() - 1200);
-        expect(headers[0].time.getTime()).toBeLessThan(headerFromGet.time.getTime() + 1200);
-
-        // second header
-        expect(headers[1].height).toEqual(headerFromGet.height);
-        // expect(headers[1].id).toEqual(headerFromGet.id);
-        expect(headers[1].transactionCount).toEqual(headerFromGet.transactionCount);
-        expect(headers[1].time).toEqual(headerFromGet.time);
-
-        connection.disconnect();
-      });
     });
 
     it("can register a blockchain", async () => {
