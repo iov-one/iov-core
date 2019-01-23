@@ -311,9 +311,9 @@ export class LiskConnection implements BcpConnection {
 
     if (query.id !== undefined) {
       return this.searchTransactions({ id: query.id }, query.minHeight, query.maxHeight);
-    } else if (query.address) {
+    } else if (query.sentFromOrTo) {
       return this.searchTransactions(
-        { senderIdOrRecipientId: query.address },
+        { senderIdOrRecipientId: query.sentFromOrTo },
         query.minHeight,
         query.maxHeight,
       );
@@ -350,7 +350,7 @@ export class LiskConnection implements BcpConnection {
 
       // concat never() because we want non-completing streams consistently
       return xstreamConcat(Stream.fromPromise(resultPromise), Stream.never());
-    } else if (query.address) {
+    } else if (query.sentFromOrTo) {
       let pollInterval: NodeJS.Timeout | undefined;
       const producer: Producer<ConfirmedTransaction> = {
         start: listener => {
@@ -359,7 +359,7 @@ export class LiskConnection implements BcpConnection {
 
           const poll = async (): Promise<void> => {
             const result = await this.searchTx({
-              address: query.address,
+              sentFromOrTo: query.sentFromOrTo,
               minHeight: minHeight,
               maxHeight: maxHeight,
             });

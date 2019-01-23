@@ -314,10 +314,10 @@ export class RiseConnection implements BcpConnection {
     if (query.id !== undefined) {
       const result = await this.searchSingleTransaction({ id: query.id });
       return result ? [result] : [];
-    } else if (query.address) {
+    } else if (query.sentFromOrTo) {
       return this.searchTransactions({
-        recipientId: query.address,
-        senderId: query.address,
+        recipientId: query.sentFromOrTo,
+        senderId: query.sentFromOrTo,
         limit: 1000,
       });
     } else {

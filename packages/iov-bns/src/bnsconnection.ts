@@ -520,7 +520,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    * A helper that triggers if the balance ever changes
    */
   public changeBalance(addr: Address): Stream<number> {
-    return this.changeTx({ address: addr });
+    return this.changeTx({ sentFromOrTo: addr });
   }
 
   /**

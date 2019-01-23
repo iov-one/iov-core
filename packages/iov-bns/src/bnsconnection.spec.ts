@@ -382,7 +382,7 @@ describe("BnsConnection", () => {
       await tendermintSearchIndexUpdated();
 
       // now verify we can query the same tx back
-      const search = await connection.searchTx({ address: faucetAddr });
+      const search = await connection.searchTx({ sentFromOrTo: faucetAddr });
       expect(search.length).toBeGreaterThanOrEqual(1);
       // make sure we get a valid signature
       const mine = search[search.length - 1];
@@ -811,7 +811,7 @@ describe("BnsConnection", () => {
       await tendermintSearchIndexUpdated();
 
       // finds transaction using tag
-      const results = await connection.searchTx({ address: rcptAddress });
+      const results = await connection.searchTx({ sentFromOrTo: rcptAddress });
       expect(results.length).toBeGreaterThanOrEqual(1);
       const mostRecentResultTransaction = results[results.length - 1].transaction;
       if (!isSendTransaction(mostRecentResultTransaction)) {
@@ -934,8 +934,8 @@ describe("BnsConnection", () => {
       await tendermintSearchIndexUpdated();
 
       {
-        // finds transaction using adddress and minHeight = 1
-        const results = await connection.searchTx({ address: rcptAddress, minHeight: 1 });
+        // finds transaction using sentFromOrTo and minHeight = 1
+        const results = await connection.searchTx({ sentFromOrTo: rcptAddress, minHeight: 1 });
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
         if (!isSendTransaction(mostRecentResultTransaction)) {
@@ -945,9 +945,9 @@ describe("BnsConnection", () => {
       }
 
       {
-        // finds transaction using adddress and minHeight = initialHeight
+        // finds transaction using sentFromOrTo and minHeight = initialHeight
         const results = await connection.searchTx({
-          address: rcptAddress,
+          sentFromOrTo: rcptAddress,
           minHeight: initialHeight,
         });
         expect(results.length).toBeGreaterThanOrEqual(1);
@@ -959,9 +959,9 @@ describe("BnsConnection", () => {
       }
 
       {
-        // finds transaction using adddress and maxHeight = 500 million
+        // finds transaction using sentFromOrTo and maxHeight = 500 million
         const results = await connection.searchTx({
-          address: rcptAddress,
+          sentFromOrTo: rcptAddress,
           maxHeight: 500_000_000,
         });
         expect(results.length).toBeGreaterThanOrEqual(1);
@@ -973,9 +973,9 @@ describe("BnsConnection", () => {
       }
 
       {
-        // finds transaction using adddress and maxHeight = initialHeight + 10
+        // finds transaction using sentFromOrTo and maxHeight = initialHeight + 10
         const results = await connection.searchTx({
-          address: rcptAddress,
+          sentFromOrTo: rcptAddress,
           maxHeight: initialHeight + 10,
         });
         expect(results.length).toBeGreaterThanOrEqual(1);
@@ -1320,7 +1320,7 @@ describe("BnsConnection", () => {
     const recipientAddress = await randomBnsAddress();
 
     // make sure that we have no tx here
-    const query: BcpTxQuery = { address: recipientAddress };
+    const query: BcpTxQuery = { sentFromOrTo: recipientAddress };
     const origSearch = await connection.searchTx(query);
     expect(origSearch.length).toEqual(0);
 
