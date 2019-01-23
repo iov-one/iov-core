@@ -348,24 +348,8 @@ export class LiskConnection implements BcpConnection {
     }
 
     if (query.id !== undefined) {
-      const searchId = query.id;
-      const resultPromise = new Promise<ConfirmedTransaction>(async (resolve, reject) => {
-        try {
-          while (true) {
-            const searchResult = await this.searchTx({ id: searchId });
-            if (searchResult.length > 0) {
-              resolve(searchResult[0]);
-            } else {
-              await sleep(4_000);
-            }
-          }
-        } catch (error) {
-          reject(error);
-        }
-      });
-
       // concat never() because we want non-completing streams consistently
-      return xstreamConcat(Stream.fromPromise(resultPromise), Stream.never());
+      return xstreamConcat(Stream.fromPromise(this.waitForTransaction(query.id)), Stream.never());
     } else if (query.sentFromOrTo) {
       let pollInterval: NodeJS.Timeout | undefined;
       const producer: Producer<ConfirmedTransaction> = {
