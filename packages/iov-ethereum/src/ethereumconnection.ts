@@ -34,7 +34,6 @@ import { keyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { Parse, Scraper } from "./parse";
-import { findScraperAddress } from "./tags";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
@@ -407,8 +406,8 @@ export class EthereumConnection implements BcpConnection {
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    if (query.height) {
-      throw new Error("Query by height not supported");
+    if (query.height || query.tags) {
+      throw new Error("Query by height or tags not supported");
     }
 
     if (query.id !== undefined) {
@@ -425,32 +424,26 @@ export class EthereumConnection implements BcpConnection {
       }
 
       return this.searchTransactionsById(query.id);
-    } else if (query.tags) {
+    } else if (query.sentFromOrTo) {
       const minHeight = query.minHeight || 0;
       const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
-
-      const address = findScraperAddress(query.tags);
-      if (!address) {
-        throw new Error("No matching search tag found to query transactions");
-      }
-
-      return this.searchTransactionsByAddress(address, minHeight, maxHeight);
+      return this.searchSendTransactionsByAddress(query.sentFromOrTo, minHeight, maxHeight);
     } else {
       throw new Error("Unsupported query.");
     }
   }
 
   public listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction> {
+    if (query.height || query.tags) {
+      throw new Error("Query by height or tags not supported");
+    }
+
     if (query.id !== undefined) {
       throw new Error(
         "listenTx() is not implemented for ID queries because block heights are not always in sync this would give you unrelyable results. What you probably want to use is liveTx() that will find your transaction ID either in history or in updates.",
       );
-    } else if (query.tags) {
-      const address = findScraperAddress(query.tags);
-      if (!address) {
-        throw new Error("No matching search tag found to query transactions");
-      }
-
+    } else if (query.sentFromOrTo) {
+      const sentFromOrTo = query.sentFromOrTo;
       let pollInterval: NodeJS.Timeout | undefined;
       const producer: Producer<ConfirmedTransaction> = {
         start: async listener => {
@@ -459,7 +452,7 @@ export class EthereumConnection implements BcpConnection {
           const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
 
           const poll = async (): Promise<void> => {
-            const result = await this.searchTransactionsByAddress(address, minHeight, maxHeight);
+            const result = await this.searchSendTransactionsByAddress(sentFromOrTo, minHeight, maxHeight);
             for (const item of result) {
               listener.next(item);
               if (item.height >= minHeight) {
@@ -486,6 +479,10 @@ export class EthereumConnection implements BcpConnection {
   }
 
   public liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction> {
+    if (query.height || query.tags) {
+      throw new Error("Query by height or tags not supported");
+    }
+
     if (query.id !== undefined) {
       const searchId = query.id;
       const resultPromise = new Promise<ConfirmedTransaction>(async (resolve, reject) => {
@@ -505,12 +502,8 @@ export class EthereumConnection implements BcpConnection {
 
       // concat never() because we want non-completing streams consistently
       return concat(Stream.fromPromise(resultPromise), Stream.never());
-    } else if (query.tags) {
-      const address = findScraperAddress(query.tags);
-      if (!address) {
-        throw new Error("No matching search tag found to query transactions");
-      }
-
+    } else if (query.sentFromOrTo) {
+      const sentFromOrTo = query.sentFromOrTo;
       let pollInterval: NodeJS.Timeout | undefined;
       const producer: Producer<ConfirmedTransaction> = {
         start: listener => {
@@ -518,7 +511,7 @@ export class EthereumConnection implements BcpConnection {
           const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
 
           const poll = async (): Promise<void> => {
-            const result = await this.searchTransactionsByAddress(address, minHeight, maxHeight);
+            const result = await this.searchSendTransactionsByAddress(sentFromOrTo, minHeight, maxHeight);
             for (const item of result) {
               listener.next(item);
               if (item.height >= minHeight) {
@@ -597,7 +590,7 @@ export class EthereumConnection implements BcpConnection {
     ];
   }
 
-  private async searchTransactionsByAddress(
+  private async searchSendTransactionsByAddress(
     address: Address,
     minHeight: number,
     maxHeight: number,

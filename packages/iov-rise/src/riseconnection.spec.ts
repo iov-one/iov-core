@@ -22,7 +22,7 @@ import {
   TransactionId,
 } from "@iov/bcp-types";
 import { Random } from "@iov/crypto";
-import { Derivation, dposFromOrToTag } from "@iov/dpos";
+import { Derivation } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet } from "@iov/keycontrol";
 
@@ -635,14 +635,14 @@ describe("RiseConnection", () => {
       // by non-existing address
       {
         const unusedAddress = await randomAddress();
-        const results = await connection.searchTx({ tags: [dposFromOrToTag(unusedAddress)] });
+        const results = await connection.searchTx({ sentFromOrTo: unusedAddress });
         expect(results.length).toEqual(0);
       }
 
       // by recipient address (https://texplorer.rise.vision/address/123R)
       {
         const searchAddress = "123R" as Address;
-        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)] });
+        const results = await connection.searchTx({ sentFromOrTo: searchAddress });
         expect(results.length).toBeGreaterThanOrEqual(874);
         for (const result of results) {
           const transaction = result.transaction;
@@ -656,7 +656,7 @@ describe("RiseConnection", () => {
       // by sender address (https://texplorer.rise.vision/address/13640984096060415228R)
       {
         const searchAddress = "13640984096060415228R" as Address;
-        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)] });
+        const results = await connection.searchTx({ sentFromOrTo: searchAddress });
         expect(results.length).toBeGreaterThanOrEqual(1);
         for (const result of results) {
           const transaction = result.transaction;
@@ -673,7 +673,7 @@ describe("RiseConnection", () => {
       // by sender address with vote transaction (https://texplorer.rise.vision/address/471759806304061958R)
       {
         const searchAddress = "471759806304061958R" as Address;
-        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)] });
+        const results = await connection.searchTx({ sentFromOrTo: searchAddress });
         expect(results.length).toBeGreaterThanOrEqual(1);
         for (const result of results) {
           const transaction = result.transaction;

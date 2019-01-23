@@ -33,6 +33,7 @@ Breaking changes
   type of `BcpConnection.getTicker`.
 * @iov/bcp-types: Migrate `UnsignedTransaction.chainId` and `.signer` into `.creator`
 * @iov/bcp-types: Add `BcpConnection.getNonces`
+* @iov/bcp-types: Add `BcpTxQuery.sentFromOrTo` in favour of package-specific address tags
 * @iov/bns: Convert `.owner` in `BnsUsernameNft` and `BnsBlockchainNft` to `Address`
 * @iov/bns: In `BncConnection.watchBlockHeaders`, the block header events
   temporarily contain a dummy `id` string until ID calculation is implemented

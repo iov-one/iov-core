@@ -23,7 +23,7 @@ import {
   TransactionId,
 } from "@iov/bcp-types";
 import { Random } from "@iov/crypto";
-import { Derivation, dposFromOrToTag } from "@iov/dpos";
+import { Derivation } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet, UserProfile } from "@iov/keycontrol";
 
@@ -720,14 +720,14 @@ describe("LiskConnection", () => {
       // by non-existing address
       {
         const unusedAddress = await randomAddress();
-        const results = await connection.searchTx({ tags: [dposFromOrToTag(unusedAddress)] });
+        const results = await connection.searchTx({ sentFromOrTo: unusedAddress });
         expect(results.length).toEqual(0);
       }
 
       // by recipient address (from lisk/init.sh)
       {
         const searchAddress = "1349293588603668134L" as Address;
-        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)] });
+        const results = await connection.searchTx({ sentFromOrTo: searchAddress });
         expect(results.length).toBeGreaterThanOrEqual(1);
         for (const result of results) {
           const transaction = result.transaction;
@@ -744,7 +744,7 @@ describe("LiskConnection", () => {
       // by sender address (from lisk/init.sh)
       {
         const searchAddress = "16313739661670634666L" as Address;
-        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)] });
+        const results = await connection.searchTx({ sentFromOrTo: searchAddress });
         expect(results.length).toBeGreaterThanOrEqual(1);
         for (const result of results) {
           const transaction = result.transaction;
@@ -770,7 +770,7 @@ describe("LiskConnection", () => {
 
       // minHeight = 2
       {
-        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)], minHeight: 2 });
+        const results = await connection.searchTx({ sentFromOrTo: searchAddress, minHeight: 2 });
         expect(results.length).toBeGreaterThanOrEqual(1);
         for (const result of results) {
           expect(result.height).toBeGreaterThanOrEqual(2);
@@ -787,7 +787,7 @@ describe("LiskConnection", () => {
 
       // maxHeight = 100
       {
-        const results = await connection.searchTx({ tags: [dposFromOrToTag(searchAddress)], maxHeight: 100 });
+        const results = await connection.searchTx({ sentFromOrTo: searchAddress, maxHeight: 100 });
         expect(results.length).toBeGreaterThanOrEqual(1);
         for (const result of results) {
           expect(result.height).toBeLessThanOrEqual(100);
@@ -805,7 +805,7 @@ describe("LiskConnection", () => {
       // minHeight = 2 and maxHeight = 100
       {
         const results = await connection.searchTx({
-          tags: [dposFromOrToTag(searchAddress)],
+          sentFromOrTo: searchAddress,
           minHeight: 2,
           maxHeight: 100,
         });
@@ -827,7 +827,7 @@ describe("LiskConnection", () => {
       // minHeight > maxHeight
       {
         const results = await connection.searchTx({
-          tags: [dposFromOrToTag(searchAddress)],
+          sentFromOrTo: searchAddress,
           minHeight: 100,
           maxHeight: 99,
         });
@@ -952,7 +952,7 @@ describe("LiskConnection", () => {
 
         // setup listener after A and B are in block
         const events = new Array<ConfirmedTransaction>();
-        const subscription = connection.liveTx({ tags: [dposFromOrToTag(recipientAddress)] }).subscribe({
+        const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
             events.push(event);
 

@@ -45,7 +45,6 @@ export function main(originalArgs: ReadonlyArray<string>): void {
   console.log(colors.yellow("  * from @iov/bns"));
   console.log(colors.yellow("    - bnsCodec"));
   console.log(colors.yellow("    - bnsConnector"));
-  console.log(colors.yellow("    - bnsFromOrToTag"));
   console.log(colors.yellow("    - SetNameTx"));
   console.log(colors.yellow("  * from @iov/core"));
   console.log(colors.yellow("    - Address"));
@@ -89,7 +88,6 @@ export function main(originalArgs: ReadonlyArray<string>): void {
     import {
       bnsCodec,
       bnsConnector,
-      bnsFromOrToTag,
       SetNameTx,
     } from '@iov/bns';
     import {

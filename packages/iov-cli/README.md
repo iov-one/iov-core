@@ -96,8 +96,8 @@ const sendTx: SendTransaction = {
 > await signer.signAndPost(sendTx, wallet.id);
 > (await connection.getAccount({ address: recipientAddress })).data[0].balance;
 
-> await connection.searchTx({ tags: [bnsFromOrToTag(faucetAddress)] });
-> await connection.searchTx({ tags: [bnsFromOrToTag(recipientAddress)] });
+> await connection.searchTx({ address: faucetAddress });
+> await connection.searchTx({ address: recipientAddress });
 ```
 
 3. Congratulations, you sent your first money!

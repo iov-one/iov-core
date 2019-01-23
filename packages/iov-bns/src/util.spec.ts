@@ -12,7 +12,7 @@ import {
   isValidAddress,
 } from "./util";
 
-const { fromHex } = Encoding;
+const { fromHex, toAscii, toHex } = Encoding;
 
 describe("Util", () => {
   it("has working identityToAddress", () => {
@@ -107,6 +107,12 @@ describe("Util", () => {
     it("handles empty query", () => {
       const query = buildTxQuery({});
       expect(query).toEqual("");
+    });
+
+    it("handles sentFromOrTo", () => {
+      const query = buildTxQuery({ sentFromOrTo: "tiov142a64wa2hw4th24m42a64wa2hw4th24m593zc3" as Address });
+      const expected = `${toHex(toAscii("wllt:")).toUpperCase()}AABBAABBAABBAABBAABBAABBAABBAABBAABBAABB='s'`;
+      expect(query).toEqual(expected);
     });
 
     it("handles empty tag list", () => {

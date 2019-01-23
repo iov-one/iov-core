@@ -31,5 +31,5 @@ export declare class EthereumConnection implements BcpConnection {
     liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction>;
     private socketSend;
     private searchTransactionsById;
-    private searchTransactionsByAddress;
+    private searchSendTransactionsByAddress;
 }

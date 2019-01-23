@@ -27,7 +27,7 @@ import {
   TokenTicker,
   TransactionId,
 } from "@iov/bcp-types";
-import { findDposAddress, Parse } from "@iov/dpos";
+import { Parse } from "@iov/dpos";
 import { Encoding, Int53, Uint53, Uint64 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
@@ -307,18 +307,17 @@ export class RiseConnection implements BcpConnection {
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    if (query.height || query.minHeight || query.maxHeight) {
+    if (query.height || query.minHeight || query.maxHeight || query.tags) {
       throw new Error("Query by height, minHeight, maxHeight, tags not supported");
     }
 
-    const searchAddress = findDposAddress(query.tags || []);
     if (query.id !== undefined) {
       const result = await this.searchSingleTransaction({ id: query.id });
       return result ? [result] : [];
-    } else if (searchAddress) {
+    } else if (query.sentFromOrTo) {
       return this.searchTransactions({
-        recipientId: searchAddress,
-        senderId: searchAddress,
+        recipientId: query.sentFromOrTo,
+        senderId: query.sentFromOrTo,
         limit: 1000,
       });
     } else {

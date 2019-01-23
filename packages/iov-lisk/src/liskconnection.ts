@@ -29,7 +29,7 @@ import {
   TokenTicker,
   TransactionId,
 } from "@iov/bcp-types";
-import { dposFromOrToTag, findDposAddress, Parse } from "@iov/dpos";
+import { Parse } from "@iov/dpos";
 import { Encoding, Int53, Uint53, Uint64 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
@@ -305,22 +305,15 @@ export class LiskConnection implements BcpConnection {
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    if (query.height) {
-      throw new Error("Query by height not supported");
+    if (query.height || query.tags) {
+      throw new Error("Query by height or tags not supported");
     }
 
     if (query.id !== undefined) {
-      if (query.tags) {
-        throw new Error("Query by tags not supported in ID query");
-      }
       return this.searchTransactions({ id: query.id }, query.minHeight, query.maxHeight);
-    } else if (query.tags) {
-      const searchAddress = findDposAddress(query.tags || []);
-      if (!searchAddress) {
-        throw new Error("Only address tag is supported");
-      }
+    } else if (query.sentFromOrTo) {
       return this.searchTransactions(
-        { senderIdOrRecipientId: searchAddress },
+        { senderIdOrRecipientId: query.sentFromOrTo },
         query.minHeight,
         query.maxHeight,
       );
@@ -334,6 +327,10 @@ export class LiskConnection implements BcpConnection {
   }
 
   public liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction> {
+    if (query.height || query.tags) {
+      throw new Error("Query by height or tags not supported");
+    }
+
     if (query.id !== undefined) {
       const searchId = query.id;
       const resultPromise = new Promise<ConfirmedTransaction>(async (resolve, reject) => {
@@ -353,12 +350,7 @@ export class LiskConnection implements BcpConnection {
 
       // concat never() because we want non-completing streams consistently
       return xstreamConcat(Stream.fromPromise(resultPromise), Stream.never());
-    } else if (query.tags) {
-      const address = findDposAddress(query.tags);
-      if (!address) {
-        throw new Error("No matching search tag found to query transactions");
-      }
-
+    } else if (query.sentFromOrTo) {
       let pollInterval: NodeJS.Timeout | undefined;
       const producer: Producer<ConfirmedTransaction> = {
         start: listener => {
@@ -367,7 +359,7 @@ export class LiskConnection implements BcpConnection {
 
           const poll = async (): Promise<void> => {
             const result = await this.searchTx({
-              tags: [dposFromOrToTag(address)],
+              sentFromOrTo: query.sentFromOrTo,
               minHeight: minHeight,
               maxHeight: maxHeight,
             });

@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { Address, BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpPubkeyQuery, BcpQueryEnvelope, BcpQueryTag, BcpSwapQuery, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, Nonce, PostableBytes, PostTxResponse, TokenTicker } from "@iov/bcp-types";
+import { Address, BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpPubkeyQuery, BcpQueryEnvelope, BcpSwapQuery, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, Nonce, PostableBytes, PostTxResponse, TokenTicker } from "@iov/bcp-types";
 import { StatusResponse } from "@iov/tendermint-rpc";
 import { BnsBlockchainNft, BnsBlockchainsQuery, BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
@@ -67,7 +67,7 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     /**
      * Emits the blockheight for every block where a tx matching these tags is emitted
      */
-    changeTx(tags: ReadonlyArray<BcpQueryTag>): Stream<number>;
+    changeTx(query: BcpTxQuery): Stream<number>;
     /**
      * A helper that triggers if the balance ever changes
      */
