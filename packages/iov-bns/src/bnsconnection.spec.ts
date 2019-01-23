@@ -1113,10 +1113,7 @@ describe("BnsConnection", () => {
       const signed = await profile.signTransaction(mainWalletId, brokeIdentity, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       const transactionIdToSearch = response.transactionId;
-
-      // Wait until transaction is in a block. blockInfo does not yet support failures
-      // await response.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
-      await sleep(1500);
+      await response.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
 
       await tendermintSearchIndexUpdated();
 
