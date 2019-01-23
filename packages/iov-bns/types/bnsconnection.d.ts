@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { Address, BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpPubkeyQuery, BcpQueryEnvelope, BcpSwapQuery, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, Nonce, PostableBytes, PostTxResponse, TokenTicker } from "@iov/bcp-types";
+import { Address, BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpPubkeyQuery, BcpQueryEnvelope, BcpSwapQuery, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Nonce, PostableBytes, PostTxResponse, TokenTicker, TransactionId } from "@iov/bcp-types";
 import { StatusResponse } from "@iov/tendermint-rpc";
 import { BnsBlockchainNft, BnsBlockchainsQuery, BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
@@ -52,6 +52,7 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
      * This includes an open swap beind claimed/expired as well as a new matching swap being offered
      */
     watchSwap(query: BcpSwapQuery): Stream<BcpAtomicSwap>;
+    waitForTransaction(id: TransactionId): Promise<ConfirmedTransaction | FailedTransaction>;
     searchTx(txQuery: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
     /**
      * A stream of all transactions that match the tags from the present moment on

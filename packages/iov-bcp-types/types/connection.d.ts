@@ -90,6 +90,19 @@ export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTr
      */
     readonly log?: string;
 }
+export interface FailedTransaction {
+    /**
+     * Application specific error code
+     */
+    readonly code: number;
+    /**
+     * Application specific logging output in an arbitrary text format that
+     * may change at any time.
+     */
+    readonly log?: string;
+}
+export declare function isConfirmedTransaction(transaction: ConfirmedTransaction | FailedTransaction): transaction is ConfirmedTransaction;
+export declare function isFailedTransaction(transaction: ConfirmedTransaction | FailedTransaction): transaction is FailedTransaction;
 export interface BcpQueryTag {
     readonly key: string;
     readonly value: string;
@@ -158,6 +171,12 @@ export interface BcpConnection {
     /** @deprecated use watchBlockHeaders().map(header => header.height) */
     readonly changeBlock: () => Stream<number>;
     readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
+    /**
+     * Looks up transaction in history and if not found, waits until it is available.
+     *
+     * As a consequence, this never resolves for non-existing transaction IDs.
+     */
+    readonly waitForTransaction?: (id: TransactionId) => Promise<ConfirmedTransaction | FailedTransaction>;
     readonly searchTx: (query: BcpTxQuery) => Promise<ReadonlyArray<ConfirmedTransaction>>;
     /**
      * Subscribes to all newly added transactions that match the query

@@ -11,6 +11,8 @@ import {
   BcpTransactionState,
   BcpTxQuery,
   ChainId,
+  isConfirmedTransaction,
+  isFailedTransaction,
   isSendTransaction,
   isSwapCounterTransaction,
   PostTxResponse,
@@ -899,11 +901,7 @@ describe("BnsConnection", () => {
         creator: faucet,
         recipient: await randomBnsAddress(),
         memo: memo,
-        amount: {
-          quantity: "1000000001",
-          fractionalDigits: 9,
-          tokenTicker: cash,
-        },
+        amount: defaultAmount,
       };
 
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
@@ -945,11 +943,7 @@ describe("BnsConnection", () => {
         creator: faucet,
         recipient: rcptAddress,
         memo: memo,
-        amount: {
-          quantity: "1000000001",
-          fractionalDigits: 9,
-          tokenTicker: cash,
-        },
+        amount: defaultAmount,
       };
 
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
@@ -1016,6 +1010,161 @@ describe("BnsConnection", () => {
     });
   });
 
+  describe("waitForTransaction", () => {
+    it("finds an existing transaction", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const chainId = connection.chainId();
+
+      const { profile, mainWalletId, faucet } = await userProfileWithFaucet(chainId);
+
+      const memo = `Payment ${Math.random()}`;
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
+        creator: faucet,
+        recipient: await randomBnsAddress(),
+        memo: memo,
+        amount: defaultAmount,
+      };
+
+      const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
+      const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
+      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+      const transactionIdToSearch = response.transactionId;
+      await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+
+      await tendermintSearchIndexUpdated();
+
+      // finds transaction using id
+      const result = await connection.waitForTransaction(transactionIdToSearch);
+
+      if (!isConfirmedTransaction(result)) {
+        throw new Error("Expected confirmed transaction");
+      }
+      const searchResultTransaction = result.transaction;
+      expect(result.transactionId).toEqual(transactionIdToSearch);
+      if (!isSendTransaction(searchResultTransaction)) {
+        throw new Error("Expected send transaction");
+      }
+      expect(searchResultTransaction.memo).toEqual(memo);
+
+      connection.disconnect();
+    });
+
+    it("can wait for a future transaction", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const chainId = connection.chainId();
+
+      const { profile, mainWalletId, faucet } = await userProfileWithFaucet(chainId);
+
+      const memo = `Payment ${Math.random()}`;
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
+        creator: faucet,
+        recipient: await randomBnsAddress(),
+        memo: memo,
+        amount: defaultAmount,
+      };
+
+      const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
+      const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
+      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+      const transactionIdToSearch = response.transactionId;
+      const pendingResult = connection.waitForTransaction(transactionIdToSearch);
+
+      // no need to await block state, just wait for transaction
+      const result = await pendingResult;
+
+      if (!isConfirmedTransaction(result)) {
+        throw new Error("Expected confirmed transaction");
+      }
+      const searchResultTransaction = result.transaction;
+      expect(result.transactionId).toEqual(transactionIdToSearch);
+      if (!isSendTransaction(searchResultTransaction)) {
+        throw new Error("Expected send transaction");
+      }
+      expect(searchResultTransaction.memo).toEqual(memo);
+
+      connection.disconnect();
+    });
+
+    it("reports DeliverTx error for an existing transaction", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const chainId = connection.chainId();
+
+      const { profile, mainWalletId } = await userProfileWithFaucet(chainId);
+      // this will never have tokens, but can try to sign
+      const brokeIdentity = await profile.createIdentity(mainWalletId, chainId, HdPaths.simpleAddress(1234));
+
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
+        creator: brokeIdentity,
+        recipient: await randomBnsAddress(),
+        memo: "Sending from empty",
+        amount: defaultAmount,
+      };
+
+      const nonce = await connection.getNonce({ pubkey: brokeIdentity.pubkey });
+      const signed = await profile.signTransaction(mainWalletId, brokeIdentity, sendTx, bnsCodec, nonce);
+      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+      const transactionIdToSearch = response.transactionId;
+
+      // Wait until transaction is in a block. blockInfo does not yet support failures
+      // await response.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+      await sleep(1500);
+
+      await tendermintSearchIndexUpdated();
+
+      const result = await connection.waitForTransaction(transactionIdToSearch);
+
+      if (!isFailedTransaction(result)) {
+        throw new Error("Expected failed transaction");
+      }
+      // https://github.com/iov-one/weave/blob/v0.10.0/x/cash/errors.go#L18
+      expect(result.code).toEqual(36);
+      expect(result.log).toMatch(/account empty/i);
+
+      connection.disconnect();
+    });
+
+    it("reports DeliverTx error for a future transaction", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const chainId = connection.chainId();
+
+      const { profile, mainWalletId } = await userProfileWithFaucet(chainId);
+      // this will never have tokens, but can try to sign
+      const brokeIdentity = await profile.createIdentity(mainWalletId, chainId, HdPaths.simpleAddress(1234));
+
+      // Sending tokens from an empty account will trigger a failure in DeliverTx
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
+        creator: brokeIdentity,
+        recipient: await randomBnsAddress(),
+        memo: "Sending from empty",
+        amount: defaultAmount,
+      };
+
+      const nonce = await connection.getNonce({ pubkey: brokeIdentity.pubkey });
+      const signed = await profile.signTransaction(mainWalletId, brokeIdentity, sendTx, bnsCodec, nonce);
+      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+      const transactionIdToSearch = response.transactionId;
+
+      const result = await connection.waitForTransaction(transactionIdToSearch);
+
+      if (!isFailedTransaction(result)) {
+        throw new Error("Expected failed transaction");
+      }
+      // https://github.com/iov-one/weave/blob/v0.10.0/x/cash/errors.go#L18
+      expect(result.code).toEqual(36);
+      expect(result.log).toMatch(/account empty/i);
+
+      connection.disconnect();
+    });
+  });
+
   describe("listenTx", () => {
     it("can listen to transactions by hash", done => {
       pendingWithoutBnsd();
@@ -1032,11 +1181,7 @@ describe("BnsConnection", () => {
           creator: faucet,
           recipient: await randomBnsAddress(),
           memo: memo,
-          amount: {
-            quantity: "1000000001",
-            fractionalDigits: 9,
-            tokenTicker: cash,
-          },
+          amount: defaultAmount,
         };
 
         const nonce = await connection.getNonce({ pubkey: faucet.pubkey });

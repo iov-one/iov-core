@@ -21,6 +21,7 @@ import {
   ChainId,
   ConfirmedTransaction,
   dummyEnvelope,
+  FailedTransaction,
   isPubkeyQuery,
   isQueryBySwapId,
   isQueryBySwapRecipient,
@@ -68,6 +69,7 @@ import {
 } from "./types";
 import {
   arraysEqual,
+  buildTxHashQuery,
   buildTxQuery,
   decodeBnsAddress,
   hashIdentifier,
@@ -442,6 +444,93 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     };
 
     return Stream.merge(offers, releases).map(combiner);
+  }
+
+  public async waitForTransaction(id: TransactionId): Promise<ConfirmedTransaction | FailedTransaction> {
+    const updatesStream = this.tmClient.subscribeTx(buildTxHashQuery(id)).map(
+      (txEvent): ConfirmedTransaction | FailedTransaction => {
+        if (txEvent.result.code === 0) {
+          return {
+            height: txEvent.height,
+            confirmations: 1, // assuming block height is current height when listening to events
+            transactionId: Encoding.toHex(txEvent.hash).toUpperCase() as TransactionId,
+            log: txEvent.result.log,
+            result: txEvent.result.data,
+            ...this.codec.parseBytes(new Uint8Array(txEvent.tx) as PostableBytes, this.chainId()),
+          };
+        } else {
+          return {
+            code: txEvent.result.code,
+            log: txEvent.result.log,
+          };
+        }
+      },
+    );
+
+    return new Promise(async (resolve, reject) => {
+      const updatesSubscription = updatesStream.subscribe({
+        next: event => {
+          resolve(event);
+          updatesSubscription.unsubscribe();
+        },
+        error: error => {
+          reject(error);
+        },
+        complete: () => {
+          reject("Updates stream completed before we got a result");
+        },
+      });
+
+      // We're subscribed and cannot miss something anymore, great. Now let's check the history
+      // From here we need to make sure to unsubscribe when we resolve of reject.
+
+      function cleanupAndResolve(value: ConfirmedTransaction | FailedTransaction): void {
+        updatesSubscription.unsubscribe();
+        resolve(value);
+      }
+
+      function cleanupAndReject(reason: any): void {
+        updatesSubscription.unsubscribe();
+        reject(reason);
+      }
+
+      try {
+        const resultTransactions = (await this.tmClient.txSearch({ query: buildTxHashQuery(id) })).txs;
+        switch (resultTransactions.length) {
+          case 0:
+            // transaction not found, wait for updates
+            break;
+          case 1:
+            const { tx, hash, height, txResult } = resultTransactions[0];
+            let out: ConfirmedTransaction | FailedTransaction;
+            if (txResult.code === 0) {
+              const currentHeight = await this.height();
+              const chainId = await this.chainId();
+              out = {
+                height: height,
+                confirmations: currentHeight - height + 1,
+                transactionId: Encoding.toHex(hash).toUpperCase() as TransactionId,
+                log: txResult.log,
+                result: txResult.data,
+                ...this.codec.parseBytes(new Uint8Array(tx) as PostableBytes, chainId),
+              };
+            } else {
+              out = {
+                code: txResult.code,
+                log: txResult.log,
+              };
+            }
+            cleanupAndResolve(out);
+            break;
+          default:
+            cleanupAndReject(
+              `Unexpected number of results in transaction search by ID: ${resultTransactions.length}`,
+            );
+        }
+      } catch (error) {
+        cleanupAndReject(error);
+      }
+    });
   }
 
   public async searchTx(txQuery: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
