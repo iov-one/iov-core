@@ -124,7 +124,7 @@ function bnsFromOrToTag(addr: Address): string {
 }
 
 export function buildTxQuery(query: BcpTxQuery): QueryString {
-  const addressConponents = query.address !== undefined ? [bnsFromOrToTag(query.address)] : [];
+  const addressComponents = query.address !== undefined ? [bnsFromOrToTag(query.address)] : [];
   const tagComponents = query.tags !== undefined ? query.tags.map(tag => `${tag.key}='${tag.value}'`) : [];
   // In Tendermint, hash can be lower case for search queries but must be upper case for subscribe queries
   const hashComponents = query.id !== undefined ? [`tx.hash='${query.id}'`] : [];
@@ -133,7 +133,7 @@ export function buildTxQuery(query: BcpTxQuery): QueryString {
   const maxHeightComponents = query.maxHeight !== undefined ? [`tx.height<${query.maxHeight}`] : [];
 
   const components: ReadonlyArray<string> = [
-    ...addressConponents,
+    ...addressComponents,
     ...tagComponents,
     ...hashComponents,
     ...heightComponents,
