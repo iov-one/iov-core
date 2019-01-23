@@ -454,6 +454,32 @@ describe("BnsConnection", () => {
       connection.disconnect();
     });
 
+    it("reports post errors (CheckTx)", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const chainId = connection.chainId();
+
+      const { profile, mainWalletId, faucet } = await userProfileWithFaucet(chainId);
+
+      // memo too long will trigger failure in CheckTx (validation of message)
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
+        creator: faucet,
+        recipient: await randomBnsAddress(),
+        memo: "too long".repeat(100),
+        amount: defaultAmount,
+      };
+      const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
+      const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
+
+      await connection
+        .postTx(bnsCodec.bytesToPost(signed))
+        .then(() => fail("promise must be rejected"))
+        .catch(err => expect(err).toMatch(/memo too long/i));
+
+      connection.disconnect();
+    });
+
     it("can post transaction and watch confirmations", done => {
       pendingWithoutBnsd();
 
