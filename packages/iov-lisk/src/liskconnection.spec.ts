@@ -8,9 +8,8 @@ import {
   BcpAccount,
   BcpAccountQuery,
   BcpAddressQuery,
-  BcpBlockInfo,
   BcpPubkeyQuery,
-  BcpTransactionState,
+  BlockInfo,
   ChainId,
   ConfirmedTransaction,
   isSendTransaction,
@@ -21,6 +20,7 @@ import {
   SignedTransaction,
   TokenTicker,
   TransactionId,
+  TransactionState,
 } from "@iov/bcp-types";
 import { Random } from "@iov/crypto";
 import { Derivation } from "@iov/dpos";
@@ -415,7 +415,7 @@ describe("LiskConnection", () => {
           };
 
           const result = await connection.postTx(liskCodec.bytesToPost(signedTransaction));
-          await result.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+          await result.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
         }
       })().catch(done.fail);
     }, 30_000);
@@ -564,17 +564,17 @@ describe("LiskConnection", () => {
         const heightBeforeTransaction = await connection.height();
         const result = await connection.postTx(bytesToPost);
         expect(result).toBeTruthy();
-        expect(result.blockInfo.value.state).toEqual(BcpTransactionState.Pending);
+        expect(result.blockInfo.value.state).toEqual(TransactionState.Pending);
 
-        const events = new Array<BcpBlockInfo>();
+        const events = new Array<BlockInfo>();
         const subscription = result.blockInfo.updates.subscribe({
           next: info => {
             events.push(info);
 
             if (events.length === 2) {
-              expect(events[0]).toEqual({ state: BcpTransactionState.Pending });
+              expect(events[0]).toEqual({ state: TransactionState.Pending });
               expect(events[1]).toEqual({
-                state: BcpTransactionState.InBlock,
+                state: TransactionState.Succeeded,
                 height: heightBeforeTransaction + 1,
                 confirmations: 1,
               });
@@ -626,11 +626,11 @@ describe("LiskConnection", () => {
       const heightBeforeTransaction = await connection.height();
       const result = await connection.postTx(bytesToPost);
       await result.blockInfo.waitFor(
-        info => info.state === BcpTransactionState.InBlock && info.confirmations === 4,
+        info => info.state === TransactionState.Succeeded && info.confirmations === 4,
       );
 
       expect(result.blockInfo.value).toEqual({
-        state: BcpTransactionState.InBlock,
+        state: TransactionState.Succeeded,
         height: heightBeforeTransaction + 1,
         confirmations: 4,
       });
@@ -948,7 +948,7 @@ describe("LiskConnection", () => {
         await connection.postTx(bytesToPostB);
 
         // Wait for a block
-        await postResultA.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+        await postResultA.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
 
         // setup listener after A and B are in block
         const events = new Array<ConfirmedTransaction>();
@@ -1006,7 +1006,7 @@ describe("LiskConnection", () => {
         const transactionId = postResult.transactionId;
 
         // Wait for a block
-        await postResult.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+        await postResult.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
 
         // setup listener after transaction is in block
         const events = new Array<ConfirmedTransaction>();

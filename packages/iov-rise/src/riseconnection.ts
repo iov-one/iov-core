@@ -8,14 +8,13 @@ import {
   BcpAccount,
   BcpAccountQuery,
   BcpAddressQuery,
-  BcpBlockInfo,
   BcpConnection,
   BcpPubkeyQuery,
   BcpTicker,
-  BcpTransactionState,
   BcpTxQuery,
   BlockHeader,
   BlockId,
+  BlockInfo,
   ChainId,
   ConfirmedTransaction,
   isPubkeyQuery,
@@ -26,6 +25,7 @@ import {
   PublicKeyBytes,
   TokenTicker,
   TransactionId,
+  TransactionState,
 } from "@iov/bcp-types";
 import { Parse } from "@iov/dpos";
 import { Encoding, Int53, Uint53, Uint64 } from "@iov/encoding";
@@ -125,18 +125,18 @@ export class RiseConnection implements BcpConnection {
     }
 
     let blockInfoInterval: any;
-    const firstEvent: BcpBlockInfo = {
-      state: BcpTransactionState.Pending,
+    const firstEvent: BlockInfo = {
+      state: TransactionState.Pending,
     };
-    let lastEventSent: BcpBlockInfo = firstEvent;
-    const blockInfoProducer = new DefaultValueProducer<BcpBlockInfo>(firstEvent, {
+    let lastEventSent: BlockInfo = firstEvent;
+    const blockInfoProducer = new DefaultValueProducer<BlockInfo>(firstEvent, {
       onStarted: () => {
         blockInfoInterval = setInterval(async () => {
           const search = await this.searchTx({ id: transactionId });
           if (search.length > 0) {
             const confirmedTransaction = search[0];
-            const event: BcpBlockInfo = {
-              state: BcpTransactionState.InBlock,
+            const event: BlockInfo = {
+              state: TransactionState.Succeeded,
               height: confirmedTransaction.height,
               confirmations: confirmedTransaction.confirmations,
             };

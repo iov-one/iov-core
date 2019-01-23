@@ -82,19 +82,21 @@ export interface BcpTicker {
   readonly fractionalDigits: number;
 }
 
-export enum BcpTransactionState {
+export enum TransactionState {
   /** accepted by a blockchain node and in mempool */
   Pending,
   /** successfully written in a block, but cannot yet guarantee it won't be reverted */
-  InBlock,
+  Succeeded,
+  /** executing the transaction failed */
+  Failed,
 }
 
-export interface BcpBlockInfoPending {
-  readonly state: BcpTransactionState.Pending;
+export interface BlockInfoPending {
+  readonly state: TransactionState.Pending;
 }
 
-export interface BcpBlockInfoInBlock {
-  readonly state: BcpTransactionState.InBlock;
+export interface BlockInfoSucceeded {
+  readonly state: TransactionState.Succeeded;
   /** block height, if the transaction is included in a block */
   readonly height: number;
   /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
@@ -103,12 +105,25 @@ export interface BcpBlockInfoInBlock {
   readonly result?: Uint8Array;
 }
 
+export interface BlockInfoFailed {
+  readonly state: TransactionState.Failed;
+  /**
+   * Application specific error code
+   */
+  readonly code: number;
+  /**
+   * Application specific logging output in an arbitrary text format that
+   * may change at any time.
+   */
+  readonly log?: string;
+}
+
 /** Information attached to a signature about its state in a block */
-export type BcpBlockInfo = BcpBlockInfoPending | BcpBlockInfoInBlock;
+export type BlockInfo = BlockInfoPending | BlockInfoSucceeded | BlockInfoFailed;
 
 export interface PostTxResponse {
   /** Information about the block the transaction is in */
-  readonly blockInfo: ValueAndUpdates<BcpBlockInfo>;
+  readonly blockInfo: ValueAndUpdates<BlockInfo>;
   /** a unique identifier (hash of the transaction) */
   readonly transactionId: TransactionId;
   /** a human readable debugging log */

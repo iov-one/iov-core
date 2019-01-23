@@ -8,16 +8,15 @@ import {
   BcpAddressQuery,
   BcpAtomicSwap,
   BcpAtomicSwapConnection,
-  BcpBlockInfo,
-  BcpBlockInfoInBlock,
   BcpPubkeyQuery,
   BcpQueryEnvelope,
   BcpSwapQuery,
   BcpTicker,
-  BcpTransactionState,
   BcpTxQuery,
   BlockHeader,
   BlockId,
+  BlockInfo,
+  BlockInfoSucceeded,
   ChainId,
   ConfirmedTransaction,
   dummyEnvelope,
@@ -36,6 +35,7 @@ import {
   SwapTimeoutTransaction,
   TokenTicker,
   TransactionId,
+  TransactionState,
   TxReadCodec,
 } from "@iov/bcp-types";
 import { Encoding, Int53, Uint53 } from "@iov/encoding";
@@ -194,9 +194,9 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     // can be undefined as we cannot guarantee it assigned before the caller unsubscribes from the stream
     let blockHeadersSubscription: Subscription | undefined;
 
-    const firstEvent: BcpBlockInfo = { state: BcpTransactionState.Pending };
-    let lastEventSent: BcpBlockInfo = firstEvent;
-    const blockInfoProducer = new DefaultValueProducer<BcpBlockInfo>(firstEvent, {
+    const firstEvent: BlockInfo = { state: TransactionState.Pending };
+    let lastEventSent: BlockInfo = firstEvent;
+    const blockInfoProducer = new DefaultValueProducer<BlockInfo>(firstEvent, {
       onStarted: async () => {
         try {
           // we utilize liveTx to implement a _search or watch_ mechanism since we do not know
@@ -209,8 +209,8 @@ export class BnsConnection implements BcpAtomicSwapConnection {
           // search result. For some transactions this will never resolve.
 
           {
-            const inBlockEvent: BcpBlockInfoInBlock = {
-              state: BcpTransactionState.InBlock,
+            const inBlockEvent: BlockInfoSucceeded = {
+              state: TransactionState.Succeeded,
               height: transactionHeight,
               confirmations: 1,
               result: transactionResult,
@@ -221,8 +221,8 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
           blockHeadersSubscription = this.watchBlockHeaders().subscribe({
             next: async blockHeader => {
-              const event: BcpBlockInfo = {
-                state: BcpTransactionState.InBlock,
+              const event: BlockInfo = {
+                state: TransactionState.Succeeded,
                 height: transactionHeight,
                 confirmations: blockHeader.height - transactionHeight + 1,
                 result: transactionResult,

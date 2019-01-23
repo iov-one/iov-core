@@ -48,17 +48,19 @@ export interface BcpTicker {
      */
     readonly fractionalDigits: number;
 }
-export declare enum BcpTransactionState {
+export declare enum TransactionState {
     /** accepted by a blockchain node and in mempool */
     Pending = 0,
     /** successfully written in a block, but cannot yet guarantee it won't be reverted */
-    InBlock = 1
+    Succeeded = 1,
+    /** executing the transaction failed */
+    Failed = 2
 }
-export interface BcpBlockInfoPending {
-    readonly state: BcpTransactionState.Pending;
+export interface BlockInfoPending {
+    readonly state: TransactionState.Pending;
 }
-export interface BcpBlockInfoInBlock {
-    readonly state: BcpTransactionState.InBlock;
+export interface BlockInfoSucceeded {
+    readonly state: TransactionState.Succeeded;
     /** block height, if the transaction is included in a block */
     readonly height: number;
     /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
@@ -66,11 +68,23 @@ export interface BcpBlockInfoInBlock {
     /** application specific data from executing tx (result, code, tags...) */
     readonly result?: Uint8Array;
 }
+export interface BlockInfoFailed {
+    readonly state: TransactionState.Failed;
+    /**
+     * Application specific error code
+     */
+    readonly code: number;
+    /**
+     * Application specific logging output in an arbitrary text format that
+     * may change at any time.
+     */
+    readonly log?: string;
+}
 /** Information attached to a signature about its state in a block */
-export declare type BcpBlockInfo = BcpBlockInfoPending | BcpBlockInfoInBlock;
+export declare type BlockInfo = BlockInfoPending | BlockInfoSucceeded | BlockInfoFailed;
 export interface PostTxResponse {
     /** Information about the block the transaction is in */
-    readonly blockInfo: ValueAndUpdates<BcpBlockInfo>;
+    readonly blockInfo: ValueAndUpdates<BlockInfo>;
     /** a unique identifier (hash of the transaction) */
     readonly transactionId: TransactionId;
     /** a human readable debugging log */

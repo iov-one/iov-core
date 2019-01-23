@@ -8,13 +8,12 @@ import {
   BcpAccount,
   BcpAccountQuery,
   BcpAddressQuery,
-  BcpBlockInfo,
   BcpConnection,
   BcpPubkeyQuery,
   BcpTicker,
-  BcpTransactionState,
   BcpTxQuery,
   BlockHeader,
+  BlockInfo,
   ChainId,
   ConfirmedTransaction,
   isPubkeyQuery,
@@ -23,6 +22,7 @@ import {
   PostTxResponse,
   TokenTicker,
   TransactionId,
+  TransactionState,
 } from "@iov/bcp-types";
 import { Encoding, Int53, Uint53 } from "@iov/encoding";
 import { isJsonRpcErrorResponse, JsonRpcRequest } from "@iov/jsonrpc";
@@ -150,9 +150,9 @@ export class EthereumConnection implements BcpConnection {
     const pollIntervalMs = 4_000;
 
     let pollInterval: NodeJS.Timeout | undefined;
-    const blockInfoPending = new DefaultValueProducer<BcpBlockInfo>(
+    const blockInfoPending = new DefaultValueProducer<BlockInfo>(
       {
-        state: BcpTransactionState.Pending,
+        state: TransactionState.Pending,
       },
       {
         onStarted: () => {
@@ -165,7 +165,7 @@ export class EthereumConnection implements BcpConnection {
             const confirmedTransaction = searchResult[0];
 
             blockInfoPending.update({
-              state: BcpTransactionState.InBlock,
+              state: TransactionState.Succeeded,
               height: confirmedTransaction.height,
               confirmations: confirmedTransaction.confirmations,
             });

@@ -10,14 +10,13 @@ import {
   BcpAccount,
   BcpAccountQuery,
   BcpAddressQuery,
-  BcpBlockInfo,
   BcpConnection,
   BcpPubkeyQuery,
   BcpTicker,
-  BcpTransactionState,
   BcpTxQuery,
   BlockHeader,
   BlockId,
+  BlockInfo,
   ChainId,
   ConfirmedTransaction,
   isPubkeyQuery,
@@ -28,6 +27,7 @@ import {
   PublicKeyBytes,
   TokenTicker,
   TransactionId,
+  TransactionState,
 } from "@iov/bcp-types";
 import { Parse } from "@iov/dpos";
 import { Encoding, Int53, Uint53, Uint64 } from "@iov/encoding";
@@ -120,10 +120,10 @@ export class LiskConnection implements BcpConnection {
     }
 
     let blockInfoInterval: any;
-    let lastEventSent: BcpBlockInfo | undefined;
-    const blockInfoProducer = new DefaultValueProducer<BcpBlockInfo>(
+    let lastEventSent: BlockInfo | undefined;
+    const blockInfoProducer = new DefaultValueProducer<BlockInfo>(
       {
-        state: BcpTransactionState.Pending,
+        state: TransactionState.Pending,
       },
       {
         onStarted: () => {
@@ -131,8 +131,8 @@ export class LiskConnection implements BcpConnection {
             const search = await this.searchTx({ id: transactionId });
             if (search.length > 0) {
               const confirmedTransaction = search[0];
-              const event: BcpBlockInfo = {
-                state: BcpTransactionState.InBlock,
+              const event: BlockInfo = {
+                state: TransactionState.Succeeded,
                 height: confirmedTransaction.height,
                 confirmations: confirmedTransaction.confirmations,
               };

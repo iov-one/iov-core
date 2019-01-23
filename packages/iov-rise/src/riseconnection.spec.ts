@@ -8,9 +8,8 @@ import {
   BcpAccount,
   BcpAccountQuery,
   BcpAddressQuery,
-  BcpBlockInfo,
   BcpPubkeyQuery,
-  BcpTransactionState,
+  BlockInfo,
   ChainId,
   isSendTransaction,
   PublicKeyBundle,
@@ -20,6 +19,7 @@ import {
   SignedTransaction,
   TokenTicker,
   TransactionId,
+  TransactionState,
 } from "@iov/bcp-types";
 import { Random } from "@iov/crypto";
 import { Derivation } from "@iov/dpos";
@@ -392,7 +392,7 @@ describe("RiseConnection", () => {
           };
 
           const result = await connection.postTx(riseCodec.bytesToPost(signedTransaction));
-          await result.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+          await result.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
         }
       })().catch(done.fail);
     }, 90_000);
@@ -533,17 +533,17 @@ describe("RiseConnection", () => {
         const heightBeforeTransaction = await connection.height();
         const result = await connection.postTx(bytesToPost);
         expect(result).toBeTruthy();
-        expect(result.blockInfo.value.state).toEqual(BcpTransactionState.Pending);
+        expect(result.blockInfo.value.state).toEqual(TransactionState.Pending);
 
-        const events = new Array<BcpBlockInfo>();
+        const events = new Array<BlockInfo>();
         const subscription = result.blockInfo.updates.subscribe({
           next: info => {
             events.push(info);
 
             if (events.length === 2) {
-              expect(events[0]).toEqual({ state: BcpTransactionState.Pending });
+              expect(events[0]).toEqual({ state: TransactionState.Pending });
               expect(events[1]).toEqual({
-                state: BcpTransactionState.InBlock,
+                state: TransactionState.Succeeded,
                 height: heightBeforeTransaction + 1,
                 confirmations: 1,
               });
