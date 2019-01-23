@@ -4,6 +4,7 @@ import { Encoding } from "@iov/encoding";
 import { address, hashCode, pubJson } from "./testdata.spec";
 import {
   arraysEqual,
+  buildTxHashQuery,
   buildTxQuery,
   decodeBnsAddress,
   encodeBnsAddress,
@@ -147,6 +148,13 @@ describe("Util", () => {
 
     it("handles id", () => {
       const query = buildTxQuery({ id: "AABB33" as TransactionId });
+      expect(query).toEqual("tx.hash='AABB33'");
+    });
+  });
+
+  describe("buildTxHashQuery", () => {
+    it("handles transaction id", () => {
+      const query = buildTxHashQuery("AABB33" as TransactionId);
       expect(query).toEqual("tx.hash='AABB33'");
     });
   });
