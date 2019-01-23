@@ -6,6 +6,7 @@
   implementations set a default value on their own.
 * @iov/bcp-type: Expose `publicKeyBundleEquals`
 * @iov/bcp-types: Add `fractionalDigits` to `BcpTicker`
+* @iov/ethereum: Add new package with Ethereum support
 * @iov/jsonrpc: Add new package for type-safe JSON-RPC 2.0 interfaces and
   response parsers. This is used for out-of-process signing and can be reused
   in @iov/ethereum and @iov/tendermint-rpc later on.
