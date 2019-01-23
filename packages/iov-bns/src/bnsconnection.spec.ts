@@ -753,12 +753,13 @@ describe("BnsConnection", () => {
           ),
         );
 
-        // a promise that should never resolve
-        const inBlock = response.blockInfo
-          .waitFor(info => info.state !== TransactionState.Pending)
-          .then(() => fail("must not resolve"));
-        await sleep(2_000); // wait to test the chance to fail
-        expect(inBlock).toBeTruthy(); // there is no API to get the status; must be pending.
+        const blockInfo = await response.blockInfo.waitFor(info => info.state === TransactionState.Failed);
+        if (blockInfo.state !== TransactionState.Failed) {
+          throw new Error("Transaction is expected to fail");
+        }
+        // https://github.com/iov-one/weave/blob/v0.10.2/x/nft/errors.go#L14
+        expect(blockInfo.code).toEqual(502);
+        expect(blockInfo.log || "").toMatch(/duplicate entry/i);
       }
 
       // Remove address
@@ -800,12 +801,14 @@ describe("BnsConnection", () => {
           ),
         );
 
-        // a promise that should never resolve
-        const inBlock = response.blockInfo
-          .waitFor(info => info.state !== TransactionState.Pending)
-          .then(() => fail("must not resolve"));
-        await sleep(2_000); // wait to test the chance to fail
-        expect(inBlock).toBeTruthy(); // there is no API to get the status; must be pending.
+        const blockInfo = await response.blockInfo.waitFor(info => info.state === TransactionState.Failed);
+        if (blockInfo.state !== TransactionState.Failed) {
+          throw new Error("Transaction is expected to fail");
+        }
+        // TODO: why is the removal of an non-existing address an invalid entry and not a missing entry?
+        // https://github.com/iov-one/weave/blob/v0.10.2/x/nft/errors.go#L16
+        expect(blockInfo.code).toEqual(504);
+        expect(blockInfo.log || "").toMatch(/invalid entry/i);
       }
 
       connection.disconnect();

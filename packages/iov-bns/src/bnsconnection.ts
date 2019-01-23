@@ -16,11 +16,13 @@ import {
   BlockHeader,
   BlockId,
   BlockInfo,
+  BlockInfoFailed,
   BlockInfoSucceeded,
   ChainId,
   ConfirmedTransaction,
   dummyEnvelope,
   FailedTransaction,
+  isFailedTransaction,
   isPubkeyQuery,
   isQueryBySwapId,
   isQueryBySwapRecipient,
@@ -39,7 +41,7 @@ import {
   TxReadCodec,
 } from "@iov/bcp-types";
 import { Encoding, Int53, Uint53 } from "@iov/encoding";
-import { concat, DefaultValueProducer, fromListPromise, toListPromise, ValueAndUpdates } from "@iov/stream";
+import { concat, DefaultValueProducer, fromListPromise, ValueAndUpdates } from "@iov/stream";
 import {
   broadcastTxSyncSuccess,
   Client as TendermintClient,
@@ -199,14 +201,24 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const blockInfoProducer = new DefaultValueProducer<BlockInfo>(firstEvent, {
       onStarted: async () => {
         try {
-          // we utilize liveTx to implement a _search or watch_ mechanism since we do not know
-          // if the transaction is already committed when the producer is started
-          const searchResult = await toListPromise(this.liveTx({ id: transactionId }), 1);
-          const transactionHeight = searchResult[0].height;
-          const transactionResult = searchResult[0].result;
+          const searchResult = await this.waitForTransaction(transactionId);
+
+          if (isFailedTransaction(searchResult)) {
+            const errorEvent: BlockInfoFailed = {
+              state: TransactionState.Failed,
+              code: searchResult.code,
+              log: searchResult.log,
+            };
+            blockInfoProducer.update(errorEvent);
+            lastEventSent = errorEvent;
+            return;
+          }
 
           // Don't do any heavy work (like subscribing to block headers) before we got the
-          // search result. For some transactions this will never resolve.
+          // search result.
+
+          const transactionHeight = searchResult.height;
+          const transactionResult = searchResult.result;
 
           {
             const inBlockEvent: BlockInfoSucceeded = {
