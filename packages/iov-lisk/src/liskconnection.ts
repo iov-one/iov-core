@@ -19,6 +19,7 @@ import {
   BlockInfo,
   ChainId,
   ConfirmedTransaction,
+  FailedTransaction,
   isPubkeyQuery,
   Nonce,
   PostableBytes,
@@ -302,6 +303,21 @@ export class LiskConnection implements BcpConnection {
   /** @deprecated use watchBlockHeaders().map(header => header.height) */
   public changeBlock(): Stream<number> {
     return this.watchBlockHeaders().map(header => header.height);
+  }
+
+  public async waitForTransaction(id: TransactionId): Promise<ConfirmedTransaction | FailedTransaction> {
+    while (true) {
+      const results = await this.searchTransactions({ id: id }, undefined, undefined);
+      switch (results.length) {
+        case 0:
+          await sleep(4_000);
+          break;
+        case 1:
+          return results[0];
+        default:
+          throw new Error(`Got unexpected number of search results: ${results.length}`);
+      }
+    }
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {

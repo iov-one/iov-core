@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpConnection, BcpPubkeyQuery, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, Nonce, PostableBytes, PostTxResponse, TokenTicker } from "@iov/bcp-types";
+import { BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpConnection, BcpPubkeyQuery, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Nonce, PostableBytes, PostTxResponse, TokenTicker, TransactionId } from "@iov/bcp-types";
 /**
  * Encodes the current date and time as a nonce
  */
@@ -23,6 +23,7 @@ export declare class LiskConnection implements BcpConnection {
     watchBlockHeaders(): Stream<BlockHeader>;
     /** @deprecated use watchBlockHeaders().map(header => header.height) */
     changeBlock(): Stream<number>;
+    waitForTransaction(id: TransactionId): Promise<ConfirmedTransaction | FailedTransaction>;
     searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
     listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction>;
     liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction>;
