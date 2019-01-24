@@ -1,4 +1,7 @@
 build/
 dist/
 docs/
+
+# build dirs for creating protobuf definitions
 weave/
+clean/
