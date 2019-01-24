@@ -944,10 +944,11 @@ describe("LiskConnection", () => {
 
         // Post A and B
         const postResultA = await connection.postTx(bytesToPostA);
-        await connection.postTx(bytesToPostB);
+        const postResultB = await connection.postTx(bytesToPostB);
 
         // Wait for a block
         await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
         const events = new Array<ConfirmedTransaction>();

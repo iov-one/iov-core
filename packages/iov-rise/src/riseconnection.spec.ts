@@ -738,10 +738,11 @@ describe("RiseConnection", () => {
 
         // Post A and B
         const postResultA = await connection.postTx(bytesToPostA);
-        await connection.postTx(bytesToPostB);
+        const postResultB = await connection.postTx(bytesToPostB);
 
         // Wait for a block
         await postResultA.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
+        await postResultB.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
 
         // setup listener after A and B are in block
         const events = new Array<ConfirmedTransaction>();
