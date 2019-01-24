@@ -158,9 +158,9 @@ describe("Encode", () => {
         },
       };
       const msg = buildMsg(addAddress).addUsernameAddressNftMsg!;
-      expect(msg.id).toEqual(toUtf8("alice"));
-      expect(msg.chainID).toEqual(toUtf8("other-land"));
-      expect(msg.address).toEqual(toUtf8("865765858O"));
+      expect(msg.usernameId).toEqual(toUtf8("alice"));
+      expect(msg.blockchainId).toEqual(toUtf8("other-land"));
+      expect(msg.address).toEqual("865765858O");
     });
 
     it("works for RegisterBlockchainTx", () => {
@@ -180,12 +180,12 @@ describe("Encode", () => {
       };
       const msg = buildMsg(registerBlockchain).issueBlockchainNftMsg!;
       expect(msg.id).toEqual(toAscii("wonderland"));
-      expect(msg.details!.chain!.chainID).toEqual("wonderland");
+      expect(msg.details!.chain!.chainId).toEqual("wonderland");
       expect(msg.details!.chain!.production).toEqual(false);
       expect(msg.details!.chain!.enabled).toEqual(true);
       expect(msg.details!.chain!.name).toEqual("Wonderland");
-      expect(msg.details!.chain!.networkID).toEqual("7rg047g4h");
-      expect(msg.details!.chain!.mainTickerID).toEqual(toUtf8("WONDER"));
+      expect(msg.details!.chain!.networkId).toEqual("7rg047g4h");
+      expect(msg.details!.chain!.mainTickerId).toEqual(toUtf8("WONDER"));
       expect(msg.details!.iov!.codec).toEqual("rules_of_wonderland");
       expect(msg.details!.iov!.codecConfig).toEqual(`{ rules: ["make peace not war"] }`);
     });
@@ -216,12 +216,12 @@ describe("Encode", () => {
       expect(msg.issueUsernameNftMsg!.details).toBeDefined();
       expect(msg.issueUsernameNftMsg!.details!.addresses).toBeDefined();
       expect(msg.issueUsernameNftMsg!.details!.addresses!.length).toEqual(3);
-      expect(msg.issueUsernameNftMsg!.details!.addresses![0].chainID).toEqual(toAscii("chain1"));
-      expect(msg.issueUsernameNftMsg!.details!.addresses![0].address).toEqual(toAscii("367X"));
-      expect(msg.issueUsernameNftMsg!.details!.addresses![1].chainID).toEqual(toAscii("chain3"));
-      expect(msg.issueUsernameNftMsg!.details!.addresses![1].address).toEqual(toAscii("0xddffeeffddaa44"));
-      expect(msg.issueUsernameNftMsg!.details!.addresses![2].chainID).toEqual(toAscii("chain2"));
-      expect(msg.issueUsernameNftMsg!.details!.addresses![2].address).toEqual(toAscii("0x00aabbddccffee"));
+      expect(msg.issueUsernameNftMsg!.details!.addresses![0].blockchainId).toEqual(toAscii("chain1"));
+      expect(msg.issueUsernameNftMsg!.details!.addresses![0].address).toEqual("367X");
+      expect(msg.issueUsernameNftMsg!.details!.addresses![1].blockchainId).toEqual(toAscii("chain3"));
+      expect(msg.issueUsernameNftMsg!.details!.addresses![1].address).toEqual("0xddffeeffddaa44");
+      expect(msg.issueUsernameNftMsg!.details!.addresses![2].blockchainId).toEqual(toAscii("chain2"));
+      expect(msg.issueUsernameNftMsg!.details!.addresses![2].address).toEqual("0x00aabbddccffee");
     });
 
     it("works for RemoveAddressFromUsernameTx", () => {
@@ -235,9 +235,9 @@ describe("Encode", () => {
         },
       };
       const msg = buildMsg(removeAddress).removeUsernameAddressMsg!;
-      expect(msg.id).toEqual(toUtf8("alice"));
-      expect(msg.chainID).toEqual(toUtf8("other-land"));
-      expect(msg.address).toEqual(toUtf8("865765858O"));
+      expect(msg.usernameId).toEqual(toUtf8("alice"));
+      expect(msg.blockchainId).toEqual(toUtf8("other-land"));
+      expect(msg.address).toEqual("865765858O");
     });
   });
 });

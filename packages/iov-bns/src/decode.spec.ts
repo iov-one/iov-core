@@ -52,11 +52,11 @@ describe("Decode", () => {
       },
       details: {
         chain: {
-          chainID: "wonderland",
-          networkID: "7rg047g4h",
+          chainId: "wonderland",
+          networkId: "7rg047g4h",
           production: false,
           enabled: true,
-          mainTickerID: toUtf8("WONDER"),
+          mainTickerId: toUtf8("WONDER"),
           name: "Wonderland",
         },
         iov: {
@@ -89,8 +89,8 @@ describe("Decode", () => {
       details: {
         addresses: [
           {
-            chainID: toUtf8("wonderland"),
-            address: toUtf8("12345W"),
+            blockchainId: toUtf8("wonderland"),
+            address: "12345W",
           },
         ],
       },
@@ -251,9 +251,9 @@ describe("Decode", () => {
     it("works for AddAddressToUsername", () => {
       const transactionMessage: codecImpl.app.ITx = {
         addUsernameAddressNftMsg: {
-          id: toUtf8("alice"),
-          chainID: toUtf8("wonderland"),
-          address: toUtf8("0xAABB001122DD"),
+          usernameId: toUtf8("alice"),
+          blockchainId: toUtf8("wonderland"),
+          address: "0xAABB001122DD",
         },
       };
       const parsed = parseMsg(defaultBaseTx, transactionMessage);
@@ -273,11 +273,11 @@ describe("Decode", () => {
           approvals: undefined,
           details: {
             chain: {
-              chainID: "wonderland",
-              networkID: "7rg047g4h",
+              chainId: "wonderland",
+              networkId: "7rg047g4h",
               production: false,
               enabled: true,
-              mainTickerID: toUtf8("WONDER"),
+              mainTickerId: toUtf8("WONDER"),
               name: "Wonderland",
             },
             iov: {
@@ -312,12 +312,12 @@ describe("Decode", () => {
           details: {
             addresses: [
               {
-                chainID: Encoding.toAscii("chain1"),
-                address: Encoding.toAscii("23456782367823X"),
+                blockchainId: Encoding.toAscii("chain1"),
+                address: "23456782367823X",
               },
               {
-                chainID: Encoding.toAscii("chain2"),
-                address: Encoding.toAscii("0x001100aabbccddffeeddaa8899776655"),
+                blockchainId: Encoding.toAscii("chain2"),
+                address: "0x001100aabbccddffeeddaa8899776655",
               },
             ],
           },
@@ -342,9 +342,9 @@ describe("Decode", () => {
     it("works for RemoveAddressFromUsername", () => {
       const transactionMessage: codecImpl.app.ITx = {
         removeUsernameAddressMsg: {
-          id: toUtf8("alice"),
-          address: toUtf8("0xAABB001122DD"),
-          chainID: toUtf8("wonderland"),
+          usernameId: toUtf8("alice"),
+          address: "0xAABB001122DD",
+          blockchainId: toUtf8("wonderland"),
         },
       };
       const parsed = parseMsg(defaultBaseTx, transactionMessage);
