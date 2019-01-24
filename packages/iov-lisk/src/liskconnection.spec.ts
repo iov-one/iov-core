@@ -27,6 +27,7 @@ import { Random } from "@iov/crypto";
 import { Derivation } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet, UserProfile } from "@iov/keycontrol";
+import { toListPromise } from "@iov/stream";
 
 import { pubkeyToAddress } from "./derivation";
 import { liskCodec } from "./liskcodec";
@@ -711,7 +712,7 @@ describe("LiskConnection", () => {
       // Wait for a block
       await postResult.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
 
-      const result = await connection.waitForTransaction(transactionId);
+      const result = (await toListPromise(connection.waitForTransaction(transactionId), 1))[0];
 
       if (!isConfirmedTransaction(result)) {
         throw new Error("Transaction must be confirmed");
@@ -747,13 +748,13 @@ describe("LiskConnection", () => {
       const signed = await profile.signTransaction(wallet.id, sender, send, liskCodec, nonce);
       const transactionId = liskCodec.identifier(signed);
 
-      const pendingResult = connection.waitForTransaction(transactionId);
+      const pendingResult = toListPromise(connection.waitForTransaction(transactionId), 1);
 
       // send transaction
       await connection.postTx(liskCodec.bytesToPost(signed));
 
       // wait for transaction
-      const result = await pendingResult;
+      const result = (await pendingResult)[0];
 
       if (!isConfirmedTransaction(result)) {
         throw new Error("Transaction must be confirmed");

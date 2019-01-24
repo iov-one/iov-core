@@ -194,65 +194,68 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const transactionId = Encoding.toHex(postResponse.hash).toUpperCase() as TransactionId;
 
     // can be undefined as we cannot guarantee it assigned before the caller unsubscribes from the stream
+    let transactionSubscription: Subscription | undefined;
     let blockHeadersSubscription: Subscription | undefined;
 
     const firstEvent: BlockInfo = { state: TransactionState.Pending };
     let lastEventSent: BlockInfo = firstEvent;
     const blockInfoProducer = new DefaultValueProducer<BlockInfo>(firstEvent, {
-      onStarted: async () => {
-        try {
-          const searchResult = await this.waitForTransaction(transactionId);
+      onStarted: () => {
+        transactionSubscription = this.waitForTransaction(transactionId).subscribe({
+          next: searchResult => {
+            if (isFailedTransaction(searchResult)) {
+              const errorEvent: BlockInfoFailed = {
+                state: TransactionState.Failed,
+                code: searchResult.code,
+                log: searchResult.log,
+              };
+              blockInfoProducer.update(errorEvent);
+              lastEventSent = errorEvent;
+              return;
+            }
 
-          if (isFailedTransaction(searchResult)) {
-            const errorEvent: BlockInfoFailed = {
-              state: TransactionState.Failed,
-              code: searchResult.code,
-              log: searchResult.log,
-            };
-            blockInfoProducer.update(errorEvent);
-            lastEventSent = errorEvent;
-            return;
-          }
+            // Don't do any heavy work (like subscribing to block headers) before we got the
+            // search result.
 
-          // Don't do any heavy work (like subscribing to block headers) before we got the
-          // search result.
+            const transactionHeight = searchResult.height;
+            const transactionResult = searchResult.result;
 
-          const transactionHeight = searchResult.height;
-          const transactionResult = searchResult.result;
-
-          {
-            const inBlockEvent: BlockInfoSucceeded = {
-              state: TransactionState.Succeeded,
-              height: transactionHeight,
-              confirmations: 1,
-              result: transactionResult,
-            };
-            blockInfoProducer.update(inBlockEvent);
-            lastEventSent = inBlockEvent;
-          }
-
-          blockHeadersSubscription = this.watchBlockHeaders().subscribe({
-            next: async blockHeader => {
-              const event: BlockInfo = {
+            {
+              const inBlockEvent: BlockInfoSucceeded = {
                 state: TransactionState.Succeeded,
                 height: transactionHeight,
-                confirmations: blockHeader.height - transactionHeight + 1,
+                confirmations: 1,
                 result: transactionResult,
               };
+              blockInfoProducer.update(inBlockEvent);
+              lastEventSent = inBlockEvent;
+            }
 
-              if (!equal(event, lastEventSent)) {
-                blockInfoProducer.update(event);
-                lastEventSent = event;
-              }
-            },
-            complete: () => blockInfoProducer.error("Block header stream stopped. This must not happen."),
-            error: error => blockInfoProducer.error(error),
-          });
-        } catch (error) {
-          blockInfoProducer.error(error);
-        }
+            blockHeadersSubscription = this.watchBlockHeaders().subscribe({
+              next: async blockHeader => {
+                const event: BlockInfo = {
+                  state: TransactionState.Succeeded,
+                  height: transactionHeight,
+                  confirmations: blockHeader.height - transactionHeight + 1,
+                  result: transactionResult,
+                };
+
+                if (!equal(event, lastEventSent)) {
+                  blockInfoProducer.update(event);
+                  lastEventSent = event;
+                }
+              },
+              complete: () => blockInfoProducer.error("Block header stream stopped. This must not happen."),
+              error: error => blockInfoProducer.error(error),
+            });
+          },
+          error: error => blockInfoProducer.error(error),
+        });
       },
       onStop: () => {
+        if (transactionSubscription) {
+          transactionSubscription.unsubscribe();
+        }
         if (blockHeadersSubscription) {
           blockHeadersSubscription.unsubscribe();
         }
@@ -458,8 +461,22 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return Stream.merge(offers, releases).map(combiner);
   }
 
-  public async waitForTransaction(id: TransactionId): Promise<ConfirmedTransaction | FailedTransaction> {
-    const updatesStream = this.tmClient.subscribeTx(buildTxHashQuery(id)).map(
+  public waitForTransaction(id: TransactionId): Stream<ConfirmedTransaction | FailedTransaction> {
+    const searchResultStream = Stream.fromPromise(this.tmClient.txSearch({ query: buildTxHashQuery(id) }))
+      .filter(searchResult => searchResult.txs.length > 0)
+      .map(searchResult => {
+        switch (searchResult.txs.length) {
+          case 1:
+            return searchResult.txs[0];
+          default:
+            throw new Error("Unexpected number of results");
+        }
+      });
+    const updatesStream = this.tmClient.subscribeTx(buildTxHashQuery(id));
+
+    const combinedStream = Stream.merge(searchResultStream, updatesStream);
+
+    return combinedStream.take(1).map(
       (txEvent): ConfirmedTransaction | FailedTransaction => {
         if (txEvent.result.code === 0) {
           return {
@@ -478,71 +495,6 @@ export class BnsConnection implements BcpAtomicSwapConnection {
         }
       },
     );
-
-    return new Promise(async (resolve, reject) => {
-      const updatesSubscription = updatesStream.subscribe({
-        next: event => {
-          resolve(event);
-          updatesSubscription.unsubscribe();
-        },
-        error: error => {
-          reject(error);
-        },
-        complete: () => {
-          reject("Updates stream completed before we got a result");
-        },
-      });
-
-      // We're subscribed and cannot miss something anymore, great. Now let's check the history
-      // From here we need to make sure to unsubscribe when we resolve of reject.
-
-      function cleanupAndResolve(value: ConfirmedTransaction | FailedTransaction): void {
-        updatesSubscription.unsubscribe();
-        resolve(value);
-      }
-
-      function cleanupAndReject(reason: any): void {
-        updatesSubscription.unsubscribe();
-        reject(reason);
-      }
-
-      try {
-        const resultTransactions = (await this.tmClient.txSearch({ query: buildTxHashQuery(id) })).txs;
-        switch (resultTransactions.length) {
-          case 0:
-            // transaction not found, wait for updates
-            break;
-          case 1:
-            const { tx, hash, height, txResult } = resultTransactions[0];
-            let out: ConfirmedTransaction | FailedTransaction;
-            if (txResult.code === 0) {
-              const currentHeight = await this.height();
-              const chainId = await this.chainId();
-              out = {
-                height: height,
-                confirmations: currentHeight - height + 1,
-                transactionId: Encoding.toHex(hash).toUpperCase() as TransactionId,
-                log: txResult.log,
-                result: txResult.data,
-                ...this.codec.parseBytes(new Uint8Array(tx) as PostableBytes, chainId),
-              };
-            } else {
-              out = {
-                code: txResult.code,
-                log: txResult.log,
-              };
-            }
-            cleanupAndResolve(out);
-            break;
-          default:
-            cleanupAndReject(
-              `Unexpected number of results in transaction search by ID: ${resultTransactions.length}`,
-            );
-        }
-      } catch (error) {
-        cleanupAndReject(error);
-      }
-    });
   }
 
   public async searchTx(txQuery: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {

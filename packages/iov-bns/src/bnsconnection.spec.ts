@@ -1039,7 +1039,7 @@ describe("BnsConnection", () => {
       await tendermintSearchIndexUpdated();
 
       // finds transaction using id
-      const result = await connection.waitForTransaction(transactionIdToSearch);
+      const result = (await toListPromise(connection.waitForTransaction(transactionIdToSearch), 1))[0];
 
       if (!isConfirmedTransaction(result)) {
         throw new Error("Expected confirmed transaction");
@@ -1074,10 +1074,10 @@ describe("BnsConnection", () => {
       const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       const transactionIdToSearch = response.transactionId;
-      const pendingResult = connection.waitForTransaction(transactionIdToSearch);
+      const pendingResult = toListPromise(connection.waitForTransaction(transactionIdToSearch), 1);
 
       // no need to await block state, just wait for transaction
-      const result = await pendingResult;
+      const result = (await pendingResult)[0];
 
       if (!isConfirmedTransaction(result)) {
         throw new Error("Expected confirmed transaction");
@@ -1117,7 +1117,7 @@ describe("BnsConnection", () => {
 
       await tendermintSearchIndexUpdated();
 
-      const result = await connection.waitForTransaction(transactionIdToSearch);
+      const result = (await toListPromise(connection.waitForTransaction(transactionIdToSearch), 1))[0];
 
       if (!isFailedTransaction(result)) {
         throw new Error("Expected failed transaction");
@@ -1152,7 +1152,7 @@ describe("BnsConnection", () => {
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       const transactionIdToSearch = response.transactionId;
 
-      const result = await connection.waitForTransaction(transactionIdToSearch);
+      const result = (await toListPromise(connection.waitForTransaction(transactionIdToSearch), 1))[0];
 
       if (!isFailedTransaction(result)) {
         throw new Error("Expected failed transaction");

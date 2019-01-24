@@ -188,9 +188,10 @@ export interface BcpConnection {
     /**
      * Looks up transaction in history and if not found, waits until it is available.
      *
-     * As a consequence, this never resolves for non-existing transaction IDs.
+     * As a consequence, this sends an event for non-existing transaction IDs. Stream completes
+     * after 1 element was sent.
      */
-    readonly waitForTransaction?: (id: TransactionId) => Promise<ConfirmedTransaction | FailedTransaction>;
+    readonly waitForTransaction?: (id: TransactionId) => Stream<ConfirmedTransaction | FailedTransaction>;
     readonly searchTx: (query: BcpTxQuery) => Promise<ReadonlyArray<ConfirmedTransaction>>;
     /**
      * Subscribes to all newly added transactions that match the query

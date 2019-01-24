@@ -51,10 +51,6 @@ export function generateNonce(): Nonce {
   return Parse.timeToNonce(now);
 }
 
-function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 function checkAndNormalizeUrl(url: string): string {
   if (!url.match(/^https?:\/\/[-\.a-zA-Z0-9]+(:[0-9]+)?\/?$/)) {
     throw new Error(
@@ -305,19 +301,41 @@ export class LiskConnection implements BcpConnection {
     return this.watchBlockHeaders().map(header => header.height);
   }
 
-  public async waitForTransaction(id: TransactionId): Promise<ConfirmedTransaction | FailedTransaction> {
-    while (true) {
-      const results = await this.searchTransactions({ id: id }, undefined, undefined);
-      switch (results.length) {
-        case 0:
-          await sleep(4_000);
-          break;
-        case 1:
-          return results[0];
-        default:
-          throw new Error(`Got unexpected number of search results: ${results.length}`);
-      }
-    }
+  public waitForTransaction(id: TransactionId): Stream<ConfirmedTransaction | FailedTransaction> {
+    let poller: NodeJS.Timeout | undefined;
+    const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
+      start: listener => {
+        setInterval(async () => {
+          try {
+            const results = await this.searchTransactions({ id: id }, undefined, undefined);
+            switch (results.length) {
+              case 0:
+                // okay, we'll try again
+                break;
+              case 1:
+                listener.next(results[0]);
+                listener.complete();
+                break;
+              default:
+                throw new Error(`Got unexpected number of search results: ${results.length}`);
+            }
+          } catch (error) {
+            if (poller) {
+              clearTimeout(poller);
+              poller = undefined;
+            }
+            listener.error(error);
+          }
+        }, 5_000);
+      },
+      stop: () => {
+        if (poller) {
+          clearTimeout(poller);
+          poller = undefined;
+        }
+      },
+    };
+    return Stream.create(producer);
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
@@ -349,7 +367,7 @@ export class LiskConnection implements BcpConnection {
 
     if (query.id !== undefined) {
       // concat never() because we want non-completing streams consistently
-      return xstreamConcat(Stream.fromPromise(this.waitForTransaction(query.id)), Stream.never());
+      return xstreamConcat(this.waitForTransaction(query.id), Stream.never());
     } else if (query.sentFromOrTo) {
       let pollInterval: NodeJS.Timeout | undefined;
       const producer: Producer<ConfirmedTransaction> = {

@@ -23,7 +23,7 @@ export declare class LiskConnection implements BcpConnection {
     watchBlockHeaders(): Stream<BlockHeader>;
     /** @deprecated use watchBlockHeaders().map(header => header.height) */
     changeBlock(): Stream<number>;
-    waitForTransaction(id: TransactionId): Promise<ConfirmedTransaction | FailedTransaction>;
+    waitForTransaction(id: TransactionId): Stream<ConfirmedTransaction | FailedTransaction>;
     searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
     listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction>;
     liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction>;
