@@ -934,10 +934,7 @@ describe("LiskConnection", () => {
           memo: `liveTx() test C ${Math.random()}`,
         };
 
-        const nonceA = await connection.getNonce({ pubkey: sender.pubkey });
-        const nonceB = await connection.getNonce({ pubkey: sender.pubkey });
-        const nonceC = await connection.getNonce({ pubkey: sender.pubkey });
-
+        const [nonceA, nonceB, nonceC] = await connection.getNonces({ pubkey: sender.pubkey }, 3);
         const signedA = await profile.signTransaction(wallet.id, sender, sendA, liskCodec, nonceA);
         const signedB = await profile.signTransaction(wallet.id, sender, sendB, liskCodec, nonceB);
         const signedC = await profile.signTransaction(wallet.id, sender, sendC, liskCodec, nonceC);

@@ -2,8 +2,6 @@ import axios from "axios";
 import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
 import { Producer, Stream } from "xstream";
-// tslint:disable-next-line:no-submodule-imports
-import xstreamConcat from "xstream/extra/concat";
 
 import {
   Algorithm,
@@ -32,7 +30,7 @@ import {
 } from "@iov/bcp-types";
 import { Parse } from "@iov/dpos";
 import { Encoding, Int53, Uint53, Uint64 } from "@iov/encoding";
-import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
+import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
 import { pubkeyToAddress } from "./derivation";
@@ -329,8 +327,12 @@ export class LiskConnection implements BcpConnection {
     }
 
     if (query.id !== undefined) {
+      if (query.minHeight || query.maxHeight) {
+        throw new Error("Query by minHeight/maxHeight not supported together with ID");
+      }
+
       // concat never() because we want non-completing streams consistently
-      return xstreamConcat(this.waitForTransaction(query.id), Stream.never());
+      return concat(this.waitForTransaction(query.id), Stream.never());
     } else if (query.sentFromOrTo) {
       let pollInterval: NodeJS.Timeout | undefined;
       const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
