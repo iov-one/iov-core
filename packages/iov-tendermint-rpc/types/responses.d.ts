@@ -71,12 +71,17 @@ export interface StatusResponse {
     readonly syncInfo: SyncInfo;
     readonly validatorInfo: Validator;
 }
+/**
+ * A transaction from RPC calls like search.
+ *
+ * Try to keep this compatible to TxEvent
+ */
 export interface TxResponse {
     readonly tx: TxBytes;
-    readonly txResult: TxData;
+    readonly hash: TxHash;
     readonly height: number;
     readonly index: number;
-    readonly hash: TxHash;
+    readonly txResult: TxData;
     readonly proof?: TxProof;
 }
 export interface TxSearchResponse {
