@@ -50,6 +50,10 @@ export const riseCodec: TxCodec = {
   bytesToPost: (signed: SignedTransaction): PostableBytes => {
     const unsigned = signed.transaction;
     if (isSendTransaction(unsigned)) {
+      if (unsigned.memo) {
+        throw new Error("RISE does not support sent transaction memos.");
+      }
+
       const timestamp = signed.primarySignature.nonce.toNumber();
       const riseTimestamp = timestamp - 1464109200;
       const id = Serialization.transactionId(
