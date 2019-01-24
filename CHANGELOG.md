@@ -38,6 +38,7 @@ Breaking changes
 * @iov/bcp-types: Removed `Bcp` prefix from `BcpTransactionState`, `BcpBlockInfoPending`,
   `BcpBlockInfoInBlock`, `BcpBlockInfo`.
 * @iov/bcp-types: Add block info state `BlockInfoFailed`.
+* @iov/bcp-types: Handle failed transactions in `searchTx`/`listenTx`/`liveTx` and `postTx`.
 * @iov/bns: Convert `.owner` in `BnsUsernameNft` and `BnsBlockchainNft` to `Address`
 * @iov/bns: In `BncConnection.watchBlockHeaders`, the block header events
   temporarily contain a dummy `id` string until ID calculation is implemented
