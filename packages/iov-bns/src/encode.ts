@@ -138,9 +138,9 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
 function buildAddAddressToUsernameTx(tx: AddAddressToUsernameTx): codecImpl.app.ITx {
   return {
     addUsernameAddressNftMsg: {
-      id: toUtf8(tx.username),
-      chainID: toUtf8(tx.payload.chainId),
-      address: toUtf8(tx.payload.address),
+      usernameId: toUtf8(tx.username),
+      blockchainId: toUtf8(tx.payload.chainId),
+      address: tx.payload.address,
     },
   };
 }
@@ -206,12 +206,12 @@ function buildRegisterBlockchainTx(tx: RegisterBlockchainTx): codecImpl.app.ITx 
       approvals: undefined,
       details: codecImpl.blockchain.TokenDetails.create({
         chain: codecImpl.blockchain.Chain.create({
-          chainID: tx.chain.chainId,
+          chainId: tx.chain.chainId,
           name: tx.chain.name,
           enabled: encodeBoolean(tx.chain.enabled),
           production: encodeBoolean(tx.chain.production),
-          networkID: tx.chain.networkId,
-          mainTickerID: tx.chain.mainTickerId ? toUtf8(tx.chain.mainTickerId) : undefined,
+          networkId: tx.chain.networkId,
+          mainTickerId: tx.chain.mainTickerId ? toUtf8(tx.chain.mainTickerId) : undefined,
         }),
         iov: codecImpl.blockchain.IOV.create({
           codec: tx.codecName,
@@ -226,8 +226,8 @@ function buildRegisterUsernameTx(tx: RegisterUsernameTx): codecImpl.app.ITx {
   const chainAddresses = tx.addresses.map(
     (pair): codecImpl.username.IChainAddress => {
       return {
-        chainID: toUtf8(pair.chainId),
-        address: toUtf8(pair.address),
+        blockchainId: toUtf8(pair.chainId),
+        address: pair.address,
       };
     },
   );
@@ -246,9 +246,9 @@ function buildRegisterUsernameTx(tx: RegisterUsernameTx): codecImpl.app.ITx {
 function buildRemoveAddressFromUsernameTx(tx: RemoveAddressFromUsernameTx): codecImpl.app.ITx {
   return {
     removeUsernameAddressMsg: {
-      id: toUtf8(tx.username),
-      chainID: toUtf8(tx.payload.chainId),
-      address: toUtf8(tx.payload.address),
+      usernameId: toUtf8(tx.username),
+      blockchainId: toUtf8(tx.payload.chainId),
+      address: tx.payload.address,
     },
   };
 }

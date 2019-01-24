@@ -48,12 +48,12 @@ export function decodeBlockchainNft(
   const details = ensure(nft.details, "details");
 
   const chain = ensure(details.chain, "details.chain");
-  const chainId = ensure(chain.chainID, "details.chain.chainID");
+  const chainId = ensure(chain.chainId, "details.chain.chainId");
   const name = ensure(chain.name, "details.chain.name");
   const production = ensure(chain.production, "details.chain.production");
   const enabled = ensure(chain.enabled, "details.chain.enabled");
-  const networkId = chain.networkID || undefined;
-  const mainTickerId = chain.mainTickerID || undefined;
+  const networkId = chain.networkId || undefined;
+  const mainTickerId = chain.mainTickerId || undefined;
 
   const iov = ensure(details.iov, "details.iov");
   const codec = ensure(iov.codec, "details.iov.codec");
@@ -91,8 +91,8 @@ export function decodeUsernameNft(
     id: fromUtf8(id),
     owner: encodeBnsAddress(addressPrefix(registryChainId), rawOwnerAddress),
     addresses: addresses.map(pair => ({
-      chainId: fromUtf8(ensure(pair.chainID, "details.addresses[n].chainID")) as ChainId,
-      address: fromUtf8(ensure(pair.address, "details.addresses[n].address")) as Address,
+      chainId: fromUtf8(ensure(pair.blockchainId, "details.addresses[n].chainId")) as ChainId,
+      address: ensure(pair.address, "details.addresses[n].address") as Address,
     })),
   };
 }
@@ -172,10 +172,10 @@ function parseAddAddressToUsernameTx(
   return {
     ...base,
     kind: "bns/add_address_to_username",
-    username: fromUtf8(ensure(msg.id, "id")),
+    username: fromUtf8(ensure(msg.usernameId, "usernameId")),
     payload: {
-      chainId: fromUtf8(ensure(msg.chainID, "chainID")) as ChainId,
-      address: fromUtf8(ensure(msg.address, "address")) as Address,
+      chainId: fromUtf8(ensure(msg.blockchainId, "blockchainId")) as ChainId,
+      address: ensure(msg.address, "address") as Address,
     },
   };
 }
@@ -255,12 +255,12 @@ function parseRegisterBlockchainTx(
   const details = ensure(msg.details, "details");
 
   const chain = ensure(details.chain, "details.chain");
-  const chainId = ensure(chain.chainID, "details.chain.chainID");
+  const chainId = ensure(chain.chainId, "details.chain.chainID");
   const name = ensure(chain.name, "details.chain.name");
   const production = ensure(chain.production, "details.chain.production");
   const enabled = ensure(chain.enabled, "details.chain.enabled");
-  const networkId = chain.networkID || undefined;
-  const mainTickerId = chain.mainTickerID || undefined;
+  const networkId = chain.networkId || undefined;
+  const mainTickerId = chain.mainTickerId || undefined;
 
   const iov = ensure(details.iov, "details.iov");
   const codec = ensure(iov.codec, "details.iov.codec");
@@ -290,8 +290,8 @@ function parseRegisterUsernameTx(
   const addresses = chainAddresses.map(
     (chainAddress): ChainAddressPair => {
       return {
-        chainId: fromUtf8(ensure(chainAddress.chainID, "chainID")) as ChainId,
-        address: fromUtf8(ensure(chainAddress.address, "address")) as Address,
+        chainId: fromUtf8(ensure(chainAddress.blockchainId, "blockchainId")) as ChainId,
+        address: ensure(chainAddress.address, "address") as Address,
       };
     },
   );
@@ -311,10 +311,10 @@ function parseRemoveAddressFromUsernameTx(
   return {
     ...base,
     kind: "bns/remove_address_from_username",
-    username: fromUtf8(ensure(msg.id, "id")),
+    username: fromUtf8(ensure(msg.usernameId, "usernameId")),
     payload: {
-      chainId: fromUtf8(ensure(msg.chainID, "chainID")) as ChainId,
-      address: fromUtf8(ensure(msg.address, "address")) as Address,
+      chainId: fromUtf8(ensure(msg.blockchainId, "blockchainId")) as ChainId,
+      address: ensure(msg.address, "address") as Address,
     },
   };
 }
