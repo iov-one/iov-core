@@ -1,1 +1,1 @@
-63aa1b2d593807294e000d3a34b15533066739a0 (HEAD, tag: v0.9.3, origin/master, origin/HEAD) Update blockchain id regexp and add tests (#194)
+c3ea9f6552af0ddf52e7e576ba873ccd564603b9 (HEAD, tag: v0.10.0) Tendermint upgrade (#266)
