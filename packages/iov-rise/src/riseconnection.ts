@@ -118,7 +118,9 @@ export class RiseConnection implements BcpConnection {
     }
 
     if (response.data.invalid.length !== 0) {
-      throw new Error(`Transactions invalid: ${JSON.stringify(response.data.invalid)}`);
+      throw new Error(
+        `Error posting transactions to node. Invalid transactions: ${JSON.stringify(response.data.invalid)}`,
+      );
     }
 
     if (response.data.accepted.length !== 1) {
