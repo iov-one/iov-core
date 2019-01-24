@@ -6,6 +6,7 @@ import {
   BlockHeader,
   BlockInfoSucceeded,
   ConfirmedTransaction,
+  isConfirmedTransaction,
   isSendTransaction,
   Nonce,
   PostTxResponse,
@@ -688,6 +689,10 @@ describe("EthereumConnection", () => {
         const events = new Array<ConfirmedTransaction>();
         const subscription = connection.listenTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
+            if (!isConfirmedTransaction(event)) {
+              throw new Error("Confirmed transaction expected");
+            }
+
             events.push(event);
 
             if (!isSendTransaction(event.transaction)) {
@@ -850,6 +855,10 @@ describe("EthereumConnection", () => {
         const events = new Array<ConfirmedTransaction>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
+            if (!isConfirmedTransaction(event)) {
+              throw new Error("Confirmed transaction expected");
+            }
+
             events.push(event);
 
             if (!isSendTransaction(event.transaction)) {
@@ -921,6 +930,10 @@ describe("EthereumConnection", () => {
         const events = new Array<ConfirmedTransaction>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
+            if (!isConfirmedTransaction(event)) {
+              throw new Error("Confirmed transaction expected");
+            }
+
             events.push(event);
 
             if (!isSendTransaction(event.transaction)) {
@@ -983,6 +996,10 @@ describe("EthereumConnection", () => {
         const events = new Array<ConfirmedTransaction>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
+            if (!isConfirmedTransaction(event)) {
+              throw new Error("Confirmed transaction expected");
+            }
+
             events.push(event);
 
             if (!isSendTransaction(event.transaction)) {

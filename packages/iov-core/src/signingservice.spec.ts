@@ -7,6 +7,7 @@ import {
   Algorithm,
   Amount,
   ChainId,
+  isConfirmedTransaction,
   PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
@@ -248,9 +249,13 @@ describe("signingservice.worker", () => {
     const transactionId: TransactionId = signAndPostResponse.result;
     expect(transactionId).toMatch(/^[0-9A-F]+$/);
 
-    const transactionSearch = await toListPromise(bnsConnection.liveTx({ id: transactionId }), 1);
-    expect(transactionSearch[0].transactionId).toEqual(transactionId);
-    expect(transactionSearch[0].transaction).toEqual(send);
+    const results = await toListPromise(bnsConnection.liveTx({ id: transactionId }), 1);
+    const result = results[0];
+    if (!isConfirmedTransaction(result)) {
+      throw new Error("Confirmed transaction extected");
+    }
+    expect(result.transactionId).toEqual(transactionId);
+    expect(result.transaction).toEqual(send);
 
     worker.terminate();
     bnsConnection.disconnect();

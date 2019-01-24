@@ -16,6 +16,7 @@ import {
   BlockInfo,
   ChainId,
   ConfirmedTransaction,
+  FailedTransaction,
   isPubkeyQuery,
   Nonce,
   PostableBytes,
@@ -433,7 +434,7 @@ export class EthereumConnection implements BcpConnection {
     }
   }
 
-  public listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction> {
+  public listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
     if (query.height || query.tags) {
       throw new Error("Query by height or tags not supported");
     }
@@ -445,7 +446,7 @@ export class EthereumConnection implements BcpConnection {
     } else if (query.sentFromOrTo) {
       const sentFromOrTo = query.sentFromOrTo;
       let pollInterval: NodeJS.Timeout | undefined;
-      const producer: Producer<ConfirmedTransaction> = {
+      const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
         start: async listener => {
           const currentHeight = await this.height();
           let minHeight = Math.max(query.minHeight || 0, currentHeight + 1);
@@ -478,7 +479,7 @@ export class EthereumConnection implements BcpConnection {
     }
   }
 
-  public liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction> {
+  public liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
     if (query.height || query.tags) {
       throw new Error("Query by height or tags not supported");
     }
@@ -505,7 +506,7 @@ export class EthereumConnection implements BcpConnection {
     } else if (query.sentFromOrTo) {
       const sentFromOrTo = query.sentFromOrTo;
       let pollInterval: NodeJS.Timeout | undefined;
-      const producer: Producer<ConfirmedTransaction> = {
+      const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
         start: listener => {
           let minHeight = query.minHeight || 0;
           const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;

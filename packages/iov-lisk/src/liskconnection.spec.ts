@@ -27,7 +27,6 @@ import { Random } from "@iov/crypto";
 import { Derivation } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet, UserProfile } from "@iov/keycontrol";
-import { toListPromise } from "@iov/stream";
 
 import { pubkeyToAddress } from "./derivation";
 import { liskCodec } from "./liskcodec";
@@ -683,92 +682,6 @@ describe("LiskConnection", () => {
     });
   });
 
-  describe("waitForTransaction", () => {
-    it("can wait for transaction (in history)", async () => {
-      pendingWithoutLiskDevnet();
-
-      const connection = await LiskConnection.establish(devnetBase);
-
-      const profile = new UserProfile();
-      const wallet = profile.addWallet(new Ed25519Wallet());
-      const sender = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
-
-      const recipientAddress = await randomAddress();
-      const send: SendTransaction = {
-        kind: "bcp/send",
-        creator: sender,
-        recipient: recipientAddress,
-        amount: devnetDefaultAmount,
-        memo: `waitForTransaction() test ${Math.random()}`,
-      };
-
-      const nonce = await connection.getNonce({ pubkey: sender.pubkey });
-      const signed = await profile.signTransaction(wallet.id, sender, send, liskCodec, nonce);
-      const bytesToPost = liskCodec.bytesToPost(signed);
-
-      const postResult = await connection.postTx(bytesToPost);
-      const transactionId = postResult.transactionId;
-
-      // Wait for a block
-      await postResult.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
-
-      const result = (await toListPromise(connection.waitForTransaction(transactionId), 1))[0];
-
-      if (!isConfirmedTransaction(result)) {
-        throw new Error("Transaction must be confirmed");
-      }
-      if (!isSendTransaction(result.transaction)) {
-        throw new Error("Unexpected transaction type");
-      }
-      expect(result.transaction.recipient).toEqual(recipientAddress);
-      expect(result.transactionId).toEqual(transactionId);
-
-      connection.disconnect();
-    }, 30_000);
-
-    it("can wait for transaction (in future)", async () => {
-      pendingWithoutLiskDevnet();
-
-      const connection = await LiskConnection.establish(devnetBase);
-
-      const profile = new UserProfile();
-      const wallet = profile.addWallet(new Ed25519Wallet());
-      const sender = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
-
-      const recipientAddress = await randomAddress();
-      const send: SendTransaction = {
-        kind: "bcp/send",
-        creator: sender,
-        recipient: recipientAddress,
-        amount: devnetDefaultAmount,
-        memo: `waitForTransaction() test ${Math.random()}`,
-      };
-
-      const nonce = await connection.getNonce({ pubkey: sender.pubkey });
-      const signed = await profile.signTransaction(wallet.id, sender, send, liskCodec, nonce);
-      const transactionId = liskCodec.identifier(signed);
-
-      const pendingResult = toListPromise(connection.waitForTransaction(transactionId), 1);
-
-      // send transaction
-      await connection.postTx(liskCodec.bytesToPost(signed));
-
-      // wait for transaction
-      const result = (await pendingResult)[0];
-
-      if (!isConfirmedTransaction(result)) {
-        throw new Error("Transaction must be confirmed");
-      }
-      if (!isSendTransaction(result.transaction)) {
-        throw new Error("Unexpected transaction type");
-      }
-      expect(result.transaction.recipient).toEqual(recipientAddress);
-      expect(result.transactionId).toEqual(transactionId);
-
-      connection.disconnect();
-    });
-  });
-
   describe("searchTx", () => {
     it("can search transactions by ID", async () => {
       pendingWithoutLiskDevnet();
@@ -1042,6 +955,10 @@ describe("LiskConnection", () => {
         const events = new Array<ConfirmedTransaction>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
+            if (!isConfirmedTransaction(event)) {
+              throw new Error("Confirmed transaction expected");
+            }
+
             events.push(event);
 
             if (!isSendTransaction(event.transaction)) {
@@ -1100,6 +1017,10 @@ describe("LiskConnection", () => {
         const events = new Array<ConfirmedTransaction>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
+            if (!isConfirmedTransaction(event)) {
+              throw new Error("Confirmed transaction expected");
+            }
+
             events.push(event);
 
             if (!isSendTransaction(event.transaction)) {
@@ -1149,6 +1070,10 @@ describe("LiskConnection", () => {
         const events = new Array<ConfirmedTransaction>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
+            if (!isConfirmedTransaction(event)) {
+              throw new Error("Confirmed transaction expected");
+            }
+
             events.push(event);
 
             if (!isSendTransaction(event.transaction)) {

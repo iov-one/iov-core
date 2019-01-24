@@ -6,7 +6,6 @@ import {
   Amount,
   BcpAccount,
   BcpSwapQuery,
-  BcpTxQuery,
   BlockInfo,
   BlockInfoSucceeded,
   ChainId,
@@ -1062,7 +1061,56 @@ describe("BnsConnection", () => {
     });
   });
 
-  describe("waitForTransaction", () => {
+  describe("listenTx", () => {
+    it("can listen to transactions by hash", done => {
+      pendingWithoutBnsd();
+
+      (async () => {
+        const connection = await BnsConnection.establish(bnsdTendermintUrl);
+        const chainId = connection.chainId();
+
+        const { profile, mainWalletId, faucet } = await userProfileWithFaucet(chainId);
+
+        const memo = `Payment ${Math.random()}`;
+        const sendTx: SendTransaction = {
+          kind: "bcp/send",
+          creator: faucet,
+          recipient: await randomBnsAddress(),
+          memo: memo,
+          amount: defaultAmount,
+        };
+
+        const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
+        const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
+        const transactionId = bnsCodec.identifier(signed);
+        const heightBeforeTransaction = await connection.height();
+
+        // start listening
+        const subscription = connection.listenTx({ id: transactionId }).subscribe({
+          next: event => {
+            if (!isConfirmedTransaction(event)) {
+              done.fail("Confirmed transaction expected");
+              return;
+            }
+
+            expect(event.transactionId).toEqual(transactionId);
+            expect(event.height).toEqual(heightBeforeTransaction + 1);
+
+            subscription.unsubscribe();
+            connection.disconnect();
+            done();
+          },
+          complete: () => done.fail("Stream completed before we are done"),
+          error: done.fail,
+        });
+
+        // post transaction
+        await connection.postTx(bnsCodec.bytesToPost(signed));
+      })().catch(done.fail);
+    });
+  });
+
+  describe("liveTx", () => {
     it("finds an existing transaction", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
@@ -1088,7 +1136,7 @@ describe("BnsConnection", () => {
       await tendermintSearchIndexUpdated();
 
       // finds transaction using id
-      const result = (await toListPromise(connection.waitForTransaction(transactionIdToSearch), 1))[0];
+      const result = (await toListPromise(connection.liveTx({ id: transactionIdToSearch }), 1))[0];
 
       if (!isConfirmedTransaction(result)) {
         throw new Error("Expected confirmed transaction");
@@ -1123,7 +1171,7 @@ describe("BnsConnection", () => {
       const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       const transactionIdToSearch = response.transactionId;
-      const pendingResult = toListPromise(connection.waitForTransaction(transactionIdToSearch), 1);
+      const pendingResult = toListPromise(connection.liveTx({ id: transactionIdToSearch }), 1);
 
       // no need to await block state, just wait for transaction
       const result = (await pendingResult)[0];
@@ -1166,7 +1214,7 @@ describe("BnsConnection", () => {
 
       await tendermintSearchIndexUpdated();
 
-      const result = (await toListPromise(connection.waitForTransaction(transactionIdToSearch), 1))[0];
+      const result = (await toListPromise(connection.liveTx({ id: transactionIdToSearch }), 1))[0];
 
       if (!isFailedTransaction(result)) {
         throw new Error("Expected failed transaction");
@@ -1201,7 +1249,7 @@ describe("BnsConnection", () => {
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       const transactionIdToSearch = response.transactionId;
 
-      const result = (await toListPromise(connection.waitForTransaction(transactionIdToSearch), 1))[0];
+      const result = (await toListPromise(connection.liveTx({ id: transactionIdToSearch }), 1))[0];
 
       if (!isFailedTransaction(result)) {
         throw new Error("Expected failed transaction");
@@ -1211,50 +1259,6 @@ describe("BnsConnection", () => {
       expect(result.log).toMatch(/account empty/i);
 
       connection.disconnect();
-    });
-  });
-
-  describe("listenTx", () => {
-    it("can listen to transactions by hash", done => {
-      pendingWithoutBnsd();
-
-      (async () => {
-        const connection = await BnsConnection.establish(bnsdTendermintUrl);
-        const chainId = connection.chainId();
-
-        const { profile, mainWalletId, faucet } = await userProfileWithFaucet(chainId);
-
-        const memo = `Payment ${Math.random()}`;
-        const sendTx: SendTransaction = {
-          kind: "bcp/send",
-          creator: faucet,
-          recipient: await randomBnsAddress(),
-          memo: memo,
-          amount: defaultAmount,
-        };
-
-        const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
-        const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
-        const transactionId = bnsCodec.identifier(signed);
-        const heightBeforeTransaction = await connection.height();
-
-        // start listening
-        const subscription = connection.listenTx({ id: transactionId }).subscribe({
-          next: event => {
-            expect(event.transactionId).toEqual(transactionId);
-            expect(event.height).toEqual(heightBeforeTransaction + 1);
-
-            subscription.unsubscribe();
-            connection.disconnect();
-            done();
-          },
-          complete: () => done.fail("Stream completed before we are done"),
-          error: done.fail,
-        });
-
-        // post transaction
-        await connection.postTx(bnsCodec.bytesToPost(signed));
-      })().catch(done.fail);
     });
   });
 
@@ -1532,57 +1536,6 @@ describe("BnsConnection", () => {
     const txBytes = bnsCodec.bytesToPost(signed);
     return connection.postTx(txBytes);
   };
-
-  it("can get live tx feed", async () => {
-    pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
-    const recipientAddress = await randomBnsAddress();
-
-    // make sure that we have no tx here
-    const query: BcpTxQuery = { sentFromOrTo: recipientAddress };
-    const origSearch = await connection.searchTx(query);
-    expect(origSearch.length).toEqual(0);
-
-    const post = await sendCash(connection, profile, faucet, recipientAddress);
-    await post.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
-    const firstId = post.transactionId;
-    expect(firstId).toMatch(/^[0-9A-F]{40}$/);
-
-    await tendermintSearchIndexUpdated();
-
-    const middleSearch = await connection.searchTx(query);
-    expect(middleSearch.length).toEqual(1);
-
-    // live.value() maintains all transactions
-    const live = asArray(connection.liveTx(query));
-
-    const secondPost = await sendCash(connection, profile, faucet, recipientAddress);
-    await secondPost.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
-    const secondId = secondPost.transactionId;
-    expect(secondId).toMatch(/^[0-9A-F]{40}$/);
-
-    await tendermintSearchIndexUpdated();
-
-    const afterSearch = (await connection.searchTx(query)).filter(isConfirmedTransaction);
-    expect(afterSearch.length).toEqual(2);
-    // make sure we have unique, defined txids
-    const transactionIds = afterSearch.map(tx => tx.transactionId);
-    expect(transactionIds.length).toEqual(2);
-    expect(transactionIds[0]).toEqual(firstId);
-    expect(transactionIds[1]).toEqual(secondId);
-    expect(transactionIds[0]).not.toEqual(transactionIds[1]);
-
-    // give time for all events to be processed
-    await sleep(100);
-    // this should grab the tx before it started, as well as the one after
-    expect(live.value().length).toEqual(2);
-    // make sure the txids also match
-    expect(live.value()[0].transactionId).toEqual(afterSearch[0].transactionId);
-    expect(live.value()[1].transactionId).toEqual(afterSearch[1].transactionId);
-
-    connection.disconnect();
-  });
 
   it("can provide change feeds", async () => {
     pendingWithoutBnsd();

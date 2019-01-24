@@ -17,6 +17,7 @@ import {
   BlockInfo,
   ChainId,
   ConfirmedTransaction,
+  FailedTransaction,
   isPubkeyQuery,
   Nonce,
   PostableBytes,
@@ -325,11 +326,11 @@ export class RiseConnection implements BcpConnection {
     }
   }
 
-  public listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
+  public listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
     throw new Error("Not implemented");
   }
 
-  public liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
+  public liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
     throw new Error("Not implemented");
   }
 

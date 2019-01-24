@@ -301,7 +301,75 @@ export class LiskConnection implements BcpConnection {
     return this.watchBlockHeaders().map(header => header.height);
   }
 
-  public waitForTransaction(id: TransactionId): Stream<ConfirmedTransaction | FailedTransaction> {
+  public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    if (query.height || query.tags) {
+      throw new Error("Query by height or tags not supported");
+    }
+
+    if (query.id !== undefined) {
+      return this.searchTransactions({ id: query.id }, query.minHeight, query.maxHeight);
+    } else if (query.sentFromOrTo) {
+      return this.searchTransactions(
+        { senderIdOrRecipientId: query.sentFromOrTo },
+        query.minHeight,
+        query.maxHeight,
+      );
+    } else {
+      throw new Error("Unsupported query.");
+    }
+  }
+
+  public listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
+    throw new Error("Not implemented");
+  }
+
+  public liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
+    if (query.height || query.tags) {
+      throw new Error("Query by height or tags not supported");
+    }
+
+    if (query.id !== undefined) {
+      // concat never() because we want non-completing streams consistently
+      return xstreamConcat(this.waitForTransaction(query.id), Stream.never());
+    } else if (query.sentFromOrTo) {
+      let pollInterval: NodeJS.Timeout | undefined;
+      const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
+        start: listener => {
+          let minHeight = query.minHeight || 0;
+          const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
+
+          const poll = async (): Promise<void> => {
+            const result = await this.searchTx({
+              sentFromOrTo: query.sentFromOrTo,
+              minHeight: minHeight,
+              maxHeight: maxHeight,
+            });
+            for (const item of result) {
+              listener.next(item);
+              if (item.height >= minHeight) {
+                // we assume we got all matching transactions from block `item.height` now
+                minHeight = item.height + 1;
+              }
+            }
+          };
+
+          poll();
+          pollInterval = setInterval(poll, 4_000);
+        },
+        stop: () => {
+          if (pollInterval) {
+            clearInterval(pollInterval);
+            pollInterval = undefined;
+          }
+        },
+      };
+      return Stream.create(producer);
+    } else {
+      throw new Error("Unsupported query.");
+    }
+  }
+
+  private waitForTransaction(id: TransactionId): Stream<ConfirmedTransaction | FailedTransaction> {
     let poller: NodeJS.Timeout | undefined;
     const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
       start: listener => {
@@ -336,74 +404,6 @@ export class LiskConnection implements BcpConnection {
       },
     };
     return Stream.create(producer);
-  }
-
-  public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    if (query.height || query.tags) {
-      throw new Error("Query by height or tags not supported");
-    }
-
-    if (query.id !== undefined) {
-      return this.searchTransactions({ id: query.id }, query.minHeight, query.maxHeight);
-    } else if (query.sentFromOrTo) {
-      return this.searchTransactions(
-        { senderIdOrRecipientId: query.sentFromOrTo },
-        query.minHeight,
-        query.maxHeight,
-      );
-    } else {
-      throw new Error("Unsupported query.");
-    }
-  }
-
-  public listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
-    throw new Error("Not implemented");
-  }
-
-  public liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction> {
-    if (query.height || query.tags) {
-      throw new Error("Query by height or tags not supported");
-    }
-
-    if (query.id !== undefined) {
-      // concat never() because we want non-completing streams consistently
-      return xstreamConcat(this.waitForTransaction(query.id), Stream.never());
-    } else if (query.sentFromOrTo) {
-      let pollInterval: NodeJS.Timeout | undefined;
-      const producer: Producer<ConfirmedTransaction> = {
-        start: listener => {
-          let minHeight = query.minHeight || 0;
-          const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
-
-          const poll = async (): Promise<void> => {
-            const result = await this.searchTx({
-              sentFromOrTo: query.sentFromOrTo,
-              minHeight: minHeight,
-              maxHeight: maxHeight,
-            });
-            for (const item of result) {
-              listener.next(item);
-              if (item.height >= minHeight) {
-                // we assume we got all matching transactions from block `item.height` now
-                minHeight = item.height + 1;
-              }
-            }
-          };
-
-          poll();
-          pollInterval = setInterval(poll, 4_000);
-        },
-        stop: () => {
-          if (pollInterval) {
-            clearInterval(pollInterval);
-            pollInterval = undefined;
-          }
-        },
-      };
-      return Stream.create(producer);
-    } else {
-      throw new Error("Unsupported query.");
-    }
   }
 
   private async searchTransactions(

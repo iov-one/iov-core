@@ -148,6 +148,8 @@ export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTr
 }
 
 export interface FailedTransaction {
+  /** a unique identifier (hash of the transaction) */
+  readonly transactionId: TransactionId;
   /**
    * Application specific error code
    */
@@ -276,22 +278,14 @@ export interface BcpConnection {
 
   // transactions
   readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
-  // TODO: make non-toptional
-  /**
-   * Looks up transaction in history and if not found, waits until it is available.
-   *
-   * As a consequence, this sends an event for non-existing transaction IDs. Stream completes
-   * after 1 element was sent.
-   */
-  readonly waitForTransaction?: (id: TransactionId) => Stream<ConfirmedTransaction | FailedTransaction>;
   readonly searchTx: (query: BcpTxQuery) => Promise<ReadonlyArray<ConfirmedTransaction | FailedTransaction>>;
   /**
    * Subscribes to all newly added transactions that match the query
    */
-  readonly listenTx: (query: BcpTxQuery) => Stream<ConfirmedTransaction>;
+  readonly listenTx: (query: BcpTxQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
   /**
    * Returns a stream for all historical transactions that match
    * the query, along with all new transactions arriving from listenTx
    */
-  readonly liveTx: (txQuery: BcpTxQuery) => Stream<ConfirmedTransaction>;
+  readonly liveTx: (txQuery: BcpTxQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
 }
