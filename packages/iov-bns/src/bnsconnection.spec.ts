@@ -438,7 +438,7 @@ describe("BnsConnection", () => {
       await tendermintSearchIndexUpdated();
 
       // now verify we can query the same tx back
-      const search = await connection.searchTx({ sentFromOrTo: faucetAddr });
+      const search = (await connection.searchTx({ sentFromOrTo: faucetAddr })).filter(isConfirmedTransaction);
       expect(search.length).toBeGreaterThanOrEqual(1);
       // make sure we get a valid signature
       const mine = search[search.length - 1];
@@ -577,7 +577,9 @@ describe("BnsConnection", () => {
       await tendermintSearchIndexUpdated();
 
       // Find registration transaction
-      const searchResult = await connection.searchTx({ tags: [bnsNonceTag(identityAddress)] });
+      const searchResult = (await connection.searchTx({ tags: [bnsNonceTag(identityAddress)] })).filter(
+        isConfirmedTransaction,
+      );
       expect(searchResult.length).toEqual(1);
       const firstSearchResult = searchResult[0].transaction;
       if (!isRegisterBlockchainTx(firstSearchResult)) {
@@ -629,7 +631,9 @@ describe("BnsConnection", () => {
       await tendermintSearchIndexUpdated();
 
       // Find registration transaction
-      const searchResult = await connection.searchTx({ tags: [bnsNonceTag(address)] });
+      const searchResult = (await connection.searchTx({ tags: [bnsNonceTag(address)] })).filter(
+        isConfirmedTransaction,
+      );
       expect(searchResult.length).toEqual(1);
       const firstSearchResultTransaction = searchResult[0].transaction;
       if (!isRegisterUsernameTx(firstSearchResultTransaction)) {
@@ -842,7 +846,9 @@ describe("BnsConnection", () => {
       await tendermintSearchIndexUpdated();
 
       // finds transaction using tag
-      const results = await connection.searchTx({ sentFromOrTo: rcptAddress });
+      const results = (await connection.searchTx({ sentFromOrTo: rcptAddress })).filter(
+        isConfirmedTransaction,
+      );
       expect(results.length).toBeGreaterThanOrEqual(1);
       const mostRecentResultTransaction = results[results.length - 1].transaction;
       if (!isSendTransaction(mostRecentResultTransaction)) {
@@ -880,7 +886,7 @@ describe("BnsConnection", () => {
       await tendermintSearchIndexUpdated();
 
       // finds transaction using height
-      const results = await connection.searchTx({ height: txHeight });
+      const results = (await connection.searchTx({ height: txHeight })).filter(isConfirmedTransaction);
       expect(results.length).toBeGreaterThanOrEqual(1);
       const mostRecentResultTransaction = results[results.length - 1].transaction;
       if (!isSendTransaction(mostRecentResultTransaction)) {
@@ -916,7 +922,9 @@ describe("BnsConnection", () => {
       await tendermintSearchIndexUpdated();
 
       // finds transaction using id
-      const searchResults = await connection.searchTx({ id: transactionIdToSearch });
+      const searchResults = (await connection.searchTx({ id: transactionIdToSearch })).filter(
+        isConfirmedTransaction,
+      );
       expect(searchResults.length).toEqual(1);
       expect(searchResults[0].transactionId).toEqual(transactionIdToSearch);
       const searchResultTransaction = searchResults[0].transaction;
@@ -958,7 +966,9 @@ describe("BnsConnection", () => {
 
       {
         // finds transaction using sentFromOrTo and minHeight = 1
-        const results = await connection.searchTx({ sentFromOrTo: rcptAddress, minHeight: 1 });
+        const results = (await connection.searchTx({ sentFromOrTo: rcptAddress, minHeight: 1 })).filter(
+          isConfirmedTransaction,
+        );
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
         if (!isSendTransaction(mostRecentResultTransaction)) {
@@ -969,10 +979,10 @@ describe("BnsConnection", () => {
 
       {
         // finds transaction using sentFromOrTo and minHeight = initialHeight
-        const results = await connection.searchTx({
+        const results = (await connection.searchTx({
           sentFromOrTo: rcptAddress,
           minHeight: initialHeight,
-        });
+        })).filter(isConfirmedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
         if (!isSendTransaction(mostRecentResultTransaction)) {
@@ -983,10 +993,10 @@ describe("BnsConnection", () => {
 
       {
         // finds transaction using sentFromOrTo and maxHeight = 500 million
-        const results = await connection.searchTx({
+        const results = (await connection.searchTx({
           sentFromOrTo: rcptAddress,
           maxHeight: 500_000_000,
-        });
+        })).filter(isConfirmedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
         if (!isSendTransaction(mostRecentResultTransaction)) {
@@ -997,10 +1007,10 @@ describe("BnsConnection", () => {
 
       {
         // finds transaction using sentFromOrTo and maxHeight = initialHeight + 10
-        const results = await connection.searchTx({
+        const results = (await connection.searchTx({
           sentFromOrTo: rcptAddress,
           maxHeight: initialHeight + 10,
-        });
+        })).filter(isConfirmedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
         if (!isSendTransaction(mostRecentResultTransaction)) {
@@ -1008,6 +1018,45 @@ describe("BnsConnection", () => {
         }
         expect(mostRecentResultTransaction.memo).toEqual(memo);
       }
+
+      connection.disconnect();
+    });
+
+    it("reports DeliverTx errors for search by ID", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const chainId = connection.chainId();
+
+      const { profile, mainWalletId } = await userProfileWithFaucet(chainId);
+      // this will never have tokens, but can try to sign
+      const brokeIdentity = await profile.createIdentity(mainWalletId, chainId, HdPaths.simpleAddress(1234));
+
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
+        creator: brokeIdentity,
+        recipient: await randomBnsAddress(),
+        memo: "Sending from empty",
+        amount: defaultAmount,
+      };
+
+      const nonce = await connection.getNonce({ pubkey: brokeIdentity.pubkey });
+      const signed = await profile.signTransaction(mainWalletId, brokeIdentity, sendTx, bnsCodec, nonce);
+      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+      const transactionIdToSearch = response.transactionId;
+      await response.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
+
+      await tendermintSearchIndexUpdated();
+
+      const results = await connection.searchTx({ id: transactionIdToSearch });
+
+      expect(results.length).toEqual(1);
+      const result = results[0];
+      if (!isFailedTransaction(result)) {
+        throw new Error("Expected failed transaction");
+      }
+      // https://github.com/iov-one/weave/blob/v0.10.0/x/cash/errors.go#L18
+      expect(result.code).toEqual(36);
+      expect(result.log).toMatch(/account empty/i);
 
       connection.disconnect();
     });
@@ -1515,7 +1564,7 @@ describe("BnsConnection", () => {
 
     await tendermintSearchIndexUpdated();
 
-    const afterSearch = await connection.searchTx(query);
+    const afterSearch = (await connection.searchTx(query)).filter(isConfirmedTransaction);
     expect(afterSearch.length).toEqual(2);
     // make sure we have unique, defined txids
     const transactionIds = afterSearch.map(tx => tx.transactionId);
@@ -1676,7 +1725,7 @@ describe("BnsConnection", () => {
     await tendermintSearchIndexUpdated();
 
     // now query by the txid
-    const search = await connection.searchTx({ id: transactionId });
+    const search = (await connection.searchTx({ id: transactionId })).filter(isConfirmedTransaction);
     expect(search.length).toEqual(1);
     // make sure we get he same tx loaded
     const loaded = search[0];
@@ -1701,19 +1750,27 @@ describe("BnsConnection", () => {
     // ----- connection.searchTx() -----
     // we should be able to find the transaction through quite a number of tag queries
 
-    const txById = await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapId)] });
+    const txById = (await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapId)] })).filter(
+      isConfirmedTransaction,
+    );
     expect(txById.length).toEqual(1);
     expect(txById[0].transactionId).toEqual(transactionId);
 
-    const txBySender = await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapSender)] });
+    const txBySender = (await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapSender)] })).filter(
+      isConfirmedTransaction,
+    );
     expect(txBySender.length).toBeGreaterThanOrEqual(1);
     expect(txBySender[txBySender.length - 1].transactionId).toEqual(transactionId);
 
-    const txByRecipient = await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapRecipient)] });
+    const txByRecipient = (await connection.searchTx({
+      tags: [bnsSwapQueryTags(querySwapRecipient)],
+    })).filter(isConfirmedTransaction);
     expect(txByRecipient.length).toEqual(1);
     expect(txByRecipient[0].transactionId).toEqual(transactionId);
 
-    const txByHash = await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapHash)] });
+    const txByHash = (await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapHash)] })).filter(
+      isConfirmedTransaction,
+    );
     expect(txByHash.length).toEqual(1);
     expect(txByHash[0].transactionId).toEqual(transactionId);
 

@@ -284,7 +284,7 @@ export interface BcpConnection {
    * after 1 element was sent.
    */
   readonly waitForTransaction?: (id: TransactionId) => Stream<ConfirmedTransaction | FailedTransaction>;
-  readonly searchTx: (query: BcpTxQuery) => Promise<ReadonlyArray<ConfirmedTransaction>>;
+  readonly searchTx: (query: BcpTxQuery) => Promise<ReadonlyArray<ConfirmedTransaction | FailedTransaction>>;
   /**
    * Subscribes to all newly added transactions that match the query
    */

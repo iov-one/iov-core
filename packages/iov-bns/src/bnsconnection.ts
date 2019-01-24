@@ -22,6 +22,7 @@ import {
   ConfirmedTransaction,
   dummyEnvelope,
   FailedTransaction,
+  isConfirmedTransaction,
   isFailedTransaction,
   isPubkeyQuery,
   isQueryBySwapId,
@@ -47,7 +48,6 @@ import {
   Client as TendermintClient,
   getTxEventHeight,
   StatusResponse,
-  TxResponse,
 } from "@iov/tendermint-rpc";
 
 import { bnsCodec } from "./bnscodec";
@@ -393,12 +393,12 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    */
   public async getSwap(query: BcpSwapQuery): Promise<BcpQueryEnvelope<BcpAtomicSwap>> {
     // we need to combine them all to see all transactions that affect the query
-    const setTxs: ReadonlyArray<ConfirmedTransaction> = await this.searchTx({
+    const setTxs: ReadonlyArray<ConfirmedTransaction> = (await this.searchTx({
       tags: [bnsSwapQueryTags(query, true)],
-    });
-    const delTxs: ReadonlyArray<ConfirmedTransaction> = await this.searchTx({
+    })).filter(isConfirmedTransaction);
+    const delTxs: ReadonlyArray<ConfirmedTransaction> = (await this.searchTx({
       tags: [bnsSwapQueryTags(query, false)],
-    });
+    })).filter(isConfirmedTransaction);
 
     // tslint:disable-next-line:readonly-array
     const offers: OpenSwap[] = setTxs
@@ -497,21 +497,36 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     );
   }
 
-  public async searchTx(txQuery: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  public async searchTx(
+    txQuery: BcpTxQuery,
+  ): Promise<ReadonlyArray<ConfirmedTransaction | FailedTransaction>> {
     // this will paginate over all transactions, even if multiple pages.
     // FIXME: consider making a streaming interface here, but that will break clients
     const res = await this.tmClient.txSearchAll({ query: buildTxQuery(txQuery) });
     const chainId = await this.chainId();
     const currentHeight = await this.height();
-    const mapper = ({ tx, hash, height, result }: TxResponse): ConfirmedTransaction => ({
-      height: height,
-      confirmations: currentHeight - height + 1,
-      transactionId: Encoding.toHex(hash).toUpperCase() as TransactionId,
-      log: result.log,
-      result: result.data,
-      ...this.codec.parseBytes(new Uint8Array(tx) as PostableBytes, chainId),
-    });
-    return res.txs.map(mapper);
+
+    return res.txs.map(
+      (txResponse): ConfirmedTransaction | FailedTransaction => {
+        const { tx, hash, height, result } = txResponse;
+
+        if (result.code === 0) {
+          return {
+            height: height,
+            confirmations: currentHeight - height + 1,
+            transactionId: Encoding.toHex(hash).toUpperCase() as TransactionId,
+            log: result.log,
+            result: result.data,
+            ...this.codec.parseBytes(new Uint8Array(tx) as PostableBytes, chainId),
+          };
+        } else {
+          return {
+            code: result.code,
+            log: result.log,
+          };
+        }
+      },
+    );
   }
 
   /**
@@ -546,7 +561,8 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    * and then continuing with live feeds
    */
   public liveTx(txQuery: BcpTxQuery): Stream<ConfirmedTransaction> {
-    const historyStream = fromListPromise(this.searchTx(txQuery));
+    // TODO: remove filter
+    const historyStream = fromListPromise(this.searchTx(txQuery)).filter(isConfirmedTransaction);
     const updatesStream = this.listenTx(txQuery);
     const combinedStream = concat(historyStream, updatesStream);
 
