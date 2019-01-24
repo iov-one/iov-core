@@ -551,12 +551,12 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const res = await this.tmClient.txSearchAll({ query: buildTxQuery(txQuery) });
     const chainId = await this.chainId();
     const currentHeight = await this.height();
-    const mapper = ({ tx, hash, height, txResult }: TxResponse): ConfirmedTransaction => ({
+    const mapper = ({ tx, hash, height, result }: TxResponse): ConfirmedTransaction => ({
       height: height,
       confirmations: currentHeight - height + 1,
       transactionId: Encoding.toHex(hash).toUpperCase() as TransactionId,
-      log: txResult.log,
-      result: txResult.data,
+      log: result.log,
+      result: result.data,
       ...this.codec.parseBytes(new Uint8Array(tx) as PostableBytes, chainId),
     });
     return res.txs.map(mapper);

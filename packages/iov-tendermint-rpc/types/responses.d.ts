@@ -81,7 +81,7 @@ export interface TxResponse {
     readonly hash: TxHash;
     readonly height: number;
     readonly index: number;
-    readonly txResult: TxData;
+    readonly result: TxData;
     readonly proof?: TxProof;
 }
 export interface TxSearchResponse {

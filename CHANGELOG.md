@@ -56,6 +56,7 @@ Breaking changes
 * @iov/keycontrol: Remove `LocalIdentity`/`LocalIdentityId` and create
   `UserProdile.getIdentityLabel` to provide labels
 * @iov/tendermint-rpc: Remove support for Tendermint 0.20 and 0.21
+* @iov/tendermint-rpc: Rename `TxResponse.txResult` -> `.result`
 * @iov/crypto: Remove support for ripemd160
 
 ## 0.10.4
