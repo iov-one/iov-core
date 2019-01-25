@@ -699,13 +699,11 @@ describe("RiseConnection", () => {
       (async () => {
         const connection = await RiseConnection.establish(base);
 
-        const recipientAddress = await randomAddress();
-
-        // send transactions
-
         const profile = new UserProfile();
         const wallet = profile.addWallet(new Ed25519Wallet());
         const sender = await profile.createIdentity(wallet.id, riseTestnet, await defaultKeypair);
+
+        const recipientAddress = await randomAddress();
 
         const sendA: SendTransaction = {
           kind: "bcp/send",
@@ -721,51 +719,38 @@ describe("RiseConnection", () => {
           amount: defaultSendAmount,
         };
 
-        const sendC: SendTransaction = {
-          kind: "bcp/send",
-          creator: sender,
-          recipient: recipientAddress,
-          amount: defaultSendAmount,
-        };
-
-        const [nonceA, nonceB, nonceC] = await connection.getNonces({ pubkey: sender.pubkey }, 3);
+        const [nonceA, nonceB] = await connection.getNonces({ pubkey: sender.pubkey }, 2);
         const signedA = await profile.signTransaction(wallet.id, sender, sendA, riseCodec, nonceA);
         const signedB = await profile.signTransaction(wallet.id, sender, sendB, riseCodec, nonceB);
-        const signedC = await profile.signTransaction(wallet.id, sender, sendC, riseCodec, nonceC);
         const bytesToPostA = riseCodec.bytesToPost(signedA);
         const bytesToPostB = riseCodec.bytesToPost(signedB);
-        const bytesToPostC = riseCodec.bytesToPost(signedC);
 
-        // Post A and B in parallel
-        const [postResultA, postResultB] = await Promise.all([
-          connection.postTx(bytesToPostA),
-          connection.postTx(bytesToPostB),
-        ]);
-
-        // Wait for a block
-        await postResultA.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
-        await postResultB.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
+        // Post A and wait for block
+        const postResultA = await connection.postTx(bytesToPostA);
+        await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
-        const events = new Array<ConfirmedTransaction>();
+        const events = new Array<ConfirmedTransaction<SendTransaction>>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
               throw new Error("Confirmed transaction expected");
             }
-
-            events.push(event);
-
             if (!isSendTransaction(event.transaction)) {
               throw new Error("Unexpected transaction type");
             }
-            expect(event.transaction.recipient).toEqual(recipientAddress);
+            events.push(event as ConfirmedTransaction<SendTransaction>);
 
-            if (events.length === 3) {
-              // This assumes we get two transactions into one block
-              // A == B < C
-              expect(events[0].height).toEqual(events[1].height);
-              expect(events[2].height).toBeGreaterThan(events[1].height);
+            if (events.length === 2) {
+              // from this test
+              expect(event.transaction.recipient).toEqual(recipientAddress);
+
+              // correct order
+              expect(events[0].primarySignature.nonce.toNumber()).toEqual(nonceA.toNumber());
+              expect(events[1].primarySignature.nonce.toNumber()).toEqual(nonceB.toNumber());
+
+              // in different blocks
+              expect(events[1].height).toBeGreaterThan(events[0].height);
 
               subscription.unsubscribe();
               connection.disconnect();
@@ -774,8 +759,8 @@ describe("RiseConnection", () => {
           },
         });
 
-        // Post C
-        await connection.postTx(bytesToPostC);
+        // Post B
+        await connection.postTx(bytesToPostB);
       })().catch(done.fail);
     }, 90_000);
 
