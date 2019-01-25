@@ -66,7 +66,7 @@ export interface AbciQueryParams {
   /**
    * A flag that defines if proofs are included in the response or not.
    *
-   * Internally this is mapped to the old name `trusted` for Tendermint < 0.26.
+   * Internally this is mapped to the old inverse name `trusted` for Tendermint < 0.26.
    * Starting with Tendermint 0.26, the default value changed from true to false.
    */
   readonly prove?: boolean;

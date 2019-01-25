@@ -102,7 +102,7 @@ function encodeAbciQueryParams(params: requests.AbciQueryParams): RpcAbciQueryPa
     path: notEmpty(params.path),
     data: Encoding.toHex(params.data) as HexString,
     height: may(Integer.encode, params.height),
-    trusted: params.prove,
+    trusted: !params.prove,
   };
 }
 

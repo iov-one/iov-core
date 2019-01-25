@@ -124,7 +124,7 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
 
     const binKey = Encoding.toAscii(key);
     const binValue = Encoding.toAscii(value);
-    const queryParams = { path: "/key", data: binKey };
+    const queryParams = { path: "/key", data: binKey, prove: true };
     const response = await client.abciQuery(queryParams);
     expect(response.key).toEqual(binKey);
     expect(response.value).toEqual(binValue);
