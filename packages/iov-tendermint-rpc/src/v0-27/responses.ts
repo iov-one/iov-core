@@ -661,15 +661,32 @@ function decodeValidatorInfo(data: RpcValidatorInfo): responses.Validator {
   };
 }
 
+/**
+ * Example data:
+ * {
+ *   "block_size": {
+ *     "max_bytes": "22020096",
+ *     "max_gas": "-1"
+ *   },
+ *   "evidence": {
+ *     "max_age": "100000"
+ *   },
+ *   "validator": {
+ *     "pub_key_types": [
+ *       "ed25519"
+ *     ]
+ *   }
+ * }
+ */
 export interface RpcConsensusParams {
-  readonly block_size_params: RpcBlockSizeParams;
-  readonly evidence_params: RpcEvidenceParams;
+  readonly block_size: RpcBlockSizeParams;
+  readonly evidence: RpcEvidenceParams;
 }
 
 function decodeConsensusParams(data: RpcConsensusParams): responses.ConsensusParams {
   return {
-    blockSizeParams: decodeBlockSizeParams(required(data.block_size_params)),
-    evidenceParams: decodeEvidenceParams(required(data.evidence_params)),
+    blockSizeParams: decodeBlockSizeParams(required(data.block_size)),
+    evidenceParams: decodeEvidenceParams(required(data.evidence)),
   };
 }
 
