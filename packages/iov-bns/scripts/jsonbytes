@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Usage: jsonbytes <filename> <jq selector to field>
+# Extracts the bytes (base64 encoded) and converts to hex
+
+cat "$1" | jq -r "$2" | base64 -d - | cat - | od -x | cut -c9- | tr -d ' \n'
+echo

@@ -25,10 +25,19 @@ const { fromHex } = Encoding;
 
 // ------------------- standard data set ---------------
 //
-// This info came from `bov testgen <dir>`.
+// This info came from `bnsd testgen <dir>`.
 // That dumped a number of files in a directory, formatted as the
 // bov blockchain application desires. We import them as strings
 // in this testfile to allow simpler tests in the browser as well.
+
+// Ex: base64 (from json) -> hex
+// ../scripts/jsonbytes testvectors/pub_key.json .Pub.Ed25519
+
+// Ex: bin file -> hex
+// ../scripts/tohex testvectors/pub_key.bin
+// OR
+// cat testvectors/pub_key.bin | ../scripts/tohex
+
 
 export const pubJson: PublicKeyBundle = {
   algo: Algorithm.Ed25519,

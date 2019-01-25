@@ -1,0 +1,6 @@
+#!/bin/bash
+# take input from a file if given, otherwise stdin
+IN=${1:--}
+
+cat $IN | od -x | cut -c9- | tr -d ' \n'
+echo
