@@ -6,12 +6,10 @@ import { hashTx } from "./hasher";
 
 describe("Hasher", () => {
   it("creates transaction hash equal to local test", () => {
-    // this was taken from a result from /search_tx
-    // for events we need to calculate this client side.
-    const txId = Encoding.fromHex("ceb861fd1ac9ab97bd56559e195b1cf87e7beda9");
-    const txData = Encoding.fromBase64(
-      "CjcKFLHKfnj3RCOuAdo7UeZ2k02RBfKCEhS/R/I/FM+ZWMQDT9kaimaRDMq4aBoJCKgFGgRDQVNIqgFqCAMSIgogUz43ZVn6VREw5yFzWvXnyfzYhp3dVFGe53n85ZhNeJgiQgpAfWoJqSugxZJnsjqsaFZ/vx861sA5f6GbupmpkGFxUwl+Q1lUAFbKuZU7AWMXNJHFl93yC9hdcSErKMxIXZBAAA==",
-    ) as TxBytes;
+    // This was taken from a result from /tx_search of some random test transaction
+    // curl "http://localhost:11127/tx_search?query=\"tx.hash='5CB2CF94A1097A4BC19258BC2353C3E76102B6D528458BE45C855DC5563C1DB2'\""
+    const txId = Encoding.fromHex("5CB2CF94A1097A4BC19258BC2353C3E76102B6D528458BE45C855DC5563C1DB2");
+    const txData = Encoding.fromBase64("YUpxZDY2NURaUDMxPWd2TzBPdnNrVWFWYg==") as TxBytes;
     expect(hashTx(txData)).toEqual(txId);
   });
 });
