@@ -11,6 +11,7 @@ import {
   BcpPubkeyQuery,
   BlockInfo,
   ChainId,
+  isBlockInfoPending,
   isSendTransaction,
   PublicKeyBundle,
   PublicKeyBytes,
@@ -392,7 +393,7 @@ describe("RiseConnection", () => {
           };
 
           const result = await connection.postTx(riseCodec.bytesToPost(signedTransaction));
-          await result.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
+          await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
         }
       })().catch(done.fail);
     }, 90_000);

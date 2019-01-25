@@ -327,7 +327,7 @@ describe("EthereumConnection", () => {
       expect(result.log).toBeUndefined();
 
       // we need to wait here such that the following tests query an updated nonce
-      await result.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
+      await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
       connection.disconnect();
     }, 30_000);
@@ -489,7 +489,7 @@ describe("EthereumConnection", () => {
 
       const resultPost = await connection.postTx(bytesToPost);
       expect(resultPost.transactionId).toMatch(/^0x[0-9a-f]{64}$/);
-      await resultPost.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
+      await resultPost.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
       const resultSearch = await connection.searchTx({ id: resultPost.transactionId });
       expect(resultSearch.length).toEqual(1);
@@ -772,7 +772,7 @@ describe("EthereumConnection", () => {
         await connection.postTx(bytesToPostB);
 
         // Wait for a block
-        await postResultA.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
+        await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // Post C
         await connection.postTx(bytesToPostC);
@@ -850,7 +850,7 @@ describe("EthereumConnection", () => {
         await connection.postTx(bytesToPostB);
 
         // Wait for a block
-        await postResultA.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
+        await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
         const events = new Array<ConfirmedTransaction>();
@@ -925,7 +925,7 @@ describe("EthereumConnection", () => {
         const transactionId = postResult.transactionId;
 
         // Wait for a block
-        await postResult.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
+        await postResult.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after transaction is in block
         const events = new Array<ConfirmedTransaction>();

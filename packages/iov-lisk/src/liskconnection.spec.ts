@@ -12,6 +12,7 @@ import {
   BlockInfo,
   ChainId,
   ConfirmedTransaction,
+  isBlockInfoPending,
   isConfirmedTransaction,
   isSendTransaction,
   PublicKeyBundle,
@@ -416,7 +417,7 @@ describe("LiskConnection", () => {
           };
 
           const result = await connection.postTx(liskCodec.bytesToPost(signedTransaction));
-          await result.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
+          await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
         }
       })().catch(done.fail);
     }, 30_000);
@@ -949,7 +950,7 @@ describe("LiskConnection", () => {
         await connection.postTx(bytesToPostB);
 
         // Wait for a block
-        await postResultA.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
+        await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
         const events = new Array<ConfirmedTransaction>();
@@ -1011,7 +1012,7 @@ describe("LiskConnection", () => {
         const transactionId = postResult.transactionId;
 
         // Wait for a block
-        await postResult.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
+        await postResult.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after transaction is in block
         const events = new Array<ConfirmedTransaction>();

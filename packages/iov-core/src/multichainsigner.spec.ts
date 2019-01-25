@@ -2,13 +2,13 @@ import {
   Address,
   Algorithm,
   ChainId,
+  isBlockInfoPending,
   isConfirmedTransaction,
   isSendTransaction,
   PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   TokenTicker,
-  TransactionState,
 } from "@iov/bcp-types";
 import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
@@ -104,7 +104,7 @@ describe("MultiChainSigner", () => {
         },
       };
       const postResponse = await signer.signAndPost(sendTx, mainWalletId);
-      await postResponse.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
+      await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
       // we should be a little bit richer
       const updatedAccount = await connection.getAccount({ address: recipient });
