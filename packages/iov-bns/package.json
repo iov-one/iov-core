@@ -30,7 +30,7 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js",
     "pack-proto": "pbjs -t static-module -w commonjs -o src/generated/codecimpl.js `find ./clean -name '*.proto'`",
     "define-proto": "pbts src/generated/codecimpl.js -o src/generated/codecimpl.d.ts",
-    "store-codec-version": "git -C ./weave log --pretty=oneline --decorate --max-count=1 > src/generated/codec_version.txt",
+    "store-codec-version": "git -C ./go/src/github.com/iov-one/weave log --pretty=oneline --decorate --max-count=1 > src/generated/codec_version.txt",
     "protoc": "./scripts/weave.sh && ./scripts/clean.sh && yarn pack-proto && yarn define-proto && yarn format && yarn store-codec-version"
   },
   "dependencies": {

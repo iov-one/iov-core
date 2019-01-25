@@ -7,13 +7,16 @@ command -v shellcheck > /dev/null && shellcheck "$0"
 # 
 # It will write all cleaned proto to ./$OUTDIR, default ./clean
 
-INDIR=weave
+BASEDIR=`pwd`
+
+CODEDIR=go/src/github.com/iov-one/weave
 OUTDIR=${OUTDIR:-clean}
 
 rm -rf ./${OUTDIR}
 
-for file in `find ./weave -name '*.proto' -not -path '*/vendor/*' -not -path '*/examples/*' -not -path '*/cmd/bcpd/*'`; do
-  outfile=$(echo $file | sed s/$INDIR/$OUTDIR/)
+cd "$CODEDIR"
+for file in `find . -name '*.proto' -not -path '*/vendor/*' -not -path '*/examples/*' -not -path '*/cmd/bcpd/*'`; do
+  outfile="$BASEDIR/$OUTDIR/$file"
   outdir=$(dirname $outfile)
   mkdir -p $outdir
   echo $outfile
@@ -24,3 +27,4 @@ for file in `find ./weave -name '*.proto' -not -path '*/vendor/*' -not -path '*/
   # This just removes all options after the fields, and removes illegal ;; typos
   cat $file | sed 's/ *\[[^]]*\];/;/g' | sed 's/;;/;/' > $outfile
 done
+cd -
