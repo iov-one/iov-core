@@ -123,6 +123,18 @@ export interface BlockInfoFailed {
 /** Information attached to a signature about its state in a block */
 export type BlockInfo = BlockInfoPending | BlockInfoSucceeded | BlockInfoFailed;
 
+export function isBlockInfoPending(info: BlockInfo): info is BlockInfoPending {
+  return info.state === TransactionState.Pending;
+}
+
+export function isBlockInfoSucceeded(info: BlockInfo): info is BlockInfoSucceeded {
+  return info.state === TransactionState.Succeeded;
+}
+
+export function isBlockInfoFailed(info: BlockInfo): info is BlockInfoFailed {
+  return info.state === TransactionState.Failed;
+}
+
 export interface PostTxResponse {
   /** Information about the block the transaction is in */
   readonly blockInfo: ValueAndUpdates<BlockInfo>;

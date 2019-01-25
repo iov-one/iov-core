@@ -84,6 +84,9 @@ export interface BlockInfoFailed {
 }
 /** Information attached to a signature about its state in a block */
 export declare type BlockInfo = BlockInfoPending | BlockInfoSucceeded | BlockInfoFailed;
+export declare function isBlockInfoPending(info: BlockInfo): info is BlockInfoPending;
+export declare function isBlockInfoSucceeded(info: BlockInfo): info is BlockInfoSucceeded;
+export declare function isBlockInfoFailed(info: BlockInfo): info is BlockInfoFailed;
 export interface PostTxResponse {
     /** Information about the block the transaction is in */
     readonly blockInfo: ValueAndUpdates<BlockInfo>;
