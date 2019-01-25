@@ -7,8 +7,11 @@ import {
   BcpAccount,
   BcpSwapQuery,
   BlockInfo,
+  BlockInfoFailed,
   BlockInfoSucceeded,
   ChainId,
+  isBlockInfoPending,
+  isBlockInfoSucceeded,
   isConfirmedTransaction,
   isFailedTransaction,
   isSendTransaction,
@@ -881,8 +884,8 @@ describe("BnsConnection", () => {
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-      const blockInfo = await response.blockInfo.waitFor(info => info.state === TransactionState.Succeeded);
-      const txHeight = (blockInfo as BlockInfoSucceeded).height;
+      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const txHeight = (blockInfo as BlockInfoSucceeded | BlockInfoFailed).height;
 
       await tendermintSearchIndexUpdated();
 
@@ -1559,13 +1562,13 @@ describe("BnsConnection", () => {
     const nonceRcpt = asArray(connection.changeNonce(rcptAddr));
 
     const post1 = await sendCash(connection, profile, faucet, rcptAddr);
-    const blockInfo1 = await post1.blockInfo.waitFor(info => info.state === TransactionState.Succeeded);
-    const transactionHeight1 = (blockInfo1 as BlockInfoSucceeded).height;
+    const blockInfo1 = await post1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    const transactionHeight1 = (blockInfo1 as BlockInfoSucceeded | BlockInfoFailed).height;
     expect(transactionHeight1).toBeGreaterThanOrEqual(1);
 
     const post2 = await sendCash(connection, profile, faucet, rcptAddr);
-    const blockInfo2 = await post2.blockInfo.waitFor(info => info.state === TransactionState.Succeeded);
-    const transactionHeight2 = (blockInfo2 as BlockInfoSucceeded).height;
+    const blockInfo2 = await post2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    const transactionHeight2 = (blockInfo2 as BlockInfoSucceeded | BlockInfoFailed).height;
     expect(transactionHeight2).toBeGreaterThanOrEqual(transactionHeight1 + 1);
 
     // give time for all events to be processed
@@ -1674,9 +1677,12 @@ describe("BnsConnection", () => {
     const transactionId = post.transactionId;
     expect(transactionId).toMatch(/^[0-9A-F]{40}$/);
 
-    const blockInfo = await post.blockInfo.waitFor(info => info.state === TransactionState.Succeeded);
-    const txHeight = (blockInfo as BlockInfoSucceeded).height;
-    const txResult = (blockInfo as BlockInfoSucceeded).result!;
+    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    if (!isBlockInfoSucceeded(blockInfo)) {
+      throw new Error(`Expected transaction state success but got state: ${blockInfo.state}`);
+    }
+    const txHeight = blockInfo.height;
+    const txResult = blockInfo.result!;
     // the transaction result is 8 byte number assigned by the application
     expect(Uint64.fromBytesBigEndian(txResult).toNumber()).toBeGreaterThanOrEqual(1);
     expect(Uint64.fromBytesBigEndian(txResult).toNumber()).toBeLessThanOrEqual(1000);
@@ -1845,13 +1851,19 @@ describe("BnsConnection", () => {
 
     // make two offers
     const post1 = await openSwap(connection, profile, faucet, recipientAddr, preimage1);
-    const blockInfo1 = await post1.blockInfo.waitFor(info => info.state === TransactionState.Succeeded);
-    const id1 = (blockInfo1 as BlockInfoSucceeded).result! as SwapIdBytes;
+    const blockInfo1 = await post1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    if (!isBlockInfoSucceeded(blockInfo1)) {
+      throw new Error(`Expected transaction state success but got state: ${blockInfo1.state}`);
+    }
+    const id1 = blockInfo1.result! as SwapIdBytes;
     expect(id1.length).toEqual(8);
 
     const post2 = await openSwap(connection, profile, faucet, recipientAddr, preimage2);
-    const blockInfo2 = await post2.blockInfo.waitFor(info => info.state === TransactionState.Succeeded);
-    const id2 = (blockInfo2 as BlockInfoSucceeded).result! as SwapIdBytes;
+    const blockInfo2 = await post2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    if (!isBlockInfoSucceeded(blockInfo2)) {
+      throw new Error(`Expected transaction state success but got state: ${blockInfo2.state}`);
+    }
+    const id2 = blockInfo2.result! as SwapIdBytes;
     expect(id2.length).toEqual(8);
 
     // find two open
@@ -1873,8 +1885,11 @@ describe("BnsConnection", () => {
     const liveView = asArray(connection.watchSwap(rcptQuery));
 
     const post3 = await openSwap(connection, profile, faucet, recipientAddr, preimage3);
-    const blockInfo3 = await post3.blockInfo.waitFor(info => info.state === TransactionState.Succeeded);
-    const id3 = (blockInfo3 as BlockInfoSucceeded).result! as SwapIdBytes;
+    const blockInfo3 = await post3.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    if (!isBlockInfoSucceeded(blockInfo3)) {
+      throw new Error(`Expected transaction state success but got state: ${blockInfo3.state}`);
+    }
+    const id3 = blockInfo3.result! as SwapIdBytes;
     expect(id3.length).toEqual(8);
 
     {

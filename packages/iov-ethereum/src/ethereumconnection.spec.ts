@@ -4,8 +4,10 @@ import {
   Amount,
   BcpAccount,
   BlockHeader,
+  BlockInfoFailed,
   BlockInfoSucceeded,
   ConfirmedTransaction,
+  isBlockInfoPending,
   isConfirmedTransaction,
   isSendTransaction,
   Nonce,
@@ -572,9 +574,8 @@ describe("EthereumConnection", () => {
 
       const resultPost = await connection.postTx(bytesToPost);
       const transactionId = resultPost.transactionId;
-      const transactionHeight = ((await resultPost.blockInfo.waitFor(
-        info => info.state === TransactionState.Succeeded,
-      )) as BlockInfoSucceeded).height;
+      const blockInfo = await resultPost.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const transactionHeight = (blockInfo as BlockInfoSucceeded | BlockInfoFailed).height;
 
       // Random delay to give scraper a chance to receive and process the new block
       await sleep(25_000);
