@@ -206,7 +206,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
               const errorEvent: BlockInfoFailed = {
                 state: TransactionState.Failed,
                 code: searchResult.code,
-                log: searchResult.log,
+                message: searchResult.message,
               };
               blockInfoProducer.update(errorEvent);
               lastEventSent = errorEvent;
@@ -484,11 +484,12 @@ export class BnsConnection implements BcpAtomicSwapConnection {
             ...this.codec.parseBytes(new Uint8Array(tx) as PostableBytes, chainId),
           };
         } else {
-          return {
+          const failed: FailedTransaction = {
             transactionId: transactionId,
             code: result.code,
-            log: result.log,
+            message: result.log,
           };
+          return failed;
         }
       },
     );
@@ -514,11 +515,12 @@ export class BnsConnection implements BcpAtomicSwapConnection {
             ...this.codec.parseBytes(new Uint8Array(transaction.tx) as PostableBytes, chainId),
           };
         } else {
-          return {
+          const failed: FailedTransaction = {
             transactionId: transactionId,
             code: transaction.result.code,
-            log: transaction.result.log,
+            message: transaction.result.log,
           };
+          return failed;
         }
       },
     );

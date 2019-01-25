@@ -762,7 +762,7 @@ describe("BnsConnection", () => {
         }
         // https://github.com/iov-one/weave/blob/v0.10.2/x/nft/errors.go#L14
         expect(blockInfo.code).toEqual(502);
-        expect(blockInfo.log || "").toMatch(/duplicate entry/i);
+        expect(blockInfo.message || "").toMatch(/duplicate entry/i);
       }
 
       // Remove address
@@ -811,7 +811,7 @@ describe("BnsConnection", () => {
         // TODO: why is the removal of an non-existing address an invalid entry and not a missing entry?
         // https://github.com/iov-one/weave/blob/v0.10.2/x/nft/errors.go#L16
         expect(blockInfo.code).toEqual(504);
-        expect(blockInfo.log || "").toMatch(/invalid entry/i);
+        expect(blockInfo.message || "").toMatch(/invalid entry/i);
       }
 
       connection.disconnect();
@@ -1055,7 +1055,7 @@ describe("BnsConnection", () => {
       }
       // https://github.com/iov-one/weave/blob/v0.10.0/x/cash/errors.go#L18
       expect(result.code).toEqual(36);
-      expect(result.log).toMatch(/account empty/i);
+      expect(result.message).toMatch(/account empty/i);
 
       connection.disconnect();
     });
@@ -1221,7 +1221,7 @@ describe("BnsConnection", () => {
       }
       // https://github.com/iov-one/weave/blob/v0.10.0/x/cash/errors.go#L18
       expect(result.code).toEqual(36);
-      expect(result.log).toMatch(/account empty/i);
+      expect(result.message).toMatch(/account empty/i);
 
       connection.disconnect();
     });
@@ -1256,7 +1256,7 @@ describe("BnsConnection", () => {
       }
       // https://github.com/iov-one/weave/blob/v0.10.0/x/cash/errors.go#L18
       expect(result.code).toEqual(36);
-      expect(result.log).toMatch(/account empty/i);
+      expect(result.message).toMatch(/account empty/i);
 
       connection.disconnect();
     });

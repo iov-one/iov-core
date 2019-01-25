@@ -75,10 +75,10 @@ export interface BlockInfoFailed {
      */
     readonly code: number;
     /**
-     * Application specific logging output in an arbitrary text format that
-     * may change at any time.
+     * Application specific, human-readable, non-localized error message
+     * in an arbitrary text format that may change at any time.
      */
-    readonly log?: string;
+    readonly message?: string;
 }
 /** Information attached to a signature about its state in a block */
 export declare type BlockInfo = BlockInfoPending | BlockInfoSucceeded | BlockInfoFailed;
@@ -112,10 +112,10 @@ export interface FailedTransaction {
      */
     readonly code: number;
     /**
-     * Application specific logging output in an arbitrary text format that
-     * may change at any time.
+     * Application specific, human-readable, non-localized error message
+     * in an arbitrary text format that may change at any time.
      */
-    readonly log?: string;
+    readonly message?: string;
 }
 export declare function isConfirmedTransaction(transaction: ConfirmedTransaction | FailedTransaction): transaction is ConfirmedTransaction;
 export declare function isFailedTransaction(transaction: ConfirmedTransaction | FailedTransaction): transaction is FailedTransaction;
