@@ -262,13 +262,15 @@ describe("Encode transactions", () => {
   });
 });
 
-describe("Ensure crypto", () => {
+fdescribe("Ensure crypto", () => {
   it("private key and public key match", async () => {
     const keypair = Ed25519Keypair.fromLibsodiumPrivkey(privJson.data);
-    const pubKey = pubJson.data;
+    const { pubkey } = keypair;
+    // extracted pubkey should match serialized pubkey
+    expect(pubkey).toEqual(pubJson.data);
     const msg = Uint8Array.from([12, 54, 98, 243, 11]);
     const signature = await Ed25519.createSignature(msg, keypair);
-    const value = await Ed25519.verifySignature(signature, msg, pubKey);
+    const value = await Ed25519.verifySignature(signature, msg, pubkey);
     expect(value).toBeTruthy();
   });
 

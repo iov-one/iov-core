@@ -38,29 +38,35 @@ const { fromHex } = Encoding;
 // OR
 // cat testvectors/pub_key.bin | ../scripts/tohex
 
-
+// ./scripts/jsonbytes testvectors/pub_key.json .Pub.Ed25519
 export const pubJson: PublicKeyBundle = {
   algo: Algorithm.Ed25519,
-  data: fromHex("507629b5f1d3946efb8fde961e146359e33610fa1536185d44fdd5011ca011d5") as PublicKeyBytes,
+  data: fromHex("7996441cee44893159bb3ad57d78c481da3247bcfa3fabafe3fab44c4f568af9") as PublicKeyBytes,
 };
-export const pubBin = fromHex("0a20507629b5f1d3946efb8fde961e146359e33610fa1536185d44fdd5011ca011d5");
+// ./scripts/tohex testvectors/pub_key.bin
+export const pubBin = fromHex("200a7996441cee44893159bb3ad57d78c481da3247bcfa3fabafe3fab44c4f568af9");
 
 // this private key matches the above public key
+// ./scripts/jsonbytes testvectors/priv_key.json .Priv.Ed25519
 export const privJson: PrivateKeyBundle = {
   algo: Algorithm.Ed25519,
   data: fromHex(
-    "516e6af7454f31fa56a43d112ea847c7e5aeea754f08385ca55935757161ad96507629b5f1d3946efb8fde961e146359e33610fa1536185d44fdd5011ca011d5",
+    "ce1e40bbcd30b2efa7f3a9264c5f71a1eb72e337bdc7fcba5a0066d322e7f3c27996441cee44893159bb3ad57d78c481da3247bcfa3fabafe3fab44c4f568af9",
   ) as PrivateKeyBytes,
 };
+// ./scripts/tohex testvectors/priv_key.bin
 export const privBin = fromHex(
-  "0a40516e6af7454f31fa56a43d112ea847c7e5aeea754f08385ca55935757161ad96507629b5f1d3946efb8fde961e146359e33610fa1536185d44fdd5011ca011d5",
+  "400ace1e40bbcd30b2efa7f3a9264c5f71a1eb72e337bdc7fcba5a0066d322e7f3c27996441cee44893159bb3ad57d78c481da3247bcfa3fabafe3fab44c4f568af9",
 );
 
 // address is calculated by bov for the public key
+// this address is displayed on testgen, or can be read from the message
 // address generated using https://github.com/nym-zone/bech32
-// bech32 -e -h tiov acc00b8f2e26fd093894c5b1d87e03afab71cf99
-export const address = "tiov14nqqhrewym7sjwy5ckcaslsr474hrnuek3vnr4" as Address;
+// ADDR=$(./scripts/jsonbytes testvectors/unsigned_tx.json .Sum.SendMsg.src)
+// bech32 -e -h tiov $ADDR
+export const address = "tiov1qsccxrdr5fkzcp7wa5qc2k3ws6urmvvfyg68wx" as Address;
 
+// TODO??? where is this from????
 export const coinJson: Amount = {
   quantity: "878001567000",
   fractionalDigits: 9,
@@ -68,37 +74,43 @@ export const coinJson: Amount = {
 };
 export const coinBin = fromHex("08ee061098d25f1a03494f56");
 
+// from: unsigned_tx.{json,bin}
 const amount: Amount = {
   quantity: "250000000000",
   fractionalDigits: 9,
   tokenTicker: "ETH" as TokenTicker,
 };
 export const chainId = "test-123" as ChainId;
+
 // the sender in this tx is the above pubkey, pubkey->address should match
 // recipient address generated using https://github.com/nym-zone/bech32
-// bech32 -e -h tiov 6f0a3e37845b6a3c8ccbe6219199abc3ae0b26d9
+// RCPT=$(./scripts/jsonbytes testvectors/unsigned_tx.json .Sum.SendMsg.dest)
+// bech32 -e -h tiov $RCPT
 export const sendTxJson: SendTransaction = {
   kind: "bcp/send",
   creator: {
     chainId: chainId,
     pubkey: pubJson,
   },
-  recipient: "tiov1du9ruduytd4rerxtucserxdtcwhqkfkezjy4w0" as Address,
+  recipient: "tiov1zqrjl3gvpt3q5akd5vrhmtqjnftecmfcttydsx" as Address,
   memo: "Test payment",
   amount,
 };
 export const sendTxBin = fromHex(
-  "0a440a14acc00b8f2e26fd093894c5b1d87e03afab71cf9912146f0a3e37845b6a3c8ccbe6219199abc3ae0b26d91a0808fa011a03455448220c54657374207061796d656e74",
+  "039a0a4431140d04a2832ca3ce6c01075aed86853d2e89b812b10714c5100a2f0a0ccde20776aca39a7d9c1238571a6d080801fa031a54452248540c7365207461706d796e650074",
+);
+// from unsigned_tx.signbytes
+export const signBytes = fromHex(
+  "e0c9127d1ead2c22c9927363fb156a35faead3d201a9af253ac7679938ecfb212a0d1678925c64b87eefba065649a14d98005cdbc7bfee9e6e40831e08bd0f61",
 );
 
-export const signBytes = fromHex(
-  "00cafe0008746573742d31323300000000000000110a440a14acc00b8f2e26fd093894c5b1d87e03afab71cf9912146f0a3e37845b6a3c8ccbe6219199abc3ae0b26d91a0808fa011a03455448220c54657374207061796d656e74",
-);
+// from signed_tx.{json,bin}
 export const sig: FullSignature = {
   nonce: new Int53(17) as Nonce,
   pubkey: pubJson,
+  // ./scripts/jsonbytes testvectors/signed_tx.json .signatures[0].signature.Sig.Ed25519
   signature: fromHex(
-    "8005d615d1866b8349b8fe1901444b5f76cfd39482d51556066e5de4a281b0394aa2bc9e07580d0a67fd36183b47f2f1b044c0ce459140f493c6e95546715003",
+    "332133b9823bc1e7ebd9e41521f3656402d56353c02563fc473697f0d43d03a3d42a69c3af6b8b3cac071fc1146f7c67d82b46981b803c60b8849022548b07b0",
   ) as SignatureBytes,
 };
 export const signedTxJson: SignedTransaction = {
@@ -107,7 +119,7 @@ export const signedTxJson: SignedTransaction = {
   otherSignatures: [],
 };
 export const signedTxBin = fromHex(
-  "0a440a14acc00b8f2e26fd093894c5b1d87e03afab71cf9912146f0a3e37845b6a3c8ccbe6219199abc3ae0b26d91a0808fa011a03455448220c54657374207061796d656e74aa016a081112220a20507629b5f1d3946efb8fde961e146359e33610fa1536185d44fdd5011ca011d522420a408005d615d1866b8349b8fe1901444b5f76cfd39482d51556066e5de4a281b0394aa2bc9e07580d0a67fd36183b47f2f1b044c0ce459140f493c6e95546715003",
+  "6a1211082212200a2fbe28f8eda07015de4b1a2baac3e2c4431c3f6986c5973315c672cff198f9934222400a332133b9823bc1e7ebd9e41521f3656402d56353c02563fc473697f0d43d03a3d42a69c3af6b8b3cac071fc1146f7c67d82b46981b803c60b8849022548b07b0039a0a4431140d04a2832ca3ce6c01075aed86853d2e89b812b10714c5100a2f0a0ccde20776aca39a7d9c1238571a6d080801fa031a54452248540c7365207461706d796e650074",
 );
 
 // ------------------- random data --------------------------

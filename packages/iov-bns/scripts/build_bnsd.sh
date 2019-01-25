@@ -9,15 +9,19 @@ export PATH="${GOPATH}:${PATH}"
 cd "$GOPATH"
 mkdir -p bin
 cd src/github.com/iov-one/weave
-ls
 
 echo "Preparing dependencies..."
 make tools
 make deps
 
-echo "Compiling binary..."
+echo "Compiling bnsd..."
 cd ./cmd/bnsd
 make build
 cp ./bnsd "$GOPATH/bin"
 
-echo "bnsd installed under ./go/bin"
+echo "Compiling bcpd..."
+cd ../bcpd
+make build
+cp ./bcpd "$GOPATH/bin"
+
+echo "bnsd and bcpd installed under ./go/bin"
