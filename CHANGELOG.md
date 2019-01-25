@@ -15,6 +15,7 @@
 * @iov/iov-core: Add `MultiChainSigner.isValidAddress` for chain-specific address input validation.
 * @iov/stream: Add an implementation of `concat` that buffers stream events
 * @iov/stream: Add `firstEvent` as a special case of `toListPromise` with one element
+* @iov/tendermint-rpc: Add support for Tendermint 0.27.x
 
 Breaking changes
 
