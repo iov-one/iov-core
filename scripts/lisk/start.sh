@@ -19,7 +19,11 @@ LISK_DOCKER_VERSION="1.4.0"
 
   (
     cd "lisk/docker"
+
     sed -e "s|ENV_LISK_VERSION=.*|ENV_LISK_VERSION=$LISK_DOCKER_VERSION|" .env.development > .env
+
+    # Work around old docker-compose version on Travis
+    sed -i -e "s|docker-compose up --detach|docker-compose up -d|" Makefile
 
     make
     make coldstart
