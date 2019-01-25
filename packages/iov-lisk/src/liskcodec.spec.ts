@@ -36,6 +36,51 @@ describe("liskCodec", () => {
     expect(liskCodec.identityToAddress(identity)).toEqual("6076671634347365051L");
   });
 
+  it("can create bytes to sign", () => {
+    const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
+
+    const tx: SendTransaction = {
+      kind: "bcp/send",
+      creator: {
+        chainId: liskTestnet,
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: pubkey as PublicKeyBytes,
+        },
+      },
+      amount: {
+        quantity: "123456789",
+        fractionalDigits: 8,
+        tokenTicker: "LSK" as TokenTicker,
+      },
+      recipient: "10010344879730196491L" as Address,
+    };
+    const bytes = liskCodec.bytesToSign(tx, defaultCreationTimestamp as Nonce);
+    expect(bytes).toBeTruthy();
+  });
+
+  it("requires 8 fractional digits in bytes to sign", () => {
+    const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
+
+    const tx: SendTransaction = {
+      kind: "bcp/send",
+      creator: {
+        chainId: liskTestnet,
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: pubkey as PublicKeyBytes,
+        },
+      },
+      amount: {
+        quantity: "123456789",
+        fractionalDigits: 7,
+        tokenTicker: "LSK" as TokenTicker,
+      },
+      recipient: "10010344879730196491L" as Address,
+    };
+    expect(() => liskCodec.bytesToSign(tx, defaultCreationTimestamp as Nonce)).toThrowError(/Requires 8/);
+  });
+
   it("can create bytes to post", () => {
     const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 

@@ -36,6 +36,51 @@ describe("riseCodec", () => {
     expect(riseCodec.identityToAddress(identity)).toEqual("10145108642177909005R");
   });
 
+  it("can create bytes to sign", () => {
+    const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
+
+    const tx: SendTransaction = {
+      kind: "bcp/send",
+      creator: {
+        chainId: riseTestnet,
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: pubkey as PublicKeyBytes,
+        },
+      },
+      amount: {
+        quantity: "123456789",
+        fractionalDigits: 8,
+        tokenTicker: "RISE" as TokenTicker,
+      },
+      recipient: "10010344879730196491R" as Address,
+    };
+    const bytes = riseCodec.bytesToSign(tx, defaultCreationTimestamp as Nonce);
+    expect(bytes).toBeTruthy();
+  });
+
+  it("requires 8 fractional digits in bytes to sign", () => {
+    const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
+
+    const tx: SendTransaction = {
+      kind: "bcp/send",
+      creator: {
+        chainId: riseTestnet,
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: pubkey as PublicKeyBytes,
+        },
+      },
+      amount: {
+        quantity: "123456789",
+        fractionalDigits: 6,
+        tokenTicker: "RISE" as TokenTicker,
+      },
+      recipient: "10010344879730196491R" as Address,
+    };
+    expect(() => riseCodec.bytesToSign(tx, defaultCreationTimestamp as Nonce)).toThrowError(/Requires 8/);
+  });
+
   it("can create bytes to post", () => {
     const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
