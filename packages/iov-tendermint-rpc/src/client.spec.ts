@@ -11,6 +11,7 @@ import { randomId } from "./jsonrpc";
 import { buildQuery } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, RpcClient, WebsocketClient } from "./rpcclients";
+import { TxBytes } from "./types";
 
 function skipTests(): boolean {
   return !process.env.TENDERMINT_ENABLED;
@@ -29,20 +30,29 @@ function pendingWithoutTendermint(): void {
  * in the port 111<version>, e.g. Tendermint 0.21.0 runs on port 11121. To start
  * a legacy version use
  *   TENDERMINT_VERSION=0.21.0 TENDERMINT_PORT=11121 ./scripts/tendermint/start.sh
+ *   TENDERMINT_VERSION=0.25.0 TENDERMINT_PORT=11125 ./scripts/tendermint/start.sh
+ *   TENDERMINT_VERSION=0.27.0 TENDERMINT_PORT=11127 ./scripts/tendermint/start.sh
  *
  * When more than 1 instances of tendermint are running, stop them manually:
  *   docker container ls | grep tendermint/tendermint
  *   docker container kill <container id from 1st column>
  */
 const tendermintInstances = [
-  // {
-  //   url: "localhost:11121",
-  //   version: "0.21.x",
-  // },
   {
     url: "localhost:12345",
     version: "0.25.x",
+    appCreator: "jae",
   },
+  // {
+  //   url: "localhost:11125",
+  //   version: "0.25.x",
+  //   appCreator: "jae",
+  // },
+  // {
+  //   url: "localhost:11127",
+  //   version: "0.27.x",
+  //   appCreator: "Cosmoshi Netowoko",
+  // },
 ];
 
 function sleep(ms: number): Promise<void> {
@@ -54,8 +64,8 @@ function tendermintSearchIndexUpdated(): Promise<void> {
   return sleep(50);
 }
 
-function buildKvTx(k: string, v: string): Uint8Array {
-  return Encoding.toAscii(`${k}=${v}`);
+function buildKvTx(k: string, v: string): TxBytes {
+  return Encoding.toAscii(`${k}=${v}`) as TxBytes;
 }
 
 function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
@@ -81,13 +91,25 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
 
     const response = await client.broadcastTxCommit({ tx: tx });
     expect(response.height).toBeGreaterThan(2);
-    expect(response.hash.length).toEqual(20);
+    expect(response.hash).toBeTruthy();
     // verify success
     expect(response.checkTx.code).toBeFalsy();
     expect(response.deliverTx).toBeTruthy();
     if (response.deliverTx) {
       expect(response.deliverTx.code).toBeFalsy();
     }
+
+    client.disconnect();
+  });
+
+  it("gets the same tx hash from backend as calculated locally", async () => {
+    pendingWithoutTendermint();
+    const client = new Client(rpcFactory(), adaptor);
+    const tx = buildKvTx(randomId(), randomId());
+    const calculatedTxHash = adaptor.hashTx(tx);
+
+    const response = await client.broadcastTxCommit({ tx: tx });
+    expect(response.hash).toEqual(calculatedTxHash);
 
     client.disconnect();
   });
@@ -102,7 +124,7 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
 
     const binKey = Encoding.toAscii(key);
     const binValue = Encoding.toAscii(value);
-    const queryParams = { path: "/key", data: binKey };
+    const queryParams = { path: "/key", data: binKey, prove: true };
     const response = await client.abciQuery(queryParams);
     expect(response.key).toEqual(binKey);
     expect(response.value).toEqual(binValue);
@@ -228,7 +250,7 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
   });
 }
 
-function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
+function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor, appCreator: string): void {
   it("can subscribe to block header events", done => {
     pendingWithoutTendermint();
 
@@ -401,7 +423,7 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
 
     const events: responses.TxEvent[] = [];
     const client = new Client(rpcFactory(), adaptor);
-    const query = buildQuery({ tags: [{ key: "app.creator", value: "jae" }] });
+    const query = buildQuery({ tags: [{ key: "app.creator", value: appCreator }] });
     const stream = client.subscribeTx(query);
     expect(stream).toBeTruthy();
     const subscription = stream.subscribe({
@@ -483,7 +505,7 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
   });
 }
 
-for (const { url, version } of tendermintInstances) {
+for (const { url, version, appCreator } of tendermintInstances) {
   describe(`Client ${version}`, () => {
     it("can connect to a given url", async () => {
       pendingWithoutTendermint();
@@ -524,7 +546,7 @@ for (const { url, version } of tendermintInstances) {
       const factory = () => new WebsocketClient(url, onError);
       const adaptor = adatorForVersion(version);
       defaultTestSuite(factory, adaptor);
-      websocketTestSuite(factory, adaptor);
+      websocketTestSuite(factory, adaptor, appCreator);
     });
   });
 }

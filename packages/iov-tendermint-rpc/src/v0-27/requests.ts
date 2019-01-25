@@ -94,7 +94,7 @@ interface RpcAbciQueryParams {
   readonly path: string;
   readonly data: HexString;
   readonly height?: string;
-  readonly trusted?: boolean;
+  readonly prove?: boolean;
 }
 
 function encodeAbciQueryParams(params: requests.AbciQueryParams): RpcAbciQueryParams {
@@ -102,7 +102,7 @@ function encodeAbciQueryParams(params: requests.AbciQueryParams): RpcAbciQueryPa
     path: notEmpty(params.path),
     data: Encoding.toHex(params.data) as HexString,
     height: may(Integer.encode, params.height),
-    trusted: !params.prove,
+    prove: params.prove,
   };
 }
 

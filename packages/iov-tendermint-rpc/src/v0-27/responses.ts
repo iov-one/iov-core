@@ -364,11 +364,12 @@ function decodeTxData(data: RpcTxData): responses.TxData {
 /**
  * Example data:
  * {
- *   "Index": "0",
- *   "Total": "1",
- *   "RootHash": "F6F143EDFBBF8D76645EF1ADD21409E0757E130A",
- *   "Data": "VERSMWZ2R3owMXZkPUpzU2VHYTBRWTZjRQ==",
+ *   "RootHash": "10A1A17D5F818099B5CAB5B91733A3CC27C0DB6CE2D571AC27FB970C314308BB",
+ *   "Data": "ZVlERVhDV2lVNEUwPXhTUjc4Tmp2QkNVSg==",
  *   "Proof": {
+ *     "total": "1",
+ *     "index": "0",
+ *     "leaf_hash": "EKGhfV+BgJm1yrW5FzOjzCfA22zi1XGsJ/uXDDFDCLs=",
  *     "aunts": []
  *   }
  * }
@@ -376,9 +377,10 @@ function decodeTxData(data: RpcTxData): responses.TxData {
 export interface RpcTxProof {
   readonly Data: Base64String;
   readonly RootHash: HexString;
-  readonly Total: IntegerString;
-  readonly Index: IntegerString;
   readonly Proof: {
+    readonly total: IntegerString;
+    readonly index: IntegerString;
+    readonly leaf_hash: Base64String;
     readonly aunts: ReadonlyArray<Base64String>;
   };
 }
@@ -388,8 +390,10 @@ function decodeTxProof(data: RpcTxProof): responses.TxProof {
     data: Base64.decode(required(data.Data)),
     rootHash: Encoding.fromHex(required(data.RootHash)),
     proof: {
-      total: Integer.parse(required(data.Total)),
-      index: Integer.parse(required(data.Index)),
+      total: Integer.parse(required(data.Proof.total)),
+      index: Integer.parse(required(data.Proof.index)),
+      // Field ignored as not present in general responses.TxProof
+      // leaf_hash: Base64.decode(required(data.Proof.leaf_hash)),
       aunts: required(data.Proof.aunts).map(Base64.decode),
     },
   };
@@ -657,15 +661,32 @@ function decodeValidatorInfo(data: RpcValidatorInfo): responses.Validator {
   };
 }
 
+/**
+ * Example data:
+ * {
+ *   "block_size": {
+ *     "max_bytes": "22020096",
+ *     "max_gas": "-1"
+ *   },
+ *   "evidence": {
+ *     "max_age": "100000"
+ *   },
+ *   "validator": {
+ *     "pub_key_types": [
+ *       "ed25519"
+ *     ]
+ *   }
+ * }
+ */
 export interface RpcConsensusParams {
-  readonly block_size_params: RpcBlockSizeParams;
-  readonly evidence_params: RpcEvidenceParams;
+  readonly block_size: RpcBlockSizeParams;
+  readonly evidence: RpcEvidenceParams;
 }
 
 function decodeConsensusParams(data: RpcConsensusParams): responses.ConsensusParams {
   return {
-    blockSize: decodeBlockSizeParams(required(data.block_size_params)),
-    evidence: decodeEvidenceParams(required(data.evidence_params)),
+    blockSize: decodeBlockSizeParams(required(data.block_size)),
+    evidence: decodeEvidenceParams(required(data.evidence)),
   };
 }
 

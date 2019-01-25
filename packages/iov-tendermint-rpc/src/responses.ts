@@ -169,9 +169,9 @@ export interface TxData {
 export interface TxProof {
   readonly data: Uint8Array;
   readonly rootHash: Uint8Array;
-  readonly total: number;
-  readonly index: number;
   readonly proof: {
+    readonly total: number;
+    readonly index: number;
     readonly aunts: ReadonlyArray<Uint8Array>;
   };
 }
@@ -274,17 +274,13 @@ export interface Validator {
 }
 
 export interface ConsensusParams {
-  readonly blockSizeParams: BlockSizeParams;
-  readonly evidenceParams: EvidenceParams;
-  // no longer exist in 0.25
-  readonly txSizeParams?: TxSizeParams;
-  readonly blockGossipParams?: BlockGossipParams;
+  readonly blockSize: BlockSizeParams;
+  readonly evidence: EvidenceParams;
 }
 
 export interface BlockSizeParams {
   readonly maxBytes: number;
   readonly maxGas: number;
-  readonly maxTxs?: number; // no longer exists in 0.25
 }
 
 export interface TxSizeParams {
