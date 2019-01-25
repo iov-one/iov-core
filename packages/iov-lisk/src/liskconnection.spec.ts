@@ -942,9 +942,11 @@ describe("LiskConnection", () => {
         const bytesToPostB = liskCodec.bytesToPost(signedB);
         const bytesToPostC = liskCodec.bytesToPost(signedC);
 
-        // Post A and B
-        const postResultA = await connection.postTx(bytesToPostA);
-        const postResultB = await connection.postTx(bytesToPostB);
+        // Post A and B in parallel
+        const [postResultA, postResultB] = await Promise.all([
+          connection.postTx(bytesToPostA),
+          connection.postTx(bytesToPostB),
+        ]);
 
         // Wait for a block
         await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));

@@ -767,12 +767,15 @@ describe("EthereumConnection", () => {
         const bytesToPostB = ethereumCodec.bytesToPost(signedB);
         const bytesToPostC = ethereumCodec.bytesToPost(signedC);
 
-        // Post A and B
-        const postResultA = await connection.postTx(bytesToPostA);
-        await connection.postTx(bytesToPostB);
+        // Post A and B in parallel
+        const [postResultA, postResultB] = await Promise.all([
+          connection.postTx(bytesToPostA),
+          connection.postTx(bytesToPostB),
+        ]);
 
         // Wait for a block
         await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // Post C
         await connection.postTx(bytesToPostC);
@@ -845,12 +848,15 @@ describe("EthereumConnection", () => {
         const bytesToPostB = ethereumCodec.bytesToPost(signedB);
         const bytesToPostC = ethereumCodec.bytesToPost(signedC);
 
-        // Post A and B
-        const postResultA = await connection.postTx(bytesToPostA);
-        await connection.postTx(bytesToPostB);
+        // Post A and B in parallel
+        const [postResultA, postResultB] = await Promise.all([
+          connection.postTx(bytesToPostA),
+          connection.postTx(bytesToPostB),
+        ]);
 
         // Wait for a block
         await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
         const events = new Array<ConfirmedTransaction>();
