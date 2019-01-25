@@ -143,6 +143,29 @@ describe("Serialization", () => {
       );
     });
 
+    it("throws error is fractionalDigits are not correct", () => {
+      const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
+      const tx: SendTransaction = {
+        kind: "bcp/send",
+        creator: {
+          chainId: riseTestnet,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: pubkey as PublicKeyBytes,
+          },
+        },
+        amount: {
+          quantity: "123456789",
+          fractionalDigits: 9,
+          tokenTicker: "RISE" as TokenTicker,
+        },
+        recipient: "10010344879730196491R" as Address,
+      };
+      expect(() =>
+        serializeTransaction(tx, defaultCreationDate, riseTransactionSerializationOptions),
+      ).toThrowError(/Requires 8/);
+    });
+
     it("can serialize Lisk transaction of type 0 with memo", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 

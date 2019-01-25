@@ -46,6 +46,12 @@ export class Serialization {
         (timestamp >> 16) & 0xff,
         (timestamp >> 24) & 0xff,
       ]);
+      // assert that there are 8 fractionalDigits so this makes sense
+      if (unsigned.amount.fractionalDigits !== 8) {
+        throw new Error(
+          `Requires 8 fractional digits on Amount, received ${unsigned.amount.fractionalDigits}`,
+        );
+      }
       const amount = Uint64.fromString(unsigned.amount.quantity);
       const fullRecipientString = unsigned.recipient;
 
