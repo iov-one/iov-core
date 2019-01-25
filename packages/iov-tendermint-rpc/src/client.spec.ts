@@ -38,15 +38,21 @@ function pendingWithoutTendermint(): void {
  *   docker container kill <container id from 1st column>
  */
 const tendermintInstances = [
-  // {
-  //   url: "localhost:11121",
-  //   version: "0.21.x",
-  // },
   {
     url: "localhost:12345",
     version: "0.25.x",
     appCreator: "jae",
   },
+  // {
+  //   url: "localhost:11125",
+  //   version: "0.25.x",
+  //   appCreator: "jae",
+  // },
+  // {
+  //   url: "localhost:11127",
+  //   version: "0.27.x",
+  //   appCreator: "Cosmoshi Netowoko",
+  // },
 ];
 
 function sleep(ms: number): Promise<void> {
