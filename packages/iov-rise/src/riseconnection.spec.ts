@@ -11,7 +11,9 @@ import {
   BcpPubkeyQuery,
   BlockInfo,
   ChainId,
+  ConfirmedTransaction,
   isBlockInfoPending,
+  isConfirmedTransaction,
   isSendTransaction,
   PublicKeyBundle,
   PublicKeyBytes,
@@ -25,7 +27,7 @@ import {
 import { Random } from "@iov/crypto";
 import { Derivation } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
-import { Ed25519Wallet } from "@iov/keycontrol";
+import { Ed25519Wallet, UserProfile } from "@iov/keycontrol";
 
 import { pubkeyToAddress } from "./derivation";
 import { riseCodec } from "./risecodec";
@@ -689,6 +691,189 @@ describe("RiseConnection", () => {
       }
 
       connection.disconnect();
+    }, 60_000);
+  });
+
+  describe("liveTx", () => {
+    it("can listen to transactions by recipient address (transactions in history and updates)", done => {
+      (async () => {
+        const connection = await RiseConnection.establish(base);
+
+        const recipientAddress = await randomAddress();
+
+        // send transactions
+
+        const profile = new UserProfile();
+        const wallet = profile.addWallet(new Ed25519Wallet());
+        const sender = await profile.createIdentity(wallet.id, riseTestnet, await defaultKeypair);
+
+        const sendA: SendTransaction = {
+          kind: "bcp/send",
+          creator: sender,
+          recipient: recipientAddress,
+          amount: defaultSendAmount,
+        };
+
+        const sendB: SendTransaction = {
+          kind: "bcp/send",
+          creator: sender,
+          recipient: recipientAddress,
+          amount: defaultSendAmount,
+        };
+
+        const sendC: SendTransaction = {
+          kind: "bcp/send",
+          creator: sender,
+          recipient: recipientAddress,
+          amount: defaultSendAmount,
+        };
+
+        const [nonceA, nonceB, nonceC] = await connection.getNonces({ pubkey: sender.pubkey }, 3);
+        const signedA = await profile.signTransaction(wallet.id, sender, sendA, riseCodec, nonceA);
+        const signedB = await profile.signTransaction(wallet.id, sender, sendB, riseCodec, nonceB);
+        const signedC = await profile.signTransaction(wallet.id, sender, sendC, riseCodec, nonceC);
+        const bytesToPostA = riseCodec.bytesToPost(signedA);
+        const bytesToPostB = riseCodec.bytesToPost(signedB);
+        const bytesToPostC = riseCodec.bytesToPost(signedC);
+
+        // Post A and B
+        const postResultA = await connection.postTx(bytesToPostA);
+        await connection.postTx(bytesToPostB);
+
+        // Wait for a block
+        await postResultA.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
+
+        // setup listener after A and B are in block
+        const events = new Array<ConfirmedTransaction>();
+        const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
+          next: event => {
+            if (!isConfirmedTransaction(event)) {
+              throw new Error("Confirmed transaction expected");
+            }
+
+            events.push(event);
+
+            if (!isSendTransaction(event.transaction)) {
+              throw new Error("Unexpected transaction type");
+            }
+            expect(event.transaction.recipient).toEqual(recipientAddress);
+
+            if (events.length === 3) {
+              // This assumes we get two transactions into one block
+              // A == B < C
+              expect(events[0].height).toEqual(events[1].height);
+              expect(events[2].height).toBeGreaterThan(events[1].height);
+
+              subscription.unsubscribe();
+              connection.disconnect();
+              done();
+            }
+          },
+        });
+
+        // Post C
+        await connection.postTx(bytesToPostC);
+      })().catch(done.fail);
+    }, 90_000);
+
+    it("can listen to transactions by ID (transaction in history)", done => {
+      (async () => {
+        const connection = await RiseConnection.establish(base);
+
+        const profile = new UserProfile();
+        const wallet = profile.addWallet(new Ed25519Wallet());
+        const sender = await profile.createIdentity(wallet.id, riseTestnet, await defaultKeypair);
+
+        const recipientAddress = await randomAddress();
+        const send: SendTransaction = {
+          kind: "bcp/send",
+          creator: sender,
+          recipient: recipientAddress,
+          amount: defaultSendAmount,
+        };
+
+        const nonce = await connection.getNonce({ pubkey: sender.pubkey });
+        const signed = await profile.signTransaction(wallet.id, sender, send, riseCodec, nonce);
+        const bytesToPost = riseCodec.bytesToPost(signed);
+
+        const postResult = await connection.postTx(bytesToPost);
+        const transactionId = postResult.transactionId;
+
+        // Wait for a block
+        await postResult.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
+
+        // setup listener after transaction is in block
+        const events = new Array<ConfirmedTransaction>();
+        const subscription = connection.liveTx({ id: transactionId }).subscribe({
+          next: event => {
+            if (!isConfirmedTransaction(event)) {
+              throw new Error("Confirmed transaction expected");
+            }
+
+            events.push(event);
+
+            if (!isSendTransaction(event.transaction)) {
+              throw new Error("Unexpected transaction type");
+            }
+            expect(event.transaction.recipient).toEqual(recipientAddress);
+            expect(event.transactionId).toEqual(transactionId);
+
+            subscription.unsubscribe();
+            connection.disconnect();
+            done();
+          },
+        });
+      })().catch(done.fail);
+    }, 60_000);
+
+    it("can listen to transactions by ID (transaction in updates)", done => {
+      (async () => {
+        const connection = await RiseConnection.establish(base);
+
+        const recipientAddress = await randomAddress();
+
+        // send transactions
+
+        const profile = new UserProfile();
+        const wallet = profile.addWallet(new Ed25519Wallet());
+        const sender = await profile.createIdentity(wallet.id, riseTestnet, await defaultKeypair);
+
+        const send: SendTransaction = {
+          kind: "bcp/send",
+          creator: sender,
+          recipient: recipientAddress,
+          amount: defaultSendAmount,
+        };
+
+        const nonce = await connection.getNonce({ pubkey: sender.pubkey });
+        const signed = await profile.signTransaction(wallet.id, sender, send, riseCodec, nonce);
+        const bytesToPost = riseCodec.bytesToPost(signed);
+
+        const postResult = await connection.postTx(bytesToPost);
+        const transactionId = postResult.transactionId;
+
+        // setup listener before transaction is in block
+        const events = new Array<ConfirmedTransaction>();
+        const subscription = connection.liveTx({ id: transactionId }).subscribe({
+          next: event => {
+            if (!isConfirmedTransaction(event)) {
+              throw new Error("Confirmed transaction expected");
+            }
+
+            events.push(event);
+
+            if (!isSendTransaction(event.transaction)) {
+              throw new Error("Unexpected transaction type");
+            }
+            expect(event.transaction.recipient).toEqual(recipientAddress);
+            expect(event.transactionId).toEqual(transactionId);
+
+            subscription.unsubscribe();
+            connection.disconnect();
+            done();
+          },
+        });
+      })().catch(done.fail);
     }, 60_000);
   });
 });

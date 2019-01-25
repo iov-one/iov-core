@@ -30,7 +30,7 @@ import {
 } from "@iov/bcp-types";
 import { Parse } from "@iov/dpos";
 import { Encoding, Int53, Uint53, Uint64 } from "@iov/encoding";
-import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
+import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
 import { pubkeyToAddress } from "./derivation";
@@ -310,19 +310,26 @@ export class RiseConnection implements BcpConnection {
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    if (query.height || query.minHeight || query.maxHeight || query.tags) {
-      throw new Error("Query by height, minHeight, maxHeight, tags not supported");
+    if (query.height || query.tags) {
+      throw new Error("Query by height and tags not supported");
     }
 
     if (query.id !== undefined) {
-      const result = await this.searchSingleTransaction({ id: query.id });
+      if (query.minHeight || query.maxHeight) {
+        throw new Error("Query by minHeight/maxHeight not supported together with ID");
+      }
+      const result = await this.searchSingleTransaction(query.id);
       return result ? [result] : [];
     } else if (query.sentFromOrTo) {
-      return this.searchTransactions({
-        recipientId: query.sentFromOrTo,
-        senderId: query.sentFromOrTo,
-        limit: 1000,
-      });
+      return this.searchTransactions(
+        {
+          recipientId: query.sentFromOrTo,
+          senderId: query.sentFromOrTo,
+          limit: 1000,
+        },
+        query.minHeight,
+        query.maxHeight,
+      );
     } else {
       throw new Error("Unsupported query.");
     }
@@ -332,13 +339,59 @@ export class RiseConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  public liveTx(_: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
-    throw new Error("Not implemented");
+  public liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
+    if (query.height || query.tags) {
+      throw new Error("Query by height or tags not supported");
+    }
+
+    if (query.id !== undefined) {
+      if (query.minHeight || query.maxHeight) {
+        throw new Error("Query by minHeight/maxHeight not supported together with ID");
+      }
+
+      // concat never() because we want non-completing streams consistently
+      return concat(this.waitForTransaction(query.id), Stream.never());
+    } else if (query.sentFromOrTo) {
+      let pollInterval: NodeJS.Timeout | undefined;
+      const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
+        start: listener => {
+          let minHeight = query.minHeight || 0;
+          const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
+
+          const poll = async (): Promise<void> => {
+            const result = await this.searchTx({
+              sentFromOrTo: query.sentFromOrTo,
+              minHeight: minHeight,
+              maxHeight: maxHeight,
+            });
+            for (const item of result) {
+              listener.next(item);
+              if (item.height >= minHeight) {
+                // we assume we got all matching transactions from block `item.height` now
+                minHeight = item.height + 1;
+              }
+            }
+          };
+
+          poll();
+          pollInterval = setInterval(poll, 8_000);
+        },
+        stop: () => {
+          if (pollInterval) {
+            clearInterval(pollInterval);
+            pollInterval = undefined;
+          }
+        },
+      };
+      return Stream.create(producer);
+    } else {
+      throw new Error("Unsupported query.");
+    }
   }
 
-  private async searchSingleTransaction(searchParams: any): Promise<ConfirmedTransaction | undefined> {
+  private async searchSingleTransaction(searchId: TransactionId): Promise<ConfirmedTransaction | undefined> {
     const result = await axios.get(`${this.baseUrl}/api/transactions/get`, {
-      params: searchParams,
+      params: { id: searchId },
     });
     const responseBody = result.data;
 
@@ -369,7 +422,43 @@ export class RiseConnection implements BcpConnection {
     };
   }
 
-  private async searchTransactions(searchParams: any): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  private waitForTransaction(id: TransactionId): Stream<ConfirmedTransaction | FailedTransaction> {
+    let poller: NodeJS.Timeout | undefined;
+    const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
+      start: listener => {
+        setInterval(async () => {
+          try {
+            const result = await this.searchSingleTransaction(id);
+            if (result) {
+              listener.next(result);
+              listener.complete();
+            } else {
+              // okay, we'll try again´
+            }
+          } catch (error) {
+            if (poller) {
+              clearTimeout(poller);
+              poller = undefined;
+            }
+            listener.error(error);
+          }
+        }, 5_000);
+      },
+      stop: () => {
+        if (poller) {
+          clearTimeout(poller);
+          poller = undefined;
+        }
+      },
+    };
+    return Stream.create(producer);
+  }
+
+  private async searchTransactions(
+    searchParams: any,
+    minHeight: number | undefined,
+    maxHeight: number | undefined,
+  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
     const result = await axios.get(`${this.baseUrl}/api/transactions`, {
       params: searchParams,
     });
@@ -381,8 +470,20 @@ export class RiseConnection implements BcpConnection {
 
     return responseBody.transactions
       .filter((transactionJson: any) => {
-        // other transaction types cannot be parsed
-        return transactionJson.type === 0;
+        if (transactionJson.type !== 0) {
+          // other transaction types cannot be parsed
+          return false;
+        }
+
+        if (minHeight !== undefined && transactionJson.height < minHeight) {
+          return false;
+        }
+
+        if (maxHeight !== undefined && transactionJson.height > maxHeight) {
+          return false;
+        }
+
+        return true;
       })
       .map((transactionJson: any) => {
         const height = new Uint53(transactionJson.height);
