@@ -1,8 +1,9 @@
 import {
   Address,
   Algorithm,
-  BcpTransactionState,
   ChainId,
+  isBlockInfoPending,
+  isConfirmedTransaction,
   isSendTransaction,
   PublicIdentity,
   PublicKeyBytes,
@@ -103,7 +104,7 @@ describe("MultiChainSigner", () => {
         },
       };
       const postResponse = await signer.signAndPost(sendTx, mainWalletId);
-      await postResponse.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+      await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
       // we should be a little bit richer
       const updatedAccount = await connection.getAccount({ address: recipient });
@@ -112,7 +113,7 @@ describe("MultiChainSigner", () => {
       expect(updatedAccount!.balance[0].quantity).toEqual("11000000000777");
 
       // find the transaction we sent by comparing the memo
-      const results = await connection.searchTx({ sentFromOrTo: recipient });
+      const results = (await connection.searchTx({ sentFromOrTo: recipient })).filter(isConfirmedTransaction);
       expect(results.length).toBeGreaterThanOrEqual(1);
       const last = results[results.length - 1].transaction;
       if (!isSendTransaction(last)) {

@@ -277,7 +277,7 @@ export interface RpcTxResponse {
 function decodeTxResponse(data: RpcTxResponse): responses.TxResponse {
   return {
     tx: Base64.decode(required(data.tx)) as TxBytes,
-    txResult: decodeTxData(required(data.tx_result)),
+    result: decodeTxData(required(data.tx_result)),
     height: Integer.parse(required(data.height)),
     index: Integer.ensure(required(data.index)),
     hash: Encoding.fromHex(required(data.hash)) as TxHash,

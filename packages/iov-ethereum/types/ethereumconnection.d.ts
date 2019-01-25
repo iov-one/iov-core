@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpConnection, BcpPubkeyQuery, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, Nonce, PostableBytes, PostTxResponse, TokenTicker } from "@iov/bcp-types";
+import { BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpConnection, BcpPubkeyQuery, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Nonce, PostableBytes, PostTxResponse, TokenTicker } from "@iov/bcp-types";
 export interface EthereumConnectionOptions {
     readonly wsUrl?: string;
     /** URL to an Etherscan compatible scraper API */
@@ -27,8 +27,8 @@ export declare class EthereumConnection implements BcpConnection {
     changeBlock(): Stream<number>;
     watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined>;
     searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
-    listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction>;
-    liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction>;
+    listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction>;
+    liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction>;
     private socketSend;
     private searchTransactionsById;
     private searchSendTransactionsByAddress;

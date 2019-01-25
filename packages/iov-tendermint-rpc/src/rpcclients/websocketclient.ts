@@ -2,7 +2,7 @@
 import { Listener, Producer, Stream, Subscription } from "xstream";
 
 import { SocketWrapperMessageEvent, StreamingSocket } from "@iov/socket";
-import { toListPromise } from "@iov/stream";
+import { firstEvent } from "@iov/stream";
 
 import {
   ifError,
@@ -102,9 +102,7 @@ export class WebsocketClient implements RpcStreamingClient {
   }
 
   protected responseForRequestId(id: string): Promise<JsonRpcResponse> {
-    return toListPromise(this.jsonRpcResponseStream.filter(r => r.id === id), 1).then(
-      responseList => responseList[0],
-    );
+    return firstEvent(this.jsonRpcResponseStream.filter(r => r.id === id));
   }
 }
 

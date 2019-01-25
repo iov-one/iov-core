@@ -10,16 +10,16 @@ import {
   BcpAccount,
   BcpAccountQuery,
   BcpAddressQuery,
-  BcpBlockInfo,
   BcpConnection,
   BcpPubkeyQuery,
   BcpTicker,
-  BcpTransactionState,
   BcpTxQuery,
   BlockHeader,
   BlockId,
+  BlockInfo,
   ChainId,
   ConfirmedTransaction,
+  FailedTransaction,
   isPubkeyQuery,
   Nonce,
   PostableBytes,
@@ -28,6 +28,7 @@ import {
   PublicKeyBytes,
   TokenTicker,
   TransactionId,
+  TransactionState,
 } from "@iov/bcp-types";
 import { Parse } from "@iov/dpos";
 import { Encoding, Int53, Uint53, Uint64 } from "@iov/encoding";
@@ -48,10 +49,6 @@ const transactionStatePollInterval = 3_000;
 export function generateNonce(): Nonce {
   const now = new ReadonlyDate(ReadonlyDate.now());
   return Parse.timeToNonce(now);
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function checkAndNormalizeUrl(url: string): string {
@@ -120,10 +117,10 @@ export class LiskConnection implements BcpConnection {
     }
 
     let blockInfoInterval: any;
-    let lastEventSent: BcpBlockInfo | undefined;
-    const blockInfoProducer = new DefaultValueProducer<BcpBlockInfo>(
+    let lastEventSent: BlockInfo | undefined;
+    const blockInfoProducer = new DefaultValueProducer<BlockInfo>(
       {
-        state: BcpTransactionState.Pending,
+        state: TransactionState.Pending,
       },
       {
         onStarted: () => {
@@ -131,8 +128,8 @@ export class LiskConnection implements BcpConnection {
             const search = await this.searchTx({ id: transactionId });
             if (search.length > 0) {
               const confirmedTransaction = search[0];
-              const event: BcpBlockInfo = {
-                state: BcpTransactionState.InBlock,
+              const event: BlockInfo = {
+                state: TransactionState.Succeeded,
                 height: confirmedTransaction.height,
                 confirmations: confirmedTransaction.confirmations,
               };
@@ -322,37 +319,21 @@ export class LiskConnection implements BcpConnection {
     }
   }
 
-  public listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction> {
+  public listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
     throw new Error("Not implemented");
   }
 
-  public liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction> {
+  public liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
     if (query.height || query.tags) {
       throw new Error("Query by height or tags not supported");
     }
 
     if (query.id !== undefined) {
-      const searchId = query.id;
-      const resultPromise = new Promise<ConfirmedTransaction>(async (resolve, reject) => {
-        try {
-          while (true) {
-            const searchResult = await this.searchTx({ id: searchId });
-            if (searchResult.length > 0) {
-              resolve(searchResult[0]);
-            } else {
-              await sleep(4_000);
-            }
-          }
-        } catch (error) {
-          reject(error);
-        }
-      });
-
       // concat never() because we want non-completing streams consistently
-      return xstreamConcat(Stream.fromPromise(resultPromise), Stream.never());
+      return xstreamConcat(this.waitForTransaction(query.id), Stream.never());
     } else if (query.sentFromOrTo) {
       let pollInterval: NodeJS.Timeout | undefined;
-      const producer: Producer<ConfirmedTransaction> = {
+      const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
         start: listener => {
           let minHeight = query.minHeight || 0;
           const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
@@ -386,6 +367,43 @@ export class LiskConnection implements BcpConnection {
     } else {
       throw new Error("Unsupported query.");
     }
+  }
+
+  private waitForTransaction(id: TransactionId): Stream<ConfirmedTransaction | FailedTransaction> {
+    let poller: NodeJS.Timeout | undefined;
+    const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
+      start: listener => {
+        setInterval(async () => {
+          try {
+            const results = await this.searchTransactions({ id: id }, undefined, undefined);
+            switch (results.length) {
+              case 0:
+                // okay, we'll try again
+                break;
+              case 1:
+                listener.next(results[0]);
+                listener.complete();
+                break;
+              default:
+                throw new Error(`Got unexpected number of search results: ${results.length}`);
+            }
+          } catch (error) {
+            if (poller) {
+              clearTimeout(poller);
+              poller = undefined;
+            }
+            listener.error(error);
+          }
+        }, 5_000);
+      },
+      stop: () => {
+        if (poller) {
+          clearTimeout(poller);
+          poller = undefined;
+        }
+      },
+    };
+    return Stream.create(producer);
   }
 
   private async searchTransactions(

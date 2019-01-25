@@ -3,10 +3,12 @@ import {
   Algorithm,
   Amount,
   BcpAccount,
-  BcpBlockInfoInBlock,
-  BcpTransactionState,
   BlockHeader,
+  BlockInfoFailed,
+  BlockInfoSucceeded,
   ConfirmedTransaction,
+  isBlockInfoPending,
+  isConfirmedTransaction,
   isSendTransaction,
   Nonce,
   PostTxResponse,
@@ -16,6 +18,7 @@ import {
   SignedTransaction,
   TokenTicker,
   TransactionId,
+  TransactionState,
 } from "@iov/bcp-types";
 import { Random, Secp256k1 } from "@iov/crypto";
 import { HdPaths, Secp256k1HdWallet, UserProfile, Wallet } from "@iov/keycontrol";
@@ -324,7 +327,7 @@ describe("EthereumConnection", () => {
       expect(result.log).toBeUndefined();
 
       // we need to wait here such that the following tests query an updated nonce
-      await result.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+      await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
       connection.disconnect();
     }, 30_000);
@@ -367,16 +370,16 @@ describe("EthereumConnection", () => {
       const heightBeforeTransaction = await connection.height();
       const result = await connection.postTx(bytesToPost);
       expect(result).toBeTruthy();
-      expect(result.blockInfo.value.state).toEqual(BcpTransactionState.Pending);
+      expect(result.blockInfo.value.state).toEqual(TransactionState.Pending);
 
       const events = await toListPromise(result.blockInfo.updates, 2);
 
-      expect(events[0]).toEqual({ state: BcpTransactionState.Pending });
+      expect(events[0]).toEqual({ state: TransactionState.Pending });
 
       // In Ropsten and Rinkerby, the currentHeight can be less than transactionHeight.
       // Is there some caching for RPC calls happening? Ignore for now.
       expect(events[1]).toEqual({
-        state: BcpTransactionState.InBlock,
+        state: TransactionState.Succeeded,
         height: heightBeforeTransaction + 1,
         confirmations: 1,
       });
@@ -486,7 +489,7 @@ describe("EthereumConnection", () => {
 
       const resultPost = await connection.postTx(bytesToPost);
       expect(resultPost.transactionId).toMatch(/^0x[0-9a-f]{64}$/);
-      await resultPost.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+      await resultPost.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
       const resultSearch = await connection.searchTx({ id: resultPost.transactionId });
       expect(resultSearch.length).toEqual(1);
@@ -571,9 +574,8 @@ describe("EthereumConnection", () => {
 
       const resultPost = await connection.postTx(bytesToPost);
       const transactionId = resultPost.transactionId;
-      const transactionHeight = ((await resultPost.blockInfo.waitFor(
-        info => info.state === BcpTransactionState.InBlock,
-      )) as BcpBlockInfoInBlock).height;
+      const blockInfo = await resultPost.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const transactionHeight = (blockInfo as BlockInfoSucceeded | BlockInfoFailed).height;
 
       // Random delay to give scraper a chance to receive and process the new block
       await sleep(25_000);
@@ -688,6 +690,10 @@ describe("EthereumConnection", () => {
         const events = new Array<ConfirmedTransaction>();
         const subscription = connection.listenTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
+            if (!isConfirmedTransaction(event)) {
+              throw new Error("Confirmed transaction expected");
+            }
+
             events.push(event);
 
             if (!isSendTransaction(event.transaction)) {
@@ -766,7 +772,7 @@ describe("EthereumConnection", () => {
         await connection.postTx(bytesToPostB);
 
         // Wait for a block
-        await postResultA.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+        await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // Post C
         await connection.postTx(bytesToPostC);
@@ -844,12 +850,16 @@ describe("EthereumConnection", () => {
         await connection.postTx(bytesToPostB);
 
         // Wait for a block
-        await postResultA.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+        await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
         const events = new Array<ConfirmedTransaction>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
+            if (!isConfirmedTransaction(event)) {
+              throw new Error("Confirmed transaction expected");
+            }
+
             events.push(event);
 
             if (!isSendTransaction(event.transaction)) {
@@ -915,12 +925,16 @@ describe("EthereumConnection", () => {
         const transactionId = postResult.transactionId;
 
         // Wait for a block
-        await postResult.blockInfo.waitFor(info => info.state === BcpTransactionState.InBlock);
+        await postResult.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after transaction is in block
         const events = new Array<ConfirmedTransaction>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
+            if (!isConfirmedTransaction(event)) {
+              throw new Error("Confirmed transaction expected");
+            }
+
             events.push(event);
 
             if (!isSendTransaction(event.transaction)) {
@@ -983,6 +997,10 @@ describe("EthereumConnection", () => {
         const events = new Array<ConfirmedTransaction>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
+            if (!isConfirmedTransaction(event)) {
+              throw new Error("Confirmed transaction expected");
+            }
+
             events.push(event);
 
             if (!isSendTransaction(event.transaction)) {

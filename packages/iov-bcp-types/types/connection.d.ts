@@ -48,17 +48,19 @@ export interface BcpTicker {
      */
     readonly fractionalDigits: number;
 }
-export declare enum BcpTransactionState {
+export declare enum TransactionState {
     /** accepted by a blockchain node and in mempool */
     Pending = 0,
     /** successfully written in a block, but cannot yet guarantee it won't be reverted */
-    InBlock = 1
+    Succeeded = 1,
+    /** executing the transaction failed */
+    Failed = 2
 }
-export interface BcpBlockInfoPending {
-    readonly state: BcpTransactionState.Pending;
+export interface BlockInfoPending {
+    readonly state: TransactionState.Pending;
 }
-export interface BcpBlockInfoInBlock {
-    readonly state: BcpTransactionState.InBlock;
+export interface BlockInfoSucceeded {
+    readonly state: TransactionState.Succeeded;
     /** block height, if the transaction is included in a block */
     readonly height: number;
     /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
@@ -66,11 +68,28 @@ export interface BcpBlockInfoInBlock {
     /** application specific data from executing tx (result, code, tags...) */
     readonly result?: Uint8Array;
 }
+export interface BlockInfoFailed {
+    readonly state: TransactionState.Failed;
+    /** height of the block that contains the transaction */
+    readonly height: number;
+    /**
+     * Application specific error code
+     */
+    readonly code: number;
+    /**
+     * Application specific, human-readable, non-localized error message
+     * in an arbitrary text format that may change at any time.
+     */
+    readonly message?: string;
+}
 /** Information attached to a signature about its state in a block */
-export declare type BcpBlockInfo = BcpBlockInfoPending | BcpBlockInfoInBlock;
+export declare type BlockInfo = BlockInfoPending | BlockInfoSucceeded | BlockInfoFailed;
+export declare function isBlockInfoPending(info: BlockInfo): info is BlockInfoPending;
+export declare function isBlockInfoSucceeded(info: BlockInfo): info is BlockInfoSucceeded;
+export declare function isBlockInfoFailed(info: BlockInfo): info is BlockInfoFailed;
 export interface PostTxResponse {
     /** Information about the block the transaction is in */
-    readonly blockInfo: ValueAndUpdates<BcpBlockInfo>;
+    readonly blockInfo: ValueAndUpdates<BlockInfo>;
     /** a unique identifier (hash of the transaction) */
     readonly transactionId: TransactionId;
     /** a human readable debugging log */
@@ -84,8 +103,29 @@ export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTr
     readonly transactionId: TransactionId;
     /** application specific data from executing tx (result, code, tags...) */
     readonly result?: Uint8Array;
+    /**
+     * Application specific logging output in an arbitrary text format that
+     * may change at any time.
+     */
     readonly log?: string;
 }
+export interface FailedTransaction {
+    /** height of the block that contains the transaction */
+    readonly height: number;
+    /** a unique identifier (hash of the transaction) */
+    readonly transactionId: TransactionId;
+    /**
+     * Application specific error code
+     */
+    readonly code: number;
+    /**
+     * Application specific, human-readable, non-localized error message
+     * in an arbitrary text format that may change at any time.
+     */
+    readonly message?: string;
+}
+export declare function isConfirmedTransaction(transaction: ConfirmedTransaction | FailedTransaction): transaction is ConfirmedTransaction;
+export declare function isFailedTransaction(transaction: ConfirmedTransaction | FailedTransaction): transaction is FailedTransaction;
 export interface BcpQueryTag {
     readonly key: string;
     readonly value: string;
@@ -154,14 +194,14 @@ export interface BcpConnection {
     /** @deprecated use watchBlockHeaders().map(header => header.height) */
     readonly changeBlock: () => Stream<number>;
     readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
-    readonly searchTx: (query: BcpTxQuery) => Promise<ReadonlyArray<ConfirmedTransaction>>;
+    readonly searchTx: (query: BcpTxQuery) => Promise<ReadonlyArray<ConfirmedTransaction | FailedTransaction>>;
     /**
      * Subscribes to all newly added transactions that match the query
      */
-    readonly listenTx: (query: BcpTxQuery) => Stream<ConfirmedTransaction>;
+    readonly listenTx: (query: BcpTxQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
     /**
      * Returns a stream for all historical transactions that match
      * the query, along with all new transactions arriving from listenTx
      */
-    readonly liveTx: (txQuery: BcpTxQuery) => Stream<ConfirmedTransaction>;
+    readonly liveTx: (txQuery: BcpTxQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
 }

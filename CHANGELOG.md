@@ -14,6 +14,7 @@
 * @iov/iov-core: Add `MultiChainSigner.shutdown` to shutdown the signer.
 * @iov/iov-core: Add `MultiChainSigner.isValidAddress` for chain-specific address input validation.
 * @iov/stream: Add an implementation of `concat` that buffers stream events
+* @iov/stream: Add `firstEvent` as a special case of `toListPromise` with one element
 
 Breaking changes
 
@@ -35,6 +36,10 @@ Breaking changes
 * @iov/bcp-types: Migrate `UnsignedTransaction.chainId` and `.signer` into `.creator`
 * @iov/bcp-types: Add `BcpConnection.getNonces`
 * @iov/bcp-types: Add `BcpTxQuery.sentFromOrTo` in favour of package-specific address tags
+* @iov/bcp-types: Removed `Bcp` prefix from `BcpTransactionState`, `BcpBlockInfoPending`,
+  `BcpBlockInfoInBlock`, `BcpBlockInfo`.
+* @iov/bcp-types: Add block info state `BlockInfoFailed`.
+* @iov/bcp-types: Handle failed transactions in `searchTx`/`listenTx`/`liveTx` and `postTx`.
 * @iov/bns: Convert `.owner` in `BnsUsernameNft` and `BnsBlockchainNft` to `Address`
 * @iov/bns: In `BncConnection.watchBlockHeaders`, the block header events
   temporarily contain a dummy `id` string until ID calculation is implemented
@@ -52,6 +57,7 @@ Breaking changes
 * @iov/keycontrol: Remove `LocalIdentity`/`LocalIdentityId` and create
   `UserProdile.getIdentityLabel` to provide labels
 * @iov/tendermint-rpc: Remove support for Tendermint 0.20 and 0.21
+* @iov/tendermint-rpc: Rename `TxResponse.txResult` -> `.result`
 * @iov/crypto: Remove support for ripemd160
 
 ## 0.10.4

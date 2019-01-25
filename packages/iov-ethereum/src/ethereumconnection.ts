@@ -8,21 +8,22 @@ import {
   BcpAccount,
   BcpAccountQuery,
   BcpAddressQuery,
-  BcpBlockInfo,
   BcpConnection,
   BcpPubkeyQuery,
   BcpTicker,
-  BcpTransactionState,
   BcpTxQuery,
   BlockHeader,
+  BlockInfo,
   ChainId,
   ConfirmedTransaction,
+  FailedTransaction,
   isPubkeyQuery,
   Nonce,
   PostableBytes,
   PostTxResponse,
   TokenTicker,
   TransactionId,
+  TransactionState,
 } from "@iov/bcp-types";
 import { Encoding, Int53, Uint53 } from "@iov/encoding";
 import { isJsonRpcErrorResponse, JsonRpcRequest } from "@iov/jsonrpc";
@@ -150,9 +151,9 @@ export class EthereumConnection implements BcpConnection {
     const pollIntervalMs = 4_000;
 
     let pollInterval: NodeJS.Timeout | undefined;
-    const blockInfoPending = new DefaultValueProducer<BcpBlockInfo>(
+    const blockInfoPending = new DefaultValueProducer<BlockInfo>(
       {
-        state: BcpTransactionState.Pending,
+        state: TransactionState.Pending,
       },
       {
         onStarted: () => {
@@ -165,7 +166,7 @@ export class EthereumConnection implements BcpConnection {
             const confirmedTransaction = searchResult[0];
 
             blockInfoPending.update({
-              state: BcpTransactionState.InBlock,
+              state: TransactionState.Succeeded,
               height: confirmedTransaction.height,
               confirmations: confirmedTransaction.confirmations,
             });
@@ -433,7 +434,7 @@ export class EthereumConnection implements BcpConnection {
     }
   }
 
-  public listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction> {
+  public listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
     if (query.height || query.tags) {
       throw new Error("Query by height or tags not supported");
     }
@@ -445,7 +446,7 @@ export class EthereumConnection implements BcpConnection {
     } else if (query.sentFromOrTo) {
       const sentFromOrTo = query.sentFromOrTo;
       let pollInterval: NodeJS.Timeout | undefined;
-      const producer: Producer<ConfirmedTransaction> = {
+      const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
         start: async listener => {
           const currentHeight = await this.height();
           let minHeight = Math.max(query.minHeight || 0, currentHeight + 1);
@@ -478,7 +479,7 @@ export class EthereumConnection implements BcpConnection {
     }
   }
 
-  public liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction> {
+  public liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
     if (query.height || query.tags) {
       throw new Error("Query by height or tags not supported");
     }
@@ -505,7 +506,7 @@ export class EthereumConnection implements BcpConnection {
     } else if (query.sentFromOrTo) {
       const sentFromOrTo = query.sentFromOrTo;
       let pollInterval: NodeJS.Timeout | undefined;
-      const producer: Producer<ConfirmedTransaction> = {
+      const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
         start: listener => {
           let minHeight = query.minHeight || 0;
           const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;

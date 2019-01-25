@@ -3,7 +3,7 @@ import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
 import { Encoding } from "@iov/encoding";
-import { toListPromise } from "@iov/stream";
+import { firstEvent, toListPromise } from "@iov/stream";
 
 import { Adaptor, adatorForVersion } from "./adaptor";
 import { Client } from "./client";
@@ -441,27 +441,27 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void
     const client = new Client(rpcFactory(), adaptor);
     const stream = client.subscribeNewBlockHeader();
 
-    const event1 = (await toListPromise(stream, 1))[0];
+    const event1 = await firstEvent(stream);
     expect(event1.height).toBeGreaterThanOrEqual(1);
     expect(event1.time.getTime()).toBeGreaterThanOrEqual(1);
 
     // No sleep: producer will not be stopped in the meantime
 
-    const event2 = (await toListPromise(stream, 1))[0];
+    const event2 = await firstEvent(stream);
     expect(event2.height).toBeGreaterThan(event1.height);
     expect(event2.time.getTime()).toBeGreaterThan(event1.time.getTime());
 
     // Very short sleep: just enough to schedule asynchonous producer stopping
     await sleep(5);
 
-    const event3 = (await toListPromise(stream, 1))[0];
+    const event3 = await firstEvent(stream);
     expect(event3.height).toBeGreaterThan(event2.height);
     expect(event3.time.getTime()).toBeGreaterThan(event2.time.getTime());
 
     // Proper sleep: enough to finish unsubscribing at over the network
     await sleep(100);
 
-    const event4 = (await toListPromise(stream, 1))[0];
+    const event4 = await firstEvent(stream);
     expect(event4.height).toBeGreaterThan(event3.height);
     expect(event4.time.getTime()).toBeGreaterThan(event3.time.getTime());
 
