@@ -212,13 +212,10 @@ export interface Validator {
 export interface ConsensusParams {
     readonly blockSizeParams: BlockSizeParams;
     readonly evidenceParams: EvidenceParams;
-    readonly txSizeParams?: TxSizeParams;
-    readonly blockGossipParams?: BlockGossipParams;
 }
 export interface BlockSizeParams {
     readonly maxBytes: number;
     readonly maxGas: number;
-    readonly maxTxs?: number;
 }
 export interface TxSizeParams {
     readonly maxBytes: number;
