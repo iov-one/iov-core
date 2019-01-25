@@ -169,9 +169,9 @@ export interface TxData {
 export interface TxProof {
   readonly data: Uint8Array;
   readonly rootHash: Uint8Array;
-  readonly total: number;
-  readonly index: number;
   readonly proof: {
+    readonly total: number;
+    readonly index: number;
     readonly aunts: ReadonlyArray<Uint8Array>;
   };
 }

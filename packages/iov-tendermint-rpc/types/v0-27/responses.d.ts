@@ -120,12 +120,26 @@ export interface RpcTxData {
     readonly data?: Base64String;
     readonly tags?: ReadonlyArray<RpcTag>;
 }
+/**
+ * Example data:
+ * {
+ *   "RootHash": "10A1A17D5F818099B5CAB5B91733A3CC27C0DB6CE2D571AC27FB970C314308BB",
+ *   "Data": "ZVlERVhDV2lVNEUwPXhTUjc4Tmp2QkNVSg==",
+ *   "Proof": {
+ *     "total": "1",
+ *     "index": "0",
+ *     "leaf_hash": "EKGhfV+BgJm1yrW5FzOjzCfA22zi1XGsJ/uXDDFDCLs=",
+ *     "aunts": []
+ *   }
+ * }
+ */
 export interface RpcTxProof {
     readonly Data: Base64String;
     readonly RootHash: HexString;
-    readonly Total: IntegerString;
-    readonly Index: IntegerString;
     readonly Proof: {
+        readonly total: IntegerString;
+        readonly index: IntegerString;
+        readonly leaf_hash: Base64String;
         readonly aunts: ReadonlyArray<Base64String>;
     };
 }

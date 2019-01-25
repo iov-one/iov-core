@@ -45,7 +45,13 @@ export interface AbciQueryParams {
     readonly path: string;
     readonly data: Uint8Array;
     readonly height?: number;
-    readonly trusted?: boolean;
+    /**
+     * A flag that defines if proofs are included in the response or not.
+     *
+     * Internally this is mapped to the old name `trusted` for Tendermint < 0.26.
+     * Starting with Tendermint 0.26, the default value changed from true to false.
+     */
+    readonly prove?: boolean;
 }
 export interface BlockRequest {
     readonly method: Method.Block;

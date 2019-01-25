@@ -120,6 +120,18 @@ export interface RpcTxData {
     readonly data?: Base64String;
     readonly tags?: ReadonlyArray<RpcTag>;
 }
+/**
+ * Example data:
+ * {
+ *   "Index": "0",
+ *   "Total": "1",
+ *   "RootHash": "F6F143EDFBBF8D76645EF1ADD21409E0757E130A",
+ *   "Data": "VERSMWZ2R3owMXZkPUpzU2VHYTBRWTZjRQ==",
+ *   "Proof": {
+ *     "aunts": []
+ *   }
+ * }
+ */
 export interface RpcTxProof {
     readonly Data: Base64String;
     readonly RootHash: HexString;

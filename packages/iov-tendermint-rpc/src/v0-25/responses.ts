@@ -361,6 +361,18 @@ function decodeTxData(data: RpcTxData): responses.TxData {
   };
 }
 
+/**
+ * Example data:
+ * {
+ *   "Index": "0",
+ *   "Total": "1",
+ *   "RootHash": "F6F143EDFBBF8D76645EF1ADD21409E0757E130A",
+ *   "Data": "VERSMWZ2R3owMXZkPUpzU2VHYTBRWTZjRQ==",
+ *   "Proof": {
+ *     "aunts": []
+ *   }
+ * }
+ */
 export interface RpcTxProof {
   readonly Data: Base64String;
   readonly RootHash: HexString;
@@ -375,9 +387,9 @@ function decodeTxProof(data: RpcTxProof): responses.TxProof {
   return {
     data: Base64.decode(required(data.Data)),
     rootHash: Encoding.fromHex(required(data.RootHash)),
-    total: Integer.parse(required(data.Total)),
-    index: Integer.parse(required(data.Index)),
     proof: {
+      total: Integer.parse(required(data.Total)),
+      index: Integer.parse(required(data.Index)),
       aunts: required(data.Proof.aunts).map(Base64.decode),
     },
   };
