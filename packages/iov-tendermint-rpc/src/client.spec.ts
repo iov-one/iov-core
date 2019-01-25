@@ -30,6 +30,8 @@ function pendingWithoutTendermint(): void {
  * in the port 111<version>, e.g. Tendermint 0.21.0 runs on port 11121. To start
  * a legacy version use
  *   TENDERMINT_VERSION=0.21.0 TENDERMINT_PORT=11121 ./scripts/tendermint/start.sh
+ *   TENDERMINT_VERSION=0.25.0 TENDERMINT_PORT=11125 ./scripts/tendermint/start.sh
+ *   TENDERMINT_VERSION=0.27.0 TENDERMINT_PORT=11127 ./scripts/tendermint/start.sh
  *
  * When more than 1 instances of tendermint are running, stop them manually:
  *   docker container ls | grep tendermint/tendermint

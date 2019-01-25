@@ -6,6 +6,7 @@ import * as requests from "./requests";
 import * as responses from "./responses";
 import { TxBytes, TxHash } from "./types";
 import { v0_25 } from "./v0-25";
+import { v0_27 } from "./v0-27";
 
 export interface Adaptor {
   readonly params: Params;
@@ -68,6 +69,8 @@ export interface Responses {
 export function adatorForVersion(version: string): Adaptor {
   if (version.startsWith("0.25.")) {
     return v0_25;
+  } else if (version.startsWith("0.27.")) {
+    return v0_27;
   } else {
     throw new Error(`Unsupported tendermint version: ${version}`);
   }
