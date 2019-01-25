@@ -107,6 +107,8 @@ export interface BlockInfoSucceeded {
 
 export interface BlockInfoFailed {
   readonly state: TransactionState.Failed;
+  /** height of the block that contains the transaction */
+  readonly height: number;
   /**
    * Application specific error code
    */
@@ -148,6 +150,8 @@ export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTr
 }
 
 export interface FailedTransaction {
+  /** height of the block that contains the transaction */
+  readonly height: number;
   /** a unique identifier (hash of the transaction) */
   readonly transactionId: TransactionId;
   /**

@@ -399,6 +399,7 @@ describe("BnsConnection", () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const chainId = connection.chainId();
+      const initialHeight = await connection.height();
 
       const { profile, mainWalletId, faucet } = await userProfileWithFaucet(chainId);
       const faucetAddr = identityToAddress(faucet);
@@ -442,6 +443,7 @@ describe("BnsConnection", () => {
       // make sure we get a valid signature
       const mine = search[search.length - 1];
       // make sure we have a txid
+      expect(mine.height).toBeGreaterThan(initialHeight);
       expect(mine.transactionId).toMatch(/^[0-9A-F]{40}$/);
       expect(mine.primarySignature.nonce).toEqual(nonce);
       expect(mine.primarySignature.signature.length).toBeTruthy();
@@ -1025,6 +1027,7 @@ describe("BnsConnection", () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const chainId = connection.chainId();
+      const initialHeight = await connection.height();
 
       const { profile, mainWalletId } = await userProfileWithFaucet(chainId);
       // this will never have tokens, but can try to sign
@@ -1053,6 +1056,7 @@ describe("BnsConnection", () => {
       if (!isFailedTransaction(result)) {
         throw new Error("Expected failed transaction");
       }
+      expect(result.height).toBeGreaterThan(initialHeight);
       // https://github.com/iov-one/weave/blob/v0.10.0/x/cash/errors.go#L18
       expect(result.code).toEqual(36);
       expect(result.message).toMatch(/account empty/i);
@@ -1193,6 +1197,7 @@ describe("BnsConnection", () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const chainId = connection.chainId();
+      const initialHeight = await connection.height();
 
       const { profile, mainWalletId } = await userProfileWithFaucet(chainId);
       // this will never have tokens, but can try to sign
@@ -1219,6 +1224,7 @@ describe("BnsConnection", () => {
       if (!isFailedTransaction(result)) {
         throw new Error("Expected failed transaction");
       }
+      expect(result.height).toBeGreaterThan(initialHeight);
       // https://github.com/iov-one/weave/blob/v0.10.0/x/cash/errors.go#L18
       expect(result.code).toEqual(36);
       expect(result.message).toMatch(/account empty/i);

@@ -205,6 +205,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
             if (isFailedTransaction(searchResult)) {
               const errorEvent: BlockInfoFailed = {
                 state: TransactionState.Failed,
+                height: searchResult.height,
                 code: searchResult.code,
                 message: searchResult.message,
               };
@@ -485,6 +486,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
           };
         } else {
           const failed: FailedTransaction = {
+            height: height,
             transactionId: transactionId,
             code: result.code,
             message: result.log,
@@ -516,6 +518,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
           };
         } else {
           const failed: FailedTransaction = {
+            height: transaction.height,
             transactionId: transactionId,
             code: transaction.result.code,
             message: transaction.result.log,
