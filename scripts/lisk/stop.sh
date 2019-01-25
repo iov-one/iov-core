@@ -8,7 +8,7 @@ command -v shellcheck > /dev/null && shellcheck "$0"
 TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/lisk_stop.XXXXXXXXX")
 
 # can be a branch or tag
-LISK_BRANCH="v1.2.0"
+LISK_BRANCH="v1.4.0"
 
 (
   cd "$TMP_DIR"
