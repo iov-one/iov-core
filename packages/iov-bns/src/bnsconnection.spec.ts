@@ -31,7 +31,7 @@ import {
 import { Random, Sha256 } from "@iov/crypto";
 import { Encoding, Uint64 } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol";
-import { asArray, lastValue, toListPromise } from "@iov/stream";
+import { asArray, firstEvent, lastValue, toListPromise } from "@iov/stream";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
@@ -1143,7 +1143,7 @@ describe("BnsConnection", () => {
       await tendermintSearchIndexUpdated();
 
       // finds transaction using id
-      const result = (await toListPromise(connection.liveTx({ id: transactionIdToSearch }), 1))[0];
+      const result = await firstEvent(connection.liveTx({ id: transactionIdToSearch }));
 
       if (!isConfirmedTransaction(result)) {
         throw new Error("Expected confirmed transaction");
@@ -1178,10 +1178,8 @@ describe("BnsConnection", () => {
       const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       const transactionIdToSearch = response.transactionId;
-      const pendingResult = toListPromise(connection.liveTx({ id: transactionIdToSearch }), 1);
 
-      // no need to await block state, just wait for transaction
-      const result = (await pendingResult)[0];
+      const result = await firstEvent(connection.liveTx({ id: transactionIdToSearch }));
 
       if (!isConfirmedTransaction(result)) {
         throw new Error("Expected confirmed transaction");
@@ -1222,7 +1220,7 @@ describe("BnsConnection", () => {
 
       await tendermintSearchIndexUpdated();
 
-      const result = (await toListPromise(connection.liveTx({ id: transactionIdToSearch }), 1))[0];
+      const result = await firstEvent(connection.liveTx({ id: transactionIdToSearch }));
 
       if (!isFailedTransaction(result)) {
         throw new Error("Expected failed transaction");
@@ -1258,7 +1256,7 @@ describe("BnsConnection", () => {
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       const transactionIdToSearch = response.transactionId;
 
-      const result = (await toListPromise(connection.liveTx({ id: transactionIdToSearch }), 1))[0];
+      const result = await firstEvent(connection.liveTx({ id: transactionIdToSearch }));
 
       if (!isFailedTransaction(result)) {
         throw new Error("Expected failed transaction");

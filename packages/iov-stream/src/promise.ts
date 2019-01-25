@@ -56,3 +56,12 @@ export function toListPromise<T>(stream: Stream<T>, count: number): Promise<Read
     });
   });
 }
+
+/**
+ * Listens to stream, collects one event and revolves.
+ *
+ * Rejects if stream completes before one event was fired.
+ */
+export async function firstEvent<T>(stream: Stream<T>): Promise<T> {
+  return (await toListPromise(stream, 1))[0];
+}

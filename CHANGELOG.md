@@ -14,6 +14,7 @@
 * @iov/iov-core: Add `MultiChainSigner.shutdown` to shutdown the signer.
 * @iov/iov-core: Add `MultiChainSigner.isValidAddress` for chain-specific address input validation.
 * @iov/stream: Add an implementation of `concat` that buffers stream events
+* @iov/stream: Add `firstEvent` as a special case of `toListPromise` with one element
 
 Breaking changes
 

@@ -15,7 +15,7 @@ import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { isJsonRpcErrorResponse, JsonCompatibleDictionary } from "@iov/jsonrpc";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
-import { toListPromise } from "@iov/stream";
+import { firstEvent } from "@iov/stream";
 
 import { JsonRpcSigningServer } from "./jsonrpcsigningserver";
 import { MultiChainSigner } from "./multichainsigner";
@@ -223,8 +223,7 @@ describe("JsonRpcSigningServer", () => {
     const transactionId: TransactionId = signAndPostResponse.result;
     expect(transactionId).toMatch(/^[0-9A-F]+$/);
 
-    const results = await toListPromise(bnsConnection.liveTx({ id: transactionId }), 1);
-    const result = results[0];
+    const result = await firstEvent(bnsConnection.liveTx({ id: transactionId }));
     if (!isConfirmedTransaction(result)) {
       throw new Error("Confirmed transaction extected");
     }

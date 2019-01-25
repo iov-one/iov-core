@@ -25,7 +25,7 @@ import {
   parseJsonRpcResponse,
   SimpleMessagingConnection,
 } from "@iov/jsonrpc";
-import { toListPromise } from "@iov/stream";
+import { firstEvent } from "@iov/stream";
 
 const { fromHex } = Encoding;
 
@@ -249,8 +249,7 @@ describe("signingservice.worker", () => {
     const transactionId: TransactionId = signAndPostResponse.result;
     expect(transactionId).toMatch(/^[0-9A-F]+$/);
 
-    const results = await toListPromise(bnsConnection.liveTx({ id: transactionId }), 1);
-    const result = results[0];
+    const result = await firstEvent(bnsConnection.liveTx({ id: transactionId }));
     if (!isConfirmedTransaction(result)) {
       throw new Error("Confirmed transaction extected");
     }
