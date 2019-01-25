@@ -1,6 +1,6 @@
 {
   "name": "@iov/dpos",
-  "version": "0.11.0-alpha.0",
+  "version": "0.11.0-alpha.1",
   "description": "Common functionality used for @iov/lisk and @iov/rise",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -30,7 +30,7 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
   },
   "dependencies": {
-    "@iov/bcp-types": "^0.11.0-alpha.0",
+    "@iov/bcp-types": "^0.11.0-alpha.1",
     "@iov/crypto": "^0.11.0-alpha.0",
     "@iov/encoding": "^0.11.0-alpha.0",
     "@types/long": "^4.0.0",
