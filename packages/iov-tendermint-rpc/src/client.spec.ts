@@ -11,6 +11,7 @@ import { randomId } from "./jsonrpc";
 import { buildQuery } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, RpcClient, WebsocketClient } from "./rpcclients";
+import { TxBytes } from "./types";
 
 function skipTests(): boolean {
   return !process.env.TENDERMINT_ENABLED;
@@ -54,8 +55,8 @@ function tendermintSearchIndexUpdated(): Promise<void> {
   return sleep(50);
 }
 
-function buildKvTx(k: string, v: string): Uint8Array {
-  return Encoding.toAscii(`${k}=${v}`);
+function buildKvTx(k: string, v: string): TxBytes {
+  return Encoding.toAscii(`${k}=${v}`) as TxBytes;
 }
 
 function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
@@ -81,13 +82,25 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
 
     const response = await client.broadcastTxCommit({ tx: tx });
     expect(response.height).toBeGreaterThan(2);
-    expect(response.hash.length).toEqual(20);
+    expect(response.hash).toBeTruthy();
     // verify success
     expect(response.checkTx.code).toBeFalsy();
     expect(response.deliverTx).toBeTruthy();
     if (response.deliverTx) {
       expect(response.deliverTx.code).toBeFalsy();
     }
+
+    client.disconnect();
+  });
+
+  it("gets the same tx hash from backend as calculated locally", async () => {
+    pendingWithoutTendermint();
+    const client = new Client(rpcFactory(), adaptor);
+    const tx = buildKvTx(randomId(), randomId());
+    const calculatedTxHash = adaptor.hashTx(tx);
+
+    const response = await client.broadcastTxCommit({ tx: tx });
+    expect(response.hash).toEqual(calculatedTxHash);
 
     client.disconnect();
   });
