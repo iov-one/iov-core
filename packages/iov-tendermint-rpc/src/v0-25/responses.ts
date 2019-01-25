@@ -664,8 +664,8 @@ export interface RpcConsensusParams {
 
 function decodeConsensusParams(data: RpcConsensusParams): responses.ConsensusParams {
   return {
-    blockSizeParams: decodeBlockSizeParams(required(data.block_size_params)),
-    evidenceParams: decodeEvidenceParams(required(data.evidence_params)),
+    blockSize: decodeBlockSizeParams(required(data.block_size_params)),
+    evidence: decodeEvidenceParams(required(data.evidence_params)),
   };
 }
 

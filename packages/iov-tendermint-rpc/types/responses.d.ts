@@ -210,8 +210,8 @@ export interface Validator {
     readonly name?: string;
 }
 export interface ConsensusParams {
-    readonly blockSizeParams: BlockSizeParams;
-    readonly evidenceParams: EvidenceParams;
+    readonly blockSize: BlockSizeParams;
+    readonly evidence: EvidenceParams;
 }
 export interface BlockSizeParams {
     readonly maxBytes: number;

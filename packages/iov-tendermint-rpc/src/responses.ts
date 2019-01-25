@@ -274,8 +274,8 @@ export interface Validator {
 }
 
 export interface ConsensusParams {
-  readonly blockSizeParams: BlockSizeParams;
-  readonly evidenceParams: EvidenceParams;
+  readonly blockSize: BlockSizeParams;
+  readonly evidence: EvidenceParams;
 }
 
 export interface BlockSizeParams {
