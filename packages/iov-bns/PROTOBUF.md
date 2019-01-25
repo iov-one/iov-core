@@ -82,8 +82,11 @@ For json, you can just view it, and use that to construct the object.
 However, there are various binary fields that are base64 encoded. The simplest approach to extract them into hex is:
 
 ```shell
-cat ./testvectors/pub_key.json
+cat ./testvectors/pub_key.json | jq .
 ./scripts/jsonbytes ./testvectors/pub_key.json .Pub.Ed25519
 ```
 
-There is often a bit of adjusting to adapt the json to the internal object format, but it should be straight-forward
+There is often a bit of adjusting to adapt the json to the internal object format, but it should be straight-forward.
+
+Note, you will also have to compile and install this script as a bech32 helper (until we add native support for this in iov-core):
+https://github.com/nym-zone/bech32
