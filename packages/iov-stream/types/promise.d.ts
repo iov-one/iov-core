@@ -7,6 +7,6 @@ export declare function fromListPromise<T>(promise: Promise<Iterable<T>>): Strea
  * Listens to stream and collects events. When `count` events are collected,
  * the promise resolves with an array of events.
  *
- * Rejects of stream completes before `count` events are collected.
+ * Rejects if stream completes before `count` events are collected.
  */
 export declare function toListPromise<T>(stream: Stream<T>, count: number): Promise<ReadonlyArray<T>>;

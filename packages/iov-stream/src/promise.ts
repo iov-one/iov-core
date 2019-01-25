@@ -27,7 +27,7 @@ export function fromListPromise<T>(promise: Promise<Iterable<T>>): Stream<T> {
  * Listens to stream and collects events. When `count` events are collected,
  * the promise resolves with an array of events.
  *
- * Rejects of stream completes before `count` events are collected.
+ * Rejects if stream completes before `count` events are collected.
  */
 export function toListPromise<T>(stream: Stream<T>, count: number): Promise<ReadonlyArray<T>> {
   return new Promise<ReadonlyArray<T>>((resolve, reject) => {
