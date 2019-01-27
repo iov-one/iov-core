@@ -1,6 +1,6 @@
 import { Encoding } from "@iov/encoding";
 
-import { Base64, Base64String, HexString, Integer, IntegerString, may, notEmpty } from "../encodings";
+import { assertNotEmpty, Base64, Base64String, HexString, Integer, IntegerString, may } from "../encodings";
 import { JsonRpcRequest, jsonRpcWith } from "../jsonrpc";
 import * as requests from "../requests";
 
@@ -99,7 +99,7 @@ interface RpcAbciQueryParams {
 
 function encodeAbciQueryParams(params: requests.AbciQueryParams): RpcAbciQueryParams {
   return {
-    path: notEmpty(params.path),
+    path: assertNotEmpty(params.path),
     data: Encoding.toHex(params.data) as HexString,
     height: may(Integer.encode, params.height),
     prove: params.prove,
@@ -111,7 +111,7 @@ interface RpcBroadcastTxParams {
 }
 function encodeBroadcastTxParams(params: requests.BroadcastTxParams): RpcBroadcastTxParams {
   return {
-    tx: Base64.encode(notEmpty(params.tx)),
+    tx: Base64.encode(assertNotEmpty(params.tx)),
   };
 }
 
@@ -121,7 +121,7 @@ interface RpcTxParams {
 }
 function encodeTxParams(params: requests.TxParams): RpcTxParams {
   return {
-    hash: Base64.encode(notEmpty(params.hash)),
+    hash: Base64.encode(assertNotEmpty(params.hash)),
     prove: params.prove,
   };
 }

@@ -1,6 +1,5 @@
 import { ReadonlyDate } from "readonly-date";
 import { As } from "type-tagger";
-import { isNumber } from "util";
 
 import { Encoding, Int53 } from "@iov/encoding";
 
@@ -13,10 +12,14 @@ interface Lengther {
   readonly length: number;
 }
 
-// notEmpty throws an error if this matches the empty type for the
-// given value (array/string of length 0, number of value 0, ...)
-export function notEmpty<T>(value: T): T {
-  if (isNumber(value) && value === 0) {
+/**
+ * Throws an error if value matches the empty value for the
+ * given type (array/string of length 0, number of value 0, ...)
+ *
+ * Otherwise returns the value.
+ */
+export function assertNotEmpty<T>(value: T): T {
+  if (typeof value === "number" && value === 0) {
     throw new Error("must provide a non-zero value");
   } else if (((value as any) as Lengther).length === 0) {
     throw new Error("must provide a non-empty value");
