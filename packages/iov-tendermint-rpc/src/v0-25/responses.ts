@@ -470,7 +470,7 @@ interface RpcCommit {
 
 function decodeCommit(data: RpcCommit): responses.Commit {
   return {
-    blockId: decodeBlockId(assertNotEmpty(data.block_id)),
+    blockId: decodeBlockId(assertSet(data.block_id)),
     precommits: assertArray(data.precommits).map(decodeVote),
   };
 }
