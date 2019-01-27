@@ -564,6 +564,11 @@ export interface RpcNodeInfo {
   readonly version: string;
   readonly channels: string; // ???
   readonly moniker: string;
+  readonly protocol_version: {
+    readonly p2p: IntegerString;
+    readonly block: IntegerString;
+    readonly app: IntegerString;
+  };
   /**
    * Additional information. E.g.
    * {
