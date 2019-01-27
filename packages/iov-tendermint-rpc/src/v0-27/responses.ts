@@ -1,6 +1,7 @@
 import { Encoding } from "@iov/encoding";
 
 import {
+  assertArray,
   assertBoolean,
   assertSet,
   Base64,
@@ -160,9 +161,9 @@ function decodeBlockResults(data: RpcBlockResultsResponse): responses.BlockResul
   const validators = optional(end.validator_updates, [] as ReadonlyArray<RpcValidatorUpdate>);
   return {
     height: Integer.parse(assertSet(data.height)),
-    results: res.map(decodeTxData),
+    results: assertArray(res).map(decodeTxData),
     endBlock: {
-      validatorUpdates: validators.map(decodeValidatorUpdate),
+      validatorUpdates: assertArray(validators).map(decodeValidatorUpdate),
       consensusUpdates: may(decodeConsensusParams, end.consensus_param_updates),
       tags: may(decodeTags, end.tags),
     },
@@ -177,7 +178,7 @@ interface RpcBlockchainResponse {
 function decodeBlockchain(data: RpcBlockchainResponse): responses.BlockchainResponse {
   return {
     lastHeight: Integer.parse(assertSet(data.last_height)),
-    blockMetas: assertSet(data.block_metas).map(decodeBlockMeta),
+    blockMetas: assertArray(data.block_metas).map(decodeBlockMeta),
   };
 }
 
@@ -242,7 +243,7 @@ function decodeGenesis(data: RpcGenesisResponse): responses.GenesisResponse {
     genesisTime: DateTime.decode(assertSet(data.genesis_time)),
     chainId: assertSet(data.chain_id),
     consensusParams: decodeConsensusParams(data.consensus_params),
-    validators: assertSet(data.validators).map(decodeValidatorGenesis),
+    validators: assertArray(data.validators).map(decodeValidatorGenesis),
     appHash: Encoding.fromHex(assertSet(data.app_hash)), // empty string in kvstore app
     appState: data.app_state,
   };
@@ -290,7 +291,7 @@ interface RpcTxSearchResponse {
 function decodeTxSearch(data: RpcTxSearchResponse): responses.TxSearchResponse {
   return {
     totalCount: Integer.parse(assertSet(data.total_count)),
-    txs: assertSet(data.txs).map(decodeTxResponse),
+    txs: assertArray(data.txs).map(decodeTxResponse),
   };
 }
 
@@ -320,7 +321,7 @@ interface RpcValidatorsResponse {
 function decodeValidators(data: RpcValidatorsResponse): responses.ValidatorsResponse {
   return {
     blockHeight: Integer.parse(assertSet(data.block_height)),
-    results: assertSet(data.validators).map(decodeValidatorData),
+    results: assertArray(data.validators).map(decodeValidatorData),
   };
 }
 
@@ -339,7 +340,7 @@ function decodeTag(data: RpcTag): responses.Tag {
 }
 
 function decodeTags(tags: ReadonlyArray<RpcTag>): ReadonlyArray<responses.Tag> {
-  return tags.map(decodeTag);
+  return assertArray(tags).map(decodeTag);
 }
 
 interface RpcTxData {
@@ -391,7 +392,7 @@ function decodeTxProof(data: RpcTxProof): responses.TxProof {
       index: Integer.parse(assertSet(data.Proof.index)),
       // Field ignored as not present in general responses.TxProof
       // leaf_hash: Base64.decode(required(data.Proof.leaf_hash)),
-      aunts: assertSet(data.Proof.aunts).map(Base64.decode),
+      aunts: assertArray(data.Proof.aunts).map(Base64.decode),
     },
   };
 }
@@ -471,7 +472,7 @@ interface RpcCommit {
 function decodeCommit(data: RpcCommit): responses.Commit {
   return {
     blockId: decodeBlockId(assertSet(data.block_id)),
-    precommits: assertSet(data.precommits).map(decodeVote),
+    precommits: assertArray(data.precommits).map(decodeVote),
   };
 }
 
@@ -490,7 +491,7 @@ function decodeBlock(data: RpcBlock): responses.Block {
   return {
     header: decodeHeader(assertSet(data.header)),
     lastCommit: decodeCommit(assertSet(data.last_commit)),
-    txs: data.data.txs ? data.data.txs.map(Base64.decode) : [],
+    txs: data.data.txs ? assertArray(data.data.txs).map(Base64.decode) : [],
     evidence: data.evidence && may(decodeEvidences, data.evidence.evidence),
   };
 }
@@ -526,7 +527,7 @@ function decodeEvidence(data: RpcEvidence): responses.Evidence {
 }
 
 function decodeEvidences(ev: ReadonlyArray<RpcEvidence>): ReadonlyArray<responses.Evidence> {
-  return ev.map(decodeEvidence);
+  return assertArray(ev).map(decodeEvidence);
 }
 
 interface RpcVote {

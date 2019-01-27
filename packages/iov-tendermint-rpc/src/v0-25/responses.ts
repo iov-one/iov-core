@@ -162,9 +162,9 @@ function decodeBlockResults(data: RpcBlockResultsResponse): responses.BlockResul
   const validators = optional(end.validator_updates, [] as ReadonlyArray<RpcValidatorUpdate>);
   return {
     height: Integer.parse(assertNotEmpty(data.height)),
-    results: res.map(decodeTxData),
+    results: assertArray(res).map(decodeTxData),
     endBlock: {
-      validatorUpdates: validators.map(decodeValidatorUpdate),
+      validatorUpdates: assertArray(validators).map(decodeValidatorUpdate),
       consensusUpdates: may(decodeConsensusParams, end.consensus_param_updates),
       tags: may(decodeTags, end.tags),
     },
@@ -343,7 +343,7 @@ function decodeTag(data: RpcTag): responses.Tag {
 }
 
 function decodeTags(tags: ReadonlyArray<RpcTag>): ReadonlyArray<responses.Tag> {
-  return tags.map(decodeTag);
+  return assertArray(tags).map(decodeTag);
 }
 
 interface RpcTxData {
@@ -490,7 +490,7 @@ function decodeBlock(data: RpcBlock): responses.Block {
   return {
     header: decodeHeader(assertSet(data.header)),
     lastCommit: decodeCommit(assertSet(data.last_commit)),
-    txs: data.data.txs ? data.data.txs.map(Base64.decode) : [],
+    txs: data.data.txs ? assertArray(data.data.txs).map(Base64.decode) : [],
     evidence: data.evidence && may(decodeEvidences, data.evidence.evidence),
   };
 }
@@ -526,7 +526,7 @@ function decodeEvidence(data: RpcEvidence): responses.Evidence {
 }
 
 function decodeEvidences(ev: ReadonlyArray<RpcEvidence>): ReadonlyArray<responses.Evidence> {
-  return ev.map(decodeEvidence);
+  return assertArray(ev).map(decodeEvidence);
 }
 
 interface RpcVote {
