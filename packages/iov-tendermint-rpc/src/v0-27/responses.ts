@@ -98,11 +98,11 @@ export class Responses {
 
 /**** results *****/
 
-export interface AbciInfoResult {
+interface AbciInfoResult {
   readonly response: RpcAbciInfoResponse;
 }
 
-export interface RpcAbciInfoResponse {
+interface RpcAbciInfoResponse {
   readonly data?: string;
   readonly last_block_height?: IntegerString;
   readonly last_block_app_hash?: Base64String;
@@ -116,11 +116,11 @@ function decodeAbciInfo(data: RpcAbciInfoResponse): responses.AbciInfoResponse {
   };
 }
 
-export interface AbciQueryResult {
+interface AbciQueryResult {
   readonly response: RpcAbciQueryResponse;
 }
 
-export interface RpcAbciQueryResponse {
+interface RpcAbciQueryResponse {
   readonly key: Base64String;
   readonly value?: Base64String;
   readonly proof?: Base64String;
@@ -142,7 +142,7 @@ function decodeAbciQuery(data: RpcAbciQueryResponse): responses.AbciQueryRespons
   };
 }
 
-export interface RpcBlockResultsResponse {
+interface RpcBlockResultsResponse {
   readonly height: IntegerString;
   readonly results: {
     readonly DeliverTx: ReadonlyArray<RpcTxData>;
@@ -169,7 +169,7 @@ function decodeBlockResults(data: RpcBlockResultsResponse): responses.BlockResul
   };
 }
 
-export interface RpcBlockchainResponse {
+interface RpcBlockchainResponse {
   readonly last_height: IntegerString;
   readonly block_metas: ReadonlyArray<RpcBlockMeta>;
 }
@@ -181,11 +181,9 @@ function decodeBlockchain(data: RpcBlockchainResponse): responses.BlockchainResp
   };
 }
 
-export interface RpcBroadcastTxSyncResponse extends RpcTxData {
+interface RpcBroadcastTxSyncResponse extends RpcTxData {
   readonly hash: HexString;
 }
-
-export type RpcBroadcastTxAsyncResponse = RpcBroadcastTxSyncResponse;
 
 function decodeBroadcastTxSync(data: RpcBroadcastTxSyncResponse): responses.BroadcastTxSyncResponse {
   return {
@@ -194,7 +192,7 @@ function decodeBroadcastTxSync(data: RpcBroadcastTxSyncResponse): responses.Broa
   };
 }
 
-export interface RpcBroadcastTxCommitResponse {
+interface RpcBroadcastTxCommitResponse {
   readonly height?: IntegerString;
   readonly hash: HexString;
   readonly check_tx: RpcTxData;
@@ -210,7 +208,7 @@ function decodeBroadcastTxCommit(data: RpcBroadcastTxCommitResponse): responses.
   };
 }
 
-export interface RpcCommitResponse {
+interface RpcCommitResponse {
   readonly signed_header: {
     readonly header: RpcHeader;
     readonly commit: RpcCommit;
@@ -226,7 +224,7 @@ function decodeCommitResponse(data: RpcCommitResponse): responses.CommitResponse
   };
 }
 
-export interface RpcGenesisResponse {
+interface RpcGenesisResponse {
   readonly genesis_time: DateTimeString;
   readonly chain_id: string; // ChainId;
   readonly consensus_params: RpcConsensusParams;
@@ -235,7 +233,7 @@ export interface RpcGenesisResponse {
   readonly app_state: {};
 }
 
-export interface GenesisResult {
+interface GenesisResult {
   readonly genesis: RpcGenesisResponse;
 }
 
@@ -250,10 +248,7 @@ function decodeGenesis(data: RpcGenesisResponse): responses.GenesisResponse {
   };
 }
 
-export type HealthResponse = null;
-
-// status
-export interface RpcStatusResponse {
+interface RpcStatusResponse {
   readonly node_info: RpcNodeInfo;
   readonly sync_info: RpcSyncInfo;
   readonly validator_info: RpcValidatorInfo;
@@ -267,7 +262,7 @@ function decodeStatus(data: RpcStatusResponse): responses.StatusResponse {
   };
 }
 
-export interface RpcTxResponse {
+interface RpcTxResponse {
   readonly tx: Base64String;
   readonly tx_result: RpcTxData;
   readonly height: IntegerString;
@@ -287,7 +282,7 @@ function decodeTxResponse(data: RpcTxResponse): responses.TxResponse {
   };
 }
 
-export interface RpcTxSearchResponse {
+interface RpcTxSearchResponse {
   readonly txs: ReadonlyArray<RpcTxResponse>;
   readonly total_count: IntegerString;
 }
@@ -317,7 +312,7 @@ function decodeTxEvent(data: RpcTxEvent): responses.TxEvent {
   };
 }
 
-export interface RpcValidatorsResponse {
+interface RpcValidatorsResponse {
   readonly block_height: IntegerString;
   readonly validators: ReadonlyArray<RpcValidatorData>;
 }
@@ -331,7 +326,7 @@ function decodeValidators(data: RpcValidatorsResponse): responses.ValidatorsResp
 
 /**** Helper items used above ******/
 
-export interface RpcTag {
+interface RpcTag {
   readonly key: Base64String;
   readonly value: Base64String;
 }
@@ -347,7 +342,7 @@ function decodeTags(tags: ReadonlyArray<RpcTag>): ReadonlyArray<responses.Tag> {
   return tags.map(decodeTag);
 }
 
-export interface RpcTxData {
+interface RpcTxData {
   readonly code?: number;
   readonly log?: string;
   readonly data?: Base64String;
@@ -376,7 +371,7 @@ function decodeTxData(data: RpcTxData): responses.TxData {
  *   }
  * }
  */
-export interface RpcTxProof {
+interface RpcTxProof {
   readonly Data: Base64String;
   readonly RootHash: HexString;
   readonly Proof: {
@@ -401,7 +396,7 @@ function decodeTxProof(data: RpcTxProof): responses.TxProof {
   };
 }
 
-export interface RpcBlockId {
+interface RpcBlockId {
   readonly hash: HexString;
   readonly parts: {
     readonly total: IntegerString;
@@ -419,7 +414,7 @@ function decodeBlockId(data: RpcBlockId): responses.BlockId {
   };
 }
 
-export interface RpcHeader {
+interface RpcHeader {
   readonly chain_id: string; // ChainId
   readonly height: IntegerString;
   readonly time: DateTimeString;
@@ -456,7 +451,7 @@ function decodeHeader(data: RpcHeader): responses.Header {
   };
 }
 
-export interface RpcBlockMeta {
+interface RpcBlockMeta {
   readonly block_id: RpcBlockId;
   readonly header: RpcHeader;
 }
@@ -468,7 +463,7 @@ function decodeBlockMeta(data: RpcBlockMeta): responses.BlockMeta {
   };
 }
 
-export interface RpcCommit {
+interface RpcCommit {
   readonly block_id: RpcBlockId;
   readonly precommits: ReadonlyArray<RpcVote>;
 }
@@ -480,7 +475,7 @@ function decodeCommit(data: RpcCommit): responses.Commit {
   };
 }
 
-export interface RpcBlock {
+interface RpcBlock {
   readonly header: RpcHeader;
   readonly last_commit: RpcCommit;
   readonly data: {
@@ -500,7 +495,7 @@ function decodeBlock(data: RpcBlock): responses.Block {
   };
 }
 
-export interface RpcBlockResponse {
+interface RpcBlockResponse {
   readonly block_meta: RpcBlockMeta;
   readonly block: RpcBlock;
 }
@@ -512,7 +507,7 @@ function decodeBlockResponse(data: RpcBlockResponse): responses.BlockResponse {
   };
 }
 
-export interface RpcEvidence {
+interface RpcEvidence {
   readonly type: string;
   readonly validator: RpcValidatorUpdate;
   readonly height: IntegerString;
@@ -534,7 +529,7 @@ function decodeEvidences(ev: ReadonlyArray<RpcEvidence>): ReadonlyArray<response
   return ev.map(decodeEvidence);
 }
 
-export interface RpcVote {
+interface RpcVote {
   readonly type: number;
   readonly validator_address: HexString;
   readonly validator_index: IntegerString;
@@ -558,7 +553,7 @@ function decodeVote(data: RpcVote): responses.Vote {
   };
 }
 
-export interface RpcNodeInfo {
+interface RpcNodeInfo {
   readonly id: HexString;
   readonly listen_addr: IpPortString;
   readonly network: string;
@@ -592,7 +587,7 @@ function decodeNodeInfo(data: RpcNodeInfo): responses.NodeInfo {
   };
 }
 
-export interface RpcSyncInfo {
+interface RpcSyncInfo {
   readonly latest_block_hash: HexString;
   readonly latest_app_hash: HexString;
   readonly latest_block_height: IntegerString;
@@ -610,8 +605,7 @@ function decodeSyncInfo(data: RpcSyncInfo): responses.SyncInfo {
   };
 }
 
-// this is in genesis
-export interface RpcValidatorGenesis {
+interface RpcValidatorGenesis {
   readonly pub_key: RpcPubkey;
   readonly power: IntegerString;
   readonly name?: string;
@@ -626,7 +620,7 @@ function decodeValidatorGenesis(data: RpcValidatorGenesis): responses.Validator 
 }
 
 // for evidence, block results, etc.
-export interface RpcValidatorUpdate {
+interface RpcValidatorUpdate {
   readonly address: HexString;
   readonly pub_key: RpcPubkey;
   readonly voting_power: IntegerString;
@@ -641,7 +635,7 @@ function decodeValidatorUpdate(data: RpcValidatorUpdate): responses.Validator {
 }
 
 // for validators
-export interface RpcValidatorData extends RpcValidatorUpdate {
+interface RpcValidatorData extends RpcValidatorUpdate {
   readonly accum?: IntegerString;
 }
 
@@ -653,7 +647,7 @@ function decodeValidatorData(data: RpcValidatorData): responses.Validator {
 }
 
 // this is in status
-export interface RpcValidatorInfo {
+interface RpcValidatorInfo {
   readonly address: HexString;
   readonly pub_key: RpcPubkey;
   readonly voting_power: IntegerString;
@@ -684,7 +678,7 @@ function decodeValidatorInfo(data: RpcValidatorInfo): responses.Validator {
  *   }
  * }
  */
-export interface RpcConsensusParams {
+interface RpcConsensusParams {
   readonly block_size: RpcBlockSizeParams;
   readonly evidence: RpcEvidenceParams;
 }
@@ -696,7 +690,7 @@ function decodeConsensusParams(data: RpcConsensusParams): responses.ConsensusPar
   };
 }
 
-export interface RpcBlockSizeParams {
+interface RpcBlockSizeParams {
   readonly max_bytes: IntegerString;
   readonly max_gas: IntegerString;
 }
@@ -708,7 +702,7 @@ function decodeBlockSizeParams(data: RpcBlockSizeParams): responses.BlockSizePar
   };
 }
 
-export interface RpcEvidenceParams {
+interface RpcEvidenceParams {
   readonly max_age: IntegerString;
 }
 
@@ -719,7 +713,7 @@ function decodeEvidenceParams(data: RpcEvidenceParams): responses.EvidenceParams
 }
 
 // yes, a different format for status and dump consensus state
-export interface RpcPubkey {
+interface RpcPubkey {
   readonly type: string;
   readonly value: Base64String;
 }
@@ -735,7 +729,7 @@ function decodePubkey(data: RpcPubkey): ValidatorPubkey {
   throw new Error(`unknown pubkey type: ${data.type}`);
 }
 
-export type RpcSignature = Base64String;
+type RpcSignature = Base64String;
 
 function decodeSignature(data: RpcSignature): ValidatorSignature {
   return {
