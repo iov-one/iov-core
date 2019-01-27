@@ -585,6 +585,11 @@ function decodeNodeInfo(data: RpcNodeInfo): responses.NodeInfo {
     channels: assertNotEmpty(data.channels),
     moniker: assertNotEmpty(data.moniker),
     other: dictionaryToStringMap(data.other),
+    protocolVersion: {
+      app: Integer.parse(assertNotEmpty(data.protocol_version.app)),
+      block: Integer.parse(assertNotEmpty(data.protocol_version.block)),
+      p2p: Integer.parse(assertNotEmpty(data.protocol_version.p2p)),
+    },
   };
 }
 
