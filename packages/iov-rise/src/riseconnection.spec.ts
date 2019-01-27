@@ -336,7 +336,6 @@ describe("RiseConnection", () => {
                 throw new Error("Second event must not be undefined");
               }
               expect(event2.address).toEqual(recipient);
-              expect(event2.name).toBeUndefined();
               expect(event2.pubkey).toBeUndefined();
               expect(event2.balance.length).toEqual(1);
               expect(event2.balance[0].quantity).toEqual(defaultSendAmount.quantity);
@@ -346,7 +345,6 @@ describe("RiseConnection", () => {
                 throw new Error("Second event must not be undefined");
               }
               expect(event3.address).toEqual(recipient);
-              expect(event3.name).toBeUndefined();
               expect(event3.pubkey).toBeUndefined();
               expect(event3.balance.length).toEqual(1);
               expect(event3.balance[0].quantity).toEqual(

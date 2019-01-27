@@ -200,7 +200,6 @@ describe("BnsConnection", () => {
         const account = responseFromAddress!;
         expect(account.address).toEqual(faucetAddress);
         expect(account.pubkey).toEqual(faucet.pubkey);
-        expect(account.name).toEqual("admin");
         expect(account.balance.length).toEqual(1);
         expect(account.balance[0].tokenTicker).toEqual(cash);
         expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
@@ -213,7 +212,6 @@ describe("BnsConnection", () => {
         const account = responseFromPubkey!;
         expect(account.address).toEqual(faucetAddress);
         expect(account.pubkey).toEqual(faucet.pubkey);
-        expect(account.name).toEqual("admin");
         expect(account.balance.length).toEqual(1);
         expect(account.balance[0].tokenTicker).toEqual(cash);
         expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
@@ -234,7 +232,6 @@ describe("BnsConnection", () => {
         const account = response!;
         expect(account.address).toEqual(newAddress);
         expect(account.pubkey).toBeUndefined();
-        expect(account.name).toBeUndefined();
       }
 
       connection.disconnect();
@@ -1607,7 +1604,6 @@ describe("BnsConnection", () => {
     // make sure there are original values sent on the wire
     expect(rcptAcct.value()).toBeUndefined();
     expect(faucetAcct.value()).toBeDefined();
-    expect(faucetAcct.value()!.name).toEqual("admin");
     expect(faucetAcct.value()!.balance.length).toEqual(1);
     const faucetStartBalance = faucetAcct.value()!.balance[0];
 
@@ -1620,13 +1616,11 @@ describe("BnsConnection", () => {
 
     // rcptAcct should now have a value
     expect(rcptAcct.value()).toBeDefined();
-    expect(rcptAcct.value()!.name).toBeUndefined();
     expect(rcptAcct.value()!.balance.length).toEqual(1);
     expect(rcptAcct.value()!.balance[0].quantity).toEqual("68000000000");
 
     // facuetAcct should have gone down a bit
     expect(faucetAcct.value()).toBeDefined();
-    expect(faucetAcct.value()!.name).toEqual("admin");
     expect(faucetAcct.value()!.balance.length).toEqual(1);
     const faucetEndBalance = faucetAcct.value()!.balance[0];
     expect(faucetEndBalance).not.toEqual(faucetStartBalance);

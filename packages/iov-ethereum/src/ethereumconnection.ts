@@ -216,7 +216,6 @@ export class EthereumConnection implements BcpConnection {
     const account: Account = {
       address: address,
       pubkey: undefined, // TODO: get from a transaction sent by this address
-      name: undefined,
       balance: [
         {
           tokenName: constants.primaryTokenName,

@@ -55,7 +55,6 @@ export interface Account {
    * - Available after first transaction sent (e.g. Lisk, Tendermint, Ethereum)
    */
   readonly pubkey?: PublicKeyBundle;
-  readonly name?: string;
   readonly balance: ReadonlyArray<BcpCoin>;
 }
 

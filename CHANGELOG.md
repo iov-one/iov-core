@@ -6,6 +6,7 @@ Breaking changes
 
 * @iov/bcp-type: Remove `Bcp*` prefix from `BcpAccount`, `BcpAccountQuery`,
   `BcpAddressQuery`, `BcpPubkeyQuery`
+* @iov/bcp-type: Remove `Account.name` in favour of BNS' username NFTs.
 
 ## 0.11.0
 

@@ -192,7 +192,6 @@ export class LiskConnection implements BcpConnection {
         return {
           address: address,
           pubkey: pubkey,
-          name: undefined,
           balance: [
             {
               quantity: Parse.parseQuantity(itemBalance),

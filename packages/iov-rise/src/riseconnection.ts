@@ -201,7 +201,6 @@ export class RiseConnection implements BcpConnection {
     return {
       address: address,
       pubkey: pubkey,
-      name: undefined,
       balance: [
         {
           quantity: Parse.parseQuantity(responseBalance),
