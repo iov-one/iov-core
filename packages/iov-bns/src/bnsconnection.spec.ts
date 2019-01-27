@@ -186,7 +186,7 @@ describe("BnsConnection", () => {
   });
 
   describe("getAccount", () => {
-    it("can get account by address, publicKey and name", async () => {
+    it("can get account by address and pubkey", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
