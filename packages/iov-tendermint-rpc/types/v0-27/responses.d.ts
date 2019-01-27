@@ -230,7 +230,7 @@ export interface RpcSyncInfo {
     readonly latest_app_hash: HexString;
     readonly latest_block_height: IntegerString;
     readonly latest_block_time: DateTimeString;
-    readonly catching_up?: boolean;
+    readonly catching_up: boolean;
 }
 export interface RpcValidatorGenesis {
     readonly pub_key: RpcPubkey;

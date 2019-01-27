@@ -2,6 +2,7 @@ import { Encoding } from "@iov/encoding";
 
 import {
   assertArray,
+  assertBoolean,
   assertNotEmpty,
   assertSet,
   Base64,
@@ -590,7 +591,7 @@ interface RpcSyncInfo {
   readonly latest_app_hash: HexString;
   readonly latest_block_height: IntegerString;
   readonly latest_block_time: DateTimeString;
-  readonly catching_up?: boolean;
+  readonly catching_up: boolean;
 }
 
 function decodeSyncInfo(data: RpcSyncInfo): responses.SyncInfo {
@@ -599,7 +600,7 @@ function decodeSyncInfo(data: RpcSyncInfo): responses.SyncInfo {
     latestAppHash: Encoding.fromHex(assertNotEmpty(data.latest_app_hash)),
     latestBlockTime: DateTime.decode(assertNotEmpty(data.latest_block_time)),
     latestBlockHeight: Integer.parse(assertNotEmpty(data.latest_block_height)),
-    syncing: !optional<boolean>(data.catching_up, false),
+    syncing: assertBoolean(data.catching_up),
   };
 }
 

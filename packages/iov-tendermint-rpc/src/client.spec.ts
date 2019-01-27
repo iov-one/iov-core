@@ -126,7 +126,7 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     expect(status.nodeInfo.other.get("tx_index")).toEqual("on");
     expect(status.validatorInfo.pubkey).toBeTruthy();
     expect(status.validatorInfo.votingPower).toBeGreaterThan(0);
-    // expect(status.syncInfo.syncing).toEqual(false);
+    expect(status.syncInfo.syncing).toEqual(false);
     expect(status.syncInfo.latestBlockHeight).toBeGreaterThanOrEqual(1);
 
     client.disconnect();
