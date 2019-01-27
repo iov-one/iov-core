@@ -220,7 +220,7 @@ interface RpcCommitResponse {
 
 function decodeCommitResponse(data: RpcCommitResponse): responses.CommitResponse {
   return {
-    canonical: assertSet(data.canonical),
+    canonical: assertBoolean(data.canonical),
     header: decodeHeader(data.signed_header.header),
     commit: decodeCommit(data.signed_header.commit),
   };
