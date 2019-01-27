@@ -600,7 +600,7 @@ function decodeSyncInfo(data: RpcSyncInfo): responses.SyncInfo {
     latestAppHash: Encoding.fromHex(assertNotEmpty(data.latest_app_hash)),
     latestBlockTime: DateTime.decode(assertNotEmpty(data.latest_block_time)),
     latestBlockHeight: Integer.parse(assertNotEmpty(data.latest_block_height)),
-    syncing: assertBoolean(data.catching_up),
+    catchingUp: assertBoolean(data.catching_up),
   };
 }
 

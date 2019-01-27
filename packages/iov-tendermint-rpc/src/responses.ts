@@ -264,7 +264,7 @@ export interface SyncInfo {
   readonly latestAppHash: Uint8Array;
   readonly latestBlockHeight: number;
   readonly latestBlockTime: ReadonlyDate;
-  readonly syncing: boolean;
+  readonly catchingUp: boolean;
 }
 
 // this is in status
