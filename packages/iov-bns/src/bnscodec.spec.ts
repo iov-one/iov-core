@@ -6,7 +6,6 @@ import {
   chainId,
   randomTxJson,
   sendTxJson,
-  setNameTxJson,
   sig,
   signBytes,
   signedTxBin,
@@ -54,7 +53,6 @@ describe("bnscodec", () => {
     const transactionsToBeVerified: ReadonlyArray<SignedTransaction> = [
       signedTxJson,
       randomTxJson,
-      setNameTxJson,
       swapCounterTxJson,
       swapClaimTxJson,
       swapTimeoutTxJson,

@@ -22,7 +22,6 @@ import {
   RegisterBlockchainTx,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
-  SetNameTx,
 } from "./types";
 import { decodeBnsAddress, identityToAddress, preimageIdentifier } from "./util";
 
@@ -125,8 +124,6 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
     // BNS
     case "bns/add_address_to_username":
       return buildAddAddressToUsernameTx(tx);
-    case "bns/set_name":
-      return buildSetNameTx(tx);
     case "bns/register_blockchain":
       return buildRegisterBlockchainTx(tx);
     case "bns/register_username":
@@ -155,15 +152,6 @@ function buildSendTransaction(tx: SendTransaction): codecImpl.app.ITx {
       dest: decodeBnsAddress(tx.recipient).data,
       amount: encodeAmount(tx.amount),
       memo: tx.memo,
-    }),
-  };
-}
-
-function buildSetNameTx(tx: SetNameTx): codecImpl.app.ITx {
-  return {
-    setNameMsg: codecImpl.namecoin.SetWalletNameMsg.create({
-      address: decodeBnsAddress(identityToAddress(tx.creator)).data,
-      name: tx.name,
     }),
   };
 }

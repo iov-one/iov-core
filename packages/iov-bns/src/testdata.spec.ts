@@ -18,7 +18,7 @@ import {
 } from "@iov/bcp-types";
 import { Encoding, Int53 } from "@iov/encoding";
 
-import { PrivateKeyBundle, PrivateKeyBytes, SetNameTx } from "./types";
+import { PrivateKeyBundle, PrivateKeyBytes } from "./types";
 import { hashId } from "./util";
 
 const { fromHex } = Encoding;
@@ -141,20 +141,6 @@ export const randomTxJson: SignedTransaction = {
   transaction: randomMsg,
   primarySignature: sig,
   otherSignatures: [sig2],
-};
-
-const setNameMsg: SetNameTx = {
-  creator: {
-    chainId: "bns-mainnet" as ChainId,
-    pubkey: pubJson,
-  },
-  kind: "bns/set_name",
-  name: "king*iov.one",
-};
-export const setNameTxJson: SignedTransaction = {
-  transaction: setNameMsg,
-  primarySignature: sig,
-  otherSignatures: [],
 };
 
 export const hashCode = Uint8Array.from([...hashId, ...fromHex("1122334455aabbccddee")]);

@@ -78,15 +78,6 @@ export interface AddAddressToUsernameTx extends UnsignedTransaction {
     readonly username: string;
     readonly payload: ChainAddressPair;
 }
-/**
- * Associates a simple name to an account on a weave-based blockchain.
- *
- * @deprecated will be dropped in favour of RegisterUsernameTx
- */
-export interface SetNameTx extends UnsignedTransaction {
-    readonly kind: "bns/set_name";
-    readonly name: string;
-}
 export interface RegisterBlockchainTx extends UnsignedTransaction {
     readonly kind: "bns/register_blockchain";
     /**
@@ -116,10 +107,9 @@ export interface RemoveAddressFromUsernameTx extends UnsignedTransaction {
     readonly username: string;
     readonly payload: ChainAddressPair;
 }
-export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapCounterTransaction | SwapClaimTransaction | SwapTimeoutTransaction | AddAddressToUsernameTx | SetNameTx | RegisterBlockchainTx | RegisterUsernameTx | RemoveAddressFromUsernameTx;
+export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapCounterTransaction | SwapClaimTransaction | SwapTimeoutTransaction | AddAddressToUsernameTx | RegisterBlockchainTx | RegisterUsernameTx | RemoveAddressFromUsernameTx;
 export declare function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx;
 export declare function isAddAddressToUsernameTx(transaction: UnsignedTransaction): transaction is AddAddressToUsernameTx;
-export declare function isSetNameTx(transaction: UnsignedTransaction): transaction is SetNameTx;
 export declare function isRegisterBlockchainTx(transaction: UnsignedTransaction): transaction is RegisterBlockchainTx;
 export declare function isRegisterUsernameTx(transaction: UnsignedTransaction): transaction is RegisterUsernameTx;
 export declare function isRemoveAddressFromUsernameTx(transaction: UnsignedTransaction): transaction is RemoveAddressFromUsernameTx;

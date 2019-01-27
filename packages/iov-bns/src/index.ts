@@ -15,7 +15,6 @@ export {
   // transactions
   BnsTx,
   AddAddressToUsernameTx,
-  SetNameTx,
   RegisterBlockchainTx,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
