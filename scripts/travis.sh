@@ -40,7 +40,7 @@ retry 3 yarn install
 # Use Docker if available (currently Linux only)
 if command -v docker > /dev/null ; then
   fold_start "tendermint-start"
-  ./scripts/tendermint/start.sh
+  ./scripts/tendermint/all_start.sh
   export TENDERMINT_ENABLED=1
   fold_end
 
@@ -232,6 +232,6 @@ fi
 if [[ ! -z ${TENDERMINT_ENABLED:-} ]]; then
   fold_start "tendermint-stop"
   unset TENDERMINT_ENABLED
-  ./scripts/tendermint/stop.sh
+  ./scripts/tendermint/all_stop.sh
   fold_end
 fi

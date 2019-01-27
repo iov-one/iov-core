@@ -2,6 +2,7 @@ import { Stream } from "xstream";
 
 import { toListPromise } from "@iov/stream";
 
+import { defaultInstance } from "../config.spec";
 import { Integer } from "../encodings";
 import { JsonRpcEvent, jsonRpcWith } from "../jsonrpc";
 import { Method } from "../requests";
@@ -18,9 +19,9 @@ function pendingWithoutTendermint(): void {
   }
 }
 
-const tendermintUrl = "localhost:12345";
-
 describe("WebsocketClient", () => {
+  const tendermintUrl = defaultInstance.url;
+
   it("can make a simple call", async () => {
     pendingWithoutTendermint();
 
