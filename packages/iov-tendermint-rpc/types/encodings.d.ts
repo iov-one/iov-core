@@ -5,13 +5,20 @@ export declare type HexString = string & As<"hex">;
 export declare type IntegerString = string & As<"integer">;
 export declare type DateTimeString = string & As<"datetime">;
 /**
+ * A runtime checker that ensures a given value is set (i.e. not undefined or null)
+ *
+ * This is used when you want to verify that data at runtime matches the expected type.
+ */
+export declare function assertSet<T>(value: T): T;
+/**
  * Throws an error if value matches the empty value for the
  * given type (array/string of length 0, number of value 0, ...)
  *
  * Otherwise returns the value.
+ *
+ * This implies assertSet
  */
 export declare function assertNotEmpty<T>(value: T): T;
-export declare function required<T>(value: T | null | undefined): T;
 export declare function optional<T>(value: T | null | undefined, fallback: T): T;
 export declare function may<T, U>(transform: (val: T) => U, value: T | null | undefined): U | undefined;
 export declare class Integer {

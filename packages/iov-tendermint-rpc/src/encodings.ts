@@ -8,6 +8,23 @@ export type HexString = string & As<"hex">;
 export type IntegerString = string & As<"integer">;
 export type DateTimeString = string & As<"datetime">;
 
+/**
+ * A runtime checker that ensures a given value is set (i.e. not undefined or null)
+ *
+ * This is used when you want to verify that data at runtime matches the expected type.
+ */
+export function assertSet<T>(value: T): T {
+  if ((value as unknown) === undefined) {
+    throw new Error("Value must not be undefined");
+  }
+
+  if ((value as unknown) === null) {
+    throw new Error("Value must not be null");
+  }
+
+  return value;
+}
+
 interface Lengther {
   readonly length: number;
 }
@@ -17,21 +34,16 @@ interface Lengther {
  * given type (array/string of length 0, number of value 0, ...)
  *
  * Otherwise returns the value.
+ *
+ * This implies assertSet
  */
 export function assertNotEmpty<T>(value: T): T {
+  assertSet(value);
+
   if (typeof value === "number" && value === 0) {
     throw new Error("must provide a non-zero value");
   } else if (((value as any) as Lengther).length === 0) {
     throw new Error("must provide a non-empty value");
-  }
-  return value;
-}
-
-// required can be used to anywhere to throw errors if missing before
-// encoding/decoding. Works with anything with strings, arrays, or numbers
-export function required<T>(value: T | null | undefined): T {
-  if (value === undefined || value === null) {
-    throw new Error("must provide a value");
   }
   return value;
 }

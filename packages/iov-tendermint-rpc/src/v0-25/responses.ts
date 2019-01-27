@@ -1,6 +1,7 @@
 import { Encoding } from "@iov/encoding";
 
 import {
+  assertSet,
   Base64,
   Base64String,
   DateTime,
@@ -11,7 +12,6 @@ import {
   IntegerString,
   may,
   optional,
-  required,
 } from "../encodings";
 import { JsonRpcEvent, JsonRpcSuccess } from "../jsonrpc";
 import * as responses from "../responses";
@@ -22,11 +22,11 @@ import { hashTx } from "./hasher";
 
 export class Responses {
   public static decodeAbciInfo(response: JsonRpcSuccess): responses.AbciInfoResponse {
-    return decodeAbciInfo(required((response.result as AbciInfoResult).response));
+    return decodeAbciInfo(assertSet((response.result as AbciInfoResult).response));
   }
 
   public static decodeAbciQuery(response: JsonRpcSuccess): responses.AbciQueryResponse {
-    return decodeAbciQuery(required((response.result as AbciQueryResult).response));
+    return decodeAbciQuery(assertSet((response.result as AbciQueryResult).response));
   }
 
   public static decodeBlock(response: JsonRpcSuccess): responses.BlockResponse {
@@ -58,7 +58,7 @@ export class Responses {
   }
 
   public static decodeGenesis(response: JsonRpcSuccess): responses.GenesisResponse {
-    return decodeGenesis(required((response.result as GenesisResult).genesis));
+    return decodeGenesis(assertSet((response.result as GenesisResult).genesis));
   }
 
   public static decodeHealth(): responses.HealthResponse {
@@ -157,7 +157,7 @@ function decodeBlockResults(data: RpcBlockResultsResponse): responses.BlockResul
   const end = data.results.EndBlock;
   const validators = optional(end.validator_updates, [] as ReadonlyArray<RpcValidatorUpdate>);
   return {
-    height: Integer.parse(required(data.height)),
+    height: Integer.parse(assertSet(data.height)),
     results: res.map(decodeTxData),
     endBlock: {
       validatorUpdates: validators.map(decodeValidatorUpdate),
@@ -174,8 +174,8 @@ export interface RpcBlockchainResponse {
 
 function decodeBlockchain(data: RpcBlockchainResponse): responses.BlockchainResponse {
   return {
-    lastHeight: Integer.parse(required(data.last_height)),
-    blockMetas: required(data.block_metas).map(decodeBlockMeta),
+    lastHeight: Integer.parse(assertSet(data.last_height)),
+    blockMetas: assertSet(data.block_metas).map(decodeBlockMeta),
   };
 }
 
@@ -188,7 +188,7 @@ export type RpcBroadcastTxAsyncResponse = RpcBroadcastTxSyncResponse;
 function decodeBroadcastTxSync(data: RpcBroadcastTxSyncResponse): responses.BroadcastTxSyncResponse {
   return {
     ...decodeTxData(data),
-    hash: Encoding.fromHex(required(data.hash)) as TxHash,
+    hash: Encoding.fromHex(assertSet(data.hash)) as TxHash,
   };
 }
 
@@ -202,8 +202,8 @@ export interface RpcBroadcastTxCommitResponse {
 function decodeBroadcastTxCommit(data: RpcBroadcastTxCommitResponse): responses.BroadcastTxCommitResponse {
   return {
     height: may(Integer.parse, data.height),
-    hash: Encoding.fromHex(required(data.hash)) as TxHash,
-    checkTx: decodeTxData(required(data.check_tx)),
+    hash: Encoding.fromHex(assertSet(data.hash)) as TxHash,
+    checkTx: decodeTxData(assertSet(data.check_tx)),
     deliverTx: may(decodeTxData, data.deliver_tx),
   };
 }
@@ -218,7 +218,7 @@ export interface RpcCommitResponse {
 
 function decodeCommitResponse(data: RpcCommitResponse): responses.CommitResponse {
   return {
-    canonical: required(data.canonical),
+    canonical: assertSet(data.canonical),
     header: decodeHeader(data.signed_header.header),
     commit: decodeCommit(data.signed_header.commit),
   };
@@ -239,11 +239,11 @@ export interface GenesisResult {
 
 function decodeGenesis(data: RpcGenesisResponse): responses.GenesisResponse {
   return {
-    genesisTime: DateTime.decode(required(data.genesis_time)),
-    chainId: required(data.chain_id),
+    genesisTime: DateTime.decode(assertSet(data.genesis_time)),
+    chainId: assertSet(data.chain_id),
     consensusParams: decodeConsensusParams(data.consensus_params),
-    validators: required(data.validators).map(decodeValidatorGenesis),
-    appHash: Encoding.fromHex(required(data.app_hash)),
+    validators: assertSet(data.validators).map(decodeValidatorGenesis),
+    appHash: Encoding.fromHex(assertSet(data.app_hash)),
     appState: data.app_state,
   };
 }
@@ -276,11 +276,11 @@ export interface RpcTxResponse {
 
 function decodeTxResponse(data: RpcTxResponse): responses.TxResponse {
   return {
-    tx: Base64.decode(required(data.tx)) as TxBytes,
-    result: decodeTxData(required(data.tx_result)),
-    height: Integer.parse(required(data.height)),
-    index: Integer.ensure(required(data.index)),
-    hash: Encoding.fromHex(required(data.hash)) as TxHash,
+    tx: Base64.decode(assertSet(data.tx)) as TxBytes,
+    result: decodeTxData(assertSet(data.tx_result)),
+    height: Integer.parse(assertSet(data.height)),
+    index: Integer.ensure(assertSet(data.index)),
+    hash: Encoding.fromHex(assertSet(data.hash)) as TxHash,
     proof: may(decodeTxProof, data.proof),
   };
 }
@@ -292,8 +292,8 @@ export interface RpcTxSearchResponse {
 
 function decodeTxSearch(data: RpcTxSearchResponse): responses.TxSearchResponse {
   return {
-    totalCount: Integer.parse(required(data.total_count)),
-    txs: required(data.txs).map(decodeTxResponse),
+    totalCount: Integer.parse(assertSet(data.total_count)),
+    txs: assertSet(data.txs).map(decodeTxResponse),
   };
 }
 
@@ -305,13 +305,13 @@ interface RpcTxEvent {
 }
 
 function decodeTxEvent(data: RpcTxEvent): responses.TxEvent {
-  const tx = Base64.decode(required(data.tx)) as TxBytes;
+  const tx = Base64.decode(assertSet(data.tx)) as TxBytes;
   return {
     tx: tx,
     hash: hashTx(tx),
     result: decodeTxData(data.result),
-    height: Integer.parse(required(data.height)),
-    index: Integer.ensure(required(data.index)),
+    height: Integer.parse(assertSet(data.height)),
+    index: Integer.ensure(assertSet(data.index)),
   };
 }
 
@@ -322,8 +322,8 @@ export interface RpcValidatorsResponse {
 
 function decodeValidators(data: RpcValidatorsResponse): responses.ValidatorsResponse {
   return {
-    blockHeight: Integer.parse(required(data.block_height)),
-    results: required(data.validators).map(decodeValidatorData),
+    blockHeight: Integer.parse(assertSet(data.block_height)),
+    results: assertSet(data.validators).map(decodeValidatorData),
   };
 }
 
@@ -336,8 +336,8 @@ export interface RpcTag {
 
 function decodeTag(data: RpcTag): responses.Tag {
   return {
-    key: Base64.decode(required(data.key)),
-    value: Base64.decode(required(data.value)),
+    key: Base64.decode(assertSet(data.key)),
+    value: Base64.decode(assertSet(data.value)),
   };
 }
 
@@ -385,12 +385,12 @@ export interface RpcTxProof {
 
 function decodeTxProof(data: RpcTxProof): responses.TxProof {
   return {
-    data: Base64.decode(required(data.Data)),
-    rootHash: Encoding.fromHex(required(data.RootHash)),
+    data: Base64.decode(assertSet(data.Data)),
+    rootHash: Encoding.fromHex(assertSet(data.RootHash)),
     proof: {
-      total: Integer.parse(required(data.Total)),
-      index: Integer.parse(required(data.Index)),
-      aunts: required(data.Proof.aunts).map(Base64.decode),
+      total: Integer.parse(assertSet(data.Total)),
+      index: Integer.parse(assertSet(data.Index)),
+      aunts: assertSet(data.Proof.aunts).map(Base64.decode),
     },
   };
 }
@@ -405,10 +405,10 @@ export interface RpcBlockId {
 
 function decodeBlockId(data: RpcBlockId): responses.BlockId {
   return {
-    hash: Encoding.fromHex(required(data.hash)),
+    hash: Encoding.fromHex(assertSet(data.hash)),
     parts: {
-      total: Integer.parse(required(data.parts.total)),
-      hash: Encoding.fromHex(required(data.parts.hash)),
+      total: Integer.parse(assertSet(data.parts.total)),
+      hash: Encoding.fromHex(assertSet(data.parts.hash)),
     },
   };
 }
@@ -433,20 +433,20 @@ export interface RpcHeader {
 
 function decodeHeader(data: RpcHeader): responses.Header {
   return {
-    chainId: required(data.chain_id),
-    height: Integer.parse(required(data.height)),
-    time: DateTime.decode(required(data.time)),
-    numTxs: Integer.parse(required(data.num_txs)),
-    totalTxs: Integer.parse(required(data.total_txs)),
+    chainId: assertSet(data.chain_id),
+    height: Integer.parse(assertSet(data.height)),
+    time: DateTime.decode(assertSet(data.time)),
+    numTxs: Integer.parse(assertSet(data.num_txs)),
+    totalTxs: Integer.parse(assertSet(data.total_txs)),
     lastBlockId: decodeBlockId(data.last_block_id),
 
-    appHash: Encoding.fromHex(required(data.app_hash)),
-    consensusHash: Encoding.fromHex(required(data.consensus_hash)),
-    dataHash: Encoding.fromHex(required(data.data_hash)),
-    evidenceHash: Encoding.fromHex(required(data.evidence_hash)),
-    lastCommitHash: Encoding.fromHex(required(data.last_commit_hash)),
-    lastResultsHash: Encoding.fromHex(required(data.last_results_hash)),
-    validatorsHash: Encoding.fromHex(required(data.validators_hash)),
+    appHash: Encoding.fromHex(assertSet(data.app_hash)),
+    consensusHash: Encoding.fromHex(assertSet(data.consensus_hash)),
+    dataHash: Encoding.fromHex(assertSet(data.data_hash)),
+    evidenceHash: Encoding.fromHex(assertSet(data.evidence_hash)),
+    lastCommitHash: Encoding.fromHex(assertSet(data.last_commit_hash)),
+    lastResultsHash: Encoding.fromHex(assertSet(data.last_results_hash)),
+    validatorsHash: Encoding.fromHex(assertSet(data.validators_hash)),
   };
 }
 
@@ -469,8 +469,8 @@ export interface RpcCommit {
 
 function decodeCommit(data: RpcCommit): responses.Commit {
   return {
-    blockId: decodeBlockId(required(data.block_id)),
-    precommits: required(data.precommits).map(decodeVote),
+    blockId: decodeBlockId(assertSet(data.block_id)),
+    precommits: assertSet(data.precommits).map(decodeVote),
   };
 }
 
@@ -487,8 +487,8 @@ export interface RpcBlock {
 
 function decodeBlock(data: RpcBlock): responses.Block {
   return {
-    header: decodeHeader(required(data.header)),
-    lastCommit: decodeCommit(required(data.last_commit)),
+    header: decodeHeader(assertSet(data.header)),
+    lastCommit: decodeCommit(assertSet(data.last_commit)),
     txs: data.data.txs ? data.data.txs.map(Base64.decode) : [],
     evidence: data.evidence && may(decodeEvidences, data.evidence.evidence),
   };
@@ -516,10 +516,10 @@ export interface RpcEvidence {
 
 function decodeEvidence(data: RpcEvidence): responses.Evidence {
   return {
-    type: required(data.type),
-    height: Integer.parse(required(data.height)),
-    time: Integer.parse(required(data.time)),
-    totalVotingPower: Integer.parse(required(data.totalVotingPower)),
+    type: assertSet(data.type),
+    height: Integer.parse(assertSet(data.height)),
+    time: Integer.parse(assertSet(data.time)),
+    totalVotingPower: Integer.parse(assertSet(data.totalVotingPower)),
     validator: decodeValidatorUpdate(data.validator),
   };
 }
@@ -541,14 +541,14 @@ export interface RpcVote {
 
 function decodeVote(data: RpcVote): responses.Vote {
   return {
-    type: Integer.ensure(required(data.type)),
-    validatorAddress: Encoding.fromHex(required(data.validator_address)),
-    validatorIndex: Integer.parse(required(data.validator_index)),
-    height: Integer.parse(required(data.height)),
-    round: Integer.parse(required(data.round)),
-    timestamp: DateTime.decode(required(data.timestamp)),
-    blockId: decodeBlockId(required(data.block_id)),
-    signature: decodeSignature(required(data.signature)),
+    type: Integer.ensure(assertSet(data.type)),
+    validatorAddress: Encoding.fromHex(assertSet(data.validator_address)),
+    validatorIndex: Integer.parse(assertSet(data.validator_index)),
+    height: Integer.parse(assertSet(data.height)),
+    round: Integer.parse(assertSet(data.round)),
+    timestamp: DateTime.decode(assertSet(data.timestamp)),
+    blockId: decodeBlockId(assertSet(data.block_id)),
+    signature: decodeSignature(assertSet(data.signature)),
   };
 }
 
@@ -572,13 +572,13 @@ export interface RpcNodeInfo {
 
 function decodeNodeInfo(data: RpcNodeInfo): responses.NodeInfo {
   return {
-    id: Encoding.fromHex(required(data.id)),
-    listenAddr: required(data.listen_addr),
-    network: required(data.network),
-    version: required(data.version),
-    channels: required(data.channels),
-    moniker: required(data.moniker),
-    other: required(data.other),
+    id: Encoding.fromHex(assertSet(data.id)),
+    listenAddr: assertSet(data.listen_addr),
+    network: assertSet(data.network),
+    version: assertSet(data.version),
+    channels: assertSet(data.channels),
+    moniker: assertSet(data.moniker),
+    other: assertSet(data.other),
   };
 }
 
@@ -592,10 +592,10 @@ export interface RpcSyncInfo {
 
 function decodeSyncInfo(data: RpcSyncInfo): responses.SyncInfo {
   return {
-    latestBlockHash: Encoding.fromHex(required(data.latest_block_hash)),
-    latestAppHash: Encoding.fromHex(required(data.latest_app_hash)),
-    latestBlockTime: DateTime.decode(required(data.latest_block_time)),
-    latestBlockHeight: Integer.parse(required(data.latest_block_height)),
+    latestBlockHash: Encoding.fromHex(assertSet(data.latest_block_hash)),
+    latestAppHash: Encoding.fromHex(assertSet(data.latest_app_hash)),
+    latestBlockTime: DateTime.decode(assertSet(data.latest_block_time)),
+    latestBlockHeight: Integer.parse(assertSet(data.latest_block_height)),
     syncing: !optional<boolean>(data.catching_up, false),
   };
 }
@@ -609,8 +609,8 @@ export interface RpcValidatorGenesis {
 
 function decodeValidatorGenesis(data: RpcValidatorGenesis): responses.Validator {
   return {
-    pubkey: decodePubkey(required(data.pub_key)),
-    votingPower: Integer.parse(required(data.power)),
+    pubkey: decodePubkey(assertSet(data.pub_key)),
+    votingPower: Integer.parse(assertSet(data.power)),
     name: data.name,
   };
 }
@@ -624,9 +624,9 @@ export interface RpcValidatorUpdate {
 
 function decodeValidatorUpdate(data: RpcValidatorUpdate): responses.Validator {
   return {
-    pubkey: decodePubkey(required(data.pub_key)),
-    votingPower: Integer.parse(required(data.voting_power)),
-    address: Hex.decode(required(data.address)),
+    pubkey: decodePubkey(assertSet(data.pub_key)),
+    votingPower: Integer.parse(assertSet(data.voting_power)),
+    address: Hex.decode(assertSet(data.address)),
   };
 }
 
@@ -651,9 +651,9 @@ export interface RpcValidatorInfo {
 
 function decodeValidatorInfo(data: RpcValidatorInfo): responses.Validator {
   return {
-    pubkey: decodePubkey(required(data.pub_key)),
-    votingPower: Integer.parse(required(data.voting_power)),
-    address: Encoding.fromHex(required(data.address)),
+    pubkey: decodePubkey(assertSet(data.pub_key)),
+    votingPower: Integer.parse(assertSet(data.voting_power)),
+    address: Encoding.fromHex(assertSet(data.address)),
   };
 }
 
@@ -664,8 +664,8 @@ export interface RpcConsensusParams {
 
 function decodeConsensusParams(data: RpcConsensusParams): responses.ConsensusParams {
   return {
-    blockSize: decodeBlockSizeParams(required(data.block_size_params)),
-    evidence: decodeEvidenceParams(required(data.evidence_params)),
+    blockSize: decodeBlockSizeParams(assertSet(data.block_size_params)),
+    evidence: decodeEvidenceParams(assertSet(data.evidence_params)),
   };
 }
 
@@ -676,8 +676,8 @@ export interface RpcBlockSizeParams {
 
 function decodeBlockSizeParams(data: RpcBlockSizeParams): responses.BlockSizeParams {
   return {
-    maxBytes: Integer.parse(required(data.max_bytes)),
-    maxGas: Integer.parse(required(data.max_gas)),
+    maxBytes: Integer.parse(assertSet(data.max_bytes)),
+    maxGas: Integer.parse(assertSet(data.max_gas)),
   };
 }
 
@@ -687,7 +687,7 @@ export interface RpcEvidenceParams {
 
 function decodeEvidenceParams(data: RpcEvidenceParams): responses.EvidenceParams {
   return {
-    maxAge: Integer.parse(required(data.max_age)),
+    maxAge: Integer.parse(assertSet(data.max_age)),
   };
 }
 
@@ -702,7 +702,7 @@ function decodePubkey(data: RpcPubkey): ValidatorPubkey {
     // go-amino special code
     return {
       algorithm: "ed25519",
-      data: Base64.decode(required(data.value)),
+      data: Base64.decode(assertSet(data.value)),
     };
   }
   throw new Error(`unknown pubkey type: ${data.type}`);
@@ -713,6 +713,6 @@ export type RpcSignature = Base64String;
 function decodeSignature(data: RpcSignature): ValidatorSignature {
   return {
     algorithm: "ed25519",
-    data: Base64.decode(required(data)),
+    data: Base64.decode(assertSet(data)),
   };
 }
