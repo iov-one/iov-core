@@ -391,8 +391,7 @@ function decodeTxProof(data: RpcTxProof): responses.TxProof {
     proof: {
       total: Integer.parse(assertNotEmpty(data.Proof.total)),
       index: Integer.parse(assertNotEmpty(data.Proof.index)),
-      // Field ignored as not present in general responses.TxProof
-      // leaf_hash: Base64.decode(required(data.Proof.leaf_hash)),
+      leafHash: Base64.decode(assertNotEmpty(data.Proof.leaf_hash)),
       aunts: assertArray(data.Proof.aunts).map(Base64.decode),
     },
   };
