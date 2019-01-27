@@ -6,6 +6,7 @@ import {
   Base64String,
   DateTime,
   DateTimeString,
+  dictionaryToStringMap,
   Hex,
   HexString,
   Integer,
@@ -556,15 +557,18 @@ interface RpcNodeInfo {
   readonly version: string;
   readonly channels: string; // ???
   readonly moniker: string;
-  readonly other: ReadonlyArray<string>;
-  // [
-  //   "amino_version=0.9.9",
-  //   "p2p_version=0.5.0",
-  //   "consensus_version=v1/0.2.2",
-  //   "rpc_version=0.7.0/3",
-  //   "tx_index=on",
-  //   "rpc_addr=tcp://0.0.0.0:46657"
-  // ]
+  /**
+   * Additional information. E.g.
+   * {
+   *   "amino_version": "0.12.0",
+   *   "p2p_version": "0.5.0",
+   *   "consensus_version": "v1/0.2.2",
+   *   "rpc_version": "0.7.0/3",
+   *   "tx_index": "on",
+   *   "rpc_address": "tcp://0.0.0.0:26657"
+   * }
+   */
+  readonly other: object;
 }
 
 function decodeNodeInfo(data: RpcNodeInfo): responses.NodeInfo {
@@ -575,7 +579,7 @@ function decodeNodeInfo(data: RpcNodeInfo): responses.NodeInfo {
     version: assertSet(data.version),
     channels: assertSet(data.channels),
     moniker: assertSet(data.moniker),
-    other: assertSet(data.other),
+    other: dictionaryToStringMap(data.other),
   };
 }
 

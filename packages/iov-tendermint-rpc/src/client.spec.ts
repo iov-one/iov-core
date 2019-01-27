@@ -112,8 +112,22 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     expect(await client.commit(4)).toBeTruthy();
     expect(await client.genesis()).toBeTruthy();
     expect(await client.health()).toBeNull();
-    expect(await client.status()).toBeTruthy();
     expect(await client.validators()).toBeTruthy();
+
+    client.disconnect();
+  });
+
+  it("can call status", async () => {
+    pendingWithoutTendermint();
+    const client = new Client(rpcFactory(), adaptor);
+
+    const status = await client.status();
+    expect(status.nodeInfo.other.size).toBeGreaterThanOrEqual(2);
+    expect(status.nodeInfo.other.get("tx_index")).toEqual("on");
+    expect(status.validatorInfo.pubkey).toBeTruthy();
+    expect(status.validatorInfo.votingPower).toBeGreaterThan(0);
+    // expect(status.syncInfo.syncing).toEqual(false);
+    expect(status.syncInfo.latestBlockHeight).toBeGreaterThanOrEqual(1);
 
     client.disconnect();
   });

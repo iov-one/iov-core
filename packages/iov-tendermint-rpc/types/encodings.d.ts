@@ -21,6 +21,7 @@ export declare function assertSet<T>(value: T): T;
 export declare function assertNotEmpty<T>(value: T): T;
 export declare function optional<T>(value: T | null | undefined, fallback: T): T;
 export declare function may<T, U>(transform: (val: T) => U, value: T | null | undefined): U | undefined;
+export declare function dictionaryToStringMap(obj: any): Map<string, string>;
 export declare class Integer {
     static parse(str: IntegerString): number;
     static encode(num: number): IntegerString;

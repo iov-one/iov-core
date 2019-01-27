@@ -193,7 +193,7 @@ export interface NodeInfo {
     readonly version: string;
     readonly channels: string;
     readonly moniker: string;
-    readonly other: ReadonlyArray<string>;
+    readonly other: Map<string, string>;
 }
 export interface SyncInfo {
     readonly latestBlockHash: Uint8Array;

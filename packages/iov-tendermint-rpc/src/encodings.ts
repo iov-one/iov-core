@@ -58,6 +58,18 @@ export function may<T, U>(transform: (val: T) => U, value: T | null | undefined)
   return value === undefined || value === null ? undefined : transform(value);
 }
 
+export function dictionaryToStringMap(obj: any): Map<string, string> {
+  const out = new Map<string, string>();
+  for (const key of Object.keys(obj)) {
+    const value: unknown = obj[key];
+    if (typeof value !== "string") {
+      throw new Error("Found dictionary value of type other than string");
+    }
+    out.set(key, value);
+  }
+  return out;
+}
+
 export class Integer {
   public static parse(str: IntegerString): number {
     return Int53.fromString(str).toNumber();

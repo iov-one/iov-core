@@ -211,7 +211,14 @@ export interface RpcNodeInfo {
     readonly version: string;
     readonly channels: string;
     readonly moniker: string;
-    readonly other: ReadonlyArray<string>;
+    /**
+     * Additional information. E.g.
+     * {
+     *   "tx_index": "on",
+     *   "rpc_address":"tcp://0.0.0.0:26657"
+     * }
+     */
+    readonly other: object;
 }
 export interface RpcSyncInfo {
     readonly latest_block_hash: HexString;
