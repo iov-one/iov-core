@@ -228,10 +228,10 @@ function decodeCommitResponse(data: RpcCommitResponse): responses.CommitResponse
 
 interface RpcGenesisResponse {
   readonly genesis_time: DateTimeString;
-  readonly chain_id: string; // ChainId;
+  readonly chain_id: string;
   readonly consensus_params: RpcConsensusParams;
   readonly validators: ReadonlyArray<RpcValidatorGenesis>;
-  readonly app_hash: HexString; // HexString, Base64String??
+  readonly app_hash: HexString;
   readonly app_state: {};
 }
 
@@ -416,7 +416,7 @@ function decodeBlockId(data: RpcBlockId): responses.BlockId {
 }
 
 interface RpcHeader {
-  readonly chain_id: string; // ChainId
+  readonly chain_id: string;
   readonly height: IntegerString;
   readonly time: DateTimeString;
   readonly num_txs: IntegerString;
