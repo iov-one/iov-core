@@ -147,28 +147,30 @@ UserProfile {
   ...
 ```
 
-### Register a BNS name
+### Register a BNS username NFT
 
 Assuming you have a `profile`, a `signer` and a `recipient` identity with
 transactions associated from above
 
 ```
 > .editor
-const setNameTx: SetNameTx = {
-  kind: "bns/set_name",
+const registration: RegisterUsernameTx = {
+  kind: "bns/register_username",
   creator: recipient,
-  name: "hans",
+  addresses: [],
+  username: "hans",
 };
 ^D
-> await signer.signAndPost(setNameTx, wallet.id);
-> (await connection.getAccount({ name: "hans" })).data[0]
-{ name: 'hans',
-  address:
-   Uint8Array [
-     174,
-     38,
-     125,
-     211, ...
+> await signer.signAndPost(registration, wallet.id);
+> const bnsConnection = connection as BnsConnection;
+> await bnsConnection.getUsernames({ owner: recipientAddress });
+[ { id: 'hans',
+    owner: 'tiov14cn8m57wtrlewmlnjucctsahpnxlj92l0crkvq',
+    addresses: [] } ]
+> await bnsConnection.getUsernames({ username: "hans" });
+[ { id: 'hans',
+    owner: 'tiov14cn8m57wtrlewmlnjucctsahpnxlj92l0crkvq',
+    addresses: [] } ]
 ```
 
 ### Disconnecting
