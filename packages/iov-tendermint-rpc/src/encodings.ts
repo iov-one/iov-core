@@ -40,6 +40,20 @@ export function assertBoolean(value: boolean): boolean {
 }
 
 /**
+ * A runtime checker that ensures a given value is a number
+ *
+ * This is used when you want to verify that data at runtime matches the expected type.
+ * This implies assertSet.
+ */
+export function assertNumber(value: number): number {
+  assertSet(value);
+  if (typeof (value as unknown) !== "number") {
+    throw new Error("Value must be a number");
+  }
+  return value;
+}
+
+/**
  * A runtime checker that ensures a given value is an array
  *
  * This is used when you want to verify that data at runtime matches the expected type.
@@ -99,22 +113,13 @@ export function dictionaryToStringMap(obj: any): Map<string, string> {
 }
 
 export class Integer {
-  public static parse(str: IntegerString): number {
-    return Int53.fromString(str).toNumber();
+  public static parse(input: IntegerString | number): number {
+    const asInt = typeof input === "number" ? new Int53(input) : Int53.fromString(input);
+    return asInt.toNumber();
   }
 
   public static encode(num: number): IntegerString {
     return new Int53(num).toString() as IntegerString;
-  }
-
-  public static ensure(num: unknown): number {
-    if (typeof num !== "number") {
-      throw new Error(`${num} is not a number`);
-    }
-    if (!Number.isInteger(num)) {
-      throw new Error(`${num} is not an integer`);
-    }
-    return num;
   }
 }
 

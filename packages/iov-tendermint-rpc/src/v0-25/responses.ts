@@ -4,6 +4,7 @@ import {
   assertArray,
   assertBoolean,
   assertNotEmpty,
+  assertNumber,
   assertSet,
   Base64,
   Base64String,
@@ -280,7 +281,7 @@ function decodeTxResponse(data: RpcTxResponse): responses.TxResponse {
     tx: Base64.decode(assertNotEmpty(data.tx)) as TxBytes,
     result: decodeTxData(assertSet(data.tx_result)),
     height: Integer.parse(assertNotEmpty(data.height)),
-    index: Integer.ensure(assertSet(data.index)),
+    index: Integer.parse(assertNumber(data.index)),
     hash: Encoding.fromHex(assertNotEmpty(data.hash)) as TxHash,
     proof: may(decodeTxProof, data.proof),
   };
@@ -312,7 +313,7 @@ function decodeTxEvent(data: RpcTxEvent): responses.TxEvent {
     hash: hashTx(tx),
     result: decodeTxData(data.result),
     height: Integer.parse(assertNotEmpty(data.height)),
-    index: Integer.ensure(assertSet(data.index)),
+    index: Integer.parse(assertNumber(data.index)),
   };
 }
 
@@ -357,7 +358,7 @@ function decodeTxData(data: RpcTxData): responses.TxData {
   return {
     data: may(Base64.decode, data.data),
     log: data.log,
-    code: Integer.ensure(optional<number>(data.code, 0)),
+    code: Integer.parse(assertNumber(optional<number>(data.code, 0))),
     tags: may(decodeTags, data.tags),
   };
 }
@@ -542,7 +543,7 @@ interface RpcVote {
 
 function decodeVote(data: RpcVote): responses.Vote {
   return {
-    type: Integer.ensure(assertNotEmpty(data.type)),
+    type: Integer.parse(assertNumber(data.type)),
     validatorAddress: Encoding.fromHex(assertNotEmpty(data.validator_address)),
     validatorIndex: Integer.parse(assertNotEmpty(data.validator_index)),
     height: Integer.parse(assertNotEmpty(data.height)),
