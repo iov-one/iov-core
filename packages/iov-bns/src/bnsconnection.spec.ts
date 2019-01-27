@@ -1,10 +1,10 @@
 import Long from "long";
 
 import {
+  Account,
   Address,
   Algorithm,
   Amount,
-  BcpAccount,
   BcpSwapQuery,
   BlockInfo,
   BlockInfoFailed,
@@ -1598,8 +1598,8 @@ describe("BnsConnection", () => {
     const recipientAccountStream = connection.watchAccount({ address: recipientAddr });
 
     // let's watch for all changes, capture them in a value sink
-    const faucetAcct = lastValue<BcpAccount | undefined>(faucetAccountStream);
-    const rcptAcct = lastValue<BcpAccount | undefined>(recipientAccountStream);
+    const faucetAcct = lastValue<Account | undefined>(faucetAccountStream);
+    const rcptAcct = lastValue<Account | undefined>(recipientAccountStream);
 
     // give it a chance to get initial feed before checking and proceeding
     await sleep(200);

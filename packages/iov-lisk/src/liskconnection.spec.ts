@@ -2,19 +2,19 @@ import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
 import {
+  Account,
+  AccountQuery,
   Address,
+  AddressQuery,
   Algorithm,
   Amount,
-  BcpAccount,
-  BcpAccountQuery,
-  BcpAddressQuery,
-  BcpPubkeyQuery,
   BlockInfo,
   ChainId,
   ConfirmedTransaction,
   isBlockInfoPending,
   isConfirmedTransaction,
   isSendTransaction,
+  PubkeyQuery,
   PublicKeyBundle,
   PublicKeyBytes,
   SendTransaction,
@@ -163,7 +163,7 @@ describe("LiskConnection", () => {
     it("can get account from address", async () => {
       pendingWithoutLiskDevnet();
       const connection = await LiskConnection.establish(devnetBase);
-      const query: BcpAccountQuery = { address: "1349293588603668134L" as Address };
+      const query: AccountQuery = { address: "1349293588603668134L" as Address };
       const account = await connection.getAccount(query);
 
       const expectedPubkey: PublicKeyBundle = {
@@ -184,7 +184,7 @@ describe("LiskConnection", () => {
         algo: Algorithm.Ed25519,
         data: fromHex("e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6") as PublicKeyBytes,
       };
-      const query: BcpAccountQuery = { pubkey: pubkey };
+      const query: AccountQuery = { pubkey: pubkey };
       const account = await connection.getAccount(query);
 
       const expectedPubkey = pubkey;
@@ -219,7 +219,7 @@ describe("LiskConnection", () => {
 
       // by address
       {
-        const query: BcpAddressQuery = { address: "6472030874529564639L" as Address };
+        const query: AddressQuery = { address: "6472030874529564639L" as Address };
         const nonce = await connection.getNonce(query);
         // nonce is current unix timestamp +/- 300ms
         expect(nonce.toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
@@ -228,7 +228,7 @@ describe("LiskConnection", () => {
 
       // by pubkey
       {
-        const query: BcpPubkeyQuery = {
+        const query: PubkeyQuery = {
           pubkey: {
             algo: Algorithm.Ed25519,
             data: fromHex(
@@ -251,8 +251,8 @@ describe("LiskConnection", () => {
       pendingWithoutLiskDevnet();
       const connection = await LiskConnection.establish(devnetBase);
 
-      const addressQuery: BcpAddressQuery = { address: "6472030874529564639L" as Address };
-      const pubkeyQuery: BcpPubkeyQuery = {
+      const addressQuery: AddressQuery = { address: "6472030874529564639L" as Address };
+      const pubkeyQuery: PubkeyQuery = {
         pubkey: {
           algo: Algorithm.Ed25519,
           data: fromHex("e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6") as PublicKeyBytes,
@@ -344,7 +344,7 @@ describe("LiskConnection", () => {
 
         const recipient = await randomAddress();
 
-        const events = new Array<BcpAccount | undefined>();
+        const events = new Array<Account | undefined>();
         const subscription = connection.watchAccount({ address: recipient }).subscribe({
           next: event => {
             events.push(event);

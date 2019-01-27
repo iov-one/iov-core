@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.12.0
+
+Breaking changes
+
+* @iov/bcp-type: Remove `Bcp*` prefix from `BcpAccount`, `BcpAccountQuery`,
+  `BcpAddressQuery`, `BcpPubkeyQuery`
+
 ## 0.11.0
 
 * @iov/bcp-type: `BcpConnection.getNonce` now returns a `Promise<Nonce>` and

@@ -4,12 +4,11 @@ import { ReadonlyDate } from "readonly-date";
 import { Producer, Stream } from "xstream";
 
 import {
+  Account,
+  AccountQuery,
+  AddressQuery,
   Algorithm,
-  BcpAccount,
-  BcpAccountQuery,
-  BcpAddressQuery,
   BcpConnection,
-  BcpPubkeyQuery,
   BcpTicker,
   BcpTxQuery,
   BlockHeader,
@@ -22,6 +21,7 @@ import {
   Nonce,
   PostableBytes,
   PostTxResponse,
+  PubkeyQuery,
   PublicKeyBundle,
   PublicKeyBytes,
   TokenTicker,
@@ -175,7 +175,7 @@ export class RiseConnection implements BcpConnection {
     ];
   }
 
-  public async getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined> {
+  public async getAccount(query: AccountQuery): Promise<Account | undefined> {
     const address = isPubkeyQuery(query) ? pubkeyToAddress(query.pubkey.data) : query.address;
 
     const url = this.baseUrl + `/api/accounts?address=${address}`;
@@ -213,11 +213,11 @@ export class RiseConnection implements BcpConnection {
     };
   }
 
-  public async getNonce(_: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {
+  public async getNonce(_: AddressQuery | PubkeyQuery): Promise<Nonce> {
     return generateNonce();
   }
 
-  public async getNonces(_: BcpAddressQuery | BcpPubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>> {
+  public async getNonces(_: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>> {
     const checkedCount = new Uint53(count).toNumber();
     // use unique nonces to ensure the same transaction content leads to a different transaction ID
     // [now-3, now-2, now-1, now] for 4 nonces
@@ -227,10 +227,10 @@ export class RiseConnection implements BcpConnection {
     });
   }
 
-  public watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined> {
+  public watchAccount(query: AccountQuery): Stream<Account | undefined> {
     let lastEvent: any = {}; // default to a dummy value to ensure an initial undefined event is sent
     let pollInternal: NodeJS.Timeout | undefined;
-    const producer: Producer<BcpAccount | undefined> = {
+    const producer: Producer<Account | undefined> = {
       start: listener => {
         const poll = async () => {
           try {

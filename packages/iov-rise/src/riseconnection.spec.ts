@@ -2,19 +2,19 @@ import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
 import {
+  Account,
+  AccountQuery,
   Address,
+  AddressQuery,
   Algorithm,
   Amount,
-  BcpAccount,
-  BcpAccountQuery,
-  BcpAddressQuery,
-  BcpPubkeyQuery,
   BlockInfo,
   ChainId,
   ConfirmedTransaction,
   isBlockInfoPending,
   isConfirmedTransaction,
   isSendTransaction,
+  PubkeyQuery,
   PublicKeyBundle,
   PublicKeyBytes,
   SendTransaction,
@@ -148,7 +148,7 @@ describe("RiseConnection", () => {
   describe("getAccount", () => {
     it("can get account from address", async () => {
       const connection = await RiseConnection.establish(base);
-      const query: BcpAccountQuery = { address: "6472030874529564639R" as Address };
+      const query: AccountQuery = { address: "6472030874529564639R" as Address };
       const response = await connection.getAccount(query);
 
       const expectedPubkey: PublicKeyBundle = {
@@ -168,7 +168,7 @@ describe("RiseConnection", () => {
         algo: Algorithm.Ed25519,
         data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PublicKeyBytes,
       };
-      const query: BcpAccountQuery = { pubkey: pubkey };
+      const query: AccountQuery = { pubkey: pubkey };
       const response = await connection.getAccount(query);
 
       const expectedPubkey = pubkey;
@@ -200,7 +200,7 @@ describe("RiseConnection", () => {
 
       // by address
       {
-        const query: BcpAddressQuery = { address: "5399275477602875017R" as Address };
+        const query: AddressQuery = { address: "5399275477602875017R" as Address };
         const nonce = await connection.getNonce(query);
         // nonce is current unix timestamp +/- 300ms
         expect(nonce.toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
@@ -209,7 +209,7 @@ describe("RiseConnection", () => {
 
       // by pubkey
       {
-        const query: BcpPubkeyQuery = {
+        const query: PubkeyQuery = {
           pubkey: {
             algo: Algorithm.Ed25519,
             data: fromHex(
@@ -231,8 +231,8 @@ describe("RiseConnection", () => {
     it("can get 0/1/2/3 nonces", async () => {
       const connection = await RiseConnection.establish(base);
 
-      const addressQuery: BcpAddressQuery = { address: "5399275477602875017R" as Address };
-      const pubkeyQuery: BcpPubkeyQuery = {
+      const addressQuery: AddressQuery = { address: "5399275477602875017R" as Address };
+      const pubkeyQuery: PubkeyQuery = {
         pubkey: {
           algo: Algorithm.Ed25519,
           data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PublicKeyBytes,
@@ -322,7 +322,7 @@ describe("RiseConnection", () => {
 
         const recipient = await randomAddress();
 
-        const events = new Array<BcpAccount | undefined>();
+        const events = new Array<Account | undefined>();
         const subscription = connection.watchAccount({ address: recipient }).subscribe({
           next: event => {
             events.push(event);

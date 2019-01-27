@@ -4,12 +4,11 @@ import { ReadonlyDate } from "readonly-date";
 import { Producer, Stream, Subscription } from "xstream";
 
 import {
+  Account,
+  AccountQuery,
   Address,
-  BcpAccount,
-  BcpAccountQuery,
-  BcpAddressQuery,
+  AddressQuery,
   BcpConnection,
-  BcpPubkeyQuery,
   BcpTicker,
   BcpTxQuery,
   BlockHeader,
@@ -21,6 +20,7 @@ import {
   Nonce,
   PostableBytes,
   PostTxResponse,
+  PubkeyQuery,
   TokenTicker,
   TransactionId,
   TransactionState,
@@ -197,7 +197,7 @@ export class EthereumConnection implements BcpConnection {
     ];
   }
 
-  public async getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined> {
+  public async getAccount(query: AccountQuery): Promise<Account | undefined> {
     const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
 
     // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance
@@ -213,7 +213,7 @@ export class EthereumConnection implements BcpConnection {
 
     // eth_getBalance always returns one result. Balance is 0x0 if account does not exist.
 
-    const account: BcpAccount = {
+    const account: Account = {
       address: address,
       pubkey: undefined, // TODO: get from a transaction sent by this address
       name: undefined,
@@ -227,7 +227,7 @@ export class EthereumConnection implements BcpConnection {
     return account;
   }
 
-  public async getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {
+  public async getNonce(query: AddressQuery | PubkeyQuery): Promise<Nonce> {
     const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
 
     // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount
@@ -244,10 +244,7 @@ export class EthereumConnection implements BcpConnection {
     return decodeHexQuantityNonce(response.result);
   }
 
-  public async getNonces(
-    query: BcpAddressQuery | BcpPubkeyQuery,
-    count: number,
-  ): Promise<ReadonlyArray<Nonce>> {
+  public async getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>> {
     const checkedCount = new Uint53(count).toNumber();
     switch (checkedCount) {
       case 0:
@@ -371,13 +368,13 @@ export class EthereumConnection implements BcpConnection {
     return this.watchBlockHeaders().map(header => header.height);
   }
 
-  public watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined> {
+  public watchAccount(query: AccountQuery): Stream<Account | undefined> {
     const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
 
     let pollInterval: NodeJS.Timeout | undefined;
     let lastEvent: any = {}; // use non-undefined init value ensure undefined is sent as an event
 
-    const producer: Producer<BcpAccount | undefined> = {
+    const producer: Producer<Account | undefined> = {
       start: listener => {
         const poll = async () => {
           try {

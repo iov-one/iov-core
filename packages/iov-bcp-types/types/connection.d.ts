@@ -15,7 +15,7 @@ export interface BcpQueryMetadata {
 }
 export interface BcpCoin extends BcpTicker, Amount {
 }
-export interface BcpAccount {
+export interface Account {
     readonly address: Address;
     /**
      * The public key, if available.
@@ -140,15 +140,15 @@ export interface BcpTxQuery {
     readonly minHeight?: number;
     readonly maxHeight?: number;
 }
-export interface BcpAddressQuery {
+export interface AddressQuery {
     readonly address: Address;
 }
-export interface BcpPubkeyQuery {
+export interface PubkeyQuery {
     readonly pubkey: PublicKeyBundle;
 }
-export declare type BcpAccountQuery = BcpAddressQuery | BcpPubkeyQuery;
-export declare function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery;
-export declare function isPubkeyQuery(query: BcpAccountQuery): query is BcpPubkeyQuery;
+export declare type AccountQuery = AddressQuery | PubkeyQuery;
+export declare function isAddressQuery(query: AccountQuery): query is AddressQuery;
+export declare function isPubkeyQuery(query: AccountQuery): query is PubkeyQuery;
 /**
  * A printable block ID in a blockchain-specific format.
  *
@@ -174,21 +174,21 @@ export interface BcpConnection {
      *
      * If an account is not found on the blockchain, this returns undefined.
      */
-    readonly getAccount: (query: BcpAccountQuery) => Promise<BcpAccount | undefined>;
-    readonly watchAccount: (account: BcpAccountQuery) => Stream<BcpAccount | undefined>;
+    readonly getAccount: (query: AccountQuery) => Promise<Account | undefined>;
+    readonly watchAccount: (account: AccountQuery) => Stream<Account | undefined>;
     /**
      * Get a nonce for the next transaction signature.
      *
      * Implementation defines a default value if blockchain does not provide a nonce.
      */
-    readonly getNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Promise<Nonce>;
+    readonly getNonce: (query: AddressQuery | PubkeyQuery) => Promise<Nonce>;
     /**
      * Get multiple nonces at once to sign multiple transactions
      *
      * This avoids querying the blockchain for every nonce and removes the need to
      * wait for blocks before getting updated nonces.
      */
-    readonly getNonces: (query: BcpAddressQuery | BcpPubkeyQuery, count: number) => Promise<ReadonlyArray<Nonce>>;
+    readonly getNonces: (query: AddressQuery | PubkeyQuery, count: number) => Promise<ReadonlyArray<Nonce>>;
     readonly getBlockHeader: (height: number) => Promise<BlockHeader>;
     readonly watchBlockHeaders: () => Stream<BlockHeader>;
     /** @deprecated use watchBlockHeaders().map(header => header.height) */

@@ -2,13 +2,12 @@ import equal from "fast-deep-equal";
 import { Stream, Subscription } from "xstream";
 
 import {
+  Account,
+  AccountQuery,
   Address,
-  BcpAccount,
-  BcpAccountQuery,
-  BcpAddressQuery,
+  AddressQuery,
   BcpAtomicSwap,
   BcpAtomicSwapConnection,
-  BcpPubkeyQuery,
   BcpQueryEnvelope,
   BcpSwapQuery,
   BcpTicker,
@@ -32,6 +31,7 @@ import {
   OpenSwap,
   PostableBytes,
   PostTxResponse,
+  PubkeyQuery,
   PublicKeyBundle,
   SwapClaimTransaction,
   SwapState,
@@ -292,7 +292,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return data;
   }
 
-  public async getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined> {
+  public async getAccount(query: AccountQuery): Promise<Account | undefined> {
     const address = isPubkeyQuery(query)
       ? identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey })
       : query.address;
@@ -325,7 +325,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     };
   }
 
-  public async getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {
+  public async getNonce(query: AddressQuery | PubkeyQuery): Promise<Nonce> {
     const address = isPubkeyQuery(query)
       ? identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey })
       : query.address;
@@ -343,10 +343,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     }
   }
 
-  public async getNonces(
-    query: BcpAddressQuery | BcpPubkeyQuery,
-    count: number,
-  ): Promise<ReadonlyArray<Nonce>> {
+  public async getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>> {
     const checkedCount = new Uint53(count).toNumber();
     switch (checkedCount) {
       case 0:
@@ -644,7 +641,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   /**
    * Gets current balance and emits an update every time it changes
    */
-  public watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined> {
+  public watchAccount(query: AccountQuery): Stream<Account | undefined> {
     const address = isPubkeyQuery(query)
       ? identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey })
       : query.address;
