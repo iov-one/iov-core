@@ -33,12 +33,20 @@ function fold_end() {
 source ./scripts/retry.sh
 retry 3 yarn install
 
+# For socketserver
+pip3 install websockets
+
 #
 # Start blockchains
 #
 
 # Use Docker if available (currently Linux only)
 if command -v docker > /dev/null ; then
+  fold_start "socketserver-start"
+  ./scripts/socketserver/start.sh
+  export SOCKETSERVER_ENABLED=1
+  fold_end
+
   fold_start "tendermint-start"
   ./scripts/tendermint/all_start.sh
   export TENDERMINT_ENABLED=1

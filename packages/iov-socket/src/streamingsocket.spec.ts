@@ -3,27 +3,27 @@ import { toListPromise } from "@iov/stream";
 import { StreamingSocket } from "./streamingsocket";
 
 function skipTests(): boolean {
-  return !process.env.TENDERMINT_ENABLED;
+  return !process.env.SOCKETSERVER_ENABLED;
 }
 
-function pendingWithoutTendermint(): void {
+function pendingWithoutSocketServer(): void {
   if (skipTests()) {
-    pending("Set TENDERMINT_ENABLED to enable tendermint rpc tests");
+    pending("Set SOCKETSERVER_ENABLED to enable socket tests");
   }
 }
 
 describe("StreamingSocket", () => {
-  const tendermintSocketUrl = "ws://localhost:12345/websocket";
+  const socketServerUrl = "ws://localhost:4444/websocket";
 
   it("can be constructed", () => {
-    const socket = new StreamingSocket(tendermintSocketUrl);
+    const socket = new StreamingSocket(socketServerUrl);
     expect(socket).toBeTruthy();
   });
 
   it("can connect", async () => {
-    pendingWithoutTendermint();
+    pendingWithoutSocketServer();
 
-    const socket = new StreamingSocket(tendermintSocketUrl);
+    const socket = new StreamingSocket(socketServerUrl);
     expect(socket).toBeTruthy();
     socket.connect();
     await socket.connected;
@@ -31,9 +31,9 @@ describe("StreamingSocket", () => {
   });
 
   it("can send events when connected", async () => {
-    pendingWithoutTendermint();
+    pendingWithoutSocketServer();
 
-    const socket = new StreamingSocket(tendermintSocketUrl);
+    const socket = new StreamingSocket(socketServerUrl);
 
     const responsePromise = toListPromise(socket.events, 3);
 
@@ -51,9 +51,9 @@ describe("StreamingSocket", () => {
   });
 
   it("completes stream when disconnected", done => {
-    pendingWithoutTendermint();
+    pendingWithoutSocketServer();
 
-    const socket = new StreamingSocket(tendermintSocketUrl);
+    const socket = new StreamingSocket(socketServerUrl);
     const subscription = socket.events.subscribe({
       complete: () => {
         subscription.unsubscribe();

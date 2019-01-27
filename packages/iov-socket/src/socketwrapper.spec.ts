@@ -1,38 +1,38 @@
 import { SocketWrapper } from "./socketwrapper";
 
 function skipTests(): boolean {
-  return !process.env.TENDERMINT_ENABLED;
+  return !process.env.SOCKETSERVER_ENABLED;
 }
 
-function pendingWithoutTendermint(): void {
+function pendingWithoutSocketServer(): void {
   if (skipTests()) {
-    pending("Set TENDERMINT_ENABLED to enable tendermint rpc tests");
+    pending("Set SOCKETSERVER_ENABLED to enable socket tests");
   }
 }
 
 describe("SocketWrapper", () => {
-  const tendermintSocketUrl = "ws://localhost:12345/websocket";
+  const socketServerUrl = "ws://localhost:4444/websocket";
 
   it("can be constructed", () => {
-    const socket = new SocketWrapper(tendermintSocketUrl, fail, fail);
+    const socket = new SocketWrapper(socketServerUrl, fail, fail);
     expect(socket).toBeTruthy();
   });
 
   it("can connect", done => {
-    pendingWithoutTendermint();
+    pendingWithoutSocketServer();
 
-    const socket = new SocketWrapper(tendermintSocketUrl, fail, fail, done, fail);
+    const socket = new SocketWrapper(socketServerUrl, fail, fail, done, fail);
     expect(socket).toBeTruthy();
     socket.connect();
   });
 
   it("can connect and disconnect", done => {
-    pendingWithoutTendermint();
+    pendingWithoutSocketServer();
 
     let opened = 0;
 
     const socket = new SocketWrapper(
-      tendermintSocketUrl,
+      socketServerUrl,
       fail,
       fail,
       () => {
@@ -51,9 +51,9 @@ describe("SocketWrapper", () => {
   });
 
   it("can disconnect before waiting for open", done => {
-    pendingWithoutTendermint();
+    pendingWithoutSocketServer();
 
-    const socket = new SocketWrapper(tendermintSocketUrl, fail, fail, fail, closeEvent => {
+    const socket = new SocketWrapper(socketServerUrl, fail, fail, fail, closeEvent => {
       expect(closeEvent.wasClean).toEqual(false);
       expect(closeEvent.code).toEqual(4001);
       done();
@@ -63,12 +63,12 @@ describe("SocketWrapper", () => {
   });
 
   it("can send events when connected", done => {
-    pendingWithoutTendermint();
+    pendingWithoutSocketServer();
 
     const responseMessages = new Array<string>();
 
     const socket = new SocketWrapper(
-      tendermintSocketUrl,
+      socketServerUrl,
       response => {
         expect(response.type).toEqual("message");
         responseMessages.push(response.data);
@@ -92,10 +92,10 @@ describe("SocketWrapper", () => {
   });
 
   it("cannot send on a disconnect socket (it will never come back)", done => {
-    pendingWithoutTendermint();
+    pendingWithoutSocketServer();
 
     const socket = new SocketWrapper(
-      tendermintSocketUrl,
+      socketServerUrl,
       fail,
       fail,
       () => {

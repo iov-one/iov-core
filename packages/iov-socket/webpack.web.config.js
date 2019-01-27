@@ -15,7 +15,7 @@ module.exports = [
       filename: "tests.js",
     },
     plugins: [
-      new webpack.EnvironmentPlugin(['TENDERMINT_ENABLED']),
+      new webpack.EnvironmentPlugin(['SOCKETSERVER_ENABLED']),
     ],
   },
 ];
