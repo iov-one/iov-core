@@ -63,7 +63,7 @@ export interface GenesisResponse {
     readonly consensusParams: ConsensusParams;
     readonly validators: ReadonlyArray<Validator>;
     readonly appHash: Uint8Array;
-    readonly appState: {};
+    readonly appState: {} | undefined;
 }
 export declare type HealthResponse = null;
 export interface StatusResponse {

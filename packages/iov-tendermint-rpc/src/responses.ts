@@ -98,7 +98,7 @@ export interface GenesisResponse {
   readonly consensusParams: ConsensusParams;
   readonly validators: ReadonlyArray<Validator>;
   readonly appHash: Uint8Array;
-  readonly appState: {};
+  readonly appState: {} | undefined;
 }
 
 export type HealthResponse = null;

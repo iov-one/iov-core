@@ -231,7 +231,7 @@ interface RpcGenesisResponse {
   readonly consensus_params: RpcConsensusParams;
   readonly validators: ReadonlyArray<RpcValidatorGenesis>;
   readonly app_hash: HexString; // HexString, Base64String??
-  readonly app_state: {};
+  readonly app_state: {} | undefined;
 }
 
 interface GenesisResult {
