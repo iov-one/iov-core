@@ -244,7 +244,7 @@ function decodeGenesis(data: RpcGenesisResponse): responses.GenesisResponse {
     chainId: assertSet(data.chain_id),
     consensusParams: decodeConsensusParams(data.consensus_params),
     validators: assertSet(data.validators).map(decodeValidatorGenesis),
-    appHash: Encoding.fromHex(assertSet(data.app_hash)),
+    appHash: Encoding.fromHex(assertSet(data.app_hash)), // empty string in kvstore app
     appState: data.app_state,
   };
 }

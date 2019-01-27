@@ -25,6 +25,34 @@ export function assertSet<T>(value: T): T {
   return value;
 }
 
+/**
+ * A runtime checker that ensures a given value is a boolean
+ *
+ * This is used when you want to verify that data at runtime matches the expected type.
+ * This implies assertSet.
+ */
+export function assertBoolean(value: boolean): boolean {
+  assertSet(value);
+  if (typeof (value as unknown) !== "boolean") {
+    throw new Error("Value must be a boolean");
+  }
+  return value;
+}
+
+/**
+ * A runtime checker that ensures a given value is an array
+ *
+ * This is used when you want to verify that data at runtime matches the expected type.
+ * This implies assertSet.
+ */
+export function assertArray<T>(value: ReadonlyArray<T>): ReadonlyArray<T> {
+  assertSet(value);
+  if (!Array.isArray(value as unknown)) {
+    throw new Error("Value must be a an array");
+  }
+  return value;
+}
+
 interface Lengther {
   readonly length: number;
 }

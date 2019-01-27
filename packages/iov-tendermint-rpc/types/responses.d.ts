@@ -180,9 +180,12 @@ export interface Header {
     readonly totalTxs: number;
     readonly appHash: Uint8Array;
     readonly consensusHash: Uint8Array;
+    /** empty when number of transaction is 0 */
     readonly dataHash: Uint8Array;
+    /** this can be empty */
     readonly evidenceHash: Uint8Array;
     readonly lastCommitHash: Uint8Array;
+    /** this can be empty */
     readonly lastResultsHash: Uint8Array;
     readonly validatorsHash: Uint8Array;
 }

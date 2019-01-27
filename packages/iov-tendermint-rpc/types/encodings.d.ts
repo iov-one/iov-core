@@ -11,6 +11,20 @@ export declare type DateTimeString = string & As<"datetime">;
  */
 export declare function assertSet<T>(value: T): T;
 /**
+ * A runtime checker that ensures a given value is a boolean
+ *
+ * This is used when you want to verify that data at runtime matches the expected type.
+ * This implies assertSet.
+ */
+export declare function assertBoolean(value: boolean): boolean;
+/**
+ * A runtime checker that ensures a given value is an array
+ *
+ * This is used when you want to verify that data at runtime matches the expected type.
+ * This implies assertSet.
+ */
+export declare function assertArray<T>(value: ReadonlyArray<T>): ReadonlyArray<T>;
+/**
  * Throws an error if value matches the empty value for the
  * given type (array/string of length 0, number of value 0, ...)
  *
