@@ -12,6 +12,8 @@ Breaking changes
 * @iov/bcp: Remove `BcpQueryEnvelope` and `dummyEnvelope`
 * @iov/bcp: Change return type of `BcpAtomicSwapConnection.getSwap` to promise
   of `ReadonlyArray<BcpAtomicSwap>`.
+* @iov/bcp-types: Rename methods to plural: `BcpAtomicSwapConnection.getSwaps`
+  and `.watchSwaps`.
 * @iov/bns: Remove obsolete `SetNameTx`
 * @iov/bns: Remove `BnsConnection.status`
 

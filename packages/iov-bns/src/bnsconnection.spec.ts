@@ -1625,7 +1625,7 @@ describe("BnsConnection", () => {
     const faucetAddr = identityToAddress(faucet);
     const recipientAddr = await randomBnsAddress();
 
-    const initSwaps = await connection.getSwap({ recipient: recipientAddr });
+    const initSwaps = await connection.getSwaps({ recipient: recipientAddr });
     expect(initSwaps.length).toEqual(0);
 
     const swapOfferPreimage = Encoding.toAscii(`my top secret phrase... ${Math.random()}`);
@@ -1717,7 +1717,7 @@ describe("BnsConnection", () => {
     // ----- connection.getSwap() -------
 
     // we can also swap by id (returned by the transaction result)
-    const idSwaps = await connection.getSwap(querySwapId);
+    const idSwaps = await connection.getSwaps(querySwapId);
     expect(idSwaps.length).toEqual(1);
 
     const swap = idSwaps[0];
@@ -1735,19 +1735,19 @@ describe("BnsConnection", () => {
     expect(swapData.hashlock).toEqual(swapOfferHash);
 
     // we can get the swap by the recipient
-    const rcptSwaps = await connection.getSwap(querySwapRecipient);
+    const rcptSwaps = await connection.getSwaps(querySwapRecipient);
     expect(rcptSwaps.length).toEqual(1);
     expect(rcptSwaps[0]).toEqual(swap);
 
     // we can also get it by the sender
-    const sendOpenSwapData = (await connection.getSwap(querySwapSender)).filter(
+    const sendOpenSwapData = (await connection.getSwaps(querySwapSender)).filter(
       s => s.kind === SwapState.Open,
     );
     expect(sendOpenSwapData.length).toBeGreaterThanOrEqual(1);
     expect(sendOpenSwapData[sendOpenSwapData.length - 1]).toEqual(swap);
 
     // we can also get it by the hash
-    const hashSwap = await connection.getSwap(querySwapHash);
+    const hashSwap = await connection.getSwaps(querySwapHash);
     expect(hashSwap.length).toEqual(1);
     expect(hashSwap[0]).toEqual(swap);
 
@@ -1821,7 +1821,7 @@ describe("BnsConnection", () => {
 
     // nothing to start with
     const rcptQuery = { recipient: recipientAddr };
-    const initSwaps = await connection.getSwap(rcptQuery);
+    const initSwaps = await connection.getSwaps(rcptQuery);
     expect(initSwaps.length).toEqual(0);
 
     // make two offers
@@ -1842,7 +1842,7 @@ describe("BnsConnection", () => {
     expect(id2.length).toEqual(8);
 
     // find two open
-    const midSwaps = await connection.getSwap(rcptQuery);
+    const midSwaps = await connection.getSwaps(rcptQuery);
     expect(midSwaps.length).toEqual(2);
     const [open1, open2] = midSwaps;
     expect(open1.kind).toEqual(SwapState.Open);
@@ -1857,7 +1857,7 @@ describe("BnsConnection", () => {
     }
 
     // start to watch
-    const liveView = asArray(connection.watchSwap(rcptQuery));
+    const liveView = asArray(connection.watchSwaps(rcptQuery));
 
     const post3 = await openSwap(connection, profile, faucet, recipientAddr, preimage3);
     const blockInfo3 = await post3.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -1873,7 +1873,7 @@ describe("BnsConnection", () => {
     }
 
     // make sure we find two claims, one open
-    const finalSwaps = await connection.getSwap({ recipient: recipientAddr });
+    const finalSwaps = await connection.getSwaps({ recipient: recipientAddr });
     expect(finalSwaps.length).toEqual(3);
     const [open3, claim2, claim1] = finalSwaps;
     expect(open3.kind).toEqual(SwapState.Open);

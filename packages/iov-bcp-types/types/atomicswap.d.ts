@@ -46,8 +46,19 @@ export declare function isQueryBySwapRecipient(query: BcpSwapQuery): query is Bc
 export declare function isQueryBySwapSender(query: BcpSwapQuery): query is BcpSwapSenderQuery;
 export declare function isQueryBySwapId(query: BcpSwapQuery): query is BcpSwapIdQuery;
 export declare function isQueryBySwapHash(query: BcpSwapQuery): query is BcpSwapHashQuery;
+/**
+ * An optional extension to the base BcpConnection that
+ * allows querying and watching atomic swaps
+ */
 export interface BcpAtomicSwapConnection extends BcpConnection {
-    readonly getSwap: (swap: BcpSwapQuery) => Promise<ReadonlyArray<BcpAtomicSwap>>;
-    readonly watchSwap: (swap: BcpSwapQuery) => Stream<BcpAtomicSwap>;
+    /** returns all matching swaps in their current state */
+    readonly getSwaps: (swap: BcpSwapQuery) => Promise<ReadonlyArray<BcpAtomicSwap>>;
+    /**
+     * Emits currentState (getSwaps) as a stream, then sends updates for any matching swap.
+     *
+     * This includes an open swap beind claimed/expired as well as a new matching swap
+     * being offered
+     */
+    readonly watchSwaps: (swap: BcpSwapQuery) => Stream<BcpAtomicSwap>;
 }
 export declare function isAtomicSwapConnection(conn: BcpConnection): conn is BcpAtomicSwapConnection;
