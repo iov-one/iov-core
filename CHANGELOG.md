@@ -14,6 +14,7 @@ Breaking changes
   of `ReadonlyArray<BcpAtomicSwap>`.
 * @iov/bcp-types: Rename methods to plural: `BcpAtomicSwapConnection.getSwaps`
   and `.watchSwaps`.
+* @iov/bns: Binary compatibility for weave v0.10.x+ (breaks for all earlier versions)
 * @iov/bns: Remove obsolete `SetNameTx`
 * @iov/bns: Remove `BnsConnection.status`
 
