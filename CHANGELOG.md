@@ -9,6 +9,9 @@ Breaking changes
 * @iov/bcp-type: Remove `Account.name` in favour of BNS' username NFTs.
 * @iov/bcp: Remove `BcpConnection.changeBlock` along with its implementations
   in favour of `BcpConnection.watchBlockHeaders`.
+* @iov/bcp: Remove `BcpQueryEnvelope` and `dummyEnvelope`
+* @iov/bcp: Change return type of `BcpAtomicSwapConnection.getSwap` to promise
+  of `ReadonlyArray<BcpAtomicSwap>`.
 * @iov/bns: Remove obsolete `SetNameTx`
 * @iov/bns: Remove `BnsConnection.status`
 

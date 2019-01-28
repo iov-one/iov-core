@@ -8,7 +8,6 @@ import {
   AddressQuery,
   BcpAtomicSwap,
   BcpAtomicSwapConnection,
-  BcpQueryEnvelope,
   BcpSwapQuery,
   BcpTicker,
   BcpTxQuery,
@@ -19,7 +18,6 @@ import {
   BlockInfoSucceeded,
   ChainId,
   ConfirmedTransaction,
-  dummyEnvelope,
   FailedTransaction,
   isConfirmedTransaction,
   isFailedTransaction,
@@ -354,7 +352,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   /**
    * All matching swaps that are open (from app state)
    */
-  public async getSwapFromState(query: BcpSwapQuery): Promise<BcpQueryEnvelope<BcpAtomicSwap>> {
+  public async getSwapFromState(query: BcpSwapQuery): Promise<ReadonlyArray<BcpAtomicSwap>> {
     const doQuery = (): Promise<QueryResponse> => {
       if (isQueryBySwapId(query)) {
         return this.query("/escrows", query.swapid);
@@ -371,7 +369,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const res = await doQuery();
     const parser = createParser(codecImpl.escrow.Escrow, "esc:");
     const data = res.results.map(parser).map(escrow => this.context.swapOffer(escrow));
-    return dummyEnvelope(data);
+    return data;
   }
 
   /**
@@ -379,7 +377,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    *
    * To get claimed and returned, we need to look at the transactions.... TODO
    */
-  public async getSwap(query: BcpSwapQuery): Promise<BcpQueryEnvelope<BcpAtomicSwap>> {
+  public async getSwap(query: BcpSwapQuery): Promise<ReadonlyArray<BcpAtomicSwap>> {
     // we need to combine them all to see all transactions that affect the query
     const setTxs: ReadonlyArray<ConfirmedTransaction> = (await this.searchTx({
       tags: [bnsSwapQueryTags(query, true)],
@@ -407,7 +405,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       settled.push(done);
     }
 
-    return dummyEnvelope([...offers, ...settled]);
+    return [...offers, ...settled];
   }
 
   /**
