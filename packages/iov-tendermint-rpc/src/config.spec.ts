@@ -29,11 +29,13 @@ export const tendermintInstances: ReadonlyArray<TendermintInstance> = [
     version: "0.25.x",
     appCreator: "jae",
   },
-  {
-    url: "localhost:11127",
-    version: "0.27.x",
-    appCreator: "Cosmoshi Netowoko",
-  },
+  // Tendermint 0.27 tests temporarily disabled because of CORS issue when running
+  // browser tests: https://github.com/tendermint/tendermint/issues/3216
+  // {
+  //   url: "localhost:11127",
+  //   version: "0.27.x",
+  //   appCreator: "Cosmoshi Netowoko",
+  // },
 ];
 
 export const defaultInstance: TendermintInstance = tendermintInstances[0];
