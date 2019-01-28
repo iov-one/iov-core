@@ -368,7 +368,7 @@ describe("BnsConnection", () => {
     });
   });
 
-  xdescribe("watchBlockHeaders", () => {
+  describe("watchBlockHeaders", () => {
     it("watches headers with same data as getBlockHeader", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
@@ -1075,7 +1075,7 @@ describe("BnsConnection", () => {
     });
   });
 
-  xdescribe("listenTx", () => {
+  describe("listenTx", () => {
     it("can listen to transactions by hash", done => {
       pendingWithoutBnsd();
 
@@ -1124,7 +1124,7 @@ describe("BnsConnection", () => {
     });
   });
 
-  xdescribe("liveTx", () => {
+  describe("liveTx", () => {
     it("finds an existing transaction", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
