@@ -5,5 +5,4 @@ command -v shellcheck > /dev/null && shellcheck "$0"
 # Usage: jsonbytes <filename> <jq selector to field>
 # Extracts the bytes (base64 encoded) and converts to hex
 
-cat "$1" | jq -r "$2" | base64 -d - | od -x | cut -c9- | tr -d ' \n'
-echo
+jq -r "$2" "$1" | base64 --decode - | xxd -p -c 999999
