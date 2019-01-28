@@ -1,6 +1,5 @@
 import { Stream } from "xstream";
 import { Account, AccountQuery, Address, AddressQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpQueryEnvelope, BcpSwapQuery, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker } from "@iov/bcp-types";
-import { StatusResponse } from "@iov/tendermint-rpc";
 import { BnsBlockchainNft, BnsBlockchainsQuery, BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
  * Talks directly to the BNS blockchain and exposes the
@@ -29,7 +28,6 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
      */
     chainId(): ChainId;
     height(): Promise<number>;
-    status(): Promise<StatusResponse>;
     postTx(tx: PostableBytes): Promise<PostTxResponse>;
     getTicker(ticker: TokenTicker): Promise<BcpTicker | undefined>;
     getAllTickers(): Promise<ReadonlyArray<BcpTicker>>;

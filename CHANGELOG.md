@@ -8,6 +8,7 @@ Breaking changes
   `BcpAddressQuery`, `BcpPubkeyQuery`
 * @iov/bcp-type: Remove `Account.name` in favour of BNS' username NFTs.
 * @iov/bns: Remove obsolete `SetNameTx`
+* @iov/bns: Remove `BnsConnection.status`
 
 ## 0.11.0
 
