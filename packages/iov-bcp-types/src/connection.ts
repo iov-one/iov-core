@@ -17,33 +17,6 @@ import {
   UnsignedTransaction,
 } from "./transactions";
 
-/*
-Types defined to match
-https://app.swaggerhub.com/apis/IOV.one/BOV/0.0.4#/basic/getAccounts
-Only a subset currently implemented.
-*/
-
-export interface BcpQueryEnvelope<T> {
-  readonly metadata: BcpQueryMetadata;
-  readonly data: ReadonlyArray<T>;
-}
-
-// dummyEnvelope just adds some plausible metadata to make bcp happy
-export function dummyEnvelope<T>(data: ReadonlyArray<T>): BcpQueryEnvelope<T> {
-  return {
-    metadata: {
-      offset: 0,
-      limit: 100,
-    },
-    data: data,
-  };
-}
-
-export interface BcpQueryMetadata {
-  readonly offset: number;
-  readonly limit: number;
-}
-
 export interface BcpCoin extends BcpTicker, Amount {}
 
 export interface Account {

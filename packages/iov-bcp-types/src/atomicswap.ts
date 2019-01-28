@@ -1,6 +1,6 @@
 import { Stream } from "xstream";
 
-import { BcpCoin, BcpConnection, BcpQueryEnvelope } from "./connection";
+import { BcpCoin, BcpConnection } from "./connection";
 import { Address, SwapIdBytes } from "./transactions";
 
 export enum SwapState {
@@ -76,18 +76,24 @@ export function isQueryBySwapHash(query: BcpSwapQuery): query is BcpSwapHashQuer
   return (query as BcpSwapHashQuery).hashlock !== undefined;
 }
 
-// BcpAtomicSwapConnection is an optional extension to the base BcpConnection
-// It allows querying and watching atomic swaps
+/**
+ * An optional extension to the base BcpConnection that
+ * allows querying and watching atomic swaps
+ */
 export interface BcpAtomicSwapConnection extends BcpConnection {
-  // getSwap returns all matching swaps in their current state
-  readonly getSwap: (swap: BcpSwapQuery) => Promise<BcpQueryEnvelope<BcpAtomicSwap>>;
+  /** returns all matching swaps in their current state */
+  readonly getSwaps: (swap: BcpSwapQuery) => Promise<ReadonlyArray<BcpAtomicSwap>>;
 
-  // watchSwap emits currentState (getSwap) as a stream, then sends updates for any matching swap
-  // this includes an open swap beind claimed/expired as well as a new matching swap being offered
-  readonly watchSwap: (swap: BcpSwapQuery) => Stream<BcpAtomicSwap>;
+  /**
+   * Emits currentState (getSwaps) as a stream, then sends updates for any matching swap.
+   *
+   * This includes an open swap beind claimed/expired as well as a new matching swap
+   * being offered
+   */
+  readonly watchSwaps: (swap: BcpSwapQuery) => Stream<BcpAtomicSwap>;
 }
 
 export function isAtomicSwapConnection(conn: BcpConnection): conn is BcpAtomicSwapConnection {
   const check = conn as BcpAtomicSwapConnection;
-  return typeof check.getSwap === "function" && typeof check.watchSwap === "function";
+  return typeof check.getSwaps === "function" && typeof check.watchSwaps === "function";
 }

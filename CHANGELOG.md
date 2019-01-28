@@ -4,11 +4,16 @@
 
 Breaking changes
 
-* @iov/bcp-type: Remove `Bcp*` prefix from `BcpAccount`, `BcpAccountQuery`,
+* @iov/bcp-types: Remove `Bcp*` prefix from `BcpAccount`, `BcpAccountQuery`,
   `BcpAddressQuery`, `BcpPubkeyQuery`
-* @iov/bcp-type: Remove `Account.name` in favour of BNS' username NFTs.
-* @iov/bcp: Remove `BcpConnection.changeBlock` along with its implementations
+* @iov/bcp-types: Remove `Account.name` in favour of BNS' username NFTs.
+* @iov/bcp-types: Remove `BcpConnection.changeBlock` along with its implementations
   in favour of `BcpConnection.watchBlockHeaders`.
+* @iov/bcp-types: Remove `BcpQueryEnvelope` and `dummyEnvelope`
+* @iov/bcp-types: Change return type of `BcpAtomicSwapConnection.getSwap` to promise
+  of `ReadonlyArray<BcpAtomicSwap>`.
+* @iov/bcp-types: Rename methods to plural: `BcpAtomicSwapConnection.getSwaps`
+  and `.watchSwaps`.
 * @iov/bns: Remove obsolete `SetNameTx`
 * @iov/bns: Remove `BnsConnection.status`
 

@@ -4,15 +4,6 @@ import { Stream } from "xstream";
 import { ValueAndUpdates } from "@iov/stream";
 import { PostableBytes } from "./codec";
 import { Address, Amount, ChainId, Nonce, PublicKeyBundle, SignedTransaction, TokenTicker, TransactionId, UnsignedTransaction } from "./transactions";
-export interface BcpQueryEnvelope<T> {
-    readonly metadata: BcpQueryMetadata;
-    readonly data: ReadonlyArray<T>;
-}
-export declare function dummyEnvelope<T>(data: ReadonlyArray<T>): BcpQueryEnvelope<T>;
-export interface BcpQueryMetadata {
-    readonly offset: number;
-    readonly limit: number;
-}
 export interface BcpCoin extends BcpTicker, Amount {
 }
 export interface Account {
