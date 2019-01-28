@@ -118,7 +118,7 @@ export function isConfirmedWithSwapClaimOrTimeoutTransaction(
 }
 
 function sentFromOrToTag(addr: Address): string {
-  const id = Uint8Array.from([...Encoding.toAscii("wllt:"), ...decodeBnsAddress(addr).data]);
+  const id = Uint8Array.from([...Encoding.toAscii("cash:"), ...decodeBnsAddress(addr).data]);
   const key = Encoding.toHex(id).toUpperCase();
   const value = "s"; // "s" for "set"
   return `${key}='${value}'`;

@@ -101,7 +101,7 @@ export function decodeNonce(acct: codecImpl.sigs.IUserData & Keyed): Nonce {
   return asInt53(acct.sequence) as Nonce;
 }
 
-export function decodeToken(data: codecImpl.namecoin.IToken & Keyed): BcpTicker {
+export function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): BcpTicker {
   return {
     tokenTicker: Encoding.fromAscii(data._id) as TokenTicker,
     tokenName: ensure(data.name),

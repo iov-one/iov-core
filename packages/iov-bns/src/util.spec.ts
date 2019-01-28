@@ -112,7 +112,7 @@ describe("Util", () => {
 
     it("handles sentFromOrTo", () => {
       const query = buildTxQuery({ sentFromOrTo: "tiov142a64wa2hw4th24m42a64wa2hw4th24m593zc3" as Address });
-      const expected = `${toHex(toAscii("wllt:")).toUpperCase()}AABBAABBAABBAABBAABBAABBAABBAABBAABBAABB='s'`;
+      const expected = `${toHex(toAscii("cash:")).toUpperCase()}AABBAABBAABBAABBAABBAABBAABBAABBAABBAABB='s'`;
       expect(query).toEqual(expected);
     });
 
