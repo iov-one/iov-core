@@ -15,7 +15,7 @@ import {
   swapTimeoutTxJson,
 } from "./testdata.spec";
 
-xdescribe("bnscodec", () => {
+describe("bnscodec", () => {
   it("properly encodes transactions", () => {
     const encoded = bnsCodec.bytesToPost(signedTxJson);
     expect(encoded).toEqual(signedTxBin);
@@ -28,14 +28,15 @@ xdescribe("bnscodec", () => {
 
   it("properly generates signbytes", async () => {
     const { bytes, prehashType } = bnsCodec.bytesToSign(sendTxJson, sig.nonce);
-    // it should match the canonical sign bytes
-    expect(bytes).toEqual(signBytes);
 
     // it should validate
     switch (prehashType) {
       case PrehashType.Sha512:
-        const pubkey = sig.pubkey.data;
+        // testvector is a sha512 digest of our testbytes
         const prehash = new Sha512(bytes).digest();
+        expect(prehash).toEqual(signBytes);
+        const pubkey = sig.pubkey.data;
+        // const prehash = new Sha512(bytes).digest();
         const valid = await Ed25519.verifySignature(sig.signature, prehash, pubkey);
         expect(valid).toEqual(true);
         break;
@@ -46,7 +47,7 @@ xdescribe("bnscodec", () => {
 
   it("generates transaction id", () => {
     const id = bnsCodec.identifier(signedTxJson);
-    expect(id).toMatch(/^[0-9A-F]{40}$/);
+    expect(id).toMatch(/^[0-9A-F]{64}$/);
   });
 
   it("round trip works", () => {

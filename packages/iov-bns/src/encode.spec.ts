@@ -138,7 +138,7 @@ describe("Encode", () => {
     expect(encoded.signature!.ed25519).toEqual(fromHex("aabbcc22334455"));
   });
 
-  xdescribe("buildMsg", () => {
+  describe("buildMsg", () => {
     const defaultCreator: PublicIdentity = {
       chainId: "registry-chain" as ChainId,
       pubkey: {
@@ -242,7 +242,7 @@ describe("Encode", () => {
   });
 });
 
-xdescribe("Encode transactions", () => {
+describe("Encode transactions", () => {
   it("encodes unsigned message", () => {
     const tx = buildMsg(sendTxJson);
     const encoded = codecImpl.app.Tx.encode(tx).finish();
@@ -274,18 +274,19 @@ describe("Ensure crypto", () => {
     expect(value).toBeTruthy();
   });
 
-  xit("sign bytes match", async () => {
+  it("sign bytes match", async () => {
     const keypair = Ed25519Keypair.fromLibsodiumPrivkey(privJson.data);
     const pubKey = pubJson.data;
 
     const tx = buildUnsignedTx(sendTxJson);
     const encoded = codecImpl.app.Tx.encode(tx).finish();
     const toSign = appendSignBytes(encoded, sendTxJson.creator.chainId, sig.nonce);
-    expect(toSign).toEqual(signBytes);
+    // testvector output already has the sha-512 digest applied
+    const prehash = new Sha512(toSign).digest();
+    expect(prehash).toEqual(signBytes);
 
     // make sure we can validate this signature (our signBytes are correct)
     const signature = sig.signature;
-    const prehash = new Sha512(toSign).digest();
     const valid = await Ed25519.verifySignature(signature, prehash, pubKey);
     expect(valid).toEqual(true);
 
