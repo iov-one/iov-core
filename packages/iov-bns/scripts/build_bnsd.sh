@@ -1,4 +1,7 @@
 #!/bin/bash
+set -o errexit -o nounset -o pipefail
+command -v shellcheck > /dev/null && shellcheck "$0"
+
 # This depends on an existing version from a previous weave.sh run
 # This will do all steps to build bnsd and copy it into ./go/bin
 
