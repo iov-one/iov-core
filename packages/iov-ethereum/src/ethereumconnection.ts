@@ -362,11 +362,6 @@ export class EthereumConnection implements BcpConnection {
     return Stream.create(producer);
   }
 
-  /** @deprecated use watchBlockHeaders().map(header => header.height) */
-  public changeBlock(): Stream<number> {
-    return this.watchBlockHeaders().map(header => header.height);
-  }
-
   public watchAccount(query: AccountQuery): Stream<Account | undefined> {
     const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
 

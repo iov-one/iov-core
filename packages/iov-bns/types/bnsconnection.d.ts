@@ -76,8 +76,6 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     changeNonce(addr: Address): Stream<number>;
     getBlockHeader(height: number): Promise<BlockHeader>;
     watchBlockHeaders(): Stream<BlockHeader>;
-    /** @deprecated use watchBlockHeaders().map(header => header.height) */
-    changeBlock(): Stream<number>;
     /**
      * Gets current balance and emits an update every time it changes
      */

@@ -281,7 +281,7 @@ log these values, or feed them into a reducer to capture their value.
 // asArray will append to an array with list of all tx that were streamed
 import { asArray, lastValue } from '@iov/stream';
 
-const liveHeight = lastValue(client.changeBlock());
+const liveHeight = lastValue(client.watchBlockHeaders().map(header => header.height));
 // if you wait a few seconds, you should see the block-height increase
 console.log(liveHeight.value());
 console.log(liveHeight.value());

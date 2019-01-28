@@ -293,11 +293,6 @@ export class LiskConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
-  /** @deprecated use watchBlockHeaders().map(header => header.height) */
-  public changeBlock(): Stream<number> {
-    return this.watchBlockHeaders().map(header => header.height);
-  }
-
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
     if (query.height || query.tags) {
       throw new Error("Query by height or tags not supported");

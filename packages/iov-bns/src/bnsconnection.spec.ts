@@ -1500,23 +1500,6 @@ describe("BnsConnection", () => {
     });
   });
 
-  it("can get live block feed", async () => {
-    pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
-
-    // get the next three block heights
-    const heights = asArray(connection.changeBlock().take(3));
-    await heights.finished();
-
-    const nums = heights.value();
-    // we should get three consequtive numbers
-    expect(nums.length).toEqual(3);
-    expect(nums[1]).toEqual(nums[0] + 1);
-    expect(nums[2]).toEqual(nums[1] + 1);
-
-    connection.disconnect();
-  });
-
   const sendCash = async (
     connection: BnsConnection,
     profile: UserProfile,

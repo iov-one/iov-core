@@ -190,8 +190,6 @@ export interface BcpConnection {
     readonly getNonces: (query: AddressQuery | PubkeyQuery, count: number) => Promise<ReadonlyArray<Nonce>>;
     readonly getBlockHeader: (height: number) => Promise<BlockHeader>;
     readonly watchBlockHeaders: () => Stream<BlockHeader>;
-    /** @deprecated use watchBlockHeaders().map(header => header.height) */
-    readonly changeBlock: () => Stream<number>;
     readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
     readonly searchTx: (query: BcpTxQuery) => Promise<ReadonlyArray<ConfirmedTransaction | FailedTransaction>>;
     /**
