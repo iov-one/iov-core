@@ -10,10 +10,9 @@ export interface ChainData {
     readonly chainId: ChainId;
     readonly tickers: Map<string, BcpTicker>;
 }
-/** Like BcpAccount but with no pubkey. Keep compatible to BcpAccount! */
+/** Like BCP's Account but with no pubkey. Keep compatible to Account! */
 export interface WalletData {
     readonly address: Address;
-    readonly name?: string;
     readonly balance: ReadonlyArray<BcpCoin>;
 }
 export declare class Context {

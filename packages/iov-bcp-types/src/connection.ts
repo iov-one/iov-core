@@ -46,7 +46,7 @@ export interface BcpQueryMetadata {
 
 export interface BcpCoin extends BcpTicker, Amount {}
 
-export interface BcpAccount {
+export interface Account {
   readonly address: Address;
   /**
    * The public key, if available.
@@ -55,7 +55,6 @@ export interface BcpAccount {
    * - Available after first transaction sent (e.g. Lisk, Tendermint, Ethereum)
    */
   readonly pubkey?: PublicKeyBundle;
-  readonly name?: string;
   readonly balance: ReadonlyArray<BcpCoin>;
 }
 
@@ -205,23 +204,23 @@ export interface BcpTxQuery {
   readonly maxHeight?: number;
 }
 
-export interface BcpAddressQuery {
+export interface AddressQuery {
   readonly address: Address;
 }
 
-export interface BcpPubkeyQuery {
+export interface PubkeyQuery {
   readonly pubkey: PublicKeyBundle;
 }
 
-export type BcpAccountQuery = BcpAddressQuery | BcpPubkeyQuery;
+export type AccountQuery = AddressQuery | PubkeyQuery;
 
 // a type checker to use in the account-based queries
-export function isAddressQuery(query: BcpAccountQuery): query is BcpAddressQuery {
-  return (query as BcpAddressQuery).address !== undefined;
+export function isAddressQuery(query: AccountQuery): query is AddressQuery {
+  return (query as AddressQuery).address !== undefined;
 }
 
-export function isPubkeyQuery(query: BcpAccountQuery): query is BcpPubkeyQuery {
-  return (query as BcpPubkeyQuery).pubkey !== undefined;
+export function isPubkeyQuery(query: AccountQuery): query is PubkeyQuery {
+  return (query as PubkeyQuery).pubkey !== undefined;
 }
 
 /**
@@ -267,24 +266,21 @@ export interface BcpConnection {
    *
    * If an account is not found on the blockchain, this returns undefined.
    */
-  readonly getAccount: (query: BcpAccountQuery) => Promise<BcpAccount | undefined>;
-  readonly watchAccount: (account: BcpAccountQuery) => Stream<BcpAccount | undefined>;
+  readonly getAccount: (query: AccountQuery) => Promise<Account | undefined>;
+  readonly watchAccount: (account: AccountQuery) => Stream<Account | undefined>;
   /**
    * Get a nonce for the next transaction signature.
    *
    * Implementation defines a default value if blockchain does not provide a nonce.
    */
-  readonly getNonce: (query: BcpAddressQuery | BcpPubkeyQuery) => Promise<Nonce>;
+  readonly getNonce: (query: AddressQuery | PubkeyQuery) => Promise<Nonce>;
   /**
    * Get multiple nonces at once to sign multiple transactions
    *
    * This avoids querying the blockchain for every nonce and removes the need to
    * wait for blocks before getting updated nonces.
    */
-  readonly getNonces: (
-    query: BcpAddressQuery | BcpPubkeyQuery,
-    count: number,
-  ) => Promise<ReadonlyArray<Nonce>>;
+  readonly getNonces: (query: AddressQuery | PubkeyQuery, count: number) => Promise<ReadonlyArray<Nonce>>;
 
   // blocks
   readonly getBlockHeader: (height: number) => Promise<BlockHeader>;

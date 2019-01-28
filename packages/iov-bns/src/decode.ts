@@ -32,7 +32,6 @@ import {
   RegisterBlockchainTx,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
-  SetNameTx,
 } from "./types";
 import { addressPrefix, encodeBnsAddress, isHashIdentifier } from "./util";
 
@@ -150,8 +149,6 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): Unsi
     return parseAddAddressToUsernameTx(base, tx.addUsernameAddressNftMsg);
   } else if (tx.sendMsg) {
     return parseSendTransaction(base, tx.sendMsg);
-  } else if (tx.setNameMsg) {
-    return parseSetNameTx(base, tx.setNameMsg);
   } else if (tx.createEscrowMsg) {
     return parseSwapCounterTx(base, tx.createEscrowMsg);
   } else if (tx.releaseEscrowMsg) {
@@ -191,14 +188,6 @@ function parseSendTransaction(base: UnsignedTransaction, msg: codecImpl.cash.ISe
     recipient: encodeBnsAddress(prefix, ensure(msg.dest, "recipient")),
     amount: decodeAmount(ensure(msg.amount)),
     memo: msg.memo || undefined,
-  };
-}
-
-function parseSetNameTx(base: UnsignedTransaction, msg: codecImpl.namecoin.ISetWalletNameMsg): SetNameTx {
-  return {
-    ...base,
-    kind: "bns/set_name",
-    name: ensure(msg.name, "name"),
   };
 }
 

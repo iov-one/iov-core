@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpConnection, BcpPubkeyQuery, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Nonce, PostableBytes, PostTxResponse, TokenTicker } from "@iov/bcp-types";
+import { Account, AccountQuery, AddressQuery, BcpConnection, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker } from "@iov/bcp-types";
 export interface EthereumConnectionOptions {
     readonly wsUrl?: string;
     /** URL to an Etherscan compatible scraper API */
@@ -18,14 +18,14 @@ export declare class EthereumConnection implements BcpConnection {
     postTx(bytes: PostableBytes): Promise<PostTxResponse>;
     getTicker(searchTicker: TokenTicker): Promise<BcpTicker | undefined>;
     getAllTickers(): Promise<ReadonlyArray<BcpTicker>>;
-    getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined>;
-    getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce>;
-    getNonces(query: BcpAddressQuery | BcpPubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>>;
+    getAccount(query: AccountQuery): Promise<Account | undefined>;
+    getNonce(query: AddressQuery | PubkeyQuery): Promise<Nonce>;
+    getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>>;
     getBlockHeader(height: number): Promise<BlockHeader>;
     watchBlockHeaders(): Stream<BlockHeader>;
     /** @deprecated use watchBlockHeaders().map(header => header.height) */
     changeBlock(): Stream<number>;
-    watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined>;
+    watchAccount(query: AccountQuery): Stream<Account | undefined>;
     searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
     listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction>;
     liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction>;

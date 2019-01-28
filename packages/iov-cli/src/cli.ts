@@ -44,8 +44,9 @@ export function main(originalArgs: ReadonlyArray<string>): void {
   console.log(colors.yellow("    - Long"));
   console.log(colors.yellow("  * from @iov/bns"));
   console.log(colors.yellow("    - bnsCodec"));
+  console.log(colors.yellow("    - BnsConnection"));
   console.log(colors.yellow("    - bnsConnector"));
-  console.log(colors.yellow("    - SetNameTx"));
+  console.log(colors.yellow("    - RegisterUsernameTx"));
   console.log(colors.yellow("  * from @iov/core"));
   console.log(colors.yellow("    - Address"));
   console.log(colors.yellow("    - ChainId"));
@@ -87,8 +88,9 @@ export function main(originalArgs: ReadonlyArray<string>): void {
     import Long from "long";
     import {
       bnsCodec,
+      BnsConnection,
       bnsConnector,
-      SetNameTx,
+      RegisterUsernameTx,
     } from '@iov/bns';
     import {
       Address,

@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpConnection, BcpPubkeyQuery, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Nonce, PostableBytes, PostTxResponse, TokenTicker } from "@iov/bcp-types";
+import { Account, AccountQuery, AddressQuery, BcpConnection, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker } from "@iov/bcp-types";
 /**
  * Encodes the current date and time as a nonce
  */
@@ -15,10 +15,10 @@ export declare class RiseConnection implements BcpConnection {
     postTx(bytes: PostableBytes): Promise<PostTxResponse>;
     getTicker(searchTicker: TokenTicker): Promise<BcpTicker | undefined>;
     getAllTickers(): Promise<ReadonlyArray<BcpTicker>>;
-    getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined>;
-    getNonce(_: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce>;
-    getNonces(_: BcpAddressQuery | BcpPubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>>;
-    watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined>;
+    getAccount(query: AccountQuery): Promise<Account | undefined>;
+    getNonce(_: AddressQuery | PubkeyQuery): Promise<Nonce>;
+    getNonces(_: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>>;
+    watchAccount(query: AccountQuery): Stream<Account | undefined>;
     getBlockHeader(height: number): Promise<BlockHeader>;
     watchBlockHeaders(): Stream<BlockHeader>;
     /** @deprecated use watchBlockHeaders().map(header => header.height) */

@@ -1,8 +1,8 @@
 import {
+  Account,
   Address,
   Algorithm,
   Amount,
-  BcpAccount,
   BlockHeader,
   BlockInfoFailed,
   BlockInfoSucceeded,
@@ -396,7 +396,7 @@ describe("EthereumConnection", () => {
         const recipient = await randomAddress();
 
         // setup watching
-        const events = new Array<BcpAccount>();
+        const events = new Array<Account>();
         const subscription = connection.watchAccount({ address: recipient }).subscribe({
           next: event => {
             if (!event) {

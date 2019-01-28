@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { Address, BcpAccount, BcpAccountQuery, BcpAddressQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpPubkeyQuery, BcpQueryEnvelope, BcpSwapQuery, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Nonce, PostableBytes, PostTxResponse, TokenTicker } from "@iov/bcp-types";
+import { Account, AccountQuery, Address, AddressQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpQueryEnvelope, BcpSwapQuery, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker } from "@iov/bcp-types";
 import { StatusResponse } from "@iov/tendermint-rpc";
 import { BnsBlockchainNft, BnsBlockchainsQuery, BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
@@ -33,9 +33,9 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     postTx(tx: PostableBytes): Promise<PostTxResponse>;
     getTicker(ticker: TokenTicker): Promise<BcpTicker | undefined>;
     getAllTickers(): Promise<ReadonlyArray<BcpTicker>>;
-    getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined>;
-    getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce>;
-    getNonces(query: BcpAddressQuery | BcpPubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>>;
+    getAccount(query: AccountQuery): Promise<Account | undefined>;
+    getNonce(query: AddressQuery | PubkeyQuery): Promise<Nonce>;
+    getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>>;
     /**
      * All matching swaps that are open (from app state)
      */
@@ -83,7 +83,7 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     /**
      * Gets current balance and emits an update every time it changes
      */
-    watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined>;
+    watchAccount(query: AccountQuery): Stream<Account | undefined>;
     getBlockchains(query: BnsBlockchainsQuery): Promise<ReadonlyArray<BnsBlockchainNft>>;
     getUsernames(query: BnsUsernamesQuery): Promise<ReadonlyArray<BnsUsernameNft>>;
     protected query(path: string, data: Uint8Array): Promise<QueryResponse>;

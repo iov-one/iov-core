@@ -36,10 +36,9 @@ export interface ChainData {
   readonly tickers: Map<string, BcpTicker>;
 }
 
-/** Like BcpAccount but with no pubkey. Keep compatible to BcpAccount! */
+/** Like BCP's Account but with no pubkey. Keep compatible to Account! */
 export interface WalletData {
   readonly address: Address;
-  readonly name?: string;
   readonly balance: ReadonlyArray<BcpCoin>;
 }
 
@@ -51,8 +50,8 @@ export class Context {
   }
 
   public wallet(acct: codecImpl.namecoin.IWallet & Keyed): WalletData {
+    // acct.name is ignored in favour of username NFTs
     return {
-      name: typeof acct.name === "string" ? acct.name : undefined,
       address: encodeBnsAddress(addressPrefix(this.chainData.chainId), acct._id),
       balance: ensure(acct.coins).map(c => this.coin(c)),
     };

@@ -75,7 +75,7 @@ $ iov-cli
 > const faucetAddress = signer.identityToAddress(faucet);
 > faucetAddress
 'tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f'
-> (await connection.getAccount({ address: faucetAddress })).data[0].balance
+> (await connection.getAccount({ address: faucetAddress })).balance
 
 > const recipient = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(1));
 > const recipientAddress = signer.identityToAddress(recipient);
@@ -94,10 +94,10 @@ const sendTx: SendTransaction = {
 };
 ^D
 > await signer.signAndPost(sendTx, wallet.id);
-> (await connection.getAccount({ address: recipientAddress })).data[0].balance;
+> (await connection.getAccount({ address: recipientAddress })).balance;
 
-> await connection.searchTx({ address: faucetAddress });
-> await connection.searchTx({ address: recipientAddress });
+> await connection.searchTx({ sentFromOrTo: faucetAddress });
+> await connection.searchTx({ sentFromOrTo: recipientAddress });
 ```
 
 3. Congratulations, you sent your first money!
@@ -107,22 +107,22 @@ const sendTx: SendTransaction = {
 > profile.wallets.value
 [ { id: 'ReYESw51lsOOr8_X', label: undefined } ]
 
-> profile.addWallet(Ed25519HdWallet.fromMnemonic("organ wheat manage mirror wish truly tool trumpet since equip flight bracket"))
+> const wallet2 = profile.addWallet(Ed25519HdWallet.fromMnemonic("organ wheat manage mirror wish truly tool trumpet since equip flight bracket"))
 
 > profile.wallets.value
 [ { id: 'ReYESw51lsOOr8_X', label: undefined },
   { id: 'FtIcQqMWcRpEIruk', label: undefined } ]
 
-> profile.getIdentities("ReYESw51lsOOr8_X" as WalletId)
+> profile.getIdentities(wallet.id)
 [ { pubkey: { algo: 'ed25519', data: [Uint8Array] },
     label: 'blockchain of value faucet',
     id: 'uul1wahs5te8fiaD' } ]
 
-> profile.getIdentities("FtIcQqMWcRpEIruk" as WalletId)
+> profile.getIdentities(wallet2.id)
 []
 
-> profile.setWalletLabel("ReYESw51lsOOr8_X" as WalletId, "main")
-> profile.setWalletLabel("FtIcQqMWcRpEIruk" as WalletId, "second")
+> profile.setWalletLabel(wallet.id, "main")
+> profile.setWalletLabel(wallet2.id, "second")
 
 > profile.wallets.value
 [ { id: 'ReYESw51lsOOr8_X', label: 'main' },
@@ -147,28 +147,30 @@ UserProfile {
   ...
 ```
 
-### Register a BNS name
+### Register a BNS username NFT
 
 Assuming you have a `profile`, a `signer` and a `recipient` identity with
 transactions associated from above
 
 ```
 > .editor
-const setNameTx: SetNameTx = {
-  kind: "bns/set_name",
+const registration: RegisterUsernameTx = {
+  kind: "bns/register_username",
   creator: recipient,
-  name: "hans",
+  addresses: [],
+  username: "hans",
 };
 ^D
-> await signer.signAndPost(setNameTx, wallet.id);
-> (await connection.getAccount({ name: "hans" })).data[0]
-{ name: 'hans',
-  address:
-   Uint8Array [
-     174,
-     38,
-     125,
-     211, ...
+> await signer.signAndPost(registration, wallet.id);
+> const bnsConnection = connection as BnsConnection;
+> await bnsConnection.getUsernames({ owner: recipientAddress });
+[ { id: 'hans',
+    owner: 'tiov14cn8m57wtrlewmlnjucctsahpnxlj92l0crkvq',
+    addresses: [] } ]
+> await bnsConnection.getUsernames({ username: "hans" });
+[ { id: 'hans',
+    owner: 'tiov14cn8m57wtrlewmlnjucctsahpnxlj92l0crkvq',
+    addresses: [] } ]
 ```
 
 ### Disconnecting
@@ -176,14 +178,14 @@ const setNameTx: SetNameTx = {
 When you are done using a WebSocket connection, disconnect the connection
 
 ```
-> (await connection.getAccount({ address: faucetAddress })).data[0].balance
+> (await connection.getAccount({ address: faucetAddress })).balance
 [ { quantity: '123456755876543211',
     fractionalDigits: 9,
     tokenTicker: 'CASH',
     tokenName: 'Main token of this chain' } ]
 > connection.disconnect()
 undefined
-> (await connection.getAccount({ address: faucetAddress })).data[0].balance
+> (await connection.getAccount({ address: faucetAddress })).balance
 Error: Socket was closed, so no data can be sent anymore.
     at ...
 ```
