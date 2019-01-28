@@ -15,7 +15,7 @@ import {
   swapTimeoutTxJson,
 } from "./testdata.spec";
 
-describe("bnscodec", () => {
+xdescribe("bnscodec", () => {
   it("properly encodes transactions", () => {
     const encoded = bnsCodec.bytesToPost(signedTxJson);
     expect(encoded).toEqual(signedTxBin);

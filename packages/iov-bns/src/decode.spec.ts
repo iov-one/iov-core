@@ -216,7 +216,7 @@ describe("Decode", () => {
     });
   });
 
-  describe("transactions", () => {
+  xdescribe("transactions", () => {
     it("decode invalid transaction fails", () => {
       /* tslint:disable-next-line:no-bitwise */
       const badBin = signedTxBin.map((x: number, i: number) => (i % 5 ? x ^ 0x01 : x));
@@ -236,7 +236,7 @@ describe("Decode", () => {
     });
   });
 
-  describe("parseMsg", () => {
+  xdescribe("parseMsg", () => {
     const defaultBaseTx: UnsignedTransaction = {
       kind: "", // this should be overriden by parseMsg
       creator: {
