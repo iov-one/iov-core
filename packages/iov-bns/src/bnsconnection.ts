@@ -624,11 +624,6 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     });
   }
 
-  /** @deprecated use watchBlockHeaders().map(header => header.height) */
-  public changeBlock(): Stream<number> {
-    return this.watchBlockHeaders().map(header => header.height);
-  }
-
   /**
    * Gets current balance and emits an update every time it changes
    */

@@ -7,6 +7,8 @@ Breaking changes
 * @iov/bcp-type: Remove `Bcp*` prefix from `BcpAccount`, `BcpAccountQuery`,
   `BcpAddressQuery`, `BcpPubkeyQuery`
 * @iov/bcp-type: Remove `Account.name` in favour of BNS' username NFTs.
+* @iov/bcp: Remove `BcpConnection.changeBlock` along with its implementations
+  in favour of `BcpConnection.watchBlockHeaders`.
 * @iov/bns: Remove obsolete `SetNameTx`
 * @iov/bns: Remove `BnsConnection.status`
 

@@ -285,8 +285,6 @@ export interface BcpConnection {
   // blocks
   readonly getBlockHeader: (height: number) => Promise<BlockHeader>;
   readonly watchBlockHeaders: () => Stream<BlockHeader>;
-  /** @deprecated use watchBlockHeaders().map(header => header.height) */
-  readonly changeBlock: () => Stream<number>;
 
   // transactions
   readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
