@@ -947,8 +947,9 @@ describe("BnsConnection", () => {
       connection.disconnect();
     });
 
-    // Activate when https://github.com/tendermint/tendermint/issues/2759 is fixed
-    xit("can search for transactions by minHeight/maxHeight", async () => {
+    // Fixed since tendermint v0.26.4
+    // see issue https://github.com/tendermint/tendermint/issues/2759
+    it("can search for transactions by minHeight/maxHeight", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const chainId = connection.chainId();
