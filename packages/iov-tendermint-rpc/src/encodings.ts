@@ -1,6 +1,5 @@
 import { ReadonlyDate } from "readonly-date";
 import { As } from "type-tagger";
-import { isNumber } from "util";
 
 import { Encoding, Int53 } from "@iov/encoding";
 
@@ -9,26 +8,84 @@ export type HexString = string & As<"hex">;
 export type IntegerString = string & As<"integer">;
 export type DateTimeString = string & As<"datetime">;
 
-interface Lengther {
-  readonly length: number;
+/**
+ * A runtime checker that ensures a given value is set (i.e. not undefined or null)
+ *
+ * This is used when you want to verify that data at runtime matches the expected type.
+ */
+export function assertSet<T>(value: T): T {
+  if ((value as unknown) === undefined) {
+    throw new Error("Value must not be undefined");
+  }
+
+  if ((value as unknown) === null) {
+    throw new Error("Value must not be null");
+  }
+
+  return value;
 }
 
-// notEmpty throws an error if this matches the empty type for the
-// given value (array/string of length 0, number of value 0, ...)
-export function notEmpty<T>(value: T): T {
-  if (isNumber(value) && value === 0) {
-    throw new Error("must provide a non-zero value");
-  } else if (((value as any) as Lengther).length === 0) {
-    throw new Error("must provide a non-empty value");
+/**
+ * A runtime checker that ensures a given value is a boolean
+ *
+ * This is used when you want to verify that data at runtime matches the expected type.
+ * This implies assertSet.
+ */
+export function assertBoolean(value: boolean): boolean {
+  assertSet(value);
+  if (typeof (value as unknown) !== "boolean") {
+    throw new Error("Value must be a boolean");
   }
   return value;
 }
 
-// required can be used to anywhere to throw errors if missing before
-// encoding/decoding. Works with anything with strings, arrays, or numbers
-export function required<T>(value: T | null | undefined): T {
-  if (value === undefined || value === null) {
-    throw new Error("must provide a value");
+/**
+ * A runtime checker that ensures a given value is a number
+ *
+ * This is used when you want to verify that data at runtime matches the expected type.
+ * This implies assertSet.
+ */
+export function assertNumber(value: number): number {
+  assertSet(value);
+  if (typeof (value as unknown) !== "number") {
+    throw new Error("Value must be a number");
+  }
+  return value;
+}
+
+/**
+ * A runtime checker that ensures a given value is an array
+ *
+ * This is used when you want to verify that data at runtime matches the expected type.
+ * This implies assertSet.
+ */
+export function assertArray<T>(value: ReadonlyArray<T>): ReadonlyArray<T> {
+  assertSet(value);
+  if (!Array.isArray(value as unknown)) {
+    throw new Error("Value must be a an array");
+  }
+  return value;
+}
+
+interface Lengther {
+  readonly length: number;
+}
+
+/**
+ * Throws an error if value matches the empty value for the
+ * given type (array/string of length 0, number of value 0, ...)
+ *
+ * Otherwise returns the value.
+ *
+ * This implies assertSet
+ */
+export function assertNotEmpty<T>(value: T): T {
+  assertSet(value);
+
+  if (typeof value === "number" && value === 0) {
+    throw new Error("must provide a non-zero value");
+  } else if (((value as any) as Lengther).length === 0) {
+    throw new Error("must provide a non-empty value");
   }
   return value;
 }
@@ -43,23 +100,26 @@ export function may<T, U>(transform: (val: T) => U, value: T | null | undefined)
   return value === undefined || value === null ? undefined : transform(value);
 }
 
+export function dictionaryToStringMap(obj: any): Map<string, string> {
+  const out = new Map<string, string>();
+  for (const key of Object.keys(obj)) {
+    const value: unknown = obj[key];
+    if (typeof value !== "string") {
+      throw new Error("Found dictionary value of type other than string");
+    }
+    out.set(key, value);
+  }
+  return out;
+}
+
 export class Integer {
-  public static parse(str: IntegerString): number {
-    return Int53.fromString(str).toNumber();
+  public static parse(input: IntegerString | number): number {
+    const asInt = typeof input === "number" ? new Int53(input) : Int53.fromString(input);
+    return asInt.toNumber();
   }
 
   public static encode(num: number): IntegerString {
     return new Int53(num).toString() as IntegerString;
-  }
-
-  public static ensure(num: unknown): number {
-    if (typeof num !== "number") {
-      throw new Error(`${num} is not a number`);
-    }
-    if (!Number.isInteger(num)) {
-      throw new Error(`${num} is not an integer`);
-    }
-    return num;
   }
 }
 

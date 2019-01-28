@@ -33,14 +33,22 @@ function fold_end() {
 source ./scripts/retry.sh
 retry 3 yarn install
 
+# For socketserver
+pip3 install websockets
+
 #
 # Start blockchains
 #
 
 # Use Docker if available (currently Linux only)
 if command -v docker > /dev/null ; then
+  fold_start "socketserver-start"
+  ./scripts/socketserver/start.sh
+  export SOCKETSERVER_ENABLED=1
+  fold_end
+
   fold_start "tendermint-start"
-  ./scripts/tendermint/start.sh
+  ./scripts/tendermint/all_start.sh
   export TENDERMINT_ENABLED=1
   fold_end
 
@@ -68,7 +76,7 @@ fi
 # Start faucet
 #
 
-if [[ ! -z ${BNSD_ENABLED:-} ]]; then
+if [[ -n ${BNSD_ENABLED:-} ]]; then
   fold_start "faucet-start"
   ./scripts/iov_faucet_start.sh
   export FAUCET_ENABLED=1
@@ -208,30 +216,30 @@ fi
 # Cleanup
 #
 
-if [[ ! -z ${FAUCET_ENABLED:-} ]]; then
+if [[ -n ${FAUCET_ENABLED:-} ]]; then
   fold_start "faucet-stop"
   unset FAUCET_ENABLED
   ./scripts/iov_faucet_stop.sh
   fold_end
 fi
 
-if [[ ! -z ${ETHEREUM_ENABLED:-} ]]; then
+if [[ -n ${ETHEREUM_ENABLED:-} ]]; then
   fold_start "ethereum-stop"
   unset ETHEREUM_ENABLED
   ./scripts/ethereum/stop.sh
   fold_end
 fi
 
-if [[ ! -z ${BNSD_ENABLED:-} ]]; then
+if [[ -n ${BNSD_ENABLED:-} ]]; then
   fold_start "bnsd-stop"
   unset BNSD_ENABLED
   ./scripts/bnsd/stop.sh
   fold_end
 fi
 
-if [[ ! -z ${TENDERMINT_ENABLED:-} ]]; then
+if [[ -n ${TENDERMINT_ENABLED:-} ]]; then
   fold_start "tendermint-stop"
   unset TENDERMINT_ENABLED
-  ./scripts/tendermint/stop.sh
+  ./scripts/tendermint/all_stop.sh
   fold_end
 fi

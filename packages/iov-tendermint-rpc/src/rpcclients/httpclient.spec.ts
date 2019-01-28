@@ -1,3 +1,4 @@
+import { defaultInstance } from "../config.spec";
 import { jsonRpcWith } from "../jsonrpc";
 import { Method } from "../requests";
 
@@ -13,9 +14,9 @@ function pendingWithoutTendermint(): void {
   }
 }
 
-const tendermintUrl = "localhost:12345";
-
 describe("HttpClient", () => {
+  const tendermintUrl = defaultInstance.url;
+
   it("can make a simple call", async () => {
     pendingWithoutTendermint();
     const client = new HttpClient(tendermintUrl);

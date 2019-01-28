@@ -1,3 +1,4 @@
+import { defaultInstance } from "../config.spec";
 import { jsonRpcWith } from "../jsonrpc";
 import { Method } from "../requests";
 
@@ -16,7 +17,7 @@ function pendingWithoutTendermint(): void {
 }
 
 describe("RpcClient", () => {
-  const tendermintUrl = "localhost:12345";
+  const tendermintUrl = defaultInstance.url;
 
   it("has working instanceOfRpcStreamingClient()", async () => {
     pendingWithoutTendermint();

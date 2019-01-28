@@ -6,6 +6,7 @@ command -v shellcheck > /dev/null && shellcheck "$0"
 # TENDERMINT_VERSION is available for manualy testing different versions and usually unset
 VERSION=${TENDERMINT_VERSION:-0.25.0}
 PORT=${TENDERMINT_PORT:-12345}
+NAME=${TENDERMINT_NAME:-tendermint-25}
 
 TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/tendermint.XXXXXXXXX")
 chmod 777 "${TMP_DIR}"
@@ -21,6 +22,7 @@ docker run --user="$UID" \
 
 # must enable tx index for search and subscribe
 docker run --user="$UID" \
+  --name "$NAME" \
   -p "${PORT}:26657" -v "${TMP_DIR}:/tendermint" \
   -e "TM_TX_INDEX_INDEX_ALL_TAGS=true" \
   "tendermint/tendermint:${VERSION}" node \

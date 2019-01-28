@@ -63,7 +63,7 @@ export interface GenesisResponse {
     readonly consensusParams: ConsensusParams;
     readonly validators: ReadonlyArray<Validator>;
     readonly appHash: Uint8Array;
-    readonly appState: {};
+    readonly appState: {} | undefined;
 }
 export declare type HealthResponse = null;
 export interface StatusResponse {
@@ -123,6 +123,8 @@ export interface TxProof {
     readonly proof: {
         readonly total: number;
         readonly index: number;
+        /** Optional because does not exist in Tendermint 0.25.x */
+        readonly leafHash?: Uint8Array;
         readonly aunts: ReadonlyArray<Uint8Array>;
     };
 }
@@ -180,9 +182,12 @@ export interface Header {
     readonly totalTxs: number;
     readonly appHash: Uint8Array;
     readonly consensusHash: Uint8Array;
+    /** empty when number of transaction is 0 */
     readonly dataHash: Uint8Array;
+    /** this can be empty */
     readonly evidenceHash: Uint8Array;
     readonly lastCommitHash: Uint8Array;
+    /** this can be empty */
     readonly lastResultsHash: Uint8Array;
     readonly validatorsHash: Uint8Array;
 }
@@ -193,14 +198,20 @@ export interface NodeInfo {
     readonly version: string;
     readonly channels: string;
     readonly moniker: string;
-    readonly other: ReadonlyArray<string>;
+    readonly other: Map<string, string>;
+    /** Optional because this does not exist in Tendermint 0.25.x */
+    readonly protocolVersion?: {
+        readonly p2p: number;
+        readonly block: number;
+        readonly app: number;
+    };
 }
 export interface SyncInfo {
     readonly latestBlockHash: Uint8Array;
     readonly latestAppHash: Uint8Array;
     readonly latestBlockHeight: number;
     readonly latestBlockTime: ReadonlyDate;
-    readonly syncing: boolean;
+    readonly catchingUp: boolean;
 }
 export interface Validator {
     readonly address?: Uint8Array;
