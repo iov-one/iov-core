@@ -43,12 +43,7 @@ import {
 } from "@iov/bcp-types";
 import { Encoding, Int53, Uint53 } from "@iov/encoding";
 import { concat, DefaultValueProducer, fromListPromise, ValueAndUpdates } from "@iov/stream";
-import {
-  broadcastTxSyncSuccess,
-  Client as TendermintClient,
-  getTxEventHeight,
-  StatusResponse,
-} from "@iov/tendermint-rpc";
+import { broadcastTxSyncSuccess, Client as TendermintClient, getTxEventHeight } from "@iov/tendermint-rpc";
 
 import { bnsCodec } from "./bnscodec";
 import { ChainData, Context } from "./context";
@@ -177,12 +172,8 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   }
 
   public async height(): Promise<number> {
-    const status = await this.status();
+    const status = await this.tmClient.status();
     return status.syncInfo.latestBlockHeight;
-  }
-
-  public status(): Promise<StatusResponse> {
-    return this.tmClient.status();
   }
 
   public async postTx(tx: PostableBytes): Promise<PostTxResponse> {
