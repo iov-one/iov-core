@@ -1,1 +1,1 @@
-c3ea9f6552af0ddf52e7e576ba873ccd564603b9 (HEAD, tag: v0.10.0) Tendermint upgrade (#266)
+fefebb1622df553c8c74e47a414728f7e581bac2 (HEAD, tag: v0.10.2) Validator scenario (#287)

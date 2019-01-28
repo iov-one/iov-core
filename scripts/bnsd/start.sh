@@ -5,7 +5,7 @@ command -v shellcheck > /dev/null && shellcheck "$0"
 # Choose from https://hub.docker.com/r/iov1/tendermint/tags/
 export BNSD_TM_VERSION=v0.27.4
 # Choose from https://hub.docker.com/r/iov1/bnsd/tags/
-export BNSD_VERSION=v0.10.0
+export BNSD_VERSION=v0.10.2
 
 docker pull "iov1/tendermint:${BNSD_TM_VERSION}"
 docker pull "iov1/bnsd:${BNSD_VERSION}"

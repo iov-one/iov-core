@@ -1782,880 +1782,6 @@ $root.app = (function() {
     return app;
 })();
 
-$root.validators = (function() {
-
-    /**
-     * Namespace validators.
-     * @exports validators
-     * @namespace
-     */
-    var validators = {};
-
-    validators.ValidatorUpdate = (function() {
-
-        /**
-         * Properties of a ValidatorUpdate.
-         * @memberof validators
-         * @interface IValidatorUpdate
-         * @property {validators.IPubkey|null} [pubkey] ValidatorUpdate pubkey
-         * @property {number|Long|null} [power] ValidatorUpdate power
-         */
-
-        /**
-         * Constructs a new ValidatorUpdate.
-         * @memberof validators
-         * @classdesc Represents a ValidatorUpdate.
-         * @implements IValidatorUpdate
-         * @constructor
-         * @param {validators.IValidatorUpdate=} [properties] Properties to set
-         */
-        function ValidatorUpdate(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * ValidatorUpdate pubkey.
-         * @member {validators.IPubkey|null|undefined} pubkey
-         * @memberof validators.ValidatorUpdate
-         * @instance
-         */
-        ValidatorUpdate.prototype.pubkey = null;
-
-        /**
-         * ValidatorUpdate power.
-         * @member {number|Long} power
-         * @memberof validators.ValidatorUpdate
-         * @instance
-         */
-        ValidatorUpdate.prototype.power = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * Creates a new ValidatorUpdate instance using the specified properties.
-         * @function create
-         * @memberof validators.ValidatorUpdate
-         * @static
-         * @param {validators.IValidatorUpdate=} [properties] Properties to set
-         * @returns {validators.ValidatorUpdate} ValidatorUpdate instance
-         */
-        ValidatorUpdate.create = function create(properties) {
-            return new ValidatorUpdate(properties);
-        };
-
-        /**
-         * Encodes the specified ValidatorUpdate message. Does not implicitly {@link validators.ValidatorUpdate.verify|verify} messages.
-         * @function encode
-         * @memberof validators.ValidatorUpdate
-         * @static
-         * @param {validators.IValidatorUpdate} message ValidatorUpdate message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        ValidatorUpdate.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.pubkey != null && message.hasOwnProperty("pubkey"))
-                $root.validators.Pubkey.encode(message.pubkey, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.power != null && message.hasOwnProperty("power"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.power);
-            return writer;
-        };
-
-        /**
-         * Encodes the specified ValidatorUpdate message, length delimited. Does not implicitly {@link validators.ValidatorUpdate.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof validators.ValidatorUpdate
-         * @static
-         * @param {validators.IValidatorUpdate} message ValidatorUpdate message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        ValidatorUpdate.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a ValidatorUpdate message from the specified reader or buffer.
-         * @function decode
-         * @memberof validators.ValidatorUpdate
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {validators.ValidatorUpdate} ValidatorUpdate
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        ValidatorUpdate.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.validators.ValidatorUpdate();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.pubkey = $root.validators.Pubkey.decode(reader, reader.uint32());
-                    break;
-                case 2:
-                    message.power = reader.int64();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a ValidatorUpdate message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof validators.ValidatorUpdate
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {validators.ValidatorUpdate} ValidatorUpdate
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        ValidatorUpdate.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a ValidatorUpdate message.
-         * @function verify
-         * @memberof validators.ValidatorUpdate
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        ValidatorUpdate.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.pubkey != null && message.hasOwnProperty("pubkey")) {
-                var error = $root.validators.Pubkey.verify(message.pubkey);
-                if (error)
-                    return "pubkey." + error;
-            }
-            if (message.power != null && message.hasOwnProperty("power"))
-                if (!$util.isInteger(message.power) && !(message.power && $util.isInteger(message.power.low) && $util.isInteger(message.power.high)))
-                    return "power: integer|Long expected";
-            return null;
-        };
-
-        /**
-         * Creates a ValidatorUpdate message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof validators.ValidatorUpdate
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {validators.ValidatorUpdate} ValidatorUpdate
-         */
-        ValidatorUpdate.fromObject = function fromObject(object) {
-            if (object instanceof $root.validators.ValidatorUpdate)
-                return object;
-            var message = new $root.validators.ValidatorUpdate();
-            if (object.pubkey != null) {
-                if (typeof object.pubkey !== "object")
-                    throw TypeError(".validators.ValidatorUpdate.pubkey: object expected");
-                message.pubkey = $root.validators.Pubkey.fromObject(object.pubkey);
-            }
-            if (object.power != null)
-                if ($util.Long)
-                    (message.power = $util.Long.fromValue(object.power)).unsigned = false;
-                else if (typeof object.power === "string")
-                    message.power = parseInt(object.power, 10);
-                else if (typeof object.power === "number")
-                    message.power = object.power;
-                else if (typeof object.power === "object")
-                    message.power = new $util.LongBits(object.power.low >>> 0, object.power.high >>> 0).toNumber();
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a ValidatorUpdate message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof validators.ValidatorUpdate
-         * @static
-         * @param {validators.ValidatorUpdate} message ValidatorUpdate
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        ValidatorUpdate.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults) {
-                object.pubkey = null;
-                if ($util.Long) {
-                    var long = new $util.Long(0, 0, false);
-                    object.power = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.power = options.longs === String ? "0" : 0;
-            }
-            if (message.pubkey != null && message.hasOwnProperty("pubkey"))
-                object.pubkey = $root.validators.Pubkey.toObject(message.pubkey, options);
-            if (message.power != null && message.hasOwnProperty("power"))
-                if (typeof message.power === "number")
-                    object.power = options.longs === String ? String(message.power) : message.power;
-                else
-                    object.power = options.longs === String ? $util.Long.prototype.toString.call(message.power) : options.longs === Number ? new $util.LongBits(message.power.low >>> 0, message.power.high >>> 0).toNumber() : message.power;
-            return object;
-        };
-
-        /**
-         * Converts this ValidatorUpdate to JSON.
-         * @function toJSON
-         * @memberof validators.ValidatorUpdate
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        ValidatorUpdate.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return ValidatorUpdate;
-    })();
-
-    validators.Pubkey = (function() {
-
-        /**
-         * Properties of a Pubkey.
-         * @memberof validators
-         * @interface IPubkey
-         * @property {string|null} [type] Pubkey type
-         * @property {Uint8Array|null} [data] Pubkey data
-         */
-
-        /**
-         * Constructs a new Pubkey.
-         * @memberof validators
-         * @classdesc Represents a Pubkey.
-         * @implements IPubkey
-         * @constructor
-         * @param {validators.IPubkey=} [properties] Properties to set
-         */
-        function Pubkey(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * Pubkey type.
-         * @member {string} type
-         * @memberof validators.Pubkey
-         * @instance
-         */
-        Pubkey.prototype.type = "";
-
-        /**
-         * Pubkey data.
-         * @member {Uint8Array} data
-         * @memberof validators.Pubkey
-         * @instance
-         */
-        Pubkey.prototype.data = $util.newBuffer([]);
-
-        /**
-         * Creates a new Pubkey instance using the specified properties.
-         * @function create
-         * @memberof validators.Pubkey
-         * @static
-         * @param {validators.IPubkey=} [properties] Properties to set
-         * @returns {validators.Pubkey} Pubkey instance
-         */
-        Pubkey.create = function create(properties) {
-            return new Pubkey(properties);
-        };
-
-        /**
-         * Encodes the specified Pubkey message. Does not implicitly {@link validators.Pubkey.verify|verify} messages.
-         * @function encode
-         * @memberof validators.Pubkey
-         * @static
-         * @param {validators.IPubkey} message Pubkey message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        Pubkey.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.type != null && message.hasOwnProperty("type"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.type);
-            if (message.data != null && message.hasOwnProperty("data"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.data);
-            return writer;
-        };
-
-        /**
-         * Encodes the specified Pubkey message, length delimited. Does not implicitly {@link validators.Pubkey.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof validators.Pubkey
-         * @static
-         * @param {validators.IPubkey} message Pubkey message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        Pubkey.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a Pubkey message from the specified reader or buffer.
-         * @function decode
-         * @memberof validators.Pubkey
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {validators.Pubkey} Pubkey
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        Pubkey.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.validators.Pubkey();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.type = reader.string();
-                    break;
-                case 2:
-                    message.data = reader.bytes();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a Pubkey message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof validators.Pubkey
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {validators.Pubkey} Pubkey
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        Pubkey.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a Pubkey message.
-         * @function verify
-         * @memberof validators.Pubkey
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        Pubkey.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.type != null && message.hasOwnProperty("type"))
-                if (!$util.isString(message.type))
-                    return "type: string expected";
-            if (message.data != null && message.hasOwnProperty("data"))
-                if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
-                    return "data: buffer expected";
-            return null;
-        };
-
-        /**
-         * Creates a Pubkey message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof validators.Pubkey
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {validators.Pubkey} Pubkey
-         */
-        Pubkey.fromObject = function fromObject(object) {
-            if (object instanceof $root.validators.Pubkey)
-                return object;
-            var message = new $root.validators.Pubkey();
-            if (object.type != null)
-                message.type = String(object.type);
-            if (object.data != null)
-                if (typeof object.data === "string")
-                    $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
-                else if (object.data.length)
-                    message.data = object.data;
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a Pubkey message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof validators.Pubkey
-         * @static
-         * @param {validators.Pubkey} message Pubkey
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        Pubkey.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults) {
-                object.type = "";
-                if (options.bytes === String)
-                    object.data = "";
-                else {
-                    object.data = [];
-                    if (options.bytes !== Array)
-                        object.data = $util.newBuffer(object.data);
-                }
-            }
-            if (message.type != null && message.hasOwnProperty("type"))
-                object.type = message.type;
-            if (message.data != null && message.hasOwnProperty("data"))
-                object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
-            return object;
-        };
-
-        /**
-         * Converts this Pubkey to JSON.
-         * @function toJSON
-         * @memberof validators.Pubkey
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        Pubkey.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return Pubkey;
-    })();
-
-    validators.SetValidatorsMsg = (function() {
-
-        /**
-         * Properties of a SetValidatorsMsg.
-         * @memberof validators
-         * @interface ISetValidatorsMsg
-         * @property {Array.<validators.IValidatorUpdate>|null} [validatorUpdates] SetValidatorsMsg validatorUpdates
-         */
-
-        /**
-         * Constructs a new SetValidatorsMsg.
-         * @memberof validators
-         * @classdesc Represents a SetValidatorsMsg.
-         * @implements ISetValidatorsMsg
-         * @constructor
-         * @param {validators.ISetValidatorsMsg=} [properties] Properties to set
-         */
-        function SetValidatorsMsg(properties) {
-            this.validatorUpdates = [];
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * SetValidatorsMsg validatorUpdates.
-         * @member {Array.<validators.IValidatorUpdate>} validatorUpdates
-         * @memberof validators.SetValidatorsMsg
-         * @instance
-         */
-        SetValidatorsMsg.prototype.validatorUpdates = $util.emptyArray;
-
-        /**
-         * Creates a new SetValidatorsMsg instance using the specified properties.
-         * @function create
-         * @memberof validators.SetValidatorsMsg
-         * @static
-         * @param {validators.ISetValidatorsMsg=} [properties] Properties to set
-         * @returns {validators.SetValidatorsMsg} SetValidatorsMsg instance
-         */
-        SetValidatorsMsg.create = function create(properties) {
-            return new SetValidatorsMsg(properties);
-        };
-
-        /**
-         * Encodes the specified SetValidatorsMsg message. Does not implicitly {@link validators.SetValidatorsMsg.verify|verify} messages.
-         * @function encode
-         * @memberof validators.SetValidatorsMsg
-         * @static
-         * @param {validators.ISetValidatorsMsg} message SetValidatorsMsg message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        SetValidatorsMsg.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.validatorUpdates != null && message.validatorUpdates.length)
-                for (var i = 0; i < message.validatorUpdates.length; ++i)
-                    $root.validators.ValidatorUpdate.encode(message.validatorUpdates[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            return writer;
-        };
-
-        /**
-         * Encodes the specified SetValidatorsMsg message, length delimited. Does not implicitly {@link validators.SetValidatorsMsg.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof validators.SetValidatorsMsg
-         * @static
-         * @param {validators.ISetValidatorsMsg} message SetValidatorsMsg message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        SetValidatorsMsg.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a SetValidatorsMsg message from the specified reader or buffer.
-         * @function decode
-         * @memberof validators.SetValidatorsMsg
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {validators.SetValidatorsMsg} SetValidatorsMsg
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        SetValidatorsMsg.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.validators.SetValidatorsMsg();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    if (!(message.validatorUpdates && message.validatorUpdates.length))
-                        message.validatorUpdates = [];
-                    message.validatorUpdates.push($root.validators.ValidatorUpdate.decode(reader, reader.uint32()));
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a SetValidatorsMsg message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof validators.SetValidatorsMsg
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {validators.SetValidatorsMsg} SetValidatorsMsg
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        SetValidatorsMsg.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a SetValidatorsMsg message.
-         * @function verify
-         * @memberof validators.SetValidatorsMsg
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        SetValidatorsMsg.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.validatorUpdates != null && message.hasOwnProperty("validatorUpdates")) {
-                if (!Array.isArray(message.validatorUpdates))
-                    return "validatorUpdates: array expected";
-                for (var i = 0; i < message.validatorUpdates.length; ++i) {
-                    var error = $root.validators.ValidatorUpdate.verify(message.validatorUpdates[i]);
-                    if (error)
-                        return "validatorUpdates." + error;
-                }
-            }
-            return null;
-        };
-
-        /**
-         * Creates a SetValidatorsMsg message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof validators.SetValidatorsMsg
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {validators.SetValidatorsMsg} SetValidatorsMsg
-         */
-        SetValidatorsMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.validators.SetValidatorsMsg)
-                return object;
-            var message = new $root.validators.SetValidatorsMsg();
-            if (object.validatorUpdates) {
-                if (!Array.isArray(object.validatorUpdates))
-                    throw TypeError(".validators.SetValidatorsMsg.validatorUpdates: array expected");
-                message.validatorUpdates = [];
-                for (var i = 0; i < object.validatorUpdates.length; ++i) {
-                    if (typeof object.validatorUpdates[i] !== "object")
-                        throw TypeError(".validators.SetValidatorsMsg.validatorUpdates: object expected");
-                    message.validatorUpdates[i] = $root.validators.ValidatorUpdate.fromObject(object.validatorUpdates[i]);
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a SetValidatorsMsg message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof validators.SetValidatorsMsg
-         * @static
-         * @param {validators.SetValidatorsMsg} message SetValidatorsMsg
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        SetValidatorsMsg.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.arrays || options.defaults)
-                object.validatorUpdates = [];
-            if (message.validatorUpdates && message.validatorUpdates.length) {
-                object.validatorUpdates = [];
-                for (var j = 0; j < message.validatorUpdates.length; ++j)
-                    object.validatorUpdates[j] = $root.validators.ValidatorUpdate.toObject(message.validatorUpdates[j], options);
-            }
-            return object;
-        };
-
-        /**
-         * Converts this SetValidatorsMsg to JSON.
-         * @function toJSON
-         * @memberof validators.SetValidatorsMsg
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        SetValidatorsMsg.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return SetValidatorsMsg;
-    })();
-
-    validators.Accounts = (function() {
-
-        /**
-         * Properties of an Accounts.
-         * @memberof validators
-         * @interface IAccounts
-         * @property {Array.<Uint8Array>|null} [addresses] Accounts addresses
-         */
-
-        /**
-         * Constructs a new Accounts.
-         * @memberof validators
-         * @classdesc Represents an Accounts.
-         * @implements IAccounts
-         * @constructor
-         * @param {validators.IAccounts=} [properties] Properties to set
-         */
-        function Accounts(properties) {
-            this.addresses = [];
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * Accounts addresses.
-         * @member {Array.<Uint8Array>} addresses
-         * @memberof validators.Accounts
-         * @instance
-         */
-        Accounts.prototype.addresses = $util.emptyArray;
-
-        /**
-         * Creates a new Accounts instance using the specified properties.
-         * @function create
-         * @memberof validators.Accounts
-         * @static
-         * @param {validators.IAccounts=} [properties] Properties to set
-         * @returns {validators.Accounts} Accounts instance
-         */
-        Accounts.create = function create(properties) {
-            return new Accounts(properties);
-        };
-
-        /**
-         * Encodes the specified Accounts message. Does not implicitly {@link validators.Accounts.verify|verify} messages.
-         * @function encode
-         * @memberof validators.Accounts
-         * @static
-         * @param {validators.IAccounts} message Accounts message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        Accounts.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.addresses != null && message.addresses.length)
-                for (var i = 0; i < message.addresses.length; ++i)
-                    writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.addresses[i]);
-            return writer;
-        };
-
-        /**
-         * Encodes the specified Accounts message, length delimited. Does not implicitly {@link validators.Accounts.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof validators.Accounts
-         * @static
-         * @param {validators.IAccounts} message Accounts message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        Accounts.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes an Accounts message from the specified reader or buffer.
-         * @function decode
-         * @memberof validators.Accounts
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {validators.Accounts} Accounts
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        Accounts.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.validators.Accounts();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    if (!(message.addresses && message.addresses.length))
-                        message.addresses = [];
-                    message.addresses.push(reader.bytes());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes an Accounts message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof validators.Accounts
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {validators.Accounts} Accounts
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        Accounts.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies an Accounts message.
-         * @function verify
-         * @memberof validators.Accounts
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        Accounts.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.addresses != null && message.hasOwnProperty("addresses")) {
-                if (!Array.isArray(message.addresses))
-                    return "addresses: array expected";
-                for (var i = 0; i < message.addresses.length; ++i)
-                    if (!(message.addresses[i] && typeof message.addresses[i].length === "number" || $util.isString(message.addresses[i])))
-                        return "addresses: buffer[] expected";
-            }
-            return null;
-        };
-
-        /**
-         * Creates an Accounts message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof validators.Accounts
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {validators.Accounts} Accounts
-         */
-        Accounts.fromObject = function fromObject(object) {
-            if (object instanceof $root.validators.Accounts)
-                return object;
-            var message = new $root.validators.Accounts();
-            if (object.addresses) {
-                if (!Array.isArray(object.addresses))
-                    throw TypeError(".validators.Accounts.addresses: array expected");
-                message.addresses = [];
-                for (var i = 0; i < object.addresses.length; ++i)
-                    if (typeof object.addresses[i] === "string")
-                        $util.base64.decode(object.addresses[i], message.addresses[i] = $util.newBuffer($util.base64.length(object.addresses[i])), 0);
-                    else if (object.addresses[i].length)
-                        message.addresses[i] = object.addresses[i];
-            }
-            return message;
-        };
-
-        /**
-         * Creates a plain object from an Accounts message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof validators.Accounts
-         * @static
-         * @param {validators.Accounts} message Accounts
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        Accounts.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.arrays || options.defaults)
-                object.addresses = [];
-            if (message.addresses && message.addresses.length) {
-                object.addresses = [];
-                for (var j = 0; j < message.addresses.length; ++j)
-                    object.addresses[j] = options.bytes === String ? $util.base64.encode(message.addresses[j], 0, message.addresses[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.addresses[j]) : message.addresses[j];
-            }
-            return object;
-        };
-
-        /**
-         * Converts this Accounts to JSON.
-         * @function toJSON
-         * @memberof validators.Accounts
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        Accounts.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return Accounts;
-    })();
-
-    return validators;
-})();
-
 $root.username = (function() {
 
     /**
@@ -4112,1592 +3238,6 @@ $root.username = (function() {
     })();
 
     return username;
-})();
-
-$root.nft = (function() {
-
-    /**
-     * Namespace nft.
-     * @exports nft
-     * @namespace
-     */
-    var nft = {};
-
-    nft.NonFungibleToken = (function() {
-
-        /**
-         * Properties of a NonFungibleToken.
-         * @memberof nft
-         * @interface INonFungibleToken
-         * @property {Uint8Array|null} [id] NonFungibleToken id
-         * @property {Uint8Array|null} [owner] NonFungibleToken owner
-         * @property {Array.<nft.IActionApprovals>|null} [actionApprovals] NonFungibleToken actionApprovals
-         */
-
-        /**
-         * Constructs a new NonFungibleToken.
-         * @memberof nft
-         * @classdesc Represents a NonFungibleToken.
-         * @implements INonFungibleToken
-         * @constructor
-         * @param {nft.INonFungibleToken=} [properties] Properties to set
-         */
-        function NonFungibleToken(properties) {
-            this.actionApprovals = [];
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * NonFungibleToken id.
-         * @member {Uint8Array} id
-         * @memberof nft.NonFungibleToken
-         * @instance
-         */
-        NonFungibleToken.prototype.id = $util.newBuffer([]);
-
-        /**
-         * NonFungibleToken owner.
-         * @member {Uint8Array} owner
-         * @memberof nft.NonFungibleToken
-         * @instance
-         */
-        NonFungibleToken.prototype.owner = $util.newBuffer([]);
-
-        /**
-         * NonFungibleToken actionApprovals.
-         * @member {Array.<nft.IActionApprovals>} actionApprovals
-         * @memberof nft.NonFungibleToken
-         * @instance
-         */
-        NonFungibleToken.prototype.actionApprovals = $util.emptyArray;
-
-        /**
-         * Creates a new NonFungibleToken instance using the specified properties.
-         * @function create
-         * @memberof nft.NonFungibleToken
-         * @static
-         * @param {nft.INonFungibleToken=} [properties] Properties to set
-         * @returns {nft.NonFungibleToken} NonFungibleToken instance
-         */
-        NonFungibleToken.create = function create(properties) {
-            return new NonFungibleToken(properties);
-        };
-
-        /**
-         * Encodes the specified NonFungibleToken message. Does not implicitly {@link nft.NonFungibleToken.verify|verify} messages.
-         * @function encode
-         * @memberof nft.NonFungibleToken
-         * @static
-         * @param {nft.INonFungibleToken} message NonFungibleToken message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        NonFungibleToken.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.id != null && message.hasOwnProperty("id"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.owner);
-            if (message.actionApprovals != null && message.actionApprovals.length)
-                for (var i = 0; i < message.actionApprovals.length; ++i)
-                    $root.nft.ActionApprovals.encode(message.actionApprovals[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
-            return writer;
-        };
-
-        /**
-         * Encodes the specified NonFungibleToken message, length delimited. Does not implicitly {@link nft.NonFungibleToken.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof nft.NonFungibleToken
-         * @static
-         * @param {nft.INonFungibleToken} message NonFungibleToken message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        NonFungibleToken.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a NonFungibleToken message from the specified reader or buffer.
-         * @function decode
-         * @memberof nft.NonFungibleToken
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {nft.NonFungibleToken} NonFungibleToken
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        NonFungibleToken.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.nft.NonFungibleToken();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.id = reader.bytes();
-                    break;
-                case 2:
-                    message.owner = reader.bytes();
-                    break;
-                case 3:
-                    if (!(message.actionApprovals && message.actionApprovals.length))
-                        message.actionApprovals = [];
-                    message.actionApprovals.push($root.nft.ActionApprovals.decode(reader, reader.uint32()));
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a NonFungibleToken message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof nft.NonFungibleToken
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {nft.NonFungibleToken} NonFungibleToken
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        NonFungibleToken.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a NonFungibleToken message.
-         * @function verify
-         * @memberof nft.NonFungibleToken
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        NonFungibleToken.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.id != null && message.hasOwnProperty("id"))
-                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
-                    return "id: buffer expected";
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
-                    return "owner: buffer expected";
-            if (message.actionApprovals != null && message.hasOwnProperty("actionApprovals")) {
-                if (!Array.isArray(message.actionApprovals))
-                    return "actionApprovals: array expected";
-                for (var i = 0; i < message.actionApprovals.length; ++i) {
-                    var error = $root.nft.ActionApprovals.verify(message.actionApprovals[i]);
-                    if (error)
-                        return "actionApprovals." + error;
-                }
-            }
-            return null;
-        };
-
-        /**
-         * Creates a NonFungibleToken message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof nft.NonFungibleToken
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {nft.NonFungibleToken} NonFungibleToken
-         */
-        NonFungibleToken.fromObject = function fromObject(object) {
-            if (object instanceof $root.nft.NonFungibleToken)
-                return object;
-            var message = new $root.nft.NonFungibleToken();
-            if (object.id != null)
-                if (typeof object.id === "string")
-                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
-                else if (object.id.length)
-                    message.id = object.id;
-            if (object.owner != null)
-                if (typeof object.owner === "string")
-                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
-                else if (object.owner.length)
-                    message.owner = object.owner;
-            if (object.actionApprovals) {
-                if (!Array.isArray(object.actionApprovals))
-                    throw TypeError(".nft.NonFungibleToken.actionApprovals: array expected");
-                message.actionApprovals = [];
-                for (var i = 0; i < object.actionApprovals.length; ++i) {
-                    if (typeof object.actionApprovals[i] !== "object")
-                        throw TypeError(".nft.NonFungibleToken.actionApprovals: object expected");
-                    message.actionApprovals[i] = $root.nft.ActionApprovals.fromObject(object.actionApprovals[i]);
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a NonFungibleToken message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof nft.NonFungibleToken
-         * @static
-         * @param {nft.NonFungibleToken} message NonFungibleToken
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        NonFungibleToken.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.arrays || options.defaults)
-                object.actionApprovals = [];
-            if (options.defaults) {
-                if (options.bytes === String)
-                    object.id = "";
-                else {
-                    object.id = [];
-                    if (options.bytes !== Array)
-                        object.id = $util.newBuffer(object.id);
-                }
-                if (options.bytes === String)
-                    object.owner = "";
-                else {
-                    object.owner = [];
-                    if (options.bytes !== Array)
-                        object.owner = $util.newBuffer(object.owner);
-                }
-            }
-            if (message.id != null && message.hasOwnProperty("id"))
-                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
-            if (message.actionApprovals && message.actionApprovals.length) {
-                object.actionApprovals = [];
-                for (var j = 0; j < message.actionApprovals.length; ++j)
-                    object.actionApprovals[j] = $root.nft.ActionApprovals.toObject(message.actionApprovals[j], options);
-            }
-            return object;
-        };
-
-        /**
-         * Converts this NonFungibleToken to JSON.
-         * @function toJSON
-         * @memberof nft.NonFungibleToken
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        NonFungibleToken.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return NonFungibleToken;
-    })();
-
-    nft.ActionApprovals = (function() {
-
-        /**
-         * Properties of an ActionApprovals.
-         * @memberof nft
-         * @interface IActionApprovals
-         * @property {string|null} [action] ActionApprovals action
-         * @property {Array.<nft.IApproval>|null} [approvals] ActionApprovals approvals
-         */
-
-        /**
-         * Constructs a new ActionApprovals.
-         * @memberof nft
-         * @classdesc Represents an ActionApprovals.
-         * @implements IActionApprovals
-         * @constructor
-         * @param {nft.IActionApprovals=} [properties] Properties to set
-         */
-        function ActionApprovals(properties) {
-            this.approvals = [];
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * ActionApprovals action.
-         * @member {string} action
-         * @memberof nft.ActionApprovals
-         * @instance
-         */
-        ActionApprovals.prototype.action = "";
-
-        /**
-         * ActionApprovals approvals.
-         * @member {Array.<nft.IApproval>} approvals
-         * @memberof nft.ActionApprovals
-         * @instance
-         */
-        ActionApprovals.prototype.approvals = $util.emptyArray;
-
-        /**
-         * Creates a new ActionApprovals instance using the specified properties.
-         * @function create
-         * @memberof nft.ActionApprovals
-         * @static
-         * @param {nft.IActionApprovals=} [properties] Properties to set
-         * @returns {nft.ActionApprovals} ActionApprovals instance
-         */
-        ActionApprovals.create = function create(properties) {
-            return new ActionApprovals(properties);
-        };
-
-        /**
-         * Encodes the specified ActionApprovals message. Does not implicitly {@link nft.ActionApprovals.verify|verify} messages.
-         * @function encode
-         * @memberof nft.ActionApprovals
-         * @static
-         * @param {nft.IActionApprovals} message ActionApprovals message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        ActionApprovals.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.action != null && message.hasOwnProperty("action"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.action);
-            if (message.approvals != null && message.approvals.length)
-                for (var i = 0; i < message.approvals.length; ++i)
-                    $root.nft.Approval.encode(message.approvals[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-            return writer;
-        };
-
-        /**
-         * Encodes the specified ActionApprovals message, length delimited. Does not implicitly {@link nft.ActionApprovals.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof nft.ActionApprovals
-         * @static
-         * @param {nft.IActionApprovals} message ActionApprovals message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        ActionApprovals.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes an ActionApprovals message from the specified reader or buffer.
-         * @function decode
-         * @memberof nft.ActionApprovals
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {nft.ActionApprovals} ActionApprovals
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        ActionApprovals.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.nft.ActionApprovals();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.action = reader.string();
-                    break;
-                case 2:
-                    if (!(message.approvals && message.approvals.length))
-                        message.approvals = [];
-                    message.approvals.push($root.nft.Approval.decode(reader, reader.uint32()));
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes an ActionApprovals message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof nft.ActionApprovals
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {nft.ActionApprovals} ActionApprovals
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        ActionApprovals.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies an ActionApprovals message.
-         * @function verify
-         * @memberof nft.ActionApprovals
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        ActionApprovals.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.action != null && message.hasOwnProperty("action"))
-                if (!$util.isString(message.action))
-                    return "action: string expected";
-            if (message.approvals != null && message.hasOwnProperty("approvals")) {
-                if (!Array.isArray(message.approvals))
-                    return "approvals: array expected";
-                for (var i = 0; i < message.approvals.length; ++i) {
-                    var error = $root.nft.Approval.verify(message.approvals[i]);
-                    if (error)
-                        return "approvals." + error;
-                }
-            }
-            return null;
-        };
-
-        /**
-         * Creates an ActionApprovals message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof nft.ActionApprovals
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {nft.ActionApprovals} ActionApprovals
-         */
-        ActionApprovals.fromObject = function fromObject(object) {
-            if (object instanceof $root.nft.ActionApprovals)
-                return object;
-            var message = new $root.nft.ActionApprovals();
-            if (object.action != null)
-                message.action = String(object.action);
-            if (object.approvals) {
-                if (!Array.isArray(object.approvals))
-                    throw TypeError(".nft.ActionApprovals.approvals: array expected");
-                message.approvals = [];
-                for (var i = 0; i < object.approvals.length; ++i) {
-                    if (typeof object.approvals[i] !== "object")
-                        throw TypeError(".nft.ActionApprovals.approvals: object expected");
-                    message.approvals[i] = $root.nft.Approval.fromObject(object.approvals[i]);
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Creates a plain object from an ActionApprovals message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof nft.ActionApprovals
-         * @static
-         * @param {nft.ActionApprovals} message ActionApprovals
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        ActionApprovals.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.arrays || options.defaults)
-                object.approvals = [];
-            if (options.defaults)
-                object.action = "";
-            if (message.action != null && message.hasOwnProperty("action"))
-                object.action = message.action;
-            if (message.approvals && message.approvals.length) {
-                object.approvals = [];
-                for (var j = 0; j < message.approvals.length; ++j)
-                    object.approvals[j] = $root.nft.Approval.toObject(message.approvals[j], options);
-            }
-            return object;
-        };
-
-        /**
-         * Converts this ActionApprovals to JSON.
-         * @function toJSON
-         * @memberof nft.ActionApprovals
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        ActionApprovals.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return ActionApprovals;
-    })();
-
-    nft.Approval = (function() {
-
-        /**
-         * Properties of an Approval.
-         * @memberof nft
-         * @interface IApproval
-         * @property {Uint8Array|null} [address] Approval address
-         * @property {nft.IApprovalOptions|null} [options] Approval options
-         */
-
-        /**
-         * Constructs a new Approval.
-         * @memberof nft
-         * @classdesc Represents an Approval.
-         * @implements IApproval
-         * @constructor
-         * @param {nft.IApproval=} [properties] Properties to set
-         */
-        function Approval(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * Approval address.
-         * @member {Uint8Array} address
-         * @memberof nft.Approval
-         * @instance
-         */
-        Approval.prototype.address = $util.newBuffer([]);
-
-        /**
-         * Approval options.
-         * @member {nft.IApprovalOptions|null|undefined} options
-         * @memberof nft.Approval
-         * @instance
-         */
-        Approval.prototype.options = null;
-
-        /**
-         * Creates a new Approval instance using the specified properties.
-         * @function create
-         * @memberof nft.Approval
-         * @static
-         * @param {nft.IApproval=} [properties] Properties to set
-         * @returns {nft.Approval} Approval instance
-         */
-        Approval.create = function create(properties) {
-            return new Approval(properties);
-        };
-
-        /**
-         * Encodes the specified Approval message. Does not implicitly {@link nft.Approval.verify|verify} messages.
-         * @function encode
-         * @memberof nft.Approval
-         * @static
-         * @param {nft.IApproval} message Approval message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        Approval.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.address != null && message.hasOwnProperty("address"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.address);
-            if (message.options != null && message.hasOwnProperty("options"))
-                $root.nft.ApprovalOptions.encode(message.options, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-            return writer;
-        };
-
-        /**
-         * Encodes the specified Approval message, length delimited. Does not implicitly {@link nft.Approval.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof nft.Approval
-         * @static
-         * @param {nft.IApproval} message Approval message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        Approval.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes an Approval message from the specified reader or buffer.
-         * @function decode
-         * @memberof nft.Approval
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {nft.Approval} Approval
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        Approval.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.nft.Approval();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.address = reader.bytes();
-                    break;
-                case 2:
-                    message.options = $root.nft.ApprovalOptions.decode(reader, reader.uint32());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes an Approval message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof nft.Approval
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {nft.Approval} Approval
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        Approval.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies an Approval message.
-         * @function verify
-         * @memberof nft.Approval
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        Approval.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.address != null && message.hasOwnProperty("address"))
-                if (!(message.address && typeof message.address.length === "number" || $util.isString(message.address)))
-                    return "address: buffer expected";
-            if (message.options != null && message.hasOwnProperty("options")) {
-                var error = $root.nft.ApprovalOptions.verify(message.options);
-                if (error)
-                    return "options." + error;
-            }
-            return null;
-        };
-
-        /**
-         * Creates an Approval message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof nft.Approval
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {nft.Approval} Approval
-         */
-        Approval.fromObject = function fromObject(object) {
-            if (object instanceof $root.nft.Approval)
-                return object;
-            var message = new $root.nft.Approval();
-            if (object.address != null)
-                if (typeof object.address === "string")
-                    $util.base64.decode(object.address, message.address = $util.newBuffer($util.base64.length(object.address)), 0);
-                else if (object.address.length)
-                    message.address = object.address;
-            if (object.options != null) {
-                if (typeof object.options !== "object")
-                    throw TypeError(".nft.Approval.options: object expected");
-                message.options = $root.nft.ApprovalOptions.fromObject(object.options);
-            }
-            return message;
-        };
-
-        /**
-         * Creates a plain object from an Approval message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof nft.Approval
-         * @static
-         * @param {nft.Approval} message Approval
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        Approval.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults) {
-                if (options.bytes === String)
-                    object.address = "";
-                else {
-                    object.address = [];
-                    if (options.bytes !== Array)
-                        object.address = $util.newBuffer(object.address);
-                }
-                object.options = null;
-            }
-            if (message.address != null && message.hasOwnProperty("address"))
-                object.address = options.bytes === String ? $util.base64.encode(message.address, 0, message.address.length) : options.bytes === Array ? Array.prototype.slice.call(message.address) : message.address;
-            if (message.options != null && message.hasOwnProperty("options"))
-                object.options = $root.nft.ApprovalOptions.toObject(message.options, options);
-            return object;
-        };
-
-        /**
-         * Converts this Approval to JSON.
-         * @function toJSON
-         * @memberof nft.Approval
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        Approval.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return Approval;
-    })();
-
-    nft.ApprovalOptions = (function() {
-
-        /**
-         * Properties of an ApprovalOptions.
-         * @memberof nft
-         * @interface IApprovalOptions
-         * @property {number|Long|null} [untilBlockHeight] ApprovalOptions untilBlockHeight
-         * @property {number|Long|null} [count] ApprovalOptions count
-         * @property {boolean|null} [immutable] ApprovalOptions immutable
-         */
-
-        /**
-         * Constructs a new ApprovalOptions.
-         * @memberof nft
-         * @classdesc Represents an ApprovalOptions.
-         * @implements IApprovalOptions
-         * @constructor
-         * @param {nft.IApprovalOptions=} [properties] Properties to set
-         */
-        function ApprovalOptions(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * ApprovalOptions untilBlockHeight.
-         * @member {number|Long} untilBlockHeight
-         * @memberof nft.ApprovalOptions
-         * @instance
-         */
-        ApprovalOptions.prototype.untilBlockHeight = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * ApprovalOptions count.
-         * @member {number|Long} count
-         * @memberof nft.ApprovalOptions
-         * @instance
-         */
-        ApprovalOptions.prototype.count = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * ApprovalOptions immutable.
-         * @member {boolean} immutable
-         * @memberof nft.ApprovalOptions
-         * @instance
-         */
-        ApprovalOptions.prototype.immutable = false;
-
-        /**
-         * Creates a new ApprovalOptions instance using the specified properties.
-         * @function create
-         * @memberof nft.ApprovalOptions
-         * @static
-         * @param {nft.IApprovalOptions=} [properties] Properties to set
-         * @returns {nft.ApprovalOptions} ApprovalOptions instance
-         */
-        ApprovalOptions.create = function create(properties) {
-            return new ApprovalOptions(properties);
-        };
-
-        /**
-         * Encodes the specified ApprovalOptions message. Does not implicitly {@link nft.ApprovalOptions.verify|verify} messages.
-         * @function encode
-         * @memberof nft.ApprovalOptions
-         * @static
-         * @param {nft.IApprovalOptions} message ApprovalOptions message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        ApprovalOptions.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.untilBlockHeight != null && message.hasOwnProperty("untilBlockHeight"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.untilBlockHeight);
-            if (message.count != null && message.hasOwnProperty("count"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.count);
-            if (message.immutable != null && message.hasOwnProperty("immutable"))
-                writer.uint32(/* id 3, wireType 0 =*/24).bool(message.immutable);
-            return writer;
-        };
-
-        /**
-         * Encodes the specified ApprovalOptions message, length delimited. Does not implicitly {@link nft.ApprovalOptions.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof nft.ApprovalOptions
-         * @static
-         * @param {nft.IApprovalOptions} message ApprovalOptions message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        ApprovalOptions.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes an ApprovalOptions message from the specified reader or buffer.
-         * @function decode
-         * @memberof nft.ApprovalOptions
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {nft.ApprovalOptions} ApprovalOptions
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        ApprovalOptions.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.nft.ApprovalOptions();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.untilBlockHeight = reader.int64();
-                    break;
-                case 2:
-                    message.count = reader.int64();
-                    break;
-                case 3:
-                    message.immutable = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes an ApprovalOptions message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof nft.ApprovalOptions
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {nft.ApprovalOptions} ApprovalOptions
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        ApprovalOptions.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies an ApprovalOptions message.
-         * @function verify
-         * @memberof nft.ApprovalOptions
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        ApprovalOptions.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.untilBlockHeight != null && message.hasOwnProperty("untilBlockHeight"))
-                if (!$util.isInteger(message.untilBlockHeight) && !(message.untilBlockHeight && $util.isInteger(message.untilBlockHeight.low) && $util.isInteger(message.untilBlockHeight.high)))
-                    return "untilBlockHeight: integer|Long expected";
-            if (message.count != null && message.hasOwnProperty("count"))
-                if (!$util.isInteger(message.count) && !(message.count && $util.isInteger(message.count.low) && $util.isInteger(message.count.high)))
-                    return "count: integer|Long expected";
-            if (message.immutable != null && message.hasOwnProperty("immutable"))
-                if (typeof message.immutable !== "boolean")
-                    return "immutable: boolean expected";
-            return null;
-        };
-
-        /**
-         * Creates an ApprovalOptions message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof nft.ApprovalOptions
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {nft.ApprovalOptions} ApprovalOptions
-         */
-        ApprovalOptions.fromObject = function fromObject(object) {
-            if (object instanceof $root.nft.ApprovalOptions)
-                return object;
-            var message = new $root.nft.ApprovalOptions();
-            if (object.untilBlockHeight != null)
-                if ($util.Long)
-                    (message.untilBlockHeight = $util.Long.fromValue(object.untilBlockHeight)).unsigned = false;
-                else if (typeof object.untilBlockHeight === "string")
-                    message.untilBlockHeight = parseInt(object.untilBlockHeight, 10);
-                else if (typeof object.untilBlockHeight === "number")
-                    message.untilBlockHeight = object.untilBlockHeight;
-                else if (typeof object.untilBlockHeight === "object")
-                    message.untilBlockHeight = new $util.LongBits(object.untilBlockHeight.low >>> 0, object.untilBlockHeight.high >>> 0).toNumber();
-            if (object.count != null)
-                if ($util.Long)
-                    (message.count = $util.Long.fromValue(object.count)).unsigned = false;
-                else if (typeof object.count === "string")
-                    message.count = parseInt(object.count, 10);
-                else if (typeof object.count === "number")
-                    message.count = object.count;
-                else if (typeof object.count === "object")
-                    message.count = new $util.LongBits(object.count.low >>> 0, object.count.high >>> 0).toNumber();
-            if (object.immutable != null)
-                message.immutable = Boolean(object.immutable);
-            return message;
-        };
-
-        /**
-         * Creates a plain object from an ApprovalOptions message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof nft.ApprovalOptions
-         * @static
-         * @param {nft.ApprovalOptions} message ApprovalOptions
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        ApprovalOptions.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults) {
-                if ($util.Long) {
-                    var long = new $util.Long(0, 0, false);
-                    object.untilBlockHeight = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.untilBlockHeight = options.longs === String ? "0" : 0;
-                if ($util.Long) {
-                    var long = new $util.Long(0, 0, false);
-                    object.count = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.count = options.longs === String ? "0" : 0;
-                object.immutable = false;
-            }
-            if (message.untilBlockHeight != null && message.hasOwnProperty("untilBlockHeight"))
-                if (typeof message.untilBlockHeight === "number")
-                    object.untilBlockHeight = options.longs === String ? String(message.untilBlockHeight) : message.untilBlockHeight;
-                else
-                    object.untilBlockHeight = options.longs === String ? $util.Long.prototype.toString.call(message.untilBlockHeight) : options.longs === Number ? new $util.LongBits(message.untilBlockHeight.low >>> 0, message.untilBlockHeight.high >>> 0).toNumber() : message.untilBlockHeight;
-            if (message.count != null && message.hasOwnProperty("count"))
-                if (typeof message.count === "number")
-                    object.count = options.longs === String ? String(message.count) : message.count;
-                else
-                    object.count = options.longs === String ? $util.Long.prototype.toString.call(message.count) : options.longs === Number ? new $util.LongBits(message.count.low >>> 0, message.count.high >>> 0).toNumber() : message.count;
-            if (message.immutable != null && message.hasOwnProperty("immutable"))
-                object.immutable = message.immutable;
-            return object;
-        };
-
-        /**
-         * Converts this ApprovalOptions to JSON.
-         * @function toJSON
-         * @memberof nft.ApprovalOptions
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        ApprovalOptions.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return ApprovalOptions;
-    })();
-
-    nft.AddApprovalMsg = (function() {
-
-        /**
-         * Properties of an AddApprovalMsg.
-         * @memberof nft
-         * @interface IAddApprovalMsg
-         * @property {Uint8Array|null} [id] AddApprovalMsg id
-         * @property {Uint8Array|null} [address] AddApprovalMsg address
-         * @property {string|null} [action] AddApprovalMsg action
-         * @property {nft.IApprovalOptions|null} [options] AddApprovalMsg options
-         * @property {string|null} [t] AddApprovalMsg t
-         */
-
-        /**
-         * Constructs a new AddApprovalMsg.
-         * @memberof nft
-         * @classdesc Represents an AddApprovalMsg.
-         * @implements IAddApprovalMsg
-         * @constructor
-         * @param {nft.IAddApprovalMsg=} [properties] Properties to set
-         */
-        function AddApprovalMsg(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * AddApprovalMsg id.
-         * @member {Uint8Array} id
-         * @memberof nft.AddApprovalMsg
-         * @instance
-         */
-        AddApprovalMsg.prototype.id = $util.newBuffer([]);
-
-        /**
-         * AddApprovalMsg address.
-         * @member {Uint8Array} address
-         * @memberof nft.AddApprovalMsg
-         * @instance
-         */
-        AddApprovalMsg.prototype.address = $util.newBuffer([]);
-
-        /**
-         * AddApprovalMsg action.
-         * @member {string} action
-         * @memberof nft.AddApprovalMsg
-         * @instance
-         */
-        AddApprovalMsg.prototype.action = "";
-
-        /**
-         * AddApprovalMsg options.
-         * @member {nft.IApprovalOptions|null|undefined} options
-         * @memberof nft.AddApprovalMsg
-         * @instance
-         */
-        AddApprovalMsg.prototype.options = null;
-
-        /**
-         * AddApprovalMsg t.
-         * @member {string} t
-         * @memberof nft.AddApprovalMsg
-         * @instance
-         */
-        AddApprovalMsg.prototype.t = "";
-
-        /**
-         * Creates a new AddApprovalMsg instance using the specified properties.
-         * @function create
-         * @memberof nft.AddApprovalMsg
-         * @static
-         * @param {nft.IAddApprovalMsg=} [properties] Properties to set
-         * @returns {nft.AddApprovalMsg} AddApprovalMsg instance
-         */
-        AddApprovalMsg.create = function create(properties) {
-            return new AddApprovalMsg(properties);
-        };
-
-        /**
-         * Encodes the specified AddApprovalMsg message. Does not implicitly {@link nft.AddApprovalMsg.verify|verify} messages.
-         * @function encode
-         * @memberof nft.AddApprovalMsg
-         * @static
-         * @param {nft.IAddApprovalMsg} message AddApprovalMsg message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        AddApprovalMsg.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.id != null && message.hasOwnProperty("id"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
-            if (message.address != null && message.hasOwnProperty("address"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.address);
-            if (message.action != null && message.hasOwnProperty("action"))
-                writer.uint32(/* id 3, wireType 2 =*/26).string(message.action);
-            if (message.options != null && message.hasOwnProperty("options"))
-                $root.nft.ApprovalOptions.encode(message.options, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-            if (message.t != null && message.hasOwnProperty("t"))
-                writer.uint32(/* id 5, wireType 2 =*/42).string(message.t);
-            return writer;
-        };
-
-        /**
-         * Encodes the specified AddApprovalMsg message, length delimited. Does not implicitly {@link nft.AddApprovalMsg.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof nft.AddApprovalMsg
-         * @static
-         * @param {nft.IAddApprovalMsg} message AddApprovalMsg message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        AddApprovalMsg.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes an AddApprovalMsg message from the specified reader or buffer.
-         * @function decode
-         * @memberof nft.AddApprovalMsg
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {nft.AddApprovalMsg} AddApprovalMsg
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        AddApprovalMsg.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.nft.AddApprovalMsg();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.id = reader.bytes();
-                    break;
-                case 2:
-                    message.address = reader.bytes();
-                    break;
-                case 3:
-                    message.action = reader.string();
-                    break;
-                case 4:
-                    message.options = $root.nft.ApprovalOptions.decode(reader, reader.uint32());
-                    break;
-                case 5:
-                    message.t = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes an AddApprovalMsg message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof nft.AddApprovalMsg
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {nft.AddApprovalMsg} AddApprovalMsg
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        AddApprovalMsg.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies an AddApprovalMsg message.
-         * @function verify
-         * @memberof nft.AddApprovalMsg
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        AddApprovalMsg.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.id != null && message.hasOwnProperty("id"))
-                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
-                    return "id: buffer expected";
-            if (message.address != null && message.hasOwnProperty("address"))
-                if (!(message.address && typeof message.address.length === "number" || $util.isString(message.address)))
-                    return "address: buffer expected";
-            if (message.action != null && message.hasOwnProperty("action"))
-                if (!$util.isString(message.action))
-                    return "action: string expected";
-            if (message.options != null && message.hasOwnProperty("options")) {
-                var error = $root.nft.ApprovalOptions.verify(message.options);
-                if (error)
-                    return "options." + error;
-            }
-            if (message.t != null && message.hasOwnProperty("t"))
-                if (!$util.isString(message.t))
-                    return "t: string expected";
-            return null;
-        };
-
-        /**
-         * Creates an AddApprovalMsg message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof nft.AddApprovalMsg
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {nft.AddApprovalMsg} AddApprovalMsg
-         */
-        AddApprovalMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.nft.AddApprovalMsg)
-                return object;
-            var message = new $root.nft.AddApprovalMsg();
-            if (object.id != null)
-                if (typeof object.id === "string")
-                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
-                else if (object.id.length)
-                    message.id = object.id;
-            if (object.address != null)
-                if (typeof object.address === "string")
-                    $util.base64.decode(object.address, message.address = $util.newBuffer($util.base64.length(object.address)), 0);
-                else if (object.address.length)
-                    message.address = object.address;
-            if (object.action != null)
-                message.action = String(object.action);
-            if (object.options != null) {
-                if (typeof object.options !== "object")
-                    throw TypeError(".nft.AddApprovalMsg.options: object expected");
-                message.options = $root.nft.ApprovalOptions.fromObject(object.options);
-            }
-            if (object.t != null)
-                message.t = String(object.t);
-            return message;
-        };
-
-        /**
-         * Creates a plain object from an AddApprovalMsg message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof nft.AddApprovalMsg
-         * @static
-         * @param {nft.AddApprovalMsg} message AddApprovalMsg
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        AddApprovalMsg.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults) {
-                if (options.bytes === String)
-                    object.id = "";
-                else {
-                    object.id = [];
-                    if (options.bytes !== Array)
-                        object.id = $util.newBuffer(object.id);
-                }
-                if (options.bytes === String)
-                    object.address = "";
-                else {
-                    object.address = [];
-                    if (options.bytes !== Array)
-                        object.address = $util.newBuffer(object.address);
-                }
-                object.action = "";
-                object.options = null;
-                object.t = "";
-            }
-            if (message.id != null && message.hasOwnProperty("id"))
-                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
-            if (message.address != null && message.hasOwnProperty("address"))
-                object.address = options.bytes === String ? $util.base64.encode(message.address, 0, message.address.length) : options.bytes === Array ? Array.prototype.slice.call(message.address) : message.address;
-            if (message.action != null && message.hasOwnProperty("action"))
-                object.action = message.action;
-            if (message.options != null && message.hasOwnProperty("options"))
-                object.options = $root.nft.ApprovalOptions.toObject(message.options, options);
-            if (message.t != null && message.hasOwnProperty("t"))
-                object.t = message.t;
-            return object;
-        };
-
-        /**
-         * Converts this AddApprovalMsg to JSON.
-         * @function toJSON
-         * @memberof nft.AddApprovalMsg
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        AddApprovalMsg.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return AddApprovalMsg;
-    })();
-
-    nft.RemoveApprovalMsg = (function() {
-
-        /**
-         * Properties of a RemoveApprovalMsg.
-         * @memberof nft
-         * @interface IRemoveApprovalMsg
-         * @property {Uint8Array|null} [id] RemoveApprovalMsg id
-         * @property {Uint8Array|null} [address] RemoveApprovalMsg address
-         * @property {string|null} [action] RemoveApprovalMsg action
-         * @property {string|null} [t] RemoveApprovalMsg t
-         */
-
-        /**
-         * Constructs a new RemoveApprovalMsg.
-         * @memberof nft
-         * @classdesc Represents a RemoveApprovalMsg.
-         * @implements IRemoveApprovalMsg
-         * @constructor
-         * @param {nft.IRemoveApprovalMsg=} [properties] Properties to set
-         */
-        function RemoveApprovalMsg(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * RemoveApprovalMsg id.
-         * @member {Uint8Array} id
-         * @memberof nft.RemoveApprovalMsg
-         * @instance
-         */
-        RemoveApprovalMsg.prototype.id = $util.newBuffer([]);
-
-        /**
-         * RemoveApprovalMsg address.
-         * @member {Uint8Array} address
-         * @memberof nft.RemoveApprovalMsg
-         * @instance
-         */
-        RemoveApprovalMsg.prototype.address = $util.newBuffer([]);
-
-        /**
-         * RemoveApprovalMsg action.
-         * @member {string} action
-         * @memberof nft.RemoveApprovalMsg
-         * @instance
-         */
-        RemoveApprovalMsg.prototype.action = "";
-
-        /**
-         * RemoveApprovalMsg t.
-         * @member {string} t
-         * @memberof nft.RemoveApprovalMsg
-         * @instance
-         */
-        RemoveApprovalMsg.prototype.t = "";
-
-        /**
-         * Creates a new RemoveApprovalMsg instance using the specified properties.
-         * @function create
-         * @memberof nft.RemoveApprovalMsg
-         * @static
-         * @param {nft.IRemoveApprovalMsg=} [properties] Properties to set
-         * @returns {nft.RemoveApprovalMsg} RemoveApprovalMsg instance
-         */
-        RemoveApprovalMsg.create = function create(properties) {
-            return new RemoveApprovalMsg(properties);
-        };
-
-        /**
-         * Encodes the specified RemoveApprovalMsg message. Does not implicitly {@link nft.RemoveApprovalMsg.verify|verify} messages.
-         * @function encode
-         * @memberof nft.RemoveApprovalMsg
-         * @static
-         * @param {nft.IRemoveApprovalMsg} message RemoveApprovalMsg message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        RemoveApprovalMsg.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.id != null && message.hasOwnProperty("id"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
-            if (message.address != null && message.hasOwnProperty("address"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.address);
-            if (message.action != null && message.hasOwnProperty("action"))
-                writer.uint32(/* id 3, wireType 2 =*/26).string(message.action);
-            if (message.t != null && message.hasOwnProperty("t"))
-                writer.uint32(/* id 4, wireType 2 =*/34).string(message.t);
-            return writer;
-        };
-
-        /**
-         * Encodes the specified RemoveApprovalMsg message, length delimited. Does not implicitly {@link nft.RemoveApprovalMsg.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof nft.RemoveApprovalMsg
-         * @static
-         * @param {nft.IRemoveApprovalMsg} message RemoveApprovalMsg message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        RemoveApprovalMsg.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a RemoveApprovalMsg message from the specified reader or buffer.
-         * @function decode
-         * @memberof nft.RemoveApprovalMsg
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {nft.RemoveApprovalMsg} RemoveApprovalMsg
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        RemoveApprovalMsg.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.nft.RemoveApprovalMsg();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.id = reader.bytes();
-                    break;
-                case 2:
-                    message.address = reader.bytes();
-                    break;
-                case 3:
-                    message.action = reader.string();
-                    break;
-                case 4:
-                    message.t = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a RemoveApprovalMsg message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof nft.RemoveApprovalMsg
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {nft.RemoveApprovalMsg} RemoveApprovalMsg
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        RemoveApprovalMsg.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a RemoveApprovalMsg message.
-         * @function verify
-         * @memberof nft.RemoveApprovalMsg
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        RemoveApprovalMsg.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.id != null && message.hasOwnProperty("id"))
-                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
-                    return "id: buffer expected";
-            if (message.address != null && message.hasOwnProperty("address"))
-                if (!(message.address && typeof message.address.length === "number" || $util.isString(message.address)))
-                    return "address: buffer expected";
-            if (message.action != null && message.hasOwnProperty("action"))
-                if (!$util.isString(message.action))
-                    return "action: string expected";
-            if (message.t != null && message.hasOwnProperty("t"))
-                if (!$util.isString(message.t))
-                    return "t: string expected";
-            return null;
-        };
-
-        /**
-         * Creates a RemoveApprovalMsg message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof nft.RemoveApprovalMsg
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {nft.RemoveApprovalMsg} RemoveApprovalMsg
-         */
-        RemoveApprovalMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.nft.RemoveApprovalMsg)
-                return object;
-            var message = new $root.nft.RemoveApprovalMsg();
-            if (object.id != null)
-                if (typeof object.id === "string")
-                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
-                else if (object.id.length)
-                    message.id = object.id;
-            if (object.address != null)
-                if (typeof object.address === "string")
-                    $util.base64.decode(object.address, message.address = $util.newBuffer($util.base64.length(object.address)), 0);
-                else if (object.address.length)
-                    message.address = object.address;
-            if (object.action != null)
-                message.action = String(object.action);
-            if (object.t != null)
-                message.t = String(object.t);
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a RemoveApprovalMsg message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof nft.RemoveApprovalMsg
-         * @static
-         * @param {nft.RemoveApprovalMsg} message RemoveApprovalMsg
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        RemoveApprovalMsg.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults) {
-                if (options.bytes === String)
-                    object.id = "";
-                else {
-                    object.id = [];
-                    if (options.bytes !== Array)
-                        object.id = $util.newBuffer(object.id);
-                }
-                if (options.bytes === String)
-                    object.address = "";
-                else {
-                    object.address = [];
-                    if (options.bytes !== Array)
-                        object.address = $util.newBuffer(object.address);
-                }
-                object.action = "";
-                object.t = "";
-            }
-            if (message.id != null && message.hasOwnProperty("id"))
-                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
-            if (message.address != null && message.hasOwnProperty("address"))
-                object.address = options.bytes === String ? $util.base64.encode(message.address, 0, message.address.length) : options.bytes === Array ? Array.prototype.slice.call(message.address) : message.address;
-            if (message.action != null && message.hasOwnProperty("action"))
-                object.action = message.action;
-            if (message.t != null && message.hasOwnProperty("t"))
-                object.t = message.t;
-            return object;
-        };
-
-        /**
-         * Converts this RemoveApprovalMsg to JSON.
-         * @function toJSON
-         * @memberof nft.RemoveApprovalMsg
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        RemoveApprovalMsg.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return RemoveApprovalMsg;
-    })();
-
-    /**
-     * Action enum.
-     * @name nft.Action
-     * @enum {string}
-     * @property {number} ActionUpdateDetails=0 ActionUpdateDetails value
-     * @property {number} ActionTransfer=1 ActionTransfer value
-     * @property {number} ActionUpdateApprovals=2 ActionUpdateApprovals value
-     */
-    nft.Action = (function() {
-        var valuesById = {}, values = Object.create(valuesById);
-        values[valuesById[0] = "ActionUpdateDetails"] = 0;
-        values[valuesById[1] = "ActionTransfer"] = 1;
-        values[valuesById[2] = "ActionUpdateApprovals"] = 2;
-        return values;
-    })();
-
-    return nft;
 })();
 
 $root.blockchain = (function() {
@@ -8917,6 +6457,2450 @@ $root.bootstrap_node = (function() {
     })();
 
     return bootstrap_node;
+})();
+
+$root.validators = (function() {
+
+    /**
+     * Namespace validators.
+     * @exports validators
+     * @namespace
+     */
+    var validators = {};
+
+    validators.ValidatorUpdate = (function() {
+
+        /**
+         * Properties of a ValidatorUpdate.
+         * @memberof validators
+         * @interface IValidatorUpdate
+         * @property {validators.IPubkey|null} [pubkey] ValidatorUpdate pubkey
+         * @property {number|Long|null} [power] ValidatorUpdate power
+         */
+
+        /**
+         * Constructs a new ValidatorUpdate.
+         * @memberof validators
+         * @classdesc Represents a ValidatorUpdate.
+         * @implements IValidatorUpdate
+         * @constructor
+         * @param {validators.IValidatorUpdate=} [properties] Properties to set
+         */
+        function ValidatorUpdate(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ValidatorUpdate pubkey.
+         * @member {validators.IPubkey|null|undefined} pubkey
+         * @memberof validators.ValidatorUpdate
+         * @instance
+         */
+        ValidatorUpdate.prototype.pubkey = null;
+
+        /**
+         * ValidatorUpdate power.
+         * @member {number|Long} power
+         * @memberof validators.ValidatorUpdate
+         * @instance
+         */
+        ValidatorUpdate.prototype.power = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * Creates a new ValidatorUpdate instance using the specified properties.
+         * @function create
+         * @memberof validators.ValidatorUpdate
+         * @static
+         * @param {validators.IValidatorUpdate=} [properties] Properties to set
+         * @returns {validators.ValidatorUpdate} ValidatorUpdate instance
+         */
+        ValidatorUpdate.create = function create(properties) {
+            return new ValidatorUpdate(properties);
+        };
+
+        /**
+         * Encodes the specified ValidatorUpdate message. Does not implicitly {@link validators.ValidatorUpdate.verify|verify} messages.
+         * @function encode
+         * @memberof validators.ValidatorUpdate
+         * @static
+         * @param {validators.IValidatorUpdate} message ValidatorUpdate message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ValidatorUpdate.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.pubkey != null && message.hasOwnProperty("pubkey"))
+                $root.validators.Pubkey.encode(message.pubkey, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.power != null && message.hasOwnProperty("power"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.power);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ValidatorUpdate message, length delimited. Does not implicitly {@link validators.ValidatorUpdate.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof validators.ValidatorUpdate
+         * @static
+         * @param {validators.IValidatorUpdate} message ValidatorUpdate message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ValidatorUpdate.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ValidatorUpdate message from the specified reader or buffer.
+         * @function decode
+         * @memberof validators.ValidatorUpdate
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {validators.ValidatorUpdate} ValidatorUpdate
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ValidatorUpdate.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.validators.ValidatorUpdate();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.pubkey = $root.validators.Pubkey.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.power = reader.int64();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a ValidatorUpdate message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof validators.ValidatorUpdate
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {validators.ValidatorUpdate} ValidatorUpdate
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ValidatorUpdate.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ValidatorUpdate message.
+         * @function verify
+         * @memberof validators.ValidatorUpdate
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ValidatorUpdate.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.pubkey != null && message.hasOwnProperty("pubkey")) {
+                var error = $root.validators.Pubkey.verify(message.pubkey);
+                if (error)
+                    return "pubkey." + error;
+            }
+            if (message.power != null && message.hasOwnProperty("power"))
+                if (!$util.isInteger(message.power) && !(message.power && $util.isInteger(message.power.low) && $util.isInteger(message.power.high)))
+                    return "power: integer|Long expected";
+            return null;
+        };
+
+        /**
+         * Creates a ValidatorUpdate message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof validators.ValidatorUpdate
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {validators.ValidatorUpdate} ValidatorUpdate
+         */
+        ValidatorUpdate.fromObject = function fromObject(object) {
+            if (object instanceof $root.validators.ValidatorUpdate)
+                return object;
+            var message = new $root.validators.ValidatorUpdate();
+            if (object.pubkey != null) {
+                if (typeof object.pubkey !== "object")
+                    throw TypeError(".validators.ValidatorUpdate.pubkey: object expected");
+                message.pubkey = $root.validators.Pubkey.fromObject(object.pubkey);
+            }
+            if (object.power != null)
+                if ($util.Long)
+                    (message.power = $util.Long.fromValue(object.power)).unsigned = false;
+                else if (typeof object.power === "string")
+                    message.power = parseInt(object.power, 10);
+                else if (typeof object.power === "number")
+                    message.power = object.power;
+                else if (typeof object.power === "object")
+                    message.power = new $util.LongBits(object.power.low >>> 0, object.power.high >>> 0).toNumber();
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ValidatorUpdate message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof validators.ValidatorUpdate
+         * @static
+         * @param {validators.ValidatorUpdate} message ValidatorUpdate
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ValidatorUpdate.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.pubkey = null;
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.power = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.power = options.longs === String ? "0" : 0;
+            }
+            if (message.pubkey != null && message.hasOwnProperty("pubkey"))
+                object.pubkey = $root.validators.Pubkey.toObject(message.pubkey, options);
+            if (message.power != null && message.hasOwnProperty("power"))
+                if (typeof message.power === "number")
+                    object.power = options.longs === String ? String(message.power) : message.power;
+                else
+                    object.power = options.longs === String ? $util.Long.prototype.toString.call(message.power) : options.longs === Number ? new $util.LongBits(message.power.low >>> 0, message.power.high >>> 0).toNumber() : message.power;
+            return object;
+        };
+
+        /**
+         * Converts this ValidatorUpdate to JSON.
+         * @function toJSON
+         * @memberof validators.ValidatorUpdate
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ValidatorUpdate.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ValidatorUpdate;
+    })();
+
+    validators.Pubkey = (function() {
+
+        /**
+         * Properties of a Pubkey.
+         * @memberof validators
+         * @interface IPubkey
+         * @property {string|null} [type] Pubkey type
+         * @property {Uint8Array|null} [data] Pubkey data
+         */
+
+        /**
+         * Constructs a new Pubkey.
+         * @memberof validators
+         * @classdesc Represents a Pubkey.
+         * @implements IPubkey
+         * @constructor
+         * @param {validators.IPubkey=} [properties] Properties to set
+         */
+        function Pubkey(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Pubkey type.
+         * @member {string} type
+         * @memberof validators.Pubkey
+         * @instance
+         */
+        Pubkey.prototype.type = "";
+
+        /**
+         * Pubkey data.
+         * @member {Uint8Array} data
+         * @memberof validators.Pubkey
+         * @instance
+         */
+        Pubkey.prototype.data = $util.newBuffer([]);
+
+        /**
+         * Creates a new Pubkey instance using the specified properties.
+         * @function create
+         * @memberof validators.Pubkey
+         * @static
+         * @param {validators.IPubkey=} [properties] Properties to set
+         * @returns {validators.Pubkey} Pubkey instance
+         */
+        Pubkey.create = function create(properties) {
+            return new Pubkey(properties);
+        };
+
+        /**
+         * Encodes the specified Pubkey message. Does not implicitly {@link validators.Pubkey.verify|verify} messages.
+         * @function encode
+         * @memberof validators.Pubkey
+         * @static
+         * @param {validators.IPubkey} message Pubkey message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Pubkey.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.type != null && message.hasOwnProperty("type"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.type);
+            if (message.data != null && message.hasOwnProperty("data"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.data);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Pubkey message, length delimited. Does not implicitly {@link validators.Pubkey.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof validators.Pubkey
+         * @static
+         * @param {validators.IPubkey} message Pubkey message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Pubkey.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Pubkey message from the specified reader or buffer.
+         * @function decode
+         * @memberof validators.Pubkey
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {validators.Pubkey} Pubkey
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Pubkey.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.validators.Pubkey();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.type = reader.string();
+                    break;
+                case 2:
+                    message.data = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Pubkey message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof validators.Pubkey
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {validators.Pubkey} Pubkey
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Pubkey.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Pubkey message.
+         * @function verify
+         * @memberof validators.Pubkey
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Pubkey.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.type != null && message.hasOwnProperty("type"))
+                if (!$util.isString(message.type))
+                    return "type: string expected";
+            if (message.data != null && message.hasOwnProperty("data"))
+                if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
+                    return "data: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates a Pubkey message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof validators.Pubkey
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {validators.Pubkey} Pubkey
+         */
+        Pubkey.fromObject = function fromObject(object) {
+            if (object instanceof $root.validators.Pubkey)
+                return object;
+            var message = new $root.validators.Pubkey();
+            if (object.type != null)
+                message.type = String(object.type);
+            if (object.data != null)
+                if (typeof object.data === "string")
+                    $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
+                else if (object.data.length)
+                    message.data = object.data;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Pubkey message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof validators.Pubkey
+         * @static
+         * @param {validators.Pubkey} message Pubkey
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Pubkey.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.type = "";
+                if (options.bytes === String)
+                    object.data = "";
+                else {
+                    object.data = [];
+                    if (options.bytes !== Array)
+                        object.data = $util.newBuffer(object.data);
+                }
+            }
+            if (message.type != null && message.hasOwnProperty("type"))
+                object.type = message.type;
+            if (message.data != null && message.hasOwnProperty("data"))
+                object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
+            return object;
+        };
+
+        /**
+         * Converts this Pubkey to JSON.
+         * @function toJSON
+         * @memberof validators.Pubkey
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Pubkey.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Pubkey;
+    })();
+
+    validators.SetValidatorsMsg = (function() {
+
+        /**
+         * Properties of a SetValidatorsMsg.
+         * @memberof validators
+         * @interface ISetValidatorsMsg
+         * @property {Array.<validators.IValidatorUpdate>|null} [validatorUpdates] SetValidatorsMsg validatorUpdates
+         */
+
+        /**
+         * Constructs a new SetValidatorsMsg.
+         * @memberof validators
+         * @classdesc Represents a SetValidatorsMsg.
+         * @implements ISetValidatorsMsg
+         * @constructor
+         * @param {validators.ISetValidatorsMsg=} [properties] Properties to set
+         */
+        function SetValidatorsMsg(properties) {
+            this.validatorUpdates = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * SetValidatorsMsg validatorUpdates.
+         * @member {Array.<validators.IValidatorUpdate>} validatorUpdates
+         * @memberof validators.SetValidatorsMsg
+         * @instance
+         */
+        SetValidatorsMsg.prototype.validatorUpdates = $util.emptyArray;
+
+        /**
+         * Creates a new SetValidatorsMsg instance using the specified properties.
+         * @function create
+         * @memberof validators.SetValidatorsMsg
+         * @static
+         * @param {validators.ISetValidatorsMsg=} [properties] Properties to set
+         * @returns {validators.SetValidatorsMsg} SetValidatorsMsg instance
+         */
+        SetValidatorsMsg.create = function create(properties) {
+            return new SetValidatorsMsg(properties);
+        };
+
+        /**
+         * Encodes the specified SetValidatorsMsg message. Does not implicitly {@link validators.SetValidatorsMsg.verify|verify} messages.
+         * @function encode
+         * @memberof validators.SetValidatorsMsg
+         * @static
+         * @param {validators.ISetValidatorsMsg} message SetValidatorsMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        SetValidatorsMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.validatorUpdates != null && message.validatorUpdates.length)
+                for (var i = 0; i < message.validatorUpdates.length; ++i)
+                    $root.validators.ValidatorUpdate.encode(message.validatorUpdates[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified SetValidatorsMsg message, length delimited. Does not implicitly {@link validators.SetValidatorsMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof validators.SetValidatorsMsg
+         * @static
+         * @param {validators.ISetValidatorsMsg} message SetValidatorsMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        SetValidatorsMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a SetValidatorsMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof validators.SetValidatorsMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {validators.SetValidatorsMsg} SetValidatorsMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        SetValidatorsMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.validators.SetValidatorsMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    if (!(message.validatorUpdates && message.validatorUpdates.length))
+                        message.validatorUpdates = [];
+                    message.validatorUpdates.push($root.validators.ValidatorUpdate.decode(reader, reader.uint32()));
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a SetValidatorsMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof validators.SetValidatorsMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {validators.SetValidatorsMsg} SetValidatorsMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        SetValidatorsMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a SetValidatorsMsg message.
+         * @function verify
+         * @memberof validators.SetValidatorsMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        SetValidatorsMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.validatorUpdates != null && message.hasOwnProperty("validatorUpdates")) {
+                if (!Array.isArray(message.validatorUpdates))
+                    return "validatorUpdates: array expected";
+                for (var i = 0; i < message.validatorUpdates.length; ++i) {
+                    var error = $root.validators.ValidatorUpdate.verify(message.validatorUpdates[i]);
+                    if (error)
+                        return "validatorUpdates." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates a SetValidatorsMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof validators.SetValidatorsMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {validators.SetValidatorsMsg} SetValidatorsMsg
+         */
+        SetValidatorsMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.validators.SetValidatorsMsg)
+                return object;
+            var message = new $root.validators.SetValidatorsMsg();
+            if (object.validatorUpdates) {
+                if (!Array.isArray(object.validatorUpdates))
+                    throw TypeError(".validators.SetValidatorsMsg.validatorUpdates: array expected");
+                message.validatorUpdates = [];
+                for (var i = 0; i < object.validatorUpdates.length; ++i) {
+                    if (typeof object.validatorUpdates[i] !== "object")
+                        throw TypeError(".validators.SetValidatorsMsg.validatorUpdates: object expected");
+                    message.validatorUpdates[i] = $root.validators.ValidatorUpdate.fromObject(object.validatorUpdates[i]);
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a SetValidatorsMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof validators.SetValidatorsMsg
+         * @static
+         * @param {validators.SetValidatorsMsg} message SetValidatorsMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        SetValidatorsMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.validatorUpdates = [];
+            if (message.validatorUpdates && message.validatorUpdates.length) {
+                object.validatorUpdates = [];
+                for (var j = 0; j < message.validatorUpdates.length; ++j)
+                    object.validatorUpdates[j] = $root.validators.ValidatorUpdate.toObject(message.validatorUpdates[j], options);
+            }
+            return object;
+        };
+
+        /**
+         * Converts this SetValidatorsMsg to JSON.
+         * @function toJSON
+         * @memberof validators.SetValidatorsMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        SetValidatorsMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return SetValidatorsMsg;
+    })();
+
+    validators.Accounts = (function() {
+
+        /**
+         * Properties of an Accounts.
+         * @memberof validators
+         * @interface IAccounts
+         * @property {Array.<Uint8Array>|null} [addresses] Accounts addresses
+         */
+
+        /**
+         * Constructs a new Accounts.
+         * @memberof validators
+         * @classdesc Represents an Accounts.
+         * @implements IAccounts
+         * @constructor
+         * @param {validators.IAccounts=} [properties] Properties to set
+         */
+        function Accounts(properties) {
+            this.addresses = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Accounts addresses.
+         * @member {Array.<Uint8Array>} addresses
+         * @memberof validators.Accounts
+         * @instance
+         */
+        Accounts.prototype.addresses = $util.emptyArray;
+
+        /**
+         * Creates a new Accounts instance using the specified properties.
+         * @function create
+         * @memberof validators.Accounts
+         * @static
+         * @param {validators.IAccounts=} [properties] Properties to set
+         * @returns {validators.Accounts} Accounts instance
+         */
+        Accounts.create = function create(properties) {
+            return new Accounts(properties);
+        };
+
+        /**
+         * Encodes the specified Accounts message. Does not implicitly {@link validators.Accounts.verify|verify} messages.
+         * @function encode
+         * @memberof validators.Accounts
+         * @static
+         * @param {validators.IAccounts} message Accounts message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Accounts.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.addresses != null && message.addresses.length)
+                for (var i = 0; i < message.addresses.length; ++i)
+                    writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.addresses[i]);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Accounts message, length delimited. Does not implicitly {@link validators.Accounts.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof validators.Accounts
+         * @static
+         * @param {validators.IAccounts} message Accounts message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Accounts.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an Accounts message from the specified reader or buffer.
+         * @function decode
+         * @memberof validators.Accounts
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {validators.Accounts} Accounts
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Accounts.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.validators.Accounts();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    if (!(message.addresses && message.addresses.length))
+                        message.addresses = [];
+                    message.addresses.push(reader.bytes());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an Accounts message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof validators.Accounts
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {validators.Accounts} Accounts
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Accounts.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an Accounts message.
+         * @function verify
+         * @memberof validators.Accounts
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Accounts.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.addresses != null && message.hasOwnProperty("addresses")) {
+                if (!Array.isArray(message.addresses))
+                    return "addresses: array expected";
+                for (var i = 0; i < message.addresses.length; ++i)
+                    if (!(message.addresses[i] && typeof message.addresses[i].length === "number" || $util.isString(message.addresses[i])))
+                        return "addresses: buffer[] expected";
+            }
+            return null;
+        };
+
+        /**
+         * Creates an Accounts message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof validators.Accounts
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {validators.Accounts} Accounts
+         */
+        Accounts.fromObject = function fromObject(object) {
+            if (object instanceof $root.validators.Accounts)
+                return object;
+            var message = new $root.validators.Accounts();
+            if (object.addresses) {
+                if (!Array.isArray(object.addresses))
+                    throw TypeError(".validators.Accounts.addresses: array expected");
+                message.addresses = [];
+                for (var i = 0; i < object.addresses.length; ++i)
+                    if (typeof object.addresses[i] === "string")
+                        $util.base64.decode(object.addresses[i], message.addresses[i] = $util.newBuffer($util.base64.length(object.addresses[i])), 0);
+                    else if (object.addresses[i].length)
+                        message.addresses[i] = object.addresses[i];
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an Accounts message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof validators.Accounts
+         * @static
+         * @param {validators.Accounts} message Accounts
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Accounts.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.addresses = [];
+            if (message.addresses && message.addresses.length) {
+                object.addresses = [];
+                for (var j = 0; j < message.addresses.length; ++j)
+                    object.addresses[j] = options.bytes === String ? $util.base64.encode(message.addresses[j], 0, message.addresses[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.addresses[j]) : message.addresses[j];
+            }
+            return object;
+        };
+
+        /**
+         * Converts this Accounts to JSON.
+         * @function toJSON
+         * @memberof validators.Accounts
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Accounts.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Accounts;
+    })();
+
+    return validators;
+})();
+
+$root.nft = (function() {
+
+    /**
+     * Namespace nft.
+     * @exports nft
+     * @namespace
+     */
+    var nft = {};
+
+    nft.NonFungibleToken = (function() {
+
+        /**
+         * Properties of a NonFungibleToken.
+         * @memberof nft
+         * @interface INonFungibleToken
+         * @property {Uint8Array|null} [id] NonFungibleToken id
+         * @property {Uint8Array|null} [owner] NonFungibleToken owner
+         * @property {Array.<nft.IActionApprovals>|null} [actionApprovals] NonFungibleToken actionApprovals
+         */
+
+        /**
+         * Constructs a new NonFungibleToken.
+         * @memberof nft
+         * @classdesc Represents a NonFungibleToken.
+         * @implements INonFungibleToken
+         * @constructor
+         * @param {nft.INonFungibleToken=} [properties] Properties to set
+         */
+        function NonFungibleToken(properties) {
+            this.actionApprovals = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * NonFungibleToken id.
+         * @member {Uint8Array} id
+         * @memberof nft.NonFungibleToken
+         * @instance
+         */
+        NonFungibleToken.prototype.id = $util.newBuffer([]);
+
+        /**
+         * NonFungibleToken owner.
+         * @member {Uint8Array} owner
+         * @memberof nft.NonFungibleToken
+         * @instance
+         */
+        NonFungibleToken.prototype.owner = $util.newBuffer([]);
+
+        /**
+         * NonFungibleToken actionApprovals.
+         * @member {Array.<nft.IActionApprovals>} actionApprovals
+         * @memberof nft.NonFungibleToken
+         * @instance
+         */
+        NonFungibleToken.prototype.actionApprovals = $util.emptyArray;
+
+        /**
+         * Creates a new NonFungibleToken instance using the specified properties.
+         * @function create
+         * @memberof nft.NonFungibleToken
+         * @static
+         * @param {nft.INonFungibleToken=} [properties] Properties to set
+         * @returns {nft.NonFungibleToken} NonFungibleToken instance
+         */
+        NonFungibleToken.create = function create(properties) {
+            return new NonFungibleToken(properties);
+        };
+
+        /**
+         * Encodes the specified NonFungibleToken message. Does not implicitly {@link nft.NonFungibleToken.verify|verify} messages.
+         * @function encode
+         * @memberof nft.NonFungibleToken
+         * @static
+         * @param {nft.INonFungibleToken} message NonFungibleToken message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        NonFungibleToken.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.id != null && message.hasOwnProperty("id"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.owner);
+            if (message.actionApprovals != null && message.actionApprovals.length)
+                for (var i = 0; i < message.actionApprovals.length; ++i)
+                    $root.nft.ActionApprovals.encode(message.actionApprovals[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified NonFungibleToken message, length delimited. Does not implicitly {@link nft.NonFungibleToken.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof nft.NonFungibleToken
+         * @static
+         * @param {nft.INonFungibleToken} message NonFungibleToken message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        NonFungibleToken.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a NonFungibleToken message from the specified reader or buffer.
+         * @function decode
+         * @memberof nft.NonFungibleToken
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {nft.NonFungibleToken} NonFungibleToken
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        NonFungibleToken.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.nft.NonFungibleToken();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.id = reader.bytes();
+                    break;
+                case 2:
+                    message.owner = reader.bytes();
+                    break;
+                case 3:
+                    if (!(message.actionApprovals && message.actionApprovals.length))
+                        message.actionApprovals = [];
+                    message.actionApprovals.push($root.nft.ActionApprovals.decode(reader, reader.uint32()));
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a NonFungibleToken message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof nft.NonFungibleToken
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {nft.NonFungibleToken} NonFungibleToken
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        NonFungibleToken.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a NonFungibleToken message.
+         * @function verify
+         * @memberof nft.NonFungibleToken
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        NonFungibleToken.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
+                    return "id: buffer expected";
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
+                    return "owner: buffer expected";
+            if (message.actionApprovals != null && message.hasOwnProperty("actionApprovals")) {
+                if (!Array.isArray(message.actionApprovals))
+                    return "actionApprovals: array expected";
+                for (var i = 0; i < message.actionApprovals.length; ++i) {
+                    var error = $root.nft.ActionApprovals.verify(message.actionApprovals[i]);
+                    if (error)
+                        return "actionApprovals." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates a NonFungibleToken message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof nft.NonFungibleToken
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {nft.NonFungibleToken} NonFungibleToken
+         */
+        NonFungibleToken.fromObject = function fromObject(object) {
+            if (object instanceof $root.nft.NonFungibleToken)
+                return object;
+            var message = new $root.nft.NonFungibleToken();
+            if (object.id != null)
+                if (typeof object.id === "string")
+                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
+                else if (object.id.length)
+                    message.id = object.id;
+            if (object.owner != null)
+                if (typeof object.owner === "string")
+                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
+                else if (object.owner.length)
+                    message.owner = object.owner;
+            if (object.actionApprovals) {
+                if (!Array.isArray(object.actionApprovals))
+                    throw TypeError(".nft.NonFungibleToken.actionApprovals: array expected");
+                message.actionApprovals = [];
+                for (var i = 0; i < object.actionApprovals.length; ++i) {
+                    if (typeof object.actionApprovals[i] !== "object")
+                        throw TypeError(".nft.NonFungibleToken.actionApprovals: object expected");
+                    message.actionApprovals[i] = $root.nft.ActionApprovals.fromObject(object.actionApprovals[i]);
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a NonFungibleToken message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof nft.NonFungibleToken
+         * @static
+         * @param {nft.NonFungibleToken} message NonFungibleToken
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        NonFungibleToken.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.actionApprovals = [];
+            if (options.defaults) {
+                if (options.bytes === String)
+                    object.id = "";
+                else {
+                    object.id = [];
+                    if (options.bytes !== Array)
+                        object.id = $util.newBuffer(object.id);
+                }
+                if (options.bytes === String)
+                    object.owner = "";
+                else {
+                    object.owner = [];
+                    if (options.bytes !== Array)
+                        object.owner = $util.newBuffer(object.owner);
+                }
+            }
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
+            if (message.actionApprovals && message.actionApprovals.length) {
+                object.actionApprovals = [];
+                for (var j = 0; j < message.actionApprovals.length; ++j)
+                    object.actionApprovals[j] = $root.nft.ActionApprovals.toObject(message.actionApprovals[j], options);
+            }
+            return object;
+        };
+
+        /**
+         * Converts this NonFungibleToken to JSON.
+         * @function toJSON
+         * @memberof nft.NonFungibleToken
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        NonFungibleToken.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return NonFungibleToken;
+    })();
+
+    nft.ActionApprovals = (function() {
+
+        /**
+         * Properties of an ActionApprovals.
+         * @memberof nft
+         * @interface IActionApprovals
+         * @property {string|null} [action] ActionApprovals action
+         * @property {Array.<nft.IApproval>|null} [approvals] ActionApprovals approvals
+         */
+
+        /**
+         * Constructs a new ActionApprovals.
+         * @memberof nft
+         * @classdesc Represents an ActionApprovals.
+         * @implements IActionApprovals
+         * @constructor
+         * @param {nft.IActionApprovals=} [properties] Properties to set
+         */
+        function ActionApprovals(properties) {
+            this.approvals = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ActionApprovals action.
+         * @member {string} action
+         * @memberof nft.ActionApprovals
+         * @instance
+         */
+        ActionApprovals.prototype.action = "";
+
+        /**
+         * ActionApprovals approvals.
+         * @member {Array.<nft.IApproval>} approvals
+         * @memberof nft.ActionApprovals
+         * @instance
+         */
+        ActionApprovals.prototype.approvals = $util.emptyArray;
+
+        /**
+         * Creates a new ActionApprovals instance using the specified properties.
+         * @function create
+         * @memberof nft.ActionApprovals
+         * @static
+         * @param {nft.IActionApprovals=} [properties] Properties to set
+         * @returns {nft.ActionApprovals} ActionApprovals instance
+         */
+        ActionApprovals.create = function create(properties) {
+            return new ActionApprovals(properties);
+        };
+
+        /**
+         * Encodes the specified ActionApprovals message. Does not implicitly {@link nft.ActionApprovals.verify|verify} messages.
+         * @function encode
+         * @memberof nft.ActionApprovals
+         * @static
+         * @param {nft.IActionApprovals} message ActionApprovals message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ActionApprovals.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.action != null && message.hasOwnProperty("action"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.action);
+            if (message.approvals != null && message.approvals.length)
+                for (var i = 0; i < message.approvals.length; ++i)
+                    $root.nft.Approval.encode(message.approvals[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ActionApprovals message, length delimited. Does not implicitly {@link nft.ActionApprovals.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof nft.ActionApprovals
+         * @static
+         * @param {nft.IActionApprovals} message ActionApprovals message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ActionApprovals.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an ActionApprovals message from the specified reader or buffer.
+         * @function decode
+         * @memberof nft.ActionApprovals
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {nft.ActionApprovals} ActionApprovals
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ActionApprovals.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.nft.ActionApprovals();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.action = reader.string();
+                    break;
+                case 2:
+                    if (!(message.approvals && message.approvals.length))
+                        message.approvals = [];
+                    message.approvals.push($root.nft.Approval.decode(reader, reader.uint32()));
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an ActionApprovals message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof nft.ActionApprovals
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {nft.ActionApprovals} ActionApprovals
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ActionApprovals.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an ActionApprovals message.
+         * @function verify
+         * @memberof nft.ActionApprovals
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ActionApprovals.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.action != null && message.hasOwnProperty("action"))
+                if (!$util.isString(message.action))
+                    return "action: string expected";
+            if (message.approvals != null && message.hasOwnProperty("approvals")) {
+                if (!Array.isArray(message.approvals))
+                    return "approvals: array expected";
+                for (var i = 0; i < message.approvals.length; ++i) {
+                    var error = $root.nft.Approval.verify(message.approvals[i]);
+                    if (error)
+                        return "approvals." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates an ActionApprovals message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof nft.ActionApprovals
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {nft.ActionApprovals} ActionApprovals
+         */
+        ActionApprovals.fromObject = function fromObject(object) {
+            if (object instanceof $root.nft.ActionApprovals)
+                return object;
+            var message = new $root.nft.ActionApprovals();
+            if (object.action != null)
+                message.action = String(object.action);
+            if (object.approvals) {
+                if (!Array.isArray(object.approvals))
+                    throw TypeError(".nft.ActionApprovals.approvals: array expected");
+                message.approvals = [];
+                for (var i = 0; i < object.approvals.length; ++i) {
+                    if (typeof object.approvals[i] !== "object")
+                        throw TypeError(".nft.ActionApprovals.approvals: object expected");
+                    message.approvals[i] = $root.nft.Approval.fromObject(object.approvals[i]);
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an ActionApprovals message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof nft.ActionApprovals
+         * @static
+         * @param {nft.ActionApprovals} message ActionApprovals
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ActionApprovals.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.approvals = [];
+            if (options.defaults)
+                object.action = "";
+            if (message.action != null && message.hasOwnProperty("action"))
+                object.action = message.action;
+            if (message.approvals && message.approvals.length) {
+                object.approvals = [];
+                for (var j = 0; j < message.approvals.length; ++j)
+                    object.approvals[j] = $root.nft.Approval.toObject(message.approvals[j], options);
+            }
+            return object;
+        };
+
+        /**
+         * Converts this ActionApprovals to JSON.
+         * @function toJSON
+         * @memberof nft.ActionApprovals
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ActionApprovals.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ActionApprovals;
+    })();
+
+    nft.Approval = (function() {
+
+        /**
+         * Properties of an Approval.
+         * @memberof nft
+         * @interface IApproval
+         * @property {Uint8Array|null} [address] Approval address
+         * @property {nft.IApprovalOptions|null} [options] Approval options
+         */
+
+        /**
+         * Constructs a new Approval.
+         * @memberof nft
+         * @classdesc Represents an Approval.
+         * @implements IApproval
+         * @constructor
+         * @param {nft.IApproval=} [properties] Properties to set
+         */
+        function Approval(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Approval address.
+         * @member {Uint8Array} address
+         * @memberof nft.Approval
+         * @instance
+         */
+        Approval.prototype.address = $util.newBuffer([]);
+
+        /**
+         * Approval options.
+         * @member {nft.IApprovalOptions|null|undefined} options
+         * @memberof nft.Approval
+         * @instance
+         */
+        Approval.prototype.options = null;
+
+        /**
+         * Creates a new Approval instance using the specified properties.
+         * @function create
+         * @memberof nft.Approval
+         * @static
+         * @param {nft.IApproval=} [properties] Properties to set
+         * @returns {nft.Approval} Approval instance
+         */
+        Approval.create = function create(properties) {
+            return new Approval(properties);
+        };
+
+        /**
+         * Encodes the specified Approval message. Does not implicitly {@link nft.Approval.verify|verify} messages.
+         * @function encode
+         * @memberof nft.Approval
+         * @static
+         * @param {nft.IApproval} message Approval message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Approval.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.address != null && message.hasOwnProperty("address"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.address);
+            if (message.options != null && message.hasOwnProperty("options"))
+                $root.nft.ApprovalOptions.encode(message.options, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Approval message, length delimited. Does not implicitly {@link nft.Approval.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof nft.Approval
+         * @static
+         * @param {nft.IApproval} message Approval message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Approval.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an Approval message from the specified reader or buffer.
+         * @function decode
+         * @memberof nft.Approval
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {nft.Approval} Approval
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Approval.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.nft.Approval();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.address = reader.bytes();
+                    break;
+                case 2:
+                    message.options = $root.nft.ApprovalOptions.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an Approval message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof nft.Approval
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {nft.Approval} Approval
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Approval.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an Approval message.
+         * @function verify
+         * @memberof nft.Approval
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Approval.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.address != null && message.hasOwnProperty("address"))
+                if (!(message.address && typeof message.address.length === "number" || $util.isString(message.address)))
+                    return "address: buffer expected";
+            if (message.options != null && message.hasOwnProperty("options")) {
+                var error = $root.nft.ApprovalOptions.verify(message.options);
+                if (error)
+                    return "options." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates an Approval message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof nft.Approval
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {nft.Approval} Approval
+         */
+        Approval.fromObject = function fromObject(object) {
+            if (object instanceof $root.nft.Approval)
+                return object;
+            var message = new $root.nft.Approval();
+            if (object.address != null)
+                if (typeof object.address === "string")
+                    $util.base64.decode(object.address, message.address = $util.newBuffer($util.base64.length(object.address)), 0);
+                else if (object.address.length)
+                    message.address = object.address;
+            if (object.options != null) {
+                if (typeof object.options !== "object")
+                    throw TypeError(".nft.Approval.options: object expected");
+                message.options = $root.nft.ApprovalOptions.fromObject(object.options);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an Approval message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof nft.Approval
+         * @static
+         * @param {nft.Approval} message Approval
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Approval.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                if (options.bytes === String)
+                    object.address = "";
+                else {
+                    object.address = [];
+                    if (options.bytes !== Array)
+                        object.address = $util.newBuffer(object.address);
+                }
+                object.options = null;
+            }
+            if (message.address != null && message.hasOwnProperty("address"))
+                object.address = options.bytes === String ? $util.base64.encode(message.address, 0, message.address.length) : options.bytes === Array ? Array.prototype.slice.call(message.address) : message.address;
+            if (message.options != null && message.hasOwnProperty("options"))
+                object.options = $root.nft.ApprovalOptions.toObject(message.options, options);
+            return object;
+        };
+
+        /**
+         * Converts this Approval to JSON.
+         * @function toJSON
+         * @memberof nft.Approval
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Approval.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Approval;
+    })();
+
+    nft.ApprovalOptions = (function() {
+
+        /**
+         * Properties of an ApprovalOptions.
+         * @memberof nft
+         * @interface IApprovalOptions
+         * @property {number|Long|null} [untilBlockHeight] ApprovalOptions untilBlockHeight
+         * @property {number|Long|null} [count] ApprovalOptions count
+         * @property {boolean|null} [immutable] ApprovalOptions immutable
+         */
+
+        /**
+         * Constructs a new ApprovalOptions.
+         * @memberof nft
+         * @classdesc Represents an ApprovalOptions.
+         * @implements IApprovalOptions
+         * @constructor
+         * @param {nft.IApprovalOptions=} [properties] Properties to set
+         */
+        function ApprovalOptions(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ApprovalOptions untilBlockHeight.
+         * @member {number|Long} untilBlockHeight
+         * @memberof nft.ApprovalOptions
+         * @instance
+         */
+        ApprovalOptions.prototype.untilBlockHeight = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * ApprovalOptions count.
+         * @member {number|Long} count
+         * @memberof nft.ApprovalOptions
+         * @instance
+         */
+        ApprovalOptions.prototype.count = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * ApprovalOptions immutable.
+         * @member {boolean} immutable
+         * @memberof nft.ApprovalOptions
+         * @instance
+         */
+        ApprovalOptions.prototype.immutable = false;
+
+        /**
+         * Creates a new ApprovalOptions instance using the specified properties.
+         * @function create
+         * @memberof nft.ApprovalOptions
+         * @static
+         * @param {nft.IApprovalOptions=} [properties] Properties to set
+         * @returns {nft.ApprovalOptions} ApprovalOptions instance
+         */
+        ApprovalOptions.create = function create(properties) {
+            return new ApprovalOptions(properties);
+        };
+
+        /**
+         * Encodes the specified ApprovalOptions message. Does not implicitly {@link nft.ApprovalOptions.verify|verify} messages.
+         * @function encode
+         * @memberof nft.ApprovalOptions
+         * @static
+         * @param {nft.IApprovalOptions} message ApprovalOptions message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ApprovalOptions.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.untilBlockHeight != null && message.hasOwnProperty("untilBlockHeight"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.untilBlockHeight);
+            if (message.count != null && message.hasOwnProperty("count"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.count);
+            if (message.immutable != null && message.hasOwnProperty("immutable"))
+                writer.uint32(/* id 3, wireType 0 =*/24).bool(message.immutable);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ApprovalOptions message, length delimited. Does not implicitly {@link nft.ApprovalOptions.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof nft.ApprovalOptions
+         * @static
+         * @param {nft.IApprovalOptions} message ApprovalOptions message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ApprovalOptions.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an ApprovalOptions message from the specified reader or buffer.
+         * @function decode
+         * @memberof nft.ApprovalOptions
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {nft.ApprovalOptions} ApprovalOptions
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ApprovalOptions.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.nft.ApprovalOptions();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.untilBlockHeight = reader.int64();
+                    break;
+                case 2:
+                    message.count = reader.int64();
+                    break;
+                case 3:
+                    message.immutable = reader.bool();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an ApprovalOptions message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof nft.ApprovalOptions
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {nft.ApprovalOptions} ApprovalOptions
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ApprovalOptions.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an ApprovalOptions message.
+         * @function verify
+         * @memberof nft.ApprovalOptions
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ApprovalOptions.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.untilBlockHeight != null && message.hasOwnProperty("untilBlockHeight"))
+                if (!$util.isInteger(message.untilBlockHeight) && !(message.untilBlockHeight && $util.isInteger(message.untilBlockHeight.low) && $util.isInteger(message.untilBlockHeight.high)))
+                    return "untilBlockHeight: integer|Long expected";
+            if (message.count != null && message.hasOwnProperty("count"))
+                if (!$util.isInteger(message.count) && !(message.count && $util.isInteger(message.count.low) && $util.isInteger(message.count.high)))
+                    return "count: integer|Long expected";
+            if (message.immutable != null && message.hasOwnProperty("immutable"))
+                if (typeof message.immutable !== "boolean")
+                    return "immutable: boolean expected";
+            return null;
+        };
+
+        /**
+         * Creates an ApprovalOptions message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof nft.ApprovalOptions
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {nft.ApprovalOptions} ApprovalOptions
+         */
+        ApprovalOptions.fromObject = function fromObject(object) {
+            if (object instanceof $root.nft.ApprovalOptions)
+                return object;
+            var message = new $root.nft.ApprovalOptions();
+            if (object.untilBlockHeight != null)
+                if ($util.Long)
+                    (message.untilBlockHeight = $util.Long.fromValue(object.untilBlockHeight)).unsigned = false;
+                else if (typeof object.untilBlockHeight === "string")
+                    message.untilBlockHeight = parseInt(object.untilBlockHeight, 10);
+                else if (typeof object.untilBlockHeight === "number")
+                    message.untilBlockHeight = object.untilBlockHeight;
+                else if (typeof object.untilBlockHeight === "object")
+                    message.untilBlockHeight = new $util.LongBits(object.untilBlockHeight.low >>> 0, object.untilBlockHeight.high >>> 0).toNumber();
+            if (object.count != null)
+                if ($util.Long)
+                    (message.count = $util.Long.fromValue(object.count)).unsigned = false;
+                else if (typeof object.count === "string")
+                    message.count = parseInt(object.count, 10);
+                else if (typeof object.count === "number")
+                    message.count = object.count;
+                else if (typeof object.count === "object")
+                    message.count = new $util.LongBits(object.count.low >>> 0, object.count.high >>> 0).toNumber();
+            if (object.immutable != null)
+                message.immutable = Boolean(object.immutable);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an ApprovalOptions message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof nft.ApprovalOptions
+         * @static
+         * @param {nft.ApprovalOptions} message ApprovalOptions
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ApprovalOptions.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.untilBlockHeight = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.untilBlockHeight = options.longs === String ? "0" : 0;
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.count = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.count = options.longs === String ? "0" : 0;
+                object.immutable = false;
+            }
+            if (message.untilBlockHeight != null && message.hasOwnProperty("untilBlockHeight"))
+                if (typeof message.untilBlockHeight === "number")
+                    object.untilBlockHeight = options.longs === String ? String(message.untilBlockHeight) : message.untilBlockHeight;
+                else
+                    object.untilBlockHeight = options.longs === String ? $util.Long.prototype.toString.call(message.untilBlockHeight) : options.longs === Number ? new $util.LongBits(message.untilBlockHeight.low >>> 0, message.untilBlockHeight.high >>> 0).toNumber() : message.untilBlockHeight;
+            if (message.count != null && message.hasOwnProperty("count"))
+                if (typeof message.count === "number")
+                    object.count = options.longs === String ? String(message.count) : message.count;
+                else
+                    object.count = options.longs === String ? $util.Long.prototype.toString.call(message.count) : options.longs === Number ? new $util.LongBits(message.count.low >>> 0, message.count.high >>> 0).toNumber() : message.count;
+            if (message.immutable != null && message.hasOwnProperty("immutable"))
+                object.immutable = message.immutable;
+            return object;
+        };
+
+        /**
+         * Converts this ApprovalOptions to JSON.
+         * @function toJSON
+         * @memberof nft.ApprovalOptions
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ApprovalOptions.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ApprovalOptions;
+    })();
+
+    nft.AddApprovalMsg = (function() {
+
+        /**
+         * Properties of an AddApprovalMsg.
+         * @memberof nft
+         * @interface IAddApprovalMsg
+         * @property {Uint8Array|null} [id] AddApprovalMsg id
+         * @property {Uint8Array|null} [address] AddApprovalMsg address
+         * @property {string|null} [action] AddApprovalMsg action
+         * @property {nft.IApprovalOptions|null} [options] AddApprovalMsg options
+         * @property {string|null} [t] AddApprovalMsg t
+         */
+
+        /**
+         * Constructs a new AddApprovalMsg.
+         * @memberof nft
+         * @classdesc Represents an AddApprovalMsg.
+         * @implements IAddApprovalMsg
+         * @constructor
+         * @param {nft.IAddApprovalMsg=} [properties] Properties to set
+         */
+        function AddApprovalMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * AddApprovalMsg id.
+         * @member {Uint8Array} id
+         * @memberof nft.AddApprovalMsg
+         * @instance
+         */
+        AddApprovalMsg.prototype.id = $util.newBuffer([]);
+
+        /**
+         * AddApprovalMsg address.
+         * @member {Uint8Array} address
+         * @memberof nft.AddApprovalMsg
+         * @instance
+         */
+        AddApprovalMsg.prototype.address = $util.newBuffer([]);
+
+        /**
+         * AddApprovalMsg action.
+         * @member {string} action
+         * @memberof nft.AddApprovalMsg
+         * @instance
+         */
+        AddApprovalMsg.prototype.action = "";
+
+        /**
+         * AddApprovalMsg options.
+         * @member {nft.IApprovalOptions|null|undefined} options
+         * @memberof nft.AddApprovalMsg
+         * @instance
+         */
+        AddApprovalMsg.prototype.options = null;
+
+        /**
+         * AddApprovalMsg t.
+         * @member {string} t
+         * @memberof nft.AddApprovalMsg
+         * @instance
+         */
+        AddApprovalMsg.prototype.t = "";
+
+        /**
+         * Creates a new AddApprovalMsg instance using the specified properties.
+         * @function create
+         * @memberof nft.AddApprovalMsg
+         * @static
+         * @param {nft.IAddApprovalMsg=} [properties] Properties to set
+         * @returns {nft.AddApprovalMsg} AddApprovalMsg instance
+         */
+        AddApprovalMsg.create = function create(properties) {
+            return new AddApprovalMsg(properties);
+        };
+
+        /**
+         * Encodes the specified AddApprovalMsg message. Does not implicitly {@link nft.AddApprovalMsg.verify|verify} messages.
+         * @function encode
+         * @memberof nft.AddApprovalMsg
+         * @static
+         * @param {nft.IAddApprovalMsg} message AddApprovalMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        AddApprovalMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.id != null && message.hasOwnProperty("id"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
+            if (message.address != null && message.hasOwnProperty("address"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.address);
+            if (message.action != null && message.hasOwnProperty("action"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.action);
+            if (message.options != null && message.hasOwnProperty("options"))
+                $root.nft.ApprovalOptions.encode(message.options, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            if (message.t != null && message.hasOwnProperty("t"))
+                writer.uint32(/* id 5, wireType 2 =*/42).string(message.t);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified AddApprovalMsg message, length delimited. Does not implicitly {@link nft.AddApprovalMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof nft.AddApprovalMsg
+         * @static
+         * @param {nft.IAddApprovalMsg} message AddApprovalMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        AddApprovalMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an AddApprovalMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof nft.AddApprovalMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {nft.AddApprovalMsg} AddApprovalMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        AddApprovalMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.nft.AddApprovalMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.id = reader.bytes();
+                    break;
+                case 2:
+                    message.address = reader.bytes();
+                    break;
+                case 3:
+                    message.action = reader.string();
+                    break;
+                case 4:
+                    message.options = $root.nft.ApprovalOptions.decode(reader, reader.uint32());
+                    break;
+                case 5:
+                    message.t = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an AddApprovalMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof nft.AddApprovalMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {nft.AddApprovalMsg} AddApprovalMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        AddApprovalMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an AddApprovalMsg message.
+         * @function verify
+         * @memberof nft.AddApprovalMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        AddApprovalMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
+                    return "id: buffer expected";
+            if (message.address != null && message.hasOwnProperty("address"))
+                if (!(message.address && typeof message.address.length === "number" || $util.isString(message.address)))
+                    return "address: buffer expected";
+            if (message.action != null && message.hasOwnProperty("action"))
+                if (!$util.isString(message.action))
+                    return "action: string expected";
+            if (message.options != null && message.hasOwnProperty("options")) {
+                var error = $root.nft.ApprovalOptions.verify(message.options);
+                if (error)
+                    return "options." + error;
+            }
+            if (message.t != null && message.hasOwnProperty("t"))
+                if (!$util.isString(message.t))
+                    return "t: string expected";
+            return null;
+        };
+
+        /**
+         * Creates an AddApprovalMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof nft.AddApprovalMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {nft.AddApprovalMsg} AddApprovalMsg
+         */
+        AddApprovalMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.nft.AddApprovalMsg)
+                return object;
+            var message = new $root.nft.AddApprovalMsg();
+            if (object.id != null)
+                if (typeof object.id === "string")
+                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
+                else if (object.id.length)
+                    message.id = object.id;
+            if (object.address != null)
+                if (typeof object.address === "string")
+                    $util.base64.decode(object.address, message.address = $util.newBuffer($util.base64.length(object.address)), 0);
+                else if (object.address.length)
+                    message.address = object.address;
+            if (object.action != null)
+                message.action = String(object.action);
+            if (object.options != null) {
+                if (typeof object.options !== "object")
+                    throw TypeError(".nft.AddApprovalMsg.options: object expected");
+                message.options = $root.nft.ApprovalOptions.fromObject(object.options);
+            }
+            if (object.t != null)
+                message.t = String(object.t);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an AddApprovalMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof nft.AddApprovalMsg
+         * @static
+         * @param {nft.AddApprovalMsg} message AddApprovalMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        AddApprovalMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                if (options.bytes === String)
+                    object.id = "";
+                else {
+                    object.id = [];
+                    if (options.bytes !== Array)
+                        object.id = $util.newBuffer(object.id);
+                }
+                if (options.bytes === String)
+                    object.address = "";
+                else {
+                    object.address = [];
+                    if (options.bytes !== Array)
+                        object.address = $util.newBuffer(object.address);
+                }
+                object.action = "";
+                object.options = null;
+                object.t = "";
+            }
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
+            if (message.address != null && message.hasOwnProperty("address"))
+                object.address = options.bytes === String ? $util.base64.encode(message.address, 0, message.address.length) : options.bytes === Array ? Array.prototype.slice.call(message.address) : message.address;
+            if (message.action != null && message.hasOwnProperty("action"))
+                object.action = message.action;
+            if (message.options != null && message.hasOwnProperty("options"))
+                object.options = $root.nft.ApprovalOptions.toObject(message.options, options);
+            if (message.t != null && message.hasOwnProperty("t"))
+                object.t = message.t;
+            return object;
+        };
+
+        /**
+         * Converts this AddApprovalMsg to JSON.
+         * @function toJSON
+         * @memberof nft.AddApprovalMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        AddApprovalMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return AddApprovalMsg;
+    })();
+
+    nft.RemoveApprovalMsg = (function() {
+
+        /**
+         * Properties of a RemoveApprovalMsg.
+         * @memberof nft
+         * @interface IRemoveApprovalMsg
+         * @property {Uint8Array|null} [id] RemoveApprovalMsg id
+         * @property {Uint8Array|null} [address] RemoveApprovalMsg address
+         * @property {string|null} [action] RemoveApprovalMsg action
+         * @property {string|null} [t] RemoveApprovalMsg t
+         */
+
+        /**
+         * Constructs a new RemoveApprovalMsg.
+         * @memberof nft
+         * @classdesc Represents a RemoveApprovalMsg.
+         * @implements IRemoveApprovalMsg
+         * @constructor
+         * @param {nft.IRemoveApprovalMsg=} [properties] Properties to set
+         */
+        function RemoveApprovalMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * RemoveApprovalMsg id.
+         * @member {Uint8Array} id
+         * @memberof nft.RemoveApprovalMsg
+         * @instance
+         */
+        RemoveApprovalMsg.prototype.id = $util.newBuffer([]);
+
+        /**
+         * RemoveApprovalMsg address.
+         * @member {Uint8Array} address
+         * @memberof nft.RemoveApprovalMsg
+         * @instance
+         */
+        RemoveApprovalMsg.prototype.address = $util.newBuffer([]);
+
+        /**
+         * RemoveApprovalMsg action.
+         * @member {string} action
+         * @memberof nft.RemoveApprovalMsg
+         * @instance
+         */
+        RemoveApprovalMsg.prototype.action = "";
+
+        /**
+         * RemoveApprovalMsg t.
+         * @member {string} t
+         * @memberof nft.RemoveApprovalMsg
+         * @instance
+         */
+        RemoveApprovalMsg.prototype.t = "";
+
+        /**
+         * Creates a new RemoveApprovalMsg instance using the specified properties.
+         * @function create
+         * @memberof nft.RemoveApprovalMsg
+         * @static
+         * @param {nft.IRemoveApprovalMsg=} [properties] Properties to set
+         * @returns {nft.RemoveApprovalMsg} RemoveApprovalMsg instance
+         */
+        RemoveApprovalMsg.create = function create(properties) {
+            return new RemoveApprovalMsg(properties);
+        };
+
+        /**
+         * Encodes the specified RemoveApprovalMsg message. Does not implicitly {@link nft.RemoveApprovalMsg.verify|verify} messages.
+         * @function encode
+         * @memberof nft.RemoveApprovalMsg
+         * @static
+         * @param {nft.IRemoveApprovalMsg} message RemoveApprovalMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        RemoveApprovalMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.id != null && message.hasOwnProperty("id"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
+            if (message.address != null && message.hasOwnProperty("address"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.address);
+            if (message.action != null && message.hasOwnProperty("action"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.action);
+            if (message.t != null && message.hasOwnProperty("t"))
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.t);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified RemoveApprovalMsg message, length delimited. Does not implicitly {@link nft.RemoveApprovalMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof nft.RemoveApprovalMsg
+         * @static
+         * @param {nft.IRemoveApprovalMsg} message RemoveApprovalMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        RemoveApprovalMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a RemoveApprovalMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof nft.RemoveApprovalMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {nft.RemoveApprovalMsg} RemoveApprovalMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        RemoveApprovalMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.nft.RemoveApprovalMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.id = reader.bytes();
+                    break;
+                case 2:
+                    message.address = reader.bytes();
+                    break;
+                case 3:
+                    message.action = reader.string();
+                    break;
+                case 4:
+                    message.t = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a RemoveApprovalMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof nft.RemoveApprovalMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {nft.RemoveApprovalMsg} RemoveApprovalMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        RemoveApprovalMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a RemoveApprovalMsg message.
+         * @function verify
+         * @memberof nft.RemoveApprovalMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        RemoveApprovalMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
+                    return "id: buffer expected";
+            if (message.address != null && message.hasOwnProperty("address"))
+                if (!(message.address && typeof message.address.length === "number" || $util.isString(message.address)))
+                    return "address: buffer expected";
+            if (message.action != null && message.hasOwnProperty("action"))
+                if (!$util.isString(message.action))
+                    return "action: string expected";
+            if (message.t != null && message.hasOwnProperty("t"))
+                if (!$util.isString(message.t))
+                    return "t: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a RemoveApprovalMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof nft.RemoveApprovalMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {nft.RemoveApprovalMsg} RemoveApprovalMsg
+         */
+        RemoveApprovalMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.nft.RemoveApprovalMsg)
+                return object;
+            var message = new $root.nft.RemoveApprovalMsg();
+            if (object.id != null)
+                if (typeof object.id === "string")
+                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
+                else if (object.id.length)
+                    message.id = object.id;
+            if (object.address != null)
+                if (typeof object.address === "string")
+                    $util.base64.decode(object.address, message.address = $util.newBuffer($util.base64.length(object.address)), 0);
+                else if (object.address.length)
+                    message.address = object.address;
+            if (object.action != null)
+                message.action = String(object.action);
+            if (object.t != null)
+                message.t = String(object.t);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a RemoveApprovalMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof nft.RemoveApprovalMsg
+         * @static
+         * @param {nft.RemoveApprovalMsg} message RemoveApprovalMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        RemoveApprovalMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                if (options.bytes === String)
+                    object.id = "";
+                else {
+                    object.id = [];
+                    if (options.bytes !== Array)
+                        object.id = $util.newBuffer(object.id);
+                }
+                if (options.bytes === String)
+                    object.address = "";
+                else {
+                    object.address = [];
+                    if (options.bytes !== Array)
+                        object.address = $util.newBuffer(object.address);
+                }
+                object.action = "";
+                object.t = "";
+            }
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
+            if (message.address != null && message.hasOwnProperty("address"))
+                object.address = options.bytes === String ? $util.base64.encode(message.address, 0, message.address.length) : options.bytes === Array ? Array.prototype.slice.call(message.address) : message.address;
+            if (message.action != null && message.hasOwnProperty("action"))
+                object.action = message.action;
+            if (message.t != null && message.hasOwnProperty("t"))
+                object.t = message.t;
+            return object;
+        };
+
+        /**
+         * Converts this RemoveApprovalMsg to JSON.
+         * @function toJSON
+         * @memberof nft.RemoveApprovalMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        RemoveApprovalMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return RemoveApprovalMsg;
+    })();
+
+    return nft;
 })();
 
 $root.paychan = (function() {

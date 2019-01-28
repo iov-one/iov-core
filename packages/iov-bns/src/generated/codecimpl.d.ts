@@ -614,391 +614,6 @@ export namespace app {
   }
 }
 
-/** Namespace validators. */
-export namespace validators {
-  /** Properties of a ValidatorUpdate. */
-  interface IValidatorUpdate {
-    /** ValidatorUpdate pubkey */
-    pubkey?: validators.IPubkey | null;
-
-    /** ValidatorUpdate power */
-    power?: number | Long | null;
-  }
-
-  /** Represents a ValidatorUpdate. */
-  class ValidatorUpdate implements IValidatorUpdate {
-    /**
-     * Constructs a new ValidatorUpdate.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: validators.IValidatorUpdate);
-
-    /** ValidatorUpdate pubkey. */
-    public pubkey?: validators.IPubkey | null;
-
-    /** ValidatorUpdate power. */
-    public power: number | Long;
-
-    /**
-     * Creates a new ValidatorUpdate instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns ValidatorUpdate instance
-     */
-    public static create(properties?: validators.IValidatorUpdate): validators.ValidatorUpdate;
-
-    /**
-     * Encodes the specified ValidatorUpdate message. Does not implicitly {@link validators.ValidatorUpdate.verify|verify} messages.
-     * @param message ValidatorUpdate message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: validators.IValidatorUpdate, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified ValidatorUpdate message, length delimited. Does not implicitly {@link validators.ValidatorUpdate.verify|verify} messages.
-     * @param message ValidatorUpdate message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: validators.IValidatorUpdate,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes a ValidatorUpdate message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns ValidatorUpdate
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): validators.ValidatorUpdate;
-
-    /**
-     * Decodes a ValidatorUpdate message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns ValidatorUpdate
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): validators.ValidatorUpdate;
-
-    /**
-     * Verifies a ValidatorUpdate message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a ValidatorUpdate message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns ValidatorUpdate
-     */
-    public static fromObject(object: { [k: string]: any }): validators.ValidatorUpdate;
-
-    /**
-     * Creates a plain object from a ValidatorUpdate message. Also converts values to other types if specified.
-     * @param message ValidatorUpdate
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: validators.ValidatorUpdate,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this ValidatorUpdate to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a Pubkey. */
-  interface IPubkey {
-    /** Pubkey type */
-    type?: string | null;
-
-    /** Pubkey data */
-    data?: Uint8Array | null;
-  }
-
-  /** Represents a Pubkey. */
-  class Pubkey implements IPubkey {
-    /**
-     * Constructs a new Pubkey.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: validators.IPubkey);
-
-    /** Pubkey type. */
-    public type: string;
-
-    /** Pubkey data. */
-    public data: Uint8Array;
-
-    /**
-     * Creates a new Pubkey instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns Pubkey instance
-     */
-    public static create(properties?: validators.IPubkey): validators.Pubkey;
-
-    /**
-     * Encodes the specified Pubkey message. Does not implicitly {@link validators.Pubkey.verify|verify} messages.
-     * @param message Pubkey message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: validators.IPubkey, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified Pubkey message, length delimited. Does not implicitly {@link validators.Pubkey.verify|verify} messages.
-     * @param message Pubkey message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: validators.IPubkey, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a Pubkey message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns Pubkey
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): validators.Pubkey;
-
-    /**
-     * Decodes a Pubkey message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns Pubkey
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): validators.Pubkey;
-
-    /**
-     * Verifies a Pubkey message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a Pubkey message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns Pubkey
-     */
-    public static fromObject(object: { [k: string]: any }): validators.Pubkey;
-
-    /**
-     * Creates a plain object from a Pubkey message. Also converts values to other types if specified.
-     * @param message Pubkey
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: validators.Pubkey,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this Pubkey to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a SetValidatorsMsg. */
-  interface ISetValidatorsMsg {
-    /** SetValidatorsMsg validatorUpdates */
-    validatorUpdates?: validators.IValidatorUpdate[] | null;
-  }
-
-  /** Represents a SetValidatorsMsg. */
-  class SetValidatorsMsg implements ISetValidatorsMsg {
-    /**
-     * Constructs a new SetValidatorsMsg.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: validators.ISetValidatorsMsg);
-
-    /** SetValidatorsMsg validatorUpdates. */
-    public validatorUpdates: validators.IValidatorUpdate[];
-
-    /**
-     * Creates a new SetValidatorsMsg instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns SetValidatorsMsg instance
-     */
-    public static create(properties?: validators.ISetValidatorsMsg): validators.SetValidatorsMsg;
-
-    /**
-     * Encodes the specified SetValidatorsMsg message. Does not implicitly {@link validators.SetValidatorsMsg.verify|verify} messages.
-     * @param message SetValidatorsMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: validators.ISetValidatorsMsg, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified SetValidatorsMsg message, length delimited. Does not implicitly {@link validators.SetValidatorsMsg.verify|verify} messages.
-     * @param message SetValidatorsMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: validators.ISetValidatorsMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes a SetValidatorsMsg message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns SetValidatorsMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): validators.SetValidatorsMsg;
-
-    /**
-     * Decodes a SetValidatorsMsg message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns SetValidatorsMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): validators.SetValidatorsMsg;
-
-    /**
-     * Verifies a SetValidatorsMsg message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a SetValidatorsMsg message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns SetValidatorsMsg
-     */
-    public static fromObject(object: { [k: string]: any }): validators.SetValidatorsMsg;
-
-    /**
-     * Creates a plain object from a SetValidatorsMsg message. Also converts values to other types if specified.
-     * @param message SetValidatorsMsg
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: validators.SetValidatorsMsg,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this SetValidatorsMsg to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of an Accounts. */
-  interface IAccounts {
-    /** Accounts addresses */
-    addresses?: Uint8Array[] | null;
-  }
-
-  /** Represents an Accounts. */
-  class Accounts implements IAccounts {
-    /**
-     * Constructs a new Accounts.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: validators.IAccounts);
-
-    /** Accounts addresses. */
-    public addresses: Uint8Array[];
-
-    /**
-     * Creates a new Accounts instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns Accounts instance
-     */
-    public static create(properties?: validators.IAccounts): validators.Accounts;
-
-    /**
-     * Encodes the specified Accounts message. Does not implicitly {@link validators.Accounts.verify|verify} messages.
-     * @param message Accounts message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: validators.IAccounts, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified Accounts message, length delimited. Does not implicitly {@link validators.Accounts.verify|verify} messages.
-     * @param message Accounts message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: validators.IAccounts, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes an Accounts message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns Accounts
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): validators.Accounts;
-
-    /**
-     * Decodes an Accounts message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns Accounts
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): validators.Accounts;
-
-    /**
-     * Verifies an Accounts message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates an Accounts message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns Accounts
-     */
-    public static fromObject(object: { [k: string]: any }): validators.Accounts;
-
-    /**
-     * Creates a plain object from an Accounts message. Also converts values to other types if specified.
-     * @param message Accounts
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: validators.Accounts,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this Accounts to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-}
-
 /** Namespace username. */
 export namespace username {
   /** Properties of a UsernameToken. */
@@ -1623,646 +1238,6 @@ export namespace username {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
-  }
-}
-
-/** Namespace nft. */
-export namespace nft {
-  /** Properties of a NonFungibleToken. */
-  interface INonFungibleToken {
-    /** NonFungibleToken id */
-    id?: Uint8Array | null;
-
-    /** NonFungibleToken owner */
-    owner?: Uint8Array | null;
-
-    /** NonFungibleToken actionApprovals */
-    actionApprovals?: nft.IActionApprovals[] | null;
-  }
-
-  /** Represents a NonFungibleToken. */
-  class NonFungibleToken implements INonFungibleToken {
-    /**
-     * Constructs a new NonFungibleToken.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: nft.INonFungibleToken);
-
-    /** NonFungibleToken id. */
-    public id: Uint8Array;
-
-    /** NonFungibleToken owner. */
-    public owner: Uint8Array;
-
-    /** NonFungibleToken actionApprovals. */
-    public actionApprovals: nft.IActionApprovals[];
-
-    /**
-     * Creates a new NonFungibleToken instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns NonFungibleToken instance
-     */
-    public static create(properties?: nft.INonFungibleToken): nft.NonFungibleToken;
-
-    /**
-     * Encodes the specified NonFungibleToken message. Does not implicitly {@link nft.NonFungibleToken.verify|verify} messages.
-     * @param message NonFungibleToken message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: nft.INonFungibleToken, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified NonFungibleToken message, length delimited. Does not implicitly {@link nft.NonFungibleToken.verify|verify} messages.
-     * @param message NonFungibleToken message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: nft.INonFungibleToken,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes a NonFungibleToken message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns NonFungibleToken
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): nft.NonFungibleToken;
-
-    /**
-     * Decodes a NonFungibleToken message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns NonFungibleToken
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): nft.NonFungibleToken;
-
-    /**
-     * Verifies a NonFungibleToken message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a NonFungibleToken message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns NonFungibleToken
-     */
-    public static fromObject(object: { [k: string]: any }): nft.NonFungibleToken;
-
-    /**
-     * Creates a plain object from a NonFungibleToken message. Also converts values to other types if specified.
-     * @param message NonFungibleToken
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: nft.NonFungibleToken,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this NonFungibleToken to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of an ActionApprovals. */
-  interface IActionApprovals {
-    /** ActionApprovals action */
-    action?: string | null;
-
-    /** ActionApprovals approvals */
-    approvals?: nft.IApproval[] | null;
-  }
-
-  /** Represents an ActionApprovals. */
-  class ActionApprovals implements IActionApprovals {
-    /**
-     * Constructs a new ActionApprovals.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: nft.IActionApprovals);
-
-    /** ActionApprovals action. */
-    public action: string;
-
-    /** ActionApprovals approvals. */
-    public approvals: nft.IApproval[];
-
-    /**
-     * Creates a new ActionApprovals instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns ActionApprovals instance
-     */
-    public static create(properties?: nft.IActionApprovals): nft.ActionApprovals;
-
-    /**
-     * Encodes the specified ActionApprovals message. Does not implicitly {@link nft.ActionApprovals.verify|verify} messages.
-     * @param message ActionApprovals message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: nft.IActionApprovals, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified ActionApprovals message, length delimited. Does not implicitly {@link nft.ActionApprovals.verify|verify} messages.
-     * @param message ActionApprovals message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: nft.IActionApprovals, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes an ActionApprovals message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns ActionApprovals
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): nft.ActionApprovals;
-
-    /**
-     * Decodes an ActionApprovals message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns ActionApprovals
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): nft.ActionApprovals;
-
-    /**
-     * Verifies an ActionApprovals message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates an ActionApprovals message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns ActionApprovals
-     */
-    public static fromObject(object: { [k: string]: any }): nft.ActionApprovals;
-
-    /**
-     * Creates a plain object from an ActionApprovals message. Also converts values to other types if specified.
-     * @param message ActionApprovals
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: nft.ActionApprovals,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this ActionApprovals to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of an Approval. */
-  interface IApproval {
-    /** Approval address */
-    address?: Uint8Array | null;
-
-    /** Approval options */
-    options?: nft.IApprovalOptions | null;
-  }
-
-  /** Represents an Approval. */
-  class Approval implements IApproval {
-    /**
-     * Constructs a new Approval.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: nft.IApproval);
-
-    /** Approval address. */
-    public address: Uint8Array;
-
-    /** Approval options. */
-    public options?: nft.IApprovalOptions | null;
-
-    /**
-     * Creates a new Approval instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns Approval instance
-     */
-    public static create(properties?: nft.IApproval): nft.Approval;
-
-    /**
-     * Encodes the specified Approval message. Does not implicitly {@link nft.Approval.verify|verify} messages.
-     * @param message Approval message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: nft.IApproval, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified Approval message, length delimited. Does not implicitly {@link nft.Approval.verify|verify} messages.
-     * @param message Approval message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: nft.IApproval, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes an Approval message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns Approval
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): nft.Approval;
-
-    /**
-     * Decodes an Approval message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns Approval
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): nft.Approval;
-
-    /**
-     * Verifies an Approval message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates an Approval message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns Approval
-     */
-    public static fromObject(object: { [k: string]: any }): nft.Approval;
-
-    /**
-     * Creates a plain object from an Approval message. Also converts values to other types if specified.
-     * @param message Approval
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: nft.Approval,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this Approval to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of an ApprovalOptions. */
-  interface IApprovalOptions {
-    /** ApprovalOptions untilBlockHeight */
-    untilBlockHeight?: number | Long | null;
-
-    /** ApprovalOptions count */
-    count?: number | Long | null;
-
-    /** ApprovalOptions immutable */
-    immutable?: boolean | null;
-  }
-
-  /** Represents an ApprovalOptions. */
-  class ApprovalOptions implements IApprovalOptions {
-    /**
-     * Constructs a new ApprovalOptions.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: nft.IApprovalOptions);
-
-    /** ApprovalOptions untilBlockHeight. */
-    public untilBlockHeight: number | Long;
-
-    /** ApprovalOptions count. */
-    public count: number | Long;
-
-    /** ApprovalOptions immutable. */
-    public immutable: boolean;
-
-    /**
-     * Creates a new ApprovalOptions instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns ApprovalOptions instance
-     */
-    public static create(properties?: nft.IApprovalOptions): nft.ApprovalOptions;
-
-    /**
-     * Encodes the specified ApprovalOptions message. Does not implicitly {@link nft.ApprovalOptions.verify|verify} messages.
-     * @param message ApprovalOptions message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: nft.IApprovalOptions, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified ApprovalOptions message, length delimited. Does not implicitly {@link nft.ApprovalOptions.verify|verify} messages.
-     * @param message ApprovalOptions message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: nft.IApprovalOptions, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes an ApprovalOptions message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns ApprovalOptions
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): nft.ApprovalOptions;
-
-    /**
-     * Decodes an ApprovalOptions message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns ApprovalOptions
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): nft.ApprovalOptions;
-
-    /**
-     * Verifies an ApprovalOptions message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates an ApprovalOptions message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns ApprovalOptions
-     */
-    public static fromObject(object: { [k: string]: any }): nft.ApprovalOptions;
-
-    /**
-     * Creates a plain object from an ApprovalOptions message. Also converts values to other types if specified.
-     * @param message ApprovalOptions
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: nft.ApprovalOptions,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this ApprovalOptions to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of an AddApprovalMsg. */
-  interface IAddApprovalMsg {
-    /** AddApprovalMsg id */
-    id?: Uint8Array | null;
-
-    /** AddApprovalMsg address */
-    address?: Uint8Array | null;
-
-    /** AddApprovalMsg action */
-    action?: string | null;
-
-    /** AddApprovalMsg options */
-    options?: nft.IApprovalOptions | null;
-
-    /** AddApprovalMsg t */
-    t?: string | null;
-  }
-
-  /** Represents an AddApprovalMsg. */
-  class AddApprovalMsg implements IAddApprovalMsg {
-    /**
-     * Constructs a new AddApprovalMsg.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: nft.IAddApprovalMsg);
-
-    /** AddApprovalMsg id. */
-    public id: Uint8Array;
-
-    /** AddApprovalMsg address. */
-    public address: Uint8Array;
-
-    /** AddApprovalMsg action. */
-    public action: string;
-
-    /** AddApprovalMsg options. */
-    public options?: nft.IApprovalOptions | null;
-
-    /** AddApprovalMsg t. */
-    public t: string;
-
-    /**
-     * Creates a new AddApprovalMsg instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns AddApprovalMsg instance
-     */
-    public static create(properties?: nft.IAddApprovalMsg): nft.AddApprovalMsg;
-
-    /**
-     * Encodes the specified AddApprovalMsg message. Does not implicitly {@link nft.AddApprovalMsg.verify|verify} messages.
-     * @param message AddApprovalMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: nft.IAddApprovalMsg, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified AddApprovalMsg message, length delimited. Does not implicitly {@link nft.AddApprovalMsg.verify|verify} messages.
-     * @param message AddApprovalMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: nft.IAddApprovalMsg, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes an AddApprovalMsg message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns AddApprovalMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): nft.AddApprovalMsg;
-
-    /**
-     * Decodes an AddApprovalMsg message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns AddApprovalMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): nft.AddApprovalMsg;
-
-    /**
-     * Verifies an AddApprovalMsg message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates an AddApprovalMsg message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns AddApprovalMsg
-     */
-    public static fromObject(object: { [k: string]: any }): nft.AddApprovalMsg;
-
-    /**
-     * Creates a plain object from an AddApprovalMsg message. Also converts values to other types if specified.
-     * @param message AddApprovalMsg
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: nft.AddApprovalMsg,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this AddApprovalMsg to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a RemoveApprovalMsg. */
-  interface IRemoveApprovalMsg {
-    /** RemoveApprovalMsg id */
-    id?: Uint8Array | null;
-
-    /** RemoveApprovalMsg address */
-    address?: Uint8Array | null;
-
-    /** RemoveApprovalMsg action */
-    action?: string | null;
-
-    /** RemoveApprovalMsg t */
-    t?: string | null;
-  }
-
-  /** Represents a RemoveApprovalMsg. */
-  class RemoveApprovalMsg implements IRemoveApprovalMsg {
-    /**
-     * Constructs a new RemoveApprovalMsg.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: nft.IRemoveApprovalMsg);
-
-    /** RemoveApprovalMsg id. */
-    public id: Uint8Array;
-
-    /** RemoveApprovalMsg address. */
-    public address: Uint8Array;
-
-    /** RemoveApprovalMsg action. */
-    public action: string;
-
-    /** RemoveApprovalMsg t. */
-    public t: string;
-
-    /**
-     * Creates a new RemoveApprovalMsg instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns RemoveApprovalMsg instance
-     */
-    public static create(properties?: nft.IRemoveApprovalMsg): nft.RemoveApprovalMsg;
-
-    /**
-     * Encodes the specified RemoveApprovalMsg message. Does not implicitly {@link nft.RemoveApprovalMsg.verify|verify} messages.
-     * @param message RemoveApprovalMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: nft.IRemoveApprovalMsg, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified RemoveApprovalMsg message, length delimited. Does not implicitly {@link nft.RemoveApprovalMsg.verify|verify} messages.
-     * @param message RemoveApprovalMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: nft.IRemoveApprovalMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes a RemoveApprovalMsg message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns RemoveApprovalMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): nft.RemoveApprovalMsg;
-
-    /**
-     * Decodes a RemoveApprovalMsg message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns RemoveApprovalMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): nft.RemoveApprovalMsg;
-
-    /**
-     * Verifies a RemoveApprovalMsg message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a RemoveApprovalMsg message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns RemoveApprovalMsg
-     */
-    public static fromObject(object: { [k: string]: any }): nft.RemoveApprovalMsg;
-
-    /**
-     * Creates a plain object from a RemoveApprovalMsg message. Also converts values to other types if specified.
-     * @param message RemoveApprovalMsg
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: nft.RemoveApprovalMsg,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this RemoveApprovalMsg to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Action enum. */
-  enum Action {
-    ActionUpdateDetails = 0,
-    ActionTransfer = 1,
-    ActionUpdateApprovals = 2,
   }
 }
 
@@ -3626,6 +2601,1024 @@ export namespace bootstrap_node {
 
     /**
      * Converts this IssueTokenMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+}
+
+/** Namespace validators. */
+export namespace validators {
+  /** Properties of a ValidatorUpdate. */
+  interface IValidatorUpdate {
+    /** ValidatorUpdate pubkey */
+    pubkey?: validators.IPubkey | null;
+
+    /** ValidatorUpdate power */
+    power?: number | Long | null;
+  }
+
+  /** Represents a ValidatorUpdate. */
+  class ValidatorUpdate implements IValidatorUpdate {
+    /**
+     * Constructs a new ValidatorUpdate.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: validators.IValidatorUpdate);
+
+    /** ValidatorUpdate pubkey. */
+    public pubkey?: validators.IPubkey | null;
+
+    /** ValidatorUpdate power. */
+    public power: number | Long;
+
+    /**
+     * Creates a new ValidatorUpdate instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ValidatorUpdate instance
+     */
+    public static create(properties?: validators.IValidatorUpdate): validators.ValidatorUpdate;
+
+    /**
+     * Encodes the specified ValidatorUpdate message. Does not implicitly {@link validators.ValidatorUpdate.verify|verify} messages.
+     * @param message ValidatorUpdate message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: validators.IValidatorUpdate, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ValidatorUpdate message, length delimited. Does not implicitly {@link validators.ValidatorUpdate.verify|verify} messages.
+     * @param message ValidatorUpdate message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: validators.IValidatorUpdate,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a ValidatorUpdate message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ValidatorUpdate
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): validators.ValidatorUpdate;
+
+    /**
+     * Decodes a ValidatorUpdate message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ValidatorUpdate
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): validators.ValidatorUpdate;
+
+    /**
+     * Verifies a ValidatorUpdate message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a ValidatorUpdate message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ValidatorUpdate
+     */
+    public static fromObject(object: { [k: string]: any }): validators.ValidatorUpdate;
+
+    /**
+     * Creates a plain object from a ValidatorUpdate message. Also converts values to other types if specified.
+     * @param message ValidatorUpdate
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: validators.ValidatorUpdate,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this ValidatorUpdate to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a Pubkey. */
+  interface IPubkey {
+    /** Pubkey type */
+    type?: string | null;
+
+    /** Pubkey data */
+    data?: Uint8Array | null;
+  }
+
+  /** Represents a Pubkey. */
+  class Pubkey implements IPubkey {
+    /**
+     * Constructs a new Pubkey.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: validators.IPubkey);
+
+    /** Pubkey type. */
+    public type: string;
+
+    /** Pubkey data. */
+    public data: Uint8Array;
+
+    /**
+     * Creates a new Pubkey instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Pubkey instance
+     */
+    public static create(properties?: validators.IPubkey): validators.Pubkey;
+
+    /**
+     * Encodes the specified Pubkey message. Does not implicitly {@link validators.Pubkey.verify|verify} messages.
+     * @param message Pubkey message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: validators.IPubkey, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Pubkey message, length delimited. Does not implicitly {@link validators.Pubkey.verify|verify} messages.
+     * @param message Pubkey message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: validators.IPubkey, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a Pubkey message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Pubkey
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): validators.Pubkey;
+
+    /**
+     * Decodes a Pubkey message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Pubkey
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): validators.Pubkey;
+
+    /**
+     * Verifies a Pubkey message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Pubkey message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Pubkey
+     */
+    public static fromObject(object: { [k: string]: any }): validators.Pubkey;
+
+    /**
+     * Creates a plain object from a Pubkey message. Also converts values to other types if specified.
+     * @param message Pubkey
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: validators.Pubkey,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Pubkey to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a SetValidatorsMsg. */
+  interface ISetValidatorsMsg {
+    /** SetValidatorsMsg validatorUpdates */
+    validatorUpdates?: validators.IValidatorUpdate[] | null;
+  }
+
+  /** Represents a SetValidatorsMsg. */
+  class SetValidatorsMsg implements ISetValidatorsMsg {
+    /**
+     * Constructs a new SetValidatorsMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: validators.ISetValidatorsMsg);
+
+    /** SetValidatorsMsg validatorUpdates. */
+    public validatorUpdates: validators.IValidatorUpdate[];
+
+    /**
+     * Creates a new SetValidatorsMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns SetValidatorsMsg instance
+     */
+    public static create(properties?: validators.ISetValidatorsMsg): validators.SetValidatorsMsg;
+
+    /**
+     * Encodes the specified SetValidatorsMsg message. Does not implicitly {@link validators.SetValidatorsMsg.verify|verify} messages.
+     * @param message SetValidatorsMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: validators.ISetValidatorsMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified SetValidatorsMsg message, length delimited. Does not implicitly {@link validators.SetValidatorsMsg.verify|verify} messages.
+     * @param message SetValidatorsMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: validators.ISetValidatorsMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a SetValidatorsMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns SetValidatorsMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): validators.SetValidatorsMsg;
+
+    /**
+     * Decodes a SetValidatorsMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns SetValidatorsMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): validators.SetValidatorsMsg;
+
+    /**
+     * Verifies a SetValidatorsMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a SetValidatorsMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns SetValidatorsMsg
+     */
+    public static fromObject(object: { [k: string]: any }): validators.SetValidatorsMsg;
+
+    /**
+     * Creates a plain object from a SetValidatorsMsg message. Also converts values to other types if specified.
+     * @param message SetValidatorsMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: validators.SetValidatorsMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this SetValidatorsMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of an Accounts. */
+  interface IAccounts {
+    /** Accounts addresses */
+    addresses?: Uint8Array[] | null;
+  }
+
+  /** Represents an Accounts. */
+  class Accounts implements IAccounts {
+    /**
+     * Constructs a new Accounts.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: validators.IAccounts);
+
+    /** Accounts addresses. */
+    public addresses: Uint8Array[];
+
+    /**
+     * Creates a new Accounts instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Accounts instance
+     */
+    public static create(properties?: validators.IAccounts): validators.Accounts;
+
+    /**
+     * Encodes the specified Accounts message. Does not implicitly {@link validators.Accounts.verify|verify} messages.
+     * @param message Accounts message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: validators.IAccounts, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Accounts message, length delimited. Does not implicitly {@link validators.Accounts.verify|verify} messages.
+     * @param message Accounts message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: validators.IAccounts, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes an Accounts message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Accounts
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): validators.Accounts;
+
+    /**
+     * Decodes an Accounts message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Accounts
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): validators.Accounts;
+
+    /**
+     * Verifies an Accounts message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an Accounts message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Accounts
+     */
+    public static fromObject(object: { [k: string]: any }): validators.Accounts;
+
+    /**
+     * Creates a plain object from an Accounts message. Also converts values to other types if specified.
+     * @param message Accounts
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: validators.Accounts,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Accounts to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+}
+
+/** Namespace nft. */
+export namespace nft {
+  /** Properties of a NonFungibleToken. */
+  interface INonFungibleToken {
+    /** NonFungibleToken id */
+    id?: Uint8Array | null;
+
+    /** NonFungibleToken owner */
+    owner?: Uint8Array | null;
+
+    /** NonFungibleToken actionApprovals */
+    actionApprovals?: nft.IActionApprovals[] | null;
+  }
+
+  /** Represents a NonFungibleToken. */
+  class NonFungibleToken implements INonFungibleToken {
+    /**
+     * Constructs a new NonFungibleToken.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: nft.INonFungibleToken);
+
+    /** NonFungibleToken id. */
+    public id: Uint8Array;
+
+    /** NonFungibleToken owner. */
+    public owner: Uint8Array;
+
+    /** NonFungibleToken actionApprovals. */
+    public actionApprovals: nft.IActionApprovals[];
+
+    /**
+     * Creates a new NonFungibleToken instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns NonFungibleToken instance
+     */
+    public static create(properties?: nft.INonFungibleToken): nft.NonFungibleToken;
+
+    /**
+     * Encodes the specified NonFungibleToken message. Does not implicitly {@link nft.NonFungibleToken.verify|verify} messages.
+     * @param message NonFungibleToken message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: nft.INonFungibleToken, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified NonFungibleToken message, length delimited. Does not implicitly {@link nft.NonFungibleToken.verify|verify} messages.
+     * @param message NonFungibleToken message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: nft.INonFungibleToken,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a NonFungibleToken message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns NonFungibleToken
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): nft.NonFungibleToken;
+
+    /**
+     * Decodes a NonFungibleToken message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns NonFungibleToken
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): nft.NonFungibleToken;
+
+    /**
+     * Verifies a NonFungibleToken message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a NonFungibleToken message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns NonFungibleToken
+     */
+    public static fromObject(object: { [k: string]: any }): nft.NonFungibleToken;
+
+    /**
+     * Creates a plain object from a NonFungibleToken message. Also converts values to other types if specified.
+     * @param message NonFungibleToken
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: nft.NonFungibleToken,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this NonFungibleToken to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of an ActionApprovals. */
+  interface IActionApprovals {
+    /** ActionApprovals action */
+    action?: string | null;
+
+    /** ActionApprovals approvals */
+    approvals?: nft.IApproval[] | null;
+  }
+
+  /** Represents an ActionApprovals. */
+  class ActionApprovals implements IActionApprovals {
+    /**
+     * Constructs a new ActionApprovals.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: nft.IActionApprovals);
+
+    /** ActionApprovals action. */
+    public action: string;
+
+    /** ActionApprovals approvals. */
+    public approvals: nft.IApproval[];
+
+    /**
+     * Creates a new ActionApprovals instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ActionApprovals instance
+     */
+    public static create(properties?: nft.IActionApprovals): nft.ActionApprovals;
+
+    /**
+     * Encodes the specified ActionApprovals message. Does not implicitly {@link nft.ActionApprovals.verify|verify} messages.
+     * @param message ActionApprovals message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: nft.IActionApprovals, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ActionApprovals message, length delimited. Does not implicitly {@link nft.ActionApprovals.verify|verify} messages.
+     * @param message ActionApprovals message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: nft.IActionApprovals, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes an ActionApprovals message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ActionApprovals
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): nft.ActionApprovals;
+
+    /**
+     * Decodes an ActionApprovals message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ActionApprovals
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): nft.ActionApprovals;
+
+    /**
+     * Verifies an ActionApprovals message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an ActionApprovals message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ActionApprovals
+     */
+    public static fromObject(object: { [k: string]: any }): nft.ActionApprovals;
+
+    /**
+     * Creates a plain object from an ActionApprovals message. Also converts values to other types if specified.
+     * @param message ActionApprovals
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: nft.ActionApprovals,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this ActionApprovals to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of an Approval. */
+  interface IApproval {
+    /** Approval address */
+    address?: Uint8Array | null;
+
+    /** Approval options */
+    options?: nft.IApprovalOptions | null;
+  }
+
+  /** Represents an Approval. */
+  class Approval implements IApproval {
+    /**
+     * Constructs a new Approval.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: nft.IApproval);
+
+    /** Approval address. */
+    public address: Uint8Array;
+
+    /** Approval options. */
+    public options?: nft.IApprovalOptions | null;
+
+    /**
+     * Creates a new Approval instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Approval instance
+     */
+    public static create(properties?: nft.IApproval): nft.Approval;
+
+    /**
+     * Encodes the specified Approval message. Does not implicitly {@link nft.Approval.verify|verify} messages.
+     * @param message Approval message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: nft.IApproval, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Approval message, length delimited. Does not implicitly {@link nft.Approval.verify|verify} messages.
+     * @param message Approval message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: nft.IApproval, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes an Approval message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Approval
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): nft.Approval;
+
+    /**
+     * Decodes an Approval message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Approval
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): nft.Approval;
+
+    /**
+     * Verifies an Approval message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an Approval message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Approval
+     */
+    public static fromObject(object: { [k: string]: any }): nft.Approval;
+
+    /**
+     * Creates a plain object from an Approval message. Also converts values to other types if specified.
+     * @param message Approval
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: nft.Approval,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Approval to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of an ApprovalOptions. */
+  interface IApprovalOptions {
+    /** ApprovalOptions untilBlockHeight */
+    untilBlockHeight?: number | Long | null;
+
+    /** ApprovalOptions count */
+    count?: number | Long | null;
+
+    /** ApprovalOptions immutable */
+    immutable?: boolean | null;
+  }
+
+  /** Represents an ApprovalOptions. */
+  class ApprovalOptions implements IApprovalOptions {
+    /**
+     * Constructs a new ApprovalOptions.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: nft.IApprovalOptions);
+
+    /** ApprovalOptions untilBlockHeight. */
+    public untilBlockHeight: number | Long;
+
+    /** ApprovalOptions count. */
+    public count: number | Long;
+
+    /** ApprovalOptions immutable. */
+    public immutable: boolean;
+
+    /**
+     * Creates a new ApprovalOptions instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ApprovalOptions instance
+     */
+    public static create(properties?: nft.IApprovalOptions): nft.ApprovalOptions;
+
+    /**
+     * Encodes the specified ApprovalOptions message. Does not implicitly {@link nft.ApprovalOptions.verify|verify} messages.
+     * @param message ApprovalOptions message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: nft.IApprovalOptions, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ApprovalOptions message, length delimited. Does not implicitly {@link nft.ApprovalOptions.verify|verify} messages.
+     * @param message ApprovalOptions message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: nft.IApprovalOptions, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes an ApprovalOptions message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ApprovalOptions
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): nft.ApprovalOptions;
+
+    /**
+     * Decodes an ApprovalOptions message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ApprovalOptions
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): nft.ApprovalOptions;
+
+    /**
+     * Verifies an ApprovalOptions message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an ApprovalOptions message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ApprovalOptions
+     */
+    public static fromObject(object: { [k: string]: any }): nft.ApprovalOptions;
+
+    /**
+     * Creates a plain object from an ApprovalOptions message. Also converts values to other types if specified.
+     * @param message ApprovalOptions
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: nft.ApprovalOptions,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this ApprovalOptions to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of an AddApprovalMsg. */
+  interface IAddApprovalMsg {
+    /** AddApprovalMsg id */
+    id?: Uint8Array | null;
+
+    /** AddApprovalMsg address */
+    address?: Uint8Array | null;
+
+    /** AddApprovalMsg action */
+    action?: string | null;
+
+    /** AddApprovalMsg options */
+    options?: nft.IApprovalOptions | null;
+
+    /** AddApprovalMsg t */
+    t?: string | null;
+  }
+
+  /** Represents an AddApprovalMsg. */
+  class AddApprovalMsg implements IAddApprovalMsg {
+    /**
+     * Constructs a new AddApprovalMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: nft.IAddApprovalMsg);
+
+    /** AddApprovalMsg id. */
+    public id: Uint8Array;
+
+    /** AddApprovalMsg address. */
+    public address: Uint8Array;
+
+    /** AddApprovalMsg action. */
+    public action: string;
+
+    /** AddApprovalMsg options. */
+    public options?: nft.IApprovalOptions | null;
+
+    /** AddApprovalMsg t. */
+    public t: string;
+
+    /**
+     * Creates a new AddApprovalMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns AddApprovalMsg instance
+     */
+    public static create(properties?: nft.IAddApprovalMsg): nft.AddApprovalMsg;
+
+    /**
+     * Encodes the specified AddApprovalMsg message. Does not implicitly {@link nft.AddApprovalMsg.verify|verify} messages.
+     * @param message AddApprovalMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: nft.IAddApprovalMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified AddApprovalMsg message, length delimited. Does not implicitly {@link nft.AddApprovalMsg.verify|verify} messages.
+     * @param message AddApprovalMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: nft.IAddApprovalMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes an AddApprovalMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns AddApprovalMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): nft.AddApprovalMsg;
+
+    /**
+     * Decodes an AddApprovalMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns AddApprovalMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): nft.AddApprovalMsg;
+
+    /**
+     * Verifies an AddApprovalMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an AddApprovalMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns AddApprovalMsg
+     */
+    public static fromObject(object: { [k: string]: any }): nft.AddApprovalMsg;
+
+    /**
+     * Creates a plain object from an AddApprovalMsg message. Also converts values to other types if specified.
+     * @param message AddApprovalMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: nft.AddApprovalMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this AddApprovalMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a RemoveApprovalMsg. */
+  interface IRemoveApprovalMsg {
+    /** RemoveApprovalMsg id */
+    id?: Uint8Array | null;
+
+    /** RemoveApprovalMsg address */
+    address?: Uint8Array | null;
+
+    /** RemoveApprovalMsg action */
+    action?: string | null;
+
+    /** RemoveApprovalMsg t */
+    t?: string | null;
+  }
+
+  /** Represents a RemoveApprovalMsg. */
+  class RemoveApprovalMsg implements IRemoveApprovalMsg {
+    /**
+     * Constructs a new RemoveApprovalMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: nft.IRemoveApprovalMsg);
+
+    /** RemoveApprovalMsg id. */
+    public id: Uint8Array;
+
+    /** RemoveApprovalMsg address. */
+    public address: Uint8Array;
+
+    /** RemoveApprovalMsg action. */
+    public action: string;
+
+    /** RemoveApprovalMsg t. */
+    public t: string;
+
+    /**
+     * Creates a new RemoveApprovalMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns RemoveApprovalMsg instance
+     */
+    public static create(properties?: nft.IRemoveApprovalMsg): nft.RemoveApprovalMsg;
+
+    /**
+     * Encodes the specified RemoveApprovalMsg message. Does not implicitly {@link nft.RemoveApprovalMsg.verify|verify} messages.
+     * @param message RemoveApprovalMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: nft.IRemoveApprovalMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified RemoveApprovalMsg message, length delimited. Does not implicitly {@link nft.RemoveApprovalMsg.verify|verify} messages.
+     * @param message RemoveApprovalMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: nft.IRemoveApprovalMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a RemoveApprovalMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns RemoveApprovalMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): nft.RemoveApprovalMsg;
+
+    /**
+     * Decodes a RemoveApprovalMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns RemoveApprovalMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): nft.RemoveApprovalMsg;
+
+    /**
+     * Verifies a RemoveApprovalMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a RemoveApprovalMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns RemoveApprovalMsg
+     */
+    public static fromObject(object: { [k: string]: any }): nft.RemoveApprovalMsg;
+
+    /**
+     * Creates a plain object from a RemoveApprovalMsg message. Also converts values to other types if specified.
+     * @param message RemoveApprovalMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: nft.RemoveApprovalMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this RemoveApprovalMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
