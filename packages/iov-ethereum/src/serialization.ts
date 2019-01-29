@@ -14,8 +14,14 @@ export class Serialization {
       const chainIdHex = encodeQuantity(fromBcpChainId(unsigned.creator.chainId));
       const valueHex = encodeQuantityString(unsigned.amount.quantity);
       const nonceHex = nonce.toNumber() > 0 ? encodeQuantity(nonce.toNumber()) : "0x";
-      const gasPriceHex = unsigned.gasPrice ? encodeQuantityString(unsigned.gasPrice.quantity) : "0x";
-      const gasLimitHex = unsigned.gasLimit ? encodeQuantityString(unsigned.gasLimit.quantity) : "0x";
+      if (!unsigned.gasPrice) {
+        throw new Error("gasPrice must be set");
+      }
+      const gasPriceHex = encodeQuantityString(unsigned.gasPrice.quantity);
+      if (!unsigned.gasLimit) {
+        throw new Error("gasLimit must be set");
+      }
+      const gasLimitHex = encodeQuantityString(unsigned.gasLimit.quantity);
       const dataHex = unsigned.memo ? "0x" + Encoding.toHex(Encoding.toUtf8(unsigned.memo)) : "0x";
 
       if (!isValidAddress(unsigned.recipient)) {
