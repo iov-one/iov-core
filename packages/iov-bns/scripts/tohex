@@ -2,6 +2,5 @@
 set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
-# take input from a file if given, otherwise stdin
-IN=${1:--}
-xxd -p -c 999999 < "$IN"
+# Usage: tohex <binary filename>
+xxd -p -c 999999 < "$1"

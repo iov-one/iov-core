@@ -88,5 +88,5 @@ cat ./testvectors/pub_key.json | jq .
 
 There is often a bit of adjusting to adapt the json to the internal object format, but it should be straight-forward.
 
-Note, you will also have to compile and install this script as a bech32 helper (until we add native support for this in iov-core):
+Note, you will also have to compile and install this script as a bech32 helper to generate the addresses:
 https://github.com/nym-zone/bech32

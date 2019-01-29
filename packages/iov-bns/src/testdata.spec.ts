@@ -66,7 +66,6 @@ export const privBin = fromHex(
 // bech32 -e -h tiov $ADDR
 export const address = "tiov1mkp7tg2qvyp6m3uttw44ju9dhjzk6mdgzcz6yf" as Address;
 
-// TODO??? where is this from????
 export const coinJson: Amount = {
   quantity: "878001567000",
   fractionalDigits: 9,
