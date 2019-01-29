@@ -38,6 +38,11 @@ export interface EthereumNetworkConfig {
   readonly unusedPubkey: PublicKeyBundle;
   /** The address that belongs to `unusedPubkey` */
   readonly unusedAddress: Address;
+  readonly expectedErrorMessages: {
+    readonly insufficientFunds: RegExp;
+    readonly invalidSignature: RegExp;
+    readonly gasLimitTooLow: RegExp;
+  };
 }
 
 // Chain Id is from eip-155.md
@@ -83,6 +88,11 @@ const local: EthereumNetworkConfig = {
     ) as PublicKeyBytes,
   },
   unusedAddress: "0x52dF0e01583E12978B0885C5836c9683f22b0618" as Address,
+  expectedErrorMessages: {
+    insufficientFunds: /sender doesn't have enough funds to send tx/i,
+    invalidSignature: /invalid signature/i,
+    gasLimitTooLow: /base fee exceeds gas limit/i,
+  },
 };
 
 const testnetRopsten: EthereumNetworkConfig = {
@@ -126,6 +136,11 @@ const testnetRopsten: EthereumNetworkConfig = {
     ) as PublicKeyBytes,
   },
   unusedAddress: "0x52dF0e01583E12978B0885C5836c9683f22b0618" as Address,
+  expectedErrorMessages: {
+    insufficientFunds: /insufficient funds for gas \* price \+ value/i,
+    invalidSignature: /invalid sender/i,
+    gasLimitTooLow: /intrinsic gas too low/i,
+  },
 };
 
 const testnetRinkeby: EthereumNetworkConfig = {
@@ -169,6 +184,11 @@ const testnetRinkeby: EthereumNetworkConfig = {
     ) as PublicKeyBytes,
   },
   unusedAddress: "0x52dF0e01583E12978B0885C5836c9683f22b0618" as Address,
+  expectedErrorMessages: {
+    insufficientFunds: /insufficient funds for gas \* price \+ value/i,
+    invalidSignature: /invalid sender/i,
+    gasLimitTooLow: /intrinsic gas too low/i,
+  },
 };
 
 const config = new Map<string, EthereumNetworkConfig>();

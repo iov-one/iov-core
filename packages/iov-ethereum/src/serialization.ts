@@ -4,7 +4,7 @@ import { Encoding } from "@iov/encoding";
 
 import { isValidAddress } from "./derivation";
 import { BlknumForkState, Eip155ChainId, eip155V, toRlp } from "./encoding";
-import { encodeQuantity, encodeQuantityString, fromBcpChainId, hexPadToEven } from "./utils";
+import { encodeQuantity, encodeQuantityString, fromBcpChainId, normalizeHex } from "./utils";
 
 const { fromHex } = Encoding;
 
@@ -13,24 +13,31 @@ export class Serialization {
     if (isSendTransaction(unsigned)) {
       const chainIdHex = encodeQuantity(fromBcpChainId(unsigned.creator.chainId));
       const valueHex = encodeQuantityString(unsigned.amount.quantity);
-      const nonceHex = nonce.toNumber() > 0 ? encodeQuantity(nonce.toNumber()) : "0x";
-      const gasPriceHex = unsigned.gasPrice ? encodeQuantityString(unsigned.gasPrice.quantity) : "0x";
-      const gasLimitHex = unsigned.gasLimit ? encodeQuantityString(unsigned.gasLimit.quantity) : "0x";
+      if (!unsigned.gasPrice) {
+        throw new Error("gasPrice must be set");
+      }
+      const gasPriceHex = encodeQuantityString(unsigned.gasPrice.quantity);
+      if (!unsigned.gasLimit) {
+        throw new Error("gasLimit must be set");
+      }
+      const gasLimitHex = encodeQuantityString(unsigned.gasLimit.quantity);
       const dataHex = unsigned.memo ? "0x" + Encoding.toHex(Encoding.toUtf8(unsigned.memo)) : "0x";
 
       if (!isValidAddress(unsigned.recipient)) {
         throw new Error("Invalid recipient address");
       }
 
+      const encodedNonce = Serialization.encodeNonce(nonce);
+
       // Last 3 items are v, r and s values. Are present to encode full structure.
       return toRlp([
-        fromHex(hexPadToEven(nonceHex)),
-        fromHex(hexPadToEven(gasPriceHex)),
-        fromHex(hexPadToEven(gasLimitHex)),
-        fromHex(hexPadToEven(unsigned.recipient)),
-        fromHex(hexPadToEven(valueHex)),
-        fromHex(hexPadToEven(dataHex)),
-        fromHex(hexPadToEven(chainIdHex)),
+        encodedNonce,
+        fromHex(normalizeHex(gasPriceHex)),
+        fromHex(normalizeHex(gasLimitHex)),
+        fromHex(normalizeHex(unsigned.recipient)),
+        fromHex(normalizeHex(valueHex)),
+        fromHex(normalizeHex(dataHex)),
+        fromHex(normalizeHex(chainIdHex)),
         new Uint8Array([]),
         new Uint8Array([]),
       ]);
@@ -46,12 +53,8 @@ export class Serialization {
       let gasPriceHex = "0x";
       let gasLimitHex = "0x";
       let dataHex = "0x";
-      let nonceHex = "0x";
 
       const valueHex = encodeQuantityString(unsigned.amount.quantity);
-      if (signed.primarySignature.nonce.toNumber() > 0) {
-        nonceHex = encodeQuantity(signed.primarySignature.nonce.toNumber());
-      }
       if (unsigned.gasPrice) {
         gasPriceHex = encodeQuantityString(unsigned.gasPrice.quantity);
       }
@@ -64,6 +67,7 @@ export class Serialization {
       if (!isValidAddress(unsigned.recipient)) {
         throw new Error("Invalid recipient address");
       }
+      const encodedNonce = Serialization.encodeNonce(signed.primarySignature.nonce);
       const sig = ExtendedSecp256k1Signature.fromFixedLength(signed.primarySignature.signature);
       const r = sig.r();
       const s = sig.s();
@@ -74,19 +78,30 @@ export class Serialization {
           : { forkState: BlknumForkState.Before };
       const v = eip155V(chain, sig.recovery);
       const postableTx = toRlp([
-        fromHex(hexPadToEven(nonceHex)),
-        fromHex(hexPadToEven(gasPriceHex)),
-        fromHex(hexPadToEven(gasLimitHex)),
-        fromHex(hexPadToEven(unsigned.recipient)),
-        fromHex(hexPadToEven(valueHex)),
-        fromHex(hexPadToEven(dataHex)),
-        fromHex(hexPadToEven(encodeQuantity(v))),
+        encodedNonce,
+        fromHex(normalizeHex(gasPriceHex)),
+        fromHex(normalizeHex(gasLimitHex)),
+        fromHex(normalizeHex(unsigned.recipient)),
+        fromHex(normalizeHex(valueHex)),
+        fromHex(normalizeHex(dataHex)),
+        fromHex(normalizeHex(encodeQuantity(v))),
         r,
         s,
       ]);
       return postableTx;
     } else {
       throw new Error("Unsupported kind of transaction");
+    }
+  }
+
+  /**
+   * Nonce 0 must be represented as 0x instead of 0x0 for some strange reason
+   */
+  private static encodeNonce(nonce: Nonce): Uint8Array {
+    if (nonce.toNumber() === 0) {
+      return new Uint8Array([]);
+    } else {
+      return fromHex(normalizeHex(encodeQuantity(nonce.toNumber())));
     }
   }
 }

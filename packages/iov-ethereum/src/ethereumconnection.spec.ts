@@ -62,8 +62,9 @@ async function randomAddress(): Promise<Address> {
 }
 
 describe("EthereumConnection", () => {
+  const defaultMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
   const defaultAmount: Amount = {
-    quantity: "5445500",
+    quantity: "445500",
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   };
@@ -291,16 +292,8 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(
-        Secp256k1HdWallet.fromMnemonic(
-          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-        ),
-      );
-      const secondIdentity = await profile.createIdentity(
-        wallet.id,
-        testConfig.chainId,
-        HdPaths.bip44(60, 0, 0, 1),
-      );
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const secondIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
 
       const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 
@@ -308,11 +301,7 @@ describe("EthereumConnection", () => {
         kind: "bcp/send",
         creator: secondIdentity,
         recipient: recipientAddress,
-        amount: {
-          quantity: "3445500",
-          fractionalDigits: 18,
-          tokenTicker: "ETH" as TokenTicker,
-        },
+        amount: defaultAmount,
         gasPrice: testConfig.gasPrice,
         gasLimit: testConfig.gasLimit,
         memo: "We \u2665 developers – iov.one",
@@ -326,8 +315,8 @@ describe("EthereumConnection", () => {
       expect(result).toBeTruthy();
       expect(result.log).toBeUndefined();
 
-      // we need to wait here such that the following tests query an updated nonce
-      await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       connection.disconnect();
     }, 30_000);
@@ -336,16 +325,8 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(
-        Secp256k1HdWallet.fromMnemonic(
-          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-        ),
-      );
-      const secondIdentity = await profile.createIdentity(
-        wallet.id,
-        testConfig.chainId,
-        HdPaths.bip44(60, 0, 0, 1),
-      );
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const secondIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
 
       const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 
@@ -353,11 +334,7 @@ describe("EthereumConnection", () => {
         kind: "bcp/send",
         creator: secondIdentity,
         recipient: recipientAddress,
-        amount: {
-          quantity: "3445500",
-          fractionalDigits: 18,
-          tokenTicker: "ETH" as TokenTicker,
-        },
+        amount: defaultAmount,
         gasPrice: testConfig.gasPrice,
         gasLimit: testConfig.gasLimit,
         memo: "We \u2665 developers – iov.one",
@@ -383,6 +360,105 @@ describe("EthereumConnection", () => {
         height: heightBeforeTransaction + 1,
         confirmations: 1,
       });
+
+      await sleep(50); // wait for node to update nonce for next test
+    }, 30_000);
+
+    it("reports error for gas limit too low", async () => {
+      pendingWithoutEthereum();
+
+      const connection = await EthereumConnection.establish(testConfig.base);
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const secondIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
+
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
+        creator: secondIdentity,
+        recipient: await randomAddress(),
+        amount: defaultAmount,
+        gasPrice: testConfig.gasPrice,
+        gasLimit: {
+          quantity: "1",
+          fractionalDigits: 18,
+          tokenTicker: "ETH" as TokenTicker,
+        },
+        memo: "We \u2665 developers – iov.one",
+      };
+      const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
+      const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
+      await connection
+        .postTx(ethereumCodec.bytesToPost(signed))
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(testConfig.expectedErrorMessages.gasLimitTooLow));
+
+      connection.disconnect();
+    }, 30_000);
+
+    it("reports error for insufficient funds", async () => {
+      pendingWithoutEthereum();
+
+      const connection = await EthereumConnection.establish(testConfig.base);
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const brokeIdentity = await profile.createIdentity(
+        wallet.id,
+        testConfig.chainId,
+        HdPaths.ethereum(999),
+      );
+
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
+        creator: brokeIdentity,
+        recipient: await randomAddress(),
+        amount: defaultAmount,
+        gasPrice: testConfig.gasPrice,
+        gasLimit: testConfig.gasLimit,
+        memo: "We \u2665 developers – iov.one",
+      };
+      const nonce = await connection.getNonce({ pubkey: brokeIdentity.pubkey });
+      const signed = await profile.signTransaction(wallet.id, brokeIdentity, sendTx, ethereumCodec, nonce);
+      await connection
+        .postTx(ethereumCodec.bytesToPost(signed))
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(testConfig.expectedErrorMessages.insufficientFunds));
+
+      connection.disconnect();
+    }, 30_000);
+
+    // Signature check not stable (https://github.com/trufflesuite/ganache-cli/issues/621)
+    xit("reports error for invalid signature", async () => {
+      pendingWithoutEthereum();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const secondIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
+
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
+        creator: secondIdentity,
+        recipient: await randomAddress(),
+        amount: defaultAmount,
+        gasPrice: testConfig.gasPrice,
+        gasLimit: testConfig.gasLimit,
+        memo: "We \u2665 developers – iov.one",
+      };
+      const connection = await EthereumConnection.establish(testConfig.base);
+      const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
+      const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
+      // tslint:disable-next-line:no-bitwise no-object-mutation
+      signed.primarySignature.signature[0] ^= 1;
+      // Alternatively we could corrupt the message
+      // ((signed.transaction as SendTransaction).memo as any) += "!";
+
+      await connection
+        .postTx(ethereumCodec.bytesToPost(signed))
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(testConfig.expectedErrorMessages.invalidSignature));
+
+      connection.disconnect();
     }, 30_000);
   });
 
@@ -424,10 +500,8 @@ describe("EthereumConnection", () => {
         });
 
         // post transactions
-        const wallet = Secp256k1HdWallet.fromMnemonic(
-          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-        );
-        const secondIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.bip44(60, 0, 0, 1));
+        const wallet = Secp256k1HdWallet.fromMnemonic(defaultMnemonic);
+        const secondIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.ethereum(1));
         const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
         await postTransaction(wallet, secondIdentity, nonce, recipient, connection);
       })().catch(done.fail);
@@ -460,16 +534,8 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(
-        Secp256k1HdWallet.fromMnemonic(
-          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-        ),
-      );
-      const secondIdentity = await profile.createIdentity(
-        wallet.id,
-        testConfig.chainId,
-        HdPaths.bip44(60, 0, 0, 1),
-      );
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const secondIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
 
       const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 
@@ -501,7 +567,7 @@ describe("EthereumConnection", () => {
         throw new Error("Unexpected transaction type");
       }
       expect(transaction.recipient).toEqual(recipientAddress);
-      expect(transaction.amount.quantity).toEqual("5445500");
+      expect(transaction.amount.quantity).toEqual("445500");
       connection.disconnect();
     }, 30_000);
 
@@ -542,16 +608,8 @@ describe("EthereumConnection", () => {
       });
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(
-        Secp256k1HdWallet.fromMnemonic(
-          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-        ),
-      );
-      const secondIdentity = await profile.createIdentity(
-        wallet.id,
-        testConfig.chainId,
-        HdPaths.bip44(60, 0, 0, 1),
-      );
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const secondIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
 
       const recipientAddress = await randomAddress();
 
@@ -559,11 +617,7 @@ describe("EthereumConnection", () => {
         kind: "bcp/send",
         creator: secondIdentity,
         recipient: recipientAddress,
-        amount: {
-          quantity: "5445500",
-          fractionalDigits: 18,
-          tokenTicker: "ETH" as TokenTicker,
-        },
+        amount: defaultAmount,
         gasPrice: testConfig.gasPrice,
         gasLimit: testConfig.gasLimit,
         memo: `Search tx test ${new Date()}`,
@@ -717,16 +771,8 @@ describe("EthereumConnection", () => {
         // send transactions
 
         const profile = new UserProfile();
-        const wallet = profile.addWallet(
-          Secp256k1HdWallet.fromMnemonic(
-            "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-          ),
-        );
-        const sender = await profile.createIdentity(
-          wallet.id,
-          testConfig.chainId,
-          HdPaths.bip44(60, 0, 0, 1),
-        );
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
 
         const sendA: SendTransaction = {
           kind: "bcp/send",
@@ -798,16 +844,8 @@ describe("EthereumConnection", () => {
         // send transactions
 
         const profile = new UserProfile();
-        const wallet = profile.addWallet(
-          Secp256k1HdWallet.fromMnemonic(
-            "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-          ),
-        );
-        const sender = await profile.createIdentity(
-          wallet.id,
-          testConfig.chainId,
-          HdPaths.bip44(60, 0, 0, 1),
-        );
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
 
         const sendA: SendTransaction = {
           kind: "bcp/send",
@@ -901,16 +939,8 @@ describe("EthereumConnection", () => {
         });
 
         const profile = new UserProfile();
-        const wallet = profile.addWallet(
-          Secp256k1HdWallet.fromMnemonic(
-            "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-          ),
-        );
-        const sender = await profile.createIdentity(
-          wallet.id,
-          testConfig.chainId,
-          HdPaths.bip44(60, 0, 0, 1),
-        );
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
 
         const recipientAddress = await randomAddress();
         const send: SendTransaction = {
@@ -971,16 +1001,8 @@ describe("EthereumConnection", () => {
         // send transactions
 
         const profile = new UserProfile();
-        const wallet = profile.addWallet(
-          Secp256k1HdWallet.fromMnemonic(
-            "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-          ),
-        );
-        const sender = await profile.createIdentity(
-          wallet.id,
-          testConfig.chainId,
-          HdPaths.bip44(60, 0, 0, 1),
-        );
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
 
         const send: SendTransaction = {
           kind: "bcp/send",
@@ -1080,10 +1102,8 @@ describe("EthereumConnection", () => {
         });
 
         // post transactions
-        const wallet = Secp256k1HdWallet.fromMnemonic(
-          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-        );
-        const secondIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.bip44(60, 0, 0, 1));
+        const wallet = Secp256k1HdWallet.fromMnemonic(defaultMnemonic);
+        const secondIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.ethereum(1));
 
         const [nonceA, nonceB] = await connection.getNonces({ pubkey: secondIdentity.pubkey }, 2);
         const recipient = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
