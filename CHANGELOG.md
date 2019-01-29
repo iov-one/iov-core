@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.1
+
+* @iov/ethereum: Fix error reporting when signing and sending transactions
+
 ## 0.11.0
 
 * @iov/bcp-types: `BcpConnection.getNonce` now returns a `Promise<Nonce>` and
