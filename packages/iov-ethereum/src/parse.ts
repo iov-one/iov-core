@@ -12,7 +12,7 @@ import { Encoding, Int53 } from "@iov/encoding";
 
 import { constants } from "./constants";
 import { toChecksumAddress } from "./derivation";
-import { hexPadToEven } from "./utils";
+import { normalizeHex } from "./utils";
 
 export class Parse {
   public static ethereumAmount(total: string): Amount {
@@ -55,7 +55,7 @@ export class Scraper {
         tokenTicker: constants.primaryTokenTicker,
       },
       recipient: toChecksumAddress(json.to),
-      memo: Encoding.fromUtf8(Encoding.fromHex(hexPadToEven(json.input))),
+      memo: Encoding.fromUtf8(Encoding.fromHex(normalizeHex(json.input))),
     };
 
     return {

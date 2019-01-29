@@ -28,7 +28,7 @@ import {
   decodeHexQuantityNonce,
   decodeHexQuantityString,
   fromBcpChainId,
-  hexPadToEven,
+  normalizeHex,
 } from "./utils";
 
 export const ethereumCodec: TxCodec = {
@@ -51,8 +51,8 @@ export const ethereumCodec: TxCodec = {
       forkState: BlknumForkState.Forked,
       chainId: fromBcpChainId(chainId),
     };
-    const r = Encoding.fromHex(hexPadToEven(json.r));
-    const s = Encoding.fromHex(hexPadToEven(json.s));
+    const r = Encoding.fromHex(normalizeHex(json.r));
+    const s = Encoding.fromHex(normalizeHex(json.s));
     const v = decodeHexQuantity(json.v);
     const recoveryParam = getRecoveryParam(chain, v);
     const signature = new ExtendedSecp256k1Signature(r, s, recoveryParam).toFixedLength() as SignatureBytes;
@@ -82,7 +82,7 @@ export const ethereumCodec: TxCodec = {
             tokenTicker: constants.primaryTokenTicker,
           },
           recipient: toChecksumAddress(json.to),
-          memo: Encoding.fromUtf8(Encoding.fromHex(hexPadToEven(json.input))),
+          memo: Encoding.fromUtf8(Encoding.fromHex(normalizeHex(json.input))),
         };
         unsignedTransaction = send;
         break;

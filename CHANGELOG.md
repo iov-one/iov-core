@@ -18,11 +18,17 @@ Breaking changes
 * @iov/bns: Remove obsolete `SetNameTx`
 * @iov/bns: Remove `BnsConnection.status`
 
+## 0.11.1
+
+* @iov/ethereum: Fix error reporting when signing and sending transactions
+* @iov/keycontrol: Add `HdPaths.ethereum` for Ethereum HD path derivation
+* @iov/keycontrol: Deprecate `HdPaths.metamaskHdKeyTree` in favour of `HdPaths.ethereum`
+
 ## 0.11.0
 
-* @iov/bcp-type: `BcpConnection.getNonce` now returns a `Promise<Nonce>` and
+* @iov/bcp-types: `BcpConnection.getNonce` now returns a `Promise<Nonce>` and
   implementations set a default value on their own.
-* @iov/bcp-type: Expose `publicKeyBundleEquals`
+* @iov/bcp-types: Expose `publicKeyBundleEquals`
 * @iov/bcp-types: Add `fractionalDigits` to `BcpTicker`
 * @iov/ethereum: Add new package with Ethereum support
 * @iov/jsonrpc: Add new package for type-safe JSON-RPC 2.0 interfaces and
