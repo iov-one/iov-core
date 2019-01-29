@@ -405,6 +405,72 @@ describe("EthereumConnection", () => {
 
       connection.disconnect();
     }, 30_000);
+
+    it("reports error for insufficient funds", async () => {
+      pendingWithoutEthereum();
+
+      const connection = await EthereumConnection.establish(testConfig.base);
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const brokeIdentity = await profile.createIdentity(
+        wallet.id,
+        testConfig.chainId,
+        HdPaths.bip44(60, 0, 0, 999),
+      );
+
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
+        creator: brokeIdentity,
+        recipient: await randomAddress(),
+        amount: defaultAmount,
+        gasPrice: testConfig.gasPrice,
+        gasLimit: testConfig.gasLimit,
+        memo: "We \u2665 developers – iov.one",
+      };
+      const nonce = await connection.getNonce({ pubkey: brokeIdentity.pubkey });
+      const signed = await profile.signTransaction(wallet.id, brokeIdentity, sendTx, ethereumCodec, nonce);
+      await connection
+        .postTx(ethereumCodec.bytesToPost(signed))
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/sender doesn't have enough funds to send tx/i));
+
+      connection.disconnect();
+    }, 30_000);
+
+    it("reports error for invalid signature", async () => {
+      pendingWithoutEthereum();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const secondIdentity = await profile.createIdentity(
+        wallet.id,
+        testConfig.chainId,
+        HdPaths.bip44(60, 0, 0, 1),
+      );
+
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
+        creator: secondIdentity,
+        recipient: await randomAddress(),
+        amount: defaultAmount,
+        gasPrice: testConfig.gasPrice,
+        gasLimit: testConfig.gasLimit,
+        memo: "We \u2665 developers – iov.one",
+      };
+      const connection = await EthereumConnection.establish(testConfig.base);
+      const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
+      const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
+      // tslint:disable-next-line:no-bitwise no-object-mutation
+      signed.primarySignature.signature[0] ^= 1;
+
+      await connection
+        .postTx(ethereumCodec.bytesToPost(signed))
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/invalid signature"/i));
+
+      connection.disconnect();
+    }, 30_000);
   });
 
   describe("watchAccount", () => {
