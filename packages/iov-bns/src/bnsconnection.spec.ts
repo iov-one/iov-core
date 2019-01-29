@@ -346,7 +346,8 @@ describe("BnsConnection", () => {
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const header = await connection.getBlockHeader(3);
       expect(header.height).toEqual(3);
-      expect(header.id).toMatch(/^[0-9A-F]{40}$/);
+      // as of tendermint v0.26.0, hashes are 32-bytes, previously 20 bytes
+      expect(header.id).toMatch(/^[0-9A-F]{64}$/);
       connection.disconnect();
     });
 
@@ -421,7 +422,8 @@ describe("BnsConnection", () => {
       const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
       const txBytes = bnsCodec.bytesToPost(signed);
       const response = await connection.postTx(txBytes);
-      await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       // we should be a little bit richer
       const updatedAccount = await connection.getAccount({ address: recipient });
@@ -444,7 +446,7 @@ describe("BnsConnection", () => {
       const mine = search[search.length - 1];
       // make sure we have a txid
       expect(mine.height).toBeGreaterThan(initialHeight);
-      expect(mine.transactionId).toMatch(/^[0-9A-F]{40}$/);
+      expect(mine.transactionId).toMatch(/^[0-9A-F]{64}$/);
       expect(mine.primarySignature.nonce).toEqual(nonce);
       expect(mine.primarySignature.signature.length).toBeTruthy();
       expect(mine.otherSignatures.length).toEqual(0);
@@ -573,7 +575,8 @@ describe("BnsConnection", () => {
       const signed = await profile.signTransaction(wallet.id, identity, registration, bnsCodec, nonce);
       const txBytes = bnsCodec.bytesToPost(signed);
       const response = await connection.postTx(txBytes);
-      await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
 
@@ -627,7 +630,8 @@ describe("BnsConnection", () => {
       const signed = await profile.signTransaction(wallet.id, identity, registration, bnsCodec, nonce);
       const txBytes = bnsCodec.bytesToPost(signed);
       const response = await connection.postTx(txBytes);
-      await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
 
@@ -675,7 +679,8 @@ describe("BnsConnection", () => {
             ),
           ),
         );
-        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
 
       // Register a blockchain
@@ -705,7 +710,8 @@ describe("BnsConnection", () => {
             ),
           ),
         );
-        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
 
       // Add address
@@ -731,7 +737,8 @@ describe("BnsConnection", () => {
             ),
           ),
         );
-        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
 
       // Adding second address for the same chain fails
@@ -789,7 +796,8 @@ describe("BnsConnection", () => {
             ),
           ),
         );
-        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
 
       // Do the same removal again
@@ -842,7 +850,8 @@ describe("BnsConnection", () => {
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-      await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
 
@@ -882,6 +891,7 @@ describe("BnsConnection", () => {
       const signed = await profile.signTransaction(mainWalletId, faucet, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toBe(TransactionState.Succeeded);
       const txHeight = (blockInfo as BlockInfoSucceeded | BlockInfoFailed).height;
 
       await tendermintSearchIndexUpdated();
@@ -937,8 +947,9 @@ describe("BnsConnection", () => {
       connection.disconnect();
     });
 
-    // Activate when https://github.com/tendermint/tendermint/issues/2759 is fixed
-    xit("can search for transactions by minHeight/maxHeight", async () => {
+    // Fixed since tendermint v0.26.4
+    // see issue https://github.com/tendermint/tendermint/issues/2759
+    it("can search for transactions by minHeight/maxHeight", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const chainId = connection.chainId();
@@ -1650,7 +1661,7 @@ describe("BnsConnection", () => {
     const signed = await profile.signTransaction(mainWalletId, faucet, swapOfferTx, bnsCodec, nonce);
     const post = await connection.postTx(bnsCodec.bytesToPost(signed));
     const transactionId = post.transactionId;
-    expect(transactionId).toMatch(/^[0-9A-F]{40}$/);
+    expect(transactionId).toMatch(/^[0-9A-F]{64}$/);
 
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo)) {

@@ -25,32 +25,46 @@ const { fromHex } = Encoding;
 
 // ------------------- standard data set ---------------
 //
-// This info came from `bov testgen <dir>`.
+// This info came from `bnsd testgen <dir>`.
 // That dumped a number of files in a directory, formatted as the
 // bov blockchain application desires. We import them as strings
 // in this testfile to allow simpler tests in the browser as well.
 
+// Ex: base64 (from json) -> hex
+// ../scripts/jsonbytes testvectors/pub_key.json .Pub.Ed25519
+
+// Ex: bin file -> hex
+// ../scripts/tohex testvectors/pub_key.bin
+// OR
+// cat testvectors/pub_key.bin | ../scripts/tohex
+
+// ./scripts/jsonbytes testvectors/pub_key.json .Pub.Ed25519
 export const pubJson: PublicKeyBundle = {
   algo: Algorithm.Ed25519,
-  data: fromHex("507629b5f1d3946efb8fde961e146359e33610fa1536185d44fdd5011ca011d5") as PublicKeyBytes,
+  data: fromHex("d9046fd4355b366f33619be7ceb27728441ff11b347976b1378c5d7f8fe4d91e") as PublicKeyBytes,
 };
-export const pubBin = fromHex("0a20507629b5f1d3946efb8fde961e146359e33610fa1536185d44fdd5011ca011d5");
+// ./scripts/tohex testvectors/pub_key.bin
+export const pubBin = fromHex("0a20d9046fd4355b366f33619be7ceb27728441ff11b347976b1378c5d7f8fe4d91e");
 
 // this private key matches the above public key
+// ./scripts/jsonbytes testvectors/priv_key.json .Priv.Ed25519
 export const privJson: PrivateKeyBundle = {
   algo: Algorithm.Ed25519,
   data: fromHex(
-    "516e6af7454f31fa56a43d112ea847c7e5aeea754f08385ca55935757161ad96507629b5f1d3946efb8fde961e146359e33610fa1536185d44fdd5011ca011d5",
+    "bc1c072063d5099639190cefbd25284d56f722c1b2eacfc1dff0edeee558c637d9046fd4355b366f33619be7ceb27728441ff11b347976b1378c5d7f8fe4d91e",
   ) as PrivateKeyBytes,
 };
+// ./scripts/tohex testvectors/priv_key.bin
 export const privBin = fromHex(
-  "0a40516e6af7454f31fa56a43d112ea847c7e5aeea754f08385ca55935757161ad96507629b5f1d3946efb8fde961e146359e33610fa1536185d44fdd5011ca011d5",
+  "0a40bc1c072063d5099639190cefbd25284d56f722c1b2eacfc1dff0edeee558c637d9046fd4355b366f33619be7ceb27728441ff11b347976b1378c5d7f8fe4d91e",
 );
 
 // address is calculated by bov for the public key
+// this address is displayed on testgen, or can be read from the message
 // address generated using https://github.com/nym-zone/bech32
-// bech32 -e -h tiov acc00b8f2e26fd093894c5b1d87e03afab71cf99
-export const address = "tiov14nqqhrewym7sjwy5ckcaslsr474hrnuek3vnr4" as Address;
+// ADDR=$(./scripts/jsonbytes testvectors/unsigned_tx.json .Sum.SendMsg.src)
+// bech32 -e -h tiov $ADDR
+export const address = "tiov1mkp7tg2qvyp6m3uttw44ju9dhjzk6mdgzcz6yf" as Address;
 
 export const coinJson: Amount = {
   quantity: "878001567000",
@@ -59,37 +73,45 @@ export const coinJson: Amount = {
 };
 export const coinBin = fromHex("08ee061098d25f1a03494f56");
 
+// from: unsigned_tx.{json,bin}
 const amount: Amount = {
   quantity: "250000000000",
   fractionalDigits: 9,
   tokenTicker: "ETH" as TokenTicker,
 };
 export const chainId = "test-123" as ChainId;
+
 // the sender in this tx is the above pubkey, pubkey->address should match
 // recipient address generated using https://github.com/nym-zone/bech32
-// bech32 -e -h tiov 6f0a3e37845b6a3c8ccbe6219199abc3ae0b26d9
+// RCPT=$(./scripts/jsonbytes testvectors/unsigned_tx.json .Sum.SendMsg.dest)
+// bech32 -e -h tiov $RCPT
 export const sendTxJson: SendTransaction = {
   kind: "bcp/send",
   creator: {
     chainId: chainId,
     pubkey: pubJson,
   },
-  recipient: "tiov1du9ruduytd4rerxtucserxdtcwhqkfkezjy4w0" as Address,
+  recipient: "tiov1hl846c5pqgaqnp0kje64rx5axj8t2fvqxunqaf" as Address,
   memo: "Test payment",
   amount,
 };
+// ./scripts/tohex testvectors/unsigned_tx.bin
 export const sendTxBin = fromHex(
-  "0a440a14acc00b8f2e26fd093894c5b1d87e03afab71cf9912146f0a3e37845b6a3c8ccbe6219199abc3ae0b26d91a0808fa011a03455448220c54657374207061796d656e74",
+  "9a03440a14dd83e5a1406103adc78b5bab5970adbc856d6da81214bfcf5d6281023a0985f69675519a9d348eb525801a0808fa011a03455448220c54657374207061796d656e74",
+);
+// ./scripts/tohex testvectors/unsigned_tx.signbytes
+// this is the sha-512 digest of the sign bytes (ready for signature)
+export const signBytes = fromHex(
+  "eeaef384712ec65e82cde2a126aa4d1950a3b89957da5e8b54d9a21343eb90dcba28122400b358bd8ed577e2d3017be21e249fb7f880870b09d620fe7bcb7dd2",
 );
 
-export const signBytes = fromHex(
-  "00cafe0008746573742d31323300000000000000110a440a14acc00b8f2e26fd093894c5b1d87e03afab71cf9912146f0a3e37845b6a3c8ccbe6219199abc3ae0b26d91a0808fa011a03455448220c54657374207061796d656e74",
-);
+// from signed_tx.json
 export const sig: FullSignature = {
   nonce: new Int53(17) as Nonce,
   pubkey: pubJson,
+  // ./scripts/jsonbytes testvectors/signed_tx.json .signatures[0].signature.Sig.Ed25519
   signature: fromHex(
-    "8005d615d1866b8349b8fe1901444b5f76cfd39482d51556066e5de4a281b0394aa2bc9e07580d0a67fd36183b47f2f1b044c0ce459140f493c6e95546715003",
+    "54376d9b806f41976ba87fc850ebd8654f1d75860dec6251741f4df11aed6de8774429cf3ec432cd5e5527f2df6542198043a3fa839ba99cdf1c754b6668c70d",
   ) as SignatureBytes,
 };
 export const signedTxJson: SignedTransaction = {
@@ -97,8 +119,9 @@ export const signedTxJson: SignedTransaction = {
   primarySignature: sig,
   otherSignatures: [],
 };
+// ./scripts/tohex testvectors/signed_tx.bin
 export const signedTxBin = fromHex(
-  "0a440a14acc00b8f2e26fd093894c5b1d87e03afab71cf9912146f0a3e37845b6a3c8ccbe6219199abc3ae0b26d91a0808fa011a03455448220c54657374207061796d656e74aa016a081112220a20507629b5f1d3946efb8fde961e146359e33610fa1536185d44fdd5011ca011d522420a408005d615d1866b8349b8fe1901444b5f76cfd39482d51556066e5de4a281b0394aa2bc9e07580d0a67fd36183b47f2f1b044c0ce459140f493c6e95546715003",
+  "126a081112220a20d9046fd4355b366f33619be7ceb27728441ff11b347976b1378c5d7f8fe4d91e22420a4054376d9b806f41976ba87fc850ebd8654f1d75860dec6251741f4df11aed6de8774429cf3ec432cd5e5527f2df6542198043a3fa839ba99cdf1c754b6668c70d9a03440a14dd83e5a1406103adc78b5bab5970adbc856d6da81214bfcf5d6281023a0985f69675519a9d348eb525801a0808fa011a03455448220c54657374207061796d656e74",
 );
 
 // ------------------- random data --------------------------

@@ -13,6 +13,10 @@ if [ -z "$TAG" ]; then
   exit 1
 fi
 
+DEST="./go/src/github.com/iov-one"
+mkdir -p "${DEST}"
+cd "${DEST}"
+
 # clone or update weave
 if [ -d weave ]; then
   (

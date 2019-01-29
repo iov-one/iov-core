@@ -1,0 +1,8 @@
+#!/bin/bash
+set -o errexit -o nounset -o pipefail
+command -v shellcheck > /dev/null && shellcheck "$0"
+
+# Usage: jsonbytes <filename> <jq selector to field>
+# Extracts the bytes (base64 encoded) and converts to hex
+
+jq -r "$2" "$1" | base64 --decode - | xxd -p -c 999999

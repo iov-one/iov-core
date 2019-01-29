@@ -131,7 +131,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
     // inlining getAllTickers
     const res = await performQuery(tmClient, "/tokens?prefix", Uint8Array.from([]));
-    const parser = createParser(codecImpl.namecoin.Token, "tkn:");
+    const parser = createParser(codecImpl.currency.TokenInfo, "tokeninfo:");
     const data = res.results.map(parser).map(decodeToken);
 
     const toKeyValue = (t: BcpTicker): [string, BcpTicker] => [t.tokenTicker, t];
@@ -260,7 +260,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
   public async getTicker(ticker: TokenTicker): Promise<BcpTicker | undefined> {
     const res = await this.query("/tokens", Encoding.toAscii(ticker));
-    const parser = createParser(codecImpl.namecoin.Token, "tkn:");
+    const parser = createParser(codecImpl.currency.TokenInfo, "tokeninfo:");
     const data = res.results.map(parser).map(decodeToken);
     switch (data.length) {
       case 0:
@@ -274,7 +274,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
   public async getAllTickers(): Promise<ReadonlyArray<BcpTicker>> {
     const res = await this.query("/tokens?prefix", Uint8Array.from([]));
-    const parser = createParser(codecImpl.namecoin.Token, "tkn:");
+    const parser = createParser(codecImpl.currency.TokenInfo, "tokeninfo:");
     const data = res.results.map(parser).map(decodeToken);
     // Sort by ticker
     data.sort((a, b) => a.tokenTicker.localeCompare(b.tokenTicker));
@@ -287,7 +287,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       : query.address;
 
     const response = await this.query("/wallets", decodeBnsAddress(address).data);
-    const parser = createParser(codecImpl.namecoin.Wallet, "wllt:");
+    const parser = createParser(codecImpl.cash.Set, "cash:");
     const walletDatas = response.results.map(parser).map(iwallet => this.context.wallet(iwallet));
 
     if (walletDatas.length === 0) {
@@ -661,7 +661,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       const rawAddress = decodeBnsAddress(query.owner).data;
       results = (await this.query("/nft/usernames/owner", rawAddress)).results;
     } else if (isBnsUsernamesByChainAndAddressQuery(query)) {
-      const pairSerialized = `${query.address}*${query.chain}`;
+      const pairSerialized = `${query.address};${query.chain}`;
       results = (await this.query("/nft/usernames/chainaddr", toUtf8(pairSerialized))).results;
     } else {
       throw new Error("Unsupported query");

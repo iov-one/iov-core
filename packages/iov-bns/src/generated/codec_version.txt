@@ -1,1 +1,1 @@
-63aa1b2d593807294e000d3a34b15533066739a0 (HEAD, tag: v0.9.3, origin/master, origin/HEAD) Update blockchain id regexp and add tests (#194)
+fefebb1622df553c8c74e47a414728f7e581bac2 (HEAD, tag: v0.10.2) Validator scenario (#287)

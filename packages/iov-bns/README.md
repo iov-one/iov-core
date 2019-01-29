@@ -17,6 +17,15 @@ bns transaction parser:
 const client = await Client.connect('wss://bov.wolfnet.iov.one');
 ```
 
+## Supported weave (bnsd) versions
+
+| IOV-Core version | Supported weave versions      |
+|------------------|-------------------------------|
+| 0.12             | 0.10.x                        |
+| 0.9 – 0.11       | 0.4.x - 0.9.x                 |
+| 0.1 – 0.8        | 0.4.x - 0.8.x                 |
+
+
 ## API Documentation
 
 [https://iov-one.github.io/iov-core-docs/latest/iov-bns/](https://iov-one.github.io/iov-core-docs/latest/iov-bns/)
