@@ -449,6 +449,8 @@ describe("EthereumConnection", () => {
       const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
       // tslint:disable-next-line:no-bitwise no-object-mutation
       signed.primarySignature.signature[0] ^= 1;
+      // Alternatively we could corrupt the message
+      // ((signed.transaction as SendTransaction).memo as any) += "!";
 
       await connection
         .postTx(ethereumCodec.bytesToPost(signed))
