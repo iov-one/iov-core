@@ -401,7 +401,7 @@ describe("EthereumConnection", () => {
       await connection
         .postTx(ethereumCodec.bytesToPost(signed))
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/base fee exceeds gas limit/i));
+        .catch(error => expect(error).toMatch(testConfig.expectedErrorMessages.gasLimitTooLow));
 
       connection.disconnect();
     }, 30_000);
@@ -433,7 +433,7 @@ describe("EthereumConnection", () => {
       await connection
         .postTx(ethereumCodec.bytesToPost(signed))
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/sender doesn't have enough funds to send tx/i));
+        .catch(error => expect(error).toMatch(testConfig.expectedErrorMessages.insufficientFunds));
 
       connection.disconnect();
     }, 30_000);
@@ -467,7 +467,7 @@ describe("EthereumConnection", () => {
       await connection
         .postTx(ethereumCodec.bytesToPost(signed))
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/invalid signature"/i));
+        .catch(error => expect(error).toMatch(testConfig.expectedErrorMessages.invalidSignature));
 
       connection.disconnect();
     }, 30_000);
