@@ -1,6 +1,6 @@
 {
   "name": "@iov/lisk",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "description": "Transaction codec and client to communicate with the Lisk blockchain",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -34,7 +34,7 @@
     "@iov/crypto": "^0.11.0",
     "@iov/dpos": "^0.11.0",
     "@iov/encoding": "^0.11.0",
-    "@iov/keycontrol": "^0.11.0",
+    "@iov/keycontrol": "^0.11.1",
     "@iov/stream": "^0.11.0",
     "@types/long": "^4.0.0",
     "axios": "^0.18.0",
