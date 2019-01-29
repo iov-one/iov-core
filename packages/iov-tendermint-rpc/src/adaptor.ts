@@ -69,7 +69,7 @@ export interface Responses {
 export function adatorForVersion(version: string): Adaptor {
   if (version.startsWith("0.25.")) {
     return v0_25;
-  } else if (version.startsWith("0.27.")) {
+  } else if (version.startsWith("0.27.") || version.startsWith("0.28.") || version.startsWith("0.29.")) {
     return v0_27;
   } else {
     throw new Error(`Unsupported tendermint version: ${version}`);
