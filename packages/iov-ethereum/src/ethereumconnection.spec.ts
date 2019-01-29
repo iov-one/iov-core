@@ -360,6 +360,8 @@ describe("EthereumConnection", () => {
         height: heightBeforeTransaction + 1,
         confirmations: 1,
       });
+
+      await sleep(50); // wait for node to update nonce for next test
     }, 30_000);
 
     it("reports error for gas limit too low", async () => {
