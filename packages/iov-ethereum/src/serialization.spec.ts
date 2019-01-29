@@ -156,6 +156,45 @@ describe("Serialization", () => {
         expect(() => serializeUnsignedTransaction(tx, nonce)).toThrowError(/gasLimit must be set/i);
       }
     });
+
+    it("throws for negative nonce", () => {
+      const creator: PublicIdentity = {
+        chainId: "ethereum-eip155-5777" as ChainId,
+        pubkey: {
+          algo: Algorithm.Secp256k1,
+          data: fromHex(
+            "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
+          ) as PublicKeyBytes,
+        },
+      };
+      const amount: Amount = {
+        quantity: "20000000000000000000",
+        fractionalDigits: 18,
+        tokenTicker: "ETH" as TokenTicker,
+      };
+      const gasPrice: Amount = {
+        quantity: "20000000000",
+        fractionalDigits: 18,
+        tokenTicker: "ETH" as TokenTicker,
+      };
+      const gasLimit: Amount = {
+        quantity: "21000",
+        fractionalDigits: 18,
+        tokenTicker: "ETH" as TokenTicker,
+      };
+
+      const tx: SendTransaction = {
+        kind: "bcp/send",
+        creator: creator,
+        amount: amount,
+        gasPrice: gasPrice,
+        gasLimit: gasLimit,
+        recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
+      };
+      expect(() => serializeUnsignedTransaction(tx, new Int53(-1) as Nonce)).toThrowError(
+        /not a unsigned safe integer/i,
+      );
+    });
   });
 
   describe("serializeSignedTransaction", () => {
