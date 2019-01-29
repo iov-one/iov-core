@@ -617,11 +617,7 @@ describe("EthereumConnection", () => {
         kind: "bcp/send",
         creator: secondIdentity,
         recipient: recipientAddress,
-        amount: {
-          quantity: "5445500",
-          fractionalDigits: 18,
-          tokenTicker: "ETH" as TokenTicker,
-        },
+        amount: defaultAmount,
         gasPrice: testConfig.gasPrice,
         gasLimit: testConfig.gasLimit,
         memo: `Search tx test ${new Date()}`,
