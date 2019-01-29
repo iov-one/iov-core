@@ -428,7 +428,8 @@ describe("EthereumConnection", () => {
       connection.disconnect();
     }, 30_000);
 
-    it("reports error for invalid signature", async () => {
+    // Signature check not stable (https://github.com/trufflesuite/ganache-cli/issues/621)
+    xit("reports error for invalid signature", async () => {
       pendingWithoutEthereum();
 
       const profile = new UserProfile();
