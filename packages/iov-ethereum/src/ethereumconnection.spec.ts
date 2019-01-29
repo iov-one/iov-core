@@ -62,6 +62,7 @@ async function randomAddress(): Promise<Address> {
 }
 
 describe("EthereumConnection", () => {
+  const defaultMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
   const defaultAmount: Amount = {
     quantity: "5445500",
     fractionalDigits: 18,
@@ -291,11 +292,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(
-        Secp256k1HdWallet.fromMnemonic(
-          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-        ),
-      );
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
       const secondIdentity = await profile.createIdentity(
         wallet.id,
         testConfig.chainId,
@@ -336,11 +333,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(
-        Secp256k1HdWallet.fromMnemonic(
-          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-        ),
-      );
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
       const secondIdentity = await profile.createIdentity(
         wallet.id,
         testConfig.chainId,
@@ -424,9 +417,7 @@ describe("EthereumConnection", () => {
         });
 
         // post transactions
-        const wallet = Secp256k1HdWallet.fromMnemonic(
-          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-        );
+        const wallet = Secp256k1HdWallet.fromMnemonic(defaultMnemonic);
         const secondIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.bip44(60, 0, 0, 1));
         const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
         await postTransaction(wallet, secondIdentity, nonce, recipient, connection);
@@ -460,11 +451,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(
-        Secp256k1HdWallet.fromMnemonic(
-          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-        ),
-      );
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
       const secondIdentity = await profile.createIdentity(
         wallet.id,
         testConfig.chainId,
@@ -542,11 +529,7 @@ describe("EthereumConnection", () => {
       });
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(
-        Secp256k1HdWallet.fromMnemonic(
-          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-        ),
-      );
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
       const secondIdentity = await profile.createIdentity(
         wallet.id,
         testConfig.chainId,
@@ -717,11 +700,7 @@ describe("EthereumConnection", () => {
         // send transactions
 
         const profile = new UserProfile();
-        const wallet = profile.addWallet(
-          Secp256k1HdWallet.fromMnemonic(
-            "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-          ),
-        );
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
         const sender = await profile.createIdentity(
           wallet.id,
           testConfig.chainId,
@@ -798,11 +777,7 @@ describe("EthereumConnection", () => {
         // send transactions
 
         const profile = new UserProfile();
-        const wallet = profile.addWallet(
-          Secp256k1HdWallet.fromMnemonic(
-            "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-          ),
-        );
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
         const sender = await profile.createIdentity(
           wallet.id,
           testConfig.chainId,
@@ -901,11 +876,7 @@ describe("EthereumConnection", () => {
         });
 
         const profile = new UserProfile();
-        const wallet = profile.addWallet(
-          Secp256k1HdWallet.fromMnemonic(
-            "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-          ),
-        );
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
         const sender = await profile.createIdentity(
           wallet.id,
           testConfig.chainId,
@@ -971,11 +942,7 @@ describe("EthereumConnection", () => {
         // send transactions
 
         const profile = new UserProfile();
-        const wallet = profile.addWallet(
-          Secp256k1HdWallet.fromMnemonic(
-            "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-          ),
-        );
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
         const sender = await profile.createIdentity(
           wallet.id,
           testConfig.chainId,
@@ -1080,9 +1047,7 @@ describe("EthereumConnection", () => {
         });
 
         // post transactions
-        const wallet = Secp256k1HdWallet.fromMnemonic(
-          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
-        );
+        const wallet = Secp256k1HdWallet.fromMnemonic(defaultMnemonic);
         const secondIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.bip44(60, 0, 0, 1));
 
         const [nonceA, nonceB] = await connection.getNonces({ pubkey: secondIdentity.pubkey }, 2);
