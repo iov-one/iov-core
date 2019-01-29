@@ -319,8 +319,8 @@ describe("EthereumConnection", () => {
       expect(result).toBeTruthy();
       expect(result.log).toBeUndefined();
 
-      // we need to wait here such that the following tests query an updated nonce
-      await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       connection.disconnect();
     }, 30_000);
