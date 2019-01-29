@@ -369,6 +369,42 @@ describe("EthereumConnection", () => {
         confirmations: 1,
       });
     }, 30_000);
+
+    it("reports error for gas limit too low", async () => {
+      pendingWithoutEthereum();
+
+      const connection = await EthereumConnection.establish(testConfig.base);
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const secondIdentity = await profile.createIdentity(
+        wallet.id,
+        testConfig.chainId,
+        HdPaths.bip44(60, 0, 0, 1),
+      );
+
+      const sendTx: SendTransaction = {
+        kind: "bcp/send",
+        creator: secondIdentity,
+        recipient: await randomAddress(),
+        amount: defaultAmount,
+        gasPrice: testConfig.gasPrice,
+        gasLimit: {
+          quantity: "1",
+          fractionalDigits: 18,
+          tokenTicker: "ETH" as TokenTicker,
+        },
+        memo: "We \u2665 developers – iov.one",
+      };
+      const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
+      const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
+      await connection
+        .postTx(ethereumCodec.bytesToPost(signed))
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/base fee exceeds gas limit/i));
+
+      connection.disconnect();
+    }, 30_000);
   });
 
   describe("watchAccount", () => {
