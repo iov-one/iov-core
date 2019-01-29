@@ -64,7 +64,7 @@ async function randomAddress(): Promise<Address> {
 describe("EthereumConnection", () => {
   const defaultMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
   const defaultAmount: Amount = {
-    quantity: "5445500",
+    quantity: "445500",
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   };
@@ -564,7 +564,7 @@ describe("EthereumConnection", () => {
         throw new Error("Unexpected transaction type");
       }
       expect(transaction.recipient).toEqual(recipientAddress);
-      expect(transaction.amount.quantity).toEqual("5445500");
+      expect(transaction.amount.quantity).toEqual("445500");
       connection.disconnect();
     }, 30_000);
 
