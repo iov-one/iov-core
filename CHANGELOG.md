@@ -3,6 +3,8 @@
 ## 0.11.1
 
 * @iov/ethereum: Fix error reporting when signing and sending transactions
+* @iov/keycontrol: Add `HdPaths.ethereum` for Ethereum HD path derivation
+* @iov/keycontrol: Deprecate `HdPaths.metamaskHdKeyTree` in favour of `HdPaths.ethereum`
 
 ## 0.11.0
 
