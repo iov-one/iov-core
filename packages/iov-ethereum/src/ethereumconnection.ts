@@ -40,7 +40,7 @@ import {
   decodeHexQuantityNonce,
   decodeHexQuantityString,
   encodeQuantity,
-  hexPadToEven,
+  normalizeHex,
   toBcpChainId,
 } from "./utils";
 
@@ -580,7 +580,7 @@ export class EthereumConnection implements BcpConnection {
       Encoding.toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
       this.myChainId,
     );
-    const transactionId = `0x${hexPadToEven(transactionsResponse.result.hash)}` as TransactionId;
+    const transactionId = `0x${normalizeHex(transactionsResponse.result.hash)}` as TransactionId;
     return [
       {
         ...transaction,
@@ -622,7 +622,7 @@ export class EthereumConnection implements BcpConnection {
     for (const tx of responseBody.result) {
       if (tx.isError === "0" && tx.txreceipt_status === "1") {
         const transaction = Scraper.parseBytesTx(tx, this.myChainId);
-        const transactionId = `0x${hexPadToEven(tx.hash)}` as TransactionId;
+        const transactionId = `0x${normalizeHex(tx.hash)}` as TransactionId;
         transactions.push({
           ...transaction,
           height: Uint53.fromString(tx.blockNumber).toNumber(),

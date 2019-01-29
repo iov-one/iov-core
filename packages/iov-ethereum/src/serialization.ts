@@ -4,7 +4,7 @@ import { Encoding } from "@iov/encoding";
 
 import { isValidAddress } from "./derivation";
 import { BlknumForkState, Eip155ChainId, eip155V, toRlp } from "./encoding";
-import { encodeQuantity, encodeQuantityString, fromBcpChainId, hexPadToEven } from "./utils";
+import { encodeQuantity, encodeQuantityString, fromBcpChainId, normalizeHex } from "./utils";
 
 const { fromHex } = Encoding;
 
@@ -30,13 +30,13 @@ export class Serialization {
 
       // Last 3 items are v, r and s values. Are present to encode full structure.
       return toRlp([
-        fromHex(hexPadToEven(nonceHex)),
-        fromHex(hexPadToEven(gasPriceHex)),
-        fromHex(hexPadToEven(gasLimitHex)),
-        fromHex(hexPadToEven(unsigned.recipient)),
-        fromHex(hexPadToEven(valueHex)),
-        fromHex(hexPadToEven(dataHex)),
-        fromHex(hexPadToEven(chainIdHex)),
+        fromHex(normalizeHex(nonceHex)),
+        fromHex(normalizeHex(gasPriceHex)),
+        fromHex(normalizeHex(gasLimitHex)),
+        fromHex(normalizeHex(unsigned.recipient)),
+        fromHex(normalizeHex(valueHex)),
+        fromHex(normalizeHex(dataHex)),
+        fromHex(normalizeHex(chainIdHex)),
         new Uint8Array([]),
         new Uint8Array([]),
       ]);
@@ -80,13 +80,13 @@ export class Serialization {
           : { forkState: BlknumForkState.Before };
       const v = eip155V(chain, sig.recovery);
       const postableTx = toRlp([
-        fromHex(hexPadToEven(nonceHex)),
-        fromHex(hexPadToEven(gasPriceHex)),
-        fromHex(hexPadToEven(gasLimitHex)),
-        fromHex(hexPadToEven(unsigned.recipient)),
-        fromHex(hexPadToEven(valueHex)),
-        fromHex(hexPadToEven(dataHex)),
-        fromHex(hexPadToEven(encodeQuantity(v))),
+        fromHex(normalizeHex(nonceHex)),
+        fromHex(normalizeHex(gasPriceHex)),
+        fromHex(normalizeHex(gasLimitHex)),
+        fromHex(normalizeHex(unsigned.recipient)),
+        fromHex(normalizeHex(valueHex)),
+        fromHex(normalizeHex(dataHex)),
+        fromHex(normalizeHex(encodeQuantity(v))),
         r,
         s,
       ]);

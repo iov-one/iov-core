@@ -45,11 +45,17 @@ export function encodeQuantityString(value: string): string {
   return "0x" + new BN(value).toString(16);
 }
 
-export function hexPadToEven(hex: string): string {
-  if (hex.length % 2 !== 0) {
-    return "0" + hex.replace("0x", "");
+/**
+ * Takes a hex representation optionally prefixed with 0x and returns a normalized
+ * representation: unprefixed, padded to even characters count, lower case.
+ */
+export function normalizeHex(input: string): string {
+  const unprefixedLower = input.replace("0x", "").toLowerCase();
+  if (unprefixedLower.length % 2 !== 0) {
+    return "0" + unprefixedLower;
+  } else {
+    return unprefixedLower;
   }
-  return hex.replace("0x", "");
 }
 
 export function toBcpChainId(numericChainId: number): ChainId {

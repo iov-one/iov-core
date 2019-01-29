@@ -8,7 +8,7 @@ import {
   encodeQuantity,
   encodeQuantityString,
   fromBcpChainId,
-  hexPadToEven,
+  normalizeHex,
   toBcpChainId,
 } from "./utils";
 
@@ -136,12 +136,26 @@ describe("Ethereum utils", () => {
     });
   });
 
-  describe("hexPadToEven", () => {
-    it("transform to valid outputs", () => {
-      expect(hexPadToEven("0x")).toEqual("");
-      expect(hexPadToEven("0x2")).toEqual("02");
-      expect(hexPadToEven("0x5208")).toEqual("5208");
-      expect(hexPadToEven("0x4a817c800")).toEqual("04a817c800");
+  describe("normalizeHex", () => {
+    it("drops prefixes", () => {
+      expect(normalizeHex("0x")).toEqual("");
+      expect(normalizeHex("0x01")).toEqual("01");
+      expect(normalizeHex("0x52ab")).toEqual("52ab");
+    });
+
+    it("padds to even hex character count", () => {
+      expect(normalizeHex("2")).toEqual("02");
+      expect(normalizeHex("0x2")).toEqual("02");
+      expect(normalizeHex("0x0")).toEqual("00");
+      expect(normalizeHex("2ab")).toEqual("02ab");
+      expect(normalizeHex("0x2ab")).toEqual("02ab");
+    });
+
+    it("converts to lower case", () => {
+      expect(normalizeHex("AB")).toEqual("ab");
+      expect(normalizeHex("Ab")).toEqual("ab");
+      expect(normalizeHex("aB")).toEqual("ab");
+      expect(normalizeHex("ab")).toEqual("ab");
     });
   });
 
