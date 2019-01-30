@@ -43,6 +43,10 @@ before_install:
     yarn global add node-gyp
   fi
 
+# Override default install step
+install:
+  - true
+
 before_script:
 # Make variables and function from Travis available in our script
 # See implementation https://github.com/travis-ci/travis-build/blob/4041ba116ddb3bdfd66ab8acbb7094dee28d6797/lib/travis/build/templates/header.sh
