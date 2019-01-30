@@ -57,7 +57,13 @@ export function main(originalArgs: ReadonlyArray<string>): void {
     ],
     ["@iov/crypto", ["Bip39", "Ed25519", "Ed25519Keypair", "Random", "Sha256", "Sha512"]],
     ["@iov/encoding", ["Bech32", "Encoding"]],
+    [
+      "@iov/ethereum",
+      ["EthereumConnection", "EthereumConnectionOptions", "ethereumConnector", "ethereumCodec"],
+    ],
     ["@iov/faucets", ["IovFaucet"]],
+    ["@iov/lisk", ["liskCodec", "LiskConnection", "liskConnector"]],
+    ["@iov/rise", ["riseCodec", "RiseConnection", "riseConnector"]],
   ]);
 
   // console.log("Called main with:", args);
