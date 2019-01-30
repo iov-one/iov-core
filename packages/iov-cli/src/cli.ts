@@ -34,6 +34,7 @@ export function main(originalArgs: ReadonlyArray<string>): void {
   }
 
   const imports = new Map<string, ReadonlyArray<string>>([
+    ["@iov/bcp-types", ["Algorithm", "PublicKeyBytes"]],
     ["@iov/bns", ["bnsCodec", "bnsConnector", "SetNameTx"]],
     [
       "@iov/core",
@@ -55,11 +56,32 @@ export function main(originalArgs: ReadonlyArray<string>): void {
         "WalletSerializationString",
       ],
     ],
-    ["@iov/crypto", ["Bip39", "Ed25519", "Ed25519Keypair", "Random", "Sha256", "Sha512"]],
+    [
+      "@iov/crypto",
+      [
+        "Bip39",
+        "Ed25519",
+        "Ed25519Keypair",
+        "EnglishMnemonic",
+        "Random",
+        "Secp256k1",
+        "Sha256",
+        "Sha512",
+        "Slip10",
+        "Slip10Curve",
+        "Slip10RawIndex",
+      ],
+    ],
     ["@iov/encoding", ["Bech32", "Encoding"]],
     [
       "@iov/ethereum",
-      ["EthereumConnection", "EthereumConnectionOptions", "ethereumConnector", "ethereumCodec"],
+      [
+        "EthereumConnection",
+        "EthereumConnectionOptions",
+        "ethereumConnector",
+        "ethereumCodec",
+        "pubkeyToAddress as ethereumPubkeyToAddress",
+      ],
     ],
     ["@iov/faucets", ["IovFaucet"]],
     ["@iov/lisk", ["liskCodec", "LiskConnection", "liskConnector"]],
