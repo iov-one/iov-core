@@ -23,6 +23,7 @@ const status = await client.status();
 
 | IOV-Core version | Supported tendermint versions |
 |------------------|-------------------------------|
+| 0.12             | 0.25.x, 0.27.x - 0.29.x       |
 | 0.11             | 0.25.x, 0.27.x                |
 | 0.9 – 0.10       | 0.20.x, 0.21.x, 0.25.x        |
 | 0.1 – 0.8        | 0.20.x, 0.21.x                |
