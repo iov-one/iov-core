@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.2
+
+* @iov/ethereum: Expose `pubkeyToAddress`
+
 ## 0.11.1
 
 * @iov/ethereum: Fix error reporting when signing and sending transactions

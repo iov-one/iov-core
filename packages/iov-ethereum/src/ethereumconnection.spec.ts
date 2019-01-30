@@ -24,7 +24,7 @@ import { Random, Secp256k1 } from "@iov/crypto";
 import { HdPaths, Secp256k1HdWallet, UserProfile, Wallet } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 
-import { keyToAddress } from "./derivation";
+import { pubkeyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
 import { testConfig } from "./testconfig.spec";
@@ -55,7 +55,7 @@ function sleep(ms: number): Promise<void> {
 
 async function randomAddress(): Promise<Address> {
   const keypair = await Secp256k1.makeKeypair(await Random.getBytes(32));
-  return keyToAddress({
+  return pubkeyToAddress({
     algo: Algorithm.Secp256k1,
     data: keypair.pubkey as PublicKeyBytes,
   });
