@@ -24,16 +24,16 @@ addons:
 
 env:
   matrix:
-    - MODE="tests"
-    - MODE="docs"
-    - MODE="lint"
+    - MODE=tests
+    - MODE=docs
+    - MODE=lint
 
 matrix:
   exclude:
     - os: osx
-      env: MODE="docs"
+      env: MODE=docs
     - os: osx
-      env: MODE="lint"
+      env: MODE=lint
 
 before_install:
 # add dependencies to compile node-hid (no prebuilt available)
