@@ -20,6 +20,10 @@ docker run --user="$UID" \
   "tendermint/tendermint:${VERSION}" \
   init
 
+# make sure we allow cors origins, only possible by modifying the config file
+# https://github.com/tendermint/tendermint/issues/3216
+sed -ie 's/cors_allowed_origins.*$/cors_allowed_origins = ["*"]/' "${TMP_DIR}/config/config.toml"
+
 # must enable tx index for search and subscribe
 docker run --user="$UID" \
   --name "$NAME" \
