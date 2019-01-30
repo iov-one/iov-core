@@ -18,12 +18,15 @@ export interface EthereumNetworkConfig {
   readonly wsUrl: string;
   readonly chainId: ChainId;
   readonly minHeight: number;
-  readonly pubkey: PublicKeyBundle;
-  readonly address: Address;
-  /** expected balance for the `address` */
-  readonly expectedBalance: Amount;
-  /** expected nonce for the `address` */
-  readonly expectedNonce: Nonce;
+  /** one account with fixed state */
+  readonly accountState: {
+    readonly pubkey: PublicKeyBundle;
+    readonly address: Address;
+    /** expected balance for the `address` */
+    readonly expectedBalance: Amount;
+    /** expected nonce for the `address` */
+    readonly expectedNonce: Nonce;
+  };
   readonly gasPrice: Amount;
   readonly gasLimit: Amount;
   readonly waitForTx: number;
@@ -56,19 +59,21 @@ const local: EthereumNetworkConfig = {
   wsUrl: "ws://localhost:8545",
   chainId: "ethereum-eip155-5777" as ChainId,
   minHeight: 0, // ganache does not auto-generate a genesis block
-  pubkey: {
-    algo: Algorithm.Secp256k1,
-    data: fromHex(
-      "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
-    ) as PublicKeyBytes,
+  accountState: {
+    pubkey: {
+      algo: Algorithm.Secp256k1,
+      data: fromHex(
+        "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
+      ) as PublicKeyBytes,
+    },
+    address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
+    expectedBalance: {
+      quantity: "100000000000000000000",
+      fractionalDigits: 18,
+      tokenTicker: "ETH" as TokenTicker,
+    },
+    expectedNonce: new Int53(0) as Nonce,
   },
-  address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
-  expectedBalance: {
-    quantity: "100000000000000000000",
-    fractionalDigits: 18,
-    tokenTicker: "ETH" as TokenTicker,
-  },
-  expectedNonce: new Int53(0) as Nonce,
   gasPrice: {
     quantity: "20000000000",
     fractionalDigits: 18,
@@ -101,19 +106,21 @@ const testnetRopsten: EthereumNetworkConfig = {
   wsUrl: "wss://ropsten.infura.io/ws",
   chainId: "ethereum-eip155-3" as ChainId,
   minHeight: 4284887,
-  pubkey: {
-    algo: Algorithm.Secp256k1,
-    data: fromHex(
-      "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
-    ) as PublicKeyBytes,
+  accountState: {
+    pubkey: {
+      algo: Algorithm.Secp256k1,
+      data: fromHex(
+        "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
+      ) as PublicKeyBytes,
+    },
+    address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
+    expectedBalance: {
+      quantity: "2999979000000000000",
+      fractionalDigits: 18,
+      tokenTicker: "ETH" as TokenTicker,
+    },
+    expectedNonce: new Int53(1) as Nonce,
   },
-  address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
-  expectedBalance: {
-    quantity: "2999979000000000000",
-    fractionalDigits: 18,
-    tokenTicker: "ETH" as TokenTicker,
-  },
-  expectedNonce: new Int53(1) as Nonce,
   gasPrice: {
     quantity: "1000000000",
     fractionalDigits: 18,
@@ -149,19 +156,21 @@ const testnetRinkeby: EthereumNetworkConfig = {
   wsUrl: "wss://rinkeby.infura.io/ws",
   chainId: "ethereum-eip155-4" as ChainId,
   minHeight: 3211058,
-  pubkey: {
-    algo: Algorithm.Secp256k1,
-    data: fromHex(
-      "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
-    ) as PublicKeyBytes,
+  accountState: {
+    pubkey: {
+      algo: Algorithm.Secp256k1,
+      data: fromHex(
+        "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
+      ) as PublicKeyBytes,
+    },
+    address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
+    expectedBalance: {
+      quantity: "20000000000000000",
+      fractionalDigits: 18,
+      tokenTicker: "ETH" as TokenTicker,
+    },
+    expectedNonce: new Int53(0) as Nonce,
   },
-  address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
-  expectedBalance: {
-    quantity: "20000000000000000",
-    fractionalDigits: 18,
-    tokenTicker: "ETH" as TokenTicker,
-  },
-  expectedNonce: new Int53(0) as Nonce,
   gasPrice: {
     quantity: "1000000000",
     fractionalDigits: 18,

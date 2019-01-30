@@ -168,11 +168,11 @@ describe("EthereumConnection", () => {
     it("can get account from address", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(testConfig.base);
-      const account = await connection.getAccount({ address: testConfig.address });
+      const account = await connection.getAccount({ address: testConfig.accountState.address });
       expect(account).toBeDefined();
-      expect(account!.address).toEqual(testConfig.address);
+      expect(account!.address).toEqual(testConfig.accountState.address);
       expect(account!.balance[0]).toEqual({
-        ...testConfig.expectedBalance,
+        ...testConfig.accountState.expectedBalance,
         tokenName: "Ether",
       });
       connection.disconnect();
@@ -181,11 +181,11 @@ describe("EthereumConnection", () => {
     it("can get account from pubkey", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(testConfig.base);
-      const account = await connection.getAccount({ pubkey: testConfig.pubkey });
+      const account = await connection.getAccount({ pubkey: testConfig.accountState.pubkey });
       expect(account).toBeDefined();
-      expect(account!.address).toEqual(testConfig.address);
+      expect(account!.address).toEqual(testConfig.accountState.address);
       expect(account!.balance[0]).toEqual({
-        ...testConfig.expectedBalance,
+        ...testConfig.accountState.expectedBalance,
         tokenName: "Ether",
       });
       connection.disconnect();
@@ -223,14 +223,14 @@ describe("EthereumConnection", () => {
 
       // by address
       {
-        const nonce = await connection.getNonce({ address: testConfig.address });
-        expect(nonce).toEqual(testConfig.expectedNonce);
+        const nonce = await connection.getNonce({ address: testConfig.accountState.address });
+        expect(nonce).toEqual(testConfig.accountState.expectedNonce);
       }
 
       // by pubkey
       {
-        const nonce = await connection.getNonce({ pubkey: testConfig.pubkey });
-        expect(nonce).toEqual(testConfig.expectedNonce);
+        const nonce = await connection.getNonce({ pubkey: testConfig.accountState.pubkey });
+        expect(nonce).toEqual(testConfig.accountState.expectedNonce);
       }
       connection.disconnect();
     });
@@ -243,44 +243,44 @@ describe("EthereumConnection", () => {
 
       // by address, 0 nonces
       {
-        const nonces = await connection.getNonces({ address: testConfig.address }, 0);
+        const nonces = await connection.getNonces({ address: testConfig.accountState.address }, 0);
         expect(nonces.length).toEqual(0);
       }
 
       // by address, 1 nonces
       {
-        const nonces = await connection.getNonces({ address: testConfig.address }, 1);
+        const nonces = await connection.getNonces({ address: testConfig.accountState.address }, 1);
         expect(nonces.length).toEqual(1);
-        expect(nonces[0].toNumber()).toEqual(testConfig.expectedNonce.toNumber());
+        expect(nonces[0].toNumber()).toEqual(testConfig.accountState.expectedNonce.toNumber());
       }
 
       // by address, 2 nonces
       {
-        const nonces = await connection.getNonces({ address: testConfig.address }, 2);
+        const nonces = await connection.getNonces({ address: testConfig.accountState.address }, 2);
         expect(nonces.length).toEqual(2);
-        expect(nonces[0].toNumber()).toEqual(testConfig.expectedNonce.toNumber());
-        expect(nonces[1].toNumber()).toEqual(testConfig.expectedNonce.toNumber() + 1);
+        expect(nonces[0].toNumber()).toEqual(testConfig.accountState.expectedNonce.toNumber());
+        expect(nonces[1].toNumber()).toEqual(testConfig.accountState.expectedNonce.toNumber() + 1);
       }
 
       // by pubkey, 0 nonces
       {
-        const nonces = await connection.getNonces({ pubkey: testConfig.pubkey }, 0);
+        const nonces = await connection.getNonces({ pubkey: testConfig.accountState.pubkey }, 0);
         expect(nonces.length).toEqual(0);
       }
 
       // by pubkey, 1 nonces
       {
-        const nonces = await connection.getNonces({ pubkey: testConfig.pubkey }, 1);
+        const nonces = await connection.getNonces({ pubkey: testConfig.accountState.pubkey }, 1);
         expect(nonces.length).toEqual(1);
-        expect(nonces[0].toNumber()).toEqual(testConfig.expectedNonce.toNumber());
+        expect(nonces[0].toNumber()).toEqual(testConfig.accountState.expectedNonce.toNumber());
       }
 
       // by pubkey, 2 nonces
       {
-        const nonces = await connection.getNonces({ pubkey: testConfig.pubkey }, 2);
+        const nonces = await connection.getNonces({ pubkey: testConfig.accountState.pubkey }, 2);
         expect(nonces.length).toEqual(2);
-        expect(nonces[0].toNumber()).toEqual(testConfig.expectedNonce.toNumber());
-        expect(nonces[1].toNumber()).toEqual(testConfig.expectedNonce.toNumber() + 1);
+        expect(nonces[0].toNumber()).toEqual(testConfig.accountState.expectedNonce.toNumber());
+        expect(nonces[1].toNumber()).toEqual(testConfig.accountState.expectedNonce.toNumber() + 1);
       }
 
       connection.disconnect();
