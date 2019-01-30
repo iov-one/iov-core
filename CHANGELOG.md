@@ -2,6 +2,7 @@
 
 ## 0.11.2
 
+* @iov/cli: Import Lisk, RISE and Ethereum symbols automatically
 * @iov/ethereum: Expose `pubkeyToAddress`
 
 ## 0.11.1
