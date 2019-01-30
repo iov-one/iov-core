@@ -33,6 +33,33 @@ export function main(originalArgs: ReadonlyArray<string>): void {
     return;
   }
 
+  const imports = new Map<string, ReadonlyArray<string>>([
+    ["@iov/bns", ["bnsCodec", "bnsConnector", "SetNameTx"]],
+    [
+      "@iov/core",
+      [
+        "Address",
+        "ChainId",
+        "Ed25519HdWallet",
+        "HdPaths",
+        "Keyring",
+        "MultiChainSigner",
+        "Nonce",
+        "Secp256k1HdWallet",
+        "SendTransaction",
+        "TokenTicker",
+        "UserProfile",
+        "Wallet",
+        "WalletId",
+        "WalletImplementationIdString",
+        "WalletSerializationString",
+      ],
+    ],
+    ["@iov/crypto", ["Bip39", "Ed25519", "Ed25519Keypair", "Random", "Sha256", "Sha512"]],
+    ["@iov/encoding", ["Bech32", "Encoding"]],
+    ["@iov/faucets", ["IovFaucet"]],
+  ]);
+
   // console.log("Called main with:", args);
   console.log(colors.green("Initializing session for you. Have fun!"));
   console.log(colors.yellow("Available imports:"));
@@ -42,38 +69,12 @@ export function main(originalArgs: ReadonlyArray<string>): void {
   console.log(colors.yellow("  * levelup"));
   console.log(colors.yellow("  * from long"));
   console.log(colors.yellow("    - Long"));
-  console.log(colors.yellow("  * from @iov/bns"));
-  console.log(colors.yellow("    - bnsCodec"));
-  console.log(colors.yellow("    - bnsConnector"));
-  console.log(colors.yellow("    - SetNameTx"));
-  console.log(colors.yellow("  * from @iov/core"));
-  console.log(colors.yellow("    - Address"));
-  console.log(colors.yellow("    - ChainId"));
-  console.log(colors.yellow("    - Ed25519HdWallet"));
-  console.log(colors.yellow("    - HdPaths"));
-  console.log(colors.yellow("    - Keyring"));
-  console.log(colors.yellow("    - MultiChainSigner"));
-  console.log(colors.yellow("    - Nonce"));
-  console.log(colors.yellow("    - UserProfile"));
-  console.log(colors.yellow("    - Secp256k1HdWallet"));
-  console.log(colors.yellow("    - SendTransaction"));
-  console.log(colors.yellow("    - TokenTicker"));
-  console.log(colors.yellow("    - Wallet"));
-  console.log(colors.yellow("    - WalletId"));
-  console.log(colors.yellow("    - WalletImplementationIdString"));
-  console.log(colors.yellow("    - WalletSerializationString"));
-  console.log(colors.yellow("  * from @iov/crypto"));
-  console.log(colors.yellow("    - Bip39"));
-  console.log(colors.yellow("    - Ed25519"));
-  console.log(colors.yellow("    - Ed25519Keypair"));
-  console.log(colors.yellow("    - Random"));
-  console.log(colors.yellow("    - Sha256"));
-  console.log(colors.yellow("    - Sha512"));
-  console.log(colors.yellow("  * from @iov/encoding"));
-  console.log(colors.yellow("    - Bech32"));
-  console.log(colors.yellow("    - Encoding"));
-  console.log(colors.yellow("  * from @iov/faucets"));
-  console.log(colors.yellow("    - IovFaucet"));
+  for (const moduleName of imports.keys()) {
+    console.log(colors.yellow(`  * from ${moduleName}`));
+    for (const symbol of imports.get(moduleName)!) {
+      console.log(colors.yellow(`    - ${symbol}`));
+    }
+  }
   console.log(colors.yellow("  * helper functions"));
   console.log(colors.yellow("    - toAscii"));
   console.log(colors.yellow("    - fromHex"));
@@ -85,33 +86,11 @@ export function main(originalArgs: ReadonlyArray<string>): void {
     import * as http from 'http';
     import * as https from 'https';
     import Long from "long";
-    import {
-      bnsCodec,
-      bnsConnector,
-      SetNameTx,
-    } from '@iov/bns';
-    import {
-      Address,
-      ChainId,
-      Ed25519HdWallet,
-      HdPaths,
-      Keyring,
-      MultiChainSigner,
-      Nonce,
-      Secp256k1HdWallet,
-      SendTransaction,
-      TokenTicker,
-      UserProfile,
-      Wallet,
-      WalletId,
-      WalletImplementationIdString,
-      WalletSerializationString,
-    } from "@iov/core";
-    import { Bip39, Ed25519, Ed25519Keypair, Random, Sha256, Sha512 } from '@iov/crypto';
-    import { Bech32, Encoding } from '@iov/encoding';
-    import { IovFaucet } from '@iov/faucets';
-    const { toAscii, fromHex, toHex } = Encoding;
   `;
+  for (const moduleName of imports.keys()) {
+    init += `import { ${imports.get(moduleName)!.join(", ")} } from "${moduleName}";\n`;
+  }
+  init += `const { toAscii, fromHex, toHex } = Encoding;\n`;
 
   if (args.selftest) {
     // execute some trival stuff and exit
