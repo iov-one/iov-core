@@ -24,7 +24,7 @@ import { Random, Secp256k1 } from "@iov/crypto";
 import { HdPaths, Secp256k1HdWallet, UserProfile, Wallet } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 
-import { keyToAddress } from "./derivation";
+import { pubkeyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
 import { testConfig } from "./testconfig.spec";
@@ -55,7 +55,7 @@ function sleep(ms: number): Promise<void> {
 
 async function randomAddress(): Promise<Address> {
   const keypair = await Secp256k1.makeKeypair(await Random.getBytes(32));
-  return keyToAddress({
+  return pubkeyToAddress({
     algo: Algorithm.Secp256k1,
     data: keypair.pubkey as PublicKeyBytes,
   });
@@ -168,11 +168,11 @@ describe("EthereumConnection", () => {
     it("can get account from address", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(testConfig.base);
-      const account = await connection.getAccount({ address: testConfig.address });
+      const account = await connection.getAccount({ address: testConfig.accountState.address });
       expect(account).toBeDefined();
-      expect(account!.address).toEqual(testConfig.address);
+      expect(account!.address).toEqual(testConfig.accountState.address);
       expect(account!.balance[0]).toEqual({
-        ...testConfig.expectedBalance,
+        ...testConfig.accountState.expectedBalance,
         tokenName: "Ether",
       });
       connection.disconnect();
@@ -181,11 +181,11 @@ describe("EthereumConnection", () => {
     it("can get account from pubkey", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(testConfig.base);
-      const account = await connection.getAccount({ pubkey: testConfig.pubkey });
+      const account = await connection.getAccount({ pubkey: testConfig.accountState.pubkey });
       expect(account).toBeDefined();
-      expect(account!.address).toEqual(testConfig.address);
+      expect(account!.address).toEqual(testConfig.accountState.address);
       expect(account!.balance[0]).toEqual({
-        ...testConfig.expectedBalance,
+        ...testConfig.accountState.expectedBalance,
         tokenName: "Ether",
       });
       connection.disconnect();
@@ -223,14 +223,14 @@ describe("EthereumConnection", () => {
 
       // by address
       {
-        const nonce = await connection.getNonce({ address: testConfig.address });
-        expect(nonce).toEqual(testConfig.expectedNonce);
+        const nonce = await connection.getNonce({ address: testConfig.accountState.address });
+        expect(nonce).toEqual(testConfig.accountState.expectedNonce);
       }
 
       // by pubkey
       {
-        const nonce = await connection.getNonce({ pubkey: testConfig.pubkey });
-        expect(nonce).toEqual(testConfig.expectedNonce);
+        const nonce = await connection.getNonce({ pubkey: testConfig.accountState.pubkey });
+        expect(nonce).toEqual(testConfig.accountState.expectedNonce);
       }
       connection.disconnect();
     });
@@ -243,44 +243,44 @@ describe("EthereumConnection", () => {
 
       // by address, 0 nonces
       {
-        const nonces = await connection.getNonces({ address: testConfig.address }, 0);
+        const nonces = await connection.getNonces({ address: testConfig.accountState.address }, 0);
         expect(nonces.length).toEqual(0);
       }
 
       // by address, 1 nonces
       {
-        const nonces = await connection.getNonces({ address: testConfig.address }, 1);
+        const nonces = await connection.getNonces({ address: testConfig.accountState.address }, 1);
         expect(nonces.length).toEqual(1);
-        expect(nonces[0].toNumber()).toEqual(testConfig.expectedNonce.toNumber());
+        expect(nonces[0].toNumber()).toEqual(testConfig.accountState.expectedNonce.toNumber());
       }
 
       // by address, 2 nonces
       {
-        const nonces = await connection.getNonces({ address: testConfig.address }, 2);
+        const nonces = await connection.getNonces({ address: testConfig.accountState.address }, 2);
         expect(nonces.length).toEqual(2);
-        expect(nonces[0].toNumber()).toEqual(testConfig.expectedNonce.toNumber());
-        expect(nonces[1].toNumber()).toEqual(testConfig.expectedNonce.toNumber() + 1);
+        expect(nonces[0].toNumber()).toEqual(testConfig.accountState.expectedNonce.toNumber());
+        expect(nonces[1].toNumber()).toEqual(testConfig.accountState.expectedNonce.toNumber() + 1);
       }
 
       // by pubkey, 0 nonces
       {
-        const nonces = await connection.getNonces({ pubkey: testConfig.pubkey }, 0);
+        const nonces = await connection.getNonces({ pubkey: testConfig.accountState.pubkey }, 0);
         expect(nonces.length).toEqual(0);
       }
 
       // by pubkey, 1 nonces
       {
-        const nonces = await connection.getNonces({ pubkey: testConfig.pubkey }, 1);
+        const nonces = await connection.getNonces({ pubkey: testConfig.accountState.pubkey }, 1);
         expect(nonces.length).toEqual(1);
-        expect(nonces[0].toNumber()).toEqual(testConfig.expectedNonce.toNumber());
+        expect(nonces[0].toNumber()).toEqual(testConfig.accountState.expectedNonce.toNumber());
       }
 
       // by pubkey, 2 nonces
       {
-        const nonces = await connection.getNonces({ pubkey: testConfig.pubkey }, 2);
+        const nonces = await connection.getNonces({ pubkey: testConfig.accountState.pubkey }, 2);
         expect(nonces.length).toEqual(2);
-        expect(nonces[0].toNumber()).toEqual(testConfig.expectedNonce.toNumber());
-        expect(nonces[1].toNumber()).toEqual(testConfig.expectedNonce.toNumber() + 1);
+        expect(nonces[0].toNumber()).toEqual(testConfig.accountState.expectedNonce.toNumber());
+        expect(nonces[1].toNumber()).toEqual(testConfig.accountState.expectedNonce.toNumber() + 1);
       }
 
       connection.disconnect();
@@ -293,13 +293,13 @@ describe("EthereumConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
-      const secondIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
+      const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
       const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        creator: secondIdentity,
+        creator: mainIdentity,
         recipient: recipientAddress,
         amount: defaultAmount,
         gasPrice: testConfig.gasPrice,
@@ -307,8 +307,8 @@ describe("EthereumConnection", () => {
         memo: "We \u2665 developers – iov.one",
       };
       const connection = await EthereumConnection.establish(testConfig.base);
-      const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
-      const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
+      const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
+      const signed = await profile.signTransaction(wallet.id, mainIdentity, sendTx, ethereumCodec, nonce);
       const bytesToPost = ethereumCodec.bytesToPost(signed);
 
       const result = await connection.postTx(bytesToPost);
@@ -326,13 +326,13 @@ describe("EthereumConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
-      const secondIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
+      const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
       const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        creator: secondIdentity,
+        creator: mainIdentity,
         recipient: recipientAddress,
         amount: defaultAmount,
         gasPrice: testConfig.gasPrice,
@@ -340,8 +340,8 @@ describe("EthereumConnection", () => {
         memo: "We \u2665 developers – iov.one",
       };
       const connection = await EthereumConnection.establish(testConfig.base);
-      const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
-      const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
+      const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
+      const signed = await profile.signTransaction(wallet.id, mainIdentity, sendTx, ethereumCodec, nonce);
       const bytesToPost = ethereumCodec.bytesToPost(signed);
 
       const heightBeforeTransaction = await connection.height();
@@ -371,11 +371,11 @@ describe("EthereumConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
-      const secondIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
+      const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        creator: secondIdentity,
+        creator: mainIdentity,
         recipient: await randomAddress(),
         amount: defaultAmount,
         gasPrice: testConfig.gasPrice,
@@ -386,8 +386,8 @@ describe("EthereumConnection", () => {
         },
         memo: "We \u2665 developers – iov.one",
       };
-      const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
-      const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
+      const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
+      const signed = await profile.signTransaction(wallet.id, mainIdentity, sendTx, ethereumCodec, nonce);
       await connection
         .postTx(ethereumCodec.bytesToPost(signed))
         .then(() => fail("must not resolve"))
@@ -434,11 +434,11 @@ describe("EthereumConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
-      const secondIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
+      const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        creator: secondIdentity,
+        creator: mainIdentity,
         recipient: await randomAddress(),
         amount: defaultAmount,
         gasPrice: testConfig.gasPrice,
@@ -446,8 +446,8 @@ describe("EthereumConnection", () => {
         memo: "We \u2665 developers – iov.one",
       };
       const connection = await EthereumConnection.establish(testConfig.base);
-      const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
-      const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
+      const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
+      const signed = await profile.signTransaction(wallet.id, mainIdentity, sendTx, ethereumCodec, nonce);
       // tslint:disable-next-line:no-bitwise no-object-mutation
       signed.primarySignature.signature[0] ^= 1;
       // Alternatively we could corrupt the message
@@ -501,9 +501,9 @@ describe("EthereumConnection", () => {
 
         // post transactions
         const wallet = Secp256k1HdWallet.fromMnemonic(defaultMnemonic);
-        const secondIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.ethereum(1));
-        const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
-        await postTransaction(wallet, secondIdentity, nonce, recipient, connection);
+        const mainIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.ethereum(0));
+        const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
+        await postTransaction(wallet, mainIdentity, nonce, recipient, connection);
       })().catch(done.fail);
     }, 90_000);
   });
@@ -535,13 +535,13 @@ describe("EthereumConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
-      const secondIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
+      const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
       const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        creator: secondIdentity,
+        creator: mainIdentity,
         recipient: recipientAddress,
         amount: defaultAmount,
         gasPrice: testConfig.gasPrice,
@@ -549,8 +549,8 @@ describe("EthereumConnection", () => {
         memo: `Search tx test ${Math.random()}`,
       };
       const connection = await EthereumConnection.establish(testConfig.base);
-      const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
-      const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
+      const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
+      const signed = await profile.signTransaction(wallet.id, mainIdentity, sendTx, ethereumCodec, nonce);
       const bytesToPost = ethereumCodec.bytesToPost(signed);
 
       const resultPost = await connection.postTx(bytesToPost);
@@ -609,21 +609,21 @@ describe("EthereumConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
-      const secondIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
+      const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
       const recipientAddress = await randomAddress();
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
-        creator: secondIdentity,
+        creator: mainIdentity,
         recipient: recipientAddress,
         amount: defaultAmount,
         gasPrice: testConfig.gasPrice,
         gasLimit: testConfig.gasLimit,
         memo: `Search tx test ${new Date()}`,
       };
-      const nonce = await connection.getNonce({ pubkey: secondIdentity.pubkey });
-      const signed = await profile.signTransaction(wallet.id, secondIdentity, sendTx, ethereumCodec, nonce);
+      const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
+      const signed = await profile.signTransaction(wallet.id, mainIdentity, sendTx, ethereumCodec, nonce);
       const bytesToPost = ethereumCodec.bytesToPost(signed);
 
       const resultPost = await connection.postTx(bytesToPost);
@@ -1103,12 +1103,12 @@ describe("EthereumConnection", () => {
 
         // post transactions
         const wallet = Secp256k1HdWallet.fromMnemonic(defaultMnemonic);
-        const secondIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.ethereum(1));
+        const mainIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.ethereum(0));
 
-        const [nonceA, nonceB] = await connection.getNonces({ pubkey: secondIdentity.pubkey }, 2);
+        const [nonceA, nonceB] = await connection.getNonces({ pubkey: mainIdentity.pubkey }, 2);
         const recipient = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
-        await postTransaction(wallet, secondIdentity, nonceA, recipient, connection);
-        await postTransaction(wallet, secondIdentity, nonceB, recipient, connection);
+        await postTransaction(wallet, mainIdentity, nonceA, recipient, connection);
+        await postTransaction(wallet, mainIdentity, nonceB, recipient, connection);
       })().catch(done.fail);
     }, 45_000);
   });

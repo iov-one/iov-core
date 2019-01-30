@@ -20,7 +20,7 @@ import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
 import { constants } from "./constants";
-import { isValidAddress, keyToAddress, toChecksumAddress } from "./derivation";
+import { isValidAddress, pubkeyToAddress, toChecksumAddress } from "./derivation";
 import { BlknumForkState, Eip155ChainId, getRecoveryParam } from "./encoding";
 import { Serialization } from "./serialization";
 import {
@@ -105,7 +105,7 @@ export const ethereumCodec: TxCodec = {
     };
   },
   identityToAddress: (identity: PublicIdentity): Address => {
-    return keyToAddress(identity.pubkey);
+    return pubkeyToAddress(identity.pubkey);
   },
   isValidAddress: isValidAddress,
 };

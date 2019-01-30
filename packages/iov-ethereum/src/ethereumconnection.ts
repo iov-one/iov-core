@@ -31,7 +31,7 @@ import { StreamingSocket } from "@iov/socket";
 import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
-import { keyToAddress } from "./derivation";
+import { pubkeyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { Parse, Scraper } from "./parse";
@@ -198,7 +198,7 @@ export class EthereumConnection implements BcpConnection {
   }
 
   public async getAccount(query: BcpAccountQuery): Promise<BcpAccount | undefined> {
-    const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
+    const address = isPubkeyQuery(query) ? pubkeyToAddress(query.pubkey) : query.address;
 
     // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance
     const response = await this.rpcClient.run({
@@ -228,7 +228,7 @@ export class EthereumConnection implements BcpConnection {
   }
 
   public async getNonce(query: BcpAddressQuery | BcpPubkeyQuery): Promise<Nonce> {
-    const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
+    const address = isPubkeyQuery(query) ? pubkeyToAddress(query.pubkey) : query.address;
 
     // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount
     const response = await this.rpcClient.run({
@@ -372,7 +372,7 @@ export class EthereumConnection implements BcpConnection {
   }
 
   public watchAccount(query: BcpAccountQuery): Stream<BcpAccount | undefined> {
-    const address = isPubkeyQuery(query) ? keyToAddress(query.pubkey) : query.address;
+    const address = isPubkeyQuery(query) ? pubkeyToAddress(query.pubkey) : query.address;
 
     let pollInterval: NodeJS.Timeout | undefined;
     let lastEvent: any = {}; // use non-undefined init value ensure undefined is sent as an event
