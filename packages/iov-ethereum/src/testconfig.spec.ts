@@ -63,12 +63,12 @@ const local: EthereumNetworkConfig = {
     pubkey: {
       algo: Algorithm.Secp256k1,
       data: fromHex(
-        "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
+        "041d4c015b00cbd914e280b871d3c6ae2a047ca650d3ecea4b5246bb3036d4d74960b7feb09068164d2b82f1c7df9e95839b29ae38e90d60578b2318a54e108cf8",
       ) as PublicKeyBytes,
     },
-    address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
+    address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
     expectedBalance: {
-      quantity: "100000000000000000000",
+      quantity: "1234567890987654321",
       fractionalDigits: 18,
       tokenTicker: "ETH" as TokenTicker,
     },
@@ -100,6 +100,7 @@ const local: EthereumNetworkConfig = {
   },
 };
 
+/** Ropsten config is not well maintained and probably outdated. Use at your won risk. */
 const testnetRopsten: EthereumNetworkConfig = {
   env: "ropsten",
   base: "https://ropsten.infura.io/",
@@ -160,16 +161,16 @@ const testnetRinkeby: EthereumNetworkConfig = {
     pubkey: {
       algo: Algorithm.Secp256k1,
       data: fromHex(
-        "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
+        "041d4c015b00cbd914e280b871d3c6ae2a047ca650d3ecea4b5246bb3036d4d74960b7feb09068164d2b82f1c7df9e95839b29ae38e90d60578b2318a54e108cf8",
       ) as PublicKeyBytes,
     },
-    address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
+    address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
     expectedBalance: {
-      quantity: "20000000000000000",
+      quantity: "7500016481703733500",
       fractionalDigits: 18,
       tokenTicker: "ETH" as TokenTicker,
     },
-    expectedNonce: new Int53(0) as Nonce,
+    expectedNonce: new Int53(463) as Nonce,
   },
   gasPrice: {
     quantity: "1000000000",
