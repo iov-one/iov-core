@@ -1,13 +1,18 @@
 #!/bin/bash
-# shellcheck disable=SC1091
 set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
 #
-# Config
+# Includes
 #
 
-export TSLINT_FLAGS='-c ./tslint_ci.json'
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# shellcheck disable=SC1090
+source "$SCRIPT_DIR/_includes.sh";
+
+#
+# Config
+#
 
 # Ensure consecutive Safari sessions don't re-open old tabs
 # https://github.com/karma-runner/karma-safari-launcher/issues/6
@@ -15,23 +20,9 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
   defaults write com.apple.Safari ApplePersistenceIgnoreState YES
 fi
 
-function fold_start() {
-  export CURRENT_FOLD_NAME="$1"
-  travis_fold start "$CURRENT_FOLD_NAME"
-  travis_time_start
-}
-
-function fold_end() {
-  travis_time_finish
-  travis_fold end "$CURRENT_FOLD_NAME"
-}
-
 #
 # Install
 #
-
-source ./scripts/retry.sh
-retry 3 yarn install
 
 # For socketserver
 pip3 install websockets
@@ -99,19 +90,11 @@ fold_start "update-npmipgnore"
 ./scripts/update_npmignore.sh
 fold_end
 
-fold_start "yarn-lint"
-yarn lint
-fold_end
-
 fold_start "yarn-build"
 yarn build
 fold_end
 
 export SKIP_BUILD=1
-
-fold_start "yarn-docs"
-yarn docs
-fold_end
 
 fold_start "check-dirty"
 # Ensure build step didn't modify source files to avoid unprettified repository state
@@ -183,35 +166,6 @@ fi
 #   iov-cli --selftest
 # )
 # fold_end
-
-#
-# Deploy
-#
-
-if [[ "$TRAVIS_OS_NAME" == "linux" ]] && [[ "$TRAVIS_NODE_VERSION" == "8" ]] && [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_PULL_REQUEST_BRANCH" == "" ]]; then
-  (
-    cd "$HOME"
-    git config --global user.email "travis@iov.invalid"
-    git config --global user.name "Travis Job"
-  )
-
-  (
-    cd ".."
-    git clone "https://webmaster128:$GITHUB_API_KEY@github.com/iov-one/iov-core-docs.git"
-    cd "iov-core-docs"
-    git checkout gh-pages
-    git reset master
-  )
-
-  ./scripts/copy_docs.sh
-
-  (
-    cd "../iov-core-docs"
-    git add ./latest
-    git commit -m "Update docs"
-    git push -f
-  )
-fi
 
 #
 # Cleanup

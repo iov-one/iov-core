@@ -39,7 +39,7 @@ export function toChecksumAddress(address: string): Address {
   return checksumAddress as Address;
 }
 
-export function keyToAddress(pubkey: PublicKeyBundle): Address {
+export function pubkeyToAddress(pubkey: PublicKeyBundle): Address {
   if (pubkey.algo !== Algorithm.Secp256k1 || pubkey.data.length !== 65 || pubkey.data[0] !== 0x04) {
     throw new Error(`Invalid pubkey data input: ${pubkey}`);
   }

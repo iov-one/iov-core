@@ -1,7 +1,7 @@
 import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
-import { isValidAddress, keyToAddress, toChecksumAddress } from "./derivation";
+import { isValidAddress, pubkeyToAddress, toChecksumAddress } from "./derivation";
 
 const { fromHex } = Encoding;
 
@@ -71,7 +71,7 @@ describe("derivation", () => {
     });
   });
 
-  describe("keyToAddress", () => {
+  describe("pubkeyToAddress", () => {
     it("derives addresses properly", () => {
       // Test cases from https://github.com/MaiaVictor/eth-lib/blob/master/test/test.js#L56
       const pubkey: PublicKeyBundle = {
@@ -80,7 +80,7 @@ describe("derivation", () => {
           "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
         ) as PublicKeyBytes,
       };
-      expect(keyToAddress(pubkey)).toEqual("0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
+      expect(pubkeyToAddress(pubkey)).toEqual("0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
     });
 
     it("throws error for invalid inputs", () => {
@@ -102,9 +102,9 @@ describe("derivation", () => {
           "074bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
         ) as PublicKeyBytes,
       };
-      expect(() => keyToAddress(pubkeyInvalidAlgo)).toThrowError(/Invalid pubkey data input/);
-      expect(() => keyToAddress(pubkeyInvalidDataLenght)).toThrowError(/Invalid pubkey data input/);
-      expect(() => keyToAddress(pubkeyInvalidDataPrefix)).toThrowError(/Invalid pubkey data input/);
+      expect(() => pubkeyToAddress(pubkeyInvalidAlgo)).toThrowError(/Invalid pubkey data input/);
+      expect(() => pubkeyToAddress(pubkeyInvalidDataLenght)).toThrowError(/Invalid pubkey data input/);
+      expect(() => pubkeyToAddress(pubkeyInvalidDataPrefix)).toThrowError(/Invalid pubkey data input/);
     });
   });
 });

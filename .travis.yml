@@ -22,6 +22,19 @@ addons:
       - python3
       - python3-pip
 
+env:
+  matrix:
+    - MODE=tests
+    - MODE=docs
+    - MODE=lint
+
+matrix:
+  exclude:
+    - os: osx
+      env: MODE=docs
+    - os: osx
+      env: MODE=lint
+
 before_install:
 # add dependencies to compile node-hid (no prebuilt available)
 - |
@@ -29,6 +42,10 @@ before_install:
     sudo apt-get install -y libudev-dev libusb-1.0-0 libusb-1.0-0-dev
     yarn global add node-gyp
   fi
+
+# Override default install step
+install:
+  - true
 
 before_script:
 # Make variables and function from Travis available in our script
@@ -38,7 +55,7 @@ before_script:
 - export -f travis_nanoseconds travis_fold travis_time_start travis_time_finish
 
 script:
-- ./scripts/travis.sh
+- ./scripts/travis/main.sh
 
 # whitelist long living branches to avoid testing feature branches twice (as branch and as pull request)
 branches:
