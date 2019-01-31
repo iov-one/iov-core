@@ -11,8 +11,10 @@ retry 3 yarn install
 fold_end
 
 case "$MODE" in
-tests)
-  "$SCRIPT_DIR/mode_tests.sh" ;;
+tests-default)
+  "$SCRIPT_DIR/mode_tests-default.sh" ;;
+tests-safari)
+  "$SCRIPT_DIR/mode_tests-safari.sh" ;;
 lint)
   "$SCRIPT_DIR/mode_lint.sh" ;;
 docs)
