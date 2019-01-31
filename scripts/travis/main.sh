@@ -17,10 +17,10 @@ tests-default)
   "$SCRIPT_DIR/mode_tests-default.sh" ;;
 tests-safari)
   "$SCRIPT_DIR/mode_tests-safari.sh" ;;
-lint)
-  "$SCRIPT_DIR/mode_lint.sh" ;;
-docs)
-  "$SCRIPT_DIR/mode_docs.sh" ;;
+lint-docs)
+  "$SCRIPT_DIR/mode_lint.sh"
+  "$SCRIPT_DIR/mode_docs.sh"
+  ;;
 *)
   echo "Invalid MODE"; exit 1 ;;
 esac

@@ -27,17 +27,14 @@ env:
     - MODE=tests-default
     - MODE=tests-browsers
     - MODE=tests-safari
-    - MODE=docs
-    - MODE=lint
+    - MODE=lint-docs
 
 matrix:
   exclude:
     - os: linux
       env: MODE=tests-safari
     - os: osx
-      env: MODE=docs
-    - os: osx
-      env: MODE=lint
+      env: MODE=lint-docs
     - os: osx
       env: MODE=tests-default
     - os: osx
