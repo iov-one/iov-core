@@ -11,6 +11,8 @@ retry 3 yarn install
 fold_end
 
 case "$MODE" in
+tests-browsers)
+  "$SCRIPT_DIR/mode_tests-default.sh" ;;
 tests-default)
   "$SCRIPT_DIR/mode_tests-default.sh" ;;
 tests-safari)

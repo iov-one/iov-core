@@ -25,6 +25,7 @@ addons:
 env:
   matrix:
     - MODE=tests-default
+    - MODE=tests-browsers
     - MODE=tests-safari
     - MODE=docs
     - MODE=lint
@@ -39,6 +40,8 @@ matrix:
       env: MODE=lint
     - os: osx
       env: MODE=tests-default
+    - os: osx
+      env: MODE=tests-browsers
 
 before_install:
 # add dependencies to compile node-hid (no prebuilt available)
