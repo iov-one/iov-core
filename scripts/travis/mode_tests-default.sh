@@ -11,16 +11,6 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "$SCRIPT_DIR/_includes.sh";
 
 #
-# Config
-#
-
-# Ensure consecutive Safari sessions don't re-open old tabs
-# https://github.com/karma-runner/karma-safari-launcher/issues/6
-if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-  defaults write com.apple.Safari ApplePersistenceIgnoreState YES
-fi
-
-#
 # Install
 #
 
@@ -84,62 +74,56 @@ echo "use Lisk? ${LISK_ENABLED:-no}"
 # Build
 #
 
-fold_start "update-npmipgnore"
-# This in combination with check-dirty (below) ensures .npmignore files are up-to-date
-./scripts/update_npmignore.sh
-fold_end
-
 fold_start "yarn-build"
 yarn build
 fold_end
 
 export SKIP_BUILD=1
 
-fold_start "check-dirty"
-# Ensure build step didn't modify source files to avoid unprettified repository state
-SOURCE_CHANGES=$(git status --porcelain)
-if [[ -n "$SOURCE_CHANGES" ]]; then
-  echo "Error: repository contains changes."
-  echo "Showing 'git status' and 'git diff' for debugging reasons now:"
-  git status
-  git diff
-  exit 1
-fi
-fold_end
+if [[ "$MODE" == "tests-chrome" ]]; then
+  fold_start "test-chrome"
+  yarn run lerna run test-chrome
+  fold_end
+elif [[ "$MODE" == "tests-firefox" ]]; then
+  # A version of Firefox is preinstalled on Linux VMs and can be used via xvfb
+  fold_start "test-firefox"
+  xvfb-run --auto-servernum yarn run lerna run test-firefox
+  fold_end
+else
+  #
+  # Sanity
+  #
 
-#
-# Test
-#
-
-fold_start "commandline-tests"
-yarn test
-fold_end
-
-#
-# CLI selftest
-#
-
-fold_start "iov-cli-selftest"
-(
-  cd packages/iov-cli
-  yarn test-bin
-)
-fold_end
-
-# Test in browsers
-
-fold_start "test-chrome"
-yarn run lerna run test-chrome
-fold_end
-
-if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-  fold_start "test-safari"
-  yarn run lerna run test-safari
+  fold_start "update-npmipgnore"
+  # This in combination with check-dirty (below) ensures .npmignore files are up-to-date
+  ./scripts/update_npmignore.sh
   fold_end
 
-  # Firefox does not run on Linux VMs because "no DISPLAY environment variable specified"
-  fold_start "test-firefox"
-  yarn run lerna run test-firefox
+  fold_start "check-dirty"
+  # Ensure build step didn't modify source files to avoid unprettified repository state
+  SOURCE_CHANGES=$(git status --porcelain)
+  if [[ -n "$SOURCE_CHANGES" ]]; then
+    echo "Error: repository contains changes."
+    echo "Showing 'git status' and 'git diff' for debugging reasons now:"
+    git status
+    git diff
+    exit 1
+  fi
+  fold_end
+
+  #
+  # Tests
+  #
+
+  fold_start "commandline-tests"
+  yarn test
+  fold_end
+
+  fold_start "iov-cli-selftest"
+  (
+    cd packages/iov-cli
+    yarn test-bin
+  )
   fold_end
 fi
 

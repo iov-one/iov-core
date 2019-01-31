@@ -9,13 +9,13 @@ sudo: required
 
 services:
   - docker
+  - xvfb
 
 language: node_js
 node_js:
   - "8"
 
 addons:
-  firefox: latest
   chrome: stable
   apt:
     packages:
@@ -24,16 +24,24 @@ addons:
 
 env:
   matrix:
-    - MODE=tests
-    - MODE=docs
-    - MODE=lint
+    - MODE=tests-default
+    - MODE=tests-chrome
+    - MODE=tests-firefox
+    - MODE=tests-safari
+    - MODE=lint-docs
 
 matrix:
   exclude:
+    - os: linux
+      env: MODE=tests-safari
     - os: osx
-      env: MODE=docs
+      env: MODE=lint-docs
     - os: osx
-      env: MODE=lint
+      env: MODE=tests-default
+    - os: osx
+      env: MODE=tests-chrome
+    - os: osx
+      env: MODE=tests-firefox
 
 before_install:
 # add dependencies to compile node-hid (no prebuilt available)

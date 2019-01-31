@@ -11,12 +11,18 @@ retry 3 yarn install
 fold_end
 
 case "$MODE" in
-tests)
-  "$SCRIPT_DIR/mode_tests.sh" ;;
-lint)
-  "$SCRIPT_DIR/mode_lint.sh" ;;
-docs)
-  "$SCRIPT_DIR/mode_docs.sh" ;;
+tests-default)
+  "$SCRIPT_DIR/mode_tests-default.sh" ;;
+tests-chrome)
+  "$SCRIPT_DIR/mode_tests-default.sh" ;;
+tests-firefox)
+  "$SCRIPT_DIR/mode_tests-default.sh" ;;
+tests-safari)
+  "$SCRIPT_DIR/mode_tests-safari.sh" ;;
+lint-docs)
+  "$SCRIPT_DIR/mode_lint.sh"
+  "$SCRIPT_DIR/mode_docs.sh"
+  ;;
 *)
   echo "Invalid MODE"; exit 1 ;;
 esac
