@@ -16,6 +16,7 @@ if [ ! -d "${BNSD_DIR}" ]; then
 fi
 
 exec docker run --user="$UID" \
+  --name "bnsd-app" \
   -v "${BNSD_DIR}:/data" \
   "iov1/bnsd:${BNSD_VERSION}" \
   -home "/data" \

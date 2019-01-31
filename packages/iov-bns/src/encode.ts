@@ -100,7 +100,12 @@ export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.app.ITx {
   const msg = buildMsg(tx);
   return codecImpl.app.Tx.create({
     ...msg,
-    fees: tx.fee ? { fees: encodeAmount(tx.fee) } : null,
+    fees: tx.fee
+      ? {
+          fees: encodeAmount(tx.fee),
+          payer: decodeBnsAddress(identityToAddress(tx.creator)).data,
+        }
+      : null,
   });
 }
 
