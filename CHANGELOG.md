@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.1
+
+* @iov/bns: Encode transaction fees
+
 ## 0.12.0
 
 Breaking changes

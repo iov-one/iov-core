@@ -139,6 +139,63 @@ describe("Encode", () => {
     expect(encoded.signature!.ed25519).toEqual(fromHex("aabbcc22334455"));
   });
 
+  describe("buildUnsignedTx", () => {
+    const defaultCreator: PublicIdentity = {
+      chainId: "some-chain" as ChainId,
+      pubkey: {
+        algo: Algorithm.Ed25519,
+        // Random 32 bytes pubkey. Derived IOV address:
+        // tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3 / 6e1114f57410d8e7bcd910a568c9196efc1479e4
+        data: fromHex("7196c465e4c95b3dce425784f51936b95da6bc58b3212648cdca64ee7198df47") as PublicKeyBytes,
+      },
+    };
+
+    const defaultAmount: Amount = {
+      quantity: "1000000001",
+      fractionalDigits: 9,
+      tokenTicker: "CASH" as TokenTicker,
+    };
+
+    it("can encode transaction without fees", () => {
+      const transaction: SendTransaction = {
+        kind: "bcp/send",
+        creator: defaultCreator,
+        amount: defaultAmount,
+        recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+        memo: "free transaction",
+      };
+
+      const encoded = buildUnsignedTx(transaction);
+      expect(encoded.fees).toBeFalsy();
+
+      // Ensure sendMsg is encoded. See buildMsg for details.
+      expect(encoded.sendMsg).toBeDefined();
+      expect(encoded.sendMsg!.memo).toEqual("free transaction");
+    });
+
+    it("can encode transaction with fees", () => {
+      const transaction: SendTransaction = {
+        kind: "bcp/send",
+        creator: defaultCreator,
+        amount: defaultAmount,
+        recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+        memo: "paid transaction",
+        fee: defaultAmount,
+      };
+
+      const encoded = buildUnsignedTx(transaction);
+      expect(encoded.fees).toBeDefined();
+      expect(encoded.fees!.fees!.whole).toEqual(1);
+      expect(encoded.fees!.fees!.fractional).toEqual(1);
+      expect(encoded.fees!.fees!.ticker).toEqual("CASH");
+      expect(encoded.fees!.payer!).toEqual(fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"));
+
+      // Ensure sendMsg is encoded. See buildMsg for details.
+      expect(encoded.sendMsg).toBeDefined();
+      expect(encoded.sendMsg!.memo).toEqual("paid transaction");
+    });
+  });
+
   describe("buildMsg", () => {
     const defaultCreator: PublicIdentity = {
       chainId: "registry-chain" as ChainId,
