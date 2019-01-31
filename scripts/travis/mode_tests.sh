@@ -132,14 +132,16 @@ fold_start "test-chrome"
 yarn run lerna run test-chrome
 fold_end
 
+if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+  # A version of Firefox is preinstalled on Linux VMs and can be used via xvfb
+  fold_start "test-firefox"
+  xvfb-run yarn run lerna run test-firefox
+  fold_end
+fi
+
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
   fold_start "test-safari"
   yarn run lerna run test-safari
-  fold_end
-
-  # Firefox does not run on Linux VMs because "no DISPLAY environment variable specified"
-  fold_start "test-firefox"
-  yarn run lerna run test-firefox
   fold_end
 fi
 

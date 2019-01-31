@@ -9,13 +9,13 @@ sudo: required
 
 services:
   - docker
+  - xvfb
 
 language: node_js
 node_js:
   - "8"
 
 addons:
-  firefox: latest
   chrome: stable
   apt:
     packages:
