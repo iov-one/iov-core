@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.3
+
+* @iov/ethereum: Allow passing `EthereumConnectionOptions` instead of websocket
+  URL into second `ethereumConnector` parameter.
+
 ## 0.11.2
 
 * @iov/cli: Import Lisk, RISE and Ethereum symbols automatically
