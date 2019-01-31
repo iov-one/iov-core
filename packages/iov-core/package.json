@@ -1,6 +1,6 @@
 {
   "name": "@iov/core",
-  "version": "0.11.2",
+  "version": "0.11.3",
   "description": "Central entry point into iov core monorepo, pulling together all modules",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -39,6 +39,6 @@
   },
   "devDependencies": {
     "@iov/bns": "^0.11.2",
-    "@iov/ethereum": "^0.11.2"
+    "@iov/ethereum": "^0.11.3"
   }
 }
