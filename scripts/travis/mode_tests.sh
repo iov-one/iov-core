@@ -84,55 +84,61 @@ echo "use Lisk? ${LISK_ENABLED:-no}"
 # Build
 #
 
-fold_start "update-npmipgnore"
-# This in combination with check-dirty (below) ensures .npmignore files are up-to-date
-./scripts/update_npmignore.sh
-fold_end
-
 fold_start "yarn-build"
 yarn build
 fold_end
 
 export SKIP_BUILD=1
 
-fold_start "check-dirty"
-# Ensure build step didn't modify source files to avoid unprettified repository state
-SOURCE_CHANGES=$(git status --porcelain)
-if [[ -n "$SOURCE_CHANGES" ]]; then
-  echo "Error: repository contains changes."
-  echo "Showing 'git status' and 'git diff' for debugging reasons now:"
-  git status
-  git diff
-  exit 1
-fi
-fold_end
-
-#
-# Test
-#
-
-fold_start "commandline-tests"
-yarn test
-fold_end
-
-#
-# CLI selftest
-#
-
-fold_start "iov-cli-selftest"
-(
-  cd packages/iov-cli
-  yarn test-bin
-)
-fold_end
-
-# Test in browsers
-
-fold_start "test-chrome"
-yarn run lerna run test-chrome
-fold_end
-
 if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+  #
+  # Sanity
+  #
+
+  fold_start "update-npmipgnore"
+  # This in combination with check-dirty (below) ensures .npmignore files are up-to-date
+  ./scripts/update_npmignore.sh
+  fold_end
+
+  fold_start "check-dirty"
+  # Ensure build step didn't modify source files to avoid unprettified repository state
+  SOURCE_CHANGES=$(git status --porcelain)
+  if [[ -n "$SOURCE_CHANGES" ]]; then
+    echo "Error: repository contains changes."
+    echo "Showing 'git status' and 'git diff' for debugging reasons now:"
+    git status
+    git diff
+    exit 1
+  fi
+  fold_end
+
+  #
+  # Test
+  #
+
+  fold_start "commandline-tests"
+  yarn test
+  fold_end
+
+  #
+  # CLI selftest
+  #
+
+  fold_start "iov-cli-selftest"
+  (
+    cd packages/iov-cli
+    yarn test-bin
+  )
+  fold_end
+
+  #
+  # Browser tests
+  #
+
+  fold_start "test-chrome"
+  yarn run lerna run test-chrome
+  fold_end
+
   # A version of Firefox is preinstalled on Linux VMs and can be used via xvfb
   fold_start "test-firefox"
   xvfb-run --auto-servernum yarn run lerna run test-firefox
