@@ -7,6 +7,7 @@ import {
   Nonce,
   PublicIdentity,
   PublicKeyBytes,
+  SendTransaction,
   SignatureBytes,
   TokenTicker,
 } from "@iov/bcp-types";
@@ -143,9 +144,34 @@ describe("Encode", () => {
       chainId: "registry-chain" as ChainId,
       pubkey: {
         algo: Algorithm.Ed25519,
-        data: fromHex("00112233445566778899aa") as PublicKeyBytes,
+        // Random 32 bytes pubkey. Derived IOV address:
+        // tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3 / 6e1114f57410d8e7bcd910a568c9196efc1479e4
+        data: fromHex("7196c465e4c95b3dce425784f51936b95da6bc58b3212648cdca64ee7198df47") as PublicKeyBytes,
       },
     };
+
+    it("works for SendTransaction", () => {
+      const transaction: SendTransaction = {
+        kind: "bcp/send",
+        creator: defaultCreator,
+        amount: {
+          quantity: "1000000001",
+          fractionalDigits: 9,
+          tokenTicker: "CASH" as TokenTicker,
+        },
+        recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+        memo: "abc",
+      };
+
+      const msg = buildMsg(transaction).sendMsg!;
+      expect(msg.src).toEqual(fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"));
+      expect(msg.dest).toEqual(fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"));
+      expect(msg.memo).toEqual("abc");
+      expect(msg.amount!.whole).toEqual(1);
+      expect(msg.amount!.fractional).toEqual(1);
+      expect(msg.amount!.ticker).toEqual("CASH");
+      expect(msg.ref!.length).toEqual(0);
+    });
 
     it("works for AddAddressToUsernameTx", () => {
       const addAddress: AddAddressToUsernameTx = {
