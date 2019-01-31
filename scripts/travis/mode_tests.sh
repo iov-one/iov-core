@@ -135,7 +135,7 @@ fold_end
 if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
   # A version of Firefox is preinstalled on Linux VMs and can be used via xvfb
   fold_start "test-firefox"
-  xvfb-run yarn run lerna run test-firefox
+  xvfb-run --auto-servernum yarn run lerna run test-firefox
   fold_end
 fi
 
