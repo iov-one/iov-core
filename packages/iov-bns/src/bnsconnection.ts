@@ -8,8 +8,8 @@ import {
   AddressQuery,
   AtomicSwap,
   AtomicSwapMerger,
+  AtomicSwapQuery,
   BcpAtomicSwapConnection,
-  BcpSwapQuery,
   BcpTicker,
   BcpTxQuery,
   BlockHeader,
@@ -20,12 +20,12 @@ import {
   ChainId,
   ConfirmedTransaction,
   FailedTransaction,
+  isAtomicSwapIdQuery,
+  isAtomicSwapRecipientQuery,
+  isAtomicSwapSenderQuery,
   isConfirmedTransaction,
   isFailedTransaction,
   isPubkeyQuery,
-  isQueryBySwapId,
-  isQueryBySwapRecipient,
-  isQueryBySwapSender,
   Nonce,
   OpenSwap,
   PostableBytes,
@@ -355,13 +355,13 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   /**
    * All matching swaps that are open (from app state)
    */
-  public async getSwapsFromState(query: BcpSwapQuery): Promise<ReadonlyArray<AtomicSwap>> {
+  public async getSwapsFromState(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>> {
     const doQuery = (): Promise<QueryResponse> => {
-      if (isQueryBySwapId(query)) {
+      if (isAtomicSwapIdQuery(query)) {
         return this.query("/escrows", query.swapid);
-      } else if (isQueryBySwapSender(query)) {
+      } else if (isAtomicSwapSenderQuery(query)) {
         return this.query("/escrows/sender", decodeBnsAddress(query.sender).data);
-      } else if (isQueryBySwapRecipient(query)) {
+      } else if (isAtomicSwapRecipientQuery(query)) {
         return this.query("/escrows/recipient", decodeBnsAddress(query.recipient).data);
       } else {
         // if (isQueryBySwapHash(query))
@@ -380,7 +380,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    *
    * To get claimed and returned, we need to look at the transactions.... TODO
    */
-  public async getSwaps(query: BcpSwapQuery): Promise<ReadonlyArray<AtomicSwap>> {
+  public async getSwaps(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>> {
     // we need to combine them all to see all transactions that affect the query
     const setTxs: ReadonlyArray<ConfirmedTransaction> = (await this.searchTx({
       tags: [bnsSwapQueryTags(query, true)],
@@ -414,7 +414,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    *
    * This includes an open swap beind claimed/expired as well as a new matching swap being offered
    */
-  public watchSwaps(query: BcpSwapQuery): Stream<AtomicSwap> {
+  public watchSwaps(query: AtomicSwapQuery): Stream<AtomicSwap> {
     // we need to combine them all to see all transactions that affect the query
     const setTxs = this.liveTx({ tags: [bnsSwapQueryTags(query, true)] }).filter(isConfirmedTransaction);
     const delTxs = this.liveTx({ tags: [bnsSwapQueryTags(query, false)] }).filter(isConfirmedTransaction);

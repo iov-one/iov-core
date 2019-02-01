@@ -29,36 +29,40 @@ export interface ExpiredSwap {
     readonly data: SwapData;
 }
 export declare type AtomicSwap = OpenSwap | ClaimedSwap | ExpiredSwap;
-export interface BcpSwapRecipientQuery {
+export interface AtomicSwapRecipientQuery {
     readonly recipient: Address;
 }
-export interface BcpSwapSenderQuery {
+export interface AtomicSwapSenderQuery {
     readonly sender: Address;
 }
-export interface BcpSwapIdQuery {
+export interface AtomicSwapIdQuery {
     readonly swapid: SwapIdBytes;
 }
-export interface BcpSwapHashQuery {
+export interface AtomicSwapHashlockQuery {
     readonly hashlock: Uint8Array;
 }
-export declare type BcpSwapQuery = BcpSwapRecipientQuery | BcpSwapSenderQuery | BcpSwapIdQuery | BcpSwapHashQuery;
-export declare function isQueryBySwapRecipient(query: BcpSwapQuery): query is BcpSwapRecipientQuery;
-export declare function isQueryBySwapSender(query: BcpSwapQuery): query is BcpSwapSenderQuery;
-export declare function isQueryBySwapId(query: BcpSwapQuery): query is BcpSwapIdQuery;
-export declare function isQueryBySwapHash(query: BcpSwapQuery): query is BcpSwapHashQuery;
+export declare type AtomicSwapQuery = AtomicSwapRecipientQuery | AtomicSwapSenderQuery | AtomicSwapIdQuery | AtomicSwapHashlockQuery;
+/** a type guard to use in the swap-based queries  */
+export declare function isAtomicSwapRecipientQuery(query: AtomicSwapQuery): query is AtomicSwapRecipientQuery;
+/** a type guard to use in the swap-based queries  */
+export declare function isAtomicSwapSenderQuery(query: AtomicSwapQuery): query is AtomicSwapSenderQuery;
+/** a type guard to use in the swap-based queries  */
+export declare function isAtomicSwapIdQuery(query: AtomicSwapQuery): query is AtomicSwapIdQuery;
+/** a type guard to use in the swap-based queries  */
+export declare function isAtomicSwapHashlockQuery(query: AtomicSwapQuery): query is AtomicSwapHashlockQuery;
 /**
  * An optional extension to the base BcpConnection that
  * allows querying and watching atomic swaps
  */
 export interface BcpAtomicSwapConnection extends BcpConnection {
     /** returns all matching swaps in their current state */
-    readonly getSwaps: (swap: BcpSwapQuery) => Promise<ReadonlyArray<AtomicSwap>>;
+    readonly getSwaps: (swap: AtomicSwapQuery) => Promise<ReadonlyArray<AtomicSwap>>;
     /**
      * Emits currentState (getSwaps) as a stream, then sends updates for any matching swap.
      *
      * This includes an open swap beind claimed/expired as well as a new matching swap
      * being offered
      */
-    readonly watchSwaps: (swap: BcpSwapQuery) => Stream<AtomicSwap>;
+    readonly watchSwaps: (swap: AtomicSwapQuery) => Stream<AtomicSwap>;
 }
 export declare function isAtomicSwapConnection(conn: BcpConnection): conn is BcpAtomicSwapConnection;

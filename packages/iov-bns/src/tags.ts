@@ -1,10 +1,10 @@
 import {
   Address,
+  AtomicSwapQuery,
   BcpQueryTag,
-  BcpSwapQuery,
-  isQueryBySwapId,
-  isQueryBySwapRecipient,
-  isQueryBySwapSender,
+  isAtomicSwapIdQuery,
+  isAtomicSwapRecipientQuery,
+  isAtomicSwapSenderQuery,
 } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
@@ -17,14 +17,14 @@ export function bnsNonceTag(addr: Address): BcpQueryTag {
   return { key, value };
 }
 
-export function bnsSwapQueryTags(query: BcpSwapQuery, set = true): BcpQueryTag {
+export function bnsSwapQueryTags(query: AtomicSwapQuery, set = true): BcpQueryTag {
   let binKey: Uint8Array;
   const bucket = "esc";
-  if (isQueryBySwapId(query)) {
+  if (isAtomicSwapIdQuery(query)) {
     binKey = Uint8Array.from([...bucketKey(bucket), ...query.swapid]);
-  } else if (isQueryBySwapSender(query)) {
+  } else if (isAtomicSwapSenderQuery(query)) {
     binKey = Uint8Array.from([...indexKey(bucket, "sender"), ...decodeBnsAddress(query.sender).data]);
-  } else if (isQueryBySwapRecipient(query)) {
+  } else if (isAtomicSwapRecipientQuery(query)) {
     binKey = Uint8Array.from([...indexKey(bucket, "recipient"), ...decodeBnsAddress(query.recipient).data]);
   } else {
     // if (isQueryBySwapHash(query))

@@ -40,40 +40,47 @@ export interface ExpiredSwap {
 
 export type AtomicSwap = OpenSwap | ClaimedSwap | ExpiredSwap;
 
-export interface BcpSwapRecipientQuery {
+export interface AtomicSwapRecipientQuery {
   readonly recipient: Address;
 }
 
-export interface BcpSwapSenderQuery {
+export interface AtomicSwapSenderQuery {
   readonly sender: Address;
 }
 
-export interface BcpSwapIdQuery {
+export interface AtomicSwapIdQuery {
   readonly swapid: SwapIdBytes;
 }
 
 // on some chains, swapid may equal hashlock, but often these may differ
-export interface BcpSwapHashQuery {
+export interface AtomicSwapHashlockQuery {
   readonly hashlock: Uint8Array;
 }
 
-export type BcpSwapQuery = BcpSwapRecipientQuery | BcpSwapSenderQuery | BcpSwapIdQuery | BcpSwapHashQuery;
+export type AtomicSwapQuery =
+  | AtomicSwapRecipientQuery
+  | AtomicSwapSenderQuery
+  | AtomicSwapIdQuery
+  | AtomicSwapHashlockQuery;
 
-// isQueryBySwapRecipient is a type guard to use in the swap-based queries
-export function isQueryBySwapRecipient(query: BcpSwapQuery): query is BcpSwapRecipientQuery {
-  return (query as BcpSwapRecipientQuery).recipient !== undefined;
+/** a type guard to use in the swap-based queries  */
+export function isAtomicSwapRecipientQuery(query: AtomicSwapQuery): query is AtomicSwapRecipientQuery {
+  return (query as AtomicSwapRecipientQuery).recipient !== undefined;
 }
-// isQueryBySwapSender is a type guard to use in the swap-based queries
-export function isQueryBySwapSender(query: BcpSwapQuery): query is BcpSwapSenderQuery {
-  return (query as BcpSwapSenderQuery).sender !== undefined;
+
+/** a type guard to use in the swap-based queries  */
+export function isAtomicSwapSenderQuery(query: AtomicSwapQuery): query is AtomicSwapSenderQuery {
+  return (query as AtomicSwapSenderQuery).sender !== undefined;
 }
-// isQueryBySwapId is a type guard to use in the swap-based queries
-export function isQueryBySwapId(query: BcpSwapQuery): query is BcpSwapIdQuery {
-  return (query as BcpSwapIdQuery).swapid !== undefined;
+
+/** a type guard to use in the swap-based queries  */
+export function isAtomicSwapIdQuery(query: AtomicSwapQuery): query is AtomicSwapIdQuery {
+  return (query as AtomicSwapIdQuery).swapid !== undefined;
 }
-// isQueryBySwapHash is a type guard to use in the swap-based queries
-export function isQueryBySwapHash(query: BcpSwapQuery): query is BcpSwapHashQuery {
-  return (query as BcpSwapHashQuery).hashlock !== undefined;
+
+/** a type guard to use in the swap-based queries  */
+export function isAtomicSwapHashlockQuery(query: AtomicSwapQuery): query is AtomicSwapHashlockQuery {
+  return (query as AtomicSwapHashlockQuery).hashlock !== undefined;
 }
 
 /**
@@ -82,7 +89,7 @@ export function isQueryBySwapHash(query: BcpSwapQuery): query is BcpSwapHashQuer
  */
 export interface BcpAtomicSwapConnection extends BcpConnection {
   /** returns all matching swaps in their current state */
-  readonly getSwaps: (swap: BcpSwapQuery) => Promise<ReadonlyArray<AtomicSwap>>;
+  readonly getSwaps: (swap: AtomicSwapQuery) => Promise<ReadonlyArray<AtomicSwap>>;
 
   /**
    * Emits currentState (getSwaps) as a stream, then sends updates for any matching swap.
@@ -90,7 +97,7 @@ export interface BcpAtomicSwapConnection extends BcpConnection {
    * This includes an open swap beind claimed/expired as well as a new matching swap
    * being offered
    */
-  readonly watchSwaps: (swap: BcpSwapQuery) => Stream<AtomicSwap>;
+  readonly watchSwaps: (swap: AtomicSwapQuery) => Stream<AtomicSwap>;
 }
 
 export function isAtomicSwapConnection(conn: BcpConnection): conn is BcpAtomicSwapConnection {

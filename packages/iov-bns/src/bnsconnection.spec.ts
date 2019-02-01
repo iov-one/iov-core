@@ -6,7 +6,7 @@ import {
   Algorithm,
   Amount,
   AtomicSwap,
-  BcpSwapQuery,
+  AtomicSwapQuery,
   BlockInfo,
   BlockInfoFailed,
   BlockInfoSucceeded,
@@ -1743,10 +1743,10 @@ describe("BnsConnection", () => {
     expect(loadedTransaction.recipient).toEqual(swapOfferTx.recipient);
 
     // ----  prepare queries
-    const querySwapId: BcpSwapQuery = { swapid: txResult as SwapIdBytes };
-    const querySwapSender: BcpSwapQuery = { sender: faucetAddr };
-    const querySwapRecipient: BcpSwapQuery = { recipient: recipientAddr };
-    const querySwapHash: BcpSwapQuery = { hashlock: swapOfferHash };
+    const querySwapId: AtomicSwapQuery = { swapid: txResult as SwapIdBytes };
+    const querySwapSender: AtomicSwapQuery = { sender: faucetAddr };
+    const querySwapRecipient: AtomicSwapQuery = { recipient: recipientAddr };
+    const querySwapHash: AtomicSwapQuery = { hashlock: swapOfferHash };
 
     // ----- connection.searchTx() -----
     // we should be able to find the transaction through quite a number of tag queries
