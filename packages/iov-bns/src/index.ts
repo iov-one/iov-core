@@ -3,6 +3,8 @@ export { bnsConnector } from "./bnsconnector";
 export { BnsConnection } from "./bnsconnection";
 export { bnsNonceTag, bnsSwapQueryTags } from "./tags";
 export {
+  // helpers
+  ChainAddressPair,
   // NFTs
   BnsBlockchainNft,
   BnsBlockchainsByChainIdQuery,
