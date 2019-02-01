@@ -3,6 +3,8 @@
 ## 0.12.1
 
 * @iov/bns: Encode transaction fees
+* @iov/ethereum: Allow passing `EthereumConnectionOptions` instead of websocket
+  URL into second `ethereumConnector` parameter.
 
 ## 0.11.3
 
