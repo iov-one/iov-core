@@ -47,7 +47,7 @@ import { bnsCodec } from "./bnscodec";
 import { ChainData, Context } from "./context";
 import { decodeBlockchainNft, decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
-import { bnsNonceTag, bnsSwapQueryTags } from "./tags";
+import { bnsNonceTag, bnsSwapQueryTag } from "./tags";
 import {
   BnsBlockchainNft,
   BnsBlockchainsQuery,
@@ -383,10 +383,10 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   public async getSwaps(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>> {
     // we need to combine them all to see all transactions that affect the query
     const setTxs: ReadonlyArray<ConfirmedTransaction> = (await this.searchTx({
-      tags: [bnsSwapQueryTags(query, true)],
+      tags: [bnsSwapQueryTag(query, true)],
     })).filter(isConfirmedTransaction);
     const delTxs: ReadonlyArray<ConfirmedTransaction> = (await this.searchTx({
-      tags: [bnsSwapQueryTags(query, false)],
+      tags: [bnsSwapQueryTag(query, false)],
     })).filter(isConfirmedTransaction);
 
     // tslint:disable-next-line:readonly-array
@@ -416,8 +416,8 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    */
   public watchSwaps(query: AtomicSwapQuery): Stream<AtomicSwap> {
     // we need to combine them all to see all transactions that affect the query
-    const setTxs = this.liveTx({ tags: [bnsSwapQueryTags(query, true)] }).filter(isConfirmedTransaction);
-    const delTxs = this.liveTx({ tags: [bnsSwapQueryTags(query, false)] }).filter(isConfirmedTransaction);
+    const setTxs = this.liveTx({ tags: [bnsSwapQueryTag(query, true)] }).filter(isConfirmedTransaction);
+    const delTxs = this.liveTx({ tags: [bnsSwapQueryTag(query, false)] }).filter(isConfirmedTransaction);
 
     const offers: Stream<OpenSwap> = setTxs
       .filter(isConfirmedWithSwapCounterTransaction)

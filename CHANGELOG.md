@@ -12,6 +12,7 @@ Breaking changes
 * @iov/bcp-types: Rename atomic swap query types to `AtomicSwapQuery`,
   `AtomicSwapRecipientQuery`, `AtomicSwapSenderQuery`, `AtomicSwapIdQuery`,
   `AtomicSwapHashlockQuery`, `isAtomicSwap*Query`.
+* @iov/bcp-types: Rename `bnsSwapQueryTags` to `bnsSwapQueryTag`
 
 ## 0.12.1
 

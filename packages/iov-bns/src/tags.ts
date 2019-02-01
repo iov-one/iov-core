@@ -17,7 +17,7 @@ export function bnsNonceTag(addr: Address): BcpQueryTag {
   return { key, value };
 }
 
-export function bnsSwapQueryTags(query: AtomicSwapQuery, set = true): BcpQueryTag {
+export function bnsSwapQueryTag(query: AtomicSwapQuery, set = true): BcpQueryTag {
   let binKey: Uint8Array;
   const bucket = "esc";
   if (isAtomicSwapIdQuery(query)) {

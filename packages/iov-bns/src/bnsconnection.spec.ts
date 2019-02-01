@@ -36,7 +36,7 @@ import { asArray, firstEvent, lastValue, toListPromise } from "@iov/stream";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
-import { bnsNonceTag, bnsSwapQueryTags } from "./tags";
+import { bnsNonceTag, bnsSwapQueryTag } from "./tags";
 import {
   AddAddressToUsernameTx,
   isRegisterBlockchainTx,
@@ -1751,25 +1751,25 @@ describe("BnsConnection", () => {
     // ----- connection.searchTx() -----
     // we should be able to find the transaction through quite a number of tag queries
 
-    const txById = (await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapId)] })).filter(
+    const txById = (await connection.searchTx({ tags: [bnsSwapQueryTag(querySwapId)] })).filter(
       isConfirmedTransaction,
     );
     expect(txById.length).toEqual(1);
     expect(txById[0].transactionId).toEqual(transactionId);
 
-    const txBySender = (await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapSender)] })).filter(
+    const txBySender = (await connection.searchTx({ tags: [bnsSwapQueryTag(querySwapSender)] })).filter(
       isConfirmedTransaction,
     );
     expect(txBySender.length).toBeGreaterThanOrEqual(1);
     expect(txBySender[txBySender.length - 1].transactionId).toEqual(transactionId);
 
     const txByRecipient = (await connection.searchTx({
-      tags: [bnsSwapQueryTags(querySwapRecipient)],
+      tags: [bnsSwapQueryTag(querySwapRecipient)],
     })).filter(isConfirmedTransaction);
     expect(txByRecipient.length).toEqual(1);
     expect(txByRecipient[0].transactionId).toEqual(transactionId);
 
-    const txByHash = (await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapHash)] })).filter(
+    const txByHash = (await connection.searchTx({ tags: [bnsSwapQueryTag(querySwapHash)] })).filter(
       isConfirmedTransaction,
     );
     expect(txByHash.length).toEqual(1);
