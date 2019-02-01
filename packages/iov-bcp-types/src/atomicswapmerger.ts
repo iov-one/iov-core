@@ -1,9 +1,7 @@
+import { Encoding } from "@iov/encoding";
+
 import { BcpAtomicSwap, OpenSwap, SwapState } from "./atomicswap";
 import { SwapClaimTransaction, SwapTimeoutTransaction } from "./transactions";
-
-function arraysEqual(a: Uint8Array, b: Uint8Array): boolean {
-  return a.length === b.length && a.every((value, index) => value === b[index]);
-}
 
 function settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTransaction | SwapTimeoutTransaction): BcpAtomicSwap {
   if (tx.kind === "bcp/swap_claim") {
@@ -21,29 +19,34 @@ function settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTransaction | SwapTimeout
 }
 
 export class AtomicSwapMerger {
-  // tslint:disable-next-line:readonly-array
-  private readonly open: OpenSwap[] = [];
+  private readonly open = new Map<string, OpenSwap>();
 
   public process(event: OpenSwap | SwapClaimTransaction | SwapTimeoutTransaction): BcpAtomicSwap {
     switch (event.kind) {
-      case SwapState.Open:
-        if (this.open.findIndex(x => arraysEqual(x.data.id, event.data.id)) !== -1) {
+      case SwapState.Open: {
+        const idAsHex = Encoding.toHex(event.data.id);
+        if (this.open.has(idAsHex)) {
           throw new Error("Swap ID already in open swaps pool");
         }
-        this.open.push(event);
+        this.open.set(idAsHex, event);
         return event;
-      default:
+      }
+      default: {
         // event is a swap claim/timeout, resolve an open swap and return new state
-        const idx = this.open.findIndex(x => arraysEqual(x.data.id, event.swapId));
-        const done = settleAtomicSwap(this.open[idx], event);
-        this.open.splice(idx, 1);
+        const idAsHex = Encoding.toHex(event.swapId);
+        const matchingOpenElement = this.open.get(idAsHex);
+        if (!matchingOpenElement) {
+          throw new Error("No matching elemement found in open swaps pool");
+        }
+        const done = settleAtomicSwap(matchingOpenElement, event);
+        this.open.delete(idAsHex);
         return done;
+      }
     }
   }
 
-  /** The unsettled swaps this object currently holds */
+  /** The unsettled swaps this object currently holds in undefined order */
   public openSwaps(): ReadonlyArray<OpenSwap> {
-    // defensive copy
-    return [...this.open];
+    return [...this.open.values()];
   }
 }

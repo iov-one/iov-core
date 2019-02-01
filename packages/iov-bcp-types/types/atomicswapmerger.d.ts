@@ -3,6 +3,6 @@ import { SwapClaimTransaction, SwapTimeoutTransaction } from "./transactions";
 export declare class AtomicSwapMerger {
     private readonly open;
     process(event: OpenSwap | SwapClaimTransaction | SwapTimeoutTransaction): BcpAtomicSwap;
-    /** The unsettled swaps this object currently holds */
+    /** The unsettled swaps this object currently holds in undefined order */
     openSwaps(): ReadonlyArray<OpenSwap>;
 }
