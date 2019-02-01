@@ -96,6 +96,10 @@ function parseTendermintRpcError(errorString: string): TendermintRpcError {
   return parsed;
 }
 
+function isDefined<T>(value: T | undefined): value is T {
+  return value !== undefined;
+}
+
 /**
  * Returns a filter that only passes when the
  * value is different than the last one
@@ -400,7 +404,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       merger.process(offer);
     }
 
-    const settled = releases.map(release => merger.process(release));
+    const settled = releases.map(release => merger.process(release)).filter(isDefined);
     const open = merger.openSwaps();
     return [...open, ...settled];
   }
@@ -425,7 +429,9 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       .map(confirmed => confirmed.transaction);
 
     const merger = new AtomicSwapMerger();
-    return Stream.merge(offers, releases).map(event => merger.process(event));
+    return Stream.merge(offers, releases)
+      .map(event => merger.process(event))
+      .filter(isDefined);
   }
 
   public async searchTx(

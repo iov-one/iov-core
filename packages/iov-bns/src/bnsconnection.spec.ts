@@ -5,6 +5,7 @@ import {
   Address,
   Algorithm,
   Amount,
+  BcpAtomicSwap,
   BcpSwapQuery,
   BlockInfo,
   BlockInfoFailed,
@@ -45,6 +46,8 @@ import {
   RemoveAddressFromUsernameTx,
 } from "./types";
 import { encodeBnsAddress, identityToAddress } from "./util";
+
+const { toHex } = Encoding;
 
 function skipTests(): boolean {
   return !process.env.BNSD_ENABLED;
@@ -1910,7 +1913,7 @@ describe("BnsConnection", () => {
 
     // then claim, offer, claim - 2 closed, 1 open
     {
-      const post = await claimSwap(connection, profile, faucet, id2, preimage1);
+      const post = await claimSwap(connection, profile, faucet, id2, preimage2);
       await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
     }
 
@@ -1941,19 +1944,29 @@ describe("BnsConnection", () => {
     expect(claim1.kind).toEqual(SwapState.Claimed);
     expect(claim1.data.id).toEqual(id1);
 
-    // validate liveView is correct
-    const vals = liveView.value();
-    expect(vals.length).toEqual(5);
-    expect(vals[0].kind).toEqual(SwapState.Open);
-    expect(vals[0].data.id).toEqual(id1);
-    expect(vals[1].kind).toEqual(SwapState.Open);
-    expect(vals[1].data.id).toEqual(id2);
-    expect(vals[2].kind).toEqual(SwapState.Claimed);
-    expect(vals[2].data.id).toEqual(id2);
-    expect(vals[3].kind).toEqual(SwapState.Open);
-    expect(vals[3].data.id).toEqual(id3);
-    expect(vals[4].kind).toEqual(SwapState.Claimed);
-    expect(vals[4].data.id).toEqual(id1);
+    // We have no guarantees which events are fired exactly,
+    // as it is a race condition if we get Open, Claimed or Claimed
+    // directly. So let's just check the last information per ID.
+    const latestEventPerId = new Map<string, BcpAtomicSwap>();
+    for (const event of liveView.value()) {
+      latestEventPerId.set(toHex(event.data.id), event);
+    }
+
+    expect(latestEventPerId.size).toEqual(3);
+    expect(latestEventPerId.get(toHex(id1))).toEqual({
+      kind: SwapState.Claimed,
+      data: open1.data,
+      preimage: preimage1,
+    });
+    expect(latestEventPerId.get(toHex(id2))).toEqual({
+      kind: SwapState.Claimed,
+      data: open2.data,
+      preimage: preimage2,
+    });
+    expect(latestEventPerId.get(toHex(id3))).toEqual({
+      kind: SwapState.Open,
+      data: open3.data,
+    });
 
     connection.disconnect();
   });

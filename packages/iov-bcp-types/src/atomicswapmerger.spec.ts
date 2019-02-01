@@ -179,4 +179,51 @@ describe("AtomicSwapMerger", () => {
     expect(() => merger.process(open)).toThrowError(/swap ID already in open swaps pool/i);
     expect(merger.openSwaps().length).toEqual(1);
   });
+
+  it("can process open and close in reverse order", () => {
+    const alice = "tiov1u8syu9juwx668k4vqfwl5vtm8j6yz89wamkcda" as Address;
+    const bobPubkey: PublicKeyBundle = {
+      algo: Algorithm.Ed25519,
+      data: fromHex("97adfd82b8e6a93368361c5b9256a85bbfb8ed7421372bf7d3fc54498c8ea730") as PublicKeyBytes,
+    };
+    const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
+    const preimage = fromHex("00110011");
+    const hashLock = new Sha256(preimage).digest();
+    const swapId = fromHex("aabbcc") as SwapIdBytes;
+    const open: OpenSwap = {
+      kind: SwapState.Open,
+      data: {
+        id: swapId,
+        sender: alice,
+        recipient: bobAddress,
+        hashlock: hashLock,
+        amounts: [defaultAmount],
+        timeout: 1_000_000,
+      },
+    };
+
+    const claim: SwapClaimTransaction = {
+      kind: "bcp/swap_claim",
+      creator: {
+        chainId: "lalala" as ChainId,
+        pubkey: bobPubkey,
+      },
+      swapId: swapId,
+      preimage: preimage,
+    };
+
+    const merger = new AtomicSwapMerger();
+    expect(merger.openSwaps().length).toEqual(0);
+
+    expect(merger.process(claim)).toEqual(undefined);
+    expect(merger.openSwaps().length).toEqual(0);
+
+    const expectedSettle: ClaimedSwap = {
+      kind: SwapState.Claimed,
+      data: open.data,
+      preimage: preimage,
+    };
+    expect(merger.process(open)).toEqual(expectedSettle);
+    expect(merger.openSwaps().length).toEqual(0);
+  });
 });
