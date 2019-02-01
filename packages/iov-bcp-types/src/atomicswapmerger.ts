@@ -27,6 +27,9 @@ export class AtomicSwapMerger {
   public process(event: OpenSwap | SwapClaimTransaction | SwapTimeoutTransaction): BcpAtomicSwap {
     switch (event.kind) {
       case SwapState.Open:
+        if (this.open.findIndex(x => arraysEqual(x.data.id, event.data.id)) !== -1) {
+          throw new Error("Swap ID already in open swaps pool");
+        }
         this.open.push(event);
         return event;
       default:

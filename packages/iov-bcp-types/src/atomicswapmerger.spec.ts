@@ -153,4 +153,30 @@ describe("AtomicSwapMerger", () => {
     expect(merger.process(claimA)).toEqual(expectedSettleA);
     expect(merger.openSwaps().length).toEqual(0);
   });
+
+  it("throws when the same ID is added twice", () => {
+    const alice = "tiov1u8syu9juwx668k4vqfwl5vtm8j6yz89wamkcda" as Address;
+    const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
+    const preimage = fromHex("00110011");
+    const hashLock = new Sha256(preimage).digest();
+    const swapId = fromHex("aabbcc") as SwapIdBytes;
+    const open: OpenSwap = {
+      kind: SwapState.Open,
+      data: {
+        id: swapId,
+        sender: alice,
+        recipient: bobAddress,
+        hashlock: hashLock,
+        amounts: [defaultAmount],
+        timeout: 1_000_000,
+      },
+    };
+
+    const merger = new AtomicSwapMerger();
+    expect(merger.openSwaps().length).toEqual(0);
+    expect(merger.process(open)).toEqual(open);
+    expect(merger.openSwaps().length).toEqual(1);
+    expect(() => merger.process(open)).toThrowError(/swap ID already in open swaps pool/i);
+    expect(merger.openSwaps().length).toEqual(1);
+  });
 });
