@@ -1,7 +1,7 @@
 import {
   Address,
   Amount,
-  BcpAtomicSwap,
+  AtomicSwap,
   BcpCoin,
   BcpTicker,
   ChainId,
@@ -60,7 +60,7 @@ export class Context {
     return this.amountToCoin(amount);
   }
 
-  public swapOffer(swap: codecImpl.escrow.Escrow & Keyed): BcpAtomicSwap {
+  public swapOffer(swap: codecImpl.escrow.Escrow & Keyed): AtomicSwap {
     // TODO: get and check hashlock
     let hashlock: Uint8Array;
     if (isHashIdentifier(swap.arbiter)) {

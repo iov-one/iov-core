@@ -5,7 +5,7 @@ import {
   Address,
   Algorithm,
   Amount,
-  BcpAtomicSwap,
+  AtomicSwap,
   BcpSwapQuery,
   BlockInfo,
   BlockInfoFailed,
@@ -1947,7 +1947,7 @@ describe("BnsConnection", () => {
     // We have no guarantees which events are fired exactly,
     // as it is a race condition if we get Open, Claimed or Claimed
     // directly. So let's just check the last information per ID.
-    const latestEventPerId = new Map<string, BcpAtomicSwap>();
+    const latestEventPerId = new Map<string, AtomicSwap>();
     for (const event of liveView.value()) {
       latestEventPerId.set(toHex(event.data.id), event);
     }

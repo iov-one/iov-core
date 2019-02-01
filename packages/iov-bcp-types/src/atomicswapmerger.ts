@@ -1,9 +1,9 @@
 import { Encoding } from "@iov/encoding";
 
-import { BcpAtomicSwap, OpenSwap, SwapState } from "./atomicswap";
+import { AtomicSwap, OpenSwap, SwapState } from "./atomicswap";
 import { SwapClaimTransaction, SwapTimeoutTransaction } from "./transactions";
 
-function settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTransaction | SwapTimeoutTransaction): BcpAtomicSwap {
+function settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTransaction | SwapTimeoutTransaction): AtomicSwap {
   if (tx.kind === "bcp/swap_claim") {
     return {
       kind: SwapState.Claimed,
@@ -26,7 +26,7 @@ export class AtomicSwapMerger {
    * Takes an event, checks if there is already a matching open or settling event
    * stored in the pool and merges.
    */
-  public process(event: OpenSwap | SwapClaimTransaction | SwapTimeoutTransaction): BcpAtomicSwap | undefined {
+  public process(event: OpenSwap | SwapClaimTransaction | SwapTimeoutTransaction): AtomicSwap | undefined {
     switch (event.kind) {
       case SwapState.Open: {
         const idAsHex = Encoding.toHex(event.data.id);

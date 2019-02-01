@@ -1,4 +1,4 @@
-import { BcpAtomicSwap, OpenSwap } from "./atomicswap";
+import { AtomicSwap, OpenSwap } from "./atomicswap";
 import { SwapClaimTransaction, SwapTimeoutTransaction } from "./transactions";
 export declare class AtomicSwapMerger {
     private readonly open;
@@ -7,7 +7,7 @@ export declare class AtomicSwapMerger {
      * Takes an event, checks if there is already a matching open or settling event
      * stored in the pool and merges.
      */
-    process(event: OpenSwap | SwapClaimTransaction | SwapTimeoutTransaction): BcpAtomicSwap | undefined;
+    process(event: OpenSwap | SwapClaimTransaction | SwapTimeoutTransaction): AtomicSwap | undefined;
     /** The unsettled swaps this object currently holds in undefined order */
     openSwaps(): ReadonlyArray<OpenSwap>;
 }

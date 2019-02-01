@@ -38,7 +38,7 @@ export interface ExpiredSwap {
   readonly data: SwapData;
 }
 
-export type BcpAtomicSwap = OpenSwap | ClaimedSwap | ExpiredSwap;
+export type AtomicSwap = OpenSwap | ClaimedSwap | ExpiredSwap;
 
 export interface BcpSwapRecipientQuery {
   readonly recipient: Address;
@@ -82,7 +82,7 @@ export function isQueryBySwapHash(query: BcpSwapQuery): query is BcpSwapHashQuer
  */
 export interface BcpAtomicSwapConnection extends BcpConnection {
   /** returns all matching swaps in their current state */
-  readonly getSwaps: (swap: BcpSwapQuery) => Promise<ReadonlyArray<BcpAtomicSwap>>;
+  readonly getSwaps: (swap: BcpSwapQuery) => Promise<ReadonlyArray<AtomicSwap>>;
 
   /**
    * Emits currentState (getSwaps) as a stream, then sends updates for any matching swap.
@@ -90,7 +90,7 @@ export interface BcpAtomicSwapConnection extends BcpConnection {
    * This includes an open swap beind claimed/expired as well as a new matching swap
    * being offered
    */
-  readonly watchSwaps: (swap: BcpSwapQuery) => Stream<BcpAtomicSwap>;
+  readonly watchSwaps: (swap: BcpSwapQuery) => Stream<AtomicSwap>;
 }
 
 export function isAtomicSwapConnection(conn: BcpConnection): conn is BcpAtomicSwapConnection {

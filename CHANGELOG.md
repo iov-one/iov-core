@@ -8,6 +8,7 @@ Breaking changes
 
 * @iov/bcp-types: Pluralize `.amounts` property and change to `Amount` array in
   `SwapOfferTransaction`, `SwapCounterTransaction`, `SwapData`
+* @iov/bcp-types: Rename `BcpAtomicSwap` to `AtomicSwap`
 
 ## 0.12.1
 
