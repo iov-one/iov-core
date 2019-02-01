@@ -3,6 +3,7 @@
 ## 0.12.1
 
 * @iov/bns: Encode transaction fees
+* @iov/bns: Export `ChainAddressPair`
 * @iov/ethereum: Allow passing `EthereumConnectionOptions` instead of websocket
   URL into second `ethereumConnector` parameter.
 
