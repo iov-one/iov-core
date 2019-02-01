@@ -48,7 +48,7 @@ describe("RiseConnection", () => {
   );
   const defaultRecipientAddress = "123R" as Address; // address with no keypair
   const defaultSendAmount: Amount = {
-    quantity: "14550000",
+    quantity: "145500",
     fractionalDigits: 8,
     tokenTicker: "RISE" as TokenTicker,
   };
