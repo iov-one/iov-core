@@ -4,6 +4,11 @@
 
 * @iov/bns: Encode transaction fees
 
+## 0.11.3
+
+* @iov/ethereum: Allow passing `EthereumConnectionOptions` instead of websocket
+  URL into second `ethereumConnector` parameter.
+
 ## 0.12.0
 
 Breaking changes
@@ -21,11 +26,6 @@ Breaking changes
 * @iov/bns: Binary compatibility for weave v0.10.x+ (breaks for all earlier versions)
 * @iov/bns: Remove obsolete `SetNameTx`
 * @iov/bns: Remove `BnsConnection.status`
-
-## 0.11.3
-
-* @iov/ethereum: Allow passing `EthereumConnectionOptions` instead of websocket
-  URL into second `ethereumConnector` parameter.
 
 ## 0.11.2
 
