@@ -6,6 +6,7 @@ import {
   AccountQuery,
   Address,
   AddressQuery,
+  AtomicSwapMerger,
   BcpAtomicSwap,
   BcpAtomicSwapConnection,
   BcpSwapQuery,
@@ -32,7 +33,6 @@ import {
   PubkeyQuery,
   PublicKeyBundle,
   SwapClaimTransaction,
-  SwapState,
   SwapTimeoutTransaction,
   TokenTicker,
   TransactionId,
@@ -63,7 +63,6 @@ import {
   Result,
 } from "./types";
 import {
-  arraysEqual,
   buildTxQuery,
   decodeBnsAddress,
   hashIdentifier,
@@ -392,20 +391,18 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       .map(tx => this.context.swapOfferFromTx(tx));
 
     // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout
-    const release: ReadonlyArray<SwapClaimTransaction | SwapTimeoutTransaction> = [...setTxs, ...delTxs]
+    const releases: ReadonlyArray<SwapClaimTransaction | SwapTimeoutTransaction> = [...setTxs, ...delTxs]
       .filter(isConfirmedWithSwapClaimOrTimeoutTransaction)
       .map(x => x.transaction);
 
-    // tslint:disable-next-line:readonly-array
-    const settled: BcpAtomicSwap[] = [];
-    for (const rel of release) {
-      const idx = offers.findIndex(x => arraysEqual(x.data.id, rel.swapId));
-      const done = this.context.settleAtomicSwap(offers[idx], rel);
-      offers.splice(idx, 1);
-      settled.push(done);
+    const merger = new AtomicSwapMerger();
+    for (const offer of offers) {
+      merger.process(offer);
     }
 
-    return [...offers, ...settled];
+    const settled = releases.map(release => merger.process(release));
+    const open = merger.openSwaps();
+    return [...open, ...settled];
   }
 
   /**
@@ -427,24 +424,8 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       .filter(isConfirmedWithSwapClaimOrTimeoutTransaction)
       .map(confirmed => confirmed.transaction);
 
-    // combine them and keep track of internal state in the mapper....
-    // tslint:disable-next-line:readonly-array
-    const open: OpenSwap[] = [];
-    const combiner = (evt: OpenSwap | SwapClaimTransaction | SwapTimeoutTransaction): BcpAtomicSwap => {
-      switch (evt.kind) {
-        case SwapState.Open:
-          open.push(evt);
-          return evt;
-        default:
-          // event is a swap claim/timeout, resolve an open swap and return new state
-          const idx = open.findIndex(x => arraysEqual(x.data.id, evt.swapId));
-          const done = this.context.settleAtomicSwap(open[idx], evt);
-          open.splice(idx, 1);
-          return done;
-      }
-    };
-
-    return Stream.merge(offers, releases).map(combiner);
+    const merger = new AtomicSwapMerger();
+    return Stream.merge(offers, releases).map(event => merger.process(event));
   }
 
   public async searchTx(

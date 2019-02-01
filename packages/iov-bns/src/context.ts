@@ -7,12 +7,10 @@ import {
   ChainId,
   ConfirmedTransaction,
   OpenSwap,
-  SwapClaimTransaction,
   SwapCounterTransaction,
   SwapData,
   SwapIdBytes,
   SwapState,
-  SwapTimeoutTransaction,
 } from "@iov/bcp-types";
 
 import { decodeAmount } from "./decode";
@@ -105,22 +103,6 @@ export class Context {
         memo: counterTransaction.memo,
       },
     };
-  }
-
-  // TODO: Not using the chain data. Does this belong here?
-  public settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTransaction | SwapTimeoutTransaction): BcpAtomicSwap {
-    if (tx.kind === "bcp/swap_claim") {
-      return {
-        kind: SwapState.Claimed,
-        data: swap.data,
-        preimage: tx.preimage,
-      };
-    } else {
-      return {
-        kind: SwapState.Expired,
-        data: swap.data,
-      };
-    }
   }
 
   private amountToCoin(amount: Amount): BcpCoin {

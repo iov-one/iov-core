@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.13.0
+
+* @iov/bcp-types: Add `AtomicSwapMerger`
+
 ## 0.12.1
 
 * @iov/bns: Encode transaction fees

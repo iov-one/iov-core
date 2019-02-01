@@ -30,6 +30,7 @@
     "test-safari": "yarn pack-web && karma start --single-run --browsers Safari"
   },
   "dependencies": {
+    "@iov/crypto": "^0.12.0",
     "@iov/encoding": "^0.12.0",
     "@iov/stream": "^0.12.0",
     "type-tagger": "^1.0.0",

@@ -1,0 +1,157 @@
+import { Sha256 } from "@iov/crypto";
+import { Encoding } from "@iov/encoding";
+
+import { ClaimedSwap, OpenSwap, SwapState } from "./atomicswap";
+import { AtomicSwapMerger } from "./atomicswapmerger";
+import { BcpCoin } from "./connection";
+import {
+  Address,
+  Algorithm,
+  ChainId,
+  PublicKeyBundle,
+  PublicKeyBytes,
+  SwapClaimTransaction,
+  SwapIdBytes,
+  TokenTicker,
+} from "./transactions";
+
+const { fromHex } = Encoding;
+
+describe("AtomicSwapMerger", () => {
+  const defaultAmount: BcpCoin = {
+    quantity: "1",
+    fractionalDigits: 9,
+    tokenTicker: "CASH" as TokenTicker,
+    tokenName: "Cash",
+  };
+
+  it("can process open and close", () => {
+    const alice = "tiov1u8syu9juwx668k4vqfwl5vtm8j6yz89wamkcda" as Address;
+    const bobPubkey: PublicKeyBundle = {
+      algo: Algorithm.Ed25519,
+      data: fromHex("97adfd82b8e6a93368361c5b9256a85bbfb8ed7421372bf7d3fc54498c8ea730") as PublicKeyBytes,
+    };
+    const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
+    const preimage = fromHex("00110011");
+    const hashLock = new Sha256(preimage).digest();
+    const swapId = fromHex("aabbcc") as SwapIdBytes;
+    const open: OpenSwap = {
+      kind: SwapState.Open,
+      data: {
+        id: swapId,
+        sender: alice,
+        recipient: bobAddress,
+        hashlock: hashLock,
+        amount: [defaultAmount],
+        timeout: 1_000_000,
+      },
+    };
+
+    const claim: SwapClaimTransaction = {
+      kind: "bcp/swap_claim",
+      creator: {
+        chainId: "lalala" as ChainId,
+        pubkey: bobPubkey,
+      },
+      swapId: swapId,
+      preimage: preimage,
+    };
+
+    const merger = new AtomicSwapMerger();
+    expect(merger.openSwaps().length).toEqual(0);
+
+    expect(merger.process(open)).toEqual(open);
+    expect(merger.openSwaps().length).toEqual(1);
+
+    const expectedSettle: ClaimedSwap = {
+      kind: SwapState.Claimed,
+      data: open.data,
+      preimage: preimage,
+    };
+    expect(merger.process(claim)).toEqual(expectedSettle);
+    expect(merger.openSwaps().length).toEqual(0);
+  });
+
+  it("can process open A/B and close B/A", () => {
+    const alice = "tiov1u8syu9juwx668k4vqfwl5vtm8j6yz89wamkcda" as Address;
+    const bobPubkey: PublicKeyBundle = {
+      algo: Algorithm.Ed25519,
+      data: fromHex("97adfd82b8e6a93368361c5b9256a85bbfb8ed7421372bf7d3fc54498c8ea730") as PublicKeyBytes,
+    };
+    const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
+
+    const preimageA = fromHex("00110011");
+    const preimageB = fromHex("aabbeeff");
+    const hashLockA = new Sha256(preimageA).digest();
+    const hashLockB = new Sha256(preimageB).digest();
+    const swapIdA = fromHex("aabbcc") as SwapIdBytes;
+    const swapIdB = fromHex("112233") as SwapIdBytes;
+    const openA: OpenSwap = {
+      kind: SwapState.Open,
+      data: {
+        id: swapIdA,
+        sender: alice,
+        recipient: bobAddress,
+        hashlock: hashLockA,
+        amount: [defaultAmount],
+        timeout: 1_000_000,
+      },
+    };
+    const openB: OpenSwap = {
+      kind: SwapState.Open,
+      data: {
+        id: swapIdB,
+        sender: alice,
+        recipient: bobAddress,
+        hashlock: hashLockB,
+        amount: [defaultAmount],
+        timeout: 1_000_000,
+      },
+    };
+
+    const claimA: SwapClaimTransaction = {
+      kind: "bcp/swap_claim",
+      creator: {
+        chainId: "lalala" as ChainId,
+        pubkey: bobPubkey,
+      },
+      swapId: swapIdA,
+      preimage: preimageA,
+    };
+
+    const claimB: SwapClaimTransaction = {
+      kind: "bcp/swap_claim",
+      creator: {
+        chainId: "lalala" as ChainId,
+        pubkey: bobPubkey,
+      },
+      swapId: swapIdB,
+      preimage: preimageB,
+    };
+
+    const merger = new AtomicSwapMerger();
+    expect(merger.openSwaps().length).toEqual(0);
+
+    expect(merger.process(openA)).toEqual(openA);
+    expect(merger.openSwaps().length).toEqual(1);
+
+    expect(merger.process(openB)).toEqual(openB);
+    expect(merger.openSwaps().length).toEqual(2);
+
+    const expectedSettleB: ClaimedSwap = {
+      kind: SwapState.Claimed,
+      data: openB.data,
+      preimage: preimageB,
+    };
+    expect(merger.process(claimB)).toEqual(expectedSettleB);
+    expect(merger.openSwaps().length).toEqual(1);
+
+    const expectedSettleA: ClaimedSwap = {
+      kind: SwapState.Claimed,
+      data: openA.data,
+      preimage: preimageA,
+    };
+    expect(merger.process(claimA)).toEqual(expectedSettleA);
+    expect(merger.openSwaps().length).toEqual(0);
+  });
+});
