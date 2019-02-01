@@ -166,7 +166,7 @@ function buildSwapOfferTx(tx: SwapOfferTransaction): codecImpl.app.ITx {
     kind: "bcp/swap_counter",
     creator: tx.creator,
     recipient: tx.recipient,
-    amount: tx.amount,
+    amounts: tx.amounts,
     timeout: tx.timeout,
     hashCode: preimageIdentifier(tx.preimage),
   };
@@ -179,7 +179,7 @@ function buildSwapCounterTx(tx: SwapCounterTransaction): codecImpl.app.ITx {
       src: decodeBnsAddress(identityToAddress(tx.creator)).data,
       arbiter: tx.hashCode,
       recipient: decodeBnsAddress(tx.recipient).data,
-      amount: tx.amount.map(encodeAmount),
+      amount: tx.amounts.map(encodeAmount),
       timeout: tx.timeout,
       memo: tx.memo,
     }),

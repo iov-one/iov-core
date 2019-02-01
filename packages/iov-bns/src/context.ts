@@ -74,7 +74,7 @@ export class Context {
       sender: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.sender)),
       recipient: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.recipient)),
       hashlock,
-      amount: ensure(swap.amount).map(coin => this.coin(coin)),
+      amounts: ensure(swap.amount).map(coin => decodeAmount(coin)),
       timeout: asNumber(swap.timeout),
       memo: swap.memo,
     };
@@ -98,7 +98,7 @@ export class Context {
         sender: identityToAddress(counterTransaction.creator),
         recipient: counterTransaction.recipient,
         hashlock: hashFromIdentifier(counterTransaction.hashCode),
-        amount: counterTransaction.amount.map(amount => this.amountToCoin(amount)),
+        amounts: counterTransaction.amounts,
         timeout: counterTransaction.timeout,
         memo: counterTransaction.memo,
       },

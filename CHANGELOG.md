@@ -4,6 +4,11 @@
 
 * @iov/bcp-types: Add `AtomicSwapMerger`
 
+Breaking changes
+
+* @iov/bcp-types: Pluralize `.amounts` property and change to `Amount` array in
+  `SwapOfferTransaction`, `SwapCounterTransaction`, `SwapData`
+
 ## 0.12.1
 
 * @iov/bns: Encode transaction fees

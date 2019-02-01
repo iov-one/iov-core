@@ -1,6 +1,6 @@
 import { Stream } from "xstream";
-import { BcpCoin, BcpConnection } from "./connection";
-import { Address, SwapIdBytes } from "./transactions";
+import { BcpConnection } from "./connection";
+import { Address, Amount, SwapIdBytes } from "./transactions";
 export declare enum SwapState {
     Open = "open",
     Claimed = "claimed",
@@ -11,7 +11,7 @@ export interface SwapData {
     readonly sender: Address;
     readonly recipient: Address;
     readonly hashlock: Uint8Array;
-    readonly amount: ReadonlyArray<BcpCoin>;
+    readonly amounts: ReadonlyArray<Amount>;
     readonly timeout: number;
     readonly memo?: string;
 }

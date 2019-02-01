@@ -1693,7 +1693,7 @@ describe("BnsConnection", () => {
       kind: "bcp/swap_offer",
       creator: faucet,
       recipient: recipientAddr,
-      amount: [
+      amounts: [
         {
           quantity: "123000456000",
           fractionalDigits: 9,
@@ -1787,9 +1787,9 @@ describe("BnsConnection", () => {
     expect(swapData.sender).toEqual(faucetAddr);
     expect(swapData.recipient).toEqual(recipientAddr);
     expect(swapData.timeout).toEqual(swapOfferTimeout);
-    expect(swapData.amount.length).toEqual(1);
-    expect(swapData.amount[0].quantity).toEqual("123000456000");
-    expect(swapData.amount[0].tokenTicker).toEqual(cash);
+    expect(swapData.amounts.length).toEqual(1);
+    expect(swapData.amounts[0].quantity).toEqual("123000456000");
+    expect(swapData.amounts[0].tokenTicker).toEqual(cash);
     expect(swapData.hashlock).toEqual(swapOfferHash);
 
     // we can get the swap by the recipient
@@ -1825,7 +1825,7 @@ describe("BnsConnection", () => {
       kind: "bcp/swap_offer",
       creator: creator,
       recipient: rcptAddr,
-      amount: [
+      amounts: [
         {
           quantity: "21000000000",
           fractionalDigits: 9,

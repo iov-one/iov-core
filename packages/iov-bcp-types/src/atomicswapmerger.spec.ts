@@ -3,10 +3,10 @@ import { Encoding } from "@iov/encoding";
 
 import { ClaimedSwap, OpenSwap, SwapState } from "./atomicswap";
 import { AtomicSwapMerger } from "./atomicswapmerger";
-import { BcpCoin } from "./connection";
 import {
   Address,
   Algorithm,
+  Amount,
   ChainId,
   PublicKeyBundle,
   PublicKeyBytes,
@@ -18,11 +18,10 @@ import {
 const { fromHex } = Encoding;
 
 describe("AtomicSwapMerger", () => {
-  const defaultAmount: BcpCoin = {
+  const defaultAmount: Amount = {
     quantity: "1",
     fractionalDigits: 9,
     tokenTicker: "CASH" as TokenTicker,
-    tokenName: "Cash",
   };
 
   it("can process open and close", () => {
@@ -42,7 +41,7 @@ describe("AtomicSwapMerger", () => {
         sender: alice,
         recipient: bobAddress,
         hashlock: hashLock,
-        amount: [defaultAmount],
+        amounts: [defaultAmount],
         timeout: 1_000_000,
       },
     };
@@ -93,7 +92,7 @@ describe("AtomicSwapMerger", () => {
         sender: alice,
         recipient: bobAddress,
         hashlock: hashLockA,
-        amount: [defaultAmount],
+        amounts: [defaultAmount],
         timeout: 1_000_000,
       },
     };
@@ -104,7 +103,7 @@ describe("AtomicSwapMerger", () => {
         sender: alice,
         recipient: bobAddress,
         hashlock: hashLockB,
-        amount: [defaultAmount],
+        amounts: [defaultAmount],
         timeout: 1_000_000,
       },
     };
