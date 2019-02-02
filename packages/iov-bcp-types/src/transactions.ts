@@ -219,6 +219,7 @@ export interface SwapOfferTransaction extends UnsignedTransaction {
    * This is a SHA256 hash until we have a way to specifiy the hashing algorithm.
    */
   readonly hash: Uint8Array;
+  readonly memo?: string;
 }
 
 export interface SwapCounterTransaction extends UnsignedTransaction {

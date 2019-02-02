@@ -169,7 +169,7 @@ function buildSwapOfferTx(tx: SwapOfferTransaction): codecImpl.app.ITx {
       recipient: decodeBnsAddress(tx.recipient).data,
       amount: tx.amounts.map(encodeAmount),
       timeout: tx.timeout,
-      memo: undefined, // why does SwapOfferTransaction not have a memo?
+      memo: tx.memo,
     }),
   };
 }
