@@ -1793,7 +1793,7 @@ describe("BnsConnection", () => {
     expect(swapData.amounts.length).toEqual(1);
     expect(swapData.amounts[0].quantity).toEqual("123000456000");
     expect(swapData.amounts[0].tokenTicker).toEqual(cash);
-    expect(swapData.hashlock).toEqual(swapOfferHash);
+    expect(swapData.hash).toEqual(swapOfferHash);
 
     // we can get the swap by the recipient
     const rcptSwaps = await connection.getSwaps(querySwapRecipient);

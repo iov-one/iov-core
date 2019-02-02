@@ -178,7 +178,7 @@ function buildSwapCounterTx(tx: SwapCounterTransaction): codecImpl.app.ITx {
   return {
     createEscrowMsg: codecImpl.escrow.CreateEscrowMsg.create({
       src: decodeBnsAddress(identityToAddress(tx.creator)).data,
-      arbiter: hashIdentifier(tx.hashCode),
+      arbiter: hashIdentifier(tx.hash),
       recipient: decodeBnsAddress(tx.recipient).data,
       amount: tx.amounts.map(encodeAmount),
       timeout: tx.timeout,

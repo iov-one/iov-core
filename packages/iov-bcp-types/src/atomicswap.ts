@@ -13,7 +13,12 @@ export interface SwapData {
   readonly id: SwapIdBytes; // this is used as an unique identitier to locate the swap
   readonly sender: Address;
   readonly recipient: Address;
-  readonly hashlock: Uint8Array; // this is the hash, whose preimage releases the swap
+  /**
+   * The hash, whose preimage releases the atomic swap.
+   *
+   * Until we have a way to specify the hashing algirithm, this is SHA256.
+   */
+  readonly hash: Uint8Array;
   readonly amounts: ReadonlyArray<Amount>;
   readonly timeout: number; // blockheight where the swap expires (TODO: alternatively support Date?)
   readonly memo?: string;

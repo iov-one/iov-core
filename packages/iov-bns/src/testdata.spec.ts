@@ -19,7 +19,6 @@ import {
 import { Encoding, Int53 } from "@iov/encoding";
 
 import { PrivateKeyBundle, PrivateKeyBytes } from "./types";
-import { hashId } from "./util";
 
 const { fromHex } = Encoding;
 
@@ -166,7 +165,6 @@ export const randomTxJson: SignedTransaction = {
   otherSignatures: [sig2],
 };
 
-export const hashCode = Uint8Array.from([...hashId, ...fromHex("1122334455aabbccddee")]);
 // recipient address generated using https://github.com/nym-zone/bech32
 // bech32 -e -h tiov 123485cb38847474fe9febfd56ab67e14bcd56f3
 const swapCounterMsg: SwapCounterTransaction = {
@@ -184,7 +182,7 @@ const swapCounterMsg: SwapCounterTransaction = {
       tokenTicker: "FOO" as TokenTicker,
     },
   ],
-  hashCode,
+  hash: fromHex("1122334455aabbccddee"),
 };
 export const swapCounterTxJson: SignedTransaction = {
   transaction: swapCounterMsg,

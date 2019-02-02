@@ -15,7 +15,6 @@ export declare function appendSignBytes(bz: Uint8Array, chainId: ChainId, nonce:
 export declare function arraysEqual(a: Uint8Array, b: Uint8Array): boolean;
 /** Type to differentiate between a raw hash of the data and the id used internally in weave */
 export declare type HashId = Uint8Array & As<"hashid">;
-export declare const hashId: Uint8Array;
 export declare function preimageIdentifier(preimage: Uint8Array): HashId;
 export declare function hashIdentifier(hash: Uint8Array): HashId;
 export declare function isHashIdentifier(ident: Uint8Array): ident is HashId;

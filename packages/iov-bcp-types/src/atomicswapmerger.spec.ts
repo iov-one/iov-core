@@ -32,7 +32,7 @@ describe("AtomicSwapMerger", () => {
     };
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
     const preimage = fromHex("00110011");
-    const hashLock = new Sha256(preimage).digest();
+    const hash = new Sha256(preimage).digest();
     const swapId = fromHex("aabbcc") as SwapIdBytes;
     const open: OpenSwap = {
       kind: SwapState.Open,
@@ -40,7 +40,7 @@ describe("AtomicSwapMerger", () => {
         id: swapId,
         sender: alice,
         recipient: bobAddress,
-        hashlock: hashLock,
+        hash: hash,
         amounts: [defaultAmount],
         timeout: 1_000_000,
       },
@@ -81,8 +81,8 @@ describe("AtomicSwapMerger", () => {
 
     const preimageA = fromHex("00110011");
     const preimageB = fromHex("aabbeeff");
-    const hashLockA = new Sha256(preimageA).digest();
-    const hashLockB = new Sha256(preimageB).digest();
+    const hashA = new Sha256(preimageA).digest();
+    const hashB = new Sha256(preimageB).digest();
     const swapIdA = fromHex("aabbcc") as SwapIdBytes;
     const swapIdB = fromHex("112233") as SwapIdBytes;
     const openA: OpenSwap = {
@@ -91,7 +91,7 @@ describe("AtomicSwapMerger", () => {
         id: swapIdA,
         sender: alice,
         recipient: bobAddress,
-        hashlock: hashLockA,
+        hash: hashA,
         amounts: [defaultAmount],
         timeout: 1_000_000,
       },
@@ -102,7 +102,7 @@ describe("AtomicSwapMerger", () => {
         id: swapIdB,
         sender: alice,
         recipient: bobAddress,
-        hashlock: hashLockB,
+        hash: hashB,
         amounts: [defaultAmount],
         timeout: 1_000_000,
       },
@@ -158,7 +158,7 @@ describe("AtomicSwapMerger", () => {
     const alice = "tiov1u8syu9juwx668k4vqfwl5vtm8j6yz89wamkcda" as Address;
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
     const preimage = fromHex("00110011");
-    const hashLock = new Sha256(preimage).digest();
+    const hash = new Sha256(preimage).digest();
     const swapId = fromHex("aabbcc") as SwapIdBytes;
     const open: OpenSwap = {
       kind: SwapState.Open,
@@ -166,7 +166,7 @@ describe("AtomicSwapMerger", () => {
         id: swapId,
         sender: alice,
         recipient: bobAddress,
-        hashlock: hashLock,
+        hash: hash,
         amounts: [defaultAmount],
         timeout: 1_000_000,
       },
@@ -188,7 +188,7 @@ describe("AtomicSwapMerger", () => {
     };
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
     const preimage = fromHex("00110011");
-    const hashLock = new Sha256(preimage).digest();
+    const hash = new Sha256(preimage).digest();
     const swapId = fromHex("aabbcc") as SwapIdBytes;
     const open: OpenSwap = {
       kind: SwapState.Open,
@@ -196,7 +196,7 @@ describe("AtomicSwapMerger", () => {
         id: swapId,
         sender: alice,
         recipient: bobAddress,
-        hashlock: hashLock,
+        hash: hash,
         amounts: [defaultAmount],
         timeout: 1_000_000,
       },

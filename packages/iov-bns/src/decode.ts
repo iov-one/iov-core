@@ -205,7 +205,7 @@ function parseSwapCounterTx(
   return {
     ...base,
     kind: "bcp/swap_counter",
-    hashCode: hashFromIdentifier(hashIdentifier),
+    hash: hashFromIdentifier(hashIdentifier),
     recipient: encodeBnsAddress(prefix, ensure(msg.recipient, "recipient")),
     timeout: asNumber(msg.timeout),
     amounts: (msg.amount || []).map(decodeAmount),

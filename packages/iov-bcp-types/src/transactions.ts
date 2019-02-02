@@ -228,7 +228,8 @@ export interface SwapCounterTransaction extends UnsignedTransaction {
   readonly recipient: Address;
   /** absolute block height at which the counter offer times out */
   readonly timeout: number;
-  readonly hashCode: Uint8Array; // pulled from the offer transaction
+  /** Copied from the swap offer transaction */
+  readonly hash: Uint8Array;
   readonly memo?: string;
 }
 

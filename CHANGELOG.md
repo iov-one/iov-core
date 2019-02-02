@@ -15,6 +15,8 @@ Breaking changes
 * @iov/bcp-types: Rename `bnsSwapQueryTags` to `bnsSwapQueryTag`
 * @iov/bcp-types: Let `SwapOfferTransaction` take a `hash` instead of a `preimage`.
 * @iov/bcp-types: Add `memo` field to `SwapOfferTransaction`.
+* @iov/bcp-types: Rename `SwapData.hashlock` to `SwapData.hash`; rename
+  `SwapCounterTransaction.hashCode` to `SwapCounterTransaction.hash`.
 * @iov/ethereum: The `options` parameter of `ethereumConnector` does not allow
   strings anymore. Use `{ wsUrl: myWebsocketUrl }` instead.
 * @iov/ledger-bns: Package removed from this monorepo and now available at
