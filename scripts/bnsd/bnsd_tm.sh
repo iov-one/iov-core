@@ -22,7 +22,8 @@ if [ ! -d "${BNSD_DIR}" ]; then
 fi
 
 # tx indexing set in init
-exec docker run --user="$UID" \
+exec docker run --rm \
+  --user="$UID" \
   --name "bnsd-tendermint" \
   -p "${PORT}:26657" -v "${BNSD_DIR}:/tendermint" \
   "iov1/tendermint:${BNSD_TM_VERSION}" node \

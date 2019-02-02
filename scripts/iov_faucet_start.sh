@@ -15,11 +15,12 @@ BLOCKCHAIN_URL="ws://$DOCKER_HOST_IP:22345"
 echo "Connecting to $BLOCKCHAIN_URL"
 
 docker pull "iov1/iov-faucet:${FAUCET_VERSION}"
-docker run --read-only \
+docker run --rm \
+  --read-only \
   --env "FAUCET_CONCURRENCY=3" \
   --env "FAUCET_MNEMONIC=degree tackle suggest window test behind mesh extra cover prepare oak script"  \
   -p 8000:8000 \
-  --rm "iov1/iov-faucet:${FAUCET_VERSION}" \
+  "iov1/iov-faucet:${FAUCET_VERSION}" \
   start bns "$BLOCKCHAIN_URL" \
   > "$LOGFILE" &
 
