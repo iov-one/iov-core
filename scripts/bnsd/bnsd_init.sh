@@ -17,7 +17,8 @@ fi
 
 chmod 777 "${BNSD_DIR}"
 
-docker run --user="$UID" \
+docker run --rm \
+  --user="$UID" \
   -v "${BNSD_DIR}:/tendermint" \
   "iov1/tendermint:${BNSD_TM_VERSION}" \
   init
@@ -30,7 +31,8 @@ jq ". + {\"app_state\" : $APP_STATE}" \
   "${BNSD_DIR}/config/genesis.json.orig" \
   > "${BNSD_DIR}/config/genesis.json"
 
-docker run --user="$UID" \
+docker run --rm \
+  --user="$UID" \
   -v "${BNSD_DIR}:/data" \
   "iov1/bnsd:${BNSD_VERSION}" \
   -home "/data" \
