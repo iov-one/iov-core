@@ -371,7 +371,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
     const res = await doQuery();
     const parser = createParser(codecImpl.escrow.Escrow, "esc:");
-    const data = res.results.map(parser).map(escrow => this.context.swapOffer(escrow));
+    const data = res.results.map(parser).map(escrow => this.context.decodeOpenSwap(escrow));
     return data;
   }
 

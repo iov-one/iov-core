@@ -1,14 +1,12 @@
 import {
   Address,
   Amount,
-  AtomicSwap,
   BcpCoin,
   BcpTicker,
   ChainId,
   ConfirmedTransaction,
   OpenSwap,
   SwapCounterTransaction,
-  SwapData,
   SwapIdBytes,
   SwapState,
 } from "@iov/bcp-types";
@@ -60,28 +58,24 @@ export class Context {
     return this.amountToCoin(amount);
   }
 
-  public swapOffer(swap: codecImpl.escrow.Escrow & Keyed): AtomicSwap {
-    // TODO: get and check hashlock
-    let hashlock: Uint8Array;
-    if (isHashIdentifier(swap.arbiter)) {
-      hashlock = hashFromIdentifier(swap.arbiter);
-    } else {
+  /** Decode within a Context to have the chain ID available */
+  public decodeOpenSwap(swap: codecImpl.escrow.Escrow & Keyed): OpenSwap {
+    if (!isHashIdentifier(swap.arbiter)) {
       throw new Error("Escrow not controlled by hashlock");
     }
-
-    const data: SwapData = {
-      id: swap._id as SwapIdBytes,
-      sender: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.sender)),
-      recipient: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.recipient)),
-      hashlock,
-      amounts: ensure(swap.amount).map(coin => decodeAmount(coin)),
-      timeout: asNumber(swap.timeout),
-      memo: swap.memo,
-    };
+    const hash = hashFromIdentifier(swap.arbiter);
 
     return {
       kind: SwapState.Open,
-      data,
+      data: {
+        id: swap._id as SwapIdBytes,
+        sender: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.sender)),
+        recipient: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.recipient)),
+        hashlock: hash,
+        amounts: ensure(swap.amount).map(coin => decodeAmount(coin)),
+        timeout: asNumber(swap.timeout),
+        memo: swap.memo,
+      },
     };
   }
 
