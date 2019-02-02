@@ -13,6 +13,8 @@ Breaking changes
   `AtomicSwapRecipientQuery`, `AtomicSwapSenderQuery`, `AtomicSwapIdQuery`,
   `AtomicSwapHashlockQuery`, `isAtomicSwap*Query`.
 * @iov/bcp-types: Rename `bnsSwapQueryTags` to `bnsSwapQueryTag`
+* @iov/ledger-bns: Package removed from this monorepo and now available at
+  https://github.com/iov-one/iov-ledger-bns
 
 ## 0.12.1
 
