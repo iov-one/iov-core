@@ -137,7 +137,12 @@ export interface SwapOfferTransaction extends UnsignedTransaction {
     readonly recipient: Address;
     /** absolute block height at which the offer times out */
     readonly timeout: number;
-    readonly preimage: Uint8Array;
+    /**
+     * Locally calculated hash of the preimage.
+     *
+     * This is a SHA256 hash until we have a way to specifiy the hashing algorithm.
+     */
+    readonly hash: Uint8Array;
 }
 export interface SwapCounterTransaction extends UnsignedTransaction {
     readonly kind: "bcp/swap_counter";

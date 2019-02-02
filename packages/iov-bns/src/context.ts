@@ -87,17 +87,13 @@ export class Context {
 
   public swapOfferFromTx(tx: ConfirmedTransaction<SwapCounterTransaction>): OpenSwap {
     const counterTransaction: SwapCounterTransaction = tx.transaction;
-    // TODO: do we really want errors here, or just filter them out???
-    if (!isHashIdentifier(counterTransaction.hashCode)) {
-      throw new Error("swap not controlled by hash lock");
-    }
     return {
       kind: SwapState.Open,
       data: {
         id: tx.result as SwapIdBytes,
         sender: identityToAddress(counterTransaction.creator),
         recipient: counterTransaction.recipient,
-        hashlock: hashFromIdentifier(counterTransaction.hashCode),
+        hashlock: counterTransaction.hashCode,
         amounts: counterTransaction.amounts,
         timeout: counterTransaction.timeout,
         memo: counterTransaction.memo,

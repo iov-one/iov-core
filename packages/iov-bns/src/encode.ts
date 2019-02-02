@@ -23,7 +23,7 @@ import {
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
 } from "./types";
-import { decodeBnsAddress, identityToAddress, preimageIdentifier } from "./util";
+import { decodeBnsAddress, hashIdentifier, identityToAddress } from "./util";
 
 const { toUtf8 } = Encoding;
 
@@ -162,22 +162,23 @@ function buildSendTransaction(tx: SendTransaction): codecImpl.app.ITx {
 }
 
 function buildSwapOfferTx(tx: SwapOfferTransaction): codecImpl.app.ITx {
-  const hashed: SwapCounterTransaction = {
-    kind: "bcp/swap_counter",
-    creator: tx.creator,
-    recipient: tx.recipient,
-    amounts: tx.amounts,
-    timeout: tx.timeout,
-    hashCode: preimageIdentifier(tx.preimage),
+  return {
+    createEscrowMsg: codecImpl.escrow.CreateEscrowMsg.create({
+      src: decodeBnsAddress(identityToAddress(tx.creator)).data,
+      arbiter: hashIdentifier(tx.hash),
+      recipient: decodeBnsAddress(tx.recipient).data,
+      amount: tx.amounts.map(encodeAmount),
+      timeout: tx.timeout,
+      memo: undefined, // why does SwapOfferTransaction not have a memo?
+    }),
   };
-  return buildSwapCounterTx(hashed);
 }
 
 function buildSwapCounterTx(tx: SwapCounterTransaction): codecImpl.app.ITx {
   return {
     createEscrowMsg: codecImpl.escrow.CreateEscrowMsg.create({
       src: decodeBnsAddress(identityToAddress(tx.creator)).data,
-      arbiter: tx.hashCode,
+      arbiter: hashIdentifier(tx.hashCode),
       recipient: decodeBnsAddress(tx.recipient).data,
       amount: tx.amounts.map(encodeAmount),
       timeout: tx.timeout,

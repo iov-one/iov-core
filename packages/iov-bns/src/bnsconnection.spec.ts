@@ -1704,7 +1704,7 @@ describe("BnsConnection", () => {
         },
       ],
       timeout: swapOfferTimeout,
-      preimage: swapOfferPreimage,
+      hash: swapOfferHash,
     };
 
     const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
@@ -1820,7 +1820,7 @@ describe("BnsConnection", () => {
     profile: UserProfile,
     creator: PublicIdentity,
     rcptAddr: Address,
-    preimage: Uint8Array,
+    hash: Uint8Array,
   ): Promise<PostTxResponse> => {
     // construct a swapOfferTx, sign and post to the chain
     const swapOfferTimeout = (await connection.height()) + 1000;
@@ -1836,7 +1836,7 @@ describe("BnsConnection", () => {
         },
       ],
       timeout: swapOfferTimeout,
-      preimage,
+      hash: hash,
     };
     const firstWalletId = profile.wallets.value[0].id;
     const nonce = await connection.getNonce({ pubkey: creator.pubkey });
@@ -1874,11 +1874,11 @@ describe("BnsConnection", () => {
 
     // create the preimages for the three swaps
     const preimage1 = Encoding.toAscii("the first swap is easy");
-    // const hash1 = new Sha256(preimage1).digest();
+    const hash1 = new Sha256(preimage1).digest();
     const preimage2 = Encoding.toAscii("ze 2nd iS l337 !@!");
-    // const hash2 = new Sha256(preimage2).digest();
+    const hash2 = new Sha256(preimage2).digest();
     const preimage3 = Encoding.toAscii("and this one is a gift.");
-    // const hash3 = new Sha256(preimage3).digest();
+    const hash3 = new Sha256(preimage3).digest();
 
     // nothing to start with
     const rcptQuery = { recipient: recipientAddr };
@@ -1886,7 +1886,7 @@ describe("BnsConnection", () => {
     expect(initSwaps.length).toEqual(0);
 
     // make two offers
-    const post1 = await openSwap(connection, profile, faucet, recipientAddr, preimage1);
+    const post1 = await openSwap(connection, profile, faucet, recipientAddr, hash1);
     const blockInfo1 = await post1.blockInfo.waitFor(info => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo1)) {
       throw new Error(`Expected transaction state success but got state: ${blockInfo1.state}`);
@@ -1894,7 +1894,7 @@ describe("BnsConnection", () => {
     const id1 = blockInfo1.result! as SwapIdBytes;
     expect(id1.length).toEqual(8);
 
-    const post2 = await openSwap(connection, profile, faucet, recipientAddr, preimage2);
+    const post2 = await openSwap(connection, profile, faucet, recipientAddr, hash2);
     const blockInfo2 = await post2.blockInfo.waitFor(info => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo2)) {
       throw new Error(`Expected transaction state success but got state: ${blockInfo2.state}`);
@@ -1920,7 +1920,7 @@ describe("BnsConnection", () => {
     // start to watch
     const liveView = asArray(connection.watchSwaps(rcptQuery));
 
-    const post3 = await openSwap(connection, profile, faucet, recipientAddr, preimage3);
+    const post3 = await openSwap(connection, profile, faucet, recipientAddr, hash3);
     const blockInfo3 = await post3.blockInfo.waitFor(info => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo3)) {
       throw new Error(`Expected transaction state success but got state: ${blockInfo3.state}`);
