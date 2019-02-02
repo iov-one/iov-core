@@ -6,15 +6,14 @@ import { EthereumConnection, EthereumConnectionOptions } from "./ethereumconnect
 /**
  * A helper to connect to a ethereum-based chain at a given url
  *
- * @param options if string, interpreted as a websocket URL; otherwise a EthereumConnectionOptions object
+ * @param options An EthereumConnectionOptions object. If undefined, all possible options are default.
  */
 export function ethereumConnector(
   url: string,
-  options: string | undefined | EthereumConnectionOptions,
+  options: EthereumConnectionOptions | undefined,
   expectedChainId?: ChainId,
 ): ChainConnector {
-  const usedOptions: EthereumConnectionOptions =
-    typeof options === "string" || options === undefined ? { wsUrl: options } : options;
+  const usedOptions: EthereumConnectionOptions = options || {};
   return {
     client: () => EthereumConnection.establish(url, usedOptions),
     codec: ethereumCodec,
