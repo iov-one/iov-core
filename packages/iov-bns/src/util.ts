@@ -85,23 +85,41 @@ export function appendSignBytes(bz: Uint8Array, chainId: ChainId, nonce: Nonce):
   ]) as SignableBytes;
 }
 
-export const arraysEqual = (a: Uint8Array, b: Uint8Array): boolean =>
-  a.length === b.length && a.every((n: number, i: number): boolean => n === b[i]);
+export function arraysEqual(a: Uint8Array, b: Uint8Array): boolean {
+  return a.length === b.length && a.every((value, index) => value === b[index]);
+}
 
-// we use this type to differentiate between a raw hash of the data and the id used internally in weave
+/** Type to differentiate between a raw hash of the data and the id used internally in weave */
 export type HashId = Uint8Array & As<"hashid">;
 
 export const hashId = Encoding.toAscii("hash/sha256/");
-export const preimageIdentifier = (data: Uint8Array): HashId => hashIdentifier(new Sha256(data).digest());
-export const hashIdentifier = (hash: Uint8Array): HashId => Uint8Array.from([...hashId, ...hash]) as HashId;
 
-export const isHashIdentifier = (ident: Uint8Array): ident is HashId =>
-  arraysEqual(hashId, ident.slice(0, hashId.length));
-export const hashFromIdentifier = (ident: HashId): Uint8Array => ident.slice(hashId.length);
+export function preimageIdentifier(preimage: Uint8Array): HashId {
+  const hash = new Sha256(preimage).digest();
+  return hashIdentifier(hash);
+}
+
+export function hashIdentifier(hash: Uint8Array): HashId {
+  return Uint8Array.from([...hashId, ...hash]) as HashId;
+}
+
+export function isHashIdentifier(ident: Uint8Array): ident is HashId {
+  const prefix = ident.slice(0, hashId.length);
+  return arraysEqual(hashId, prefix);
+}
+
+export function hashFromIdentifier(ident: HashId): Uint8Array {
+  return ident.slice(hashId.length);
+}
 
 // calculate keys for query tags
-export const bucketKey = (bucket: string) => Encoding.toAscii(`${bucket}:`);
-export const indexKey = (bucket: string, index: string) => Encoding.toAscii(`_i.${bucket}_${index}:`);
+export function bucketKey(bucket: string): Uint8Array {
+  return Encoding.toAscii(`${bucket}:`);
+}
+
+export function indexKey(bucket: string, index: string): Uint8Array {
+  return Encoding.toAscii(`_i.${bucket}_${index}:`);
+}
 
 export function isConfirmedWithSwapCounterTransaction(
   tx: ConfirmedTransaction,
