@@ -12,15 +12,16 @@ export declare function decodeBnsAddress(address: Address): {
 export declare function identityToAddress(identity: PublicIdentity): Address;
 export declare function isValidAddress(address: string): boolean;
 export declare function appendSignBytes(bz: Uint8Array, chainId: ChainId, nonce: Nonce): SignableBytes;
-export declare const arraysEqual: (a: Uint8Array, b: Uint8Array) => boolean;
+export declare function arraysEqual(a: Uint8Array, b: Uint8Array): boolean;
+/** Type to differentiate between a raw hash of the data and the id used internally in weave */
 export declare type HashId = Uint8Array & As<"hashid">;
 export declare const hashId: Uint8Array;
-export declare const preimageIdentifier: (data: Uint8Array) => HashId;
-export declare const hashIdentifier: (hash: Uint8Array) => HashId;
-export declare const isHashIdentifier: (ident: Uint8Array) => ident is HashId;
-export declare const hashFromIdentifier: (ident: HashId) => Uint8Array;
-export declare const bucketKey: (bucket: string) => Uint8Array;
-export declare const indexKey: (bucket: string, index: string) => Uint8Array;
+export declare function preimageIdentifier(preimage: Uint8Array): HashId;
+export declare function hashIdentifier(hash: Uint8Array): HashId;
+export declare function isHashIdentifier(ident: Uint8Array): ident is HashId;
+export declare function hashFromIdentifier(ident: HashId): Uint8Array;
+export declare function bucketKey(bucket: string): Uint8Array;
+export declare function indexKey(bucket: string, index: string): Uint8Array;
 export declare function isConfirmedWithSwapCounterTransaction(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapCounterTransaction>;
 export declare function isConfirmedWithSwapClaimOrTimeoutTransaction(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapClaimTransaction | SwapTimeoutTransaction>;
 export declare function buildTxQuery(query: BcpTxQuery): QueryString;
