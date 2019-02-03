@@ -2,7 +2,5 @@
 set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
-for NAME in "bnsd-app" "bnsd-tendermint"; do
-  echo "Killing container named '$NAME' ..."
-  docker container kill "$NAME"
-done
+echo "Killing BNSd containers ..."
+docker container kill "bnsd-app" "bnsd-tendermint"
