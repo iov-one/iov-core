@@ -1,6 +1,11 @@
+import BN = require("bn.js");
+
 import {
+  Address,
+  Amount,
   BcpAtomicSwapConnection,
   isBlockInfoPending,
+  isBlockInfoSucceeded,
   isFailedTransaction,
   isSwapCounterTransaction,
   PublicIdentity,
@@ -9,11 +14,9 @@ import {
   SwapOfferTransaction,
   SwapState,
   TokenTicker,
-  TransactionState,
 } from "@iov/bcp-types";
 import { bnsConnector, bnsSwapQueryTag } from "@iov/bns";
-import { Sha256, Slip10RawIndex } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Random, Sha256, Slip10RawIndex } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol";
 import { firstEvent } from "@iov/stream";
 
@@ -40,7 +43,7 @@ function pendingWithoutBcpd(): void {
   }
 }
 
-interface Actor {
+interface ActorData {
   readonly mainWalletId: WalletId;
   readonly signer: MultiChainSigner;
   readonly bnsConnection: BcpAtomicSwapConnection;
@@ -49,25 +52,193 @@ interface Actor {
   readonly bcpIdentity: PublicIdentity;
 }
 
-async function buildActor(mnemonic: string, hdPath: ReadonlyArray<Slip10RawIndex>): Promise<Actor> {
-  const profile = new UserProfile();
-  const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic));
-  const signer = new MultiChainSigner(profile);
+class Actor {
+  public static async create(mnemonic: string, hdPath: ReadonlyArray<Slip10RawIndex>): Promise<Actor> {
+    const profile = new UserProfile();
+    const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic));
+    const signer = new MultiChainSigner(profile);
 
-  const bnsConnection = (await signer.addChain(bnsConnector("ws://localhost:22345"))).connection;
-  const bcpConnection = (await signer.addChain(bnsConnector("ws://localhost:23457"))).connection;
+    const bnsConnection = (await signer.addChain(bnsConnector("ws://localhost:22345"))).connection;
+    const bcpConnection = (await signer.addChain(bnsConnector("ws://localhost:23457"))).connection;
 
-  const bnsIdentity = await profile.createIdentity(wallet.id, bnsConnection.chainId(), hdPath);
-  const bcpIdentity = await profile.createIdentity(wallet.id, bcpConnection.chainId(), hdPath);
+    const bnsIdentity = await profile.createIdentity(wallet.id, bnsConnection.chainId(), hdPath);
+    const bcpIdentity = await profile.createIdentity(wallet.id, bcpConnection.chainId(), hdPath);
 
-  return {
-    mainWalletId: wallet.id,
-    signer: signer,
-    bnsConnection: bnsConnection as BcpAtomicSwapConnection,
-    bcpConnection: bcpConnection as BcpAtomicSwapConnection,
-    bnsIdentity: bnsIdentity,
-    bcpIdentity: bcpIdentity,
-  };
+    return new Actor({
+      mainWalletId: wallet.id,
+      signer: signer,
+      bnsConnection: bnsConnection as BcpAtomicSwapConnection,
+      bcpConnection: bcpConnection as BcpAtomicSwapConnection,
+      bnsIdentity: bnsIdentity,
+      bcpIdentity: bcpIdentity,
+    });
+  }
+
+  public readonly bnsIdentity: PublicIdentity;
+  public readonly bcpIdentity: PublicIdentity;
+  public get bnsAddress(): Address {
+    return this.signer.identityToAddress(this.bnsIdentity);
+  }
+  public get bcpAddress(): Address {
+    return this.signer.identityToAddress(this.bcpIdentity);
+  }
+
+  private readonly mainWalletId: WalletId;
+  private readonly signer: MultiChainSigner;
+  private readonly bnsConnection: BcpAtomicSwapConnection;
+  private readonly bcpConnection: BcpAtomicSwapConnection;
+  // tslint:disable-next-line:readonly-keyword
+  private preimage: Uint8Array | undefined;
+
+  constructor(data: ActorData) {
+    this.mainWalletId = data.mainWalletId;
+    this.signer = data.signer;
+    this.bnsConnection = data.bnsConnection;
+    this.bcpConnection = data.bcpConnection;
+    this.bnsIdentity = data.bnsIdentity;
+    this.bcpIdentity = data.bcpIdentity;
+  }
+
+  // CASH is a token on BNS
+  public async getCashBalance(): Promise<BN> {
+    const account = await this.bnsConnection.getAccount({ pubkey: this.bnsIdentity.pubkey });
+    const balance = account ? account.balance : [];
+    const amount = balance.find(row => row.tokenTicker === "CASH");
+    return new BN(amount ? amount.quantity : 0);
+  }
+
+  // MASH is a token on BCP
+  public async getMashBalance(): Promise<BN> {
+    const account = await this.bcpConnection.getAccount({ pubkey: this.bcpIdentity.pubkey });
+    const balance = account ? account.balance : [];
+    const amount = balance.find(row => row.tokenTicker === "MASH");
+    return new BN(amount ? amount.quantity : 0);
+  }
+
+  public async generatePreimage(): Promise<void> {
+    // tslint:disable-next-line:no-object-mutation
+    this.preimage = await Random.getBytes(32);
+  }
+
+  public async sendSwapOfferOnBns(recipient: Address, amount: Amount): Promise<void> {
+    const offer: SwapOfferTransaction = {
+      kind: "bcp/swap_offer",
+      creator: this.bnsIdentity,
+      memo: "Take this cash",
+      recipient: recipient,
+      timeout: (await this.bnsConnection.height()) + 100,
+      hash: new Sha256(this.preimage!).digest(),
+      amounts: [amount],
+    };
+    const post = await this.signer.signAndPost(offer, this.mainWalletId);
+    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    if (!isBlockInfoSucceeded(blockInfo)) {
+      throw new Error("Transaction failed");
+    }
+    await tendermintSearchIndexUpdated();
+  }
+
+  public async sendSwapCounterOnBcp(recipient: Address, amount: Amount): Promise<void> {
+    // ensure correct offer was sent on BNS
+    // TODO: search swap offer by ID
+    const offerReview = await firstEvent(
+      this.bnsConnection.liveTx({ tags: [bnsSwapQueryTag({ recipient: this.bnsAddress })] }),
+    );
+    if (isFailedTransaction(offerReview)) {
+      throw new Error("Transaction must not fail");
+    }
+    if (!isSwapCounterTransaction(offerReview.transaction)) {
+      throw new Error("Expected swap counter type");
+    }
+
+    if (offerReview.transaction.recipient !== this.bnsAddress) {
+      throw new Error("Swap offer has wrong recipient");
+    }
+
+    expect(offerReview.transaction.amounts.length).toEqual(1);
+    expect(offerReview.transaction.amounts[0].quantity).toEqual("2000000000");
+    expect(offerReview.transaction.amounts[0].fractionalDigits).toEqual(9);
+    expect(offerReview.transaction.amounts[0].tokenTicker).toEqual("CASH");
+
+    // sent counter on BCP
+    const counter: SwapCounterTransaction = {
+      kind: "bcp/swap_counter",
+      creator: this.bcpIdentity,
+      amounts: [amount],
+      recipient: recipient,
+      // TODO: some clever cross chain timeout calculation where counter lives longer than offer
+      timeout: (await this.bcpConnection.height()) + 200,
+      hash: offerReview.transaction.hash,
+    };
+
+    const post = await this.signer.signAndPost(counter, this.mainWalletId);
+    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    if (!isBlockInfoSucceeded(blockInfo)) {
+      throw new Error("Transaction failed");
+    }
+    await tendermintSearchIndexUpdated();
+  }
+
+  public async claimFromPreimageOnBcp(): Promise<void> {
+    // review counter
+    // TODO: search counter by swap ID
+    const searchResult = await this.bcpConnection.getSwaps({ recipient: this.bcpAddress });
+    expect(searchResult.length).toEqual(1);
+    const counterReview = searchResult[0];
+
+    if (counterReview.kind !== SwapState.Open) {
+      throw new Error("Swap should be open");
+    }
+
+    if (counterReview.data.recipient !== this.bcpAddress) {
+      throw new Error("Swap counter has wrong recipient");
+    }
+
+    expect(counterReview.data.amounts.length).toEqual(1);
+    expect(counterReview.data.amounts[0].quantity).toEqual("5000000000");
+    expect(counterReview.data.amounts[0].fractionalDigits).toEqual(9);
+    expect(counterReview.data.amounts[0].tokenTicker).toEqual("MASH");
+
+    // reciew ok, alice claims MASH on BCP
+    const claim: SwapClaimTransaction = {
+      kind: "bcp/swap_claim",
+      creator: this.bcpIdentity,
+      swapId: counterReview.data.id,
+      preimage: this.preimage!,
+    };
+
+    const post = await this.signer.signAndPost(claim, this.mainWalletId);
+    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    if (!isBlockInfoSucceeded(blockInfo)) {
+      throw new Error("Transaction failed");
+    }
+    await tendermintSearchIndexUpdated();
+  }
+
+  public async claimFromClaimOnBns(): Promise<void> {
+    const searchResults = await this.bcpConnection.getSwaps({ sender: this.bcpAddress });
+    expect(searchResults.length).toEqual(1);
+    const claim1Review = searchResults[0];
+
+    if (claim1Review.kind !== SwapState.Claimed) {
+      throw new Error("Swap should be claimed");
+    }
+
+    // found preimage on BCP, now bob claims CASH on BNS
+    const claim2: SwapClaimTransaction = {
+      kind: "bcp/swap_claim",
+      creator: this.bnsIdentity,
+      swapId: claim1Review.data.id,
+      preimage: claim1Review.preimage, // public data now!
+    };
+
+    const post = await this.signer.signAndPost(claim2, this.mainWalletId);
+    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    if (!isBlockInfoSucceeded(blockInfo)) {
+      throw new Error("Transaction failed");
+    }
+    await tendermintSearchIndexUpdated();
+  }
 }
 
 describe("Full atomic swap", () => {
@@ -76,195 +247,67 @@ describe("Full atomic swap", () => {
     pendingWithoutBnsd();
     pendingWithoutBcpd();
 
-    // alice owns CASH tokens on BNS
-    const alice = await buildActor(
+    const alice = await Actor.create(
       "degree tackle suggest window test behind mesh extra cover prepare oak script",
       HdPaths.simpleAddress(0),
     );
-    expect(alice.signer.identityToAddress(alice.bnsIdentity)).toEqual(
-      "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f",
-    );
-    expect(alice.signer.identityToAddress(alice.bcpIdentity)).toEqual(
-      "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f",
-    );
-    // console.log("Alice connected");
+    expect(alice.bnsAddress).toEqual("tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f");
+    expect(alice.bcpAddress).toEqual("tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f");
 
-    // bob owns MASH tokens on BCP
-    const bob = await buildActor(
+    const bob = await Actor.create(
       "dad kiss slogan offer outer bomb usual dream awkward jeans enlist mansion",
       HdPaths.iov(0),
     );
-    expect(bob.signer.identityToAddress(bob.bnsIdentity)).toEqual(
-      "tiov1qrw95py2x7fzjw25euuqlj6dq6t0jahe7rh8wp",
-    );
-    expect(bob.signer.identityToAddress(bob.bcpIdentity)).toEqual(
-      "tiov1qrw95py2x7fzjw25euuqlj6dq6t0jahe7rh8wp",
-    );
-    // console.log("Bob connected");
+    expect(bob.bnsAddress).toEqual("tiov1qrw95py2x7fzjw25euuqlj6dq6t0jahe7rh8wp");
+    expect(bob.bcpAddress).toEqual("tiov1qrw95py2x7fzjw25euuqlj6dq6t0jahe7rh8wp");
 
-    // alice checks her balance on BCP
-    {
-      const account = await alice.bcpConnection.getAccount({ pubkey: alice.bcpIdentity.pubkey });
-      expect(account).toBeUndefined();
-    }
+    // alice owns CASH on BNS but no MASH
+    const aliceInitialCash = await alice.getCashBalance();
+    const aliceInitialMash = await alice.getMashBalance();
+    expect(aliceInitialCash.gtn(100_000000000)).toEqual(true);
+    expect(aliceInitialMash.toString()).toEqual("0");
 
-    // bob checks his balance on BNS
-    {
-      const account = await bob.bnsConnection.getAccount({ pubkey: bob.bnsIdentity.pubkey });
-      expect(account).toBeUndefined();
-    }
+    // bob owns MASH on BCP but no CASH
+    const bobInitialCash = await bob.getCashBalance();
+    const bobInitialMash = await bob.getMashBalance();
+    expect(bobInitialCash.toString()).toEqual("0");
+    expect(bobInitialMash.gtn(100_000000000)).toEqual(true);
 
-    // console.log("Accounts checked");
+    // A secret that only Alice knows
+    await alice.generatePreimage();
 
-    // belongs to alice. Bob will not read this variable
-    const preimage = Encoding.toAscii("aabbcc!!4bn34n7899(s)d(ffg)bp34");
+    await alice.sendSwapOfferOnBns(bob.bnsAddress, {
+      quantity: "2000000000",
+      fractionalDigits: 9,
+      tokenTicker: "CASH" as TokenTicker,
+    });
 
-    {
-      const offer: SwapOfferTransaction = {
-        kind: "bcp/swap_offer",
-        creator: alice.bnsIdentity,
-        memo: "Take this cash",
-        recipient: alice.signer.identityToAddress(bob.bnsIdentity),
-        timeout: (await alice.bnsConnection.height()) + 100,
-        hash: new Sha256(preimage).digest(),
-        amounts: [
-          {
-            quantity: "2",
-            fractionalDigits: 9,
-            tokenTicker: "CASH" as TokenTicker,
-          },
-        ],
-      };
-      const post = await alice.signer.signAndPost(offer, alice.mainWalletId);
-      const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
-      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
-    }
+    // Alice's 2 CASH are locked in the contract
+    expect(aliceInitialCash.sub(await alice.getCashBalance()).toString()).toEqual("2000000000");
 
-    // console.log("Offer sent on BNS");
+    await bob.sendSwapCounterOnBcp(alice.bcpAddress, {
+      quantity: "5000000000",
+      fractionalDigits: 9,
+      tokenTicker: "MASH" as TokenTicker,
+    });
 
-    {
-      const bobAddressOnBns = bob.signer.identityToAddress(bob.bnsIdentity);
-      const bobOfferReview = await firstEvent(
-        bob.bnsConnection.liveTx({ tags: [bnsSwapQueryTag({ recipient: bobAddressOnBns })] }),
-      );
-      if (isFailedTransaction(bobOfferReview)) {
-        throw new Error("Transaction must not fail");
-      }
-      if (!isSwapCounterTransaction(bobOfferReview.transaction)) {
-        throw new Error("Expected swap counter type");
-      }
+    // Bob's 5 MASH are locked in the contract
+    expect(bobInitialMash.sub(await bob.getMashBalance()).toString()).toEqual("5000000000");
 
-      expect(bobOfferReview.transaction.recipient).toEqual(bobAddressOnBns);
-      expect(bobOfferReview.transaction.amounts.length).toEqual(1);
-      expect(bobOfferReview.transaction.amounts[0].quantity).toEqual("2");
-      expect(bobOfferReview.transaction.amounts[0].fractionalDigits).toEqual(9);
-      expect(bobOfferReview.transaction.amounts[0].tokenTicker).toEqual("CASH");
+    await alice.claimFromPreimageOnBcp();
 
-      const counter: SwapCounterTransaction = {
-        kind: "bcp/swap_counter",
-        creator: bob.bcpIdentity,
-        amounts: [
-          {
-            quantity: "5",
-            fractionalDigits: 9,
-            tokenTicker: "MASH" as TokenTicker,
-          },
-        ],
-        recipient: bob.signer.identityToAddress(alice.bcpIdentity),
-        // TODO: some clever cross chain timeout calculation where counter lives longer than offer
-        timeout: (await bob.bcpConnection.height()) + 200,
-        hash: bobOfferReview.transaction.hash,
-      };
-      {
-        const post = await bob.signer.signAndPost(counter, bob.mainWalletId);
-        const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
-      }
-    }
+    // Alice revealed her secret and should own 5 MASH now
+    expect((await alice.getMashBalance()).toString()).toEqual("5000000000");
 
-    // console.log("Counter sent on BCP");
-    await tendermintSearchIndexUpdated();
+    await bob.claimFromClaimOnBns();
 
-    {
-      const aliceAddressOnBcp = alice.signer.identityToAddress(alice.bcpIdentity);
-      const aliceCounterReviews = await alice.bcpConnection.getSwaps({ recipient: aliceAddressOnBcp });
-      expect(aliceCounterReviews.length).toEqual(1);
-      const aliceCounterReview = aliceCounterReviews[0];
+    // Bob used Alice's preimage to claim his 2 CASH
+    expect((await bob.getCashBalance()).toString()).toEqual("2000000000");
 
-      if (aliceCounterReview.kind !== SwapState.Open) {
-        throw new Error("Swap should be open");
-      }
+    // Alice's CASH balance now down by 2
+    expect(aliceInitialCash.sub(await alice.getCashBalance()).toString()).toEqual("2000000000");
 
-      expect(aliceCounterReview.data.recipient).toEqual(aliceAddressOnBcp);
-      expect(aliceCounterReview.data.amounts.length).toEqual(1);
-      expect(aliceCounterReview.data.amounts[0].quantity).toEqual("5");
-      expect(aliceCounterReview.data.amounts[0].fractionalDigits).toEqual(9);
-      expect(aliceCounterReview.data.amounts[0].tokenTicker).toEqual("MASH");
-
-      // reciew ok, alice claims MASH on BCP
-      const claim: SwapClaimTransaction = {
-        kind: "bcp/swap_claim",
-        creator: alice.bcpIdentity,
-        swapId: aliceCounterReview.data.id,
-        preimage: preimage,
-      };
-
-      {
-        const post = await alice.signer.signAndPost(claim, alice.mainWalletId);
-        const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
-      }
-
-      await tendermintSearchIndexUpdated();
-
-      // Alice revealed her secret and should own 5 MASH now
-      {
-        const account = await alice.bcpConnection.getAccount({ pubkey: alice.bcpIdentity.pubkey });
-        expect(account).toBeDefined();
-        expect(account!.balance[0].quantity).toEqual("5");
-        expect(account!.balance[0].fractionalDigits).toEqual(9);
-        expect(account!.balance[0].tokenTicker).toEqual("MASH");
-      }
-    }
-
-    // console.log("Alice revealed on BCP and got funded");
-
-    {
-      const bobAddressOnBcp = bob.signer.identityToAddress(bob.bcpIdentity);
-      const claimReviews = await bob.bcpConnection.getSwaps({ sender: bobAddressOnBcp });
-      expect(claimReviews.length).toEqual(1);
-      const claimReview = claimReviews[0];
-
-      if (claimReview.kind !== SwapState.Claimed) {
-        throw new Error("Swap should be claimed");
-      }
-
-      // bob found preimage on BCP, now bob claims CASH on BNS
-      const claim: SwapClaimTransaction = {
-        kind: "bcp/swap_claim",
-        creator: bob.bnsIdentity,
-        swapId: claimReview.data.id,
-        preimage: claimReview.preimage, // public data now!
-      };
-
-      {
-        const post = await bob.signer.signAndPost(claim, bob.mainWalletId);
-        const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
-      }
-
-      await tendermintSearchIndexUpdated();
-
-      // Bob used Alice's preimage to claim his 2 CASH
-      {
-        const account = await bob.bnsConnection.getAccount({ pubkey: bob.bnsIdentity.pubkey });
-        expect(account).toBeDefined();
-        expect(account!.balance[0].quantity).toEqual("2");
-        expect(account!.balance[0].fractionalDigits).toEqual(9);
-        expect(account!.balance[0].tokenTicker).toEqual("CASH");
-      }
-    }
-
-    // console.log("Bob claimed on BNS");
+    // Bob's MASH balance now down by 5
+    expect(bobInitialMash.sub(await bob.getMashBalance()).toString()).toEqual("5000000000");
   });
 });
