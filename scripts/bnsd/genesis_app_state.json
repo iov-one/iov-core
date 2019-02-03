@@ -2,7 +2,6 @@
   "cash": [
     {
       "address": "b1ca7e78f74423ae01da3b51e676934d9105f282",
-      "// name": "admin",
       "coins": [
         {
           "whole": 123456789,
@@ -12,7 +11,6 @@
     },
     {
       "address": "053e4ffbb040d4dc3b201dfe9264c00d918e087b",
-      "// name": "faucet",
       "coins": [
         {
           "whole": 1000000,
