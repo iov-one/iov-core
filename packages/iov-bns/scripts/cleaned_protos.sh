@@ -27,6 +27,8 @@ OUT_DIR=$(mktemp -d "${TMPDIR:-/tmp}/clean_proto.XXXXXXXXX")
     sed -ie 's/ *\[[^]]*\];/;/g' "$outfile"
     # removes illegal ;; typos
     sed -ie 's/;;/;/' "$outfile"
+    # convert comments into doc comments
+    sed -ie 's|// |/// |' "$outfile"
   done < tmp
   rm tmp
 )

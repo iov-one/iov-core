@@ -30,7 +30,7 @@ $root.app = (function() {
         /**
          * Constructs a new ResultSet.
          * @memberof app
-         * @classdesc Represents a ResultSet.
+         * @classdesc ResultSet contains a list of keys or values
          * @implements IResultSet
          * @constructor
          * @param {app.IResultSet=} [properties] Properties to set
@@ -232,8 +232,8 @@ $root.app = (function() {
          * @interface ITx
          * @property {cash.IFeeInfo|null} [fees] Tx fees
          * @property {Array.<sigs.IStdSignature>|null} [signatures] Tx signatures
-         * @property {Uint8Array|null} [preimage] Tx preimage
-         * @property {Array.<Uint8Array>|null} [multisig] Tx multisig
+         * @property {Uint8Array|null} [preimage] Preimage for hashlock.
+         * @property {Array.<Uint8Array>|null} [multisig] ID of a multisig contract.
          * @property {cash.ISendMsg|null} [sendMsg] Tx sendMsg
          * @property {escrow.ICreateEscrowMsg|null} [createEscrowMsg] Tx createEscrowMsg
          * @property {escrow.IReleaseEscrowMsg|null} [releaseEscrowMsg] Tx releaseEscrowMsg
@@ -243,7 +243,7 @@ $root.app = (function() {
          * @property {multisig.IUpdateContractMsg|null} [updateContractMsg] Tx updateContractMsg
          * @property {validators.ISetValidatorsMsg|null} [setValidatorsMsg] Tx setValidatorsMsg
          * @property {currency.INewTokenInfoMsg|null} [newTokenInfoMsg] Tx newTokenInfoMsg
-         * @property {nft.IAddApprovalMsg|null} [addApprovalMsg] Tx addApprovalMsg
+         * @property {nft.IAddApprovalMsg|null} [addApprovalMsg] BatchMsg batch_msg = 60;
          * @property {nft.IRemoveApprovalMsg|null} [removeApprovalMsg] Tx removeApprovalMsg
          * @property {username.IIssueTokenMsg|null} [issueUsernameNftMsg] Tx issueUsernameNftMsg
          * @property {username.IAddChainAddressMsg|null} [addUsernameAddressNftMsg] Tx addUsernameAddressNftMsg
@@ -256,7 +256,7 @@ $root.app = (function() {
         /**
          * Constructs a new Tx.
          * @memberof app
-         * @classdesc Represents a Tx.
+         * @classdesc clarity).
          * @implements ITx
          * @constructor
          * @param {app.ITx=} [properties] Properties to set
@@ -287,7 +287,7 @@ $root.app = (function() {
         Tx.prototype.signatures = $util.emptyArray;
 
         /**
-         * Tx preimage.
+         * Preimage for hashlock.
          * @member {Uint8Array} preimage
          * @memberof app.Tx
          * @instance
@@ -295,7 +295,7 @@ $root.app = (function() {
         Tx.prototype.preimage = $util.newBuffer([]);
 
         /**
-         * Tx multisig.
+         * ID of a multisig contract.
          * @member {Array.<Uint8Array>} multisig
          * @memberof app.Tx
          * @instance
@@ -375,7 +375,7 @@ $root.app = (function() {
         Tx.prototype.newTokenInfoMsg = null;
 
         /**
-         * Tx addApprovalMsg.
+         * BatchMsg batch_msg = 60;
          * @member {nft.IAddApprovalMsg|null|undefined} addApprovalMsg
          * @memberof app.Tx
          * @instance
@@ -442,7 +442,7 @@ $root.app = (function() {
         var $oneOfFields;
 
         /**
-         * Tx sum.
+         * msg is a sum type over all allowed messages on this chain.
          * @member {"sendMsg"|"createEscrowMsg"|"releaseEscrowMsg"|"returnEscrowMsg"|"updateEscrowMsg"|"createContractMsg"|"updateContractMsg"|"setValidatorsMsg"|"newTokenInfoMsg"|"addApprovalMsg"|"removeApprovalMsg"|"issueUsernameNftMsg"|"addUsernameAddressNftMsg"|"removeUsernameAddressMsg"|"issueBlockchainNftMsg"|"issueTickerNftMsg"|"issueBootstrapNodeNftMsg"|undefined} sum
          * @memberof app.Tx
          * @instance
@@ -1601,18 +1601,18 @@ $root.blockchain = (function() {
          * Properties of a Chain.
          * @memberof blockchain
          * @interface IChain
-         * @property {string|null} [chainId] Chain chainId
-         * @property {string|null} [networkId] Chain networkId
-         * @property {string|null} [name] Chain name
-         * @property {boolean|null} [enabled] Chain enabled
+         * @property {string|null} [chainId] Chain ID is the blockchain ID as referred in our system.
+         * @property {string|null} [networkId] https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids
+         * @property {string|null} [name] Name holds human redable name of the blockchain.
+         * @property {boolean|null} [enabled] Enabled is a flag used for soft delete.
          * @property {boolean|null} [production] Chain production
-         * @property {Uint8Array|null} [mainTickerId] Chain mainTickerId
+         * @property {Uint8Array|null} [mainTickerId] any number of tickers registered.
          */
 
         /**
          * Constructs a new Chain.
          * @memberof blockchain
-         * @classdesc Represents a Chain.
+         * @classdesc everywhere.
          * @implements IChain
          * @constructor
          * @param {blockchain.IChain=} [properties] Properties to set
@@ -1625,7 +1625,7 @@ $root.blockchain = (function() {
         }
 
         /**
-         * Chain chainId.
+         * Chain ID is the blockchain ID as referred in our system.
          * @member {string} chainId
          * @memberof blockchain.Chain
          * @instance
@@ -1633,7 +1633,7 @@ $root.blockchain = (function() {
         Chain.prototype.chainId = "";
 
         /**
-         * Chain networkId.
+         * https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids
          * @member {string} networkId
          * @memberof blockchain.Chain
          * @instance
@@ -1641,7 +1641,7 @@ $root.blockchain = (function() {
         Chain.prototype.networkId = "";
 
         /**
-         * Chain name.
+         * Name holds human redable name of the blockchain.
          * @member {string} name
          * @memberof blockchain.Chain
          * @instance
@@ -1649,7 +1649,7 @@ $root.blockchain = (function() {
         Chain.prototype.name = "";
 
         /**
-         * Chain enabled.
+         * Enabled is a flag used for soft delete.
          * @member {boolean} enabled
          * @memberof blockchain.Chain
          * @instance
@@ -1665,7 +1665,7 @@ $root.blockchain = (function() {
         Chain.prototype.production = false;
 
         /**
-         * Chain mainTickerId.
+         * any number of tickers registered.
          * @member {Uint8Array} mainTickerId
          * @memberof blockchain.Chain
          * @instance
@@ -4808,14 +4808,14 @@ $root.username = (function() {
          * Properties of a ChainAddress.
          * @memberof username
          * @interface IChainAddress
-         * @property {Uint8Array|null} [blockchainId] ChainAddress blockchainId
-         * @property {string|null} [address] ChainAddress address
+         * @property {Uint8Array|null} [blockchainId] module).
+         * @property {string|null} [address] blockchain.
          */
 
         /**
          * Constructs a new ChainAddress.
          * @memberof username
-         * @classdesc Represents a ChainAddress.
+         * @classdesc ChainAddress is an address bind to a specific blockchain chain.
          * @implements IChainAddress
          * @constructor
          * @param {username.IChainAddress=} [properties] Properties to set
@@ -4828,7 +4828,7 @@ $root.username = (function() {
         }
 
         /**
-         * ChainAddress blockchainId.
+         * module).
          * @member {Uint8Array} blockchainId
          * @memberof username.ChainAddress
          * @instance
@@ -4836,7 +4836,7 @@ $root.username = (function() {
         ChainAddress.prototype.blockchainId = $util.newBuffer([]);
 
         /**
-         * ChainAddress address.
+         * blockchain.
          * @member {string} address
          * @memberof username.ChainAddress
          * @instance
@@ -6480,7 +6480,7 @@ $root.orm = (function() {
         /**
          * Constructs a new MultiRef.
          * @memberof orm
-         * @classdesc Represents a MultiRef.
+         * @classdesc MultiRef contains a list of references to pks
          * @implements IMultiRef
          * @constructor
          * @param {orm.IMultiRef=} [properties] Properties to set
@@ -6686,7 +6686,7 @@ $root.orm = (function() {
         /**
          * Constructs a new Counter.
          * @memberof orm
-         * @classdesc Represents a Counter.
+         * @classdesc Counter could be used for sequence, but mainly just for test
          * @implements ICounter
          * @constructor
          * @param {orm.ICounter=} [properties] Properties to set
@@ -7117,7 +7117,7 @@ $root.cash = (function() {
         /**
          * Constructs a new Set.
          * @memberof cash
-         * @classdesc Represents a Set.
+         * @classdesc It handles adding and subtracting sets of currencies.
          * @implements ISet
          * @constructor
          * @param {cash.ISet=} [properties] Properties to set
@@ -7322,14 +7322,14 @@ $root.cash = (function() {
          * @property {Uint8Array|null} [src] SendMsg src
          * @property {Uint8Array|null} [dest] SendMsg dest
          * @property {x.ICoin|null} [amount] SendMsg amount
-         * @property {string|null} [memo] SendMsg memo
-         * @property {Uint8Array|null} [ref] SendMsg ref
+         * @property {string|null} [memo] max length 128 character
+         * @property {Uint8Array|null} [ref] max length 64 bytes
          */
 
         /**
          * Constructs a new SendMsg.
          * @memberof cash
-         * @classdesc Represents a SendMsg.
+         * @classdesc eg. tx hash
          * @implements ISendMsg
          * @constructor
          * @param {cash.ISendMsg=} [properties] Properties to set
@@ -7366,7 +7366,7 @@ $root.cash = (function() {
         SendMsg.prototype.amount = null;
 
         /**
-         * SendMsg memo.
+         * max length 128 character
          * @member {string} memo
          * @memberof cash.SendMsg
          * @instance
@@ -7374,7 +7374,7 @@ $root.cash = (function() {
         SendMsg.prototype.memo = "";
 
         /**
-         * SendMsg ref.
+         * max length 64 bytes
          * @member {Uint8Array} ref
          * @memberof cash.SendMsg
          * @instance
@@ -7634,7 +7634,7 @@ $root.cash = (function() {
         /**
          * Constructs a new FeeInfo.
          * @memberof cash
-         * @classdesc Represents a FeeInfo.
+         * @classdesc message processed
          * @implements IFeeInfo
          * @constructor
          * @param {cash.IFeeInfo=} [properties] Properties to set
@@ -7863,16 +7863,16 @@ $root.x = (function() {
          * Properties of a Coin.
          * @memberof x
          * @interface ICoin
-         * @property {number|Long|null} [whole] Coin whole
-         * @property {number|Long|null} [fractional] Coin fractional
-         * @property {string|null} [ticker] Coin ticker
-         * @property {string|null} [issuer] Coin issuer
+         * @property {number|Long|null} [whole] Whole coins, -10^15 < integer < 10^15
+         * @property {number|Long|null} [fractional] If fractional != 0, must have same sign as integer
+         * @property {string|null} [ticker] all Coins of the same currency can be combined
+         * @property {string|null} [issuer] Issuer both match.
          */
 
         /**
          * Constructs a new Coin.
          * @memberof x
-         * @classdesc Represents a Coin.
+         * @classdesc own type, possibly borrowing from this code.
          * @implements ICoin
          * @constructor
          * @param {x.ICoin=} [properties] Properties to set
@@ -7885,7 +7885,7 @@ $root.x = (function() {
         }
 
         /**
-         * Coin whole.
+         * Whole coins, -10^15 < integer < 10^15
          * @member {number|Long} whole
          * @memberof x.Coin
          * @instance
@@ -7893,7 +7893,7 @@ $root.x = (function() {
         Coin.prototype.whole = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * Coin fractional.
+         * If fractional != 0, must have same sign as integer
          * @member {number|Long} fractional
          * @memberof x.Coin
          * @instance
@@ -7901,7 +7901,7 @@ $root.x = (function() {
         Coin.prototype.fractional = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * Coin ticker.
+         * all Coins of the same currency can be combined
          * @member {string} ticker
          * @memberof x.Coin
          * @instance
@@ -7909,7 +7909,7 @@ $root.x = (function() {
         Coin.prototype.ticker = "";
 
         /**
-         * Coin issuer.
+         * Issuer both match.
          * @member {string} issuer
          * @memberof x.Coin
          * @instance
@@ -8164,7 +8164,7 @@ $root.currency = (function() {
         /**
          * Constructs a new TokenInfo.
          * @memberof currency
-         * @classdesc Represents a TokenInfo.
+         * @classdesc alternative solution to hardcoding supported currencies information.
          * @implements ITokenInfo
          * @constructor
          * @param {currency.ITokenInfo=} [properties] Properties to set
@@ -8375,7 +8375,7 @@ $root.currency = (function() {
         /**
          * Constructs a new NewTokenInfoMsg.
          * @memberof currency
-         * @classdesc Represents a NewTokenInfoMsg.
+         * @classdesc be registered only once.
          * @implements INewTokenInfoMsg
          * @constructor
          * @param {currency.INewTokenInfoMsg=} [properties] Properties to set
@@ -8611,18 +8611,18 @@ $root.escrow = (function() {
          * Properties of an Escrow.
          * @memberof escrow
          * @interface IEscrow
-         * @property {Uint8Array|null} [sender] Escrow sender
+         * @property {Uint8Array|null} [sender] Sender, Arbiter, Recipient are all weave.Permission
          * @property {Uint8Array|null} [arbiter] Escrow arbiter
          * @property {Uint8Array|null} [recipient] Escrow recipient
-         * @property {Array.<x.ICoin>|null} [amount] Escrow amount
-         * @property {number|Long|null} [timeout] Escrow timeout
-         * @property {string|null} [memo] Escrow memo
+         * @property {Array.<x.ICoin>|null} [amount] amount may contain multiple token types
+         * @property {number|Long|null} [timeout] timeout stored here is absolute block height
+         * @property {string|null} [memo] max length 128 character
          */
 
         /**
          * Constructs a new Escrow.
          * @memberof escrow
-         * @classdesc Represents an Escrow.
+         * @classdesc an HTLC ;)
          * @implements IEscrow
          * @constructor
          * @param {escrow.IEscrow=} [properties] Properties to set
@@ -8636,7 +8636,7 @@ $root.escrow = (function() {
         }
 
         /**
-         * Escrow sender.
+         * Sender, Arbiter, Recipient are all weave.Permission
          * @member {Uint8Array} sender
          * @memberof escrow.Escrow
          * @instance
@@ -8660,7 +8660,7 @@ $root.escrow = (function() {
         Escrow.prototype.recipient = $util.newBuffer([]);
 
         /**
-         * Escrow amount.
+         * amount may contain multiple token types
          * @member {Array.<x.ICoin>} amount
          * @memberof escrow.Escrow
          * @instance
@@ -8668,7 +8668,7 @@ $root.escrow = (function() {
         Escrow.prototype.amount = $util.emptyArray;
 
         /**
-         * Escrow timeout.
+         * timeout stored here is absolute block height
          * @member {number|Long} timeout
          * @memberof escrow.Escrow
          * @instance
@@ -8676,7 +8676,7 @@ $root.escrow = (function() {
         Escrow.prototype.timeout = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * Escrow memo.
+         * max length 128 character
          * @member {string} memo
          * @memberof escrow.Escrow
          * @instance
@@ -8972,18 +8972,18 @@ $root.escrow = (function() {
          * Properties of a CreateEscrowMsg.
          * @memberof escrow
          * @interface ICreateEscrowMsg
-         * @property {Uint8Array|null} [src] CreateEscrowMsg src
+         * @property {Uint8Array|null} [src] Sender, Arbiter, Recipient are all weave.Permission
          * @property {Uint8Array|null} [arbiter] CreateEscrowMsg arbiter
          * @property {Uint8Array|null} [recipient] CreateEscrowMsg recipient
-         * @property {Array.<x.ICoin>|null} [amount] CreateEscrowMsg amount
-         * @property {number|Long|null} [timeout] CreateEscrowMsg timeout
-         * @property {string|null} [memo] CreateEscrowMsg memo
+         * @property {Array.<x.ICoin>|null} [amount] amount may contain multiple token types
+         * @property {number|Long|null} [timeout] if unreleased before timeout, will return to sender
+         * @property {string|null} [memo] max length 128 character
          */
 
         /**
          * Constructs a new CreateEscrowMsg.
          * @memberof escrow
-         * @classdesc Represents a CreateEscrowMsg.
+         * @classdesc The rest must be defined
          * @implements ICreateEscrowMsg
          * @constructor
          * @param {escrow.ICreateEscrowMsg=} [properties] Properties to set
@@ -8997,7 +8997,7 @@ $root.escrow = (function() {
         }
 
         /**
-         * CreateEscrowMsg src.
+         * Sender, Arbiter, Recipient are all weave.Permission
          * @member {Uint8Array} src
          * @memberof escrow.CreateEscrowMsg
          * @instance
@@ -9021,7 +9021,7 @@ $root.escrow = (function() {
         CreateEscrowMsg.prototype.recipient = $util.newBuffer([]);
 
         /**
-         * CreateEscrowMsg amount.
+         * amount may contain multiple token types
          * @member {Array.<x.ICoin>} amount
          * @memberof escrow.CreateEscrowMsg
          * @instance
@@ -9029,7 +9029,7 @@ $root.escrow = (function() {
         CreateEscrowMsg.prototype.amount = $util.emptyArray;
 
         /**
-         * CreateEscrowMsg timeout.
+         * if unreleased before timeout, will return to sender
          * @member {number|Long} timeout
          * @memberof escrow.CreateEscrowMsg
          * @instance
@@ -9037,7 +9037,7 @@ $root.escrow = (function() {
         CreateEscrowMsg.prototype.timeout = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * CreateEscrowMsg memo.
+         * max length 128 character
          * @member {string} memo
          * @memberof escrow.CreateEscrowMsg
          * @instance
@@ -9340,7 +9340,7 @@ $root.escrow = (function() {
         /**
          * Constructs a new ReleaseEscrowMsg.
          * @memberof escrow
-         * @classdesc Represents a ReleaseEscrowMsg.
+         * @classdesc May be a subset of the current balance.
          * @implements IReleaseEscrowMsg
          * @constructor
          * @param {escrow.IReleaseEscrowMsg=} [properties] Properties to set
@@ -9579,7 +9579,7 @@ $root.escrow = (function() {
         /**
          * Constructs a new ReturnEscrowMsg.
          * @memberof escrow
-         * @classdesc Represents a ReturnEscrowMsg.
+         * @classdesc Must be authorized by the sender or an expired timeout
          * @implements IReturnEscrowMsg
          * @constructor
          * @param {escrow.IReturnEscrowMsg=} [properties] Properties to set
@@ -9778,7 +9778,7 @@ $root.escrow = (function() {
         /**
          * Constructs a new UpdateEscrowPartiesMsg.
          * @memberof escrow
-         * @classdesc Represents an UpdateEscrowPartiesMsg.
+         * @classdesc Represents delegating responsibility
          * @implements IUpdateEscrowPartiesMsg
          * @constructor
          * @param {escrow.IUpdateEscrowPartiesMsg=} [properties] Properties to set
@@ -10071,9 +10071,9 @@ $root.multisig = (function() {
          * Properties of a Contract.
          * @memberof multisig
          * @interface IContract
-         * @property {Array.<Uint8Array>|null} [sigs] Contract sigs
-         * @property {number|Long|null} [activationThreshold] Contract activationThreshold
-         * @property {number|Long|null} [adminThreshold] Contract adminThreshold
+         * @property {Array.<Uint8Array>|null} [sigs] addresses to control it
+         * @property {number|Long|null} [activationThreshold] threshold needed to sign to activate it
+         * @property {number|Long|null} [adminThreshold] threshold needed to sign to change it
          */
 
         /**
@@ -10093,7 +10093,7 @@ $root.multisig = (function() {
         }
 
         /**
-         * Contract sigs.
+         * addresses to control it
          * @member {Array.<Uint8Array>} sigs
          * @memberof multisig.Contract
          * @instance
@@ -10101,7 +10101,7 @@ $root.multisig = (function() {
         Contract.prototype.sigs = $util.emptyArray;
 
         /**
-         * Contract activationThreshold.
+         * threshold needed to sign to activate it
          * @member {number|Long} activationThreshold
          * @memberof multisig.Contract
          * @instance
@@ -10109,7 +10109,7 @@ $root.multisig = (function() {
         Contract.prototype.activationThreshold = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * Contract adminThreshold.
+         * threshold needed to sign to change it
          * @member {number|Long} adminThreshold
          * @memberof multisig.Contract
          * @instance
@@ -10351,9 +10351,9 @@ $root.multisig = (function() {
          * Properties of a CreateContractMsg.
          * @memberof multisig
          * @interface ICreateContractMsg
-         * @property {Array.<Uint8Array>|null} [sigs] CreateContractMsg sigs
-         * @property {number|Long|null} [activationThreshold] CreateContractMsg activationThreshold
-         * @property {number|Long|null} [adminThreshold] CreateContractMsg adminThreshold
+         * @property {Array.<Uint8Array>|null} [sigs] addresses to control it
+         * @property {number|Long|null} [activationThreshold] threshold needed to sign to activate it
+         * @property {number|Long|null} [adminThreshold] threshold needed to sign to change it
          */
 
         /**
@@ -10373,7 +10373,7 @@ $root.multisig = (function() {
         }
 
         /**
-         * CreateContractMsg sigs.
+         * addresses to control it
          * @member {Array.<Uint8Array>} sigs
          * @memberof multisig.CreateContractMsg
          * @instance
@@ -10381,7 +10381,7 @@ $root.multisig = (function() {
         CreateContractMsg.prototype.sigs = $util.emptyArray;
 
         /**
-         * CreateContractMsg activationThreshold.
+         * threshold needed to sign to activate it
          * @member {number|Long} activationThreshold
          * @memberof multisig.CreateContractMsg
          * @instance
@@ -10389,7 +10389,7 @@ $root.multisig = (function() {
         CreateContractMsg.prototype.activationThreshold = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * CreateContractMsg adminThreshold.
+         * threshold needed to sign to change it
          * @member {number|Long} adminThreshold
          * @memberof multisig.CreateContractMsg
          * @instance
@@ -10631,10 +10631,10 @@ $root.multisig = (function() {
          * Properties of an UpdateContractMsg.
          * @memberof multisig
          * @interface IUpdateContractMsg
-         * @property {Uint8Array|null} [id] UpdateContractMsg id
-         * @property {Array.<Uint8Array>|null} [sigs] UpdateContractMsg sigs
-         * @property {number|Long|null} [activationThreshold] UpdateContractMsg activationThreshold
-         * @property {number|Long|null} [adminThreshold] UpdateContractMsg adminThreshold
+         * @property {Uint8Array|null} [id] contract id
+         * @property {Array.<Uint8Array>|null} [sigs] addresses to control it
+         * @property {number|Long|null} [activationThreshold] threshold needed to sign to activate it
+         * @property {number|Long|null} [adminThreshold] threshold needed to sign to change it
          */
 
         /**
@@ -10654,7 +10654,7 @@ $root.multisig = (function() {
         }
 
         /**
-         * UpdateContractMsg id.
+         * contract id
          * @member {Uint8Array} id
          * @memberof multisig.UpdateContractMsg
          * @instance
@@ -10662,7 +10662,7 @@ $root.multisig = (function() {
         UpdateContractMsg.prototype.id = $util.newBuffer([]);
 
         /**
-         * UpdateContractMsg sigs.
+         * addresses to control it
          * @member {Array.<Uint8Array>} sigs
          * @memberof multisig.UpdateContractMsg
          * @instance
@@ -10670,7 +10670,7 @@ $root.multisig = (function() {
         UpdateContractMsg.prototype.sigs = $util.emptyArray;
 
         /**
-         * UpdateContractMsg activationThreshold.
+         * threshold needed to sign to activate it
          * @member {number|Long} activationThreshold
          * @memberof multisig.UpdateContractMsg
          * @instance
@@ -10678,7 +10678,7 @@ $root.multisig = (function() {
         UpdateContractMsg.prototype.activationThreshold = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * UpdateContractMsg adminThreshold.
+         * threshold needed to sign to change it
          * @member {number|Long} adminThreshold
          * @memberof multisig.UpdateContractMsg
          * @instance
@@ -10961,7 +10961,7 @@ $root.namecoin = (function() {
         /**
          * Constructs a new Wallet.
          * @memberof namecoin
-         * @classdesc Represents a Wallet.
+         * @classdesc Wallet has a name and a set of coins
          * @implements IWallet
          * @constructor
          * @param {namecoin.IWallet=} [properties] Properties to set
@@ -11192,7 +11192,7 @@ $root.namecoin = (function() {
         /**
          * Constructs a new Token.
          * @memberof namecoin
-         * @classdesc Represents a Token.
+         * @classdesc Token contains information about a registered currency
          * @implements IToken
          * @constructor
          * @param {namecoin.IToken=} [properties] Properties to set
@@ -11403,7 +11403,7 @@ $root.namecoin = (function() {
         /**
          * Constructs a new NewTokenMsg.
          * @memberof namecoin
-         * @classdesc Represents a NewTokenMsg.
+         * @classdesc and should be limited to privledged users.
          * @implements INewTokenMsg
          * @constructor
          * @param {namecoin.INewTokenMsg=} [properties] Properties to set
@@ -11634,7 +11634,7 @@ $root.namecoin = (function() {
         /**
          * Constructs a new SetWalletNameMsg.
          * @memberof namecoin
-         * @classdesc Represents a SetWalletNameMsg.
+         * @classdesc wallet. Can only be performed if the wallet name is empty.
          * @implements ISetWalletNameMsg
          * @constructor
          * @param {namecoin.ISetWalletNameMsg=} [properties] Properties to set
@@ -11858,15 +11858,15 @@ $root.nft = (function() {
          * Properties of a NonFungibleToken.
          * @memberof nft
          * @interface INonFungibleToken
-         * @property {Uint8Array|null} [id] NonFungibleToken id
-         * @property {Uint8Array|null} [owner] NonFungibleToken owner
-         * @property {Array.<nft.IActionApprovals>|null} [actionApprovals] NonFungibleToken actionApprovals
+         * @property {Uint8Array|null} [id] ID is the address of this token.
+         * @property {Uint8Array|null} [owner] Owner is the address of the token owner.
+         * @property {Array.<nft.IActionApprovals>|null} [actionApprovals] succeed, all action approvals validation must pass.
          */
 
         /**
          * Constructs a new NonFungibleToken.
          * @memberof nft
-         * @classdesc Represents a NonFungibleToken.
+         * @classdesc implementation. Usually it is the first attirbute called `base`.
          * @implements INonFungibleToken
          * @constructor
          * @param {nft.INonFungibleToken=} [properties] Properties to set
@@ -11880,7 +11880,7 @@ $root.nft = (function() {
         }
 
         /**
-         * NonFungibleToken id.
+         * ID is the address of this token.
          * @member {Uint8Array} id
          * @memberof nft.NonFungibleToken
          * @instance
@@ -11888,7 +11888,7 @@ $root.nft = (function() {
         NonFungibleToken.prototype.id = $util.newBuffer([]);
 
         /**
-         * NonFungibleToken owner.
+         * Owner is the address of the token owner.
          * @member {Uint8Array} owner
          * @memberof nft.NonFungibleToken
          * @instance
@@ -11896,7 +11896,7 @@ $root.nft = (function() {
         NonFungibleToken.prototype.owner = $util.newBuffer([]);
 
         /**
-         * NonFungibleToken actionApprovals.
+         * succeed, all action approvals validation must pass.
          * @member {Array.<nft.IActionApprovals>} actionApprovals
          * @memberof nft.NonFungibleToken
          * @instance
@@ -12137,7 +12137,7 @@ $root.nft = (function() {
         /**
          * Constructs a new ActionApprovals.
          * @memberof nft
-         * @classdesc Represents an ActionApprovals.
+         * @classdesc execute given operation.
          * @implements IActionApprovals
          * @constructor
          * @param {nft.IActionApprovals=} [properties] Properties to set
@@ -12585,9 +12585,9 @@ $root.nft = (function() {
          * Properties of an ApprovalOptions.
          * @memberof nft
          * @interface IApprovalOptions
-         * @property {number|Long|null} [untilBlockHeight] ApprovalOptions untilBlockHeight
-         * @property {number|Long|null} [count] ApprovalOptions count
-         * @property {boolean|null} [immutable] ApprovalOptions immutable
+         * @property {number|Long|null} [untilBlockHeight] approval is valid. This can be used to define an approval expiration.
+         * @property {number|Long|null} [count] Use -1 to bypass count expiration.
+         * @property {boolean|null} [immutable] changed.
          */
 
         /**
@@ -12606,7 +12606,7 @@ $root.nft = (function() {
         }
 
         /**
-         * ApprovalOptions untilBlockHeight.
+         * approval is valid. This can be used to define an approval expiration.
          * @member {number|Long} untilBlockHeight
          * @memberof nft.ApprovalOptions
          * @instance
@@ -12614,7 +12614,7 @@ $root.nft = (function() {
         ApprovalOptions.prototype.untilBlockHeight = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * ApprovalOptions count.
+         * Use -1 to bypass count expiration.
          * @member {number|Long} count
          * @memberof nft.ApprovalOptions
          * @instance
@@ -12622,7 +12622,7 @@ $root.nft = (function() {
         ApprovalOptions.prototype.count = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * ApprovalOptions immutable.
+         * changed.
          * @member {boolean} immutable
          * @memberof nft.ApprovalOptions
          * @instance
@@ -13428,19 +13428,19 @@ $root.paychan = (function() {
          * Properties of a PaymentChannel.
          * @memberof paychan
          * @interface IPaymentChannel
-         * @property {Uint8Array|null} [src] PaymentChannel src
-         * @property {crypto.IPublicKey|null} [senderPubkey] PaymentChannel senderPubkey
-         * @property {Uint8Array|null} [recipient] PaymentChannel recipient
-         * @property {x.ICoin|null} [total] PaymentChannel total
-         * @property {number|Long|null} [timeout] PaymentChannel timeout
-         * @property {string|null} [memo] PaymentChannel memo
-         * @property {x.ICoin|null} [transferred] PaymentChannel transferred
+         * @property {Uint8Array|null} [src] Sender is the source that the founds are allocated from (weave.Address).
+         * @property {crypto.IPublicKey|null} [senderPubkey] to the recipient. Signature prevents from altering transfer message.
+         * @property {Uint8Array|null} [recipient] (weave.Address).
+         * @property {x.ICoin|null} [total] payment channel.
+         * @property {number|Long|null} [timeout] sender.
+         * @property {string|null} [memo] Max length 128 character.
+         * @property {x.ICoin|null} [transferred] (total) value. Transferred must never exceed total value.
          */
 
         /**
          * Constructs a new PaymentChannel.
          * @memberof paychan
-         * @classdesc Represents a PaymentChannel.
+         * @classdesc PaymentChannel holds the state of a payment channel during its lifetime.
          * @implements IPaymentChannel
          * @constructor
          * @param {paychan.IPaymentChannel=} [properties] Properties to set
@@ -13453,7 +13453,7 @@ $root.paychan = (function() {
         }
 
         /**
-         * PaymentChannel src.
+         * Sender is the source that the founds are allocated from (weave.Address).
          * @member {Uint8Array} src
          * @memberof paychan.PaymentChannel
          * @instance
@@ -13461,7 +13461,7 @@ $root.paychan = (function() {
         PaymentChannel.prototype.src = $util.newBuffer([]);
 
         /**
-         * PaymentChannel senderPubkey.
+         * to the recipient. Signature prevents from altering transfer message.
          * @member {crypto.IPublicKey|null|undefined} senderPubkey
          * @memberof paychan.PaymentChannel
          * @instance
@@ -13469,7 +13469,7 @@ $root.paychan = (function() {
         PaymentChannel.prototype.senderPubkey = null;
 
         /**
-         * PaymentChannel recipient.
+         * (weave.Address).
          * @member {Uint8Array} recipient
          * @memberof paychan.PaymentChannel
          * @instance
@@ -13477,7 +13477,7 @@ $root.paychan = (function() {
         PaymentChannel.prototype.recipient = $util.newBuffer([]);
 
         /**
-         * PaymentChannel total.
+         * payment channel.
          * @member {x.ICoin|null|undefined} total
          * @memberof paychan.PaymentChannel
          * @instance
@@ -13485,7 +13485,7 @@ $root.paychan = (function() {
         PaymentChannel.prototype.total = null;
 
         /**
-         * PaymentChannel timeout.
+         * sender.
          * @member {number|Long} timeout
          * @memberof paychan.PaymentChannel
          * @instance
@@ -13493,7 +13493,7 @@ $root.paychan = (function() {
         PaymentChannel.prototype.timeout = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * PaymentChannel memo.
+         * Max length 128 character.
          * @member {string} memo
          * @memberof paychan.PaymentChannel
          * @instance
@@ -13501,7 +13501,7 @@ $root.paychan = (function() {
         PaymentChannel.prototype.memo = "";
 
         /**
-         * PaymentChannel transferred.
+         * (total) value. Transferred must never exceed total value.
          * @member {x.ICoin|null|undefined} transferred
          * @memberof paychan.PaymentChannel
          * @instance
@@ -13795,18 +13795,18 @@ $root.paychan = (function() {
          * Properties of a CreatePaymentChannelMsg.
          * @memberof paychan
          * @interface ICreatePaymentChannelMsg
-         * @property {Uint8Array|null} [src] CreatePaymentChannelMsg src
-         * @property {crypto.IPublicKey|null} [senderPubkey] CreatePaymentChannelMsg senderPubkey
-         * @property {Uint8Array|null} [recipient] CreatePaymentChannelMsg recipient
-         * @property {x.ICoin|null} [total] CreatePaymentChannelMsg total
-         * @property {number|Long|null} [timeout] CreatePaymentChannelMsg timeout
-         * @property {string|null} [memo] CreatePaymentChannelMsg memo
+         * @property {Uint8Array|null} [src] Sender address (weave.Address).
+         * @property {crypto.IPublicKey|null} [senderPubkey] Sender public key is for validating transfer message signature.
+         * @property {Uint8Array|null} [recipient] Recipient address  (weave.Address).
+         * @property {x.ICoin|null} [total] Maximum amount that can be transferred via this channel.
+         * @property {number|Long|null} [timeout] anyone.
+         * @property {string|null} [memo] Max length 128 character.
          */
 
         /**
          * Constructs a new CreatePaymentChannelMsg.
          * @memberof paychan
-         * @classdesc Represents a CreatePaymentChannelMsg.
+         * @classdesc in the transactions done via created payment channel.
          * @implements ICreatePaymentChannelMsg
          * @constructor
          * @param {paychan.ICreatePaymentChannelMsg=} [properties] Properties to set
@@ -13819,7 +13819,7 @@ $root.paychan = (function() {
         }
 
         /**
-         * CreatePaymentChannelMsg src.
+         * Sender address (weave.Address).
          * @member {Uint8Array} src
          * @memberof paychan.CreatePaymentChannelMsg
          * @instance
@@ -13827,7 +13827,7 @@ $root.paychan = (function() {
         CreatePaymentChannelMsg.prototype.src = $util.newBuffer([]);
 
         /**
-         * CreatePaymentChannelMsg senderPubkey.
+         * Sender public key is for validating transfer message signature.
          * @member {crypto.IPublicKey|null|undefined} senderPubkey
          * @memberof paychan.CreatePaymentChannelMsg
          * @instance
@@ -13835,7 +13835,7 @@ $root.paychan = (function() {
         CreatePaymentChannelMsg.prototype.senderPubkey = null;
 
         /**
-         * CreatePaymentChannelMsg recipient.
+         * Recipient address  (weave.Address).
          * @member {Uint8Array} recipient
          * @memberof paychan.CreatePaymentChannelMsg
          * @instance
@@ -13843,7 +13843,7 @@ $root.paychan = (function() {
         CreatePaymentChannelMsg.prototype.recipient = $util.newBuffer([]);
 
         /**
-         * CreatePaymentChannelMsg total.
+         * Maximum amount that can be transferred via this channel.
          * @member {x.ICoin|null|undefined} total
          * @memberof paychan.CreatePaymentChannelMsg
          * @instance
@@ -13851,7 +13851,7 @@ $root.paychan = (function() {
         CreatePaymentChannelMsg.prototype.total = null;
 
         /**
-         * CreatePaymentChannelMsg timeout.
+         * anyone.
          * @member {number|Long} timeout
          * @memberof paychan.CreatePaymentChannelMsg
          * @instance
@@ -13859,7 +13859,7 @@ $root.paychan = (function() {
         CreatePaymentChannelMsg.prototype.timeout = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * CreatePaymentChannelMsg memo.
+         * Max length 128 character.
          * @member {string} memo
          * @memberof paychan.CreatePaymentChannelMsg
          * @instance
@@ -14138,13 +14138,13 @@ $root.paychan = (function() {
          * @property {string|null} [chainId] Payment chainId
          * @property {Uint8Array|null} [channelId] Payment channelId
          * @property {x.ICoin|null} [amount] Payment amount
-         * @property {string|null} [memo] Payment memo
+         * @property {string|null} [memo] Max length 128 character.
          */
 
         /**
          * Constructs a new Payment.
          * @memberof paychan
-         * @classdesc Represents a Payment.
+         * @classdesc Each Payment should be created with amount greater than the previous one.
          * @implements IPayment
          * @constructor
          * @param {paychan.IPayment=} [properties] Properties to set
@@ -14181,7 +14181,7 @@ $root.paychan = (function() {
         Payment.prototype.amount = null;
 
         /**
-         * Payment memo.
+         * Max length 128 character.
          * @member {string} memo
          * @memberof paychan.Payment
          * @instance
@@ -14410,7 +14410,7 @@ $root.paychan = (function() {
         /**
          * Constructs a new TransferPaymentChannelMsg.
          * @memberof paychan
-         * @classdesc Represents a TransferPaymentChannelMsg.
+         * @classdesc Signature is there to ensure that payment message was not altered.
          * @implements ITransferPaymentChannelMsg
          * @constructor
          * @param {paychan.ITransferPaymentChannelMsg=} [properties] Properties to set
@@ -14624,13 +14624,13 @@ $root.paychan = (function() {
          * @memberof paychan
          * @interface IClosePaymentChannelMsg
          * @property {Uint8Array|null} [channelId] ClosePaymentChannelMsg channelId
-         * @property {string|null} [memo] ClosePaymentChannelMsg memo
+         * @property {string|null} [memo] Max length 128 character.
          */
 
         /**
          * Constructs a new ClosePaymentChannelMsg.
          * @memberof paychan
-         * @classdesc Represents a ClosePaymentChannelMsg.
+         * @classdesc Sender can close channel only if the timeout chain height was reached.
          * @implements IClosePaymentChannelMsg
          * @constructor
          * @param {paychan.IClosePaymentChannelMsg=} [properties] Properties to set
@@ -14651,7 +14651,7 @@ $root.paychan = (function() {
         ClosePaymentChannelMsg.prototype.channelId = $util.newBuffer([]);
 
         /**
-         * ClosePaymentChannelMsg memo.
+         * Max length 128 character.
          * @member {string} memo
          * @memberof paychan.ClosePaymentChannelMsg
          * @instance
@@ -14861,7 +14861,7 @@ $root.sigs = (function() {
         /**
          * Constructs a new UserData.
          * @memberof sigs
-         * @classdesc Represents a UserData.
+         * @classdesc User is the entry point you want
          * @implements IUserData
          * @constructor
          * @param {sigs.IUserData=} [properties] Properties to set
@@ -15085,13 +15085,13 @@ $root.sigs = (function() {
          * @interface IStdSignature
          * @property {number|Long|null} [sequence] StdSignature sequence
          * @property {crypto.IPublicKey|null} [pubkey] StdSignature pubkey
-         * @property {crypto.ISignature|null} [signature] StdSignature signature
+         * @property {crypto.ISignature|null} [signature] Removed Address, Pubkey is more powerful
          */
 
         /**
          * Constructs a new StdSignature.
          * @memberof sigs
-         * @classdesc Represents a StdSignature.
+         * @classdesc increasing by 1 each time (starting at 0)
          * @implements IStdSignature
          * @constructor
          * @param {sigs.IStdSignature=} [properties] Properties to set
@@ -15120,7 +15120,7 @@ $root.sigs = (function() {
         StdSignature.prototype.pubkey = null;
 
         /**
-         * StdSignature signature.
+         * Removed Address, Pubkey is more powerful
          * @member {crypto.ISignature|null|undefined} signature
          * @memberof sigs.StdSignature
          * @instance
@@ -15358,7 +15358,7 @@ $root.validators = (function() {
         /**
          * Constructs a new ValidatorUpdate.
          * @memberof validators
-         * @classdesc Represents a ValidatorUpdate.
+         * @classdesc ValidatorUpdate
          * @implements IValidatorUpdate
          * @constructor
          * @param {validators.IValidatorUpdate=} [properties] Properties to set
@@ -15805,7 +15805,7 @@ $root.validators = (function() {
         /**
          * Constructs a new SetValidatorsMsg.
          * @memberof validators
-         * @classdesc Represents a SetValidatorsMsg.
+         * @classdesc This message is designed to update validator power
          * @implements ISetValidatorsMsg
          * @constructor
          * @param {validators.ISetValidatorsMsg=} [properties] Properties to set
@@ -16013,7 +16013,7 @@ $root.validators = (function() {
         /**
          * Constructs a new Accounts.
          * @memberof validators
-         * @classdesc Represents an Accounts.
+         * @classdesc Accounts is a list of accounts allowed to update validators
          * @implements IAccounts
          * @constructor
          * @param {validators.IAccounts=} [properties] Properties to set

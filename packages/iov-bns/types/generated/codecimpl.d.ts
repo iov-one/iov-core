@@ -7,7 +7,7 @@ export namespace app {
     results?: Uint8Array[] | null;
   }
 
-  /** Represents a ResultSet. */
+  /** ResultSet contains a list of keys or values */
   class ResultSet implements IResultSet {
     /**
      * Constructs a new ResultSet.
@@ -100,10 +100,10 @@ export namespace app {
     /** Tx signatures */
     signatures?: sigs.IStdSignature[] | null;
 
-    /** Tx preimage */
+    /** Preimage for hashlock. */
     preimage?: Uint8Array | null;
 
-    /** Tx multisig */
+    /** ID of a multisig contract. */
     multisig?: Uint8Array[] | null;
 
     /** Tx sendMsg */
@@ -133,7 +133,7 @@ export namespace app {
     /** Tx newTokenInfoMsg */
     newTokenInfoMsg?: currency.INewTokenInfoMsg | null;
 
-    /** Tx addApprovalMsg */
+    /** BatchMsg batch_msg = 60; */
     addApprovalMsg?: nft.IAddApprovalMsg | null;
 
     /** Tx removeApprovalMsg */
@@ -158,7 +158,7 @@ export namespace app {
     issueBootstrapNodeNftMsg?: bootstrap_node.IIssueTokenMsg | null;
   }
 
-  /** Represents a Tx. */
+  /** clarity). */
   class Tx implements ITx {
     /**
      * Constructs a new Tx.
@@ -172,10 +172,10 @@ export namespace app {
     /** Tx signatures. */
     public signatures: sigs.IStdSignature[];
 
-    /** Tx preimage. */
+    /** Preimage for hashlock. */
     public preimage: Uint8Array;
 
-    /** Tx multisig. */
+    /** ID of a multisig contract. */
     public multisig: Uint8Array[];
 
     /** Tx sendMsg. */
@@ -205,7 +205,7 @@ export namespace app {
     /** Tx newTokenInfoMsg. */
     public newTokenInfoMsg?: currency.INewTokenInfoMsg | null;
 
-    /** Tx addApprovalMsg. */
+    /** BatchMsg batch_msg = 60; */
     public addApprovalMsg?: nft.IAddApprovalMsg | null;
 
     /** Tx removeApprovalMsg. */
@@ -229,7 +229,7 @@ export namespace app {
     /** Tx issueBootstrapNodeNftMsg. */
     public issueBootstrapNodeNftMsg?: bootstrap_node.IIssueTokenMsg | null;
 
-    /** Tx sum. */
+    /** msg is a sum type over all allowed messages on this chain. */
     public sum?:
       | "sendMsg"
       | "createEscrowMsg"
@@ -533,26 +533,26 @@ export namespace blockchain {
 
   /** Properties of a Chain. */
   interface IChain {
-    /** Chain chainId */
+    /** Chain ID is the blockchain ID as referred in our system. */
     chainId?: string | null;
 
-    /** Chain networkId */
+    /** https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids */
     networkId?: string | null;
 
-    /** Chain name */
+    /** Name holds human redable name of the blockchain. */
     name?: string | null;
 
-    /** Chain enabled */
+    /** Enabled is a flag used for soft delete. */
     enabled?: boolean | null;
 
     /** Chain production */
     production?: boolean | null;
 
-    /** Chain mainTickerId */
+    /** any number of tickers registered. */
     mainTickerId?: Uint8Array | null;
   }
 
-  /** Represents a Chain. */
+  /** everywhere. */
   class Chain implements IChain {
     /**
      * Constructs a new Chain.
@@ -560,22 +560,22 @@ export namespace blockchain {
      */
     constructor(properties?: blockchain.IChain);
 
-    /** Chain chainId. */
+    /** Chain ID is the blockchain ID as referred in our system. */
     public chainId: string;
 
-    /** Chain networkId. */
+    /** https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids */
     public networkId: string;
 
-    /** Chain name. */
+    /** Name holds human redable name of the blockchain. */
     public name: string;
 
-    /** Chain enabled. */
+    /** Enabled is a flag used for soft delete. */
     public enabled: boolean;
 
     /** Chain production. */
     public production: boolean;
 
-    /** Chain mainTickerId. */
+    /** any number of tickers registered. */
     public mainTickerId: Uint8Array;
 
     /**
@@ -1893,14 +1893,14 @@ export namespace username {
 
   /** Properties of a ChainAddress. */
   interface IChainAddress {
-    /** ChainAddress blockchainId */
+    /** module). */
     blockchainId?: Uint8Array | null;
 
-    /** ChainAddress address */
+    /** blockchain. */
     address?: string | null;
   }
 
-  /** Represents a ChainAddress. */
+  /** ChainAddress is an address bind to a specific blockchain chain. */
   class ChainAddress implements IChainAddress {
     /**
      * Constructs a new ChainAddress.
@@ -1908,10 +1908,10 @@ export namespace username {
      */
     constructor(properties?: username.IChainAddress);
 
-    /** ChainAddress blockchainId. */
+    /** module). */
     public blockchainId: Uint8Array;
 
-    /** ChainAddress address. */
+    /** blockchain. */
     public address: string;
 
     /**
@@ -2615,7 +2615,7 @@ export namespace orm {
     refs?: Uint8Array[] | null;
   }
 
-  /** Represents a MultiRef. */
+  /** MultiRef contains a list of references to pks */
   class MultiRef implements IMultiRef {
     /**
      * Constructs a new MultiRef.
@@ -2706,7 +2706,7 @@ export namespace orm {
     count?: number | Long | null;
   }
 
-  /** Represents a Counter. */
+  /** Counter could be used for sequence, but mainly just for test */
   class Counter implements ICounter {
     /**
      * Constructs a new Counter.
@@ -2894,7 +2894,7 @@ export namespace cash {
     coins?: x.ICoin[] | null;
   }
 
-  /** Represents a Set. */
+  /** It handles adding and subtracting sets of currencies. */
   class Set implements ISet {
     /**
      * Constructs a new Set.
@@ -2987,14 +2987,14 @@ export namespace cash {
     /** SendMsg amount */
     amount?: x.ICoin | null;
 
-    /** SendMsg memo */
+    /** max length 128 character */
     memo?: string | null;
 
-    /** SendMsg ref */
+    /** max length 64 bytes */
     ref?: Uint8Array | null;
   }
 
-  /** Represents a SendMsg. */
+  /** eg. tx hash */
   class SendMsg implements ISendMsg {
     /**
      * Constructs a new SendMsg.
@@ -3011,10 +3011,10 @@ export namespace cash {
     /** SendMsg amount. */
     public amount?: x.ICoin | null;
 
-    /** SendMsg memo. */
+    /** max length 128 character */
     public memo: string;
 
-    /** SendMsg ref. */
+    /** max length 64 bytes */
     public ref: Uint8Array;
 
     /**
@@ -3100,7 +3100,7 @@ export namespace cash {
     fees?: x.ICoin | null;
   }
 
-  /** Represents a FeeInfo. */
+  /** message processed */
   class FeeInfo implements IFeeInfo {
     /**
      * Constructs a new FeeInfo.
@@ -3193,20 +3193,20 @@ export namespace cash {
 export namespace x {
   /** Properties of a Coin. */
   interface ICoin {
-    /** Coin whole */
+    /** Whole coins, -10^15 < integer < 10^15 */
     whole?: number | Long | null;
 
-    /** Coin fractional */
+    /** If fractional != 0, must have same sign as integer */
     fractional?: number | Long | null;
 
-    /** Coin ticker */
+    /** all Coins of the same currency can be combined */
     ticker?: string | null;
 
-    /** Coin issuer */
+    /** Issuer both match. */
     issuer?: string | null;
   }
 
-  /** Represents a Coin. */
+  /** own type, possibly borrowing from this code. */
   class Coin implements ICoin {
     /**
      * Constructs a new Coin.
@@ -3214,16 +3214,16 @@ export namespace x {
      */
     constructor(properties?: x.ICoin);
 
-    /** Coin whole. */
+    /** Whole coins, -10^15 < integer < 10^15 */
     public whole: number | Long;
 
-    /** Coin fractional. */
+    /** If fractional != 0, must have same sign as integer */
     public fractional: number | Long;
 
-    /** Coin ticker. */
+    /** all Coins of the same currency can be combined */
     public ticker: string;
 
-    /** Coin issuer. */
+    /** Issuer both match. */
     public issuer: string;
 
     /**
@@ -3309,7 +3309,7 @@ export namespace currency {
     sigFigs?: number | null;
   }
 
-  /** Represents a TokenInfo. */
+  /** alternative solution to hardcoding supported currencies information. */
   class TokenInfo implements ITokenInfo {
     /**
      * Constructs a new TokenInfo.
@@ -3409,7 +3409,7 @@ export namespace currency {
     sigFigs?: number | null;
   }
 
-  /** Represents a NewTokenInfoMsg. */
+  /** be registered only once. */
   class NewTokenInfoMsg implements INewTokenInfoMsg {
     /**
      * Constructs a new NewTokenInfoMsg.
@@ -3508,7 +3508,7 @@ export namespace currency {
 export namespace escrow {
   /** Properties of an Escrow. */
   interface IEscrow {
-    /** Escrow sender */
+    /** Sender, Arbiter, Recipient are all weave.Permission */
     sender?: Uint8Array | null;
 
     /** Escrow arbiter */
@@ -3517,17 +3517,17 @@ export namespace escrow {
     /** Escrow recipient */
     recipient?: Uint8Array | null;
 
-    /** Escrow amount */
+    /** amount may contain multiple token types */
     amount?: x.ICoin[] | null;
 
-    /** Escrow timeout */
+    /** timeout stored here is absolute block height */
     timeout?: number | Long | null;
 
-    /** Escrow memo */
+    /** max length 128 character */
     memo?: string | null;
   }
 
-  /** Represents an Escrow. */
+  /** an HTLC ;) */
   class Escrow implements IEscrow {
     /**
      * Constructs a new Escrow.
@@ -3535,7 +3535,7 @@ export namespace escrow {
      */
     constructor(properties?: escrow.IEscrow);
 
-    /** Escrow sender. */
+    /** Sender, Arbiter, Recipient are all weave.Permission */
     public sender: Uint8Array;
 
     /** Escrow arbiter. */
@@ -3544,13 +3544,13 @@ export namespace escrow {
     /** Escrow recipient. */
     public recipient: Uint8Array;
 
-    /** Escrow amount. */
+    /** amount may contain multiple token types */
     public amount: x.ICoin[];
 
-    /** Escrow timeout. */
+    /** timeout stored here is absolute block height */
     public timeout: number | Long;
 
-    /** Escrow memo. */
+    /** max length 128 character */
     public memo: string;
 
     /**
@@ -3629,7 +3629,7 @@ export namespace escrow {
 
   /** Properties of a CreateEscrowMsg. */
   interface ICreateEscrowMsg {
-    /** CreateEscrowMsg src */
+    /** Sender, Arbiter, Recipient are all weave.Permission */
     src?: Uint8Array | null;
 
     /** CreateEscrowMsg arbiter */
@@ -3638,17 +3638,17 @@ export namespace escrow {
     /** CreateEscrowMsg recipient */
     recipient?: Uint8Array | null;
 
-    /** CreateEscrowMsg amount */
+    /** amount may contain multiple token types */
     amount?: x.ICoin[] | null;
 
-    /** CreateEscrowMsg timeout */
+    /** if unreleased before timeout, will return to sender */
     timeout?: number | Long | null;
 
-    /** CreateEscrowMsg memo */
+    /** max length 128 character */
     memo?: string | null;
   }
 
-  /** Represents a CreateEscrowMsg. */
+  /** The rest must be defined */
   class CreateEscrowMsg implements ICreateEscrowMsg {
     /**
      * Constructs a new CreateEscrowMsg.
@@ -3656,7 +3656,7 @@ export namespace escrow {
      */
     constructor(properties?: escrow.ICreateEscrowMsg);
 
-    /** CreateEscrowMsg src. */
+    /** Sender, Arbiter, Recipient are all weave.Permission */
     public src: Uint8Array;
 
     /** CreateEscrowMsg arbiter. */
@@ -3665,13 +3665,13 @@ export namespace escrow {
     /** CreateEscrowMsg recipient. */
     public recipient: Uint8Array;
 
-    /** CreateEscrowMsg amount. */
+    /** amount may contain multiple token types */
     public amount: x.ICoin[];
 
-    /** CreateEscrowMsg timeout. */
+    /** if unreleased before timeout, will return to sender */
     public timeout: number | Long;
 
-    /** CreateEscrowMsg memo. */
+    /** max length 128 character */
     public memo: string;
 
     /**
@@ -3760,7 +3760,7 @@ export namespace escrow {
     amount?: x.ICoin[] | null;
   }
 
-  /** Represents a ReleaseEscrowMsg. */
+  /** May be a subset of the current balance. */
   class ReleaseEscrowMsg implements IReleaseEscrowMsg {
     /**
      * Constructs a new ReleaseEscrowMsg.
@@ -3857,7 +3857,7 @@ export namespace escrow {
     escrowId?: Uint8Array | null;
   }
 
-  /** Represents a ReturnEscrowMsg. */
+  /** Must be authorized by the sender or an expired timeout */
   class ReturnEscrowMsg implements IReturnEscrowMsg {
     /**
      * Constructs a new ReturnEscrowMsg.
@@ -3960,7 +3960,7 @@ export namespace escrow {
     recipient?: Uint8Array | null;
   }
 
-  /** Represents an UpdateEscrowPartiesMsg. */
+  /** Represents delegating responsibility */
   class UpdateEscrowPartiesMsg implements IUpdateEscrowPartiesMsg {
     /**
      * Constructs a new UpdateEscrowPartiesMsg.
@@ -4068,13 +4068,13 @@ export namespace escrow {
 export namespace multisig {
   /** Properties of a Contract. */
   interface IContract {
-    /** Contract sigs */
+    /** addresses to control it */
     sigs?: Uint8Array[] | null;
 
-    /** Contract activationThreshold */
+    /** threshold needed to sign to activate it */
     activationThreshold?: number | Long | null;
 
-    /** Contract adminThreshold */
+    /** threshold needed to sign to change it */
     adminThreshold?: number | Long | null;
   }
 
@@ -4086,13 +4086,13 @@ export namespace multisig {
      */
     constructor(properties?: multisig.IContract);
 
-    /** Contract sigs. */
+    /** addresses to control it */
     public sigs: Uint8Array[];
 
-    /** Contract activationThreshold. */
+    /** threshold needed to sign to activate it */
     public activationThreshold: number | Long;
 
-    /** Contract adminThreshold. */
+    /** threshold needed to sign to change it */
     public adminThreshold: number | Long;
 
     /**
@@ -4171,13 +4171,13 @@ export namespace multisig {
 
   /** Properties of a CreateContractMsg. */
   interface ICreateContractMsg {
-    /** CreateContractMsg sigs */
+    /** addresses to control it */
     sigs?: Uint8Array[] | null;
 
-    /** CreateContractMsg activationThreshold */
+    /** threshold needed to sign to activate it */
     activationThreshold?: number | Long | null;
 
-    /** CreateContractMsg adminThreshold */
+    /** threshold needed to sign to change it */
     adminThreshold?: number | Long | null;
   }
 
@@ -4189,13 +4189,13 @@ export namespace multisig {
      */
     constructor(properties?: multisig.ICreateContractMsg);
 
-    /** CreateContractMsg sigs. */
+    /** addresses to control it */
     public sigs: Uint8Array[];
 
-    /** CreateContractMsg activationThreshold. */
+    /** threshold needed to sign to activate it */
     public activationThreshold: number | Long;
 
-    /** CreateContractMsg adminThreshold. */
+    /** threshold needed to sign to change it */
     public adminThreshold: number | Long;
 
     /**
@@ -4277,16 +4277,16 @@ export namespace multisig {
 
   /** Properties of an UpdateContractMsg. */
   interface IUpdateContractMsg {
-    /** UpdateContractMsg id */
+    /** contract id */
     id?: Uint8Array | null;
 
-    /** UpdateContractMsg sigs */
+    /** addresses to control it */
     sigs?: Uint8Array[] | null;
 
-    /** UpdateContractMsg activationThreshold */
+    /** threshold needed to sign to activate it */
     activationThreshold?: number | Long | null;
 
-    /** UpdateContractMsg adminThreshold */
+    /** threshold needed to sign to change it */
     adminThreshold?: number | Long | null;
   }
 
@@ -4298,16 +4298,16 @@ export namespace multisig {
      */
     constructor(properties?: multisig.IUpdateContractMsg);
 
-    /** UpdateContractMsg id. */
+    /** contract id */
     public id: Uint8Array;
 
-    /** UpdateContractMsg sigs. */
+    /** addresses to control it */
     public sigs: Uint8Array[];
 
-    /** UpdateContractMsg activationThreshold. */
+    /** threshold needed to sign to activate it */
     public activationThreshold: number | Long;
 
-    /** UpdateContractMsg adminThreshold. */
+    /** threshold needed to sign to change it */
     public adminThreshold: number | Long;
 
     /**
@@ -4399,7 +4399,7 @@ export namespace namecoin {
     name?: string | null;
   }
 
-  /** Represents a Wallet. */
+  /** Wallet has a name and a set of coins */
   class Wallet implements IWallet {
     /**
      * Constructs a new Wallet.
@@ -4496,7 +4496,7 @@ export namespace namecoin {
     sigFigs?: number | null;
   }
 
-  /** Represents a Token. */
+  /** Token contains information about a registered currency */
   class Token implements IToken {
     /**
      * Constructs a new Token.
@@ -4596,7 +4596,7 @@ export namespace namecoin {
     sigFigs?: number | null;
   }
 
-  /** Represents a NewTokenMsg. */
+  /** and should be limited to privledged users. */
   class NewTokenMsg implements INewTokenMsg {
     /**
      * Constructs a new NewTokenMsg.
@@ -4699,7 +4699,7 @@ export namespace namecoin {
     name?: string | null;
   }
 
-  /** Represents a SetWalletNameMsg. */
+  /** wallet. Can only be performed if the wallet name is empty. */
   class SetWalletNameMsg implements ISetWalletNameMsg {
     /**
      * Constructs a new SetWalletNameMsg.
@@ -4795,17 +4795,17 @@ export namespace namecoin {
 export namespace nft {
   /** Properties of a NonFungibleToken. */
   interface INonFungibleToken {
-    /** NonFungibleToken id */
+    /** ID is the address of this token. */
     id?: Uint8Array | null;
 
-    /** NonFungibleToken owner */
+    /** Owner is the address of the token owner. */
     owner?: Uint8Array | null;
 
-    /** NonFungibleToken actionApprovals */
+    /** succeed, all action approvals validation must pass. */
     actionApprovals?: nft.IActionApprovals[] | null;
   }
 
-  /** Represents a NonFungibleToken. */
+  /** implementation. Usually it is the first attirbute called `base`. */
   class NonFungibleToken implements INonFungibleToken {
     /**
      * Constructs a new NonFungibleToken.
@@ -4813,13 +4813,13 @@ export namespace nft {
      */
     constructor(properties?: nft.INonFungibleToken);
 
-    /** NonFungibleToken id. */
+    /** ID is the address of this token. */
     public id: Uint8Array;
 
-    /** NonFungibleToken owner. */
+    /** Owner is the address of the token owner. */
     public owner: Uint8Array;
 
-    /** NonFungibleToken actionApprovals. */
+    /** succeed, all action approvals validation must pass. */
     public actionApprovals: nft.IActionApprovals[];
 
     /**
@@ -4908,7 +4908,7 @@ export namespace nft {
     approvals?: nft.IApproval[] | null;
   }
 
-  /** Represents an ActionApprovals. */
+  /** execute given operation. */
   class ActionApprovals implements IActionApprovals {
     /**
      * Constructs a new ActionApprovals.
@@ -5095,13 +5095,13 @@ export namespace nft {
 
   /** Properties of an ApprovalOptions. */
   interface IApprovalOptions {
-    /** ApprovalOptions untilBlockHeight */
+    /** approval is valid. This can be used to define an approval expiration. */
     untilBlockHeight?: number | Long | null;
 
-    /** ApprovalOptions count */
+    /** Use -1 to bypass count expiration. */
     count?: number | Long | null;
 
-    /** ApprovalOptions immutable */
+    /** changed. */
     immutable?: boolean | null;
   }
 
@@ -5113,13 +5113,13 @@ export namespace nft {
      */
     constructor(properties?: nft.IApprovalOptions);
 
-    /** ApprovalOptions untilBlockHeight. */
+    /** approval is valid. This can be used to define an approval expiration. */
     public untilBlockHeight: number | Long;
 
-    /** ApprovalOptions count. */
+    /** Use -1 to bypass count expiration. */
     public count: number | Long;
 
-    /** ApprovalOptions immutable. */
+    /** changed. */
     public immutable: boolean;
 
     /**
@@ -5428,29 +5428,29 @@ export namespace nft {
 export namespace paychan {
   /** Properties of a PaymentChannel. */
   interface IPaymentChannel {
-    /** PaymentChannel src */
+    /** Sender is the source that the founds are allocated from (weave.Address). */
     src?: Uint8Array | null;
 
-    /** PaymentChannel senderPubkey */
+    /** to the recipient. Signature prevents from altering transfer message. */
     senderPubkey?: crypto.IPublicKey | null;
 
-    /** PaymentChannel recipient */
+    /** (weave.Address). */
     recipient?: Uint8Array | null;
 
-    /** PaymentChannel total */
+    /** payment channel. */
     total?: x.ICoin | null;
 
-    /** PaymentChannel timeout */
+    /** sender. */
     timeout?: number | Long | null;
 
-    /** PaymentChannel memo */
+    /** Max length 128 character. */
     memo?: string | null;
 
-    /** PaymentChannel transferred */
+    /** (total) value. Transferred must never exceed total value. */
     transferred?: x.ICoin | null;
   }
 
-  /** Represents a PaymentChannel. */
+  /** PaymentChannel holds the state of a payment channel during its lifetime. */
   class PaymentChannel implements IPaymentChannel {
     /**
      * Constructs a new PaymentChannel.
@@ -5458,25 +5458,25 @@ export namespace paychan {
      */
     constructor(properties?: paychan.IPaymentChannel);
 
-    /** PaymentChannel src. */
+    /** Sender is the source that the founds are allocated from (weave.Address). */
     public src: Uint8Array;
 
-    /** PaymentChannel senderPubkey. */
+    /** to the recipient. Signature prevents from altering transfer message. */
     public senderPubkey?: crypto.IPublicKey | null;
 
-    /** PaymentChannel recipient. */
+    /** (weave.Address). */
     public recipient: Uint8Array;
 
-    /** PaymentChannel total. */
+    /** payment channel. */
     public total?: x.ICoin | null;
 
-    /** PaymentChannel timeout. */
+    /** sender. */
     public timeout: number | Long;
 
-    /** PaymentChannel memo. */
+    /** Max length 128 character. */
     public memo: string;
 
-    /** PaymentChannel transferred. */
+    /** (total) value. Transferred must never exceed total value. */
     public transferred?: x.ICoin | null;
 
     /**
@@ -5558,26 +5558,26 @@ export namespace paychan {
 
   /** Properties of a CreatePaymentChannelMsg. */
   interface ICreatePaymentChannelMsg {
-    /** CreatePaymentChannelMsg src */
+    /** Sender address (weave.Address). */
     src?: Uint8Array | null;
 
-    /** CreatePaymentChannelMsg senderPubkey */
+    /** Sender public key is for validating transfer message signature. */
     senderPubkey?: crypto.IPublicKey | null;
 
-    /** CreatePaymentChannelMsg recipient */
+    /** Recipient address  (weave.Address). */
     recipient?: Uint8Array | null;
 
-    /** CreatePaymentChannelMsg total */
+    /** Maximum amount that can be transferred via this channel. */
     total?: x.ICoin | null;
 
-    /** CreatePaymentChannelMsg timeout */
+    /** anyone. */
     timeout?: number | Long | null;
 
-    /** CreatePaymentChannelMsg memo */
+    /** Max length 128 character. */
     memo?: string | null;
   }
 
-  /** Represents a CreatePaymentChannelMsg. */
+  /** in the transactions done via created payment channel. */
   class CreatePaymentChannelMsg implements ICreatePaymentChannelMsg {
     /**
      * Constructs a new CreatePaymentChannelMsg.
@@ -5585,22 +5585,22 @@ export namespace paychan {
      */
     constructor(properties?: paychan.ICreatePaymentChannelMsg);
 
-    /** CreatePaymentChannelMsg src. */
+    /** Sender address (weave.Address). */
     public src: Uint8Array;
 
-    /** CreatePaymentChannelMsg senderPubkey. */
+    /** Sender public key is for validating transfer message signature. */
     public senderPubkey?: crypto.IPublicKey | null;
 
-    /** CreatePaymentChannelMsg recipient. */
+    /** Recipient address  (weave.Address). */
     public recipient: Uint8Array;
 
-    /** CreatePaymentChannelMsg total. */
+    /** Maximum amount that can be transferred via this channel. */
     public total?: x.ICoin | null;
 
-    /** CreatePaymentChannelMsg timeout. */
+    /** anyone. */
     public timeout: number | Long;
 
-    /** CreatePaymentChannelMsg memo. */
+    /** Max length 128 character. */
     public memo: string;
 
     /**
@@ -5697,11 +5697,11 @@ export namespace paychan {
     /** Payment amount */
     amount?: x.ICoin | null;
 
-    /** Payment memo */
+    /** Max length 128 character. */
     memo?: string | null;
   }
 
-  /** Represents a Payment. */
+  /** Each Payment should be created with amount greater than the previous one. */
   class Payment implements IPayment {
     /**
      * Constructs a new Payment.
@@ -5718,7 +5718,7 @@ export namespace paychan {
     /** Payment amount. */
     public amount?: x.ICoin | null;
 
-    /** Payment memo. */
+    /** Max length 128 character. */
     public memo: string;
 
     /**
@@ -5804,7 +5804,7 @@ export namespace paychan {
     signature?: crypto.ISignature | null;
   }
 
-  /** Represents a TransferPaymentChannelMsg. */
+  /** Signature is there to ensure that payment message was not altered. */
   class TransferPaymentChannelMsg implements ITransferPaymentChannelMsg {
     /**
      * Constructs a new TransferPaymentChannelMsg.
@@ -5906,11 +5906,11 @@ export namespace paychan {
     /** ClosePaymentChannelMsg channelId */
     channelId?: Uint8Array | null;
 
-    /** ClosePaymentChannelMsg memo */
+    /** Max length 128 character. */
     memo?: string | null;
   }
 
-  /** Represents a ClosePaymentChannelMsg. */
+  /** Sender can close channel only if the timeout chain height was reached. */
   class ClosePaymentChannelMsg implements IClosePaymentChannelMsg {
     /**
      * Constructs a new ClosePaymentChannelMsg.
@@ -5921,7 +5921,7 @@ export namespace paychan {
     /** ClosePaymentChannelMsg channelId. */
     public channelId: Uint8Array;
 
-    /** ClosePaymentChannelMsg memo. */
+    /** Max length 128 character. */
     public memo: string;
 
     /**
@@ -6019,7 +6019,7 @@ export namespace sigs {
     sequence?: number | Long | null;
   }
 
-  /** Represents a UserData. */
+  /** User is the entry point you want */
   class UserData implements IUserData {
     /**
      * Constructs a new UserData.
@@ -6115,11 +6115,11 @@ export namespace sigs {
     /** StdSignature pubkey */
     pubkey?: crypto.IPublicKey | null;
 
-    /** StdSignature signature */
+    /** Removed Address, Pubkey is more powerful */
     signature?: crypto.ISignature | null;
   }
 
-  /** Represents a StdSignature. */
+  /** increasing by 1 each time (starting at 0) */
   class StdSignature implements IStdSignature {
     /**
      * Constructs a new StdSignature.
@@ -6133,7 +6133,7 @@ export namespace sigs {
     /** StdSignature pubkey. */
     public pubkey?: crypto.IPublicKey | null;
 
-    /** StdSignature signature. */
+    /** Removed Address, Pubkey is more powerful */
     public signature?: crypto.ISignature | null;
 
     /**
@@ -6222,7 +6222,7 @@ export namespace validators {
     power?: number | Long | null;
   }
 
-  /** Represents a ValidatorUpdate. */
+  /** ValidatorUpdate */
   class ValidatorUpdate implements IValidatorUpdate {
     /**
      * Constructs a new ValidatorUpdate.
@@ -6416,7 +6416,7 @@ export namespace validators {
     validatorUpdates?: validators.IValidatorUpdate[] | null;
   }
 
-  /** Represents a SetValidatorsMsg. */
+  /** This message is designed to update validator power */
   class SetValidatorsMsg implements ISetValidatorsMsg {
     /**
      * Constructs a new SetValidatorsMsg.
@@ -6510,7 +6510,7 @@ export namespace validators {
     addresses?: Uint8Array[] | null;
   }
 
-  /** Represents an Accounts. */
+  /** Accounts is a list of accounts allowed to update validators */
   class Accounts implements IAccounts {
     /**
      * Constructs a new Accounts.
