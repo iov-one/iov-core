@@ -19,11 +19,12 @@ This will checkout the named tag (eg. v0.10.0) in a subdirectory called weave.
 ## Compiling the protobuf
 
 One you have checked out weave, there are a few steps to compile the protobuf.
-We wrap them all in a helper script, but here they are for your understanding...
+We wrap them all in a helper script, but here they are for your understanding.
 
-`yarn find-proto`: will produce a list of all proto files we care about in the weave directory you
-checked out before. We ignore the examples, but do want to compile all available ./cmd directories,
-which we support. (or just bnsd?)
+`./scripts/cleaned_protos.sh`: will produce a list of all proto files we care about in
+the weave directory you checked out before. We ignore the examples, but do want to
+compile all available ./cmd directories, which we support. (or just bnsd?)
+This also prepares .proto files for further processing.
 
 There is currently an issue here, as package name is used to differentiate the objects in the compiled
 javascript. And `./app`, `./cmd/bnsd/app` and `./cmd/bcpd/app` all define protobuf with the `package app`
@@ -32,8 +33,9 @@ definition. These can be combined, but as bcpd and bnsd define the same type (`T
 **TODO**: update weave to provide unique package names, not just different paths. At this point, we can
 compile `./cmd/bnsd` and `./cmd/bcpd` together. We will have to update package names in calling code.
 
-`yarn pack-proto`: will compile all the protobuf files returned by `yarn find-proto` into a javascript module
-located at `./src/generated/codecimpl.js`. This contains the codecs to serialize and deserialize everything.
+`yarn pack-proto`: will compile all the protobuf files returned by `./scripts/cleaned_protos.sh`
+into a javascript module located at `./src/generated/codecimpl.js`. This contains the codecs to
+serialize and deserialize everything.
 
 `yarn define-proto`: will generate typescript definitions for `./src/generated/codecimpl.js` and
 save them under `src/generated/codecimpl.d.ts`. This allows us to properly use all the codecs from typescript.
