@@ -1,1 +1,1 @@
-fefebb1622df553c8c74e47a414728f7e581bac2 (HEAD, tag: v0.10.2) Validator scenario (#287)
+b0474f3b493de0a2bbeca196f8f6a1eb5c888903 (HEAD, tag: v0.11.1) Init validators in bcpd (#298)
