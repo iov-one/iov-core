@@ -5,26 +5,28 @@ command -v shellcheck > /dev/null && shellcheck "$0"
 # This must be run after weave.sh and will clean up the protobuf files
 # before compilation, to remove traces of gogoproto
 #
-# It will write all cleaned proto to ./$OUTDIR, default ./clean
-
-BASEDIR=$(pwd)
+# It will write all cleaned proto to a temporary dir
 
 CODEDIR=go/src/github.com/iov-one/weave
-OUTDIR=${OUTDIR:-clean}
+OUT_DIR=$(mktemp -d "${TMPDIR:-/tmp}/clean_proto.XXXXXXXXX")
 
-rm -rf "./${OUTDIR}"
+# Write debugging to STDERR
+>&2 echo "Using temporary folder for prepared .proto files: $OUT_DIR"
 
 (
   cd "$CODEDIR"
   find . -name '*.proto' -not -path '*/vendor/*' -not -path '*/examples/*' -not -path '*/cmd/bcpd/*' > tmp
-  while IFS= read -r file
+  while IFS= read -r filename
   do
-    outfile="$BASEDIR/$OUTDIR/$file"
+    outfile="$OUT_DIR/$filename"
     outdir=$(dirname "$outfile")
     mkdir -p "$outdir"
     echo "$outfile"
-    # This just removes all options after the fields, and removes illegal ;; typos
-    sed 's/ *\[[^]]*\];/;/g' "$file" | sed 's/;;/;/' > "$outfile"
+    cp "$filename" "$outfile"
+    # This just removes all options after the fields
+    sed -ie 's/ *\[[^]]*\];/;/g' "$outfile"
+    # removes illegal ;; typos
+    sed -ie 's/;;/;/' "$outfile"
   done < tmp
   rm tmp
 )
