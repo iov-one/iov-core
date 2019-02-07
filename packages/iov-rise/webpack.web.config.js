@@ -15,7 +15,7 @@ module.exports = [
       filename: "tests.js",
     },
     plugins: [
-      new webpack.EnvironmentPlugin([]),
+      new webpack.EnvironmentPlugin(['RISE_ENABLED']),
     ],
   },
 ];

@@ -36,6 +36,12 @@ import { generateNonce, RiseConnection } from "./riseconnection";
 const { fromHex } = Encoding;
 const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
 
+function pendingWithoutRise(): void {
+  if (!process.env.RISE_ENABLED) {
+    pending("Set RISE_ENABLED to enable Rise network tests");
+  }
+}
+
 async function randomAddress(): Promise<Address> {
   const pubkey = await Random.getBytes(32);
   return pubkeyToAddress(pubkey);
@@ -106,6 +112,7 @@ describe("RiseConnection", () => {
   });
 
   it("can disconnect", () => {
+    pendingWithoutRise();
     const connection = new RiseConnection(base, riseTestnet);
     expect(() => connection.disconnect()).not.toThrow();
   });
@@ -133,12 +140,14 @@ describe("RiseConnection", () => {
   });
 
   it("can get chain ID", async () => {
+    pendingWithoutRise();
     const connection = await RiseConnection.establish(base);
     const chainId = connection.chainId();
     expect(chainId).toEqual(riseTestnet);
   });
 
   it("can get height", async () => {
+    pendingWithoutRise();
     const connection = await RiseConnection.establish(base);
     const height = await connection.height();
     expect(height).toBeGreaterThan(1000000);
@@ -147,6 +156,7 @@ describe("RiseConnection", () => {
 
   describe("getAccount", () => {
     it("can get account from address", async () => {
+      pendingWithoutRise();
       const connection = await RiseConnection.establish(base);
       const query: AccountQuery = { address: "6472030874529564639R" as Address };
       const response = await connection.getAccount(query);
@@ -163,6 +173,7 @@ describe("RiseConnection", () => {
     });
 
     it("can get account from pubkey", async () => {
+      pendingWithoutRise();
       const connection = await RiseConnection.establish(base);
       const pubkey: PublicKeyBundle = {
         algo: Algorithm.Ed25519,
@@ -180,6 +191,7 @@ describe("RiseConnection", () => {
     });
 
     it("returns undefined pubkey for account with no outgoing transactions", async () => {
+      pendingWithoutRise();
       const connection = await RiseConnection.establish(base);
       const response = await connection.getAccount({ address: defaultRecipientAddress });
       expect(response!.address).toEqual(defaultRecipientAddress);
@@ -187,6 +199,7 @@ describe("RiseConnection", () => {
     });
 
     it("returns empty list when getting an unused account", async () => {
+      pendingWithoutRise();
       const unusedAddress = "5648777643193648871R" as Address;
       const connection = await RiseConnection.establish(base);
       const response = await connection.getAccount({ address: unusedAddress });
@@ -196,6 +209,7 @@ describe("RiseConnection", () => {
 
   describe("getNonce", () => {
     it("can get nonce", async () => {
+      pendingWithoutRise();
       const connection = await RiseConnection.establish(base);
 
       // by address
@@ -229,6 +243,7 @@ describe("RiseConnection", () => {
 
   describe("getNonces", () => {
     it("can get 0/1/2/3 nonces", async () => {
+      pendingWithoutRise();
       const connection = await RiseConnection.establish(base);
 
       const addressQuery: AddressQuery = { address: "5399275477602875017R" as Address };
@@ -317,6 +332,7 @@ describe("RiseConnection", () => {
 
   describe("watchAccount", () => {
     it("can watch account by address", done => {
+      pendingWithoutRise();
       (async () => {
         const connection = await RiseConnection.establish(base);
 
@@ -401,6 +417,7 @@ describe("RiseConnection", () => {
 
   describe("getBlockHeader", () => {
     it("throws for invalid height arguments", async () => {
+      pendingWithoutRise();
       const connection = await RiseConnection.establish(base);
 
       // not an integer
@@ -437,6 +454,7 @@ describe("RiseConnection", () => {
     });
 
     it("can get genesis", async () => {
+      pendingWithoutRise();
       const connection = await RiseConnection.establish(base);
 
       // https://github.com/RiseVision/rise-node/blob/v1.3.2/etc/testnet/genesisBlock.json
@@ -450,6 +468,7 @@ describe("RiseConnection", () => {
     });
 
     it("rejects for non-existing block", async () => {
+      pendingWithoutRise();
       const connection = await RiseConnection.establish(base);
 
       await connection
@@ -463,6 +482,7 @@ describe("RiseConnection", () => {
 
   describe("postTx", () => {
     it("can post transaction", async () => {
+      pendingWithoutRise();
       const wallet = new Ed25519Wallet();
       const mainIdentity = await wallet.createIdentity(riseTestnet, await defaultKeypair);
 
@@ -499,6 +519,7 @@ describe("RiseConnection", () => {
     });
 
     xit("can post transaction and watch confirmations", done => {
+      pendingWithoutRise();
       (async () => {
         const wallet = new Ed25519Wallet();
         const mainIdentity = await wallet.createIdentity(riseTestnet, await defaultKeypair);
@@ -559,6 +580,7 @@ describe("RiseConnection", () => {
     }, 80_000);
 
     it("throws for transaction with corrupted signature", async () => {
+      pendingWithoutRise();
       const wallet = new Ed25519Wallet();
       const mainIdentity = await wallet.createIdentity(riseTestnet, await defaultKeypair);
 
@@ -602,6 +624,7 @@ describe("RiseConnection", () => {
 
   describe("searchTx", () => {
     it("can search transactions by ID", async () => {
+      pendingWithoutRise();
       const connection = await RiseConnection.establish(base);
 
       // by non-existing ID
@@ -631,6 +654,7 @@ describe("RiseConnection", () => {
     });
 
     it("can search transactions by address", async () => {
+      pendingWithoutRise();
       const connection = await RiseConnection.establish(base);
 
       // by non-existing address
@@ -694,6 +718,7 @@ describe("RiseConnection", () => {
 
   describe("liveTx", () => {
     it("can listen to transactions by recipient address (transactions in history and updates)", done => {
+      pendingWithoutRise();
       (async () => {
         const connection = await RiseConnection.establish(base);
 
@@ -763,6 +788,7 @@ describe("RiseConnection", () => {
     }, 90_000);
 
     it("can listen to transactions by ID (transaction in history)", done => {
+      pendingWithoutRise();
       (async () => {
         const connection = await RiseConnection.establish(base);
 
@@ -813,6 +839,7 @@ describe("RiseConnection", () => {
     }, 60_000);
 
     it("can listen to transactions by ID (transaction in updates)", done => {
+      pendingWithoutRise();
       (async () => {
         const connection = await RiseConnection.establish(base);
 
