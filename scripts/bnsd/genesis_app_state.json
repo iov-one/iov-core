@@ -41,5 +41,9 @@
       "name": "Let the Phoenix arise",
       "sig_figs": 6
     }
-  ]
+  ],
+  "gconf": {
+    "cash:minimal_fee": {},
+    "cash:collector_address": "0000000000000000000000000000000000000000"
+  }
 }
