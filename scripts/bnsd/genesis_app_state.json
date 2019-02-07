@@ -44,6 +44,6 @@
   ],
   "gconf": {
     "cash:minimal_fee": {},
-    "cash:collector_address": "fake-collector-address"
+    "cash:collector_address": "b1ca7e78f74423ae01da3b51e676934d9105f282"
   }
 }
