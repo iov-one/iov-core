@@ -1,18 +1,16 @@
 import {
   Address,
   Amount,
-  BcpAtomicSwap,
+  AtomicSwap,
   BcpCoin,
   BcpTicker,
   ChainId,
   ConfirmedTransaction,
   OpenSwap,
-  SwapClaimTransaction,
   SwapCounterTransaction,
   SwapData,
   SwapIdBytes,
   SwapState,
-  SwapTimeoutTransaction,
 } from "@iov/bcp-types";
 
 import { decodeAmount } from "./decode";
@@ -62,7 +60,7 @@ export class Context {
     return this.amountToCoin(amount);
   }
 
-  public swapOffer(swap: codecImpl.escrow.Escrow & Keyed): BcpAtomicSwap {
+  public swapOffer(swap: codecImpl.escrow.Escrow & Keyed): AtomicSwap {
     // TODO: get and check hashlock
     let hashlock: Uint8Array;
     if (isHashIdentifier(swap.arbiter)) {
@@ -76,7 +74,7 @@ export class Context {
       sender: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.sender)),
       recipient: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.recipient)),
       hashlock,
-      amount: ensure(swap.amount).map(coin => this.coin(coin)),
+      amounts: ensure(swap.amount).map(coin => decodeAmount(coin)),
       timeout: asNumber(swap.timeout),
       memo: swap.memo,
     };
@@ -100,27 +98,11 @@ export class Context {
         sender: identityToAddress(counterTransaction.creator),
         recipient: counterTransaction.recipient,
         hashlock: hashFromIdentifier(counterTransaction.hashCode),
-        amount: counterTransaction.amount.map(amount => this.amountToCoin(amount)),
+        amounts: counterTransaction.amounts,
         timeout: counterTransaction.timeout,
         memo: counterTransaction.memo,
       },
     };
-  }
-
-  // TODO: Not using the chain data. Does this belong here?
-  public settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTransaction | SwapTimeoutTransaction): BcpAtomicSwap {
-    if (tx.kind === "bcp/swap_claim") {
-      return {
-        kind: SwapState.Claimed,
-        data: swap.data,
-        preimage: tx.preimage,
-      };
-    } else {
-      return {
-        kind: SwapState.Expired,
-        data: swap.data,
-      };
-    }
   }
 
   private amountToCoin(amount: Amount): BcpCoin {

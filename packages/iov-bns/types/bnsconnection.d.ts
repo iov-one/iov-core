@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { Account, AccountQuery, Address, AddressQuery, BcpAtomicSwap, BcpAtomicSwapConnection, BcpSwapQuery, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker } from "@iov/bcp-types";
+import { Account, AccountQuery, Address, AddressQuery, AtomicSwap, AtomicSwapQuery, BcpAtomicSwapConnection, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker } from "@iov/bcp-types";
 import { BnsBlockchainNft, BnsBlockchainsQuery, BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
  * Talks directly to the BNS blockchain and exposes the
@@ -37,19 +37,19 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     /**
      * All matching swaps that are open (from app state)
      */
-    getSwapsFromState(query: BcpSwapQuery): Promise<ReadonlyArray<BcpAtomicSwap>>;
+    getSwapsFromState(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>>;
     /**
      * All matching swaps that are open (in app state)
      *
      * To get claimed and returned, we need to look at the transactions.... TODO
      */
-    getSwaps(query: BcpSwapQuery): Promise<ReadonlyArray<BcpAtomicSwap>>;
+    getSwaps(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>>;
     /**
      * Emits currentState (getSwap) as a stream, then sends updates for any matching swap
      *
      * This includes an open swap beind claimed/expired as well as a new matching swap being offered
      */
-    watchSwaps(query: BcpSwapQuery): Stream<BcpAtomicSwap>;
+    watchSwaps(query: AtomicSwapQuery): Stream<AtomicSwap>;
     searchTx(txQuery: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction | FailedTransaction>>;
     /**
      * A stream of all transactions that match the tags from the present moment on

@@ -24,6 +24,7 @@ node_modules/
 tmp/
 
 build/
+dist/
 docs/
 
 # .npmignore additions

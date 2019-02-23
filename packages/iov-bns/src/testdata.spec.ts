@@ -177,7 +177,7 @@ const swapCounterMsg: SwapCounterTransaction = {
   kind: "bcp/swap_counter",
   recipient: "tiov1zg6gtjecs368fl5la074d2m8u99u64hnhhlprg" as Address,
   timeout: 7890,
-  amount: [
+  amounts: [
     {
       quantity: "128079890911",
       fractionalDigits: 9,

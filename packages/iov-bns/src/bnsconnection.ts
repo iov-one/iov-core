@@ -6,9 +6,10 @@ import {
   AccountQuery,
   Address,
   AddressQuery,
-  BcpAtomicSwap,
+  AtomicSwap,
+  AtomicSwapMerger,
+  AtomicSwapQuery,
   BcpAtomicSwapConnection,
-  BcpSwapQuery,
   BcpTicker,
   BcpTxQuery,
   BlockHeader,
@@ -19,12 +20,12 @@ import {
   ChainId,
   ConfirmedTransaction,
   FailedTransaction,
+  isAtomicSwapIdQuery,
+  isAtomicSwapRecipientQuery,
+  isAtomicSwapSenderQuery,
   isConfirmedTransaction,
   isFailedTransaction,
   isPubkeyQuery,
-  isQueryBySwapId,
-  isQueryBySwapRecipient,
-  isQueryBySwapSender,
   Nonce,
   OpenSwap,
   PostableBytes,
@@ -32,7 +33,6 @@ import {
   PubkeyQuery,
   PublicKeyBundle,
   SwapClaimTransaction,
-  SwapState,
   SwapTimeoutTransaction,
   TokenTicker,
   TransactionId,
@@ -47,7 +47,7 @@ import { bnsCodec } from "./bnscodec";
 import { ChainData, Context } from "./context";
 import { decodeBlockchainNft, decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
-import { bnsNonceTag, bnsSwapQueryTags } from "./tags";
+import { bnsNonceTag, bnsSwapQueryTag } from "./tags";
 import {
   BnsBlockchainNft,
   BnsBlockchainsQuery,
@@ -63,7 +63,6 @@ import {
   Result,
 } from "./types";
 import {
-  arraysEqual,
   buildTxQuery,
   decodeBnsAddress,
   hashIdentifier,
@@ -95,6 +94,10 @@ function parseTendermintRpcError(errorString: string): TendermintRpcError {
     throw new Error("Could not parse `data` property");
   }
   return parsed;
+}
+
+function isDefined<T>(value: T | undefined): value is T {
+  return value !== undefined;
 }
 
 /**
@@ -352,13 +355,13 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   /**
    * All matching swaps that are open (from app state)
    */
-  public async getSwapsFromState(query: BcpSwapQuery): Promise<ReadonlyArray<BcpAtomicSwap>> {
+  public async getSwapsFromState(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>> {
     const doQuery = (): Promise<QueryResponse> => {
-      if (isQueryBySwapId(query)) {
+      if (isAtomicSwapIdQuery(query)) {
         return this.query("/escrows", query.swapid);
-      } else if (isQueryBySwapSender(query)) {
+      } else if (isAtomicSwapSenderQuery(query)) {
         return this.query("/escrows/sender", decodeBnsAddress(query.sender).data);
-      } else if (isQueryBySwapRecipient(query)) {
+      } else if (isAtomicSwapRecipientQuery(query)) {
         return this.query("/escrows/recipient", decodeBnsAddress(query.recipient).data);
       } else {
         // if (isQueryBySwapHash(query))
@@ -377,13 +380,13 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    *
    * To get claimed and returned, we need to look at the transactions.... TODO
    */
-  public async getSwaps(query: BcpSwapQuery): Promise<ReadonlyArray<BcpAtomicSwap>> {
+  public async getSwaps(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>> {
     // we need to combine them all to see all transactions that affect the query
     const setTxs: ReadonlyArray<ConfirmedTransaction> = (await this.searchTx({
-      tags: [bnsSwapQueryTags(query, true)],
+      tags: [bnsSwapQueryTag(query, true)],
     })).filter(isConfirmedTransaction);
     const delTxs: ReadonlyArray<ConfirmedTransaction> = (await this.searchTx({
-      tags: [bnsSwapQueryTags(query, false)],
+      tags: [bnsSwapQueryTag(query, false)],
     })).filter(isConfirmedTransaction);
 
     // tslint:disable-next-line:readonly-array
@@ -392,20 +395,18 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       .map(tx => this.context.swapOfferFromTx(tx));
 
     // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout
-    const release: ReadonlyArray<SwapClaimTransaction | SwapTimeoutTransaction> = [...setTxs, ...delTxs]
+    const releases: ReadonlyArray<SwapClaimTransaction | SwapTimeoutTransaction> = [...setTxs, ...delTxs]
       .filter(isConfirmedWithSwapClaimOrTimeoutTransaction)
       .map(x => x.transaction);
 
-    // tslint:disable-next-line:readonly-array
-    const settled: BcpAtomicSwap[] = [];
-    for (const rel of release) {
-      const idx = offers.findIndex(x => arraysEqual(x.data.id, rel.swapId));
-      const done = this.context.settleAtomicSwap(offers[idx], rel);
-      offers.splice(idx, 1);
-      settled.push(done);
+    const merger = new AtomicSwapMerger();
+    for (const offer of offers) {
+      merger.process(offer);
     }
 
-    return [...offers, ...settled];
+    const settled = releases.map(release => merger.process(release)).filter(isDefined);
+    const open = merger.openSwaps();
+    return [...open, ...settled];
   }
 
   /**
@@ -413,10 +414,10 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    *
    * This includes an open swap beind claimed/expired as well as a new matching swap being offered
    */
-  public watchSwaps(query: BcpSwapQuery): Stream<BcpAtomicSwap> {
+  public watchSwaps(query: AtomicSwapQuery): Stream<AtomicSwap> {
     // we need to combine them all to see all transactions that affect the query
-    const setTxs = this.liveTx({ tags: [bnsSwapQueryTags(query, true)] }).filter(isConfirmedTransaction);
-    const delTxs = this.liveTx({ tags: [bnsSwapQueryTags(query, false)] }).filter(isConfirmedTransaction);
+    const setTxs = this.liveTx({ tags: [bnsSwapQueryTag(query, true)] }).filter(isConfirmedTransaction);
+    const delTxs = this.liveTx({ tags: [bnsSwapQueryTag(query, false)] }).filter(isConfirmedTransaction);
 
     const offers: Stream<OpenSwap> = setTxs
       .filter(isConfirmedWithSwapCounterTransaction)
@@ -427,24 +428,10 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       .filter(isConfirmedWithSwapClaimOrTimeoutTransaction)
       .map(confirmed => confirmed.transaction);
 
-    // combine them and keep track of internal state in the mapper....
-    // tslint:disable-next-line:readonly-array
-    const open: OpenSwap[] = [];
-    const combiner = (evt: OpenSwap | SwapClaimTransaction | SwapTimeoutTransaction): BcpAtomicSwap => {
-      switch (evt.kind) {
-        case SwapState.Open:
-          open.push(evt);
-          return evt;
-        default:
-          // event is a swap claim/timeout, resolve an open swap and return new state
-          const idx = open.findIndex(x => arraysEqual(x.data.id, evt.swapId));
-          const done = this.context.settleAtomicSwap(open[idx], evt);
-          open.splice(idx, 1);
-          return done;
-      }
-    };
-
-    return Stream.merge(offers, releases).map(combiner);
+    const merger = new AtomicSwapMerger();
+    return Stream.merge(offers, releases)
+      .map(event => merger.process(event))
+      .filter(isDefined);
   }
 
   public async searchTx(

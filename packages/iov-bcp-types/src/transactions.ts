@@ -209,7 +209,7 @@ export interface SendTransaction extends UnsignedTransaction {
 
 export interface SwapOfferTransaction extends UnsignedTransaction {
   readonly kind: "bcp/swap_offer";
-  readonly amount: ReadonlyArray<Amount>;
+  readonly amounts: ReadonlyArray<Amount>;
   readonly recipient: Address;
   /** absolute block height at which the offer times out */
   readonly timeout: number;
@@ -218,7 +218,7 @@ export interface SwapOfferTransaction extends UnsignedTransaction {
 
 export interface SwapCounterTransaction extends UnsignedTransaction {
   readonly kind: "bcp/swap_counter";
-  readonly amount: ReadonlyArray<Amount>;
+  readonly amounts: ReadonlyArray<Amount>;
   readonly recipient: Address;
   /** absolute block height at which the counter offer times out */
   readonly timeout: number;

@@ -1,7 +1,7 @@
 export { bnsCodec } from "./bnscodec";
 export { bnsConnector } from "./bnsconnector";
 export { BnsConnection } from "./bnsconnection";
-export { bnsNonceTag, bnsSwapQueryTags } from "./tags";
+export { bnsNonceTag, bnsSwapQueryTag } from "./tags";
 export {
   // helpers
   ChainAddressPair,

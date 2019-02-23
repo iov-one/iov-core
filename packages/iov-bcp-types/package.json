@@ -18,12 +18,19 @@
     "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
     "lint": "cross-env-shell \"tslint -t verbose --project . ${TSLINT_FLAGS}\"",
     "prebuild": "yarn format",
-    "move-types": "shx rm -r ./types/* && shx mv build/types/* ./types",
+    "move-types": "shx rm -r ./types/* && shx mv build/types/* ./types && shx rm ./types/*.spec.d.ts",
     "build": "shx rm -rf ./build && tsc && yarn move-types",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
-    "test": "echo \"Info: no test specified\""
+    "test-node": "node jasmine-testrunner.js",
+    "test": "yarn build-or-skip && yarn test-node",
+    "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js",
+    "test-edge": "yarn pack-web && karma start --single-run --browsers Edge",
+    "test-firefox": "yarn pack-web && karma start --single-run --browsers Firefox",
+    "test-chrome": "yarn pack-web && karma start --single-run --browsers ChromeHeadless",
+    "test-safari": "yarn pack-web && karma start --single-run --browsers Safari"
   },
   "dependencies": {
+    "@iov/crypto": "^0.12.0",
     "@iov/encoding": "^0.12.0",
     "@iov/stream": "^0.12.0",
     "type-tagger": "^1.0.0",

@@ -206,7 +206,7 @@ function parseSwapCounterTx(
     hashCode,
     recipient: encodeBnsAddress(prefix, ensure(msg.recipient, "recipient")),
     timeout: asNumber(msg.timeout),
-    amount: (msg.amount || []).map(decodeAmount),
+    amounts: (msg.amount || []).map(decodeAmount),
   };
 }
 

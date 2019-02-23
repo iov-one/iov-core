@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.13.0
+
+* @iov/bcp-types: Add `AtomicSwapMerger`
+
+Breaking changes
+
+* @iov/bcp-types: Pluralize `.amounts` property and change to `Amount` array in
+  `SwapOfferTransaction`, `SwapCounterTransaction`, `SwapData`
+* @iov/bcp-types: Rename `BcpAtomicSwap` to `AtomicSwap`
+* @iov/bcp-types: Rename atomic swap query types to `AtomicSwapQuery`,
+  `AtomicSwapRecipientQuery`, `AtomicSwapSenderQuery`, `AtomicSwapIdQuery`,
+  `AtomicSwapHashlockQuery`, `isAtomicSwap*Query`.
+* @iov/bcp-types: Rename `bnsSwapQueryTags` to `bnsSwapQueryTag`
+
 ## 0.12.1
 
 * @iov/bns: Encode transaction fees

@@ -5,7 +5,8 @@ import {
   Address,
   Algorithm,
   Amount,
-  BcpSwapQuery,
+  AtomicSwap,
+  AtomicSwapQuery,
   BlockInfo,
   BlockInfoFailed,
   BlockInfoSucceeded,
@@ -35,7 +36,7 @@ import { asArray, firstEvent, lastValue, toListPromise } from "@iov/stream";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
-import { bnsNonceTag, bnsSwapQueryTags } from "./tags";
+import { bnsNonceTag, bnsSwapQueryTag } from "./tags";
 import {
   AddAddressToUsernameTx,
   isRegisterBlockchainTx,
@@ -45,6 +46,8 @@ import {
   RemoveAddressFromUsernameTx,
 } from "./types";
 import { encodeBnsAddress, identityToAddress } from "./util";
+
+const { toHex } = Encoding;
 
 function skipTests(): boolean {
   return !process.env.BNSD_ENABLED;
@@ -1693,7 +1696,7 @@ describe("BnsConnection", () => {
       kind: "bcp/swap_offer",
       creator: faucet,
       recipient: recipientAddr,
-      amount: [
+      amounts: [
         {
           quantity: "123000456000",
           fractionalDigits: 9,
@@ -1740,33 +1743,33 @@ describe("BnsConnection", () => {
     expect(loadedTransaction.recipient).toEqual(swapOfferTx.recipient);
 
     // ----  prepare queries
-    const querySwapId: BcpSwapQuery = { swapid: txResult as SwapIdBytes };
-    const querySwapSender: BcpSwapQuery = { sender: faucetAddr };
-    const querySwapRecipient: BcpSwapQuery = { recipient: recipientAddr };
-    const querySwapHash: BcpSwapQuery = { hashlock: swapOfferHash };
+    const querySwapId: AtomicSwapQuery = { swapid: txResult as SwapIdBytes };
+    const querySwapSender: AtomicSwapQuery = { sender: faucetAddr };
+    const querySwapRecipient: AtomicSwapQuery = { recipient: recipientAddr };
+    const querySwapHash: AtomicSwapQuery = { hashlock: swapOfferHash };
 
     // ----- connection.searchTx() -----
     // we should be able to find the transaction through quite a number of tag queries
 
-    const txById = (await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapId)] })).filter(
+    const txById = (await connection.searchTx({ tags: [bnsSwapQueryTag(querySwapId)] })).filter(
       isConfirmedTransaction,
     );
     expect(txById.length).toEqual(1);
     expect(txById[0].transactionId).toEqual(transactionId);
 
-    const txBySender = (await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapSender)] })).filter(
+    const txBySender = (await connection.searchTx({ tags: [bnsSwapQueryTag(querySwapSender)] })).filter(
       isConfirmedTransaction,
     );
     expect(txBySender.length).toBeGreaterThanOrEqual(1);
     expect(txBySender[txBySender.length - 1].transactionId).toEqual(transactionId);
 
     const txByRecipient = (await connection.searchTx({
-      tags: [bnsSwapQueryTags(querySwapRecipient)],
+      tags: [bnsSwapQueryTag(querySwapRecipient)],
     })).filter(isConfirmedTransaction);
     expect(txByRecipient.length).toEqual(1);
     expect(txByRecipient[0].transactionId).toEqual(transactionId);
 
-    const txByHash = (await connection.searchTx({ tags: [bnsSwapQueryTags(querySwapHash)] })).filter(
+    const txByHash = (await connection.searchTx({ tags: [bnsSwapQueryTag(querySwapHash)] })).filter(
       isConfirmedTransaction,
     );
     expect(txByHash.length).toEqual(1);
@@ -1787,9 +1790,9 @@ describe("BnsConnection", () => {
     expect(swapData.sender).toEqual(faucetAddr);
     expect(swapData.recipient).toEqual(recipientAddr);
     expect(swapData.timeout).toEqual(swapOfferTimeout);
-    expect(swapData.amount.length).toEqual(1);
-    expect(swapData.amount[0].quantity).toEqual("123000456000");
-    expect(swapData.amount[0].tokenTicker).toEqual(cash);
+    expect(swapData.amounts.length).toEqual(1);
+    expect(swapData.amounts[0].quantity).toEqual("123000456000");
+    expect(swapData.amounts[0].tokenTicker).toEqual(cash);
     expect(swapData.hashlock).toEqual(swapOfferHash);
 
     // we can get the swap by the recipient
@@ -1825,7 +1828,7 @@ describe("BnsConnection", () => {
       kind: "bcp/swap_offer",
       creator: creator,
       recipient: rcptAddr,
-      amount: [
+      amounts: [
         {
           quantity: "21000000000",
           fractionalDigits: 9,
@@ -1910,7 +1913,7 @@ describe("BnsConnection", () => {
 
     // then claim, offer, claim - 2 closed, 1 open
     {
-      const post = await claimSwap(connection, profile, faucet, id2, preimage1);
+      const post = await claimSwap(connection, profile, faucet, id2, preimage2);
       await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
     }
 
@@ -1941,19 +1944,29 @@ describe("BnsConnection", () => {
     expect(claim1.kind).toEqual(SwapState.Claimed);
     expect(claim1.data.id).toEqual(id1);
 
-    // validate liveView is correct
-    const vals = liveView.value();
-    expect(vals.length).toEqual(5);
-    expect(vals[0].kind).toEqual(SwapState.Open);
-    expect(vals[0].data.id).toEqual(id1);
-    expect(vals[1].kind).toEqual(SwapState.Open);
-    expect(vals[1].data.id).toEqual(id2);
-    expect(vals[2].kind).toEqual(SwapState.Claimed);
-    expect(vals[2].data.id).toEqual(id2);
-    expect(vals[3].kind).toEqual(SwapState.Open);
-    expect(vals[3].data.id).toEqual(id3);
-    expect(vals[4].kind).toEqual(SwapState.Claimed);
-    expect(vals[4].data.id).toEqual(id1);
+    // We have no guarantees which events are fired exactly,
+    // as it is a race condition if we get Open, Claimed or Claimed
+    // directly. So let's just check the last information per ID.
+    const latestEventPerId = new Map<string, AtomicSwap>();
+    for (const event of liveView.value()) {
+      latestEventPerId.set(toHex(event.data.id), event);
+    }
+
+    expect(latestEventPerId.size).toEqual(3);
+    expect(latestEventPerId.get(toHex(id1))).toEqual({
+      kind: SwapState.Claimed,
+      data: open1.data,
+      preimage: preimage1,
+    });
+    expect(latestEventPerId.get(toHex(id2))).toEqual({
+      kind: SwapState.Claimed,
+      data: open2.data,
+      preimage: preimage2,
+    });
+    expect(latestEventPerId.get(toHex(id3))).toEqual({
+      kind: SwapState.Open,
+      data: open3.data,
+    });
 
     connection.disconnect();
   });
