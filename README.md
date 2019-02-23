@@ -29,10 +29,11 @@ issues in the API.
 
 The following projects use IOV-Core (add yourself via a PR):
 
-| Project                                                 | Tech stack / JavaScript environments |
-|---------------------------------------------------------|--------------------------------------|
-| [TokenFinder](https://github.com/iov-one/token-finder)  | TypeScript / React / Browsers        |
-| [iov-faucet](https://github.com/iov-one/iov-faucet)     | TypeScript / NodeJS 10               |
+| Project                                                      | Tech stack / JavaScript environments |
+|--------------------------------------------------------------|--------------------------------------|
+| [TokenFinder](https://github.com/iov-one/token-finder)       | TypeScript / React / Browsers        |
+| [iov-faucet](https://github.com/iov-one/iov-faucet)          | TypeScript / NodeJS 10               |
+| [@iov/ledger-bns](https://github.com/iov-one/iov-ledger-bns) | TypeScript / NodeJS / Browsers       |
 
 ## Compatibility
 
