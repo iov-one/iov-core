@@ -16,7 +16,7 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp-types";
-import { ExtendedSecp256k1Signature } from "@iov/crypto";
+import { ExtendedSecp256k1Signature, Keccak256, Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
 import { constants } from "./constants";
@@ -27,6 +27,7 @@ import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
   decodeHexQuantityString,
+  encodeQuantity,
   fromBcpChainId,
   normalizeHex,
 } from "./utils";
@@ -46,7 +47,7 @@ export const ethereumCodec: TxCodec = {
   },
   parseBytes: (bytes: PostableBytes, chainId: ChainId): SignedTransaction => {
     const json = JSON.parse(Encoding.fromUtf8(bytes));
-    // signature
+    const nonce = decodeHexQuantityNonce(json.nonce);
     const chain: Eip155ChainId = {
       forkState: BlknumForkState.Forked,
       chainId: fromBcpChainId(chainId),
@@ -55,7 +56,20 @@ export const ethereumCodec: TxCodec = {
     const s = Encoding.fromHex(normalizeHex(json.s));
     const v = decodeHexQuantity(json.v);
     const recoveryParam = getRecoveryParam(chain, v);
-    const signature = new ExtendedSecp256k1Signature(r, s, recoveryParam).toFixedLength() as SignatureBytes;
+    const signature = new ExtendedSecp256k1Signature(r, s, recoveryParam);
+    const signatureBytes = signature.toFixedLength() as SignatureBytes;
+
+    const message = Serialization.serializeUnsignedEthSendTransaction(
+      nonce,
+      json.gasPrice,
+      json.gas,
+      json.to,
+      json.value,
+      json.input,
+      encodeQuantity(chain.chainId),
+    );
+    const messageHash = new Keccak256(message).digest();
+    const signerPubkey = Secp256k1.recoverPubkey(signature, messageHash) as PublicKeyBytes;
 
     let unsignedTransaction: SendTransaction;
     switch (json.type) {
@@ -66,9 +80,7 @@ export const ethereumCodec: TxCodec = {
             chainId: chainId,
             pubkey: {
               algo: Algorithm.Secp256k1,
-              // Only sender address available directly. We probably need to calculate
-              // this from the ECDSA signature and recovery parameter
-              data: new Uint8Array([]) as PublicKeyBytes,
+              data: signerPubkey,
             },
           },
           fee: {
@@ -93,13 +105,12 @@ export const ethereumCodec: TxCodec = {
     return {
       transaction: unsignedTransaction,
       primarySignature: {
-        nonce: decodeHexQuantityNonce(json.nonce),
-        // fake pubkey, we cannot know this
+        nonce: nonce,
         pubkey: {
           algo: Algorithm.Secp256k1,
-          data: new Uint8Array([]) as PublicKeyBytes,
+          data: signerPubkey,
         },
-        signature: signature,
+        signature: signatureBytes,
       },
       otherSignatures: [],
     };
