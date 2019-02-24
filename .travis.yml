@@ -43,14 +43,6 @@ matrix:
     - os: osx
       env: MODE=tests-firefox
 
-before_install:
-# add dependencies to compile node-hid (no prebuilt available)
-- |
-  if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-    sudo apt-get install -y libudev-dev libusb-1.0-0 libusb-1.0-0-dev
-    yarn global add node-gyp
-  fi
-
 # Override default install step
 install:
   - true
