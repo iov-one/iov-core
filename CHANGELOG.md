@@ -13,6 +13,8 @@ Breaking changes
   `AtomicSwapRecipientQuery`, `AtomicSwapSenderQuery`, `AtomicSwapIdQuery`,
   `AtomicSwapHashlockQuery`, `isAtomicSwap*Query`.
 * @iov/bcp-types: Rename `bnsSwapQueryTags` to `bnsSwapQueryTag`
+* @iov/ethereum: The `options` parameter of `ethereumConnector` does not allow
+  strings anymore. Use `{ wsUrl: myWebsocketUrl }` instead.
 * @iov/ledger-bns: Package removed from this monorepo and now available at
   https://github.com/iov-one/iov-ledger-bns
 
