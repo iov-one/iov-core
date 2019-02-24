@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.12.2
+
+* @iov/crypto: Add `Secp256k1.recoverPubkey` to recover pubkey from signature
+  and message
+
 ## 0.12.1
 
 * @iov/bns: Encode transaction fees

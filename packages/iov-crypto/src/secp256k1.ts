@@ -103,4 +103,11 @@ export class Secp256k1 {
       return false;
     }
   }
+
+  public static recoverPubkey(signature: ExtendedSecp256k1Signature, messageHash: Uint8Array): Uint8Array {
+    const signatureForElliptic = { r: Encoding.toHex(signature.r()), s: Encoding.toHex(signature.s()) };
+    const point = secp256k1.recoverPubKey(messageHash, signatureForElliptic, signature.recovery);
+    const keypair = secp256k1.keyFromPublic(point);
+    return Encoding.fromHex(keypair.getPublic(false, "hex"));
+  }
 }
