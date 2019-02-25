@@ -185,7 +185,8 @@ const testnetRinkeby: EthereumNetworkConfig = {
   waitForTx: 4000,
   scraper: {
     apiUrl: "https://api-rinkeby.etherscan.io/api",
-    address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
+    // recipient address with no known keypair
+    address: "0x7C14eF21979996A49551a16c7a96899e9C485eb4" as Address,
   },
   unusedPubkey: {
     algo: Algorithm.Secp256k1,
