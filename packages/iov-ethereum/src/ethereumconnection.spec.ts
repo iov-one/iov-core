@@ -755,6 +755,8 @@ describe("EthereumConnection", () => {
               throw new Error("Unexpected transaction type");
             }
             expect(event.transaction.recipient).toEqual(recipientAddress);
+            expect(event.transaction.creator).toEqual(sender);
+            expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
             if (events.length === 3) {
               // This assumes we get two transactions into one block
@@ -911,6 +913,8 @@ describe("EthereumConnection", () => {
               throw new Error("Unexpected transaction type");
             }
             expect(event.transaction.recipient).toEqual(recipientAddress);
+            expect(event.transaction.creator).toEqual(sender);
+            expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
             if (events.length === 3) {
               // This assumes we get two transactions into one block

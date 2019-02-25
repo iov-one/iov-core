@@ -6,6 +6,8 @@
   and message
 * @iov/ethereum: Implement pubkey recovery when parsing transaction in search
   by transaction ID.
+* @iov/ethereum: Transaction parsing now works for pre-EIP155 signatures
+* @iov/ethereum: Let listenTx/liveTx return signer's pubkey
 
 ## 0.12.1
 

@@ -34,7 +34,7 @@ import { constants } from "./constants";
 import { pubkeyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
-import { Parse, Scraper } from "./parse";
+import { Parse } from "./parse";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
@@ -609,17 +609,15 @@ export class EthereumConnection implements BcpConnection {
     if (responseBody.result === null) {
       return [];
     }
-    const transactions: any = [];
+    // tslint:disable-next-line:readonly-array
+    const transactions: ConfirmedTransaction[] = [];
     for (const tx of responseBody.result) {
       if (tx.isError === "0" && tx.txreceipt_status === "1") {
-        const transaction = Scraper.parseBytesTx(tx, this.myChainId);
         const transactionId = `0x${normalizeHex(tx.hash)}` as TransactionId;
-        transactions.push({
-          ...transaction,
-          height: Uint53.fromString(tx.blockNumber).toNumber(),
-          confirmations: tx.confirmations,
-          transactionId: transactionId,
-        });
+        // Do an extra query to the node as the scraper result does not contain the
+        // transaction signature, which we need for recovering the signer's pubkey.
+        const transaction = (await this.searchTransactionsById(transactionId))[0];
+        transactions.push(transaction);
       }
     }
     return transactions;
