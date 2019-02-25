@@ -139,23 +139,30 @@ describe("Ethereum encoding", () => {
       expect(getRecoveryParam(afterForkChain, 2709)).toEqual(0);
       expect(getRecoveryParam(afterForkChain, 2710)).toEqual(1);
     });
+
     it("error for invalid inputs", () => {
       // before eip155 implementation
       const previousForkChain: Eip155ChainId = { forkState: BlknumForkState.Before };
-      expect(() => getRecoveryParam(previousForkChain, 27)).toThrowError(
+      expect(() => getRecoveryParam(previousForkChain, 43)).toThrowError(
         /transaction not supported before eip155 implementation/,
       );
-      expect(() => getRecoveryParam(previousForkChain, 28)).toThrowError(
+      expect(() => getRecoveryParam(previousForkChain, 44)).toThrowError(
         /transaction not supported before eip155 implementation/,
       );
       // after eip155 implementation but chain id 0
       const invalidChain: Eip155ChainId = { forkState: BlknumForkState.Forked, chainId: 0 };
-      expect(() => getRecoveryParam(invalidChain, 27)).toThrowError(
+      expect(() => getRecoveryParam(invalidChain, 43)).toThrowError(
         /transaction not supported before eip155 implementation/,
       );
-      expect(() => getRecoveryParam(invalidChain, 28)).toThrowError(
+      expect(() => getRecoveryParam(invalidChain, 44)).toThrowError(
         /transaction not supported before eip155 implementation/,
       );
+    });
+
+    it("handles pre-eip255 signatures", () => {
+      const rinkeby: Eip155ChainId = { forkState: BlknumForkState.Forked, chainId: 4 };
+      expect(getRecoveryParam(rinkeby, 27)).toEqual(0);
+      expect(getRecoveryParam(rinkeby, 28)).toEqual(1);
     });
   });
 });

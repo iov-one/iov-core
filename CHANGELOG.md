@@ -6,6 +6,7 @@
   and message
 * @iov/ethereum: Implement pubkey recovery when parsing transaction in search
   by transaction ID.
+* @iov/ethereum: Transaction parsing now works for pre-EIP155 signatures
 
 ## 0.12.1
 
