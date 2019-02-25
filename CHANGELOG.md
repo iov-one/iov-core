@@ -8,6 +8,7 @@
   by transaction ID.
 * @iov/ethereum: Transaction parsing now works for pre-EIP155 signatures
 * @iov/ethereum: Let listenTx/liveTx return signer's pubkey
+* @iov/ethereum: Let `.getAccount` return undefined when balance is 0
 
 ## 0.12.1
 
