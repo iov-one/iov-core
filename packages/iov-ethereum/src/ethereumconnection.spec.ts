@@ -568,6 +568,7 @@ describe("EthereumConnection", () => {
       }
       expect(transaction.recipient).toEqual(recipientAddress);
       expect(transaction.amount.quantity).toEqual("445500");
+      expect(transaction.creator.pubkey).toEqual(mainIdentity.pubkey);
       connection.disconnect();
     }, 30_000);
 
