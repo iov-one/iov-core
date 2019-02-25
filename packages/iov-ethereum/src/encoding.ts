@@ -1,5 +1,7 @@
 import * as rlp from "rlp";
 
+import { Int53 } from "@iov/encoding";
+
 /**
  * Encode as RLP (Recursive Length Prefix)
  */
@@ -40,7 +42,14 @@ export function eip155V(chain: Eip155ChainId, recoveryParam: number): number {
 export function getRecoveryParam(chain: Eip155ChainId, v: number): number {
   if (chain.forkState === BlknumForkState.Forked && chain.chainId > 0) {
     // chain ID available
-    return v - chain.chainId * 2 - 35;
+    const recoveryParam = new Int53(v - chain.chainId * 2 - 35);
+    if (recoveryParam.toNumber() < 0 || recoveryParam.toNumber() > 3) {
+      throw new Error(
+        `Calculated recovery parameter must be one of 0, 1, 2, 3 but is ${recoveryParam}. ` +
+          `Got v: ${v} and chain ID: ${chain.chainId}`,
+      );
+    }
+    return recoveryParam.toNumber();
   }
   throw new Error("transaction not supported before eip155 implementation");
 }
