@@ -212,6 +212,15 @@ export class EthereumConnection implements BcpConnection {
     }
 
     // eth_getBalance always returns one result. Balance is 0x0 if account does not exist.
+    const ethBalance = Parse.ethereumAmount(decodeHexQuantityString(response.result));
+
+    // Assume the account does not exist when balance is 0. This can lead to cases
+    // where undefined is returned even if the account exists. Keep this as a
+    // workaround until we have a clever and fast way to check account existence.
+    // https://github.com/iov-one/iov-core/issues/676
+    if (ethBalance.quantity === "0") {
+      return undefined;
+    }
 
     const account: Account = {
       address: address,
@@ -219,7 +228,7 @@ export class EthereumConnection implements BcpConnection {
       balance: [
         {
           tokenName: constants.primaryTokenName,
-          ...Parse.ethereumAmount(decodeHexQuantityString(response.result)),
+          ...ethBalance,
         },
       ],
     };
