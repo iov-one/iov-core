@@ -4,7 +4,7 @@ import since = require("jasmine2-custom-message");
 import { Encoding } from "@iov/encoding";
 
 import { Secp256k1 } from "./secp256k1";
-import { Secp256k1Signature } from "./secp256k1signature";
+import { ExtendedSecp256k1Signature, Secp256k1Signature } from "./secp256k1signature";
 import { Sha256 } from "./sha";
 
 const { fromHex } = Encoding;
@@ -350,5 +350,30 @@ describe("Secp256k1", () => {
         .expect(calculatedSignature.toDer())
         .toEqual(row.signature);
     }
+  });
+
+  describe("recoverPubkey", () => {
+    it("can recover pubkey", async () => {
+      {
+        // Test data from https://github.com/ethereumjs/ethereumjs-util/blob/v6.1.0/test/index.js#L496
+        const expectedPubkey = (await Secp256k1.makeKeypair(fromHex("3c9229289a6125f7fdf1885a77bb12c37a8d3b4962d936f7e3084dece32a3ca1"))).pubkey;
+        const signature = new ExtendedSecp256k1Signature(fromHex("99e71a99cb2270b8cac5254f9e99b6210c6c10224a1579cf389ef88b20a1abe9"), fromHex("129ff05af364204442bdb53ab6f18a99ab48acc9326fa689f228040429e3ca66"), 0);
+        const messageHash = fromHex("82ff40c0a986c6a5cfad4ddf4c3aa6996f1a7837f9c398e17e5de5cbd5a12b28");
+        const pubkey = Secp256k1.recoverPubkey(signature, messageHash);
+        expect(pubkey).toEqual(expectedPubkey);
+      }
+      {
+        // Test data from https://github.com/randombit/botan/blob/2.9.0/src/tests/data/pubkey/ecdsa_key_recovery.vec
+        const expectedPubkeyX = "F3F8BB913AA68589A2C8C607A877AB05252ADBD963E1BE846DDEB8456942AEDC";
+        const expectedPubkeyY = "A2ED51F08CA3EF3DAC0A7504613D54CD539FC1B3CBC92453CD704B6A2D012B2C";
+        const expectedPubkey = fromHex(`04${expectedPubkeyX}${expectedPubkeyY}`);
+        const r = fromHex("E30F2E6A0F705F4FB5F8501BA79C7C0D3FAC847F1AD70B873E9797B17B89B390");
+        const s = fromHex("81F1A4457589F30D76AB9F89E748A68C8A94C30FE0BAC8FB5C0B54EA70BF6D2F");
+        const signature = new ExtendedSecp256k1Signature(r, s, 0);
+        const messageHash = fromHex("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+        const pubkey = Secp256k1.recoverPubkey(signature, messageHash);
+        expect(pubkey).toEqual(expectedPubkey);
+      }
+    });
   });
 });

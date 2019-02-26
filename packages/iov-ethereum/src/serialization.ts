@@ -9,6 +9,29 @@ import { encodeQuantity, encodeQuantityString, fromBcpChainId, normalizeHex } fr
 const { fromHex } = Encoding;
 
 export class Serialization {
+  public static serializeUnsignedEthSendTransaction(
+    nonce: Nonce,
+    gasPriceHex: string,
+    gasLimitHex: string,
+    recipientHex: string,
+    valueHex: string,
+    dataHex: string,
+    chainIdHex: string,
+  ): Uint8Array {
+    // Last 3 items are v, r and s values. Are present to encode full structure.
+    return toRlp([
+      Serialization.encodeNonce(nonce),
+      fromHex(normalizeHex(gasPriceHex)),
+      fromHex(normalizeHex(gasLimitHex)),
+      fromHex(normalizeHex(recipientHex)),
+      fromHex(normalizeHex(valueHex)),
+      fromHex(normalizeHex(dataHex)),
+      fromHex(normalizeHex(chainIdHex)),
+      new Uint8Array([]),
+      new Uint8Array([]),
+    ]);
+  }
+
   public static serializeUnsignedTransaction(unsigned: UnsignedTransaction, nonce: Nonce): Uint8Array {
     if (isSendTransaction(unsigned)) {
       const chainIdHex = encodeQuantity(fromBcpChainId(unsigned.creator.chainId));
@@ -27,20 +50,15 @@ export class Serialization {
         throw new Error("Invalid recipient address");
       }
 
-      const encodedNonce = Serialization.encodeNonce(nonce);
-
-      // Last 3 items are v, r and s values. Are present to encode full structure.
-      return toRlp([
-        encodedNonce,
-        fromHex(normalizeHex(gasPriceHex)),
-        fromHex(normalizeHex(gasLimitHex)),
-        fromHex(normalizeHex(unsigned.recipient)),
-        fromHex(normalizeHex(valueHex)),
-        fromHex(normalizeHex(dataHex)),
-        fromHex(normalizeHex(chainIdHex)),
-        new Uint8Array([]),
-        new Uint8Array([]),
-      ]);
+      return Serialization.serializeUnsignedEthSendTransaction(
+        nonce,
+        gasPriceHex,
+        gasLimitHex,
+        unsigned.recipient,
+        valueHex,
+        dataHex,
+        chainIdHex,
+      );
     } else {
       throw new Error("Unsupported kind of transaction");
     }

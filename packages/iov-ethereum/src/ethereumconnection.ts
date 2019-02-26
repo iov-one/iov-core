@@ -34,7 +34,7 @@ import { constants } from "./constants";
 import { pubkeyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
-import { Parse, Scraper } from "./parse";
+import { Parse } from "./parse";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
@@ -212,6 +212,15 @@ export class EthereumConnection implements BcpConnection {
     }
 
     // eth_getBalance always returns one result. Balance is 0x0 if account does not exist.
+    const ethBalance = Parse.ethereumAmount(decodeHexQuantityString(response.result));
+
+    // Assume the account does not exist when balance is 0. This can lead to cases
+    // where undefined is returned even if the account exists. Keep this as a
+    // workaround until we have a clever and fast way to check account existence.
+    // https://github.com/iov-one/iov-core/issues/676
+    if (ethBalance.quantity === "0") {
+      return undefined;
+    }
 
     const account: Account = {
       address: address,
@@ -219,7 +228,7 @@ export class EthereumConnection implements BcpConnection {
       balance: [
         {
           tokenName: constants.primaryTokenName,
-          ...Parse.ethereumAmount(decodeHexQuantityString(response.result)),
+          ...ethBalance,
         },
       ],
     };
@@ -609,17 +618,15 @@ export class EthereumConnection implements BcpConnection {
     if (responseBody.result === null) {
       return [];
     }
-    const transactions: any = [];
+    // tslint:disable-next-line:readonly-array
+    const transactions: ConfirmedTransaction[] = [];
     for (const tx of responseBody.result) {
       if (tx.isError === "0" && tx.txreceipt_status === "1") {
-        const transaction = Scraper.parseBytesTx(tx, this.myChainId);
         const transactionId = `0x${normalizeHex(tx.hash)}` as TransactionId;
-        transactions.push({
-          ...transaction,
-          height: Uint53.fromString(tx.blockNumber).toNumber(),
-          confirmations: tx.confirmations,
-          transactionId: transactionId,
-        });
+        // Do an extra query to the node as the scraper result does not contain the
+        // transaction signature, which we need for recovering the signer's pubkey.
+        const transaction = (await this.searchTransactionsById(transactionId))[0];
+        transactions.push(transaction);
       }
     }
     return transactions;

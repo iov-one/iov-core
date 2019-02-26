@@ -194,11 +194,9 @@ describe("EthereumConnection", () => {
     it("can get account from unused address", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(testConfig.base);
-      const account = await connection.getAccount({ address: testConfig.unusedAddress });
 
-      // At the moment we cannot distinguish between unused account and balance 0
-      expect(account).toBeDefined();
-      expect(account!.balance[0].quantity).toEqual("0");
+      const account = await connection.getAccount({ address: testConfig.unusedAddress });
+      expect(account).toBeUndefined();
 
       connection.disconnect();
     });
@@ -206,11 +204,9 @@ describe("EthereumConnection", () => {
     it("can get account from unused pubkey", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(testConfig.base);
-      const account = await connection.getAccount({ pubkey: testConfig.unusedPubkey });
 
-      // At the moment we cannot distinguish between unused account and balance 0
-      expect(account).toBeDefined();
-      expect(account!.balance[0].quantity).toEqual("0");
+      const account = await connection.getAccount({ pubkey: testConfig.unusedPubkey });
+      expect(account).toBeUndefined();
 
       connection.disconnect();
     });
@@ -472,25 +468,22 @@ describe("EthereumConnection", () => {
         const recipient = await randomAddress();
 
         // setup watching
-        const events = new Array<Account>();
+        const events = new Array<Account | undefined>();
         const subscription = connection.watchAccount({ address: recipient }).subscribe({
           next: event => {
-            if (!event) {
-              subscription.unsubscribe();
-              connection.disconnect();
-              done.fail("Received event undefined, which is not expected in Ethereum");
-              return;
-            }
             events.push(event);
 
-            expect(event.address).toEqual(recipient);
-            expect(event.balance.length).toEqual(1);
-            expect(event.balance[0].fractionalDigits).toEqual(18);
-            expect(event.balance[0].tokenTicker).toEqual("ETH");
+            if (event) {
+              expect(event.address).toEqual(recipient);
+              expect(event.balance.length).toEqual(1);
+              expect(event.balance[0].fractionalDigits).toEqual(18);
+              expect(event.balance[0].tokenTicker).toEqual("ETH");
+            }
 
             if (events.length === 2) {
-              expect(events[0].balance[0].quantity).toEqual("0");
-              expect(events[1].balance[0].quantity).toEqual(defaultAmount.quantity);
+              expect(events[0]).toBeUndefined();
+              expect(events[1]).toBeDefined();
+              expect(events[1]!.balance[0].quantity).toEqual(defaultAmount.quantity);
 
               subscription.unsubscribe();
               connection.disconnect();
@@ -568,6 +561,7 @@ describe("EthereumConnection", () => {
       }
       expect(transaction.recipient).toEqual(recipientAddress);
       expect(transaction.amount.quantity).toEqual("445500");
+      expect(transaction.creator.pubkey).toEqual(mainIdentity.pubkey);
       connection.disconnect();
     }, 30_000);
 
@@ -754,6 +748,8 @@ describe("EthereumConnection", () => {
               throw new Error("Unexpected transaction type");
             }
             expect(event.transaction.recipient).toEqual(recipientAddress);
+            expect(event.transaction.creator).toEqual(sender);
+            expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
             if (events.length === 3) {
               // This assumes we get two transactions into one block
@@ -910,6 +906,8 @@ describe("EthereumConnection", () => {
               throw new Error("Unexpected transaction type");
             }
             expect(event.transaction.recipient).toEqual(recipientAddress);
+            expect(event.transaction.creator).toEqual(sender);
+            expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
             if (events.length === 3) {
               // This assumes we get two transactions into one block

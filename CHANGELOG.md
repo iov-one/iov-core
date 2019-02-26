@@ -18,6 +18,16 @@ Breaking changes
 * @iov/ledger-bns: Package removed from this monorepo and now available at
   https://github.com/iov-one/iov-ledger-bns
 
+## 0.12.2
+
+* @iov/crypto: Add `Secp256k1.recoverPubkey` to recover pubkey from signature
+  and message
+* @iov/ethereum: Implement pubkey recovery when parsing transaction in search
+  by transaction ID.
+* @iov/ethereum: Transaction parsing now works for pre-EIP155 signatures
+* @iov/ethereum: Let listenTx/liveTx return signer's pubkey
+* @iov/ethereum: Let `.getAccount` return undefined when balance is 0
+
 ## 0.12.1
 
 * @iov/bns: Encode transaction fees

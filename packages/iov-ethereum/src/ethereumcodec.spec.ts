@@ -13,6 +13,8 @@ import { Encoding, Int53 } from "@iov/encoding";
 
 import { ethereumCodec } from "./ethereumcodec";
 
+const { fromHex } = Encoding;
+
 describe("ethereumCodec", () => {
   describe("parseBytes", () => {
     it("works", () => {
@@ -32,6 +34,9 @@ describe("ethereumCodec", () => {
         v: "0x2b",
         value: "0x53177c",
       };
+      const expectedPubkey = fromHex(
+        "041d4c015b00cbd914e280b871d3c6ae2a047ca650d3ecea4b5246bb3036d4d74960b7feb09068164d2b82f1c7df9e95839b29ae38e90d60578b2318a54e108cf8",
+      ) as PublicKeyBytes;
 
       const postableBytes = Encoding.toUtf8(
         JSON.stringify({ ...rawGetTransactionByHashResult, type: 0 }),
@@ -43,7 +48,7 @@ describe("ethereumCodec", () => {
             chainId: "ethereum-eip155-4" as ChainId,
             pubkey: {
               algo: Algorithm.Secp256k1,
-              data: new Uint8Array([]) as PublicKeyBytes,
+              data: expectedPubkey,
             },
           },
           fee: {
@@ -63,7 +68,7 @@ describe("ethereumCodec", () => {
           nonce: new Int53(225) as Nonce,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: new Uint8Array([]) as PublicKeyBytes,
+            data: expectedPubkey,
           },
           signature: new ExtendedSecp256k1Signature(
             Encoding.fromHex("b9299dab50b3cddcaecd64b29bfbd5cd30fac1a1adea1b359a13c4e5171492a6"),
