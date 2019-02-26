@@ -1,5 +1,6 @@
 import { As } from "type-tagger";
 import { Int53 } from "@iov/encoding";
+import { Preimage } from "./atomicswaptypes";
 export declare enum Algorithm {
     Ed25519 = "ed25519",
     Secp256k1 = "secp256k1"
@@ -148,7 +149,7 @@ export interface SwapOfferTransaction extends UnsignedTransaction {
 }
 export interface SwapClaimTransaction extends UnsignedTransaction {
     readonly kind: "bcp/swap_claim";
-    readonly preimage: Uint8Array;
+    readonly preimage: Preimage;
     readonly swapId: SwapIdBytes;
 }
 export interface SwapTimeoutTransaction extends UnsignedTransaction {

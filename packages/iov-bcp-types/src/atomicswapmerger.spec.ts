@@ -2,7 +2,7 @@ import { Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
 import { AtomicSwapMerger } from "./atomicswapmerger";
-import { ClaimedSwap, OpenSwap, SwapState } from "./atomicswaptypes";
+import { ClaimedSwap, OpenSwap, Preimage, SwapState } from "./atomicswaptypes";
 import {
   Address,
   Algorithm,
@@ -31,7 +31,7 @@ describe("AtomicSwapMerger", () => {
       data: fromHex("97adfd82b8e6a93368361c5b9256a85bbfb8ed7421372bf7d3fc54498c8ea730") as PublicKeyBytes,
     };
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
-    const preimage = fromHex("00110011");
+    const preimage = fromHex("00110011") as Preimage;
     const hash = new Sha256(preimage).digest();
     const swapId = fromHex("aabbcc") as SwapIdBytes;
     const open: OpenSwap = {
@@ -79,8 +79,8 @@ describe("AtomicSwapMerger", () => {
     };
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
 
-    const preimageA = fromHex("00110011");
-    const preimageB = fromHex("aabbeeff");
+    const preimageA = fromHex("00110011") as Preimage;
+    const preimageB = fromHex("aabbeeff") as Preimage;
     const hashA = new Sha256(preimageA).digest();
     const hashB = new Sha256(preimageB).digest();
     const swapIdA = fromHex("aabbcc") as SwapIdBytes;
@@ -187,7 +187,7 @@ describe("AtomicSwapMerger", () => {
       data: fromHex("97adfd82b8e6a93368361c5b9256a85bbfb8ed7421372bf7d3fc54498c8ea730") as PublicKeyBytes,
     };
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
-    const preimage = fromHex("00110011");
+    const preimage = fromHex("00110011") as Preimage;
     const hash = new Sha256(preimage).digest();
     const swapId = fromHex("aabbcc") as SwapIdBytes;
     const open: OpenSwap = {

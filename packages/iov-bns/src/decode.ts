@@ -7,6 +7,7 @@ import {
   ChainId,
   FullSignature,
   Nonce,
+  Preimage,
   SendTransaction,
   SignedTransaction,
   SwapClaimTransaction,
@@ -219,7 +220,7 @@ function parseSwapClaimTx(
     ...base,
     kind: "bcp/swap_claim",
     swapId: ensure(msg.escrowId) as SwapIdBytes,
-    preimage: ensure(tx.preimage),
+    preimage: ensure(tx.preimage) as Preimage,
   };
 }
 

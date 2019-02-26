@@ -8,6 +8,7 @@ import {
   isBlockInfoSucceeded,
   isFailedTransaction,
   isSwapOfferTransaction,
+  Preimage,
   PublicIdentity,
   SwapClaimTransaction,
   SwapOfferTransaction,
@@ -87,7 +88,7 @@ class Actor {
   private readonly bnsConnection: BcpAtomicSwapConnection;
   private readonly bcpConnection: BcpAtomicSwapConnection;
   // tslint:disable-next-line:readonly-keyword
-  private preimage: Uint8Array | undefined;
+  private preimage: Preimage | undefined;
 
   constructor(data: ActorData) {
     this.mainWalletId = data.mainWalletId;
@@ -116,7 +117,7 @@ class Actor {
 
   public async generatePreimage(): Promise<void> {
     // tslint:disable-next-line:no-object-mutation
-    this.preimage = await Random.getBytes(32);
+    this.preimage = (await Random.getBytes(32)) as Preimage;
   }
 
   public async sendSwapOfferOnBns(recipient: Address, amount: Amount): Promise<void> {

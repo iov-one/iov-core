@@ -1,3 +1,4 @@
+import { As } from "type-tagger";
 import { Stream } from "xstream";
 
 import { BcpConnection } from "./connection";
@@ -30,11 +31,13 @@ export interface OpenSwap {
   readonly data: SwapData;
 }
 
+export type Preimage = Uint8Array & As<"preimage">;
+
 // ClosedSwap is returned once the swap has been claimed, exposing the preimage that was used to claim it
 export interface ClaimedSwap {
   readonly kind: SwapState.Claimed;
   readonly data: SwapData;
-  readonly preimage: Uint8Array;
+  readonly preimage: Preimage;
 }
 
 // ExpiredSwap is an offer that timed out without being claimed

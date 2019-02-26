@@ -5,6 +5,7 @@ import {
   ChainId,
   FullSignature,
   Nonce,
+  Preimage,
   PublicKeyBundle,
   PublicKeyBytes,
   SendTransaction,
@@ -197,7 +198,7 @@ const swapClaimMsg: SwapClaimTransaction = {
     pubkey: pubJson,
   },
   kind: "bcp/swap_claim",
-  preimage: fromHex("00000000fffffffffff000000000"),
+  preimage: fromHex("00000000fffffffffff000000000") as Preimage,
   swapId: fromHex("1234") as SwapIdBytes,
 };
 export const swapClaimTxJson: SignedTransaction = {

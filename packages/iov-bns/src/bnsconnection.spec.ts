@@ -18,6 +18,7 @@ import {
   isSendTransaction,
   isSwapOfferTransaction,
   PostTxResponse,
+  Preimage,
   PublicIdentity,
   PublicKeyBundle,
   PublicKeyBytes,
@@ -1848,7 +1849,7 @@ describe("BnsConnection", () => {
     profile: UserProfile,
     creator: PublicIdentity,
     swapId: SwapIdBytes,
-    preimage: Uint8Array,
+    preimage: Preimage,
   ): Promise<PostTxResponse> => {
     // construct a swapOfferTx, sign and post to the chain
     const swapClaimTx: SwapClaimTransaction = {
@@ -1871,11 +1872,11 @@ describe("BnsConnection", () => {
     const recipientAddr = await randomBnsAddress();
 
     // create the preimages for the three swaps
-    const preimage1 = Encoding.toAscii("the first swap is easy");
+    const preimage1 = Encoding.toAscii("the first swap is easy") as Preimage;
     const hash1 = new Sha256(preimage1).digest();
-    const preimage2 = Encoding.toAscii("ze 2nd iS l337 !@!");
+    const preimage2 = Encoding.toAscii("ze 2nd iS l337 !@!") as Preimage;
     const hash2 = new Sha256(preimage2).digest();
-    const preimage3 = Encoding.toAscii("and this one is a gift.");
+    const preimage3 = Encoding.toAscii("and this one is a gift.") as Preimage;
     const hash3 = new Sha256(preimage3).digest();
 
     // nothing to start with
