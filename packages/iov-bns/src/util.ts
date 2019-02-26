@@ -94,11 +94,6 @@ export type HashId = Uint8Array & As<"hashid">;
 
 const hashIdentifierPrefix = Encoding.toAscii("hash/sha256/");
 
-export function preimageIdentifier(preimage: Uint8Array): HashId {
-  const hash = new Sha256(preimage).digest();
-  return hashIdentifier(hash);
-}
-
 export function hashIdentifier(hash: Uint8Array): HashId {
   return Uint8Array.from([...hashIdentifierPrefix, ...hash]) as HashId;
 }
