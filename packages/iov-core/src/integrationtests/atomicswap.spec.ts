@@ -17,7 +17,7 @@ import {
   TokenTicker,
 } from "@iov/bcp-types";
 import { bnsConnector, bnsSwapQueryTag } from "@iov/bns";
-import { Sha256, Slip10RawIndex } from "@iov/crypto";
+import { Slip10RawIndex } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol";
 import { firstEvent } from "@iov/stream";
 
@@ -128,7 +128,7 @@ class Actor {
       memo: "Take this cash",
       recipient: recipient,
       timeout: (await this.bnsConnection.height()) + 100,
-      hash: new Sha256(this.preimage!).digest(),
+      hash: AtomicSwapHelpers.hashPreimage(this.preimage!),
       amounts: [amount],
     };
     const post = await this.signer.signAndPost(offer, this.mainWalletId);

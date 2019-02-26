@@ -6,6 +6,7 @@ import {
   Algorithm,
   Amount,
   AtomicSwap,
+  AtomicSwapHelpers,
   AtomicSwapQuery,
   BlockInfo,
   BlockInfoFailed,
@@ -1873,11 +1874,11 @@ describe("BnsConnection", () => {
 
     // create the preimages for the three swaps
     const preimage1 = Encoding.toAscii("the first swap is easy") as Preimage;
-    const hash1 = new Sha256(preimage1).digest();
+    const hash1 = AtomicSwapHelpers.hashPreimage(preimage1);
     const preimage2 = Encoding.toAscii("ze 2nd iS l337 !@!") as Preimage;
-    const hash2 = new Sha256(preimage2).digest();
+    const hash2 = AtomicSwapHelpers.hashPreimage(preimage2);
     const preimage3 = Encoding.toAscii("and this one is a gift.") as Preimage;
-    const hash3 = new Sha256(preimage3).digest();
+    const hash3 = AtomicSwapHelpers.hashPreimage(preimage3);
 
     // nothing to start with
     const rcptQuery = { recipient: recipientAddr };
