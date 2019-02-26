@@ -8,14 +8,14 @@ import {
   ChainId,
   ConfirmedTransaction,
   isSwapClaimTransaction,
-  isSwapCounterTransaction,
+  isSwapOfferTransaction,
   isSwapTimeoutTransaction,
   Nonce,
   PublicIdentity,
   PublicKeyBundle,
   SignableBytes,
   SwapClaimTransaction,
-  SwapCounterTransaction,
+  SwapOfferTransaction,
   SwapTimeoutTransaction,
   TransactionId,
 } from "@iov/bcp-types";
@@ -121,11 +121,11 @@ export function indexKey(bucket: string, index: string): Uint8Array {
   return Encoding.toAscii(`_i.${bucket}_${index}:`);
 }
 
-export function isConfirmedWithSwapCounterTransaction(
+export function isConfirmedWithSwapOfferTransaction(
   tx: ConfirmedTransaction,
-): tx is ConfirmedTransaction<SwapCounterTransaction> {
+): tx is ConfirmedTransaction<SwapOfferTransaction> {
   const unsigned = tx.transaction;
-  return isSwapCounterTransaction(unsigned);
+  return isSwapOfferTransaction(unsigned);
 }
 
 export function isConfirmedWithSwapClaimOrTimeoutTransaction(

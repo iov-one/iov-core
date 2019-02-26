@@ -10,8 +10,8 @@ import {
   SendTransaction,
   SignedTransaction,
   SwapClaimTransaction,
-  SwapCounterTransaction,
   SwapIdBytes,
+  SwapOfferTransaction,
   SwapTimeoutTransaction,
   TokenTicker,
   UnsignedTransaction,
@@ -150,9 +150,7 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): Unsi
   } else if (tx.sendMsg) {
     return parseSendTransaction(base, tx.sendMsg);
   } else if (tx.createEscrowMsg) {
-    // weave does not differentiate between swap offer and swap counter transactions,
-    // so everything that comes from the blockchain is interpreted as a swap counter.
-    return parseSwapCounterTx(base, tx.createEscrowMsg);
+    return parseSwapOfferTx(base, tx.createEscrowMsg);
   } else if (tx.releaseEscrowMsg) {
     return parseSwapClaimTx(base, tx.releaseEscrowMsg, tx);
   } else if (tx.returnEscrowMsg) {
@@ -193,10 +191,10 @@ function parseSendTransaction(base: UnsignedTransaction, msg: codecImpl.cash.ISe
   };
 }
 
-function parseSwapCounterTx(
+function parseSwapOfferTx(
   base: UnsignedTransaction,
   msg: codecImpl.escrow.ICreateEscrowMsg,
-): SwapCounterTransaction {
+): SwapOfferTransaction {
   const hashIdentifier = ensure(msg.arbiter, "arbiter");
   if (!isHashIdentifier(hashIdentifier)) {
     throw new Error("escrow not controlled by hashlock");
@@ -204,7 +202,7 @@ function parseSwapCounterTx(
   const prefix = addressPrefix(base.creator.chainId);
   return {
     ...base,
-    kind: "bcp/swap_counter",
+    kind: "bcp/swap_offer",
     hash: hashFromIdentifier(hashIdentifier),
     recipient: encodeBnsAddress(prefix, ensure(msg.recipient, "recipient")),
     timeout: asNumber(msg.timeout),

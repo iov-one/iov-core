@@ -7,10 +7,9 @@ import {
   isBlockInfoPending,
   isBlockInfoSucceeded,
   isFailedTransaction,
-  isSwapCounterTransaction,
+  isSwapOfferTransaction,
   PublicIdentity,
   SwapClaimTransaction,
-  SwapCounterTransaction,
   SwapOfferTransaction,
   SwapState,
   TokenTicker,
@@ -147,8 +146,8 @@ class Actor {
     if (isFailedTransaction(offerReview)) {
       throw new Error("Transaction must not fail");
     }
-    if (!isSwapCounterTransaction(offerReview.transaction)) {
-      throw new Error("Expected swap counter type");
+    if (!isSwapOfferTransaction(offerReview.transaction)) {
+      throw new Error("Expected swap offer type");
     }
 
     if (offerReview.transaction.recipient !== this.bnsAddress) {
@@ -160,9 +159,9 @@ class Actor {
     expect(offerReview.transaction.amounts[0].fractionalDigits).toEqual(9);
     expect(offerReview.transaction.amounts[0].tokenTicker).toEqual("CASH");
 
-    // sent counter on BCP
-    const counter: SwapCounterTransaction = {
-      kind: "bcp/swap_counter",
+    // sent counter offer on BCP
+    const counterOffer: SwapOfferTransaction = {
+      kind: "bcp/swap_offer",
       creator: this.bcpIdentity,
       amounts: [amount],
       recipient: recipient,
@@ -171,7 +170,7 @@ class Actor {
       hash: offerReview.transaction.hash,
     };
 
-    const post = await this.signer.signAndPost(counter, this.mainWalletId);
+    const post = await this.signer.signAndPost(counterOffer, this.mainWalletId);
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo)) {
       throw new Error("Transaction failed");

@@ -11,7 +11,7 @@ import {
   signedTxBin,
   signedTxJson,
   swapClaimTxJson,
-  swapCounterTxJson,
+  swapOfferTxJson,
   swapTimeoutTxJson,
 } from "./testdata.spec";
 
@@ -54,7 +54,7 @@ describe("bnscodec", () => {
     const transactionsToBeVerified: ReadonlyArray<SignedTransaction> = [
       signedTxJson,
       randomTxJson,
-      swapCounterTxJson,
+      swapOfferTxJson,
       swapClaimTxJson,
       swapTimeoutTxJson,
     ];

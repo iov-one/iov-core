@@ -11,8 +11,8 @@ import {
   SignatureBytes,
   SignedTransaction,
   SwapClaimTransaction,
-  SwapCounterTransaction,
   SwapIdBytes,
+  SwapOfferTransaction,
   SwapTimeoutTransaction,
   TokenTicker,
 } from "@iov/bcp-types";
@@ -167,12 +167,12 @@ export const randomTxJson: SignedTransaction = {
 
 // recipient address generated using https://github.com/nym-zone/bech32
 // bech32 -e -h tiov 123485cb38847474fe9febfd56ab67e14bcd56f3
-const swapCounterMsg: SwapCounterTransaction = {
+const swapOfferTransaction: SwapOfferTransaction = {
   creator: {
     chainId: "swap-a-doo" as ChainId,
     pubkey: pubJson,
   },
-  kind: "bcp/swap_counter",
+  kind: "bcp/swap_offer",
   recipient: "tiov1zg6gtjecs368fl5la074d2m8u99u64hnhhlprg" as Address,
   timeout: 7890,
   amounts: [
@@ -184,8 +184,9 @@ const swapCounterMsg: SwapCounterTransaction = {
   ],
   hash: fromHex("1122334455aabbccddee"),
 };
-export const swapCounterTxJson: SignedTransaction = {
-  transaction: swapCounterMsg,
+
+export const swapOfferTxJson: SignedTransaction = {
+  transaction: swapOfferTransaction,
   primarySignature: sig2,
   otherSignatures: [],
 };

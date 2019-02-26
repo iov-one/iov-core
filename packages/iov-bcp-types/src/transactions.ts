@@ -207,6 +207,7 @@ export interface SendTransaction extends UnsignedTransaction {
   readonly memo?: string;
 }
 
+/** A swap offer or a counter offer */
 export interface SwapOfferTransaction extends UnsignedTransaction {
   readonly kind: "bcp/swap_offer";
   readonly amounts: ReadonlyArray<Amount>;
@@ -218,17 +219,6 @@ export interface SwapOfferTransaction extends UnsignedTransaction {
    *
    * This is a SHA256 hash until we have a way to specifiy the hashing algorithm.
    */
-  readonly hash: Uint8Array;
-  readonly memo?: string;
-}
-
-export interface SwapCounterTransaction extends UnsignedTransaction {
-  readonly kind: "bcp/swap_counter";
-  readonly amounts: ReadonlyArray<Amount>;
-  readonly recipient: Address;
-  /** absolute block height at which the counter offer times out */
-  readonly timeout: number;
-  /** Copied from the swap offer transaction */
   readonly hash: Uint8Array;
   readonly memo?: string;
 }
@@ -252,12 +242,6 @@ export function isSwapOfferTransaction(
   transaction: UnsignedTransaction,
 ): transaction is SwapOfferTransaction {
   return (transaction as SwapOfferTransaction).kind === "bcp/swap_offer";
-}
-
-export function isSwapCounterTransaction(
-  transaction: UnsignedTransaction,
-): transaction is SwapCounterTransaction {
-  return (transaction as SwapCounterTransaction).kind === "bcp/swap_counter";
 }
 
 export function isSwapClaimTransaction(

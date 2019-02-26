@@ -131,6 +131,7 @@ export interface SendTransaction extends UnsignedTransaction {
     readonly recipient: Address;
     readonly memo?: string;
 }
+/** A swap offer or a counter offer */
 export interface SwapOfferTransaction extends UnsignedTransaction {
     readonly kind: "bcp/swap_offer";
     readonly amounts: ReadonlyArray<Amount>;
@@ -145,16 +146,6 @@ export interface SwapOfferTransaction extends UnsignedTransaction {
     readonly hash: Uint8Array;
     readonly memo?: string;
 }
-export interface SwapCounterTransaction extends UnsignedTransaction {
-    readonly kind: "bcp/swap_counter";
-    readonly amounts: ReadonlyArray<Amount>;
-    readonly recipient: Address;
-    /** absolute block height at which the counter offer times out */
-    readonly timeout: number;
-    /** Copied from the swap offer transaction */
-    readonly hash: Uint8Array;
-    readonly memo?: string;
-}
 export interface SwapClaimTransaction extends UnsignedTransaction {
     readonly kind: "bcp/swap_claim";
     readonly preimage: Uint8Array;
@@ -166,6 +157,5 @@ export interface SwapTimeoutTransaction extends UnsignedTransaction {
 }
 export declare function isSendTransaction(transaction: UnsignedTransaction): transaction is SendTransaction;
 export declare function isSwapOfferTransaction(transaction: UnsignedTransaction): transaction is SwapOfferTransaction;
-export declare function isSwapCounterTransaction(transaction: UnsignedTransaction): transaction is SwapCounterTransaction;
 export declare function isSwapClaimTransaction(transaction: UnsignedTransaction): transaction is SwapClaimTransaction;
 export declare function isSwapTimeoutTransaction(transaction: UnsignedTransaction): transaction is SwapTimeoutTransaction;

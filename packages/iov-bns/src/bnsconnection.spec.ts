@@ -16,7 +16,7 @@ import {
   isConfirmedTransaction,
   isFailedTransaction,
   isSendTransaction,
-  isSwapCounterTransaction,
+  isSwapOfferTransaction,
   PostTxResponse,
   PublicIdentity,
   PublicKeyBundle,
@@ -1734,10 +1734,8 @@ describe("BnsConnection", () => {
     // make sure it also stored a result
     expect(loaded.result).toEqual(txResult);
     expect(loaded.height).toEqual(txHeight);
-    // we never write the offer (with preimage) to a chain, only convert it to a SwapCounterTx
-    // which only has the hashed data, then commit it (thus the different kind is expected)
     const loadedTransaction = loaded.transaction;
-    if (!isSwapCounterTransaction(loadedTransaction)) {
+    if (!isSwapOfferTransaction(loadedTransaction)) {
       throw new Error("Wrong transaction type");
     }
     expect(loadedTransaction.recipient).toEqual(swapOfferTx.recipient);

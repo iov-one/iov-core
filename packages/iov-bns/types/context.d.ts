@@ -1,4 +1,4 @@
-import { Address, BcpCoin, BcpTicker, ChainId, ConfirmedTransaction, OpenSwap, SwapCounterTransaction } from "@iov/bcp-types";
+import { Address, BcpCoin, BcpTicker, ChainId, ConfirmedTransaction, OpenSwap, SwapOfferTransaction } from "@iov/bcp-types";
 import * as codecImpl from "./generated/codecimpl";
 import { Keyed } from "./types";
 /**
@@ -22,6 +22,6 @@ export declare class Context {
     coin(coin: codecImpl.x.ICoin): BcpCoin;
     /** Decode within a Context to have the chain ID available */
     decodeOpenSwap(swap: codecImpl.escrow.Escrow & Keyed): OpenSwap;
-    swapOfferFromTx(tx: ConfirmedTransaction<SwapCounterTransaction>): OpenSwap;
+    swapOfferFromTx(confirmed: ConfirmedTransaction<SwapOfferTransaction>): OpenSwap;
     private amountToCoin;
 }

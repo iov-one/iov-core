@@ -6,8 +6,8 @@ import {
   ChainId,
   ConfirmedTransaction,
   OpenSwap,
-  SwapCounterTransaction,
   SwapIdBytes,
+  SwapOfferTransaction,
   SwapState,
 } from "@iov/bcp-types";
 
@@ -79,18 +79,18 @@ export class Context {
     };
   }
 
-  public swapOfferFromTx(tx: ConfirmedTransaction<SwapCounterTransaction>): OpenSwap {
-    const counterTransaction: SwapCounterTransaction = tx.transaction;
+  public swapOfferFromTx(confirmed: ConfirmedTransaction<SwapOfferTransaction>): OpenSwap {
+    const transaction = confirmed.transaction;
     return {
       kind: SwapState.Open,
       data: {
-        id: tx.result as SwapIdBytes,
-        sender: identityToAddress(counterTransaction.creator),
-        recipient: counterTransaction.recipient,
-        hash: counterTransaction.hash,
-        amounts: counterTransaction.amounts,
-        timeout: counterTransaction.timeout,
-        memo: counterTransaction.memo,
+        id: confirmed.result as SwapIdBytes,
+        sender: identityToAddress(transaction.creator),
+        recipient: transaction.recipient,
+        hash: transaction.hash,
+        amounts: transaction.amounts,
+        timeout: transaction.timeout,
+        memo: transaction.memo,
       },
     };
   }

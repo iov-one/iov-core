@@ -1,5 +1,5 @@
 import { As } from "type-tagger";
-import { Address, BcpTxQuery, ChainId, ConfirmedTransaction, Nonce, PublicIdentity, SignableBytes, SwapClaimTransaction, SwapCounterTransaction, SwapTimeoutTransaction, TransactionId } from "@iov/bcp-types";
+import { Address, BcpTxQuery, ChainId, ConfirmedTransaction, Nonce, PublicIdentity, SignableBytes, SwapClaimTransaction, SwapOfferTransaction, SwapTimeoutTransaction, TransactionId } from "@iov/bcp-types";
 import { QueryString } from "@iov/tendermint-rpc";
 export declare function addressPrefix(chainId: ChainId): "iov" | "tiov";
 /** Encodes raw bytes into a bech32 address */
@@ -21,7 +21,7 @@ export declare function isHashIdentifier(ident: Uint8Array): ident is HashId;
 export declare function hashFromIdentifier(ident: HashId): Uint8Array;
 export declare function bucketKey(bucket: string): Uint8Array;
 export declare function indexKey(bucket: string, index: string): Uint8Array;
-export declare function isConfirmedWithSwapCounterTransaction(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapCounterTransaction>;
+export declare function isConfirmedWithSwapOfferTransaction(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapOfferTransaction>;
 export declare function isConfirmedWithSwapClaimOrTimeoutTransaction(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapClaimTransaction | SwapTimeoutTransaction>;
 export declare function buildTxQuery(query: BcpTxQuery): QueryString;
 export declare function buildTxHashQuery(id: TransactionId): QueryString;
