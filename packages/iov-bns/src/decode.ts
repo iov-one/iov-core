@@ -7,11 +7,12 @@ import {
   ChainId,
   FullSignature,
   Nonce,
+  Preimage,
   SendTransaction,
   SignedTransaction,
   SwapClaimTransaction,
-  SwapCounterTransaction,
   SwapIdBytes,
+  SwapOfferTransaction,
   SwapTimeoutTransaction,
   TokenTicker,
   UnsignedTransaction,
@@ -33,7 +34,7 @@ import {
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
 } from "./types";
-import { addressPrefix, encodeBnsAddress, isHashIdentifier } from "./util";
+import { addressPrefix, encodeBnsAddress, hashFromIdentifier, isHashIdentifier } from "./util";
 
 const { fromUtf8 } = Encoding;
 
@@ -150,7 +151,7 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): Unsi
   } else if (tx.sendMsg) {
     return parseSendTransaction(base, tx.sendMsg);
   } else if (tx.createEscrowMsg) {
-    return parseSwapCounterTx(base, tx.createEscrowMsg);
+    return parseSwapOfferTx(base, tx.createEscrowMsg);
   } else if (tx.releaseEscrowMsg) {
     return parseSwapClaimTx(base, tx.releaseEscrowMsg, tx);
   } else if (tx.returnEscrowMsg) {
@@ -191,19 +192,19 @@ function parseSendTransaction(base: UnsignedTransaction, msg: codecImpl.cash.ISe
   };
 }
 
-function parseSwapCounterTx(
+function parseSwapOfferTx(
   base: UnsignedTransaction,
   msg: codecImpl.escrow.ICreateEscrowMsg,
-): SwapCounterTransaction {
-  const hashCode = ensure(msg.arbiter, "arbiter");
-  if (!isHashIdentifier(hashCode)) {
+): SwapOfferTransaction {
+  const hashIdentifier = ensure(msg.arbiter, "arbiter");
+  if (!isHashIdentifier(hashIdentifier)) {
     throw new Error("escrow not controlled by hashlock");
   }
   const prefix = addressPrefix(base.creator.chainId);
   return {
     ...base,
-    kind: "bcp/swap_counter",
-    hashCode,
+    kind: "bcp/swap_offer",
+    hash: hashFromIdentifier(hashIdentifier),
     recipient: encodeBnsAddress(prefix, ensure(msg.recipient, "recipient")),
     timeout: asNumber(msg.timeout),
     amounts: (msg.amount || []).map(decodeAmount),
@@ -219,7 +220,7 @@ function parseSwapClaimTx(
     ...base,
     kind: "bcp/swap_claim",
     swapId: ensure(msg.escrowId) as SwapIdBytes,
-    preimage: ensure(tx.preimage),
+    preimage: ensure(tx.preimage) as Preimage,
   };
 }
 

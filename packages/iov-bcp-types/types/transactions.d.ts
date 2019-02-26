@@ -1,5 +1,6 @@
 import { As } from "type-tagger";
 import { Int53 } from "@iov/encoding";
+import { Preimage } from "./atomicswaptypes";
 export declare enum Algorithm {
     Ed25519 = "ed25519",
     Secp256k1 = "secp256k1"
@@ -131,26 +132,24 @@ export interface SendTransaction extends UnsignedTransaction {
     readonly recipient: Address;
     readonly memo?: string;
 }
+/** A swap offer or a counter offer */
 export interface SwapOfferTransaction extends UnsignedTransaction {
     readonly kind: "bcp/swap_offer";
     readonly amounts: ReadonlyArray<Amount>;
     readonly recipient: Address;
     /** absolute block height at which the offer times out */
     readonly timeout: number;
-    readonly preimage: Uint8Array;
-}
-export interface SwapCounterTransaction extends UnsignedTransaction {
-    readonly kind: "bcp/swap_counter";
-    readonly amounts: ReadonlyArray<Amount>;
-    readonly recipient: Address;
-    /** absolute block height at which the counter offer times out */
-    readonly timeout: number;
-    readonly hashCode: Uint8Array;
+    /**
+     * Locally calculated hash of the preimage.
+     *
+     * This is a SHA256 hash until we have a way to specifiy the hashing algorithm.
+     */
+    readonly hash: Uint8Array;
     readonly memo?: string;
 }
 export interface SwapClaimTransaction extends UnsignedTransaction {
     readonly kind: "bcp/swap_claim";
-    readonly preimage: Uint8Array;
+    readonly preimage: Preimage;
     readonly swapId: SwapIdBytes;
 }
 export interface SwapTimeoutTransaction extends UnsignedTransaction {
@@ -159,6 +158,5 @@ export interface SwapTimeoutTransaction extends UnsignedTransaction {
 }
 export declare function isSendTransaction(transaction: UnsignedTransaction): transaction is SendTransaction;
 export declare function isSwapOfferTransaction(transaction: UnsignedTransaction): transaction is SwapOfferTransaction;
-export declare function isSwapCounterTransaction(transaction: UnsignedTransaction): transaction is SwapCounterTransaction;
 export declare function isSwapClaimTransaction(transaction: UnsignedTransaction): transaction is SwapClaimTransaction;
 export declare function isSwapTimeoutTransaction(transaction: UnsignedTransaction): transaction is SwapTimeoutTransaction;

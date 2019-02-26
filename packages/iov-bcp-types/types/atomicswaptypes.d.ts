@@ -1,3 +1,4 @@
+import { As } from "type-tagger";
 import { Stream } from "xstream";
 import { BcpConnection } from "./connection";
 import { Address, Amount, SwapIdBytes } from "./transactions";
@@ -10,7 +11,12 @@ export interface SwapData {
     readonly id: SwapIdBytes;
     readonly sender: Address;
     readonly recipient: Address;
-    readonly hashlock: Uint8Array;
+    /**
+     * The hash, whose preimage releases the atomic swap.
+     *
+     * Until we have a way to specify the hashing algirithm, this is SHA256.
+     */
+    readonly hash: Uint8Array;
     readonly amounts: ReadonlyArray<Amount>;
     readonly timeout: number;
     readonly memo?: string;
@@ -19,10 +25,11 @@ export interface OpenSwap {
     readonly kind: SwapState.Open;
     readonly data: SwapData;
 }
+export declare type Preimage = Uint8Array & As<"preimage">;
 export interface ClaimedSwap {
     readonly kind: SwapState.Claimed;
     readonly data: SwapData;
-    readonly preimage: Uint8Array;
+    readonly preimage: Preimage;
 }
 export interface ExpiredSwap {
     readonly kind: SwapState.Expired;

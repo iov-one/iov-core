@@ -5,21 +5,21 @@ import {
   ChainId,
   FullSignature,
   Nonce,
+  Preimage,
   PublicKeyBundle,
   PublicKeyBytes,
   SendTransaction,
   SignatureBytes,
   SignedTransaction,
   SwapClaimTransaction,
-  SwapCounterTransaction,
   SwapIdBytes,
+  SwapOfferTransaction,
   SwapTimeoutTransaction,
   TokenTicker,
 } from "@iov/bcp-types";
 import { Encoding, Int53 } from "@iov/encoding";
 
 import { PrivateKeyBundle, PrivateKeyBytes } from "./types";
-import { hashId } from "./util";
 
 const { fromHex } = Encoding;
 
@@ -166,15 +166,14 @@ export const randomTxJson: SignedTransaction = {
   otherSignatures: [sig2],
 };
 
-export const hashCode = Uint8Array.from([...hashId, ...fromHex("1122334455aabbccddee")]);
 // recipient address generated using https://github.com/nym-zone/bech32
 // bech32 -e -h tiov 123485cb38847474fe9febfd56ab67e14bcd56f3
-const swapCounterMsg: SwapCounterTransaction = {
+const swapOfferTransaction: SwapOfferTransaction = {
   creator: {
     chainId: "swap-a-doo" as ChainId,
     pubkey: pubJson,
   },
-  kind: "bcp/swap_counter",
+  kind: "bcp/swap_offer",
   recipient: "tiov1zg6gtjecs368fl5la074d2m8u99u64hnhhlprg" as Address,
   timeout: 7890,
   amounts: [
@@ -184,10 +183,11 @@ const swapCounterMsg: SwapCounterTransaction = {
       tokenTicker: "FOO" as TokenTicker,
     },
   ],
-  hashCode,
+  hash: fromHex("1122334455aabbccddee"),
 };
-export const swapCounterTxJson: SignedTransaction = {
-  transaction: swapCounterMsg,
+
+export const swapOfferTxJson: SignedTransaction = {
+  transaction: swapOfferTransaction,
   primarySignature: sig2,
   otherSignatures: [],
 };
@@ -198,7 +198,7 @@ const swapClaimMsg: SwapClaimTransaction = {
     pubkey: pubJson,
   },
   kind: "bcp/swap_claim",
-  preimage: fromHex("00000000fffffffffff000000000"),
+  preimage: fromHex("00000000fffffffffff000000000") as Preimage,
   swapId: fromHex("1234") as SwapIdBytes,
 };
 export const swapClaimTxJson: SignedTransaction = {

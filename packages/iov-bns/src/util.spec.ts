@@ -1,7 +1,7 @@
 import { Address, ChainId, TransactionId } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
-import { address, hashCode, pubJson } from "./testdata.spec";
+import { address, pubJson } from "./testdata.spec";
 import {
   arraysEqual,
   buildTxHashQuery,
@@ -13,7 +13,7 @@ import {
   isValidAddress,
 } from "./util";
 
-const { fromHex, toAscii, toHex } = Encoding;
+const { fromHex, toAscii, toHex, toUtf8 } = Encoding;
 
 describe("Util", () => {
   it("has working identityToAddress", () => {
@@ -69,11 +69,21 @@ describe("Util", () => {
   });
 
   it("verify hash checks out", () => {
-    const a = fromHex("1234567890abcdef1234567890abcdef");
-    const badHash = isHashIdentifier(a);
-    expect(badHash).toEqual(false);
-    const goodHash = isHashIdentifier(hashCode);
-    expect(goodHash).toEqual(true);
+    // bad
+    {
+      const identifier = isHashIdentifier(fromHex("1234567890abcdef1234567890abcdef"));
+      expect(identifier).toEqual(false);
+    }
+    // good
+    {
+      const identifier = isHashIdentifier(toUtf8("hash/sha256/@öülä*`5%%&"));
+      expect(identifier).toEqual(true);
+    }
+    // good – but should that one really be good?
+    {
+      const identifier = isHashIdentifier(toAscii("hash/sha256/"));
+      expect(identifier).toEqual(true);
+    }
   });
 
   it("has working encodeBnsAddress", () => {

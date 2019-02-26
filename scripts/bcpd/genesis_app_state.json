@@ -1,0 +1,20 @@
+{
+  "cash": [
+    {
+      "address": "00dc5a048a3792293954cf380fcb4d0696f976f9",
+      "coins": [
+        {
+          "whole": 10000,
+          "ticker": "MASH"
+        }
+      ]
+    }
+  ],
+  "currencies": [
+    {
+      "ticker": "MASH",
+      "name": "Smashing all the other coins",
+      "sig_figs": 6
+    }
+  ]
+}

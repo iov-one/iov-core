@@ -8,14 +8,14 @@ import {
   ChainId,
   ConfirmedTransaction,
   isSwapClaimTransaction,
-  isSwapCounterTransaction,
+  isSwapOfferTransaction,
   isSwapTimeoutTransaction,
   Nonce,
   PublicIdentity,
   PublicKeyBundle,
   SignableBytes,
   SwapClaimTransaction,
-  SwapCounterTransaction,
+  SwapOfferTransaction,
   SwapTimeoutTransaction,
   TransactionId,
 } from "@iov/bcp-types";
@@ -92,24 +92,19 @@ export function arraysEqual(a: Uint8Array, b: Uint8Array): boolean {
 /** Type to differentiate between a raw hash of the data and the id used internally in weave */
 export type HashId = Uint8Array & As<"hashid">;
 
-export const hashId = Encoding.toAscii("hash/sha256/");
-
-export function preimageIdentifier(preimage: Uint8Array): HashId {
-  const hash = new Sha256(preimage).digest();
-  return hashIdentifier(hash);
-}
+const hashIdentifierPrefix = Encoding.toAscii("hash/sha256/");
 
 export function hashIdentifier(hash: Uint8Array): HashId {
-  return Uint8Array.from([...hashId, ...hash]) as HashId;
+  return Uint8Array.from([...hashIdentifierPrefix, ...hash]) as HashId;
 }
 
 export function isHashIdentifier(ident: Uint8Array): ident is HashId {
-  const prefix = ident.slice(0, hashId.length);
-  return arraysEqual(hashId, prefix);
+  const prefix = ident.slice(0, hashIdentifierPrefix.length);
+  return arraysEqual(hashIdentifierPrefix, prefix);
 }
 
 export function hashFromIdentifier(ident: HashId): Uint8Array {
-  return ident.slice(hashId.length);
+  return ident.slice(hashIdentifierPrefix.length);
 }
 
 // calculate keys for query tags
@@ -121,11 +116,11 @@ export function indexKey(bucket: string, index: string): Uint8Array {
   return Encoding.toAscii(`_i.${bucket}_${index}:`);
 }
 
-export function isConfirmedWithSwapCounterTransaction(
+export function isConfirmedWithSwapOfferTransaction(
   tx: ConfirmedTransaction,
-): tx is ConfirmedTransaction<SwapCounterTransaction> {
+): tx is ConfirmedTransaction<SwapOfferTransaction> {
   const unsigned = tx.transaction;
-  return isSwapCounterTransaction(unsigned);
+  return isSwapOfferTransaction(unsigned);
 }
 
 export function isConfirmedWithSwapClaimOrTimeoutTransaction(

@@ -68,7 +68,7 @@ import {
   hashIdentifier,
   identityToAddress,
   isConfirmedWithSwapClaimOrTimeoutTransaction,
-  isConfirmedWithSwapCounterTransaction,
+  isConfirmedWithSwapOfferTransaction,
 } from "./util";
 
 const { toAscii, toHex, toUtf8 } = Encoding;
@@ -371,7 +371,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
     const res = await doQuery();
     const parser = createParser(codecImpl.escrow.Escrow, "esc:");
-    const data = res.results.map(parser).map(escrow => this.context.swapOffer(escrow));
+    const data = res.results.map(parser).map(escrow => this.context.decodeOpenSwap(escrow));
     return data;
   }
 
@@ -389,9 +389,8 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       tags: [bnsSwapQueryTag(query, false)],
     })).filter(isConfirmedTransaction);
 
-    // tslint:disable-next-line:readonly-array
-    const offers: OpenSwap[] = setTxs
-      .filter(isConfirmedWithSwapCounterTransaction)
+    const offers: ReadonlyArray<OpenSwap> = setTxs
+      .filter(isConfirmedWithSwapOfferTransaction)
       .map(tx => this.context.swapOfferFromTx(tx));
 
     // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout
@@ -420,7 +419,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const delTxs = this.liveTx({ tags: [bnsSwapQueryTag(query, false)] }).filter(isConfirmedTransaction);
 
     const offers: Stream<OpenSwap> = setTxs
-      .filter(isConfirmedWithSwapCounterTransaction)
+      .filter(isConfirmedWithSwapOfferTransaction)
       .map(tx => this.context.swapOfferFromTx(tx));
 
     // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout

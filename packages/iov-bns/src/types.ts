@@ -8,7 +8,6 @@ import {
   FullSignature,
   isSendTransaction,
   isSwapClaimTransaction,
-  isSwapCounterTransaction,
   isSwapOfferTransaction,
   isSwapTimeoutTransaction,
   Nonce,
@@ -17,7 +16,6 @@ import {
   SendTransaction,
   SignatureBytes,
   SwapClaimTransaction,
-  SwapCounterTransaction,
   SwapOfferTransaction,
   SwapTimeoutTransaction,
   TokenTicker,
@@ -244,7 +242,6 @@ export type BnsTx =
   // BCP
   | SendTransaction
   | SwapOfferTransaction
-  | SwapCounterTransaction
   | SwapClaimTransaction
   | SwapTimeoutTransaction
   // BNS
@@ -257,7 +254,6 @@ export function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx 
   if (
     isSendTransaction(transaction) ||
     isSwapOfferTransaction(transaction) ||
-    isSwapCounterTransaction(transaction) ||
     isSwapClaimTransaction(transaction) ||
     isSwapTimeoutTransaction(transaction)
   ) {

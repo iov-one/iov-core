@@ -1,8 +1,9 @@
 import { Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
-import { ClaimedSwap, OpenSwap, SwapState } from "./atomicswap";
+import { AtomicSwapHelpers } from "./atomicswaphelpers";
 import { AtomicSwapMerger } from "./atomicswapmerger";
+import { ClaimedSwap, OpenSwap, Preimage, SwapState } from "./atomicswaptypes";
 import {
   Address,
   Algorithm,
@@ -31,8 +32,8 @@ describe("AtomicSwapMerger", () => {
       data: fromHex("97adfd82b8e6a93368361c5b9256a85bbfb8ed7421372bf7d3fc54498c8ea730") as PublicKeyBytes,
     };
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
-    const preimage = fromHex("00110011");
-    const hashLock = new Sha256(preimage).digest();
+    const preimage = fromHex("00110011") as Preimage;
+    const hash = AtomicSwapHelpers.hashPreimage(preimage);
     const swapId = fromHex("aabbcc") as SwapIdBytes;
     const open: OpenSwap = {
       kind: SwapState.Open,
@@ -40,7 +41,7 @@ describe("AtomicSwapMerger", () => {
         id: swapId,
         sender: alice,
         recipient: bobAddress,
-        hashlock: hashLock,
+        hash: hash,
         amounts: [defaultAmount],
         timeout: 1_000_000,
       },
@@ -79,10 +80,10 @@ describe("AtomicSwapMerger", () => {
     };
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
 
-    const preimageA = fromHex("00110011");
-    const preimageB = fromHex("aabbeeff");
-    const hashLockA = new Sha256(preimageA).digest();
-    const hashLockB = new Sha256(preimageB).digest();
+    const preimageA = fromHex("00110011") as Preimage;
+    const preimageB = fromHex("aabbeeff") as Preimage;
+    const hashA = new Sha256(preimageA).digest();
+    const hashB = new Sha256(preimageB).digest();
     const swapIdA = fromHex("aabbcc") as SwapIdBytes;
     const swapIdB = fromHex("112233") as SwapIdBytes;
     const openA: OpenSwap = {
@@ -91,7 +92,7 @@ describe("AtomicSwapMerger", () => {
         id: swapIdA,
         sender: alice,
         recipient: bobAddress,
-        hashlock: hashLockA,
+        hash: hashA,
         amounts: [defaultAmount],
         timeout: 1_000_000,
       },
@@ -102,7 +103,7 @@ describe("AtomicSwapMerger", () => {
         id: swapIdB,
         sender: alice,
         recipient: bobAddress,
-        hashlock: hashLockB,
+        hash: hashB,
         amounts: [defaultAmount],
         timeout: 1_000_000,
       },
@@ -157,8 +158,8 @@ describe("AtomicSwapMerger", () => {
   it("throws when the same ID is added twice", () => {
     const alice = "tiov1u8syu9juwx668k4vqfwl5vtm8j6yz89wamkcda" as Address;
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
-    const preimage = fromHex("00110011");
-    const hashLock = new Sha256(preimage).digest();
+    const preimage = fromHex("00110011") as Preimage;
+    const hash = AtomicSwapHelpers.hashPreimage(preimage);
     const swapId = fromHex("aabbcc") as SwapIdBytes;
     const open: OpenSwap = {
       kind: SwapState.Open,
@@ -166,7 +167,7 @@ describe("AtomicSwapMerger", () => {
         id: swapId,
         sender: alice,
         recipient: bobAddress,
-        hashlock: hashLock,
+        hash: hash,
         amounts: [defaultAmount],
         timeout: 1_000_000,
       },
@@ -187,8 +188,8 @@ describe("AtomicSwapMerger", () => {
       data: fromHex("97adfd82b8e6a93368361c5b9256a85bbfb8ed7421372bf7d3fc54498c8ea730") as PublicKeyBytes,
     };
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
-    const preimage = fromHex("00110011");
-    const hashLock = new Sha256(preimage).digest();
+    const preimage = fromHex("00110011") as Preimage;
+    const hash = AtomicSwapHelpers.hashPreimage(preimage);
     const swapId = fromHex("aabbcc") as SwapIdBytes;
     const open: OpenSwap = {
       kind: SwapState.Open,
@@ -196,7 +197,7 @@ describe("AtomicSwapMerger", () => {
         id: swapId,
         sender: alice,
         recipient: bobAddress,
-        hashlock: hashLock,
+        hash: hash,
         amounts: [defaultAmount],
         timeout: 1_000_000,
       },

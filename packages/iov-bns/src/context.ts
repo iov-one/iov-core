@@ -1,15 +1,13 @@
 import {
   Address,
   Amount,
-  AtomicSwap,
   BcpCoin,
   BcpTicker,
   ChainId,
   ConfirmedTransaction,
   OpenSwap,
-  SwapCounterTransaction,
-  SwapData,
   SwapIdBytes,
+  SwapOfferTransaction,
   SwapState,
 } from "@iov/bcp-types";
 
@@ -60,47 +58,39 @@ export class Context {
     return this.amountToCoin(amount);
   }
 
-  public swapOffer(swap: codecImpl.escrow.Escrow & Keyed): AtomicSwap {
-    // TODO: get and check hashlock
-    let hashlock: Uint8Array;
-    if (isHashIdentifier(swap.arbiter)) {
-      hashlock = hashFromIdentifier(swap.arbiter);
-    } else {
+  /** Decode within a Context to have the chain ID available */
+  public decodeOpenSwap(swap: codecImpl.escrow.Escrow & Keyed): OpenSwap {
+    if (!isHashIdentifier(swap.arbiter)) {
       throw new Error("Escrow not controlled by hashlock");
     }
+    const hash = hashFromIdentifier(swap.arbiter);
 
-    const data: SwapData = {
-      id: swap._id as SwapIdBytes,
-      sender: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.sender)),
-      recipient: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.recipient)),
-      hashlock,
-      amounts: ensure(swap.amount).map(coin => decodeAmount(coin)),
-      timeout: asNumber(swap.timeout),
-      memo: swap.memo,
-    };
-
-    return {
-      kind: SwapState.Open,
-      data,
-    };
-  }
-
-  public swapOfferFromTx(tx: ConfirmedTransaction<SwapCounterTransaction>): OpenSwap {
-    const counterTransaction: SwapCounterTransaction = tx.transaction;
-    // TODO: do we really want errors here, or just filter them out???
-    if (!isHashIdentifier(counterTransaction.hashCode)) {
-      throw new Error("swap not controlled by hash lock");
-    }
     return {
       kind: SwapState.Open,
       data: {
-        id: tx.result as SwapIdBytes,
-        sender: identityToAddress(counterTransaction.creator),
-        recipient: counterTransaction.recipient,
-        hashlock: hashFromIdentifier(counterTransaction.hashCode),
-        amounts: counterTransaction.amounts,
-        timeout: counterTransaction.timeout,
-        memo: counterTransaction.memo,
+        id: swap._id as SwapIdBytes,
+        sender: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.sender)),
+        recipient: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.recipient)),
+        hash: hash,
+        amounts: ensure(swap.amount).map(coin => decodeAmount(coin)),
+        timeout: asNumber(swap.timeout),
+        memo: swap.memo,
+      },
+    };
+  }
+
+  public swapOfferFromTx(confirmed: ConfirmedTransaction<SwapOfferTransaction>): OpenSwap {
+    const transaction = confirmed.transaction;
+    return {
+      kind: SwapState.Open,
+      data: {
+        id: confirmed.result as SwapIdBytes,
+        sender: identityToAddress(transaction.creator),
+        recipient: transaction.recipient,
+        hash: transaction.hash,
+        amounts: transaction.amounts,
+        timeout: transaction.timeout,
+        memo: transaction.memo,
       },
     };
   }
