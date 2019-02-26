@@ -389,8 +389,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       tags: [bnsSwapQueryTag(query, false)],
     })).filter(isConfirmedTransaction);
 
-    // tslint:disable-next-line:readonly-array
-    const offers: OpenSwap[] = setTxs
+    const offers: ReadonlyArray<OpenSwap> = setTxs
       .filter(isConfirmedWithSwapOfferTransaction)
       .map(tx => this.context.swapOfferFromTx(tx));
 
