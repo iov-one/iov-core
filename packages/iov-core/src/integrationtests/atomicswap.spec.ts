@@ -3,6 +3,7 @@ import BN = require("bn.js");
 import {
   Address,
   Amount,
+  AtomicSwapHelpers,
   BcpAtomicSwapConnection,
   isBlockInfoPending,
   isBlockInfoSucceeded,
@@ -16,7 +17,7 @@ import {
   TokenTicker,
 } from "@iov/bcp-types";
 import { bnsConnector, bnsSwapQueryTag } from "@iov/bns";
-import { Random, Sha256, Slip10RawIndex } from "@iov/crypto";
+import { Sha256, Slip10RawIndex } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol";
 import { firstEvent } from "@iov/stream";
 
@@ -117,7 +118,7 @@ class Actor {
 
   public async generatePreimage(): Promise<void> {
     // tslint:disable-next-line:no-object-mutation
-    this.preimage = (await Random.getBytes(32)) as Preimage;
+    this.preimage = await AtomicSwapHelpers.createPreimage();
   }
 
   public async sendSwapOfferOnBns(recipient: Address, amount: Amount): Promise<void> {
