@@ -1,6 +1,6 @@
 {
   "name": "@iov/dpos",
-  "version": "0.12.1",
+  "version": "0.12.2",
   "description": "Common functionality used for @iov/lisk and @iov/rise",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@iov/bcp-types": "^0.12.0",
-    "@iov/crypto": "^0.12.1",
+    "@iov/crypto": "^0.12.2",
     "@iov/encoding": "^0.12.0",
     "@types/long": "^4.0.0",
     "long": "^4.0.0",
