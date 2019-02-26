@@ -1,6 +1,6 @@
 import { Encoding } from "@iov/encoding";
 
-import { AtomicSwap, OpenSwap, SwapState } from "./atomicswap";
+import { AtomicSwap, OpenSwap, SwapState } from "./atomicswaptypes";
 import { SwapClaimTransaction, SwapTimeoutTransaction } from "./transactions";
 
 function settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTransaction | SwapTimeoutTransaction): AtomicSwap {

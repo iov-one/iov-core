@@ -1,4 +1,4 @@
-export * from "./atomicswap";
+export * from "./atomicswaptypes";
 export { AtomicSwapMerger } from "./atomicswapmerger";
 export * from "./chainconnector";
 export * from "./codec";

@@ -1,8 +1,8 @@
 import { Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
-import { ClaimedSwap, OpenSwap, SwapState } from "./atomicswap";
 import { AtomicSwapMerger } from "./atomicswapmerger";
+import { ClaimedSwap, OpenSwap, SwapState } from "./atomicswaptypes";
 import {
   Address,
   Algorithm,
