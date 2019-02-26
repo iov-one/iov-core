@@ -18,6 +18,8 @@ Breaking changes
 * @iov/bcp-types: Rename `SwapData.hashlock` to `SwapData.hash`
 * @iov/bcp-types: Remove `SwapCounterTransaction` in favour of
   `SwapOfferTransaction` for both offer and counter offer.
+* @iov/bcp-types: `AtomicSwapHelpers.createPreimage` and `.hashPreimage` are
+  now available to perform BCP specific atomic swap operations
 * @iov/ethereum: The `options` parameter of `ethereumConnector` does not allow
   strings anymore. Use `{ wsUrl: myWebsocketUrl }` instead.
 * @iov/ledger-bns: Package removed from this monorepo and now available at
