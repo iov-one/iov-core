@@ -1,4 +1,4 @@
-import { ChainId, isUnsignedTransaction, UnsignedTransaction } from "@iov/bcp-types";
+import { ChainId, isUnsignedTransaction, UnsignedTransaction } from "@iov/bcp";
 import {
   isJsonCompatibleDictionary,
   jsonRpcCodeInvalidParams,

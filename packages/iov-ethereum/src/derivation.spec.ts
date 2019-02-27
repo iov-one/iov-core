@@ -1,4 +1,4 @@
-import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/bcp-types";
+import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
 import { isValidAddress, pubkeyToAddress, toChecksumAddress } from "./derivation";

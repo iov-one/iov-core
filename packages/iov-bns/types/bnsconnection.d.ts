@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { Account, AccountQuery, Address, AddressQuery, AtomicSwap, AtomicSwapQuery, BcpAtomicSwapConnection, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker } from "@iov/bcp-types";
+import { Account, AccountQuery, Address, AddressQuery, AtomicSwap, AtomicSwapQuery, BcpAtomicSwapConnection, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker } from "@iov/bcp";
 import { BnsBlockchainNft, BnsBlockchainsQuery, BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
  * Talks directly to the BNS blockchain and exposes the

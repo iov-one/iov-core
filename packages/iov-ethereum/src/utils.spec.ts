@@ -1,4 +1,4 @@
-import { ChainId, Nonce } from "@iov/bcp-types";
+import { ChainId, Nonce } from "@iov/bcp";
 import { Int53 } from "@iov/encoding";
 
 import {

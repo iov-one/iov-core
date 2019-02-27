@@ -1,4 +1,4 @@
-import { Address, BcpCoin, BcpTicker, ChainId, ConfirmedTransaction, OpenSwap, SwapOfferTransaction } from "@iov/bcp-types";
+import { Address, BcpCoin, BcpTicker, ChainId, ConfirmedTransaction, OpenSwap, SwapOfferTransaction } from "@iov/bcp";
 import * as codecImpl from "./generated/codecimpl";
 import { Keyed } from "./types";
 /**

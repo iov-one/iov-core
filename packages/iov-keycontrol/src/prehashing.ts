@@ -1,4 +1,4 @@
-import { PrehashType, SignableBytes } from "@iov/bcp-types";
+import { PrehashType, SignableBytes } from "@iov/bcp";
 import { Keccak256, Sha256, Sha512 } from "@iov/crypto";
 
 export function prehash(bytes: SignableBytes, type: PrehashType): Uint8Array {

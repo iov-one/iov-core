@@ -1,6 +1,6 @@
 import Long from "long";
 
-import { Address } from "@iov/bcp-types";
+import { Address } from "@iov/bcp";
 import { Ed25519, Ed25519Keypair, Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 

@@ -2,7 +2,7 @@
 import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
-import { FullSignature, isSendTransaction, TransactionId, UnsignedTransaction } from "@iov/bcp-types";
+import { FullSignature, isSendTransaction, TransactionId, UnsignedTransaction } from "@iov/bcp";
 import { Sha256 } from "@iov/crypto";
 import { Encoding, Uint64 } from "@iov/encoding";
 

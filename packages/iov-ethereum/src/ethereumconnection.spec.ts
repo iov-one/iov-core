@@ -19,7 +19,7 @@ import {
   TokenTicker,
   TransactionId,
   TransactionState,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Random, Secp256k1 } from "@iov/crypto";
 import { HdPaths, Secp256k1HdWallet, UserProfile, Wallet } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";

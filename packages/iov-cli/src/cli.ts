@@ -34,7 +34,7 @@ export function main(originalArgs: ReadonlyArray<string>): void {
   }
 
   const imports = new Map<string, ReadonlyArray<string>>([
-    ["@iov/bcp-types", ["Algorithm", "PublicKeyBytes"]],
+    ["@iov/bcp", ["Algorithm", "PublicKeyBytes"]],
     ["@iov/bns", ["bnsCodec", "bnsConnector", "RegisterUsernameTx"]],
     [
       "@iov/core",

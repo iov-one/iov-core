@@ -1,4 +1,4 @@
-import { Amount, TokenTicker } from "@iov/bcp-types";
+import { Amount, TokenTicker } from "@iov/bcp";
 
 import { Parse } from "./parse";
 

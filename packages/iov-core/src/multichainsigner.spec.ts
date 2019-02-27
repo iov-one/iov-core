@@ -9,7 +9,7 @@ import {
   PublicKeyBytes,
   SendTransaction,
   TokenTicker,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";

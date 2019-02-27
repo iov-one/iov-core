@@ -16,7 +16,7 @@ import {
   SwapTimeoutTransaction,
   TokenTicker,
   UnsignedTransaction,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";

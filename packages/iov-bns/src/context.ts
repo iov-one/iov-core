@@ -9,7 +9,7 @@ import {
   SwapIdBytes,
   SwapOfferTransaction,
   SwapState,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 
 import { decodeAmount } from "./decode";
 import * as codecImpl from "./generated/codecimpl";

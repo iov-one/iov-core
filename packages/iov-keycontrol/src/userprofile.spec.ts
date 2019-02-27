@@ -18,7 +18,7 @@ import {
   TokenTicker,
   TransactionId,
   TxCodec,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Ed25519, Slip10RawIndex } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 

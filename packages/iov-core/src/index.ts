@@ -1,4 +1,4 @@
-export { Address, ChainId, Nonce, SendTransaction, TokenTicker } from "@iov/bcp-types";
+export { Address, ChainId, Nonce, SendTransaction, TokenTicker } from "@iov/bcp";
 export {
   Ed25519HdWallet,
   Ed25519Wallet,

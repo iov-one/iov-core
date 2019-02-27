@@ -15,7 +15,7 @@ import {
   TransactionId,
   TxCodec,
   UnsignedTransaction,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { ExtendedSecp256k1Signature, Keccak256, Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 

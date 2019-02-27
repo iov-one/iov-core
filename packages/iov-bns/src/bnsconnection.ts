@@ -38,7 +38,7 @@ import {
   TransactionId,
   TransactionState,
   TxReadCodec,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Encoding, Int53, Uint53 } from "@iov/encoding";
 import { concat, DefaultValueProducer, fromListPromise, ValueAndUpdates } from "@iov/stream";
 import { broadcastTxSyncSuccess, Client as TendermintClient, getTxEventHeight } from "@iov/tendermint-rpc";

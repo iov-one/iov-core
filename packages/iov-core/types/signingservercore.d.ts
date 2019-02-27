@@ -1,4 +1,4 @@
-import { ChainId, PublicIdentity, TransactionId, UnsignedTransaction } from "@iov/bcp-types";
+import { ChainId, PublicIdentity, TransactionId, UnsignedTransaction } from "@iov/bcp";
 import { UserProfile } from "@iov/keycontrol";
 import { MultiChainSigner } from "./multichainsigner";
 export declare class SigningServerCore {

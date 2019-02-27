@@ -15,7 +15,7 @@ import {
   SwapOfferTransaction,
   SwapState,
   TokenTicker,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { bnsConnector, bnsSwapQueryTag } from "@iov/bns";
 import { Slip10RawIndex } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol";

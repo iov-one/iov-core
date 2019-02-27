@@ -6,7 +6,7 @@ import {
   PublicKeyBytes,
   TokenTicker,
   UnsignedTransaction,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Bech32, Encoding, Int53 } from "@iov/encoding";
 
 import {

@@ -23,7 +23,7 @@ import {
   TokenTicker,
   TransactionId,
   TransactionState,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Random } from "@iov/crypto";
 import { Derivation } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";

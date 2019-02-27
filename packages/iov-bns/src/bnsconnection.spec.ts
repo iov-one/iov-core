@@ -30,7 +30,7 @@ import {
   SwapState,
   TokenTicker,
   TransactionState,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Random, Sha256 } from "@iov/crypto";
 import { Encoding, Uint64 } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol";

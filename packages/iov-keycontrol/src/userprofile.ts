@@ -11,7 +11,7 @@ import {
   SignedTransaction,
   TxCodec,
   UnsignedTransaction,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Argon2id, Argon2idOptions, Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";

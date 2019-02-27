@@ -1,4 +1,4 @@
-import { Amount } from "@iov/bcp-types";
+import { Amount } from "@iov/bcp";
 
 import { constants } from "./constants";
 

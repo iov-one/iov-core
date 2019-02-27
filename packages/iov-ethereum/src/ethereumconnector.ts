@@ -1,4 +1,4 @@
-import { ChainConnector, ChainId } from "@iov/bcp-types";
+import { ChainConnector, ChainId } from "@iov/bcp";
 
 import { ethereumCodec } from "./ethereumcodec";
 import { EthereumConnection, EthereumConnectionOptions } from "./ethereumconnection";

@@ -1,4 +1,4 @@
-import { Address, ChainId, TransactionId } from "@iov/bcp-types";
+import { Address, ChainId, TransactionId } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
 import { address, pubJson } from "./testdata.spec";

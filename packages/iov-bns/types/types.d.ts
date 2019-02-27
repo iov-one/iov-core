@@ -1,6 +1,6 @@
 import * as Long from "long";
 import { As } from "type-tagger";
-import { Address, Algorithm, ChainId, FullSignature, PublicKeyBundle, SendTransaction, SignatureBytes, SwapClaimTransaction, SwapOfferTransaction, SwapTimeoutTransaction, TokenTicker, UnsignedTransaction } from "@iov/bcp-types";
+import { Address, Algorithm, ChainId, FullSignature, PublicKeyBundle, SendTransaction, SignatureBytes, SwapClaimTransaction, SwapOfferTransaction, SwapTimeoutTransaction, TokenTicker, UnsignedTransaction } from "@iov/bcp";
 import { Int53 } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
 export interface ChainAddressPair {
