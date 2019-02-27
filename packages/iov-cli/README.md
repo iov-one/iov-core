@@ -200,34 +200,22 @@ When using a Testnet, you can use the IovFaucet to receive tokens:
 'helmet album grow detail apology thank wire chef fame core private cargo'
 > const profile = new UserProfile();
 > const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic));
-> const me = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
 
 > const signer = new MultiChainSigner(profile);
-> const { connection } = await signer.addChain(bnsConnector("https://bns.yaknet.iov.one"));
-> const meAddress = signer.keyToAddress(connection.chainId(), me.pubkey);
+> const { connection } = await signer.addChain(bnsConnector("https://bns.hugnet.iov.one"));
+> const chainId = connection.chainId();
 
-> const faucet = new IovFaucet("https://iov-faucet.yaknet.iov.one");
+> const me = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(0));
+> const meAddress = signer.identityToAddress(me);
+
+> const faucet = new IovFaucet("https://iov-faucet.hugnet.iov.one");
 
 > await faucet.credit(meAddress, "IOV" as TokenTicker)
-> (await connection.getAccount({ address: meAddress })).data[0].balance
-[ { whole: 10,
-    fractional: 0,
+> (await connection.getAccount({ address: meAddress })).balance
+[ { quantity: '10000000000',
+    fractionalDigits: 9,
     tokenTicker: 'IOV',
-    tokenName: 'Main token of this chain',
-    fractionalDigits: 6 } ]
-
-> await faucet.credit(meAddress, "PAJA" as TokenTicker)
-> (await connection.getAccount({ address: meAddress })).data[0].balance
-[ { whole: 10,
-    fractional: 0,
-    tokenTicker: 'IOV',
-    tokenName: 'Main token of this chain',
-    fractionalDigits: 6 },
-  { whole: 10,
-    fractional: 0,
-    tokenTicker: 'PAJA',
-    tokenName: 'Mightiest token of this chain',
-    fractionalDigits: 9 } ]
+    tokenName: 'Main token of this chain' } ]
 ```
 
 ## Ledger usage
