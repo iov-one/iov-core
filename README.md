@@ -130,6 +130,8 @@ unset BNSD_ENABLED
 ./scripts/bnsd/stop.sh
 ```
 
+#### Lisk
+
 If you are working on `iov-lisk`, you can run the tests against a local
 Lisk devnet. See [scripts/lisk/README.md](https://github.com/iov-one/iov-core/tree/master/scripts/lisk#start)
 how to start the Lisk devnet.
@@ -141,8 +143,7 @@ yarn test
 
 ### Browser tests
 
-The CI runs all code not only under node, but also
-[in various browsers](https://github.com/iov-one/iov-core/blob/master/scripts/travis.sh#L44-L57)
+The CI runs all code not only under node, but also in various browsers.
 
 These work almost all of the time, but if you CI test fails in the browser,
 or if you are just curious to see this work, you can run the browser tests
