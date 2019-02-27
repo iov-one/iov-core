@@ -74,21 +74,23 @@ profile.setWalletLabel(wallet2.id, "24 words");
 Create identies on the two wallets:
 
 ```ts
+import { ChainId } from '@iov/bcp-types';
 import { HdPaths } from '@iov/keycontrol';
 import { Encoding } from '@iov/encoding';
 const { fromHex, toHex } = Encoding;
 
+const chainId = 'bov-hugnet' as ChainId;
 // this creates two different public key identities, generated from the
 // first mnemonic using two different SLIP-0010 paths
-const id1a = await profile.createIdentity(wallet1.id, HdPaths.simpleAddress(0));
-const id1b = await profile.createIdentity(wallet1.id, HdPaths.simpleAddress(1));
+const id1a = await profile.createIdentity(wallet1.id, chainId, HdPaths.simpleAddress(0));
+const id1b = await profile.createIdentity(wallet1.id, chainId, HdPaths.simpleAddress(1));
 console.log(id1a);
 console.log(id1a.pubkey.algo, toHex(id1a.pubkey.data))
 console.log(id1b.pubkey.algo, toHex(id1b.pubkey.data))
 
 // this creates a different key from the second mnemonic,
 // this uses the same HD path as id1a, but different seed.
-const id2 = await profile.createIdentity(wallet2.id, HdPaths.simpleAddress(0));
+const id2 = await profile.createIdentity(wallet2.id, chainId, HdPaths.simpleAddress(0));
 console.log(id2.pubkey.algo, toHex(id2.pubkey.data));
 
 // we can also add labels to the individual identies
@@ -134,15 +136,14 @@ the `bov` and `tendermint` binaries, construct your genesis file and run
 the client against your one-node "dev net"...
 
 But, if you just want to see how the client works, let's run against iov's testnet
-and use the faucet to get some tokens. As of August 6, 2018, the current testnet
-is located at https://bov.friendnet-fast.iov.one/ (we are currently roating it in 2-3
-week cycles to improve the setup based on loadtests and internal feedback).
+and use the faucet to get some tokens. As of February 27, 2019, the current testnet
+is located at https://bov.hugnet.iov.one/.
 
 To connect, you need to know the address of the rpc server (above).
 It is also helpful to know the `chainId` of the chain.
 You can find that quite easily by looking
-at the [genesis file](https://bov.friendnet-fast.iov.one/genesis) under
-`.result.genesis.chain_id`. In our case this is `chain-friendnet-fast`.
+at the [genesis file](https://bov.hugnet.iov.one/genesis) under
+`.result.genesis.chain_id`. In our case this is `bov-hugnet`.
 
 ### Executing the commands
 
@@ -153,7 +154,7 @@ to use the chain-dependent `TxCodec` to generate it. In our case, bnsCodec:
 import { bnsCodec } from '@iov/bns';
 
 const addr = bnsCodec.identityToAddress(id1a);
-console.log(toHex(addr));
+console.log(addr);
 ```
 
 If you are running your own "dev-net" give that address plenty of tokens
@@ -166,10 +167,9 @@ Now, connect to the network:
 import { bnsConnector, MultiChainSigner } from '@iov/core';
 
 const signer = new MultiChainSigner(profile);
-await signer.addChain(bnsConnector('wss://bov.friendnet-fast.iov.one/'));
+await signer.addChain(bnsConnector('wss://bov.hugnet.iov.one/'));
 
-const chainId = signer.chainIds()[0];
-console.log(chainId); // is this what you got yourself?
+console.log(signer.chainIds()[0]); // is this what you got yourself?
 ```
 
 List the tickers on the network:
@@ -186,14 +186,10 @@ Query the testnet for some existing genesis accounts:
 ```ts
 // this is pulled from the genesis account
 import { Address } from "@iov/bcp-types"
-const bert = "E28AE9A6EB94FC88B73EB7CBD6B87BF93EB9BEF0" as Address;
-const faucet = await connection.getAccount({ address: bert });
-console.log(faucet);
-console.log(faucet.data[0])
 
-// you can also query by registered name
-const byName = await connection.getAccount({ name: "bert" });
-console.log(byName.data[0])
+const bert = "tiov1u29wnfhtjn7g3de7kl9adwrmlyltn0hsjckecc" as Address;
+const acct = await connection.getAccount({ address: bert });
+console.log(acct);
 ```
 
 If you are running the testnet faucet, just ask for some free money.
@@ -202,21 +198,21 @@ If you are running the testnet faucet, just ask for some free money.
 import { TokenTicker } from "@iov/bcp-types";
 import { IovFaucet } from "@iov/faucets";
 
-const faucet = new IovFaucet("https://iov-faucet.yaknet.iov.one");
-await faucet.credit(addr, "IOV" as TokenTicker);
+const faucet = new IovFaucet("https://bov-faucet.hugnet.iov.one/");
+await faucet.credit(addr, "ALT" as TokenTicker);
 ```
 
 Then query your account:
 
 ```ts
 const mine = await connection.getAccount({ address: addr });
-console.log(mine); // should show non-empty array for data
-console.log(mine.data[0]);
+console.log(mine); // should show non-empty array for balance
+console.log(mine.balance[0]);
 
 const addr2 = bnsCodec.identityToAddress(id2);
-console.log(toHex(addr2));
+console.log(addr2);
 let yours = await connection.getAccount({ address: addr2 });
-console.log(yours); // should show empty array for data
+console.log(yours); // should be undefined
 ```
 
 Send a transaction to second id:
@@ -229,33 +225,27 @@ const sendTx: SendTransaction = {
   creator: id1a, // this account must have money
   recipient: addr2,
   memo: "My first transaction",
-  amount: { // 10.11 IOV (9 sig figs in tx codec)
-    whole: 10,
-    fractional: 110000000,
-    tokenTicker: "IOV" as TokenTicker,
+  amount: { // 10.11 ALT (9 sig figs in tx codec)
+    quantity: '10110000000',
+    fractionalDigits: 9,
+    tokenTicker: "ALT" as TokenTicker,
   },
 };
-
-// the signer has a 0 nonce
-console.log(await signer.getNonce(chainId, addr))
 
 // we must have the private key for the signer (id1a)
 // second argument is the ID of the wallet where the private key can be found
 await signer.signAndPost(sendTx, wallet1.id);
 
-// note that the nonce of the signer is incremented
-console.log(await signer.getNonce(chainId, addr))
-
 // and we have a balance on the recipient now
 yours = await connection.getAccount({ address: addr2 });
-console.log(yours); // should show non-empty array for data
-console.log(yours.data[0]); // should show non-empty array for data
+console.log(yours); // should show non-empty array for balance
+console.log(yours.balance[0]);
 ```
 
 Now, query the transaction history:
 
 ```ts
-const history = await connection.searchTx({ address: addr2 });
+const history = await connection.searchTx({ sentFromOrTo: addr2 });
 console.log(history);
 const first = history[0].transaction as SendTransaction;
 console.log(first.amount);
@@ -265,7 +255,7 @@ console.log(toHex(first.recipient));
 console.log(toHex(first.signer.data));
 // address of sender
 const sender = bnsCodec.identityToAddress(first);
-console.log(toHex(sender));
+console.log(sender);
 ```
 
 ## Reactive Clients
