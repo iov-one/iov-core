@@ -28,6 +28,8 @@ Breaking changes
 * @iov/keycontrol: Remove `HdPaths.metamaskHdKeyTree`. Use `HdPaths.ethereum` instead.
 * @iov/ledger-bns: Package removed from this monorepo and now available at
   https://github.com/iov-one/iov-ledger-bns
+* @iov/iov-core: Constructor of `SigningServerCore` now takes two arguments for
+  authozization callbacks.
 
 ## 0.12.2
 
