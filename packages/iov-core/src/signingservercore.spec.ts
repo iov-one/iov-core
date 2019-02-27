@@ -13,7 +13,7 @@ import { Ed25519, Random } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";
-import { SigningServerCore } from "./signingservercore";
+import { GetIdentitiesAuthorization, SignAndPostAuthorization, SigningServerCore } from "./signingservercore";
 
 function pendingWithoutBnsd(): void {
   if (!process.env.BNSD_ENABLED) {
@@ -41,11 +41,18 @@ describe("SigningServerCore", () => {
     fractionalDigits: 9,
     tokenTicker: "CASH" as TokenTicker,
   };
+  const defaultGetIdentitiesCallback: GetIdentitiesAuthorization = async (_, matching) => matching;
+  const defaultSignAndPostCallback: SignAndPostAuthorization = async (_1, _2) => true;
 
   it("can be constructed", () => {
     const profile = new UserProfile();
     const signer = new MultiChainSigner(profile);
-    const core = new SigningServerCore(profile, signer);
+    const core = new SigningServerCore(
+      profile,
+      signer,
+      defaultGetIdentitiesCallback,
+      defaultSignAndPostCallback,
+    );
     expect(core).toBeTruthy();
     core.shutdown();
   });
@@ -73,7 +80,12 @@ describe("SigningServerCore", () => {
     const idB2 = await profile.createIdentity(walletB.id, xnet, HdPaths.simpleAddress(2));
 
     const signer = new MultiChainSigner(profile);
-    const core = new SigningServerCore(profile, signer);
+    const core = new SigningServerCore(
+      profile,
+      signer,
+      defaultGetIdentitiesCallback,
+      defaultSignAndPostCallback,
+    );
 
     const ynetIdentities = await core.getIdentities("Login to XY service", [ynet]);
     expect(ynetIdentities).toEqual([idA0, idB1]);
@@ -104,7 +116,12 @@ describe("SigningServerCore", () => {
       await profile.createIdentity(wallet.id, bnsChain, HdPaths.simpleAddress(0));
     }
 
-    const core = new SigningServerCore(profile, signer);
+    const core = new SigningServerCore(
+      profile,
+      signer,
+      defaultGetIdentitiesCallback,
+      defaultSignAndPostCallback,
+    );
 
     const identities = await core.getIdentities("Please select signer", [bnsChain]);
     const signingIdentity = identities[0];

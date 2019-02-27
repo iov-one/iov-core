@@ -3,29 +3,57 @@ import { UserProfile, WalletId } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";
 
+export interface GetIdentitiesAuthorization {
+  /**
+   * Called by the signing server and lets user decide which of the
+   * available identities should be revealed to the application.
+   */
+  (reason: string, matchingIdentities: ReadonlyArray<PublicIdentity>): Promise<ReadonlyArray<PublicIdentity>>;
+}
+
+export interface SignAndPostAuthorization {
+  /**
+   * Called by the signing server and lets user decide if they want to
+   * authorize a sign and post request
+   */
+  (reason: string, transaction: UnsignedTransaction): Promise<boolean>;
+}
+
 export class SigningServerCore {
   private readonly signer: MultiChainSigner;
   private readonly profile: UserProfile;
+  private readonly authorizeGetIdentities: GetIdentitiesAuthorization;
+  private readonly authorizeSignAndPost: SignAndPostAuthorization;
 
-  constructor(profile: UserProfile, signer: MultiChainSigner) {
+  constructor(
+    profile: UserProfile,
+    signer: MultiChainSigner,
+    authorizeGetIdentities: GetIdentitiesAuthorization,
+    authorizeSignAndPost: SignAndPostAuthorization,
+  ) {
     this.signer = signer;
     this.profile = profile;
+    this.authorizeGetIdentities = authorizeGetIdentities;
+    this.authorizeSignAndPost = authorizeSignAndPost;
   }
 
   public async getIdentities(
-    _: string,
+    reason: string,
     chainIds: ReadonlyArray<ChainId>,
   ): Promise<ReadonlyArray<PublicIdentity>> {
     const matchingIdentities = this.allIdentities().filter(identity => {
       return chainIds.some(chainId => identity.chainId === chainId);
     });
 
-    // TODO: ask user for permission and allow selection of identities
+    const authorizedIdentities = this.authorizeGetIdentities(reason, matchingIdentities);
 
-    return matchingIdentities;
+    return authorizedIdentities;
   }
 
-  public async signAndPost(_: string, transaction: UnsignedTransaction): Promise<TransactionId> {
+  public async signAndPost(
+    reason: string,
+    transaction: UnsignedTransaction,
+  ): Promise<TransactionId | undefined> {
     let walletId: WalletId;
     const wallets = this.profile.wallets.value.filter(wallet => {
       const firstMatchIndex = this.profile.getIdentities(wallet.id).findIndex(identity => {
@@ -43,10 +71,12 @@ export class SigningServerCore {
         throw new Error("More than one wallets contain the identity to sign this transaction");
     }
 
-    // TODO: ask user for permission
-
-    const response = await this.signer.signAndPost(transaction, walletId);
-    return response.transactionId;
+    if (this.authorizeSignAndPost(reason, transaction)) {
+      const response = await this.signer.signAndPost(transaction, walletId);
+      return response.transactionId;
+    } else {
+      return undefined;
+    }
   }
 
   /**

@@ -16,6 +16,10 @@ const bnsdFaucetMnemonic = "degree tackle suggest window test behind mesh extra 
 const ethereumUrl = "http://localhost:8545";
 const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
 
+async function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function main(): Promise<void> {
   const profile = new UserProfile();
   const ed25519Wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(bnsdFaucetMnemonic));
@@ -32,7 +36,19 @@ async function main(): Promise<void> {
   // ganache second identity
   await profile.createIdentity(secp256k1Wallet.id, ethereumChainId, HdPaths.bip44(60, 0, 0, 1));
 
-  const server = new JsonRpcSigningServer(new SigningServerCore(profile, signer));
+  const core = new SigningServerCore(
+    profile,
+    signer,
+    async (_, matchingIdentities) => {
+      await sleep(500);
+      return matchingIdentities;
+    },
+    async (_1, _2) => {
+      await sleep(500);
+      return true;
+    },
+  );
+  const server = new JsonRpcSigningServer(core);
 
   onmessage = async event => {
     // console.log("Received message", JSON.stringify(event));
