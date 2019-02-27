@@ -53,10 +53,8 @@ Create a new profile with two wallets:
 import { Ed25519HdWallet, UserProfile } from '@iov/keycontrol';
 
 const profile = new UserProfile();
-const wallet1 = Ed25519HdWallet.fromMnemonic(mnemonic12);
-const wallet2 = Ed25519HdWallet.fromMnemonic(mnemonic24);
-profile.addWallet(wallet1);
-profile.addWallet(wallet2);
+const wallet1 = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic12));
+const wallet2 = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic24));
 ```
 
 Inspect the profile:
