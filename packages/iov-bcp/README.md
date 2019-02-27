@@ -1,12 +1,12 @@
-# @iov/bcp-types
+# @iov/bcp
 
-[![npm version](https://img.shields.io/npm/v/@iov/bcp-types.svg)](https://www.npmjs.com/package/@iov/bcp-types)
+[![npm version](https://img.shields.io/npm/v/@iov/bcp.svg)](https://www.npmjs.com/package/@iov/bcp)
 
-@iov/bcp-types holds all types needed to properly implement the generic BCP interfaces.
+@iov/bcp holds all types needed to properly implement the generic BCP interfaces, plus some helper functions.
 
 ## API Documentation
 
-[https://iov-one.github.io/iov-core-docs/latest/iov-bcp-types/](https://iov-one.github.io/iov-core-docs/latest/iov-bcp-types/)
+[https://iov-one.github.io/iov-core-docs/latest/iov-bcp/](https://iov-one.github.io/iov-core-docs/latest/iov-bcp/)
 
 ## License
 
