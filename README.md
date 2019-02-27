@@ -7,14 +7,14 @@ This can be used to build cli/gui clients, automated scripts, or help build bcp-
 
 Main functionality provided:
 
-* Solid crypto library with HD support for ed25519 (following SLIP-0010, ledger compatible)
-* Secure private key management, including encrypted local storage for both browser and node
-* Generic, type-safe adaptor to read/write on tendermint rpc server (with http/s and ws/s support)
-* Adaptor to query / create transactions for IOV's testnet of the BNS blockchain
-* Adaptor for key management using IOV's BNS ledger app
-* High level controller for managing multiple user profiles and various key material
-* High level controller for managing read/write connections to multiple blockchains (CoreWriter)
-* Integration with REPL environment for quick prototyping for developers
+- Solid crypto library with HD support for ed25519 (following SLIP-0010, ledger compatible)
+- Secure private key management, including encrypted local storage for both browser and node
+- Generic, type-safe adaptor to read/write on tendermint rpc server (with http/s and ws/s support)
+- Adaptor to query / create transactions for IOV's testnet of the BNS blockchain
+- Adaptor for key management using IOV's BNS ledger app
+- High level controller for managing multiple user profiles and various key material
+- High level controller for managing read/write connections to multiple blockchains (CoreWriter)
+- Integration with REPL environment for quick prototyping for developers
 
 This is still in pre-alpha state and will evolve quickly as we add support for multiple blockchains,
 more transactions types, and better extensibility. However, all attempts have been made that the
@@ -30,7 +30,7 @@ issues in the API.
 The following projects use IOV-Core (add yourself via a PR):
 
 | Project                                                      | Tech stack / JavaScript environments |
-|--------------------------------------------------------------|--------------------------------------|
+| ------------------------------------------------------------ | ------------------------------------ |
 | [TokenFinder](https://github.com/iov-one/token-finder)       | TypeScript / React / Browsers        |
 | [iov-faucet](https://github.com/iov-one/iov-faucet)          | TypeScript / NodeJS 10               |
 | [@iov/ledger-bns](https://github.com/iov-one/iov-ledger-bns) | TypeScript / NodeJS / Browsers       |
@@ -46,9 +46,9 @@ and enjoy `yarn`.
 
 CI Tests:
 
-* Linux: node 8, chrome, (electron manually)
-* OSX: node 8, chrome, firefox, safari, (electron manually)
-* Windows: node 8, (edge, electron manually)
+- Linux: node 8, chrome, (electron manually)
+- OSX: node 8, chrome, firefox, safari, (electron manually)
+- Windows: node 8, (edge, electron manually)
 
 (Node 10 tested on many dev machines)
 
@@ -187,6 +187,25 @@ These are needed to compile the usb driver.
 
 Sometimes compiling native code with `node-pre-gyp` causes issues in very
 recent versions of Node.js. At the moment, Node.js 8, 10 and 11 should work.
+
+### Docker fails to run a test server
+
+If you're using OSX and Docker Desktop for Mac and you get an error like the following, you'll need to add your `$TMPDIR` path to the list of shared paths:
+
+```
+docker: Error response from daemon: Mounts denied:
+The path /path/to/tmpdir is not shared from OS X and is not known to Docker.
+You can configure shared paths from Docker -> Preferences... -> File Sharing.
+See https://docs.docker.com/docker-for-mac/osxfs/#namespaces for more info.
+```
+
+In a terminal, run this command to find out your `$TMPDIR`:
+
+```sh
+echo $TMPDIR
+```
+
+Then add it to the list of shared paths in Docker -> Preferences ... -> File Sharing. Apply and restart, and try to start the test server again.
 
 ### My PR works but the CI rejects it
 
