@@ -218,52 +218,6 @@ When using a Testnet, you can use the IovFaucet to receive tokens:
     tokenName: 'Main token of this chain' } ]
 ```
 
-## Ledger usage
-
-Do 1. and 2. like above
-
-```
-> import { LedgerSimpleAddressWallet } from "@iov/ledger-bns";
-> const profile = new UserProfile();
-> const wallet = Ed25519HdWallet.fromMnemonic("tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral");
-> profile.addWallet(wallet)
-> const ledgerWallet = new LedgerSimpleAddressWallet();
-> ledgerWallet.startDeviceTracking();
-> profile.addWallet(ledgerWallet);
-
-> profile.getIdentities(wallet.id)
-[]
-
-> profile.getIdentities(ledgerWallet.id)
-[]
-
-> const softwareIdentity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0))
-> const hardwareIdentity = await profile.createIdentity(ledgerWallet.id, 0)
-
-> softwareIdentity.pubkey
-{ algo: 'ed25519',
-  data:
-   Uint8Array [
-     84,
-     114, ...
-
-> hardwareIdentity.pubkey
-{ algo: 'ed25519',
-  data:
-   Uint8Array [
-     84,
-     114, ...
-
-> LedgerSimpleAddressWallet.registerWithKeyring()
-> const db = levelup(leveldown('./my_userprofile_db'))
-> await profile.storeIn(db, "secret passwd")
-> const profileFromDb = await UserProfile.loadFrom(db, "secret passwd");
-> profileFromDb
-UserProfile {
-  createdAt: 2018-08-02T16:25:38.274Z,
-  keyring: Keyring { wallets: [ [Object], [Object] ] }, ...
-```
-
 ## License
 
 This package is part of the IOV-Core repository, licensed under the Apache License 2.0
