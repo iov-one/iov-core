@@ -74,7 +74,8 @@ profile.setWalletLabel(wallet2.id, "24 words");
 Create identies on the two wallets:
 
 ```ts
-import { ChainId, HdPaths } from '@iov/keycontrol';
+import { ChainId } from '@iov/bcp-types';
+import { HdPaths } from '@iov/keycontrol';
 import { Encoding } from '@iov/encoding';
 const { fromHex, toHex } = Encoding;
 
@@ -186,10 +187,9 @@ Query the testnet for some existing genesis accounts:
 // this is pulled from the genesis account
 import { Address } from "@iov/bcp-types"
 
-const bert = "E28AE9A6EB94FC88B73EB7CBD6B87BF93EB9BEF0" as Address;
+const bert = "tiov1u29wnfhtjn7g3de7kl9adwrmlyltn0hsjckecc" as Address;
 const acct = await connection.getAccount({ address: bert });
 console.log(acct);
-console.log(acct.data[0])
 ```
 
 If you are running the testnet faucet, just ask for some free money.
