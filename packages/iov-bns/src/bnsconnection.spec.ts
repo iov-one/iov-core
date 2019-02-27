@@ -61,11 +61,11 @@ function pendingWithoutBnsd(): void {
   }
 }
 
-function sleep(ms: number): Promise<void> {
+async function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function tendermintSearchIndexUpdated(): Promise<void> {
+async function tendermintSearchIndexUpdated(): Promise<void> {
   // Tendermint needs some time before a committed transaction is found in search
   return sleep(50);
 }
@@ -1624,7 +1624,7 @@ describe("BnsConnection", () => {
     expect(nonceRcpt.value().length).toEqual(0);
 
     // make sure proper values
-    expect(balanceFaucet.value()).toEqual([transactionHeight1!, transactionHeight2!]);
+    expect(balanceFaucet.value()).toEqual([transactionHeight1, transactionHeight2]);
 
     connection.disconnect();
   });

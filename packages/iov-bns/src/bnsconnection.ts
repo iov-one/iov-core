@@ -356,7 +356,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    * All matching swaps that are open (from app state)
    */
   public async getSwapsFromState(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>> {
-    const doQuery = (): Promise<QueryResponse> => {
+    const doQuery = async (): Promise<QueryResponse> => {
       if (isAtomicSwapIdQuery(query)) {
         return this.query("/escrows", query.swapid);
       } else if (isAtomicSwapSenderQuery(query)) {
@@ -658,7 +658,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return nfts;
   }
 
-  protected query(path: string, data: Uint8Array): Promise<QueryResponse> {
+  protected async query(path: string, data: Uint8Array): Promise<QueryResponse> {
     return performQuery(this.tmClient, path, data);
   }
 }

@@ -52,7 +52,7 @@ export class Reducer<T, U> {
   }
 
   // finished resolves on completed stream, rejects on stream error
-  public finished(): Promise<void> {
+  public async finished(): Promise<void> {
     return this.completed;
   }
 }

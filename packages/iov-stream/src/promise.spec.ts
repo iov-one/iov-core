@@ -5,7 +5,7 @@ import { Producer, Stream } from "xstream";
 import { firstEvent, fromListPromise, toListPromise } from "./promise";
 import { asArray, countStream } from "./reducer";
 
-function oneTickLater(): Promise<void> {
+async function oneTickLater(): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, 0));
 }
 

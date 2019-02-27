@@ -19,14 +19,14 @@ function filterBadStatus(res: any): any {
  *
  * For some reason, fetch does not complain about missing server-side CORS support.
  */
-function http(method: "POST", url: string, request?: any): Promise<any> {
+async function http(method: "POST", url: string, request?: any): Promise<any> {
   if (typeof fetch !== "undefined") {
     const body = request ? JSON.stringify(request) : undefined;
     return fetch(url, { method, body })
       .then(filterBadStatus)
       .then((res: any) => res.json());
   } else {
-    return axios.request({ url, method, data: request }).then(res => res.data) as Promise<any>;
+    return axios.request({ url, method, data: request }).then(res => res.data);
   }
 }
 

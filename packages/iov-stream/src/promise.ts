@@ -29,7 +29,7 @@ export function fromListPromise<T>(promise: Promise<Iterable<T>>): Stream<T> {
  *
  * Rejects if stream completes before `count` events are collected.
  */
-export function toListPromise<T>(stream: Stream<T>, count: number): Promise<ReadonlyArray<T>> {
+export async function toListPromise<T>(stream: Stream<T>, count: number): Promise<ReadonlyArray<T>> {
   return new Promise<ReadonlyArray<T>>((resolve, reject) => {
     if (count === 0) {
       resolve([]);

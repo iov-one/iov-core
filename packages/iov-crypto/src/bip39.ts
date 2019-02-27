@@ -58,7 +58,7 @@ export class Bip39 {
     return Encoding.fromHex(bip39.mnemonicToEntropy(mnemonic.asString()));
   }
 
-  public static mnemonicToSeed(mnemonic: EnglishMnemonic, password?: string): Promise<Uint8Array> {
+  public static async mnemonicToSeed(mnemonic: EnglishMnemonic, password?: string): Promise<Uint8Array> {
     // reimplementation of bip39.mnemonicToSeed using the asynchonous
     // interface of https://www.npmjs.com/package/pbkdf2
     const mnemonicBytes = Buffer.from(unorm.nfkd(mnemonic.asString()), "utf8");
@@ -68,7 +68,7 @@ export class Bip39 {
   }
 
   // convert pbkdf2's calllback interface to Promise interface
-  private static pbkdf2(
+  private static async pbkdf2(
     secret: Uint8Array,
     salt: Uint8Array,
     iterations: number,

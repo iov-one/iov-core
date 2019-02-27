@@ -40,9 +40,9 @@ describe("StreamingSocket", () => {
     socket.connect();
     await socket.connected;
 
-    socket.send("aabbccdd");
-    socket.send("whatever");
-    socket.send("lalala");
+    await socket.send("aabbccdd");
+    await socket.send("whatever");
+    await socket.send("lalala");
 
     const response = await responsePromise;
     expect(response.length).toEqual(3);
@@ -64,9 +64,9 @@ describe("StreamingSocket", () => {
     (async () => {
       socket.connect();
       await socket.connected;
-      socket.send("aabbccdd");
-      socket.send("whatever");
-      socket.send("lalala");
+      await socket.send("aabbccdd");
+      await socket.send("whatever");
+      await socket.send("lalala");
       socket.disconnect();
     })().catch(done.fail);
   });

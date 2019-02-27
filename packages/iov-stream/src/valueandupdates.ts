@@ -29,7 +29,7 @@ export class ValueAndUpdates<T> {
    * @param search either a value or a function that must return true when found
    * @returns the value of the update that caused the search match
    */
-  public waitFor(search: SearchFunction<T> | T): Promise<T> {
+  public async waitFor(search: SearchFunction<T> | T): Promise<T> {
     const searchImplementation: SearchFunction<T> =
       typeof search === "function" ? (search as SearchFunction<T>) : (value: T): boolean => value === search;
 

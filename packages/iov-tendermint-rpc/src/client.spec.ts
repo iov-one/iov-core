@@ -24,11 +24,11 @@ function pendingWithoutTendermint(): void {
   }
 }
 
-function sleep(ms: number): Promise<void> {
+async function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function tendermintSearchIndexUpdated(): Promise<void> {
+async function tendermintSearchIndexUpdated(): Promise<void> {
   // Tendermint needs some time before a committed transaction is found in search
   return sleep(50);
 }

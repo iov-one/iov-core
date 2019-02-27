@@ -93,7 +93,7 @@ export class WebsocketClient implements RpcStreamingClient {
    * Resolves as soon as websocket is connected. execute() queues requests automatically,
    * so this should be required for testing purposes only.
    */
-  public connected(): Promise<void> {
+  public async connected(): Promise<void> {
     return this.socket.connected;
   }
 
@@ -101,7 +101,7 @@ export class WebsocketClient implements RpcStreamingClient {
     this.socket.disconnect();
   }
 
-  protected responseForRequestId(id: string): Promise<JsonRpcResponse> {
+  protected async responseForRequestId(id: string): Promise<JsonRpcResponse> {
     return firstEvent(this.jsonRpcResponseStream.filter(r => r.id === id));
   }
 }
@@ -121,7 +121,7 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
   /**
    * Implementation of Producer.start
    */
-  public start(listener: Listener<JsonRpcEvent>): void {
+  public async start(listener: Listener<JsonRpcEvent>): Promise<void> {
     if (this.running) {
       throw Error("Already started. Please stop first before restarting.");
     }
@@ -129,8 +129,8 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
 
     this.connectToClient(listener);
 
-    this.socket.connected.then(() => {
-      this.socket.send(JSON.stringify(this.request)).catch(error => {
+    await this.socket.connected.then(async () => {
+      await this.socket.send(JSON.stringify(this.request)).catch(error => {
         listener.error(error);
       });
     });

@@ -78,10 +78,10 @@ describe("SocketWrapper", () => {
         }
       },
       fail,
-      () => {
-        socket.send("aabbccdd");
-        socket.send("whatever");
-        socket.send("lalala");
+      async () => {
+        await socket.send("aabbccdd");
+        await socket.send("whatever");
+        await socket.send("lalala");
       },
       () => {
         expect(responseMessages.length).toEqual(3);

@@ -464,7 +464,7 @@ describe("UserProfile", () => {
 
   it("throws when loading a profile with unsupported format version", async () => {
     const db = levelup(MemDownConstructor<string, string>());
-    db.put("format_version", "123");
+    await db.put("format_version", "123");
 
     await UserProfile.loadFrom(db, defaultEncryptionPassword)
       .then(() => fail("must not resolve"))
