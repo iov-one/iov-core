@@ -1,4 +1,4 @@
-import { ChainConnector } from "@iov/bcp-types";
+import { ChainConnector } from "@iov/bcp";
 
 import { riseCodec } from "./risecodec";
 import { RiseConnection } from "./riseconnection";

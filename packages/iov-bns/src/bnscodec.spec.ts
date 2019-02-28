@@ -1,4 +1,4 @@
-import { PostableBytes, PrehashType, SignedTransaction } from "@iov/bcp-types";
+import { PostableBytes, PrehashType, SignedTransaction } from "@iov/bcp";
 import { Ed25519, Sha512 } from "@iov/crypto";
 
 import { bnsCodec } from "./bnscodec";

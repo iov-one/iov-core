@@ -7,7 +7,7 @@ import {
   PublicKeyBundle,
   PublicKeyBytes,
   TokenTicker,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Encoding, Int53 } from "@iov/encoding";
 
 const { fromHex } = Encoding;

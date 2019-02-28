@@ -10,7 +10,7 @@ import {
   SignatureBytes,
   SignedTransaction,
   TokenTicker,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Encoding, Int53 } from "@iov/encoding";
 
 import { Serialization, TransactionSerializationOptions } from "./serialization";

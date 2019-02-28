@@ -18,7 +18,7 @@ import {
   TransactionId,
   TxCodec,
   UnsignedTransaction,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Parse, Serialization } from "@iov/dpos";
 import { Encoding, Int53 } from "@iov/encoding";
 

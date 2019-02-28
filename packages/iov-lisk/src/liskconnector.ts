@@ -1,4 +1,4 @@
-import { ChainConnector } from "@iov/bcp-types";
+import { ChainConnector } from "@iov/bcp";
 
 import { liskCodec } from "./liskcodec";
 import { LiskConnection } from "./liskconnection";

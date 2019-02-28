@@ -1,4 +1,4 @@
-import { Address } from "@iov/bcp-types";
+import { Address } from "@iov/bcp";
 import { Derivation } from "@iov/dpos";
 
 import { constants } from "./constants";

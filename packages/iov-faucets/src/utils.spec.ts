@@ -1,4 +1,4 @@
-import { Address, Algorithm, ChainId, PublicIdentity, PublicKeyBytes } from "@iov/bcp-types";
+import { Address, Algorithm, ChainId, PublicIdentity, PublicKeyBytes } from "@iov/bcp";
 import { bnsCodec } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 

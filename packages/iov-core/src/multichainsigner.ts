@@ -9,7 +9,7 @@ import {
   SignedTransaction,
   TxCodec,
   UnsignedTransaction,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { WalletId } from "@iov/keycontrol";
 
 /**

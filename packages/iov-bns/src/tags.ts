@@ -5,7 +5,7 @@ import {
   isAtomicSwapIdQuery,
   isAtomicSwapRecipientQuery,
   isAtomicSwapSenderQuery,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
 import { bucketKey, decodeBnsAddress, hashIdentifier, indexKey } from "./util";

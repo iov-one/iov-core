@@ -10,7 +10,7 @@ import {
   SendTransaction,
   SignatureBytes,
   TokenTicker,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 

@@ -1,4 +1,4 @@
-import { Address, Algorithm, PublicKeyBundle } from "@iov/bcp-types";
+import { Address, Algorithm, PublicKeyBundle } from "@iov/bcp";
 import { Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 

@@ -10,7 +10,7 @@ import {
   SignatureBytes,
   SignedTransaction,
   TokenTicker,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 

@@ -8,7 +8,7 @@ import {
   TransactionId,
   TxCodec,
   UnsignedTransaction,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 import { TxBytes, v0_27 } from "@iov/tendermint-rpc";
 

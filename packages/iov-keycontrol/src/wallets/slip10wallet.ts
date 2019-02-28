@@ -9,7 +9,7 @@ import {
   PublicKeyBytes,
   SignableBytes,
   SignatureBytes,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import {
   Bip39,
   Ed25519,

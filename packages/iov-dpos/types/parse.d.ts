@@ -1,5 +1,5 @@
 import { ReadonlyDate } from "readonly-date";
-import { Nonce } from "@iov/bcp-types";
+import { Nonce } from "@iov/bcp";
 export declare class Parse {
     /** validates string to be a non-negative integer and cuts leading zeros */
     static parseQuantity(quantity: string): string;

@@ -16,7 +16,7 @@ import {
   SwapOfferTransaction,
   SwapTimeoutTransaction,
   TokenTicker,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Encoding, Int53 } from "@iov/encoding";
 
 import { PrivateKeyBundle, PrivateKeyBytes } from "./types";

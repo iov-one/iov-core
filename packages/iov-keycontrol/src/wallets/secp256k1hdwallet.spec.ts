@@ -1,4 +1,4 @@
-import { ChainId, PrehashType, SignableBytes } from "@iov/bcp-types";
+import { ChainId, PrehashType, SignableBytes } from "@iov/bcp";
 import { ExtendedSecp256k1Signature, Secp256k1, Sha256, Slip10RawIndex } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 

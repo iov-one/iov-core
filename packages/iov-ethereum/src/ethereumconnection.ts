@@ -24,7 +24,7 @@ import {
   TokenTicker,
   TransactionId,
   TransactionState,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Encoding, Int53, Uint53 } from "@iov/encoding";
 import { isJsonRpcErrorResponse, JsonRpcRequest } from "@iov/jsonrpc";
 import { StreamingSocket } from "@iov/socket";

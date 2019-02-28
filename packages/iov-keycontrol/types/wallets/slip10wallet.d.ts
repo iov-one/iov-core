@@ -1,4 +1,4 @@
-import { ChainId, PrehashType, PublicIdentity, SignableBytes, SignatureBytes } from "@iov/bcp-types";
+import { ChainId, PrehashType, PublicIdentity, SignableBytes, SignatureBytes } from "@iov/bcp";
 import { Slip10Curve } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "../wallet";

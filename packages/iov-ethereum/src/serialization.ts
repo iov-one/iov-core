@@ -1,4 +1,4 @@
-import { isSendTransaction, Nonce, SignedTransaction, UnsignedTransaction } from "@iov/bcp-types";
+import { isSendTransaction, Nonce, SignedTransaction, UnsignedTransaction } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 

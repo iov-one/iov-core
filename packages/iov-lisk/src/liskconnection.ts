@@ -27,7 +27,7 @@ import {
   TokenTicker,
   TransactionId,
   TransactionState,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Parse } from "@iov/dpos";
 import { Encoding, Int53, Uint53, Uint64 } from "@iov/encoding";
 import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";

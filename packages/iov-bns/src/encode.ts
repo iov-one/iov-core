@@ -10,7 +10,7 @@ import {
   SwapOfferTransaction,
   SwapTimeoutTransaction,
   UnsignedTransaction,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Encoding, Int53 } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";

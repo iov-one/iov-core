@@ -1,7 +1,7 @@
 import { AbstractLevelDOWN } from "abstract-leveldown";
 import { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
-import { ChainId, Nonce, PublicIdentity, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp-types";
+import { ChainId, Nonce, PublicIdentity, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp";
 import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { Keyring } from "./keyring";

@@ -9,7 +9,7 @@ import {
   PublicKeyBytes,
   SignableBytes,
   SignatureBytes,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 import { Ed25519, Ed25519Keypair } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";

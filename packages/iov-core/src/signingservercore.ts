@@ -1,10 +1,4 @@
-import {
-  ChainId,
-  PublicIdentity,
-  publicIdentityEquals,
-  TransactionId,
-  UnsignedTransaction,
-} from "@iov/bcp-types";
+import { ChainId, PublicIdentity, publicIdentityEquals, TransactionId, UnsignedTransaction } from "@iov/bcp";
 import { UserProfile, WalletId } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";

@@ -1,4 +1,4 @@
-import { ChainId, Nonce } from "@iov/bcp-types";
+import { ChainId, Nonce } from "@iov/bcp";
 export declare function decodeHexQuantity(hexString: string): number;
 export declare function decodeHexQuantityString(hexString: string): string;
 export declare function decodeHexQuantityNonce(hexString: string): Nonce;

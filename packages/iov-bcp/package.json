@@ -1,14 +1,14 @@
 {
-  "name": "@iov/bcp-types",
+  "name": "@iov/bcp",
   "version": "0.12.0",
-  "description": "General types for IOV projects",
+  "description": "General types and helpers for IOV's blockchain communication protocol",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
   "main": "build/index.js",
   "types": "types/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-bcp-types"
+    "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-bcp"
   },
   "publishConfig": {
     "access": "public"

@@ -9,7 +9,7 @@ Use some Testnet faucets from JavaScript.
 The basic usage of this package is:
 
 ```ts
-import { TokenTicker } from "@iov/bcp-types";
+import { TokenTicker } from "@iov/bcp";
 import { IovFaucet } from '@iov/faucets';
 
 const faucet = new IovFaucet("https://iov-faucet.yaknet.iov.one");

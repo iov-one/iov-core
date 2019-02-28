@@ -1,4 +1,4 @@
-import { TokenTicker } from "@iov/bcp-types";
+import { TokenTicker } from "@iov/bcp";
 export declare const constants: {
     addressSuffix: string;
     primaryTokenTicker: TokenTicker;

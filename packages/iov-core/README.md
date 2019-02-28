@@ -72,7 +72,7 @@ profile.setWalletLabel(wallet2.id, "24 words");
 Create identies on the two wallets:
 
 ```ts
-import { ChainId } from '@iov/bcp-types';
+import { ChainId } from '@iov/bcp';
 import { HdPaths } from '@iov/keycontrol';
 import { Encoding } from '@iov/encoding';
 const { fromHex, toHex } = Encoding;
@@ -183,7 +183,7 @@ Query the testnet for some existing genesis accounts:
 
 ```ts
 // this is pulled from the genesis account
-import { Address } from "@iov/bcp-types"
+import { Address } from "@iov/bcp"
 
 const bert = "tiov1u29wnfhtjn7g3de7kl9adwrmlyltn0hsjckecc" as Address;
 const acct = await connection.getAccount({ address: bert });
@@ -193,7 +193,7 @@ console.log(acct);
 If you are running the testnet faucet, just ask for some free money.
 
 ```ts
-import { TokenTicker } from "@iov/bcp-types";
+import { TokenTicker } from "@iov/bcp";
 import { IovFaucet } from "@iov/faucets";
 
 const faucet = new IovFaucet("https://bov-faucet.hugnet.iov.one/");
@@ -216,7 +216,7 @@ console.log(yours); // should be undefined
 Send a transaction to second id:
 
 ```ts
-import { SendTransaction, TokenTicker } from "@iov/bcp-types"
+import { SendTransaction, TokenTicker } from "@iov/bcp"
 
 const sendTx: SendTransaction = {
   kind: "bcp/send",

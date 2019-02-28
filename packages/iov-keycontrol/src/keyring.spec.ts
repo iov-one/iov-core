@@ -1,4 +1,4 @@
-import { ChainId } from "@iov/bcp-types";
+import { ChainId } from "@iov/bcp";
 import { Ed25519, Ed25519Keypair, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 

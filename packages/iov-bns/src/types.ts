@@ -20,7 +20,7 @@ import {
   SwapTimeoutTransaction,
   TokenTicker,
   UnsignedTransaction,
-} from "@iov/bcp-types";
+} from "@iov/bcp";
 
 import { Int53 } from "@iov/encoding";
 
