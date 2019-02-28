@@ -41,6 +41,7 @@ describe("SigningServerCore", () => {
     fractionalDigits: 9,
     tokenTicker: "CASH" as TokenTicker,
   };
+  const defaultChainId = "some-network" as ChainId;
   const defaultGetIdentitiesCallback: GetIdentitiesAuthorization = async (_, matching) => matching;
   const defaultSignAndPostCallback: SignAndPostAuthorization = async (_1, _2) => true;
 
@@ -79,6 +80,43 @@ describe("SigningServerCore", () => {
 
     const xnetIdentities = await core.getIdentities("Login to XY service", [chainId]);
     expect(xnetIdentities).toEqual([identity0, identity1]);
+
+    core.shutdown();
+  });
+
+  it("can get some selected identities", async () => {
+    const profile = new UserProfile();
+    const wallet = profile.addWallet(
+      Ed25519HdWallet.fromMnemonic(
+        "option diagram plastic million educate they arrow fat comic excite abandon green",
+      ),
+    );
+
+    const identities: ReadonlyArray<PublicIdentity> = [
+      await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0)),
+      await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(1)),
+      await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(2)),
+      await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(3)),
+    ];
+
+    async function selectEvenIdentitiesCallback(
+      _: string,
+      matchingIdentities: ReadonlyArray<PublicIdentity>,
+    ): Promise<ReadonlyArray<PublicIdentity>> {
+      // select all even identities
+      return matchingIdentities.filter((_1, index) => index % 2 === 0);
+    }
+
+    const signer = new MultiChainSigner(profile);
+    const core = new SigningServerCore(
+      profile,
+      signer,
+      selectEvenIdentitiesCallback,
+      defaultSignAndPostCallback,
+    );
+
+    const revealedIdentities = await core.getIdentities("Login to XY service", [defaultChainId]);
+    expect(revealedIdentities).toEqual([identities[0], identities[2]]);
 
     core.shutdown();
   });
