@@ -1587,48 +1587,6 @@ describe("BnsConnection", () => {
     return connection.postTx(txBytes);
   };
 
-  it("can provide change feeds", async () => {
-    pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const { profile, mainWalletId, faucet } = await userProfileWithFaucet(connection.chainId());
-
-    const faucetAddr = identityToAddress(faucet);
-    const rcpt = await profile.createIdentity(mainWalletId, defaultChain, HdPaths.simpleAddress(87));
-    const rcptAddr = identityToAddress(rcpt);
-
-    // let's watch for all changes, capture them in arrays
-    const balanceFaucet = asArray(connection.changeBalance(faucetAddr));
-    const balanceRcpt = asArray(connection.changeBalance(rcptAddr));
-    const nonceFaucet = asArray(connection.changeNonce(faucetAddr));
-    const nonceRcpt = asArray(connection.changeNonce(rcptAddr));
-
-    const post1 = await sendCash(connection, profile, faucet, rcptAddr);
-    const blockInfo1 = await post1.blockInfo.waitFor(info => !isBlockInfoPending(info));
-    const transactionHeight1 = (blockInfo1 as BlockInfoSucceeded | BlockInfoFailed).height;
-    expect(transactionHeight1).toBeGreaterThanOrEqual(1);
-
-    const post2 = await sendCash(connection, profile, faucet, rcptAddr);
-    const blockInfo2 = await post2.blockInfo.waitFor(info => !isBlockInfoPending(info));
-    const transactionHeight2 = (blockInfo2 as BlockInfoSucceeded | BlockInfoFailed).height;
-    expect(transactionHeight2).toBeGreaterThanOrEqual(transactionHeight1 + 1);
-
-    // give time for all events to be processed
-    await sleep(50);
-
-    // both should show up on the balance changes
-    expect(balanceFaucet.value().length).toEqual(2);
-    expect(balanceRcpt.value().length).toEqual(2);
-
-    // only faucet should show up on the nonce changes
-    expect(nonceFaucet.value().length).toEqual(2);
-    expect(nonceRcpt.value().length).toEqual(0);
-
-    // make sure proper values
-    expect(balanceFaucet.value()).toEqual([transactionHeight1, transactionHeight2]);
-
-    connection.disconnect();
-  });
-
   // make sure we can get a reactive account balance (as well as nonce)
   it("can watch accounts", async () => {
     pendingWithoutBnsd();
