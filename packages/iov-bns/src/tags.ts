@@ -1,5 +1,4 @@
 import {
-  Address,
   AtomicSwapQuery,
   BcpQueryTag,
   isAtomicSwapIdQuery,
@@ -9,13 +8,6 @@ import {
 import { Encoding } from "@iov/encoding";
 
 import { bucketKey, decodeBnsAddress, hashIdentifier, indexKey } from "./util";
-
-export function bnsNonceTag(addr: Address): BcpQueryTag {
-  const id = Uint8Array.from([...Encoding.toAscii("sigs:"), ...decodeBnsAddress(addr).data]);
-  const key = Encoding.toHex(id).toUpperCase();
-  const value = "s"; // "s" for "set"
-  return { key, value };
-}
 
 export function bnsSwapQueryTag(query: AtomicSwapQuery, set = true): BcpQueryTag {
   let binKey: Uint8Array;

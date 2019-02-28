@@ -38,7 +38,7 @@ import { asArray, firstEvent, lastValue, toListPromise } from "@iov/stream";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
-import { bnsNonceTag, bnsSwapQueryTag } from "./tags";
+import { bnsSwapQueryTag } from "./tags";
 import {
   AddAddressToUsernameTx,
   isRegisterBlockchainTx,
@@ -633,7 +633,7 @@ describe("BnsConnection", () => {
       await tendermintSearchIndexUpdated();
 
       // Find registration transaction
-      const searchResult = (await connection.searchTx({ tags: [bnsNonceTag(identityAddress)] })).filter(
+      const searchResult = (await connection.searchTx({ signedBy: identityAddress })).filter(
         isConfirmedTransaction,
       );
       expect(searchResult.length).toEqual(1);
@@ -688,9 +688,7 @@ describe("BnsConnection", () => {
       await tendermintSearchIndexUpdated();
 
       // Find registration transaction
-      const searchResult = (await connection.searchTx({ tags: [bnsNonceTag(address)] })).filter(
-        isConfirmedTransaction,
-      );
+      const searchResult = (await connection.searchTx({ signedBy: address })).filter(isConfirmedTransaction);
       expect(searchResult.length).toEqual(1);
       const firstSearchResultTransaction = searchResult[0].transaction;
       if (!isRegisterUsernameTx(firstSearchResultTransaction)) {

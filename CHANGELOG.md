@@ -3,6 +3,7 @@
 ## 0.13.0
 
 * @iov/bcp: Add `AtomicSwapMerger`
+* @iov/bcp: Add `signedBy` field to `BcpTxQuery`.
 
 Breaking changes
 
@@ -21,6 +22,7 @@ Breaking changes
   `SwapOfferTransaction` for both offer and counter offer.
 * @iov/bcp: `AtomicSwapHelpers.createPreimage` and `.hashPreimage` are
   now available to perform BCP specific atomic swap operations
+* @iov/bns: Remove `bnsNonceTag` in favour of `BcpTxQuery.signedBy`.
 * @iov/ethereum: The `options` parameter of `ethereumConnector` does not allow
   strings anymore. Use `{ wsUrl: myWebsocketUrl }` instead.
 * @iov/keycontrol: Remove `HdPaths.metamaskHdKeyTree`. Use `HdPaths.ethereum` instead.
