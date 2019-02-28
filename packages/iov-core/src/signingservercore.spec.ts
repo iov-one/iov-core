@@ -223,7 +223,8 @@ describe("SigningServerCore", () => {
       recipient: await randomBnsAddress(),
     };
     const transactionId = await core.signAndPost("Please sign now", send);
-    expect(transactionId).toBeTruthy();
+    expect(transactionId).toBeDefined();
+    expect(transactionId).toMatch(/^[0-9A-F]{64}$/);
 
     core.shutdown();
   });
