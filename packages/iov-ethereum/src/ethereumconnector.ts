@@ -15,7 +15,7 @@ export function ethereumConnector(
 ): ChainConnector {
   const usedOptions: EthereumConnectionOptions = options || {};
   return {
-    client: () => EthereumConnection.establish(url, usedOptions),
+    client: async () => EthereumConnection.establish(url, usedOptions),
     codec: ethereumCodec,
     expectedChainId,
   };

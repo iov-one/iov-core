@@ -2,7 +2,7 @@ import { AbstractLevelDOWN } from "abstract-leveldown";
 import { LevelUp } from "levelup";
 
 export class DatabaseUtils {
-  public static clear<K, V>(db: LevelUp<AbstractLevelDOWN<K, V>>): Promise<void> {
+  public static async clear<K, V>(db: LevelUp<AbstractLevelDOWN<K, V>>): Promise<void> {
     const keysToClear = new Array<K>();
 
     return new Promise((resolve, reject) => {

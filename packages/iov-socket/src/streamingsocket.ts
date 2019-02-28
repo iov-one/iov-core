@@ -58,7 +58,7 @@ export class StreamingSocket {
     this.socket.disconnect();
   }
 
-  public send(data: string): Promise<void> {
+  public async send(data: string): Promise<void> {
     return this.socket.send(data);
   }
 }

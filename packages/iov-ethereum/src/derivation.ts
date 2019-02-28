@@ -46,5 +46,5 @@ export function pubkeyToAddress(pubkey: PublicKeyBundle): Address {
   const hash = toHex(new Keccak256(pubkey.data.slice(1)).digest());
   const lastFortyChars = hash.slice(-40);
   const addressString = toChecksumAddress("0x" + lastFortyChars);
-  return addressString as Address;
+  return addressString;
 }

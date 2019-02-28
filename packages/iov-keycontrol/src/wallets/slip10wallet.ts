@@ -357,7 +357,7 @@ export class Slip10Wallet implements Wallet {
             },
             label: label,
           },
-          privkeyPath: privkeyPath.map(rawIndex => rawIndex.asNumber()),
+          privkeyPath: privkeyPath.map(rawIndex => rawIndex.toNumber()),
         };
       },
     );

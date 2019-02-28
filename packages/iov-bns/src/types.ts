@@ -62,7 +62,7 @@ export type BnsBlockchainsQuery = BnsBlockchainsByChainIdQuery;
 export function isBnsBlockchainsByChainIdQuery(
   query: BnsBlockchainsQuery,
 ): query is BnsBlockchainsByChainIdQuery {
-  return typeof (query as BnsBlockchainsByChainIdQuery).chainId !== "undefined";
+  return typeof query.chainId !== "undefined";
 }
 
 // username NFT

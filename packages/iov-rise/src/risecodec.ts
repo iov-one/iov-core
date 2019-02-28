@@ -149,7 +149,7 @@ export const riseCodec: TxCodec = {
    * Address string, e.g. 10145108642177909005R
    */
   identityToAddress: (identity: PublicIdentity): Address => {
-    return pubkeyToAddress(identity.pubkey.data) as Address;
+    return pubkeyToAddress(identity.pubkey.data);
   },
 
   isValidAddress: isValidAddress,

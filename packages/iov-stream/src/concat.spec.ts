@@ -3,7 +3,7 @@ import { Producer, Stream } from "xstream";
 
 import { concat } from "./concat";
 
-function producerIsStopped(): Promise<void> {
+async function producerIsStopped(): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, 50));
 }
 

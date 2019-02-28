@@ -7,7 +7,7 @@ import * as responses from "./responses";
 import { HttpClient, instanceOfRpcStreamingClient, RpcClient, WebsocketClient } from "./rpcclients";
 
 export class Client {
-  public static connect(url: string): Promise<Client> {
+  public static async connect(url: string): Promise<Client> {
     const useHttp = url.startsWith("http://") || url.startsWith("https://");
     const client = useHttp ? new HttpClient(url) : new WebsocketClient(url);
     return this.detectVersion(client);
@@ -44,27 +44,27 @@ export class Client {
     this.client.disconnect();
   }
 
-  public abciInfo(): Promise<responses.AbciInfoResponse> {
+  public async abciInfo(): Promise<responses.AbciInfoResponse> {
     const query: requests.AbciInfoRequest = { method: requests.Method.AbciInfo };
     return this.doCall(query, this.p.encodeAbciInfo, this.r.decodeAbciInfo);
   }
 
-  public abciQuery(params: requests.AbciQueryParams): Promise<responses.AbciQueryResponse> {
+  public async abciQuery(params: requests.AbciQueryParams): Promise<responses.AbciQueryResponse> {
     const query: requests.AbciQueryRequest = { params, method: requests.Method.AbciQuery };
     return this.doCall(query, this.p.encodeAbciQuery, this.r.decodeAbciQuery);
   }
 
-  public block(height?: number): Promise<responses.BlockResponse> {
+  public async block(height?: number): Promise<responses.BlockResponse> {
     const query: requests.BlockRequest = { method: requests.Method.Block, params: { height } };
     return this.doCall(query, this.p.encodeBlock, this.r.decodeBlock);
   }
 
-  public blockResults(height?: number): Promise<responses.BlockResultsResponse> {
+  public async blockResults(height?: number): Promise<responses.BlockResultsResponse> {
     const query: requests.BlockResultsRequest = { method: requests.Method.BlockResults, params: { height } };
     return this.doCall(query, this.p.encodeBlockResults, this.r.decodeBlockResults);
   }
 
-  public blockchain(minHeight?: number, maxHeight?: number): Promise<responses.BlockchainResponse> {
+  public async blockchain(minHeight?: number, maxHeight?: number): Promise<responses.BlockchainResponse> {
     const query: requests.BlockchainRequest = {
       method: requests.Method.Blockchain,
       params: { minHeight, maxHeight },
@@ -77,7 +77,9 @@ export class Client {
    *
    * @see https://tendermint.com/rpc/#broadcasttxsync
    */
-  public broadcastTxSync(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxSyncResponse> {
+  public async broadcastTxSync(
+    params: requests.BroadcastTxParams,
+  ): Promise<responses.BroadcastTxSyncResponse> {
     const query: requests.BroadcastTxRequest = { params, method: requests.Method.BroadcastTxSync };
     return this.doCall(query, this.p.encodeBroadcastTx, this.r.decodeBroadcastTxSync);
   }
@@ -87,7 +89,9 @@ export class Client {
    *
    * @see https://tendermint.com/rpc/#broadcasttxasync
    */
-  public broadcastTxAsync(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxAsyncResponse> {
+  public async broadcastTxAsync(
+    params: requests.BroadcastTxParams,
+  ): Promise<responses.BroadcastTxAsyncResponse> {
     const query: requests.BroadcastTxRequest = { params, method: requests.Method.BroadcastTxAsync };
     return this.doCall(query, this.p.encodeBroadcastTx, this.r.decodeBroadcastTxAsync);
   }
@@ -97,27 +101,29 @@ export class Client {
    *
    * @see https://tendermint.com/rpc/#broadcasttxcommit
    */
-  public broadcastTxCommit(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxCommitResponse> {
+  public async broadcastTxCommit(
+    params: requests.BroadcastTxParams,
+  ): Promise<responses.BroadcastTxCommitResponse> {
     const query: requests.BroadcastTxRequest = { params, method: requests.Method.BroadcastTxCommit };
     return this.doCall(query, this.p.encodeBroadcastTx, this.r.decodeBroadcastTxCommit);
   }
 
-  public commit(height?: number): Promise<responses.CommitResponse> {
+  public async commit(height?: number): Promise<responses.CommitResponse> {
     const query: requests.CommitRequest = { method: requests.Method.Commit, params: { height } };
     return this.doCall(query, this.p.encodeCommit, this.r.decodeCommit);
   }
 
-  public genesis(): Promise<responses.GenesisResponse> {
+  public async genesis(): Promise<responses.GenesisResponse> {
     const query: requests.GenesisRequest = { method: requests.Method.Genesis };
     return this.doCall(query, this.p.encodeGenesis, this.r.decodeGenesis);
   }
 
-  public health(): Promise<responses.HealthResponse> {
+  public async health(): Promise<responses.HealthResponse> {
     const query: requests.HealthRequest = { method: requests.Method.Health };
     return this.doCall(query, this.p.encodeHealth, this.r.decodeHealth);
   }
 
-  public status(): Promise<responses.StatusResponse> {
+  public async status(): Promise<responses.StatusResponse> {
     const query: requests.StatusRequest = { method: requests.Method.Status };
     return this.doCall(query, this.p.encodeStatus, this.r.decodeStatus);
   }
@@ -149,7 +155,7 @@ export class Client {
     return this.subscribe(request, this.r.decodeTxEvent);
   }
 
-  public tx(params: requests.TxParams): Promise<responses.TxResponse> {
+  public async tx(params: requests.TxParams): Promise<responses.TxResponse> {
     const query: requests.TxRequest = { params, method: requests.Method.Tx };
     return this.doCall(query, this.p.encodeTx, this.r.decodeTx);
   }
@@ -196,7 +202,7 @@ export class Client {
     };
   }
 
-  public validators(height?: number): Promise<responses.ValidatorsResponse> {
+  public async validators(height?: number): Promise<responses.ValidatorsResponse> {
     const query: requests.ValidatorsRequest = { method: requests.Method.Validators, params: { height } };
     return this.doCall(query, this.p.encodeValidators, this.r.decodeValidators);
   }

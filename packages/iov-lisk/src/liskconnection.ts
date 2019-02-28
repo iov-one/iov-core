@@ -224,7 +224,7 @@ export class LiskConnection implements BcpConnection {
     let lastEvent: any = {}; // default to a dummy value to ensure an initial undefined event is sent
     let pollInternal: NodeJS.Timeout | undefined;
     const producer: Producer<Account | undefined> = {
-      start: listener => {
+      start: async listener => {
         const poll = async () => {
           try {
             const event = await this.getAccount(query);
@@ -238,7 +238,7 @@ export class LiskConnection implements BcpConnection {
         };
 
         pollInternal = setInterval(poll, 5_000);
-        poll();
+        await poll();
       },
       stop: () => {
         if (pollInternal) {
@@ -330,7 +330,7 @@ export class LiskConnection implements BcpConnection {
     } else if (query.sentFromOrTo) {
       let pollInterval: NodeJS.Timeout | undefined;
       const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
-        start: listener => {
+        start: async listener => {
           let minHeight = query.minHeight || 0;
           const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
 
@@ -349,7 +349,7 @@ export class LiskConnection implements BcpConnection {
             }
           };
 
-          poll();
+          await poll();
           pollInterval = setInterval(poll, 4_000);
         },
         stop: () => {
