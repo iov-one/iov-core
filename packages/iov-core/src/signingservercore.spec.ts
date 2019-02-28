@@ -7,6 +7,7 @@ import {
   PublicKeyBytes,
   SendTransaction,
   TokenTicker,
+  UnsignedTransaction,
 } from "@iov/bcp";
 import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
@@ -225,6 +226,43 @@ describe("SigningServerCore", () => {
     const transactionId = await core.signAndPost("Please sign now", send);
     expect(transactionId).toBeDefined();
     expect(transactionId).toMatch(/^[0-9A-F]{64}$/);
+
+    core.shutdown();
+  });
+
+  it("can handle rejected sign and post request", async () => {
+    pendingWithoutBnsd();
+
+    const profile = new UserProfile();
+    const signer = new MultiChainSigner(profile);
+    const { connection } = await signer.addChain(bnsConnector(bnsdUrl));
+    const bnsChain = connection.chainId();
+
+    {
+      const wallet = profile.addWallet(
+        Ed25519HdWallet.fromMnemonic(
+          "option diagram plastic million educate they arrow fat comic excite abandon green",
+        ),
+      );
+      await profile.createIdentity(wallet.id, bnsChain, HdPaths.simpleAddress(1));
+    }
+
+    async function rejectAllTransactions(_1: string, _2: UnsignedTransaction): Promise<boolean> {
+      return false;
+    }
+
+    const core = new SigningServerCore(profile, signer, defaultGetIdentitiesCallback, rejectAllTransactions);
+
+    const identities = await core.getIdentities("Please select signer", [bnsChain]);
+    const signingIdentity = identities[0];
+    const send: SendTransaction = {
+      kind: "bcp/send",
+      creator: signingIdentity,
+      amount: defaultAmount,
+      recipient: await randomBnsAddress(),
+    };
+    const transactionId = await core.signAndPost("Please sign now", send);
+    expect(transactionId).toBeUndefined();
 
     core.shutdown();
   });

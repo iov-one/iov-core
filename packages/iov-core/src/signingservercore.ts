@@ -85,7 +85,9 @@ export class SigningServerCore {
         throw new Error("More than one wallets contain the identity to sign this transaction");
     }
 
-    if (this.authorizeSignAndPost(reason, transaction)) {
+    const authorized: boolean = await this.authorizeSignAndPost(reason, transaction);
+
+    if (authorized) {
       const response = await this.signer.signAndPost(transaction, walletId);
       return response.transactionId;
     } else {
