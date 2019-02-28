@@ -121,6 +121,35 @@ describe("SigningServerCore", () => {
     core.shutdown();
   });
 
+  it("can get no identities", async () => {
+    const profile = new UserProfile();
+    const wallet = profile.addWallet(
+      Ed25519HdWallet.fromMnemonic(
+        "option diagram plastic million educate they arrow fat comic excite abandon green",
+      ),
+    );
+
+    await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0));
+    await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(1));
+    await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(2));
+    await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(3));
+
+    async function selectNoIdentityCallback(
+      _1: string,
+      _2: ReadonlyArray<PublicIdentity>,
+    ): Promise<ReadonlyArray<PublicIdentity>> {
+      return [];
+    }
+
+    const signer = new MultiChainSigner(profile);
+    const core = new SigningServerCore(profile, signer, selectNoIdentityCallback, defaultSignAndPostCallback);
+
+    const revealedIdentities = await core.getIdentities("Login to XY service", [defaultChainId]);
+    expect(revealedIdentities).toEqual([]);
+
+    core.shutdown();
+  });
+
   it("can get identities from multiple chains", async () => {
     const xnet = "xnet" as ChainId;
     const ynet = "ynet" as ChainId;
