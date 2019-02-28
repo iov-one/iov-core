@@ -118,16 +118,12 @@ unset TENDERMINT_ENABLED
 
 #### BNS
 
-```
-./scripts/bnsd/start.sh
-export BNSD_ENABLED=1
+If you are working on `@iov/bns`, you can run the tests against a local
+BNS devnet. See [scripts/bnsd/README.md](https://github.com/iov-one/iov-core/tree/master/scripts/bnsd/README.md#start) how to start the BNS devnet.
 
+```
 cd packages/iov-bns
 yarn test
-cd ../..
-
-unset BNSD_ENABLED
-./scripts/bnsd/stop.sh
 ```
 
 #### Lisk
