@@ -53,6 +53,13 @@ export class SigningServerCore {
     this.authorizeSignAndPost = authorizeSignAndPost;
   }
 
+  /**
+   * Handles a identities request
+   *
+   * Returns the a list of identities selected by the user. In case
+   * the user selected no identity or rejected the request entirely,
+   * this returns an empty list.
+   */
   public async getIdentities(
     reason: string,
     chainIds: ReadonlyArray<ChainId>,
@@ -72,6 +79,12 @@ export class SigningServerCore {
     return authorizedIdentities;
   }
 
+  /**
+   * Handles a transaction signing request
+   *
+   * Returns the transaction ID in case the user authorized the signing.
+   * Returns undefined in the case the user rejected.
+   */
   public async signAndPost(
     reason: string,
     transaction: UnsignedTransaction,

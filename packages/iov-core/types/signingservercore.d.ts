@@ -37,7 +37,20 @@ export declare class SigningServerCore {
     private readonly authorizeGetIdentities;
     private readonly authorizeSignAndPost;
     constructor(profile: UserProfile, signer: MultiChainSigner, authorizeGetIdentities: GetIdentitiesAuthorization, authorizeSignAndPost: SignAndPostAuthorization);
+    /**
+     * Handles a identities request
+     *
+     * Returns the a list of identities selected by the user. In case
+     * the user selected no identity or rejected the request entirely,
+     * this returns an empty list.
+     */
     getIdentities(reason: string, chainIds: ReadonlyArray<ChainId>): Promise<ReadonlyArray<PublicIdentity>>;
+    /**
+     * Handles a transaction signing request
+     *
+     * Returns the transaction ID in case the user authorized the signing.
+     * Returns undefined in the case the user rejected.
+     */
     signAndPost(reason: string, transaction: UnsignedTransaction): Promise<TransactionId | undefined>;
     /**
      * Call this to free ressources when server is not needed anymore
