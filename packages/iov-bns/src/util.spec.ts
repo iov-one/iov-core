@@ -126,6 +126,12 @@ describe("Util", () => {
       expect(query).toEqual(expected);
     });
 
+    it("handles signedBy", () => {
+      const query = buildTxQuery({ signedBy: "tiov142a64wa2hw4th24m42a64wa2hw4th24m593zc3" as Address });
+      const expected = `${toHex(toAscii("sigs:")).toUpperCase()}AABBAABBAABBAABBAABBAABBAABBAABBAABBAABB='s'`;
+      expect(query).toEqual(expected);
+    });
+
     it("handles empty tag list", () => {
       const query = buildTxQuery({ tags: [] });
       expect(query).toEqual("");
