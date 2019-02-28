@@ -78,13 +78,4 @@ export class HdPaths {
   public static ethereum(account: number): ReadonlyArray<Slip10RawIndex> {
     return HdPaths.bip44(60, 0, 0, account);
   }
-
-  /**
-   * The default MetaMask derivation path
-   *
-   * @deprecated use HdPaths.ethereum
-   */
-  public static metamaskHdKeyTree(account: number): ReadonlyArray<Slip10RawIndex> {
-    return HdPaths.ethereum(account);
-  }
 }

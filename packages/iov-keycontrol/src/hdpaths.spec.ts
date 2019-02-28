@@ -62,25 +62,4 @@ describe("HdPaths", () => {
       Slip10RawIndex.normal(123),
     ]);
   });
-
-  it("has working MetaMask 'HD Key Tree' implementation", () => {
-    // tslint:disable:deprecation
-    // m/44'/60'/0'/0/0
-    expect(HdPaths.metamaskHdKeyTree(0)).toEqual([
-      Slip10RawIndex.hardened(44),
-      Slip10RawIndex.hardened(60),
-      Slip10RawIndex.hardened(0),
-      Slip10RawIndex.normal(0),
-      Slip10RawIndex.normal(0),
-    ]);
-    // m/44'/60'/0'/0/123
-    expect(HdPaths.metamaskHdKeyTree(123)).toEqual([
-      Slip10RawIndex.hardened(44),
-      Slip10RawIndex.hardened(60),
-      Slip10RawIndex.hardened(0),
-      Slip10RawIndex.normal(0),
-      Slip10RawIndex.normal(123),
-    ]);
-    // tslint:enable:deprecation
-  });
 });
