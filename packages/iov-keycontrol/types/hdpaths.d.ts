@@ -48,10 +48,4 @@ export declare class HdPaths {
      * (see https://github.com/MetaMask/eth-hd-keyring/blob/018a11a3a2/index.js#L8)
      */
     static ethereum(account: number): ReadonlyArray<Slip10RawIndex>;
-    /**
-     * The default MetaMask derivation path
-     *
-     * @deprecated use HdPaths.ethereum
-     */
-    static metamaskHdKeyTree(account: number): ReadonlyArray<Slip10RawIndex>;
 }
