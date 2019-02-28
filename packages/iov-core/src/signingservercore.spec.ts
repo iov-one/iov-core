@@ -59,16 +59,14 @@ describe("SigningServerCore", () => {
   });
 
   it("can get identities", async () => {
-    const chainId = "some-network" as ChainId;
-
     const profile = new UserProfile();
     const wallet = profile.addWallet(
       Ed25519HdWallet.fromMnemonic(
         "option diagram plastic million educate they arrow fat comic excite abandon green",
       ),
     );
-    const identity0 = await profile.createIdentity(wallet.id, chainId, HdPaths.iov(0));
-    const identity1 = await profile.createIdentity(wallet.id, chainId, HdPaths.iov(1));
+    const identity0 = await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0));
+    const identity1 = await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(1));
 
     const signer = new MultiChainSigner(profile);
     const core = new SigningServerCore(
@@ -78,8 +76,8 @@ describe("SigningServerCore", () => {
       defaultSignAndPostCallback,
     );
 
-    const xnetIdentities = await core.getIdentities("Login to XY service", [chainId]);
-    expect(xnetIdentities).toEqual([identity0, identity1]);
+    const revealedIdentities = await core.getIdentities("Login to XY service", [defaultChainId]);
+    expect(revealedIdentities).toEqual([identity0, identity1]);
 
     core.shutdown();
   });
