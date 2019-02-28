@@ -122,7 +122,7 @@ export interface BcpQueryTag {
 }
 export interface BcpTxQuery {
     readonly id?: TransactionId;
-    /** any transaction sent to or from this address */
+    /** any send transaction to or from this address */
     readonly sentFromOrTo?: Address;
     /** any transaction signed by this address */
     readonly signedBy?: Address;
