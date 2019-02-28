@@ -52,7 +52,7 @@ CI Tests:
 
 (Node 10 tested on many dev machines)
 
-## Gettting Started
+## Getting Started
 
 The best way to learn about code is to use it.
 You can read some [examples in @iov/core](./packages/iov-core/README.md).
@@ -60,7 +60,7 @@ And you can use a REPL to [interactively try the code](./packages/iov-cli/README
 
 Once you understand the basics, you can dig in deeper with the API documentation.
 
-## Api Docs
+## API Docs
 
 Documentation is published at [https://iov-one.github.io/iov-core-docs/](https://iov-one.github.io/iov-core-docs/).
 
@@ -75,7 +75,7 @@ to work on existing issues or create an issue and get feedback from one of the
 [main contributors](https://github.com/iov-one/iov-core/graphs/contributors)
 before starting on a PR. If you don't know where to start, we try to tag
 ["good first issues"](https://github.com/iov-one/iov-core/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-that provide a nice way to get started with the iov-core repo.
+that provide a nice way to get started with the IOV-Core repo.
 
 ### Development Environment
 
@@ -97,7 +97,7 @@ and verify the changes with `yarn test` on that one package.
 ### Integration Tests
 
 There are a number of integration tests involving communication with tendermint
-(in `iov-tendermint-rpc`) and the bns blockchain (in `iov-bns`) that require
+(in `@iov/tendermint-rpc`) and the BNS blockchain (in `@iov/bns`) that require
 a test server to run and are skipped by default. If you are working on those
 packages, please run those tests. (They require docker to be installed and
 executable by the current user)
@@ -116,25 +116,20 @@ unset TENDERMINT_ENABLED
 ./scripts/tendermint/stop.sh
 ```
 
-#### BNSD
+#### BNS
+
+If you are working on `@iov/bns`, you can run the tests against a local
+BNS devnet. See [scripts/bnsd/README.md](https://github.com/iov-one/iov-core/tree/master/scripts/bnsd/README.md#start) for instructions on how to start the BNS devnet. Then run the tests as follows:
 
 ```
-./scripts/bnsd/start.sh
-export BNSD_ENABLED=1
-
 cd packages/iov-bns
 yarn test
-cd ../..
-
-unset BNSD_ENABLED
-./scripts/bnsd/stop.sh
 ```
 
 #### Lisk
 
-If you are working on `iov-lisk`, you can run the tests against a local
-Lisk devnet. See [scripts/lisk/README.md](https://github.com/iov-one/iov-core/tree/master/scripts/lisk#start)
-how to start the Lisk devnet.
+If you are working on `@iov/lisk`, you can run the tests against a local
+Lisk devnet. See [scripts/lisk/README.md](https://github.com/iov-one/iov-core/tree/master/scripts/lisk#start) for instructions on how to start the Lisk devnet. Then run the tests as follows:
 
 ```
 cd packages/iov-lisk
@@ -181,7 +176,7 @@ git config --global core.eol lf
 
 ### Libusb fails to build, why?
 
-If you are running on linux, you may not have the proper dependencies installed. For ubuntu, try the
+If you are running on linux, you may not have the proper dependencies installed. For Ubuntu, try the
 following: `sudo apt-get install libudev-dev libusb-1.0-0 libusb-1.0-0-dev`.
 These are needed to compile the usb driver.
 

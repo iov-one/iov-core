@@ -38,8 +38,9 @@ $ iov-cli
 
 ## How to use the IOV-Core command line interface
 
-1. Install @iov/cli and run `iov-cli` as shown above
-2. Play around like in the following example code:
+1. Install `@iov/cli` and run `iov-cli` as shown above
+2. Start a local BNS blockchain as described in [scripts/bnsd/README.md](https://github.com/iov-one/iov-core/tree/master/scripts/bnsd/README.md)
+3. Play around as in the following example code:
 
 ```
 > const profile = new UserProfile();
@@ -192,7 +193,9 @@ Error: Socket was closed, so no data can be sent anymore.
 
 ## Faucet usage
 
-When using a Testnet, you can use the IovFaucet to receive tokens:
+When using a Testnet, you can use the IovFaucet to receive tokens.
+
+In this example we connect to a public test network.
 
 ```
 > const mnemonic = Bip39.encode(await Random.getBytes(16)).asString();
@@ -200,80 +203,22 @@ When using a Testnet, you can use the IovFaucet to receive tokens:
 'helmet album grow detail apology thank wire chef fame core private cargo'
 > const profile = new UserProfile();
 > const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic));
-> const me = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0));
 
 > const signer = new MultiChainSigner(profile);
-> const { connection } = await signer.addChain(bnsConnector("https://bns.yaknet.iov.one"));
-> const meAddress = signer.keyToAddress(connection.chainId(), me.pubkey);
+> const { connection } = await signer.addChain(bnsConnector("https://bns.hugnet.iov.one"));
+> const chainId = connection.chainId();
 
-> const faucet = new IovFaucet("https://iov-faucet.yaknet.iov.one");
+> const alice = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(0));
+> const aliceAddress = signer.identityToAddress(alice);
 
-> await faucet.credit(meAddress, "IOV" as TokenTicker)
-> (await connection.getAccount({ address: meAddress })).data[0].balance
-[ { whole: 10,
-    fractional: 0,
+> const faucet = new IovFaucet("https://iov-faucet.hugnet.iov.one");
+
+> await faucet.credit(aliceAddress, "IOV" as TokenTicker)
+> (await connection.getAccount({ address: aliceAddress })).balance
+[ { quantity: '10000000000',
+    fractionalDigits: 9,
     tokenTicker: 'IOV',
-    tokenName: 'Main token of this chain',
-    fractionalDigits: 6 } ]
-
-> await faucet.credit(meAddress, "PAJA" as TokenTicker)
-> (await connection.getAccount({ address: meAddress })).data[0].balance
-[ { whole: 10,
-    fractional: 0,
-    tokenTicker: 'IOV',
-    tokenName: 'Main token of this chain',
-    fractionalDigits: 6 },
-  { whole: 10,
-    fractional: 0,
-    tokenTicker: 'PAJA',
-    tokenName: 'Mightiest token of this chain',
-    fractionalDigits: 9 } ]
-```
-
-## Ledger usage
-
-Do 1. and 2. like above
-
-```
-> import { LedgerSimpleAddressWallet } from "@iov/ledger-bns";
-> const profile = new UserProfile();
-> const wallet = Ed25519HdWallet.fromMnemonic("tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral");
-> profile.addWallet(wallet)
-> const ledgerWallet = new LedgerSimpleAddressWallet();
-> ledgerWallet.startDeviceTracking();
-> profile.addWallet(ledgerWallet);
-
-> profile.getIdentities(wallet.id)
-[]
-
-> profile.getIdentities(ledgerWallet.id)
-[]
-
-> const softwareIdentity = await profile.createIdentity(wallet.id, HdPaths.simpleAddress(0))
-> const hardwareIdentity = await profile.createIdentity(ledgerWallet.id, 0)
-
-> softwareIdentity.pubkey
-{ algo: 'ed25519',
-  data:
-   Uint8Array [
-     84,
-     114, ...
-
-> hardwareIdentity.pubkey
-{ algo: 'ed25519',
-  data:
-   Uint8Array [
-     84,
-     114, ...
-
-> LedgerSimpleAddressWallet.registerWithKeyring()
-> const db = levelup(leveldown('./my_userprofile_db'))
-> await profile.storeIn(db, "secret passwd")
-> const profileFromDb = await UserProfile.loadFrom(db, "secret passwd");
-> profileFromDb
-UserProfile {
-  createdAt: 2018-08-02T16:25:38.274Z,
-  keyring: Keyring { wallets: [ [Object], [Object] ] }, ...
+    tokenName: 'Main token of this chain' } ]
 ```
 
 ## License

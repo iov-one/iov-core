@@ -10,23 +10,12 @@ Please stick to using the [public API](https://iov-one.github.io/iov-core-docs/l
 even if you are importing from javascript, where `private` is not enforces. There are plans to wrap
 objects in closures to provide run-time protection of secrets like private keys and mneumonic seeds.
 
-Simplest usage:
+## Getting started
 
-```
-const profile = new UserProfile();
+Please see the following documents for how to get started using the `@iov/keycontrol` classes:
 
-// use 32 bytes if you want more security, 24 word phrase
-const seed = await Random.getBytes(16);
-const mnemonic = Bip39.encode(seed).asString();
-console.log(mnemonic);
-
-// we only added one wallet, but you could add multiple with different mneumonics,
-// or one as ledger, secp256k1, etc....
-const walletInfo = profile.addWallet(Ed25519HdWallet.fromMnemonic(mneumonic));
-
-const identity = await profile.createIdentity(walletInfo.id, HdPaths.simpleAddress(0));
-profile.getIdentities(walletInfo.id);
-```
+1. [@iov/core README](https://github.com/iov-one/iov-core/tree/master/packages/iov-core/README.md)
+2. [@iov/cli README](https://github.com/iov-one/iov-core/tree/master/packages/iov-cli/README.md)
 
 ## API Documentation
 
