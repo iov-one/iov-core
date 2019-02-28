@@ -23,7 +23,7 @@ Breaking changes
   now available to perform BCP specific atomic swap operations
 * @iov/ethereum: The `options` parameter of `ethereumConnector` does not allow
   strings anymore. Use `{ wsUrl: myWebsocketUrl }` instead.
-* @iov/keycontrol: Remove `HDPaths.metamaskHdKeyTree`. Use `HDPaths.ethereum` instead.
+* @iov/keycontrol: Remove `HdPaths.metamaskHdKeyTree`. Use `HdPaths.ethereum` instead.
 * @iov/ledger-bns: Package removed from this monorepo and now available at
   https://github.com/iov-one/iov-ledger-bns
 
