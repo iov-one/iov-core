@@ -11,8 +11,9 @@ export interface GetIdentitiesAuthorization {
    * Must return a list of identities selected by the user, which is
    * the empty list in case of full request denial.
    *
-   * Any error thrown in this callback is sent to the RPC client as an
-   * unspecified "Internal server error" and the callback author should
+   * Any error (thrown or returned as a rejected promise) from this
+   * callback is sent to the RPC client as an unspecified
+   * "Internal server error" and the callback author should
    * ensure this does not happen.
    */
   (reason: string, matchingIdentities: ReadonlyArray<PublicIdentity>): Promise<ReadonlyArray<PublicIdentity>>;
@@ -26,8 +27,9 @@ export interface SignAndPostAuthorization {
    * Must return true if the user authorized the signing and false if the
    * user rejects it.
    *
-   * Any error thrown in this callback is sent to the RPC client as an
-   * unspecified "Internal server error" and the callback author should
+   * Any error (thrown or returned as a rejected promise) from this
+   * callback is sent to the RPC client as an unspecified
+   * "Internal server error" and the callback author should
    * ensure this does not happen.
    */
   (reason: string, transaction: UnsignedTransaction): Promise<boolean>;
@@ -59,7 +61,13 @@ export class SigningServerCore {
       return chainIds.some(chainId => identity.chainId === chainId);
     });
 
-    const authorizedIdentities = this.authorizeGetIdentities(reason, matchingIdentities);
+    let authorizedIdentities: ReadonlyArray<PublicIdentity>;
+    try {
+      authorizedIdentities = await this.authorizeGetIdentities(reason, matchingIdentities);
+    } catch (error) {
+      // don't expose callback error details over the server
+      throw new Error("Internal server error");
+    }
 
     return authorizedIdentities;
   }
@@ -85,7 +93,13 @@ export class SigningServerCore {
         throw new Error("More than one wallets contain the identity to sign this transaction");
     }
 
-    const authorized: boolean = await this.authorizeSignAndPost(reason, transaction);
+    let authorized: boolean;
+    try {
+      authorized = await this.authorizeSignAndPost(reason, transaction);
+    } catch (error) {
+      // don't expose callback error details over the server
+      throw new Error("Internal server error");
+    }
 
     if (authorized) {
       const response = await this.signer.signAndPost(transaction, walletId);

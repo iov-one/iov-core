@@ -196,6 +196,37 @@ describe("SigningServerCore", () => {
 
       core.shutdown();
     });
+
+    it("handles exceptions in callback", async () => {
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(
+        Ed25519HdWallet.fromMnemonic(
+          "option diagram plastic million educate they arrow fat comic excite abandon green",
+        ),
+      );
+
+      await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0));
+      await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(1));
+      await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(2));
+      await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(3));
+
+      async function throwingCallback(
+        _1: string,
+        _2: ReadonlyArray<PublicIdentity>,
+      ): Promise<ReadonlyArray<PublicIdentity>> {
+        throw new Error("Something broken in here!");
+      }
+
+      const signer = new MultiChainSigner(profile);
+      const core = new SigningServerCore(profile, signer, throwingCallback, defaultSignAndPostCallback);
+
+      await core
+        .getIdentities("Login to XY service", [defaultChainId])
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/internal server error/i));
+
+      core.shutdown();
+    });
   });
 
   describe("signAndPost", () => {
@@ -276,6 +307,43 @@ describe("SigningServerCore", () => {
       };
       const transactionId = await core.signAndPost("Please sign now", send);
       expect(transactionId).toBeUndefined();
+
+      core.shutdown();
+    });
+
+    it("handles exceptions in callback", async () => {
+      pendingWithoutBnsd();
+
+      const profile = new UserProfile();
+      const signer = new MultiChainSigner(profile);
+      const { connection } = await signer.addChain(bnsConnector(bnsdUrl));
+      const bnsChain = connection.chainId();
+
+      {
+        const wallet = profile.addWallet(
+          Ed25519HdWallet.fromMnemonic(
+            "option diagram plastic million educate they arrow fat comic excite abandon green",
+          ),
+        );
+        await profile.createIdentity(wallet.id, bnsChain, HdPaths.simpleAddress(0));
+      }
+
+      async function throwingCallback(_1: string, _2: UnsignedTransaction): Promise<boolean> {
+        throw new Error("Something broken in here!");
+      }
+      const core = new SigningServerCore(profile, signer, defaultGetIdentitiesCallback, throwingCallback);
+      const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
+
+      const send: SendTransaction = {
+        kind: "bcp/send",
+        creator: signingIdentity,
+        amount: defaultAmount,
+        recipient: await randomBnsAddress(),
+      };
+      await core
+        .signAndPost("Please sign now", send)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/internal server error/i));
 
       core.shutdown();
     });
