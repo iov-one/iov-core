@@ -39,7 +39,8 @@ $ iov-cli
 ## How to use the IOV-Core command line interface
 
 1. Install @iov/cli and run `iov-cli` as shown above
-2. Play around like in the following example code:
+2. Start a local BNS blockchain as described in [scripts/bnsd/README.md](https://github.com/iov-one/iov-core/tree/master/scripts/bnsd/README.md)
+3. Play around like in the following example code:
 
 ```
 > const profile = new UserProfile();
@@ -192,7 +193,9 @@ Error: Socket was closed, so no data can be sent anymore.
 
 ## Faucet usage
 
-When using a Testnet, you can use the IovFaucet to receive tokens:
+When using a Testnet, you can use the IovFaucet to receive tokens.
+
+In this example we connect to a public test network.
 
 ```
 > const mnemonic = Bip39.encode(await Random.getBytes(16)).asString();
