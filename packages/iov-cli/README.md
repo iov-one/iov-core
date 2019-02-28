@@ -208,13 +208,13 @@ In this example we connect to a public test network.
 > const { connection } = await signer.addChain(bnsConnector("https://bns.hugnet.iov.one"));
 > const chainId = connection.chainId();
 
-> const me = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(0));
-> const meAddress = signer.identityToAddress(me);
+> const alice = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(0));
+> const aliceAddress = signer.identityToAddress(alice);
 
 > const faucet = new IovFaucet("https://iov-faucet.hugnet.iov.one");
 
-> await faucet.credit(meAddress, "IOV" as TokenTicker)
-> (await connection.getAccount({ address: meAddress })).balance
+> await faucet.credit(aliceAddress, "IOV" as TokenTicker)
+> (await connection.getAccount({ address: aliceAddress })).balance
 [ { quantity: '10000000000',
     fractionalDigits: 9,
     tokenTicker: 'IOV',
