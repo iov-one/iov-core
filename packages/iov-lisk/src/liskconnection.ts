@@ -294,8 +294,8 @@ export class LiskConnection implements BcpConnection {
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    if (query.height || query.tags) {
-      throw new Error("Query by height or tags not supported");
+    if (query.height || query.tags || query.signedBy) {
+      throw new Error("Query by height, tags or signedBy not supported");
     }
 
     if (query.id !== undefined) {
@@ -316,8 +316,8 @@ export class LiskConnection implements BcpConnection {
   }
 
   public liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
-    if (query.height || query.tags) {
-      throw new Error("Query by height or tags not supported");
+    if (query.height || query.tags || query.signedBy) {
+      throw new Error("Query by height, tags or signedBy not supported");
     }
 
     if (query.id !== undefined) {
