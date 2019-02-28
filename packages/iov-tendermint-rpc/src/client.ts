@@ -77,7 +77,9 @@ export class Client {
    *
    * @see https://tendermint.com/rpc/#broadcasttxsync
    */
-  public async broadcastTxSync(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxSyncResponse> {
+  public async broadcastTxSync(
+    params: requests.BroadcastTxParams,
+  ): Promise<responses.BroadcastTxSyncResponse> {
     const query: requests.BroadcastTxRequest = { params, method: requests.Method.BroadcastTxSync };
     return this.doCall(query, this.p.encodeBroadcastTx, this.r.decodeBroadcastTxSync);
   }
@@ -87,7 +89,9 @@ export class Client {
    *
    * @see https://tendermint.com/rpc/#broadcasttxasync
    */
-  public async broadcastTxAsync(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxAsyncResponse> {
+  public async broadcastTxAsync(
+    params: requests.BroadcastTxParams,
+  ): Promise<responses.BroadcastTxAsyncResponse> {
     const query: requests.BroadcastTxRequest = { params, method: requests.Method.BroadcastTxAsync };
     return this.doCall(query, this.p.encodeBroadcastTx, this.r.decodeBroadcastTxAsync);
   }
@@ -97,7 +101,9 @@ export class Client {
    *
    * @see https://tendermint.com/rpc/#broadcasttxcommit
    */
-  public async broadcastTxCommit(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxCommitResponse> {
+  public async broadcastTxCommit(
+    params: requests.BroadcastTxParams,
+  ): Promise<responses.BroadcastTxCommitResponse> {
     const query: requests.BroadcastTxRequest = { params, method: requests.Method.BroadcastTxCommit };
     return this.doCall(query, this.p.encodeBroadcastTx, this.r.decodeBroadcastTxCommit);
   }

@@ -63,7 +63,7 @@ describe("WebsocketClient", () => {
 
         if (events.length === 2) {
           // make sure they are consequtive heights
-          const height = (i: number) => Integer.parse((events[i].data.value).header.height);
+          const height = (i: number) => Integer.parse(events[i].data.value.header.height);
           expect(height(1)).toEqual(height(0) + 1);
 
           sub.unsubscribe();
