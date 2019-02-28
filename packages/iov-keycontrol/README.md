@@ -12,7 +12,7 @@ objects in closures to provide run-time protection of secrets like private keys 
 
 ## Getting started
 
-Please see the following documents for how to get started using the @iov/keycontrol classes:
+Please see the following documents for how to get started using the `@iov/keycontrol` classes:
 
 1. [@iov/core README](https://github.com/iov-one/iov-core/tree/master/packages/iov-core/README.md)
 2. [@iov/cli README](https://github.com/iov-one/iov-core/tree/master/packages/iov-cli/README.md)
