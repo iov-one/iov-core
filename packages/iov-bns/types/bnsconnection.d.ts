@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { Account, AccountQuery, Address, AddressQuery, AtomicSwap, AtomicSwapQuery, BcpAtomicSwapConnection, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker } from "@iov/bcp";
+import { Account, AccountQuery, AddressQuery, AtomicSwap, AtomicSwapQuery, BcpAtomicSwapConnection, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker } from "@iov/bcp";
 import { BnsBlockchainNft, BnsBlockchainsQuery, BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
  * Talks directly to the BNS blockchain and exposes the
@@ -62,18 +62,6 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
      * and then continuing with live feeds
      */
     liveTx(txQuery: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction>;
-    /**
-     * Emits the blockheight for every block where a tx matching these tags is emitted
-     */
-    changeTx(query: BcpTxQuery): Stream<number>;
-    /**
-     * A helper that triggers if the balance ever changes
-     */
-    changeBalance(addr: Address): Stream<number>;
-    /**
-     * A helper that triggers if the nonce every changes
-     */
-    changeNonce(addr: Address): Stream<number>;
     getBlockHeader(height: number): Promise<BlockHeader>;
     watchBlockHeaders(): Stream<BlockHeader>;
     /**

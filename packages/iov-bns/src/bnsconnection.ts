@@ -4,7 +4,6 @@ import { Stream, Subscription } from "xstream";
 import {
   Account,
   AccountQuery,
-  Address,
   AddressQuery,
   AtomicSwap,
   AtomicSwapMerger,
@@ -41,13 +40,13 @@ import {
 } from "@iov/bcp";
 import { Encoding, Int53, Uint53 } from "@iov/encoding";
 import { concat, DefaultValueProducer, fromListPromise, ValueAndUpdates } from "@iov/stream";
-import { broadcastTxSyncSuccess, Client as TendermintClient, getTxEventHeight } from "@iov/tendermint-rpc";
+import { broadcastTxSyncSuccess, Client as TendermintClient } from "@iov/tendermint-rpc";
 
 import { bnsCodec } from "./bnscodec";
 import { ChainData, Context } from "./context";
 import { decodeBlockchainNft, decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
-import { bnsNonceTag, bnsSwapQueryTag } from "./tags";
+import { bnsSwapQueryTag } from "./tags";
 import {
   BnsBlockchainNft,
   BnsBlockchainsQuery,
@@ -98,21 +97,6 @@ function parseTendermintRpcError(errorString: string): TendermintRpcError {
 
 function isDefined<T>(value: T | undefined): value is T {
   return value !== undefined;
-}
-
-/**
- * Returns a filter that only passes when the
- * value is different than the last one
- */
-function onChange<T>(): (val: T) => boolean {
-  let oldVal: T | undefined;
-  return (val: T): boolean => {
-    if (val === oldVal) {
-      return false;
-    }
-    oldVal = val;
-    return true;
-  };
 }
 
 /**
@@ -521,30 +505,6 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return deduplicatedStream;
   }
 
-  /**
-   * Emits the blockheight for every block where a tx matching these tags is emitted
-   */
-  public changeTx(query: BcpTxQuery): Stream<number> {
-    return this.tmClient
-      .subscribeTx(buildTxQuery(query))
-      .map(getTxEventHeight)
-      .filter(onChange<number>());
-  }
-
-  /**
-   * A helper that triggers if the balance ever changes
-   */
-  public changeBalance(addr: Address): Stream<number> {
-    return this.changeTx({ sentFromOrTo: addr });
-  }
-
-  /**
-   * A helper that triggers if the nonce every changes
-   */
-  public changeNonce(addr: Address): Stream<number> {
-    return this.changeTx({ tags: [bnsNonceTag(addr)] });
-  }
-
   public async getBlockHeader(height: number): Promise<BlockHeader> {
     try {
       // tslint:disable-next-line:no-unused-expression
@@ -618,7 +578,8 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
     return concat(
       Stream.fromPromise(this.getAccount(query)),
-      this.changeBalance(address)
+      this.tmClient
+        .subscribeTx(buildTxQuery({ sentFromOrTo: address }))
         .map(() => Stream.fromPromise(this.getAccount(query)))
         .flatten(),
     );
