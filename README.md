@@ -97,7 +97,7 @@ and verify the changes with `yarn test` on that one package.
 ### Integration Tests
 
 There are a number of integration tests involving communication with tendermint
-(in `iov-tendermint-rpc`) and the bns blockchain (in `iov-bns`) that require
+(in `@iov/tendermint-rpc`) and the BNS blockchain (in `@iov/bns`) that require
 a test server to run and are skipped by default. If you are working on those
 packages, please run those tests. (They require docker to be installed and
 executable by the current user)
@@ -116,7 +116,7 @@ unset TENDERMINT_ENABLED
 ./scripts/tendermint/stop.sh
 ```
 
-#### BNSD
+#### BNS
 
 ```
 ./scripts/bnsd/start.sh
@@ -132,7 +132,7 @@ unset BNSD_ENABLED
 
 #### Lisk
 
-If you are working on `iov-lisk`, you can run the tests against a local
+If you are working on `@iov/lisk`, you can run the tests against a local
 Lisk devnet. See [scripts/lisk/README.md](https://github.com/iov-one/iov-core/tree/master/scripts/lisk#start)
 how to start the Lisk devnet.
 
