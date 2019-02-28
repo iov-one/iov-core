@@ -5,13 +5,27 @@ export interface GetIdentitiesAuthorization {
     /**
      * Called by the signing server and lets user decide which of the
      * available identities should be revealed to the application.
+     *
+     * Must return a list of identities selected by the user, which is
+     * the empty list in case of full request denial.
+     *
+     * Any error thrown in this callback is sent to the RPC client as an
+     * unspecified "Internal server error" and the callback author should
+     * ensure this does not happen.
      */
     (reason: string, matchingIdentities: ReadonlyArray<PublicIdentity>): Promise<ReadonlyArray<PublicIdentity>>;
 }
 export interface SignAndPostAuthorization {
     /**
      * Called by the signing server and lets user decide if they want to
-     * authorize a sign and post request
+     * authorize a sign and post request.
+     *
+     * Must return true if the user authorized the signing and false if the
+     * user rejects it.
+     *
+     * Any error thrown in this callback is sent to the RPC client as an
+     * unspecified "Internal server error" and the callback author should
+     * ensure this does not happen.
      */
     (reason: string, transaction: UnsignedTransaction): Promise<boolean>;
 }
