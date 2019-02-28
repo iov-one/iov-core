@@ -38,9 +38,9 @@ $ iov-cli
 
 ## How to use the IOV-Core command line interface
 
-1. Install @iov/cli and run `iov-cli` as shown above
+1. Install `@iov/cli` and run `iov-cli` as shown above
 2. Start a local BNS blockchain as described in [scripts/bnsd/README.md](https://github.com/iov-one/iov-core/tree/master/scripts/bnsd/README.md)
-3. Play around like in the following example code:
+3. Play around as in the following example code:
 
 ```
 > const profile = new UserProfile();
