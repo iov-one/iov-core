@@ -4,18 +4,11 @@ import { ReadonlyDate } from "readonly-date";
 import { ChainId, Nonce, PublicIdentity, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp";
 import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
-import { Keyring } from "./keyring";
+import { Keyring, WalletInfo } from "./keyring";
 import { Wallet, WalletId } from "./wallet";
 export interface UserProfileOptions {
     readonly createdAt: ReadonlyDate;
     readonly keyring: Keyring;
-}
-/**
- * Read-only information about one wallet in a keyring/user profile
- */
-export interface WalletInfo {
-    readonly id: WalletId;
-    readonly label: string | undefined;
 }
 /**
  * All calls must go though the UserProfile. A newly created UserProfile
@@ -40,16 +33,16 @@ export declare class UserProfile {
      */
     addWallet(wallet: Wallet): WalletInfo;
     /** Sets the label of the wallet with the given ID in the primary keyring  */
-    setWalletLabel(id: WalletId, label: string | undefined): void;
+    setWalletLabel(walletId: WalletId, label: string | undefined): void;
     /**
      * Creates an identitiy in the wallet with the given ID in the primary keyring
      *
      * The identity is bound to one chain ID to encourage using different
      * keypairs on different chains.
      */
-    createIdentity(id: WalletId, chainId: ChainId, options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number): Promise<PublicIdentity>;
+    createIdentity(walletId: WalletId, chainId: ChainId, options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number): Promise<PublicIdentity>;
     /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
-    setIdentityLabel(id: WalletId, identity: PublicIdentity, label: string | undefined): void;
+    setIdentityLabel(walletId: WalletId, identity: PublicIdentity, label: string | undefined): void;
     /**
      * Gets the local label of one of the identities in the wallet with the given ID
      * in the primary keyring
@@ -68,6 +61,8 @@ export declare class UserProfile {
      * how the result looks like.
      */
     printableSecret(id: WalletId): string;
+    /** Throws if the primary keyring is not set, i.e. UserProfile is locked. */
+    private primaryKeyring;
     /** Throws if wallet does not exist in primary keyring */
     private findWalletInPrimaryKeyring;
     private walletInfos;

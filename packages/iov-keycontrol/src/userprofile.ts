@@ -16,10 +16,10 @@ import { Argon2id, Argon2idOptions, Ed25519Keypair, Slip10RawIndex } from "@iov/
 import { Encoding, Int53 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
-import { Keyring } from "./keyring";
+import { Keyring, WalletInfo } from "./keyring";
 import { EncryptedKeyring, KeyringEncryptor } from "./keyringencryptor";
 import { DatabaseUtils } from "./utils";
-import { Wallet, WalletId } from "./wallet";
+import { ReadonlyWallet, Wallet, WalletId } from "./wallet";
 
 const { toAscii, fromBase64, toBase64, toRfc3339, fromRfc3339 } = Encoding;
 
@@ -41,14 +41,6 @@ const userProfileSalt = toAscii("core-userprofile");
 export interface UserProfileOptions {
   readonly createdAt: ReadonlyDate;
   readonly keyring: Keyring;
-}
-
-/**
- * Read-only information about one wallet in a keyring/user profile
- */
-export interface WalletInfo {
-  readonly id: WalletId;
-  readonly label: string | undefined;
 }
 
 /**
@@ -149,18 +141,14 @@ export class UserProfile {
     }
 
     const copy = wallet.clone();
-    this.keyring.add(copy);
+    const info = this.keyring.add(copy);
     this.walletsProducer.update(this.walletInfos());
-    return {
-      id: copy.id,
-      label: copy.label.value,
-    };
+    return info;
   }
 
   /** Sets the label of the wallet with the given ID in the primary keyring  */
-  public setWalletLabel(id: WalletId, label: string | undefined): void {
-    const wallet = this.findWalletInPrimaryKeyring(id);
-    wallet.setLabel(label);
+  public setWalletLabel(walletId: WalletId, label: string | undefined): void {
+    this.primaryKeyring().setWalletLabel(walletId, label);
     this.walletsProducer.update(this.walletInfos());
   }
 
@@ -171,18 +159,16 @@ export class UserProfile {
    * keypairs on different chains.
    */
   public async createIdentity(
-    id: WalletId,
+    walletId: WalletId,
     chainId: ChainId,
     options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number,
   ): Promise<PublicIdentity> {
-    const wallet = this.findWalletInPrimaryKeyring(id);
-    return wallet.createIdentity(chainId, options);
+    return this.primaryKeyring().createIdentity(walletId, chainId, options);
   }
 
   /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
-  public setIdentityLabel(id: WalletId, identity: PublicIdentity, label: string | undefined): void {
-    const wallet = this.findWalletInPrimaryKeyring(id);
-    wallet.setIdentityLabel(identity, label);
+  public setIdentityLabel(walletId: WalletId, identity: PublicIdentity, label: string | undefined): void {
+    this.primaryKeyring().setIdentityLabel(walletId, identity, label);
   }
 
   /**
@@ -269,14 +255,20 @@ export class UserProfile {
     return wallet.printableSecret();
   }
 
-  /** Throws if wallet does not exist in primary keyring */
-  private findWalletInPrimaryKeyring(id: WalletId): Wallet {
-    if (!this.keyring) {
+  /** Throws if the primary keyring is not set, i.e. UserProfile is locked. */
+  private primaryKeyring(): Keyring {
+    const keyring = this.keyring;
+    if (!keyring) {
       throw new Error("UserProfile is currently locked");
     }
+    return keyring;
+  }
 
-    const wallet = this.keyring.getWallet(id);
+  /** Throws if wallet does not exist in primary keyring */
+  private findWalletInPrimaryKeyring(id: WalletId): ReadonlyWallet {
+    const keyring = this.primaryKeyring();
 
+    const wallet = keyring.getWallet(id);
     if (!wallet) {
       throw new Error(`Wallet of id '${id}' does not exist in keyring`);
     }

@@ -8,44 +8,14 @@ export type WalletId = string & As<"wallet-id">;
 export type WalletImplementationIdString = string & As<"wallet-implementation-id">;
 export type WalletSerializationString = string & As<"wallet-serialization">;
 
-/**
- * A is a generic interface for managing a set of keys and signing
- * data with them.
- *
- * A Wallet is responsible for storing private keys securely and
- * signing with them. Wallet can be implemented in software or as
- * a bridge to a hardware wallet.
- */
-export interface Wallet {
+/** An interface that does not allow mutating any internal state of the Wallet */
+export interface ReadonlyWallet {
   readonly label: ValueAndUpdates<string | undefined>;
 
   // id is a unique identifier based on the content of the keyring
   // the same implementation with same seed/secret should have same identifier
   // otherwise, they will be different
   readonly id: WalletId;
-
-  /**
-   * Sets a label for this wallet to be displayed in the UI.
-   * To clear the label, set it to undefined.
-   */
-  readonly setLabel: (label: string | undefined) => void;
-
-  /**
-   * Creates a new identity in the wallet.
-   *
-   * The identity is bound to one chain ID to encourage using different
-   * keypairs on different chains.
-   */
-  readonly createIdentity: (
-    chainId: ChainId,
-    options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number,
-  ) => Promise<PublicIdentity>;
-
-  /**
-   * Sets a local label associated with the public identity to be displayed in the UI.
-   * To clear a label, set it to undefined
-   */
-  readonly setIdentityLabel: (identity: PublicIdentity, label: string | undefined) => void;
 
   /**
    * Gets a local label associated with the public identity to be displayed in the UI.
@@ -93,4 +63,37 @@ export interface Wallet {
   readonly serialize: () => WalletSerializationString;
 
   readonly clone: () => Wallet;
+}
+
+/**
+ * A is a generic interface for managing a set of keys and signing
+ * data with them.
+ *
+ * A Wallet is responsible for storing private keys securely and
+ * signing with them. Wallet can be implemented in software or as
+ * a bridge to a hardware wallet.
+ */
+export interface Wallet extends ReadonlyWallet {
+  /**
+   * Sets a label for this wallet to be displayed in the UI.
+   * To clear the label, set it to undefined.
+   */
+  readonly setLabel: (label: string | undefined) => void;
+
+  /**
+   * Creates a new identity in the wallet.
+   *
+   * The identity is bound to one chain ID to encourage using different
+   * keypairs on different chains.
+   */
+  readonly createIdentity: (
+    chainId: ChainId,
+    options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number,
+  ) => Promise<PublicIdentity>;
+
+  /**
+   * Sets a local label associated with the public identity to be displayed in the UI.
+   * To clear a label, set it to undefined
+   */
+  readonly setIdentityLabel: (identity: PublicIdentity, label: string | undefined) => void;
 }
