@@ -40,16 +40,16 @@ export declare class UserProfile {
      */
     addWallet(wallet: Wallet): WalletInfo;
     /** Sets the label of the wallet with the given ID in the primary keyring  */
-    setWalletLabel(id: WalletId, label: string | undefined): void;
+    setWalletLabel(walletId: WalletId, label: string | undefined): void;
     /**
      * Creates an identitiy in the wallet with the given ID in the primary keyring
      *
      * The identity is bound to one chain ID to encourage using different
      * keypairs on different chains.
      */
-    createIdentity(id: WalletId, chainId: ChainId, options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number): Promise<PublicIdentity>;
+    createIdentity(walletId: WalletId, chainId: ChainId, options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number): Promise<PublicIdentity>;
     /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
-    setIdentityLabel(id: WalletId, identity: PublicIdentity, label: string | undefined): void;
+    setIdentityLabel(walletId: WalletId, identity: PublicIdentity, label: string | undefined): void;
     /**
      * Gets the local label of one of the identities in the wallet with the given ID
      * in the primary keyring
@@ -68,6 +68,8 @@ export declare class UserProfile {
      * how the result looks like.
      */
     printableSecret(id: WalletId): string;
+    /** Throws if the primary keyring is not set, i.e. UserProfile is locked. */
+    private primaryKeyring;
     /** Throws if wallet does not exist in primary keyring */
     private findWalletInPrimaryKeyring;
     private walletInfos;

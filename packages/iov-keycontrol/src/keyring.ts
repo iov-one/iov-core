@@ -1,5 +1,8 @@
 import { As } from "type-tagger";
 
+import { ChainId, PublicIdentity } from "@iov/bcp";
+import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
+
 import { Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "./wallet";
 import { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./wallets";
 
@@ -102,6 +105,42 @@ export class Keyring {
    */
   public getWallet(id: WalletId): Wallet | undefined {
     return this.wallets.find(wallet => wallet.id === id);
+  }
+
+  /** Sets the label of the wallet with the given ID in the primary keyring  */
+  public setWalletLabel(walletId: WalletId, label: string | undefined): void {
+    const wallet = this.getWallet(walletId);
+    if (!wallet) {
+      throw new Error(`Wallet of id '${walletId}' does not exist in keyring`);
+    }
+    wallet.setLabel(label);
+  }
+
+  /**
+   * Creates an identitiy in the wallet with the given ID in the primary keyring
+   *
+   * The identity is bound to one chain ID to encourage using different
+   * keypairs on different chains.
+   */
+  public async createIdentity(
+    walletId: WalletId,
+    chainId: ChainId,
+    options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number,
+  ): Promise<PublicIdentity> {
+    const wallet = this.getWallet(walletId);
+    if (!wallet) {
+      throw new Error(`Wallet of id '${walletId}' does not exist in keyring`);
+    }
+    return wallet.createIdentity(chainId, options);
+  }
+
+  /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
+  public setIdentityLabel(walletId: WalletId, identity: PublicIdentity, label: string | undefined): void {
+    const wallet = this.getWallet(walletId);
+    if (!wallet) {
+      throw new Error(`Wallet of id '${walletId}' does not exist in keyring`);
+    }
+    wallet.setIdentityLabel(identity, label);
   }
 
   // serialize will produce a representation that can be writen to disk.
