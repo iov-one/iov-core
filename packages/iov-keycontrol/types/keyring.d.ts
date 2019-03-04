@@ -3,6 +3,13 @@ import { ChainId, PublicIdentity } from "@iov/bcp";
 import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { ReadonlyWallet, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "./wallet";
 export declare type KeyringSerializationString = string & As<"keyring-serialization">;
+/**
+ * Read-only information about one wallet in a keyring
+ */
+export interface WalletInfo {
+    readonly id: WalletId;
+    readonly label: string | undefined;
+}
 export declare type WalletDeserializer = (data: WalletSerializationString) => Wallet;
 /**
  * A collection of wallets
@@ -13,7 +20,7 @@ export declare class Keyring {
     private static deserializeWallet;
     private readonly wallets;
     constructor(data?: KeyringSerializationString);
-    add(wallet: Wallet): void;
+    add(wallet: Wallet): WalletInfo;
     /**
      * Returns an array with immutable references.
      */

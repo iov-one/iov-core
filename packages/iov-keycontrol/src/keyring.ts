@@ -14,6 +14,14 @@ import { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./wallets";
 
 export type KeyringSerializationString = string & As<"keyring-serialization">;
 
+/**
+ * Read-only information about one wallet in a keyring
+ */
+export interface WalletInfo {
+  readonly id: WalletId;
+  readonly label: string | undefined;
+}
+
 interface WalletSerialization {
   readonly implementationId: WalletImplementationIdString;
   readonly data: WalletSerializationString;
@@ -91,8 +99,12 @@ export class Keyring {
     }
   }
 
-  public add(wallet: Wallet): void {
+  public add(wallet: Wallet): WalletInfo {
     this.wallets.push(wallet);
+    return {
+      id: wallet.id,
+      label: wallet.label.value,
+    };
   }
 
   /**

@@ -16,7 +16,7 @@ import { Argon2id, Argon2idOptions, Ed25519Keypair, Slip10RawIndex } from "@iov/
 import { Encoding, Int53 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
-import { Keyring } from "./keyring";
+import { Keyring, WalletInfo } from "./keyring";
 import { EncryptedKeyring, KeyringEncryptor } from "./keyringencryptor";
 import { DatabaseUtils } from "./utils";
 import { ReadonlyWallet, Wallet, WalletId } from "./wallet";
@@ -41,14 +41,6 @@ const userProfileSalt = toAscii("core-userprofile");
 export interface UserProfileOptions {
   readonly createdAt: ReadonlyDate;
   readonly keyring: Keyring;
-}
-
-/**
- * Read-only information about one wallet in a keyring/user profile
- */
-export interface WalletInfo {
-  readonly id: WalletId;
-  readonly label: string | undefined;
 }
 
 /**
@@ -149,12 +141,9 @@ export class UserProfile {
     }
 
     const copy = wallet.clone();
-    this.keyring.add(copy);
+    const info = this.keyring.add(copy);
     this.walletsProducer.update(this.walletInfos());
-    return {
-      id: copy.id,
-      label: copy.label.value,
-    };
+    return info;
   }
 
   /** Sets the label of the wallet with the given ID in the primary keyring  */

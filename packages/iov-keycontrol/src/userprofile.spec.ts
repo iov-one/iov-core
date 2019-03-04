@@ -548,10 +548,9 @@ describe("UserProfile", () => {
   it("can sign and append signature", async () => {
     const createdAt = new ReadonlyDate(ReadonlyDate.now());
     const keyring = new Keyring();
-    const wallet = Ed25519HdWallet.fromMnemonic(
-      "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash",
+    const wallet = keyring.add(
+      Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"),
     );
-    keyring.add(wallet);
     const mainIdentity = await keyring.createIdentity(wallet.id, defaultChain, HdPaths.simpleAddress(0));
     const profile = new UserProfile({ createdAt, keyring });
 

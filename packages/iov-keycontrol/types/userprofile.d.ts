@@ -4,18 +4,11 @@ import { ReadonlyDate } from "readonly-date";
 import { ChainId, Nonce, PublicIdentity, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp";
 import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
-import { Keyring } from "./keyring";
+import { Keyring, WalletInfo } from "./keyring";
 import { Wallet, WalletId } from "./wallet";
 export interface UserProfileOptions {
     readonly createdAt: ReadonlyDate;
     readonly keyring: Keyring;
-}
-/**
- * Read-only information about one wallet in a keyring/user profile
- */
-export interface WalletInfo {
-    readonly id: WalletId;
-    readonly label: string | undefined;
 }
 /**
  * All calls must go though the UserProfile. A newly created UserProfile
