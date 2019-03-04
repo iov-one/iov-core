@@ -552,7 +552,7 @@ describe("UserProfile", () => {
       "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash",
     );
     keyring.add(wallet);
-    const mainIdentity = await keyring.getWallets()[0].createIdentity(defaultChain, HdPaths.simpleAddress(0));
+    const mainIdentity = await keyring.createIdentity(wallet.id, defaultChain, HdPaths.simpleAddress(0));
     const profile = new UserProfile({ createdAt, keyring });
 
     const fakeTransaction: SendTransaction = {

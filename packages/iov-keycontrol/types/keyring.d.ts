@@ -1,7 +1,7 @@
 import { As } from "type-tagger";
 import { ChainId, PublicIdentity } from "@iov/bcp";
 import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
-import { Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "./wallet";
+import { ReadonlyWallet, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "./wallet";
 export declare type KeyringSerializationString = string & As<"keyring-serialization">;
 export declare type WalletDeserializer = (data: WalletSerializationString) => Wallet;
 /**
@@ -15,17 +15,15 @@ export declare class Keyring {
     constructor(data?: KeyringSerializationString);
     add(wallet: Wallet): void;
     /**
-     * this returns an array with mutable element references. Thus e.g.
-     * .getWallets().createIdentity() will change the keyring.
+     * Returns an array with immutable references.
      */
-    getWallets(): ReadonlyArray<Wallet>;
+    getWallets(): ReadonlyArray<ReadonlyWallet>;
     /**
-     * Finds a wallet and returns a mutable references. Thus e.g.
-     * .getWallet(xyz).createIdentity() will change the keyring.
+     * Finds a wallet and returns an immutable references.
      *
      * @returns a wallet if ID is found, undefined otherwise
      */
-    getWallet(id: WalletId): Wallet | undefined;
+    getWallet(id: WalletId): ReadonlyWallet | undefined;
     /** Sets the label of the wallet with the given ID in the primary keyring  */
     setWalletLabel(walletId: WalletId, label: string | undefined): void;
     /**
@@ -39,4 +37,11 @@ export declare class Keyring {
     setIdentityLabel(walletId: WalletId, identity: PublicIdentity, label: string | undefined): void;
     serialize(): KeyringSerializationString;
     clone(): Keyring;
+    /**
+     * Finds a wallet and returns a mutable references. Thus e.g.
+     * .getMutableWallet(xyz).createIdentity(...) will change the keyring.
+     *
+     * @returns a wallet if ID is found, undefined otherwise
+     */
+    private getMutableWallet;
 }

@@ -3,7 +3,13 @@ import { As } from "type-tagger";
 import { ChainId, PublicIdentity } from "@iov/bcp";
 import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 
-import { Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "./wallet";
+import {
+  ReadonlyWallet,
+  Wallet,
+  WalletId,
+  WalletImplementationIdString,
+  WalletSerializationString,
+} from "./wallet";
 import { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./wallets";
 
 export type KeyringSerializationString = string & As<"keyring-serialization">;
@@ -90,26 +96,24 @@ export class Keyring {
   }
 
   /**
-   * this returns an array with mutable element references. Thus e.g.
-   * .getWallets().createIdentity() will change the keyring.
+   * Returns an array with immutable references.
    */
-  public getWallets(): ReadonlyArray<Wallet> {
+  public getWallets(): ReadonlyArray<ReadonlyWallet> {
     return this.wallets;
   }
 
   /**
-   * Finds a wallet and returns a mutable references. Thus e.g.
-   * .getWallet(xyz).createIdentity() will change the keyring.
+   * Finds a wallet and returns an immutable references.
    *
    * @returns a wallet if ID is found, undefined otherwise
    */
-  public getWallet(id: WalletId): Wallet | undefined {
+  public getWallet(id: WalletId): ReadonlyWallet | undefined {
     return this.wallets.find(wallet => wallet.id === id);
   }
 
   /** Sets the label of the wallet with the given ID in the primary keyring  */
   public setWalletLabel(walletId: WalletId, label: string | undefined): void {
-    const wallet = this.getWallet(walletId);
+    const wallet = this.getMutableWallet(walletId);
     if (!wallet) {
       throw new Error(`Wallet of id '${walletId}' does not exist in keyring`);
     }
@@ -127,7 +131,7 @@ export class Keyring {
     chainId: ChainId,
     options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number,
   ): Promise<PublicIdentity> {
-    const wallet = this.getWallet(walletId);
+    const wallet = this.getMutableWallet(walletId);
     if (!wallet) {
       throw new Error(`Wallet of id '${walletId}' does not exist in keyring`);
     }
@@ -136,7 +140,7 @@ export class Keyring {
 
   /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
   public setIdentityLabel(walletId: WalletId, identity: PublicIdentity, label: string | undefined): void {
-    const wallet = this.getWallet(walletId);
+    const wallet = this.getMutableWallet(walletId);
     if (!wallet) {
       throw new Error(`Wallet of id '${walletId}' does not exist in keyring`);
     }
@@ -160,5 +164,15 @@ export class Keyring {
 
   public clone(): Keyring {
     return new Keyring(this.serialize());
+  }
+
+  /**
+   * Finds a wallet and returns a mutable references. Thus e.g.
+   * .getMutableWallet(xyz).createIdentity(...) will change the keyring.
+   *
+   * @returns a wallet if ID is found, undefined otherwise
+   */
+  private getMutableWallet(id: WalletId): Wallet | undefined {
+    return this.wallets.find(wallet => wallet.id === id);
   }
 }
