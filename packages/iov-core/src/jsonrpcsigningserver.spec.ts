@@ -19,7 +19,7 @@ import { firstEvent } from "@iov/stream";
 
 import { JsonRpcSigningServer } from "./jsonrpcsigningserver";
 import { MultiChainSigner } from "./multichainsigner";
-import { SigningServerCore } from "./signingservercore";
+import { GetIdentitiesAuthorization, SignAndPostAuthorization, SigningServerCore } from "./signingservercore";
 
 const { fromHex } = Encoding;
 
@@ -52,6 +52,9 @@ const bnsdFaucetMnemonic = "degree tackle suggest window test behind mesh extra 
 const ethereumChainId = "ethereum-eip155-5777" as ChainId;
 const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
 
+const defaultGetIdentitiesCallback: GetIdentitiesAuthorization = async (_, matching) => matching;
+const defaultSignAndPostCallback: SignAndPostAuthorization = async (_1, _2) => true;
+
 async function makeJsonRpcSigningServer(): Promise<JsonRpcSigningServer> {
   const profile = new UserProfile();
   const ed25519Wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(bnsdFaucetMnemonic));
@@ -65,7 +68,13 @@ async function makeJsonRpcSigningServer(): Promise<JsonRpcSigningServer> {
   // ganache second identity
   await profile.createIdentity(secp256k1Wallet.id, ethereumChainId, HdPaths.bip44(60, 0, 0, 1));
 
-  return new JsonRpcSigningServer(new SigningServerCore(profile, signer));
+  const core = new SigningServerCore(
+    profile,
+    signer,
+    defaultGetIdentitiesCallback,
+    defaultSignAndPostCallback,
+  );
+  return new JsonRpcSigningServer(core);
 }
 
 describe("JsonRpcSigningServer", () => {

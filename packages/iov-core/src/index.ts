@@ -14,4 +14,4 @@ export {
 
 export { JsonRpcSigningServer } from "./jsonrpcsigningserver";
 export { MultiChainSigner } from "./multichainsigner";
-export { SigningServerCore } from "./signingservercore";
+export { GetIdentitiesAuthorization, SignAndPostAuthorization, SigningServerCore } from "./signingservercore";
