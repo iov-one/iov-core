@@ -9,8 +9,6 @@ export declare class Uint32 implements Integer {
     toBytesBigEndian(): ReadonlyArray<number>;
     toNumber(): number;
     toString(): string;
-    /** @deprecated use toNumber() */
-    asNumber(): number;
 }
 export declare class Int53 implements Integer {
     static fromString(str: string): Int53;
