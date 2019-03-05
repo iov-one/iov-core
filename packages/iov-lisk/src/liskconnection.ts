@@ -290,7 +290,38 @@ export class LiskConnection implements BcpConnection {
   }
 
   public watchBlockHeaders(): Stream<BlockHeader> {
-    throw new Error("Not implemented");
+    let lastEvent: BlockHeader | undefined; // Ensures the stream does not contain duplicates
+    let pollInternal: NodeJS.Timeout | undefined;
+    const producer: Producer<BlockHeader> = {
+      start: async listener => {
+        let watchHeight: number = await this.height();
+        const poll = async () => {
+          try {
+            const event = await this.getBlockHeader(watchHeight);
+            if (!equal(event, lastEvent)) {
+              listener.next(event);
+              ++watchHeight;
+              lastEvent = event;
+            }
+          } catch (error) {
+            if (!/^Block does not exist$/.test(error.message)) {
+              listener.error(error);
+            }
+          }
+        };
+
+        pollInternal = setInterval(poll, 5_000);
+        await poll();
+      },
+      stop: () => {
+        if (pollInternal) {
+          clearInterval(pollInternal);
+          pollInternal = undefined;
+        }
+      },
+    };
+
+    return Stream.create(producer);
   }
 
   public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
