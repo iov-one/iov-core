@@ -215,13 +215,15 @@ describe("Keyring", () => {
     }).not.toThrow();
   });
 
-  it("can be cloned", () => {
-    const original = new Keyring();
-    const wallet = Ed25519HdWallet.fromEntropy(fromHex("c7f74844892fd7b707e74fc9b6c8ef917c13ddbb380cadbc"));
-    original.add(wallet);
+  describe("clone", () => {
+    it("can be cloned", () => {
+      const original = new Keyring();
+      const wallet = Ed25519HdWallet.fromEntropy(fromHex("c7f74844892fd7b707e74fc9b6c8ef917c13ddbb380cadbc"));
+      original.add(wallet);
 
-    const clone = original.clone();
-    expect(clone).not.toBe(original);
-    expect(clone.serialize()).toEqual(original.serialize());
+      const clone = original.clone();
+      expect(clone).not.toBe(original);
+      expect(clone.serialize()).toEqual(original.serialize());
+    });
   });
 });
