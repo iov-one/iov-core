@@ -75,6 +75,7 @@ async function randomBnsAddress(): Promise<Address> {
 }
 
 const cash = "CASH" as TokenTicker;
+const blockTime = 1000;
 
 describe("BnsConnection", () => {
   const defaultChain = "chain123" as ChainId;
@@ -387,8 +388,8 @@ describe("BnsConnection", () => {
       expect(headers[0].height).toEqual(headerFromGet.height - 1);
       // expect(headers[0].id).not.toEqual(headerFromGet.id);
       expect(headers[0].transactionCount).toBeGreaterThanOrEqual(0);
-      expect(headers[0].time.getTime()).toBeGreaterThan(headerFromGet.time.getTime() - 1200);
-      expect(headers[0].time.getTime()).toBeLessThan(headerFromGet.time.getTime() + 1200);
+      expect(headers[0].time.getTime()).toBeGreaterThan(headerFromGet.time.getTime() - blockTime - 200);
+      expect(headers[0].time.getTime()).toBeLessThan(headerFromGet.time.getTime() - blockTime + 200);
 
       // second header
       expect(headers[1].height).toEqual(headerFromGet.height);
