@@ -9,12 +9,13 @@ import {
   PublicKeyBytes,
   SendTransaction,
   TokenTicker,
+  TransactionState,
 } from "@iov/bcp";
 import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { ethereumConnector } from "@iov/ethereum";
-import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol";
+import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile, WalletId } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";
 
@@ -170,6 +171,80 @@ describe("MultiChainSigner", () => {
       const account2 = await connection2.getAccount({ address: ganacheAddr });
       expect(account2).toBeDefined();
       expect(account2!.balance.length).toEqual(1);
+
+      signer.shutdown();
+    });
+
+    it("can add two chains and send on both of them", async () => {
+      pendingWithoutBnsd();
+      pendingWithoutEthereum();
+
+      const profile = new UserProfile();
+      const signer = new MultiChainSigner(profile);
+      expect(signer.chainIds().length).toEqual(0);
+
+      await signer.addChain(bnsConnector(bnsdTendermintUrl));
+      await signer.addChain(ethereumConnector(httpEthereumUrl, undefined));
+      const [bnsId, ethereumChainId] = signer.chainIds();
+
+      // Create sender identities
+      const { mainWalletId, faucet: bnsFaucet } = await addWalletWithFaucet(profile, bnsId);
+      const secpWallet = profile.addWallet(
+        Secp256k1HdWallet.fromMnemonic(
+          "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+        ),
+      );
+      const ganacheMainIdentity = await profile.createIdentity(
+        secpWallet.id,
+        ethereumChainId,
+        HdPaths.ethereum(0),
+      );
+
+      {
+        // Send on BNS
+        const sendOnBns: SendTransaction = {
+          kind: "bcp/send",
+          creator: bnsFaucet,
+          recipient: await randomBnsAddress(),
+          memo: `MultiChainSigner style (${Math.random()})`,
+          amount: {
+            quantity: "11000000000777",
+            fractionalDigits: 9,
+            tokenTicker: cash,
+          },
+        };
+        const postResponse = await signer.signAndPost(sendOnBns, mainWalletId);
+        const blockInfo = await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+      }
+
+      {
+        // Send on Ethereum
+        const sendOnEthereum: SendTransaction = {
+          kind: "bcp/send",
+          creator: ganacheMainIdentity,
+          amount: {
+            quantity: "1",
+            tokenTicker: "ETH" as TokenTicker,
+            fractionalDigits: 18,
+          },
+          recipient: "0x0000000000000000000000000000000000000000" as Address,
+          memo: `MultiChainSigner style (${Math.random()})`,
+          gasPrice: {
+            quantity: "20000000000",
+            fractionalDigits: 18,
+            tokenTicker: "ETH" as TokenTicker,
+          },
+          gasLimit: {
+            quantity: "2100000",
+            fractionalDigits: 18,
+            tokenTicker: "ETH" as TokenTicker,
+          },
+        };
+        const postResponse = await signer.signAndPost(sendOnEthereum, secpWallet.id);
+        const blockInfo = await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+      }
 
       signer.shutdown();
     });
