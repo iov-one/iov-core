@@ -63,11 +63,6 @@ export class Uint32 implements Integer {
   public toString(): string {
     return this.data.toString();
   }
-
-  /** @deprecated use toNumber() */
-  public asNumber(): number {
-    return this.toNumber();
-  }
 }
 
 export class Int53 implements Integer {
