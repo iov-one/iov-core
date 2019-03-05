@@ -126,6 +126,50 @@ describe("Keyring", () => {
         new Keyring(serialized);
       }).not.toThrow();
     });
+
+    it("throws when the same identity is added twice", async () => {
+      const wallet1 = Ed25519HdWallet.fromMnemonic(
+        "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash",
+      );
+      const wallet2 = Ed25519HdWallet.fromMnemonic(
+        "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash",
+      );
+      await wallet1.createIdentity(defaultChain, HdPaths.iov(0));
+      await wallet2.createIdentity(defaultChain, HdPaths.iov(0));
+
+      const keyring = new Keyring();
+      keyring.add(wallet1);
+      expect(() => keyring.add(wallet2)).toThrowError(/identity collision/i);
+    });
+  });
+
+  describe("createIdentity", () => {
+    it("works", async () => {
+      const keyring = new Keyring();
+      const wallet = keyring.add(
+        Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"),
+      );
+
+      const newIdentity = await keyring.createIdentity(wallet.id, defaultChain, HdPaths.iov(0));
+
+      expect(keyring.getWallets()[0].getIdentities()).toEqual([newIdentity]);
+    });
+
+    xit("throws when the same identity is added twice", async () => {
+      const keyring = new Keyring();
+      const wallet1 = keyring.add(
+        Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"),
+      );
+      const wallet2 = keyring.add(
+        Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"),
+      );
+
+      await keyring.createIdentity(wallet1.id, defaultChain, HdPaths.iov(0));
+      await keyring
+        .createIdentity(wallet2.id, defaultChain, HdPaths.iov(0))
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/identity collision/));
+    });
   });
 
   describe("serialize", () => {

@@ -51,4 +51,8 @@ export declare class Keyring {
      * @returns a wallet if ID is found, undefined otherwise
      */
     private getMutableWallet;
+    /**
+     * Throws if any of the new identities already exists in this keyring.
+     */
+    private ensureNoIdentityCollision;
 }

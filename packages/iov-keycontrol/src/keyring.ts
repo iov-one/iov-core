@@ -1,6 +1,6 @@
 import { As } from "type-tagger";
 
-import { ChainId, PublicIdentity } from "@iov/bcp";
+import { ChainId, PublicIdentity, publicIdentityEquals } from "@iov/bcp";
 import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 
 import {
@@ -100,6 +100,7 @@ export class Keyring {
   }
 
   public add(wallet: Wallet): WalletInfo {
+    this.ensureNoIdentityCollision(wallet.getIdentities());
     this.wallets.push(wallet);
     return {
       id: wallet.id,
@@ -186,5 +187,24 @@ export class Keyring {
    */
   private getMutableWallet(id: WalletId): Wallet | undefined {
     return this.wallets.find(wallet => wallet.id === id);
+  }
+
+  /**
+   * Throws if any of the new identities already exists in this keyring.
+   */
+  private ensureNoIdentityCollision(newIdentities: ReadonlyArray<PublicIdentity>): void {
+    const existingIdentities = this.wallets.reduce((currentList, wallet) => {
+      return currentList.concat(wallet.getIdentities());
+    }, new Array<PublicIdentity>());
+
+    for (const newIdentity of newIdentities) {
+      for (const existingIdentity of existingIdentities) {
+        if (publicIdentityEquals(newIdentity, existingIdentity)) {
+          throw new Error(
+            `Identity collision: ${JSON.stringify(newIdentity)} already exists in this Keyring`,
+          );
+        }
+      }
+    }
   }
 }
