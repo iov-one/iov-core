@@ -28,12 +28,14 @@ import { Random } from "@iov/crypto";
 import { Derivation } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet, UserProfile } from "@iov/keycontrol";
+import { toListPromise } from "@iov/stream";
 
 import { pubkeyToAddress } from "./derivation";
 import { liskCodec } from "./liskcodec";
 import { generateNonce, LiskConnection } from "./liskconnection";
 
 const { fromHex } = Encoding;
+const blockTime = 10_000;
 
 function pendingWithoutLiskDevnet(): void {
   if (!process.env.LISK_ENABLED) {
@@ -482,6 +484,31 @@ describe("LiskConnection", () => {
         .catch(error => expect(error).toMatch(/block does not exist/i));
 
       connection.disconnect();
+    });
+  });
+
+  describe("watchBlockHeaders", () => {
+    it("watches headers with same data as getBlockHeader", async () => {
+      pendingWithoutLiskDevnet();
+      const connection = await LiskConnection.establish(devnetBase);
+
+      const headers = await toListPromise(connection.watchBlockHeaders(), 2);
+
+      const lastHeight = headers[headers.length - 1].height;
+      const headerFromGet = await connection.getBlockHeader(lastHeight);
+
+      // first header
+      expect(headers[0].height).toEqual(headerFromGet.height - 1);
+      expect(headers[0].id).not.toEqual(headerFromGet.id);
+      expect(headers[0].transactionCount).toBeGreaterThanOrEqual(0);
+      expect(headers[0].time.getTime()).toBeGreaterThan(headerFromGet.time.getTime() - blockTime - 200);
+      expect(headers[0].time.getTime()).toBeLessThan(headerFromGet.time.getTime() - blockTime + 200);
+
+      // second header
+      expect(headers[1].height).toEqual(headerFromGet.height);
+      expect(headers[1].id).toEqual(headerFromGet.id);
+      expect(headers[1].transactionCount).toEqual(headerFromGet.transactionCount);
+      expect(headers[1].time).toEqual(headerFromGet.time);
     });
   });
 
