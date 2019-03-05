@@ -39,7 +39,7 @@ import { liskCodec } from "./liskcodec";
 const { toUtf8 } = Encoding;
 
 // poll every 3 seconds (block time 10s)
-const transactionStatePollInterval = 3_000;
+const defaultPollInterval = 3_000;
 
 /**
  * Encodes the current date and time as a nonce
@@ -137,7 +137,7 @@ export class LiskConnection implements BcpConnection {
                 lastEventSent = event;
               }
             }
-          }, transactionStatePollInterval);
+          }, defaultPollInterval);
         },
         onStop: () => clearInterval(blockInfoInterval),
       },
@@ -237,7 +237,7 @@ export class LiskConnection implements BcpConnection {
           }
         };
 
-        pollInternal = setInterval(poll, 5_000);
+        pollInternal = setInterval(poll, defaultPollInterval);
         await poll();
       },
       stop: () => {
@@ -310,7 +310,7 @@ export class LiskConnection implements BcpConnection {
           }
         };
 
-        pollInternal = setInterval(poll, 5_000);
+        pollInternal = setInterval(poll, defaultPollInterval);
         await poll();
       },
       stop: () => {
@@ -359,7 +359,7 @@ export class LiskConnection implements BcpConnection {
       // concat never() because we want non-completing streams consistently
       return concat(this.waitForTransaction(query.id), Stream.never());
     } else if (query.sentFromOrTo) {
-      let pollInterval: NodeJS.Timeout | undefined;
+      let pollInternal: NodeJS.Timeout | undefined;
       const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
         start: async listener => {
           let minHeight = query.minHeight || 0;
@@ -381,12 +381,12 @@ export class LiskConnection implements BcpConnection {
           };
 
           await poll();
-          pollInterval = setInterval(poll, 4_000);
+          pollInternal = setInterval(poll, defaultPollInterval);
         },
         stop: () => {
-          if (pollInterval) {
-            clearInterval(pollInterval);
-            pollInterval = undefined;
+          if (pollInternal) {
+            clearInterval(pollInternal);
+            pollInternal = undefined;
           }
         },
       };
@@ -397,7 +397,7 @@ export class LiskConnection implements BcpConnection {
   }
 
   private waitForTransaction(id: TransactionId): Stream<ConfirmedTransaction | FailedTransaction> {
-    let poller: NodeJS.Timeout | undefined;
+    let pollInternal: NodeJS.Timeout | undefined;
     const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
       start: listener => {
         setInterval(async () => {
@@ -415,18 +415,18 @@ export class LiskConnection implements BcpConnection {
                 throw new Error(`Got unexpected number of search results: ${results.length}`);
             }
           } catch (error) {
-            if (poller) {
-              clearTimeout(poller);
-              poller = undefined;
+            if (pollInternal) {
+              clearTimeout(pollInternal);
+              pollInternal = undefined;
             }
             listener.error(error);
           }
-        }, 5_000);
+        }, defaultPollInterval);
       },
       stop: () => {
-        if (poller) {
-          clearTimeout(poller);
-          poller = undefined;
+        if (pollInternal) {
+          clearTimeout(pollInternal);
+          pollInternal = undefined;
         }
       },
     };
