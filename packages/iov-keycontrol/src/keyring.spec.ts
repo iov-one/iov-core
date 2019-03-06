@@ -155,7 +155,7 @@ describe("Keyring", () => {
       expect(keyring.getWallets()[0].getIdentities()).toEqual([newIdentity]);
     });
 
-    xit("throws when the same identity is added twice", async () => {
+    it("throws when the same identity is added twice", async () => {
       const keyring = new Keyring();
       const wallet1 = keyring.add(
         Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"),
@@ -168,7 +168,7 @@ describe("Keyring", () => {
       await keyring
         .createIdentity(wallet2.id, defaultChain, HdPaths.iov(0))
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/identity collision/));
+        .catch(error => expect(error).toMatch(/identity collision/i));
     });
   });
 

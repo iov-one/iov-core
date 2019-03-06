@@ -32,6 +32,7 @@ Breaking changes
   `Keyring.setWalletLabel`, `.createIdentity`, `.setIdentityLabel` are added.
 * @iov/keycontrol: Let `Keyring.addWallet` return a `WalletInfo` object
 * @iov/keycontrol: Add `.previewIdentity` to the `ReadonlyWallet`/`Wallet` interfaces
+* @iov/keycontrol: Identities now must be unique in `Keyring`.
 * @iov/ledger-bns: Package removed from this monorepo and now available at
   https://github.com/iov-one/iov-ledger-bns
 * @iov/iov-core: Constructor of `SigningServerCore` now takes two arguments for

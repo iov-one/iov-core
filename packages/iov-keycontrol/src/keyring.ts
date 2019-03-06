@@ -91,11 +91,14 @@ export class Keyring {
   private readonly wallets: Wallet[];
 
   constructor(data?: KeyringSerializationString) {
+    this.wallets = [];
+
     if (data) {
       const parsedData = deserialize(data);
-      this.wallets = parsedData.wallets.map(Keyring.deserializeWallet);
-    } else {
-      this.wallets = [];
+      for (const wallet of parsedData.wallets.map(Keyring.deserializeWallet)) {
+        // use Keyring to utilize its identity collision checks
+        this.add(wallet);
+      }
     }
   }
 
@@ -148,6 +151,10 @@ export class Keyring {
     if (!wallet) {
       throw new Error(`Wallet of id '${walletId}' does not exist in keyring`);
     }
+
+    const previewIdentity = await wallet.previewIdentity(chainId, options);
+    this.ensureNoIdentityCollision([previewIdentity]);
+
     return wallet.createIdentity(chainId, options);
   }
 
