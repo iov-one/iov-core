@@ -155,9 +155,11 @@ const randomMsg: SendTransaction = {
     tokenTicker: "FOO" as TokenTicker,
   },
   fee: {
-    quantity: "5432",
-    fractionalDigits: 9,
-    tokenTicker: "PSQL" as TokenTicker,
+    tokens: {
+      quantity: "5432",
+      fractionalDigits: 9,
+      tokenTicker: "PSQL" as TokenTicker,
+    },
   },
 };
 export const randomTxJson: SignedTransaction = {

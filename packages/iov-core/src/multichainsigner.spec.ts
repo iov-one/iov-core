@@ -230,15 +230,17 @@ describe("MultiChainSigner", () => {
           },
           recipient: "0x0000000000000000000000000000000000000000" as Address,
           memo: `MultiChainSigner style (${Math.random()})`,
-          gasPrice: {
-            quantity: "20000000000",
-            fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
-          },
-          gasLimit: {
-            quantity: "2100000",
-            fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
+          fee: {
+            gasPrice: {
+              quantity: "20000000000",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
+            gasLimit: {
+              quantity: "2100000",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
           },
         };
         const postResponse = await signer.signAndPost(sendOnEthereum, secpWallet.id);

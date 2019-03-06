@@ -40,15 +40,17 @@ describe("Serialization", () => {
           fractionalDigits: 18,
           tokenTicker: "ETH" as TokenTicker,
         },
-        gasPrice: {
-          quantity: "20000000000",
-          fractionalDigits: 18,
-          tokenTicker: "ETH" as TokenTicker,
-        },
-        gasLimit: {
-          quantity: "21000",
-          fractionalDigits: 18,
-          tokenTicker: "ETH" as TokenTicker,
+        fee: {
+          gasPrice: {
+            quantity: "20000000000",
+            fractionalDigits: 18,
+            tokenTicker: "ETH" as TokenTicker,
+          },
+          gasLimit: {
+            quantity: "21000",
+            fractionalDigits: 18,
+            tokenTicker: "ETH" as TokenTicker,
+          },
         },
         recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
       };
@@ -80,15 +82,17 @@ describe("Serialization", () => {
           fractionalDigits: 18,
           tokenTicker: "ETH" as TokenTicker,
         },
-        gasPrice: {
-          quantity: "20000000000",
-          fractionalDigits: 18,
-          tokenTicker: "ETH" as TokenTicker,
-        },
-        gasLimit: {
-          quantity: "21000",
-          fractionalDigits: 18,
-          tokenTicker: "ETH" as TokenTicker,
+        fee: {
+          gasPrice: {
+            quantity: "20000000000",
+            fractionalDigits: 18,
+            tokenTicker: "ETH" as TokenTicker,
+          },
+          gasLimit: {
+            quantity: "21000",
+            fractionalDigits: 18,
+            tokenTicker: "ETH" as TokenTicker,
+          },
         },
         recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
         memo:
@@ -134,10 +138,12 @@ describe("Serialization", () => {
       {
         const tx: SendTransaction = {
           kind: "bcp/send",
-          creator: creator,
-          amount: amount,
-          gasPrice: undefined,
-          gasLimit: gasLimit,
+          creator,
+          amount,
+          fee: {
+            gasPrice: undefined,
+            gasLimit,
+          },
           recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
         };
         expect(() => serializeUnsignedTransaction(tx, nonce)).toThrowError(/gasPrice must be set/i);
@@ -147,10 +153,12 @@ describe("Serialization", () => {
       {
         const tx: SendTransaction = {
           kind: "bcp/send",
-          creator: creator,
-          amount: amount,
-          gasPrice: gasPrice,
-          gasLimit: undefined,
+          creator,
+          amount,
+          fee: {
+            gasPrice,
+            gasLimit: undefined,
+          },
           recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
         };
         expect(() => serializeUnsignedTransaction(tx, nonce)).toThrowError(/gasLimit must be set/i);
@@ -185,10 +193,12 @@ describe("Serialization", () => {
 
       const tx: SendTransaction = {
         kind: "bcp/send",
-        creator: creator,
-        amount: amount,
-        gasPrice: gasPrice,
-        gasLimit: gasLimit,
+        creator,
+        amount,
+        fee: {
+          gasPrice,
+          gasLimit,
+        },
         recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
       };
       expect(() => serializeUnsignedTransaction(tx, new Int53(-1) as Nonce)).toThrowError(
@@ -218,15 +228,17 @@ describe("Serialization", () => {
             fractionalDigits: 18,
             tokenTicker: "ETH" as TokenTicker,
           },
-          gasPrice: {
-            quantity: "1",
-            fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
-          },
-          gasLimit: {
-            quantity: "21000",
-            fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
+          fee: {
+            gasPrice: {
+              quantity: "1",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
+            gasLimit: {
+              quantity: "21000",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
           },
           recipient: "0x095e7baea6a6c7c4c2dfeb977efac326af552d87" as Address,
         },

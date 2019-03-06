@@ -112,9 +112,11 @@ export const liskCodec: TxCodec = {
             },
           },
           fee: {
-            quantity: Parse.parseQuantity(json.fee),
-            fractionalDigits: constants.primaryTokenFractionalDigits,
-            tokenTicker: constants.primaryTokenTicker,
+            tokens: {
+              quantity: Parse.parseQuantity(json.fee),
+              fractionalDigits: constants.primaryTokenFractionalDigits,
+              tokenTicker: constants.primaryTokenTicker,
+            },
           },
           amount: {
             quantity: Parse.parseQuantity(json.amount),

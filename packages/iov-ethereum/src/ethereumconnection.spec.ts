@@ -81,8 +81,10 @@ describe("EthereumConnection", () => {
       creator: sender,
       recipient: recipient,
       amount: defaultAmount,
-      gasPrice: testConfig.gasPrice,
-      gasLimit: testConfig.gasLimit,
+      fee: {
+        gasPrice: testConfig.gasPrice,
+        gasLimit: testConfig.gasLimit,
+      },
       memo: `Some text ${Math.random()}`,
     };
     const signedTransaction = await profile.signTransaction(walletId, sendTx, ethereumCodec, nonce);
@@ -281,8 +283,10 @@ describe("EthereumConnection", () => {
         creator: mainIdentity,
         recipient: recipientAddress,
         amount: defaultAmount,
-        gasPrice: testConfig.gasPrice,
-        gasLimit: testConfig.gasLimit,
+        fee: {
+          gasPrice: testConfig.gasPrice,
+          gasLimit: testConfig.gasLimit,
+        },
         memo: "We \u2665 developers – iov.one",
       };
       const connection = await EthereumConnection.establish(testConfig.base);
@@ -314,8 +318,10 @@ describe("EthereumConnection", () => {
         creator: mainIdentity,
         recipient: recipientAddress,
         amount: defaultAmount,
-        gasPrice: testConfig.gasPrice,
-        gasLimit: testConfig.gasLimit,
+        fee: {
+          gasPrice: testConfig.gasPrice,
+          gasLimit: testConfig.gasLimit,
+        },
         memo: "We \u2665 developers – iov.one",
       };
       const connection = await EthereumConnection.establish(testConfig.base);
@@ -357,11 +363,13 @@ describe("EthereumConnection", () => {
         creator: mainIdentity,
         recipient: await randomAddress(),
         amount: defaultAmount,
-        gasPrice: testConfig.gasPrice,
-        gasLimit: {
-          quantity: "1",
-          fractionalDigits: 18,
-          tokenTicker: "ETH" as TokenTicker,
+        fee: {
+          gasPrice: testConfig.gasPrice,
+          gasLimit: {
+            quantity: "1",
+            fractionalDigits: 18,
+            tokenTicker: "ETH" as TokenTicker,
+          },
         },
         memo: "We \u2665 developers – iov.one",
       };
@@ -393,8 +401,10 @@ describe("EthereumConnection", () => {
         creator: brokeIdentity,
         recipient: await randomAddress(),
         amount: defaultAmount,
-        gasPrice: testConfig.gasPrice,
-        gasLimit: testConfig.gasLimit,
+        fee: {
+          gasPrice: testConfig.gasPrice,
+          gasLimit: testConfig.gasLimit,
+        },
         memo: "We \u2665 developers – iov.one",
       };
       const nonce = await connection.getNonce({ pubkey: brokeIdentity.pubkey });
@@ -420,8 +430,10 @@ describe("EthereumConnection", () => {
         creator: mainIdentity,
         recipient: await randomAddress(),
         amount: defaultAmount,
-        gasPrice: testConfig.gasPrice,
-        gasLimit: testConfig.gasLimit,
+        fee: {
+          gasPrice: testConfig.gasPrice,
+          gasLimit: testConfig.gasLimit,
+        },
         memo: "We \u2665 developers – iov.one",
       };
       const connection = await EthereumConnection.establish(testConfig.base);
@@ -521,8 +533,10 @@ describe("EthereumConnection", () => {
         creator: mainIdentity,
         recipient: recipientAddress,
         amount: defaultAmount,
-        gasPrice: testConfig.gasPrice,
-        gasLimit: testConfig.gasLimit,
+        fee: {
+          gasPrice: testConfig.gasPrice,
+          gasLimit: testConfig.gasLimit,
+        },
         memo: `Search tx test ${Math.random()}`,
       };
       const connection = await EthereumConnection.establish(testConfig.base);
@@ -596,8 +610,10 @@ describe("EthereumConnection", () => {
         creator: mainIdentity,
         recipient: recipientAddress,
         amount: defaultAmount,
-        gasPrice: testConfig.gasPrice,
-        gasLimit: testConfig.gasLimit,
+        fee: {
+          gasPrice: testConfig.gasPrice,
+          gasLimit: testConfig.gasLimit,
+        },
         memo: `Search tx test ${new Date()}`,
       };
       const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
@@ -759,8 +775,10 @@ describe("EthereumConnection", () => {
           creator: sender,
           recipient: recipientAddress,
           amount: defaultAmount,
-          gasPrice: testConfig.gasPrice,
-          gasLimit: testConfig.gasLimit,
+          fee: {
+            gasPrice: testConfig.gasPrice,
+            gasLimit: testConfig.gasLimit,
+          },
           memo: `listenTx() test A ${Math.random()}`,
         };
 
@@ -769,8 +787,10 @@ describe("EthereumConnection", () => {
           creator: sender,
           recipient: recipientAddress,
           amount: defaultAmount,
-          gasPrice: testConfig.gasPrice,
-          gasLimit: testConfig.gasLimit,
+          fee: {
+            gasPrice: testConfig.gasPrice,
+            gasLimit: testConfig.gasLimit,
+          },
           memo: `listenTx() test B ${Math.random()}`,
         };
 
@@ -779,8 +799,10 @@ describe("EthereumConnection", () => {
           creator: sender,
           recipient: recipientAddress,
           amount: defaultAmount,
-          gasPrice: testConfig.gasPrice,
-          gasLimit: testConfig.gasLimit,
+          fee: {
+            gasPrice: testConfig.gasPrice,
+            gasLimit: testConfig.gasLimit,
+          },
           memo: `listenTx() test C ${Math.random()}`,
         };
 
@@ -832,8 +854,10 @@ describe("EthereumConnection", () => {
           creator: sender,
           recipient: recipientAddress,
           amount: defaultAmount,
-          gasPrice: testConfig.gasPrice,
-          gasLimit: testConfig.gasLimit,
+          fee: {
+            gasPrice: testConfig.gasPrice,
+            gasLimit: testConfig.gasLimit,
+          },
           memo: `liveTx() test A ${Math.random()}`,
         };
 
@@ -842,8 +866,10 @@ describe("EthereumConnection", () => {
           creator: sender,
           recipient: recipientAddress,
           amount: defaultAmount,
-          gasPrice: testConfig.gasPrice,
-          gasLimit: testConfig.gasLimit,
+          fee: {
+            gasPrice: testConfig.gasPrice,
+            gasLimit: testConfig.gasLimit,
+          },
           memo: `liveTx() test B ${Math.random()}`,
         };
 
@@ -852,8 +878,10 @@ describe("EthereumConnection", () => {
           creator: sender,
           recipient: recipientAddress,
           amount: defaultAmount,
-          gasPrice: testConfig.gasPrice,
-          gasLimit: testConfig.gasLimit,
+          fee: {
+            gasPrice: testConfig.gasPrice,
+            gasLimit: testConfig.gasLimit,
+          },
           memo: `liveTx() test C ${Math.random()}`,
         };
 
@@ -930,8 +958,10 @@ describe("EthereumConnection", () => {
           creator: sender,
           recipient: recipientAddress,
           amount: defaultAmount,
-          gasPrice: testConfig.gasPrice,
-          gasLimit: testConfig.gasLimit,
+          fee: {
+            gasPrice: testConfig.gasPrice,
+            gasLimit: testConfig.gasLimit,
+          },
           memo: `liveTx() test ${Math.random()}`,
         };
 
@@ -991,8 +1021,10 @@ describe("EthereumConnection", () => {
           creator: sender,
           recipient: recipientAddress,
           amount: defaultAmount,
-          gasPrice: testConfig.gasPrice,
-          gasLimit: testConfig.gasLimit,
+          fee: {
+            gasPrice: testConfig.gasPrice,
+            gasLimit: testConfig.gasLimit,
+          },
           memo: `liveTx() test ${Math.random()}`,
         };
 
