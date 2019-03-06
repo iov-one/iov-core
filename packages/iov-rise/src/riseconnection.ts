@@ -17,6 +17,7 @@ import {
   ChainId,
   ConfirmedTransaction,
   FailedTransaction,
+  Fee,
   isPubkeyQuery,
   Nonce,
   PostableBytes,
@@ -27,6 +28,7 @@ import {
   TokenTicker,
   TransactionId,
   TransactionState,
+  UnsignedTransaction,
 } from "@iov/bcp";
 import { Parse } from "@iov/dpos";
 import { Encoding, Int53, Uint53, Uint64 } from "@iov/encoding";
@@ -381,6 +383,10 @@ export class RiseConnection implements BcpConnection {
     } else {
       throw new Error("Unsupported query.");
     }
+  }
+
+  public async getFeeQuote(_: UnsignedTransaction): Promise<Fee> {
+    throw new Error("Not implemented");
   }
 
   private async searchSingleTransaction(searchId: TransactionId): Promise<ConfirmedTransaction | undefined> {

@@ -19,6 +19,7 @@ import {
   ChainId,
   ConfirmedTransaction,
   FailedTransaction,
+  Fee,
   isAtomicSwapIdQuery,
   isAtomicSwapRecipientQuery,
   isAtomicSwapSenderQuery,
@@ -37,6 +38,7 @@ import {
   TransactionId,
   TransactionState,
   TxReadCodec,
+  UnsignedTransaction,
 } from "@iov/bcp";
 import { Encoding, Int53, Uint53 } from "@iov/encoding";
 import { concat, DefaultValueProducer, fromListPromise, ValueAndUpdates } from "@iov/stream";
@@ -617,6 +619,10 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const parser = createParser(codecImpl.username.UsernameToken, "usrnft:");
     const nfts = results.map(parser).map(nft => decodeUsernameNft(nft, this.chainId()));
     return nfts;
+  }
+
+  public async getFeeQuote(_: UnsignedTransaction): Promise<Fee> {
+    throw new Error("Not implemented");
   }
 
   protected async query(path: string, data: Uint8Array): Promise<QueryResponse> {
