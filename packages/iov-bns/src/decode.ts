@@ -244,7 +244,7 @@ function parseBaseTx(tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId
     },
   };
   if (tx.fees && tx.fees.fees) {
-    return { ...base, fee: decodeAmount(tx.fees.fees) };
+    return { ...base, fee: { tokens: decodeAmount(tx.fees.fees) } };
   }
   return base;
 }

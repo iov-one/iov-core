@@ -114,9 +114,11 @@ export const riseCodec: TxCodec = {
             },
           },
           fee: {
-            quantity: Parse.parseQuantity(`${json.fee}`), // `fee` is a number
-            fractionalDigits: constants.primaryTokenFractionalDigits,
-            tokenTicker: constants.primaryTokenTicker,
+            tokens: {
+              quantity: Parse.parseQuantity(`${json.fee}`), // `fee` is a number
+              fractionalDigits: constants.primaryTokenFractionalDigits,
+              tokenTicker: constants.primaryTokenTicker,
+            },
           },
           amount: {
             quantity: Parse.parseQuantity(`${json.amount}`), // `amount` is a number

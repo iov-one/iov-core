@@ -36,14 +36,14 @@ export class Serialization {
     if (isSendTransaction(unsigned)) {
       const chainIdHex = encodeQuantity(fromBcpChainId(unsigned.creator.chainId));
       const valueHex = encodeQuantityString(unsigned.amount.quantity);
-      if (!unsigned.gasPrice) {
-        throw new Error("gasPrice must be set");
+      if (!unsigned.fee || !unsigned.fee.gasPrice) {
+        throw new Error("fee.gasPrice must be set");
       }
-      const gasPriceHex = encodeQuantityString(unsigned.gasPrice.quantity);
-      if (!unsigned.gasLimit) {
-        throw new Error("gasLimit must be set");
+      const gasPriceHex = encodeQuantityString(unsigned.fee.gasPrice.quantity);
+      if (!unsigned.fee.gasLimit) {
+        throw new Error("fee.gasLimit must be set");
       }
-      const gasLimitHex = encodeQuantityString(unsigned.gasLimit.quantity);
+      const gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit.quantity);
       const dataHex = unsigned.memo ? "0x" + Encoding.toHex(Encoding.toUtf8(unsigned.memo)) : "0x";
 
       if (!isValidAddress(unsigned.recipient)) {
@@ -73,11 +73,11 @@ export class Serialization {
       let dataHex = "0x";
 
       const valueHex = encodeQuantityString(unsigned.amount.quantity);
-      if (unsigned.gasPrice) {
-        gasPriceHex = encodeQuantityString(unsigned.gasPrice.quantity);
+      if (unsigned.fee && unsigned.fee.gasPrice) {
+        gasPriceHex = encodeQuantityString(unsigned.fee.gasPrice.quantity);
       }
-      if (unsigned.gasLimit) {
-        gasLimitHex = encodeQuantityString(unsigned.gasLimit.quantity);
+      if (unsigned.fee && unsigned.fee.gasLimit) {
+        gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit.quantity);
       }
       if (unsigned.memo) {
         dataHex += Encoding.toHex(Encoding.toUtf8(unsigned.memo));

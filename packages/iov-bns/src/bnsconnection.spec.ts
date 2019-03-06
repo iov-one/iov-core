@@ -487,9 +487,11 @@ describe("BnsConnection", () => {
           tokenTicker: cash,
         },
         fee: {
-          quantity: "2",
-          fractionalDigits: 9,
-          tokenTicker: cash,
+          tokens: {
+            quantity: "2",
+            fractionalDigits: 9,
+            tokenTicker: cash,
+          },
         },
       };
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
