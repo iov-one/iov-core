@@ -50,6 +50,10 @@ export declare class UserProfile {
     getIdentityLabel(id: WalletId, identity: PublicIdentity): string | undefined;
     /** Get identities of the wallet with the given ID in the primary keyring  */
     getIdentities(id: WalletId): ReadonlyArray<PublicIdentity>;
+    /**
+     * All identities of the primary keyring
+     */
+    getAllIdentities(): ReadonlyArray<PublicIdentity>;
     signTransaction(id: WalletId, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
     appendSignature(id: WalletId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
     /**

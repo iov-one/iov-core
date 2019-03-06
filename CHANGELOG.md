@@ -5,6 +5,7 @@
 * @iov/bcp: Add `AtomicSwapMerger`
 * @iov/bcp: Add `signedBy` field to `BcpTxQuery`.
 * @iov/keycontrol: Add `Keyring.getAllIdentities`
+* @iov/keycontrol: Add `UserProfile.getAllIdentities`
 
 Breaking changes
 

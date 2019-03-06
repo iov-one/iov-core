@@ -337,6 +337,43 @@ describe("UserProfile", () => {
     });
   });
 
+  describe("getAllIdentities", () => {
+    it("works for no wallet", async () => {
+      const profile = new UserProfile();
+      expect(profile.getAllIdentities()).toEqual([]);
+    });
+
+    it("works for one wallet", async () => {
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
+
+      const identity1 = await profile.createIdentity(wallet.id, defaultChain, HdPaths.iov(0));
+      const identity2 = await profile.createIdentity(wallet.id, defaultChain, HdPaths.iov(1));
+
+      expect(profile.getAllIdentities()).toEqual([identity1, identity2]);
+    });
+
+    it("works for two wallets", async () => {
+      const profile = new UserProfile();
+      const walletA = profile.addWallet(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
+      const walletB = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+
+      const identityA1 = await profile.createIdentity(walletA.id, defaultChain, HdPaths.iov(0));
+      const identityA2 = await profile.createIdentity(walletA.id, defaultChain, HdPaths.iov(1));
+      const identityB1 = await profile.createIdentity(walletB.id, defaultChain, HdPaths.ethereum(0));
+      const identityB2 = await profile.createIdentity(walletB.id, defaultChain, HdPaths.ethereum(1));
+      const identityB3 = await profile.createIdentity(walletB.id, defaultChain, HdPaths.ethereum(2));
+
+      expect(profile.getAllIdentities()).toEqual([
+        identityA1,
+        identityA2,
+        identityB1,
+        identityB2,
+        identityB3,
+      ]);
+    });
+  });
+
   it("can export a printable secret for a wallet", () => {
     const profile = new UserProfile();
     const walletInfo = profile.addWallet(

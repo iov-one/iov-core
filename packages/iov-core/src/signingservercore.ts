@@ -64,7 +64,7 @@ export class SigningServerCore {
     reason: string,
     chainIds: ReadonlyArray<ChainId>,
   ): Promise<ReadonlyArray<PublicIdentity>> {
-    const matchingIdentities = this.allIdentities().filter(identity => {
+    const matchingIdentities = this.profile.getAllIdentities().filter(identity => {
       return chainIds.some(chainId => identity.chainId === chainId);
     });
 
@@ -127,20 +127,5 @@ export class SigningServerCore {
    */
   public shutdown(): void {
     this.signer.shutdown();
-  }
-
-  private allIdentities(): ReadonlyArray<PublicIdentity> {
-    // tslint:disable-next-line:readonly-array
-    const out: PublicIdentity[] = [];
-    for (const wallet of this.profile.wallets.value) {
-      const localIdentities = this.profile.getIdentities(wallet.id);
-      out.push(
-        ...localIdentities.map(local => ({
-          chainId: local.chainId,
-          pubkey: local.pubkey,
-        })),
-      );
-    }
-    return out;
   }
 }

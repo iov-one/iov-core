@@ -184,6 +184,14 @@ export class UserProfile {
     return wallet.getIdentities();
   }
 
+  /**
+   * All identities of the primary keyring
+   */
+  public getAllIdentities(): ReadonlyArray<PublicIdentity> {
+    const keyring = this.primaryKeyring();
+    return keyring.getAllIdentities();
+  }
+
   public async signTransaction(
     id: WalletId,
     identity: PublicIdentity,

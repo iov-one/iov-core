@@ -56,5 +56,4 @@ export declare class SigningServerCore {
      * Call this to free ressources when server is not needed anymore
      */
     shutdown(): void;
-    private allIdentities;
 }
