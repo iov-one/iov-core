@@ -102,9 +102,18 @@ export class Keyring {
     }
   }
 
-  public add(wallet: Wallet): WalletInfo {
+  /**
+   * Stores a copy of the given wallet in the Keyring.
+   *
+   * Outside changes of the wallet do not affect the Keyring. Use keyring's
+   * setWalletLabel, createIdentity, setIdentityLabel to mutate wallets in the keyring.
+   */
+  public add(wallet: ReadonlyWallet): WalletInfo {
     this.ensureNoIdentityCollision(wallet.getIdentities());
-    this.wallets.push(wallet);
+
+    const copy = wallet.clone();
+    this.wallets.push(copy);
+
     return {
       id: wallet.id,
       label: wallet.label.value,

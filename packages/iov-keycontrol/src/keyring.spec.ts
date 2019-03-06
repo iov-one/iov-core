@@ -73,8 +73,8 @@ describe("Keyring", () => {
       keyring.add(wallet);
 
       expect(keyring.getWallets().length).toEqual(1);
-      // Ensure added wallet is the same object, no copy of it
-      expect(keyring.getWallets()[0]).toBe(wallet);
+      // Ensure added wallet is not the same object, but a copy of it
+      expect(keyring.getWallets()[0]).not.toBe(wallet);
     });
 
     it("can add and get multiple wallets", () => {
@@ -96,18 +96,11 @@ describe("Keyring", () => {
       keyring.add(wallet3);
       keyring.add(wallet4);
 
-      // get via getWallets()
       expect(keyring.getWallets().length).toEqual(4);
-      expect(keyring.getWallets()[0]).toBe(wallet1);
-      expect(keyring.getWallets()[1]).toBe(wallet2);
-      expect(keyring.getWallets()[2]).toBe(wallet3);
-      expect(keyring.getWallets()[3]).toBe(wallet4);
-
-      // get via getWallet()
-      expect(keyring.getWallet(wallet1.id)).toBe(wallet1);
-      expect(keyring.getWallet(wallet2.id)).toBe(wallet2);
-      expect(keyring.getWallet(wallet3.id)).toBe(wallet3);
-      expect(keyring.getWallet(wallet4.id)).toBe(wallet4);
+      expect(keyring.getWallets()[0].id).toEqual(wallet1.id);
+      expect(keyring.getWallets()[1].id).toEqual(wallet2.id);
+      expect(keyring.getWallets()[2].id).toEqual(wallet3.id);
+      expect(keyring.getWallets()[3].id).toEqual(wallet4.id);
     });
 
     it("supports all basic wallet types by default", () => {

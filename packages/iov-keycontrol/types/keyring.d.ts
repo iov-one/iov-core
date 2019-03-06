@@ -20,7 +20,13 @@ export declare class Keyring {
     private static deserializeWallet;
     private readonly wallets;
     constructor(data?: KeyringSerializationString);
-    add(wallet: Wallet): WalletInfo;
+    /**
+     * Stores a copy of the given wallet in the Keyring.
+     *
+     * Outside changes of the wallet do not affect the Keyring. Use keyring's
+     * setWalletLabel, createIdentity, setIdentityLabel to mutate wallets in the keyring.
+     */
+    add(wallet: ReadonlyWallet): WalletInfo;
     /**
      * Returns an array with immutable references.
      */

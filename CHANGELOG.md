@@ -31,6 +31,7 @@ Breaking changes
   immutable type ReadonlyWallet now. New functions to mutate wallets are added:
   `Keyring.setWalletLabel`, `.createIdentity`, `.setIdentityLabel` are added.
 * @iov/keycontrol: Let `Keyring.addWallet` return a `WalletInfo` object
+* @iov/keycontrol: `Keyring.addWallet` now stores a copy of the wallet
 * @iov/keycontrol: Add `.previewIdentity` to the `ReadonlyWallet`/`Wallet` interfaces
 * @iov/keycontrol: Identities now must be unique in `Keyring`.
 * @iov/ledger-bns: Package removed from this monorepo and now available at
