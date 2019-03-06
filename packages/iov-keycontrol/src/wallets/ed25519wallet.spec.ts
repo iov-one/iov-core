@@ -40,8 +40,6 @@ describe("Ed25519Wallet", () => {
     it("works", async () => {
       const wallet = new Ed25519Wallet();
       const newIdentity = await wallet.previewIdentity(defaultChain, defaultKeypair);
-      expect(newIdentity).toBeTruthy();
-      expect(newIdentity.pubkey.algo).toEqual(Algorithm.Ed25519);
       expect(newIdentity).toEqual({
         chainId: defaultChain,
         pubkey: {
