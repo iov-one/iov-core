@@ -280,6 +280,7 @@ describe("UserProfile", () => {
       // Stellar public keys can be converted to raw ed25519 pubkeys as follows
       // $ yarn add stellar-sdk
       // $ node
+      // > const { Keypair } = require("stellar-sdk")
       // > Keypair.fromPublicKey("GDRXE2BQUC3AZNPVFSCEZ76NJ3WWL25FYFK6RGZGIEKWE4SOOHSUJUJ6").rawPublicKey().toString("hex")
 
       const profile = new UserProfile();

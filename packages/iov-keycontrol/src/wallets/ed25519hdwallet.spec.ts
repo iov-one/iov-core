@@ -31,6 +31,7 @@ describe("Ed25519HdWallet", () => {
     // Stellar public keys can be converted to raw ed25519 pubkeys as follows
     // $ yarn add stellar-sdk
     // $ node
+    // > const { Keypair } = require("stellar-sdk")
     // > Keypair.fromPublicKey("GDRXE2BQUC3AZNPVFSCEZ76NJ3WWL25FYFK6RGZGIEKWE4SOOHSUJUJ6").rawPublicKey().toString("hex")
     const wallet = Ed25519HdWallet.fromMnemonic(
       "illness spike retreat truth genius clock brain pass fit cave bargain toe",
