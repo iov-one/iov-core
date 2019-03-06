@@ -7,6 +7,7 @@ export declare class Ed25519Wallet implements Wallet {
     private static generateId;
     private static identityId;
     private static algorithmFromString;
+    private static buildIdentity;
     readonly label: ValueAndUpdates<string | undefined>;
     readonly canSign: ValueAndUpdates<boolean>;
     readonly implementationId: WalletImplementationIdString;
@@ -17,6 +18,7 @@ export declare class Ed25519Wallet implements Wallet {
     private readonly labels;
     constructor(data?: WalletSerializationString);
     setLabel(label: string | undefined): void;
+    previewIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity>;
     createIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity>;
     setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
     getIdentityLabel(identity: PublicIdentity): string | undefined;
@@ -26,5 +28,4 @@ export declare class Ed25519Wallet implements Wallet {
     serialize(): WalletSerializationString;
     clone(): Ed25519Wallet;
     private privateKeyForIdentity;
-    private buildIdentity;
 }

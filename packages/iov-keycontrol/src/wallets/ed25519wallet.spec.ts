@@ -1,4 +1,4 @@
-import { Algorithm, ChainId, PrehashType, SignableBytes } from "@iov/bcp";
+import { Algorithm, ChainId, PrehashType, PublicKeyBytes, SignableBytes } from "@iov/bcp";
 import { Ed25519Keypair, Sha256, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
@@ -34,6 +34,23 @@ describe("Ed25519Wallet", () => {
 
     wallet.setLabel(undefined);
     expect(wallet.label.value).toBeUndefined();
+  });
+
+  describe("previewIdentity", () => {
+    it("works", async () => {
+      const wallet = new Ed25519Wallet();
+      const newIdentity = await wallet.previewIdentity(defaultChain, defaultKeypair);
+      expect(newIdentity).toEqual({
+        chainId: defaultChain,
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: defaultKeypair.pubkey as PublicKeyBytes,
+        },
+      });
+
+      // preview identity not persisted
+      expect(wallet.getIdentities()).toEqual([]);
+    });
   });
 
   it("can create an identity", async () => {

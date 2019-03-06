@@ -15,13 +15,12 @@ import {
   PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
-  SignedTransaction,
   TokenTicker,
   TransactionId,
   TransactionState,
 } from "@iov/bcp";
 import { Random, Secp256k1 } from "@iov/crypto";
-import { HdPaths, Secp256k1HdWallet, UserProfile, Wallet } from "@iov/keycontrol";
+import { HdPaths, Secp256k1HdWallet, UserProfile, WalletId } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 
 import { pubkeyToAddress } from "./derivation";
@@ -70,7 +69,8 @@ describe("EthereumConnection", () => {
   };
 
   async function postTransaction(
-    wallet: Wallet,
+    profile: UserProfile,
+    walletId: WalletId,
     sender: PublicIdentity,
     nonce: Nonce,
     recipient: Address,
@@ -85,25 +85,8 @@ describe("EthereumConnection", () => {
       gasLimit: testConfig.gasLimit,
       memo: `Some text ${Math.random()}`,
     };
-    const signingJob = ethereumCodec.bytesToSign(sendTx, nonce);
-    const signature = await wallet.createTransactionSignature(
-      sender,
-      signingJob.bytes,
-      signingJob.prehashType,
-    );
-
-    const signedTransaction: SignedTransaction = {
-      transaction: sendTx,
-      primarySignature: {
-        nonce: nonce,
-        pubkey: sender.pubkey,
-        signature: signature,
-      },
-      otherSignatures: [],
-    };
-    const bytesToPost = ethereumCodec.bytesToPost(signedTransaction);
-
-    const resultPost = await connection.postTx(bytesToPost);
+    const signedTransaction = await profile.signTransaction(walletId, sender, sendTx, ethereumCodec, nonce);
+    const resultPost = await connection.postTx(ethereumCodec.bytesToPost(signedTransaction));
     return resultPost;
   }
 
@@ -493,10 +476,11 @@ describe("EthereumConnection", () => {
         });
 
         // post transactions
-        const wallet = Secp256k1HdWallet.fromMnemonic(defaultMnemonic);
-        const mainIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.ethereum(0));
+        const profile = new UserProfile();
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+        const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
         const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
-        await postTransaction(wallet, mainIdentity, nonce, recipient, connection);
+        await postTransaction(profile, wallet.id, mainIdentity, nonce, recipient, connection);
       })().catch(done.fail);
     }, 90_000);
   });
@@ -1100,13 +1084,14 @@ describe("EthereumConnection", () => {
         });
 
         // post transactions
-        const wallet = Secp256k1HdWallet.fromMnemonic(defaultMnemonic);
-        const mainIdentity = await wallet.createIdentity(testConfig.chainId, HdPaths.ethereum(0));
+        const profile = new UserProfile();
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+        const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
         const [nonceA, nonceB] = await connection.getNonces({ pubkey: mainIdentity.pubkey }, 2);
         const recipient = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
-        await postTransaction(wallet, mainIdentity, nonceA, recipient, connection);
-        await postTransaction(wallet, mainIdentity, nonceB, recipient, connection);
+        await postTransaction(profile, wallet.id, mainIdentity, nonceA, recipient, connection);
+        await postTransaction(profile, wallet.id, mainIdentity, nonceB, recipient, connection);
       })().catch(done.fail);
     }, 45_000);
   });

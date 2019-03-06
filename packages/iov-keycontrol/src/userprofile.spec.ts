@@ -32,6 +32,7 @@ const { fromHex } = Encoding;
 
 describe("UserProfile", () => {
   const defaultChain = "chain123" as ChainId;
+  const defaultMnemonic = "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash";
   const defaultEncryptionPassword = "my super str0ng and super long password";
 
   it("can be constructed without arguments", () => {
@@ -41,9 +42,7 @@ describe("UserProfile", () => {
 
   it("is safe against keyring manipulation", () => {
     const keyring = new Keyring();
-    keyring.add(
-      Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"),
-    );
+    keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
     const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
     expect(profile.wallets.value.length).toEqual(1);
 
@@ -74,18 +73,14 @@ describe("UserProfile", () => {
 
     {
       const keyring = new Keyring();
-      keyring.add(
-        Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"),
-      );
+      keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
       const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
       expect(profile.wallets.value.length).toEqual(1);
     }
 
     {
       const keyring = new Keyring();
-      keyring.add(
-        Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"),
-      );
+      keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
       keyring.add(
         Ed25519HdWallet.fromMnemonic(
           "perfect clump orphan margin memory amazing morning use snap skate erosion civil",
@@ -108,9 +103,7 @@ describe("UserProfile", () => {
     }
 
     {
-      const wallet = Ed25519HdWallet.fromMnemonic(
-        "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash",
-      );
+      const wallet = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
       wallet.setLabel("label 1");
 
       const keyring = new Keyring();
@@ -120,9 +113,7 @@ describe("UserProfile", () => {
     }
 
     {
-      const wallet1 = Ed25519HdWallet.fromMnemonic(
-        "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash",
-      );
+      const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
       wallet1.setLabel("label 1");
       const wallet2 = Ed25519HdWallet.fromMnemonic(
         "perfect clump orphan margin memory amazing morning use snap skate erosion civil",
@@ -144,9 +135,7 @@ describe("UserProfile", () => {
 
   it("can add different kinds of wallets", () => {
     const profile = new UserProfile();
-    const wallet1 = Ed25519HdWallet.fromMnemonic(
-      "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash",
-    );
+    const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
     const wallet2 = Secp256k1HdWallet.fromMnemonic(
       "perfect clump orphan margin memory amazing morning use snap skate erosion civil",
     );
@@ -168,9 +157,7 @@ describe("UserProfile", () => {
 
   it("returns wallet info when adding wallet", () => {
     const profile = new UserProfile();
-    const wallet1 = Ed25519HdWallet.fromMnemonic(
-      "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash",
-    );
+    const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
     const wallet2 = Ed25519HdWallet.fromMnemonic(
       "perfect clump orphan margin memory amazing morning use snap skate erosion civil",
     );
@@ -187,12 +174,8 @@ describe("UserProfile", () => {
 
   it("can update wallet labels", () => {
     const keyring = new Keyring();
-    const wallet1 = Ed25519HdWallet.fromMnemonic(
-      "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash",
-    );
-    const wallet2 = Ed25519HdWallet.fromMnemonic(
-      "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash",
-    );
+    const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
+    const wallet2 = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
     keyring.add(wallet1);
     keyring.add(wallet2);
     const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
@@ -266,9 +249,7 @@ describe("UserProfile", () => {
     );
     profile.addWallet(wallet1);
 
-    const wallet2 = Ed25519HdWallet.fromMnemonic(
-      "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash",
-    );
+    const wallet2 = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
 
     expect(() => profile.getIdentities(wallet2.id)).toThrowError(
       `Wallet of id '${wallet2.id}' does not exist in keyring`,
@@ -280,9 +261,7 @@ describe("UserProfile", () => {
 
   it("added wallet can not be manipulated from outside", async () => {
     const profile = new UserProfile();
-    const newWallet = Ed25519HdWallet.fromMnemonic(
-      "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash",
-    );
+    const newWallet = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
     profile.addWallet(newWallet);
     expect(profile.getIdentities(newWallet.id).length).toEqual(0);
 
@@ -301,6 +280,7 @@ describe("UserProfile", () => {
       // Stellar public keys can be converted to raw ed25519 pubkeys as follows
       // $ yarn add stellar-sdk
       // $ node
+      // > const { Keypair } = require("stellar-sdk")
       // > Keypair.fromPublicKey("GDRXE2BQUC3AZNPVFSCEZ76NJ3WWL25FYFK6RGZGIEKWE4SOOHSUJUJ6").rawPublicKey().toString("hex")
 
       const profile = new UserProfile();
@@ -355,6 +335,43 @@ describe("UserProfile", () => {
       expect(identity.pubkey.data).toEqual(
         fromHex("d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"),
       );
+    });
+  });
+
+  describe("getAllIdentities", () => {
+    it("works for no wallet", async () => {
+      const profile = new UserProfile();
+      expect(profile.getAllIdentities()).toEqual([]);
+    });
+
+    it("works for one wallet", async () => {
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
+
+      const identity1 = await profile.createIdentity(wallet.id, defaultChain, HdPaths.iov(0));
+      const identity2 = await profile.createIdentity(wallet.id, defaultChain, HdPaths.iov(1));
+
+      expect(profile.getAllIdentities()).toEqual([identity1, identity2]);
+    });
+
+    it("works for two wallets", async () => {
+      const profile = new UserProfile();
+      const walletA = profile.addWallet(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
+      const walletB = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+
+      const identityA1 = await profile.createIdentity(walletA.id, defaultChain, HdPaths.iov(0));
+      const identityA2 = await profile.createIdentity(walletA.id, defaultChain, HdPaths.iov(1));
+      const identityB1 = await profile.createIdentity(walletB.id, defaultChain, HdPaths.ethereum(0));
+      const identityB2 = await profile.createIdentity(walletB.id, defaultChain, HdPaths.ethereum(1));
+      const identityB3 = await profile.createIdentity(walletB.id, defaultChain, HdPaths.ethereum(2));
+
+      expect(profile.getAllIdentities()).toEqual([
+        identityA1,
+        identityA2,
+        identityB1,
+        identityB2,
+        identityB3,
+      ]);
     });
   });
 
@@ -548,9 +565,7 @@ describe("UserProfile", () => {
   it("can sign and append signature", async () => {
     const createdAt = new ReadonlyDate(ReadonlyDate.now());
     const keyring = new Keyring();
-    const wallet = keyring.add(
-      Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"),
-    );
+    const wallet = keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
     const mainIdentity = await keyring.createIdentity(wallet.id, defaultChain, HdPaths.simpleAddress(0));
     const profile = new UserProfile({ createdAt, keyring });
 

@@ -19,7 +19,7 @@ import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { Keyring, WalletInfo } from "./keyring";
 import { EncryptedKeyring, KeyringEncryptor } from "./keyringencryptor";
 import { DatabaseUtils } from "./utils";
-import { ReadonlyWallet, Wallet, WalletId } from "./wallet";
+import { ReadonlyWallet, WalletId } from "./wallet";
 
 const { toAscii, fromBase64, toBase64, toRfc3339, fromRfc3339 } = Encoding;
 
@@ -135,13 +135,11 @@ export class UserProfile {
   /**
    * Adds a copy of the wallet to the primary keyring
    */
-  public addWallet(wallet: Wallet): WalletInfo {
+  public addWallet(wallet: ReadonlyWallet): WalletInfo {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
-
-    const copy = wallet.clone();
-    const info = this.keyring.add(copy);
+    const info = this.keyring.add(wallet);
     this.walletsProducer.update(this.walletInfos());
     return info;
   }
@@ -184,6 +182,14 @@ export class UserProfile {
   public getIdentities(id: WalletId): ReadonlyArray<PublicIdentity> {
     const wallet = this.findWalletInPrimaryKeyring(id);
     return wallet.getIdentities();
+  }
+
+  /**
+   * All identities of the primary keyring
+   */
+  public getAllIdentities(): ReadonlyArray<PublicIdentity> {
+    const keyring = this.primaryKeyring();
+    return keyring.getAllIdentities();
   }
 
   public async signTransaction(

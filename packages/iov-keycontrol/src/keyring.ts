@@ -1,6 +1,6 @@
 import { As } from "type-tagger";
 
-import { ChainId, PublicIdentity } from "@iov/bcp";
+import { ChainId, PublicIdentity, publicIdentityEquals } from "@iov/bcp";
 import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 
 import {
@@ -91,16 +91,29 @@ export class Keyring {
   private readonly wallets: Wallet[];
 
   constructor(data?: KeyringSerializationString) {
+    this.wallets = [];
+
     if (data) {
       const parsedData = deserialize(data);
-      this.wallets = parsedData.wallets.map(Keyring.deserializeWallet);
-    } else {
-      this.wallets = [];
+      for (const wallet of parsedData.wallets.map(Keyring.deserializeWallet)) {
+        // use Keyring to utilize its identity collision checks
+        this.add(wallet);
+      }
     }
   }
 
-  public add(wallet: Wallet): WalletInfo {
-    this.wallets.push(wallet);
+  /**
+   * Stores a copy of the given wallet in the Keyring.
+   *
+   * Outside changes of the wallet do not affect the Keyring. Use keyring's
+   * setWalletLabel, createIdentity, setIdentityLabel to mutate wallets in the keyring.
+   */
+  public add(wallet: ReadonlyWallet): WalletInfo {
+    this.ensureNoIdentityCollision(wallet.getIdentities());
+
+    const copy = wallet.clone();
+    this.wallets.push(copy);
+
     return {
       id: wallet.id,
       label: wallet.label.value,
@@ -147,7 +160,23 @@ export class Keyring {
     if (!wallet) {
       throw new Error(`Wallet of id '${walletId}' does not exist in keyring`);
     }
+
+    const previewIdentity = await wallet.previewIdentity(chainId, options);
+    this.ensureNoIdentityCollision([previewIdentity]);
+
     return wallet.createIdentity(chainId, options);
+  }
+
+  /**
+   * All identities of all wallets
+   */
+  public getAllIdentities(): ReadonlyArray<PublicIdentity> {
+    // Use Array.flat when available (https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/flat)
+    const out = new Array<PublicIdentity>();
+    for (const wallet of this.wallets) {
+      out.push(...wallet.getIdentities());
+    }
+    return out;
   }
 
   /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
@@ -186,5 +215,22 @@ export class Keyring {
    */
   private getMutableWallet(id: WalletId): Wallet | undefined {
     return this.wallets.find(wallet => wallet.id === id);
+  }
+
+  /**
+   * Throws if any of the new identities already exists in this keyring.
+   */
+  private ensureNoIdentityCollision(newIdentities: ReadonlyArray<PublicIdentity>): void {
+    const existingIdentities = this.getAllIdentities();
+
+    for (const newIdentity of newIdentities) {
+      for (const existingIdentity of existingIdentities) {
+        if (publicIdentityEquals(newIdentity, existingIdentity)) {
+          throw new Error(
+            `Identity collision: ${JSON.stringify(newIdentity)} already exists in this Keyring`,
+          );
+        }
+      }
+    }
   }
 }

@@ -20,7 +20,13 @@ export declare class Keyring {
     private static deserializeWallet;
     private readonly wallets;
     constructor(data?: KeyringSerializationString);
-    add(wallet: Wallet): WalletInfo;
+    /**
+     * Stores a copy of the given wallet in the Keyring.
+     *
+     * Outside changes of the wallet do not affect the Keyring. Use keyring's
+     * setWalletLabel, createIdentity, setIdentityLabel to mutate wallets in the keyring.
+     */
+    add(wallet: ReadonlyWallet): WalletInfo;
     /**
      * Returns an array with immutable references.
      */
@@ -40,6 +46,10 @@ export declare class Keyring {
      * keypairs on different chains.
      */
     createIdentity(walletId: WalletId, chainId: ChainId, options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number): Promise<PublicIdentity>;
+    /**
+     * All identities of all wallets
+     */
+    getAllIdentities(): ReadonlyArray<PublicIdentity>;
     /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
     setIdentityLabel(walletId: WalletId, identity: PublicIdentity, label: string | undefined): void;
     serialize(): KeyringSerializationString;
@@ -51,4 +61,8 @@ export declare class Keyring {
      * @returns a wallet if ID is found, undefined otherwise
      */
     private getMutableWallet;
+    /**
+     * Throws if any of the new identities already exists in this keyring.
+     */
+    private ensureNoIdentityCollision;
 }

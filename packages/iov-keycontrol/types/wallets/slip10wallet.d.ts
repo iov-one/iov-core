@@ -13,6 +13,7 @@ export declare class Slip10Wallet implements Wallet {
     private static generateId;
     private static identityId;
     private static algorithmFromCurve;
+    private static buildIdentity;
     private static algorithmFromString;
     readonly label: ValueAndUpdates<string | undefined>;
     readonly canSign: ValueAndUpdates<boolean>;
@@ -26,6 +27,7 @@ export declare class Slip10Wallet implements Wallet {
     private readonly labels;
     constructor(data: WalletSerializationString);
     setLabel(label: string | undefined): void;
+    previewIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity>;
     createIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity>;
     setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
     getIdentityLabel(identity: PublicIdentity): string | undefined;
@@ -36,6 +38,5 @@ export declare class Slip10Wallet implements Wallet {
     clone(): Slip10Wallet;
     private privkeyPathForIdentity;
     private privkeyForIdentity;
-    private buildIdentity;
 }
 export {};

@@ -151,6 +151,22 @@ export class Slip10Wallet implements Wallet {
     }
   }
 
+  private static buildIdentity(curve: Slip10Curve, chainId: ChainId, bytes: PublicKeyBytes): PublicIdentity {
+    if (!chainId) {
+      throw new Error("Got empty chain ID when tying to build a local identity.");
+    }
+
+    const algorithm = Slip10Wallet.algorithmFromCurve(curve);
+    const publicIdentity: PublicIdentity = {
+      chainId: chainId,
+      pubkey: {
+        algo: algorithm,
+        data: bytes,
+      },
+    };
+    return publicIdentity;
+  }
+
   private static algorithmFromString(input: string): Algorithm {
     switch (input) {
       case "ed25519":
@@ -205,7 +221,8 @@ export class Slip10Wallet implements Wallet {
         );
       }
 
-      const identity = this.buildIdentity(
+      const identity = Slip10Wallet.buildIdentity(
+        this.curve,
         record.localIdentity.chainId as ChainId,
         Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
       );
@@ -226,7 +243,7 @@ export class Slip10Wallet implements Wallet {
     this.labelProducer.update(label);
   }
 
-  public async createIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity> {
+  public async previewIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity> {
     if (!isPath(options)) {
       throw new Error("Did not get the correct argument type. Expected array of Slip10RawIndex");
     }
@@ -253,7 +270,16 @@ export class Slip10Wallet implements Wallet {
         throw new Error("Unknown curve");
     }
 
-    const newIdentity = this.buildIdentity(chainId, pubkeyBytes);
+    return Slip10Wallet.buildIdentity(this.curve, chainId, pubkeyBytes);
+  }
+
+  public async createIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity> {
+    if (!isPath(options)) {
+      throw new Error("Did not get the correct argument type. Expected array of Slip10RawIndex");
+    }
+    const path = options;
+
+    const newIdentity = await this.previewIdentity(chainId, options);
     const newIdentityId = Slip10Wallet.identityId(newIdentity);
 
     if (this.identities.find(i => Slip10Wallet.identityId(i) === newIdentityId)) {
@@ -393,21 +419,5 @@ export class Slip10Wallet implements Wallet {
     const seed = await Bip39.mnemonicToSeed(this.secret);
     const derivationResult = Slip10.derivePath(this.curve, seed, privkeyPath);
     return derivationResult.privkey;
-  }
-
-  private buildIdentity(chainId: ChainId, bytes: PublicKeyBytes): PublicIdentity {
-    if (!chainId) {
-      throw new Error("Got empty chain ID when tying to build a local identity.");
-    }
-
-    const algorithm = Slip10Wallet.algorithmFromCurve(this.curve);
-    const publicIdentity: PublicIdentity = {
-      chainId: chainId,
-      pubkey: {
-        algo: algorithm,
-        data: bytes,
-      },
-    };
-    return publicIdentity;
   }
 }
