@@ -179,6 +179,14 @@ export class Ed25519Wallet implements Wallet {
     this.labelProducer.update(label);
   }
 
+  public async previewIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity> {
+    if (!(options instanceof Ed25519Keypair)) {
+      throw new Error("Ed25519.createIdentity requires a keypair argument");
+    }
+    const keypair = options;
+    return Ed25519Wallet.buildIdentity(chainId, keypair.pubkey as PublicKeyBytes);
+  }
+
   public async createIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity> {
     if (!(options instanceof Ed25519Keypair)) {
       throw new Error("Ed25519.createIdentity requires a keypair argument");

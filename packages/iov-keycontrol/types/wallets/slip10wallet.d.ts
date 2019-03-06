@@ -27,6 +27,7 @@ export declare class Slip10Wallet implements Wallet {
     private readonly labels;
     constructor(data: WalletSerializationString);
     setLabel(label: string | undefined): void;
+    previewIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity>;
     createIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity>;
     setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
     getIdentityLabel(identity: PublicIdentity): string | undefined;

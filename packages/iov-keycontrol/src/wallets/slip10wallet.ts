@@ -243,7 +243,7 @@ export class Slip10Wallet implements Wallet {
     this.labelProducer.update(label);
   }
 
-  public async createIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity> {
+  public async previewIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity> {
     if (!isPath(options)) {
       throw new Error("Did not get the correct argument type. Expected array of Slip10RawIndex");
     }
@@ -270,7 +270,16 @@ export class Slip10Wallet implements Wallet {
         throw new Error("Unknown curve");
     }
 
-    const newIdentity = Slip10Wallet.buildIdentity(this.curve, chainId, pubkeyBytes);
+    return Slip10Wallet.buildIdentity(this.curve, chainId, pubkeyBytes);
+  }
+
+  public async createIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity> {
+    if (!isPath(options)) {
+      throw new Error("Did not get the correct argument type. Expected array of Slip10RawIndex");
+    }
+    const path = options;
+
+    const newIdentity = await this.previewIdentity(chainId, options);
     const newIdentityId = Slip10Wallet.identityId(newIdentity);
 
     if (this.identities.find(i => Slip10Wallet.identityId(i) === newIdentityId)) {

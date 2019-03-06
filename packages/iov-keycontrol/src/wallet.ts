@@ -37,6 +37,17 @@ export interface ReadonlyWallet {
   readonly implementationId: WalletImplementationIdString;
 
   /**
+   * Creates a new identity from the wallet's secret but does not store it.
+   *
+   * This allows the Keyring to check for duplicate identities before they
+   * are persisted.
+   */
+  readonly previewIdentity: (
+    chainId: ChainId,
+    options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number,
+  ) => Promise<PublicIdentity>;
+
+  /**
    * Created a detached signature for the signable bytes
    * with the private key that matches the given PublicIdentity.
    *
