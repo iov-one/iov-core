@@ -164,6 +164,13 @@ export function isAmount(data: any): data is Amount {
   );
 }
 
+/** A general interface for blockchain fees */
+export interface Fee {
+  readonly tokens?: Amount;
+  readonly gasPrice?: Amount;
+  readonly gasLimit?: Amount;
+}
+
 /** The basic transaction type all transactions should extend */
 export interface UnsignedTransaction {
   /**
@@ -184,21 +191,21 @@ export interface UnsignedTransaction {
    * This implicitly fixes the chain ID this transaction can be used on.
    */
   readonly creator: PublicIdentity;
-  readonly fee?: Amount;
-  readonly gasPrice?: Amount;
-  readonly gasLimit?: Amount;
+  readonly fee?: Fee;
 }
 
 export function isUnsignedTransaction(data: any): data is UnsignedTransaction {
+  const isObject = typeof data === "object" && data !== null;
+  if (!isObject) {
+    return false;
+  }
+  const tx = data as UnsignedTransaction;
   return (
-    typeof data === "object" &&
-    data !== null &&
-    typeof (data as UnsignedTransaction).kind === "string" &&
-    isPublicIdentity((data as UnsignedTransaction).creator) &&
-    ((data as UnsignedTransaction).fee === undefined || isAmount((data as UnsignedTransaction).fee)) &&
-    ((data as UnsignedTransaction).gasPrice === undefined ||
-      isAmount((data as UnsignedTransaction).gasPrice)) &&
-    ((data as UnsignedTransaction).gasLimit === undefined || isAmount((data as UnsignedTransaction).gasLimit))
+    typeof tx.kind === "string" &&
+    isPublicIdentity(tx.creator) &&
+    (tx.fee === undefined ||
+      isAmount(tx.fee.tokens) ||
+      (isAmount(tx.fee.gasPrice) && isAmount(tx.fee.gasLimit)))
   );
 }
 
