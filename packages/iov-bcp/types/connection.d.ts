@@ -3,7 +3,7 @@ import { As } from "type-tagger";
 import { Stream } from "xstream";
 import { ValueAndUpdates } from "@iov/stream";
 import { PostableBytes } from "./codec";
-import { Address, Amount, ChainId, Nonce, PublicKeyBundle, SignedTransaction, TokenTicker, TransactionId, UnsignedTransaction } from "./transactions";
+import { Address, Amount, ChainId, Fee, Nonce, PublicKeyBundle, SignedTransaction, TokenTicker, TransactionId, UnsignedTransaction } from "./transactions";
 export interface BcpCoin extends BcpTicker, Amount {
 }
 export interface Account {
@@ -194,4 +194,5 @@ export interface BcpConnection {
      * the query, along with all new transactions arriving from listenTx
      */
     readonly liveTx: (txQuery: BcpTxQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
+    readonly getFeeQuote: (tx: UnsignedTransaction) => Promise<Fee>;
 }

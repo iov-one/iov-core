@@ -107,6 +107,7 @@ export interface Fee {
     readonly gasPrice?: Amount;
     readonly gasLimit?: Amount;
 }
+export declare function isFee(data: any): data is Fee;
 /** The basic transaction type all transactions should extend */
 export interface UnsignedTransaction {
     /**
