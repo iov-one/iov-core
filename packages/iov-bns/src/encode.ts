@@ -134,7 +134,7 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
     case "bns/remove_address_from_username":
       return buildRemoveAddressFromUsernameTx(tx);
     default:
-      throw new Error("Received transacion of unsupported kind.");
+      throw new Error("Received transaction of unsupported kind.");
   }
 }
 
