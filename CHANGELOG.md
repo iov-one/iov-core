@@ -23,6 +23,7 @@ Breaking changes
 * @iov/bcp: `AtomicSwapHelpers.createPreimage` and `.hashPreimage` are
   now available to perform BCP specific atomic swap operations
 * @iov/bns: Remove `bnsNonceTag` in favour of `BcpTxQuery.signedBy`.
+* @iov/encoding: Remove `Uint32.asNumber`. Use `Uint32.toNumber` instead.
 * @iov/ethereum: The `options` parameter of `ethereumConnector` does not allow
   strings anymore. Use `{ wsUrl: myWebsocketUrl }` instead.
 * @iov/keycontrol: Remove `HdPaths.metamaskHdKeyTree`. Use `HdPaths.ethereum` instead.
