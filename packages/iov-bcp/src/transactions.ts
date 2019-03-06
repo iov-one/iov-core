@@ -171,6 +171,14 @@ export interface Fee {
   readonly gasLimit?: Amount;
 }
 
+export function isFee(data: any): data is Fee {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    (isAmount(data.tokens) || (isAmount(data.gasPrice) && isAmount(data.gasLimit)))
+  );
+}
+
 /** The basic transaction type all transactions should extend */
 export interface UnsignedTransaction {
   /**
@@ -200,13 +208,7 @@ export function isUnsignedTransaction(data: any): data is UnsignedTransaction {
     return false;
   }
   const tx = data as UnsignedTransaction;
-  return (
-    typeof tx.kind === "string" &&
-    isPublicIdentity(tx.creator) &&
-    (tx.fee === undefined ||
-      isAmount(tx.fee.tokens) ||
-      (isAmount(tx.fee.gasPrice) && isAmount(tx.fee.gasLimit)))
-  );
+  return typeof tx.kind === "string" && isPublicIdentity(tx.creator) && isFee(tx.fee);
 }
 
 export interface SendTransaction extends UnsignedTransaction {
