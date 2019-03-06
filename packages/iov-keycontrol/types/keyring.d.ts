@@ -46,6 +46,10 @@ export declare class Keyring {
      * keypairs on different chains.
      */
     createIdentity(walletId: WalletId, chainId: ChainId, options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number): Promise<PublicIdentity>;
+    /**
+     * All identities of all wallets
+     */
+    getAllIdentities(): ReadonlyArray<PublicIdentity>;
     /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
     setIdentityLabel(walletId: WalletId, identity: PublicIdentity, label: string | undefined): void;
     serialize(): KeyringSerializationString;

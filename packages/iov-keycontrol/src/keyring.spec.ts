@@ -152,6 +152,43 @@ describe("Keyring", () => {
     });
   });
 
+  describe("getAllIdentities", () => {
+    it("works for no wallet", async () => {
+      const keyring = new Keyring();
+      expect(keyring.getAllIdentities()).toEqual([]);
+    });
+
+    it("works for one wallet", async () => {
+      const keyring = new Keyring();
+      const wallet = keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
+
+      const identity1 = await keyring.createIdentity(wallet.id, defaultChain, HdPaths.iov(0));
+      const identity2 = await keyring.createIdentity(wallet.id, defaultChain, HdPaths.iov(1));
+
+      expect(keyring.getAllIdentities()).toEqual([identity1, identity2]);
+    });
+
+    it("works for two wallets", async () => {
+      const keyring = new Keyring();
+      const walletA = keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
+      const walletB = keyring.add(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+
+      const identityA1 = await keyring.createIdentity(walletA.id, defaultChain, HdPaths.iov(0));
+      const identityA2 = await keyring.createIdentity(walletA.id, defaultChain, HdPaths.iov(1));
+      const identityB1 = await keyring.createIdentity(walletB.id, defaultChain, HdPaths.ethereum(0));
+      const identityB2 = await keyring.createIdentity(walletB.id, defaultChain, HdPaths.ethereum(1));
+      const identityB3 = await keyring.createIdentity(walletB.id, defaultChain, HdPaths.ethereum(2));
+
+      expect(keyring.getAllIdentities()).toEqual([
+        identityA1,
+        identityA2,
+        identityB1,
+        identityB2,
+        identityB3,
+      ]);
+    });
+  });
+
   describe("serialize", () => {
     it("can serialize empty", () => {
       const keyring = new Keyring();

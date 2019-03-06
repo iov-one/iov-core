@@ -167,6 +167,18 @@ export class Keyring {
     return wallet.createIdentity(chainId, options);
   }
 
+  /**
+   * All identities of all wallets
+   */
+  public getAllIdentities(): ReadonlyArray<PublicIdentity> {
+    // Use Array.flat when available (https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/flat)
+    const out = new Array<PublicIdentity>();
+    for (const wallet of this.wallets) {
+      out.push(...wallet.getIdentities());
+    }
+    return out;
+  }
+
   /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
   public setIdentityLabel(walletId: WalletId, identity: PublicIdentity, label: string | undefined): void {
     const wallet = this.getMutableWallet(walletId);
@@ -209,9 +221,7 @@ export class Keyring {
    * Throws if any of the new identities already exists in this keyring.
    */
   private ensureNoIdentityCollision(newIdentities: ReadonlyArray<PublicIdentity>): void {
-    const existingIdentities = this.wallets.reduce((currentList, wallet) => {
-      return currentList.concat(wallet.getIdentities());
-    }, new Array<PublicIdentity>());
+    const existingIdentities = this.getAllIdentities();
 
     for (const newIdentity of newIdentities) {
       for (const existingIdentity of existingIdentities) {
