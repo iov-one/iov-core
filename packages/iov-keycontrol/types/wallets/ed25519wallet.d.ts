@@ -7,6 +7,7 @@ export declare class Ed25519Wallet implements Wallet {
     private static generateId;
     private static identityId;
     private static algorithmFromString;
+    private static buildIdentity;
     readonly label: ValueAndUpdates<string | undefined>;
     readonly canSign: ValueAndUpdates<boolean>;
     readonly implementationId: WalletImplementationIdString;
@@ -26,5 +27,4 @@ export declare class Ed25519Wallet implements Wallet {
     serialize(): WalletSerializationString;
     clone(): Ed25519Wallet;
     private privateKeyForIdentity;
-    private buildIdentity;
 }

@@ -151,6 +151,22 @@ export class Slip10Wallet implements Wallet {
     }
   }
 
+  private static buildIdentity(curve: Slip10Curve, chainId: ChainId, bytes: PublicKeyBytes): PublicIdentity {
+    if (!chainId) {
+      throw new Error("Got empty chain ID when tying to build a local identity.");
+    }
+
+    const algorithm = Slip10Wallet.algorithmFromCurve(curve);
+    const publicIdentity: PublicIdentity = {
+      chainId: chainId,
+      pubkey: {
+        algo: algorithm,
+        data: bytes,
+      },
+    };
+    return publicIdentity;
+  }
+
   private static algorithmFromString(input: string): Algorithm {
     switch (input) {
       case "ed25519":
@@ -205,7 +221,8 @@ export class Slip10Wallet implements Wallet {
         );
       }
 
-      const identity = this.buildIdentity(
+      const identity = Slip10Wallet.buildIdentity(
+        this.curve,
         record.localIdentity.chainId as ChainId,
         Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
       );
@@ -253,7 +270,7 @@ export class Slip10Wallet implements Wallet {
         throw new Error("Unknown curve");
     }
 
-    const newIdentity = this.buildIdentity(chainId, pubkeyBytes);
+    const newIdentity = Slip10Wallet.buildIdentity(this.curve, chainId, pubkeyBytes);
     const newIdentityId = Slip10Wallet.identityId(newIdentity);
 
     if (this.identities.find(i => Slip10Wallet.identityId(i) === newIdentityId)) {
@@ -393,21 +410,5 @@ export class Slip10Wallet implements Wallet {
     const seed = await Bip39.mnemonicToSeed(this.secret);
     const derivationResult = Slip10.derivePath(this.curve, seed, privkeyPath);
     return derivationResult.privkey;
-  }
-
-  private buildIdentity(chainId: ChainId, bytes: PublicKeyBytes): PublicIdentity {
-    if (!chainId) {
-      throw new Error("Got empty chain ID when tying to build a local identity.");
-    }
-
-    const algorithm = Slip10Wallet.algorithmFromCurve(this.curve);
-    const publicIdentity: PublicIdentity = {
-      chainId: chainId,
-      pubkey: {
-        algo: algorithm,
-        data: bytes,
-      },
-    };
-    return publicIdentity;
   }
 }

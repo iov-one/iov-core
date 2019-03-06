@@ -104,6 +104,21 @@ export class Ed25519Wallet implements Wallet {
     }
   }
 
+  private static buildIdentity(chainId: ChainId, bytes: PublicKeyBytes): PublicIdentity {
+    if (!chainId) {
+      throw new Error("Got empty chain ID when tying to build a local identity.");
+    }
+
+    const publicIdentity: PublicIdentity = {
+      chainId: chainId,
+      pubkey: {
+        algo: Algorithm.Ed25519,
+        data: bytes,
+      },
+    };
+    return publicIdentity;
+  }
+
   public readonly label: ValueAndUpdates<string | undefined>;
   public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
   public readonly implementationId = "ed25519" as WalletImplementationIdString;
@@ -140,7 +155,7 @@ export class Ed25519Wallet implements Wallet {
         if (Ed25519Wallet.algorithmFromString(record.localIdentity.pubkey.algo) !== Algorithm.Ed25519) {
           throw new Error("This keyring only supports ed25519 private keys");
         }
-        const identity = this.buildIdentity(
+        const identity = Ed25519Wallet.buildIdentity(
           record.localIdentity.chainId as ChainId,
           keypair.pubkey as PublicKeyBytes,
         );
@@ -170,7 +185,7 @@ export class Ed25519Wallet implements Wallet {
     }
     const keypair = options;
 
-    const newIdentity = this.buildIdentity(chainId, keypair.pubkey as PublicKeyBytes);
+    const newIdentity = Ed25519Wallet.buildIdentity(chainId, keypair.pubkey as PublicKeyBytes);
     const newIdentityId = Ed25519Wallet.identityId(newIdentity);
 
     if (this.identities.find(i => Ed25519Wallet.identityId(i) === newIdentityId)) {
@@ -263,20 +278,5 @@ export class Ed25519Wallet implements Wallet {
       throw new Error("No private key found for identity '" + identityId + "'");
     }
     return privkey;
-  }
-
-  private buildIdentity(chainId: ChainId, bytes: PublicKeyBytes): PublicIdentity {
-    if (!chainId) {
-      throw new Error("Got empty chain ID when tying to build a local identity.");
-    }
-
-    const publicIdentity: PublicIdentity = {
-      chainId: chainId,
-      pubkey: {
-        algo: Algorithm.Ed25519,
-        data: bytes,
-      },
-    };
-    return publicIdentity;
   }
 }

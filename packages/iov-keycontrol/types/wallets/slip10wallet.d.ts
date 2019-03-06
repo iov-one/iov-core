@@ -13,6 +13,7 @@ export declare class Slip10Wallet implements Wallet {
     private static generateId;
     private static identityId;
     private static algorithmFromCurve;
+    private static buildIdentity;
     private static algorithmFromString;
     readonly label: ValueAndUpdates<string | undefined>;
     readonly canSign: ValueAndUpdates<boolean>;
@@ -36,6 +37,5 @@ export declare class Slip10Wallet implements Wallet {
     clone(): Slip10Wallet;
     private privkeyPathForIdentity;
     private privkeyForIdentity;
-    private buildIdentity;
 }
 export {};
