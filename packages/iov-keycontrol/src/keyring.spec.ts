@@ -207,30 +207,17 @@ describe("Keyring", () => {
 
     it("can serialize many wallets", () => {
       const keyring = new Keyring();
-      const wallet1 = Ed25519HdWallet.fromEntropy(
+
+      for (const entropy of [
         fromHex("c7f74844892fd7b707e74fc9b6c8ef917c13ddbb380cadbc"),
-      );
-      const wallet2 = Ed25519HdWallet.fromEntropy(
         fromHex("2a7e3f902279af82138f14f871badf8d92b33713eb6c7193"),
-      );
-      const wallet3 = Ed25519HdWallet.fromEntropy(
         fromHex("602c79484cf098bd4445ad45b5e6557d83ec743cebddb4cd"),
-      );
-      const wallet4 = Ed25519HdWallet.fromEntropy(
         fromHex("1124ef7ab681387eba8fdd93a0a88ec2f3326f2a6e5e967d"),
-      );
-      const wallet5 = Ed25519HdWallet.fromEntropy(
         fromHex("cd0e346ae5c714a1514562cb8ad5d4b5a2443dbbc5dd2b5b"),
-      );
-      const wallet6 = Ed25519HdWallet.fromEntropy(
         fromHex("e38dd5c066406668b51be00e8ad0276ed9dec967d95c2248"),
-      );
-      keyring.add(wallet1);
-      keyring.add(wallet2);
-      keyring.add(wallet3);
-      keyring.add(wallet4);
-      keyring.add(wallet5);
-      keyring.add(wallet6);
+      ]) {
+        keyring.add(Ed25519HdWallet.fromEntropy(entropy));
+      }
 
       expect(keyring.serialize()).toMatch(
         /^{\"formatVersion\":1,\"wallets\":\[{\"implementationId\":\"ed25519-hd\",\"data\":\"{.*}\"}(,{\"implementationId\":\"ed25519-hd\",\"data\":\"{.*}\"}){5}\]}$/,
