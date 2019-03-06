@@ -385,8 +385,19 @@ export class RiseConnection implements BcpConnection {
     }
   }
 
-  public async getFeeQuote(_: UnsignedTransaction): Promise<Fee> {
-    throw new Error("Not implemented");
+  public async getFeeQuote(tx: UnsignedTransaction): Promise<Fee> {
+    switch (tx.kind) {
+      case "bcp/send":
+        return {
+          tokens: {
+            quantity: "10000000",
+            fractionalDigits: constants.primaryTokenFractionalDigits,
+            tokenTicker: constants.primaryTokenTicker,
+          },
+        };
+      default:
+        throw new Error("Received transaction of unsupported kind.");
+    }
   }
 
   private async searchSingleTransaction(searchId: TransactionId): Promise<ConfirmedTransaction | undefined> {
