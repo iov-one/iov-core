@@ -24,7 +24,7 @@ export declare class LiskConnection implements BcpConnection {
     searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
     listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction>;
     liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction>;
-    getFeeQuote(_: UnsignedTransaction): Promise<Fee>;
+    getFeeQuote(tx: UnsignedTransaction): Promise<Fee>;
     private waitForTransaction;
     private searchTransactions;
 }
