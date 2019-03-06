@@ -379,8 +379,9 @@ describe("RiseConnection", () => {
           error: done.fail,
         });
 
-        const wallet = new Ed25519Wallet();
-        const mainIdentity = await wallet.createIdentity(riseTestnet, await defaultKeypair);
+        const profile = new UserProfile();
+        const wallet = profile.addWallet(new Ed25519Wallet());
+        const mainIdentity = await profile.createIdentity(wallet.id, riseTestnet, await defaultKeypair);
 
         for (const _ of [0, 1]) {
           const sendTx: SendTransaction = {
@@ -390,23 +391,13 @@ describe("RiseConnection", () => {
             amount: defaultSendAmount,
           };
 
-          const nonce = generateNonce();
-          const signingJob = riseCodec.bytesToSign(sendTx, nonce);
-          const signature = await wallet.createTransactionSignature(
+          const signedTransaction = await profile.signTransaction(
+            wallet.id,
             mainIdentity,
-            signingJob.bytes,
-            signingJob.prehashType,
+            sendTx,
+            riseCodec,
+            generateNonce(),
           );
-
-          const signedTransaction: SignedTransaction = {
-            transaction: sendTx,
-            primarySignature: {
-              nonce: nonce,
-              pubkey: mainIdentity.pubkey,
-              signature: signature,
-            },
-            otherSignatures: [],
-          };
 
           const result = await connection.postTx(riseCodec.bytesToPost(signedTransaction));
           await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -483,8 +474,10 @@ describe("RiseConnection", () => {
   describe("postTx", () => {
     it("can post transaction", async () => {
       pendingWithoutRise();
-      const wallet = new Ed25519Wallet();
-      const mainIdentity = await wallet.createIdentity(riseTestnet, await defaultKeypair);
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(new Ed25519Wallet());
+      const mainIdentity = await profile.createIdentity(wallet.id, riseTestnet, await defaultKeypair);
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
@@ -493,24 +486,13 @@ describe("RiseConnection", () => {
         amount: defaultSendAmount,
       };
 
-      // Encode creation timestamp into nonce
-      const nonce = generateNonce();
-      const signingJob = riseCodec.bytesToSign(sendTx, nonce);
-      const signature = await wallet.createTransactionSignature(
+      const signedTransaction = await profile.signTransaction(
+        wallet.id,
         mainIdentity,
-        signingJob.bytes,
-        signingJob.prehashType,
+        sendTx,
+        riseCodec,
+        generateNonce(),
       );
-
-      const signedTransaction: SignedTransaction = {
-        transaction: sendTx,
-        primarySignature: {
-          nonce: nonce,
-          pubkey: mainIdentity.pubkey,
-          signature: signature,
-        },
-        otherSignatures: [],
-      };
       const bytesToPost = riseCodec.bytesToPost(signedTransaction);
 
       const connection = await RiseConnection.establish(base);
@@ -521,8 +503,9 @@ describe("RiseConnection", () => {
     xit("can post transaction and watch confirmations", done => {
       pendingWithoutRise();
       (async () => {
-        const wallet = new Ed25519Wallet();
-        const mainIdentity = await wallet.createIdentity(riseTestnet, await defaultKeypair);
+        const profile = new UserProfile();
+        const wallet = profile.addWallet(new Ed25519Wallet());
+        const mainIdentity = await profile.createIdentity(wallet.id, riseTestnet, await defaultKeypair);
 
         const sendTx: SendTransaction = {
           kind: "bcp/send",
@@ -531,24 +514,13 @@ describe("RiseConnection", () => {
           amount: defaultSendAmount,
         };
 
-        // Encode creation timestamp into nonce
-        const nonce = generateNonce();
-        const signingJob = riseCodec.bytesToSign(sendTx, nonce);
-        const signature = await wallet.createTransactionSignature(
+        const signedTransaction = await profile.signTransaction(
+          wallet.id,
           mainIdentity,
-          signingJob.bytes,
-          signingJob.prehashType,
+          sendTx,
+          riseCodec,
+          generateNonce(),
         );
-
-        const signedTransaction: SignedTransaction = {
-          transaction: sendTx,
-          primarySignature: {
-            nonce: nonce,
-            pubkey: mainIdentity.pubkey,
-            signature: signature,
-          },
-          otherSignatures: [],
-        };
         const bytesToPost = riseCodec.bytesToPost(signedTransaction);
 
         const connection = await RiseConnection.establish(base);
@@ -581,8 +553,10 @@ describe("RiseConnection", () => {
 
     it("throws for transaction with corrupted signature", async () => {
       pendingWithoutRise();
-      const wallet = new Ed25519Wallet();
-      const mainIdentity = await wallet.createIdentity(riseTestnet, await defaultKeypair);
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(new Ed25519Wallet());
+      const mainIdentity = await profile.createIdentity(wallet.id, riseTestnet, await defaultKeypair);
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
@@ -591,28 +565,28 @@ describe("RiseConnection", () => {
         amount: defaultSendAmount,
       };
 
-      // Encode creation timestamp into nonce
-      const nonce = generateNonce();
-      const signingJob = riseCodec.bytesToSign(sendTx, nonce);
-      const signature = await wallet.createTransactionSignature(
+      const signedTransaction = await profile.signTransaction(
+        wallet.id,
         mainIdentity,
-        signingJob.bytes,
-        signingJob.prehashType,
+        sendTx,
+        riseCodec,
+        generateNonce(),
       );
 
-      // tslint:disable-next-line:no-bitwise
-      const corruptedSignature = signature.map((x, i) => (i === 0 ? x ^ 0x01 : x)) as SignatureBytes;
+      const corruptedSignature = signedTransaction.primarySignature.signature.map((x, i) =>
+        // tslint:disable-next-line:no-bitwise
+        i === 0 ? x ^ 0x01 : x,
+      ) as SignatureBytes;
 
-      const signedTransaction: SignedTransaction = {
-        transaction: sendTx,
+      const corruptedSignedTransaction: SignedTransaction = {
+        transaction: signedTransaction.transaction,
         primarySignature: {
-          nonce: nonce,
-          pubkey: mainIdentity.pubkey,
+          ...signedTransaction.primarySignature,
           signature: corruptedSignature,
         },
         otherSignatures: [],
       };
-      const bytesToPost = riseCodec.bytesToPost(signedTransaction);
+      const bytesToPost = riseCodec.bytesToPost(corruptedSignedTransaction);
 
       const connection = await RiseConnection.establish(base);
       await connection

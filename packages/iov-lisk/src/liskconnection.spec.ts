@@ -385,8 +385,13 @@ describe("LiskConnection", () => {
           error: done.fail,
         });
 
-        const wallet = new Ed25519Wallet();
-        const mainIdentity = await wallet.createIdentity(dummynetChainId, await devnetDefaultKeypair);
+        const profile = new UserProfile();
+        const wallet = profile.addWallet(new Ed25519Wallet());
+        const mainIdentity = await profile.createIdentity(
+          wallet.id,
+          dummynetChainId,
+          await devnetDefaultKeypair,
+        );
 
         for (const _ of [0, 1]) {
           const sendTx: SendTransaction = {
@@ -396,23 +401,13 @@ describe("LiskConnection", () => {
             amount: devnetDefaultAmount,
           };
 
-          const nonce = generateNonce();
-          const signingJob = liskCodec.bytesToSign(sendTx, nonce);
-          const signature = await wallet.createTransactionSignature(
+          const signedTransaction = await profile.signTransaction(
+            wallet.id,
             mainIdentity,
-            signingJob.bytes,
-            signingJob.prehashType,
+            sendTx,
+            liskCodec,
+            generateNonce(),
           );
-
-          const signedTransaction: SignedTransaction = {
-            transaction: sendTx,
-            primarySignature: {
-              nonce: nonce,
-              pubkey: mainIdentity.pubkey,
-              signature: signature,
-            },
-            otherSignatures: [],
-          };
 
           const result = await connection.postTx(liskCodec.bytesToPost(signedTransaction));
           await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -489,8 +484,9 @@ describe("LiskConnection", () => {
     it("can post transaction", async () => {
       pendingWithoutLiskDevnet();
 
-      const wallet = new Ed25519Wallet();
-      const mainIdentity = await wallet.createIdentity(devnetChainId, await devnetDefaultKeypair);
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(new Ed25519Wallet());
+      const mainIdentity = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
@@ -500,24 +496,13 @@ describe("LiskConnection", () => {
         amount: devnetDefaultAmount,
       };
 
-      // Encode creation timestamp into nonce
-      const nonce = generateNonce();
-      const signingJob = liskCodec.bytesToSign(sendTx, nonce);
-      const signature = await wallet.createTransactionSignature(
+      const signedTransaction = await profile.signTransaction(
+        wallet.id,
         mainIdentity,
-        signingJob.bytes,
-        signingJob.prehashType,
+        sendTx,
+        liskCodec,
+        generateNonce(),
       );
-
-      const signedTransaction: SignedTransaction = {
-        transaction: sendTx,
-        primarySignature: {
-          nonce: nonce,
-          pubkey: mainIdentity.pubkey,
-          signature: signature,
-        },
-        otherSignatures: [],
-      };
       const bytesToPost = liskCodec.bytesToPost(signedTransaction);
 
       const connection = await LiskConnection.establish(devnetBase);
@@ -529,8 +514,13 @@ describe("LiskConnection", () => {
       pendingWithoutLiskDevnet();
 
       (async () => {
-        const wallet = new Ed25519Wallet();
-        const mainIdentity = await wallet.createIdentity(devnetChainId, await devnetDefaultKeypair);
+        const profile = new UserProfile();
+        const wallet = profile.addWallet(new Ed25519Wallet());
+        const mainIdentity = await profile.createIdentity(
+          wallet.id,
+          devnetChainId,
+          await devnetDefaultKeypair,
+        );
 
         const sendTx: SendTransaction = {
           kind: "bcp/send",
@@ -540,24 +530,13 @@ describe("LiskConnection", () => {
           amount: devnetDefaultAmount,
         };
 
-        // Encode creation timestamp into nonce
-        const nonce = generateNonce();
-        const signingJob = liskCodec.bytesToSign(sendTx, nonce);
-        const signature = await wallet.createTransactionSignature(
+        const signedTransaction = await profile.signTransaction(
+          wallet.id,
           mainIdentity,
-          signingJob.bytes,
-          signingJob.prehashType,
+          sendTx,
+          liskCodec,
+          generateNonce(),
         );
-
-        const signedTransaction: SignedTransaction = {
-          transaction: sendTx,
-          primarySignature: {
-            nonce: nonce,
-            pubkey: mainIdentity.pubkey,
-            signature: signature,
-          },
-          otherSignatures: [],
-        };
         const bytesToPost = liskCodec.bytesToPost(signedTransaction);
 
         const connection = await LiskConnection.establish(devnetBase);
@@ -591,8 +570,9 @@ describe("LiskConnection", () => {
     xit("can post transaction and wait for 4 confirmations", async () => {
       pendingWithoutLiskDevnet();
 
-      const wallet = new Ed25519Wallet();
-      const mainIdentity = await wallet.createIdentity(devnetChainId, await devnetDefaultKeypair);
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(new Ed25519Wallet());
+      const mainIdentity = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
@@ -602,24 +582,13 @@ describe("LiskConnection", () => {
         amount: devnetDefaultAmount,
       };
 
-      // Encode creation timestamp into nonce
-      const nonce = generateNonce();
-      const signingJob = liskCodec.bytesToSign(sendTx, nonce);
-      const signature = await wallet.createTransactionSignature(
+      const signedTransaction = await profile.signTransaction(
+        wallet.id,
         mainIdentity,
-        signingJob.bytes,
-        signingJob.prehashType,
+        sendTx,
+        liskCodec,
+        generateNonce(),
       );
-
-      const signedTransaction: SignedTransaction = {
-        transaction: sendTx,
-        primarySignature: {
-          nonce: nonce,
-          pubkey: mainIdentity.pubkey,
-          signature: signature,
-        },
-        otherSignatures: [],
-      };
       const bytesToPost = liskCodec.bytesToPost(signedTransaction);
 
       const connection = await LiskConnection.establish(devnetBase);
@@ -639,8 +608,9 @@ describe("LiskConnection", () => {
     it("throws for invalid transaction", async () => {
       pendingWithoutLiskDevnet();
 
-      const wallet = new Ed25519Wallet();
-      const mainIdentity = await wallet.createIdentity(devnetChainId, await devnetDefaultKeypair);
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(new Ed25519Wallet());
+      const mainIdentity = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
@@ -651,27 +621,28 @@ describe("LiskConnection", () => {
       };
 
       // Encode creation timestamp into nonce
-      const nonce = generateNonce();
-      const signingJob = liskCodec.bytesToSign(sendTx, nonce);
-      const signature = await wallet.createTransactionSignature(
+      const signedTransaction = await profile.signTransaction(
+        wallet.id,
         mainIdentity,
-        signingJob.bytes,
-        signingJob.prehashType,
+        sendTx,
+        liskCodec,
+        generateNonce(),
       );
 
-      // tslint:disable-next-line:no-bitwise
-      const corruptedSignature = signature.map((x, i) => (i === 0 ? x ^ 0x01 : x)) as SignatureBytes;
+      const corruptedSignature = signedTransaction.primarySignature.signature.map((x, i) =>
+        // tslint:disable-next-line:no-bitwise
+        i === 0 ? x ^ 0x01 : x,
+      ) as SignatureBytes;
 
-      const signedTransaction: SignedTransaction = {
-        transaction: sendTx,
+      const corruptedSignedTransaction: SignedTransaction = {
+        transaction: signedTransaction.transaction,
         primarySignature: {
-          nonce: nonce,
-          pubkey: mainIdentity.pubkey,
+          ...signedTransaction.primarySignature,
           signature: corruptedSignature,
         },
         otherSignatures: [],
       };
-      const bytesToPost = liskCodec.bytesToPost(signedTransaction);
+      const bytesToPost = liskCodec.bytesToPost(corruptedSignedTransaction);
 
       const connection = await LiskConnection.establish(devnetBase);
       await connection
