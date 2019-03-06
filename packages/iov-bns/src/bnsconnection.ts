@@ -38,7 +38,6 @@ import {
   TransactionId,
   TransactionState,
   TxReadCodec,
-  UnsignedTransaction,
 } from "@iov/bcp";
 import { Encoding, Int53, Uint53 } from "@iov/encoding";
 import { concat, DefaultValueProducer, fromListPromise, ValueAndUpdates } from "@iov/stream";
@@ -621,7 +620,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return nfts;
   }
 
-  public async getFeeQuote(_: UnsignedTransaction): Promise<Fee> {
+  public async getFeeQuote(): Promise<Fee> {
     throw new Error("Not implemented");
   }
 
