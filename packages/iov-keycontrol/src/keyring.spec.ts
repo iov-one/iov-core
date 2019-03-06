@@ -62,6 +62,25 @@ describe("Keyring", () => {
       expect(keyring.getWallets().length).toEqual(1);
       expect(keyring.getWallets()[0]).toEqual(jasmine.any(Ed25519Wallet));
     });
+
+    it("throws when deserializing a duplicate identity", () => {
+      const serialization = `
+        {
+          "formatVersion": 1,
+          "wallets": [
+            {
+              "implementationId":"ed25519",
+              "data":"{ \\"formatVersion\\": 2, \\"id\\": \\"n3u04gh03h\\", \\"identities\\":[{\\"localIdentity\\": { \\"chainId\\": \\"barnet\\", \\"pubkey\\": { \\"algo\\": \\"ed25519\\", \\"data\\": \\"aabbccdd\\" }, \\"nickname\\": \\"foo\\" }, \\"privkey\\": \\"223322112233aabb\\"}] }"
+            },
+            {
+              "implementationId":"ed25519",
+              "data":"{ \\"formatVersion\\": 2, \\"id\\": \\"677657622\\", \\"identities\\":[{\\"localIdentity\\": { \\"chainId\\": \\"barnet\\", \\"pubkey\\": { \\"algo\\": \\"ed25519\\", \\"data\\": \\"aabbccdd\\" }, \\"nickname\\": \\"foo\\" }, \\"privkey\\": \\"223322112233aabb\\"}] }"
+            }
+          ]
+        }` as KeyringSerializationString;
+
+      expect(() => new Keyring(serialization)).toThrowError(/identity collision/i);
+    });
   });
 
   describe("add", () => {
