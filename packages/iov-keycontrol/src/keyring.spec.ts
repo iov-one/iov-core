@@ -85,12 +85,10 @@ describe("Keyring", () => {
         "flip hunt behind absorb blush proof hurry embody quantum start pencil rapid",
       );
       // Wallet 3 and 4 have the same seed. This is stupid but not the Keyring's problem
-      const wallet3 = Ed25519HdWallet.fromEntropy(
-        fromHex("3275a0acb9f697875d829119e4eda0f799afe5e8fb0bc7199c75ae19df610949"),
-      );
-      const wallet4 = Ed25519HdWallet.fromEntropy(
-        fromHex("3275a0acb9f697875d829119e4eda0f799afe5e8fb0bc7199c75ae19df610949"),
-      );
+      // as long as no duplicate identity exists
+      const otherMnemonic = "victory puppy sight pave absorb inform seat pear light enjoy begin face";
+      const wallet3 = Ed25519HdWallet.fromMnemonic(otherMnemonic);
+      const wallet4 = Ed25519HdWallet.fromMnemonic(otherMnemonic);
 
       keyring.add(wallet1);
       keyring.add(wallet2);
