@@ -14,6 +14,7 @@ async function makeRandomEd25519Keypair(): Promise<Ed25519Keypair> {
 
 describe("Keyring", () => {
   const defaultChain = "chain123" as ChainId;
+  const defaultMnemonic = "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash";
 
   describe("constructor", () => {
     it("can be constructed", () => {
@@ -106,12 +107,8 @@ describe("Keyring", () => {
     it("supports all basic wallet types by default", () => {
       const keyring = new Keyring();
       keyring.add(new Ed25519Wallet());
-      keyring.add(
-        Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"),
-      );
-      keyring.add(
-        Secp256k1HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"),
-      );
+      keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
+      keyring.add(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
 
       expect(() => {
         const serialized = keyring.serialize();
@@ -121,12 +118,8 @@ describe("Keyring", () => {
     });
 
     it("throws when the same identity is added twice", async () => {
-      const wallet1 = Ed25519HdWallet.fromMnemonic(
-        "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash",
-      );
-      const wallet2 = Ed25519HdWallet.fromMnemonic(
-        "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash",
-      );
+      const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
+      const wallet2 = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
       await wallet1.createIdentity(defaultChain, HdPaths.iov(0));
       await wallet2.createIdentity(defaultChain, HdPaths.iov(0));
 
@@ -139,9 +132,7 @@ describe("Keyring", () => {
   describe("createIdentity", () => {
     it("works", async () => {
       const keyring = new Keyring();
-      const wallet = keyring.add(
-        Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"),
-      );
+      const wallet = keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
 
       const newIdentity = await keyring.createIdentity(wallet.id, defaultChain, HdPaths.iov(0));
 
@@ -150,12 +141,8 @@ describe("Keyring", () => {
 
     it("throws when the same identity is added twice", async () => {
       const keyring = new Keyring();
-      const wallet1 = keyring.add(
-        Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"),
-      );
-      const wallet2 = keyring.add(
-        Ed25519HdWallet.fromMnemonic("melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash"),
-      );
+      const wallet1 = keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
+      const wallet2 = keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
 
       await keyring.createIdentity(wallet1.id, defaultChain, HdPaths.iov(0));
       await keyring
