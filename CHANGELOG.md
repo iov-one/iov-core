@@ -33,6 +33,7 @@ Breaking changes
 * @iov/keycontrol: Let `Keyring.addWallet` return a `WalletInfo` object
 * @iov/ledger-bns: Package removed from this monorepo and now available at
   https://github.com/iov-one/iov-ledger-bns
+* @iov/lisk: Implement `watchBlockHeaders` method on `LiskConnection`.
 * @iov/iov-core: Constructor of `SigningServerCore` now takes two arguments for
   authozization callbacks.
 
