@@ -32,11 +32,17 @@ export declare class Keyring {
      */
     getWallets(): ReadonlyArray<ReadonlyWallet>;
     /**
-     * Finds a wallet and returns an immutable references.
+     * Finds a wallet and returns an immutable reference.
      *
      * @returns a wallet if ID is found, undefined otherwise
      */
     getWallet(id: WalletId): ReadonlyWallet | undefined;
+    /**
+     * Finds a wallet for a given identity and returns an immutable reference.
+     *
+     * @returns a wallet if ID is found, undefined otherwise
+     */
+    getWalletByIdentity(identity: PublicIdentity): ReadonlyWallet | undefined;
     /** Sets the label of the wallet with the given ID in the primary keyring  */
     setWalletLabel(walletId: WalletId, label: string | undefined): void;
     /**
@@ -51,16 +57,23 @@ export declare class Keyring {
      */
     getAllIdentities(): ReadonlyArray<PublicIdentity>;
     /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
-    setIdentityLabel(walletId: WalletId, identity: PublicIdentity, label: string | undefined): void;
+    setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
     serialize(): KeyringSerializationString;
     clone(): Keyring;
     /**
-     * Finds a wallet and returns a mutable references. Thus e.g.
+     * Finds a wallet and returns a mutable reference. Thus e.g.
      * .getMutableWallet(xyz).createIdentity(...) will change the keyring.
      *
      * @returns a wallet if ID is found, undefined otherwise
      */
     private getMutableWallet;
+    /**
+     * Finds a wallet for a given identity and returns a mutable reference. Thus e.g.
+     * .getWalletByIdentity(xyz).createIdentity(...) will change the keyring.
+     *
+     * @returns a wallet if ID is found, undefined otherwise
+     */
+    private getMutableWalletByIdentity;
     /**
      * Throws if any of the new identities already exists in this keyring.
      */

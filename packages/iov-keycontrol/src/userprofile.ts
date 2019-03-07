@@ -165,16 +165,16 @@ export class UserProfile {
   }
 
   /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
-  public setIdentityLabel(walletId: WalletId, identity: PublicIdentity, label: string | undefined): void {
-    this.primaryKeyring().setIdentityLabel(walletId, identity, label);
+  public setIdentityLabel(identity: PublicIdentity, label: string | undefined): void {
+    this.primaryKeyring().setIdentityLabel(identity, label);
   }
 
   /**
    * Gets the local label of one of the identities in the wallet with the given ID
    * in the primary keyring
    */
-  public getIdentityLabel(id: WalletId, identity: PublicIdentity): string | undefined {
-    const wallet = this.findWalletInPrimaryKeyring(id);
+  public getIdentityLabel(identity: PublicIdentity): string | undefined {
+    const wallet = this.findWalletInPrimaryKeyringByIdentity(identity);
     return wallet.getIdentityLabel(identity);
   }
 
@@ -273,6 +273,17 @@ export class UserProfile {
     const wallet = keyring.getWallet(id);
     if (!wallet) {
       throw new Error(`Wallet of id '${id}' does not exist in keyring`);
+    }
+
+    return wallet;
+  }
+
+  private findWalletInPrimaryKeyringByIdentity(identity: PublicIdentity): ReadonlyWallet {
+    const keyring = this.primaryKeyring();
+
+    const wallet = keyring.getWalletByIdentity(identity);
+    if (!wallet) {
+      throw new Error(`No wallet for identity '${JSON.stringify(identity)}' found in keyring`);
     }
 
     return wallet;

@@ -234,9 +234,9 @@ describe("UserProfile", () => {
     expect(profile.getIdentities(wallet2.id).length).toEqual(2);
 
     // set an identity label
-    profile.setIdentityLabel(wallet2.id, key, "foobar");
+    profile.setIdentityLabel(key, "foobar");
     const labels = profile.getIdentities(wallet2.id).map(identity => {
-      return profile.getIdentityLabel(wallet2.id, identity);
+      return profile.getIdentityLabel(identity);
     });
     expect(labels).toEqual(["foobar", undefined]);
   });
@@ -545,8 +545,8 @@ describe("UserProfile", () => {
     expect(() => profile.getIdentities(walletId)).toThrowError(
       /wallet of id 'bar' does not exist in keyring/i,
     );
-    expect(() => profile.setIdentityLabel(walletId, fakeIdentity, "foo")).toThrowError(
-      /wallet of id 'bar' does not exist in keyring/i,
+    expect(() => profile.setIdentityLabel(fakeIdentity, "foo")).toThrowError(
+      /No wallet for identity '{"chainId":"ethereum","pubkey":{"algo":"ed25519","data":{"0":170}}}' found in keyring/,
     );
     await profile
       .createIdentity(walletId, defaultChain, HdPaths.simpleAddress(0))

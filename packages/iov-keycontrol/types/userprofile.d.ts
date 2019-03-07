@@ -42,12 +42,12 @@ export declare class UserProfile {
      */
     createIdentity(walletId: WalletId, chainId: ChainId, options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number): Promise<PublicIdentity>;
     /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
-    setIdentityLabel(walletId: WalletId, identity: PublicIdentity, label: string | undefined): void;
+    setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
     /**
      * Gets the local label of one of the identities in the wallet with the given ID
      * in the primary keyring
      */
-    getIdentityLabel(id: WalletId, identity: PublicIdentity): string | undefined;
+    getIdentityLabel(identity: PublicIdentity): string | undefined;
     /** Get identities of the wallet with the given ID in the primary keyring  */
     getIdentities(id: WalletId): ReadonlyArray<PublicIdentity>;
     /**
@@ -73,5 +73,6 @@ export declare class UserProfile {
     private primaryKeyring;
     /** Throws if wallet does not exist in primary keyring */
     private findWalletInPrimaryKeyring;
+    private findWalletInPrimaryKeyringByIdentity;
     private walletInfos;
 }
