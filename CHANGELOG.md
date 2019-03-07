@@ -3,9 +3,14 @@
 ## 0.13.0
 
 * @iov/bcp: Add `AtomicSwapMerger`
+* @iov/bcp: `AtomicSwapHelpers.createPreimage` and `.hashPreimage` are
+  now available to perform BCP specific atomic swap operations
 * @iov/bcp: Add `signedBy` field to `BcpTxQuery`.
+* @iov/bcp: Add `memo` field to `SwapOfferTransaction`.
 * @iov/keycontrol: Add `Keyring.getAllIdentities`
 * @iov/keycontrol: Add `UserProfile.getAllIdentities`
+* @iov/keycontrol: Add `.previewIdentity` to the `ReadonlyWallet`/`Wallet` interfaces
+* @iov/lisk: Implement `watchBlockHeaders` method on `LiskConnection`.
 
 Breaking changes
 
@@ -18,12 +23,9 @@ Breaking changes
   `AtomicSwapHashlockQuery`, `isAtomicSwap*Query`.
 * @iov/bcp: Rename `bnsSwapQueryTags` to `bnsSwapQueryTag`
 * @iov/bcp: Let `SwapOfferTransaction` take a `hash` instead of a `preimage`.
-* @iov/bcp: Add `memo` field to `SwapOfferTransaction`.
 * @iov/bcp: Rename `SwapData.hashlock` to `SwapData.hash`
 * @iov/bcp: Remove `SwapCounterTransaction` in favour of
   `SwapOfferTransaction` for both offer and counter offer.
-* @iov/bcp: `AtomicSwapHelpers.createPreimage` and `.hashPreimage` are
-  now available to perform BCP specific atomic swap operations
 * @iov/bns: Remove `bnsNonceTag` in favour of `BcpTxQuery.signedBy`.
 * @iov/encoding: Remove `Uint32.asNumber`. Use `Uint32.toNumber` instead.
 * @iov/ethereum: The `options` parameter of `ethereumConnector` does not allow
@@ -34,12 +36,10 @@ Breaking changes
   `Keyring.setWalletLabel`, `.createIdentity`, `.setIdentityLabel` are added.
 * @iov/keycontrol: Let `Keyring.addWallet` return a `WalletInfo` object
 * @iov/keycontrol: `Keyring.addWallet` now stores a copy of the wallet
-* @iov/keycontrol: Add `.previewIdentity` to the `ReadonlyWallet`/`Wallet` interfaces
 * @iov/keycontrol: Identities now must be unique in `Keyring`.
 * @iov/keycontrol: Remove identity argument from `UserProfile.signTransaction`
 * @iov/ledger-bns: Package removed from this monorepo and now available at
   https://github.com/iov-one/iov-ledger-bns
-* @iov/lisk: Implement `watchBlockHeaders` method on `LiskConnection`.
 * @iov/iov-core: Constructor of `SigningServerCore` now takes two arguments for
   authozization callbacks.
 
