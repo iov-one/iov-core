@@ -7,10 +7,14 @@
   now available to perform BCP specific atomic swap operations
 * @iov/bcp: Add `signedBy` field to `BcpTxQuery`.
 * @iov/bcp: Add `memo` field to `SwapOfferTransaction`.
+* @iov/bcp: Add `Fee` type and `isFee` helper function.
+* @iov/bcp: Add `getFeeQuote` method to `BcpConnection`.
 * @iov/keycontrol: Add `Keyring.getAllIdentities`
 * @iov/keycontrol: Add `UserProfile.getAllIdentities`
 * @iov/keycontrol: Add `.previewIdentity` to the `ReadonlyWallet`/`Wallet` interfaces
 * @iov/lisk: Implement `watchBlockHeaders` method on `LiskConnection`.
+* @iov/lisk: Implement `getFeeQuote` method on `LiskConnection`.
+* @iov/rise: Implement `getFeeQuote` method on `RiseConnection`.
 
 Breaking changes
 
@@ -26,6 +30,7 @@ Breaking changes
 * @iov/bcp: Rename `SwapData.hashlock` to `SwapData.hash`
 * @iov/bcp: Remove `SwapCounterTransaction` in favour of
   `SwapOfferTransaction` for both offer and counter offer.
+* @iov/bcp: Transaction fee data (including gas data) is now stored under a `fee` key.
 * @iov/bns: Remove `bnsNonceTag` in favour of `BcpTxQuery.signedBy`.
 * @iov/encoding: Remove `Uint32.asNumber`. Use `Uint32.toNumber` instead.
 * @iov/ethereum: The `options` parameter of `ethereumConnector` does not allow
