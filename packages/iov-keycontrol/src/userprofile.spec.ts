@@ -553,13 +553,21 @@ describe("UserProfile", () => {
       .then(() => fail("Promise must not resolve"))
       .catch(error => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
     await profile
-      .signTransaction(walletId, fakeTransaction, fakeCodec, new Int53(12) as Nonce)
+      .signTransaction(fakeTransaction, fakeCodec, new Int53(12) as Nonce)
       .then(() => fail("Promise must not resolve"))
-      .catch(error => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
+      .catch(error =>
+        expect(error).toMatch(
+          /No wallet for identity '{"chainId":"ethereum","pubkey":{"algo":"ed25519","data":{"0":170}}}' found in keyring/,
+        ),
+      );
     await profile
-      .appendSignature(walletId, fakeIdentity, fakeSignedTransaction, fakeCodec, new Int53(12) as Nonce)
+      .appendSignature(fakeIdentity, fakeSignedTransaction, fakeCodec, new Int53(12) as Nonce)
       .then(() => fail("Promise must not resolve"))
-      .catch(error => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
+      .catch(error =>
+        expect(error).toMatch(
+          /No wallet for identity '{"chainId":"ethereum","pubkey":{"algo":"ed25519","data":{"0":170}}}' found in keyring/,
+        ),
+      );
   });
 
   it("can sign and append signature", async () => {
@@ -605,7 +613,7 @@ describe("UserProfile", () => {
     };
     const nonce = new Int53(0x112233445566) as Nonce;
 
-    const signedTransaction = await profile.signTransaction(wallet.id, fakeTransaction, fakeCodec, nonce);
+    const signedTransaction = await profile.signTransaction(fakeTransaction, fakeCodec, nonce);
     expect(signedTransaction.transaction).toEqual(fakeTransaction);
     expect(signedTransaction.primarySignature).toBeTruthy();
     expect(signedTransaction.primarySignature.nonce).toEqual(nonce);
@@ -614,7 +622,6 @@ describe("UserProfile", () => {
     expect(signedTransaction.otherSignatures).toEqual([]);
 
     const doubleSignedTransaction = await profile.appendSignature(
-      wallet.id,
       mainIdentity,
       signedTransaction,
       fakeCodec,
