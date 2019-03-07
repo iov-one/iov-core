@@ -75,7 +75,7 @@ describe("MultiChainSigner", () => {
     }> {
       const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic));
       const faucet = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(0));
-      return { mainWalletId: wallet.id, faucet };
+      return { mainWalletId: wallet.id, faucet: faucet };
     }
 
     it("can send transaction", async () => {

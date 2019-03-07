@@ -93,7 +93,7 @@ export const sendTxJson: SendTransaction = {
   },
   recipient: "tiov1hl846c5pqgaqnp0kje64rx5axj8t2fvqxunqaf" as Address,
   memo: "Test payment",
-  amount,
+  amount: amount,
 };
 // ./scripts/tohex testvectors/unsigned_tx.bin
 export const sendTxBin = fromHex(

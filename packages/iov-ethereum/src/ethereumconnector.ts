@@ -17,6 +17,6 @@ export function ethereumConnector(
   return {
     client: async () => EthereumConnection.establish(url, usedOptions),
     codec: ethereumCodec,
-    expectedChainId,
+    expectedChainId: expectedChainId,
   };
 }

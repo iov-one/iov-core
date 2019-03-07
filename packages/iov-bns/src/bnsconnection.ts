@@ -123,7 +123,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
     const toKeyValue = (t: BcpTicker): [string, BcpTicker] => [t.tokenTicker, t];
     const tickers = new Map(data.map(toKeyValue));
-    return { chainId, tickers };
+    return { chainId: chainId, tickers: tickers };
   }
 
   private readonly tmClient: TendermintClient;
@@ -162,7 +162,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   }
 
   public async postTx(tx: PostableBytes): Promise<PostTxResponse> {
-    const postResponse = await this.tmClient.broadcastTxSync({ tx });
+    const postResponse = await this.tmClient.broadcastTxSync({ tx: tx });
     if (!broadcastTxSyncSuccess(postResponse)) {
       throw new Error(JSON.stringify(postResponse, null, 2));
     }
@@ -634,11 +634,11 @@ async function performQuery(
   path: string,
   data: Uint8Array,
 ): Promise<QueryResponse> {
-  const response = await tmClient.abciQuery({ path, data });
+  const response = await tmClient.abciQuery({ path: path, data: data });
   const keys = codecImpl.app.ResultSet.decode(response.key).results;
   const values = codecImpl.app.ResultSet.decode(response.value).results;
   const results: ReadonlyArray<Result> = zip(keys, values);
-  return { height: response.height, results };
+  return { height: response.height, results: results };
 }
 
 /* Various helpers for parsing the results of querying abci */
@@ -678,5 +678,5 @@ function zip<T, U>(keys: ReadonlyArray<T>, values: ReadonlyArray<U>): ReadonlyAr
   if (keys.length !== values.length) {
     throw Error("Got " + keys.length + " keys but " + values.length + " values");
   }
-  return keys.map((key, i) => ({ key, value: values[i] }));
+  return keys.map((key, i) => ({ key: key, value: values[i] }));
 }

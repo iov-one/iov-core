@@ -140,7 +140,7 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     const me = randomId();
     const tx = buildKvTx(find, me);
 
-    const txRes = await client.broadcastTxCommit({ tx });
+    const txRes = await client.broadcastTxCommit({ tx: tx });
     expect(responses.broadcastTxCommitSuccess(txRes)).toEqual(true);
     expect(txRes.height).toBeTruthy();
     const height: number = txRes.height || 0; // || 0 for type system
@@ -150,7 +150,7 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     await tendermintSearchIndexUpdated();
 
     // find by hash - does it match?
-    const r = await client.tx({ hash, prove: true });
+    const r = await client.tx({ hash: hash, prove: true });
     // both values come from rpc, so same type (Buffer/Uint8Array)
     expect(r.hash).toEqual(hash);
     // force the type when comparing to locally generated value
@@ -162,7 +162,7 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     // tendermint, else you get empty results
     const query = buildQuery({ tags: [{ key: "app.key", value: find }] });
 
-    const s = await client.txSearch({ query, page: 1, per_page: 30 });
+    const s = await client.txSearch({ query: query, page: 1, per_page: 30 });
     // should find the tx
     expect(s.totalCount).toEqual(1);
     // should return same info as querying directly,
@@ -170,7 +170,7 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     expect(s.txs[0]).toEqual({ ...r, proof: undefined });
 
     // ensure txSearchAll works as well
-    const sall = await client.txSearchAll({ query });
+    const sall = await client.txSearchAll({ query: query });
     // should find the tx
     expect(sall.totalCount).toEqual(1);
     // should return same info as querying directly,
@@ -197,7 +197,7 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
       const me = randomId();
       const tx = buildKvTx(find, me);
 
-      const txRes = await client.broadcastTxCommit({ tx });
+      const txRes = await client.broadcastTxCommit({ tx: tx });
       expect(responses.broadcastTxCommitSuccess(txRes)).toEqual(true);
       expect(txRes.height).toBeTruthy();
       expect(txRes.hash.length).not.toEqual(0);
@@ -211,17 +211,17 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     await tendermintSearchIndexUpdated();
 
     // expect one page of results
-    const s1 = await client.txSearch({ query, page: 1, per_page: 2 });
+    const s1 = await client.txSearch({ query: query, page: 1, per_page: 2 });
     expect(s1.totalCount).toEqual(3);
     expect(s1.txs.length).toEqual(2);
 
     // second page
-    const s2 = await client.txSearch({ query, page: 2, per_page: 2 });
+    const s2 = await client.txSearch({ query: query, page: 2, per_page: 2 });
     expect(s2.totalCount).toEqual(3);
     expect(s2.txs.length).toEqual(1);
 
     // and all together now
-    const sall = await client.txSearchAll({ query, per_page: 2 });
+    const sall = await client.txSearchAll({ query: query, per_page: 2 });
     expect(sall.totalCount).toEqual(3);
     expect(sall.txs.length).toEqual(3);
     // make sure there are in order from lowest to highest height

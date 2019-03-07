@@ -48,7 +48,7 @@ describe("WebsocketClient", () => {
     const client = new WebsocketClient(tendermintUrl);
 
     const query = "tm.event='NewBlockHeader'";
-    const req = jsonRpcWith("subscribe", { query });
+    const req = jsonRpcWith("subscribe", { query: query });
     const headers = client.listen(req);
 
     // tslint:disable-next-line:readonly-array
@@ -111,7 +111,7 @@ describe("WebsocketClient", () => {
     const client = new WebsocketClient(tendermintUrl);
 
     const query = "tm.event='NewBlockHeader'";
-    const req = jsonRpcWith("subscribe", { query });
+    const req = jsonRpcWith("subscribe", { query: query });
     const headers = client.listen(req);
 
     // tslint:disable-next-line:readonly-array
@@ -150,7 +150,7 @@ describe("WebsocketClient", () => {
     const client = new WebsocketClient(tendermintUrl);
 
     const query = "tm.event='NewBlockHeader'";
-    const req = jsonRpcWith("subscribe", { query });
+    const req = jsonRpcWith("subscribe", { query: query });
     const headers = client.listen(req);
 
     // tslint:disable-next-line:readonly-array
@@ -195,7 +195,7 @@ describe("WebsocketClient", () => {
       client.disconnect();
 
       const query = "tm.event='NewBlockHeader'";
-      const req = jsonRpcWith("subscribe", { query });
+      const req = jsonRpcWith("subscribe", { query: query });
       client.listen(req).subscribe({
         error: error => {
           expect(error.toString()).toMatch(/is not open/);

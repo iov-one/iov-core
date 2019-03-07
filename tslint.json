@@ -29,7 +29,7 @@
     "no-unnecessary-class": ["allow-static-only"],
     "no-unnecessary-type-assertion": true,
     "no-var-keyword": true,
-    "object-literal-shorthand": false,
+    "object-literal-shorthand": [true, "never"],
     "object-literal-sort-keys": false,
     "prefer-const": true,
     "promise-function-async": true,
