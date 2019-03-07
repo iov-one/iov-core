@@ -208,7 +208,9 @@ export function isUnsignedTransaction(data: any): data is UnsignedTransaction {
     return false;
   }
   const tx = data as UnsignedTransaction;
-  return typeof tx.kind === "string" && isPublicIdentity(tx.creator) && isFee(tx.fee);
+  return (
+    typeof tx.kind === "string" && isPublicIdentity(tx.creator) && (tx.fee === undefined || isFee(tx.fee))
+  );
 }
 
 export interface SendTransaction extends UnsignedTransaction {
