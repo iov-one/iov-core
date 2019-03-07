@@ -10,6 +10,6 @@ export function bnsConnector(url: string, expectedChainId?: ChainId): ChainConne
   return {
     client: async () => BnsConnection.establish(url),
     codec: bnsCodec,
-    expectedChainId,
+    expectedChainId: expectedChainId,
   };
 }

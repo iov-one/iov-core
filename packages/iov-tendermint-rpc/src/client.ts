@@ -50,24 +50,30 @@ export class Client {
   }
 
   public async abciQuery(params: requests.AbciQueryParams): Promise<responses.AbciQueryResponse> {
-    const query: requests.AbciQueryRequest = { params, method: requests.Method.AbciQuery };
+    const query: requests.AbciQueryRequest = { params: params, method: requests.Method.AbciQuery };
     return this.doCall(query, this.p.encodeAbciQuery, this.r.decodeAbciQuery);
   }
 
   public async block(height?: number): Promise<responses.BlockResponse> {
-    const query: requests.BlockRequest = { method: requests.Method.Block, params: { height } };
+    const query: requests.BlockRequest = { method: requests.Method.Block, params: { height: height } };
     return this.doCall(query, this.p.encodeBlock, this.r.decodeBlock);
   }
 
   public async blockResults(height?: number): Promise<responses.BlockResultsResponse> {
-    const query: requests.BlockResultsRequest = { method: requests.Method.BlockResults, params: { height } };
+    const query: requests.BlockResultsRequest = {
+      method: requests.Method.BlockResults,
+      params: { height: height },
+    };
     return this.doCall(query, this.p.encodeBlockResults, this.r.decodeBlockResults);
   }
 
   public async blockchain(minHeight?: number, maxHeight?: number): Promise<responses.BlockchainResponse> {
     const query: requests.BlockchainRequest = {
       method: requests.Method.Blockchain,
-      params: { minHeight, maxHeight },
+      params: {
+        minHeight: minHeight,
+        maxHeight: maxHeight,
+      },
     };
     return this.doCall(query, this.p.encodeBlockchain, this.r.decodeBlockchain);
   }
@@ -80,7 +86,7 @@ export class Client {
   public async broadcastTxSync(
     params: requests.BroadcastTxParams,
   ): Promise<responses.BroadcastTxSyncResponse> {
-    const query: requests.BroadcastTxRequest = { params, method: requests.Method.BroadcastTxSync };
+    const query: requests.BroadcastTxRequest = { params: params, method: requests.Method.BroadcastTxSync };
     return this.doCall(query, this.p.encodeBroadcastTx, this.r.decodeBroadcastTxSync);
   }
 
@@ -92,7 +98,7 @@ export class Client {
   public async broadcastTxAsync(
     params: requests.BroadcastTxParams,
   ): Promise<responses.BroadcastTxAsyncResponse> {
-    const query: requests.BroadcastTxRequest = { params, method: requests.Method.BroadcastTxAsync };
+    const query: requests.BroadcastTxRequest = { params: params, method: requests.Method.BroadcastTxAsync };
     return this.doCall(query, this.p.encodeBroadcastTx, this.r.decodeBroadcastTxAsync);
   }
 
@@ -104,12 +110,12 @@ export class Client {
   public async broadcastTxCommit(
     params: requests.BroadcastTxParams,
   ): Promise<responses.BroadcastTxCommitResponse> {
-    const query: requests.BroadcastTxRequest = { params, method: requests.Method.BroadcastTxCommit };
+    const query: requests.BroadcastTxRequest = { params: params, method: requests.Method.BroadcastTxCommit };
     return this.doCall(query, this.p.encodeBroadcastTx, this.r.decodeBroadcastTxCommit);
   }
 
   public async commit(height?: number): Promise<responses.CommitResponse> {
-    const query: requests.CommitRequest = { method: requests.Method.Commit, params: { height } };
+    const query: requests.CommitRequest = { method: requests.Method.Commit, params: { height: height } };
     return this.doCall(query, this.p.encodeCommit, this.r.decodeCommit);
   }
 
@@ -156,7 +162,7 @@ export class Client {
   }
 
   public async tx(params: requests.TxParams): Promise<responses.TxResponse> {
-    const query: requests.TxRequest = { params, method: requests.Method.Tx };
+    const query: requests.TxRequest = { params: params, method: requests.Method.Tx };
     return this.doCall(query, this.p.encodeTx, this.r.decodeTx);
   }
 
@@ -166,7 +172,7 @@ export class Client {
    * @see https://tendermint.com/rpc/#txsearch
    */
   public async txSearch(params: requests.TxSearchParams): Promise<responses.TxSearchResponse> {
-    const query: requests.TxSearchRequest = { params, method: requests.Method.TxSearch };
+    const query: requests.TxSearchRequest = { params: params, method: requests.Method.TxSearch };
     const resp = await this.doCall(query, this.p.encodeTxSearch, this.r.decodeTxSearch);
     return {
       ...resp,
@@ -184,7 +190,7 @@ export class Client {
     let done = false;
 
     while (!done) {
-      const resp = await this.txSearch({ ...params, page });
+      const resp = await this.txSearch({ ...params, page: page });
       txs.push(...resp.txs);
       if (txs.length < resp.totalCount) {
         page++;
@@ -198,12 +204,15 @@ export class Client {
 
     return {
       totalCount: txs.length,
-      txs,
+      txs: txs,
     };
   }
 
   public async validators(height?: number): Promise<responses.ValidatorsResponse> {
-    const query: requests.ValidatorsRequest = { method: requests.Method.Validators, params: { height } };
+    const query: requests.ValidatorsRequest = {
+      method: requests.Method.Validators,
+      params: { height: height },
+    };
     return this.doCall(query, this.p.encodeValidators, this.r.decodeValidators);
   }
 

@@ -22,11 +22,11 @@ function filterBadStatus(res: any): any {
 async function http(method: "POST", url: string, request?: any): Promise<any> {
   if (typeof fetch !== "undefined") {
     const body = request ? JSON.stringify(request) : undefined;
-    return fetch(url, { method, body })
+    return fetch(url, { method: method, body: body })
       .then(filterBadStatus)
       .then((res: any) => res.json());
   } else {
-    return axios.request({ url, method, data: request }).then(res => res.data);
+    return axios.request({ url: url, method: method, data: request }).then(res => res.data);
   }
 }
 

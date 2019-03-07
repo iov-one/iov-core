@@ -43,7 +43,7 @@ describe("UserProfile", () => {
   it("is safe against keyring manipulation", () => {
     const keyring = new Keyring();
     keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
-    const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
+    const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring: keyring });
     expect(profile.wallets.value.length).toEqual(1);
 
     // manipulate external keyring
@@ -67,14 +67,14 @@ describe("UserProfile", () => {
   it("initial wallet count works", () => {
     {
       const keyring = new Keyring();
-      const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
+      const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring: keyring });
       expect(profile.wallets.value.length).toEqual(0);
     }
 
     {
       const keyring = new Keyring();
       keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
-      const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
+      const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring: keyring });
       expect(profile.wallets.value.length).toEqual(1);
     }
 
@@ -91,7 +91,7 @@ describe("UserProfile", () => {
           "degree tackle suggest window test behind mesh extra cover prepare oak script",
         ),
       );
-      const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
+      const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring: keyring });
       expect(profile.wallets.value.length).toEqual(3);
     }
   });
@@ -108,7 +108,7 @@ describe("UserProfile", () => {
 
       const keyring = new Keyring();
       keyring.add(wallet);
-      const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
+      const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring: keyring });
       expect(profile.wallets.value.map(i => i.label)).toEqual(["label 1"]);
     }
 
@@ -128,7 +128,7 @@ describe("UserProfile", () => {
       keyring.add(wallet1);
       keyring.add(wallet2);
       keyring.add(wallet3);
-      const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
+      const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring: keyring });
       expect(profile.wallets.value.map(i => i.label)).toEqual(["label 1", "", undefined]);
     }
   });
@@ -178,7 +178,7 @@ describe("UserProfile", () => {
     const wallet2 = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
     keyring.add(wallet1);
     keyring.add(wallet2);
-    const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring });
+    const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring: keyring });
     expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined]);
 
     profile.setWalletLabel(wallet1.id, "foo1");
@@ -392,7 +392,7 @@ describe("UserProfile", () => {
 
     const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
     const keyring = new Keyring();
-    const profile = new UserProfile({ createdAt, keyring });
+    const profile = new UserProfile({ createdAt: createdAt, keyring: keyring });
 
     await profile.storeIn(db, defaultEncryptionPassword);
     expect(await db.get("format_version", { asBuffer: false })).toEqual("1");
@@ -425,7 +425,7 @@ describe("UserProfile", () => {
 
     const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
     const keyring = new Keyring();
-    const original = new UserProfile({ createdAt, keyring });
+    const original = new UserProfile({ createdAt: createdAt, keyring: keyring });
 
     await original.storeIn(db, defaultEncryptionPassword);
 
@@ -459,7 +459,7 @@ describe("UserProfile", () => {
 
     const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
     const keyring = new Keyring();
-    const original = new UserProfile({ createdAt, keyring });
+    const original = new UserProfile({ createdAt: createdAt, keyring: keyring });
 
     await original.storeIn(db, defaultEncryptionPassword);
 
@@ -567,7 +567,7 @@ describe("UserProfile", () => {
     const keyring = new Keyring();
     const wallet = keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
     const mainIdentity = await keyring.createIdentity(wallet.id, defaultChain, HdPaths.simpleAddress(0));
-    const profile = new UserProfile({ createdAt, keyring });
+    const profile = new UserProfile({ createdAt: createdAt, keyring: keyring });
 
     const fakeTransaction: SendTransaction = {
       kind: "bcp/send",

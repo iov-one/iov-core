@@ -23,9 +23,10 @@ export function bnsSwapQueryTag(query: AtomicSwapQuery, set = true): BcpQueryTag
     binKey = Uint8Array.from([...indexKey(bucket, "arbiter"), ...hashIdentifier(query.hashlock)]);
   }
 
-  const key = Encoding.toHex(binKey).toUpperCase();
-  // "s" for set, "d" for delete.... we need to watch both changes to be clear
-  // But if we return two tags here, that would AND not OR
-  const value = set ? "s" : "d";
-  return { key, value };
+  return {
+    key: Encoding.toHex(binKey).toUpperCase(),
+    // "s" for set, "d" for delete.... we need to watch both changes to be clear
+    // But if we return two tags here, that would AND not OR
+    value: set ? "s" : "d",
+  };
 }

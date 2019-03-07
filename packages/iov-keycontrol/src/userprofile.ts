@@ -68,9 +68,10 @@ export class UserProfile {
         const keyringSerialization = await KeyringEncryptor.decrypt(encryptedKeyring, encryptionKey);
 
         // create objects
-        const createdAt = fromRfc3339(createdAtFromStorage);
-        const keyring = new Keyring(keyringSerialization);
-        return new UserProfile({ createdAt, keyring });
+        return new UserProfile({
+          createdAt: fromRfc3339(createdAtFromStorage),
+          keyring: new Keyring(keyringSerialization),
+        });
       default:
         throw new Error(`Unsupported format version: ${formatVersion.toNumber()}`);
     }

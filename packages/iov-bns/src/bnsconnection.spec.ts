@@ -105,7 +105,7 @@ describe("BnsConnection", () => {
     const profile = new UserProfile();
     profile.addWallet(wallet);
     const faucet = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(0));
-    return { profile, mainWalletId: wallet.id, faucet };
+    return { profile: profile, mainWalletId: wallet.id, faucet: faucet };
   }
 
   async function ensureNonceNonZero(
@@ -1804,8 +1804,8 @@ describe("BnsConnection", () => {
     const swapClaimTx: SwapClaimTransaction = {
       kind: "bcp/swap_claim",
       creator: creator,
-      swapId,
-      preimage,
+      swapId: swapId,
+      preimage: preimage,
     };
     const firstWalletId = profile.wallets.value[0].id;
     const nonce = await connection.getNonce({ pubkey: creator.pubkey });
