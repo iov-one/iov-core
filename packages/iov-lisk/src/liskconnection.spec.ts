@@ -405,7 +405,6 @@ describe("LiskConnection", () => {
 
           const signedTransaction = await profile.signTransaction(
             wallet.id,
-            mainIdentity,
             sendTx,
             liskCodec,
             generateNonce(),
@@ -523,13 +522,7 @@ describe("LiskConnection", () => {
         amount: devnetDefaultAmount,
       };
 
-      const signedTransaction = await profile.signTransaction(
-        wallet.id,
-        mainIdentity,
-        sendTx,
-        liskCodec,
-        generateNonce(),
-      );
+      const signedTransaction = await profile.signTransaction(wallet.id, sendTx, liskCodec, generateNonce());
       const bytesToPost = liskCodec.bytesToPost(signedTransaction);
 
       const connection = await LiskConnection.establish(devnetBase);
@@ -559,7 +552,6 @@ describe("LiskConnection", () => {
 
         const signedTransaction = await profile.signTransaction(
           wallet.id,
-          mainIdentity,
           sendTx,
           liskCodec,
           generateNonce(),
@@ -609,13 +601,7 @@ describe("LiskConnection", () => {
         amount: devnetDefaultAmount,
       };
 
-      const signedTransaction = await profile.signTransaction(
-        wallet.id,
-        mainIdentity,
-        sendTx,
-        liskCodec,
-        generateNonce(),
-      );
+      const signedTransaction = await profile.signTransaction(wallet.id, sendTx, liskCodec, generateNonce());
       const bytesToPost = liskCodec.bytesToPost(signedTransaction);
 
       const connection = await LiskConnection.establish(devnetBase);
@@ -648,13 +634,7 @@ describe("LiskConnection", () => {
       };
 
       // Encode creation timestamp into nonce
-      const signedTransaction = await profile.signTransaction(
-        wallet.id,
-        mainIdentity,
-        sendTx,
-        liskCodec,
-        generateNonce(),
-      );
+      const signedTransaction = await profile.signTransaction(wallet.id, sendTx, liskCodec, generateNonce());
 
       const corruptedSignature = signedTransaction.primarySignature.signature.map((x, i) =>
         // tslint:disable-next-line:no-bitwise
@@ -931,9 +911,9 @@ describe("LiskConnection", () => {
         };
 
         const [nonceA, nonceB, nonceC] = await connection.getNonces({ pubkey: sender.pubkey }, 3);
-        const signedA = await profile.signTransaction(wallet.id, sender, sendA, liskCodec, nonceA);
-        const signedB = await profile.signTransaction(wallet.id, sender, sendB, liskCodec, nonceB);
-        const signedC = await profile.signTransaction(wallet.id, sender, sendC, liskCodec, nonceC);
+        const signedA = await profile.signTransaction(wallet.id, sendA, liskCodec, nonceA);
+        const signedB = await profile.signTransaction(wallet.id, sendB, liskCodec, nonceB);
+        const signedC = await profile.signTransaction(wallet.id, sendC, liskCodec, nonceC);
         const bytesToPostA = liskCodec.bytesToPost(signedA);
         const bytesToPostB = liskCodec.bytesToPost(signedB);
         const bytesToPostC = liskCodec.bytesToPost(signedC);
@@ -1001,7 +981,7 @@ describe("LiskConnection", () => {
         };
 
         const nonce = await connection.getNonce({ pubkey: sender.pubkey });
-        const signed = await profile.signTransaction(wallet.id, sender, send, liskCodec, nonce);
+        const signed = await profile.signTransaction(wallet.id, send, liskCodec, nonce);
         const bytesToPost = liskCodec.bytesToPost(signed);
 
         const postResult = await connection.postTx(bytesToPost);
@@ -1057,7 +1037,7 @@ describe("LiskConnection", () => {
         };
 
         const nonce = await connection.getNonce({ pubkey: sender.pubkey });
-        const signed = await profile.signTransaction(wallet.id, sender, send, liskCodec, nonce);
+        const signed = await profile.signTransaction(wallet.id, send, liskCodec, nonce);
         const bytesToPost = liskCodec.bytesToPost(signed);
 
         const postResult = await connection.postTx(bytesToPost);

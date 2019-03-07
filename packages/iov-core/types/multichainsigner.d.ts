@@ -6,7 +6,7 @@ import { WalletId } from "@iov/keycontrol";
  * logic for key derivation, etc.
  */
 export interface Profile {
-    readonly signTransaction: (id: WalletId, identity: PublicIdentity, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
+    readonly signTransaction: (id: WalletId, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
     readonly appendSignature: (id: WalletId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
 }
 export declare class MultiChainSigner {

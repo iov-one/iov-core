@@ -7,7 +7,6 @@ import {
   FullSignature,
   Nonce,
   PublicIdentity,
-  publicIdentityEquals,
   SignedTransaction,
   TxCodec,
   UnsignedTransaction,
@@ -192,27 +191,23 @@ export class UserProfile {
     return keyring.getAllIdentities();
   }
 
+  /**
+   * Signs a transaction using the profile's primary keyring. The transaction's
+   * creator field specifies the keypair to be used for signing.
+   */
   public async signTransaction(
     id: WalletId,
-    identity: PublicIdentity,
     transaction: UnsignedTransaction,
     codec: TxCodec,
     nonce: Nonce,
   ): Promise<SignedTransaction> {
-    // identity and the pair (transaction.chainId, transaction.signer) are redundant
-    // but we keep both in the interface to be consistent with appendSignature() where
-    // the original transaction creator is not the signer
-    if (!publicIdentityEquals(identity, transaction.creator)) {
-      throw new Error("Signing identity does not match the transaction creator");
-    }
-
     const wallet = this.findWalletInPrimaryKeyring(id);
 
     const { bytes, prehashType } = codec.bytesToSign(transaction, nonce);
     const signature: FullSignature = {
-      pubkey: identity.pubkey,
+      pubkey: transaction.creator.pubkey,
       nonce: nonce,
-      signature: await wallet.createTransactionSignature(identity, bytes, prehashType),
+      signature: await wallet.createTransactionSignature(transaction.creator, bytes, prehashType),
     };
 
     return {

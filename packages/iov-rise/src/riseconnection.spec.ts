@@ -393,7 +393,6 @@ describe("RiseConnection", () => {
 
           const signedTransaction = await profile.signTransaction(
             wallet.id,
-            mainIdentity,
             sendTx,
             riseCodec,
             generateNonce(),
@@ -486,13 +485,7 @@ describe("RiseConnection", () => {
         amount: defaultSendAmount,
       };
 
-      const signedTransaction = await profile.signTransaction(
-        wallet.id,
-        mainIdentity,
-        sendTx,
-        riseCodec,
-        generateNonce(),
-      );
+      const signedTransaction = await profile.signTransaction(wallet.id, sendTx, riseCodec, generateNonce());
       const bytesToPost = riseCodec.bytesToPost(signedTransaction);
 
       const connection = await RiseConnection.establish(base);
@@ -516,7 +509,6 @@ describe("RiseConnection", () => {
 
         const signedTransaction = await profile.signTransaction(
           wallet.id,
-          mainIdentity,
           sendTx,
           riseCodec,
           generateNonce(),
@@ -565,13 +557,7 @@ describe("RiseConnection", () => {
         amount: defaultSendAmount,
       };
 
-      const signedTransaction = await profile.signTransaction(
-        wallet.id,
-        mainIdentity,
-        sendTx,
-        riseCodec,
-        generateNonce(),
-      );
+      const signedTransaction = await profile.signTransaction(wallet.id, sendTx, riseCodec, generateNonce());
 
       const corruptedSignature = signedTransaction.primarySignature.signature.map((x, i) =>
         // tslint:disable-next-line:no-bitwise
@@ -717,8 +703,8 @@ describe("RiseConnection", () => {
         };
 
         const [nonceA, nonceB] = await connection.getNonces({ pubkey: sender.pubkey }, 2);
-        const signedA = await profile.signTransaction(wallet.id, sender, sendA, riseCodec, nonceA);
-        const signedB = await profile.signTransaction(wallet.id, sender, sendB, riseCodec, nonceB);
+        const signedA = await profile.signTransaction(wallet.id, sendA, riseCodec, nonceA);
+        const signedB = await profile.signTransaction(wallet.id, sendB, riseCodec, nonceB);
         const bytesToPostA = riseCodec.bytesToPost(signedA);
         const bytesToPostB = riseCodec.bytesToPost(signedB);
 
@@ -779,7 +765,7 @@ describe("RiseConnection", () => {
         };
 
         const nonce = await connection.getNonce({ pubkey: sender.pubkey });
-        const signed = await profile.signTransaction(wallet.id, sender, send, riseCodec, nonce);
+        const signed = await profile.signTransaction(wallet.id, send, riseCodec, nonce);
         const bytesToPost = riseCodec.bytesToPost(signed);
 
         const postResult = await connection.postTx(bytesToPost);
@@ -833,7 +819,7 @@ describe("RiseConnection", () => {
         };
 
         const nonce = await connection.getNonce({ pubkey: sender.pubkey });
-        const signed = await profile.signTransaction(wallet.id, sender, send, riseCodec, nonce);
+        const signed = await profile.signTransaction(wallet.id, send, riseCodec, nonce);
         const bytesToPost = riseCodec.bytesToPost(signed);
 
         const postResult = await connection.postTx(bytesToPost);

@@ -38,7 +38,6 @@ async function connectChain(x: ChainConnector): Promise<Chain> {
 export interface Profile {
   readonly signTransaction: (
     id: WalletId,
-    identity: PublicIdentity,
     transaction: UnsignedTransaction,
     codec: TxCodec,
     nonce: Nonce,
@@ -125,7 +124,7 @@ export class MultiChainSigner {
 
     const nonce = await connection.getNonce({ pubkey: tx.creator.pubkey });
 
-    const signed = await this.profile.signTransaction(walletId, tx.creator, tx, codec, nonce);
+    const signed = await this.profile.signTransaction(walletId, tx, codec, nonce);
     const txBytes = codec.bytesToPost(signed);
     const post = await connection.postTx(txBytes);
     return post;
