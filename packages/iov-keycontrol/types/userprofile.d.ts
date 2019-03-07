@@ -58,8 +58,8 @@ export declare class UserProfile {
      * Signs a transaction using the profile's primary keyring. The transaction's
      * creator field specifies the keypair to be used for signing.
      */
-    signTransaction(id: WalletId, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
-    appendSignature(id: WalletId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
+    signTransaction(transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
+    appendSignature(identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
     /**
      * Exposes the secret data of a wallet in a printable format for
      * backup purposes.
