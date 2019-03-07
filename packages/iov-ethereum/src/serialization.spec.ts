@@ -138,11 +138,11 @@ describe("Serialization", () => {
       {
         const tx: SendTransaction = {
           kind: "bcp/send",
-          creator,
-          amount,
+          creator: creator,
+          amount: amount,
           fee: {
             gasPrice: undefined,
-            gasLimit,
+            gasLimit: gasLimit,
           },
           recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
         };
@@ -153,10 +153,10 @@ describe("Serialization", () => {
       {
         const tx: SendTransaction = {
           kind: "bcp/send",
-          creator,
-          amount,
+          creator: creator,
+          amount: amount,
           fee: {
-            gasPrice,
+            gasPrice: gasPrice,
             gasLimit: undefined,
           },
           recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
@@ -193,11 +193,11 @@ describe("Serialization", () => {
 
       const tx: SendTransaction = {
         kind: "bcp/send",
-        creator,
-        amount,
+        creator: creator,
+        amount: amount,
         fee: {
-          gasPrice,
-          gasLimit,
+          gasPrice: gasPrice,
+          gasLimit: gasLimit,
         },
         recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
       };
