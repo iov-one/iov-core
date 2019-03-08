@@ -266,9 +266,11 @@ describe("Serialization", () => {
           tokenTicker: "XNET" as TokenTicker,
         },
         fee: {
-          quantity: "0",
-          fractionalDigits: 8,
-          tokenTicker: "XNET" as TokenTicker,
+          tokens: {
+            quantity: "0",
+            fractionalDigits: 8,
+            tokenTicker: "XNET" as TokenTicker,
+          },
         },
         recipient: "10010344879730196491X" as Address,
       };

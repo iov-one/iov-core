@@ -160,9 +160,10 @@ describe("liskCodec", () => {
       throw new Error("wrong transaction kind");
     }
     expect(unsigned.fee).toBeTruthy();
-    expect(unsigned.fee!.quantity).toEqual("10000000");
-    expect(unsigned.fee!.fractionalDigits).toEqual(8);
-    expect(unsigned.fee!.tokenTicker).toEqual("LSK");
+    expect(unsigned.fee!.tokens).toBeTruthy();
+    expect(unsigned.fee!.tokens!.quantity).toEqual("10000000");
+    expect(unsigned.fee!.tokens!.fractionalDigits).toEqual(8);
+    expect(unsigned.fee!.tokens!.tokenTicker).toEqual("LSK");
     expect(unsigned.amount).toBeTruthy();
     expect(unsigned.amount.quantity).toEqual("244550000");
     expect(unsigned.amount.fractionalDigits).toEqual(8);

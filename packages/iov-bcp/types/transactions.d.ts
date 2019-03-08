@@ -101,6 +101,13 @@ export interface Amount {
     readonly tokenTicker: TokenTicker;
 }
 export declare function isAmount(data: any): data is Amount;
+/** A general interface for blockchain fees */
+export interface Fee {
+    readonly tokens?: Amount;
+    readonly gasPrice?: Amount;
+    readonly gasLimit?: Amount;
+}
+export declare function isFee(data: any): data is Fee;
 /** The basic transaction type all transactions should extend */
 export interface UnsignedTransaction {
     /**
@@ -121,9 +128,7 @@ export interface UnsignedTransaction {
      * This implicitly fixes the chain ID this transaction can be used on.
      */
     readonly creator: PublicIdentity;
-    readonly fee?: Amount;
-    readonly gasPrice?: Amount;
-    readonly gasLimit?: Amount;
+    readonly fee?: Fee;
 }
 export declare function isUnsignedTransaction(data: any): data is UnsignedTransaction;
 export interface SendTransaction extends UnsignedTransaction {

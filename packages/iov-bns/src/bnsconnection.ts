@@ -19,6 +19,7 @@ import {
   ChainId,
   ConfirmedTransaction,
   FailedTransaction,
+  Fee,
   isAtomicSwapIdQuery,
   isAtomicSwapRecipientQuery,
   isAtomicSwapSenderQuery,
@@ -617,6 +618,10 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const parser = createParser(codecImpl.username.UsernameToken, "usrnft:");
     const nfts = results.map(parser).map(nft => decodeUsernameNft(nft, this.chainId()));
     return nfts;
+  }
+
+  public async getFeeQuote(): Promise<Fee> {
+    throw new Error("Not implemented");
   }
 
   protected async query(path: string, data: Uint8Array): Promise<QueryResponse> {

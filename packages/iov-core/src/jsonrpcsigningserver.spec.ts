@@ -113,7 +113,7 @@ describe("JsonRpcSigningServer", () => {
     expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
     if (isJsonRpcErrorResponse(response)) {
-      throw new Error("Response must not be an error");
+      throw new Error(`Response must not be an error, but got '${response.error.message}'`);
     }
     expect(response.result).toEqual(jasmine.any(Array));
     expect((response.result as ReadonlyArray<any>).length).toEqual(1);
@@ -145,7 +145,7 @@ describe("JsonRpcSigningServer", () => {
     expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
     if (isJsonRpcErrorResponse(response)) {
-      throw new Error("Response must not be an error");
+      throw new Error(`Response must not be an error, but got '${response.error.message}'`);
     }
     expect(response.result).toEqual(jasmine.any(Array));
     expect((response.result as ReadonlyArray<any>).length).toEqual(1);
@@ -173,7 +173,7 @@ describe("JsonRpcSigningServer", () => {
     expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
     if (isJsonRpcErrorResponse(response)) {
-      throw new Error("Response must not be an error");
+      throw new Error(`Response must not be an error, but got '${response.error.message}'`);
     }
     expect(response.result).toEqual(jasmine.any(Array));
     expect((response.result as ReadonlyArray<any>).length).toEqual(2);
@@ -205,7 +205,7 @@ describe("JsonRpcSigningServer", () => {
       },
     });
     if (isJsonRpcErrorResponse(identitiesResponse)) {
-      throw new Error("Response must not be an error");
+      throw new Error(`Response must not be an error, but got '${identitiesResponse.error.message}'`);
     }
     const signer: PublicIdentity = identitiesResponse.result[0];
 
@@ -227,7 +227,7 @@ describe("JsonRpcSigningServer", () => {
       },
     });
     if (isJsonRpcErrorResponse(signAndPostResponse)) {
-      throw new Error("Response must not be an error");
+      throw new Error(`Response must not be an error, but got '${signAndPostResponse.error.message}'`);
     }
     const transactionId: TransactionId = signAndPostResponse.result;
     expect(transactionId).toMatch(/^[0-9A-F]+$/);

@@ -9,6 +9,7 @@ import {
   Address,
   Amount,
   ChainId,
+  Fee,
   Nonce,
   PublicKeyBundle,
   SignedTransaction,
@@ -273,4 +274,5 @@ export interface BcpConnection {
    * the query, along with all new transactions arriving from listenTx
    */
   readonly liveTx: (txQuery: BcpTxQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
+  readonly getFeeQuote: (tx: UnsignedTransaction) => Promise<Fee>;
 }

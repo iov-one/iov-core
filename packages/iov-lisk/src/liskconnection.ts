@@ -17,6 +17,7 @@ import {
   ChainId,
   ConfirmedTransaction,
   FailedTransaction,
+  Fee,
   isPubkeyQuery,
   Nonce,
   PostableBytes,
@@ -27,6 +28,7 @@ import {
   TokenTicker,
   TransactionId,
   TransactionState,
+  UnsignedTransaction,
 } from "@iov/bcp";
 import { Parse } from "@iov/dpos";
 import { Encoding, Int53, Uint53, Uint64 } from "@iov/encoding";
@@ -393,6 +395,21 @@ export class LiskConnection implements BcpConnection {
       return Stream.create(producer);
     } else {
       throw new Error("Unsupported query.");
+    }
+  }
+
+  public async getFeeQuote(tx: UnsignedTransaction): Promise<Fee> {
+    switch (tx.kind) {
+      case "bcp/send":
+        return {
+          tokens: {
+            quantity: "10000000",
+            fractionalDigits: constants.primaryTokenFractionalDigits,
+            tokenTicker: constants.primaryTokenTicker,
+          },
+        };
+      default:
+        throw new Error("Received transaction of unsupported kind.");
     }
   }
 

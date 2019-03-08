@@ -180,7 +180,9 @@ describe("Encode", () => {
         amount: defaultAmount,
         recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
         memo: "paid transaction",
-        fee: defaultAmount,
+        fee: {
+          tokens: defaultAmount,
+        },
       };
 
       const encoded = buildUnsignedTx(transaction);

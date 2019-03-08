@@ -16,6 +16,7 @@ import {
   ChainId,
   ConfirmedTransaction,
   FailedTransaction,
+  Fee,
   isPubkeyQuery,
   Nonce,
   PostableBytes,
@@ -24,6 +25,7 @@ import {
   TokenTicker,
   TransactionId,
   TransactionState,
+  UnsignedTransaction,
 } from "@iov/bcp";
 import { Encoding, Int53, Uint53 } from "@iov/encoding";
 import { isJsonRpcErrorResponse, JsonRpcRequest } from "@iov/jsonrpc";
@@ -537,6 +539,10 @@ export class EthereumConnection implements BcpConnection {
     } else {
       throw new Error("Unsupported query.");
     }
+  }
+
+  public async getFeeQuote(_: UnsignedTransaction): Promise<Fee> {
+    throw new Error("Not implemented");
   }
 
   private async socketSend(request: JsonRpcRequest, ignoreNetworkError: boolean = false): Promise<void> {

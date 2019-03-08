@@ -99,12 +99,13 @@ export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.app.ITx {
   const msg = buildMsg(tx);
   return codecImpl.app.Tx.create({
     ...msg,
-    fees: tx.fee
-      ? {
-          fees: encodeAmount(tx.fee),
-          payer: decodeBnsAddress(identityToAddress(tx.creator)).data,
-        }
-      : null,
+    fees:
+      tx.fee && tx.fee.tokens
+        ? {
+            fees: encodeAmount(tx.fee.tokens),
+            payer: decodeBnsAddress(identityToAddress(tx.creator)).data,
+          }
+        : null,
   });
 }
 
@@ -133,7 +134,7 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
     case "bns/remove_address_from_username":
       return buildRemoveAddressFromUsernameTx(tx);
     default:
-      throw new Error("Received transacion of unsupported kind.");
+      throw new Error("Received transaction of unsupported kind.");
   }
 }
 

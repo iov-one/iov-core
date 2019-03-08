@@ -52,9 +52,12 @@ describe("ethereumCodec", () => {
             },
           },
           fee: {
-            quantity: "141000",
-            fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
+            // TODO: Make this make sense
+            tokens: {
+              quantity: "141000",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
           },
           amount: {
             quantity: "5445500",

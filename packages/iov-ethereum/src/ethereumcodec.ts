@@ -84,9 +84,12 @@ export const ethereumCodec: TxCodec = {
             },
           },
           fee: {
-            quantity: decodeHexQuantityString(json.gas),
-            fractionalDigits: constants.primaryTokenFractionalDigits,
-            tokenTicker: constants.primaryTokenTicker,
+            // TODO: Make this make sense
+            tokens: {
+              quantity: decodeHexQuantityString(json.gas),
+              fractionalDigits: constants.primaryTokenFractionalDigits,
+              tokenTicker: constants.primaryTokenTicker,
+            },
           },
           amount: {
             quantity: decodeHexQuantityString(json.value),
