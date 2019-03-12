@@ -248,9 +248,9 @@ $root.app = (function() {
          * @property {username.IIssueTokenMsg|null} [issueUsernameNftMsg] Tx issueUsernameNftMsg
          * @property {username.IAddChainAddressMsg|null} [addUsernameAddressNftMsg] Tx addUsernameAddressNftMsg
          * @property {username.IRemoveChainAddressMsg|null} [removeUsernameAddressMsg] Tx removeUsernameAddressMsg
-         * @property {blockchain.IIssueTokenMsg|null} [issueBlockchainNftMsg] Tx issueBlockchainNftMsg
-         * @property {ticker.IIssueTokenMsg|null} [issueTickerNftMsg] Tx issueTickerNftMsg
-         * @property {bootstrap_node.IIssueTokenMsg|null} [issueBootstrapNodeNftMsg] Tx issueBootstrapNodeNftMsg
+         * @property {distribution.INewRevenueMsg|null} [newRevenueMsg] Tx newRevenueMsg
+         * @property {distribution.IDistributeMsg|null} [distributeMsg] Tx distributeMsg
+         * @property {distribution.IResetRevenueMsg|null} [resetRevenueMsg] Tx resetRevenueMsg
          */
 
         /**
@@ -415,40 +415,40 @@ $root.app = (function() {
         Tx.prototype.removeUsernameAddressMsg = null;
 
         /**
-         * Tx issueBlockchainNftMsg.
-         * @member {blockchain.IIssueTokenMsg|null|undefined} issueBlockchainNftMsg
+         * Tx newRevenueMsg.
+         * @member {distribution.INewRevenueMsg|null|undefined} newRevenueMsg
          * @memberof app.Tx
          * @instance
          */
-        Tx.prototype.issueBlockchainNftMsg = null;
+        Tx.prototype.newRevenueMsg = null;
 
         /**
-         * Tx issueTickerNftMsg.
-         * @member {ticker.IIssueTokenMsg|null|undefined} issueTickerNftMsg
+         * Tx distributeMsg.
+         * @member {distribution.IDistributeMsg|null|undefined} distributeMsg
          * @memberof app.Tx
          * @instance
          */
-        Tx.prototype.issueTickerNftMsg = null;
+        Tx.prototype.distributeMsg = null;
 
         /**
-         * Tx issueBootstrapNodeNftMsg.
-         * @member {bootstrap_node.IIssueTokenMsg|null|undefined} issueBootstrapNodeNftMsg
+         * Tx resetRevenueMsg.
+         * @member {distribution.IResetRevenueMsg|null|undefined} resetRevenueMsg
          * @memberof app.Tx
          * @instance
          */
-        Tx.prototype.issueBootstrapNodeNftMsg = null;
+        Tx.prototype.resetRevenueMsg = null;
 
         // OneOf field names bound to virtual getters and setters
         var $oneOfFields;
 
         /**
          * msg is a sum type over all allowed messages on this chain.
-         * @member {"sendMsg"|"createEscrowMsg"|"releaseEscrowMsg"|"returnEscrowMsg"|"updateEscrowMsg"|"createContractMsg"|"updateContractMsg"|"setValidatorsMsg"|"newTokenInfoMsg"|"addApprovalMsg"|"removeApprovalMsg"|"issueUsernameNftMsg"|"addUsernameAddressNftMsg"|"removeUsernameAddressMsg"|"issueBlockchainNftMsg"|"issueTickerNftMsg"|"issueBootstrapNodeNftMsg"|undefined} sum
+         * @member {"sendMsg"|"createEscrowMsg"|"releaseEscrowMsg"|"returnEscrowMsg"|"updateEscrowMsg"|"createContractMsg"|"updateContractMsg"|"setValidatorsMsg"|"newTokenInfoMsg"|"addApprovalMsg"|"removeApprovalMsg"|"issueUsernameNftMsg"|"addUsernameAddressNftMsg"|"removeUsernameAddressMsg"|"newRevenueMsg"|"distributeMsg"|"resetRevenueMsg"|undefined} sum
          * @memberof app.Tx
          * @instance
          */
         Object.defineProperty(Tx.prototype, "sum", {
-            get: $util.oneOfGetter($oneOfFields = ["sendMsg", "createEscrowMsg", "releaseEscrowMsg", "returnEscrowMsg", "updateEscrowMsg", "createContractMsg", "updateContractMsg", "setValidatorsMsg", "newTokenInfoMsg", "addApprovalMsg", "removeApprovalMsg", "issueUsernameNftMsg", "addUsernameAddressNftMsg", "removeUsernameAddressMsg", "issueBlockchainNftMsg", "issueTickerNftMsg", "issueBootstrapNodeNftMsg"]),
+            get: $util.oneOfGetter($oneOfFields = ["sendMsg", "createEscrowMsg", "releaseEscrowMsg", "returnEscrowMsg", "updateEscrowMsg", "createContractMsg", "updateContractMsg", "setValidatorsMsg", "newTokenInfoMsg", "addApprovalMsg", "removeApprovalMsg", "issueUsernameNftMsg", "addUsernameAddressNftMsg", "removeUsernameAddressMsg", "newRevenueMsg", "distributeMsg", "resetRevenueMsg"]),
             set: $util.oneOfSetter($oneOfFields)
         });
 
@@ -514,12 +514,12 @@ $root.app = (function() {
                 $root.username.AddChainAddressMsg.encode(message.addUsernameAddressNftMsg, writer.uint32(/* id 64, wireType 2 =*/514).fork()).ldelim();
             if (message.removeUsernameAddressMsg != null && message.hasOwnProperty("removeUsernameAddressMsg"))
                 $root.username.RemoveChainAddressMsg.encode(message.removeUsernameAddressMsg, writer.uint32(/* id 65, wireType 2 =*/522).fork()).ldelim();
-            if (message.issueBlockchainNftMsg != null && message.hasOwnProperty("issueBlockchainNftMsg"))
-                $root.blockchain.IssueTokenMsg.encode(message.issueBlockchainNftMsg, writer.uint32(/* id 66, wireType 2 =*/530).fork()).ldelim();
-            if (message.issueTickerNftMsg != null && message.hasOwnProperty("issueTickerNftMsg"))
-                $root.ticker.IssueTokenMsg.encode(message.issueTickerNftMsg, writer.uint32(/* id 67, wireType 2 =*/538).fork()).ldelim();
-            if (message.issueBootstrapNodeNftMsg != null && message.hasOwnProperty("issueBootstrapNodeNftMsg"))
-                $root.bootstrap_node.IssueTokenMsg.encode(message.issueBootstrapNodeNftMsg, writer.uint32(/* id 68, wireType 2 =*/546).fork()).ldelim();
+            if (message.newRevenueMsg != null && message.hasOwnProperty("newRevenueMsg"))
+                $root.distribution.NewRevenueMsg.encode(message.newRevenueMsg, writer.uint32(/* id 66, wireType 2 =*/530).fork()).ldelim();
+            if (message.distributeMsg != null && message.hasOwnProperty("distributeMsg"))
+                $root.distribution.DistributeMsg.encode(message.distributeMsg, writer.uint32(/* id 67, wireType 2 =*/538).fork()).ldelim();
+            if (message.resetRevenueMsg != null && message.hasOwnProperty("resetRevenueMsg"))
+                $root.distribution.ResetRevenueMsg.encode(message.resetRevenueMsg, writer.uint32(/* id 68, wireType 2 =*/546).fork()).ldelim();
             return writer;
         };
 
@@ -613,13 +613,13 @@ $root.app = (function() {
                     message.removeUsernameAddressMsg = $root.username.RemoveChainAddressMsg.decode(reader, reader.uint32());
                     break;
                 case 66:
-                    message.issueBlockchainNftMsg = $root.blockchain.IssueTokenMsg.decode(reader, reader.uint32());
+                    message.newRevenueMsg = $root.distribution.NewRevenueMsg.decode(reader, reader.uint32());
                     break;
                 case 67:
-                    message.issueTickerNftMsg = $root.ticker.IssueTokenMsg.decode(reader, reader.uint32());
+                    message.distributeMsg = $root.distribution.DistributeMsg.decode(reader, reader.uint32());
                     break;
                 case 68:
-                    message.issueBootstrapNodeNftMsg = $root.bootstrap_node.IssueTokenMsg.decode(reader, reader.uint32());
+                    message.resetRevenueMsg = $root.distribution.ResetRevenueMsg.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -819,34 +819,34 @@ $root.app = (function() {
                         return "removeUsernameAddressMsg." + error;
                 }
             }
-            if (message.issueBlockchainNftMsg != null && message.hasOwnProperty("issueBlockchainNftMsg")) {
+            if (message.newRevenueMsg != null && message.hasOwnProperty("newRevenueMsg")) {
                 if (properties.sum === 1)
                     return "sum: multiple values";
                 properties.sum = 1;
                 {
-                    var error = $root.blockchain.IssueTokenMsg.verify(message.issueBlockchainNftMsg);
+                    var error = $root.distribution.NewRevenueMsg.verify(message.newRevenueMsg);
                     if (error)
-                        return "issueBlockchainNftMsg." + error;
+                        return "newRevenueMsg." + error;
                 }
             }
-            if (message.issueTickerNftMsg != null && message.hasOwnProperty("issueTickerNftMsg")) {
+            if (message.distributeMsg != null && message.hasOwnProperty("distributeMsg")) {
                 if (properties.sum === 1)
                     return "sum: multiple values";
                 properties.sum = 1;
                 {
-                    var error = $root.ticker.IssueTokenMsg.verify(message.issueTickerNftMsg);
+                    var error = $root.distribution.DistributeMsg.verify(message.distributeMsg);
                     if (error)
-                        return "issueTickerNftMsg." + error;
+                        return "distributeMsg." + error;
                 }
             }
-            if (message.issueBootstrapNodeNftMsg != null && message.hasOwnProperty("issueBootstrapNodeNftMsg")) {
+            if (message.resetRevenueMsg != null && message.hasOwnProperty("resetRevenueMsg")) {
                 if (properties.sum === 1)
                     return "sum: multiple values";
                 properties.sum = 1;
                 {
-                    var error = $root.bootstrap_node.IssueTokenMsg.verify(message.issueBootstrapNodeNftMsg);
+                    var error = $root.distribution.ResetRevenueMsg.verify(message.resetRevenueMsg);
                     if (error)
-                        return "issueBootstrapNodeNftMsg." + error;
+                        return "resetRevenueMsg." + error;
                 }
             }
             return null;
@@ -964,20 +964,20 @@ $root.app = (function() {
                     throw TypeError(".app.Tx.removeUsernameAddressMsg: object expected");
                 message.removeUsernameAddressMsg = $root.username.RemoveChainAddressMsg.fromObject(object.removeUsernameAddressMsg);
             }
-            if (object.issueBlockchainNftMsg != null) {
-                if (typeof object.issueBlockchainNftMsg !== "object")
-                    throw TypeError(".app.Tx.issueBlockchainNftMsg: object expected");
-                message.issueBlockchainNftMsg = $root.blockchain.IssueTokenMsg.fromObject(object.issueBlockchainNftMsg);
+            if (object.newRevenueMsg != null) {
+                if (typeof object.newRevenueMsg !== "object")
+                    throw TypeError(".app.Tx.newRevenueMsg: object expected");
+                message.newRevenueMsg = $root.distribution.NewRevenueMsg.fromObject(object.newRevenueMsg);
             }
-            if (object.issueTickerNftMsg != null) {
-                if (typeof object.issueTickerNftMsg !== "object")
-                    throw TypeError(".app.Tx.issueTickerNftMsg: object expected");
-                message.issueTickerNftMsg = $root.ticker.IssueTokenMsg.fromObject(object.issueTickerNftMsg);
+            if (object.distributeMsg != null) {
+                if (typeof object.distributeMsg !== "object")
+                    throw TypeError(".app.Tx.distributeMsg: object expected");
+                message.distributeMsg = $root.distribution.DistributeMsg.fromObject(object.distributeMsg);
             }
-            if (object.issueBootstrapNodeNftMsg != null) {
-                if (typeof object.issueBootstrapNodeNftMsg !== "object")
-                    throw TypeError(".app.Tx.issueBootstrapNodeNftMsg: object expected");
-                message.issueBootstrapNodeNftMsg = $root.bootstrap_node.IssueTokenMsg.fromObject(object.issueBootstrapNodeNftMsg);
+            if (object.resetRevenueMsg != null) {
+                if (typeof object.resetRevenueMsg !== "object")
+                    throw TypeError(".app.Tx.resetRevenueMsg: object expected");
+                message.resetRevenueMsg = $root.distribution.ResetRevenueMsg.fromObject(object.resetRevenueMsg);
             }
             return message;
         };
@@ -1093,20 +1093,20 @@ $root.app = (function() {
                 if (options.oneofs)
                     object.sum = "removeUsernameAddressMsg";
             }
-            if (message.issueBlockchainNftMsg != null && message.hasOwnProperty("issueBlockchainNftMsg")) {
-                object.issueBlockchainNftMsg = $root.blockchain.IssueTokenMsg.toObject(message.issueBlockchainNftMsg, options);
+            if (message.newRevenueMsg != null && message.hasOwnProperty("newRevenueMsg")) {
+                object.newRevenueMsg = $root.distribution.NewRevenueMsg.toObject(message.newRevenueMsg, options);
                 if (options.oneofs)
-                    object.sum = "issueBlockchainNftMsg";
+                    object.sum = "newRevenueMsg";
             }
-            if (message.issueTickerNftMsg != null && message.hasOwnProperty("issueTickerNftMsg")) {
-                object.issueTickerNftMsg = $root.ticker.IssueTokenMsg.toObject(message.issueTickerNftMsg, options);
+            if (message.distributeMsg != null && message.hasOwnProperty("distributeMsg")) {
+                object.distributeMsg = $root.distribution.DistributeMsg.toObject(message.distributeMsg, options);
                 if (options.oneofs)
-                    object.sum = "issueTickerNftMsg";
+                    object.sum = "distributeMsg";
             }
-            if (message.issueBootstrapNodeNftMsg != null && message.hasOwnProperty("issueBootstrapNodeNftMsg")) {
-                object.issueBootstrapNodeNftMsg = $root.bootstrap_node.IssueTokenMsg.toObject(message.issueBootstrapNodeNftMsg, options);
+            if (message.resetRevenueMsg != null && message.hasOwnProperty("resetRevenueMsg")) {
+                object.resetRevenueMsg = $root.distribution.ResetRevenueMsg.toObject(message.resetRevenueMsg, options);
                 if (options.oneofs)
-                    object.sum = "issueBootstrapNodeNftMsg";
+                    object.sum = "resetRevenueMsg";
             }
             return object;
         };
@@ -1125,3244 +1125,7 @@ $root.app = (function() {
         return Tx;
     })();
 
-    /**
-     * NftType enum.
-     * @name app.NftType
-     * @enum {string}
-     * @property {number} USERNAME=0 USERNAME value
-     * @property {number} TICKER=1 TICKER value
-     * @property {number} BLOCKCHAIN=3 BLOCKCHAIN value
-     * @property {number} BOOTSTRAP_NODE=4 BOOTSTRAP_NODE value
-     */
-    app.NftType = (function() {
-        var valuesById = {}, values = Object.create(valuesById);
-        values[valuesById[0] = "USERNAME"] = 0;
-        values[valuesById[1] = "TICKER"] = 1;
-        values[valuesById[3] = "BLOCKCHAIN"] = 3;
-        values[valuesById[4] = "BOOTSTRAP_NODE"] = 4;
-        return values;
-    })();
-
     return app;
-})();
-
-$root.blockchain = (function() {
-
-    /**
-     * Namespace blockchain.
-     * @exports blockchain
-     * @namespace
-     */
-    var blockchain = {};
-
-    blockchain.BlockchainToken = (function() {
-
-        /**
-         * Properties of a BlockchainToken.
-         * @memberof blockchain
-         * @interface IBlockchainToken
-         * @property {nft.INonFungibleToken|null} [base] BlockchainToken base
-         * @property {blockchain.ITokenDetails|null} [details] BlockchainToken details
-         */
-
-        /**
-         * Constructs a new BlockchainToken.
-         * @memberof blockchain
-         * @classdesc Represents a BlockchainToken.
-         * @implements IBlockchainToken
-         * @constructor
-         * @param {blockchain.IBlockchainToken=} [properties] Properties to set
-         */
-        function BlockchainToken(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * BlockchainToken base.
-         * @member {nft.INonFungibleToken|null|undefined} base
-         * @memberof blockchain.BlockchainToken
-         * @instance
-         */
-        BlockchainToken.prototype.base = null;
-
-        /**
-         * BlockchainToken details.
-         * @member {blockchain.ITokenDetails|null|undefined} details
-         * @memberof blockchain.BlockchainToken
-         * @instance
-         */
-        BlockchainToken.prototype.details = null;
-
-        /**
-         * Creates a new BlockchainToken instance using the specified properties.
-         * @function create
-         * @memberof blockchain.BlockchainToken
-         * @static
-         * @param {blockchain.IBlockchainToken=} [properties] Properties to set
-         * @returns {blockchain.BlockchainToken} BlockchainToken instance
-         */
-        BlockchainToken.create = function create(properties) {
-            return new BlockchainToken(properties);
-        };
-
-        /**
-         * Encodes the specified BlockchainToken message. Does not implicitly {@link blockchain.BlockchainToken.verify|verify} messages.
-         * @function encode
-         * @memberof blockchain.BlockchainToken
-         * @static
-         * @param {blockchain.IBlockchainToken} message BlockchainToken message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        BlockchainToken.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.base != null && message.hasOwnProperty("base"))
-                $root.nft.NonFungibleToken.encode(message.base, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.details != null && message.hasOwnProperty("details"))
-                $root.blockchain.TokenDetails.encode(message.details, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-            return writer;
-        };
-
-        /**
-         * Encodes the specified BlockchainToken message, length delimited. Does not implicitly {@link blockchain.BlockchainToken.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof blockchain.BlockchainToken
-         * @static
-         * @param {blockchain.IBlockchainToken} message BlockchainToken message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        BlockchainToken.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a BlockchainToken message from the specified reader or buffer.
-         * @function decode
-         * @memberof blockchain.BlockchainToken
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {blockchain.BlockchainToken} BlockchainToken
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        BlockchainToken.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blockchain.BlockchainToken();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.base = $root.nft.NonFungibleToken.decode(reader, reader.uint32());
-                    break;
-                case 2:
-                    message.details = $root.blockchain.TokenDetails.decode(reader, reader.uint32());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a BlockchainToken message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof blockchain.BlockchainToken
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blockchain.BlockchainToken} BlockchainToken
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        BlockchainToken.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a BlockchainToken message.
-         * @function verify
-         * @memberof blockchain.BlockchainToken
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        BlockchainToken.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.base != null && message.hasOwnProperty("base")) {
-                var error = $root.nft.NonFungibleToken.verify(message.base);
-                if (error)
-                    return "base." + error;
-            }
-            if (message.details != null && message.hasOwnProperty("details")) {
-                var error = $root.blockchain.TokenDetails.verify(message.details);
-                if (error)
-                    return "details." + error;
-            }
-            return null;
-        };
-
-        /**
-         * Creates a BlockchainToken message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof blockchain.BlockchainToken
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {blockchain.BlockchainToken} BlockchainToken
-         */
-        BlockchainToken.fromObject = function fromObject(object) {
-            if (object instanceof $root.blockchain.BlockchainToken)
-                return object;
-            var message = new $root.blockchain.BlockchainToken();
-            if (object.base != null) {
-                if (typeof object.base !== "object")
-                    throw TypeError(".blockchain.BlockchainToken.base: object expected");
-                message.base = $root.nft.NonFungibleToken.fromObject(object.base);
-            }
-            if (object.details != null) {
-                if (typeof object.details !== "object")
-                    throw TypeError(".blockchain.BlockchainToken.details: object expected");
-                message.details = $root.blockchain.TokenDetails.fromObject(object.details);
-            }
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a BlockchainToken message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof blockchain.BlockchainToken
-         * @static
-         * @param {blockchain.BlockchainToken} message BlockchainToken
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        BlockchainToken.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults) {
-                object.base = null;
-                object.details = null;
-            }
-            if (message.base != null && message.hasOwnProperty("base"))
-                object.base = $root.nft.NonFungibleToken.toObject(message.base, options);
-            if (message.details != null && message.hasOwnProperty("details"))
-                object.details = $root.blockchain.TokenDetails.toObject(message.details, options);
-            return object;
-        };
-
-        /**
-         * Converts this BlockchainToken to JSON.
-         * @function toJSON
-         * @memberof blockchain.BlockchainToken
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        BlockchainToken.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return BlockchainToken;
-    })();
-
-    blockchain.TokenDetails = (function() {
-
-        /**
-         * Properties of a TokenDetails.
-         * @memberof blockchain
-         * @interface ITokenDetails
-         * @property {blockchain.IChain|null} [chain] TokenDetails chain
-         * @property {blockchain.IIOV|null} [iov] TokenDetails iov
-         */
-
-        /**
-         * Constructs a new TokenDetails.
-         * @memberof blockchain
-         * @classdesc Represents a TokenDetails.
-         * @implements ITokenDetails
-         * @constructor
-         * @param {blockchain.ITokenDetails=} [properties] Properties to set
-         */
-        function TokenDetails(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * TokenDetails chain.
-         * @member {blockchain.IChain|null|undefined} chain
-         * @memberof blockchain.TokenDetails
-         * @instance
-         */
-        TokenDetails.prototype.chain = null;
-
-        /**
-         * TokenDetails iov.
-         * @member {blockchain.IIOV|null|undefined} iov
-         * @memberof blockchain.TokenDetails
-         * @instance
-         */
-        TokenDetails.prototype.iov = null;
-
-        /**
-         * Creates a new TokenDetails instance using the specified properties.
-         * @function create
-         * @memberof blockchain.TokenDetails
-         * @static
-         * @param {blockchain.ITokenDetails=} [properties] Properties to set
-         * @returns {blockchain.TokenDetails} TokenDetails instance
-         */
-        TokenDetails.create = function create(properties) {
-            return new TokenDetails(properties);
-        };
-
-        /**
-         * Encodes the specified TokenDetails message. Does not implicitly {@link blockchain.TokenDetails.verify|verify} messages.
-         * @function encode
-         * @memberof blockchain.TokenDetails
-         * @static
-         * @param {blockchain.ITokenDetails} message TokenDetails message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        TokenDetails.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.chain != null && message.hasOwnProperty("chain"))
-                $root.blockchain.Chain.encode(message.chain, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.iov != null && message.hasOwnProperty("iov"))
-                $root.blockchain.IOV.encode(message.iov, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-            return writer;
-        };
-
-        /**
-         * Encodes the specified TokenDetails message, length delimited. Does not implicitly {@link blockchain.TokenDetails.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof blockchain.TokenDetails
-         * @static
-         * @param {blockchain.ITokenDetails} message TokenDetails message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        TokenDetails.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a TokenDetails message from the specified reader or buffer.
-         * @function decode
-         * @memberof blockchain.TokenDetails
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {blockchain.TokenDetails} TokenDetails
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        TokenDetails.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blockchain.TokenDetails();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.chain = $root.blockchain.Chain.decode(reader, reader.uint32());
-                    break;
-                case 2:
-                    message.iov = $root.blockchain.IOV.decode(reader, reader.uint32());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a TokenDetails message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof blockchain.TokenDetails
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blockchain.TokenDetails} TokenDetails
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        TokenDetails.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a TokenDetails message.
-         * @function verify
-         * @memberof blockchain.TokenDetails
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        TokenDetails.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.chain != null && message.hasOwnProperty("chain")) {
-                var error = $root.blockchain.Chain.verify(message.chain);
-                if (error)
-                    return "chain." + error;
-            }
-            if (message.iov != null && message.hasOwnProperty("iov")) {
-                var error = $root.blockchain.IOV.verify(message.iov);
-                if (error)
-                    return "iov." + error;
-            }
-            return null;
-        };
-
-        /**
-         * Creates a TokenDetails message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof blockchain.TokenDetails
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {blockchain.TokenDetails} TokenDetails
-         */
-        TokenDetails.fromObject = function fromObject(object) {
-            if (object instanceof $root.blockchain.TokenDetails)
-                return object;
-            var message = new $root.blockchain.TokenDetails();
-            if (object.chain != null) {
-                if (typeof object.chain !== "object")
-                    throw TypeError(".blockchain.TokenDetails.chain: object expected");
-                message.chain = $root.blockchain.Chain.fromObject(object.chain);
-            }
-            if (object.iov != null) {
-                if (typeof object.iov !== "object")
-                    throw TypeError(".blockchain.TokenDetails.iov: object expected");
-                message.iov = $root.blockchain.IOV.fromObject(object.iov);
-            }
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a TokenDetails message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof blockchain.TokenDetails
-         * @static
-         * @param {blockchain.TokenDetails} message TokenDetails
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        TokenDetails.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults) {
-                object.chain = null;
-                object.iov = null;
-            }
-            if (message.chain != null && message.hasOwnProperty("chain"))
-                object.chain = $root.blockchain.Chain.toObject(message.chain, options);
-            if (message.iov != null && message.hasOwnProperty("iov"))
-                object.iov = $root.blockchain.IOV.toObject(message.iov, options);
-            return object;
-        };
-
-        /**
-         * Converts this TokenDetails to JSON.
-         * @function toJSON
-         * @memberof blockchain.TokenDetails
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        TokenDetails.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return TokenDetails;
-    })();
-
-    blockchain.Chain = (function() {
-
-        /**
-         * Properties of a Chain.
-         * @memberof blockchain
-         * @interface IChain
-         * @property {string|null} [chainId] Chain ID is the blockchain ID as referred in our system.
-         * @property {string|null} [networkId] https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids
-         * @property {string|null} [name] Name holds human redable name of the blockchain.
-         * @property {boolean|null} [enabled] Enabled is a flag used for soft delete.
-         * @property {boolean|null} [production] Chain production
-         * @property {Uint8Array|null} [mainTickerId] any number of tickers registered.
-         */
-
-        /**
-         * Constructs a new Chain.
-         * @memberof blockchain
-         * @classdesc everywhere.
-         * @implements IChain
-         * @constructor
-         * @param {blockchain.IChain=} [properties] Properties to set
-         */
-        function Chain(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * Chain ID is the blockchain ID as referred in our system.
-         * @member {string} chainId
-         * @memberof blockchain.Chain
-         * @instance
-         */
-        Chain.prototype.chainId = "";
-
-        /**
-         * https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids
-         * @member {string} networkId
-         * @memberof blockchain.Chain
-         * @instance
-         */
-        Chain.prototype.networkId = "";
-
-        /**
-         * Name holds human redable name of the blockchain.
-         * @member {string} name
-         * @memberof blockchain.Chain
-         * @instance
-         */
-        Chain.prototype.name = "";
-
-        /**
-         * Enabled is a flag used for soft delete.
-         * @member {boolean} enabled
-         * @memberof blockchain.Chain
-         * @instance
-         */
-        Chain.prototype.enabled = false;
-
-        /**
-         * Chain production.
-         * @member {boolean} production
-         * @memberof blockchain.Chain
-         * @instance
-         */
-        Chain.prototype.production = false;
-
-        /**
-         * any number of tickers registered.
-         * @member {Uint8Array} mainTickerId
-         * @memberof blockchain.Chain
-         * @instance
-         */
-        Chain.prototype.mainTickerId = $util.newBuffer([]);
-
-        /**
-         * Creates a new Chain instance using the specified properties.
-         * @function create
-         * @memberof blockchain.Chain
-         * @static
-         * @param {blockchain.IChain=} [properties] Properties to set
-         * @returns {blockchain.Chain} Chain instance
-         */
-        Chain.create = function create(properties) {
-            return new Chain(properties);
-        };
-
-        /**
-         * Encodes the specified Chain message. Does not implicitly {@link blockchain.Chain.verify|verify} messages.
-         * @function encode
-         * @memberof blockchain.Chain
-         * @static
-         * @param {blockchain.IChain} message Chain message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        Chain.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.chainId != null && message.hasOwnProperty("chainId"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.chainId);
-            if (message.networkId != null && message.hasOwnProperty("networkId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.networkId);
-            if (message.name != null && message.hasOwnProperty("name"))
-                writer.uint32(/* id 3, wireType 2 =*/26).string(message.name);
-            if (message.enabled != null && message.hasOwnProperty("enabled"))
-                writer.uint32(/* id 4, wireType 0 =*/32).bool(message.enabled);
-            if (message.production != null && message.hasOwnProperty("production"))
-                writer.uint32(/* id 5, wireType 0 =*/40).bool(message.production);
-            if (message.mainTickerId != null && message.hasOwnProperty("mainTickerId"))
-                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.mainTickerId);
-            return writer;
-        };
-
-        /**
-         * Encodes the specified Chain message, length delimited. Does not implicitly {@link blockchain.Chain.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof blockchain.Chain
-         * @static
-         * @param {blockchain.IChain} message Chain message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        Chain.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a Chain message from the specified reader or buffer.
-         * @function decode
-         * @memberof blockchain.Chain
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {blockchain.Chain} Chain
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        Chain.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blockchain.Chain();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.chainId = reader.string();
-                    break;
-                case 2:
-                    message.networkId = reader.string();
-                    break;
-                case 3:
-                    message.name = reader.string();
-                    break;
-                case 4:
-                    message.enabled = reader.bool();
-                    break;
-                case 5:
-                    message.production = reader.bool();
-                    break;
-                case 6:
-                    message.mainTickerId = reader.bytes();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a Chain message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof blockchain.Chain
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blockchain.Chain} Chain
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        Chain.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a Chain message.
-         * @function verify
-         * @memberof blockchain.Chain
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        Chain.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.chainId != null && message.hasOwnProperty("chainId"))
-                if (!$util.isString(message.chainId))
-                    return "chainId: string expected";
-            if (message.networkId != null && message.hasOwnProperty("networkId"))
-                if (!$util.isString(message.networkId))
-                    return "networkId: string expected";
-            if (message.name != null && message.hasOwnProperty("name"))
-                if (!$util.isString(message.name))
-                    return "name: string expected";
-            if (message.enabled != null && message.hasOwnProperty("enabled"))
-                if (typeof message.enabled !== "boolean")
-                    return "enabled: boolean expected";
-            if (message.production != null && message.hasOwnProperty("production"))
-                if (typeof message.production !== "boolean")
-                    return "production: boolean expected";
-            if (message.mainTickerId != null && message.hasOwnProperty("mainTickerId"))
-                if (!(message.mainTickerId && typeof message.mainTickerId.length === "number" || $util.isString(message.mainTickerId)))
-                    return "mainTickerId: buffer expected";
-            return null;
-        };
-
-        /**
-         * Creates a Chain message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof blockchain.Chain
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {blockchain.Chain} Chain
-         */
-        Chain.fromObject = function fromObject(object) {
-            if (object instanceof $root.blockchain.Chain)
-                return object;
-            var message = new $root.blockchain.Chain();
-            if (object.chainId != null)
-                message.chainId = String(object.chainId);
-            if (object.networkId != null)
-                message.networkId = String(object.networkId);
-            if (object.name != null)
-                message.name = String(object.name);
-            if (object.enabled != null)
-                message.enabled = Boolean(object.enabled);
-            if (object.production != null)
-                message.production = Boolean(object.production);
-            if (object.mainTickerId != null)
-                if (typeof object.mainTickerId === "string")
-                    $util.base64.decode(object.mainTickerId, message.mainTickerId = $util.newBuffer($util.base64.length(object.mainTickerId)), 0);
-                else if (object.mainTickerId.length)
-                    message.mainTickerId = object.mainTickerId;
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a Chain message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof blockchain.Chain
-         * @static
-         * @param {blockchain.Chain} message Chain
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        Chain.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults) {
-                object.chainId = "";
-                object.networkId = "";
-                object.name = "";
-                object.enabled = false;
-                object.production = false;
-                if (options.bytes === String)
-                    object.mainTickerId = "";
-                else {
-                    object.mainTickerId = [];
-                    if (options.bytes !== Array)
-                        object.mainTickerId = $util.newBuffer(object.mainTickerId);
-                }
-            }
-            if (message.chainId != null && message.hasOwnProperty("chainId"))
-                object.chainId = message.chainId;
-            if (message.networkId != null && message.hasOwnProperty("networkId"))
-                object.networkId = message.networkId;
-            if (message.name != null && message.hasOwnProperty("name"))
-                object.name = message.name;
-            if (message.enabled != null && message.hasOwnProperty("enabled"))
-                object.enabled = message.enabled;
-            if (message.production != null && message.hasOwnProperty("production"))
-                object.production = message.production;
-            if (message.mainTickerId != null && message.hasOwnProperty("mainTickerId"))
-                object.mainTickerId = options.bytes === String ? $util.base64.encode(message.mainTickerId, 0, message.mainTickerId.length) : options.bytes === Array ? Array.prototype.slice.call(message.mainTickerId) : message.mainTickerId;
-            return object;
-        };
-
-        /**
-         * Converts this Chain to JSON.
-         * @function toJSON
-         * @memberof blockchain.Chain
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        Chain.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return Chain;
-    })();
-
-    blockchain.IOV = (function() {
-
-        /**
-         * Properties of a IOV.
-         * @memberof blockchain
-         * @interface IIOV
-         * @property {string|null} [codec] IOV codec
-         * @property {string|null} [codecConfig] IOV codecConfig
-         */
-
-        /**
-         * Constructs a new IOV.
-         * @memberof blockchain
-         * @classdesc Represents a IOV.
-         * @implements IIOV
-         * @constructor
-         * @param {blockchain.IIOV=} [properties] Properties to set
-         */
-        function IOV(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * IOV codec.
-         * @member {string} codec
-         * @memberof blockchain.IOV
-         * @instance
-         */
-        IOV.prototype.codec = "";
-
-        /**
-         * IOV codecConfig.
-         * @member {string} codecConfig
-         * @memberof blockchain.IOV
-         * @instance
-         */
-        IOV.prototype.codecConfig = "";
-
-        /**
-         * Creates a new IOV instance using the specified properties.
-         * @function create
-         * @memberof blockchain.IOV
-         * @static
-         * @param {blockchain.IIOV=} [properties] Properties to set
-         * @returns {blockchain.IOV} IOV instance
-         */
-        IOV.create = function create(properties) {
-            return new IOV(properties);
-        };
-
-        /**
-         * Encodes the specified IOV message. Does not implicitly {@link blockchain.IOV.verify|verify} messages.
-         * @function encode
-         * @memberof blockchain.IOV
-         * @static
-         * @param {blockchain.IIOV} message IOV message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        IOV.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.codec != null && message.hasOwnProperty("codec"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.codec);
-            if (message.codecConfig != null && message.hasOwnProperty("codecConfig"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.codecConfig);
-            return writer;
-        };
-
-        /**
-         * Encodes the specified IOV message, length delimited. Does not implicitly {@link blockchain.IOV.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof blockchain.IOV
-         * @static
-         * @param {blockchain.IIOV} message IOV message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        IOV.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a IOV message from the specified reader or buffer.
-         * @function decode
-         * @memberof blockchain.IOV
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {blockchain.IOV} IOV
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        IOV.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blockchain.IOV();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.codec = reader.string();
-                    break;
-                case 2:
-                    message.codecConfig = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a IOV message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof blockchain.IOV
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blockchain.IOV} IOV
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        IOV.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a IOV message.
-         * @function verify
-         * @memberof blockchain.IOV
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        IOV.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.codec != null && message.hasOwnProperty("codec"))
-                if (!$util.isString(message.codec))
-                    return "codec: string expected";
-            if (message.codecConfig != null && message.hasOwnProperty("codecConfig"))
-                if (!$util.isString(message.codecConfig))
-                    return "codecConfig: string expected";
-            return null;
-        };
-
-        /**
-         * Creates a IOV message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof blockchain.IOV
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {blockchain.IOV} IOV
-         */
-        IOV.fromObject = function fromObject(object) {
-            if (object instanceof $root.blockchain.IOV)
-                return object;
-            var message = new $root.blockchain.IOV();
-            if (object.codec != null)
-                message.codec = String(object.codec);
-            if (object.codecConfig != null)
-                message.codecConfig = String(object.codecConfig);
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a IOV message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof blockchain.IOV
-         * @static
-         * @param {blockchain.IOV} message IOV
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        IOV.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults) {
-                object.codec = "";
-                object.codecConfig = "";
-            }
-            if (message.codec != null && message.hasOwnProperty("codec"))
-                object.codec = message.codec;
-            if (message.codecConfig != null && message.hasOwnProperty("codecConfig"))
-                object.codecConfig = message.codecConfig;
-            return object;
-        };
-
-        /**
-         * Converts this IOV to JSON.
-         * @function toJSON
-         * @memberof blockchain.IOV
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        IOV.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return IOV;
-    })();
-
-    blockchain.Config = (function() {
-
-        /**
-         * Properties of a Config.
-         * @memberof blockchain
-         * @interface IConfig
-         * @property {blockchain.IChain|null} [chain] Config chain
-         * @property {string|null} [codecConfig] Config codecConfig
-         */
-
-        /**
-         * Constructs a new Config.
-         * @memberof blockchain
-         * @classdesc Represents a Config.
-         * @implements IConfig
-         * @constructor
-         * @param {blockchain.IConfig=} [properties] Properties to set
-         */
-        function Config(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * Config chain.
-         * @member {blockchain.IChain|null|undefined} chain
-         * @memberof blockchain.Config
-         * @instance
-         */
-        Config.prototype.chain = null;
-
-        /**
-         * Config codecConfig.
-         * @member {string} codecConfig
-         * @memberof blockchain.Config
-         * @instance
-         */
-        Config.prototype.codecConfig = "";
-
-        /**
-         * Creates a new Config instance using the specified properties.
-         * @function create
-         * @memberof blockchain.Config
-         * @static
-         * @param {blockchain.IConfig=} [properties] Properties to set
-         * @returns {blockchain.Config} Config instance
-         */
-        Config.create = function create(properties) {
-            return new Config(properties);
-        };
-
-        /**
-         * Encodes the specified Config message. Does not implicitly {@link blockchain.Config.verify|verify} messages.
-         * @function encode
-         * @memberof blockchain.Config
-         * @static
-         * @param {blockchain.IConfig} message Config message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        Config.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.chain != null && message.hasOwnProperty("chain"))
-                $root.blockchain.Chain.encode(message.chain, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.codecConfig != null && message.hasOwnProperty("codecConfig"))
-                writer.uint32(/* id 3, wireType 2 =*/26).string(message.codecConfig);
-            return writer;
-        };
-
-        /**
-         * Encodes the specified Config message, length delimited. Does not implicitly {@link blockchain.Config.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof blockchain.Config
-         * @static
-         * @param {blockchain.IConfig} message Config message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        Config.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a Config message from the specified reader or buffer.
-         * @function decode
-         * @memberof blockchain.Config
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {blockchain.Config} Config
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        Config.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blockchain.Config();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.chain = $root.blockchain.Chain.decode(reader, reader.uint32());
-                    break;
-                case 3:
-                    message.codecConfig = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a Config message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof blockchain.Config
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blockchain.Config} Config
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        Config.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a Config message.
-         * @function verify
-         * @memberof blockchain.Config
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        Config.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.chain != null && message.hasOwnProperty("chain")) {
-                var error = $root.blockchain.Chain.verify(message.chain);
-                if (error)
-                    return "chain." + error;
-            }
-            if (message.codecConfig != null && message.hasOwnProperty("codecConfig"))
-                if (!$util.isString(message.codecConfig))
-                    return "codecConfig: string expected";
-            return null;
-        };
-
-        /**
-         * Creates a Config message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof blockchain.Config
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {blockchain.Config} Config
-         */
-        Config.fromObject = function fromObject(object) {
-            if (object instanceof $root.blockchain.Config)
-                return object;
-            var message = new $root.blockchain.Config();
-            if (object.chain != null) {
-                if (typeof object.chain !== "object")
-                    throw TypeError(".blockchain.Config.chain: object expected");
-                message.chain = $root.blockchain.Chain.fromObject(object.chain);
-            }
-            if (object.codecConfig != null)
-                message.codecConfig = String(object.codecConfig);
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a Config message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof blockchain.Config
-         * @static
-         * @param {blockchain.Config} message Config
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        Config.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults) {
-                object.chain = null;
-                object.codecConfig = "";
-            }
-            if (message.chain != null && message.hasOwnProperty("chain"))
-                object.chain = $root.blockchain.Chain.toObject(message.chain, options);
-            if (message.codecConfig != null && message.hasOwnProperty("codecConfig"))
-                object.codecConfig = message.codecConfig;
-            return object;
-        };
-
-        /**
-         * Converts this Config to JSON.
-         * @function toJSON
-         * @memberof blockchain.Config
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        Config.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return Config;
-    })();
-
-    blockchain.IssueTokenMsg = (function() {
-
-        /**
-         * Properties of an IssueTokenMsg.
-         * @memberof blockchain
-         * @interface IIssueTokenMsg
-         * @property {Uint8Array|null} [owner] IssueTokenMsg owner
-         * @property {Uint8Array|null} [id] IssueTokenMsg id
-         * @property {blockchain.ITokenDetails|null} [details] IssueTokenMsg details
-         * @property {Array.<nft.IActionApprovals>|null} [approvals] IssueTokenMsg approvals
-         */
-
-        /**
-         * Constructs a new IssueTokenMsg.
-         * @memberof blockchain
-         * @classdesc Represents an IssueTokenMsg.
-         * @implements IIssueTokenMsg
-         * @constructor
-         * @param {blockchain.IIssueTokenMsg=} [properties] Properties to set
-         */
-        function IssueTokenMsg(properties) {
-            this.approvals = [];
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * IssueTokenMsg owner.
-         * @member {Uint8Array} owner
-         * @memberof blockchain.IssueTokenMsg
-         * @instance
-         */
-        IssueTokenMsg.prototype.owner = $util.newBuffer([]);
-
-        /**
-         * IssueTokenMsg id.
-         * @member {Uint8Array} id
-         * @memberof blockchain.IssueTokenMsg
-         * @instance
-         */
-        IssueTokenMsg.prototype.id = $util.newBuffer([]);
-
-        /**
-         * IssueTokenMsg details.
-         * @member {blockchain.ITokenDetails|null|undefined} details
-         * @memberof blockchain.IssueTokenMsg
-         * @instance
-         */
-        IssueTokenMsg.prototype.details = null;
-
-        /**
-         * IssueTokenMsg approvals.
-         * @member {Array.<nft.IActionApprovals>} approvals
-         * @memberof blockchain.IssueTokenMsg
-         * @instance
-         */
-        IssueTokenMsg.prototype.approvals = $util.emptyArray;
-
-        /**
-         * Creates a new IssueTokenMsg instance using the specified properties.
-         * @function create
-         * @memberof blockchain.IssueTokenMsg
-         * @static
-         * @param {blockchain.IIssueTokenMsg=} [properties] Properties to set
-         * @returns {blockchain.IssueTokenMsg} IssueTokenMsg instance
-         */
-        IssueTokenMsg.create = function create(properties) {
-            return new IssueTokenMsg(properties);
-        };
-
-        /**
-         * Encodes the specified IssueTokenMsg message. Does not implicitly {@link blockchain.IssueTokenMsg.verify|verify} messages.
-         * @function encode
-         * @memberof blockchain.IssueTokenMsg
-         * @static
-         * @param {blockchain.IIssueTokenMsg} message IssueTokenMsg message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        IssueTokenMsg.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.owner);
-            if (message.id != null && message.hasOwnProperty("id"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.id);
-            if (message.details != null && message.hasOwnProperty("details"))
-                $root.blockchain.TokenDetails.encode(message.details, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
-            if (message.approvals != null && message.approvals.length)
-                for (var i = 0; i < message.approvals.length; ++i)
-                    $root.nft.ActionApprovals.encode(message.approvals[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-            return writer;
-        };
-
-        /**
-         * Encodes the specified IssueTokenMsg message, length delimited. Does not implicitly {@link blockchain.IssueTokenMsg.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof blockchain.IssueTokenMsg
-         * @static
-         * @param {blockchain.IIssueTokenMsg} message IssueTokenMsg message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        IssueTokenMsg.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes an IssueTokenMsg message from the specified reader or buffer.
-         * @function decode
-         * @memberof blockchain.IssueTokenMsg
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {blockchain.IssueTokenMsg} IssueTokenMsg
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        IssueTokenMsg.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blockchain.IssueTokenMsg();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.owner = reader.bytes();
-                    break;
-                case 2:
-                    message.id = reader.bytes();
-                    break;
-                case 3:
-                    message.details = $root.blockchain.TokenDetails.decode(reader, reader.uint32());
-                    break;
-                case 4:
-                    if (!(message.approvals && message.approvals.length))
-                        message.approvals = [];
-                    message.approvals.push($root.nft.ActionApprovals.decode(reader, reader.uint32()));
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes an IssueTokenMsg message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof blockchain.IssueTokenMsg
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blockchain.IssueTokenMsg} IssueTokenMsg
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        IssueTokenMsg.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies an IssueTokenMsg message.
-         * @function verify
-         * @memberof blockchain.IssueTokenMsg
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        IssueTokenMsg.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
-                    return "owner: buffer expected";
-            if (message.id != null && message.hasOwnProperty("id"))
-                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
-                    return "id: buffer expected";
-            if (message.details != null && message.hasOwnProperty("details")) {
-                var error = $root.blockchain.TokenDetails.verify(message.details);
-                if (error)
-                    return "details." + error;
-            }
-            if (message.approvals != null && message.hasOwnProperty("approvals")) {
-                if (!Array.isArray(message.approvals))
-                    return "approvals: array expected";
-                for (var i = 0; i < message.approvals.length; ++i) {
-                    var error = $root.nft.ActionApprovals.verify(message.approvals[i]);
-                    if (error)
-                        return "approvals." + error;
-                }
-            }
-            return null;
-        };
-
-        /**
-         * Creates an IssueTokenMsg message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof blockchain.IssueTokenMsg
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {blockchain.IssueTokenMsg} IssueTokenMsg
-         */
-        IssueTokenMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.blockchain.IssueTokenMsg)
-                return object;
-            var message = new $root.blockchain.IssueTokenMsg();
-            if (object.owner != null)
-                if (typeof object.owner === "string")
-                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
-                else if (object.owner.length)
-                    message.owner = object.owner;
-            if (object.id != null)
-                if (typeof object.id === "string")
-                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
-                else if (object.id.length)
-                    message.id = object.id;
-            if (object.details != null) {
-                if (typeof object.details !== "object")
-                    throw TypeError(".blockchain.IssueTokenMsg.details: object expected");
-                message.details = $root.blockchain.TokenDetails.fromObject(object.details);
-            }
-            if (object.approvals) {
-                if (!Array.isArray(object.approvals))
-                    throw TypeError(".blockchain.IssueTokenMsg.approvals: array expected");
-                message.approvals = [];
-                for (var i = 0; i < object.approvals.length; ++i) {
-                    if (typeof object.approvals[i] !== "object")
-                        throw TypeError(".blockchain.IssueTokenMsg.approvals: object expected");
-                    message.approvals[i] = $root.nft.ActionApprovals.fromObject(object.approvals[i]);
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Creates a plain object from an IssueTokenMsg message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof blockchain.IssueTokenMsg
-         * @static
-         * @param {blockchain.IssueTokenMsg} message IssueTokenMsg
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        IssueTokenMsg.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.arrays || options.defaults)
-                object.approvals = [];
-            if (options.defaults) {
-                if (options.bytes === String)
-                    object.owner = "";
-                else {
-                    object.owner = [];
-                    if (options.bytes !== Array)
-                        object.owner = $util.newBuffer(object.owner);
-                }
-                if (options.bytes === String)
-                    object.id = "";
-                else {
-                    object.id = [];
-                    if (options.bytes !== Array)
-                        object.id = $util.newBuffer(object.id);
-                }
-                object.details = null;
-            }
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
-            if (message.id != null && message.hasOwnProperty("id"))
-                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
-            if (message.details != null && message.hasOwnProperty("details"))
-                object.details = $root.blockchain.TokenDetails.toObject(message.details, options);
-            if (message.approvals && message.approvals.length) {
-                object.approvals = [];
-                for (var j = 0; j < message.approvals.length; ++j)
-                    object.approvals[j] = $root.nft.ActionApprovals.toObject(message.approvals[j], options);
-            }
-            return object;
-        };
-
-        /**
-         * Converts this IssueTokenMsg to JSON.
-         * @function toJSON
-         * @memberof blockchain.IssueTokenMsg
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        IssueTokenMsg.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return IssueTokenMsg;
-    })();
-
-    return blockchain;
-})();
-
-$root.bootstrap_node = (function() {
-
-    /**
-     * Namespace bootstrap_node.
-     * @exports bootstrap_node
-     * @namespace
-     */
-    var bootstrap_node = {};
-
-    bootstrap_node.BootstrapNodeToken = (function() {
-
-        /**
-         * Properties of a BootstrapNodeToken.
-         * @memberof bootstrap_node
-         * @interface IBootstrapNodeToken
-         * @property {nft.INonFungibleToken|null} [base] BootstrapNodeToken base
-         * @property {bootstrap_node.ITokenDetails|null} [details] BootstrapNodeToken details
-         */
-
-        /**
-         * Constructs a new BootstrapNodeToken.
-         * @memberof bootstrap_node
-         * @classdesc Represents a BootstrapNodeToken.
-         * @implements IBootstrapNodeToken
-         * @constructor
-         * @param {bootstrap_node.IBootstrapNodeToken=} [properties] Properties to set
-         */
-        function BootstrapNodeToken(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * BootstrapNodeToken base.
-         * @member {nft.INonFungibleToken|null|undefined} base
-         * @memberof bootstrap_node.BootstrapNodeToken
-         * @instance
-         */
-        BootstrapNodeToken.prototype.base = null;
-
-        /**
-         * BootstrapNodeToken details.
-         * @member {bootstrap_node.ITokenDetails|null|undefined} details
-         * @memberof bootstrap_node.BootstrapNodeToken
-         * @instance
-         */
-        BootstrapNodeToken.prototype.details = null;
-
-        /**
-         * Creates a new BootstrapNodeToken instance using the specified properties.
-         * @function create
-         * @memberof bootstrap_node.BootstrapNodeToken
-         * @static
-         * @param {bootstrap_node.IBootstrapNodeToken=} [properties] Properties to set
-         * @returns {bootstrap_node.BootstrapNodeToken} BootstrapNodeToken instance
-         */
-        BootstrapNodeToken.create = function create(properties) {
-            return new BootstrapNodeToken(properties);
-        };
-
-        /**
-         * Encodes the specified BootstrapNodeToken message. Does not implicitly {@link bootstrap_node.BootstrapNodeToken.verify|verify} messages.
-         * @function encode
-         * @memberof bootstrap_node.BootstrapNodeToken
-         * @static
-         * @param {bootstrap_node.IBootstrapNodeToken} message BootstrapNodeToken message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        BootstrapNodeToken.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.base != null && message.hasOwnProperty("base"))
-                $root.nft.NonFungibleToken.encode(message.base, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.details != null && message.hasOwnProperty("details"))
-                $root.bootstrap_node.TokenDetails.encode(message.details, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-            return writer;
-        };
-
-        /**
-         * Encodes the specified BootstrapNodeToken message, length delimited. Does not implicitly {@link bootstrap_node.BootstrapNodeToken.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof bootstrap_node.BootstrapNodeToken
-         * @static
-         * @param {bootstrap_node.IBootstrapNodeToken} message BootstrapNodeToken message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        BootstrapNodeToken.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a BootstrapNodeToken message from the specified reader or buffer.
-         * @function decode
-         * @memberof bootstrap_node.BootstrapNodeToken
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {bootstrap_node.BootstrapNodeToken} BootstrapNodeToken
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        BootstrapNodeToken.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bootstrap_node.BootstrapNodeToken();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.base = $root.nft.NonFungibleToken.decode(reader, reader.uint32());
-                    break;
-                case 2:
-                    message.details = $root.bootstrap_node.TokenDetails.decode(reader, reader.uint32());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a BootstrapNodeToken message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof bootstrap_node.BootstrapNodeToken
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {bootstrap_node.BootstrapNodeToken} BootstrapNodeToken
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        BootstrapNodeToken.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a BootstrapNodeToken message.
-         * @function verify
-         * @memberof bootstrap_node.BootstrapNodeToken
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        BootstrapNodeToken.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.base != null && message.hasOwnProperty("base")) {
-                var error = $root.nft.NonFungibleToken.verify(message.base);
-                if (error)
-                    return "base." + error;
-            }
-            if (message.details != null && message.hasOwnProperty("details")) {
-                var error = $root.bootstrap_node.TokenDetails.verify(message.details);
-                if (error)
-                    return "details." + error;
-            }
-            return null;
-        };
-
-        /**
-         * Creates a BootstrapNodeToken message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof bootstrap_node.BootstrapNodeToken
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {bootstrap_node.BootstrapNodeToken} BootstrapNodeToken
-         */
-        BootstrapNodeToken.fromObject = function fromObject(object) {
-            if (object instanceof $root.bootstrap_node.BootstrapNodeToken)
-                return object;
-            var message = new $root.bootstrap_node.BootstrapNodeToken();
-            if (object.base != null) {
-                if (typeof object.base !== "object")
-                    throw TypeError(".bootstrap_node.BootstrapNodeToken.base: object expected");
-                message.base = $root.nft.NonFungibleToken.fromObject(object.base);
-            }
-            if (object.details != null) {
-                if (typeof object.details !== "object")
-                    throw TypeError(".bootstrap_node.BootstrapNodeToken.details: object expected");
-                message.details = $root.bootstrap_node.TokenDetails.fromObject(object.details);
-            }
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a BootstrapNodeToken message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof bootstrap_node.BootstrapNodeToken
-         * @static
-         * @param {bootstrap_node.BootstrapNodeToken} message BootstrapNodeToken
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        BootstrapNodeToken.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults) {
-                object.base = null;
-                object.details = null;
-            }
-            if (message.base != null && message.hasOwnProperty("base"))
-                object.base = $root.nft.NonFungibleToken.toObject(message.base, options);
-            if (message.details != null && message.hasOwnProperty("details"))
-                object.details = $root.bootstrap_node.TokenDetails.toObject(message.details, options);
-            return object;
-        };
-
-        /**
-         * Converts this BootstrapNodeToken to JSON.
-         * @function toJSON
-         * @memberof bootstrap_node.BootstrapNodeToken
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        BootstrapNodeToken.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return BootstrapNodeToken;
-    })();
-
-    bootstrap_node.TokenDetails = (function() {
-
-        /**
-         * Properties of a TokenDetails.
-         * @memberof bootstrap_node
-         * @interface ITokenDetails
-         * @property {Uint8Array|null} [blockchainId] TokenDetails blockchainId
-         * @property {bootstrap_node.IURI|null} [uri] TokenDetails uri
-         */
-
-        /**
-         * Constructs a new TokenDetails.
-         * @memberof bootstrap_node
-         * @classdesc Represents a TokenDetails.
-         * @implements ITokenDetails
-         * @constructor
-         * @param {bootstrap_node.ITokenDetails=} [properties] Properties to set
-         */
-        function TokenDetails(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * TokenDetails blockchainId.
-         * @member {Uint8Array} blockchainId
-         * @memberof bootstrap_node.TokenDetails
-         * @instance
-         */
-        TokenDetails.prototype.blockchainId = $util.newBuffer([]);
-
-        /**
-         * TokenDetails uri.
-         * @member {bootstrap_node.IURI|null|undefined} uri
-         * @memberof bootstrap_node.TokenDetails
-         * @instance
-         */
-        TokenDetails.prototype.uri = null;
-
-        /**
-         * Creates a new TokenDetails instance using the specified properties.
-         * @function create
-         * @memberof bootstrap_node.TokenDetails
-         * @static
-         * @param {bootstrap_node.ITokenDetails=} [properties] Properties to set
-         * @returns {bootstrap_node.TokenDetails} TokenDetails instance
-         */
-        TokenDetails.create = function create(properties) {
-            return new TokenDetails(properties);
-        };
-
-        /**
-         * Encodes the specified TokenDetails message. Does not implicitly {@link bootstrap_node.TokenDetails.verify|verify} messages.
-         * @function encode
-         * @memberof bootstrap_node.TokenDetails
-         * @static
-         * @param {bootstrap_node.ITokenDetails} message TokenDetails message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        TokenDetails.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.blockchainId != null && message.hasOwnProperty("blockchainId"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.blockchainId);
-            if (message.uri != null && message.hasOwnProperty("uri"))
-                $root.bootstrap_node.URI.encode(message.uri, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-            return writer;
-        };
-
-        /**
-         * Encodes the specified TokenDetails message, length delimited. Does not implicitly {@link bootstrap_node.TokenDetails.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof bootstrap_node.TokenDetails
-         * @static
-         * @param {bootstrap_node.ITokenDetails} message TokenDetails message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        TokenDetails.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a TokenDetails message from the specified reader or buffer.
-         * @function decode
-         * @memberof bootstrap_node.TokenDetails
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {bootstrap_node.TokenDetails} TokenDetails
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        TokenDetails.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bootstrap_node.TokenDetails();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.blockchainId = reader.bytes();
-                    break;
-                case 2:
-                    message.uri = $root.bootstrap_node.URI.decode(reader, reader.uint32());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a TokenDetails message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof bootstrap_node.TokenDetails
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {bootstrap_node.TokenDetails} TokenDetails
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        TokenDetails.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a TokenDetails message.
-         * @function verify
-         * @memberof bootstrap_node.TokenDetails
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        TokenDetails.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.blockchainId != null && message.hasOwnProperty("blockchainId"))
-                if (!(message.blockchainId && typeof message.blockchainId.length === "number" || $util.isString(message.blockchainId)))
-                    return "blockchainId: buffer expected";
-            if (message.uri != null && message.hasOwnProperty("uri")) {
-                var error = $root.bootstrap_node.URI.verify(message.uri);
-                if (error)
-                    return "uri." + error;
-            }
-            return null;
-        };
-
-        /**
-         * Creates a TokenDetails message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof bootstrap_node.TokenDetails
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {bootstrap_node.TokenDetails} TokenDetails
-         */
-        TokenDetails.fromObject = function fromObject(object) {
-            if (object instanceof $root.bootstrap_node.TokenDetails)
-                return object;
-            var message = new $root.bootstrap_node.TokenDetails();
-            if (object.blockchainId != null)
-                if (typeof object.blockchainId === "string")
-                    $util.base64.decode(object.blockchainId, message.blockchainId = $util.newBuffer($util.base64.length(object.blockchainId)), 0);
-                else if (object.blockchainId.length)
-                    message.blockchainId = object.blockchainId;
-            if (object.uri != null) {
-                if (typeof object.uri !== "object")
-                    throw TypeError(".bootstrap_node.TokenDetails.uri: object expected");
-                message.uri = $root.bootstrap_node.URI.fromObject(object.uri);
-            }
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a TokenDetails message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof bootstrap_node.TokenDetails
-         * @static
-         * @param {bootstrap_node.TokenDetails} message TokenDetails
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        TokenDetails.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults) {
-                if (options.bytes === String)
-                    object.blockchainId = "";
-                else {
-                    object.blockchainId = [];
-                    if (options.bytes !== Array)
-                        object.blockchainId = $util.newBuffer(object.blockchainId);
-                }
-                object.uri = null;
-            }
-            if (message.blockchainId != null && message.hasOwnProperty("blockchainId"))
-                object.blockchainId = options.bytes === String ? $util.base64.encode(message.blockchainId, 0, message.blockchainId.length) : options.bytes === Array ? Array.prototype.slice.call(message.blockchainId) : message.blockchainId;
-            if (message.uri != null && message.hasOwnProperty("uri"))
-                object.uri = $root.bootstrap_node.URI.toObject(message.uri, options);
-            return object;
-        };
-
-        /**
-         * Converts this TokenDetails to JSON.
-         * @function toJSON
-         * @memberof bootstrap_node.TokenDetails
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        TokenDetails.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return TokenDetails;
-    })();
-
-    bootstrap_node.URI = (function() {
-
-        /**
-         * Properties of a URI.
-         * @memberof bootstrap_node
-         * @interface IURI
-         * @property {string|null} [host] URI host
-         * @property {number|null} [port] URI port
-         * @property {string|null} [protocol] URI protocol
-         * @property {string|null} [pubKey] URI pubKey
-         */
-
-        /**
-         * Constructs a new URI.
-         * @memberof bootstrap_node
-         * @classdesc Represents a URI.
-         * @implements IURI
-         * @constructor
-         * @param {bootstrap_node.IURI=} [properties] Properties to set
-         */
-        function URI(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * URI host.
-         * @member {string} host
-         * @memberof bootstrap_node.URI
-         * @instance
-         */
-        URI.prototype.host = "";
-
-        /**
-         * URI port.
-         * @member {number} port
-         * @memberof bootstrap_node.URI
-         * @instance
-         */
-        URI.prototype.port = 0;
-
-        /**
-         * URI protocol.
-         * @member {string} protocol
-         * @memberof bootstrap_node.URI
-         * @instance
-         */
-        URI.prototype.protocol = "";
-
-        /**
-         * URI pubKey.
-         * @member {string} pubKey
-         * @memberof bootstrap_node.URI
-         * @instance
-         */
-        URI.prototype.pubKey = "";
-
-        /**
-         * Creates a new URI instance using the specified properties.
-         * @function create
-         * @memberof bootstrap_node.URI
-         * @static
-         * @param {bootstrap_node.IURI=} [properties] Properties to set
-         * @returns {bootstrap_node.URI} URI instance
-         */
-        URI.create = function create(properties) {
-            return new URI(properties);
-        };
-
-        /**
-         * Encodes the specified URI message. Does not implicitly {@link bootstrap_node.URI.verify|verify} messages.
-         * @function encode
-         * @memberof bootstrap_node.URI
-         * @static
-         * @param {bootstrap_node.IURI} message URI message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        URI.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.host != null && message.hasOwnProperty("host"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.host);
-            if (message.port != null && message.hasOwnProperty("port"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.port);
-            if (message.protocol != null && message.hasOwnProperty("protocol"))
-                writer.uint32(/* id 3, wireType 2 =*/26).string(message.protocol);
-            if (message.pubKey != null && message.hasOwnProperty("pubKey"))
-                writer.uint32(/* id 4, wireType 2 =*/34).string(message.pubKey);
-            return writer;
-        };
-
-        /**
-         * Encodes the specified URI message, length delimited. Does not implicitly {@link bootstrap_node.URI.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof bootstrap_node.URI
-         * @static
-         * @param {bootstrap_node.IURI} message URI message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        URI.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a URI message from the specified reader or buffer.
-         * @function decode
-         * @memberof bootstrap_node.URI
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {bootstrap_node.URI} URI
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        URI.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bootstrap_node.URI();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.host = reader.string();
-                    break;
-                case 2:
-                    message.port = reader.int32();
-                    break;
-                case 3:
-                    message.protocol = reader.string();
-                    break;
-                case 4:
-                    message.pubKey = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a URI message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof bootstrap_node.URI
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {bootstrap_node.URI} URI
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        URI.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a URI message.
-         * @function verify
-         * @memberof bootstrap_node.URI
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        URI.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.host != null && message.hasOwnProperty("host"))
-                if (!$util.isString(message.host))
-                    return "host: string expected";
-            if (message.port != null && message.hasOwnProperty("port"))
-                if (!$util.isInteger(message.port))
-                    return "port: integer expected";
-            if (message.protocol != null && message.hasOwnProperty("protocol"))
-                if (!$util.isString(message.protocol))
-                    return "protocol: string expected";
-            if (message.pubKey != null && message.hasOwnProperty("pubKey"))
-                if (!$util.isString(message.pubKey))
-                    return "pubKey: string expected";
-            return null;
-        };
-
-        /**
-         * Creates a URI message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof bootstrap_node.URI
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {bootstrap_node.URI} URI
-         */
-        URI.fromObject = function fromObject(object) {
-            if (object instanceof $root.bootstrap_node.URI)
-                return object;
-            var message = new $root.bootstrap_node.URI();
-            if (object.host != null)
-                message.host = String(object.host);
-            if (object.port != null)
-                message.port = object.port | 0;
-            if (object.protocol != null)
-                message.protocol = String(object.protocol);
-            if (object.pubKey != null)
-                message.pubKey = String(object.pubKey);
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a URI message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof bootstrap_node.URI
-         * @static
-         * @param {bootstrap_node.URI} message URI
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        URI.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults) {
-                object.host = "";
-                object.port = 0;
-                object.protocol = "";
-                object.pubKey = "";
-            }
-            if (message.host != null && message.hasOwnProperty("host"))
-                object.host = message.host;
-            if (message.port != null && message.hasOwnProperty("port"))
-                object.port = message.port;
-            if (message.protocol != null && message.hasOwnProperty("protocol"))
-                object.protocol = message.protocol;
-            if (message.pubKey != null && message.hasOwnProperty("pubKey"))
-                object.pubKey = message.pubKey;
-            return object;
-        };
-
-        /**
-         * Converts this URI to JSON.
-         * @function toJSON
-         * @memberof bootstrap_node.URI
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        URI.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return URI;
-    })();
-
-    bootstrap_node.IssueTokenMsg = (function() {
-
-        /**
-         * Properties of an IssueTokenMsg.
-         * @memberof bootstrap_node
-         * @interface IIssueTokenMsg
-         * @property {Uint8Array|null} [owner] IssueTokenMsg owner
-         * @property {Uint8Array|null} [id] IssueTokenMsg id
-         * @property {bootstrap_node.ITokenDetails|null} [details] IssueTokenMsg details
-         * @property {Array.<nft.IActionApprovals>|null} [approvals] IssueTokenMsg approvals
-         */
-
-        /**
-         * Constructs a new IssueTokenMsg.
-         * @memberof bootstrap_node
-         * @classdesc Represents an IssueTokenMsg.
-         * @implements IIssueTokenMsg
-         * @constructor
-         * @param {bootstrap_node.IIssueTokenMsg=} [properties] Properties to set
-         */
-        function IssueTokenMsg(properties) {
-            this.approvals = [];
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * IssueTokenMsg owner.
-         * @member {Uint8Array} owner
-         * @memberof bootstrap_node.IssueTokenMsg
-         * @instance
-         */
-        IssueTokenMsg.prototype.owner = $util.newBuffer([]);
-
-        /**
-         * IssueTokenMsg id.
-         * @member {Uint8Array} id
-         * @memberof bootstrap_node.IssueTokenMsg
-         * @instance
-         */
-        IssueTokenMsg.prototype.id = $util.newBuffer([]);
-
-        /**
-         * IssueTokenMsg details.
-         * @member {bootstrap_node.ITokenDetails|null|undefined} details
-         * @memberof bootstrap_node.IssueTokenMsg
-         * @instance
-         */
-        IssueTokenMsg.prototype.details = null;
-
-        /**
-         * IssueTokenMsg approvals.
-         * @member {Array.<nft.IActionApprovals>} approvals
-         * @memberof bootstrap_node.IssueTokenMsg
-         * @instance
-         */
-        IssueTokenMsg.prototype.approvals = $util.emptyArray;
-
-        /**
-         * Creates a new IssueTokenMsg instance using the specified properties.
-         * @function create
-         * @memberof bootstrap_node.IssueTokenMsg
-         * @static
-         * @param {bootstrap_node.IIssueTokenMsg=} [properties] Properties to set
-         * @returns {bootstrap_node.IssueTokenMsg} IssueTokenMsg instance
-         */
-        IssueTokenMsg.create = function create(properties) {
-            return new IssueTokenMsg(properties);
-        };
-
-        /**
-         * Encodes the specified IssueTokenMsg message. Does not implicitly {@link bootstrap_node.IssueTokenMsg.verify|verify} messages.
-         * @function encode
-         * @memberof bootstrap_node.IssueTokenMsg
-         * @static
-         * @param {bootstrap_node.IIssueTokenMsg} message IssueTokenMsg message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        IssueTokenMsg.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.owner);
-            if (message.id != null && message.hasOwnProperty("id"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.id);
-            if (message.details != null && message.hasOwnProperty("details"))
-                $root.bootstrap_node.TokenDetails.encode(message.details, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
-            if (message.approvals != null && message.approvals.length)
-                for (var i = 0; i < message.approvals.length; ++i)
-                    $root.nft.ActionApprovals.encode(message.approvals[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-            return writer;
-        };
-
-        /**
-         * Encodes the specified IssueTokenMsg message, length delimited. Does not implicitly {@link bootstrap_node.IssueTokenMsg.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof bootstrap_node.IssueTokenMsg
-         * @static
-         * @param {bootstrap_node.IIssueTokenMsg} message IssueTokenMsg message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        IssueTokenMsg.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes an IssueTokenMsg message from the specified reader or buffer.
-         * @function decode
-         * @memberof bootstrap_node.IssueTokenMsg
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {bootstrap_node.IssueTokenMsg} IssueTokenMsg
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        IssueTokenMsg.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bootstrap_node.IssueTokenMsg();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.owner = reader.bytes();
-                    break;
-                case 2:
-                    message.id = reader.bytes();
-                    break;
-                case 3:
-                    message.details = $root.bootstrap_node.TokenDetails.decode(reader, reader.uint32());
-                    break;
-                case 4:
-                    if (!(message.approvals && message.approvals.length))
-                        message.approvals = [];
-                    message.approvals.push($root.nft.ActionApprovals.decode(reader, reader.uint32()));
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes an IssueTokenMsg message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof bootstrap_node.IssueTokenMsg
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {bootstrap_node.IssueTokenMsg} IssueTokenMsg
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        IssueTokenMsg.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies an IssueTokenMsg message.
-         * @function verify
-         * @memberof bootstrap_node.IssueTokenMsg
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        IssueTokenMsg.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
-                    return "owner: buffer expected";
-            if (message.id != null && message.hasOwnProperty("id"))
-                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
-                    return "id: buffer expected";
-            if (message.details != null && message.hasOwnProperty("details")) {
-                var error = $root.bootstrap_node.TokenDetails.verify(message.details);
-                if (error)
-                    return "details." + error;
-            }
-            if (message.approvals != null && message.hasOwnProperty("approvals")) {
-                if (!Array.isArray(message.approvals))
-                    return "approvals: array expected";
-                for (var i = 0; i < message.approvals.length; ++i) {
-                    var error = $root.nft.ActionApprovals.verify(message.approvals[i]);
-                    if (error)
-                        return "approvals." + error;
-                }
-            }
-            return null;
-        };
-
-        /**
-         * Creates an IssueTokenMsg message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof bootstrap_node.IssueTokenMsg
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {bootstrap_node.IssueTokenMsg} IssueTokenMsg
-         */
-        IssueTokenMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.bootstrap_node.IssueTokenMsg)
-                return object;
-            var message = new $root.bootstrap_node.IssueTokenMsg();
-            if (object.owner != null)
-                if (typeof object.owner === "string")
-                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
-                else if (object.owner.length)
-                    message.owner = object.owner;
-            if (object.id != null)
-                if (typeof object.id === "string")
-                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
-                else if (object.id.length)
-                    message.id = object.id;
-            if (object.details != null) {
-                if (typeof object.details !== "object")
-                    throw TypeError(".bootstrap_node.IssueTokenMsg.details: object expected");
-                message.details = $root.bootstrap_node.TokenDetails.fromObject(object.details);
-            }
-            if (object.approvals) {
-                if (!Array.isArray(object.approvals))
-                    throw TypeError(".bootstrap_node.IssueTokenMsg.approvals: array expected");
-                message.approvals = [];
-                for (var i = 0; i < object.approvals.length; ++i) {
-                    if (typeof object.approvals[i] !== "object")
-                        throw TypeError(".bootstrap_node.IssueTokenMsg.approvals: object expected");
-                    message.approvals[i] = $root.nft.ActionApprovals.fromObject(object.approvals[i]);
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Creates a plain object from an IssueTokenMsg message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof bootstrap_node.IssueTokenMsg
-         * @static
-         * @param {bootstrap_node.IssueTokenMsg} message IssueTokenMsg
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        IssueTokenMsg.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.arrays || options.defaults)
-                object.approvals = [];
-            if (options.defaults) {
-                if (options.bytes === String)
-                    object.owner = "";
-                else {
-                    object.owner = [];
-                    if (options.bytes !== Array)
-                        object.owner = $util.newBuffer(object.owner);
-                }
-                if (options.bytes === String)
-                    object.id = "";
-                else {
-                    object.id = [];
-                    if (options.bytes !== Array)
-                        object.id = $util.newBuffer(object.id);
-                }
-                object.details = null;
-            }
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
-            if (message.id != null && message.hasOwnProperty("id"))
-                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
-            if (message.details != null && message.hasOwnProperty("details"))
-                object.details = $root.bootstrap_node.TokenDetails.toObject(message.details, options);
-            if (message.approvals && message.approvals.length) {
-                object.approvals = [];
-                for (var j = 0; j < message.approvals.length; ++j)
-                    object.approvals[j] = $root.nft.ActionApprovals.toObject(message.approvals[j], options);
-            }
-            return object;
-        };
-
-        /**
-         * Converts this IssueTokenMsg to JSON.
-         * @function toJSON
-         * @memberof bootstrap_node.IssueTokenMsg
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        IssueTokenMsg.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return IssueTokenMsg;
-    })();
-
-    return bootstrap_node;
-})();
-
-$root.ticker = (function() {
-
-    /**
-     * Namespace ticker.
-     * @exports ticker
-     * @namespace
-     */
-    var ticker = {};
-
-    ticker.TickerToken = (function() {
-
-        /**
-         * Properties of a TickerToken.
-         * @memberof ticker
-         * @interface ITickerToken
-         * @property {nft.INonFungibleToken|null} [base] TickerToken base
-         * @property {ticker.ITokenDetails|null} [details] TickerToken details
-         */
-
-        /**
-         * Constructs a new TickerToken.
-         * @memberof ticker
-         * @classdesc Represents a TickerToken.
-         * @implements ITickerToken
-         * @constructor
-         * @param {ticker.ITickerToken=} [properties] Properties to set
-         */
-        function TickerToken(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * TickerToken base.
-         * @member {nft.INonFungibleToken|null|undefined} base
-         * @memberof ticker.TickerToken
-         * @instance
-         */
-        TickerToken.prototype.base = null;
-
-        /**
-         * TickerToken details.
-         * @member {ticker.ITokenDetails|null|undefined} details
-         * @memberof ticker.TickerToken
-         * @instance
-         */
-        TickerToken.prototype.details = null;
-
-        /**
-         * Creates a new TickerToken instance using the specified properties.
-         * @function create
-         * @memberof ticker.TickerToken
-         * @static
-         * @param {ticker.ITickerToken=} [properties] Properties to set
-         * @returns {ticker.TickerToken} TickerToken instance
-         */
-        TickerToken.create = function create(properties) {
-            return new TickerToken(properties);
-        };
-
-        /**
-         * Encodes the specified TickerToken message. Does not implicitly {@link ticker.TickerToken.verify|verify} messages.
-         * @function encode
-         * @memberof ticker.TickerToken
-         * @static
-         * @param {ticker.ITickerToken} message TickerToken message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        TickerToken.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.base != null && message.hasOwnProperty("base"))
-                $root.nft.NonFungibleToken.encode(message.base, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.details != null && message.hasOwnProperty("details"))
-                $root.ticker.TokenDetails.encode(message.details, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-            return writer;
-        };
-
-        /**
-         * Encodes the specified TickerToken message, length delimited. Does not implicitly {@link ticker.TickerToken.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof ticker.TickerToken
-         * @static
-         * @param {ticker.ITickerToken} message TickerToken message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        TickerToken.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a TickerToken message from the specified reader or buffer.
-         * @function decode
-         * @memberof ticker.TickerToken
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {ticker.TickerToken} TickerToken
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        TickerToken.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.ticker.TickerToken();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.base = $root.nft.NonFungibleToken.decode(reader, reader.uint32());
-                    break;
-                case 2:
-                    message.details = $root.ticker.TokenDetails.decode(reader, reader.uint32());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a TickerToken message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof ticker.TickerToken
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {ticker.TickerToken} TickerToken
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        TickerToken.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a TickerToken message.
-         * @function verify
-         * @memberof ticker.TickerToken
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        TickerToken.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.base != null && message.hasOwnProperty("base")) {
-                var error = $root.nft.NonFungibleToken.verify(message.base);
-                if (error)
-                    return "base." + error;
-            }
-            if (message.details != null && message.hasOwnProperty("details")) {
-                var error = $root.ticker.TokenDetails.verify(message.details);
-                if (error)
-                    return "details." + error;
-            }
-            return null;
-        };
-
-        /**
-         * Creates a TickerToken message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof ticker.TickerToken
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {ticker.TickerToken} TickerToken
-         */
-        TickerToken.fromObject = function fromObject(object) {
-            if (object instanceof $root.ticker.TickerToken)
-                return object;
-            var message = new $root.ticker.TickerToken();
-            if (object.base != null) {
-                if (typeof object.base !== "object")
-                    throw TypeError(".ticker.TickerToken.base: object expected");
-                message.base = $root.nft.NonFungibleToken.fromObject(object.base);
-            }
-            if (object.details != null) {
-                if (typeof object.details !== "object")
-                    throw TypeError(".ticker.TickerToken.details: object expected");
-                message.details = $root.ticker.TokenDetails.fromObject(object.details);
-            }
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a TickerToken message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof ticker.TickerToken
-         * @static
-         * @param {ticker.TickerToken} message TickerToken
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        TickerToken.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults) {
-                object.base = null;
-                object.details = null;
-            }
-            if (message.base != null && message.hasOwnProperty("base"))
-                object.base = $root.nft.NonFungibleToken.toObject(message.base, options);
-            if (message.details != null && message.hasOwnProperty("details"))
-                object.details = $root.ticker.TokenDetails.toObject(message.details, options);
-            return object;
-        };
-
-        /**
-         * Converts this TickerToken to JSON.
-         * @function toJSON
-         * @memberof ticker.TickerToken
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        TickerToken.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return TickerToken;
-    })();
-
-    ticker.TokenDetails = (function() {
-
-        /**
-         * Properties of a TokenDetails.
-         * @memberof ticker
-         * @interface ITokenDetails
-         * @property {Uint8Array|null} [blockchainId] TokenDetails blockchainId
-         */
-
-        /**
-         * Constructs a new TokenDetails.
-         * @memberof ticker
-         * @classdesc Represents a TokenDetails.
-         * @implements ITokenDetails
-         * @constructor
-         * @param {ticker.ITokenDetails=} [properties] Properties to set
-         */
-        function TokenDetails(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * TokenDetails blockchainId.
-         * @member {Uint8Array} blockchainId
-         * @memberof ticker.TokenDetails
-         * @instance
-         */
-        TokenDetails.prototype.blockchainId = $util.newBuffer([]);
-
-        /**
-         * Creates a new TokenDetails instance using the specified properties.
-         * @function create
-         * @memberof ticker.TokenDetails
-         * @static
-         * @param {ticker.ITokenDetails=} [properties] Properties to set
-         * @returns {ticker.TokenDetails} TokenDetails instance
-         */
-        TokenDetails.create = function create(properties) {
-            return new TokenDetails(properties);
-        };
-
-        /**
-         * Encodes the specified TokenDetails message. Does not implicitly {@link ticker.TokenDetails.verify|verify} messages.
-         * @function encode
-         * @memberof ticker.TokenDetails
-         * @static
-         * @param {ticker.ITokenDetails} message TokenDetails message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        TokenDetails.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.blockchainId != null && message.hasOwnProperty("blockchainId"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.blockchainId);
-            return writer;
-        };
-
-        /**
-         * Encodes the specified TokenDetails message, length delimited. Does not implicitly {@link ticker.TokenDetails.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof ticker.TokenDetails
-         * @static
-         * @param {ticker.ITokenDetails} message TokenDetails message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        TokenDetails.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a TokenDetails message from the specified reader or buffer.
-         * @function decode
-         * @memberof ticker.TokenDetails
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {ticker.TokenDetails} TokenDetails
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        TokenDetails.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.ticker.TokenDetails();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.blockchainId = reader.bytes();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a TokenDetails message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof ticker.TokenDetails
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {ticker.TokenDetails} TokenDetails
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        TokenDetails.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a TokenDetails message.
-         * @function verify
-         * @memberof ticker.TokenDetails
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        TokenDetails.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.blockchainId != null && message.hasOwnProperty("blockchainId"))
-                if (!(message.blockchainId && typeof message.blockchainId.length === "number" || $util.isString(message.blockchainId)))
-                    return "blockchainId: buffer expected";
-            return null;
-        };
-
-        /**
-         * Creates a TokenDetails message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof ticker.TokenDetails
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {ticker.TokenDetails} TokenDetails
-         */
-        TokenDetails.fromObject = function fromObject(object) {
-            if (object instanceof $root.ticker.TokenDetails)
-                return object;
-            var message = new $root.ticker.TokenDetails();
-            if (object.blockchainId != null)
-                if (typeof object.blockchainId === "string")
-                    $util.base64.decode(object.blockchainId, message.blockchainId = $util.newBuffer($util.base64.length(object.blockchainId)), 0);
-                else if (object.blockchainId.length)
-                    message.blockchainId = object.blockchainId;
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a TokenDetails message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof ticker.TokenDetails
-         * @static
-         * @param {ticker.TokenDetails} message TokenDetails
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        TokenDetails.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults)
-                if (options.bytes === String)
-                    object.blockchainId = "";
-                else {
-                    object.blockchainId = [];
-                    if (options.bytes !== Array)
-                        object.blockchainId = $util.newBuffer(object.blockchainId);
-                }
-            if (message.blockchainId != null && message.hasOwnProperty("blockchainId"))
-                object.blockchainId = options.bytes === String ? $util.base64.encode(message.blockchainId, 0, message.blockchainId.length) : options.bytes === Array ? Array.prototype.slice.call(message.blockchainId) : message.blockchainId;
-            return object;
-        };
-
-        /**
-         * Converts this TokenDetails to JSON.
-         * @function toJSON
-         * @memberof ticker.TokenDetails
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        TokenDetails.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return TokenDetails;
-    })();
-
-    ticker.IssueTokenMsg = (function() {
-
-        /**
-         * Properties of an IssueTokenMsg.
-         * @memberof ticker
-         * @interface IIssueTokenMsg
-         * @property {Uint8Array|null} [owner] IssueTokenMsg owner
-         * @property {Uint8Array|null} [id] IssueTokenMsg id
-         * @property {ticker.ITokenDetails|null} [details] IssueTokenMsg details
-         * @property {Array.<nft.IActionApprovals>|null} [approvals] IssueTokenMsg approvals
-         */
-
-        /**
-         * Constructs a new IssueTokenMsg.
-         * @memberof ticker
-         * @classdesc Represents an IssueTokenMsg.
-         * @implements IIssueTokenMsg
-         * @constructor
-         * @param {ticker.IIssueTokenMsg=} [properties] Properties to set
-         */
-        function IssueTokenMsg(properties) {
-            this.approvals = [];
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * IssueTokenMsg owner.
-         * @member {Uint8Array} owner
-         * @memberof ticker.IssueTokenMsg
-         * @instance
-         */
-        IssueTokenMsg.prototype.owner = $util.newBuffer([]);
-
-        /**
-         * IssueTokenMsg id.
-         * @member {Uint8Array} id
-         * @memberof ticker.IssueTokenMsg
-         * @instance
-         */
-        IssueTokenMsg.prototype.id = $util.newBuffer([]);
-
-        /**
-         * IssueTokenMsg details.
-         * @member {ticker.ITokenDetails|null|undefined} details
-         * @memberof ticker.IssueTokenMsg
-         * @instance
-         */
-        IssueTokenMsg.prototype.details = null;
-
-        /**
-         * IssueTokenMsg approvals.
-         * @member {Array.<nft.IActionApprovals>} approvals
-         * @memberof ticker.IssueTokenMsg
-         * @instance
-         */
-        IssueTokenMsg.prototype.approvals = $util.emptyArray;
-
-        /**
-         * Creates a new IssueTokenMsg instance using the specified properties.
-         * @function create
-         * @memberof ticker.IssueTokenMsg
-         * @static
-         * @param {ticker.IIssueTokenMsg=} [properties] Properties to set
-         * @returns {ticker.IssueTokenMsg} IssueTokenMsg instance
-         */
-        IssueTokenMsg.create = function create(properties) {
-            return new IssueTokenMsg(properties);
-        };
-
-        /**
-         * Encodes the specified IssueTokenMsg message. Does not implicitly {@link ticker.IssueTokenMsg.verify|verify} messages.
-         * @function encode
-         * @memberof ticker.IssueTokenMsg
-         * @static
-         * @param {ticker.IIssueTokenMsg} message IssueTokenMsg message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        IssueTokenMsg.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.owner);
-            if (message.id != null && message.hasOwnProperty("id"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.id);
-            if (message.details != null && message.hasOwnProperty("details"))
-                $root.ticker.TokenDetails.encode(message.details, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
-            if (message.approvals != null && message.approvals.length)
-                for (var i = 0; i < message.approvals.length; ++i)
-                    $root.nft.ActionApprovals.encode(message.approvals[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-            return writer;
-        };
-
-        /**
-         * Encodes the specified IssueTokenMsg message, length delimited. Does not implicitly {@link ticker.IssueTokenMsg.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof ticker.IssueTokenMsg
-         * @static
-         * @param {ticker.IIssueTokenMsg} message IssueTokenMsg message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        IssueTokenMsg.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes an IssueTokenMsg message from the specified reader or buffer.
-         * @function decode
-         * @memberof ticker.IssueTokenMsg
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {ticker.IssueTokenMsg} IssueTokenMsg
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        IssueTokenMsg.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.ticker.IssueTokenMsg();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.owner = reader.bytes();
-                    break;
-                case 2:
-                    message.id = reader.bytes();
-                    break;
-                case 3:
-                    message.details = $root.ticker.TokenDetails.decode(reader, reader.uint32());
-                    break;
-                case 4:
-                    if (!(message.approvals && message.approvals.length))
-                        message.approvals = [];
-                    message.approvals.push($root.nft.ActionApprovals.decode(reader, reader.uint32()));
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes an IssueTokenMsg message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof ticker.IssueTokenMsg
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {ticker.IssueTokenMsg} IssueTokenMsg
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        IssueTokenMsg.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies an IssueTokenMsg message.
-         * @function verify
-         * @memberof ticker.IssueTokenMsg
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        IssueTokenMsg.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
-                    return "owner: buffer expected";
-            if (message.id != null && message.hasOwnProperty("id"))
-                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
-                    return "id: buffer expected";
-            if (message.details != null && message.hasOwnProperty("details")) {
-                var error = $root.ticker.TokenDetails.verify(message.details);
-                if (error)
-                    return "details." + error;
-            }
-            if (message.approvals != null && message.hasOwnProperty("approvals")) {
-                if (!Array.isArray(message.approvals))
-                    return "approvals: array expected";
-                for (var i = 0; i < message.approvals.length; ++i) {
-                    var error = $root.nft.ActionApprovals.verify(message.approvals[i]);
-                    if (error)
-                        return "approvals." + error;
-                }
-            }
-            return null;
-        };
-
-        /**
-         * Creates an IssueTokenMsg message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof ticker.IssueTokenMsg
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {ticker.IssueTokenMsg} IssueTokenMsg
-         */
-        IssueTokenMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.ticker.IssueTokenMsg)
-                return object;
-            var message = new $root.ticker.IssueTokenMsg();
-            if (object.owner != null)
-                if (typeof object.owner === "string")
-                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
-                else if (object.owner.length)
-                    message.owner = object.owner;
-            if (object.id != null)
-                if (typeof object.id === "string")
-                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
-                else if (object.id.length)
-                    message.id = object.id;
-            if (object.details != null) {
-                if (typeof object.details !== "object")
-                    throw TypeError(".ticker.IssueTokenMsg.details: object expected");
-                message.details = $root.ticker.TokenDetails.fromObject(object.details);
-            }
-            if (object.approvals) {
-                if (!Array.isArray(object.approvals))
-                    throw TypeError(".ticker.IssueTokenMsg.approvals: array expected");
-                message.approvals = [];
-                for (var i = 0; i < object.approvals.length; ++i) {
-                    if (typeof object.approvals[i] !== "object")
-                        throw TypeError(".ticker.IssueTokenMsg.approvals: object expected");
-                    message.approvals[i] = $root.nft.ActionApprovals.fromObject(object.approvals[i]);
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Creates a plain object from an IssueTokenMsg message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof ticker.IssueTokenMsg
-         * @static
-         * @param {ticker.IssueTokenMsg} message IssueTokenMsg
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        IssueTokenMsg.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.arrays || options.defaults)
-                object.approvals = [];
-            if (options.defaults) {
-                if (options.bytes === String)
-                    object.owner = "";
-                else {
-                    object.owner = [];
-                    if (options.bytes !== Array)
-                        object.owner = $util.newBuffer(object.owner);
-                }
-                if (options.bytes === String)
-                    object.id = "";
-                else {
-                    object.id = [];
-                    if (options.bytes !== Array)
-                        object.id = $util.newBuffer(object.id);
-                }
-                object.details = null;
-            }
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
-            if (message.id != null && message.hasOwnProperty("id"))
-                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
-            if (message.details != null && message.hasOwnProperty("details"))
-                object.details = $root.ticker.TokenDetails.toObject(message.details, options);
-            if (message.approvals && message.approvals.length) {
-                object.approvals = [];
-                for (var j = 0; j < message.approvals.length; ++j)
-                    object.approvals[j] = $root.nft.ActionApprovals.toObject(message.approvals[j], options);
-            }
-            return object;
-        };
-
-        /**
-         * Converts this IssueTokenMsg to JSON.
-         * @function toJSON
-         * @memberof ticker.IssueTokenMsg
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        IssueTokenMsg.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return IssueTokenMsg;
-    })();
-
-    return ticker;
 })();
 
 $root.username = (function() {
@@ -4808,7 +1571,7 @@ $root.username = (function() {
          * Properties of a ChainAddress.
          * @memberof username
          * @interface IChainAddress
-         * @property {Uint8Array|null} [blockchainId] module).
+         * @property {Uint8Array|null} [blockchainId] validating it.
          * @property {string|null} [address] blockchain.
          */
 
@@ -4828,7 +1591,7 @@ $root.username = (function() {
         }
 
         /**
-         * module).
+         * validating it.
          * @member {Uint8Array} blockchainId
          * @memberof username.ChainAddress
          * @instance
@@ -5821,6 +2584,278 @@ $root.username = (function() {
     })();
 
     return username;
+})();
+
+$root.coin = (function() {
+
+    /**
+     * Namespace coin.
+     * @exports coin
+     * @namespace
+     */
+    var coin = {};
+
+    coin.Coin = (function() {
+
+        /**
+         * Properties of a Coin.
+         * @memberof coin
+         * @interface ICoin
+         * @property {number|Long|null} [whole] Whole coins, -10^15 < integer < 10^15
+         * @property {number|Long|null} [fractional] If fractional != 0, must have same sign as integer
+         * @property {string|null} [ticker] all Coins of the same currency can be combined
+         */
+
+        /**
+         * Constructs a new Coin.
+         * @memberof coin
+         * @classdesc own type, possibly borrowing from this code.
+         * @implements ICoin
+         * @constructor
+         * @param {coin.ICoin=} [properties] Properties to set
+         */
+        function Coin(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Whole coins, -10^15 < integer < 10^15
+         * @member {number|Long} whole
+         * @memberof coin.Coin
+         * @instance
+         */
+        Coin.prototype.whole = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * If fractional != 0, must have same sign as integer
+         * @member {number|Long} fractional
+         * @memberof coin.Coin
+         * @instance
+         */
+        Coin.prototype.fractional = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * all Coins of the same currency can be combined
+         * @member {string} ticker
+         * @memberof coin.Coin
+         * @instance
+         */
+        Coin.prototype.ticker = "";
+
+        /**
+         * Creates a new Coin instance using the specified properties.
+         * @function create
+         * @memberof coin.Coin
+         * @static
+         * @param {coin.ICoin=} [properties] Properties to set
+         * @returns {coin.Coin} Coin instance
+         */
+        Coin.create = function create(properties) {
+            return new Coin(properties);
+        };
+
+        /**
+         * Encodes the specified Coin message. Does not implicitly {@link coin.Coin.verify|verify} messages.
+         * @function encode
+         * @memberof coin.Coin
+         * @static
+         * @param {coin.ICoin} message Coin message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Coin.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.whole != null && message.hasOwnProperty("whole"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.whole);
+            if (message.fractional != null && message.hasOwnProperty("fractional"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.fractional);
+            if (message.ticker != null && message.hasOwnProperty("ticker"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.ticker);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Coin message, length delimited. Does not implicitly {@link coin.Coin.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof coin.Coin
+         * @static
+         * @param {coin.ICoin} message Coin message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Coin.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Coin message from the specified reader or buffer.
+         * @function decode
+         * @memberof coin.Coin
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {coin.Coin} Coin
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Coin.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coin.Coin();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.whole = reader.int64();
+                    break;
+                case 2:
+                    message.fractional = reader.int64();
+                    break;
+                case 3:
+                    message.ticker = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Coin message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof coin.Coin
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {coin.Coin} Coin
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Coin.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Coin message.
+         * @function verify
+         * @memberof coin.Coin
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Coin.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.whole != null && message.hasOwnProperty("whole"))
+                if (!$util.isInteger(message.whole) && !(message.whole && $util.isInteger(message.whole.low) && $util.isInteger(message.whole.high)))
+                    return "whole: integer|Long expected";
+            if (message.fractional != null && message.hasOwnProperty("fractional"))
+                if (!$util.isInteger(message.fractional) && !(message.fractional && $util.isInteger(message.fractional.low) && $util.isInteger(message.fractional.high)))
+                    return "fractional: integer|Long expected";
+            if (message.ticker != null && message.hasOwnProperty("ticker"))
+                if (!$util.isString(message.ticker))
+                    return "ticker: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a Coin message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof coin.Coin
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {coin.Coin} Coin
+         */
+        Coin.fromObject = function fromObject(object) {
+            if (object instanceof $root.coin.Coin)
+                return object;
+            var message = new $root.coin.Coin();
+            if (object.whole != null)
+                if ($util.Long)
+                    (message.whole = $util.Long.fromValue(object.whole)).unsigned = false;
+                else if (typeof object.whole === "string")
+                    message.whole = parseInt(object.whole, 10);
+                else if (typeof object.whole === "number")
+                    message.whole = object.whole;
+                else if (typeof object.whole === "object")
+                    message.whole = new $util.LongBits(object.whole.low >>> 0, object.whole.high >>> 0).toNumber();
+            if (object.fractional != null)
+                if ($util.Long)
+                    (message.fractional = $util.Long.fromValue(object.fractional)).unsigned = false;
+                else if (typeof object.fractional === "string")
+                    message.fractional = parseInt(object.fractional, 10);
+                else if (typeof object.fractional === "number")
+                    message.fractional = object.fractional;
+                else if (typeof object.fractional === "object")
+                    message.fractional = new $util.LongBits(object.fractional.low >>> 0, object.fractional.high >>> 0).toNumber();
+            if (object.ticker != null)
+                message.ticker = String(object.ticker);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Coin message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof coin.Coin
+         * @static
+         * @param {coin.Coin} message Coin
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Coin.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.whole = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.whole = options.longs === String ? "0" : 0;
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.fractional = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.fractional = options.longs === String ? "0" : 0;
+                object.ticker = "";
+            }
+            if (message.whole != null && message.hasOwnProperty("whole"))
+                if (typeof message.whole === "number")
+                    object.whole = options.longs === String ? String(message.whole) : message.whole;
+                else
+                    object.whole = options.longs === String ? $util.Long.prototype.toString.call(message.whole) : options.longs === Number ? new $util.LongBits(message.whole.low >>> 0, message.whole.high >>> 0).toNumber() : message.whole;
+            if (message.fractional != null && message.hasOwnProperty("fractional"))
+                if (typeof message.fractional === "number")
+                    object.fractional = options.longs === String ? String(message.fractional) : message.fractional;
+                else
+                    object.fractional = options.longs === String ? $util.Long.prototype.toString.call(message.fractional) : options.longs === Number ? new $util.LongBits(message.fractional.low >>> 0, message.fractional.high >>> 0).toNumber() : message.fractional;
+            if (message.ticker != null && message.hasOwnProperty("ticker"))
+                object.ticker = message.ticker;
+            return object;
+        };
+
+        /**
+         * Converts this Coin to JSON.
+         * @function toJSON
+         * @memberof coin.Coin
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Coin.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Coin;
+    })();
+
+    return coin;
 })();
 
 $root.crypto = (function() {
@@ -7111,7 +4146,7 @@ $root.cash = (function() {
          * Properties of a Set.
          * @memberof cash
          * @interface ISet
-         * @property {Array.<x.ICoin>|null} [coins] Set coins
+         * @property {Array.<coin.ICoin>|null} [coins] Set coins
          */
 
         /**
@@ -7132,7 +4167,7 @@ $root.cash = (function() {
 
         /**
          * Set coins.
-         * @member {Array.<x.ICoin>} coins
+         * @member {Array.<coin.ICoin>} coins
          * @memberof cash.Set
          * @instance
          */
@@ -7164,7 +4199,7 @@ $root.cash = (function() {
                 writer = $Writer.create();
             if (message.coins != null && message.coins.length)
                 for (var i = 0; i < message.coins.length; ++i)
-                    $root.x.Coin.encode(message.coins[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    $root.coin.Coin.encode(message.coins[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             return writer;
         };
 
@@ -7202,7 +4237,7 @@ $root.cash = (function() {
                 case 1:
                     if (!(message.coins && message.coins.length))
                         message.coins = [];
-                    message.coins.push($root.x.Coin.decode(reader, reader.uint32()));
+                    message.coins.push($root.coin.Coin.decode(reader, reader.uint32()));
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -7243,7 +4278,7 @@ $root.cash = (function() {
                 if (!Array.isArray(message.coins))
                     return "coins: array expected";
                 for (var i = 0; i < message.coins.length; ++i) {
-                    var error = $root.x.Coin.verify(message.coins[i]);
+                    var error = $root.coin.Coin.verify(message.coins[i]);
                     if (error)
                         return "coins." + error;
                 }
@@ -7270,7 +4305,7 @@ $root.cash = (function() {
                 for (var i = 0; i < object.coins.length; ++i) {
                     if (typeof object.coins[i] !== "object")
                         throw TypeError(".cash.Set.coins: object expected");
-                    message.coins[i] = $root.x.Coin.fromObject(object.coins[i]);
+                    message.coins[i] = $root.coin.Coin.fromObject(object.coins[i]);
                 }
             }
             return message;
@@ -7294,7 +4329,7 @@ $root.cash = (function() {
             if (message.coins && message.coins.length) {
                 object.coins = [];
                 for (var j = 0; j < message.coins.length; ++j)
-                    object.coins[j] = $root.x.Coin.toObject(message.coins[j], options);
+                    object.coins[j] = $root.coin.Coin.toObject(message.coins[j], options);
             }
             return object;
         };
@@ -7321,7 +4356,7 @@ $root.cash = (function() {
          * @interface ISendMsg
          * @property {Uint8Array|null} [src] SendMsg src
          * @property {Uint8Array|null} [dest] SendMsg dest
-         * @property {x.ICoin|null} [amount] SendMsg amount
+         * @property {coin.ICoin|null} [amount] SendMsg amount
          * @property {string|null} [memo] max length 128 character
          * @property {Uint8Array|null} [ref] max length 64 bytes
          */
@@ -7359,7 +4394,7 @@ $root.cash = (function() {
 
         /**
          * SendMsg amount.
-         * @member {x.ICoin|null|undefined} amount
+         * @member {coin.ICoin|null|undefined} amount
          * @memberof cash.SendMsg
          * @instance
          */
@@ -7410,7 +4445,7 @@ $root.cash = (function() {
             if (message.dest != null && message.hasOwnProperty("dest"))
                 writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.dest);
             if (message.amount != null && message.hasOwnProperty("amount"))
-                $root.x.Coin.encode(message.amount, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.coin.Coin.encode(message.amount, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message.memo != null && message.hasOwnProperty("memo"))
                 writer.uint32(/* id 4, wireType 2 =*/34).string(message.memo);
             if (message.ref != null && message.hasOwnProperty("ref"))
@@ -7456,7 +4491,7 @@ $root.cash = (function() {
                     message.dest = reader.bytes();
                     break;
                 case 3:
-                    message.amount = $root.x.Coin.decode(reader, reader.uint32());
+                    message.amount = $root.coin.Coin.decode(reader, reader.uint32());
                     break;
                 case 4:
                     message.memo = reader.string();
@@ -7506,7 +4541,7 @@ $root.cash = (function() {
                 if (!(message.dest && typeof message.dest.length === "number" || $util.isString(message.dest)))
                     return "dest: buffer expected";
             if (message.amount != null && message.hasOwnProperty("amount")) {
-                var error = $root.x.Coin.verify(message.amount);
+                var error = $root.coin.Coin.verify(message.amount);
                 if (error)
                     return "amount." + error;
             }
@@ -7544,7 +4579,7 @@ $root.cash = (function() {
             if (object.amount != null) {
                 if (typeof object.amount !== "object")
                     throw TypeError(".cash.SendMsg.amount: object expected");
-                message.amount = $root.x.Coin.fromObject(object.amount);
+                message.amount = $root.coin.Coin.fromObject(object.amount);
             }
             if (object.memo != null)
                 message.memo = String(object.memo);
@@ -7599,7 +4634,7 @@ $root.cash = (function() {
             if (message.dest != null && message.hasOwnProperty("dest"))
                 object.dest = options.bytes === String ? $util.base64.encode(message.dest, 0, message.dest.length) : options.bytes === Array ? Array.prototype.slice.call(message.dest) : message.dest;
             if (message.amount != null && message.hasOwnProperty("amount"))
-                object.amount = $root.x.Coin.toObject(message.amount, options);
+                object.amount = $root.coin.Coin.toObject(message.amount, options);
             if (message.memo != null && message.hasOwnProperty("memo"))
                 object.memo = message.memo;
             if (message.ref != null && message.hasOwnProperty("ref"))
@@ -7628,7 +4663,7 @@ $root.cash = (function() {
          * @memberof cash
          * @interface IFeeInfo
          * @property {Uint8Array|null} [payer] FeeInfo payer
-         * @property {x.ICoin|null} [fees] FeeInfo fees
+         * @property {coin.ICoin|null} [fees] FeeInfo fees
          */
 
         /**
@@ -7656,7 +4691,7 @@ $root.cash = (function() {
 
         /**
          * FeeInfo fees.
-         * @member {x.ICoin|null|undefined} fees
+         * @member {coin.ICoin|null|undefined} fees
          * @memberof cash.FeeInfo
          * @instance
          */
@@ -7689,7 +4724,7 @@ $root.cash = (function() {
             if (message.payer != null && message.hasOwnProperty("payer"))
                 writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.payer);
             if (message.fees != null && message.hasOwnProperty("fees"))
-                $root.x.Coin.encode(message.fees, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.coin.Coin.encode(message.fees, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             return writer;
         };
 
@@ -7728,7 +4763,7 @@ $root.cash = (function() {
                     message.payer = reader.bytes();
                     break;
                 case 2:
-                    message.fees = $root.x.Coin.decode(reader, reader.uint32());
+                    message.fees = $root.coin.Coin.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -7769,7 +4804,7 @@ $root.cash = (function() {
                 if (!(message.payer && typeof message.payer.length === "number" || $util.isString(message.payer)))
                     return "payer: buffer expected";
             if (message.fees != null && message.hasOwnProperty("fees")) {
-                var error = $root.x.Coin.verify(message.fees);
+                var error = $root.coin.Coin.verify(message.fees);
                 if (error)
                     return "fees." + error;
             }
@@ -7796,7 +4831,7 @@ $root.cash = (function() {
             if (object.fees != null) {
                 if (typeof object.fees !== "object")
                     throw TypeError(".cash.FeeInfo.fees: object expected");
-                message.fees = $root.x.Coin.fromObject(object.fees);
+                message.fees = $root.coin.Coin.fromObject(object.fees);
             }
             return message;
         };
@@ -7827,7 +4862,7 @@ $root.cash = (function() {
             if (message.payer != null && message.hasOwnProperty("payer"))
                 object.payer = options.bytes === String ? $util.base64.encode(message.payer, 0, message.payer.length) : options.bytes === Array ? Array.prototype.slice.call(message.payer) : message.payer;
             if (message.fees != null && message.hasOwnProperty("fees"))
-                object.fees = $root.x.Coin.toObject(message.fees, options);
+                object.fees = $root.coin.Coin.toObject(message.fees, options);
             return object;
         };
 
@@ -7848,300 +4883,6 @@ $root.cash = (function() {
     return cash;
 })();
 
-$root.x = (function() {
-
-    /**
-     * Namespace x.
-     * @exports x
-     * @namespace
-     */
-    var x = {};
-
-    x.Coin = (function() {
-
-        /**
-         * Properties of a Coin.
-         * @memberof x
-         * @interface ICoin
-         * @property {number|Long|null} [whole] Whole coins, -10^15 < integer < 10^15
-         * @property {number|Long|null} [fractional] If fractional != 0, must have same sign as integer
-         * @property {string|null} [ticker] all Coins of the same currency can be combined
-         * @property {string|null} [issuer] Issuer both match.
-         */
-
-        /**
-         * Constructs a new Coin.
-         * @memberof x
-         * @classdesc own type, possibly borrowing from this code.
-         * @implements ICoin
-         * @constructor
-         * @param {x.ICoin=} [properties] Properties to set
-         */
-        function Coin(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * Whole coins, -10^15 < integer < 10^15
-         * @member {number|Long} whole
-         * @memberof x.Coin
-         * @instance
-         */
-        Coin.prototype.whole = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * If fractional != 0, must have same sign as integer
-         * @member {number|Long} fractional
-         * @memberof x.Coin
-         * @instance
-         */
-        Coin.prototype.fractional = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * all Coins of the same currency can be combined
-         * @member {string} ticker
-         * @memberof x.Coin
-         * @instance
-         */
-        Coin.prototype.ticker = "";
-
-        /**
-         * Issuer both match.
-         * @member {string} issuer
-         * @memberof x.Coin
-         * @instance
-         */
-        Coin.prototype.issuer = "";
-
-        /**
-         * Creates a new Coin instance using the specified properties.
-         * @function create
-         * @memberof x.Coin
-         * @static
-         * @param {x.ICoin=} [properties] Properties to set
-         * @returns {x.Coin} Coin instance
-         */
-        Coin.create = function create(properties) {
-            return new Coin(properties);
-        };
-
-        /**
-         * Encodes the specified Coin message. Does not implicitly {@link x.Coin.verify|verify} messages.
-         * @function encode
-         * @memberof x.Coin
-         * @static
-         * @param {x.ICoin} message Coin message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        Coin.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.whole != null && message.hasOwnProperty("whole"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.whole);
-            if (message.fractional != null && message.hasOwnProperty("fractional"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.fractional);
-            if (message.ticker != null && message.hasOwnProperty("ticker"))
-                writer.uint32(/* id 3, wireType 2 =*/26).string(message.ticker);
-            if (message.issuer != null && message.hasOwnProperty("issuer"))
-                writer.uint32(/* id 4, wireType 2 =*/34).string(message.issuer);
-            return writer;
-        };
-
-        /**
-         * Encodes the specified Coin message, length delimited. Does not implicitly {@link x.Coin.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof x.Coin
-         * @static
-         * @param {x.ICoin} message Coin message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        Coin.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a Coin message from the specified reader or buffer.
-         * @function decode
-         * @memberof x.Coin
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {x.Coin} Coin
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        Coin.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.x.Coin();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.whole = reader.int64();
-                    break;
-                case 2:
-                    message.fractional = reader.int64();
-                    break;
-                case 3:
-                    message.ticker = reader.string();
-                    break;
-                case 4:
-                    message.issuer = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a Coin message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof x.Coin
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {x.Coin} Coin
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        Coin.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a Coin message.
-         * @function verify
-         * @memberof x.Coin
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        Coin.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.whole != null && message.hasOwnProperty("whole"))
-                if (!$util.isInteger(message.whole) && !(message.whole && $util.isInteger(message.whole.low) && $util.isInteger(message.whole.high)))
-                    return "whole: integer|Long expected";
-            if (message.fractional != null && message.hasOwnProperty("fractional"))
-                if (!$util.isInteger(message.fractional) && !(message.fractional && $util.isInteger(message.fractional.low) && $util.isInteger(message.fractional.high)))
-                    return "fractional: integer|Long expected";
-            if (message.ticker != null && message.hasOwnProperty("ticker"))
-                if (!$util.isString(message.ticker))
-                    return "ticker: string expected";
-            if (message.issuer != null && message.hasOwnProperty("issuer"))
-                if (!$util.isString(message.issuer))
-                    return "issuer: string expected";
-            return null;
-        };
-
-        /**
-         * Creates a Coin message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof x.Coin
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {x.Coin} Coin
-         */
-        Coin.fromObject = function fromObject(object) {
-            if (object instanceof $root.x.Coin)
-                return object;
-            var message = new $root.x.Coin();
-            if (object.whole != null)
-                if ($util.Long)
-                    (message.whole = $util.Long.fromValue(object.whole)).unsigned = false;
-                else if (typeof object.whole === "string")
-                    message.whole = parseInt(object.whole, 10);
-                else if (typeof object.whole === "number")
-                    message.whole = object.whole;
-                else if (typeof object.whole === "object")
-                    message.whole = new $util.LongBits(object.whole.low >>> 0, object.whole.high >>> 0).toNumber();
-            if (object.fractional != null)
-                if ($util.Long)
-                    (message.fractional = $util.Long.fromValue(object.fractional)).unsigned = false;
-                else if (typeof object.fractional === "string")
-                    message.fractional = parseInt(object.fractional, 10);
-                else if (typeof object.fractional === "number")
-                    message.fractional = object.fractional;
-                else if (typeof object.fractional === "object")
-                    message.fractional = new $util.LongBits(object.fractional.low >>> 0, object.fractional.high >>> 0).toNumber();
-            if (object.ticker != null)
-                message.ticker = String(object.ticker);
-            if (object.issuer != null)
-                message.issuer = String(object.issuer);
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a Coin message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof x.Coin
-         * @static
-         * @param {x.Coin} message Coin
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        Coin.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults) {
-                if ($util.Long) {
-                    var long = new $util.Long(0, 0, false);
-                    object.whole = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.whole = options.longs === String ? "0" : 0;
-                if ($util.Long) {
-                    var long = new $util.Long(0, 0, false);
-                    object.fractional = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.fractional = options.longs === String ? "0" : 0;
-                object.ticker = "";
-                object.issuer = "";
-            }
-            if (message.whole != null && message.hasOwnProperty("whole"))
-                if (typeof message.whole === "number")
-                    object.whole = options.longs === String ? String(message.whole) : message.whole;
-                else
-                    object.whole = options.longs === String ? $util.Long.prototype.toString.call(message.whole) : options.longs === Number ? new $util.LongBits(message.whole.low >>> 0, message.whole.high >>> 0).toNumber() : message.whole;
-            if (message.fractional != null && message.hasOwnProperty("fractional"))
-                if (typeof message.fractional === "number")
-                    object.fractional = options.longs === String ? String(message.fractional) : message.fractional;
-                else
-                    object.fractional = options.longs === String ? $util.Long.prototype.toString.call(message.fractional) : options.longs === Number ? new $util.LongBits(message.fractional.low >>> 0, message.fractional.high >>> 0).toNumber() : message.fractional;
-            if (message.ticker != null && message.hasOwnProperty("ticker"))
-                object.ticker = message.ticker;
-            if (message.issuer != null && message.hasOwnProperty("issuer"))
-                object.issuer = message.issuer;
-            return object;
-        };
-
-        /**
-         * Converts this Coin to JSON.
-         * @function toJSON
-         * @memberof x.Coin
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        Coin.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return Coin;
-    })();
-
-    return x;
-})();
-
 $root.currency = (function() {
 
     /**
@@ -8158,7 +4899,6 @@ $root.currency = (function() {
          * @memberof currency
          * @interface ITokenInfo
          * @property {string|null} [name] TokenInfo name
-         * @property {number|null} [sigFigs] TokenInfo sigFigs
          */
 
         /**
@@ -8183,14 +4923,6 @@ $root.currency = (function() {
          * @instance
          */
         TokenInfo.prototype.name = "";
-
-        /**
-         * TokenInfo sigFigs.
-         * @member {number} sigFigs
-         * @memberof currency.TokenInfo
-         * @instance
-         */
-        TokenInfo.prototype.sigFigs = 0;
 
         /**
          * Creates a new TokenInfo instance using the specified properties.
@@ -8218,8 +4950,6 @@ $root.currency = (function() {
                 writer = $Writer.create();
             if (message.name != null && message.hasOwnProperty("name"))
                 writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
-            if (message.sigFigs != null && message.hasOwnProperty("sigFigs"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.sigFigs);
             return writer;
         };
 
@@ -8256,9 +4986,6 @@ $root.currency = (function() {
                 switch (tag >>> 3) {
                 case 1:
                     message.name = reader.string();
-                    break;
-                case 2:
-                    message.sigFigs = reader.int32();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -8298,9 +5025,6 @@ $root.currency = (function() {
             if (message.name != null && message.hasOwnProperty("name"))
                 if (!$util.isString(message.name))
                     return "name: string expected";
-            if (message.sigFigs != null && message.hasOwnProperty("sigFigs"))
-                if (!$util.isInteger(message.sigFigs))
-                    return "sigFigs: integer expected";
             return null;
         };
 
@@ -8318,8 +5042,6 @@ $root.currency = (function() {
             var message = new $root.currency.TokenInfo();
             if (object.name != null)
                 message.name = String(object.name);
-            if (object.sigFigs != null)
-                message.sigFigs = object.sigFigs | 0;
             return message;
         };
 
@@ -8336,14 +5058,10 @@ $root.currency = (function() {
             if (!options)
                 options = {};
             var object = {};
-            if (options.defaults) {
+            if (options.defaults)
                 object.name = "";
-                object.sigFigs = 0;
-            }
             if (message.name != null && message.hasOwnProperty("name"))
                 object.name = message.name;
-            if (message.sigFigs != null && message.hasOwnProperty("sigFigs"))
-                object.sigFigs = message.sigFigs;
             return object;
         };
 
@@ -8369,7 +5087,6 @@ $root.currency = (function() {
          * @interface INewTokenInfoMsg
          * @property {string|null} [ticker] NewTokenInfoMsg ticker
          * @property {string|null} [name] NewTokenInfoMsg name
-         * @property {number|null} [sigFigs] NewTokenInfoMsg sigFigs
          */
 
         /**
@@ -8404,14 +5121,6 @@ $root.currency = (function() {
         NewTokenInfoMsg.prototype.name = "";
 
         /**
-         * NewTokenInfoMsg sigFigs.
-         * @member {number} sigFigs
-         * @memberof currency.NewTokenInfoMsg
-         * @instance
-         */
-        NewTokenInfoMsg.prototype.sigFigs = 0;
-
-        /**
          * Creates a new NewTokenInfoMsg instance using the specified properties.
          * @function create
          * @memberof currency.NewTokenInfoMsg
@@ -8439,8 +5148,6 @@ $root.currency = (function() {
                 writer.uint32(/* id 1, wireType 2 =*/10).string(message.ticker);
             if (message.name != null && message.hasOwnProperty("name"))
                 writer.uint32(/* id 2, wireType 2 =*/18).string(message.name);
-            if (message.sigFigs != null && message.hasOwnProperty("sigFigs"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.sigFigs);
             return writer;
         };
 
@@ -8480,9 +5187,6 @@ $root.currency = (function() {
                     break;
                 case 2:
                     message.name = reader.string();
-                    break;
-                case 3:
-                    message.sigFigs = reader.int32();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -8525,9 +5229,6 @@ $root.currency = (function() {
             if (message.name != null && message.hasOwnProperty("name"))
                 if (!$util.isString(message.name))
                     return "name: string expected";
-            if (message.sigFigs != null && message.hasOwnProperty("sigFigs"))
-                if (!$util.isInteger(message.sigFigs))
-                    return "sigFigs: integer expected";
             return null;
         };
 
@@ -8547,8 +5248,6 @@ $root.currency = (function() {
                 message.ticker = String(object.ticker);
             if (object.name != null)
                 message.name = String(object.name);
-            if (object.sigFigs != null)
-                message.sigFigs = object.sigFigs | 0;
             return message;
         };
 
@@ -8568,14 +5267,11 @@ $root.currency = (function() {
             if (options.defaults) {
                 object.ticker = "";
                 object.name = "";
-                object.sigFigs = 0;
             }
             if (message.ticker != null && message.hasOwnProperty("ticker"))
                 object.ticker = message.ticker;
             if (message.name != null && message.hasOwnProperty("name"))
                 object.name = message.name;
-            if (message.sigFigs != null && message.hasOwnProperty("sigFigs"))
-                object.sigFigs = message.sigFigs;
             return object;
         };
 
@@ -8596,6 +5292,1153 @@ $root.currency = (function() {
     return currency;
 })();
 
+$root.distribution = (function() {
+
+    /**
+     * Namespace distribution.
+     * @exports distribution
+     * @namespace
+     */
+    var distribution = {};
+
+    distribution.Revenue = (function() {
+
+        /**
+         * Properties of a Revenue.
+         * @memberof distribution
+         * @interface IRevenue
+         * @property {Uint8Array|null} [admin] While not enforced it is best to use a multisig contract here.
+         * @property {Array.<distribution.IRecipient>|null} [recipients] distributed to. Must be at least one.
+         */
+
+        /**
+         * Constructs a new Revenue.
+         * @memberof distribution
+         * @classdesc the owners.
+         * @implements IRevenue
+         * @constructor
+         * @param {distribution.IRevenue=} [properties] Properties to set
+         */
+        function Revenue(properties) {
+            this.recipients = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * While not enforced it is best to use a multisig contract here.
+         * @member {Uint8Array} admin
+         * @memberof distribution.Revenue
+         * @instance
+         */
+        Revenue.prototype.admin = $util.newBuffer([]);
+
+        /**
+         * distributed to. Must be at least one.
+         * @member {Array.<distribution.IRecipient>} recipients
+         * @memberof distribution.Revenue
+         * @instance
+         */
+        Revenue.prototype.recipients = $util.emptyArray;
+
+        /**
+         * Creates a new Revenue instance using the specified properties.
+         * @function create
+         * @memberof distribution.Revenue
+         * @static
+         * @param {distribution.IRevenue=} [properties] Properties to set
+         * @returns {distribution.Revenue} Revenue instance
+         */
+        Revenue.create = function create(properties) {
+            return new Revenue(properties);
+        };
+
+        /**
+         * Encodes the specified Revenue message. Does not implicitly {@link distribution.Revenue.verify|verify} messages.
+         * @function encode
+         * @memberof distribution.Revenue
+         * @static
+         * @param {distribution.IRevenue} message Revenue message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Revenue.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.admin);
+            if (message.recipients != null && message.recipients.length)
+                for (var i = 0; i < message.recipients.length; ++i)
+                    $root.distribution.Recipient.encode(message.recipients[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Revenue message, length delimited. Does not implicitly {@link distribution.Revenue.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof distribution.Revenue
+         * @static
+         * @param {distribution.IRevenue} message Revenue message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Revenue.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Revenue message from the specified reader or buffer.
+         * @function decode
+         * @memberof distribution.Revenue
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {distribution.Revenue} Revenue
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Revenue.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.distribution.Revenue();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.admin = reader.bytes();
+                    break;
+                case 2:
+                    if (!(message.recipients && message.recipients.length))
+                        message.recipients = [];
+                    message.recipients.push($root.distribution.Recipient.decode(reader, reader.uint32()));
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Revenue message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof distribution.Revenue
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {distribution.Revenue} Revenue
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Revenue.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Revenue message.
+         * @function verify
+         * @memberof distribution.Revenue
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Revenue.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                if (!(message.admin && typeof message.admin.length === "number" || $util.isString(message.admin)))
+                    return "admin: buffer expected";
+            if (message.recipients != null && message.hasOwnProperty("recipients")) {
+                if (!Array.isArray(message.recipients))
+                    return "recipients: array expected";
+                for (var i = 0; i < message.recipients.length; ++i) {
+                    var error = $root.distribution.Recipient.verify(message.recipients[i]);
+                    if (error)
+                        return "recipients." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates a Revenue message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof distribution.Revenue
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {distribution.Revenue} Revenue
+         */
+        Revenue.fromObject = function fromObject(object) {
+            if (object instanceof $root.distribution.Revenue)
+                return object;
+            var message = new $root.distribution.Revenue();
+            if (object.admin != null)
+                if (typeof object.admin === "string")
+                    $util.base64.decode(object.admin, message.admin = $util.newBuffer($util.base64.length(object.admin)), 0);
+                else if (object.admin.length)
+                    message.admin = object.admin;
+            if (object.recipients) {
+                if (!Array.isArray(object.recipients))
+                    throw TypeError(".distribution.Revenue.recipients: array expected");
+                message.recipients = [];
+                for (var i = 0; i < object.recipients.length; ++i) {
+                    if (typeof object.recipients[i] !== "object")
+                        throw TypeError(".distribution.Revenue.recipients: object expected");
+                    message.recipients[i] = $root.distribution.Recipient.fromObject(object.recipients[i]);
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Revenue message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof distribution.Revenue
+         * @static
+         * @param {distribution.Revenue} message Revenue
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Revenue.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.recipients = [];
+            if (options.defaults)
+                if (options.bytes === String)
+                    object.admin = "";
+                else {
+                    object.admin = [];
+                    if (options.bytes !== Array)
+                        object.admin = $util.newBuffer(object.admin);
+                }
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                object.admin = options.bytes === String ? $util.base64.encode(message.admin, 0, message.admin.length) : options.bytes === Array ? Array.prototype.slice.call(message.admin) : message.admin;
+            if (message.recipients && message.recipients.length) {
+                object.recipients = [];
+                for (var j = 0; j < message.recipients.length; ++j)
+                    object.recipients[j] = $root.distribution.Recipient.toObject(message.recipients[j], options);
+            }
+            return object;
+        };
+
+        /**
+         * Converts this Revenue to JSON.
+         * @function toJSON
+         * @memberof distribution.Revenue
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Revenue.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Revenue;
+    })();
+
+    distribution.Recipient = (function() {
+
+        /**
+         * Properties of a Recipient.
+         * @memberof distribution
+         * @interface IRecipient
+         * @property {Uint8Array|null} [address] of the validators.
+         * @property {number|null} [weight] second one.
+         */
+
+        /**
+         * Constructs a new Recipient.
+         * @memberof distribution
+         * @classdesc Represents a Recipient.
+         * @implements IRecipient
+         * @constructor
+         * @param {distribution.IRecipient=} [properties] Properties to set
+         */
+        function Recipient(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * of the validators.
+         * @member {Uint8Array} address
+         * @memberof distribution.Recipient
+         * @instance
+         */
+        Recipient.prototype.address = $util.newBuffer([]);
+
+        /**
+         * second one.
+         * @member {number} weight
+         * @memberof distribution.Recipient
+         * @instance
+         */
+        Recipient.prototype.weight = 0;
+
+        /**
+         * Creates a new Recipient instance using the specified properties.
+         * @function create
+         * @memberof distribution.Recipient
+         * @static
+         * @param {distribution.IRecipient=} [properties] Properties to set
+         * @returns {distribution.Recipient} Recipient instance
+         */
+        Recipient.create = function create(properties) {
+            return new Recipient(properties);
+        };
+
+        /**
+         * Encodes the specified Recipient message. Does not implicitly {@link distribution.Recipient.verify|verify} messages.
+         * @function encode
+         * @memberof distribution.Recipient
+         * @static
+         * @param {distribution.IRecipient} message Recipient message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Recipient.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.address != null && message.hasOwnProperty("address"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.address);
+            if (message.weight != null && message.hasOwnProperty("weight"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.weight);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Recipient message, length delimited. Does not implicitly {@link distribution.Recipient.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof distribution.Recipient
+         * @static
+         * @param {distribution.IRecipient} message Recipient message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Recipient.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Recipient message from the specified reader or buffer.
+         * @function decode
+         * @memberof distribution.Recipient
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {distribution.Recipient} Recipient
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Recipient.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.distribution.Recipient();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.address = reader.bytes();
+                    break;
+                case 2:
+                    message.weight = reader.int32();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Recipient message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof distribution.Recipient
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {distribution.Recipient} Recipient
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Recipient.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Recipient message.
+         * @function verify
+         * @memberof distribution.Recipient
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Recipient.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.address != null && message.hasOwnProperty("address"))
+                if (!(message.address && typeof message.address.length === "number" || $util.isString(message.address)))
+                    return "address: buffer expected";
+            if (message.weight != null && message.hasOwnProperty("weight"))
+                if (!$util.isInteger(message.weight))
+                    return "weight: integer expected";
+            return null;
+        };
+
+        /**
+         * Creates a Recipient message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof distribution.Recipient
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {distribution.Recipient} Recipient
+         */
+        Recipient.fromObject = function fromObject(object) {
+            if (object instanceof $root.distribution.Recipient)
+                return object;
+            var message = new $root.distribution.Recipient();
+            if (object.address != null)
+                if (typeof object.address === "string")
+                    $util.base64.decode(object.address, message.address = $util.newBuffer($util.base64.length(object.address)), 0);
+                else if (object.address.length)
+                    message.address = object.address;
+            if (object.weight != null)
+                message.weight = object.weight | 0;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Recipient message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof distribution.Recipient
+         * @static
+         * @param {distribution.Recipient} message Recipient
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Recipient.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                if (options.bytes === String)
+                    object.address = "";
+                else {
+                    object.address = [];
+                    if (options.bytes !== Array)
+                        object.address = $util.newBuffer(object.address);
+                }
+                object.weight = 0;
+            }
+            if (message.address != null && message.hasOwnProperty("address"))
+                object.address = options.bytes === String ? $util.base64.encode(message.address, 0, message.address.length) : options.bytes === Array ? Array.prototype.slice.call(message.address) : message.address;
+            if (message.weight != null && message.hasOwnProperty("weight"))
+                object.weight = message.weight;
+            return object;
+        };
+
+        /**
+         * Converts this Recipient to JSON.
+         * @function toJSON
+         * @memberof distribution.Recipient
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Recipient.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Recipient;
+    })();
+
+    distribution.NewRevenueMsg = (function() {
+
+        /**
+         * Properties of a NewRevenueMsg.
+         * @memberof distribution
+         * @interface INewRevenueMsg
+         * @property {Uint8Array|null} [admin] While not enforced it is best to use a multisig contract here.
+         * @property {Array.<distribution.IRecipient>|null} [recipients] distributed to. Must be at least one.
+         */
+
+        /**
+         * Constructs a new NewRevenueMsg.
+         * @memberof distribution
+         * @classdesc NewRevenueMsg is issuing the creation of a new revenue stream instance.
+         * @implements INewRevenueMsg
+         * @constructor
+         * @param {distribution.INewRevenueMsg=} [properties] Properties to set
+         */
+        function NewRevenueMsg(properties) {
+            this.recipients = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * While not enforced it is best to use a multisig contract here.
+         * @member {Uint8Array} admin
+         * @memberof distribution.NewRevenueMsg
+         * @instance
+         */
+        NewRevenueMsg.prototype.admin = $util.newBuffer([]);
+
+        /**
+         * distributed to. Must be at least one.
+         * @member {Array.<distribution.IRecipient>} recipients
+         * @memberof distribution.NewRevenueMsg
+         * @instance
+         */
+        NewRevenueMsg.prototype.recipients = $util.emptyArray;
+
+        /**
+         * Creates a new NewRevenueMsg instance using the specified properties.
+         * @function create
+         * @memberof distribution.NewRevenueMsg
+         * @static
+         * @param {distribution.INewRevenueMsg=} [properties] Properties to set
+         * @returns {distribution.NewRevenueMsg} NewRevenueMsg instance
+         */
+        NewRevenueMsg.create = function create(properties) {
+            return new NewRevenueMsg(properties);
+        };
+
+        /**
+         * Encodes the specified NewRevenueMsg message. Does not implicitly {@link distribution.NewRevenueMsg.verify|verify} messages.
+         * @function encode
+         * @memberof distribution.NewRevenueMsg
+         * @static
+         * @param {distribution.INewRevenueMsg} message NewRevenueMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        NewRevenueMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.admin);
+            if (message.recipients != null && message.recipients.length)
+                for (var i = 0; i < message.recipients.length; ++i)
+                    $root.distribution.Recipient.encode(message.recipients[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified NewRevenueMsg message, length delimited. Does not implicitly {@link distribution.NewRevenueMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof distribution.NewRevenueMsg
+         * @static
+         * @param {distribution.INewRevenueMsg} message NewRevenueMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        NewRevenueMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a NewRevenueMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof distribution.NewRevenueMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {distribution.NewRevenueMsg} NewRevenueMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        NewRevenueMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.distribution.NewRevenueMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.admin = reader.bytes();
+                    break;
+                case 2:
+                    if (!(message.recipients && message.recipients.length))
+                        message.recipients = [];
+                    message.recipients.push($root.distribution.Recipient.decode(reader, reader.uint32()));
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a NewRevenueMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof distribution.NewRevenueMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {distribution.NewRevenueMsg} NewRevenueMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        NewRevenueMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a NewRevenueMsg message.
+         * @function verify
+         * @memberof distribution.NewRevenueMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        NewRevenueMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                if (!(message.admin && typeof message.admin.length === "number" || $util.isString(message.admin)))
+                    return "admin: buffer expected";
+            if (message.recipients != null && message.hasOwnProperty("recipients")) {
+                if (!Array.isArray(message.recipients))
+                    return "recipients: array expected";
+                for (var i = 0; i < message.recipients.length; ++i) {
+                    var error = $root.distribution.Recipient.verify(message.recipients[i]);
+                    if (error)
+                        return "recipients." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates a NewRevenueMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof distribution.NewRevenueMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {distribution.NewRevenueMsg} NewRevenueMsg
+         */
+        NewRevenueMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.distribution.NewRevenueMsg)
+                return object;
+            var message = new $root.distribution.NewRevenueMsg();
+            if (object.admin != null)
+                if (typeof object.admin === "string")
+                    $util.base64.decode(object.admin, message.admin = $util.newBuffer($util.base64.length(object.admin)), 0);
+                else if (object.admin.length)
+                    message.admin = object.admin;
+            if (object.recipients) {
+                if (!Array.isArray(object.recipients))
+                    throw TypeError(".distribution.NewRevenueMsg.recipients: array expected");
+                message.recipients = [];
+                for (var i = 0; i < object.recipients.length; ++i) {
+                    if (typeof object.recipients[i] !== "object")
+                        throw TypeError(".distribution.NewRevenueMsg.recipients: object expected");
+                    message.recipients[i] = $root.distribution.Recipient.fromObject(object.recipients[i]);
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a NewRevenueMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof distribution.NewRevenueMsg
+         * @static
+         * @param {distribution.NewRevenueMsg} message NewRevenueMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        NewRevenueMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.recipients = [];
+            if (options.defaults)
+                if (options.bytes === String)
+                    object.admin = "";
+                else {
+                    object.admin = [];
+                    if (options.bytes !== Array)
+                        object.admin = $util.newBuffer(object.admin);
+                }
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                object.admin = options.bytes === String ? $util.base64.encode(message.admin, 0, message.admin.length) : options.bytes === Array ? Array.prototype.slice.call(message.admin) : message.admin;
+            if (message.recipients && message.recipients.length) {
+                object.recipients = [];
+                for (var j = 0; j < message.recipients.length; ++j)
+                    object.recipients[j] = $root.distribution.Recipient.toObject(message.recipients[j], options);
+            }
+            return object;
+        };
+
+        /**
+         * Converts this NewRevenueMsg to JSON.
+         * @function toJSON
+         * @memberof distribution.NewRevenueMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        NewRevenueMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return NewRevenueMsg;
+    })();
+
+    distribution.DistributeMsg = (function() {
+
+        /**
+         * Properties of a DistributeMsg.
+         * @memberof distribution
+         * @interface IDistributeMsg
+         * @property {Uint8Array|null} [revenueId] should be distributed between recipients.
+         */
+
+        /**
+         * Constructs a new DistributeMsg.
+         * @memberof distribution
+         * @classdesc signed using admin key.
+         * @implements IDistributeMsg
+         * @constructor
+         * @param {distribution.IDistributeMsg=} [properties] Properties to set
+         */
+        function DistributeMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * should be distributed between recipients.
+         * @member {Uint8Array} revenueId
+         * @memberof distribution.DistributeMsg
+         * @instance
+         */
+        DistributeMsg.prototype.revenueId = $util.newBuffer([]);
+
+        /**
+         * Creates a new DistributeMsg instance using the specified properties.
+         * @function create
+         * @memberof distribution.DistributeMsg
+         * @static
+         * @param {distribution.IDistributeMsg=} [properties] Properties to set
+         * @returns {distribution.DistributeMsg} DistributeMsg instance
+         */
+        DistributeMsg.create = function create(properties) {
+            return new DistributeMsg(properties);
+        };
+
+        /**
+         * Encodes the specified DistributeMsg message. Does not implicitly {@link distribution.DistributeMsg.verify|verify} messages.
+         * @function encode
+         * @memberof distribution.DistributeMsg
+         * @static
+         * @param {distribution.IDistributeMsg} message DistributeMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DistributeMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.revenueId != null && message.hasOwnProperty("revenueId"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.revenueId);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified DistributeMsg message, length delimited. Does not implicitly {@link distribution.DistributeMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof distribution.DistributeMsg
+         * @static
+         * @param {distribution.IDistributeMsg} message DistributeMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DistributeMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a DistributeMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof distribution.DistributeMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {distribution.DistributeMsg} DistributeMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DistributeMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.distribution.DistributeMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.revenueId = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a DistributeMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof distribution.DistributeMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {distribution.DistributeMsg} DistributeMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DistributeMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a DistributeMsg message.
+         * @function verify
+         * @memberof distribution.DistributeMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        DistributeMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.revenueId != null && message.hasOwnProperty("revenueId"))
+                if (!(message.revenueId && typeof message.revenueId.length === "number" || $util.isString(message.revenueId)))
+                    return "revenueId: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates a DistributeMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof distribution.DistributeMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {distribution.DistributeMsg} DistributeMsg
+         */
+        DistributeMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.distribution.DistributeMsg)
+                return object;
+            var message = new $root.distribution.DistributeMsg();
+            if (object.revenueId != null)
+                if (typeof object.revenueId === "string")
+                    $util.base64.decode(object.revenueId, message.revenueId = $util.newBuffer($util.base64.length(object.revenueId)), 0);
+                else if (object.revenueId.length)
+                    message.revenueId = object.revenueId;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a DistributeMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof distribution.DistributeMsg
+         * @static
+         * @param {distribution.DistributeMsg} message DistributeMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        DistributeMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults)
+                if (options.bytes === String)
+                    object.revenueId = "";
+                else {
+                    object.revenueId = [];
+                    if (options.bytes !== Array)
+                        object.revenueId = $util.newBuffer(object.revenueId);
+                }
+            if (message.revenueId != null && message.hasOwnProperty("revenueId"))
+                object.revenueId = options.bytes === String ? $util.base64.encode(message.revenueId, 0, message.revenueId.length) : options.bytes === Array ? Array.prototype.slice.call(message.revenueId) : message.revenueId;
+            return object;
+        };
+
+        /**
+         * Converts this DistributeMsg to JSON.
+         * @function toJSON
+         * @memberof distribution.DistributeMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        DistributeMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return DistributeMsg;
+    })();
+
+    distribution.ResetRevenueMsg = (function() {
+
+        /**
+         * Properties of a ResetRevenueMsg.
+         * @memberof distribution
+         * @interface IResetRevenueMsg
+         * @property {Uint8Array|null} [revenueId] Revenue ID reference an ID of a revenue instance that is updated.
+         * @property {Array.<distribution.IRecipient>|null} [recipients] distributed to. Must be at least one.
+         */
+
+        /**
+         * Constructs a new ResetRevenueMsg.
+         * @memberof distribution
+         * @classdesc collected revenue amount is equal to zero the change is applied.
+         * @implements IResetRevenueMsg
+         * @constructor
+         * @param {distribution.IResetRevenueMsg=} [properties] Properties to set
+         */
+        function ResetRevenueMsg(properties) {
+            this.recipients = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Revenue ID reference an ID of a revenue instance that is updated.
+         * @member {Uint8Array} revenueId
+         * @memberof distribution.ResetRevenueMsg
+         * @instance
+         */
+        ResetRevenueMsg.prototype.revenueId = $util.newBuffer([]);
+
+        /**
+         * distributed to. Must be at least one.
+         * @member {Array.<distribution.IRecipient>} recipients
+         * @memberof distribution.ResetRevenueMsg
+         * @instance
+         */
+        ResetRevenueMsg.prototype.recipients = $util.emptyArray;
+
+        /**
+         * Creates a new ResetRevenueMsg instance using the specified properties.
+         * @function create
+         * @memberof distribution.ResetRevenueMsg
+         * @static
+         * @param {distribution.IResetRevenueMsg=} [properties] Properties to set
+         * @returns {distribution.ResetRevenueMsg} ResetRevenueMsg instance
+         */
+        ResetRevenueMsg.create = function create(properties) {
+            return new ResetRevenueMsg(properties);
+        };
+
+        /**
+         * Encodes the specified ResetRevenueMsg message. Does not implicitly {@link distribution.ResetRevenueMsg.verify|verify} messages.
+         * @function encode
+         * @memberof distribution.ResetRevenueMsg
+         * @static
+         * @param {distribution.IResetRevenueMsg} message ResetRevenueMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ResetRevenueMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.revenueId != null && message.hasOwnProperty("revenueId"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.revenueId);
+            if (message.recipients != null && message.recipients.length)
+                for (var i = 0; i < message.recipients.length; ++i)
+                    $root.distribution.Recipient.encode(message.recipients[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ResetRevenueMsg message, length delimited. Does not implicitly {@link distribution.ResetRevenueMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof distribution.ResetRevenueMsg
+         * @static
+         * @param {distribution.IResetRevenueMsg} message ResetRevenueMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ResetRevenueMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ResetRevenueMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof distribution.ResetRevenueMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {distribution.ResetRevenueMsg} ResetRevenueMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ResetRevenueMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.distribution.ResetRevenueMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.revenueId = reader.bytes();
+                    break;
+                case 2:
+                    if (!(message.recipients && message.recipients.length))
+                        message.recipients = [];
+                    message.recipients.push($root.distribution.Recipient.decode(reader, reader.uint32()));
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a ResetRevenueMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof distribution.ResetRevenueMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {distribution.ResetRevenueMsg} ResetRevenueMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ResetRevenueMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ResetRevenueMsg message.
+         * @function verify
+         * @memberof distribution.ResetRevenueMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ResetRevenueMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.revenueId != null && message.hasOwnProperty("revenueId"))
+                if (!(message.revenueId && typeof message.revenueId.length === "number" || $util.isString(message.revenueId)))
+                    return "revenueId: buffer expected";
+            if (message.recipients != null && message.hasOwnProperty("recipients")) {
+                if (!Array.isArray(message.recipients))
+                    return "recipients: array expected";
+                for (var i = 0; i < message.recipients.length; ++i) {
+                    var error = $root.distribution.Recipient.verify(message.recipients[i]);
+                    if (error)
+                        return "recipients." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates a ResetRevenueMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof distribution.ResetRevenueMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {distribution.ResetRevenueMsg} ResetRevenueMsg
+         */
+        ResetRevenueMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.distribution.ResetRevenueMsg)
+                return object;
+            var message = new $root.distribution.ResetRevenueMsg();
+            if (object.revenueId != null)
+                if (typeof object.revenueId === "string")
+                    $util.base64.decode(object.revenueId, message.revenueId = $util.newBuffer($util.base64.length(object.revenueId)), 0);
+                else if (object.revenueId.length)
+                    message.revenueId = object.revenueId;
+            if (object.recipients) {
+                if (!Array.isArray(object.recipients))
+                    throw TypeError(".distribution.ResetRevenueMsg.recipients: array expected");
+                message.recipients = [];
+                for (var i = 0; i < object.recipients.length; ++i) {
+                    if (typeof object.recipients[i] !== "object")
+                        throw TypeError(".distribution.ResetRevenueMsg.recipients: object expected");
+                    message.recipients[i] = $root.distribution.Recipient.fromObject(object.recipients[i]);
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ResetRevenueMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof distribution.ResetRevenueMsg
+         * @static
+         * @param {distribution.ResetRevenueMsg} message ResetRevenueMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ResetRevenueMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.recipients = [];
+            if (options.defaults)
+                if (options.bytes === String)
+                    object.revenueId = "";
+                else {
+                    object.revenueId = [];
+                    if (options.bytes !== Array)
+                        object.revenueId = $util.newBuffer(object.revenueId);
+                }
+            if (message.revenueId != null && message.hasOwnProperty("revenueId"))
+                object.revenueId = options.bytes === String ? $util.base64.encode(message.revenueId, 0, message.revenueId.length) : options.bytes === Array ? Array.prototype.slice.call(message.revenueId) : message.revenueId;
+            if (message.recipients && message.recipients.length) {
+                object.recipients = [];
+                for (var j = 0; j < message.recipients.length; ++j)
+                    object.recipients[j] = $root.distribution.Recipient.toObject(message.recipients[j], options);
+            }
+            return object;
+        };
+
+        /**
+         * Converts this ResetRevenueMsg to JSON.
+         * @function toJSON
+         * @memberof distribution.ResetRevenueMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ResetRevenueMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ResetRevenueMsg;
+    })();
+
+    return distribution;
+})();
+
 $root.escrow = (function() {
 
     /**
@@ -8614,7 +6457,6 @@ $root.escrow = (function() {
          * @property {Uint8Array|null} [sender] Sender, Arbiter, Recipient are all weave.Permission
          * @property {Uint8Array|null} [arbiter] Escrow arbiter
          * @property {Uint8Array|null} [recipient] Escrow recipient
-         * @property {Array.<x.ICoin>|null} [amount] amount may contain multiple token types
          * @property {number|Long|null} [timeout] timeout stored here is absolute block height
          * @property {string|null} [memo] max length 128 character
          */
@@ -8628,7 +6470,6 @@ $root.escrow = (function() {
          * @param {escrow.IEscrow=} [properties] Properties to set
          */
         function Escrow(properties) {
-            this.amount = [];
             if (properties)
                 for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -8658,14 +6499,6 @@ $root.escrow = (function() {
          * @instance
          */
         Escrow.prototype.recipient = $util.newBuffer([]);
-
-        /**
-         * amount may contain multiple token types
-         * @member {Array.<x.ICoin>} amount
-         * @memberof escrow.Escrow
-         * @instance
-         */
-        Escrow.prototype.amount = $util.emptyArray;
 
         /**
          * timeout stored here is absolute block height
@@ -8713,9 +6546,6 @@ $root.escrow = (function() {
                 writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.arbiter);
             if (message.recipient != null && message.hasOwnProperty("recipient"))
                 writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.recipient);
-            if (message.amount != null && message.amount.length)
-                for (var i = 0; i < message.amount.length; ++i)
-                    $root.x.Coin.encode(message.amount[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             if (message.timeout != null && message.hasOwnProperty("timeout"))
                 writer.uint32(/* id 5, wireType 0 =*/40).int64(message.timeout);
             if (message.memo != null && message.hasOwnProperty("memo"))
@@ -8762,11 +6592,6 @@ $root.escrow = (function() {
                     break;
                 case 3:
                     message.recipient = reader.bytes();
-                    break;
-                case 4:
-                    if (!(message.amount && message.amount.length))
-                        message.amount = [];
-                    message.amount.push($root.x.Coin.decode(reader, reader.uint32()));
                     break;
                 case 5:
                     message.timeout = reader.int64();
@@ -8818,15 +6643,6 @@ $root.escrow = (function() {
             if (message.recipient != null && message.hasOwnProperty("recipient"))
                 if (!(message.recipient && typeof message.recipient.length === "number" || $util.isString(message.recipient)))
                     return "recipient: buffer expected";
-            if (message.amount != null && message.hasOwnProperty("amount")) {
-                if (!Array.isArray(message.amount))
-                    return "amount: array expected";
-                for (var i = 0; i < message.amount.length; ++i) {
-                    var error = $root.x.Coin.verify(message.amount[i]);
-                    if (error)
-                        return "amount." + error;
-                }
-            }
             if (message.timeout != null && message.hasOwnProperty("timeout"))
                 if (!$util.isInteger(message.timeout) && !(message.timeout && $util.isInteger(message.timeout.low) && $util.isInteger(message.timeout.high)))
                     return "timeout: integer|Long expected";
@@ -8863,16 +6679,6 @@ $root.escrow = (function() {
                     $util.base64.decode(object.recipient, message.recipient = $util.newBuffer($util.base64.length(object.recipient)), 0);
                 else if (object.recipient.length)
                     message.recipient = object.recipient;
-            if (object.amount) {
-                if (!Array.isArray(object.amount))
-                    throw TypeError(".escrow.Escrow.amount: array expected");
-                message.amount = [];
-                for (var i = 0; i < object.amount.length; ++i) {
-                    if (typeof object.amount[i] !== "object")
-                        throw TypeError(".escrow.Escrow.amount: object expected");
-                    message.amount[i] = $root.x.Coin.fromObject(object.amount[i]);
-                }
-            }
             if (object.timeout != null)
                 if ($util.Long)
                     (message.timeout = $util.Long.fromValue(object.timeout)).unsigned = false;
@@ -8900,8 +6706,6 @@ $root.escrow = (function() {
             if (!options)
                 options = {};
             var object = {};
-            if (options.arrays || options.defaults)
-                object.amount = [];
             if (options.defaults) {
                 if (options.bytes === String)
                     object.sender = "";
@@ -8937,11 +6741,6 @@ $root.escrow = (function() {
                 object.arbiter = options.bytes === String ? $util.base64.encode(message.arbiter, 0, message.arbiter.length) : options.bytes === Array ? Array.prototype.slice.call(message.arbiter) : message.arbiter;
             if (message.recipient != null && message.hasOwnProperty("recipient"))
                 object.recipient = options.bytes === String ? $util.base64.encode(message.recipient, 0, message.recipient.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipient) : message.recipient;
-            if (message.amount && message.amount.length) {
-                object.amount = [];
-                for (var j = 0; j < message.amount.length; ++j)
-                    object.amount[j] = $root.x.Coin.toObject(message.amount[j], options);
-            }
             if (message.timeout != null && message.hasOwnProperty("timeout"))
                 if (typeof message.timeout === "number")
                     object.timeout = options.longs === String ? String(message.timeout) : message.timeout;
@@ -8975,7 +6774,7 @@ $root.escrow = (function() {
          * @property {Uint8Array|null} [src] Sender, Arbiter, Recipient are all weave.Permission
          * @property {Uint8Array|null} [arbiter] CreateEscrowMsg arbiter
          * @property {Uint8Array|null} [recipient] CreateEscrowMsg recipient
-         * @property {Array.<x.ICoin>|null} [amount] amount may contain multiple token types
+         * @property {Array.<coin.ICoin>|null} [amount] amount may contain multiple token types
          * @property {number|Long|null} [timeout] if unreleased before timeout, will return to sender
          * @property {string|null} [memo] max length 128 character
          */
@@ -9022,7 +6821,7 @@ $root.escrow = (function() {
 
         /**
          * amount may contain multiple token types
-         * @member {Array.<x.ICoin>} amount
+         * @member {Array.<coin.ICoin>} amount
          * @memberof escrow.CreateEscrowMsg
          * @instance
          */
@@ -9076,7 +6875,7 @@ $root.escrow = (function() {
                 writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.recipient);
             if (message.amount != null && message.amount.length)
                 for (var i = 0; i < message.amount.length; ++i)
-                    $root.x.Coin.encode(message.amount[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                    $root.coin.Coin.encode(message.amount[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             if (message.timeout != null && message.hasOwnProperty("timeout"))
                 writer.uint32(/* id 5, wireType 0 =*/40).int64(message.timeout);
             if (message.memo != null && message.hasOwnProperty("memo"))
@@ -9127,7 +6926,7 @@ $root.escrow = (function() {
                 case 4:
                     if (!(message.amount && message.amount.length))
                         message.amount = [];
-                    message.amount.push($root.x.Coin.decode(reader, reader.uint32()));
+                    message.amount.push($root.coin.Coin.decode(reader, reader.uint32()));
                     break;
                 case 5:
                     message.timeout = reader.int64();
@@ -9183,7 +6982,7 @@ $root.escrow = (function() {
                 if (!Array.isArray(message.amount))
                     return "amount: array expected";
                 for (var i = 0; i < message.amount.length; ++i) {
-                    var error = $root.x.Coin.verify(message.amount[i]);
+                    var error = $root.coin.Coin.verify(message.amount[i]);
                     if (error)
                         return "amount." + error;
                 }
@@ -9231,7 +7030,7 @@ $root.escrow = (function() {
                 for (var i = 0; i < object.amount.length; ++i) {
                     if (typeof object.amount[i] !== "object")
                         throw TypeError(".escrow.CreateEscrowMsg.amount: object expected");
-                    message.amount[i] = $root.x.Coin.fromObject(object.amount[i]);
+                    message.amount[i] = $root.coin.Coin.fromObject(object.amount[i]);
                 }
             }
             if (object.timeout != null)
@@ -9301,7 +7100,7 @@ $root.escrow = (function() {
             if (message.amount && message.amount.length) {
                 object.amount = [];
                 for (var j = 0; j < message.amount.length; ++j)
-                    object.amount[j] = $root.x.Coin.toObject(message.amount[j], options);
+                    object.amount[j] = $root.coin.Coin.toObject(message.amount[j], options);
             }
             if (message.timeout != null && message.hasOwnProperty("timeout"))
                 if (typeof message.timeout === "number")
@@ -9334,7 +7133,7 @@ $root.escrow = (function() {
          * @memberof escrow
          * @interface IReleaseEscrowMsg
          * @property {Uint8Array|null} [escrowId] ReleaseEscrowMsg escrowId
-         * @property {Array.<x.ICoin>|null} [amount] ReleaseEscrowMsg amount
+         * @property {Array.<coin.ICoin>|null} [amount] ReleaseEscrowMsg amount
          */
 
         /**
@@ -9363,7 +7162,7 @@ $root.escrow = (function() {
 
         /**
          * ReleaseEscrowMsg amount.
-         * @member {Array.<x.ICoin>} amount
+         * @member {Array.<coin.ICoin>} amount
          * @memberof escrow.ReleaseEscrowMsg
          * @instance
          */
@@ -9397,7 +7196,7 @@ $root.escrow = (function() {
                 writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.escrowId);
             if (message.amount != null && message.amount.length)
                 for (var i = 0; i < message.amount.length; ++i)
-                    $root.x.Coin.encode(message.amount[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    $root.coin.Coin.encode(message.amount[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             return writer;
         };
 
@@ -9438,7 +7237,7 @@ $root.escrow = (function() {
                 case 2:
                     if (!(message.amount && message.amount.length))
                         message.amount = [];
-                    message.amount.push($root.x.Coin.decode(reader, reader.uint32()));
+                    message.amount.push($root.coin.Coin.decode(reader, reader.uint32()));
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -9482,7 +7281,7 @@ $root.escrow = (function() {
                 if (!Array.isArray(message.amount))
                     return "amount: array expected";
                 for (var i = 0; i < message.amount.length; ++i) {
-                    var error = $root.x.Coin.verify(message.amount[i]);
+                    var error = $root.coin.Coin.verify(message.amount[i]);
                     if (error)
                         return "amount." + error;
                 }
@@ -9514,7 +7313,7 @@ $root.escrow = (function() {
                 for (var i = 0; i < object.amount.length; ++i) {
                     if (typeof object.amount[i] !== "object")
                         throw TypeError(".escrow.ReleaseEscrowMsg.amount: object expected");
-                    message.amount[i] = $root.x.Coin.fromObject(object.amount[i]);
+                    message.amount[i] = $root.coin.Coin.fromObject(object.amount[i]);
                 }
             }
             return message;
@@ -9548,7 +7347,7 @@ $root.escrow = (function() {
             if (message.amount && message.amount.length) {
                 object.amount = [];
                 for (var j = 0; j < message.amount.length; ++j)
-                    object.amount[j] = $root.x.Coin.toObject(message.amount[j], options);
+                    object.amount[j] = $root.coin.Coin.toObject(message.amount[j], options);
             }
             return object;
         };
@@ -10054,6 +7853,233 @@ $root.escrow = (function() {
     })();
 
     return escrow;
+})();
+
+$root.msgfee = (function() {
+
+    /**
+     * Namespace msgfee.
+     * @exports msgfee
+     * @namespace
+     */
+    var msgfee = {};
+
+    msgfee.MsgFee = (function() {
+
+        /**
+         * Properties of a MsgFee.
+         * @memberof msgfee
+         * @interface IMsgFee
+         * @property {string|null} [msgPath] MsgFee msgPath
+         * @property {coin.ICoin|null} [fee] MsgFee fee
+         */
+
+        /**
+         * Constructs a new MsgFee.
+         * @memberof msgfee
+         * @classdesc the message to be processed.
+         * @implements IMsgFee
+         * @constructor
+         * @param {msgfee.IMsgFee=} [properties] Properties to set
+         */
+        function MsgFee(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * MsgFee msgPath.
+         * @member {string} msgPath
+         * @memberof msgfee.MsgFee
+         * @instance
+         */
+        MsgFee.prototype.msgPath = "";
+
+        /**
+         * MsgFee fee.
+         * @member {coin.ICoin|null|undefined} fee
+         * @memberof msgfee.MsgFee
+         * @instance
+         */
+        MsgFee.prototype.fee = null;
+
+        /**
+         * Creates a new MsgFee instance using the specified properties.
+         * @function create
+         * @memberof msgfee.MsgFee
+         * @static
+         * @param {msgfee.IMsgFee=} [properties] Properties to set
+         * @returns {msgfee.MsgFee} MsgFee instance
+         */
+        MsgFee.create = function create(properties) {
+            return new MsgFee(properties);
+        };
+
+        /**
+         * Encodes the specified MsgFee message. Does not implicitly {@link msgfee.MsgFee.verify|verify} messages.
+         * @function encode
+         * @memberof msgfee.MsgFee
+         * @static
+         * @param {msgfee.IMsgFee} message MsgFee message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        MsgFee.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.msgPath != null && message.hasOwnProperty("msgPath"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.msgPath);
+            if (message.fee != null && message.hasOwnProperty("fee"))
+                $root.coin.Coin.encode(message.fee, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified MsgFee message, length delimited. Does not implicitly {@link msgfee.MsgFee.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof msgfee.MsgFee
+         * @static
+         * @param {msgfee.IMsgFee} message MsgFee message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        MsgFee.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a MsgFee message from the specified reader or buffer.
+         * @function decode
+         * @memberof msgfee.MsgFee
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {msgfee.MsgFee} MsgFee
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        MsgFee.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.msgfee.MsgFee();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.msgPath = reader.string();
+                    break;
+                case 2:
+                    message.fee = $root.coin.Coin.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a MsgFee message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof msgfee.MsgFee
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {msgfee.MsgFee} MsgFee
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        MsgFee.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a MsgFee message.
+         * @function verify
+         * @memberof msgfee.MsgFee
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        MsgFee.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.msgPath != null && message.hasOwnProperty("msgPath"))
+                if (!$util.isString(message.msgPath))
+                    return "msgPath: string expected";
+            if (message.fee != null && message.hasOwnProperty("fee")) {
+                var error = $root.coin.Coin.verify(message.fee);
+                if (error)
+                    return "fee." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates a MsgFee message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof msgfee.MsgFee
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {msgfee.MsgFee} MsgFee
+         */
+        MsgFee.fromObject = function fromObject(object) {
+            if (object instanceof $root.msgfee.MsgFee)
+                return object;
+            var message = new $root.msgfee.MsgFee();
+            if (object.msgPath != null)
+                message.msgPath = String(object.msgPath);
+            if (object.fee != null) {
+                if (typeof object.fee !== "object")
+                    throw TypeError(".msgfee.MsgFee.fee: object expected");
+                message.fee = $root.coin.Coin.fromObject(object.fee);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a MsgFee message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof msgfee.MsgFee
+         * @static
+         * @param {msgfee.MsgFee} message MsgFee
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        MsgFee.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.msgPath = "";
+                object.fee = null;
+            }
+            if (message.msgPath != null && message.hasOwnProperty("msgPath"))
+                object.msgPath = message.msgPath;
+            if (message.fee != null && message.hasOwnProperty("fee"))
+                object.fee = $root.coin.Coin.toObject(message.fee, options);
+            return object;
+        };
+
+        /**
+         * Converts this MsgFee to JSON.
+         * @function toJSON
+         * @memberof msgfee.MsgFee
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        MsgFee.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return MsgFee;
+    })();
+
+    return msgfee;
 })();
 
 $root.multisig = (function() {
@@ -10954,7 +8980,7 @@ $root.namecoin = (function() {
          * Properties of a Wallet.
          * @memberof namecoin
          * @interface IWallet
-         * @property {Array.<x.ICoin>|null} [coins] Wallet coins
+         * @property {Array.<coin.ICoin>|null} [coins] Wallet coins
          * @property {string|null} [name] Wallet name
          */
 
@@ -10976,7 +9002,7 @@ $root.namecoin = (function() {
 
         /**
          * Wallet coins.
-         * @member {Array.<x.ICoin>} coins
+         * @member {Array.<coin.ICoin>} coins
          * @memberof namecoin.Wallet
          * @instance
          */
@@ -11016,7 +9042,7 @@ $root.namecoin = (function() {
                 writer = $Writer.create();
             if (message.coins != null && message.coins.length)
                 for (var i = 0; i < message.coins.length; ++i)
-                    $root.x.Coin.encode(message.coins[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    $root.coin.Coin.encode(message.coins[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.name != null && message.hasOwnProperty("name"))
                 writer.uint32(/* id 2, wireType 2 =*/18).string(message.name);
             return writer;
@@ -11056,7 +9082,7 @@ $root.namecoin = (function() {
                 case 1:
                     if (!(message.coins && message.coins.length))
                         message.coins = [];
-                    message.coins.push($root.x.Coin.decode(reader, reader.uint32()));
+                    message.coins.push($root.coin.Coin.decode(reader, reader.uint32()));
                     break;
                 case 2:
                     message.name = reader.string();
@@ -11100,7 +9126,7 @@ $root.namecoin = (function() {
                 if (!Array.isArray(message.coins))
                     return "coins: array expected";
                 for (var i = 0; i < message.coins.length; ++i) {
-                    var error = $root.x.Coin.verify(message.coins[i]);
+                    var error = $root.coin.Coin.verify(message.coins[i]);
                     if (error)
                         return "coins." + error;
                 }
@@ -11130,7 +9156,7 @@ $root.namecoin = (function() {
                 for (var i = 0; i < object.coins.length; ++i) {
                     if (typeof object.coins[i] !== "object")
                         throw TypeError(".namecoin.Wallet.coins: object expected");
-                    message.coins[i] = $root.x.Coin.fromObject(object.coins[i]);
+                    message.coins[i] = $root.coin.Coin.fromObject(object.coins[i]);
                 }
             }
             if (object.name != null)
@@ -11158,7 +9184,7 @@ $root.namecoin = (function() {
             if (message.coins && message.coins.length) {
                 object.coins = [];
                 for (var j = 0; j < message.coins.length; ++j)
-                    object.coins[j] = $root.x.Coin.toObject(message.coins[j], options);
+                    object.coins[j] = $root.coin.Coin.toObject(message.coins[j], options);
             }
             if (message.name != null && message.hasOwnProperty("name"))
                 object.name = message.name;
@@ -13431,10 +11457,10 @@ $root.paychan = (function() {
          * @property {Uint8Array|null} [src] Sender is the source that the founds are allocated from (weave.Address).
          * @property {crypto.IPublicKey|null} [senderPubkey] to the recipient. Signature prevents from altering transfer message.
          * @property {Uint8Array|null} [recipient] (weave.Address).
-         * @property {x.ICoin|null} [total] payment channel.
+         * @property {coin.ICoin|null} [total] payment channel.
          * @property {number|Long|null} [timeout] sender.
          * @property {string|null} [memo] Max length 128 character.
-         * @property {x.ICoin|null} [transferred] (total) value. Transferred must never exceed total value.
+         * @property {coin.ICoin|null} [transferred] (total) value. Transferred must never exceed total value.
          */
 
         /**
@@ -13478,7 +11504,7 @@ $root.paychan = (function() {
 
         /**
          * payment channel.
-         * @member {x.ICoin|null|undefined} total
+         * @member {coin.ICoin|null|undefined} total
          * @memberof paychan.PaymentChannel
          * @instance
          */
@@ -13502,7 +11528,7 @@ $root.paychan = (function() {
 
         /**
          * (total) value. Transferred must never exceed total value.
-         * @member {x.ICoin|null|undefined} transferred
+         * @member {coin.ICoin|null|undefined} transferred
          * @memberof paychan.PaymentChannel
          * @instance
          */
@@ -13539,13 +11565,13 @@ $root.paychan = (function() {
             if (message.recipient != null && message.hasOwnProperty("recipient"))
                 writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.recipient);
             if (message.total != null && message.hasOwnProperty("total"))
-                $root.x.Coin.encode(message.total, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.coin.Coin.encode(message.total, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             if (message.timeout != null && message.hasOwnProperty("timeout"))
                 writer.uint32(/* id 5, wireType 0 =*/40).int64(message.timeout);
             if (message.memo != null && message.hasOwnProperty("memo"))
                 writer.uint32(/* id 6, wireType 2 =*/50).string(message.memo);
             if (message.transferred != null && message.hasOwnProperty("transferred"))
-                $root.x.Coin.encode(message.transferred, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                $root.coin.Coin.encode(message.transferred, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
             return writer;
         };
 
@@ -13590,7 +11616,7 @@ $root.paychan = (function() {
                     message.recipient = reader.bytes();
                     break;
                 case 4:
-                    message.total = $root.x.Coin.decode(reader, reader.uint32());
+                    message.total = $root.coin.Coin.decode(reader, reader.uint32());
                     break;
                 case 5:
                     message.timeout = reader.int64();
@@ -13599,7 +11625,7 @@ $root.paychan = (function() {
                     message.memo = reader.string();
                     break;
                 case 7:
-                    message.transferred = $root.x.Coin.decode(reader, reader.uint32());
+                    message.transferred = $root.coin.Coin.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -13648,7 +11674,7 @@ $root.paychan = (function() {
                 if (!(message.recipient && typeof message.recipient.length === "number" || $util.isString(message.recipient)))
                     return "recipient: buffer expected";
             if (message.total != null && message.hasOwnProperty("total")) {
-                var error = $root.x.Coin.verify(message.total);
+                var error = $root.coin.Coin.verify(message.total);
                 if (error)
                     return "total." + error;
             }
@@ -13659,7 +11685,7 @@ $root.paychan = (function() {
                 if (!$util.isString(message.memo))
                     return "memo: string expected";
             if (message.transferred != null && message.hasOwnProperty("transferred")) {
-                var error = $root.x.Coin.verify(message.transferred);
+                var error = $root.coin.Coin.verify(message.transferred);
                 if (error)
                     return "transferred." + error;
             }
@@ -13696,7 +11722,7 @@ $root.paychan = (function() {
             if (object.total != null) {
                 if (typeof object.total !== "object")
                     throw TypeError(".paychan.PaymentChannel.total: object expected");
-                message.total = $root.x.Coin.fromObject(object.total);
+                message.total = $root.coin.Coin.fromObject(object.total);
             }
             if (object.timeout != null)
                 if ($util.Long)
@@ -13712,7 +11738,7 @@ $root.paychan = (function() {
             if (object.transferred != null) {
                 if (typeof object.transferred !== "object")
                     throw TypeError(".paychan.PaymentChannel.transferred: object expected");
-                message.transferred = $root.x.Coin.fromObject(object.transferred);
+                message.transferred = $root.coin.Coin.fromObject(object.transferred);
             }
             return message;
         };
@@ -13762,7 +11788,7 @@ $root.paychan = (function() {
             if (message.recipient != null && message.hasOwnProperty("recipient"))
                 object.recipient = options.bytes === String ? $util.base64.encode(message.recipient, 0, message.recipient.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipient) : message.recipient;
             if (message.total != null && message.hasOwnProperty("total"))
-                object.total = $root.x.Coin.toObject(message.total, options);
+                object.total = $root.coin.Coin.toObject(message.total, options);
             if (message.timeout != null && message.hasOwnProperty("timeout"))
                 if (typeof message.timeout === "number")
                     object.timeout = options.longs === String ? String(message.timeout) : message.timeout;
@@ -13771,7 +11797,7 @@ $root.paychan = (function() {
             if (message.memo != null && message.hasOwnProperty("memo"))
                 object.memo = message.memo;
             if (message.transferred != null && message.hasOwnProperty("transferred"))
-                object.transferred = $root.x.Coin.toObject(message.transferred, options);
+                object.transferred = $root.coin.Coin.toObject(message.transferred, options);
             return object;
         };
 
@@ -13798,7 +11824,7 @@ $root.paychan = (function() {
          * @property {Uint8Array|null} [src] Sender address (weave.Address).
          * @property {crypto.IPublicKey|null} [senderPubkey] Sender public key is for validating transfer message signature.
          * @property {Uint8Array|null} [recipient] Recipient address  (weave.Address).
-         * @property {x.ICoin|null} [total] Maximum amount that can be transferred via this channel.
+         * @property {coin.ICoin|null} [total] Maximum amount that can be transferred via this channel.
          * @property {number|Long|null} [timeout] anyone.
          * @property {string|null} [memo] Max length 128 character.
          */
@@ -13844,7 +11870,7 @@ $root.paychan = (function() {
 
         /**
          * Maximum amount that can be transferred via this channel.
-         * @member {x.ICoin|null|undefined} total
+         * @member {coin.ICoin|null|undefined} total
          * @memberof paychan.CreatePaymentChannelMsg
          * @instance
          */
@@ -13897,7 +11923,7 @@ $root.paychan = (function() {
             if (message.recipient != null && message.hasOwnProperty("recipient"))
                 writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.recipient);
             if (message.total != null && message.hasOwnProperty("total"))
-                $root.x.Coin.encode(message.total, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.coin.Coin.encode(message.total, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             if (message.timeout != null && message.hasOwnProperty("timeout"))
                 writer.uint32(/* id 5, wireType 0 =*/40).int64(message.timeout);
             if (message.memo != null && message.hasOwnProperty("memo"))
@@ -13946,7 +11972,7 @@ $root.paychan = (function() {
                     message.recipient = reader.bytes();
                     break;
                 case 4:
-                    message.total = $root.x.Coin.decode(reader, reader.uint32());
+                    message.total = $root.coin.Coin.decode(reader, reader.uint32());
                     break;
                 case 5:
                     message.timeout = reader.int64();
@@ -14001,7 +12027,7 @@ $root.paychan = (function() {
                 if (!(message.recipient && typeof message.recipient.length === "number" || $util.isString(message.recipient)))
                     return "recipient: buffer expected";
             if (message.total != null && message.hasOwnProperty("total")) {
-                var error = $root.x.Coin.verify(message.total);
+                var error = $root.coin.Coin.verify(message.total);
                 if (error)
                     return "total." + error;
             }
@@ -14044,7 +12070,7 @@ $root.paychan = (function() {
             if (object.total != null) {
                 if (typeof object.total !== "object")
                     throw TypeError(".paychan.CreatePaymentChannelMsg.total: object expected");
-                message.total = $root.x.Coin.fromObject(object.total);
+                message.total = $root.coin.Coin.fromObject(object.total);
             }
             if (object.timeout != null)
                 if ($util.Long)
@@ -14104,7 +12130,7 @@ $root.paychan = (function() {
             if (message.recipient != null && message.hasOwnProperty("recipient"))
                 object.recipient = options.bytes === String ? $util.base64.encode(message.recipient, 0, message.recipient.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipient) : message.recipient;
             if (message.total != null && message.hasOwnProperty("total"))
-                object.total = $root.x.Coin.toObject(message.total, options);
+                object.total = $root.coin.Coin.toObject(message.total, options);
             if (message.timeout != null && message.hasOwnProperty("timeout"))
                 if (typeof message.timeout === "number")
                     object.timeout = options.longs === String ? String(message.timeout) : message.timeout;
@@ -14137,7 +12163,7 @@ $root.paychan = (function() {
          * @interface IPayment
          * @property {string|null} [chainId] Payment chainId
          * @property {Uint8Array|null} [channelId] Payment channelId
-         * @property {x.ICoin|null} [amount] Payment amount
+         * @property {coin.ICoin|null} [amount] Payment amount
          * @property {string|null} [memo] Max length 128 character.
          */
 
@@ -14174,7 +12200,7 @@ $root.paychan = (function() {
 
         /**
          * Payment amount.
-         * @member {x.ICoin|null|undefined} amount
+         * @member {coin.ICoin|null|undefined} amount
          * @memberof paychan.Payment
          * @instance
          */
@@ -14217,7 +12243,7 @@ $root.paychan = (function() {
             if (message.channelId != null && message.hasOwnProperty("channelId"))
                 writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.channelId);
             if (message.amount != null && message.hasOwnProperty("amount"))
-                $root.x.Coin.encode(message.amount, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.coin.Coin.encode(message.amount, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message.memo != null && message.hasOwnProperty("memo"))
                 writer.uint32(/* id 4, wireType 2 =*/34).string(message.memo);
             return writer;
@@ -14261,7 +12287,7 @@ $root.paychan = (function() {
                     message.channelId = reader.bytes();
                     break;
                 case 3:
-                    message.amount = $root.x.Coin.decode(reader, reader.uint32());
+                    message.amount = $root.coin.Coin.decode(reader, reader.uint32());
                     break;
                 case 4:
                     message.memo = reader.string();
@@ -14308,7 +12334,7 @@ $root.paychan = (function() {
                 if (!(message.channelId && typeof message.channelId.length === "number" || $util.isString(message.channelId)))
                     return "channelId: buffer expected";
             if (message.amount != null && message.hasOwnProperty("amount")) {
-                var error = $root.x.Coin.verify(message.amount);
+                var error = $root.coin.Coin.verify(message.amount);
                 if (error)
                     return "amount." + error;
             }
@@ -14340,7 +12366,7 @@ $root.paychan = (function() {
             if (object.amount != null) {
                 if (typeof object.amount !== "object")
                     throw TypeError(".paychan.Payment.amount: object expected");
-                message.amount = $root.x.Coin.fromObject(object.amount);
+                message.amount = $root.coin.Coin.fromObject(object.amount);
             }
             if (object.memo != null)
                 message.memo = String(object.memo);
@@ -14377,7 +12403,7 @@ $root.paychan = (function() {
             if (message.channelId != null && message.hasOwnProperty("channelId"))
                 object.channelId = options.bytes === String ? $util.base64.encode(message.channelId, 0, message.channelId.length) : options.bytes === Array ? Array.prototype.slice.call(message.channelId) : message.channelId;
             if (message.amount != null && message.hasOwnProperty("amount"))
-                object.amount = $root.x.Coin.toObject(message.amount, options);
+                object.amount = $root.coin.Coin.toObject(message.amount, options);
             if (message.memo != null && message.hasOwnProperty("memo"))
                 object.memo = message.memo;
             return object;
