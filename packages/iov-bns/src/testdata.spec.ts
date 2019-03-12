@@ -41,22 +41,22 @@ const { fromHex } = Encoding;
 // ./scripts/jsonbytes testvectors/pub_key.json .Pub.Ed25519
 export const pubJson: PublicKeyBundle = {
   algo: Algorithm.Ed25519,
-  data: fromHex("d9046fd4355b366f33619be7ceb27728441ff11b347976b1378c5d7f8fe4d91e") as PublicKeyBytes,
+  data: fromHex("5e90f47efe5b6931dcfad9663863dedd0f86df4ccb7365cef975ca19bae1fa1b") as PublicKeyBytes,
 };
 // ./scripts/tohex testvectors/pub_key.bin
-export const pubBin = fromHex("0a20d9046fd4355b366f33619be7ceb27728441ff11b347976b1378c5d7f8fe4d91e");
+export const pubBin = fromHex("0a205e90f47efe5b6931dcfad9663863dedd0f86df4ccb7365cef975ca19bae1fa1b");
 
 // this private key matches the above public key
 // ./scripts/jsonbytes testvectors/priv_key.json .Priv.Ed25519
 export const privJson: PrivateKeyBundle = {
   algo: Algorithm.Ed25519,
   data: fromHex(
-    "bc1c072063d5099639190cefbd25284d56f722c1b2eacfc1dff0edeee558c637d9046fd4355b366f33619be7ceb27728441ff11b347976b1378c5d7f8fe4d91e",
+    "3895cbda9baa79caf25592de3d0fb313274c5bfe1d1496bf282c05504bd4ebc95e90f47efe5b6931dcfad9663863dedd0f86df4ccb7365cef975ca19bae1fa1b",
   ) as PrivateKeyBytes,
 };
 // ./scripts/tohex testvectors/priv_key.bin
 export const privBin = fromHex(
-  "0a40bc1c072063d5099639190cefbd25284d56f722c1b2eacfc1dff0edeee558c637d9046fd4355b366f33619be7ceb27728441ff11b347976b1378c5d7f8fe4d91e",
+  "0a403895cbda9baa79caf25592de3d0fb313274c5bfe1d1496bf282c05504bd4ebc95e90f47efe5b6931dcfad9663863dedd0f86df4ccb7365cef975ca19bae1fa1b",
 );
 
 // address is calculated by bov for the public key
@@ -64,7 +64,7 @@ export const privBin = fromHex(
 // address generated using https://github.com/nym-zone/bech32
 // ADDR=$(./scripts/jsonbytes testvectors/unsigned_tx.json .Sum.SendMsg.src)
 // bech32 -e -h tiov $ADDR
-export const address = "tiov1mkp7tg2qvyp6m3uttw44ju9dhjzk6mdgzcz6yf" as Address;
+export const address = "A8D527FD625D437114F01187210D2261F0A9606A" as Address;
 
 export const coinJson: Amount = {
   quantity: "878001567000",
