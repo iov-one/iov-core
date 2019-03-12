@@ -1,5 +1,4 @@
 import BN = require("bn.js");
-
 import {
   Address,
   Amount,
@@ -24,58 +23,17 @@ import {
   AddAddressToUsernameTx,
   asInt53,
   asNumber,
-  BnsBlockchainNft,
   BnsUsernameNft,
   ChainAddressPair,
   decodeFullSig,
   ensure,
   Keyed,
-  RegisterBlockchainTx,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
 } from "./types";
 import { addressPrefix, encodeBnsAddress, hashFromIdentifier, isHashIdentifier } from "./util";
 
 const { fromUtf8 } = Encoding;
-
-export function decodeBlockchainNft(
-  nft: codecImpl.blockchain.IBlockchainToken,
-  registryChainId: ChainId,
-): BnsBlockchainNft {
-  const base = ensure(nft.base, "base");
-  const id = ensure(base.id, "base.id");
-  const rawOwnerAddress = ensure(base.owner, "base.owner");
-
-  const details = ensure(nft.details, "details");
-
-  const chain = ensure(details.chain, "details.chain");
-  const chainId = ensure(chain.chainId, "details.chain.chainId");
-  const name = ensure(chain.name, "details.chain.name");
-  const production = ensure(chain.production, "details.chain.production");
-  const enabled = ensure(chain.enabled, "details.chain.enabled");
-  const networkId = chain.networkId || undefined;
-  const mainTickerId = chain.mainTickerId || undefined;
-
-  const iov = ensure(details.iov, "details.iov");
-  const codec = ensure(iov.codec, "details.iov.codec");
-  const codecConfig = ensure(iov.codecConfig, "details.iov.codecConfig");
-
-  return {
-    id: fromUtf8(id),
-    owner: encodeBnsAddress(addressPrefix(registryChainId), rawOwnerAddress),
-    chain: {
-      chainId: chainId as ChainId,
-      name: name,
-      production: production,
-      enabled: enabled,
-      networkId: networkId,
-      mainTickerId:
-        mainTickerId && mainTickerId.length > 0 ? (fromUtf8(mainTickerId) as TokenTicker) : undefined,
-    },
-    codecName: codec,
-    codecConfig: codecConfig,
-  };
-}
 
 export function decodeUsernameNft(
   nft: codecImpl.username.IUsernameToken,
@@ -110,7 +68,7 @@ export function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): BcpTic
   };
 }
 
-export function decodeAmount(coin: codecImpl.x.ICoin): Amount {
+export function decodeAmount(coin: codecImpl.coin.ICoin): Amount {
   const fractionalDigits = 9; // fixed for all tickers in BNS
 
   const wholeNumber = asNumber(coin.whole);
@@ -156,8 +114,6 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): Unsi
     return parseSwapClaimTx(base, tx.releaseEscrowMsg, tx);
   } else if (tx.returnEscrowMsg) {
     return parseSwapTimeoutTx(base, tx.returnEscrowMsg);
-  } else if (tx.issueBlockchainNftMsg) {
-    return parseRegisterBlockchainTx(base, tx.issueBlockchainNftMsg);
   } else if (tx.issueUsernameNftMsg) {
     return parseRegisterUsernameTx(base, tx.issueUsernameNftMsg);
   } else if (tx.removeUsernameAddressMsg) {
@@ -247,40 +203,6 @@ function parseBaseTx(tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId
     return { ...base, fee: { tokens: decodeAmount(tx.fees.fees) } };
   }
   return base;
-}
-
-function parseRegisterBlockchainTx(
-  base: UnsignedTransaction,
-  msg: codecImpl.blockchain.IIssueTokenMsg,
-): RegisterBlockchainTx {
-  const details = ensure(msg.details, "details");
-
-  const chain = ensure(details.chain, "details.chain");
-  const chainId = ensure(chain.chainId, "details.chain.chainID");
-  const name = ensure(chain.name, "details.chain.name");
-  const production = ensure(chain.production, "details.chain.production");
-  const enabled = ensure(chain.enabled, "details.chain.enabled");
-  const networkId = chain.networkId || undefined;
-  const mainTickerId = chain.mainTickerId || undefined;
-
-  const iov = ensure(details.iov, "details.iov");
-  const codec = ensure(iov.codec, "details.iov.codec");
-  const codecConfig = ensure(iov.codecConfig, "details.iov.codecConfig");
-  return {
-    ...base,
-    kind: "bns/register_blockchain",
-    chain: {
-      chainId: chainId as ChainId,
-      name: name,
-      production: production,
-      enabled: enabled,
-      networkId: networkId,
-      mainTickerId:
-        mainTickerId && mainTickerId.length > 0 ? (fromUtf8(mainTickerId) as TokenTicker) : undefined,
-    },
-    codecName: codec,
-    codecConfig: codecConfig,
-  };
 }
 
 function parseRegisterUsernameTx(

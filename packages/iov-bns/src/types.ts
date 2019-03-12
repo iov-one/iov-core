@@ -18,7 +18,6 @@ import {
   SwapClaimTransaction,
   SwapOfferTransaction,
   SwapTimeoutTransaction,
-  TokenTicker,
   UnsignedTransaction,
 } from "@iov/bcp";
 
@@ -30,41 +29,6 @@ export interface ChainAddressPair {
   readonly chainId: ChainId;
   readonly address: Address;
 }
-
-// blockchain NFT
-
-export interface BnsBlockchainNft {
-  readonly id: string;
-  readonly owner: Address;
-  /**
-   * The registered chain information
-   *
-   * Fields as defined in https://github.com/iov-one/bns-spec/blob/master/docs/data/ObjectDefinitions.rst#chain
-   */
-  readonly chain: {
-    readonly chainId: ChainId;
-    readonly name: string;
-    readonly enabled: boolean;
-    readonly production: boolean;
-    readonly networkId: string | undefined;
-    readonly mainTickerId: TokenTicker | undefined;
-  };
-  readonly codecName: string;
-  readonly codecConfig: string;
-}
-
-export interface BnsBlockchainsByChainIdQuery {
-  readonly chainId: ChainId;
-}
-
-export type BnsBlockchainsQuery = BnsBlockchainsByChainIdQuery;
-
-export function isBnsBlockchainsByChainIdQuery(
-  query: BnsBlockchainsQuery,
-): query is BnsBlockchainsByChainIdQuery {
-  return typeof query.chainId !== "undefined";
-}
-
 // username NFT
 
 export interface BnsUsernameNft {
@@ -205,26 +169,6 @@ export interface AddAddressToUsernameTx extends UnsignedTransaction {
   readonly payload: ChainAddressPair;
 }
 
-export interface RegisterBlockchainTx extends UnsignedTransaction {
-  readonly kind: "bns/register_blockchain";
-  /**
-   * The chain to be registered
-   *
-   * Fields as defined in https://github.com/iov-one/bns-spec/blob/master/docs/data/ObjectDefinitions.rst#chain
-   */
-  readonly chain: {
-    readonly chainId: ChainId;
-    readonly name: string;
-    readonly enabled: boolean;
-    readonly production: boolean;
-
-    readonly networkId?: string;
-    readonly mainTickerId?: TokenTicker;
-  };
-  readonly codecName: string;
-  readonly codecConfig: string;
-}
-
 export interface RegisterUsernameTx extends UnsignedTransaction {
   readonly kind: "bns/register_username";
   readonly username: string;
@@ -246,7 +190,6 @@ export type BnsTx =
   | SwapTimeoutTransaction
   // BNS
   | AddAddressToUsernameTx
-  | RegisterBlockchainTx
   | RegisterUsernameTx
   | RemoveAddressFromUsernameTx;
 
@@ -267,12 +210,6 @@ export function isAddAddressToUsernameTx(
   transaction: UnsignedTransaction,
 ): transaction is AddAddressToUsernameTx {
   return isBnsTx(transaction) && transaction.kind === "bns/add_address_to_username";
-}
-
-export function isRegisterBlockchainTx(
-  transaction: UnsignedTransaction,
-): transaction is RegisterBlockchainTx {
-  return isBnsTx(transaction) && transaction.kind === "bns/register_blockchain";
 }
 
 export function isRegisterUsernameTx(transaction: UnsignedTransaction): transaction is RegisterUsernameTx {

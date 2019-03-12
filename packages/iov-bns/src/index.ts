@@ -6,9 +6,6 @@ export {
   // helpers
   ChainAddressPair,
   // NFTs
-  BnsBlockchainNft,
-  BnsBlockchainsByChainIdQuery,
-  BnsBlockchainsQuery,
   BnsUsernamesByChainAndAddressQuery,
   BnsUsernamesByOwnerAddressQuery,
   BnsUsernamesByUsernameQuery,
@@ -17,7 +14,6 @@ export {
   // transactions
   BnsTx,
   AddAddressToUsernameTx,
-  RegisterBlockchainTx,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
 } from "./types";

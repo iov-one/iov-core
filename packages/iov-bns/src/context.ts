@@ -53,7 +53,7 @@ export class Context {
     };
   }
 
-  public coin(coin: codecImpl.x.ICoin): BcpCoin {
+  public coin(coin: codecImpl.coin.ICoin): BcpCoin {
     const amount = decodeAmount(coin);
     return this.amountToCoin(amount);
   }
@@ -72,7 +72,7 @@ export class Context {
         sender: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.sender)),
         recipient: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.recipient)),
         hash: hash,
-        amounts: ensure(swap.amount).map(coin => decodeAmount(coin)),
+        amounts: [], // TODO: escrow does not contain any amounts anymore. Query the account instead like with distribution;
         timeout: asNumber(swap.timeout),
         memo: swap.memo,
       },

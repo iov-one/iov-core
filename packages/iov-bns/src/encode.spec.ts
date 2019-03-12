@@ -24,12 +24,7 @@ import {
   encodePubkey,
 } from "./encode";
 import * as codecImpl from "./generated/codecimpl";
-import {
-  AddAddressToUsernameTx,
-  RegisterBlockchainTx,
-  RegisterUsernameTx,
-  RemoveAddressFromUsernameTx,
-} from "./types";
+import { AddAddressToUsernameTx, RegisterUsernameTx, RemoveAddressFromUsernameTx } from "./types";
 import { appendSignBytes } from "./util";
 
 import {
@@ -119,7 +114,7 @@ describe("Encode", () => {
 
     it("is compatible to test data", () => {
       const encoded = encodeAmount(coinJson);
-      const encodedBinary = Uint8Array.from(codecImpl.x.Coin.encode(encoded).finish());
+      const encodedBinary = Uint8Array.from(codecImpl.coin.Coin.encode(encoded).finish());
       expect(encodedBinary).toEqual(coinBin);
     });
   });
@@ -246,33 +241,6 @@ describe("Encode", () => {
       expect(msg.usernameId).toEqual(toUtf8("alice"));
       expect(msg.blockchainId).toEqual(toUtf8("other-land"));
       expect(msg.address).toEqual("865765858O");
-    });
-
-    it("works for RegisterBlockchainTx", () => {
-      const registerBlockchain: RegisterBlockchainTx = {
-        kind: "bns/register_blockchain",
-        creator: defaultCreator,
-        chain: {
-          chainId: "wonderland" as ChainId,
-          production: false,
-          enabled: true,
-          name: "Wonderland",
-          networkId: "7rg047g4h",
-          mainTickerId: "WONDER" as TokenTicker,
-        },
-        codecName: "rules_of_wonderland",
-        codecConfig: `{ rules: ["make peace not war"] }`,
-      };
-      const msg = buildMsg(registerBlockchain).issueBlockchainNftMsg!;
-      expect(msg.id).toEqual(toAscii("wonderland"));
-      expect(msg.details!.chain!.chainId).toEqual("wonderland");
-      expect(msg.details!.chain!.production).toEqual(false);
-      expect(msg.details!.chain!.enabled).toEqual(true);
-      expect(msg.details!.chain!.name).toEqual("Wonderland");
-      expect(msg.details!.chain!.networkId).toEqual("7rg047g4h");
-      expect(msg.details!.chain!.mainTickerId).toEqual(toUtf8("WONDER"));
-      expect(msg.details!.iov!.codec).toEqual("rules_of_wonderland");
-      expect(msg.details!.iov!.codecConfig).toEqual(`{ rules: ["make peace not war"] }`);
     });
 
     it("works for RegisterUsernameTx", () => {
