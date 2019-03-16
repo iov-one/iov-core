@@ -6,9 +6,9 @@ import {
   SendTransaction,
   SignatureBytes,
   SignedTransaction,
+  SwapAbortTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
-  SwapTimeoutTransaction,
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Encoding, Int53 } from "@iov/encoding";
@@ -122,8 +122,8 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
       return buildSwapOfferTx(tx);
     case "bcp/swap_claim":
       return buildSwapClaimTx(tx);
-    case "bcp/swap_timeout":
-      return buildSwapTimeoutTx(tx);
+    case "bcp/swap_abort":
+      return buildSwapAbortTransaction(tx);
     // BNS
     case "bns/add_address_to_username":
       return buildAddAddressToUsernameTx(tx);
@@ -181,7 +181,7 @@ function buildSwapClaimTx(tx: SwapClaimTransaction): codecImpl.app.ITx {
   };
 }
 
-function buildSwapTimeoutTx(tx: SwapTimeoutTransaction): codecImpl.app.ITx {
+function buildSwapAbortTransaction(tx: SwapAbortTransaction): codecImpl.app.ITx {
   return {
     returnEscrowMsg: codecImpl.escrow.ReturnEscrowMsg.create({
       escrowId: tx.swapId,

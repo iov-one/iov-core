@@ -1,6 +1,6 @@
 import * as Long from "long";
 import { As } from "type-tagger";
-import { Address, Algorithm, ChainId, FullSignature, PublicKeyBundle, SendTransaction, SignatureBytes, SwapClaimTransaction, SwapOfferTransaction, SwapTimeoutTransaction, TokenTicker, UnsignedTransaction } from "@iov/bcp";
+import { Address, Algorithm, ChainId, FullSignature, PublicKeyBundle, SendTransaction, SignatureBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TokenTicker, UnsignedTransaction } from "@iov/bcp";
 import { Int53 } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
 export interface ChainAddressPair {
@@ -107,7 +107,7 @@ export interface RemoveAddressFromUsernameTx extends UnsignedTransaction {
     readonly username: string;
     readonly payload: ChainAddressPair;
 }
-export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapTimeoutTransaction | AddAddressToUsernameTx | RegisterBlockchainTx | RegisterUsernameTx | RemoveAddressFromUsernameTx;
+export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | AddAddressToUsernameTx | RegisterBlockchainTx | RegisterUsernameTx | RemoveAddressFromUsernameTx;
 export declare function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx;
 export declare function isAddAddressToUsernameTx(transaction: UnsignedTransaction): transaction is AddAddressToUsernameTx;
 export declare function isRegisterBlockchainTx(transaction: UnsignedTransaction): transaction is RegisterBlockchainTx;

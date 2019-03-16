@@ -157,11 +157,11 @@ export interface SwapClaimTransaction extends UnsignedTransaction {
     readonly preimage: Preimage;
     readonly swapId: SwapIdBytes;
 }
-export interface SwapTimeoutTransaction extends UnsignedTransaction {
-    readonly kind: "bcp/swap_timeout";
+export interface SwapAbortTransaction extends UnsignedTransaction {
+    readonly kind: "bcp/swap_abort";
     readonly swapId: SwapIdBytes;
 }
 export declare function isSendTransaction(transaction: UnsignedTransaction): transaction is SendTransaction;
 export declare function isSwapOfferTransaction(transaction: UnsignedTransaction): transaction is SwapOfferTransaction;
 export declare function isSwapClaimTransaction(transaction: UnsignedTransaction): transaction is SwapClaimTransaction;
-export declare function isSwapTimeoutTransaction(transaction: UnsignedTransaction): transaction is SwapTimeoutTransaction;
+export declare function isSwapAbortTransaction(transaction: UnsignedTransaction): transaction is SwapAbortTransaction;

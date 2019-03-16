@@ -7,16 +7,16 @@ import {
   BcpTxQuery,
   ChainId,
   ConfirmedTransaction,
+  isSwapAbortTransaction,
   isSwapClaimTransaction,
   isSwapOfferTransaction,
-  isSwapTimeoutTransaction,
   Nonce,
   PublicIdentity,
   PublicKeyBundle,
   SignableBytes,
+  SwapAbortTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
-  SwapTimeoutTransaction,
   TransactionId,
 } from "@iov/bcp";
 import { Sha256 } from "@iov/crypto";
@@ -123,11 +123,11 @@ export function isConfirmedWithSwapOfferTransaction(
   return isSwapOfferTransaction(unsigned);
 }
 
-export function isConfirmedWithSwapClaimOrTimeoutTransaction(
+export function isConfirmedWithSwapClaimOrAbortTransaction(
   tx: ConfirmedTransaction,
-): tx is ConfirmedTransaction<SwapClaimTransaction | SwapTimeoutTransaction> {
+): tx is ConfirmedTransaction<SwapClaimTransaction | SwapAbortTransaction> {
   const unsigned = tx.transaction;
-  return isSwapClaimTransaction(unsigned) || isSwapTimeoutTransaction(unsigned);
+  return isSwapClaimTransaction(unsigned) || isSwapAbortTransaction(unsigned);
 }
 
 function sentFromOrToTag(addr: Address): string {

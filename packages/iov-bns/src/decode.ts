@@ -10,10 +10,10 @@ import {
   Preimage,
   SendTransaction,
   SignedTransaction,
+  SwapAbortTransaction,
   SwapClaimTransaction,
   SwapIdBytes,
   SwapOfferTransaction,
-  SwapTimeoutTransaction,
   TokenTicker,
   UnsignedTransaction,
 } from "@iov/bcp";
@@ -155,7 +155,7 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): Unsi
   } else if (tx.releaseEscrowMsg) {
     return parseSwapClaimTx(base, tx.releaseEscrowMsg, tx);
   } else if (tx.returnEscrowMsg) {
-    return parseSwapTimeoutTx(base, tx.returnEscrowMsg);
+    return parseSwapAbortTransaction(base, tx.returnEscrowMsg);
   } else if (tx.issueBlockchainNftMsg) {
     return parseRegisterBlockchainTx(base, tx.issueBlockchainNftMsg);
   } else if (tx.issueUsernameNftMsg) {
@@ -224,13 +224,13 @@ function parseSwapClaimTx(
   };
 }
 
-function parseSwapTimeoutTx(
+function parseSwapAbortTransaction(
   base: UnsignedTransaction,
   msg: codecImpl.escrow.IReturnEscrowMsg,
-): SwapTimeoutTransaction {
+): SwapAbortTransaction {
   return {
     ...base,
-    kind: "bcp/swap_timeout",
+    kind: "bcp/swap_abort",
     swapId: ensure(msg.escrowId) as SwapIdBytes,
   };
 }

@@ -242,8 +242,8 @@ export interface SwapClaimTransaction extends UnsignedTransaction {
   readonly swapId: SwapIdBytes; // pulled from the offer transaction
 }
 
-export interface SwapTimeoutTransaction extends UnsignedTransaction {
-  readonly kind: "bcp/swap_timeout";
+export interface SwapAbortTransaction extends UnsignedTransaction {
+  readonly kind: "bcp/swap_abort";
   readonly swapId: SwapIdBytes; // pulled from the offer transaction
 }
 
@@ -263,8 +263,8 @@ export function isSwapClaimTransaction(
   return (transaction as SwapClaimTransaction).kind === "bcp/swap_claim";
 }
 
-export function isSwapTimeoutTransaction(
+export function isSwapAbortTransaction(
   transaction: UnsignedTransaction,
-): transaction is SwapTimeoutTransaction {
-  return (transaction as SwapTimeoutTransaction).kind === "bcp/swap_timeout";
+): transaction is SwapAbortTransaction {
+  return (transaction as SwapAbortTransaction).kind === "bcp/swap_abort";
 }

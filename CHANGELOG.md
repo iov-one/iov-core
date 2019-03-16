@@ -31,6 +31,8 @@ Breaking changes
 * @iov/bcp: Remove `SwapCounterTransaction` in favour of
   `SwapOfferTransaction` for both offer and counter offer.
 * @iov/bcp: Transaction fee data (including gas data) is now stored under a `fee` key.
+* @iov/bcp: Rename `SwapTimeoutTransaction` to `SwapAbortTransaction` and
+  `isSwapTimeoutTransaction` to `isSwapAbortTransaction`.
 * @iov/bns: Remove `bnsNonceTag` in favour of `BcpTxQuery.signedBy`.
 * @iov/encoding: Remove `Uint32.asNumber`. Use `Uint32.toNumber` instead.
 * @iov/ethereum: The `options` parameter of `ethereumConnector` does not allow
