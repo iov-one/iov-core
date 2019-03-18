@@ -92,7 +92,7 @@ const id2 = await profile.createIdentity(wallet2.id, chainId, HdPaths.simpleAddr
 console.log(id2.pubkey.algo, toHex(id2.pubkey.data));
 
 // we can also add labels to the individual identies
-profile.setIdentityLabel(wallet1.id, id1a, 'main account');
+profile.setIdentityLabel(id1a, 'main account');
 console.log(profile.getIdentities(wallet1.id));
 ```
 
@@ -230,9 +230,8 @@ const sendTx: SendTransaction = {
   },
 };
 
-// we must have the private key for the signer (id1a)
-// second argument is the ID of the wallet where the private key can be found
-await signer.signAndPost(sendTx, wallet1.id);
+// we must have the private key for the transaction creator (id1a)
+await signer.signAndPost(sendTx);
 
 // and we have a balance on the recipient now
 yours = await connection.getAccount({ address: addr2 });

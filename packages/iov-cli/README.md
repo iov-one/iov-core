@@ -65,7 +65,7 @@ $ iov-cli
      224,
      42, ...
 
-> profile.setIdentityLabel(wallet.id, faucet, "blockchain of value faucet")
+> profile.setIdentityLabel(faucet, "blockchain of value faucet")
 
 > profile.getIdentities(wallet.id)
 [ { chainId: 'test-chain-esuZ1V',
@@ -94,7 +94,7 @@ const sendTx: SendTransaction = {
   },
 };
 ^D
-> await signer.signAndPost(sendTx, wallet.id);
+> await signer.signAndPost(sendTx);
 > (await connection.getAccount({ address: recipientAddress })).balance;
 
 > await connection.searchTx({ sentFromOrTo: faucetAddress });
@@ -162,7 +162,7 @@ const registration: RegisterUsernameTx = {
   username: "hans",
 };
 ^D
-> await signer.signAndPost(registration, wallet.id);
+> await signer.signAndPost(registration);
 > const bnsConnection = connection as BnsConnection;
 > await bnsConnection.getUsernames({ owner: recipientAddress });
 [ { id: 'hans',
