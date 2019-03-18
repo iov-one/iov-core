@@ -9,6 +9,7 @@
 * @iov/bcp: Add `memo` field to `SwapOfferTransaction`.
 * @iov/bcp: Add `Fee` type and `isFee` helper function.
 * @iov/bcp: Add `getFeeQuote` method to `BcpConnection`.
+* @iov/bns: Implement `getFeeQuote` method on `BnsConnection`.
 * @iov/keycontrol: Add `Keyring.getAllIdentities` and `Keyring.getWalletByIdentity`
 * @iov/keycontrol: Add `UserProfile.getAllIdentities`
 * @iov/keycontrol: Add `.previewIdentity` to the `ReadonlyWallet`/`Wallet` interfaces

@@ -38,6 +38,7 @@ import {
   TransactionId,
   TransactionState,
   TxReadCodec,
+  UnsignedTransaction,
 } from "@iov/bcp";
 import { Encoding, Int53, Uint53 } from "@iov/encoding";
 import { concat, DefaultValueProducer, fromListPromise, ValueAndUpdates } from "@iov/stream";
@@ -56,6 +57,7 @@ import {
   decodePubkey,
   Decoder,
   isBnsBlockchainsByChainIdQuery,
+  isBnsTx,
   isBnsUsernamesByChainAndAddressQuery,
   isBnsUsernamesByOwnerAddressQuery,
   isBnsUsernamesByUsernameQuery,
@@ -620,8 +622,19 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return nfts;
   }
 
-  public async getFeeQuote(): Promise<Fee> {
-    throw new Error("Not implemented");
+  public async getFeeQuote(transaction: UnsignedTransaction): Promise<Fee> {
+    if (isBnsTx(transaction)) {
+      const firstToken = (await this.getAllTickers())[0];
+      return {
+        tokens: {
+          quantity: "0",
+          fractionalDigits: firstToken.fractionalDigits,
+          tokenTicker: firstToken.tokenTicker,
+        },
+      };
+    }
+
+    throw new Error("Received transaction of unsupported kind.");
   }
 
   protected async query(path: string, data: Uint8Array): Promise<QueryResponse> {
