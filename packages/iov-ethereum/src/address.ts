@@ -12,7 +12,7 @@ export function isValidAddress(address: string): boolean {
   const isChecksummed = !address.match(/^0x[a-f0-9]{40}$/);
   if (isChecksummed) {
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md
-    const addressLower = address.toLowerCase().replace("0x", "") as Address;
+    const addressLower = address.toLowerCase().replace("0x", "");
     const addressHash = toHex(new Keccak256(toAscii(addressLower)).digest());
     for (let i = 0; i < 40; i++) {
       if (
@@ -39,7 +39,7 @@ export function toChecksumAddress(address: string): Address {
   }
 
   // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md
-  const addressLower = address.toLowerCase().replace("0x", "") as Address;
+  const addressLower = address.toLowerCase().replace("0x", "");
   const addressHash = toHex(new Keccak256(toAscii(addressLower)).digest());
   let checksumAddress = "0x";
   for (let i = 0; i < 40; i++) {
