@@ -76,7 +76,7 @@ describe("address", () => {
       );
     });
 
-    it("throws for invalud input addresses", () => {
+    it("throws for invalid input addresses", () => {
       // incorrect format
       expect(() => toChecksummedAddress("")).toThrowError(/not a valid Ethereum address/i);
       expect(() => toChecksummedAddress("124")).toThrowError(/not a valid Ethereum address/i);
