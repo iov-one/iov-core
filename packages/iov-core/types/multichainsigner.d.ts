@@ -6,8 +6,8 @@ import { WalletId } from "@iov/keycontrol";
  * logic for key derivation, etc.
  */
 export interface Profile {
-    readonly signTransaction: (id: WalletId, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
-    readonly appendSignature: (id: WalletId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
+    readonly signTransaction: (transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
+    readonly appendSignature: (identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
 }
 export declare class MultiChainSigner {
     private readonly knownChains;
@@ -37,7 +37,7 @@ export declare class MultiChainSigner {
      * The transaction signer is determined by the transaction content. A lookup for
      * the private key for the signer in the given wallet ID is done automatically.
      */
-    signAndPost(tx: UnsignedTransaction, walletId: WalletId): Promise<PostTxResponse>;
+    signAndPost(tx: UnsignedTransaction, _: WalletId): Promise<PostTxResponse>;
     /**
      * Call this to free ressources when signer is not needed anymore.
      * This disconnects all chains and other housekeeping if necessary.
