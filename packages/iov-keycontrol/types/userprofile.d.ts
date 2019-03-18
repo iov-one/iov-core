@@ -42,12 +42,12 @@ export declare class UserProfile {
      */
     createIdentity(walletId: WalletId, chainId: ChainId, options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number): Promise<PublicIdentity>;
     /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
-    setIdentityLabel(walletId: WalletId, identity: PublicIdentity, label: string | undefined): void;
+    setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
     /**
      * Gets the local label of one of the identities in the wallet with the given ID
      * in the primary keyring
      */
-    getIdentityLabel(id: WalletId, identity: PublicIdentity): string | undefined;
+    getIdentityLabel(identity: PublicIdentity): string | undefined;
     /** Get identities of the wallet with the given ID in the primary keyring  */
     getIdentities(id: WalletId): ReadonlyArray<PublicIdentity>;
     /**
@@ -58,8 +58,8 @@ export declare class UserProfile {
      * Signs a transaction using the profile's primary keyring. The transaction's
      * creator field specifies the keypair to be used for signing.
      */
-    signTransaction(id: WalletId, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
-    appendSignature(id: WalletId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
+    signTransaction(transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
+    appendSignature(identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
     /**
      * Exposes the secret data of a wallet in a printable format for
      * backup purposes.
@@ -73,5 +73,6 @@ export declare class UserProfile {
     private primaryKeyring;
     /** Throws if wallet does not exist in primary keyring */
     private findWalletInPrimaryKeyring;
+    private findWalletInPrimaryKeyringByIdentity;
     private walletInfos;
 }

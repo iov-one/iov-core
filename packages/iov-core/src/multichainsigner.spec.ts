@@ -87,7 +87,7 @@ describe("MultiChainSigner", () => {
       expect(signer.chainIds().length).toEqual(1);
       const chainId = connection.chainId();
 
-      const { mainWalletId, faucet } = await addWalletWithFaucet(profile, chainId);
+      const { faucet } = await addWalletWithFaucet(profile, chainId);
 
       const recipient = await randomBnsAddress();
 
@@ -104,7 +104,7 @@ describe("MultiChainSigner", () => {
           tokenTicker: cash,
         },
       };
-      const postResponse = await signer.signAndPost(sendTx, mainWalletId);
+      const postResponse = await signer.signAndPost(sendTx);
       await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
       // we should be a little bit richer
@@ -188,7 +188,7 @@ describe("MultiChainSigner", () => {
       const [bnsId, ethereumChainId] = signer.chainIds();
 
       // Create sender identities
-      const { mainWalletId, faucet: bnsFaucet } = await addWalletWithFaucet(profile, bnsId);
+      const { faucet: bnsFaucet } = await addWalletWithFaucet(profile, bnsId);
       const secpWallet = profile.addWallet(
         Secp256k1HdWallet.fromMnemonic(
           "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
@@ -213,7 +213,7 @@ describe("MultiChainSigner", () => {
             tokenTicker: cash,
           },
         };
-        const postResponse = await signer.signAndPost(sendOnBns, mainWalletId);
+        const postResponse = await signer.signAndPost(sendOnBns);
         const blockInfo = await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
@@ -243,7 +243,7 @@ describe("MultiChainSigner", () => {
             },
           },
         };
-        const postResponse = await signer.signAndPost(sendOnEthereum, secpWallet.id);
+        const postResponse = await signer.signAndPost(sendOnEthereum);
         const blockInfo = await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }

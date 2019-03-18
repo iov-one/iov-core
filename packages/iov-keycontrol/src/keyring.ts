@@ -128,12 +128,23 @@ export class Keyring {
   }
 
   /**
-   * Finds a wallet and returns an immutable references.
+   * Finds a wallet and returns an immutable reference.
    *
    * @returns a wallet if ID is found, undefined otherwise
    */
   public getWallet(id: WalletId): ReadonlyWallet | undefined {
     return this.wallets.find(wallet => wallet.id === id);
+  }
+
+  /**
+   * Finds a wallet for a given identity and returns an immutable reference.
+   *
+   * @returns a wallet if ID is found, undefined otherwise
+   */
+  public getWalletByIdentity(identity: PublicIdentity): ReadonlyWallet | undefined {
+    return this.wallets.find(wallet =>
+      wallet.getIdentities().some(publicIdentityEquals.bind(null, identity)),
+    );
   }
 
   /** Sets the label of the wallet with the given ID in the primary keyring  */
@@ -180,10 +191,10 @@ export class Keyring {
   }
 
   /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
-  public setIdentityLabel(walletId: WalletId, identity: PublicIdentity, label: string | undefined): void {
-    const wallet = this.getMutableWallet(walletId);
+  public setIdentityLabel(identity: PublicIdentity, label: string | undefined): void {
+    const wallet = this.getMutableWalletByIdentity(identity);
     if (!wallet) {
-      throw new Error(`Wallet of id '${walletId}' does not exist in keyring`);
+      throw new Error(`No wallet for identity '${JSON.stringify(identity)}' found in keyring`);
     }
     wallet.setIdentityLabel(identity, label);
   }
@@ -208,13 +219,25 @@ export class Keyring {
   }
 
   /**
-   * Finds a wallet and returns a mutable references. Thus e.g.
+   * Finds a wallet and returns a mutable reference. Thus e.g.
    * .getMutableWallet(xyz).createIdentity(...) will change the keyring.
    *
    * @returns a wallet if ID is found, undefined otherwise
    */
   private getMutableWallet(id: WalletId): Wallet | undefined {
     return this.wallets.find(wallet => wallet.id === id);
+  }
+
+  /**
+   * Finds a wallet for a given identity and returns a mutable reference. Thus e.g.
+   * .getWalletByIdentity(xyz).createIdentity(...) will change the keyring.
+   *
+   * @returns a wallet if ID is found, undefined otherwise
+   */
+  private getMutableWalletByIdentity(identity: PublicIdentity): Wallet | undefined {
+    return this.wallets.find(wallet =>
+      wallet.getIdentities().some(publicIdentityEquals.bind(null, identity)),
+    );
   }
 
   /**

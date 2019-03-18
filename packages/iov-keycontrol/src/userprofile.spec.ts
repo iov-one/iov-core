@@ -234,9 +234,9 @@ describe("UserProfile", () => {
     expect(profile.getIdentities(wallet2.id).length).toEqual(2);
 
     // set an identity label
-    profile.setIdentityLabel(wallet2.id, key, "foobar");
+    profile.setIdentityLabel(key, "foobar");
     const labels = profile.getIdentities(wallet2.id).map(identity => {
-      return profile.getIdentityLabel(wallet2.id, identity);
+      return profile.getIdentityLabel(identity);
     });
     expect(labels).toEqual(["foobar", undefined]);
   });
@@ -545,21 +545,29 @@ describe("UserProfile", () => {
     expect(() => profile.getIdentities(walletId)).toThrowError(
       /wallet of id 'bar' does not exist in keyring/i,
     );
-    expect(() => profile.setIdentityLabel(walletId, fakeIdentity, "foo")).toThrowError(
-      /wallet of id 'bar' does not exist in keyring/i,
+    expect(() => profile.setIdentityLabel(fakeIdentity, "foo")).toThrowError(
+      /No wallet for identity '{"chainId":"ethereum","pubkey":{"algo":"ed25519","data":{"0":170}}}' found in keyring/,
     );
     await profile
       .createIdentity(walletId, defaultChain, HdPaths.simpleAddress(0))
       .then(() => fail("Promise must not resolve"))
       .catch(error => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
     await profile
-      .signTransaction(walletId, fakeTransaction, fakeCodec, new Int53(12) as Nonce)
+      .signTransaction(fakeTransaction, fakeCodec, new Int53(12) as Nonce)
       .then(() => fail("Promise must not resolve"))
-      .catch(error => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
+      .catch(error =>
+        expect(error).toMatch(
+          /No wallet for identity '{"chainId":"ethereum","pubkey":{"algo":"ed25519","data":{"0":170}}}' found in keyring/,
+        ),
+      );
     await profile
-      .appendSignature(walletId, fakeIdentity, fakeSignedTransaction, fakeCodec, new Int53(12) as Nonce)
+      .appendSignature(fakeIdentity, fakeSignedTransaction, fakeCodec, new Int53(12) as Nonce)
       .then(() => fail("Promise must not resolve"))
-      .catch(error => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
+      .catch(error =>
+        expect(error).toMatch(
+          /No wallet for identity '{"chainId":"ethereum","pubkey":{"algo":"ed25519","data":{"0":170}}}' found in keyring/,
+        ),
+      );
   });
 
   it("can sign and append signature", async () => {
@@ -605,7 +613,7 @@ describe("UserProfile", () => {
     };
     const nonce = new Int53(0x112233445566) as Nonce;
 
-    const signedTransaction = await profile.signTransaction(wallet.id, fakeTransaction, fakeCodec, nonce);
+    const signedTransaction = await profile.signTransaction(fakeTransaction, fakeCodec, nonce);
     expect(signedTransaction.transaction).toEqual(fakeTransaction);
     expect(signedTransaction.primarySignature).toBeTruthy();
     expect(signedTransaction.primarySignature.nonce).toEqual(nonce);
@@ -614,7 +622,6 @@ describe("UserProfile", () => {
     expect(signedTransaction.otherSignatures).toEqual([]);
 
     const doubleSignedTransaction = await profile.appendSignature(
-      wallet.id,
       mainIdentity,
       signedTransaction,
       fakeCodec,

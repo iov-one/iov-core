@@ -10,7 +10,6 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { WalletId } from "@iov/keycontrol";
 
 /**
  * An internal helper to pass around the tuple
@@ -37,14 +36,12 @@ async function connectChain(x: ChainConnector): Promise<Chain> {
  */
 export interface Profile {
   readonly signTransaction: (
-    id: WalletId,
     transaction: UnsignedTransaction,
     codec: TxCodec,
     nonce: Nonce,
   ) => Promise<SignedTransaction>;
 
   readonly appendSignature: (
-    id: WalletId,
     identity: PublicIdentity,
     originalTransaction: SignedTransaction,
     codec: TxCodec,
@@ -116,15 +113,14 @@ export class MultiChainSigner {
   /**
    * Queries the nonce, signs the transaction and posts it to the blockchain.
    *
-   * The transaction signer is determined by the transaction content. A lookup for
-   * the private key for the signer in the given wallet ID is done automatically.
+   * The signing keypair is determined by the `creator` field of the transaction.
    */
-  public async signAndPost(tx: UnsignedTransaction, walletId: WalletId): Promise<PostTxResponse> {
-    const { connection, codec } = this.getChain(tx.creator.chainId);
+  public async signAndPost(transaction: UnsignedTransaction): Promise<PostTxResponse> {
+    const { connection, codec } = this.getChain(transaction.creator.chainId);
 
-    const nonce = await connection.getNonce({ pubkey: tx.creator.pubkey });
+    const nonce = await connection.getNonce({ pubkey: transaction.creator.pubkey });
 
-    const signed = await this.profile.signTransaction(walletId, tx, codec, nonce);
+    const signed = await this.profile.signTransaction(transaction, codec, nonce);
     const txBytes = codec.bytesToPost(signed);
     const post = await connection.postTx(txBytes);
     return post;

@@ -9,7 +9,7 @@
 * @iov/bcp: Add `memo` field to `SwapOfferTransaction`.
 * @iov/bcp: Add `Fee` type and `isFee` helper function.
 * @iov/bcp: Add `getFeeQuote` method to `BcpConnection`.
-* @iov/keycontrol: Add `Keyring.getAllIdentities`
+* @iov/keycontrol: Add `Keyring.getAllIdentities` and `Keyring.getWalletByIdentity`
 * @iov/keycontrol: Add `UserProfile.getAllIdentities`
 * @iov/keycontrol: Add `.previewIdentity` to the `ReadonlyWallet`/`Wallet` interfaces
 * @iov/lisk: Implement `watchBlockHeaders` method on `LiskConnection`.
@@ -34,6 +34,7 @@ Breaking changes
 * @iov/bcp: Rename `SwapTimeoutTransaction` to `SwapAbortTransaction` and
   `isSwapTimeoutTransaction` to `isSwapAbortTransaction`.
 * @iov/bns: Remove `bnsNonceTag` in favour of `BcpTxQuery.signedBy`.
+* @iov/core: Remove wallet ID argument from `MultiChainSigner.signAndPost`
 * @iov/encoding: Remove `Uint32.asNumber`. Use `Uint32.toNumber` instead.
 * @iov/ethereum: The `options` parameter of `ethereumConnector` does not allow
   strings anymore. Use `{ wsUrl: myWebsocketUrl }` instead.
@@ -45,6 +46,9 @@ Breaking changes
 * @iov/keycontrol: `Keyring.addWallet` now stores a copy of the wallet
 * @iov/keycontrol: Identities now must be unique in `Keyring`.
 * @iov/keycontrol: Remove identity argument from `UserProfile.signTransaction`
+* @iov/keycontrol: Remove wallet ID argument from `UserProfile.signTransaction`,
+  `.appendSignature`, `.setIdentityLabel` and `.getIdentityLabel` as well as
+  `Keyring.setIdentityLabel`.
 * @iov/ledger-bns: Package removed from this monorepo and now available at
   https://github.com/iov-one/iov-ledger-bns
 * @iov/iov-core: Constructor of `SigningServerCore` now takes two arguments for

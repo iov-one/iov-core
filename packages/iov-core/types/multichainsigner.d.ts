@@ -1,13 +1,12 @@
 import { Address, BcpConnection, ChainConnector, ChainId, Nonce, PostTxResponse, PublicIdentity, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp";
-import { WalletId } from "@iov/keycontrol";
 /**
  * TransactionSigner is just the methods on `UserProfile` that we need in `MultiChainSigner`.
  * By only requiring this interface, we allow the use of other implementations with custom
  * logic for key derivation, etc.
  */
 export interface Profile {
-    readonly signTransaction: (id: WalletId, transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
-    readonly appendSignature: (id: WalletId, identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
+    readonly signTransaction: (transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
+    readonly appendSignature: (identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
 }
 export declare class MultiChainSigner {
     private readonly knownChains;
@@ -34,10 +33,9 @@ export declare class MultiChainSigner {
     /**
      * Queries the nonce, signs the transaction and posts it to the blockchain.
      *
-     * The transaction signer is determined by the transaction content. A lookup for
-     * the private key for the signer in the given wallet ID is done automatically.
+     * The signing keypair is determined by the `creator` field of the transaction.
      */
-    signAndPost(tx: UnsignedTransaction, walletId: WalletId): Promise<PostTxResponse>;
+    signAndPost(transaction: UnsignedTransaction): Promise<PostTxResponse>;
     /**
      * Call this to free ressources when signer is not needed anymore.
      * This disconnects all chains and other housekeeping if necessary.
