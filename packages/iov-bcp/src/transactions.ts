@@ -1,7 +1,5 @@
 import { As } from "type-tagger";
 
-import { Int53 } from "@iov/encoding";
-
 import { Preimage } from "./atomicswaptypes";
 
 export enum Algorithm {
@@ -75,7 +73,8 @@ export function publicIdentityEquals(left: PublicIdentity, right: PublicIdentity
 
 export type SignatureBytes = Uint8Array & As<"signature">;
 
-export type Nonce = Int53 & As<"nonce">;
+/** An integer in the safe integer range */
+export type Nonce = number & As<"nonce">;
 
 // TokenTicker should be 3-4 letters, uppercase
 export type TokenTicker = string & As<"token-ticker">;

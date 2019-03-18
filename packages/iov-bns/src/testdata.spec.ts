@@ -17,7 +17,7 @@ import {
   SwapOfferTransaction,
   TokenTicker,
 } from "@iov/bcp";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding } from "@iov/encoding";
 
 import { PrivateKeyBundle, PrivateKeyBytes } from "./types";
 
@@ -107,7 +107,7 @@ export const signBytes = fromHex(
 
 // from signed_tx.json
 export const sig: FullSignature = {
-  nonce: new Int53(17) as Nonce,
+  nonce: 17 as Nonce,
   pubkey: pubJson,
   // ./scripts/jsonbytes testvectors/signed_tx.json .signatures[0].signature.Sig.Ed25519
   signature: fromHex(
@@ -133,7 +133,7 @@ export const signedTxBin = fromHex(
 // but we just want to ensure that all fields can be writen and
 // read back the same
 const sig2: FullSignature = {
-  nonce: new Int53(18) as Nonce,
+  nonce: 18 as Nonce,
   pubkey: pubJson,
   signature: fromHex(
     "baddad00cafe00bece8675da9d005f2018b69820673d57f5500ae2728d3e5012a44c786133cd911cc40761cda9ccf9094c1bbe1dc11f2d568cc4998072819a0c",

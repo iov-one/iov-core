@@ -18,6 +18,7 @@ import {
   isFailedTransaction,
   isSendTransaction,
   isSwapOfferTransaction,
+  Nonce,
   PostTxResponse,
   Preimage,
   PublicIdentity,
@@ -262,7 +263,7 @@ describe("BnsConnection", () => {
       // by address
       const unusedAddress = "tiov1qyqszqszqgpsxqcyqszq2pg9q59q5zs2fx9n6s" as Address;
       const nonce1 = await connection.getNonce({ address: unusedAddress });
-      expect(nonce1.toNumber()).toEqual(0);
+      expect(nonce1).toEqual(0 as Nonce);
 
       // by pubkey
       const unusedPubkey: PublicKeyBundle = {
@@ -272,7 +273,7 @@ describe("BnsConnection", () => {
         ) as PublicKeyBytes,
       };
       const nonce2 = await connection.getNonce({ pubkey: unusedPubkey });
-      expect(nonce2.toNumber()).toEqual(0);
+      expect(nonce2).toEqual(0 as Nonce);
 
       connection.disconnect();
     });
@@ -286,11 +287,11 @@ describe("BnsConnection", () => {
       // by address
       const faucetAddress = identityToAddress(faucet);
       const nonce1 = await connection.getNonce({ address: faucetAddress });
-      expect(nonce1.toNumber()).toBeGreaterThan(0);
+      expect(nonce1).toBeGreaterThan(0);
 
       // by pubkey
       const nonce2 = await connection.getNonce({ pubkey: faucet.pubkey });
-      expect(nonce2.toNumber()).toBeGreaterThan(0);
+      expect(nonce2).toBeGreaterThan(0);
 
       connection.disconnect();
     });
@@ -319,7 +320,7 @@ describe("BnsConnection", () => {
       {
         const nonces = await connection.getNonces({ address: faucetAddress }, 2);
         expect(nonces.length).toEqual(2);
-        expect(nonces[1].toNumber()).toEqual(nonces[0].toNumber() + 1);
+        expect(nonces[1]).toEqual((nonces[0] + 1) as Nonce);
       }
 
       // by pubkey, 0 nonces
@@ -338,7 +339,7 @@ describe("BnsConnection", () => {
       {
         const nonces = await connection.getNonces({ pubkey: faucet.pubkey }, 2);
         expect(nonces.length).toEqual(2);
-        expect(nonces[1].toNumber()).toEqual(nonces[0].toNumber() + 1);
+        expect(nonces[1]).toEqual((nonces[0] + 1) as Nonce);
       }
 
       connection.disconnect();
@@ -440,7 +441,7 @@ describe("BnsConnection", () => {
       // and the nonce should go up, to be at least one
       // (worrying about replay issues)
       const fNonce = await connection.getNonce({ pubkey: faucet.pubkey });
-      expect(fNonce.toNumber()).toBeGreaterThanOrEqual(1);
+      expect(fNonce).toBeGreaterThanOrEqual(1);
 
       await tendermintSearchIndexUpdated();
 

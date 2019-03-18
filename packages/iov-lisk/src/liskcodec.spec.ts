@@ -12,7 +12,7 @@ import {
   SignedTransaction,
   TokenTicker,
 } from "@iov/bcp";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding } from "@iov/encoding";
 
 import { liskCodec } from "./liskcodec";
 
@@ -21,7 +21,7 @@ const { fromHex } = Encoding;
 // use nethash as chain ID
 const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
 const liskEpochAsUnixTimestamp = 1464109200;
-const defaultCreationTimestamp = new Int53(865708731 + liskEpochAsUnixTimestamp);
+const defaultCreationTimestamp = 865708731 + liskEpochAsUnixTimestamp;
 
 describe("liskCodec", () => {
   it("derives addresses properly", () => {
@@ -176,7 +176,7 @@ describe("liskCodec", () => {
     );
     expect(unsigned.recipient).toEqual("6076671634347365051L");
 
-    expect(parsed.primarySignature.nonce).toEqual(new Int53(73863961 + liskEpochAsUnixTimestamp) as Nonce);
+    expect(parsed.primarySignature.nonce).toEqual((73863961 + liskEpochAsUnixTimestamp) as Nonce);
     expect(parsed.primarySignature.pubkey.algo).toEqual(Algorithm.Ed25519);
     expect(parsed.primarySignature.pubkey.data).toEqual(
       fromHex("06ad4341a609af2de837e1156f81849b05bf3c280940a9f45db76d09a3a3f2fa"),

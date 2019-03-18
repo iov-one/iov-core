@@ -12,7 +12,7 @@ import {
   TokenTicker,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding } from "@iov/encoding";
 
 import { Serialization } from "./serialization";
 
@@ -54,7 +54,7 @@ describe("Serialization", () => {
         },
         recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
       };
-      const nonce = new Int53(0) as Nonce;
+      const nonce = 0 as Nonce;
       const serializedTx = serializeUnsignedTransaction(tx, nonce);
       expect(serializedTx).toEqual(
         fromHex(
@@ -98,7 +98,7 @@ describe("Serialization", () => {
         memo:
           "The nice memo I attach to that money for the whole world to read, And can encode as much data as you want, and unicode symbols like \u2764",
       };
-      const nonce = new Int53(0) as Nonce;
+      const nonce = 0 as Nonce;
       const serializedTx = serializeUnsignedTransaction(tx, nonce);
       expect(serializedTx).toEqual(
         fromHex(
@@ -132,7 +132,7 @@ describe("Serialization", () => {
         fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
       };
-      const nonce = new Int53(0) as Nonce;
+      const nonce = 0 as Nonce;
 
       // gasPrice unset
       {
@@ -201,7 +201,7 @@ describe("Serialization", () => {
         },
         recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
       };
-      expect(() => serializeUnsignedTransaction(tx, new Int53(-1) as Nonce)).toThrowError(
+      expect(() => serializeUnsignedTransaction(tx, -1 as Nonce)).toThrowError(
         /not a unsigned safe integer/i,
       );
     });
@@ -243,7 +243,7 @@ describe("Serialization", () => {
           recipient: "0x095e7baea6a6c7c4c2dfeb977efac326af552d87" as Address,
         },
         primarySignature: {
-          nonce: new Int53(0) as Nonce,
+          nonce: 0 as Nonce,
           pubkey: {
             algo: Algorithm.Secp256k1,
             data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization

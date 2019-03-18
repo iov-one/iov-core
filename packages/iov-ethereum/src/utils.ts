@@ -1,5 +1,5 @@
 import { ChainId, Nonce } from "@iov/bcp";
-import { Int53, Uint53 } from "@iov/encoding";
+import { Uint53 } from "@iov/encoding";
 
 import BN = require("bn.js");
 
@@ -23,8 +23,8 @@ export function decodeHexQuantityString(hexString: string): string {
 }
 
 export function decodeHexQuantityNonce(hexString: string): Nonce {
-  const nonce = decodeHexQuantity(hexString);
-  return new Int53(nonce) as Nonce;
+  const value = new Uint53(decodeHexQuantity(hexString));
+  return value.toNumber() as Nonce;
 }
 
 export function encodeQuantity(value: number): string {

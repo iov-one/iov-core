@@ -1,5 +1,4 @@
 import { As } from "type-tagger";
-import { Int53 } from "@iov/encoding";
 import { Preimage } from "./atomicswaptypes";
 export declare enum Algorithm {
     Ed25519 = "ed25519",
@@ -39,7 +38,8 @@ export declare function isPublicIdentity(data: any): data is PublicIdentity;
  */
 export declare function publicIdentityEquals(left: PublicIdentity, right: PublicIdentity): boolean;
 export declare type SignatureBytes = Uint8Array & As<"signature">;
-export declare type Nonce = Int53 & As<"nonce">;
+/** An integer in the safe integer range */
+export declare type Nonce = number & As<"nonce">;
 export declare type TokenTicker = string & As<"token-ticker">;
 export declare type SwapIdBytes = Uint8Array & As<"swap-id">;
 export declare type SwapIdString = string & As<"swap-id">;

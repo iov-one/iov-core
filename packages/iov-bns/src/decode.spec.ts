@@ -7,7 +7,7 @@ import {
   TokenTicker,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Bech32, Encoding, Int53 } from "@iov/encoding";
+import { Bech32, Encoding } from "@iov/encoding";
 
 import {
   decodeAmount,
@@ -126,7 +126,7 @@ describe("Decode", () => {
       sequence: 7,
     };
     const nonce = decodeNonce(user);
-    expect(nonce).toEqual(new Int53(7) as Nonce);
+    expect(nonce).toEqual(7 as Nonce);
   });
 
   it("has working decodeToken", () => {

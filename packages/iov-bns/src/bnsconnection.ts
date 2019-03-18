@@ -39,7 +39,7 @@ import {
   TransactionState,
   TxReadCodec,
 } from "@iov/bcp";
-import { Encoding, Int53, Uint53 } from "@iov/encoding";
+import { Encoding, Uint53 } from "@iov/encoding";
 import { concat, DefaultValueProducer, fromListPromise, ValueAndUpdates } from "@iov/stream";
 import { broadcastTxSyncSuccess, Client as TendermintClient } from "@iov/tendermint-rpc";
 
@@ -312,7 +312,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
 
     switch (nonces.length) {
       case 0:
-        return new Int53(0) as Nonce;
+        return 0 as Nonce;
       case 1:
         return nonces[0];
       default:
@@ -331,7 +331,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
         const firstNonce = await this.getNonce(query);
         out.push(firstNonce);
         for (let index = 1; index < checkedCount; index++) {
-          out.push(new Int53(firstNonce.toNumber() + index) as Nonce);
+          out.push((firstNonce + index) as Nonce);
         }
         return out;
     }

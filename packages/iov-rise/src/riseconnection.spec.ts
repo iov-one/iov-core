@@ -14,6 +14,7 @@ import {
   isBlockInfoPending,
   isConfirmedTransaction,
   isSendTransaction,
+  Nonce,
   PubkeyQuery,
   PublicKeyBundle,
   PublicKeyBytes,
@@ -217,8 +218,8 @@ describe("RiseConnection", () => {
         const query: AddressQuery = { address: "5399275477602875017R" as Address };
         const nonce = await connection.getNonce(query);
         // nonce is current unix timestamp +/- 300ms
-        expect(nonce.toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
-        expect(nonce.toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+        expect(nonce).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonce).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
       }
 
       // by pubkey
@@ -233,8 +234,8 @@ describe("RiseConnection", () => {
         };
         const nonce = await connection.getNonce(query);
         // nonce is current unix timestamp +/- 300ms
-        expect(nonce.toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
-        expect(nonce.toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+        expect(nonce).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonce).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
       }
 
       connection.disconnect();
@@ -265,8 +266,8 @@ describe("RiseConnection", () => {
         const nonces = await connection.getNonces(addressQuery, 1);
         expect(nonces.length).toEqual(1);
         // last nonce is current unix timestamp +/- 300ms
-        expect(nonces[0].toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
-        expect(nonces[0].toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+        expect(nonces[0]).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonces[0]).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
       }
 
       // by address, 2 nonces
@@ -274,9 +275,9 @@ describe("RiseConnection", () => {
         const nonces = await connection.getNonces(addressQuery, 2);
         expect(nonces.length).toEqual(2);
         // last nonce is current unix timestamp +/- 300ms
-        expect(nonces[1].toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
-        expect(nonces[1].toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
-        expect(nonces[0].toNumber()).toEqual(nonces[1].toNumber() - 1);
+        expect(nonces[1]).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonces[1]).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+        expect(nonces[0]).toEqual((nonces[1] - 1) as Nonce);
       }
 
       // by address, 3 nonces
@@ -284,10 +285,10 @@ describe("RiseConnection", () => {
         const nonces = await connection.getNonces(addressQuery, 3);
         expect(nonces.length).toEqual(3);
         // last nonce is current unix timestamp +/- 300ms
-        expect(nonces[2].toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
-        expect(nonces[2].toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
-        expect(nonces[1].toNumber()).toEqual(nonces[2].toNumber() - 1);
-        expect(nonces[0].toNumber()).toEqual(nonces[1].toNumber() - 1);
+        expect(nonces[2]).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonces[2]).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+        expect(nonces[1]).toEqual((nonces[2] - 1) as Nonce);
+        expect(nonces[0]).toEqual((nonces[1] - 1) as Nonce);
       }
 
       // by pubkey, 0 nonces
@@ -301,8 +302,8 @@ describe("RiseConnection", () => {
         const nonces = await connection.getNonces(pubkeyQuery, 1);
         expect(nonces.length).toEqual(1);
         // last nonce is current unix timestamp +/- 300ms
-        expect(nonces[0].toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
-        expect(nonces[0].toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+        expect(nonces[0]).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonces[0]).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
       }
 
       // by pubkey, 2 nonces
@@ -310,9 +311,9 @@ describe("RiseConnection", () => {
         const nonces = await connection.getNonces(pubkeyQuery, 2);
         expect(nonces.length).toEqual(2);
         // last nonce is current unix timestamp +/- 300ms
-        expect(nonces[1].toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
-        expect(nonces[1].toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
-        expect(nonces[0].toNumber()).toEqual(nonces[1].toNumber() - 1);
+        expect(nonces[1]).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonces[1]).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+        expect(nonces[0]).toEqual((nonces[1] - 1) as Nonce);
       }
 
       // by pubkey, 3 nonces
@@ -320,10 +321,10 @@ describe("RiseConnection", () => {
         const nonces = await connection.getNonces(pubkeyQuery, 3);
         expect(nonces.length).toEqual(3);
         // last nonce is current unix timestamp +/- 300ms
-        expect(nonces[2].toNumber()).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
-        expect(nonces[2].toNumber()).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
-        expect(nonces[1].toNumber()).toEqual(nonces[2].toNumber() - 1);
-        expect(nonces[0].toNumber()).toEqual(nonces[1].toNumber() - 1);
+        expect(nonces[2]).toBeGreaterThanOrEqual(Math.floor(Date.now() / 1000 - 0.3));
+        expect(nonces[2]).toBeLessThanOrEqual(Math.floor(Date.now() / 1000 + 0.3));
+        expect(nonces[1]).toEqual((nonces[2] - 1) as Nonce);
+        expect(nonces[0]).toEqual((nonces[1] - 1) as Nonce);
       }
 
       connection.disconnect();
@@ -719,8 +720,8 @@ describe("RiseConnection", () => {
               expect(event.transaction.recipient).toEqual(recipientAddress);
 
               // correct order
-              expect(events[0].primarySignature.nonce.toNumber()).toEqual(nonceA.toNumber());
-              expect(events[1].primarySignature.nonce.toNumber()).toEqual(nonceB.toNumber());
+              expect(events[0].primarySignature.nonce).toEqual(nonceA);
+              expect(events[1].primarySignature.nonce).toEqual(nonceB);
 
               // in different blocks
               expect(events[1].height).toBeGreaterThan(events[0].height);

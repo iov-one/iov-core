@@ -80,7 +80,7 @@ export function appendSignBytes(bz: Uint8Array, chainId: ChainId, nonce: Nonce):
     ...signCodev1,
     chainId.length,
     ...Encoding.toAscii(chainId),
-    ...Long.fromNumber(nonce.toNumber()).toBytesBE(),
+    ...Long.fromNumber(nonce).toBytesBE(),
     ...bz,
   ]) as SignableBytes;
 }

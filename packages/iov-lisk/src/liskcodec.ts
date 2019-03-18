@@ -20,7 +20,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Parse, Serialization } from "@iov/dpos";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 
 import { constants } from "./constants";
 import { isValidAddress, pubkeyToAddress } from "./derivation";
@@ -31,8 +31,8 @@ export const liskCodec: TxCodec = {
    * https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/transaction.cpp#L36
    */
   bytesToSign: (unsigned: UnsignedTransaction, nonce: Nonce): SigningJob => {
-    const creationTimestamp = nonce.toNumber();
-    const creationDate = new ReadonlyDate(creationTimestamp * 1000);
+    const creationTimestamp = new Int53(nonce);
+    const creationDate = new ReadonlyDate(creationTimestamp.toNumber() * 1000);
     return {
       bytes: Serialization.serializeTransaction(
         unsigned,
@@ -50,11 +50,11 @@ export const liskCodec: TxCodec = {
   bytesToPost: (signed: SignedTransaction): PostableBytes => {
     const unsigned = signed.transaction;
     if (isSendTransaction(unsigned)) {
-      const timestamp = signed.primarySignature.nonce.toNumber();
-      const liskTimestamp = timestamp - 1464109200;
+      const timestamp = new Int53(signed.primarySignature.nonce);
+      const liskTimestamp = timestamp.toNumber() - 1464109200;
       const id = Serialization.transactionId(
         unsigned,
-        new ReadonlyDate(timestamp * 1000),
+        new ReadonlyDate(timestamp.toNumber() * 1000),
         signed.primarySignature,
         constants.transactionSerializationOptions,
       );
@@ -83,8 +83,8 @@ export const liskCodec: TxCodec = {
    * https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/transaction.cpp#L87
    */
   identifier: (signed: SignedTransaction): TransactionId => {
-    const creationTimestamp = signed.primarySignature.nonce.toNumber();
-    const creationDate = new ReadonlyDate(creationTimestamp * 1000);
+    const creationTimestamp = new Int53(signed.primarySignature.nonce);
+    const creationDate = new ReadonlyDate(creationTimestamp.toNumber() * 1000);
     return Serialization.transactionId(
       signed.transaction,
       creationDate,

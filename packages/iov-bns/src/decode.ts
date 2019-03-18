@@ -99,7 +99,7 @@ export function decodeUsernameNft(
 }
 
 export function decodeNonce(acct: codecImpl.sigs.IUserData & Keyed): Nonce {
-  return asInt53(acct.sequence) as Nonce;
+  return asInt53(acct.sequence).toNumber() as Nonce;
 }
 
 export function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): BcpTicker {

@@ -8,7 +8,7 @@ import {
   PublicKeyBytes,
   TokenTicker,
 } from "@iov/bcp";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding } from "@iov/encoding";
 
 const { fromHex } = Encoding;
 
@@ -72,7 +72,7 @@ const local: EthereumNetworkConfig = {
       fractionalDigits: 18,
       tokenTicker: "ETH" as TokenTicker,
     },
-    expectedNonce: new Int53(0) as Nonce,
+    expectedNonce: 0 as Nonce,
   },
   gasPrice: {
     quantity: "20000000000",
@@ -120,7 +120,7 @@ const testnetRopsten: EthereumNetworkConfig = {
       fractionalDigits: 18,
       tokenTicker: "ETH" as TokenTicker,
     },
-    expectedNonce: new Int53(1) as Nonce,
+    expectedNonce: 1 as Nonce,
   },
   gasPrice: {
     quantity: "1000000000",
@@ -170,7 +170,7 @@ const testnetRinkeby: EthereumNetworkConfig = {
       fractionalDigits: 18,
       tokenTicker: "ETH" as TokenTicker,
     },
-    expectedNonce: new Int53(463) as Nonce,
+    expectedNonce: 463 as Nonce,
   },
   gasPrice: {
     quantity: "1000000000",

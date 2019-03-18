@@ -27,7 +27,7 @@ import {
   TransactionState,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Encoding, Int53, Uint53 } from "@iov/encoding";
+import { Encoding, Uint53 } from "@iov/encoding";
 import { isJsonRpcErrorResponse, JsonRpcRequest } from "@iov/jsonrpc";
 import { StreamingSocket } from "@iov/socket";
 import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
@@ -265,7 +265,7 @@ export class EthereumConnection implements BcpConnection {
         const firstNonce = await this.getNonce(query);
         out.push(firstNonce);
         for (let index = 1; index < checkedCount; index++) {
-          out.push(new Int53(firstNonce.toNumber() + index) as Nonce);
+          out.push((firstNonce + index) as Nonce);
         }
         return out;
     }

@@ -1,5 +1,4 @@
 import { ChainId, Nonce } from "@iov/bcp";
-import { Int53 } from "@iov/encoding";
 
 import {
   decodeHexQuantity,
@@ -69,17 +68,17 @@ describe("Ethereum utils", () => {
     it("verify valid inputs", () => {
       let decStrQty;
       decStrQty = decodeHexQuantityNonce("0x38d7ea4c67fff");
-      expect(decStrQty).toEqual(new Int53(999999999999999) as Nonce);
+      expect(decStrQty).toEqual(999999999999999 as Nonce);
       decStrQty = decodeHexQuantityNonce("0x9184e72a000");
-      expect(decStrQty).toEqual(new Int53(10000000000000) as Nonce);
+      expect(decStrQty).toEqual(10000000000000 as Nonce);
       decStrQty = decodeHexQuantityNonce("0x400");
-      expect(decStrQty).toEqual(new Int53(1024) as Nonce);
+      expect(decStrQty).toEqual(1024 as Nonce);
       decStrQty = decodeHexQuantityNonce("0x41");
-      expect(decStrQty).toEqual(new Int53(65) as Nonce);
+      expect(decStrQty).toEqual(65 as Nonce);
       decStrQty = decodeHexQuantityNonce("0x2");
-      expect(decStrQty).toEqual(new Int53(2) as Nonce);
+      expect(decStrQty).toEqual(2 as Nonce);
       decStrQty = decodeHexQuantityNonce("0x0");
-      expect(decStrQty).toEqual(new Int53(0) as Nonce);
+      expect(decStrQty).toEqual(0 as Nonce);
     });
 
     it("throws error for invalid inputs", () => {
