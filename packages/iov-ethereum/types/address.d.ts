@@ -5,5 +5,5 @@ export declare function isValidAddress(address: string): boolean;
  *
  * Input address must be valid, i.e. either all lower case or correctly checksummed.
  */
-export declare function toChecksumAddress(address: string): Address;
+export declare function toChecksummedAddress(address: string): Address;
 export declare function pubkeyToAddress(pubkey: PublicKeyBundle): Address;

@@ -33,7 +33,7 @@ export function isValidAddress(address: string): boolean {
  *
  * Input address must be valid, i.e. either all lower case or correctly checksummed.
  */
-export function toChecksumAddress(address: string): Address {
+export function toChecksummedAddress(address: string): Address {
   if (!isValidAddress(address)) {
     throw new Error("Input is not a valid Ethereum address");
   }
@@ -54,6 +54,6 @@ export function pubkeyToAddress(pubkey: PublicKeyBundle): Address {
   }
   const hash = toHex(new Keccak256(pubkey.data.slice(1)).digest());
   const lastFortyChars = hash.slice(-40);
-  const addressString = toChecksumAddress("0x" + lastFortyChars);
+  const addressString = toChecksummedAddress("0x" + lastFortyChars);
   return addressString as Address;
 }
