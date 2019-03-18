@@ -30,6 +30,7 @@ import {
   SwapState,
   TokenTicker,
   TransactionState,
+  UnsignedTransaction,
 } from "@iov/bcp";
 import { Random, Sha256 } from "@iov/crypto";
 import { Encoding, Uint64 } from "@iov/encoding";
@@ -49,7 +50,7 @@ import {
 } from "./types";
 import { encodeBnsAddress, identityToAddress } from "./util";
 
-const { toHex } = Encoding;
+const { fromHex, toHex } = Encoding;
 
 function skipTests(): boolean {
   return !process.env.BNSD_ENABLED;
@@ -1906,5 +1907,86 @@ describe("BnsConnection", () => {
     });
 
     connection.disconnect();
+  });
+
+  describe("getFeeQuote", () => {
+    it("works for send transaction", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+      const sendTransaction: SendTransaction = {
+        kind: "bcp/send",
+        creator: {
+          chainId: connection.chainId(),
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: fromHex("aabbccdd") as PublicKeyBytes,
+          },
+        },
+        recipient: await randomBnsAddress(),
+        memo: `We ❤️ developers – iov.one`,
+        amount: defaultAmount,
+      };
+      const result = await connection.getFeeQuote(sendTransaction);
+      expect(result.tokens!.quantity).toEqual("0"); // ignore token type since it is free anyway
+      expect(result.gasPrice).toBeUndefined();
+      expect(result.gasLimit).toBeUndefined();
+
+      connection.disconnect();
+    });
+
+    it("works for other BNS transaction", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+      const registerBlockchainTransaction: RegisterBlockchainTx = {
+        kind: "bns/register_blockchain",
+        creator: {
+          chainId: connection.chainId(),
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: fromHex("aabbccdd") as PublicKeyBytes,
+          },
+        },
+        chain: {
+          chainId: "wonderland" as ChainId,
+          production: false,
+          enabled: true,
+          name: "Wonderland",
+          networkId: "7rg047g4h",
+          mainTickerId: "WONDER" as TokenTicker,
+        },
+        codecName: "rules_of_wonderland",
+        codecConfig: `{ rules: ["make peace not war"] }`,
+      };
+      const result = await connection.getFeeQuote(registerBlockchainTransaction);
+      expect(result.tokens!.quantity).toEqual("0"); // ignore token type since it is free anyway
+      expect(result.gasPrice).toBeUndefined();
+      expect(result.gasLimit).toBeUndefined();
+
+      connection.disconnect();
+    });
+
+    it("throws for unsupported transaction kind", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+      const otherTransaction: UnsignedTransaction = {
+        kind: "other/kind",
+        creator: {
+          chainId: connection.chainId(),
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: fromHex("aabbccdd") as PublicKeyBytes,
+          },
+        },
+      };
+      await connection
+        .getFeeQuote(otherTransaction)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/transaction of unsupported kind/i));
+
+      connection.disconnect();
+    });
   });
 });
