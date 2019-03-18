@@ -69,6 +69,12 @@ describe("address", () => {
         "0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359",
       );
     });
+
+    it("does not change checksummed addresses", () => {
+      expect(toChecksumAddress("0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359")).toEqual(
+        "0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359",
+      );
+    });
   });
 
   describe("pubkeyToAddress", () => {
