@@ -7,17 +7,17 @@ import {
   ChainId,
   FullSignature,
   isSendTransaction,
+  isSwapAbortTransaction,
   isSwapClaimTransaction,
   isSwapOfferTransaction,
-  isSwapTimeoutTransaction,
   Nonce,
   PublicKeyBundle,
   PublicKeyBytes,
   SendTransaction,
   SignatureBytes,
+  SwapAbortTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
-  SwapTimeoutTransaction,
   TokenTicker,
   UnsignedTransaction,
 } from "@iov/bcp";
@@ -243,7 +243,7 @@ export type BnsTx =
   | SendTransaction
   | SwapOfferTransaction
   | SwapClaimTransaction
-  | SwapTimeoutTransaction
+  | SwapAbortTransaction
   // BNS
   | AddAddressToUsernameTx
   | RegisterBlockchainTx
@@ -255,7 +255,7 @@ export function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx 
     isSendTransaction(transaction) ||
     isSwapOfferTransaction(transaction) ||
     isSwapClaimTransaction(transaction) ||
-    isSwapTimeoutTransaction(transaction)
+    isSwapAbortTransaction(transaction)
   ) {
     return true;
   }

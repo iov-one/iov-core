@@ -32,8 +32,8 @@ import {
   PostTxResponse,
   PubkeyQuery,
   PublicKeyBundle,
+  SwapAbortTransaction,
   SwapClaimTransaction,
-  SwapTimeoutTransaction,
   TokenTicker,
   TransactionId,
   TransactionState,
@@ -67,7 +67,7 @@ import {
   decodeBnsAddress,
   hashIdentifier,
   identityToAddress,
-  isConfirmedWithSwapClaimOrTimeoutTransaction,
+  isConfirmedWithSwapClaimOrAbortTransaction,
   isConfirmedWithSwapOfferTransaction,
 } from "./util";
 
@@ -378,9 +378,9 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       .filter(isConfirmedWithSwapOfferTransaction)
       .map(tx => this.context.swapOfferFromTx(tx));
 
-    // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout
-    const releases: ReadonlyArray<SwapClaimTransaction | SwapTimeoutTransaction> = [...setTxs, ...delTxs]
-      .filter(isConfirmedWithSwapClaimOrTimeoutTransaction)
+    // setTxs (esp on secondary index) may be a claim/abort, delTxs must be a claim/abort
+    const releases: ReadonlyArray<SwapClaimTransaction | SwapAbortTransaction> = [...setTxs, ...delTxs]
+      .filter(isConfirmedWithSwapClaimOrAbortTransaction)
       .map(x => x.transaction);
 
     const merger = new AtomicSwapMerger();
@@ -407,9 +407,9 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       .filter(isConfirmedWithSwapOfferTransaction)
       .map(tx => this.context.swapOfferFromTx(tx));
 
-    // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout
-    const releases: Stream<SwapClaimTransaction | SwapTimeoutTransaction> = Stream.merge(setTxs, delTxs)
-      .filter(isConfirmedWithSwapClaimOrTimeoutTransaction)
+    // setTxs (esp on secondary index) may be a claim/abort, delTxs must be a claim/abort
+    const releases: Stream<SwapClaimTransaction | SwapAbortTransaction> = Stream.merge(setTxs, delTxs)
+      .filter(isConfirmedWithSwapClaimOrAbortTransaction)
       .map(confirmed => confirmed.transaction);
 
     const merger = new AtomicSwapMerger();

@@ -11,10 +11,10 @@ import {
   SendTransaction,
   SignatureBytes,
   SignedTransaction,
+  SwapAbortTransaction,
   SwapClaimTransaction,
   SwapIdBytes,
   SwapOfferTransaction,
-  SwapTimeoutTransaction,
   TokenTicker,
 } from "@iov/bcp";
 import { Encoding, Int53 } from "@iov/encoding";
@@ -209,16 +209,16 @@ export const swapClaimTxJson: SignedTransaction = {
   otherSignatures: [],
 };
 
-const swapTimeoutMsg: SwapTimeoutTransaction = {
+const swapAbort: SwapAbortTransaction = {
   creator: {
     chainId: "swap-a-doo" as ChainId,
     pubkey: pubJson,
   },
-  kind: "bcp/swap_timeout",
+  kind: "bcp/swap_abort",
   swapId: fromHex("1234") as SwapIdBytes,
 };
-export const swapTimeoutTxJson: SignedTransaction = {
-  transaction: swapTimeoutMsg,
+export const swapAbortTxJson: SignedTransaction = {
+  transaction: swapAbort,
   primarySignature: sig,
   otherSignatures: [],
 };

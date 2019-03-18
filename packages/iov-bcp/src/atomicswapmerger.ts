@@ -1,9 +1,9 @@
 import { Encoding } from "@iov/encoding";
 
 import { AtomicSwap, OpenSwap, SwapState } from "./atomicswaptypes";
-import { SwapClaimTransaction, SwapTimeoutTransaction } from "./transactions";
+import { SwapAbortTransaction, SwapClaimTransaction } from "./transactions";
 
-function settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTransaction | SwapTimeoutTransaction): AtomicSwap {
+function settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTransaction | SwapAbortTransaction): AtomicSwap {
   if (tx.kind === "bcp/swap_claim") {
     return {
       kind: SwapState.Claimed,
@@ -20,13 +20,13 @@ function settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTransaction | SwapTimeout
 
 export class AtomicSwapMerger {
   private readonly open = new Map<string, OpenSwap>();
-  private readonly settling = new Map<string, SwapClaimTransaction | SwapTimeoutTransaction>();
+  private readonly settling = new Map<string, SwapClaimTransaction | SwapAbortTransaction>();
 
   /**
    * Takes an event, checks if there is already a matching open or settling event
    * stored in the pool and merges.
    */
-  public process(event: OpenSwap | SwapClaimTransaction | SwapTimeoutTransaction): AtomicSwap | undefined {
+  public process(event: OpenSwap | SwapClaimTransaction | SwapAbortTransaction): AtomicSwap | undefined {
     switch (event.kind) {
       case SwapState.Open: {
         const idAsHex = Encoding.toHex(event.data.id);
@@ -47,7 +47,7 @@ export class AtomicSwapMerger {
         }
       }
       default: {
-        // event is a swap claim/timeout, resolve an open swap and return new state
+        // event is a swap claim/abort, resolve an open swap and return new state
         const idAsHex = Encoding.toHex(event.swapId);
         const matchingOpenElement = this.open.get(idAsHex);
         if (matchingOpenElement) {
@@ -55,7 +55,7 @@ export class AtomicSwapMerger {
           this.open.delete(idAsHex);
           return settled;
         } else {
-          // store swap claim/timeout in case a matching open comes in delayed
+          // store swap claim/abort in case a matching open comes in delayed
           if (this.settling.has(idAsHex)) {
             throw new Error("Swap ID already in closing swaps pool");
           }
