@@ -1,11 +1,11 @@
 import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/bcp-types";
 import { Encoding } from "@iov/encoding";
 
-import { isValidAddress, pubkeyToAddress, toChecksumAddress } from "./derivation";
+import { isValidAddress, pubkeyToAddress, toChecksumAddress } from "./address";
 
 const { fromHex } = Encoding;
 
-describe("derivation", () => {
+describe("address", () => {
   describe("isValidAddress", () => {
     it("should accept non-checksummed addresses (all lower)", () => {
       expect(isValidAddress("0x0000000000000000000000000000000000000000")).toEqual(true);

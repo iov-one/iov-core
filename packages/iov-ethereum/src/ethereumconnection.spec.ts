@@ -24,7 +24,7 @@ import { Random, Secp256k1 } from "@iov/crypto";
 import { HdPaths, Secp256k1HdWallet, UserProfile, Wallet } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 
-import { pubkeyToAddress } from "./derivation";
+import { pubkeyToAddress } from "./address";
 import { ethereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
 import { testConfig } from "./testconfig.spec";

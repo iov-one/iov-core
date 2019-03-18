@@ -2,7 +2,7 @@ import { isSendTransaction, Nonce, SignedTransaction, UnsignedTransaction } from
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
-import { isValidAddress } from "./derivation";
+import { isValidAddress } from "./address";
 import { BlknumForkState, Eip155ChainId, eip155V, toRlp } from "./encoding";
 import { encodeQuantity, encodeQuantityString, fromBcpChainId, normalizeHex } from "./utils";
 

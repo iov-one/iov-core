@@ -4,4 +4,4 @@ export { ethereumConnector } from "./ethereumconnector";
 export { ethereumCodec } from "./ethereumcodec";
 
 // Custom helper functions
-export { pubkeyToAddress } from "./derivation";
+export { pubkeyToAddress } from "./address";
