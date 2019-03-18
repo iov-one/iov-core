@@ -28,7 +28,16 @@ export function isValidAddress(address: string): boolean {
   }
 }
 
+/**
+ * Converts Ethereum adddress to checksummed address according to EIP-55.
+ *
+ * Input address must be valid, i.e. either all lower case or correctly checksummed.
+ */
 export function toChecksumAddress(address: string): Address {
+  if (!isValidAddress(address)) {
+    throw new Error("Input is not a valid Ethereum address");
+  }
+
   // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md
   const addressLower = address.toLowerCase().replace("0x", "") as Address;
   const addressHash = toHex(new Keccak256(toAscii(addressLower)).digest());

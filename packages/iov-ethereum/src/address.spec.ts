@@ -75,6 +75,30 @@ describe("address", () => {
         "0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359",
       );
     });
+
+    it("throws for invalud input addresses", () => {
+      // incorrect format
+      expect(() => toChecksumAddress("")).toThrowError(/not a valid Ethereum address/i);
+      expect(() => toChecksumAddress("124")).toThrowError(/not a valid Ethereum address/i);
+      expect(() => toChecksumAddress(" 0xfb6916095ca1df60bb79ce92ce3ea74c37c5d359")).toThrowError(
+        /not a valid Ethereum address/i,
+      );
+      expect(() => toChecksumAddress("0xfb6916095ca1df60bb79ce92ce3ea74c37c5d359 ")).toThrowError(
+        /not a valid Ethereum address/i,
+      );
+
+      // invalid length
+      expect(() => toChecksumAddress("0x")).toThrowError(/not a valid Ethereum address/i);
+      expect(() => toChecksumAddress("0xaa")).toThrowError(/not a valid Ethereum address/i);
+      expect(() => toChecksumAddress("0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")).toThrowError(
+        /not a valid Ethereum address/i,
+      );
+
+      // incorrectly checksummed
+      expect(() => toChecksumAddress("0xFB6916095ca1df60bB79Ce92cE3Ea74c37c5d359")).toThrowError(
+        /not a valid Ethereum address/i,
+      );
+    });
   });
 
   describe("pubkeyToAddress", () => {
