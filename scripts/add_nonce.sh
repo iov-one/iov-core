@@ -8,10 +8,10 @@ NONCE=$(date +%s)
 
 for packagedir in ./packages/*; do
   if [[ -d "$packagedir" ]]; then
-    echo "$packagedir"
     mkdir -p "$packagedir/nonces"
     echo "Directory used to trigger lerna package updates for all packages" \
       > "$packagedir/nonces/README.txt"
     touch "$packagedir/nonces/$NONCE"
+    echo "Added nonce to package $packagedir"
   fi
 done
