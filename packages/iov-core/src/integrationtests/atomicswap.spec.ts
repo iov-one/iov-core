@@ -18,7 +18,7 @@ import {
 } from "@iov/bcp";
 import { bnsConnector, bnsSwapQueryTag } from "@iov/bns";
 import { Slip10RawIndex } from "@iov/crypto";
-import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol";
+import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 import { firstEvent } from "@iov/stream";
 
 import { MultiChainSigner } from "../multichainsigner";
@@ -45,7 +45,6 @@ function pendingWithoutBcpd(): void {
 }
 
 interface ActorData {
-  readonly mainWalletId: WalletId;
   readonly signer: MultiChainSigner;
   readonly bnsConnection: BcpAtomicSwapConnection;
   readonly bcpConnection: BcpAtomicSwapConnection;
@@ -66,7 +65,6 @@ class Actor {
     const bcpIdentity = await profile.createIdentity(wallet.id, bcpConnection.chainId(), hdPath);
 
     return new Actor({
-      mainWalletId: wallet.id,
       signer: signer,
       bnsConnection: bnsConnection as BcpAtomicSwapConnection,
       bcpConnection: bcpConnection as BcpAtomicSwapConnection,
@@ -84,7 +82,6 @@ class Actor {
     return this.signer.identityToAddress(this.bcpIdentity);
   }
 
-  private readonly mainWalletId: WalletId;
   private readonly signer: MultiChainSigner;
   private readonly bnsConnection: BcpAtomicSwapConnection;
   private readonly bcpConnection: BcpAtomicSwapConnection;
@@ -92,7 +89,6 @@ class Actor {
   private preimage: Preimage | undefined;
 
   constructor(data: ActorData) {
-    this.mainWalletId = data.mainWalletId;
     this.signer = data.signer;
     this.bnsConnection = data.bnsConnection;
     this.bcpConnection = data.bcpConnection;
@@ -131,7 +127,7 @@ class Actor {
       hash: AtomicSwapHelpers.hashPreimage(this.preimage!),
       amounts: [amount],
     };
-    const post = await this.signer.signAndPost(offer, this.mainWalletId);
+    const post = await this.signer.signAndPost(offer);
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo)) {
       throw new Error("Transaction failed");
@@ -172,7 +168,7 @@ class Actor {
       hash: offerReview.transaction.hash,
     };
 
-    const post = await this.signer.signAndPost(counterOffer, this.mainWalletId);
+    const post = await this.signer.signAndPost(counterOffer);
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo)) {
       throw new Error("Transaction failed");
@@ -208,7 +204,7 @@ class Actor {
       preimage: this.preimage!,
     };
 
-    const post = await this.signer.signAndPost(claim, this.mainWalletId);
+    const post = await this.signer.signAndPost(claim);
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo)) {
       throw new Error("Transaction failed");
@@ -233,7 +229,7 @@ class Actor {
       preimage: claim1Review.preimage, // public data now!
     };
 
-    const post = await this.signer.signAndPost(claim2, this.mainWalletId);
+    const post = await this.signer.signAndPost(claim2);
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo)) {
       throw new Error("Transaction failed");

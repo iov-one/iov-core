@@ -34,6 +34,7 @@ Breaking changes
 * @iov/bcp: Rename `SwapTimeoutTransaction` to `SwapAbortTransaction` and
   `isSwapTimeoutTransaction` to `isSwapAbortTransaction`.
 * @iov/bns: Remove `bnsNonceTag` in favour of `BcpTxQuery.signedBy`.
+* @iov/core: Remove wallet ID argument from `MultiChainSigner.signAndPost`
 * @iov/encoding: Remove `Uint32.asNumber`. Use `Uint32.toNumber` instead.
 * @iov/ethereum: The `options` parameter of `ethereumConnector` does not allow
   strings anymore. Use `{ wsUrl: myWebsocketUrl }` instead.
