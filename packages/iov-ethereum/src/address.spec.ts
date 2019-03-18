@@ -1,11 +1,11 @@
 import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
-import { isValidAddress, pubkeyToAddress, toChecksumAddress } from "./derivation";
+import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";
 
 const { fromHex } = Encoding;
 
-describe("derivation", () => {
+describe("address", () => {
   describe("isValidAddress", () => {
     it("should accept non-checksummed addresses (all lower)", () => {
       expect(isValidAddress("0x0000000000000000000000000000000000000000")).toEqual(true);
@@ -47,26 +47,56 @@ describe("derivation", () => {
     });
   });
 
-  describe("toChecksumAddress", () => {
+  describe("toChecksummedAddress", () => {
     it("convert address properly", () => {
       // test cases from https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md#test-cases
-      expect(toChecksumAddress("0x52908400098527886E0F7030069857D2E4169EE7")).toEqual(
+      expect(toChecksummedAddress("0x52908400098527886E0F7030069857D2E4169EE7")).toEqual(
         "0x52908400098527886E0F7030069857D2E4169EE7",
       );
-      expect(toChecksumAddress("0x8617E340B3D01FA5F11F306F4090FD50E238070D")).toEqual(
+      expect(toChecksummedAddress("0x8617E340B3D01FA5F11F306F4090FD50E238070D")).toEqual(
         "0x8617E340B3D01FA5F11F306F4090FD50E238070D",
       );
-      expect(toChecksumAddress("0xde709f2102306220921060314715629080e2fb77")).toEqual(
+      expect(toChecksummedAddress("0xde709f2102306220921060314715629080e2fb77")).toEqual(
         "0xde709f2102306220921060314715629080e2fb77",
       );
-      expect(toChecksumAddress("0x27b1fdb04752bbc536007a920d24acb045561c26")).toEqual(
+      expect(toChecksummedAddress("0x27b1fdb04752bbc536007a920d24acb045561c26")).toEqual(
         "0x27b1fdb04752bbc536007a920d24acb045561c26",
       );
-      expect(toChecksumAddress("0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed")).toEqual(
+      expect(toChecksummedAddress("0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed")).toEqual(
         "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed",
       );
-      expect(toChecksumAddress("0xfb6916095ca1df60bb79ce92ce3ea74c37c5d359")).toEqual(
+      expect(toChecksummedAddress("0xfb6916095ca1df60bb79ce92ce3ea74c37c5d359")).toEqual(
         "0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359",
+      );
+    });
+
+    it("does not change checksummed addresses", () => {
+      expect(toChecksummedAddress("0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359")).toEqual(
+        "0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359",
+      );
+    });
+
+    it("throws for invalid input addresses", () => {
+      // incorrect format
+      expect(() => toChecksummedAddress("")).toThrowError(/not a valid Ethereum address/i);
+      expect(() => toChecksummedAddress("124")).toThrowError(/not a valid Ethereum address/i);
+      expect(() => toChecksummedAddress(" 0xfb6916095ca1df60bb79ce92ce3ea74c37c5d359")).toThrowError(
+        /not a valid Ethereum address/i,
+      );
+      expect(() => toChecksummedAddress("0xfb6916095ca1df60bb79ce92ce3ea74c37c5d359 ")).toThrowError(
+        /not a valid Ethereum address/i,
+      );
+
+      // invalid length
+      expect(() => toChecksummedAddress("0x")).toThrowError(/not a valid Ethereum address/i);
+      expect(() => toChecksummedAddress("0xaa")).toThrowError(/not a valid Ethereum address/i);
+      expect(() => toChecksummedAddress("0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")).toThrowError(
+        /not a valid Ethereum address/i,
+      );
+
+      // incorrectly checksummed
+      expect(() => toChecksummedAddress("0xFB6916095ca1df60bB79Ce92cE3Ea74c37c5d359")).toThrowError(
+        /not a valid Ethereum address/i,
       );
     });
   });

@@ -50,6 +50,11 @@ Breaking changes
 * @iov/iov-core: Constructor of `SigningServerCore` now takes two arguments for
   authozization callbacks.
 
+## 0.12.3
+
+* @iov/ethereum: Add missing dependencies on @iov/socket and @iov/stream
+* @iov/ethereum: Export `toChecksummedAddress`
+
 ## 0.12.2
 
 * @iov/crypto: Add `Secp256k1.recoverPubkey` to recover pubkey from signature

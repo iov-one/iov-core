@@ -12,7 +12,7 @@ export function isValidAddress(address: string): boolean {
   const isChecksummed = !address.match(/^0x[a-f0-9]{40}$/);
   if (isChecksummed) {
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md
-    const addressLower = address.toLowerCase().replace("0x", "") as Address;
+    const addressLower = address.toLowerCase().replace("0x", "");
     const addressHash = toHex(new Keccak256(toAscii(addressLower)).digest());
     for (let i = 0; i < 40; i++) {
       if (
@@ -28,9 +28,19 @@ export function isValidAddress(address: string): boolean {
   }
 }
 
-export function toChecksumAddress(address: string): Address {
-  // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md
-  const addressLower = address.toLowerCase().replace("0x", "") as Address;
+/**
+ * Converts Ethereum address to checksummed address according to EIP-55.
+ *
+ * Input address must be valid, i.e. either all lower case or correctly checksummed.
+ *
+ * @link https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md
+ */
+export function toChecksummedAddress(address: string): Address {
+  if (!isValidAddress(address)) {
+    throw new Error("Input is not a valid Ethereum address");
+  }
+
+  const addressLower = address.toLowerCase().replace("0x", "");
   const addressHash = toHex(new Keccak256(toAscii(addressLower)).digest());
   let checksumAddress = "0x";
   for (let i = 0; i < 40; i++) {
@@ -45,6 +55,6 @@ export function pubkeyToAddress(pubkey: PublicKeyBundle): Address {
   }
   const hash = toHex(new Keccak256(pubkey.data.slice(1)).digest());
   const lastFortyChars = hash.slice(-40);
-  const addressString = toChecksumAddress("0x" + lastFortyChars);
+  const addressString = toChecksummedAddress("0x" + lastFortyChars);
   return addressString;
 }

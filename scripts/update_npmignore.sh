@@ -22,6 +22,7 @@ do
       echo ""
       echo "# .npmignore additions"
       echo "!build/"
+      echo "nonces/"
       # we are not in the business of bundling for licensing reasons
       echo "karma.conf.js"
       echo "webpack*.config.js"

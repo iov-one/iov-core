@@ -29,5 +29,6 @@ docs/
 
 # .npmignore additions
 !build/
+nonces/
 karma.conf.js
 webpack*.config.js

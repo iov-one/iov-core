@@ -32,8 +32,8 @@ import { isJsonRpcErrorResponse, JsonRpcRequest } from "@iov/jsonrpc";
 import { StreamingSocket } from "@iov/socket";
 import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
+import { pubkeyToAddress } from "./address";
 import { constants } from "./constants";
-import { pubkeyToAddress } from "./derivation";
 import { ethereumCodec } from "./ethereumcodec";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { Parse } from "./parse";

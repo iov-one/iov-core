@@ -35,6 +35,8 @@
     "@iov/encoding": "^0.13.0-alpha.0",
     "@iov/jsonrpc": "^0.13.0-alpha.0",
     "@iov/keycontrol": "^0.13.0-alpha.0",
+    "@iov/socket": "^0.13.0-alpha.0",
+    "@iov/stream": "^0.13.0-alpha.0",
     "@types/long": "^4.0.0",
     "axios": "^0.18.0",
     "bn.js": "^4.11.8",

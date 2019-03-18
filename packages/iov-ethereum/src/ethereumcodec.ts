@@ -19,8 +19,8 @@ import {
 import { ExtendedSecp256k1Signature, Keccak256, Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
+import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
-import { isValidAddress, pubkeyToAddress, toChecksumAddress } from "./derivation";
 import { BlknumForkState, Eip155ChainId, getRecoveryParam } from "./encoding";
 import { Serialization } from "./serialization";
 import {
@@ -96,7 +96,7 @@ export const ethereumCodec: TxCodec = {
             fractionalDigits: constants.primaryTokenFractionalDigits,
             tokenTicker: constants.primaryTokenTicker,
           },
-          recipient: toChecksumAddress(json.to),
+          recipient: toChecksummedAddress(json.to),
           memo: Encoding.fromUtf8(Encoding.fromHex(normalizeHex(json.input))),
         };
         unsignedTransaction = send;
