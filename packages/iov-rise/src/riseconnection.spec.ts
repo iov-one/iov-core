@@ -23,6 +23,7 @@ import {
   TokenTicker,
   TransactionId,
   TransactionState,
+  UnsignedTransaction,
 } from "@iov/bcp";
 import { Random } from "@iov/crypto";
 import { Derivation } from "@iov/dpos";
@@ -838,5 +839,56 @@ describe("RiseConnection", () => {
         });
       })().catch(done.fail);
     }, 60_000);
+  });
+
+  describe("getFeeQuote", () => {
+    it("works for send transaction", async () => {
+      const connection = new RiseConnection(base, riseTestnet);
+
+      const sendTransaction: SendTransaction = {
+        kind: "bcp/send",
+        creator: {
+          chainId: riseTestnet,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: fromHex("aabbccdd") as PublicKeyBytes,
+          },
+        },
+        recipient: defaultRecipientAddress,
+        memo: `We ❤️ developers – iov.one ${Math.random()}`,
+        amount: defaultSendAmount,
+      };
+      const result = await connection.getFeeQuote(sendTransaction);
+      expect(result.tokens).toEqual({
+        quantity: "10000000",
+        fractionalDigits: 8,
+        tokenTicker: "RISE" as TokenTicker,
+      });
+      expect(result.gasPrice).toBeUndefined();
+      expect(result.gasLimit).toBeUndefined();
+
+      connection.disconnect();
+    });
+
+    it("throws for unsupported transaction kind", async () => {
+      const connection = new RiseConnection(base, riseTestnet);
+
+      const otherTransaction: UnsignedTransaction = {
+        kind: "other/kind",
+        creator: {
+          chainId: riseTestnet,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: fromHex("aabbccdd") as PublicKeyBytes,
+          },
+        },
+      };
+      await connection
+        .getFeeQuote(otherTransaction)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/transaction of unsupported kind/i));
+
+      connection.disconnect();
+    });
   });
 });

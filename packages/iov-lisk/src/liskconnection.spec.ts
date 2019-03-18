@@ -23,6 +23,7 @@ import {
   TokenTicker,
   TransactionId,
   TransactionState,
+  UnsignedTransaction,
 } from "@iov/bcp";
 import { Random } from "@iov/crypto";
 import { Derivation } from "@iov/dpos";
@@ -1056,5 +1057,52 @@ describe("LiskConnection", () => {
         });
       })().catch(done.fail);
     }, 30_000);
+  });
+
+  describe("getFeeQuote", () => {
+    it("works for send transaction", async () => {
+      const connection = new LiskConnection(dummynetBase, dummynetChainId);
+
+      const sendTransaction: SendTransaction = {
+        kind: "bcp/send",
+        creator: {
+          chainId: dummynetChainId,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: fromHex("aabbccdd") as PublicKeyBytes,
+          },
+        },
+        recipient: devnetDefaultRecipient,
+        memo: `We ❤️ developers – iov.one ${Math.random()}`,
+        amount: devnetDefaultAmount,
+      };
+      const result = await connection.getFeeQuote(sendTransaction);
+      expect(result.tokens).toEqual({
+        quantity: "10000000",
+        fractionalDigits: 8,
+        tokenTicker: "LSK" as TokenTicker,
+      });
+      expect(result.gasPrice).toBeUndefined();
+      expect(result.gasLimit).toBeUndefined();
+    });
+
+    it("throws for unsupported transaction kind", async () => {
+      const connection = new LiskConnection(dummynetBase, dummynetChainId);
+
+      const otherTransaction: UnsignedTransaction = {
+        kind: "other/kind",
+        creator: {
+          chainId: dummynetChainId,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: fromHex("aabbccdd") as PublicKeyBytes,
+          },
+        },
+      };
+      await connection
+        .getFeeQuote(otherTransaction)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/transaction of unsupported kind/i));
+    });
   });
 });
