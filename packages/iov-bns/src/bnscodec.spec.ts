@@ -10,9 +10,9 @@ import {
   signBytes,
   signedTxBin,
   signedTxJson,
+  swapAbortTxJson,
   swapClaimTxJson,
   swapOfferTxJson,
-  swapTimeoutTxJson,
 } from "./testdata.spec";
 
 describe("bnscodec", () => {
@@ -56,7 +56,7 @@ describe("bnscodec", () => {
       randomTxJson,
       swapOfferTxJson,
       swapClaimTxJson,
-      swapTimeoutTxJson,
+      swapAbortTxJson,
     ];
 
     for (const trial of transactionsToBeVerified) {

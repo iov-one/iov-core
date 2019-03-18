@@ -378,7 +378,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       .filter(isConfirmedWithSwapOfferTransaction)
       .map(tx => this.context.swapOfferFromTx(tx));
 
-    // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout
+    // setTxs (esp on secondary index) may be a claim/abort, delTxs must be a claim/abort
     const releases: ReadonlyArray<SwapClaimTransaction | SwapAbortTransaction> = [...setTxs, ...delTxs]
       .filter(isConfirmedWithSwapClaimOrAbortTransaction)
       .map(x => x.transaction);
@@ -407,7 +407,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       .filter(isConfirmedWithSwapOfferTransaction)
       .map(tx => this.context.swapOfferFromTx(tx));
 
-    // setTxs (esp on secondary index) may be a claim/timeout, delTxs must be a claim/timeout
+    // setTxs (esp on secondary index) may be a claim/abort, delTxs must be a claim/abort
     const releases: Stream<SwapClaimTransaction | SwapAbortTransaction> = Stream.merge(setTxs, delTxs)
       .filter(isConfirmedWithSwapClaimOrAbortTransaction)
       .map(confirmed => confirmed.transaction);

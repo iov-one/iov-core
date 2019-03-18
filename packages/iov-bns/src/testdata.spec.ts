@@ -217,7 +217,7 @@ const swapAbort: SwapAbortTransaction = {
   kind: "bcp/swap_abort",
   swapId: fromHex("1234") as SwapIdBytes,
 };
-export const swapTimeoutTxJson: SignedTransaction = {
+export const swapAbortTxJson: SignedTransaction = {
   transaction: swapAbort,
   primarySignature: sig,
   otherSignatures: [],

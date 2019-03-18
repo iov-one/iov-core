@@ -47,7 +47,7 @@ export class AtomicSwapMerger {
         }
       }
       default: {
-        // event is a swap claim/timeout, resolve an open swap and return new state
+        // event is a swap claim/abort, resolve an open swap and return new state
         const idAsHex = Encoding.toHex(event.swapId);
         const matchingOpenElement = this.open.get(idAsHex);
         if (matchingOpenElement) {
@@ -55,7 +55,7 @@ export class AtomicSwapMerger {
           this.open.delete(idAsHex);
           return settled;
         } else {
-          // store swap claim/timeout in case a matching open comes in delayed
+          // store swap claim/abort in case a matching open comes in delayed
           if (this.settling.has(idAsHex)) {
             throw new Error("Swap ID already in closing swaps pool");
           }
