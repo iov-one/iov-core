@@ -46,6 +46,9 @@ Breaking changes
 * @iov/keycontrol: `Keyring.addWallet` now stores a copy of the wallet
 * @iov/keycontrol: Identities now must be unique in `Keyring`.
 * @iov/keycontrol: Remove identity argument from `UserProfile.signTransaction`
+* @iov/keycontrol: Remove wallet ID argument from `UserProfile.signTransaction`,
+  `.appendSignature`, `.setIdentityLabel` and `.getIdentityLabel` as well as
+  `Keyring.setIdentityLabel`.
 * @iov/ledger-bns: Package removed from this monorepo and now available at
   https://github.com/iov-one/iov-ledger-bns
 * @iov/iov-core: Constructor of `SigningServerCore` now takes two arguments for
