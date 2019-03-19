@@ -118,6 +118,7 @@ describe("signingservice.worker", () => {
 
   it("can get bnsd identities", async () => {
     pendingWithoutBnsd();
+    pendingWithoutEthereum();
     pendingWithoutWorker();
 
     const bnsConnection = await bnsConnector(bnsdUrl).client();
@@ -177,6 +178,7 @@ describe("signingservice.worker", () => {
   });
 
   it("can get BNS or Ethereum identities", async () => {
+    pendingWithoutBnsd();
     pendingWithoutEthereum();
     pendingWithoutWorker();
 
@@ -212,6 +214,7 @@ describe("signingservice.worker", () => {
 
   it("send a signing request to service", async () => {
     pendingWithoutBnsd();
+    pendingWithoutEthereum();
     pendingWithoutWorker();
 
     const bnsConnection = await bnsConnector(bnsdUrl).client();
