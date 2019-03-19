@@ -34,12 +34,12 @@ describe("jsoncompatibledictionary", () => {
     });
 
     it("returns true for dict with array", () => {
-      expect(isJsonCompatibleDictionary({ a: [1, 2, 3] })).toEqual(true);
-      expect(isJsonCompatibleDictionary({ a: [1, "2", true, null] })).toEqual(true);
+      expect(isJsonCompatibleValue({ a: [1, 2, 3] })).toEqual(true);
+      expect(isJsonCompatibleValue({ a: [1, "2", true, null] })).toEqual(true);
     });
 
     it("returns true for nested dicts", () => {
-      expect(isJsonCompatibleDictionary({ a: { b: 123 } })).toEqual(true);
+      expect(isJsonCompatibleValue({ a: { b: 123 } })).toEqual(true);
     });
 
     it("returns false for functions", () => {
