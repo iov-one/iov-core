@@ -41,6 +41,7 @@ Breaking changes
 * @iov/encoding: Remove `Uint32.asNumber`. Use `Uint32.toNumber` instead.
 * @iov/ethereum: The `options` parameter of `ethereumConnector` does not allow
   strings anymore. Use `{ wsUrl: myWebsocketUrl }` instead.
+* @iov/jsonrpc: Make request and response types generic in `SimpleMessagingConnection`.
 * @iov/keycontrol: Remove `HdPaths.metamaskHdKeyTree`. Use `HdPaths.ethereum` instead.
 * @iov/keycontrol: `Keyring.getWallet` and `Keyring.getWallets` return the
   immutable type ReadonlyWallet now. New functions to mutate wallets are added:

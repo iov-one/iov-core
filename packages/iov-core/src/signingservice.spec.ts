@@ -20,6 +20,7 @@ import { Encoding } from "@iov/encoding";
 import {
   JsonCompatibleDictionary,
   JsonRpcClient,
+  JsonRpcRequest,
   JsonRpcResponse,
   parseJsonRpcError,
   parseJsonRpcResponse,
@@ -63,7 +64,9 @@ async function randomBnsAddress(): Promise<Address> {
   return bnsCodec.identityToAddress(randomIdentity);
 }
 
-function makeSimpleMessagingConnection(worker: Worker): SimpleMessagingConnection {
+function makeSimpleMessagingConnection(
+  worker: Worker,
+): SimpleMessagingConnection<JsonRpcRequest, JsonRpcResponse> {
   const producer: Producer<JsonRpcResponse> = {
     start: listener => {
       // tslint:disable-next-line:no-object-mutation
