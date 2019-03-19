@@ -58,7 +58,10 @@ export function isJsonCompatibleDictionary(data: unknown): data is JsonCompatibl
     return false;
   }
 
-  if (Array.isArray(data)) {
+  // Exclude special kind of objects like Array, Date or Uint8Array
+  // Object.prototype.toString() returns a specified value:
+  // http://www.ecma-international.org/ecma-262/7.0/index.html#sec-object.prototype.tostring
+  if (Object.prototype.toString.call(data) !== "[object Object]") {
     return false;
   }
 

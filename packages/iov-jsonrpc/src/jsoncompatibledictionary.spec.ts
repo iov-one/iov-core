@@ -92,6 +92,12 @@ describe("jsoncompatibledictionary", () => {
       expect(isJsonCompatibleDictionary(false)).toEqual(false);
     });
 
+    it("returns false for other objects", () => {
+      expect(isJsonCompatibleDictionary(new Uint8Array([0x00]))).toEqual(false);
+      expect(isJsonCompatibleDictionary(/123/)).toEqual(false);
+      expect(isJsonCompatibleDictionary(new Date())).toEqual(false);
+    });
+
     it("returns false for arrays", () => {
       expect(isJsonCompatibleDictionary([1, 2, 3])).toEqual(false);
     });

@@ -13,6 +13,7 @@
 * @iov/keycontrol: Add `Keyring.getAllIdentities` and `Keyring.getWalletByIdentity`
 * @iov/keycontrol: Add `UserProfile.getAllIdentities`
 * @iov/keycontrol: Add `.previewIdentity` to the `ReadonlyWallet`/`Wallet` interfaces
+* @iov/jsonrpc: Let `isJsonCompatibleDictionary` not accept non-simple objects
 * @iov/lisk: Implement `watchBlockHeaders` method on `LiskConnection`.
 * @iov/lisk: Implement `getFeeQuote` method on `LiskConnection`.
 * @iov/rise: Implement `getFeeQuote` method on `RiseConnection`.
