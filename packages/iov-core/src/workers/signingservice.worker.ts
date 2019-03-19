@@ -7,7 +7,7 @@ import { bnsConnector } from "@iov/bns";
 import { ethereumConnector } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 
-import { JsonRpcSigningServer } from "../jsonrpcsigningserver";
+import { JsRpcSigningServer } from "../jsrpcsigningserver";
 import { MultiChainSigner } from "../multichainsigner";
 import { SigningServerCore } from "../signingservercore";
 
@@ -48,7 +48,7 @@ async function main(): Promise<void> {
       return true;
     },
   );
-  const server = new JsonRpcSigningServer(core);
+  const server = new JsRpcSigningServer(core);
 
   onmessage = async event => {
     // console.log("Received message", JSON.stringify(event));

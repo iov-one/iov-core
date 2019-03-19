@@ -39,6 +39,8 @@ Breaking changes
   JavaScript and JSON interfaces.
 * @iov/bns: Remove `bnsNonceTag` in favour of `BcpTxQuery.signedBy`.
 * @iov/core: Remove wallet ID argument from `MultiChainSigner.signAndPost`
+* @iov/core: Rename `JsonRpcSigningServer` to `JsRpcSigningServer` and convert
+  interface from JSON to JavaScript.
 * @iov/encoding: Remove `Uint32.asNumber`. Use `Uint32.toNumber` instead.
 * @iov/ethereum: The `options` parameter of `ethereumConnector` does not allow
   strings anymore. Use `{ wsUrl: myWebsocketUrl }` instead.

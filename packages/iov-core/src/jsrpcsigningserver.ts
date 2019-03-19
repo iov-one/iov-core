@@ -81,7 +81,7 @@ function parseRpcCall(data: JsRpcRequest): RpcCall {
 /**
  * A transport-agnostic JavaScript RPC wrapper around SigningServerCore
  */
-export class JsonRpcSigningServer {
+export class JsRpcSigningServer {
   private readonly core: SigningServerCore;
 
   constructor(core: SigningServerCore) {
@@ -108,11 +108,11 @@ export class JsonRpcSigningServer {
   }
 
   /**
-   * Handles a checked JsonRpcRequest
+   * Handles a checked JsRpcRequest
    *
-   * 1. convert JsonRpcRequest into calls to SigningServerCore
+   * 1. convert JsRpcRequest into calls to SigningServerCore
    * 2. call SigningServerCore
-   * 3. convert result to JSON-RPC format
+   * 3. convert result to JS RPC format
    */
   public async handleChecked(request: JsRpcRequest): Promise<JsRpcResponse> {
     let call: RpcCall;

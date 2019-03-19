@@ -17,8 +17,8 @@ import { ethereumConnector } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 import { firstEvent } from "@iov/stream";
 
-import { JsonRpcSigningServer } from "./jsonrpcsigningserver";
 import { isJsRpcErrorResponse, JsRpcCompatibleDictionary } from "./jsrpc";
+import { JsRpcSigningServer } from "./jsrpcsigningserver";
 import { MultiChainSigner } from "./multichainsigner";
 import { GetIdentitiesAuthorization, SignAndPostAuthorization, SigningServerCore } from "./signingservercore";
 
@@ -57,7 +57,7 @@ const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown quest
 const defaultGetIdentitiesCallback: GetIdentitiesAuthorization = async (_, matching) => matching;
 const defaultSignAndPostCallback: SignAndPostAuthorization = async (_1, _2) => true;
 
-async function makeJsonRpcSigningServer(): Promise<JsonRpcSigningServer> {
+async function makeBnsEthereumSigningServer(): Promise<JsRpcSigningServer> {
   const profile = new UserProfile();
   const ed25519Wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(bnsdFaucetMnemonic));
   const secp256k1Wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(ganacheMnemonic));
@@ -78,10 +78,10 @@ async function makeJsonRpcSigningServer(): Promise<JsonRpcSigningServer> {
     defaultGetIdentitiesCallback,
     defaultSignAndPostCallback,
   );
-  return new JsonRpcSigningServer(core);
+  return new JsRpcSigningServer(core);
 }
 
-describe("JsonRpcSigningServer", () => {
+describe("JsRpcSigningServer", () => {
   const ganacheSecondIdentity: PublicIdentity = {
     chainId: ethereumChainId,
     pubkey: {
@@ -104,7 +104,7 @@ describe("JsonRpcSigningServer", () => {
 
     const bnsConnection = await bnsConnector(bnsdUrl).client();
 
-    const server = await makeJsonRpcSigningServer();
+    const server = await makeBnsEthereumSigningServer();
 
     const response = await server.handleUnchecked({
       id: 123,
@@ -134,7 +134,7 @@ describe("JsonRpcSigningServer", () => {
     pendingWithoutBnsd();
     pendingWithoutEthereum();
 
-    const server = await makeJsonRpcSigningServer();
+    const server = await makeBnsEthereumSigningServer();
 
     const response = await server.handleChecked({
       id: 123,
@@ -161,7 +161,7 @@ describe("JsonRpcSigningServer", () => {
 
     const bnsConnection = await bnsConnector(bnsdUrl).client();
 
-    const server = await makeJsonRpcSigningServer();
+    const server = await makeBnsEthereumSigningServer();
 
     const response = await server.handleChecked({
       id: 123,
@@ -194,7 +194,7 @@ describe("JsonRpcSigningServer", () => {
 
     const bnsConnection = await bnsConnector(bnsdUrl).client();
 
-    const server = await makeJsonRpcSigningServer();
+    const server = await makeBnsEthereumSigningServer();
 
     const identitiesResponse = await server.handleChecked({
       id: 1,

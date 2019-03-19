@@ -3,16 +3,16 @@ import { SigningServerCore } from "./signingservercore";
 /**
  * A transport-agnostic JavaScript RPC wrapper around SigningServerCore
  */
-export declare class JsonRpcSigningServer {
+export declare class JsRpcSigningServer {
     private readonly core;
     constructor(core: SigningServerCore);
     handleUnchecked(request: unknown): Promise<JsRpcResponse>;
     /**
-     * Handles a checked JsonRpcRequest
+     * Handles a checked JsRpcRequest
      *
-     * 1. convert JsonRpcRequest into calls to SigningServerCore
+     * 1. convert JsRpcRequest into calls to SigningServerCore
      * 2. call SigningServerCore
-     * 3. convert result to JSON-RPC format
+     * 3. convert result to JS RPC format
      */
     handleChecked(request: JsRpcRequest): Promise<JsRpcResponse>;
     /**

@@ -12,7 +12,6 @@ export {
   WalletSerializationString,
 } from "@iov/keycontrol";
 
-export { JsonRpcSigningServer } from "./jsonrpcsigningserver";
 export {
   JsRpcClient,
   jsRpcCode,
@@ -25,5 +24,6 @@ export {
   parseJsRpcRequest,
   parseJsRpcResponse,
 } from "./jsrpc";
+export { JsRpcSigningServer } from "./jsrpcsigningserver";
 export { MultiChainSigner } from "./multichainsigner";
 export { GetIdentitiesAuthorization, SignAndPostAuthorization, SigningServerCore } from "./signingservercore";
