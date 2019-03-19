@@ -12,7 +12,7 @@ import {
   TokenTicker,
 } from "@iov/bcp";
 import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding } from "@iov/encoding";
 
 import {
   buildMsg,
@@ -126,7 +126,7 @@ describe("Encode", () => {
 
   it("encodes full signature", () => {
     const fullSignature: FullSignature = {
-      nonce: new Int53(123) as Nonce,
+      nonce: 123 as Nonce,
       pubkey: {
         algo: Algorithm.Ed25519,
         data: fromHex("00aa1122bbddffeeddcc") as PublicKeyBytes,

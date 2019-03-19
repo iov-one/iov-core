@@ -1,7 +1,7 @@
 import { ReadonlyDate } from "readonly-date";
 
 import { Nonce } from "@iov/bcp";
-import { Int53, Uint64 } from "@iov/encoding";
+import { Uint64 } from "@iov/encoding";
 
 export class Parse {
   /** validates string to be a non-negative integer and cuts leading zeros */
@@ -34,6 +34,6 @@ export class Parse {
    * @param date the JavaScript date and time object
    */
   public static timeToNonce(date: ReadonlyDate): Nonce {
-    return new Int53(Math.floor(date.getTime() / 1000)) as Nonce;
+    return Math.floor(date.getTime() / 1000) as Nonce;
   }
 }

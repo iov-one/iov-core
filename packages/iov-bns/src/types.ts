@@ -164,7 +164,7 @@ export function decodeSignature(signature: codecImpl.crypto.ISignature): Signatu
 }
 
 export const decodeFullSig = (sig: codecImpl.sigs.IStdSignature): FullSignature => ({
-  nonce: asInt53(sig.sequence) as Nonce,
+  nonce: asInt53(sig.sequence).toNumber() as Nonce,
   pubkey: decodePubkey(ensure(sig.pubkey)),
   signature: decodeSignature(ensure(sig.signature)),
 });

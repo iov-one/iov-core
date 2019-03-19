@@ -1,6 +1,6 @@
 import { isSendTransaction, Nonce, SignedTransaction, UnsignedTransaction } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 
 import { isValidAddress } from "./address";
 import { BlknumForkState, Eip155ChainId, eip155V, toRlp } from "./encoding";
@@ -116,10 +116,12 @@ export class Serialization {
    * Nonce 0 must be represented as 0x instead of 0x0 for some strange reason
    */
   private static encodeNonce(nonce: Nonce): Uint8Array {
-    if (nonce.toNumber() === 0) {
+    const checkedNonce = new Int53(nonce);
+
+    if (checkedNonce.toNumber() === 0) {
       return new Uint8Array([]);
     } else {
-      return fromHex(normalizeHex(encodeQuantity(nonce.toNumber())));
+      return fromHex(normalizeHex(encodeQuantity(checkedNonce.toNumber())));
     }
   }
 }

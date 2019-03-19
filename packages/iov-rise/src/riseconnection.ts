@@ -31,7 +31,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Parse } from "@iov/dpos";
-import { Encoding, Int53, Uint53, Uint64 } from "@iov/encoding";
+import { Encoding, Uint53, Uint64 } from "@iov/encoding";
 import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { constants } from "./constants";
@@ -222,9 +222,9 @@ export class RiseConnection implements BcpConnection {
     const checkedCount = new Uint53(count).toNumber();
     // use unique nonces to ensure the same transaction content leads to a different transaction ID
     // [now-3, now-2, now-1, now] for 4 nonces
-    const lastNonce = generateNonce().toNumber();
+    const lastNonce = generateNonce();
     return Array.from({ length: checkedCount }).map((_1, index) => {
-      return new Int53(lastNonce - (checkedCount - 1 - index)) as Nonce;
+      return (lastNonce - (checkedCount - 1 - index)) as Nonce;
     });
   }
 

@@ -20,7 +20,7 @@ import {
   TxCodec,
 } from "@iov/bcp";
 import { Ed25519, Slip10RawIndex } from "@iov/crypto";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding } from "@iov/encoding";
 
 import { HdPaths } from "./hdpaths";
 import { Keyring } from "./keyring";
@@ -508,7 +508,7 @@ describe("UserProfile", () => {
     const fakeSignedTransaction: SignedTransaction = {
       transaction: fakeTransaction,
       primarySignature: {
-        nonce: new Int53(11) as Nonce,
+        nonce: 11 as Nonce,
         pubkey: fakeIdentity.pubkey,
         signature: new Uint8Array([]) as SignatureBytes,
       },
@@ -553,7 +553,7 @@ describe("UserProfile", () => {
       .then(() => fail("Promise must not resolve"))
       .catch(error => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
     await profile
-      .signTransaction(fakeTransaction, fakeCodec, new Int53(12) as Nonce)
+      .signTransaction(fakeTransaction, fakeCodec, 12 as Nonce)
       .then(() => fail("Promise must not resolve"))
       .catch(error =>
         expect(error).toMatch(
@@ -561,7 +561,7 @@ describe("UserProfile", () => {
         ),
       );
     await profile
-      .appendSignature(fakeIdentity, fakeSignedTransaction, fakeCodec, new Int53(12) as Nonce)
+      .appendSignature(fakeIdentity, fakeSignedTransaction, fakeCodec, 12 as Nonce)
       .then(() => fail("Promise must not resolve"))
       .catch(error =>
         expect(error).toMatch(
@@ -611,7 +611,7 @@ describe("UserProfile", () => {
         throw new Error("not implemented");
       },
     };
-    const nonce = new Int53(0x112233445566) as Nonce;
+    const nonce = 0x112233445566 as Nonce;
 
     const signedTransaction = await profile.signTransaction(fakeTransaction, fakeCodec, nonce);
     expect(signedTransaction.transaction).toEqual(fakeTransaction);

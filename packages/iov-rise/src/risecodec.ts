@@ -31,8 +31,8 @@ export const riseCodec: TxCodec = {
    * https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/transaction.cpp#L36
    */
   bytesToSign: (unsigned: UnsignedTransaction, nonce: Nonce): SigningJob => {
-    const creationTimestamp = nonce.toNumber();
-    const creationDate = new ReadonlyDate(creationTimestamp * 1000);
+    const creationTimestamp = new Int53(nonce);
+    const creationDate = new ReadonlyDate(creationTimestamp.toNumber() * 1000);
     return {
       bytes: Serialization.serializeTransaction(
         unsigned,
@@ -54,11 +54,11 @@ export const riseCodec: TxCodec = {
         throw new Error("RISE does not support sent transaction memos.");
       }
 
-      const timestamp = signed.primarySignature.nonce.toNumber();
-      const riseTimestamp = timestamp - 1464109200;
+      const timestamp = new Int53(signed.primarySignature.nonce);
+      const riseTimestamp = timestamp.toNumber() - 1464109200;
       const id = Serialization.transactionId(
         unsigned,
-        new ReadonlyDate(timestamp * 1000),
+        new ReadonlyDate(timestamp.toNumber() * 1000),
         signed.primarySignature,
         constants.transactionSerializationOptions,
       );
@@ -85,8 +85,8 @@ export const riseCodec: TxCodec = {
    * https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/transaction.cpp#L87
    */
   identifier: (signed: SignedTransaction): TransactionId => {
-    const creationTimestamp = signed.primarySignature.nonce.toNumber();
-    const creationDate = new ReadonlyDate(creationTimestamp * 1000);
+    const creationTimestamp = new Int53(signed.primarySignature.nonce);
+    const creationDate = new ReadonlyDate(creationTimestamp.toNumber() * 1000);
     return Serialization.transactionId(
       signed.transaction,
       creationDate,

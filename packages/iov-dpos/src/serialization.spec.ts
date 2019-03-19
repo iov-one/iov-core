@@ -11,7 +11,7 @@ import {
   SignedTransaction,
   TokenTicker,
 } from "@iov/bcp";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding } from "@iov/encoding";
 
 import { Serialization, TransactionSerializationOptions } from "./serialization";
 
@@ -20,7 +20,7 @@ const { serializeTransaction, toTimestamp, transactionId } = Serialization;
 
 const epochAsUnixTimestamp = 1464109200;
 const defaultCreationDate = new ReadonlyDate((865708731 + epochAsUnixTimestamp) * 1000);
-const zeroNonce = new Int53(0) as Nonce;
+const zeroNonce = 0 as Nonce;
 // use nethash as chain ID
 const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
 const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;

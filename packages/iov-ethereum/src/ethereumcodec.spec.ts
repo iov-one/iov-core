@@ -9,7 +9,7 @@ import {
   TokenTicker,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding } from "@iov/encoding";
 
 import { ethereumCodec } from "./ethereumcodec";
 
@@ -68,7 +68,7 @@ describe("ethereumCodec", () => {
           memo: "Search tx test 0.6590869173964335",
         },
         primarySignature: {
-          nonce: new Int53(225) as Nonce,
+          nonce: 225 as Nonce,
           pubkey: {
             algo: Algorithm.Secp256k1,
             data: expectedPubkey,

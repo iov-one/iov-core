@@ -83,7 +83,7 @@ function encodeSignature(algo: Algorithm, bytes: SignatureBytes): codecImpl.cryp
 
 export function encodeFullSignature(fullSignature: FullSignature): codecImpl.sigs.IStdSignature {
   return codecImpl.sigs.StdSignature.create({
-    sequence: fullSignature.nonce.toNumber(),
+    sequence: fullSignature.nonce,
     pubkey: encodePubkey(fullSignature.pubkey),
     signature: encodeSignature(fullSignature.pubkey.algo, fullSignature.signature),
   });

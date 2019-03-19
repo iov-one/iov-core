@@ -12,7 +12,7 @@ import {
   SignedTransaction,
   TokenTicker,
 } from "@iov/bcp";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding } from "@iov/encoding";
 
 import { riseCodec } from "./risecodec";
 
@@ -21,7 +21,7 @@ const { fromHex } = Encoding;
 // use nethash as chain ID
 const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
 const riseEpochAsUnixTimestamp = 1464109200;
-const defaultCreationTimestamp = new Int53(865708731 + riseEpochAsUnixTimestamp);
+const defaultCreationTimestamp = 865708731 + riseEpochAsUnixTimestamp;
 
 describe("riseCodec", () => {
   it("derives addresses properly", () => {
@@ -174,7 +174,7 @@ describe("riseCodec", () => {
     );
     expect(unsigned.recipient).toEqual("9662024034251537644R");
 
-    expect(parsed.primarySignature.nonce).toEqual(new Int53(75015345 + riseEpochAsUnixTimestamp) as Nonce);
+    expect(parsed.primarySignature.nonce).toEqual((75015345 + riseEpochAsUnixTimestamp) as Nonce);
     expect(parsed.primarySignature.pubkey.algo).toEqual(Algorithm.Ed25519);
     expect(parsed.primarySignature.pubkey.data).toEqual(
       fromHex("3e992130a22a124b38998887f4c791c8e4d4b9d7c21522f2dffea5d09b4d8679"),

@@ -34,6 +34,8 @@ Breaking changes
 * @iov/bcp: Transaction fee data (including gas data) is now stored under a `fee` key.
 * @iov/bcp: Rename `SwapTimeoutTransaction` to `SwapAbortTransaction` and
   `isSwapTimeoutTransaction` to `isSwapAbortTransaction`.
+* @iov/bcp: Convert type `Nonce` from Int53 to number to simplify use over
+  JavaScript and JSON interfaces.
 * @iov/bns: Remove `bnsNonceTag` in favour of `BcpTxQuery.signedBy`.
 * @iov/core: Remove wallet ID argument from `MultiChainSigner.signAndPost`
 * @iov/encoding: Remove `Uint32.asNumber`. Use `Uint32.toNumber` instead.
