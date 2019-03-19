@@ -13,6 +13,7 @@ import {
 import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
+import { ethereumConnector } from "@iov/ethereum";
 import { isJsonRpcErrorResponse, JsonCompatibleDictionary } from "@iov/jsonrpc";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 import { firstEvent } from "@iov/stream";
@@ -49,6 +50,7 @@ async function randomBnsAddress(): Promise<Address> {
 
 const bnsdUrl = "ws://localhost:22345";
 const bnsdFaucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
+const ethereumUrl = "http://localhost:8545";
 const ethereumChainId = "ethereum-eip155-5777" as ChainId;
 const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
 
@@ -61,12 +63,14 @@ async function makeJsonRpcSigningServer(): Promise<JsonRpcSigningServer> {
   const secp256k1Wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(ganacheMnemonic));
   const signer = new MultiChainSigner(profile);
 
+  // connect to chains
   const bnsConnection = (await signer.addChain(bnsConnector(bnsdUrl))).connection;
+  const ethereumConnection = (await signer.addChain(ethereumConnector(ethereumUrl, {}))).connection;
 
   // faucet identity
   await profile.createIdentity(ed25519Wallet.id, bnsConnection.chainId(), HdPaths.simpleAddress(0));
   // ganache second identity
-  await profile.createIdentity(secp256k1Wallet.id, ethereumChainId, HdPaths.bip44(60, 0, 0, 1));
+  await profile.createIdentity(secp256k1Wallet.id, ethereumConnection.chainId(), HdPaths.bip44(60, 0, 0, 1));
 
   const core = new SigningServerCore(
     profile,
@@ -96,6 +100,7 @@ describe("JsonRpcSigningServer", () => {
 
   it("can get bnsd identities", async () => {
     pendingWithoutBnsd();
+    pendingWithoutEthereum();
 
     const bnsConnection = await bnsConnector(bnsdUrl).client();
 
@@ -155,6 +160,7 @@ describe("JsonRpcSigningServer", () => {
   });
 
   it("can get BNS or Ethereum identities", async () => {
+    pendingWithoutBnsd();
     pendingWithoutEthereum();
 
     const bnsConnection = await bnsConnector(bnsdUrl).client();
@@ -190,6 +196,7 @@ describe("JsonRpcSigningServer", () => {
 
   it("send a signing request to service", async () => {
     pendingWithoutBnsd();
+    pendingWithoutEthereum();
 
     const bnsConnection = await bnsConnector(bnsdUrl).client();
 
