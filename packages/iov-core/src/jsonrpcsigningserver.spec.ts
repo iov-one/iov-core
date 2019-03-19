@@ -14,11 +14,11 @@ import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { ethereumConnector } from "@iov/ethereum";
-import { isJsonRpcErrorResponse, JsonCompatibleDictionary } from "@iov/jsonrpc";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 import { firstEvent } from "@iov/stream";
 
 import { JsonRpcSigningServer } from "./jsonrpcsigningserver";
+import { isJsRpcErrorResponse, JsRpcCompatibleDictionary } from "./jsrpc";
 import { MultiChainSigner } from "./multichainsigner";
 import { GetIdentitiesAuthorization, SignAndPostAuthorization, SigningServerCore } from "./signingservercore";
 
@@ -107,7 +107,6 @@ describe("JsonRpcSigningServer", () => {
     const server = await makeJsonRpcSigningServer();
 
     const response = await server.handleUnchecked({
-      jsonrpc: "2.0",
       id: 123,
       method: "getIdentities",
       params: {
@@ -115,9 +114,8 @@ describe("JsonRpcSigningServer", () => {
         chainIds: [bnsConnection.chainId()],
       },
     });
-    expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
-    if (isJsonRpcErrorResponse(response)) {
+    if (isJsRpcErrorResponse(response)) {
       throw new Error(`Response must not be an error, but got '${response.error.message}'`);
     }
     expect(response.result).toEqual(jasmine.any(Array));
@@ -139,7 +137,6 @@ describe("JsonRpcSigningServer", () => {
     const server = await makeJsonRpcSigningServer();
 
     const response = await server.handleChecked({
-      jsonrpc: "2.0",
       id: 123,
       method: "getIdentities",
       params: {
@@ -147,9 +144,8 @@ describe("JsonRpcSigningServer", () => {
         chainIds: [ethereumChainId],
       },
     });
-    expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
-    if (isJsonRpcErrorResponse(response)) {
+    if (isJsRpcErrorResponse(response)) {
       throw new Error(`Response must not be an error, but got '${response.error.message}'`);
     }
     expect(response.result).toEqual(jasmine.any(Array));
@@ -168,7 +164,6 @@ describe("JsonRpcSigningServer", () => {
     const server = await makeJsonRpcSigningServer();
 
     const response = await server.handleChecked({
-      jsonrpc: "2.0",
       id: 123,
       method: "getIdentities",
       params: {
@@ -176,9 +171,8 @@ describe("JsonRpcSigningServer", () => {
         chainIds: [ethereumChainId, bnsConnection.chainId()],
       },
     });
-    expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
-    if (isJsonRpcErrorResponse(response)) {
+    if (isJsRpcErrorResponse(response)) {
       throw new Error(`Response must not be an error, but got '${response.error.message}'`);
     }
     expect(response.result).toEqual(jasmine.any(Array));
@@ -203,7 +197,6 @@ describe("JsonRpcSigningServer", () => {
     const server = await makeJsonRpcSigningServer();
 
     const identitiesResponse = await server.handleChecked({
-      jsonrpc: "2.0",
       id: 1,
       method: "getIdentities",
       params: {
@@ -211,7 +204,7 @@ describe("JsonRpcSigningServer", () => {
         chainIds: [bnsConnection.chainId()],
       },
     });
-    if (isJsonRpcErrorResponse(identitiesResponse)) {
+    if (isJsRpcErrorResponse(identitiesResponse)) {
       throw new Error(`Response must not be an error, but got '${identitiesResponse.error.message}'`);
     }
     const signer: PublicIdentity = identitiesResponse.result[0];
@@ -225,15 +218,16 @@ describe("JsonRpcSigningServer", () => {
     };
 
     const signAndPostResponse = await server.handleChecked({
-      jsonrpc: "2.0",
       id: 2,
       method: "signAndPost",
       params: {
         reason: "Please sign",
-        transaction: (send as unknown) as JsonCompatibleDictionary,
+        // Cast needed since type of indices of transaction is not string at compile time.
+        // see https://stackoverflow.com/a/37006179/2013738
+        transaction: (send as unknown) as JsRpcCompatibleDictionary,
       },
     });
-    if (isJsonRpcErrorResponse(signAndPostResponse)) {
+    if (isJsRpcErrorResponse(signAndPostResponse)) {
       throw new Error(`Response must not be an error, but got '${signAndPostResponse.error.message}'`);
     }
     const transactionId: TransactionId = signAndPostResponse.result;

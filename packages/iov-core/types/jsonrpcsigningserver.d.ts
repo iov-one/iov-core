@@ -1,12 +1,12 @@
-import { JsonRpcRequest, JsonRpcResponse } from "@iov/jsonrpc";
+import { JsRpcRequest, JsRpcResponse } from "./jsrpc";
 import { SigningServerCore } from "./signingservercore";
 /**
- * A transport-agnostic JSON-RPC wrapper around SigningServerCore
+ * A transport-agnostic JavaScript RPC wrapper around SigningServerCore
  */
 export declare class JsonRpcSigningServer {
     private readonly core;
     constructor(core: SigningServerCore);
-    handleUnchecked(request: unknown): Promise<JsonRpcResponse>;
+    handleUnchecked(request: unknown): Promise<JsRpcResponse>;
     /**
      * Handles a checked JsonRpcRequest
      *
@@ -14,7 +14,7 @@ export declare class JsonRpcSigningServer {
      * 2. call SigningServerCore
      * 3. convert result to JSON-RPC format
      */
-    handleChecked(request: JsonRpcRequest): Promise<JsonRpcResponse>;
+    handleChecked(request: JsRpcRequest): Promise<JsRpcResponse>;
     /**
      * Call this to free ressources when server is not needed anymore
      */

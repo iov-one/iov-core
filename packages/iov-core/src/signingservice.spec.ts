@@ -17,16 +17,16 @@ import {
 import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import {
-  JsonCompatibleDictionary,
-  JsonRpcClient,
-  JsonRpcRequest,
-  JsonRpcResponse,
-  parseJsonRpcError,
-  parseJsonRpcResponse,
-  SimpleMessagingConnection,
-} from "@iov/jsonrpc";
+import { SimpleMessagingConnection } from "@iov/jsonrpc";
 import { firstEvent } from "@iov/stream";
+import {
+  JsRpcClient,
+  JsRpcCompatibleDictionary,
+  JsRpcRequest,
+  JsRpcResponse,
+  parseJsRpcErrorResponse,
+  parseJsRpcResponse,
+} from "./jsrpc";
 
 const { fromHex } = Encoding;
 
@@ -66,17 +66,17 @@ async function randomBnsAddress(): Promise<Address> {
 
 function makeSimpleMessagingConnection(
   worker: Worker,
-): SimpleMessagingConnection<JsonRpcRequest, JsonRpcResponse> {
-  const producer: Producer<JsonRpcResponse> = {
+): SimpleMessagingConnection<JsRpcRequest, JsRpcResponse> {
+  const producer: Producer<JsRpcResponse> = {
     start: listener => {
       // tslint:disable-next-line:no-object-mutation
       worker.onmessage = event => {
         // console.log("Got message from connection", event);
-        const responseError = parseJsonRpcError(event.data);
+        const responseError = parseJsRpcErrorResponse(event.data);
         if (responseError) {
           listener.next(responseError);
         } else {
-          const response = parseJsonRpcResponse(event.data);
+          const response = parseJsRpcResponse(event.data);
           listener.next(response);
         }
       };
@@ -126,9 +126,8 @@ describe("signingservice.worker", () => {
     const worker = new Worker(signingserviceKarmaUrl);
     await sleep(signingserviceBootTime);
 
-    const client = new JsonRpcClient(makeSimpleMessagingConnection(worker));
+    const client = new JsRpcClient(makeSimpleMessagingConnection(worker));
     const response = await client.run({
-      jsonrpc: "2.0",
       id: 123,
       method: "getIdentities",
       params: {
@@ -136,7 +135,6 @@ describe("signingservice.worker", () => {
         chainIds: [bnsConnection.chainId()],
       },
     });
-    expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
     expect(response.result).toEqual(jasmine.any(Array));
     expect((response.result as ReadonlyArray<any>).length).toEqual(1);
@@ -158,9 +156,8 @@ describe("signingservice.worker", () => {
     const worker = new Worker(signingserviceKarmaUrl);
     await sleep(signingserviceBootTime);
 
-    const client = new JsonRpcClient(makeSimpleMessagingConnection(worker));
+    const client = new JsRpcClient(makeSimpleMessagingConnection(worker));
     const response = await client.run({
-      jsonrpc: "2.0",
       id: 123,
       method: "getIdentities",
       params: {
@@ -168,7 +165,6 @@ describe("signingservice.worker", () => {
         chainIds: [ganacheChainId],
       },
     });
-    expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
     expect(response.result).toEqual(jasmine.any(Array));
     expect((response.result as ReadonlyArray<any>).length).toEqual(1);
@@ -187,9 +183,8 @@ describe("signingservice.worker", () => {
     const worker = new Worker(signingserviceKarmaUrl);
     await sleep(signingserviceBootTime);
 
-    const client = new JsonRpcClient(makeSimpleMessagingConnection(worker));
+    const client = new JsRpcClient(makeSimpleMessagingConnection(worker));
     const response = await client.run({
-      jsonrpc: "2.0",
       id: 123,
       method: "getIdentities",
       params: {
@@ -197,7 +192,6 @@ describe("signingservice.worker", () => {
         chainIds: [ganacheChainId, bnsConnection.chainId()],
       },
     });
-    expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
     expect(response.result).toEqual(jasmine.any(Array));
     expect((response.result as ReadonlyArray<any>).length).toEqual(2);
@@ -222,10 +216,9 @@ describe("signingservice.worker", () => {
     const worker = new Worker(signingserviceKarmaUrl);
     await sleep(signingserviceBootTime);
 
-    const client = new JsonRpcClient(makeSimpleMessagingConnection(worker));
+    const client = new JsRpcClient(makeSimpleMessagingConnection(worker));
 
     const identitiesResponse = await client.run({
-      jsonrpc: "2.0",
       id: 1,
       method: "getIdentities",
       params: {
@@ -244,12 +237,13 @@ describe("signingservice.worker", () => {
     };
 
     const signAndPostResponse = await client.run({
-      jsonrpc: "2.0",
       id: 2,
       method: "signAndPost",
       params: {
         reason: "Please sign",
-        transaction: (send as unknown) as JsonCompatibleDictionary,
+        // Cast needed since type of indices of transaction is not string at compile time.
+        // see https://stackoverflow.com/a/37006179/2013738
+        transaction: (send as unknown) as JsRpcCompatibleDictionary,
       },
     });
     const transactionId: TransactionId = signAndPostResponse.result;
