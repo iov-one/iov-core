@@ -8,6 +8,7 @@ import {
   Amount,
   ChainId,
   isConfirmedTransaction,
+  isPublicIdentity,
   PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
@@ -226,7 +227,12 @@ describe("signingservice.worker", () => {
         chainIds: [bnsConnection.chainId()],
       },
     });
-    const signer: PublicIdentity = identitiesResponse.result[0];
+    expect(identitiesResponse.result).toEqual(jasmine.any(Array));
+    expect((identitiesResponse.result as ReadonlyArray<any>).length).toEqual(1);
+    const signer = identitiesResponse.result[0];
+    if (!isPublicIdentity(signer)) {
+      throw new Error("Identity element is not valid");
+    }
 
     const send: SendTransaction = {
       kind: "bcp/send",

@@ -4,6 +4,7 @@ import {
   Amount,
   ChainId,
   isConfirmedTransaction,
+  isPublicIdentity,
   PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
@@ -207,7 +208,12 @@ describe("JsRpcSigningServer", () => {
     if (isJsRpcErrorResponse(identitiesResponse)) {
       throw new Error(`Response must not be an error, but got '${identitiesResponse.error.message}'`);
     }
-    const signer: PublicIdentity = identitiesResponse.result[0];
+    expect(identitiesResponse.result).toEqual(jasmine.any(Array));
+    expect((identitiesResponse.result as ReadonlyArray<any>).length).toEqual(1);
+    const signer = identitiesResponse.result[0];
+    if (!isPublicIdentity(signer)) {
+      throw new Error("Identity element is not valid");
+    }
 
     const send: SendTransaction = {
       kind: "bcp/send",
