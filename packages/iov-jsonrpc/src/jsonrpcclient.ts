@@ -4,15 +4,15 @@ import { firstEvent } from "@iov/stream";
 
 import { isJsonRpcErrorResponse, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccessResponse } from "./types";
 
-export interface SimpleMessagingConnection {
-  readonly responseStream: Stream<JsonRpcResponse>;
-  readonly sendRequest: (request: JsonRpcRequest) => void;
+export interface SimpleMessagingConnection<Request, Response> {
+  readonly responseStream: Stream<Response>;
+  readonly sendRequest: (request: Request) => void;
 }
 
 export class JsonRpcClient {
-  private readonly connection: SimpleMessagingConnection;
+  private readonly connection: SimpleMessagingConnection<JsonRpcRequest, JsonRpcResponse>;
 
-  constructor(connection: SimpleMessagingConnection) {
+  constructor(connection: SimpleMessagingConnection<JsonRpcRequest, JsonRpcResponse>) {
     this.connection = connection;
   }
 

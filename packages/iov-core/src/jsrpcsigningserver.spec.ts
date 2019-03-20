@@ -4,6 +4,7 @@ import {
   Amount,
   ChainId,
   isConfirmedTransaction,
+  isPublicIdentity,
   PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
@@ -13,11 +14,12 @@ import {
 import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { isJsonRpcErrorResponse, JsonCompatibleDictionary } from "@iov/jsonrpc";
+import { ethereumConnector } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 import { firstEvent } from "@iov/stream";
 
-import { JsonRpcSigningServer } from "./jsonrpcsigningserver";
+import { isJsRpcErrorResponse, JsRpcCompatibleDictionary } from "./jsrpc";
+import { JsRpcSigningServer } from "./jsrpcsigningserver";
 import { MultiChainSigner } from "./multichainsigner";
 import { GetIdentitiesAuthorization, SignAndPostAuthorization, SigningServerCore } from "./signingservercore";
 
@@ -49,24 +51,27 @@ async function randomBnsAddress(): Promise<Address> {
 
 const bnsdUrl = "ws://localhost:22345";
 const bnsdFaucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
+const ethereumUrl = "http://localhost:8545";
 const ethereumChainId = "ethereum-eip155-5777" as ChainId;
 const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
 
 const defaultGetIdentitiesCallback: GetIdentitiesAuthorization = async (_, matching) => matching;
 const defaultSignAndPostCallback: SignAndPostAuthorization = async (_1, _2) => true;
 
-async function makeJsonRpcSigningServer(): Promise<JsonRpcSigningServer> {
+async function makeBnsEthereumSigningServer(): Promise<JsRpcSigningServer> {
   const profile = new UserProfile();
   const ed25519Wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(bnsdFaucetMnemonic));
   const secp256k1Wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(ganacheMnemonic));
   const signer = new MultiChainSigner(profile);
 
+  // connect to chains
   const bnsConnection = (await signer.addChain(bnsConnector(bnsdUrl))).connection;
+  const ethereumConnection = (await signer.addChain(ethereumConnector(ethereumUrl, {}))).connection;
 
   // faucet identity
   await profile.createIdentity(ed25519Wallet.id, bnsConnection.chainId(), HdPaths.simpleAddress(0));
   // ganache second identity
-  await profile.createIdentity(secp256k1Wallet.id, ethereumChainId, HdPaths.bip44(60, 0, 0, 1));
+  await profile.createIdentity(secp256k1Wallet.id, ethereumConnection.chainId(), HdPaths.bip44(60, 0, 0, 1));
 
   const core = new SigningServerCore(
     profile,
@@ -74,10 +79,10 @@ async function makeJsonRpcSigningServer(): Promise<JsonRpcSigningServer> {
     defaultGetIdentitiesCallback,
     defaultSignAndPostCallback,
   );
-  return new JsonRpcSigningServer(core);
+  return new JsRpcSigningServer(core);
 }
 
-describe("JsonRpcSigningServer", () => {
+describe("JsRpcSigningServer", () => {
   const ganacheSecondIdentity: PublicIdentity = {
     chainId: ethereumChainId,
     pubkey: {
@@ -96,13 +101,13 @@ describe("JsonRpcSigningServer", () => {
 
   it("can get bnsd identities", async () => {
     pendingWithoutBnsd();
+    pendingWithoutEthereum();
 
     const bnsConnection = await bnsConnector(bnsdUrl).client();
 
-    const server = await makeJsonRpcSigningServer();
+    const server = await makeBnsEthereumSigningServer();
 
     const response = await server.handleUnchecked({
-      jsonrpc: "2.0",
       id: 123,
       method: "getIdentities",
       params: {
@@ -110,9 +115,8 @@ describe("JsonRpcSigningServer", () => {
         chainIds: [bnsConnection.chainId()],
       },
     });
-    expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
-    if (isJsonRpcErrorResponse(response)) {
+    if (isJsRpcErrorResponse(response)) {
       throw new Error(`Response must not be an error, but got '${response.error.message}'`);
     }
     expect(response.result).toEqual(jasmine.any(Array));
@@ -131,10 +135,9 @@ describe("JsonRpcSigningServer", () => {
     pendingWithoutBnsd();
     pendingWithoutEthereum();
 
-    const server = await makeJsonRpcSigningServer();
+    const server = await makeBnsEthereumSigningServer();
 
     const response = await server.handleChecked({
-      jsonrpc: "2.0",
       id: 123,
       method: "getIdentities",
       params: {
@@ -142,9 +145,8 @@ describe("JsonRpcSigningServer", () => {
         chainIds: [ethereumChainId],
       },
     });
-    expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
-    if (isJsonRpcErrorResponse(response)) {
+    if (isJsRpcErrorResponse(response)) {
       throw new Error(`Response must not be an error, but got '${response.error.message}'`);
     }
     expect(response.result).toEqual(jasmine.any(Array));
@@ -155,14 +157,14 @@ describe("JsonRpcSigningServer", () => {
   });
 
   it("can get BNS or Ethereum identities", async () => {
+    pendingWithoutBnsd();
     pendingWithoutEthereum();
 
     const bnsConnection = await bnsConnector(bnsdUrl).client();
 
-    const server = await makeJsonRpcSigningServer();
+    const server = await makeBnsEthereumSigningServer();
 
     const response = await server.handleChecked({
-      jsonrpc: "2.0",
       id: 123,
       method: "getIdentities",
       params: {
@@ -170,9 +172,8 @@ describe("JsonRpcSigningServer", () => {
         chainIds: [ethereumChainId, bnsConnection.chainId()],
       },
     });
-    expect(response.jsonrpc).toEqual("2.0");
     expect(response.id).toEqual(123);
-    if (isJsonRpcErrorResponse(response)) {
+    if (isJsRpcErrorResponse(response)) {
       throw new Error(`Response must not be an error, but got '${response.error.message}'`);
     }
     expect(response.result).toEqual(jasmine.any(Array));
@@ -190,13 +191,13 @@ describe("JsonRpcSigningServer", () => {
 
   it("send a signing request to service", async () => {
     pendingWithoutBnsd();
+    pendingWithoutEthereum();
 
     const bnsConnection = await bnsConnector(bnsdUrl).client();
 
-    const server = await makeJsonRpcSigningServer();
+    const server = await makeBnsEthereumSigningServer();
 
     const identitiesResponse = await server.handleChecked({
-      jsonrpc: "2.0",
       id: 1,
       method: "getIdentities",
       params: {
@@ -204,10 +205,15 @@ describe("JsonRpcSigningServer", () => {
         chainIds: [bnsConnection.chainId()],
       },
     });
-    if (isJsonRpcErrorResponse(identitiesResponse)) {
+    if (isJsRpcErrorResponse(identitiesResponse)) {
       throw new Error(`Response must not be an error, but got '${identitiesResponse.error.message}'`);
     }
-    const signer: PublicIdentity = identitiesResponse.result[0];
+    expect(identitiesResponse.result).toEqual(jasmine.any(Array));
+    expect((identitiesResponse.result as ReadonlyArray<any>).length).toEqual(1);
+    const signer = identitiesResponse.result[0];
+    if (!isPublicIdentity(signer)) {
+      throw new Error("Identity element is not valid");
+    }
 
     const send: SendTransaction = {
       kind: "bcp/send",
@@ -218,15 +224,16 @@ describe("JsonRpcSigningServer", () => {
     };
 
     const signAndPostResponse = await server.handleChecked({
-      jsonrpc: "2.0",
       id: 2,
       method: "signAndPost",
       params: {
         reason: "Please sign",
-        transaction: (send as unknown) as JsonCompatibleDictionary,
+        // Cast needed since type of indices of transaction is not string at compile time.
+        // see https://stackoverflow.com/a/37006179/2013738
+        transaction: (send as unknown) as JsRpcCompatibleDictionary,
       },
     });
-    if (isJsonRpcErrorResponse(signAndPostResponse)) {
+    if (isJsRpcErrorResponse(signAndPostResponse)) {
       throw new Error(`Response must not be an error, but got '${signAndPostResponse.error.message}'`);
     }
     const transactionId: TransactionId = signAndPostResponse.result;

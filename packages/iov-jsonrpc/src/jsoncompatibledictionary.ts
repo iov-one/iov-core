@@ -58,16 +58,14 @@ export function isJsonCompatibleDictionary(data: unknown): data is JsonCompatibl
     return false;
   }
 
-  if (Array.isArray(data)) {
+  // Exclude special kind of objects like Array, Date or Uint8Array
+  // Object.prototype.toString() returns a specified value:
+  // http://www.ecma-international.org/ecma-262/7.0/index.html#sec-object.prototype.tostring
+  if (Object.prototype.toString.call(data) !== "[object Object]") {
     return false;
   }
 
-  for (const key of Object.getOwnPropertyNames(data)) {
-    const value = (data as any)[key];
-    if (!isJsonCompatibleValue(value)) {
-      return false;
-    }
-  }
-
-  return true;
+  // replace with Object.values when available (ES2017+)
+  const values = Object.getOwnPropertyNames(data).map(key => (data as any)[key]);
+  return values.every(isJsonCompatibleValue);
 }

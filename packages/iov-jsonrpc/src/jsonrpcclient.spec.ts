@@ -4,7 +4,7 @@ import { Producer, Stream } from "xstream";
 
 import { JsonRpcClient, SimpleMessagingConnection } from "./jsonrpcclient";
 import { parseJsonRpcError, parseJsonRpcResponse } from "./parse";
-import { JsonRpcResponse } from "./types";
+import { JsonRpcRequest, JsonRpcResponse } from "./types";
 
 function pendingWithoutWorker(): void {
   if (typeof Worker === "undefined") {
@@ -12,7 +12,9 @@ function pendingWithoutWorker(): void {
   }
 }
 
-function makeSimpleMessagingConnection(worker: Worker): SimpleMessagingConnection {
+function makeSimpleMessagingConnection(
+  worker: Worker,
+): SimpleMessagingConnection<JsonRpcRequest, JsonRpcResponse> {
   const producer: Producer<JsonRpcResponse> = {
     start: listener => {
       // tslint:disable-next-line:no-object-mutation

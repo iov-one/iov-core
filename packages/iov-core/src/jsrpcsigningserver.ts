@@ -1,18 +1,15 @@
 import { ChainId, isUnsignedTransaction, UnsignedTransaction } from "@iov/bcp";
-import {
-  isJsonCompatibleDictionary,
-  jsonRpcCodeInvalidParams,
-  jsonRpcCodeInvalidRequest,
-  jsonRpcCodeMethodNotFound,
-  jsonRpcCodeServerErrorDefault,
-  JsonRpcErrorResponse,
-  JsonRpcRequest,
-  JsonRpcResponse,
-  JsonRpcSuccessResponse,
-  parseJsonRpcId,
-  parseJsonRpcRequest,
-} from "@iov/jsonrpc";
+import { parseJsonRpcId } from "@iov/jsonrpc";
 
+import {
+  isJsRpcCompatibleDictionary,
+  jsRpcCode,
+  JsRpcErrorResponse,
+  JsRpcRequest,
+  JsRpcResponse,
+  JsRpcSuccessResponse,
+  parseJsRpcRequest,
+} from "./jsrpc";
 import { SigningServerCore } from "./signingservercore";
 
 interface RpcCallGetIdentities {
@@ -36,8 +33,8 @@ function isArrayOfStrings(array: ReadonlyArray<any>): array is ReadonlyArray<str
   return array.every(element => typeof element === "string");
 }
 
-function parseRpcCall(data: JsonRpcRequest): RpcCall {
-  if (!isJsonCompatibleDictionary(data.params)) {
+function parseRpcCall(data: JsRpcRequest): RpcCall {
+  if (!isJsRpcCompatibleDictionary(data.params)) {
     throw new Error("Request params are only supported as dictionary");
   }
 
@@ -82,26 +79,25 @@ function parseRpcCall(data: JsonRpcRequest): RpcCall {
 }
 
 /**
- * A transport-agnostic JSON-RPC wrapper around SigningServerCore
+ * A transport-agnostic JavaScript RPC wrapper around SigningServerCore
  */
-export class JsonRpcSigningServer {
+export class JsRpcSigningServer {
   private readonly core: SigningServerCore;
 
   constructor(core: SigningServerCore) {
     this.core = core;
   }
 
-  public async handleUnchecked(request: unknown): Promise<JsonRpcResponse> {
-    let checkedRequest: JsonRpcRequest;
+  public async handleUnchecked(request: unknown): Promise<JsRpcResponse> {
+    let checkedRequest: JsRpcRequest;
     try {
-      checkedRequest = parseJsonRpcRequest(request);
+      checkedRequest = parseJsRpcRequest(request);
     } catch (error) {
       const requestId = parseJsonRpcId(request);
-      const errorResponse: JsonRpcErrorResponse = {
-        jsonrpc: "2.0",
+      const errorResponse: JsRpcErrorResponse = {
         id: requestId,
         error: {
-          code: jsonRpcCodeInvalidRequest,
+          code: jsRpcCode.invalidRequest,
           message: error.toString(),
         },
       };
@@ -112,22 +108,21 @@ export class JsonRpcSigningServer {
   }
 
   /**
-   * Handles a checked JsonRpcRequest
+   * Handles a checked JsRpcRequest
    *
-   * 1. convert JsonRpcRequest into calls to SigningServerCore
+   * 1. convert JsRpcRequest into calls to SigningServerCore
    * 2. call SigningServerCore
-   * 3. convert result to JSON-RPC format
+   * 3. convert result to JS RPC format
    */
-  public async handleChecked(request: JsonRpcRequest): Promise<JsonRpcResponse> {
+  public async handleChecked(request: JsRpcRequest): Promise<JsRpcResponse> {
     let call: RpcCall;
     try {
       call = parseRpcCall(request);
     } catch (error) {
-      const errorResponse: JsonRpcErrorResponse = {
-        jsonrpc: "2.0",
+      const errorResponse: JsRpcErrorResponse = {
         id: request.id,
         error: {
-          code: jsonRpcCodeMethodNotFound,
+          code: jsRpcCode.methodNotFound,
           message: error.toString(),
         },
       };
@@ -135,18 +130,16 @@ export class JsonRpcSigningServer {
     }
 
     try {
-      let response: JsonRpcSuccessResponse;
+      let response: JsRpcSuccessResponse;
       switch (call.name) {
         case "getIdentities":
           response = {
-            jsonrpc: "2.0",
             id: request.id,
             result: await this.core.getIdentities(call.reason, call.chainIds),
           };
           break;
         case "signAndPost":
           response = {
-            jsonrpc: "2.0",
             id: request.id,
             result: await this.core.signAndPost(call.reason, call.transaction),
           };
@@ -158,15 +151,14 @@ export class JsonRpcSigningServer {
     } catch (error) {
       let errorCode: number;
       if (error instanceof ParamsError) {
-        errorCode = jsonRpcCodeInvalidParams;
+        errorCode = jsRpcCode.invalidParams;
       } else if (error instanceof MethodNotFoundError) {
-        errorCode = jsonRpcCodeMethodNotFound;
+        errorCode = jsRpcCode.methodNotFound;
       } else {
-        errorCode = jsonRpcCodeServerErrorDefault;
+        errorCode = jsRpcCode.serverErrorDefault;
       }
 
-      const errorResponse: JsonRpcErrorResponse = {
-        jsonrpc: "2.0",
+      const errorResponse: JsRpcErrorResponse = {
         id: request.id,
         error: {
           code: errorCode,

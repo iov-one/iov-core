@@ -13,6 +13,7 @@
 * @iov/keycontrol: Add `Keyring.getAllIdentities` and `Keyring.getWalletByIdentity`
 * @iov/keycontrol: Add `UserProfile.getAllIdentities`
 * @iov/keycontrol: Add `.previewIdentity` to the `ReadonlyWallet`/`Wallet` interfaces
+* @iov/jsonrpc: Let `isJsonCompatibleDictionary` not accept non-simple objects
 * @iov/lisk: Implement `watchBlockHeaders` method on `LiskConnection`.
 * @iov/lisk: Implement `getFeeQuote` method on `LiskConnection`.
 * @iov/rise: Implement `getFeeQuote` method on `RiseConnection`.
@@ -38,9 +39,12 @@ Breaking changes
   JavaScript and JSON interfaces.
 * @iov/bns: Remove `bnsNonceTag` in favour of `BcpTxQuery.signedBy`.
 * @iov/core: Remove wallet ID argument from `MultiChainSigner.signAndPost`
+* @iov/core: Rename `JsonRpcSigningServer` to `JsRpcSigningServer` and convert
+  interface from JSON to JavaScript.
 * @iov/encoding: Remove `Uint32.asNumber`. Use `Uint32.toNumber` instead.
 * @iov/ethereum: The `options` parameter of `ethereumConnector` does not allow
   strings anymore. Use `{ wsUrl: myWebsocketUrl }` instead.
+* @iov/jsonrpc: Make request and response types generic in `SimpleMessagingConnection`.
 * @iov/keycontrol: Remove `HdPaths.metamaskHdKeyTree`. Use `HdPaths.ethereum` instead.
 * @iov/keycontrol: `Keyring.getWallet` and `Keyring.getWallets` return the
   immutable type ReadonlyWallet now. New functions to mutate wallets are added:
