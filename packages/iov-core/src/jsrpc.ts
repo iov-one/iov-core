@@ -63,14 +63,9 @@ export function isJsRpcCompatibleDictionary(data: unknown): data is JsRpcCompati
     return false;
   }
 
-  for (const key of Object.getOwnPropertyNames(data)) {
-    const value = (data as any)[key];
-    if (!isJsRpcCompatibleValue(value)) {
-      return false;
-    }
-  }
-
-  return true;
+  // replace with Object.values when available (ES2017+)
+  const values = Object.getOwnPropertyNames(data).map(key => (data as any)[key]);
+  return values.every(isJsRpcCompatibleValue);
 }
 
 export interface JsRpcRequest {
