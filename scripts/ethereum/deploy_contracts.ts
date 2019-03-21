@@ -35,11 +35,17 @@ async function main(): Promise<void> {
     console.log(`${name} deployed to`, debugAddress(receipt.contractAddress));
 
     if (typeof contract.methods.mint !== "undefined") {
-      const quantity = "33445566";
-      console.log(`Minting ${quantity} atomic units for ${secondIdentity} ...`);
-      await contract.methods.mint(secondIdentity, quantity)
-        .send({ from: mainIdentity, gasPrice: ganacheGasPrice })
-        .getReceipt();
+      const mintingJobs = new Map<Address, string>([
+        [secondIdentity, "33445566"],
+        [Address.fromString("0x0000000000111111111122222222223333333333"), "38"],
+      ]);
+
+      for (const [recipient, quantity] of mintingJobs) {
+        console.log(`Minting ${quantity} atomic units for ${recipient} ...`);
+        await contract.methods.mint(recipient, quantity)
+          .send({ from: mainIdentity, gasPrice: ganacheGasPrice })
+          .getReceipt();
+      }
     }
   }
 }
