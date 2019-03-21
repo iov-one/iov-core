@@ -1,0 +1,9 @@
+{
+  "outputPath": "./src/contracts",
+  "contracts": {
+    "AshToken": {
+      "source": "truffle",
+      "buildFile": "truffle-contracts/AshToken.json"
+    }
+  }
+}
