@@ -51,6 +51,10 @@ if command -v docker > /dev/null ; then
   ./scripts/ethereum/start.sh
   export ETHEREUM_ENABLED=1
   fold_end
+
+  # Wait until API is ready and run in background because script
+  # takes some time but will be ready before tests start
+  (sleep 5 && ./scripts/ethereum/init.sh ) &
 fi
 
 #

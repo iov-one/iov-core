@@ -9,6 +9,8 @@ To start use
 
 ```
 ./scripts/ethereum/start.sh
+sleep 5
+./scripts/ethereum/init.sh
 export ETHEREUM_ENABLED=1
 ```
 
