@@ -151,7 +151,7 @@ describe("EthereumConnection", () => {
   describe("getAccount", () => {
     it("can get account from address", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base);
+      const connection = await EthereumConnection.establish(testConfig.base, { wsUrl: testConfig.wsUrl });
       const account = await connection.getAccount({ address: testConfig.accountState.address });
       expect(account).toBeDefined();
       expect(account!.address).toEqual(testConfig.accountState.address);
@@ -159,19 +159,22 @@ describe("EthereumConnection", () => {
         ...testConfig.accountState.expectedBalance,
         tokenName: "Ether",
       });
+      expect(account!.balance[1]).toEqual({
+        tokenTicker: "ASH" as TokenTicker,
+        fractionalDigits: 12,
+        quantity: "33445566",
+        tokenName: "Ash Token",
+      });
       connection.disconnect();
     });
 
     it("can get account from pubkey", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base);
+      const connection = await EthereumConnection.establish(testConfig.base, { wsUrl: testConfig.wsUrl });
       const account = await connection.getAccount({ pubkey: testConfig.accountState.pubkey });
       expect(account).toBeDefined();
       expect(account!.address).toEqual(testConfig.accountState.address);
-      expect(account!.balance[0]).toEqual({
-        ...testConfig.accountState.expectedBalance,
-        tokenName: "Ether",
-      });
+      expect(account!.balance.length).toBeGreaterThanOrEqual(1);
       connection.disconnect();
     });
 

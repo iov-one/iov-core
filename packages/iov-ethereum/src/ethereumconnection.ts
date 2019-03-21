@@ -1,6 +1,12 @@
 import axios from "axios";
 import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
+// tslint:disable-next-line:no-submodule-imports
+import { Address as Web3xAddress } from "web3x/address";
+// tslint:disable-next-line:no-submodule-imports
+import { Eth } from "web3x/eth";
+// tslint:disable-next-line:no-submodule-imports
+import { WebsocketProvider } from "web3x/providers";
 import { Producer, Stream, Subscription } from "xstream";
 
 import {
@@ -8,6 +14,7 @@ import {
   AccountQuery,
   Address,
   AddressQuery,
+  BcpCoin,
   BcpConnection,
   BcpTicker,
   BcpTxQuery,
@@ -34,6 +41,7 @@ import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { pubkeyToAddress } from "./address";
 import { constants } from "./constants";
+import { AshToken } from "./contracts/AshToken";
 import { ethereumCodec } from "./ethereumcodec";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { Parse } from "./parse";
@@ -86,6 +94,7 @@ export class EthereumConnection implements BcpConnection {
   private readonly myChainId: ChainId;
   private readonly socket: StreamingSocket | undefined;
   private readonly scraperApiUrl: string | undefined;
+  private readonly erc20Tokens = new Map<TokenTicker, AshToken>();
 
   constructor(baseUrl: string, chainId: ChainId, options?: EthereumConnectionOptions) {
     this.rpcClient = new HttpJsonRpcClient(baseUrl);
@@ -95,6 +104,14 @@ export class EthereumConnection implements BcpConnection {
       if (options.wsUrl) {
         this.socket = new StreamingSocket(options.wsUrl);
         this.socket.connect();
+
+        const provider = new WebsocketProvider(options.wsUrl);
+        const eth = new Eth(provider);
+
+        this.erc20Tokens.set(
+          "ASH" as TokenTicker,
+          new AshToken(eth, Web3xAddress.fromString("0xCb642A87923580b6F7D07D1471F93361196f2650")),
+        );
       }
 
       if (options.scraperApiUrl) {
@@ -224,6 +241,19 @@ export class EthereumConnection implements BcpConnection {
       return undefined;
     }
 
+    const erc20Balances: ReadonlyArray<BcpCoin> = await Promise.all(
+      [...this.erc20Tokens.entries()].map(async ([ticker, contract]) => {
+        return {
+          tokenTicker: ticker,
+          quantity: await contract.methods.balanceOf(Web3xAddress.fromString(address)).call(),
+          // TODO: cache those calls
+          fractionalDigits: Uint53.fromString(await contract.methods.decimals().call()).toNumber(),
+          tokenName: await contract.methods.name().call(),
+        };
+      }),
+    );
+    const nonEmptyErc20Balances = erc20Balances.filter(balance => balance.quantity !== "0");
+
     const account: Account = {
       address: address,
       pubkey: undefined, // TODO: get from a transaction sent by this address
@@ -232,6 +262,7 @@ export class EthereumConnection implements BcpConnection {
           tokenName: constants.primaryTokenName,
           ...ethBalance,
         },
+        ...nonEmptyErc20Balances,
       ],
     };
     return account;

@@ -56,7 +56,7 @@ const env = process.env.ETH_ENV || "";
 const local: EthereumNetworkConfig = {
   env: "local",
   base: "http://localhost:8545",
-  wsUrl: "ws://localhost:8545",
+  wsUrl: "ws://localhost:8545/ws",
   chainId: "ethereum-eip155-5777" as ChainId,
   minHeight: 0, // ganache does not auto-generate a genesis block
   accountState: {

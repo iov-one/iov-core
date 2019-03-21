@@ -11,6 +11,7 @@ export declare class EthereumConnection implements BcpConnection {
     private readonly myChainId;
     private readonly socket;
     private readonly scraperApiUrl;
+    private readonly erc20Tokens;
     constructor(baseUrl: string, chainId: ChainId, options?: EthereumConnectionOptions);
     disconnect(): void;
     chainId(): ChainId;
