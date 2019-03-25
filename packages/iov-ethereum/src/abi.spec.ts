@@ -1,3 +1,4 @@
+import { Address } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
 import { Abi } from "./abi";
@@ -5,6 +6,45 @@ import { Abi } from "./abi";
 const { fromHex } = Encoding;
 
 describe("Abi", () => {
+  describe("encodeAddress", () => {
+    it("works", () => {
+      {
+        const address = "0x0000000000000000000000000000000000000000" as Address;
+        expect(Abi.encodeAddress(address)).toEqual(
+          fromHex("0000000000000000000000000000000000000000000000000000000000000000"),
+        );
+      }
+      {
+        const address = "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address;
+        expect(Abi.encodeAddress(address)).toEqual(
+          fromHex("00000000000000000000000043aa18faae961c23715735682dc75662d90f4dde"),
+        );
+      }
+    });
+
+    it("throws for invalid address", () => {
+      // wrong prefix missing
+      expect(() => Abi.encodeAddress("0000000000000000000000000000000000000000" as Address)).toThrowError(
+        /invalid address/i,
+      );
+      expect(() => Abi.encodeAddress("0X0000000000000000000000000000000000000000" as Address)).toThrowError(
+        /invalid address/i,
+      );
+      // wrong length
+      expect(() => Abi.encodeAddress("0x" as Address)).toThrowError(/invalid address/i);
+      expect(() => Abi.encodeAddress("0x00000000000000000000000000000000000000" as Address)).toThrowError(
+        /invalid address/i,
+      );
+      expect(() => Abi.encodeAddress("0x000000000000000000000000000000000000000000" as Address)).toThrowError(
+        /invalid address/i,
+      );
+      // wrong checksum
+      expect(() => Abi.encodeAddress("0x43aa18FAAE961c23715735682dC75662d90F4DDE" as Address)).toThrowError(
+        /invalid address/i,
+      );
+    });
+  });
+
   describe("decodeHeadTail", () => {
     it("works for single string", () => {
       const data = fromHex(
