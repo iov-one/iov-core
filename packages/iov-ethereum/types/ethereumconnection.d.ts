@@ -1,9 +1,12 @@
 import { Stream } from "xstream";
 import { Account, AccountQuery, AddressQuery, BcpConnection, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, UnsignedTransaction } from "@iov/bcp";
+import { Erc20Options } from "./erc20";
 export interface EthereumConnectionOptions {
     readonly wsUrl?: string;
     /** URL to an Etherscan compatible scraper API */
     readonly scraperApiUrl?: string;
+    /** List of supported ERC20 tokens */
+    readonly erc20Tokens?: Map<TokenTicker, Erc20Options>;
 }
 export declare class EthereumConnection implements BcpConnection {
     static establish(baseUrl: string, options?: EthereumConnectionOptions): Promise<EthereumConnection>;

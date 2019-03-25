@@ -72,6 +72,8 @@ export interface EthereumConnectionOptions {
   readonly wsUrl?: string;
   /** URL to an Etherscan compatible scraper API */
   readonly scraperApiUrl?: string;
+  /** List of supported ERC20 tokens */
+  readonly erc20Tokens?: Map<TokenTicker, Erc20Options>;
 }
 
 export class EthereumConnection implements BcpConnection {
@@ -94,17 +96,6 @@ export class EthereumConnection implements BcpConnection {
     this.rpcClient = new HttpJsonRpcClient(baseUrl);
     this.myChainId = chainId;
 
-    if (options) {
-      if (options.wsUrl) {
-        this.socket = new StreamingSocket(options.wsUrl);
-        this.socket.connect();
-      }
-
-      if (options.scraperApiUrl) {
-        this.scraperApiUrl = options.scraperApiUrl;
-      }
-    }
-
     const ethereumClient = {
       ethCall: async (contractAddress: Address, data: Uint8Array): Promise<Uint8Array> => {
         // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call
@@ -122,14 +113,22 @@ export class EthereumConnection implements BcpConnection {
       },
     };
 
-    const ashToken: Erc20Options = {
-      contractAddress: "0xCb642A87923580b6F7D07D1471F93361196f2650" as Address,
-      hasDecimals: true,
-      hasSymbol: true,
-      hasName: true,
-    };
+    if (options) {
+      if (options.wsUrl) {
+        this.socket = new StreamingSocket(options.wsUrl);
+        this.socket.connect();
+      }
 
-    this.erc20Tokens.set("ASH" as TokenTicker, new Erc20(ethereumClient, ashToken));
+      if (options.scraperApiUrl) {
+        this.scraperApiUrl = options.scraperApiUrl;
+      }
+
+      if (options.erc20Tokens) {
+        for (const [ticker, erc20Options] of options.erc20Tokens.entries()) {
+          this.erc20Tokens.set(ticker, new Erc20(ethereumClient, erc20Options));
+        }
+      }
+    }
   }
 
   public disconnect(): void {

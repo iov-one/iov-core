@@ -10,6 +10,8 @@ import {
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
+import { Erc20Options } from "./erc20";
+
 const { fromHex } = Encoding;
 
 export interface EthereumNetworkConfig {
@@ -46,6 +48,7 @@ export interface EthereumNetworkConfig {
     readonly invalidSignature: RegExp;
     readonly gasLimitTooLow: RegExp;
   };
+  readonly erc20Tokens: Map<TokenTicker, Erc20Options>;
 }
 
 // Chain Id is from eip-155.md
@@ -98,6 +101,17 @@ const local: EthereumNetworkConfig = {
     invalidSignature: /invalid signature/i,
     gasLimitTooLow: /base fee exceeds gas limit/i,
   },
+  erc20Tokens: new Map([
+    [
+      "ASH" as TokenTicker,
+      {
+        contractAddress: "0xCb642A87923580b6F7D07D1471F93361196f2650" as Address,
+        hasDecimals: true,
+        hasSymbol: true,
+        hasName: true,
+      },
+    ],
+  ]),
 };
 
 /** Ropsten config is not well maintained and probably outdated. Use at your won risk. */
@@ -149,6 +163,7 @@ const testnetRopsten: EthereumNetworkConfig = {
     invalidSignature: /invalid sender/i,
     gasLimitTooLow: /intrinsic gas too low/i,
   },
+  erc20Tokens: new Map([]),
 };
 
 const testnetRinkeby: EthereumNetworkConfig = {
@@ -200,6 +215,7 @@ const testnetRinkeby: EthereumNetworkConfig = {
     invalidSignature: /invalid sender/i,
     gasLimitTooLow: /intrinsic gas too low/i,
   },
+  erc20Tokens: new Map([]),
 };
 
 const config = new Map<string, EthereumNetworkConfig>();

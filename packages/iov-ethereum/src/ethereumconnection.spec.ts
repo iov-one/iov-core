@@ -151,7 +151,9 @@ describe("EthereumConnection", () => {
   describe("getAccount", () => {
     it("can get account from address", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, { wsUrl: testConfig.wsUrl });
+      const connection = await EthereumConnection.establish(testConfig.base, {
+        erc20Tokens: testConfig.erc20Tokens,
+      });
       const account = await connection.getAccount({ address: testConfig.accountState.address });
       expect(account).toBeDefined();
       expect(account!.address).toEqual(testConfig.accountState.address);
@@ -170,7 +172,9 @@ describe("EthereumConnection", () => {
 
     it("can get account from pubkey", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, { wsUrl: testConfig.wsUrl });
+      const connection = await EthereumConnection.establish(testConfig.base, {
+        erc20Tokens: testConfig.erc20Tokens,
+      });
       const account = await connection.getAccount({ pubkey: testConfig.accountState.pubkey });
       expect(account).toBeDefined();
       expect(account!.address).toEqual(testConfig.accountState.address);
@@ -180,7 +184,9 @@ describe("EthereumConnection", () => {
 
     it("can get account from unused address", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base);
+      const connection = await EthereumConnection.establish(testConfig.base, {
+        erc20Tokens: testConfig.erc20Tokens,
+      });
 
       const account = await connection.getAccount({ address: testConfig.unusedAddress });
       expect(account).toBeUndefined();
@@ -190,7 +196,9 @@ describe("EthereumConnection", () => {
 
     it("can get account from unused pubkey", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base);
+      const connection = await EthereumConnection.establish(testConfig.base, {
+        erc20Tokens: testConfig.erc20Tokens,
+      });
 
       const account = await connection.getAccount({ pubkey: testConfig.unusedPubkey });
       expect(account).toBeUndefined();
@@ -200,7 +208,9 @@ describe("EthereumConnection", () => {
 
     it("has balance for account with no ETH but ERC20 tokens", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, { wsUrl: testConfig.wsUrl });
+      const connection = await EthereumConnection.establish(testConfig.base, {
+        erc20Tokens: testConfig.erc20Tokens,
+      });
 
       const account = await connection.getAccount({
         address: "0x0000000000111111111122222222223333333333" as Address,
