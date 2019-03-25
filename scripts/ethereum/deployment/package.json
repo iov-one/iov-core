@@ -8,10 +8,13 @@
   "types": "types/index.d.ts",
   "scripts": {
     "generate-contracts": "web3x-codegen",
+    "postgenerate-contracts": "yarn format",
+    "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
     "build": "tsc",
     "deploy-contracts": "node build/deploy_contracts.js"
   },
   "devDependencies": {
+    "prettier": "^1.16.4",
     "typescript": "~3.3",
     "web3x": "^3.0.6"
   }

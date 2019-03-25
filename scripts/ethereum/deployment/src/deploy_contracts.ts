@@ -1,8 +1,8 @@
 // tslint:disable: no-submodule-imports
-import { Address } from 'web3x/address';
-import { Contract, TxSend } from 'web3x/contract';
-import { Eth } from 'web3x/eth';
-import { WebsocketProvider } from 'web3x/providers';
+import { Address } from "web3x/address";
+import { Contract, TxSend } from "web3x/contract";
+import { Eth } from "web3x/eth";
+import { WebsocketProvider } from "web3x/providers";
 
 import { AshToken } from "./AshToken";
 import { TrashToken } from "./TrashToken";
@@ -19,17 +19,17 @@ function debugAddress(address: Address | undefined): string | undefined {
 }
 
 interface DeployableContract extends Contract<any> {
-  readonly deploy: () => TxSend<any>,
+  readonly deploy: () => TxSend<any>;
 }
 
 interface DeploymentJob {
-  readonly name: string,
-  readonly contract: DeployableContract,
+  readonly name: string;
+  readonly contract: DeployableContract;
 }
 
 interface MintingJob {
-  readonly recipient: Address,
-  readonly quantity: string,
+  readonly recipient: Address;
+  readonly quantity: string;
 }
 
 async function main(): Promise<void> {
@@ -38,11 +38,11 @@ async function main(): Promise<void> {
 
   // Order matters to get reproducible contract addresses
   const deploymentJobs: ReadonlyArray<DeploymentJob> = [
-    { name: "AshToken", contract: new AshToken(eth), },
-    { name: "TrashToken", contract: new TrashToken(eth), },
+    { name: "AshToken", contract: new AshToken(eth) },
+    { name: "TrashToken", contract: new TrashToken(eth) },
   ];
 
-  for (const {name, contract} of deploymentJobs) {
+  for (const { name, contract } of deploymentJobs) {
     const deploymentTransaction = contract.deploy();
 
     const estimatedGas = await deploymentTransaction.estimateGas();
@@ -57,9 +57,10 @@ async function main(): Promise<void> {
         { recipient: Address.fromString("0x0000000000111111111122222222223333333333"), quantity: "38" },
       ];
 
-      for (const {recipient, quantity} of mintingJobs) {
+      for (const { recipient, quantity } of mintingJobs) {
         console.log(`Minting ${quantity} atomic units for ${recipient} ...`);
-        await contract.methods.mint(recipient, quantity)
+        await contract.methods
+          .mint(recipient, quantity)
           .send({ from: mainIdentity, gasPrice: ganacheGasPrice })
           .getReceipt();
       }
