@@ -167,6 +167,12 @@ describe("EthereumConnection", () => {
         quantity: "33445566",
         tokenName: "Ash Token",
       });
+      expect(account!.balance[2]).toEqual({
+        tokenTicker: "TRASH" as TokenTicker,
+        fractionalDigits: 9,
+        quantity: "33445566",
+        tokenName: "Trash Token",
+      });
       connection.disconnect();
     });
 
