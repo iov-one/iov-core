@@ -10,8 +10,7 @@
     "generate-contracts": "web3x-codegen",
     "postgenerate-contracts": "yarn format",
     "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
-    "build": "tsc",
-    "deploy-contracts": "node build/deploy_contracts.js"
+    "build": "tsc"
   },
   "devDependencies": {
     "prettier": "^1.16.4",

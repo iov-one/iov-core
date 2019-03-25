@@ -11,5 +11,5 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
   cd "$SCRIPT_DIR/deployment"
   yarn install
   yarn build
-  yarn deploy-contracts
+  ./bin/deploy
 )

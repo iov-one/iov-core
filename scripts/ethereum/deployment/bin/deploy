@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+const path = require("path");
+
+const deployment = require(path.join(__dirname, "..", "build", "deploy_contracts.js"));
+
+deployment.main()
+  .then(() => process.exit(0))
+  .catch(error => {
+    console.error(error);
+    process.exit(1);
+  });

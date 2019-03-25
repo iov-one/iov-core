@@ -32,7 +32,7 @@ interface MintingJob {
   readonly quantity: string;
 }
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const provider = new WebsocketProvider(`ws://${ganacheHost}/ws`);
   const eth = new Eth(provider);
 
@@ -67,10 +67,3 @@ async function main(): Promise<void> {
     }
   }
 }
-
-main()
-  .then(() => process.exit(0))
-  .catch(error => {
-    console.error(error);
-    process.exit(1);
-  });
