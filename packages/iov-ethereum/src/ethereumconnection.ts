@@ -253,7 +253,6 @@ export class EthereumConnection implements BcpConnection {
         return {
           tokenTicker: ticker,
           quantity: (await contract.balanceOf(address)).toString(),
-          // TODO: cache those calls; handle undefined
           fractionalDigits: await contract.decimals(),
           tokenName: await contract.name(),
         };

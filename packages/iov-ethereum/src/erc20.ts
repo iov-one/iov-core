@@ -48,10 +48,17 @@ export class Erc20 {
     return new BN(result);
   }
 
+  /**
+   * Returns symbol value from options or from chain.
+   *
+   * On-chain values will be cached internally, i.e. it is cheap to use this getter
+   * as long as the class instance is long living.
+   */
   public async name(): Promise<string> {
     if (this.options.name) {
       return this.options.name;
     } else {
+      // TODO: cache this call
       const data = calcMethodId("name()");
       const result = await this.client.ethCall(this.options.contractAddress, data);
       const [nameBinary] = Abi.decodeHeadTail(result).tail;
@@ -59,10 +66,17 @@ export class Erc20 {
     }
   }
 
+  /**
+   * Returns symbol value from options or from chain.
+   *
+   * On-chain values will be cached internally, i.e. it is cheap to use this getter
+   * as long as the class instance is long living.
+   */
   public async symbol(): Promise<string> {
     if (this.options.symbol) {
       return this.options.symbol;
     } else {
+      // TODO: cache this call
       const data = calcMethodId("symbol()");
       const result = await this.client.ethCall(this.options.contractAddress, data);
       const [symbolBinary] = Abi.decodeHeadTail(result).tail;
@@ -70,10 +84,17 @@ export class Erc20 {
     }
   }
 
+  /**
+   * Returns decimals value from options or from chain.
+   *
+   * On-chain values will be cached internally, i.e. it is cheap to use this getter
+   * as long as the class instance is long living.
+   */
   public async decimals(): Promise<number> {
     if (this.options.decimals) {
       return this.options.decimals;
     } else {
+      // TODO: cache this call
       const data = calcMethodId("decimals()");
       const result = await this.client.ethCall(this.options.contractAddress, data);
       return new BN(result).toNumber();
