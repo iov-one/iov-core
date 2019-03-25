@@ -6,10 +6,12 @@ export GANACHE_PORT="8545"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+docker pull "alpine"
+DOCKER_HOST_IP=$(docker run --rm alpine ip route | awk 'NR==1 {print $3}')
+
 (
-  # This must be done in a nodejs 10+ environment
+  # Use docker because this must run in nodejs 10+
   cd "$SCRIPT_DIR/deployment"
-  yarn install
-  yarn build
-  ./bin/deploy
+  docker build -t "ethereum-deployment:manual" .
+  docker run --read-only --rm "ethereum-deployment:manual" "ws://$DOCKER_HOST_IP:$GANACHE_PORT/ws"
 )

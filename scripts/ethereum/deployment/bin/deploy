@@ -3,7 +3,7 @@ const path = require("path");
 
 const deployment = require(path.join(__dirname, "..", "build", "deploy_contracts.js"));
 
-deployment.main()
+deployment.main(process.argv.slice(2))
   .then(() => process.exit(0))
   .catch(error => {
     console.error(error);

@@ -7,7 +7,6 @@ import { WebsocketProvider } from "web3x/providers";
 import { AshToken } from "./AshToken";
 import { TrashToken } from "./TrashToken";
 
-const ganacheHost = `localhost:${process.env.GANACHE_PORT}`;
 const ganacheGasPrice = 50000;
 
 // From README.md
@@ -32,8 +31,10 @@ interface MintingJob {
   readonly quantity: string;
 }
 
-export async function main(): Promise<void> {
-  const provider = new WebsocketProvider(`ws://${ganacheHost}/ws`);
+export async function main(args: ReadonlyArray<string>): Promise<void> {
+  const ganacheUrl = args[0];
+
+  const provider = new WebsocketProvider(ganacheUrl);
   const eth = new Eth(provider);
 
   // Order matters to get reproducible contract addresses
