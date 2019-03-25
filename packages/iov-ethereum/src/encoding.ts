@@ -113,3 +113,17 @@ export function decodeHeadTail(data: Uint8Array): HeadTail {
     tail: contents,
   };
 }
+
+export function decodeVariableLength(data: Uint8Array): Uint8Array {
+  if (data.length % 32 !== 0) {
+    throw new Error("Input data length not divisible by 32");
+  }
+
+  if (data.length === 0) {
+    throw new Error("Input data empty");
+  }
+
+  const length = new BN(data.slice(0, 32)).toNumber();
+
+  return data.slice(32, 32 + length);
+}

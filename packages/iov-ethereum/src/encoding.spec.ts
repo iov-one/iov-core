@@ -1,6 +1,13 @@
 import { Encoding } from "@iov/encoding";
 
-import { BlknumForkState, decodeHeadTail, Eip155ChainId, eip155V, getRecoveryParam } from "./encoding";
+import {
+  BlknumForkState,
+  decodeHeadTail,
+  decodeVariableLength,
+  Eip155ChainId,
+  eip155V,
+  getRecoveryParam,
+} from "./encoding";
 
 const { fromHex } = Encoding;
 
@@ -280,6 +287,45 @@ describe("Ethereum encoding", () => {
           ),
         ),
       ).toThrowError(/start position inside the header/i);
+    });
+  });
+
+  describe("decodeVariableLength", () => {
+    it("works for a three byte string", () => {
+      const data = Encoding.fromHex(
+        `
+        0000000000000000000000000000000000000000000000000000000000000003
+        4153480000000000000000000000000000000000000000000000000000000000
+      `.replace(/\s+/g, ""),
+      );
+      const result = decodeVariableLength(data);
+      expect(result).toEqual(fromHex("415348"));
+    });
+
+    it("works for 48 byte string", () => {
+      const data = Encoding.fromHex(
+        `
+        0000000000000000000000000000000000000000000000000000000000000030
+        6161616161616161616161616161616161616161616161616161616161616161
+        6161616161616161616161616161616100000000000000000000000000000000
+      `.replace(/\s+/g, ""),
+      );
+      const result = decodeVariableLength(data);
+      expect(result).toEqual(
+        fromHex(
+          "616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161",
+        ),
+      );
+    });
+
+    it("works for 0 byte string", () => {
+      const data = Encoding.fromHex(
+        `
+        0000000000000000000000000000000000000000000000000000000000000000
+      `.replace(/\s+/g, ""),
+      );
+      const result = decodeVariableLength(data);
+      expect(result).toEqual(fromHex(""));
     });
   });
 });

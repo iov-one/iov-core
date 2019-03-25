@@ -31,3 +31,4 @@ export interface HeadTail {
  * https://medium.com/@hayeah/how-to-decipher-a-smart-contract-method-call-8ee980311603
  */
 export declare function decodeHeadTail(data: Uint8Array): HeadTail;
+export declare function decodeVariableLength(data: Uint8Array): Uint8Array;
