@@ -17,9 +17,12 @@ function calcMethodId(signature: string): Uint8Array {
 
 export interface Erc20Options {
   readonly contractAddress: Address;
-  readonly hasSymbol: boolean;
-  readonly hasName: boolean;
-  readonly hasDecimals: boolean;
+  /** Override on-chain symbol. Use this of contract does not define value on-chain */
+  readonly symbol?: string;
+  /** Override on-chain name. Use this of contract does not define value on-chain */
+  readonly name?: string;
+  /** Override on-chain decimals. Use this of contract does not define value on-chain */
+  readonly decimals?: number;
 }
 
 export class Erc20 {
@@ -45,38 +48,35 @@ export class Erc20 {
     return new BN(result);
   }
 
-  /** optional, returns undefined if call does not exist */
-  public async name(): Promise<string | undefined> {
-    if (this.options.hasName) {
+  public async name(): Promise<string> {
+    if (this.options.name) {
+      return this.options.name;
+    } else {
       const data = calcMethodId("name()");
       const result = await this.client.ethCall(this.options.contractAddress, data);
       const [nameBinary] = Abi.decodeHeadTail(result).tail;
       return Encoding.fromUtf8(Abi.decodeVariableLength(nameBinary));
-    } else {
-      return undefined;
     }
   }
 
-  /** optional, returns undefined if call does not exist */
-  public async symbol(): Promise<string | undefined> {
-    if (this.options.hasSymbol) {
+  public async symbol(): Promise<string> {
+    if (this.options.symbol) {
+      return this.options.symbol;
+    } else {
       const data = calcMethodId("symbol()");
       const result = await this.client.ethCall(this.options.contractAddress, data);
       const [symbolBinary] = Abi.decodeHeadTail(result).tail;
       return Encoding.fromUtf8(Abi.decodeVariableLength(symbolBinary));
-    } else {
-      return undefined;
     }
   }
 
-  /** optional, returns undefined if call does not exist */
-  public async decimals(): Promise<BN | undefined> {
-    if (this.options.hasDecimals) {
+  public async decimals(): Promise<number> {
+    if (this.options.decimals) {
+      return this.options.decimals;
+    } else {
       const data = calcMethodId("decimals()");
       const result = await this.client.ethCall(this.options.contractAddress, data);
-      return new BN(result);
-    } else {
-      return undefined;
+      return new BN(result).toNumber();
     }
   }
 }

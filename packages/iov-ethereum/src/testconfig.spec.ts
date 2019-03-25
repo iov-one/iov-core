@@ -106,9 +106,6 @@ const local: EthereumNetworkConfig = {
       "ASH" as TokenTicker,
       {
         contractAddress: "0xCb642A87923580b6F7D07D1471F93361196f2650" as Address,
-        hasDecimals: true,
-        hasSymbol: true,
-        hasName: true,
       },
     ],
   ]),

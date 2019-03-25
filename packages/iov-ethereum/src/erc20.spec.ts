@@ -51,15 +51,12 @@ function makeClient(baseUrl: string): EthereumRpcClient {
 describe("Erc20", () => {
   const ashToken: Erc20Options = {
     contractAddress: "0xCb642A87923580b6F7D07D1471F93361196f2650" as Address,
-    hasDecimals: true,
-    hasSymbol: true,
-    hasName: true,
   };
   const trashToken: Erc20Options = {
     contractAddress: "0x9768ae2339B48643d710B11dDbDb8A7eDBEa15BC" as Address,
-    hasDecimals: false,
-    hasSymbol: false,
-    hasName: false,
+    decimals: 9,
+    symbol: "TRASH",
+    name: "Trash Token",
   };
 
   it("can query total supply", async () => {
@@ -99,12 +96,12 @@ describe("Erc20", () => {
       expect(result).toEqual("ASH");
     });
 
-    it("returns undefined if not set on-chain", async () => {
+    it("returns configured value if set", async () => {
       pendingWithoutEthereum();
 
       const contract = new Erc20(makeClient(testConfig.base), trashToken);
       const result = await contract.symbol();
-      expect(result).toBeUndefined();
+      expect(result).toEqual("TRASH");
     });
   });
 
@@ -117,12 +114,12 @@ describe("Erc20", () => {
       expect(result).toEqual("Ash Token");
     });
 
-    it("returns undefined if not set on-chain", async () => {
+    it("returns configured value if set", async () => {
       pendingWithoutEthereum();
 
       const contract = new Erc20(makeClient(testConfig.base), trashToken);
       const result = await contract.name();
-      expect(result).toBeUndefined();
+      expect(result).toEqual("Trash Token");
     });
   });
 
@@ -132,15 +129,15 @@ describe("Erc20", () => {
 
       const contract = new Erc20(makeClient(testConfig.base), ashToken);
       const result = await contract.decimals();
-      expect(result!.toNumber()).toEqual(12);
+      expect(result).toEqual(12);
     });
 
-    it("returns undefined if not set on-chain", async () => {
+    it("returns configured value if set", async () => {
       pendingWithoutEthereum();
 
       const contract = new Erc20(makeClient(testConfig.base), trashToken);
       const result = await contract.decimals();
-      expect(result).toBeUndefined();
+      expect(result).toEqual(9);
     });
   });
 });

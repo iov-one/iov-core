@@ -246,12 +246,16 @@ export class EthereumConnection implements BcpConnection {
 
     const erc20Balances: ReadonlyArray<BcpCoin> = await Promise.all(
       [...this.erc20Tokens.entries()].map(async ([ticker, contract]) => {
+        if (ticker !== (await contract.symbol())) {
+          throw new Error("Inconsistent ticker configured and in contract");
+        }
+
         return {
           tokenTicker: ticker,
           quantity: (await contract.balanceOf(address)).toString(),
           // TODO: cache those calls; handle undefined
-          fractionalDigits: (await contract.decimals())!.toNumber(),
-          tokenName: (await contract.name())!,
+          fractionalDigits: await contract.decimals(),
+          tokenName: await contract.name(),
         };
       }),
     );
