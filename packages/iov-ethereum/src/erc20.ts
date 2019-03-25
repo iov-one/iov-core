@@ -3,7 +3,8 @@ import BN = require("bn.js");
 import { Address } from "@iov/bcp";
 import { Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { decodeHeadTail, decodeVariableLength } from "./encoding";
+
+import { Abi } from "./abi";
 
 export interface EthereumRpcClient {
   readonly ethCall: (to: Address, data: Uint8Array) => Promise<Uint8Array>;
@@ -57,16 +58,16 @@ export class Erc20 {
     const data = calcMethodId("name()");
     const result = await this.client.ethCall(this.contractAddress, data);
 
-    const [nameBinary] = decodeHeadTail(result).tail;
-    return Encoding.fromUtf8(decodeVariableLength(nameBinary));
+    const [nameBinary] = Abi.decodeHeadTail(result).tail;
+    return Encoding.fromUtf8(Abi.decodeVariableLength(nameBinary));
   }
 
   /** optional, returns undefined if call does not exist */
   public async symbol(): Promise<string | undefined> {
     const data = calcMethodId("symbol()");
     const result = await this.client.ethCall(this.contractAddress, data);
-    const [symbolBinary] = decodeHeadTail(result).tail;
-    return Encoding.fromUtf8(decodeVariableLength(symbolBinary));
+    const [symbolBinary] = Abi.decodeHeadTail(result).tail;
+    return Encoding.fromUtf8(Abi.decodeVariableLength(symbolBinary));
   }
 
   /** optional, returns undefined if call does not exist */
