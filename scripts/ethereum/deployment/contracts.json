@@ -4,6 +4,10 @@
     "AshToken": {
       "source": "truffle",
       "buildFile": "contracts/AshToken.json"
+    },
+    "TrashToken": {
+      "source": "truffle",
+      "buildFile": "contracts/TrashToken.json"
     }
   }
 }
