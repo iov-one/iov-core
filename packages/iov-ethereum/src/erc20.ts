@@ -21,13 +21,6 @@ function encodeAddress(address: Address): Uint8Array {
   return new Uint8Array([...padding, ...addressBytes]);
 }
 
-function encodeNumber(num: BN | number): Uint8Array {
-  const value = num.toString(16);
-  const valueBytes = Encoding.fromHex(value);
-  const padding = new Array(32 - valueBytes.length).fill(0);
-  return new Uint8Array([...padding, ...valueBytes]);
-}
-
 export class Erc20 {
   private readonly client: EthereumRpcClient;
   private readonly contractAddress: Address;
@@ -41,16 +34,6 @@ export class Erc20 {
     const data = calcMethodId("totalSupply()");
     const result = await this.client.ethCall(this.contractAddress, data);
     return new BN(result);
-  }
-
-  public async approve(address: Address, value: BN): Promise<BN> {
-    const signature = "approve(address,uint256)";
-    const methodId = calcMethodId(signature);
-
-    const data = new Uint8Array([...methodId, ...encodeAddress(address), ...encodeNumber(value)]);
-    const result = await this.client.ethCall(this.contractAddress, data);
-    console.log(result);
-    return new BN(0);
   }
 
   public async balanceOf(address: Address): Promise<BN> {
