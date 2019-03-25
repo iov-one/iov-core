@@ -53,6 +53,14 @@ export class Erc20 {
     return new BN(0);
   }
 
+  public async balanceOf(address: Address): Promise<BN> {
+    const methodId = calcMethodId("balanceOf(address)");
+
+    const data = new Uint8Array([...methodId, ...encodeAddress(address)]);
+    const result = await this.client.ethCall(this.contractAddress, data);
+    return new BN(result);
+  }
+
   /** optional, returns undefined if call does not exist */
   public async name(): Promise<string | undefined> {
     const data = calcMethodId("name()");

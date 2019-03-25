@@ -9,6 +9,7 @@ export declare class Erc20 {
     constructor(client: EthereumRpcClient, contractAddress: Address);
     totalSupply(): Promise<BN>;
     approve(address: Address, value: BN): Promise<BN>;
+    balanceOf(address: Address): Promise<BN>;
     /** optional, returns undefined if call does not exist */
     name(): Promise<string | undefined>;
     /** optional, returns undefined if call does not exist */

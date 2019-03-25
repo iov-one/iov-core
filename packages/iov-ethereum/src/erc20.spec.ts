@@ -1,9 +1,11 @@
 import BN = require("bn.js");
 
-import { Address } from "@iov/bcp";
+import { Address, Algorithm, PublicKeyBytes } from "@iov/bcp";
+import { Random, Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { isJsonRpcErrorResponse } from "@iov/jsonrpc";
 
+import { pubkeyToAddress } from "./address";
 import { Erc20, EthereumRpcClient } from "./erc20";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { testConfig } from "./testconfig.spec";
@@ -17,6 +19,14 @@ function pendingWithoutEthereum(): void {
   if (skipTests()) {
     return pending("Set ETHEREUM_ENABLED to enable ethereum-node-based tests");
   }
+}
+
+async function randomAddress(): Promise<Address> {
+  const keypair = await Secp256k1.makeKeypair(await Random.getBytes(32));
+  return pubkeyToAddress({
+    algo: Algorithm.Secp256k1,
+    data: keypair.pubkey as PublicKeyBytes,
+  });
 }
 
 function makeClient(baseUrl: string): EthereumRpcClient {
@@ -49,6 +59,24 @@ describe("Erc20", () => {
     expect(result).toBeTruthy();
     expect(result.gt(new BN(33_445566))).toEqual(true);
     expect(result.lt(new BN(5000_000000))).toEqual(true);
+  });
+
+  describe("balanceOf", () => {
+    it("works for address with balance", async () => {
+      pendingWithoutEthereum();
+
+      const contract = new Erc20(makeClient(testConfig.base), ashTokenAddress);
+      const result = await contract.balanceOf(testConfig.accountState.address);
+      expect(result.toString()).toEqual("33445566");
+    });
+
+    it("works for unused address", async () => {
+      pendingWithoutEthereum();
+
+      const contract = new Erc20(makeClient(testConfig.base), ashTokenAddress);
+      const result = await contract.balanceOf(await randomAddress());
+      expect(result.toString()).toEqual("0");
+    });
   });
 
   it("can query symbol", async () => {
