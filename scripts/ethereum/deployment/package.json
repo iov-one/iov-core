@@ -1,0 +1,18 @@
+{
+  "name": "deployment",
+  "version": "0.0.1",
+  "private": true,
+  "author": "IOV SAS <admin@iov.one>",
+  "license": "Apache-2.0",
+  "main": "build/index.js",
+  "types": "types/index.d.ts",
+  "scripts": {
+    "generate-contracts": "web3x-codegen",
+    "build": "tsc",
+    "deploy-contracts": "node build/deploy_contracts.js"
+  },
+  "devDependencies": {
+    "typescript": "~3.3",
+    "web3x": "^3.0.6"
+  }
+}

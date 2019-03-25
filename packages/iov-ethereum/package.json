@@ -14,8 +14,6 @@
     "access": "public"
   },
   "scripts": {
-    "generate-contracts": "web3x-codegen",
-    "postgenerate-contracts": "yarn format",
     "docs": "shx rm -rf docs && typedoc --options typedoc.js",
     "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
     "lint": "cross-env-shell \"tslint -t verbose --project . ${TSLINT_FLAGS}\"",

@@ -3,7 +3,7 @@ import { Address } from 'web3x/address';
 import { Eth } from 'web3x/eth';
 import { WebsocketProvider } from 'web3x/providers';
 
-import { AshToken } from "./contracts/AshToken";
+import { AshToken } from "./AshToken";
 
 const ganacheHost = `localhost:${process.env.GANACHE_PORT}`;
 const ganacheGasPrice = 50000;
