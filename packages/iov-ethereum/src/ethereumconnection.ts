@@ -35,7 +35,7 @@ import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { pubkeyToAddress } from "./address";
 import { constants } from "./constants";
-import { Erc20 } from "./erc20";
+import { Erc20, Erc20Options } from "./erc20";
 import { ethereumCodec } from "./ethereumcodec";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { Parse } from "./parse";
@@ -122,10 +122,14 @@ export class EthereumConnection implements BcpConnection {
       },
     };
 
-    this.erc20Tokens.set(
-      "ASH" as TokenTicker,
-      new Erc20(ethereumClient, "0xCb642A87923580b6F7D07D1471F93361196f2650" as Address),
-    );
+    const ashToken: Erc20Options = {
+      contractAddress: "0xCb642A87923580b6F7D07D1471F93361196f2650" as Address,
+      hasDecimals: true,
+      hasSymbol: true,
+      hasName: true,
+    };
+
+    this.erc20Tokens.set("ASH" as TokenTicker, new Erc20(ethereumClient, ashToken));
   }
 
   public disconnect(): void {

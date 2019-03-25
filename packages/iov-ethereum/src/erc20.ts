@@ -15,18 +15,25 @@ function calcMethodId(signature: string): Uint8Array {
   return firstFourBytes;
 }
 
+export interface Erc20Options {
+  readonly contractAddress: Address;
+  readonly hasSymbol: boolean;
+  readonly hasName: boolean;
+  readonly hasDecimals: boolean;
+}
+
 export class Erc20 {
   private readonly client: EthereumRpcClient;
-  private readonly contractAddress: Address;
+  private readonly options: Erc20Options;
 
-  constructor(client: EthereumRpcClient, contractAddress: Address) {
+  constructor(client: EthereumRpcClient, options: Erc20Options) {
     this.client = client;
-    this.contractAddress = contractAddress;
+    this.options = options;
   }
 
   public async totalSupply(): Promise<BN> {
     const data = calcMethodId("totalSupply()");
-    const result = await this.client.ethCall(this.contractAddress, data);
+    const result = await this.client.ethCall(this.options.contractAddress, data);
     return new BN(result);
   }
 
@@ -34,31 +41,42 @@ export class Erc20 {
     const methodId = calcMethodId("balanceOf(address)");
 
     const data = new Uint8Array([...methodId, ...Abi.encodeAddress(address)]);
-    const result = await this.client.ethCall(this.contractAddress, data);
+    const result = await this.client.ethCall(this.options.contractAddress, data);
     return new BN(result);
   }
 
   /** optional, returns undefined if call does not exist */
   public async name(): Promise<string | undefined> {
-    const data = calcMethodId("name()");
-    const result = await this.client.ethCall(this.contractAddress, data);
-
-    const [nameBinary] = Abi.decodeHeadTail(result).tail;
-    return Encoding.fromUtf8(Abi.decodeVariableLength(nameBinary));
+    if (this.options.hasName) {
+      const data = calcMethodId("name()");
+      const result = await this.client.ethCall(this.options.contractAddress, data);
+      const [nameBinary] = Abi.decodeHeadTail(result).tail;
+      return Encoding.fromUtf8(Abi.decodeVariableLength(nameBinary));
+    } else {
+      return undefined;
+    }
   }
 
   /** optional, returns undefined if call does not exist */
   public async symbol(): Promise<string | undefined> {
-    const data = calcMethodId("symbol()");
-    const result = await this.client.ethCall(this.contractAddress, data);
-    const [symbolBinary] = Abi.decodeHeadTail(result).tail;
-    return Encoding.fromUtf8(Abi.decodeVariableLength(symbolBinary));
+    if (this.options.hasSymbol) {
+      const data = calcMethodId("symbol()");
+      const result = await this.client.ethCall(this.options.contractAddress, data);
+      const [symbolBinary] = Abi.decodeHeadTail(result).tail;
+      return Encoding.fromUtf8(Abi.decodeVariableLength(symbolBinary));
+    } else {
+      return undefined;
+    }
   }
 
   /** optional, returns undefined if call does not exist */
   public async decimals(): Promise<BN | undefined> {
-    const data = calcMethodId("decimals()");
-    const result = await this.client.ethCall(this.contractAddress, data);
-    return new BN(result);
+    if (this.options.hasDecimals) {
+      const data = calcMethodId("decimals()");
+      const result = await this.client.ethCall(this.options.contractAddress, data);
+      return new BN(result);
+    } else {
+      return undefined;
+    }
   }
 }

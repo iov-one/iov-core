@@ -6,7 +6,7 @@ import { Encoding } from "@iov/encoding";
 import { isJsonRpcErrorResponse } from "@iov/jsonrpc";
 
 import { pubkeyToAddress } from "./address";
-import { Erc20, EthereumRpcClient } from "./erc20";
+import { Erc20, Erc20Options, EthereumRpcClient } from "./erc20";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { testConfig } from "./testconfig.spec";
 import { normalizeHex } from "./utils";
@@ -49,12 +49,23 @@ function makeClient(baseUrl: string): EthereumRpcClient {
 }
 
 describe("Erc20", () => {
-  const ashTokenAddress = "0xCb642A87923580b6F7D07D1471F93361196f2650" as Address;
+  const ashToken: Erc20Options = {
+    contractAddress: "0xCb642A87923580b6F7D07D1471F93361196f2650" as Address,
+    hasDecimals: true,
+    hasSymbol: true,
+    hasName: true,
+  };
+  const trashToken: Erc20Options = {
+    contractAddress: "0x9768ae2339B48643d710B11dDbDb8A7eDBEa15BC" as Address,
+    hasDecimals: false,
+    hasSymbol: false,
+    hasName: false,
+  };
 
   it("can query total supply", async () => {
     pendingWithoutEthereum();
 
-    const contract = new Erc20(makeClient(testConfig.base), ashTokenAddress);
+    const contract = new Erc20(makeClient(testConfig.base), ashToken);
     const result = await contract.totalSupply();
     expect(result).toBeTruthy();
     expect(result.gt(new BN(33_445566))).toEqual(true);
@@ -65,7 +76,7 @@ describe("Erc20", () => {
     it("works for address with balance", async () => {
       pendingWithoutEthereum();
 
-      const contract = new Erc20(makeClient(testConfig.base), ashTokenAddress);
+      const contract = new Erc20(makeClient(testConfig.base), ashToken);
       const result = await contract.balanceOf(testConfig.accountState.address);
       expect(result.toString()).toEqual("33445566");
     });
@@ -73,33 +84,63 @@ describe("Erc20", () => {
     it("works for unused address", async () => {
       pendingWithoutEthereum();
 
-      const contract = new Erc20(makeClient(testConfig.base), ashTokenAddress);
+      const contract = new Erc20(makeClient(testConfig.base), ashToken);
       const result = await contract.balanceOf(await randomAddress());
       expect(result.toString()).toEqual("0");
     });
   });
 
-  it("can query symbol", async () => {
-    pendingWithoutEthereum();
+  describe("symbol", () => {
+    it("works if set on-chain", async () => {
+      pendingWithoutEthereum();
 
-    const contract = new Erc20(makeClient(testConfig.base), ashTokenAddress);
-    const result = await contract.symbol();
-    expect(result).toEqual("ASH");
+      const contract = new Erc20(makeClient(testConfig.base), ashToken);
+      const result = await contract.symbol();
+      expect(result).toEqual("ASH");
+    });
+
+    it("returns undefined if not set on-chain", async () => {
+      pendingWithoutEthereum();
+
+      const contract = new Erc20(makeClient(testConfig.base), trashToken);
+      const result = await contract.symbol();
+      expect(result).toBeUndefined();
+    });
   });
 
-  it("can query name", async () => {
-    pendingWithoutEthereum();
+  describe("name", () => {
+    it("works if set on-chain", async () => {
+      pendingWithoutEthereum();
 
-    const contract = new Erc20(makeClient(testConfig.base), ashTokenAddress);
-    const result = await contract.name();
-    expect(result).toEqual("Ash Token");
+      const contract = new Erc20(makeClient(testConfig.base), ashToken);
+      const result = await contract.name();
+      expect(result).toEqual("Ash Token");
+    });
+
+    it("returns undefined if not set on-chain", async () => {
+      pendingWithoutEthereum();
+
+      const contract = new Erc20(makeClient(testConfig.base), trashToken);
+      const result = await contract.name();
+      expect(result).toBeUndefined();
+    });
   });
 
-  it("can query decimals", async () => {
-    pendingWithoutEthereum();
+  describe("decimals", () => {
+    it("works if set on-chain", async () => {
+      pendingWithoutEthereum();
 
-    const contract = new Erc20(makeClient(testConfig.base), ashTokenAddress);
-    const result = await contract.decimals();
-    expect(result!.toNumber()).toEqual(12);
+      const contract = new Erc20(makeClient(testConfig.base), ashToken);
+      const result = await contract.decimals();
+      expect(result!.toNumber()).toEqual(12);
+    });
+
+    it("returns undefined if not set on-chain", async () => {
+      pendingWithoutEthereum();
+
+      const contract = new Erc20(makeClient(testConfig.base), trashToken);
+      const result = await contract.decimals();
+      expect(result).toBeUndefined();
+    });
   });
 });
