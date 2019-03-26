@@ -74,7 +74,7 @@ describe("Erc20", () => {
       pendingWithoutEthereum();
 
       const contract = new Erc20(makeClient(testConfig.base), ashToken);
-      const result = await contract.balanceOf(testConfig.accountState.address);
+      const result = await contract.balanceOf(testConfig.accountStates.full.address);
       expect(result.toString()).toEqual("33445566");
     });
 

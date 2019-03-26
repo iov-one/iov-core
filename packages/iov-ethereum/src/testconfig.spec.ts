@@ -21,14 +21,21 @@ export interface EthereumNetworkConfig {
   readonly wsUrl: string;
   readonly chainId: ChainId;
   readonly minHeight: number;
-  /** one account with fixed state */
-  readonly accountState: {
-    readonly pubkey: PublicKeyBundle;
-    readonly address: Address;
-    /** expected balance for the `address` */
-    readonly expectedBalance: ReadonlyArray<BcpCoin>;
-    /** expected nonce for the `address` */
-    readonly expectedNonce: Nonce;
+  readonly accountStates: {
+    /** An account with ETH and ERC20 balance */
+    readonly full: {
+      readonly pubkey: PublicKeyBundle;
+      readonly address: Address;
+      /** expected balance for the `address` */
+      readonly expectedBalance: ReadonlyArray<BcpCoin>;
+      /** expected nonce for the `address` */
+      readonly expectedNonce: Nonce;
+    };
+    /** An account not used on this network */
+    readonly unused: {
+      readonly pubkey: PublicKeyBundle;
+      readonly address: Address;
+    };
   };
   readonly gasPrice: Amount;
   readonly gasLimit: Amount;
@@ -40,10 +47,6 @@ export interface EthereumNetworkConfig {
         readonly address: Address;
       }
     | undefined;
-  /** An pubkey not used on this network */
-  readonly unusedPubkey: PublicKeyBundle;
-  /** The address that belongs to `unusedPubkey` */
-  readonly unusedAddress: Address;
   readonly expectedErrorMessages: {
     readonly insufficientFunds: RegExp;
     readonly invalidSignature: RegExp;
@@ -61,35 +64,46 @@ const local: EthereumNetworkConfig = {
   wsUrl: "ws://localhost:8545/ws",
   chainId: "ethereum-eip155-5777" as ChainId,
   minHeight: 0, // ganache does not auto-generate a genesis block
-  accountState: {
-    pubkey: {
-      algo: Algorithm.Secp256k1,
-      data: fromHex(
-        "041d4c015b00cbd914e280b871d3c6ae2a047ca650d3ecea4b5246bb3036d4d74960b7feb09068164d2b82f1c7df9e95839b29ae38e90d60578b2318a54e108cf8",
-      ) as PublicKeyBytes,
+  accountStates: {
+    full: {
+      pubkey: {
+        algo: Algorithm.Secp256k1,
+        data: fromHex(
+          "041d4c015b00cbd914e280b871d3c6ae2a047ca650d3ecea4b5246bb3036d4d74960b7feb09068164d2b82f1c7df9e95839b29ae38e90d60578b2318a54e108cf8",
+        ) as PublicKeyBytes,
+      },
+      address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
+      expectedBalance: [
+        {
+          quantity: "1234567890987654321",
+          fractionalDigits: 18,
+          tokenTicker: "ETH" as TokenTicker,
+          tokenName: "Ether",
+        },
+        {
+          tokenTicker: "ASH" as TokenTicker,
+          fractionalDigits: 12,
+          quantity: "33445566",
+          tokenName: "Ash Token",
+        },
+        {
+          tokenTicker: "TRASH" as TokenTicker,
+          fractionalDigits: 9,
+          quantity: "33445566",
+          tokenName: "Trash Token",
+        },
+      ],
+      expectedNonce: 0 as Nonce,
     },
-    address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
-    expectedBalance: [
-      {
-        quantity: "1234567890987654321",
-        fractionalDigits: 18,
-        tokenTicker: "ETH" as TokenTicker,
-        tokenName: "Ether",
+    unused: {
+      pubkey: {
+        algo: Algorithm.Secp256k1,
+        data: fromHex(
+          "049555be4c5136102e1645f9ce53475b2fed172078de78d3b7d0befed14f5471a077123dd459624055c93f85c0d8f99d9178b79b151f597f714ac759bca9dd3cb1",
+        ) as PublicKeyBytes,
       },
-      {
-        tokenTicker: "ASH" as TokenTicker,
-        fractionalDigits: 12,
-        quantity: "33445566",
-        tokenName: "Ash Token",
-      },
-      {
-        tokenTicker: "TRASH" as TokenTicker,
-        fractionalDigits: 9,
-        quantity: "33445566",
-        tokenName: "Trash Token",
-      },
-    ],
-    expectedNonce: 0 as Nonce,
+      address: "0x52dF0e01583E12978B0885C5836c9683f22b0618" as Address,
+    },
   },
   gasPrice: {
     quantity: "20000000000",
@@ -103,13 +117,6 @@ const local: EthereumNetworkConfig = {
   },
   waitForTx: 100, // by default, ganache will instantly mine a new block for every transaction
   scraper: undefined,
-  unusedPubkey: {
-    algo: Algorithm.Secp256k1,
-    data: fromHex(
-      "049555be4c5136102e1645f9ce53475b2fed172078de78d3b7d0befed14f5471a077123dd459624055c93f85c0d8f99d9178b79b151f597f714ac759bca9dd3cb1",
-    ) as PublicKeyBytes,
-  },
-  unusedAddress: "0x52dF0e01583E12978B0885C5836c9683f22b0618" as Address,
   expectedErrorMessages: {
     insufficientFunds: /sender doesn't have enough funds to send tx/i,
     invalidSignature: /invalid signature/i,
@@ -141,23 +148,34 @@ const ropsten: EthereumNetworkConfig = {
   wsUrl: "wss://ropsten.infura.io/ws",
   chainId: "ethereum-eip155-3" as ChainId,
   minHeight: 4284887,
-  accountState: {
-    pubkey: {
-      algo: Algorithm.Secp256k1,
-      data: fromHex(
-        "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
-      ) as PublicKeyBytes,
-    },
-    address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
-    expectedBalance: [
-      {
-        quantity: "2999979000000000000",
-        fractionalDigits: 18,
-        tokenTicker: "ETH" as TokenTicker,
-        tokenName: "Ether",
+  accountStates: {
+    full: {
+      pubkey: {
+        algo: Algorithm.Secp256k1,
+        data: fromHex(
+          "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
+        ) as PublicKeyBytes,
       },
-    ],
-    expectedNonce: 1 as Nonce,
+      address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
+      expectedBalance: [
+        {
+          quantity: "2999979000000000000",
+          fractionalDigits: 18,
+          tokenTicker: "ETH" as TokenTicker,
+          tokenName: "Ether",
+        },
+      ],
+      expectedNonce: 1 as Nonce,
+    },
+    unused: {
+      pubkey: {
+        algo: Algorithm.Secp256k1,
+        data: fromHex(
+          "049555be4c5136102e1645f9ce53475b2fed172078de78d3b7d0befed14f5471a077123dd459624055c93f85c0d8f99d9178b79b151f597f714ac759bca9dd3cb1",
+        ) as PublicKeyBytes,
+      },
+      address: "0x52dF0e01583E12978B0885C5836c9683f22b0618" as Address,
+    },
   },
   gasPrice: {
     quantity: "1000000000",
@@ -174,13 +192,6 @@ const ropsten: EthereumNetworkConfig = {
     apiUrl: "https://api-ropsten.etherscan.io/api",
     address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
   },
-  unusedPubkey: {
-    algo: Algorithm.Secp256k1,
-    data: fromHex(
-      "049555be4c5136102e1645f9ce53475b2fed172078de78d3b7d0befed14f5471a077123dd459624055c93f85c0d8f99d9178b79b151f597f714ac759bca9dd3cb1",
-    ) as PublicKeyBytes,
-  },
-  unusedAddress: "0x52dF0e01583E12978B0885C5836c9683f22b0618" as Address,
   expectedErrorMessages: {
     insufficientFunds: /insufficient funds for gas \* price \+ value/i,
     invalidSignature: /invalid sender/i,
@@ -195,31 +206,42 @@ const rinkeby: EthereumNetworkConfig = {
   wsUrl: "wss://rinkeby.infura.io/ws",
   chainId: "ethereum-eip155-4" as ChainId,
   minHeight: 3211058,
-  accountState: {
-    // Second account (m/44'/60'/0'/0/1) of
-    // "retire bench island cushion panther noodle cactus keep danger assault home letter"
-    pubkey: {
-      algo: Algorithm.Secp256k1,
-      data: fromHex(
-        "045a977cdfa082bd486755a440b1e411a14c690fd9ac0bb6d866070f63911c54af75ae8f0f40c7069ce2df65c6facc45902d462f39e8812421502e0216da7ef51e",
-      ) as PublicKeyBytes,
+  accountStates: {
+    full: {
+      // Second account (m/44'/60'/0'/0/1) of
+      // "retire bench island cushion panther noodle cactus keep danger assault home letter"
+      pubkey: {
+        algo: Algorithm.Secp256k1,
+        data: fromHex(
+          "045a977cdfa082bd486755a440b1e411a14c690fd9ac0bb6d866070f63911c54af75ae8f0f40c7069ce2df65c6facc45902d462f39e8812421502e0216da7ef51e",
+        ) as PublicKeyBytes,
+      },
+      address: "0x2eF42084759d67CA34aA910DFE22d78bbb66964f" as Address,
+      expectedBalance: [
+        {
+          quantity: "1776612104000000000",
+          fractionalDigits: 18,
+          tokenTicker: "ETH" as TokenTicker,
+          tokenName: "Ether",
+        },
+        {
+          quantity: "1223344550000000000",
+          fractionalDigits: 18,
+          tokenTicker: "WETH" as TokenTicker,
+          tokenName: "Wrapped Ether",
+        },
+      ],
+      expectedNonce: 1 as Nonce,
     },
-    address: "0x2eF42084759d67CA34aA910DFE22d78bbb66964f" as Address,
-    expectedBalance: [
-      {
-        quantity: "1776612104000000000",
-        fractionalDigits: 18,
-        tokenTicker: "ETH" as TokenTicker,
-        tokenName: "Ether",
+    unused: {
+      pubkey: {
+        algo: Algorithm.Secp256k1,
+        data: fromHex(
+          "049555be4c5136102e1645f9ce53475b2fed172078de78d3b7d0befed14f5471a077123dd459624055c93f85c0d8f99d9178b79b151f597f714ac759bca9dd3cb1",
+        ) as PublicKeyBytes,
       },
-      {
-        quantity: "1223344550000000000",
-        fractionalDigits: 18,
-        tokenTicker: "WETH" as TokenTicker,
-        tokenName: "Wrapped Ether",
-      },
-    ],
-    expectedNonce: 1 as Nonce,
+      address: "0x52dF0e01583E12978B0885C5836c9683f22b0618" as Address,
+    },
   },
   gasPrice: {
     quantity: "1000000000",
@@ -237,13 +259,6 @@ const rinkeby: EthereumNetworkConfig = {
     // recipient address with no known keypair
     address: "0x7C14eF21979996A49551a16c7a96899e9C485eb4" as Address,
   },
-  unusedPubkey: {
-    algo: Algorithm.Secp256k1,
-    data: fromHex(
-      "049555be4c5136102e1645f9ce53475b2fed172078de78d3b7d0befed14f5471a077123dd459624055c93f85c0d8f99d9178b79b151f597f714ac759bca9dd3cb1",
-    ) as PublicKeyBytes,
-  },
-  unusedAddress: "0x52dF0e01583E12978B0885C5836c9683f22b0618" as Address,
   expectedErrorMessages: {
     insufficientFunds: /insufficient funds for gas \* price \+ value/i,
     invalidSignature: /invalid sender/i,
