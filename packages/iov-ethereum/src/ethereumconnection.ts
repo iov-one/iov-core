@@ -218,12 +218,30 @@ export class EthereumConnection implements BcpConnection {
   }
 
   public async getAllTickers(): Promise<ReadonlyArray<BcpTicker>> {
+    const erc20s = await Promise.all(
+      [...this.erc20Tokens.entries()].map(
+        async ([ticker, contract]): Promise<BcpTicker> => {
+          const symbol = await contract.symbol();
+          if (ticker !== symbol) {
+            throw new Error(`Configured ticker '${ticker}' does not match contract symbol '${symbol}'`);
+          }
+
+          return {
+            tokenTicker: (await contract.symbol()) as TokenTicker,
+            tokenName: await contract.name(),
+            fractionalDigits: await contract.decimals(),
+          };
+        },
+      ),
+    );
+
     return [
       {
         tokenTicker: constants.primaryTokenTicker,
         tokenName: constants.primaryTokenName,
         fractionalDigits: constants.primaryTokenFractionalDigits,
       },
+      ...erc20s,
     ];
   }
 
@@ -246,8 +264,9 @@ export class EthereumConnection implements BcpConnection {
 
     const erc20Balances: ReadonlyArray<BcpCoin> = await Promise.all(
       [...this.erc20Tokens.entries()].map(async ([ticker, contract]) => {
-        if (ticker !== (await contract.symbol())) {
-          throw new Error("Inconsistent ticker configured and in contract");
+        const symbol = await contract.symbol();
+        if (ticker !== symbol) {
+          throw new Error(`Configured ticker '${ticker}' does not match contract symbol '${symbol}'`);
         }
 
         return {
