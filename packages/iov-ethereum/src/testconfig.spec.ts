@@ -24,7 +24,7 @@ export interface EthereumNetworkConfig {
   readonly minHeight: number;
   readonly accountStates: {
     /** An account with ETH and ERC20 balance */
-    readonly full: {
+    readonly default: {
       readonly pubkey: PublicKeyBundle;
       readonly address: Address;
       /** expected balance for the `address` */
@@ -73,7 +73,7 @@ const local: EthereumNetworkConfig = {
   chainId: "ethereum-eip155-5777" as ChainId,
   minHeight: 0, // ganache does not auto-generate a genesis block
   accountStates: {
-    full: {
+    default: {
       pubkey: {
         algo: Algorithm.Secp256k1,
         data: fromHex(
@@ -198,7 +198,7 @@ const ropsten: EthereumNetworkConfig = {
   chainId: "ethereum-eip155-3" as ChainId,
   minHeight: 4284887,
   accountStates: {
-    full: {
+    default: {
       pubkey: {
         algo: Algorithm.Secp256k1,
         data: fromHex(
@@ -275,7 +275,7 @@ const rinkeby: EthereumNetworkConfig = {
   chainId: "ethereum-eip155-4" as ChainId,
   minHeight: 3211058,
   accountStates: {
-    full: {
+    default: {
       // Second account (m/44'/60'/0'/0/1) of
       // "retire bench island cushion panther noodle cactus keep danger assault home letter"
       pubkey: {
