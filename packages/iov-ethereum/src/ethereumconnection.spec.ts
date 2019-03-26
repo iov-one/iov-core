@@ -157,22 +157,7 @@ describe("EthereumConnection", () => {
       const account = await connection.getAccount({ address: testConfig.accountState.address });
       expect(account).toBeDefined();
       expect(account!.address).toEqual(testConfig.accountState.address);
-      expect(account!.balance[0]).toEqual({
-        ...testConfig.accountState.expectedBalance,
-        tokenName: "Ether",
-      });
-      expect(account!.balance[1]).toEqual({
-        tokenTicker: "ASH" as TokenTicker,
-        fractionalDigits: 12,
-        quantity: "33445566",
-        tokenName: "Ash Token",
-      });
-      expect(account!.balance[2]).toEqual({
-        tokenTicker: "TRASH" as TokenTicker,
-        fractionalDigits: 9,
-        quantity: "33445566",
-        tokenName: "Trash Token",
-      });
+      expect(account!.balance).toEqual(testConfig.accountState.expectedBalance);
       connection.disconnect();
     });
 

@@ -2,6 +2,7 @@ import {
   Address,
   Algorithm,
   Amount,
+  BcpCoin,
   ChainId,
   Nonce,
   PublicKeyBundle,
@@ -25,7 +26,7 @@ export interface EthereumNetworkConfig {
     readonly pubkey: PublicKeyBundle;
     readonly address: Address;
     /** expected balance for the `address` */
-    readonly expectedBalance: Amount;
+    readonly expectedBalance: ReadonlyArray<BcpCoin>;
     /** expected nonce for the `address` */
     readonly expectedNonce: Nonce;
   };
@@ -70,11 +71,26 @@ const local: EthereumNetworkConfig = {
       ) as PublicKeyBytes,
     },
     address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
-    expectedBalance: {
-      quantity: "1234567890987654321",
-      fractionalDigits: 18,
-      tokenTicker: "ETH" as TokenTicker,
-    },
+    expectedBalance: [
+      {
+        quantity: "1234567890987654321",
+        fractionalDigits: 18,
+        tokenTicker: "ETH" as TokenTicker,
+        tokenName: "Ether",
+      },
+      {
+        tokenTicker: "ASH" as TokenTicker,
+        fractionalDigits: 12,
+        quantity: "33445566",
+        tokenName: "Ash Token",
+      },
+      {
+        tokenTicker: "TRASH" as TokenTicker,
+        fractionalDigits: 9,
+        quantity: "33445566",
+        tokenName: "Trash Token",
+      },
+    ],
     expectedNonce: 0 as Nonce,
   },
   gasPrice: {
@@ -135,11 +151,14 @@ const testnetRopsten: EthereumNetworkConfig = {
       ) as PublicKeyBytes,
     },
     address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
-    expectedBalance: {
-      quantity: "2999979000000000000",
-      fractionalDigits: 18,
-      tokenTicker: "ETH" as TokenTicker,
-    },
+    expectedBalance: [
+      {
+        quantity: "2999979000000000000",
+        fractionalDigits: 18,
+        tokenTicker: "ETH" as TokenTicker,
+        tokenName: "Ether",
+      },
+    ],
     expectedNonce: 1 as Nonce,
   },
   gasPrice: {
@@ -186,11 +205,14 @@ const testnetRinkeby: EthereumNetworkConfig = {
       ) as PublicKeyBytes,
     },
     address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
-    expectedBalance: {
-      quantity: "7500016481703733500",
-      fractionalDigits: 18,
-      tokenTicker: "ETH" as TokenTicker,
-    },
+    expectedBalance: [
+      {
+        quantity: "7500016481703733500",
+        fractionalDigits: 18,
+        tokenTicker: "ETH" as TokenTicker,
+        tokenName: "Ether",
+      },
+    ],
     expectedNonce: 463 as Nonce,
   },
   gasPrice: {
