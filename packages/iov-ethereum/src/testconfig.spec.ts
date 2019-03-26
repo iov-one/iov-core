@@ -52,10 +52,8 @@ export interface EthereumNetworkConfig {
   readonly erc20Tokens: Map<TokenTicker, Erc20Options>;
 }
 
-// Chain Id is from eip-155.md
-// set process.env.ETH_ENV  'testnetRopsten', 'testnetRinkeby'
-// default test env is local;
-const env = process.env.ETH_ENV || "";
+// Set environment variable ETHEREUM_NETWORK to "local" (default), "ropsten", "rinkeby"
+const env = process.env.ETHEREUM_NETWORK || "local";
 
 const local: EthereumNetworkConfig = {
   env: "local",
@@ -137,7 +135,7 @@ const local: EthereumNetworkConfig = {
 };
 
 /** Ropsten config is not well maintained and probably outdated. Use at your won risk. */
-const testnetRopsten: EthereumNetworkConfig = {
+const ropsten: EthereumNetworkConfig = {
   env: "ropsten",
   base: "https://ropsten.infura.io/",
   wsUrl: "wss://ropsten.infura.io/ws",
@@ -191,7 +189,7 @@ const testnetRopsten: EthereumNetworkConfig = {
   erc20Tokens: new Map([]),
 };
 
-const testnetRinkeby: EthereumNetworkConfig = {
+const rinkeby: EthereumNetworkConfig = {
   env: "rinkeby",
   base: "https://rinkeby.infura.io",
   wsUrl: "wss://rinkeby.infura.io/ws",
@@ -248,7 +246,7 @@ const testnetRinkeby: EthereumNetworkConfig = {
 
 const config = new Map<string, EthereumNetworkConfig>();
 config.set("local", local);
-config.set("testnetRopsten", testnetRopsten);
-config.set("testnetRinkeby", testnetRinkeby);
+config.set("ropsten", ropsten);
+config.set("rinkeby", rinkeby);
 
-export const testConfig = config.get(env) || local;
+export const testConfig = config.get(env)!;
