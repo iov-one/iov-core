@@ -53,7 +53,7 @@ export class Context {
     };
   }
 
-  public coin(coin: codecImpl.x.ICoin): BcpCoin {
+  public coin(coin: codecImpl.coin.ICoin): BcpCoin {
     const amount = decodeAmount(coin);
     return this.amountToCoin(amount);
   }

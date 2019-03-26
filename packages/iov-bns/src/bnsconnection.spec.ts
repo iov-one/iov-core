@@ -44,9 +44,7 @@ import { BnsConnection } from "./bnsconnection";
 import { bnsSwapQueryTag } from "./tags";
 import {
   AddAddressToUsernameTx,
-  isRegisterBlockchainTx,
   isRegisterUsernameTx,
-  RegisterBlockchainTx,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
 } from "./types";
@@ -603,63 +601,6 @@ describe("BnsConnection", () => {
       })().catch(done.fail);
     });
 
-    it("can register a blockchain", async () => {
-      pendingWithoutBnsd();
-      const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
-
-      const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
-      const identityAddress = identityToAddress(identity);
-
-      // Create and send registration
-      const chainId = `wonderland_${Math.random()}` as ChainId;
-      const registration: RegisterBlockchainTx = {
-        kind: "bns/register_blockchain",
-        creator: identity,
-        chain: {
-          chainId: chainId,
-          production: false,
-          enabled: true,
-          name: "Wonderland",
-          networkId: "7rg047g4h",
-        },
-        codecName: "wonderland_rules",
-        codecConfig: `{ "any" : [ "json", "content" ] }`,
-      };
-      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
-      const signed = await profile.signTransaction(registration, bnsCodec, nonce);
-      const txBytes = bnsCodec.bytesToPost(signed);
-      const response = await connection.postTx(txBytes);
-      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
-
-      await tendermintSearchIndexUpdated();
-
-      // Find registration transaction
-      const searchResult = (await connection.searchTx({ signedBy: identityAddress })).filter(
-        isConfirmedTransaction,
-      );
-      expect(searchResult.length).toEqual(1);
-      const firstSearchResult = searchResult[0].transaction;
-      if (!isRegisterBlockchainTx(firstSearchResult)) {
-        throw new Error("Unexpected transaction kind");
-      }
-      expect(firstSearchResult.chain).toEqual({
-        chainId: chainId,
-        production: false,
-        enabled: true,
-        name: "Wonderland",
-        networkId: "7rg047g4h",
-        mainTickerId: undefined,
-      });
-      expect(firstSearchResult.codecName).toEqual("wonderland_rules");
-      expect(firstSearchResult.codecConfig).toEqual(`{ "any" : [ "json", "content" ] }`);
-
-      connection.disconnect();
-    });
-
     it("can register a username", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
@@ -675,12 +616,7 @@ describe("BnsConnection", () => {
       const registration: RegisterUsernameTx = {
         kind: "bns/register_username",
         creator: identity,
-        addresses: [
-          // TODO: Re-enable when there are pre-registered blockchains for testing
-          // (https://github.com/iov-one/weave/issues/184)
-          //
-          // { chainId: ..., address: ... },
-        ],
+        addresses: [{ chainId: "foobar" as ChainId, address: address }],
         username: username,
       };
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
@@ -736,34 +672,8 @@ describe("BnsConnection", () => {
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
 
-      // Register a blockchain
+      // With a blockchain
       const chainId = `wonderland_${Math.random()}` as ChainId;
-      const blockchainRegistration: RegisterBlockchainTx = {
-        kind: "bns/register_blockchain",
-        creator: identity,
-        chain: {
-          chainId: chainId,
-          networkId: "7rg047g4h",
-          production: false,
-          enabled: true,
-          name: "Wonderland",
-        },
-        codecName: "wonderland_rules",
-        codecConfig: `{ "any" : [ "json", "content" ] }`,
-      };
-      {
-        const response = await connection.postTx(
-          bnsCodec.bytesToPost(
-            await profile.signTransaction(
-              blockchainRegistration,
-              bnsCodec,
-              await connection.getNonce({ pubkey: identity.pubkey }),
-            ),
-          ),
-        );
-        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
-      }
 
       // Add address
       const address = `testaddress_${Math.random()}` as Address;
@@ -1320,73 +1230,6 @@ describe("BnsConnection", () => {
     });
   });
 
-  describe("getBlockchains", () => {
-    it("can query blockchains by chain ID", async () => {
-      pendingWithoutBnsd();
-      const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
-
-      const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
-      const identityAddress = identityToAddress(identity);
-
-      // Register blockchain
-      const chainId = `wonderland_${Math.random()}` as ChainId;
-      const blockchainRegistration: RegisterBlockchainTx = {
-        kind: "bns/register_blockchain",
-        creator: identity,
-        chain: {
-          chainId: chainId,
-          production: false,
-          enabled: true,
-          name: "Wonderland",
-          networkId: "7rg047g4h",
-        },
-        codecName: "wonderland_rules",
-        codecConfig: `{ "any" : [ "json", "content" ] }`,
-      };
-      {
-        const response = await connection.postTx(
-          bnsCodec.bytesToPost(
-            await profile.signTransaction(
-              blockchainRegistration,
-              bnsCodec,
-              await connection.getNonce({ pubkey: identity.pubkey }),
-            ),
-          ),
-        );
-        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-      }
-
-      // Query by existing chain ID
-      {
-        const results = await connection.getBlockchains({ chainId: chainId });
-        expect(results.length).toEqual(1);
-        expect(results[0].id).toEqual(chainId);
-        expect(results[0].owner).toEqual(identityAddress);
-        expect(results[0].chain).toEqual({
-          chainId: chainId,
-          production: false,
-          enabled: true,
-          name: "Wonderland",
-          networkId: "7rg047g4h",
-          mainTickerId: undefined,
-        });
-        expect(results[0].codecName).toEqual("wonderland_rules");
-        expect(results[0].codecConfig).toEqual(`{ "any" : [ "json", "content" ] }`);
-      }
-
-      // Query by non-existing chain ID
-      {
-        const results = await connection.getBlockchains({ chainId: "chain_we_dont_have" as ChainId });
-        expect(results.length).toEqual(0);
-      }
-
-      connection.disconnect();
-    });
-  });
-
   describe("getUsernames", () => {
     it("can query usernames by name or owner", async () => {
       pendingWithoutBnsd();
@@ -1455,33 +1298,8 @@ describe("BnsConnection", () => {
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
       const identityAddress = identityToAddress(identity);
 
-      // Register blockchain
+      // With a  blockchain
       const chainId = `wonderland_${Math.random()}` as ChainId;
-      const blockchainRegistration: RegisterBlockchainTx = {
-        kind: "bns/register_blockchain",
-        creator: identity,
-        chain: {
-          chainId: chainId,
-          production: false,
-          enabled: true,
-          name: "Wonderland",
-          networkId: "7rg047g4h",
-        },
-        codecName: "wonderland_rules",
-        codecConfig: `{ "any" : [ "json", "content" ] }`,
-      };
-      {
-        const response = await connection.postTx(
-          bnsCodec.bytesToPost(
-            await profile.signTransaction(
-              blockchainRegistration,
-              bnsCodec,
-              await connection.getNonce({ pubkey: identity.pubkey }),
-            ),
-          ),
-        );
-        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-      }
 
       // Register username
       const username = `testuser_${Math.random()}`;
@@ -1941,8 +1759,9 @@ describe("BnsConnection", () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
-      const registerBlockchainTransaction: RegisterBlockchainTx = {
-        kind: "bns/register_blockchain",
+      const username = `testuser_${Math.random()}`;
+      const usernameRegistration: RegisterUsernameTx = {
+        kind: "bns/register_username",
         creator: {
           chainId: connection.chainId(),
           pubkey: {
@@ -1950,18 +1769,16 @@ describe("BnsConnection", () => {
             data: fromHex("aabbccdd") as PublicKeyBytes,
           },
         },
-        chain: {
-          chainId: "wonderland" as ChainId,
-          production: false,
-          enabled: true,
-          name: "Wonderland",
-          networkId: "7rg047g4h",
-          mainTickerId: "WONDER" as TokenTicker,
-        },
-        codecName: "rules_of_wonderland",
-        codecConfig: `{ rules: ["make peace not war"] }`,
+        addresses: [
+          {
+            address: "12345678912345W" as Address,
+            chainId: "somechain" as ChainId,
+          },
+        ],
+        username: username,
       };
-      const result = await connection.getFeeQuote(registerBlockchainTransaction);
+
+      const result = await connection.getFeeQuote(usernameRegistration);
       expect(result.tokens!.quantity).toEqual("0"); // ignore token type since it is free anyway
       expect(result.gasPrice).toBeUndefined();
       expect(result.gasLimit).toBeUndefined();
