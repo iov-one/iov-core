@@ -29,6 +29,7 @@ import {
   SwapIdBytes,
   SwapOfferTransaction,
   SwapState,
+  SwapTimeout,
   TokenTicker,
   TransactionState,
   UnsignedTransaction,
@@ -1634,7 +1635,7 @@ describe("BnsConnection", () => {
 
     const swapOfferPreimage = Encoding.toAscii(`my top secret phrase... ${Math.random()}`);
     const swapOfferHash = new Sha256(swapOfferPreimage).digest();
-    const swapOfferTimeout = (await connection.height()) + 1000;
+    const swapOfferTimeout: SwapTimeout = { height: (await connection.height()) + 1000 };
     const swapOfferTx: SwapOfferTransaction = {
       kind: "bcp/swap_offer",
       creator: faucet,
@@ -1764,7 +1765,7 @@ describe("BnsConnection", () => {
     hash: Uint8Array,
   ): Promise<PostTxResponse> => {
     // construct a swapOfferTx, sign and post to the chain
-    const swapOfferTimeout = (await connection.height()) + 1000;
+    const swapOfferTimeout: SwapTimeout = { height: (await connection.height()) + 1000 };
     const swapOfferTx: SwapOfferTransaction = {
       kind: "bcp/swap_offer",
       creator: creator,

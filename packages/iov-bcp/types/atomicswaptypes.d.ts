@@ -1,11 +1,11 @@
 import { As } from "type-tagger";
 import { Stream } from "xstream";
 import { BcpConnection } from "./connection";
-import { Address, Amount, SwapIdBytes } from "./transactions";
+import { Address, Amount, SwapIdBytes, SwapTimeout } from "./transactions";
 export declare enum SwapState {
     Open = "open",
     Claimed = "claimed",
-    Expired = "expired"
+    Aborted = "aborted"
 }
 export interface SwapData {
     readonly id: SwapIdBytes;
@@ -18,7 +18,12 @@ export interface SwapData {
      */
     readonly hash: Uint8Array;
     readonly amounts: ReadonlyArray<Amount>;
-    readonly timeout: number;
+    /**
+     * The first point in time at which the offer is expired.
+     *
+     * Can be represented as a block height or UNIX timestamp.
+     */
+    readonly timeout: SwapTimeout;
     readonly memo?: string;
 }
 export interface OpenSwap {
@@ -31,11 +36,12 @@ export interface ClaimedSwap {
     readonly data: SwapData;
     readonly preimage: Preimage;
 }
-export interface ExpiredSwap {
-    readonly kind: SwapState.Expired;
+/** A swap offer that has been aborted */
+export interface AbortedSwap {
+    readonly kind: SwapState.Aborted;
     readonly data: SwapData;
 }
-export declare type AtomicSwap = OpenSwap | ClaimedSwap | ExpiredSwap;
+export declare type AtomicSwap = OpenSwap | ClaimedSwap | AbortedSwap;
 export interface AtomicSwapRecipientQuery {
     readonly recipient: Address;
 }

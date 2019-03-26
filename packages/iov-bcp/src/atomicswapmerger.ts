@@ -12,7 +12,7 @@ function settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTransaction | SwapAbortTr
     };
   } else {
     return {
-      kind: SwapState.Expired,
+      kind: SwapState.Aborted,
       data: swap.data,
     };
   }

@@ -137,13 +137,28 @@ export interface SendTransaction extends UnsignedTransaction {
     readonly recipient: Address;
     readonly memo?: string;
 }
+export declare type SwapTimeout = BlockHeightTimeout | TimestampTimeout;
+export interface BlockHeightTimeout {
+    /** Absolute block height */
+    readonly height: number;
+}
+export declare function isBlockHeightTimeout(timeout: SwapTimeout): timeout is BlockHeightTimeout;
+export interface TimestampTimeout {
+    /** Unix timestamp in seconds */
+    readonly timestamp: number;
+}
+export declare function isTimestampTimeout(timeout: SwapTimeout): timeout is TimestampTimeout;
 /** A swap offer or a counter offer */
 export interface SwapOfferTransaction extends UnsignedTransaction {
     readonly kind: "bcp/swap_offer";
     readonly amounts: ReadonlyArray<Amount>;
     readonly recipient: Address;
-    /** absolute block height at which the offer times out */
-    readonly timeout: number;
+    /**
+     * The first point in time at which the offer is expired.
+     *
+     * Can be represented as a block height or UNIX timestamp.
+     */
+    readonly timeout: SwapTimeout;
     /**
      * Locally calculated hash of the preimage.
      *

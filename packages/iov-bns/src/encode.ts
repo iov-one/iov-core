@@ -2,6 +2,7 @@ import {
   Algorithm,
   Amount,
   FullSignature,
+  isBlockHeightTimeout,
   PublicKeyBundle,
   SendTransaction,
   SignatureBytes,
@@ -160,13 +161,17 @@ function buildSendTransaction(tx: SendTransaction): codecImpl.app.ITx {
 }
 
 function buildSwapOfferTx(tx: SwapOfferTransaction): codecImpl.app.ITx {
+  if (!isBlockHeightTimeout(tx.timeout)) {
+    throw new Error("Got unsupported timeout type");
+  }
+
   return {
     createEscrowMsg: codecImpl.escrow.CreateEscrowMsg.create({
       src: decodeBnsAddress(identityToAddress(tx.creator)).data,
       arbiter: hashIdentifier(tx.hash),
       recipient: decodeBnsAddress(tx.recipient).data,
       amount: tx.amounts.map(encodeAmount),
-      timeout: tx.timeout,
+      timeout: tx.timeout.height,
       memo: tx.memo,
     }),
   };
