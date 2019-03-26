@@ -73,7 +73,7 @@ export class Context {
         recipient: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.recipient)),
         hash: hash,
         amounts: ensure(swap.amount).map(coin => decodeAmount(coin)),
-        timeout: asNumber(swap.timeout),
+        timeout: { height: asNumber(swap.timeout) },
         memo: swap.memo,
       },
     };

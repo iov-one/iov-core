@@ -2,7 +2,7 @@ import { As } from "type-tagger";
 import { Stream } from "xstream";
 
 import { BcpConnection } from "./connection";
-import { Address, Amount, SwapIdBytes } from "./transactions";
+import { Address, Amount, SwapIdBytes, SwapTimeout } from "./transactions";
 
 export enum SwapState {
   Open = "open",
@@ -21,7 +21,12 @@ export interface SwapData {
    */
   readonly hash: Uint8Array;
   readonly amounts: ReadonlyArray<Amount>;
-  readonly timeout: number; // blockheight where the swap expires (TODO: alternatively support Date?)
+  /**
+   * The first point in time at which the offer is expired.
+   *
+   * Can be represented as a block height or UNIX timestamp.
+   */
+  readonly timeout: SwapTimeout;
   readonly memo?: string;
 }
 

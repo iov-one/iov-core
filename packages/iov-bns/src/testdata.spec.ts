@@ -177,7 +177,7 @@ const swapOfferTransaction: SwapOfferTransaction = {
   },
   kind: "bcp/swap_offer",
   recipient: "tiov1zg6gtjecs368fl5la074d2m8u99u64hnhhlprg" as Address,
-  timeout: 7890,
+  timeout: { height: 7890 },
   amounts: [
     {
       quantity: "128079890911",

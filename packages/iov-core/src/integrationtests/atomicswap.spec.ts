@@ -123,7 +123,9 @@ class Actor {
       creator: this.bnsIdentity,
       memo: "Take this cash",
       recipient: recipient,
-      timeout: (await this.bnsConnection.height()) + 100,
+      timeout: {
+        height: (await this.bnsConnection.height()) + 100,
+      },
       hash: AtomicSwapHelpers.hashPreimage(this.preimage!),
       amounts: [amount],
     };
@@ -164,7 +166,9 @@ class Actor {
       amounts: [amount],
       recipient: recipient,
       // TODO: some clever cross chain timeout calculation where counter lives longer than offer
-      timeout: (await this.bcpConnection.height()) + 200,
+      timeout: {
+        height: (await this.bcpConnection.height()) + 200,
+      },
       hash: offerReview.transaction.hash,
     };
 

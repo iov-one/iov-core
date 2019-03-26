@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.14.0
+
+Breaking changes
+
+* @iov/bcp: Change type of `SwapData.timeout` and `SwapOfferTransaction.timeout`
+  to `SwapTimeout = BlockHeightTimeout | TimestampTimeout`.
+
 ## 0.13.1
 
 @iov/ethereum: Allow querying of ERC20 token balances

@@ -43,7 +43,7 @@ describe("AtomicSwapMerger", () => {
         recipient: bobAddress,
         hash: hash,
         amounts: [defaultAmount],
-        timeout: 1_000_000,
+        timeout: { height: 1_000_000 },
       },
     };
 
@@ -94,7 +94,7 @@ describe("AtomicSwapMerger", () => {
         recipient: bobAddress,
         hash: hashA,
         amounts: [defaultAmount],
-        timeout: 1_000_000,
+        timeout: { height: 1_000_000 },
       },
     };
     const openB: OpenSwap = {
@@ -105,7 +105,7 @@ describe("AtomicSwapMerger", () => {
         recipient: bobAddress,
         hash: hashB,
         amounts: [defaultAmount],
-        timeout: 1_000_000,
+        timeout: { height: 1_000_000 },
       },
     };
 
@@ -169,7 +169,7 @@ describe("AtomicSwapMerger", () => {
         recipient: bobAddress,
         hash: hash,
         amounts: [defaultAmount],
-        timeout: 1_000_000,
+        timeout: { height: 1_000_000 },
       },
     };
 
@@ -199,7 +199,7 @@ describe("AtomicSwapMerger", () => {
         recipient: bobAddress,
         hash: hash,
         amounts: [defaultAmount],
-        timeout: 1_000_000,
+        timeout: { height: 1_000_000 },
       },
     };
 
