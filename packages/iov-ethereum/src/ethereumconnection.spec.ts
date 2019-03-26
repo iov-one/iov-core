@@ -203,18 +203,9 @@ describe("EthereumConnection", () => {
         erc20Tokens: testConfig.erc20Tokens,
       });
 
-      const account = await connection.getAccount({
-        address: "0x0000000000111111111122222222223333333333" as Address,
-      });
+      const account = await connection.getAccount({ address: testConfig.accountStates.noEth.address });
       expect(account).toBeDefined();
-      expect(account!.balance.length).toBeGreaterThanOrEqual(1);
-      const ashBalance = account!.balance.find(balance => balance.tokenTicker === "ASH");
-      expect(ashBalance).toEqual({
-        tokenTicker: "ASH" as TokenTicker,
-        fractionalDigits: 12,
-        quantity: "38",
-        tokenName: "Ash Token",
-      });
+      expect(account!.balance).toEqual(testConfig.accountStates.noEth.expectedBalance);
 
       connection.disconnect();
     });

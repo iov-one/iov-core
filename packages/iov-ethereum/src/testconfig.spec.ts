@@ -31,6 +31,12 @@ export interface EthereumNetworkConfig {
       /** expected nonce for the `address` */
       readonly expectedNonce: Nonce;
     };
+    /** An account with ERC20 balances but no ETH */
+    readonly noEth: {
+      readonly address: Address;
+      /** expected balance for the `address` */
+      readonly expectedBalance: ReadonlyArray<BcpCoin>;
+    };
     /** An account not used on this network */
     readonly unused: {
       readonly pubkey: PublicKeyBundle;
@@ -94,6 +100,30 @@ const local: EthereumNetworkConfig = {
         },
       ],
       expectedNonce: 0 as Nonce,
+    },
+    noEth: {
+      address: "0x0000000000111111111122222222223333333333" as Address,
+      expectedBalance: [
+        // ETH balance should be listed anyway
+        {
+          quantity: "0",
+          fractionalDigits: 18,
+          tokenTicker: "ETH" as TokenTicker,
+          tokenName: "Ether",
+        },
+        {
+          tokenTicker: "ASH" as TokenTicker,
+          fractionalDigits: 12,
+          quantity: "38",
+          tokenName: "Ash Token",
+        },
+        {
+          tokenTicker: "TRASH" as TokenTicker,
+          fractionalDigits: 9,
+          quantity: "38",
+          tokenName: "Trash Token",
+        },
+      ],
     },
     unused: {
       pubkey: {
@@ -167,6 +197,18 @@ const ropsten: EthereumNetworkConfig = {
       ],
       expectedNonce: 1 as Nonce,
     },
+    noEth: {
+      address: "0x0000000000000000000000000000000000000000" as Address,
+      expectedBalance: [
+        // ETH balance should be listed anyway
+        {
+          quantity: "0",
+          fractionalDigits: 18,
+          tokenTicker: "ETH" as TokenTicker,
+          tokenName: "Ether",
+        },
+      ],
+    },
     unused: {
       pubkey: {
         algo: Algorithm.Secp256k1,
@@ -219,19 +261,37 @@ const rinkeby: EthereumNetworkConfig = {
       address: "0x2eF42084759d67CA34aA910DFE22d78bbb66964f" as Address,
       expectedBalance: [
         {
-          quantity: "1776612104000000000",
+          quantity: "1775182474000000000",
           fractionalDigits: 18,
           tokenTicker: "ETH" as TokenTicker,
           tokenName: "Ether",
         },
         {
-          quantity: "1223344550000000000",
+          quantity: "1123344550000000000",
           fractionalDigits: 18,
           tokenTicker: "WETH" as TokenTicker,
           tokenName: "Wrapped Ether",
         },
       ],
-      expectedNonce: 1 as Nonce,
+      expectedNonce: 3 as Nonce,
+    },
+    noEth: {
+      address: "0x2244224422448877887744444444445555555555" as Address,
+      expectedBalance: [
+        // ETH balance should be listed anyway
+        {
+          quantity: "0",
+          fractionalDigits: 18,
+          tokenTicker: "ETH" as TokenTicker,
+          tokenName: "Ether",
+        },
+        {
+          tokenTicker: "WETH" as TokenTicker,
+          fractionalDigits: 18,
+          quantity: "100000000000000000",
+          tokenName: "Wrapped Ether",
+        },
+      ],
     },
     unused: {
       pubkey: {
