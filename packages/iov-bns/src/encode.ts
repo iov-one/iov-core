@@ -2,7 +2,7 @@ import {
   Algorithm,
   Amount,
   FullSignature,
-  isBlockHeightTimeout,
+  isTimestampTimeout,
   PublicKeyBundle,
   SendTransaction,
   SignatureBytes,
@@ -154,7 +154,7 @@ function buildSendTransaction(tx: SendTransaction): codecImpl.app.ITx {
 }
 
 function buildSwapOfferTx(tx: SwapOfferTransaction): codecImpl.app.ITx {
-  if (!isBlockHeightTimeout(tx.timeout)) {
+  if (!isTimestampTimeout(tx.timeout)) {
     throw new Error("Got unsupported timeout type");
   }
 
@@ -164,7 +164,7 @@ function buildSwapOfferTx(tx: SwapOfferTransaction): codecImpl.app.ITx {
       arbiter: hashIdentifier(tx.hash),
       recipient: decodeBnsAddress(tx.recipient).data,
       amount: tx.amounts.map(encodeAmount),
-      timeout: tx.timeout.height,
+      timeout: { seconds: tx.timeout.timestamp },
       memo: tx.memo,
     }),
   };

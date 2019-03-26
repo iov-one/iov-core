@@ -163,7 +163,7 @@ function parseSwapOfferTx(
     kind: "bcp/swap_offer",
     hash: hashFromIdentifier(hashIdentifier),
     recipient: encodeBnsAddress(prefix, ensure(msg.recipient, "recipient")),
-    timeout: { height: asNumber(msg.timeout) },
+    timeout: { timestamp: asNumber(ensure(msg.timeout).seconds) },
     amounts: (msg.amount || []).map(decodeAmount),
   };
 }

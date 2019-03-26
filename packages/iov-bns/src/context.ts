@@ -72,8 +72,10 @@ export class Context {
         sender: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.sender)),
         recipient: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.recipient)),
         hash: hash,
-        amounts: ensure(swap.amount).map(coin => decodeAmount(coin)),
-        timeout: { height: asNumber(swap.timeout) },
+        // amounts: ensure(swap.amount).map(coin => decodeAmount(coin)),
+        // TODO: read this is a second query
+        amounts: [],
+        timeout: { timestamp: asNumber(ensure(swap.timeout).seconds) },
         memo: swap.memo,
       },
     };

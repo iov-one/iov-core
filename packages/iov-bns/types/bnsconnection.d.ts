@@ -1,6 +1,6 @@
 import { Stream } from "xstream";
 import { Account, AccountQuery, AddressQuery, AtomicSwap, AtomicSwapQuery, BcpAtomicSwapConnection, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, UnsignedTransaction } from "@iov/bcp";
-import { BnsBlockchainNft, BnsBlockchainsQuery, BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
+import { BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
  * Talks directly to the BNS blockchain and exposes the
  * same interface we have with the BCP protocol.
@@ -68,7 +68,6 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
      * Gets current balance and emits an update every time it changes
      */
     watchAccount(query: AccountQuery): Stream<Account | undefined>;
-    getBlockchains(query: BnsBlockchainsQuery): Promise<ReadonlyArray<BnsBlockchainNft>>;
     getUsernames(query: BnsUsernamesQuery): Promise<ReadonlyArray<BnsUsernameNft>>;
     getFeeQuote(transaction: UnsignedTransaction): Promise<Fee>;
     protected query(path: string, data: Uint8Array): Promise<QueryResponse>;

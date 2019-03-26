@@ -78,24 +78,6 @@ export interface AddAddressToUsernameTx extends UnsignedTransaction {
     readonly username: string;
     readonly payload: ChainAddressPair;
 }
-export interface RegisterBlockchainTx extends UnsignedTransaction {
-    readonly kind: "bns/register_blockchain";
-    /**
-     * The chain to be registered
-     *
-     * Fields as defined in https://github.com/iov-one/bns-spec/blob/master/docs/data/ObjectDefinitions.rst#chain
-     */
-    readonly chain: {
-        readonly chainId: ChainId;
-        readonly name: string;
-        readonly enabled: boolean;
-        readonly production: boolean;
-        readonly networkId?: string;
-        readonly mainTickerId?: TokenTicker;
-    };
-    readonly codecName: string;
-    readonly codecConfig: string;
-}
 export interface RegisterUsernameTx extends UnsignedTransaction {
     readonly kind: "bns/register_username";
     readonly username: string;
@@ -107,9 +89,8 @@ export interface RemoveAddressFromUsernameTx extends UnsignedTransaction {
     readonly username: string;
     readonly payload: ChainAddressPair;
 }
-export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | AddAddressToUsernameTx | RegisterBlockchainTx | RegisterUsernameTx | RemoveAddressFromUsernameTx;
+export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | AddAddressToUsernameTx | RegisterUsernameTx | RemoveAddressFromUsernameTx;
 export declare function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx;
 export declare function isAddAddressToUsernameTx(transaction: UnsignedTransaction): transaction is AddAddressToUsernameTx;
-export declare function isRegisterBlockchainTx(transaction: UnsignedTransaction): transaction is RegisterBlockchainTx;
 export declare function isRegisterUsernameTx(transaction: UnsignedTransaction): transaction is RegisterUsernameTx;
 export declare function isRemoveAddressFromUsernameTx(transaction: UnsignedTransaction): transaction is RemoveAddressFromUsernameTx;
