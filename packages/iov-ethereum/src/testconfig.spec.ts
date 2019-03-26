@@ -196,22 +196,30 @@ const rinkeby: EthereumNetworkConfig = {
   chainId: "ethereum-eip155-4" as ChainId,
   minHeight: 3211058,
   accountState: {
+    // Second account (m/44'/60'/0'/0/1) of
+    // "retire bench island cushion panther noodle cactus keep danger assault home letter"
     pubkey: {
       algo: Algorithm.Secp256k1,
       data: fromHex(
-        "041d4c015b00cbd914e280b871d3c6ae2a047ca650d3ecea4b5246bb3036d4d74960b7feb09068164d2b82f1c7df9e95839b29ae38e90d60578b2318a54e108cf8",
+        "045a977cdfa082bd486755a440b1e411a14c690fd9ac0bb6d866070f63911c54af75ae8f0f40c7069ce2df65c6facc45902d462f39e8812421502e0216da7ef51e",
       ) as PublicKeyBytes,
     },
-    address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
+    address: "0x2eF42084759d67CA34aA910DFE22d78bbb66964f" as Address,
     expectedBalance: [
       {
-        quantity: "7500016481703733500",
+        quantity: "1776612104000000000",
         fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
         tokenName: "Ether",
       },
+      {
+        quantity: "1223344550000000000",
+        fractionalDigits: 18,
+        tokenTicker: "WETH" as TokenTicker,
+        tokenName: "Wrapped Ether",
+      },
     ],
-    expectedNonce: 463 as Nonce,
+    expectedNonce: 1 as Nonce,
   },
   gasPrice: {
     quantity: "1000000000",
@@ -241,7 +249,9 @@ const rinkeby: EthereumNetworkConfig = {
     invalidSignature: /invalid sender/i,
     gasLimitTooLow: /intrinsic gas too low/i,
   },
-  erc20Tokens: new Map([]),
+  erc20Tokens: new Map<TokenTicker, Erc20Options>([
+    ["WETH" as TokenTicker, { contractAddress: "0xc778417e063141139fce010982780140aa0cd5ab" as Address }],
+  ]),
 };
 
 const config = new Map<string, EthereumNetworkConfig>();
