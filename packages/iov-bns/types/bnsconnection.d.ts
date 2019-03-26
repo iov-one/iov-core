@@ -47,7 +47,7 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     /**
      * Emits currentState (getSwap) as a stream, then sends updates for any matching swap
      *
-     * This includes an open swap beind claimed/expired as well as a new matching swap being offered
+     * This includes an open swap beind claimed/aborted as well as a new matching swap being offered
      */
     watchSwaps(query: AtomicSwapQuery): Stream<AtomicSwap>;
     searchTx(txQuery: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction | FailedTransaction>>;

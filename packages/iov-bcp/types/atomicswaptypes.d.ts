@@ -5,7 +5,7 @@ import { Address, Amount, SwapIdBytes, SwapTimeout } from "./transactions";
 export declare enum SwapState {
     Open = "open",
     Claimed = "claimed",
-    Expired = "expired"
+    Aborted = "aborted"
 }
 export interface SwapData {
     readonly id: SwapIdBytes;
@@ -36,11 +36,12 @@ export interface ClaimedSwap {
     readonly data: SwapData;
     readonly preimage: Preimage;
 }
-export interface ExpiredSwap {
-    readonly kind: SwapState.Expired;
+/** A swap offer that has been aborted */
+export interface AbortedSwap {
+    readonly kind: SwapState.Aborted;
     readonly data: SwapData;
 }
-export declare type AtomicSwap = OpenSwap | ClaimedSwap | ExpiredSwap;
+export declare type AtomicSwap = OpenSwap | ClaimedSwap | AbortedSwap;
 export interface AtomicSwapRecipientQuery {
     readonly recipient: Address;
 }
