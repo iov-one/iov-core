@@ -15,7 +15,7 @@ module.exports = [
       filename: "tests.js",
     },
     plugins: [
-      new webpack.EnvironmentPlugin(['ETHEREUM_ENABLED', 'ETH_ENV']),
+      new webpack.EnvironmentPlugin(['ETHEREUM_ENABLED', 'ETHEREUM_NETWORK']),
     ],
   },
 ];
