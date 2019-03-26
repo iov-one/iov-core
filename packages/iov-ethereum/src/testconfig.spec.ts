@@ -3,6 +3,7 @@ import {
   Algorithm,
   Amount,
   BcpCoin,
+  BcpTicker,
   ChainId,
   Nonce,
   PublicKeyBundle,
@@ -59,6 +60,7 @@ export interface EthereumNetworkConfig {
     readonly gasLimitTooLow: RegExp;
   };
   readonly erc20Tokens: Map<TokenTicker, Erc20Options>;
+  readonly tokens: ReadonlyArray<BcpTicker>;
 }
 
 // Set environment variable ETHEREUM_NETWORK to "local" (default), "ropsten", "rinkeby"
@@ -169,6 +171,23 @@ const local: EthereumNetworkConfig = {
       },
     ],
   ]),
+  tokens: [
+    {
+      tokenTicker: "ETH" as TokenTicker,
+      tokenName: "Ether",
+      fractionalDigits: 18,
+    },
+    {
+      tokenTicker: "ASH" as TokenTicker,
+      tokenName: "Ash Token",
+      fractionalDigits: 12,
+    },
+    {
+      tokenTicker: "TRASH" as TokenTicker,
+      tokenName: "Trash Token",
+      fractionalDigits: 9,
+    },
+  ],
 };
 
 /** Ropsten config is not well maintained and probably outdated. Use at your won risk. */
@@ -240,6 +259,13 @@ const ropsten: EthereumNetworkConfig = {
     gasLimitTooLow: /intrinsic gas too low/i,
   },
   erc20Tokens: new Map([]),
+  tokens: [
+    {
+      tokenTicker: "ETH" as TokenTicker,
+      tokenName: "Ether",
+      fractionalDigits: 18,
+    },
+  ],
 };
 
 const rinkeby: EthereumNetworkConfig = {
@@ -327,6 +353,18 @@ const rinkeby: EthereumNetworkConfig = {
   erc20Tokens: new Map<TokenTicker, Erc20Options>([
     ["WETH" as TokenTicker, { contractAddress: "0xc778417e063141139fce010982780140aa0cd5ab" as Address }],
   ]),
+  tokens: [
+    {
+      tokenTicker: "ETH" as TokenTicker,
+      tokenName: "Ether",
+      fractionalDigits: 18,
+    },
+    {
+      tokenTicker: "WETH" as TokenTicker,
+      tokenName: "Wrapped Ether",
+      fractionalDigits: 18,
+    },
+  ],
 };
 
 const config = new Map<string, EthereumNetworkConfig>();

@@ -135,15 +135,14 @@ describe("EthereumConnection", () => {
     });
   });
 
-  describe("getTickers", () => {
+  describe("getAllTickers", () => {
     it("can get all tickers", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base);
-      const tickers = await connection.getAllTickers();
-      expect(tickers.length).toEqual(1);
-      expect(tickers[0].tokenTicker).toEqual("ETH");
-      expect(tickers[0].tokenName).toEqual("Ether");
-      expect(tickers[0].fractionalDigits).toEqual(18);
+      const connection = await EthereumConnection.establish(testConfig.base, {
+        erc20Tokens: testConfig.erc20Tokens,
+      });
+      const tokens = await connection.getAllTickers();
+      expect(tokens).toEqual(testConfig.tokens);
       connection.disconnect();
     });
   });
