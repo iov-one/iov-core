@@ -24,7 +24,7 @@
     }
   ],
   "gconf": {
-    "cash:minimal_fee": "0 CASH",
+    "cash:minimal_fee": "0.01 CASH",
     "cash:collector_address": "0000000000000000000000000000000000000000"
   }
 }

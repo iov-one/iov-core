@@ -10,5 +10,9 @@
       "ticker": "MASH",
       "name": "Smashing all the other coins",
     }
-  ]
+  ],
+  "gconf": {
+    "cash:minimal_fee": "0.01 MASH",
+    "cash:collector_address": "0000000000000000000000000000000000000000"
+  }
 }
