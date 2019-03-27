@@ -93,7 +93,7 @@ describe("MultiChainSigner", () => {
 
       // construct a sendtx, this mirrors the MultiChainSigner api
       const memo = `MultiChainSigner style (${Math.random()})`;
-      const preSend: SendTransaction = {
+      const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         creator: faucet,
         recipient: recipient,
@@ -103,9 +103,7 @@ describe("MultiChainSigner", () => {
           fractionalDigits: 9,
           tokenTicker: cash,
         },
-      };
-      // TODO: shall we add the withDefaultFee to the bcp api?
-      const sendTx = { ...preSend, fee: await connection.getFeeQuote(preSend) };
+      });
       const postResponse = await signer.signAndPost(sendTx);
       await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
@@ -204,7 +202,7 @@ describe("MultiChainSigner", () => {
 
       {
         // Send on BNS
-        const preSendOnBns: SendTransaction = {
+        const sendOnBns = await bnsConnection.withDefaultFee<SendTransaction>({
           kind: "bcp/send",
           creator: bnsFaucet,
           recipient: await randomBnsAddress(),
@@ -214,9 +212,7 @@ describe("MultiChainSigner", () => {
             fractionalDigits: 9,
             tokenTicker: cash,
           },
-        };
-        // TODO: shall we add the withDefaultFee to the bcp api?
-        const sendOnBns = { ...preSendOnBns, fee: await bnsConnection.getFeeQuote(preSendOnBns) };
+        });
         const postResponse = await signer.signAndPost(sendOnBns);
         const blockInfo = await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);

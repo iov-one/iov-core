@@ -258,14 +258,12 @@ describe("SigningServerCore", () => {
 
       const identities = await core.getIdentities("Please select signer", [bnsChain]);
       const signingIdentity = identities[0];
-      const preSend: SendTransaction = {
+      const send = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         creator: signingIdentity,
         amount: defaultAmount,
         recipient: await randomBnsAddress(),
-      };
-      // TODO: shall we add the withDefaultFee to the bcp api?
-      const send = { ...preSend, fee: await connection.getFeeQuote(preSend) };
+      });
       const transactionId = await core.signAndPost("Please sign now", send);
       expect(transactionId).toBeDefined();
       expect(transactionId).toMatch(/^[0-9A-F]{64}$/);

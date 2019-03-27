@@ -215,15 +215,13 @@ describe("JsRpcSigningServer", () => {
       throw new Error("Identity element is not valid");
     }
 
-    const preSend: SendTransaction = {
+    const send = await bnsConnection.withDefaultFee<SendTransaction>({
       kind: "bcp/send",
       creator: signer,
       memo: `Hello ${Math.random()}`,
       amount: defaultAmount,
       recipient: await randomBnsAddress(),
-    };
-    // TODO: shall we add the withDefaultFee to the bcp api?
-    const send = { ...preSend, fee: await bnsConnection.getFeeQuote(preSend) };
+    });
 
     const signAndPostResponse = await server.handleChecked({
       id: 2,
