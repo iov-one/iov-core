@@ -180,7 +180,7 @@ describe("Decode", () => {
   });
 
   describe("decodeJsonAmount", () => {
-    it("can decode strings ", () => {
+    it("can decode strings", () => {
       const decoded = decodeJsonAmount(`"3.123456789 ASH"`);
       expect(decoded).toEqual({
         quantity: "3123456789",
@@ -201,6 +201,14 @@ describe("Decode", () => {
         fractionalDigits: 9,
         tokenTicker: "CASH" as TokenTicker,
       });
+
+      // max decimals
+      const decoded4 = decodeJsonAmount(`"123456.123456789 IOV"`);
+      expect(decoded4).toEqual({
+        quantity: "123456123456789",
+        fractionalDigits: 9,
+        tokenTicker: "IOV" as TokenTicker,
+      });
     });
 
     it("rejects invalid strings ", () => {
@@ -210,6 +218,8 @@ describe("Decode", () => {
       expect(() => decodeJsonAmount(`"   1 ASH"`)).toThrowError();
       // no whole numbers
       expect(() => decodeJsonAmount(`".0001   CASH"`)).toThrowError();
+      // too many decimals
+      expect(() => decodeJsonAmount(`"0.1234567890 ASH"`)).toThrowError();
       // just number
       expect(() => decodeJsonAmount(`"42.13"`)).toThrowError();
       // just ticker

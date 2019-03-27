@@ -97,7 +97,7 @@ export function decodeAmount(coin: codecImpl.coin.ICoin): Amount {
 export function decodeJsonAmount(json: string): Amount {
   const data = JSON.parse(json);
   if (typeof data === "string") {
-    // parse "1.23 IOV", ".001CASH", "12   FOO"
+    // parse eg. "1.23 IOV"
     const vals = humanCoinFormat.exec(data);
     if (vals === null) {
       throw new Error(`Invalid coin string: ${data}`);
@@ -110,12 +110,14 @@ export function decodeJsonAmount(json: string): Amount {
     };
     return decodeAmount(coin);
   } else if (typeof data === "object" && data !== null) {
+    // parse a json coin representation
     return decodeAmount(data as codecImpl.coin.ICoin);
   }
   throw new Error("Impossible type for amount json");
 }
 
-const humanCoinFormat = new RegExp(/^(\d+)(\.\d+)?\s*([A-Z]{3,4})$/);
+// we only allow up to 9 decimal places
+const humanCoinFormat = new RegExp(/^(\d+)(\.\d{1,9})?\s*([A-Z]{3,4})$/);
 
 // adds zeros to the right as needed to ensure given length
 function rightPadZeros(short: string, length: number): string {
