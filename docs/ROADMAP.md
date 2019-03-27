@@ -6,7 +6,7 @@ milestones
 The Roadmap is a work-in-progress, so please add comments to help clarify and
 point out missing items
 
------------------- (Mostly) finished, may need polish ------------------------
+---------------- (Mostly) finished, may need polish ----------------
 
 ## BcpConnection/writer MVP
 
@@ -83,7 +83,7 @@ transactions and send tokens on the network.
       bcp-proxy maybe?)
 - [x] Expose API for integration in web wallet (using observables as above)
 
------------------- Next steps ------------------------
+---------------- Next steps ----------------
 
 ## Core-Writer Extension MVP (chrome and firefox?)
 
@@ -137,8 +137,7 @@ Depends on: BNS implementation on backend completed and deployed
       the app
 - TODO....
 
------------------- Rough ideas not quite ready for backlog
-------------------------
+---------------- Rough ideas not quite ready for backlog ----------------
 
 ## Enhancement: Flexible Core-Writer (maybe rethink this one)
 
