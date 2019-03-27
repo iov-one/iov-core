@@ -1,7 +1,8 @@
 # User Stories
 
 Below is a list of User Stories that can guide a developer on an End Users work
-flow when using the Keybase. It is broken down into stories around the following topics:
+flow when using the Keybase. It is broken down into stories around the following
+topics:
 
 - User Management
 - Identity Management
@@ -34,7 +35,8 @@ This removes the `UserProfile` from the store and logs the `User` out.
 
 #### I am a User who is away from my computer for X time.
 
-The profile should lock according to the timeout set in the `User`'s `securityModel`.
+The profile should lock according to the timeout set in the `User`'s
+`securityModel`.
 
 #### I want to logout of my `UserProfile`
 
@@ -62,8 +64,8 @@ populate the `SeedIdentity`.
 #### I want to create an Universal Address Pair
 
 Add two `publicIdentity`s, one for `ed25519` and one for `secp256k1`, to
-`publicIdentities` using the `SeedIdentity`. These identities use only the
-BIP32 standard.
+`publicIdentities` using the `SeedIdentity`. These identities use only the BIP32
+standard.
 
 #### I want to create an Extended Address
 
@@ -74,20 +76,19 @@ identity uses the full BIP44 and BIP32 standards.
 
 The following entries discuss the routes a User will take to use their profile.
 
-####  I want to add a `contact` to my `AddressBook`
+#### I want to add a `contact` to my `AddressBook`
 
 Add a `contact` to the `addressBook` in the `UserProfile`
 
 #### I have a populated `KeyringEntry` and want to sign a something
 
-Create a signature from `bytes`, a `SeedIdentity` and `PublicIdentity`
-pair. Return a `signature`.
+Create a signature from `bytes`, a `SeedIdentity` and `PublicIdentity` pair.
+Return a `signature`.
 
-####  I have a populated `KeyringEntry` and want to get a balance
+#### I have a populated `KeyringEntry` and want to get a balance
 
 Return an `address` and a `chain` from a `PublicIdentity`. These will be used
 query the associated chain.
-
 
 # Export / Backup
 
