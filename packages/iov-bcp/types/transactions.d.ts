@@ -1,5 +1,5 @@
 import { As } from "type-tagger";
-import { Preimage } from "./atomicswaptypes";
+import { Hash, Preimage } from "./atomicswaptypes";
 export declare enum Algorithm {
     Ed25519 = "ed25519",
     Secp256k1 = "secp256k1"
@@ -171,7 +171,7 @@ export interface SwapOfferTransaction extends UnsignedTransaction {
      *
      * This is a SHA256 hash until we have a way to specifiy the hashing algorithm.
      */
-    readonly hash: Uint8Array;
+    readonly hash: Hash;
     readonly memo?: string;
 }
 export interface SwapClaimTransaction extends UnsignedTransaction {

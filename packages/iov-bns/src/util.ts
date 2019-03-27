@@ -7,6 +7,7 @@ import {
   BcpTxQuery,
   ChainId,
   ConfirmedTransaction,
+  Hash,
   isSwapAbortTransaction,
   isSwapClaimTransaction,
   isSwapOfferTransaction,
@@ -124,8 +125,8 @@ export function isHashIdentifier(ident: Uint8Array): ident is HashId {
   return arraysEqual(hashIdentifierPrefix, prefix);
 }
 
-export function hashFromIdentifier(ident: HashId): Uint8Array {
-  return ident.slice(hashIdentifierPrefix.length);
+export function hashFromIdentifier(ident: HashId): Hash {
+  return ident.slice(hashIdentifierPrefix.length) as Hash;
 }
 
 // calculate keys for query tags

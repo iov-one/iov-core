@@ -8,6 +8,8 @@ Breaking changes
   to `SwapTimeout = BlockHeightTimeout | TimestampTimeout`.
 - @iov/bcp: Rename `SwapState.Expired` to `.Aborted` and `ExpiredSwap` to
   `AbortedSwap`.
+- @iov/bcp: New type `Hash` used for atomic swap hashes. Use
+  `AtomicSwapHelpers.hashPreimage` to create those hashes.
 
 ## 0.13.1
 

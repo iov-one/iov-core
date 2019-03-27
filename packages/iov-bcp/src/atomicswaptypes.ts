@@ -10,6 +10,9 @@ export enum SwapState {
   Aborted = "aborted",
 }
 
+export type Preimage = Uint8Array & As<"preimage">;
+export type Hash = Uint8Array & As<"hash">;
+
 export interface SwapData {
   readonly id: SwapIdBytes; // this is used as an unique identitier to locate the swap
   readonly sender: Address;
@@ -19,7 +22,7 @@ export interface SwapData {
    *
    * Until we have a way to specify the hashing algirithm, this is SHA256.
    */
-  readonly hash: Uint8Array;
+  readonly hash: Hash;
   readonly amounts: ReadonlyArray<Amount>;
   /**
    * The first point in time at which the offer is expired.
@@ -35,8 +38,6 @@ export interface OpenSwap {
   readonly kind: SwapState.Open;
   readonly data: SwapData;
 }
-
-export type Preimage = Uint8Array & As<"preimage">;
 
 // ClosedSwap is returned once the swap has been claimed, exposing the preimage that was used to claim it
 export interface ClaimedSwap {

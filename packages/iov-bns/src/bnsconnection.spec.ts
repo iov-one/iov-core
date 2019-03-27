@@ -13,6 +13,7 @@ import {
   BlockInfoSucceeded,
   ChainId,
   createTimestampTimeout,
+  Hash,
   isBlockInfoPending,
   isBlockInfoSucceeded,
   isConfirmedTransaction,
@@ -35,7 +36,7 @@ import {
   TransactionState,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Random, Sha256 } from "@iov/crypto";
+import { Random } from "@iov/crypto";
 import { Encoding, Uint64 } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol";
 import { asArray, firstEvent, lastValue, toListPromise } from "@iov/stream";
@@ -1458,8 +1459,8 @@ describe("BnsConnection", () => {
     const initSwaps = await connection.getSwaps({ recipient: recipientAddr });
     expect(initSwaps.length).toEqual(0);
 
-    const swapOfferPreimage = Encoding.toAscii(`my top secret phrase... ${Math.random()}`);
-    const swapOfferHash = new Sha256(swapOfferPreimage).digest();
+    const swapOfferPreimage = await AtomicSwapHelpers.createPreimage();
+    const swapOfferHash = AtomicSwapHelpers.hashPreimage(swapOfferPreimage);
 
     // it will live 30 seconds
     const swapOfferTimeout: SwapTimeout = createTimestampTimeout(30);
@@ -1604,7 +1605,7 @@ describe("BnsConnection", () => {
     profile: UserProfile,
     creator: PublicIdentity,
     rcptAddr: Address,
-    hash: Uint8Array,
+    hash: Hash,
   ): Promise<PostTxResponse> => {
     // construct a swapOfferTx, sign and post to the chain
     const swapOfferTimeout: SwapTimeout = createTimestampTimeout(30);

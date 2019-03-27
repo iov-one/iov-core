@@ -1,4 +1,3 @@
-import { Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
 import { AtomicSwapHelpers } from "./atomicswaphelpers";
@@ -82,8 +81,8 @@ describe("AtomicSwapMerger", () => {
 
     const preimageA = fromHex("00110011") as Preimage;
     const preimageB = fromHex("aabbeeff") as Preimage;
-    const hashA = new Sha256(preimageA).digest();
-    const hashB = new Sha256(preimageB).digest();
+    const hashA = AtomicSwapHelpers.hashPreimage(preimageA);
+    const hashB = AtomicSwapHelpers.hashPreimage(preimageB);
     const swapIdA = fromHex("aabbcc") as SwapIdBytes;
     const swapIdB = fromHex("112233") as SwapIdBytes;
     const openA: OpenSwap = {

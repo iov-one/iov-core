@@ -1,6 +1,6 @@
 import { Random, Sha256 } from "@iov/crypto";
 
-import { Preimage } from "./atomicswaptypes";
+import { Hash, Preimage } from "./atomicswaptypes";
 
 export class AtomicSwapHelpers {
   public static async createPreimage(): Promise<Preimage> {
@@ -12,7 +12,7 @@ export class AtomicSwapHelpers {
   }
 
   /** Creates a SHA256 hash of the preimage */
-  public static hashPreimage(preimage: Preimage): Uint8Array {
-    return new Sha256(preimage).digest();
+  public static hashPreimage(preimage: Preimage): Hash {
+    return new Sha256(preimage).digest() as Hash;
   }
 }

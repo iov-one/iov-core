@@ -7,6 +7,8 @@ export declare enum SwapState {
     Claimed = "claimed",
     Aborted = "aborted"
 }
+export declare type Preimage = Uint8Array & As<"preimage">;
+export declare type Hash = Uint8Array & As<"hash">;
 export interface SwapData {
     readonly id: SwapIdBytes;
     readonly sender: Address;
@@ -16,7 +18,7 @@ export interface SwapData {
      *
      * Until we have a way to specify the hashing algirithm, this is SHA256.
      */
-    readonly hash: Uint8Array;
+    readonly hash: Hash;
     readonly amounts: ReadonlyArray<Amount>;
     /**
      * The first point in time at which the offer is expired.
@@ -30,7 +32,6 @@ export interface OpenSwap {
     readonly kind: SwapState.Open;
     readonly data: SwapData;
 }
-export declare type Preimage = Uint8Array & As<"preimage">;
 export interface ClaimedSwap {
     readonly kind: SwapState.Claimed;
     readonly data: SwapData;
