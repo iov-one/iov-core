@@ -253,7 +253,7 @@ class Actor {
     }
 
     // found preimage on BCP, now bob claims CASH on BNS
-    const claim2 = await this.bcpConnection.withDefaultFee<SwapClaimTransaction>({
+    const claim2 = await this.bnsConnection.withDefaultFee<SwapClaimTransaction>({
       kind: "bcp/swap_claim",
       creator: this.bnsIdentity,
       swapId: claim1Review.data.id,
@@ -290,14 +290,14 @@ describe("Full atomic swap", () => {
     expect(bob.bnsAddress).toEqual("tiov1qrw95py2x7fzjw25euuqlj6dq6t0jahe7rh8wp");
     expect(bob.bcpAddress).toEqual("tiov1qrw95py2x7fzjw25euuqlj6dq6t0jahe7rh8wp");
 
-    // We need to send a 0.05 tokens to the other ones to allow fees
+    // We need to send a 0.01 tokens to the other ones to allow claim fees
     await alice.sendBnsTokens(bob.bnsAddress, {
-      quantity: "50000000",
+      quantity: "10000000",
       fractionalDigits: 9,
       tokenTicker: "CASH" as TokenTicker,
     });
     await bob.sendBcpTokens(alice.bcpAddress, {
-      quantity: "50000000",
+      quantity: "10000000",
       fractionalDigits: 9,
       tokenTicker: "MASH" as TokenTicker,
     });
@@ -306,12 +306,12 @@ describe("Full atomic swap", () => {
     const aliceInitialCash = await alice.getCashBalance();
     const aliceInitialMash = await alice.getMashBalance();
     expect(aliceInitialCash.gtn(100_000000000)).toEqual(true);
-    expect(aliceInitialMash.toString()).toEqual("50000000");
+    expect(aliceInitialMash.toString()).toEqual("10000000");
 
     // bob owns MASH on BCP but no CASH
     const bobInitialCash = await bob.getCashBalance();
     const bobInitialMash = await bob.getMashBalance();
-    expect(bobInitialCash.toString()).toEqual("50000000");
+    expect(bobInitialCash.toString()).toEqual("10000000");
     expect(bobInitialMash.gtn(100_000000000)).toEqual(true);
 
     // A secret that only Alice knows
@@ -345,10 +345,10 @@ describe("Full atomic swap", () => {
     // Bob used Alice's preimage to claim his 2 CASH
     expect((await bob.getCashBalance()).toString()).toEqual("2000000000");
 
-    // Alice's CASH balance now down by 2
-    expect(aliceInitialCash.sub(await alice.getCashBalance()).toString()).toEqual("2000000000");
+    // Alice's CASH balance now down by 2 (plus fees)
+    expect(aliceInitialCash.sub(await alice.getCashBalance()).toString()).toEqual("2010000000");
 
-    // Bob's MASH balance now down by 5
-    expect(bobInitialMash.sub(await bob.getMashBalance()).toString()).toEqual("5000000000");
+    // Bob's MASH balance now down by 5 (plus fees)
+    expect(bobInitialMash.sub(await bob.getMashBalance()).toString()).toEqual("5010000000");
   });
 });
