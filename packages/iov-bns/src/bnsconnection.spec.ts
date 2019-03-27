@@ -127,14 +127,18 @@ describe("BnsConnection", () => {
     await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
   }
 
-  async function ensureBalanceNonZero(connection: BnsConnection, address: Address): Promise<void> {
+  async function ensureBalanceNonZero(
+    connection: BnsConnection,
+    address: Address,
+    amount: Amount = defaultAmount,
+  ): Promise<void> {
     const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
 
     const sendTx = (await connection.withDefaultFee({
       kind: "bcp/send",
       creator: faucet,
       recipient: address,
-      amount: defaultAmount,
+      amount: amount,
     })) as SendTransaction;
     const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
     const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
@@ -599,8 +603,11 @@ describe("BnsConnection", () => {
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
 
-      // Create and send registration
+      // we need funds to pay the fees
       const address = identityToAddress(identity);
+      await ensureBalanceNonZero(connection, address);
+
+      // Create and send registration
       const username = `testuser_${Math.random()}`;
       const registration = (await connection.withDefaultFee({
         kind: "bns/register_username",
@@ -638,6 +645,9 @@ describe("BnsConnection", () => {
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
+      // we need funds to pay the fees
+      const myAddress = identityToAddress(identity);
+      await ensureBalanceNonZero(connection, myAddress);
 
       // Create and send registration
       const username = `testuser_${Math.random()}`;
@@ -993,6 +1003,9 @@ describe("BnsConnection", () => {
         amount: defaultAmount,
       })) as SendTransaction;
 
+      // give the broke Identity just enough to pay the fee
+      await ensureBalanceNonZero(connection, identityToAddress(brokeIdentity), sendTx.fee!.tokens);
+
       const nonce = await connection.getNonce({ pubkey: brokeIdentity.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
@@ -1009,9 +1022,9 @@ describe("BnsConnection", () => {
         throw new Error("Expected failed transaction");
       }
       expect(result.height).toBeGreaterThan(initialHeight);
-      // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L40
-      expect(result.code).toEqual(9);
-      expect(result.message).toMatch(/value is empty/i);
+      // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L50
+      expect(result.code).toEqual(12);
+      expect(result.message).toMatch(/insufficient amount/i);
 
       connection.disconnect();
     });
@@ -1161,6 +1174,9 @@ describe("BnsConnection", () => {
         amount: defaultAmount,
       })) as SendTransaction;
 
+      // give the broke Identity just enough to pay the fee
+      await ensureBalanceNonZero(connection, identityToAddress(brokeIdentity), sendTx.fee!.tokens);
+
       const nonce = await connection.getNonce({ pubkey: brokeIdentity.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
@@ -1175,9 +1191,9 @@ describe("BnsConnection", () => {
         throw new Error("Expected failed transaction");
       }
       expect(result.height).toBeGreaterThan(initialHeight);
-      // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L40
-      expect(result.code).toEqual(9);
-      expect(result.message).toMatch(/value is empty/i);
+      // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L50
+      expect(result.code).toEqual(12);
+      expect(result.message).toMatch(/insufficient amount/i);
 
       connection.disconnect();
     });
@@ -1200,6 +1216,9 @@ describe("BnsConnection", () => {
         amount: defaultAmount,
       })) as SendTransaction;
 
+      // give the broke Identity just enough to pay the fee
+      await ensureBalanceNonZero(connection, identityToAddress(brokeIdentity), sendTx.fee!.tokens);
+
       const nonce = await connection.getNonce({ pubkey: brokeIdentity.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
@@ -1210,9 +1229,9 @@ describe("BnsConnection", () => {
       if (!isFailedTransaction(result)) {
         throw new Error("Expected failed transaction");
       }
-      // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L40
-      expect(result.code).toEqual(9);
-      expect(result.message).toMatch(/value is empty/i);
+      // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L50
+      expect(result.code).toEqual(12);
+      expect(result.message).toMatch(/insufficient amount/i);
 
       connection.disconnect();
     });
@@ -1228,6 +1247,7 @@ describe("BnsConnection", () => {
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
       const identityAddress = identityToAddress(identity);
+      await ensureBalanceNonZero(connection, identityAddress);
 
       // Register username
       const username = `testuser_${Math.random()}`;
@@ -1285,6 +1305,7 @@ describe("BnsConnection", () => {
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
       const identityAddress = identityToAddress(identity);
+      await ensureBalanceNonZero(connection, identityAddress);
 
       // With a  blockchain
       const chainId = `wonderland_${Math.random()}` as ChainId;
