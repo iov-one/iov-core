@@ -636,7 +636,7 @@ describe("BnsConnection", () => {
         throw new Error("Unexpected transaction kind");
       }
       expect(firstSearchResultTransaction.username).toEqual(username);
-      expect(firstSearchResultTransaction.addresses.length).toEqual(0);
+      expect(firstSearchResultTransaction.addresses.length).toEqual(1);
 
       connection.disconnect();
     });
@@ -726,9 +726,9 @@ describe("BnsConnection", () => {
         if (blockInfo.state !== TransactionState.Failed) {
           throw new Error("Transaction is expected to fail");
         }
-        // https://github.com/iov-one/weave/blob/v0.10.2/x/nft/errors.go#L14
-        expect(blockInfo.code).toEqual(502);
-        expect(blockInfo.message || "").toMatch(/duplicate entry/i);
+        // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L29
+        expect(blockInfo.code).toEqual(6);
+        expect(blockInfo.message || "").toMatch(/duplicate/i);
       }
 
       // Remove address
@@ -771,10 +771,9 @@ describe("BnsConnection", () => {
         if (blockInfo.state !== TransactionState.Failed) {
           throw new Error("Transaction is expected to fail");
         }
-        // TODO: why is the removal of an non-existing address an invalid entry and not a missing entry?
-        // https://github.com/iov-one/weave/blob/v0.10.2/x/nft/errors.go#L16
-        expect(blockInfo.code).toEqual(504);
-        expect(blockInfo.message || "").toMatch(/invalid entry/i);
+        // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L56
+        expect(blockInfo.code).toEqual(14);
+        expect(blockInfo.message || "").toMatch(/invalid input/i);
       }
 
       connection.disconnect();
@@ -1021,9 +1020,9 @@ describe("BnsConnection", () => {
         throw new Error("Expected failed transaction");
       }
       expect(result.height).toBeGreaterThan(initialHeight);
-      // https://github.com/iov-one/weave/blob/v0.10.0/x/cash/errors.go#L18
-      expect(result.code).toEqual(36);
-      expect(result.message).toMatch(/account empty/i);
+      // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L40
+      expect(result.code).toEqual(9);
+      expect(result.message).toMatch(/value is empty/i);
 
       connection.disconnect();
     });
@@ -1187,9 +1186,9 @@ describe("BnsConnection", () => {
         throw new Error("Expected failed transaction");
       }
       expect(result.height).toBeGreaterThan(initialHeight);
-      // https://github.com/iov-one/weave/blob/v0.10.0/x/cash/errors.go#L18
-      expect(result.code).toEqual(36);
-      expect(result.message).toMatch(/account empty/i);
+      // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L40
+      expect(result.code).toEqual(9);
+      expect(result.message).toMatch(/value is empty/i);
 
       connection.disconnect();
     });
@@ -1222,9 +1221,9 @@ describe("BnsConnection", () => {
       if (!isFailedTransaction(result)) {
         throw new Error("Expected failed transaction");
       }
-      // https://github.com/iov-one/weave/blob/v0.10.0/x/cash/errors.go#L18
-      expect(result.code).toEqual(36);
-      expect(result.message).toMatch(/account empty/i);
+      // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L40
+      expect(result.code).toEqual(9);
+      expect(result.message).toMatch(/value is empty/i);
 
       connection.disconnect();
     });
