@@ -148,6 +148,7 @@ export interface TimestampTimeout {
     readonly timestamp: number;
 }
 export declare function isTimestampTimeout(timeout: SwapTimeout): timeout is TimestampTimeout;
+export declare function timeoutInSeconds(seconds: number): TimestampTimeout;
 /** A swap offer or a counter offer */
 export interface SwapOfferTransaction extends UnsignedTransaction {
     readonly kind: "bcp/swap_offer";

@@ -30,6 +30,7 @@ import {
   SwapOfferTransaction,
   SwapState,
   SwapTimeout,
+  timeoutInSeconds,
   TokenTicker,
   TransactionState,
   UnsignedTransaction,
@@ -1452,7 +1453,9 @@ describe("BnsConnection", () => {
 
     const swapOfferPreimage = Encoding.toAscii(`my top secret phrase... ${Math.random()}`);
     const swapOfferHash = new Sha256(swapOfferPreimage).digest();
-    const swapOfferTimeout: SwapTimeout = { height: (await connection.height()) + 1000 };
+
+    // it will live 30 seconds
+    const swapOfferTimeout: SwapTimeout = timeoutInSeconds(30);
     const swapOfferTx: SwapOfferTransaction = {
       kind: "bcp/swap_offer",
       creator: faucet,
@@ -1582,7 +1585,7 @@ describe("BnsConnection", () => {
     hash: Uint8Array,
   ): Promise<PostTxResponse> => {
     // construct a swapOfferTx, sign and post to the chain
-    const swapOfferTimeout: SwapTimeout = { height: (await connection.height()) + 1000 };
+    const swapOfferTimeout: SwapTimeout = timeoutInSeconds(30);
     const swapOfferTx: SwapOfferTransaction = {
       kind: "bcp/swap_offer",
       creator: creator,

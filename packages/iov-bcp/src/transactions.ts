@@ -1,3 +1,4 @@
+import { ReadonlyDate } from "readonly-date";
 import { As } from "type-tagger";
 
 import { Preimage } from "./atomicswaptypes";
@@ -237,6 +238,10 @@ export interface TimestampTimeout {
 
 export function isTimestampTimeout(timeout: SwapTimeout): timeout is TimestampTimeout {
   return typeof (timeout as TimestampTimeout).timestamp === "number";
+}
+
+export function timeoutInSeconds(seconds: number): TimestampTimeout {
+  return { timestamp: Math.floor(ReadonlyDate.now() / 1000) + seconds };
 }
 
 /** A swap offer or a counter offer */
