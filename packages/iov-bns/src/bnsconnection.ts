@@ -606,18 +606,21 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   }
 
   public async getFeeQuote(transaction: UnsignedTransaction): Promise<Fee> {
-    if (isBnsTx(transaction)) {
-      const firstToken = (await this.getAllTickers())[0];
-      return {
-        tokens: {
-          quantity: "0",
-          fractionalDigits: firstToken.fractionalDigits,
-          tokenTicker: firstToken.tokenTicker,
-        },
-      };
+    if (!isBnsTx(transaction)) {
+      throw new Error("Received transaction of unsupported kind.");
     }
+    const firstToken = (await this.getAllTickers())[0];
+    return {
+      tokens: {
+        quantity: "100000000",
+        fractionalDigits: firstToken.fractionalDigits,
+        tokenTicker: "CASH" as TokenTicker,
+      },
+    };
+  }
 
-    throw new Error("Received transaction of unsupported kind.");
+  public async withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T> {
+    return { ...transaction, fee: await this.getFeeQuote(transaction) };
   }
 
   protected async query(path: string, data: Uint8Array): Promise<QueryResponse> {

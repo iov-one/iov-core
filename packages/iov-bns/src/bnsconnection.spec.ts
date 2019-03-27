@@ -403,7 +403,7 @@ describe("BnsConnection", () => {
   });
 
   describe("postTx", () => {
-    it("can send transaction", async () => {
+    fit("can send transaction", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const chainId = connection.chainId();
@@ -414,7 +414,7 @@ describe("BnsConnection", () => {
       const recipient = await randomBnsAddress();
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
-      const sendTx: SendTransaction = {
+      const sendTx = (await connection.withDefaultFee({
         kind: "bcp/send",
         creator: faucet,
         recipient: recipient,
@@ -424,7 +424,7 @@ describe("BnsConnection", () => {
           fractionalDigits: 9,
           tokenTicker: cash,
         },
-      };
+      })) as SendTransaction;
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
       const txBytes = bnsCodec.bytesToPost(signed);

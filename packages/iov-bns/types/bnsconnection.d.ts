@@ -70,6 +70,7 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     watchAccount(query: AccountQuery): Stream<Account | undefined>;
     getUsernames(query: BnsUsernamesQuery): Promise<ReadonlyArray<BnsUsernameNft>>;
     getFeeQuote(transaction: UnsignedTransaction): Promise<Fee>;
+    withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;
     protected query(path: string, data: Uint8Array): Promise<QueryResponse>;
 }
 export interface QueryResponse {
