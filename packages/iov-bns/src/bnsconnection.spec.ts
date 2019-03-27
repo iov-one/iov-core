@@ -115,12 +115,12 @@ describe("BnsConnection", () => {
     profile: UserProfile,
     identity: PublicIdentity,
   ): Promise<void> {
-    const sendTx: SendTransaction = {
+    const sendTx = (await connection.withDefaultFee({
       kind: "bcp/send",
       creator: identity,
       recipient: await randomBnsAddress(),
       amount: defaultAmount,
-    };
+    })) as SendTransaction;
     const nonce = await connection.getNonce({ pubkey: identity.pubkey });
     const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
     const response = await connection.postTx(bnsCodec.bytesToPost(signed));
@@ -130,12 +130,12 @@ describe("BnsConnection", () => {
   async function ensureBalanceNonZero(connection: BnsConnection, address: Address): Promise<void> {
     const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
 
-    const sendTx: SendTransaction = {
+    const sendTx = (await connection.withDefaultFee({
       kind: "bcp/send",
       creator: faucet,
       recipient: address,
       amount: defaultAmount,
-    };
+    })) as SendTransaction;
     const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
     const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
     const response = await connection.postTx(bnsCodec.bytesToPost(signed));
@@ -403,7 +403,7 @@ describe("BnsConnection", () => {
   });
 
   describe("postTx", () => {
-    fit("can send transaction", async () => {
+    it("can send transaction", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const chainId = connection.chainId();
@@ -466,16 +466,13 @@ describe("BnsConnection", () => {
       connection.disconnect();
     });
 
-    it("can send transaction with fees", async () => {
+    // TODO: extend this with missing and high fees
+    it("rejects send transaction with manual fees too low", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const chainId = connection.chainId();
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
-
-      const initialBalance = (await connection.getAccount({ pubkey: faucet.pubkey }))!.balance.find(
-        coin => coin.tokenTicker === cash,
-      )!;
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
@@ -497,21 +494,12 @@ describe("BnsConnection", () => {
       };
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
-      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
-
-      const reducedBalance = (await connection.getAccount({ pubkey: faucet.pubkey }))!.balance.find(
-        coin => coin.tokenTicker === cash,
-      )!;
-
-      expect(reducedBalance.quantity).toEqual(
-        Long.fromString(initialBalance.quantity)
-          .subtract(100)
-          .subtract(2)
-          .toString(),
-      );
-
+      try {
+        await connection.postTx(bnsCodec.bytesToPost(signed));
+        fail("above line should reject with low fees");
+      } catch (err) {
+        expect(err).toMatch(/fee less than minimum/);
+      }
       connection.disconnect();
     });
 
@@ -523,13 +511,13 @@ describe("BnsConnection", () => {
       const { profile, faucet } = await userProfileWithFaucet(chainId);
 
       // memo too long will trigger failure in CheckTx (validation of message)
-      const sendTx: SendTransaction = {
+      const sendTx = (await connection.withDefaultFee({
         kind: "bcp/send",
         creator: faucet,
         recipient: await randomBnsAddress(),
         memo: "too long".repeat(100),
         amount: defaultAmount,
-      };
+      })) as SendTransaction;
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
 
@@ -552,7 +540,7 @@ describe("BnsConnection", () => {
         const recipient = await randomBnsAddress();
 
         // construct a sendtx, this is normally used in the MultiChainSigner api
-        const sendTx: SendTransaction = {
+        const sendTx = (await connection.withDefaultFee({
           kind: "bcp/send",
           creator: faucet,
           recipient: recipient,
@@ -562,7 +550,7 @@ describe("BnsConnection", () => {
             fractionalDigits: 9,
             tokenTicker: cash,
           },
-        };
+        })) as SendTransaction;
         const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
         const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
         const heightBeforeTransaction = await connection.height();
@@ -614,12 +602,12 @@ describe("BnsConnection", () => {
       // Create and send registration
       const address = identityToAddress(identity);
       const username = `testuser_${Math.random()}`;
-      const registration: RegisterUsernameTx = {
+      const registration = (await connection.withDefaultFee({
         kind: "bns/register_username",
         creator: identity,
         addresses: [{ chainId: "foobar" as ChainId, address: address }],
         username: username,
-      };
+      })) as RegisterUsernameTx;
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
       const signed = await profile.signTransaction(registration, bnsCodec, nonce);
       const txBytes = bnsCodec.bytesToPost(signed);
@@ -653,12 +641,12 @@ describe("BnsConnection", () => {
 
       // Create and send registration
       const username = `testuser_${Math.random()}`;
-      const usernameRegistration: RegisterUsernameTx = {
+      const usernameRegistration = (await connection.withDefaultFee({
         kind: "bns/register_username",
         creator: identity,
         username: username,
         addresses: [],
-      };
+      })) as RegisterUsernameTx;
       {
         const response = await connection.postTx(
           bnsCodec.bytesToPost(
@@ -678,7 +666,7 @@ describe("BnsConnection", () => {
 
       // Add address
       const address = `testaddress_${Math.random()}` as Address;
-      const addAddress: AddAddressToUsernameTx = {
+      const addAddress = (await connection.withDefaultFee({
         kind: "bns/add_address_to_username",
         creator: identity,
         username: username,
@@ -686,7 +674,7 @@ describe("BnsConnection", () => {
           chainId: chainId,
           address: address,
         },
-      };
+      })) as AddAddressToUsernameTx;
       {
         const response = await connection.postTx(
           bnsCodec.bytesToPost(
@@ -703,7 +691,7 @@ describe("BnsConnection", () => {
 
       // Adding second address for the same chain fails
       const address2 = `testaddress2_${Math.random()}` as Address;
-      const addAddress2: AddAddressToUsernameTx = {
+      const addAddress2 = (await connection.withDefaultFee({
         kind: "bns/add_address_to_username",
         creator: identity,
         username: username,
@@ -711,7 +699,7 @@ describe("BnsConnection", () => {
           chainId: chainId,
           address: address2,
         },
-      };
+      })) as AddAddressToUsernameTx;
       {
         const response = await connection.postTx(
           bnsCodec.bytesToPost(
@@ -733,7 +721,7 @@ describe("BnsConnection", () => {
       }
 
       // Remove address
-      const removeAddress: RemoveAddressFromUsernameTx = {
+      const removeAddress = (await connection.withDefaultFee({
         kind: "bns/remove_address_from_username",
         creator: identity,
         username: username,
@@ -741,7 +729,7 @@ describe("BnsConnection", () => {
           chainId: chainId,
           address: address,
         },
-      };
+      })) as RemoveAddressFromUsernameTx;
       {
         const response = await connection.postTx(
           bnsCodec.bytesToPost(
@@ -792,13 +780,13 @@ describe("BnsConnection", () => {
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
       const memo = `Payment ${Math.random()}`;
-      const sendTx: SendTransaction = {
+      const sendTx = (await connection.withDefaultFee({
         kind: "bcp/send",
         creator: faucet,
         recipient: rcptAddress,
         memo: memo,
         amount: defaultAmount,
-      };
+      })) as SendTransaction;
 
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
@@ -832,13 +820,13 @@ describe("BnsConnection", () => {
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
       const memo = `Payment ${Math.random()}`;
-      const sendTx: SendTransaction = {
+      const sendTx = (await connection.withDefaultFee({
         kind: "bcp/send",
         creator: faucet,
         recipient: rcptAddress,
         memo: memo,
         amount: defaultAmount,
-      };
+      })) as SendTransaction;
 
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
@@ -869,13 +857,13 @@ describe("BnsConnection", () => {
       const { profile, faucet } = await userProfileWithFaucet(chainId);
 
       const memo = `Payment ${Math.random()}`;
-      const sendTx: SendTransaction = {
+      const sendTx = (await connection.withDefaultFee({
         kind: "bcp/send",
         creator: faucet,
         recipient: await randomBnsAddress(),
         memo: memo,
         amount: defaultAmount,
-      };
+      })) as SendTransaction;
 
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
@@ -914,13 +902,13 @@ describe("BnsConnection", () => {
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
       const memo = `Payment ${Math.random()}`;
-      const sendTx: SendTransaction = {
+      const sendTx = (await connection.withDefaultFee({
         kind: "bcp/send",
         creator: faucet,
         recipient: rcptAddress,
         memo: memo,
         amount: defaultAmount,
-      };
+      })) as SendTransaction;
 
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
@@ -997,13 +985,13 @@ describe("BnsConnection", () => {
       // this will never have tokens, but can try to sign
       const brokeIdentity = await profile.createIdentity(mainWalletId, chainId, HdPaths.simpleAddress(1234));
 
-      const sendTx: SendTransaction = {
+      const sendTx = (await connection.withDefaultFee({
         kind: "bcp/send",
         creator: brokeIdentity,
         recipient: await randomBnsAddress(),
         memo: "Sending from empty",
         amount: defaultAmount,
-      };
+      })) as SendTransaction;
 
       const nonce = await connection.getNonce({ pubkey: brokeIdentity.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
@@ -1040,13 +1028,13 @@ describe("BnsConnection", () => {
         const { profile, faucet } = await userProfileWithFaucet(chainId);
 
         const memo = `Payment ${Math.random()}`;
-        const sendTx: SendTransaction = {
+        const sendTx = (await connection.withDefaultFee({
           kind: "bcp/send",
           creator: faucet,
           recipient: await randomBnsAddress(),
           memo: memo,
           amount: defaultAmount,
-        };
+        })) as SendTransaction;
 
         const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
         const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
@@ -1087,13 +1075,13 @@ describe("BnsConnection", () => {
       const { profile, faucet } = await userProfileWithFaucet(chainId);
 
       const memo = `Payment ${Math.random()}`;
-      const sendTx: SendTransaction = {
+      const sendTx = (await connection.withDefaultFee({
         kind: "bcp/send",
         creator: faucet,
         recipient: await randomBnsAddress(),
         memo: memo,
         amount: defaultAmount,
-      };
+      })) as SendTransaction;
 
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
@@ -1127,13 +1115,13 @@ describe("BnsConnection", () => {
       const { profile, faucet } = await userProfileWithFaucet(chainId);
 
       const memo = `Payment ${Math.random()}`;
-      const sendTx: SendTransaction = {
+      const sendTx = (await connection.withDefaultFee({
         kind: "bcp/send",
         creator: faucet,
         recipient: await randomBnsAddress(),
         memo: memo,
         amount: defaultAmount,
-      };
+      })) as SendTransaction;
 
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
@@ -1165,13 +1153,13 @@ describe("BnsConnection", () => {
       // this will never have tokens, but can try to sign
       const brokeIdentity = await profile.createIdentity(mainWalletId, chainId, HdPaths.simpleAddress(1234));
 
-      const sendTx: SendTransaction = {
+      const sendTx = (await connection.withDefaultFee({
         kind: "bcp/send",
         creator: brokeIdentity,
         recipient: await randomBnsAddress(),
         memo: "Sending from empty",
         amount: defaultAmount,
-      };
+      })) as SendTransaction;
 
       const nonce = await connection.getNonce({ pubkey: brokeIdentity.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
@@ -1204,13 +1192,13 @@ describe("BnsConnection", () => {
       const brokeIdentity = await profile.createIdentity(mainWalletId, chainId, HdPaths.simpleAddress(1234));
 
       // Sending tokens from an empty account will trigger a failure in DeliverTx
-      const sendTx: SendTransaction = {
+      const sendTx = (await connection.withDefaultFee({
         kind: "bcp/send",
         creator: brokeIdentity,
         recipient: await randomBnsAddress(),
         memo: "Sending from empty",
         amount: defaultAmount,
-      };
+      })) as SendTransaction;
 
       const nonce = await connection.getNonce({ pubkey: brokeIdentity.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
@@ -1243,12 +1231,12 @@ describe("BnsConnection", () => {
 
       // Register username
       const username = `testuser_${Math.random()}`;
-      const registration: RegisterUsernameTx = {
+      const registration = (await connection.withDefaultFee({
         kind: "bns/register_username",
         creator: identity,
         addresses: [],
         username: username,
-      };
+      })) as RegisterUsernameTx;
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
       const signed = await profile.signTransaction(registration, bnsCodec, nonce);
       {
@@ -1303,7 +1291,7 @@ describe("BnsConnection", () => {
 
       // Register username
       const username = `testuser_${Math.random()}`;
-      const usernameRegistration: RegisterUsernameTx = {
+      const usernameRegistration = (await connection.withDefaultFee({
         kind: "bns/register_username",
         creator: identity,
         addresses: [
@@ -1313,7 +1301,7 @@ describe("BnsConnection", () => {
           },
         ],
         username: username,
-      };
+      })) as RegisterUsernameTx;
       {
         const response = await connection.postTx(
           bnsCodec.bytesToPost(
@@ -1373,7 +1361,7 @@ describe("BnsConnection", () => {
     rcptAddr: Address,
   ): Promise<PostTxResponse> => {
     // construct a sendtx, this is normally used in the MultiChainSigner api
-    const sendTx: SendTransaction = {
+    const sendTx = (await connection.withDefaultFee({
       kind: "bcp/send",
       creator: faucet,
       recipient: rcptAddr,
@@ -1382,7 +1370,7 @@ describe("BnsConnection", () => {
         fractionalDigits: 9,
         tokenTicker: cash,
       },
-    };
+    })) as SendTransaction;
     const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
     const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
@@ -1433,6 +1421,7 @@ describe("BnsConnection", () => {
     expect(faucetEndBalance.quantity).toEqual(
       Long.fromString(faucetStartBalance.quantity)
         .subtract(68_000000000)
+        .subtract(10_000000) // the fee (0.01 CASH)
         .toString(),
     );
 
@@ -1456,7 +1445,7 @@ describe("BnsConnection", () => {
 
     // it will live 30 seconds
     const swapOfferTimeout: SwapTimeout = timeoutInSeconds(30);
-    const swapOfferTx: SwapOfferTransaction = {
+    const swapOfferTx = (await connection.withDefaultFee({
       kind: "bcp/swap_offer",
       creator: faucet,
       recipient: recipientAddr,
@@ -1469,7 +1458,7 @@ describe("BnsConnection", () => {
       ],
       timeout: swapOfferTimeout,
       hash: swapOfferHash,
-    };
+    })) as SwapOfferTransaction;
 
     const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
     const signed = await profile.signTransaction(swapOfferTx, bnsCodec, nonce);
@@ -1586,7 +1575,7 @@ describe("BnsConnection", () => {
   ): Promise<PostTxResponse> => {
     // construct a swapOfferTx, sign and post to the chain
     const swapOfferTimeout: SwapTimeout = timeoutInSeconds(30);
-    const swapOfferTx: SwapOfferTransaction = {
+    const swapOfferTx = (await connection.withDefaultFee({
       kind: "bcp/swap_offer",
       creator: creator,
       recipient: rcptAddr,
@@ -1599,7 +1588,7 @@ describe("BnsConnection", () => {
       ],
       timeout: swapOfferTimeout,
       hash: hash,
-    };
+    })) as SwapOfferTransaction;
     const nonce = await connection.getNonce({ pubkey: creator.pubkey });
     const signed = await profile.signTransaction(swapOfferTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
@@ -1614,12 +1603,12 @@ describe("BnsConnection", () => {
     preimage: Preimage,
   ): Promise<PostTxResponse> => {
     // construct a swapOfferTx, sign and post to the chain
-    const swapClaimTx: SwapClaimTransaction = {
+    const swapClaimTx = (await connection.withDefaultFee({
       kind: "bcp/swap_claim",
       creator: creator,
       swapId: swapId,
       preimage: preimage,
-    };
+    })) as SwapClaimTransaction;
     const nonce = await connection.getNonce({ pubkey: creator.pubkey });
     const signed = await profile.signTransaction(swapClaimTx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
@@ -1736,7 +1725,7 @@ describe("BnsConnection", () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
-      const sendTransaction: SendTransaction = {
+      const sendTransaction = {
         kind: "bcp/send",
         creator: {
           chainId: connection.chainId(),
@@ -1750,7 +1739,11 @@ describe("BnsConnection", () => {
         amount: defaultAmount,
       };
       const result = await connection.getFeeQuote(sendTransaction);
-      expect(result.tokens!.quantity).toEqual("0"); // ignore token type since it is free anyway
+      // anti-spam gconf fee from genesis
+      expect(result.tokens!.quantity).toEqual("10000000");
+      expect(result.tokens!.fractionalDigits).toEqual(9);
+      expect(result.tokens!.tokenTicker).toEqual("CASH" as TokenTicker);
+
       expect(result.gasPrice).toBeUndefined();
       expect(result.gasLimit).toBeUndefined();
 
@@ -1762,7 +1755,7 @@ describe("BnsConnection", () => {
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
       const username = `testuser_${Math.random()}`;
-      const usernameRegistration: RegisterUsernameTx = {
+      const usernameRegistration = {
         kind: "bns/register_username",
         creator: {
           chainId: connection.chainId(),
@@ -1781,7 +1774,11 @@ describe("BnsConnection", () => {
       };
 
       const result = await connection.getFeeQuote(usernameRegistration);
-      expect(result.tokens!.quantity).toEqual("0"); // ignore token type since it is free anyway
+      // anti-spam gconf fee from genesis
+      expect(result.tokens!.quantity).toEqual("10000000");
+      expect(result.tokens!.fractionalDigits).toEqual(9);
+      expect(result.tokens!.tokenTicker).toEqual("CASH" as TokenTicker);
+
       expect(result.gasPrice).toBeUndefined();
       expect(result.gasLimit).toBeUndefined();
 
