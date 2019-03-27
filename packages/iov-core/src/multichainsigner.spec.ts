@@ -93,7 +93,7 @@ describe("MultiChainSigner", () => {
 
       // construct a sendtx, this mirrors the MultiChainSigner api
       const memo = `MultiChainSigner style (${Math.random()})`;
-      const sendTx: SendTransaction = {
+      const preSend: SendTransaction = {
         kind: "bcp/send",
         creator: faucet,
         recipient: recipient,
@@ -104,6 +104,8 @@ describe("MultiChainSigner", () => {
           tokenTicker: cash,
         },
       };
+      // TODO: shall we add the withDefaultFee to the bcp api?
+      const sendTx = { ...preSend, fee: await connection.getFeeQuote(preSend) };
       const postResponse = await signer.signAndPost(sendTx);
       await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
@@ -183,7 +185,7 @@ describe("MultiChainSigner", () => {
       const signer = new MultiChainSigner(profile);
       expect(signer.chainIds().length).toEqual(0);
 
-      await signer.addChain(bnsConnector(bnsdTendermintUrl));
+      const { connection: bnsConnection } = await signer.addChain(bnsConnector(bnsdTendermintUrl));
       await signer.addChain(ethereumConnector(httpEthereumUrl, undefined));
       const [bnsId, ethereumChainId] = signer.chainIds();
 
@@ -202,7 +204,7 @@ describe("MultiChainSigner", () => {
 
       {
         // Send on BNS
-        const sendOnBns: SendTransaction = {
+        const preSendOnBns: SendTransaction = {
           kind: "bcp/send",
           creator: bnsFaucet,
           recipient: await randomBnsAddress(),
@@ -213,6 +215,8 @@ describe("MultiChainSigner", () => {
             tokenTicker: cash,
           },
         };
+        // TODO: shall we add the withDefaultFee to the bcp api?
+        const sendOnBns = { ...preSendOnBns, fee: await bnsConnection.getFeeQuote(preSendOnBns) };
         const postResponse = await signer.signAndPost(sendOnBns);
         const blockInfo = await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
@@ -230,6 +234,7 @@ describe("MultiChainSigner", () => {
           },
           recipient: "0x0000000000000000000000000000000000000000" as Address,
           memo: `MultiChainSigner style (${Math.random()})`,
+          // TODO: shall we use getFeeQuote here?
           fee: {
             gasPrice: {
               quantity: "20000000000",
