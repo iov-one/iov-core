@@ -115,12 +115,12 @@ describe("BnsConnection", () => {
     profile: UserProfile,
     identity: PublicIdentity,
   ): Promise<void> {
-    const sendTx = (await connection.withDefaultFee({
+    const sendTx = await connection.withDefaultFee<SendTransaction>({
       kind: "bcp/send",
       creator: identity,
       recipient: await randomBnsAddress(),
       amount: defaultAmount,
-    })) as SendTransaction;
+    });
     const nonce = await connection.getNonce({ pubkey: identity.pubkey });
     const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
     const response = await connection.postTx(bnsCodec.bytesToPost(signed));
