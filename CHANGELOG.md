@@ -4,9 +4,10 @@
 
 Breaking changes
 
-* @iov/bcp: Change type of `SwapData.timeout` and `SwapOfferTransaction.timeout`
+- @iov/bcp: Change type of `SwapData.timeout` and `SwapOfferTransaction.timeout`
   to `SwapTimeout = BlockHeightTimeout | TimestampTimeout`.
-* @iov/bcp: Rename `SwapState.Expired` to `.Aborted` and `ExpiredSwap` to `AbortedSwap`.
+- @iov/bcp: Rename `SwapState.Expired` to `.Aborted` and `ExpiredSwap` to
+  `AbortedSwap`.
 
 ## 0.13.1
 
