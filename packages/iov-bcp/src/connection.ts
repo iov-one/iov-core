@@ -275,4 +275,6 @@ export interface BcpConnection {
    */
   readonly liveTx: (txQuery: BcpTxQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
   readonly getFeeQuote: (tx: UnsignedTransaction) => Promise<Fee>;
+  // withDefaultFee will set the fee of the transaction to the result of getFeeQuote
+  readonly withDefaultFee: <T extends UnsignedTransaction>(tx: T) => Promise<T>;
 }

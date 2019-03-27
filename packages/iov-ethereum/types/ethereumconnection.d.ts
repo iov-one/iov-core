@@ -32,6 +32,7 @@ export declare class EthereumConnection implements BcpConnection {
     listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction>;
     liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction>;
     getFeeQuote(_: UnsignedTransaction): Promise<Fee>;
+    withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;
     private socketSend;
     private searchTransactionsById;
     private searchSendTransactionsByAddress;
