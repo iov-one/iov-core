@@ -613,9 +613,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     // TODO: get product fee for this type
     // take maximum
     const res = await this.query("/", Encoding.toAscii("gconf:cash:minimal_fee"));
-    if (res.results.length === 0) {
-      throw new Error("No fee defined");
-    } else if (res.results.length > 1) {
+    if (res.results.length !== 1) {
       throw new Error("Received unexpected number of fees");
     }
     const data = Encoding.fromAscii(res.results[0].value);

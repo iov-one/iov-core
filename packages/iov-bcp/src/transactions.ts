@@ -240,8 +240,8 @@ export function isTimestampTimeout(timeout: SwapTimeout): timeout is TimestampTi
   return typeof (timeout as TimestampTimeout).timestamp === "number";
 }
 
-export function timeoutInSeconds(seconds: number): TimestampTimeout {
-  return { timestamp: Math.floor(ReadonlyDate.now() / 1000) + seconds };
+export function createTimestampTimeout(secondsFromNow: number): TimestampTimeout {
+  return { timestamp: Math.floor(ReadonlyDate.now() / 1000) + secondsFromNow };
 }
 
 /** A swap offer or a counter offer */

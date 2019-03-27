@@ -30,7 +30,7 @@ import {
   SwapOfferTransaction,
   SwapState,
   SwapTimeout,
-  timeoutInSeconds,
+  createTimestampTimeout,
   TokenTicker,
   TransactionState,
   UnsignedTransaction,
@@ -1442,7 +1442,7 @@ describe("BnsConnection", () => {
     expect(faucetEndBalance.quantity).toEqual(
       Long.fromString(faucetStartBalance.quantity)
         .subtract(68_000000000)
-        .subtract(10_000000) // the fee (0.01 CASH)
+        .subtract(0_010000000) // the fee (0.01 CASH)
         .toString(),
     );
 
@@ -1465,7 +1465,7 @@ describe("BnsConnection", () => {
     const swapOfferHash = new Sha256(swapOfferPreimage).digest();
 
     // it will live 30 seconds
-    const swapOfferTimeout: SwapTimeout = timeoutInSeconds(30);
+    const swapOfferTimeout: SwapTimeout = createTimestampTimeout(30);
     const swapOfferTx = (await connection.withDefaultFee({
       kind: "bcp/swap_offer",
       creator: faucet,
@@ -1595,7 +1595,7 @@ describe("BnsConnection", () => {
     hash: Uint8Array,
   ): Promise<PostTxResponse> => {
     // construct a swapOfferTx, sign and post to the chain
-    const swapOfferTimeout: SwapTimeout = timeoutInSeconds(30);
+    const swapOfferTimeout: SwapTimeout = createTimestampTimeout(30);
     const swapOfferTx = (await connection.withDefaultFee({
       kind: "bcp/swap_offer",
       creator: creator,
