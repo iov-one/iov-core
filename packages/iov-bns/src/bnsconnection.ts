@@ -46,7 +46,7 @@ import { broadcastTxSyncSuccess, Client as TendermintClient } from "@iov/tenderm
 
 import { bnsCodec } from "./bnscodec";
 import { ChainData, Context } from "./context";
-import { decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
+import { decodeNonce, decodeToken, decodeUsernameNft, decodeJsonAmount } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
 import {
@@ -609,14 +609,18 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     if (!isBnsTx(transaction)) {
       throw new Error("Received transaction of unsupported kind.");
     }
-    const firstToken = (await this.getAllTickers())[0];
-    return {
-      tokens: {
-        quantity: "100000000",
-        fractionalDigits: firstToken.fractionalDigits,
-        tokenTicker: "CASH" as TokenTicker,
-      },
-    };
+    // get gconf fee
+    // TODO: get product fee for this type
+    // take maximum
+    const res = await this.query("/", Encoding.toAscii("gconf:cash:minimal_fee"));
+    if (res.results.length === 0) {
+      throw new Error("No fee defined");
+    } else if (res.results.length > 1) {
+      throw new Error("Received unexpected number of fees");
+    }
+    const data = Encoding.fromAscii(res.results[0].value);
+    const amount = decodeJsonAmount(data);
+    return { tokens: amount };
   }
 
   public async withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T> {

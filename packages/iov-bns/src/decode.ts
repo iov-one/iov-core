@@ -17,7 +17,7 @@ import {
   TokenTicker,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
 import {
@@ -241,4 +241,35 @@ function parseRemoveAddressFromUsernameTx(
       address: ensure(msg.address, "address") as Address,
     },
   };
+}
+
+const humanCoinFormat = new RegExp(/^(\d+)(\.\d+)?\s*([A-Z]{3,4})$/);
+
+// adds zeros to the right as needed to ensure given length
+function rightPadZeros(short: string, length: number): string {
+  if (short.length >= length) {
+    return short;
+  }
+  return short + "0".repeat(length - short.length);
+}
+
+export function decodeJsonAmount(json: string): Amount {
+  const data = JSON.parse(json);
+  if (typeof data === "string") {
+    // parse "1.23 IOV", ".001CASH", "12   FOO"
+    const vals = humanCoinFormat.exec(data);
+    if (vals === null) {
+      throw new Error(`Invalid coin string: ${data}`);
+    }
+    const [, wholeStr, fracString, ticker] = vals;
+    const coin = {
+      whole: wholeStr ? Int53.fromString(wholeStr).toNumber() : undefined,
+      fractional: fracString ? Int53.fromString(rightPadZeros(fracString.slice(1), 9)).toNumber() : undefined,
+      ticker: ticker as TokenTicker,
+    };
+    return decodeAmount(coin);
+  } else if (typeof data === "object" && data !== null) {
+    return decodeAmount(data as codecImpl.coin.ICoin);
+  }
+  throw new Error("Impossible type for amount json");
 }
