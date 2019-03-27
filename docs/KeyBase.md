@@ -6,12 +6,19 @@ they contain.
 
 ## Key Terms:
 
-- `UserProfile`: A collection of User materials. Includes multiple `keyringEntries` associated with a `UserProfile`.
+- `UserProfile`: A collection of User materials. Includes multiple
+  `keyringEntries` associated with a `UserProfile`.
 - `Keyring`: An object containing `keyringEntry`'s.
-- `KeyringEntry`: An object which houses ONE `SeedIdentity` and N `PublicIdentities`.
-- `SeedIdentity`: Single Private material entry in a `KeyringEntry`, used for deriving a `secret` to sign  transactions and generate `PublicIdentities`.
-- `PublicIdentities`: Public materials collection. Contains the an array of objects related to a `SeedIdentity`.
-- `PublicIdentity`: A collection of information derived from a `secret`. It includes an address, publicKey, and HD path data which is always defined via the HD specifications. Used for end user queries for balances and transaction histories.
+- `KeyringEntry`: An object which houses ONE `SeedIdentity` and N
+  `PublicIdentities`.
+- `SeedIdentity`: Single Private material entry in a `KeyringEntry`, used for
+  deriving a `secret` to sign transactions and generate `PublicIdentities`.
+- `PublicIdentities`: Public materials collection. Contains the an array of
+  objects related to a `SeedIdentity`.
+- `PublicIdentity`: A collection of information derived from a `secret`. It
+  includes an address, publicKey, and HD path data which is always defined via
+  the HD specifications. Used for end user queries for balances and transaction
+  histories.
 
 ## Feature Set:
 
@@ -21,8 +28,8 @@ a Hardware Wallet, and various cryptographic algorithms.
 
 ### Generation of HD Seeds
 
-The iov-core Keybase will require the ability to generate new seeds from entropy for
-a user, when needed. This can occur when a UserProfile is made, or later on
+The iov-core Keybase will require the ability to generate new seeds from entropy
+for a user, when needed. This can occur when a UserProfile is made, or later on
 demand by the User.
 
 ### Import/Export of HD Seeds
@@ -51,13 +58,15 @@ practical to use. Ledger will be the first device type supported by the Keybase.
 ### Transaction/Message operations
 
 The Keybase will have the following features:
+
 - Sign and Verify Transactions
 - Sign and Verify Messages
 
 ### Profile and HD Seed encryption
 
 All data entered into a profile is encrypted before it is stored on disk.
-Additionally, individual KeyringEntries can be encrypted by a separate passphrase.
+Additionally, individual KeyringEntries can be encrypted by a separate
+passphrase.
 
 ## Standards Used:
 
@@ -65,35 +74,47 @@ The Keybase will implement a variety of standards regarding address derivation
 and timestamp generation. These have been listed here for review.
 
 ### Hierarchical Deterministic Wallets
-HD wallets will be created through this standard to yield a master publickey:privatekey pair.
+
+HD wallets will be created through this standard to yield a master
+publickey:privatekey pair.
 
 - BIP32: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
 
 ### Multi-Account Hierarchy for Deterministic Wallets
-HD Wallets for chain specific support will be created through the following standards for each algorithm.
+
+HD Wallets for chain specific support will be created through the following
+standards for each algorithm.
 
 #### secp256k1
+
 - BIP43: https://github.com/bitcoin/bips/blob/master/bip-0043.mediawiki
 - BIP44: https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
 
 #### ed25519
+
 - SLIP-0010: https://github.com/satoshilabs/slips/blob/master/slip-0010.md
 
 #### Both
+
 - SLIP-0044: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 
 ### HD Seed Generation:
+
 Seed generation will be performed through the BIP39 specification for HD seeds
 
 - BIP39: https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki
 
 ### Timestamp Generation
-Timestamps are generated using a widely known standard to enable deterministic parsing.
+
+Timestamps are generated using a widely known standard to enable deterministic
+parsing.
 
 - RFC 3339: https://tools.ietf.org/html/rfc3339
 
 # Code Architecture
-The code for keyring management is broken down into logical units, each performing a specific task. The design can be visualized as follows:
+
+The code for keyring management is broken down into logical units, each
+performing a specific task. The design can be visualized as follows:
 
 ```
 UserProfileController (1 UserProfileController)
@@ -114,19 +135,23 @@ UserProfileController (1 UserProfileController)
                   | > PublicIdentities (1 SecretIdentity : N PublicIdentities)
 ```
 
-
 ## UserProfileController
 
-The primary purpose of the `UserProfileController` is to manage multiple `UserProfile`s. It provides the logic to manipulate  `UserProfile`s.
+The primary purpose of the `UserProfileController` is to manage multiple
+`UserProfile`s. It provides the logic to manipulate `UserProfile`s.
 
-The following functions are called by the `User`, through the `UserProfileController`
+The following functions are called by the `User`, through the
+`UserProfileController`
 
 ### Functions:
 
 - CreateUserProfile: Creates a new user in the `UserProfileController`
-- LoginUserProfile: Passes `username:password` pair to the `UserProfileController`
-- DeleteUserProfile: Requests deletion of a `UserProfile` to the `UserProfileController`
-- ExportUserProfile: Requests the plaintext export of `UserProfile` details, requires a correct `login`
+- LoginUserProfile: Passes `username:password` pair to the
+  `UserProfileController`
+- DeleteUserProfile: Requests deletion of a `UserProfile` to the
+  `UserProfileController`
+- ExportUserProfile: Requests the plaintext export of `UserProfile` details,
+  requires a correct `login`
 
 ### Object Definition:
 
@@ -138,11 +163,12 @@ The following functions are called by the `User`, through the `UserProfileContro
 
 ## UserProfile
 
- A `UserProfile` contains an object called `keyring`, an object called
+A `UserProfile` contains an object called `keyring`, an object called
 `addressBook`, and an object called `securityModel`. This is a `1:N` relation,
 where `N` is each `UserProfile` created by the `UserProfileController`.
 
 ### Object Definition:
+
 ```
 "UserProfile": {
   "username": "isabella",
@@ -162,16 +188,20 @@ where `N` is each `UserProfile` created by the `UserProfileController`.
 
 ## AddressBook
 
-Contains a list of addresses a user has interacted with, or added for frequent use.
+Contains a list of addresses a user has interacted with, or added for frequent
+use.
 
 ### Functions:
+
 - AddContact: Adds a contact to a `AddressBook` with the specified information.
 - DeleteContact: Deletes a contact from a `AddressBook`
 - GetContact: Returns the `chain:address:humanName` for use in the application.
-- ExportContact: Returns a `contact` in plain text for import in another iov-core system.
+- ExportContact: Returns a `contact` in plain text for import in another
+  iov-core system.
 - ImportContact: Adds a `contact` from a predefined plain text entry.
 
 ### Object Definition:
+
 ```
 "addressBook": {
   "addressBookEntries": [
@@ -196,10 +226,12 @@ when a profile will lock down through inactivity. This is a `1:1` relation
 inside of a `UserProfile`.
 
 ### Functions:
+
 - GetSecurityDetails: Returns a security information for the `UserProfile`.
 - ModifySecurityDetails: Changes security information for the `UserProfile`.
 
 ### Object Definition:
+
 ```
 "securityModel": {
   "timeout": 3600
@@ -213,13 +245,19 @@ of the `UserProfile`'s `KeyringEntry`s. This is a `1:1` relation inside of a
 `UserProfile`.
 
 ### Functions:
-- GetKeyringEntry: Returns a requested `KeyringEntry`'s details, such as `PublicIdentities`.
-- AddKeyringEntry: Adds a new `KeyringEntry`, with an autogenerated or imported `SecretIdentity` to the `Keyring`.
+
+- GetKeyringEntry: Returns a requested `KeyringEntry`'s details, such as
+  `PublicIdentities`.
+- AddKeyringEntry: Adds a new `KeyringEntry`, with an autogenerated or imported
+  `SecretIdentity` to the `Keyring`.
 - DeleteKeyringEntry: Removes an existing `KeyringEntry` from the `Keyring`.
-- ExportKeyringEntry: Exports a `KeyringEntry` in plain text, for use in another `Keyring`.
-- ImportKeyringEntry: Imports a whole `KeyringEntry`, complete with a `SecretIdentity` and the list `PublicIdentities`.
+- ExportKeyringEntry: Exports a `KeyringEntry` in plain text, for use in another
+  `Keyring`.
+- ImportKeyringEntry: Imports a whole `KeyringEntry`, complete with a
+  `SecretIdentity` and the list `PublicIdentities`.
 
 ### Object Definition:
+
 ```
 "keyring": {
   "keyringEntries": []
@@ -228,21 +266,24 @@ of the `UserProfile`'s `KeyringEntry`s. This is a `1:1` relation inside of a
 
 ## KeyringEntry
 
-A `KeyringEntry` contains all of the related `SeedIdentity`,
-`PublicIdentities` and personality information for an associated `SeedIdentity`.
+A `KeyringEntry` contains all of the related `SeedIdentity`, `PublicIdentities`
+and personality information for an associated `SeedIdentity`.
 
-A `SeedIdentity` is only an HD Seed value (`Mnemonic Passphrase`) or a
-hardware device identifier for a `Ledger`.
+A `SeedIdentity` is only an HD Seed value (`Mnemonic Passphrase`) or a hardware
+device identifier for a `Ledger`.
 
 This is a `1:1` relation, where each `KeyringEntry` has one `SeedIdentity`.
 
 ### Functions:
+
 - CreateSeedIdentity: Creates a `SeedIdentity`, if the `KeyRingEntry` has none.
 - RenameSeedIdentity: Changes the label of the `keyringEntry`.
 - DeleteSeedIdentity: Removes the `SeedIdentity` from the `keyringEntry`.
-- ExportSeedIdentity: Exports the `SeedIdentity` in plain text. Only the type of `HD` can be exported.
+- ExportSeedIdentity: Exports the `SeedIdentity` in plain text. Only the type of
+  `HD` can be exported.
 
 ### Object Definition:
+
 ```
 "KeyringEntry": {
   "label": "My Account",
@@ -265,12 +306,14 @@ This is a `1:N` relation, where 1 is the `SeedIdentity` for which the
 `PublicIdentity` is related and N are the generated `PublicIdentities`.
 
 ### Functions:
+
 - GetPublicIdentity: Returns `PublicIdentity` details for a specific algorithm.
 - CreatePublicIdentity: Creates a `PublicIdentity` from the `SeedIdentity`.
 - DeletePublicIdentity: Removes a `PublicIdentity` from `PublicIdentities`.
-- ExportPublicIdentity: Exports  a `PublicIdentity` in plain text.
+- ExportPublicIdentity: Exports a `PublicIdentity` in plain text.
 
 ### Object Definition:
+
 ```
 "PublicIdentities": [
   "PublicIdentity": {
@@ -298,7 +341,9 @@ This is a `1:N` relation, where 1 is the `SeedIdentity` for which the
 
 ## Complete Object Definition
 
-The following is what a fully initialized profile will look like. This includes one relation of each type.
+The following is what a fully initialized profile will look like. This includes
+one relation of each type.
+
 ```
 "UserProfile": {
   "username": "isabella",
@@ -356,45 +401,53 @@ The following is what a fully initialized profile will look like. This includes 
 
 # Address Architecture
 
-There are two main types of addresses implemented into the Keybase.
-These are `Simple Addresses` and `Extended Addresses`.
-The simple address will implement the base set of features offered by BIP43.
-The extended addresses will implement the full suite of BIP44 features.
+There are two main types of addresses implemented into the Keybase. These are
+`Simple Addresses` and `Extended Addresses`. The simple address will implement
+the base set of features offered by BIP43. The extended addresses will implement
+the full suite of BIP44 features.
 
 ## Simple Addresses:
 
-The BCP and BNS will both support the standard cryptography algorithms found in the majority of blockchain ecosystems. This includes `ed25519` and `secp256k1`. While these algorithms are different, we can use some key features of Bitcoin that have propogated and become standard throughout many implementations.
+The BCP and BNS will both support the standard cryptography algorithms found in
+the majority of blockchain ecosystems. This includes `ed25519` and `secp256k1`.
+While these algorithms are different, we can use some key features of Bitcoin
+that have propogated and become standard throughout many implementations.
 
 Simple addresses are BIP43 compatible HD addresses using the IOV purpose.
 
 ### IOV purpose (purpose = 4804438)
 
-BIP43 describes the standard HD path specification. It allows the use of custom `purpose`s for
-for custom address schemes. Simple addresses use `purpose = 4804438`.
-The choosen purpose value is the integer created by the ascii encoding of the letters "IOV".
-We hope it remains unique within the industry.
+BIP43 describes the standard HD path specification. It allows the use of custom
+`purpose`s for for custom address schemes. Simple addresses use
+`purpose = 4804438`. The choosen purpose value is the integer created by the
+ascii encoding of the letters "IOV". We hope it remains unique within the
+industry.
 
 ### Simple Address Derivation
 
-Using `purpose = 4804438`, we create BIP43 compatible HD addresses using the derivation path
-`m / 4804438' / i'` where `i` is an index starting at 0.
+Using `purpose = 4804438`, we create BIP43 compatible HD addresses using the
+derivation path `m / 4804438' / i'` where `i` is an index starting at 0.
 
 This creates a simple, linear address space.
 
 ## Extended Addresses:
 
-In many circumstances, users will want a chain specific key that can be portable if needed. We can provide them access to these keys using the full BIP43/44 specifications.
+In many circumstances, users will want a chain specific key that can be portable
+if needed. We can provide them access to these keys using the full BIP43/44
+specifications.
 
 > m / purpose' / coin_type' / account' / change / address_index
 
-Purpose MUST follow the BIP44 specification and as such, be set to be `44`. `coin_type` MUST be supported according to the SLIP list. This will provide the greatest compatibility, especially if a user needs to exit the system.
+Purpose MUST follow the BIP44 specification and as such, be set to be `44`.
+`coin_type` MUST be supported according to the SLIP list. This will provide the
+greatest compatibility, especially if a user needs to exit the system.
 
 Users MAY use these individual chain specific addresses.
 
 This feature set provides compatibility with other wallets (eg. metamask),
-allowing the user  to use the same seed in other wallets for any features or
-integrations that are not present in iov-core at launch (although we will work over
-time to provide most of these features).
+allowing the user to use the same seed in other wallets for any features or
+integrations that are not present in iov-core at launch (although we will work
+over time to provide most of these features).
 
 This is support is also critical for users who are importing HD seeds from other
 software, so that we can locate existing tokens for that user. During the import
@@ -404,7 +457,8 @@ used. In the case of many addresses, the user can use a `load more` button.
 
 # Security Concerns
 
-There are a few minor security concerns around Seed management and private key usage, these are addressed here.
+There are a few minor security concerns around Seed management and private key
+usage, these are addressed here.
 
 ## Persisting Seeds on Disk
 
