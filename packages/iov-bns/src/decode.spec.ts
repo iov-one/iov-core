@@ -9,7 +9,15 @@ import {
 } from "@iov/bcp";
 import { Bech32, Encoding } from "@iov/encoding";
 
-import { decodeAmount, decodeNonce, decodeToken, decodeUsernameNft, parseMsg, parseTx } from "./decode";
+import {
+  decodeAmount,
+  decodeJsonAmount,
+  decodeNonce,
+  decodeToken,
+  decodeUsernameNft,
+  parseMsg,
+  parseTx,
+} from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import {
   chainId,
@@ -168,6 +176,75 @@ describe("Decode", () => {
         };
         expect(() => decodeAmount(backendAmount)).toThrowError(/`fractional` must not be negative/i);
       }
+    });
+  });
+
+  describe("decodeJsonAmount", () => {
+    it("can decode strings ", () => {
+      const decoded = decodeJsonAmount(`"3.123456789 ASH"`);
+      expect(decoded).toEqual({
+        quantity: "3123456789",
+        fractionalDigits: 9,
+        tokenTicker: "ASH" as TokenTicker,
+      });
+
+      const decoded2 = decodeJsonAmount(`"4IOV"`);
+      expect(decoded2).toEqual({
+        quantity: "4000000000",
+        fractionalDigits: 9,
+        tokenTicker: "IOV" as TokenTicker,
+      });
+
+      const decoded3 = decodeJsonAmount(`"0.0001   CASH"`);
+      expect(decoded3).toEqual({
+        quantity: "100000",
+        fractionalDigits: 9,
+        tokenTicker: "CASH" as TokenTicker,
+      });
+    });
+
+    it("rejects invalid strings ", () => {
+      // invalid format
+      expect(() => decodeJsonAmount(`"1,23 ASH"`)).toThrowError();
+      // leading spaces
+      expect(() => decodeJsonAmount(`"   1 ASH"`)).toThrowError();
+      // no whole numbers
+      expect(() => decodeJsonAmount(`".0001   CASH"`)).toThrowError();
+      // just number
+      expect(() => decodeJsonAmount(`"42.13"`)).toThrowError();
+      // just ticker
+      expect(() => decodeJsonAmount(`"FOO"`)).toThrowError();
+      // wrong order
+      expect(() => decodeJsonAmount(`"ASH 22"`)).toThrowError();
+      // ticker bad size
+      expect(() => decodeJsonAmount(`"0.01 A"`)).toThrowError();
+      // ticker bad size
+      expect(() => decodeJsonAmount(`"0.01 SUPERLONG"`)).toThrowError();
+    });
+
+    it("can decode json objects", () => {
+      const backendAmount = `{ "whole": 1, "fractional": 230000000, "ticker": "ASH" }`;
+      const decoded = decodeJsonAmount(backendAmount);
+      expect(decoded).toEqual({
+        quantity: "1230000000",
+        fractionalDigits: 9,
+        tokenTicker: "ASH" as TokenTicker,
+      });
+    });
+
+    it("can decode json objects with missing fields", () => {
+      const backendAmount = `{ "fractional": 1230, "ticker": "FOO" }`;
+      const decoded = decodeJsonAmount(backendAmount);
+      expect(decoded).toEqual({
+        quantity: "1230",
+        fractionalDigits: 9,
+        tokenTicker: "FOO" as TokenTicker,
+      });
+    });
+
+    it("rejects other data", () => {
+      // string is not json encoded
+      expect(() => decodeJsonAmount("0.01 ASH")).toThrowError();
     });
   });
 
