@@ -95,14 +95,17 @@ Actions are mutations of the on-chain state triggered by transactions.
 - **Abort:** Withdraws the tokens from the contract to the creator. Requires
   timeout to be reached.
 
-### Swap offer open state
+### Swap offer process state
 
-Each swap offer individually is either _open_, _claimed_ or _aborted_. The open
-state can only be changed by performing an action via a transaction.
+Each swap offer individually is either _open_, _claimed_ or _aborted_. The
+process state can only be changed by performing an action via a transaction.
 
-- **Open:** This is the initial open state.
-- **Claimed:** An _open_ swap becomes _claimed_ by performing the clain action.
+- **Open:** This is the initial process state.
+- **Claimed:** An _open_ swap becomes _claimed_ by performing the claim action.
 - **Aborted:** An _open_ swap becomes _aborted_ by performing the abort action.
+
+A claimed or aborted swap offer process state cannot change again, i.e. the only
+possible transitions are _open → claimed_ and _open → aborted_.
 
 Common synonym: _settled = (claimed or aborted)_
 
@@ -119,7 +122,7 @@ vice versa.
 - **Expired** In the range `[timeout, ∞)`, the swap offer is _expired_. Common
   synonym: _abortable_.
 
-#### Note on open and expiry state
+#### Note on process and expiry state
 
 Both states are independent of each other. A swap offer can be open and expired
 at the same time.
