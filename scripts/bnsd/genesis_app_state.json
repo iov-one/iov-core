@@ -2,25 +2,25 @@
   "cash": [
     {
       "address": "b1ca7e78f74423ae01da3b51e676934d9105f282",
-      "coins": [ "123456789 CASH" ]
+      "coins": ["123456789 CASH"]
     },
     {
       "address": "053e4ffbb040d4dc3b201dfe9264c00d918e087b",
-      "coins": [ "1000000 CASH", "2000000 BASH" ]
+      "coins": ["1000000 CASH", "2000000 BASH"]
     }
   ],
   "currencies": [
     {
       "ticker": "CASH",
-      "name": "Main token of this chain",
+      "name": "Main token of this chain"
     },
     {
       "ticker": "BASH",
-      "name": "Another token of this chain",
+      "name": "Another token of this chain"
     },
     {
       "ticker": "ASH",
-      "name": "Let the Phoenix arise",
+      "name": "Let the Phoenix arise"
     }
   ],
   "gconf": {
