@@ -6,6 +6,15 @@ import { Abi } from "./abi";
 const { fromHex } = Encoding;
 
 describe("Abi", () => {
+  describe("calculateMethodId", () => {
+    it("works", () => {
+      // Examples from https://solidity.readthedocs.io/en/develop/abi-spec.html#examples
+      expect(Abi.calculateMethodId("baz(uint32,bool)")).toEqual(fromHex("cdcd77c0"));
+      expect(Abi.calculateMethodId("bar(bytes3[2])")).toEqual(fromHex("fce353f6"));
+      expect(Abi.calculateMethodId("sam(bytes,bool,uint256[])")).toEqual(fromHex("a5643bf2"));
+    });
+  });
+
   describe("encodeAddress", () => {
     it("works", () => {
       {
