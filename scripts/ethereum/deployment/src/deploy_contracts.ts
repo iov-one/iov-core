@@ -5,6 +5,7 @@ import { Eth } from "web3x/eth";
 import { WebsocketProvider } from "web3x/providers";
 
 import { AshToken } from "./AshToken";
+import { AtomicSwapEther } from "./AtomicSwapEther";
 import { TrashToken } from "./TrashToken";
 
 const ganacheGasPrice = 50000;
@@ -41,6 +42,7 @@ export async function main(args: ReadonlyArray<string>): Promise<void> {
   const deploymentJobs: ReadonlyArray<DeploymentJob> = [
     { name: "AshToken", contract: new AshToken(eth) },
     { name: "TrashToken", contract: new TrashToken(eth) },
+    { name: "AtomicSwapEther", contract: new AtomicSwapEther(eth) },
   ];
 
   for (const { name, contract } of deploymentJobs) {
