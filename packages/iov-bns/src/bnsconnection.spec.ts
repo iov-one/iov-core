@@ -1440,7 +1440,7 @@ describe("BnsConnection", () => {
     connection.disconnect();
   });
 
-  it("can start atomic swap", async () => {
+  fit("can start atomic swap", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
     const chainId = connection.chainId();
@@ -1457,17 +1457,16 @@ describe("BnsConnection", () => {
 
     // it will live 30 seconds
     const swapOfferTimeout: SwapTimeout = createTimestampTimeout(30);
+    const amount = {
+      quantity: "123000456000",
+      fractionalDigits: 9,
+      tokenTicker: cash,
+    };
     const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction>({
       kind: "bcp/swap_offer",
       creator: faucet,
       recipient: recipientAddr,
-      amounts: [
-        {
-          quantity: "123000456000",
-          fractionalDigits: 9,
-          tokenTicker: cash,
-        },
-      ],
+      amounts: [amount],
       timeout: swapOfferTimeout,
       hash: swapOfferHash,
     });
@@ -1554,8 +1553,7 @@ describe("BnsConnection", () => {
     expect(swapData.recipient).toEqual(recipientAddr);
     expect(swapData.timeout).toEqual(swapOfferTimeout);
     expect(swapData.amounts.length).toEqual(1);
-    expect(swapData.amounts[0].quantity).toEqual("123000456000");
-    expect(swapData.amounts[0].tokenTicker).toEqual(cash);
+    expect(swapData.amounts[0]).toEqual(amount);
     expect(swapData.hash).toEqual(swapOfferHash);
 
     // we can get the swap by the recipient
@@ -1574,6 +1572,23 @@ describe("BnsConnection", () => {
     const hashSwap = await connection.getSwaps(querySwapHash);
     expect(hashSwap.length).toEqual(1);
     expect(hashSwap[0]).toEqual(swap);
+
+    // ----- connection.getSwapByState() should also work -------
+    const swapStates = await connection.getSwapsFromState(querySwapRecipient);
+    expect(swapStates.length).toEqual(1);
+
+    const swapState = swapStates[0];
+    expect(swapState.kind).toEqual(SwapState.Open);
+
+    // and it matches expectations
+    const stateDate = swapState.data;
+    expect(stateDate.id).toEqual(txResult);
+    expect(stateDate.sender).toEqual(faucetAddr);
+    expect(stateDate.recipient).toEqual(recipientAddr);
+    expect(stateDate.timeout).toEqual(swapOfferTimeout);
+    expect(stateDate.amounts.length).toEqual(1);
+    expect(stateDate.amounts[0]).toEqual(amount);
+    expect(stateDate.hash).toEqual(swapOfferHash);
 
     connection.disconnect();
   });
