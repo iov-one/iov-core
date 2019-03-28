@@ -108,7 +108,7 @@ A swap offer which has been claimed or aborted cannot change to another process
 state, i.e. the only possible transitions are _open → claimed_ and _open →
 aborted_.
 
-Common synonym: _settled = (claimed or aborted)_
+Common synonyms: _settled = (claimed or aborted)_, _closed = claimed_.
 
 ### Swap offer expiry state
 
