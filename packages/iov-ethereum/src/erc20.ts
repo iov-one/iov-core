@@ -1,18 +1,12 @@
 import BN = require("bn.js");
 
 import { Address } from "@iov/bcp";
-import { Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
 import { Abi } from "./abi";
 
 export interface EthereumRpcClient {
   readonly ethCall: (to: Address, data: Uint8Array) => Promise<Uint8Array>;
-}
-
-function calcMethodId(signature: string): Uint8Array {
-  const firstFourBytes = new Keccak256(Encoding.toAscii(signature)).digest().slice(0, 4);
-  return firstFourBytes;
 }
 
 export interface Erc20Options {
@@ -35,13 +29,13 @@ export class Erc20 {
   }
 
   public async totalSupply(): Promise<BN> {
-    const data = calcMethodId("totalSupply()");
+    const data = Abi.calculateMethodId("totalSupply()");
     const result = await this.client.ethCall(this.options.contractAddress, data);
     return new BN(result);
   }
 
   public async balanceOf(address: Address): Promise<BN> {
-    const methodId = calcMethodId("balanceOf(address)");
+    const methodId = Abi.calculateMethodId("balanceOf(address)");
 
     const data = new Uint8Array([...methodId, ...Abi.encodeAddress(address)]);
     const result = await this.client.ethCall(this.options.contractAddress, data);
@@ -59,7 +53,7 @@ export class Erc20 {
       return this.options.name;
     } else {
       // TODO: cache this call
-      const data = calcMethodId("name()");
+      const data = Abi.calculateMethodId("name()");
       const result = await this.client.ethCall(this.options.contractAddress, data);
       const [nameBinary] = Abi.decodeHeadTail(result).tail;
       return Encoding.fromUtf8(Abi.decodeVariableLength(nameBinary));
@@ -77,7 +71,7 @@ export class Erc20 {
       return this.options.symbol;
     } else {
       // TODO: cache this call
-      const data = calcMethodId("symbol()");
+      const data = Abi.calculateMethodId("symbol()");
       const result = await this.client.ethCall(this.options.contractAddress, data);
       const [symbolBinary] = Abi.decodeHeadTail(result).tail;
       return Encoding.fromUtf8(Abi.decodeVariableLength(symbolBinary));
@@ -95,7 +89,7 @@ export class Erc20 {
       return this.options.decimals;
     } else {
       // TODO: cache this call
-      const data = calcMethodId("decimals()");
+      const data = Abi.calculateMethodId("decimals()");
       const result = await this.client.ethCall(this.options.contractAddress, data);
       return new BN(result).toNumber();
     }

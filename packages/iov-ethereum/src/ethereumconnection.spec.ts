@@ -18,8 +18,10 @@ import {
   TokenTicker,
   TransactionId,
   TransactionState,
+  UnsignedTransaction,
 } from "@iov/bcp";
 import { Random, Secp256k1 } from "@iov/crypto";
+import { Encoding } from "@iov/encoding";
 import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 
@@ -27,6 +29,8 @@ import { pubkeyToAddress } from "./address";
 import { ethereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
 import { testConfig } from "./testconfig.spec";
+
+const { fromHex } = Encoding;
 
 function skipTests(): boolean {
   return !process.env.ETHEREUM_ENABLED;
@@ -1139,5 +1143,59 @@ describe("EthereumConnection", () => {
         await postTransaction(profile, mainIdentity, nonceB, recipient, connection);
       })().catch(done.fail);
     }, 45_000);
+  });
+
+  describe("getFeeQuote", () => {
+    it("works for send transaction", async () => {
+      pendingWithoutEthereum();
+      const connection = await EthereumConnection.establish(testConfig.base);
+
+      const sendTransaction: SendTransaction = {
+        kind: "bcp/send",
+        creator: {
+          chainId: connection.chainId(),
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: fromHex("aabbccdd") as PublicKeyBytes,
+          },
+        },
+        recipient: await randomAddress(),
+        memo: `We ❤️ developers – iov.one ${Math.random()}`,
+        amount: defaultAmount,
+      };
+      const result = await connection.getFeeQuote(sendTransaction);
+      expect(result.tokens).toBeUndefined();
+      expect(result.gasPrice).toEqual({
+        // 20 gwei
+        quantity: "20000000000",
+        fractionalDigits: 18,
+        tokenTicker: "ETH" as TokenTicker,
+      });
+      expect(result.gasLimit!.quantity).toEqual("2100000");
+
+      connection.disconnect();
+    });
+
+    it("throws for unsupported transaction kind", async () => {
+      pendingWithoutEthereum();
+      const connection = await EthereumConnection.establish(testConfig.base);
+
+      const otherTransaction: UnsignedTransaction = {
+        kind: "other/kind",
+        creator: {
+          chainId: connection.chainId(),
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: fromHex("aabbccdd") as PublicKeyBytes,
+          },
+        },
+      };
+      await connection
+        .getFeeQuote(otherTransaction)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/transaction of unsupported kind/i));
+
+      connection.disconnect();
+    });
   });
 });

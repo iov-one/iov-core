@@ -1,7 +1,9 @@
 import BN = require("bn.js");
 
 import { Address } from "@iov/bcp";
+import { Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
+
 import { isValidAddress } from "./address";
 
 export interface HeadTail {
@@ -12,6 +14,11 @@ export interface HeadTail {
 }
 
 export class Abi {
+  public static calculateMethodId(signature: string): Uint8Array {
+    const hash = new Keccak256(Encoding.toAscii(signature)).digest();
+    return hash.slice(0, 4);
+  }
+
   public static encodeAddress(address: Address): Uint8Array {
     if (!isValidAddress(address)) {
       throw new Error("Invalid address format");

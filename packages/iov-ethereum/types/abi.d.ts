@@ -6,6 +6,7 @@ export interface HeadTail {
     readonly tail: ReadonlyArray<Uint8Array>;
 }
 export declare class Abi {
+    static calculateMethodId(signature: string): Uint8Array;
     static encodeAddress(address: Address): Uint8Array;
     /**
      * Decode head-tail encoded data as described in

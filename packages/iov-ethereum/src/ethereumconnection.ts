@@ -605,8 +605,27 @@ export class EthereumConnection implements BcpConnection {
     }
   }
 
-  public async getFeeQuote(_: UnsignedTransaction): Promise<Fee> {
-    throw new Error("Not implemented");
+  public async getFeeQuote(transaction: UnsignedTransaction): Promise<Fee> {
+    switch (transaction.kind) {
+      case "bcp/send":
+        return {
+          gasPrice: {
+            // TODO: calculate dynamically from previous blocks or external API
+            quantity: "20000000000", // 20 gwei
+            fractionalDigits: constants.primaryTokenFractionalDigits,
+            tokenTicker: constants.primaryTokenTicker,
+          },
+          gasLimit: {
+            quantity: "2100000",
+            // Those fields are pointless and will be removed in 0.14
+            // https://github.com/iov-one/iov-core/issues/858
+            fractionalDigits: constants.primaryTokenFractionalDigits,
+            tokenTicker: constants.primaryTokenTicker,
+          },
+        };
+      default:
+        throw new Error("Received transaction of unsupported kind.");
+    }
   }
 
   public async withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T> {
