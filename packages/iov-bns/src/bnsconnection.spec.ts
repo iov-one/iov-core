@@ -81,18 +81,16 @@ const blockTime = 1000;
 
 describe("BnsConnection", () => {
   const defaultChain = "chain123" as ChainId;
-  // the first key generated from this mneumonic produces the given address
-  // this account has money in the genesis file (setup in docker)
-  // expectedFaucetAddress generated using https://github.com/nym-zone/bech32
-  // bech32 -e -h tiov b1ca7e78f74423ae01da3b51e676934d9105f282
-  const defaultMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
-  // address must match defaultChain
-  const defaultFaucetAddress = "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address;
   const defaultAmount: Amount = {
     quantity: "1000000001",
     fractionalDigits: 9,
     tokenTicker: cash,
   };
+
+  // The first simple address key (m/4804438'/0') generated from this mnemonic produces the address
+  // tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f (bech32) / b1ca7e78f74423ae01da3b51e676934d9105f282 (hex).
+  // This account has money in the genesis file (setup in docker).
+  const faucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
 
   const bnsdTendermintUrl = "ws://localhost:22345";
 
@@ -100,14 +98,13 @@ describe("BnsConnection", () => {
     chainId: ChainId,
   ): Promise<{
     readonly profile: UserProfile;
-    readonly mainWalletId: WalletId;
+    readonly walletId: WalletId;
     readonly faucet: PublicIdentity;
   }> {
-    const wallet = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
     const profile = new UserProfile();
-    profile.addWallet(wallet);
+    const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(faucetMnemonic));
     const faucet = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(0));
-    return { profile: profile, mainWalletId: wallet.id, faucet: faucet };
+    return { profile: profile, walletId: wallet.id, faucet: faucet };
   }
 
   async function ensureNonceNonZero(
@@ -127,30 +124,24 @@ describe("BnsConnection", () => {
     await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
   }
 
-  async function ensureBalanceNonZero(
+  async function sendTokensFromFaucet(
     connection: BnsConnection,
-    address: Address,
+    recipient: Address,
     amount: Amount = defaultAmount,
   ): Promise<void> {
     const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
 
-    const sendTx = (await connection.withDefaultFee({
+    const sendTx = await connection.withDefaultFee<SendTransaction>({
       kind: "bcp/send",
       creator: faucet,
-      recipient: address,
+      recipient: recipient,
       amount: amount,
-    })) as SendTransaction;
+    });
     const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
     const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
     const response = await connection.postTx(bnsCodec.bytesToPost(signed));
     await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
   }
-
-  it("Generate proper faucet address", async () => {
-    const { faucet } = await userProfileWithFaucet(defaultChain);
-    const addr = identityToAddress(faucet);
-    expect(addr).toEqual(defaultFaucetAddress);
-  });
 
   it("Can connect to tendermint", async () => {
     pendingWithoutBnsd();
@@ -235,7 +226,7 @@ describe("BnsConnection", () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const newAddress = await randomBnsAddress();
-      await ensureBalanceNonZero(connection, newAddress);
+      await sendTokensFromFaucet(connection, newAddress);
 
       const response = await connection.getAccount({ address: newAddress });
       expect(response).toBeDefined();
@@ -605,7 +596,7 @@ describe("BnsConnection", () => {
 
       // we need funds to pay the fees
       const address = identityToAddress(identity);
-      await ensureBalanceNonZero(connection, address);
+      await sendTokensFromFaucet(connection, address);
 
       // Create and send registration
       const username = `testuser_${Math.random()}`;
@@ -647,7 +638,7 @@ describe("BnsConnection", () => {
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
       // we need funds to pay the fees
       const myAddress = identityToAddress(identity);
-      await ensureBalanceNonZero(connection, myAddress);
+      await sendTokensFromFaucet(connection, myAddress);
 
       // Create and send registration
       const username = `testuser_${Math.random()}`;
@@ -906,8 +897,8 @@ describe("BnsConnection", () => {
       const chainId = connection.chainId();
       const initialHeight = await connection.height();
 
-      const { profile, mainWalletId, faucet } = await userProfileWithFaucet(chainId);
-      const rcpt = await profile.createIdentity(mainWalletId, defaultChain, HdPaths.simpleAddress(68));
+      const { profile, walletId, faucet } = await userProfileWithFaucet(chainId);
+      const rcpt = await profile.createIdentity(walletId, defaultChain, HdPaths.simpleAddress(68));
       const rcptAddress = identityToAddress(rcpt);
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
@@ -991,9 +982,9 @@ describe("BnsConnection", () => {
       const chainId = connection.chainId();
       const initialHeight = await connection.height();
 
-      const { profile, mainWalletId } = await userProfileWithFaucet(chainId);
+      const { profile, walletId } = await userProfileWithFaucet(chainId);
       // this will never have tokens, but can try to sign
-      const brokeIdentity = await profile.createIdentity(mainWalletId, chainId, HdPaths.simpleAddress(1234));
+      const brokeIdentity = await profile.createIdentity(walletId, chainId, HdPaths.simpleAddress(1234));
 
       const sendTx = (await connection.withDefaultFee({
         kind: "bcp/send",
@@ -1004,7 +995,7 @@ describe("BnsConnection", () => {
       })) as SendTransaction;
 
       // give the broke Identity just enough to pay the fee
-      await ensureBalanceNonZero(connection, identityToAddress(brokeIdentity), sendTx.fee!.tokens);
+      await sendTokensFromFaucet(connection, identityToAddress(brokeIdentity), sendTx.fee!.tokens);
 
       const nonce = await connection.getNonce({ pubkey: brokeIdentity.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
@@ -1162,9 +1153,9 @@ describe("BnsConnection", () => {
       const chainId = connection.chainId();
       const initialHeight = await connection.height();
 
-      const { profile, mainWalletId } = await userProfileWithFaucet(chainId);
+      const { profile, walletId } = await userProfileWithFaucet(chainId);
       // this will never have tokens, but can try to sign
-      const brokeIdentity = await profile.createIdentity(mainWalletId, chainId, HdPaths.simpleAddress(1234));
+      const brokeIdentity = await profile.createIdentity(walletId, chainId, HdPaths.simpleAddress(1234));
 
       const sendTx = (await connection.withDefaultFee({
         kind: "bcp/send",
@@ -1175,7 +1166,7 @@ describe("BnsConnection", () => {
       })) as SendTransaction;
 
       // give the broke Identity just enough to pay the fee
-      await ensureBalanceNonZero(connection, identityToAddress(brokeIdentity), sendTx.fee!.tokens);
+      await sendTokensFromFaucet(connection, identityToAddress(brokeIdentity), sendTx.fee!.tokens);
 
       const nonce = await connection.getNonce({ pubkey: brokeIdentity.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
@@ -1203,9 +1194,9 @@ describe("BnsConnection", () => {
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const chainId = connection.chainId();
 
-      const { profile, mainWalletId } = await userProfileWithFaucet(chainId);
+      const { profile, walletId } = await userProfileWithFaucet(chainId);
       // this will never have tokens, but can try to sign
-      const brokeIdentity = await profile.createIdentity(mainWalletId, chainId, HdPaths.simpleAddress(1234));
+      const brokeIdentity = await profile.createIdentity(walletId, chainId, HdPaths.simpleAddress(1234));
 
       // Sending tokens from an empty account will trigger a failure in DeliverTx
       const sendTx = (await connection.withDefaultFee({
@@ -1217,7 +1208,7 @@ describe("BnsConnection", () => {
       })) as SendTransaction;
 
       // give the broke Identity just enough to pay the fee
-      await ensureBalanceNonZero(connection, identityToAddress(brokeIdentity), sendTx.fee!.tokens);
+      await sendTokensFromFaucet(connection, identityToAddress(brokeIdentity), sendTx.fee!.tokens);
 
       const nonce = await connection.getNonce({ pubkey: brokeIdentity.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
@@ -1247,7 +1238,7 @@ describe("BnsConnection", () => {
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
       const identityAddress = identityToAddress(identity);
-      await ensureBalanceNonZero(connection, identityAddress);
+      await sendTokensFromFaucet(connection, identityAddress);
 
       // Register username
       const username = `testuser_${Math.random()}`;
@@ -1305,7 +1296,7 @@ describe("BnsConnection", () => {
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
       const identityAddress = identityToAddress(identity);
-      await ensureBalanceNonZero(connection, identityAddress);
+      await sendTokensFromFaucet(connection, identityAddress);
 
       // With a  blockchain
       const chainId = `wonderland_${Math.random()}` as ChainId;
