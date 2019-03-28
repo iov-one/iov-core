@@ -18,21 +18,21 @@ specification to build compatible components.
 Two actors Alice (A) and Bob (B) agreed on a token exchange off-chain. Both have
 one address on each blockchain X and Y.
 
-- Alice creates a secret key locally (called preimage) and stores it.
+- Alice creates a secret key locally (called a "preimage") and stores it.
 - Alice creates a swap offer on X, the blockchain where her tokens live. This is
-  a HLTC that contains the recipient address of Bob on X (b<sub>X</sub>), the
+  a HTLC that contains the recipient address of Bob on X (b<sub>X</sub>), the
   amount of tokens offered, the hash of the preimage and a timeout. This
   contract locks her tokens and sends them to b<sub>X</sub> if the preimage is
-  releaved on-chain.
+  revealed on-chain.
 - Bob creates a swap offer on Y, the blockchain where his tokens live. This is a
-  HLTC that contains the recipient address of Alice on Y (a<sub>Y</sub>), the
+  HTLC that contains the recipient address of Alice on Y (a<sub>Y</sub>), the
   amount of tokens offered, the hash copied from Alice's offer and a timeout.
   This contract locks his tokens and sends them to a<sub>Y</sub> if the preimage
-  is releaved on-chain.
+  is revealed on-chain.
 - (Variant 1): Alice now uses her preimage to claim Bob's swap offer on Y,
-  causing the token transfer from b<sub>Y</sub> to a<sub>Y</sub>. Bob looks up
-  this now public preimage on Y to claim Alice's swap offer on X, causing the
-  token transfer from a<sub>X</sub> to b<sub>X</sub>.
+  triggering the token transfer from b<sub>Y</sub> to a<sub>Y</sub>. Bob looks
+  up this now public preimage on Y to claim Alice's swap offer on X, triggering
+  the token transfer from a<sub>X</sub> to b<sub>X</sub>.
 - (Variant 2): Alice decides not to reveal her preimage before the timeout of
   Bob's offer is reached. As soon as the timeout is reached, Bob aborts his
   offer and gets back his tokens. Alice also needs to wait for the timeout of
@@ -42,16 +42,16 @@ one address on each blockchain X and Y.
 
 As soon as both offers are created, the actor that created the preimage has the
 one-sided option to execute the atomic swap or to let it expire. Thus this actor
-is called to be _in long position_. The other actor is called to be _in short
-position_.
+is described as being _in long position_. The other actor is described as being
+_in short position_.
 
 Being in long position has two advantages:
 
 1. having the free option to execute the swap or not and
-2. claiming the other actor's swap offer first, which reduces the risk of
-   loosing tokens in the case of a half executed swap.
+2. claiming the other actor's swap offer first, which reduces the risk of losing
+   tokens in the case of a half executed swap.
 
-Being in short position has that advantage to be able to review the other
+Being in short position has the advantage of being able to review the other
 actor's swap offer before creating an offer oneself.
 
 ## The swap offer
@@ -71,10 +71,10 @@ Common synonyms: _swap_, _contract_, _escrow_.
 
 ### Preimage and hashing
 
-The preimage is 32 bytes of raw binary data. It is locally created by the long
-position and must be kept a secret. It is in the creator's own interest to use a
-sufficiently good source of entropy to generate it, but this is not required by
-the protocol.
+The preimage is exactly 32 bytes of raw binary data. It is locally created by
+the long position and must be kept a secret. It is in the creator's own interest
+to use a sufficiently good source of entropy to generate it, but this is not
+required by the protocol.
 
 The hashing algorithm is fixed to SHA-256. The hash is 32 bytes of raw binary
 data with `hash = sha256(preimage)`.
@@ -132,18 +132,19 @@ Others need to be mitigated by smart choice of parameters.
 
 ### Pre-image attacks
 
-The short position copies the hash without knowing the preimage. Now the long
-position could use a very long preimage that is either expensive or impossible
-to process on one chain but works easily on the other chain. This can make it
-unprofitable or impossible for short to claim their tokens, leading to free
-tokens for long.
+The short position copies the hash without knowing the preimage. This means the
+long position could use a very long preimage that is either expensive or
+impossible to process on one chain but works easily on the other chain. This can
+make it unprofitable or impossible for short to claim their tokens, leading to
+free tokens for long.
 
 This risk is avoided in this protocol by having a fixed preimage length.
 
 ### No counter offer created
 
-The short position can pretend to create a counter offer but not do it. In this
-case long loses access to the locked tokens until the timeout is reached.
+The short position can pretend to have the intention to create a counter offer
+but not do it. In this case long loses access to the locked tokens until the
+timeout is reached.
 
 ### Half executed atomic swaps
 
