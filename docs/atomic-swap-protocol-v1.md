@@ -104,8 +104,9 @@ process state can only be changed by performing an action via a transaction.
 - **Claimed:** An _open_ swap becomes _claimed_ by performing the claim action.
 - **Aborted:** An _open_ swap becomes _aborted_ by performing the abort action.
 
-A claimed or aborted swap offer process state cannot change again, i.e. the only
-possible transitions are _open → claimed_ and _open → aborted_.
+A swap offer which has been claimed or aborted cannot change to another process
+state, i.e. the only possible transitions are _open → claimed_ and _open →
+aborted_.
 
 Common synonym: _settled = (claimed or aborted)_
 
