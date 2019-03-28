@@ -3,6 +3,7 @@
 ## 0.13.1
 
 - @iov/ethereum: Allow querying of ERC20 token balances
+- @iov/ethereum: Implement `getFeeQuote` method on `EthereumConnection`.
 
 ## 0.13.0
 
