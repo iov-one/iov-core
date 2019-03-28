@@ -93,7 +93,7 @@ describe("MultiChainSigner", () => {
 
       // construct a sendtx, this mirrors the MultiChainSigner api
       const memo = `MultiChainSigner style (${Math.random()})`;
-      const sendTx: SendTransaction = {
+      const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         creator: faucet,
         recipient: recipient,
@@ -103,7 +103,7 @@ describe("MultiChainSigner", () => {
           fractionalDigits: 9,
           tokenTicker: cash,
         },
-      };
+      });
       const postResponse = await signer.signAndPost(sendTx);
       await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
@@ -183,7 +183,7 @@ describe("MultiChainSigner", () => {
       const signer = new MultiChainSigner(profile);
       expect(signer.chainIds().length).toEqual(0);
 
-      await signer.addChain(bnsConnector(bnsdTendermintUrl));
+      const { connection: bnsConnection } = await signer.addChain(bnsConnector(bnsdTendermintUrl));
       await signer.addChain(ethereumConnector(httpEthereumUrl, undefined));
       const [bnsId, ethereumChainId] = signer.chainIds();
 
@@ -202,7 +202,7 @@ describe("MultiChainSigner", () => {
 
       {
         // Send on BNS
-        const sendOnBns: SendTransaction = {
+        const sendOnBns = await bnsConnection.withDefaultFee<SendTransaction>({
           kind: "bcp/send",
           creator: bnsFaucet,
           recipient: await randomBnsAddress(),
@@ -212,7 +212,7 @@ describe("MultiChainSigner", () => {
             fractionalDigits: 9,
             tokenTicker: cash,
           },
-        };
+        });
         const postResponse = await signer.signAndPost(sendOnBns);
         const blockInfo = await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
@@ -230,6 +230,7 @@ describe("MultiChainSigner", () => {
           },
           recipient: "0x0000000000000000000000000000000000000000" as Address,
           memo: `MultiChainSigner style (${Math.random()})`,
+          // TODO: shall we use getFeeQuote here?
           fee: {
             gasPrice: {
               quantity: "20000000000",

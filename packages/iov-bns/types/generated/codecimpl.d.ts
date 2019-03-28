@@ -148,14 +148,14 @@ export namespace app {
     /** Tx removeUsernameAddressMsg */
     removeUsernameAddressMsg?: username.IRemoveChainAddressMsg | null;
 
-    /** Tx issueBlockchainNftMsg */
-    issueBlockchainNftMsg?: blockchain.IIssueTokenMsg | null;
+    /** Tx newRevenueMsg */
+    newRevenueMsg?: distribution.INewRevenueMsg | null;
 
-    /** Tx issueTickerNftMsg */
-    issueTickerNftMsg?: ticker.IIssueTokenMsg | null;
+    /** Tx distributeMsg */
+    distributeMsg?: distribution.IDistributeMsg | null;
 
-    /** Tx issueBootstrapNodeNftMsg */
-    issueBootstrapNodeNftMsg?: bootstrap_node.IIssueTokenMsg | null;
+    /** Tx resetRevenueMsg */
+    resetRevenueMsg?: distribution.IResetRevenueMsg | null;
   }
 
   /** clarity). */
@@ -220,14 +220,14 @@ export namespace app {
     /** Tx removeUsernameAddressMsg. */
     public removeUsernameAddressMsg?: username.IRemoveChainAddressMsg | null;
 
-    /** Tx issueBlockchainNftMsg. */
-    public issueBlockchainNftMsg?: blockchain.IIssueTokenMsg | null;
+    /** Tx newRevenueMsg. */
+    public newRevenueMsg?: distribution.INewRevenueMsg | null;
 
-    /** Tx issueTickerNftMsg. */
-    public issueTickerNftMsg?: ticker.IIssueTokenMsg | null;
+    /** Tx distributeMsg. */
+    public distributeMsg?: distribution.IDistributeMsg | null;
 
-    /** Tx issueBootstrapNodeNftMsg. */
-    public issueBootstrapNodeNftMsg?: bootstrap_node.IIssueTokenMsg | null;
+    /** Tx resetRevenueMsg. */
+    public resetRevenueMsg?: distribution.IResetRevenueMsg | null;
 
     /** msg is a sum type over all allowed messages on this chain. */
     public sum?:
@@ -245,9 +245,9 @@ export namespace app {
       | "issueUsernameNftMsg"
       | "addUsernameAddressNftMsg"
       | "removeUsernameAddressMsg"
-      | "issueBlockchainNftMsg"
-      | "issueTickerNftMsg"
-      | "issueBootstrapNodeNftMsg";
+      | "newRevenueMsg"
+      | "distributeMsg"
+      | "resetRevenueMsg";
 
     /**
      * Creates a new Tx instance using the specified properties.
@@ -315,1380 +315,6 @@ export namespace app {
 
     /**
      * Converts this Tx to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** NftType enum. */
-  enum NftType {
-    USERNAME = 0,
-    TICKER = 1,
-    BLOCKCHAIN = 3,
-    BOOTSTRAP_NODE = 4,
-  }
-}
-
-/** Namespace blockchain. */
-export namespace blockchain {
-  /** Properties of a BlockchainToken. */
-  interface IBlockchainToken {
-    /** BlockchainToken base */
-    base?: nft.INonFungibleToken | null;
-
-    /** BlockchainToken details */
-    details?: blockchain.ITokenDetails | null;
-  }
-
-  /** Represents a BlockchainToken. */
-  class BlockchainToken implements IBlockchainToken {
-    /**
-     * Constructs a new BlockchainToken.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: blockchain.IBlockchainToken);
-
-    /** BlockchainToken base. */
-    public base?: nft.INonFungibleToken | null;
-
-    /** BlockchainToken details. */
-    public details?: blockchain.ITokenDetails | null;
-
-    /**
-     * Creates a new BlockchainToken instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns BlockchainToken instance
-     */
-    public static create(properties?: blockchain.IBlockchainToken): blockchain.BlockchainToken;
-
-    /**
-     * Encodes the specified BlockchainToken message. Does not implicitly {@link blockchain.BlockchainToken.verify|verify} messages.
-     * @param message BlockchainToken message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: blockchain.IBlockchainToken, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified BlockchainToken message, length delimited. Does not implicitly {@link blockchain.BlockchainToken.verify|verify} messages.
-     * @param message BlockchainToken message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: blockchain.IBlockchainToken,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes a BlockchainToken message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns BlockchainToken
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): blockchain.BlockchainToken;
-
-    /**
-     * Decodes a BlockchainToken message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns BlockchainToken
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blockchain.BlockchainToken;
-
-    /**
-     * Verifies a BlockchainToken message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a BlockchainToken message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns BlockchainToken
-     */
-    public static fromObject(object: { [k: string]: any }): blockchain.BlockchainToken;
-
-    /**
-     * Creates a plain object from a BlockchainToken message. Also converts values to other types if specified.
-     * @param message BlockchainToken
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: blockchain.BlockchainToken,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this BlockchainToken to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a TokenDetails. */
-  interface ITokenDetails {
-    /** TokenDetails chain */
-    chain?: blockchain.IChain | null;
-
-    /** TokenDetails iov */
-    iov?: blockchain.IIOV | null;
-  }
-
-  /** Represents a TokenDetails. */
-  class TokenDetails implements ITokenDetails {
-    /**
-     * Constructs a new TokenDetails.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: blockchain.ITokenDetails);
-
-    /** TokenDetails chain. */
-    public chain?: blockchain.IChain | null;
-
-    /** TokenDetails iov. */
-    public iov?: blockchain.IIOV | null;
-
-    /**
-     * Creates a new TokenDetails instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns TokenDetails instance
-     */
-    public static create(properties?: blockchain.ITokenDetails): blockchain.TokenDetails;
-
-    /**
-     * Encodes the specified TokenDetails message. Does not implicitly {@link blockchain.TokenDetails.verify|verify} messages.
-     * @param message TokenDetails message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: blockchain.ITokenDetails, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified TokenDetails message, length delimited. Does not implicitly {@link blockchain.TokenDetails.verify|verify} messages.
-     * @param message TokenDetails message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: blockchain.ITokenDetails,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes a TokenDetails message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns TokenDetails
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): blockchain.TokenDetails;
-
-    /**
-     * Decodes a TokenDetails message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns TokenDetails
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blockchain.TokenDetails;
-
-    /**
-     * Verifies a TokenDetails message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a TokenDetails message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns TokenDetails
-     */
-    public static fromObject(object: { [k: string]: any }): blockchain.TokenDetails;
-
-    /**
-     * Creates a plain object from a TokenDetails message. Also converts values to other types if specified.
-     * @param message TokenDetails
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: blockchain.TokenDetails,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this TokenDetails to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a Chain. */
-  interface IChain {
-    /** Chain ID is the blockchain ID as referred in our system. */
-    chainId?: string | null;
-
-    /** https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids */
-    networkId?: string | null;
-
-    /** Name holds human redable name of the blockchain. */
-    name?: string | null;
-
-    /** Enabled is a flag used for soft delete. */
-    enabled?: boolean | null;
-
-    /** Chain production */
-    production?: boolean | null;
-
-    /** any number of tickers registered. */
-    mainTickerId?: Uint8Array | null;
-  }
-
-  /** everywhere. */
-  class Chain implements IChain {
-    /**
-     * Constructs a new Chain.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: blockchain.IChain);
-
-    /** Chain ID is the blockchain ID as referred in our system. */
-    public chainId: string;
-
-    /** https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids */
-    public networkId: string;
-
-    /** Name holds human redable name of the blockchain. */
-    public name: string;
-
-    /** Enabled is a flag used for soft delete. */
-    public enabled: boolean;
-
-    /** Chain production. */
-    public production: boolean;
-
-    /** any number of tickers registered. */
-    public mainTickerId: Uint8Array;
-
-    /**
-     * Creates a new Chain instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns Chain instance
-     */
-    public static create(properties?: blockchain.IChain): blockchain.Chain;
-
-    /**
-     * Encodes the specified Chain message. Does not implicitly {@link blockchain.Chain.verify|verify} messages.
-     * @param message Chain message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: blockchain.IChain, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified Chain message, length delimited. Does not implicitly {@link blockchain.Chain.verify|verify} messages.
-     * @param message Chain message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: blockchain.IChain, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a Chain message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns Chain
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): blockchain.Chain;
-
-    /**
-     * Decodes a Chain message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns Chain
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blockchain.Chain;
-
-    /**
-     * Verifies a Chain message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a Chain message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns Chain
-     */
-    public static fromObject(object: { [k: string]: any }): blockchain.Chain;
-
-    /**
-     * Creates a plain object from a Chain message. Also converts values to other types if specified.
-     * @param message Chain
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: blockchain.Chain,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this Chain to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a IOV. */
-  interface IIOV {
-    /** IOV codec */
-    codec?: string | null;
-
-    /** IOV codecConfig */
-    codecConfig?: string | null;
-  }
-
-  /** Represents a IOV. */
-  class IOV implements IIOV {
-    /**
-     * Constructs a new IOV.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: blockchain.IIOV);
-
-    /** IOV codec. */
-    public codec: string;
-
-    /** IOV codecConfig. */
-    public codecConfig: string;
-
-    /**
-     * Creates a new IOV instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns IOV instance
-     */
-    public static create(properties?: blockchain.IIOV): blockchain.IOV;
-
-    /**
-     * Encodes the specified IOV message. Does not implicitly {@link blockchain.IOV.verify|verify} messages.
-     * @param message IOV message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: blockchain.IIOV, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified IOV message, length delimited. Does not implicitly {@link blockchain.IOV.verify|verify} messages.
-     * @param message IOV message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: blockchain.IIOV, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a IOV message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns IOV
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): blockchain.IOV;
-
-    /**
-     * Decodes a IOV message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns IOV
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blockchain.IOV;
-
-    /**
-     * Verifies a IOV message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a IOV message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns IOV
-     */
-    public static fromObject(object: { [k: string]: any }): blockchain.IOV;
-
-    /**
-     * Creates a plain object from a IOV message. Also converts values to other types if specified.
-     * @param message IOV
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: blockchain.IOV,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this IOV to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a Config. */
-  interface IConfig {
-    /** Config chain */
-    chain?: blockchain.IChain | null;
-
-    /** Config codecConfig */
-    codecConfig?: string | null;
-  }
-
-  /** Represents a Config. */
-  class Config implements IConfig {
-    /**
-     * Constructs a new Config.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: blockchain.IConfig);
-
-    /** Config chain. */
-    public chain?: blockchain.IChain | null;
-
-    /** Config codecConfig. */
-    public codecConfig: string;
-
-    /**
-     * Creates a new Config instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns Config instance
-     */
-    public static create(properties?: blockchain.IConfig): blockchain.Config;
-
-    /**
-     * Encodes the specified Config message. Does not implicitly {@link blockchain.Config.verify|verify} messages.
-     * @param message Config message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: blockchain.IConfig, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified Config message, length delimited. Does not implicitly {@link blockchain.Config.verify|verify} messages.
-     * @param message Config message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: blockchain.IConfig, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a Config message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns Config
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): blockchain.Config;
-
-    /**
-     * Decodes a Config message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns Config
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blockchain.Config;
-
-    /**
-     * Verifies a Config message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a Config message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns Config
-     */
-    public static fromObject(object: { [k: string]: any }): blockchain.Config;
-
-    /**
-     * Creates a plain object from a Config message. Also converts values to other types if specified.
-     * @param message Config
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: blockchain.Config,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this Config to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of an IssueTokenMsg. */
-  interface IIssueTokenMsg {
-    /** IssueTokenMsg owner */
-    owner?: Uint8Array | null;
-
-    /** IssueTokenMsg id */
-    id?: Uint8Array | null;
-
-    /** IssueTokenMsg details */
-    details?: blockchain.ITokenDetails | null;
-
-    /** IssueTokenMsg approvals */
-    approvals?: nft.IActionApprovals[] | null;
-  }
-
-  /** Represents an IssueTokenMsg. */
-  class IssueTokenMsg implements IIssueTokenMsg {
-    /**
-     * Constructs a new IssueTokenMsg.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: blockchain.IIssueTokenMsg);
-
-    /** IssueTokenMsg owner. */
-    public owner: Uint8Array;
-
-    /** IssueTokenMsg id. */
-    public id: Uint8Array;
-
-    /** IssueTokenMsg details. */
-    public details?: blockchain.ITokenDetails | null;
-
-    /** IssueTokenMsg approvals. */
-    public approvals: nft.IActionApprovals[];
-
-    /**
-     * Creates a new IssueTokenMsg instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns IssueTokenMsg instance
-     */
-    public static create(properties?: blockchain.IIssueTokenMsg): blockchain.IssueTokenMsg;
-
-    /**
-     * Encodes the specified IssueTokenMsg message. Does not implicitly {@link blockchain.IssueTokenMsg.verify|verify} messages.
-     * @param message IssueTokenMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: blockchain.IIssueTokenMsg, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified IssueTokenMsg message, length delimited. Does not implicitly {@link blockchain.IssueTokenMsg.verify|verify} messages.
-     * @param message IssueTokenMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: blockchain.IIssueTokenMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes an IssueTokenMsg message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns IssueTokenMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): blockchain.IssueTokenMsg;
-
-    /**
-     * Decodes an IssueTokenMsg message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns IssueTokenMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blockchain.IssueTokenMsg;
-
-    /**
-     * Verifies an IssueTokenMsg message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates an IssueTokenMsg message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns IssueTokenMsg
-     */
-    public static fromObject(object: { [k: string]: any }): blockchain.IssueTokenMsg;
-
-    /**
-     * Creates a plain object from an IssueTokenMsg message. Also converts values to other types if specified.
-     * @param message IssueTokenMsg
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: blockchain.IssueTokenMsg,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this IssueTokenMsg to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-}
-
-/** Namespace bootstrap_node. */
-export namespace bootstrap_node {
-  /** Properties of a BootstrapNodeToken. */
-  interface IBootstrapNodeToken {
-    /** BootstrapNodeToken base */
-    base?: nft.INonFungibleToken | null;
-
-    /** BootstrapNodeToken details */
-    details?: bootstrap_node.ITokenDetails | null;
-  }
-
-  /** Represents a BootstrapNodeToken. */
-  class BootstrapNodeToken implements IBootstrapNodeToken {
-    /**
-     * Constructs a new BootstrapNodeToken.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: bootstrap_node.IBootstrapNodeToken);
-
-    /** BootstrapNodeToken base. */
-    public base?: nft.INonFungibleToken | null;
-
-    /** BootstrapNodeToken details. */
-    public details?: bootstrap_node.ITokenDetails | null;
-
-    /**
-     * Creates a new BootstrapNodeToken instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns BootstrapNodeToken instance
-     */
-    public static create(properties?: bootstrap_node.IBootstrapNodeToken): bootstrap_node.BootstrapNodeToken;
-
-    /**
-     * Encodes the specified BootstrapNodeToken message. Does not implicitly {@link bootstrap_node.BootstrapNodeToken.verify|verify} messages.
-     * @param message BootstrapNodeToken message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(
-      message: bootstrap_node.IBootstrapNodeToken,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Encodes the specified BootstrapNodeToken message, length delimited. Does not implicitly {@link bootstrap_node.BootstrapNodeToken.verify|verify} messages.
-     * @param message BootstrapNodeToken message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: bootstrap_node.IBootstrapNodeToken,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes a BootstrapNodeToken message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns BootstrapNodeToken
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(
-      reader: $protobuf.Reader | Uint8Array,
-      length?: number,
-    ): bootstrap_node.BootstrapNodeToken;
-
-    /**
-     * Decodes a BootstrapNodeToken message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns BootstrapNodeToken
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): bootstrap_node.BootstrapNodeToken;
-
-    /**
-     * Verifies a BootstrapNodeToken message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a BootstrapNodeToken message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns BootstrapNodeToken
-     */
-    public static fromObject(object: { [k: string]: any }): bootstrap_node.BootstrapNodeToken;
-
-    /**
-     * Creates a plain object from a BootstrapNodeToken message. Also converts values to other types if specified.
-     * @param message BootstrapNodeToken
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: bootstrap_node.BootstrapNodeToken,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this BootstrapNodeToken to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a TokenDetails. */
-  interface ITokenDetails {
-    /** TokenDetails blockchainId */
-    blockchainId?: Uint8Array | null;
-
-    /** TokenDetails uri */
-    uri?: bootstrap_node.IURI | null;
-  }
-
-  /** Represents a TokenDetails. */
-  class TokenDetails implements ITokenDetails {
-    /**
-     * Constructs a new TokenDetails.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: bootstrap_node.ITokenDetails);
-
-    /** TokenDetails blockchainId. */
-    public blockchainId: Uint8Array;
-
-    /** TokenDetails uri. */
-    public uri?: bootstrap_node.IURI | null;
-
-    /**
-     * Creates a new TokenDetails instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns TokenDetails instance
-     */
-    public static create(properties?: bootstrap_node.ITokenDetails): bootstrap_node.TokenDetails;
-
-    /**
-     * Encodes the specified TokenDetails message. Does not implicitly {@link bootstrap_node.TokenDetails.verify|verify} messages.
-     * @param message TokenDetails message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: bootstrap_node.ITokenDetails, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified TokenDetails message, length delimited. Does not implicitly {@link bootstrap_node.TokenDetails.verify|verify} messages.
-     * @param message TokenDetails message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: bootstrap_node.ITokenDetails,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes a TokenDetails message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns TokenDetails
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): bootstrap_node.TokenDetails;
-
-    /**
-     * Decodes a TokenDetails message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns TokenDetails
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): bootstrap_node.TokenDetails;
-
-    /**
-     * Verifies a TokenDetails message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a TokenDetails message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns TokenDetails
-     */
-    public static fromObject(object: { [k: string]: any }): bootstrap_node.TokenDetails;
-
-    /**
-     * Creates a plain object from a TokenDetails message. Also converts values to other types if specified.
-     * @param message TokenDetails
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: bootstrap_node.TokenDetails,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this TokenDetails to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a URI. */
-  interface IURI {
-    /** URI host */
-    host?: string | null;
-
-    /** URI port */
-    port?: number | null;
-
-    /** URI protocol */
-    protocol?: string | null;
-
-    /** URI pubKey */
-    pubKey?: string | null;
-  }
-
-  /** Represents a URI. */
-  class URI implements IURI {
-    /**
-     * Constructs a new URI.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: bootstrap_node.IURI);
-
-    /** URI host. */
-    public host: string;
-
-    /** URI port. */
-    public port: number;
-
-    /** URI protocol. */
-    public protocol: string;
-
-    /** URI pubKey. */
-    public pubKey: string;
-
-    /**
-     * Creates a new URI instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns URI instance
-     */
-    public static create(properties?: bootstrap_node.IURI): bootstrap_node.URI;
-
-    /**
-     * Encodes the specified URI message. Does not implicitly {@link bootstrap_node.URI.verify|verify} messages.
-     * @param message URI message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: bootstrap_node.IURI, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified URI message, length delimited. Does not implicitly {@link bootstrap_node.URI.verify|verify} messages.
-     * @param message URI message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: bootstrap_node.IURI, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a URI message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns URI
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): bootstrap_node.URI;
-
-    /**
-     * Decodes a URI message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns URI
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): bootstrap_node.URI;
-
-    /**
-     * Verifies a URI message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a URI message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns URI
-     */
-    public static fromObject(object: { [k: string]: any }): bootstrap_node.URI;
-
-    /**
-     * Creates a plain object from a URI message. Also converts values to other types if specified.
-     * @param message URI
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: bootstrap_node.URI,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this URI to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of an IssueTokenMsg. */
-  interface IIssueTokenMsg {
-    /** IssueTokenMsg owner */
-    owner?: Uint8Array | null;
-
-    /** IssueTokenMsg id */
-    id?: Uint8Array | null;
-
-    /** IssueTokenMsg details */
-    details?: bootstrap_node.ITokenDetails | null;
-
-    /** IssueTokenMsg approvals */
-    approvals?: nft.IActionApprovals[] | null;
-  }
-
-  /** Represents an IssueTokenMsg. */
-  class IssueTokenMsg implements IIssueTokenMsg {
-    /**
-     * Constructs a new IssueTokenMsg.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: bootstrap_node.IIssueTokenMsg);
-
-    /** IssueTokenMsg owner. */
-    public owner: Uint8Array;
-
-    /** IssueTokenMsg id. */
-    public id: Uint8Array;
-
-    /** IssueTokenMsg details. */
-    public details?: bootstrap_node.ITokenDetails | null;
-
-    /** IssueTokenMsg approvals. */
-    public approvals: nft.IActionApprovals[];
-
-    /**
-     * Creates a new IssueTokenMsg instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns IssueTokenMsg instance
-     */
-    public static create(properties?: bootstrap_node.IIssueTokenMsg): bootstrap_node.IssueTokenMsg;
-
-    /**
-     * Encodes the specified IssueTokenMsg message. Does not implicitly {@link bootstrap_node.IssueTokenMsg.verify|verify} messages.
-     * @param message IssueTokenMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: bootstrap_node.IIssueTokenMsg, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified IssueTokenMsg message, length delimited. Does not implicitly {@link bootstrap_node.IssueTokenMsg.verify|verify} messages.
-     * @param message IssueTokenMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: bootstrap_node.IIssueTokenMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes an IssueTokenMsg message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns IssueTokenMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(
-      reader: $protobuf.Reader | Uint8Array,
-      length?: number,
-    ): bootstrap_node.IssueTokenMsg;
-
-    /**
-     * Decodes an IssueTokenMsg message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns IssueTokenMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): bootstrap_node.IssueTokenMsg;
-
-    /**
-     * Verifies an IssueTokenMsg message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates an IssueTokenMsg message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns IssueTokenMsg
-     */
-    public static fromObject(object: { [k: string]: any }): bootstrap_node.IssueTokenMsg;
-
-    /**
-     * Creates a plain object from an IssueTokenMsg message. Also converts values to other types if specified.
-     * @param message IssueTokenMsg
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: bootstrap_node.IssueTokenMsg,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this IssueTokenMsg to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-}
-
-/** Namespace ticker. */
-export namespace ticker {
-  /** Properties of a TickerToken. */
-  interface ITickerToken {
-    /** TickerToken base */
-    base?: nft.INonFungibleToken | null;
-
-    /** TickerToken details */
-    details?: ticker.ITokenDetails | null;
-  }
-
-  /** Represents a TickerToken. */
-  class TickerToken implements ITickerToken {
-    /**
-     * Constructs a new TickerToken.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: ticker.ITickerToken);
-
-    /** TickerToken base. */
-    public base?: nft.INonFungibleToken | null;
-
-    /** TickerToken details. */
-    public details?: ticker.ITokenDetails | null;
-
-    /**
-     * Creates a new TickerToken instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns TickerToken instance
-     */
-    public static create(properties?: ticker.ITickerToken): ticker.TickerToken;
-
-    /**
-     * Encodes the specified TickerToken message. Does not implicitly {@link ticker.TickerToken.verify|verify} messages.
-     * @param message TickerToken message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: ticker.ITickerToken, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified TickerToken message, length delimited. Does not implicitly {@link ticker.TickerToken.verify|verify} messages.
-     * @param message TickerToken message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: ticker.ITickerToken, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a TickerToken message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns TickerToken
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): ticker.TickerToken;
-
-    /**
-     * Decodes a TickerToken message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns TickerToken
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): ticker.TickerToken;
-
-    /**
-     * Verifies a TickerToken message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a TickerToken message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns TickerToken
-     */
-    public static fromObject(object: { [k: string]: any }): ticker.TickerToken;
-
-    /**
-     * Creates a plain object from a TickerToken message. Also converts values to other types if specified.
-     * @param message TickerToken
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: ticker.TickerToken,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this TickerToken to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a TokenDetails. */
-  interface ITokenDetails {
-    /** TokenDetails blockchainId */
-    blockchainId?: Uint8Array | null;
-  }
-
-  /** Represents a TokenDetails. */
-  class TokenDetails implements ITokenDetails {
-    /**
-     * Constructs a new TokenDetails.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: ticker.ITokenDetails);
-
-    /** TokenDetails blockchainId. */
-    public blockchainId: Uint8Array;
-
-    /**
-     * Creates a new TokenDetails instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns TokenDetails instance
-     */
-    public static create(properties?: ticker.ITokenDetails): ticker.TokenDetails;
-
-    /**
-     * Encodes the specified TokenDetails message. Does not implicitly {@link ticker.TokenDetails.verify|verify} messages.
-     * @param message TokenDetails message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: ticker.ITokenDetails, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified TokenDetails message, length delimited. Does not implicitly {@link ticker.TokenDetails.verify|verify} messages.
-     * @param message TokenDetails message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: ticker.ITokenDetails, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a TokenDetails message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns TokenDetails
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): ticker.TokenDetails;
-
-    /**
-     * Decodes a TokenDetails message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns TokenDetails
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): ticker.TokenDetails;
-
-    /**
-     * Verifies a TokenDetails message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a TokenDetails message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns TokenDetails
-     */
-    public static fromObject(object: { [k: string]: any }): ticker.TokenDetails;
-
-    /**
-     * Creates a plain object from a TokenDetails message. Also converts values to other types if specified.
-     * @param message TokenDetails
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: ticker.TokenDetails,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this TokenDetails to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of an IssueTokenMsg. */
-  interface IIssueTokenMsg {
-    /** IssueTokenMsg owner */
-    owner?: Uint8Array | null;
-
-    /** IssueTokenMsg id */
-    id?: Uint8Array | null;
-
-    /** IssueTokenMsg details */
-    details?: ticker.ITokenDetails | null;
-
-    /** IssueTokenMsg approvals */
-    approvals?: nft.IActionApprovals[] | null;
-  }
-
-  /** Represents an IssueTokenMsg. */
-  class IssueTokenMsg implements IIssueTokenMsg {
-    /**
-     * Constructs a new IssueTokenMsg.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: ticker.IIssueTokenMsg);
-
-    /** IssueTokenMsg owner. */
-    public owner: Uint8Array;
-
-    /** IssueTokenMsg id. */
-    public id: Uint8Array;
-
-    /** IssueTokenMsg details. */
-    public details?: ticker.ITokenDetails | null;
-
-    /** IssueTokenMsg approvals. */
-    public approvals: nft.IActionApprovals[];
-
-    /**
-     * Creates a new IssueTokenMsg instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns IssueTokenMsg instance
-     */
-    public static create(properties?: ticker.IIssueTokenMsg): ticker.IssueTokenMsg;
-
-    /**
-     * Encodes the specified IssueTokenMsg message. Does not implicitly {@link ticker.IssueTokenMsg.verify|verify} messages.
-     * @param message IssueTokenMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: ticker.IIssueTokenMsg, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified IssueTokenMsg message, length delimited. Does not implicitly {@link ticker.IssueTokenMsg.verify|verify} messages.
-     * @param message IssueTokenMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: ticker.IIssueTokenMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes an IssueTokenMsg message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns IssueTokenMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): ticker.IssueTokenMsg;
-
-    /**
-     * Decodes an IssueTokenMsg message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns IssueTokenMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): ticker.IssueTokenMsg;
-
-    /**
-     * Verifies an IssueTokenMsg message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates an IssueTokenMsg message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns IssueTokenMsg
-     */
-    public static fromObject(object: { [k: string]: any }): ticker.IssueTokenMsg;
-
-    /**
-     * Creates a plain object from an IssueTokenMsg message. Also converts values to other types if specified.
-     * @param message IssueTokenMsg
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: ticker.IssueTokenMsg,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this IssueTokenMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -1893,7 +519,7 @@ export namespace username {
 
   /** Properties of a ChainAddress. */
   interface IChainAddress {
-    /** module). */
+    /** validating it. */
     blockchainId?: Uint8Array | null;
 
     /** blockchain. */
@@ -1908,7 +534,7 @@ export namespace username {
      */
     constructor(properties?: username.IChainAddress);
 
-    /** module). */
+    /** validating it. */
     public blockchainId: Uint8Array;
 
     /** blockchain. */
@@ -2316,6 +942,109 @@ export namespace username {
 
     /**
      * Converts this RemoveChainAddressMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+}
+
+/** Namespace coin. */
+export namespace coin {
+  /** Properties of a Coin. */
+  interface ICoin {
+    /** Whole coins, -10^15 < integer < 10^15 */
+    whole?: number | Long | null;
+
+    /** If fractional != 0, must have same sign as integer */
+    fractional?: number | Long | null;
+
+    /** all Coins of the same currency can be combined */
+    ticker?: string | null;
+  }
+
+  /** own type, possibly borrowing from this code. */
+  class Coin implements ICoin {
+    /**
+     * Constructs a new Coin.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: coin.ICoin);
+
+    /** Whole coins, -10^15 < integer < 10^15 */
+    public whole: number | Long;
+
+    /** If fractional != 0, must have same sign as integer */
+    public fractional: number | Long;
+
+    /** all Coins of the same currency can be combined */
+    public ticker: string;
+
+    /**
+     * Creates a new Coin instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Coin instance
+     */
+    public static create(properties?: coin.ICoin): coin.Coin;
+
+    /**
+     * Encodes the specified Coin message. Does not implicitly {@link coin.Coin.verify|verify} messages.
+     * @param message Coin message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: coin.ICoin, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Coin message, length delimited. Does not implicitly {@link coin.Coin.verify|verify} messages.
+     * @param message Coin message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: coin.ICoin, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a Coin message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Coin
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): coin.Coin;
+
+    /**
+     * Decodes a Coin message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Coin
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): coin.Coin;
+
+    /**
+     * Verifies a Coin message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Coin message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Coin
+     */
+    public static fromObject(object: { [k: string]: any }): coin.Coin;
+
+    /**
+     * Creates a plain object from a Coin message. Also converts values to other types if specified.
+     * @param message Coin
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: coin.Coin, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this Coin to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -2792,6 +1521,100 @@ export namespace orm {
   }
 }
 
+/** Namespace weavetest. */
+export namespace weavetest {
+  /** Properties of a ResultSet. */
+  interface IResultSet {
+    /** ResultSet results */
+    results?: Uint8Array[] | null;
+  }
+
+  /** and therefore it is binary compatible with it. Copied to avoid import. */
+  class ResultSet implements IResultSet {
+    /**
+     * Constructs a new ResultSet.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: weavetest.IResultSet);
+
+    /** ResultSet results. */
+    public results: Uint8Array[];
+
+    /**
+     * Creates a new ResultSet instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ResultSet instance
+     */
+    public static create(properties?: weavetest.IResultSet): weavetest.ResultSet;
+
+    /**
+     * Encodes the specified ResultSet message. Does not implicitly {@link weavetest.ResultSet.verify|verify} messages.
+     * @param message ResultSet message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: weavetest.IResultSet, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ResultSet message, length delimited. Does not implicitly {@link weavetest.ResultSet.verify|verify} messages.
+     * @param message ResultSet message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: weavetest.IResultSet, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a ResultSet message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ResultSet
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): weavetest.ResultSet;
+
+    /**
+     * Decodes a ResultSet message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ResultSet
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): weavetest.ResultSet;
+
+    /**
+     * Verifies a ResultSet message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a ResultSet message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ResultSet
+     */
+    public static fromObject(object: { [k: string]: any }): weavetest.ResultSet;
+
+    /**
+     * Creates a plain object from a ResultSet message. Also converts values to other types if specified.
+     * @param message ResultSet
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: weavetest.ResultSet,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this ResultSet to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+}
+
 /** Namespace batch. */
 export namespace batch {
   /** Properties of a ByteArrayList. */
@@ -2891,7 +1714,7 @@ export namespace cash {
   /** Properties of a Set. */
   interface ISet {
     /** Set coins */
-    coins?: x.ICoin[] | null;
+    coins?: coin.ICoin[] | null;
   }
 
   /** It handles adding and subtracting sets of currencies. */
@@ -2903,7 +1726,7 @@ export namespace cash {
     constructor(properties?: cash.ISet);
 
     /** Set coins. */
-    public coins: x.ICoin[];
+    public coins: coin.ICoin[];
 
     /**
      * Creates a new Set instance using the specified properties.
@@ -2985,7 +1808,7 @@ export namespace cash {
     dest?: Uint8Array | null;
 
     /** SendMsg amount */
-    amount?: x.ICoin | null;
+    amount?: coin.ICoin | null;
 
     /** max length 128 character */
     memo?: string | null;
@@ -3009,7 +1832,7 @@ export namespace cash {
     public dest: Uint8Array;
 
     /** SendMsg amount. */
-    public amount?: x.ICoin | null;
+    public amount?: coin.ICoin | null;
 
     /** max length 128 character */
     public memo: string;
@@ -3097,7 +1920,7 @@ export namespace cash {
     payer?: Uint8Array | null;
 
     /** FeeInfo fees */
-    fees?: x.ICoin | null;
+    fees?: coin.ICoin | null;
   }
 
   /** message processed */
@@ -3112,7 +1935,7 @@ export namespace cash {
     public payer: Uint8Array;
 
     /** FeeInfo fees. */
-    public fees?: x.ICoin | null;
+    public fees?: coin.ICoin | null;
 
     /**
      * Creates a new FeeInfo instance using the specified properties.
@@ -3189,124 +2012,12 @@ export namespace cash {
   }
 }
 
-/** Namespace x. */
-export namespace x {
-  /** Properties of a Coin. */
-  interface ICoin {
-    /** Whole coins, -10^15 < integer < 10^15 */
-    whole?: number | Long | null;
-
-    /** If fractional != 0, must have same sign as integer */
-    fractional?: number | Long | null;
-
-    /** all Coins of the same currency can be combined */
-    ticker?: string | null;
-
-    /** Issuer both match. */
-    issuer?: string | null;
-  }
-
-  /** own type, possibly borrowing from this code. */
-  class Coin implements ICoin {
-    /**
-     * Constructs a new Coin.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: x.ICoin);
-
-    /** Whole coins, -10^15 < integer < 10^15 */
-    public whole: number | Long;
-
-    /** If fractional != 0, must have same sign as integer */
-    public fractional: number | Long;
-
-    /** all Coins of the same currency can be combined */
-    public ticker: string;
-
-    /** Issuer both match. */
-    public issuer: string;
-
-    /**
-     * Creates a new Coin instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns Coin instance
-     */
-    public static create(properties?: x.ICoin): x.Coin;
-
-    /**
-     * Encodes the specified Coin message. Does not implicitly {@link x.Coin.verify|verify} messages.
-     * @param message Coin message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: x.ICoin, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified Coin message, length delimited. Does not implicitly {@link x.Coin.verify|verify} messages.
-     * @param message Coin message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: x.ICoin, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a Coin message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns Coin
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): x.Coin;
-
-    /**
-     * Decodes a Coin message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns Coin
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): x.Coin;
-
-    /**
-     * Verifies a Coin message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a Coin message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns Coin
-     */
-    public static fromObject(object: { [k: string]: any }): x.Coin;
-
-    /**
-     * Creates a plain object from a Coin message. Also converts values to other types if specified.
-     * @param message Coin
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(message: x.Coin, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-    /**
-     * Converts this Coin to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-}
-
 /** Namespace currency. */
 export namespace currency {
   /** Properties of a TokenInfo. */
   interface ITokenInfo {
     /** TokenInfo name */
     name?: string | null;
-
-    /** TokenInfo sigFigs */
-    sigFigs?: number | null;
   }
 
   /** alternative solution to hardcoding supported currencies information. */
@@ -3319,9 +2030,6 @@ export namespace currency {
 
     /** TokenInfo name. */
     public name: string;
-
-    /** TokenInfo sigFigs. */
-    public sigFigs: number;
 
     /**
      * Creates a new TokenInfo instance using the specified properties.
@@ -3404,9 +2112,6 @@ export namespace currency {
 
     /** NewTokenInfoMsg name */
     name?: string | null;
-
-    /** NewTokenInfoMsg sigFigs */
-    sigFigs?: number | null;
   }
 
   /** be registered only once. */
@@ -3422,9 +2127,6 @@ export namespace currency {
 
     /** NewTokenInfoMsg name. */
     public name: string;
-
-    /** NewTokenInfoMsg sigFigs. */
-    public sigFigs: number;
 
     /**
      * Creates a new NewTokenInfoMsg instance using the specified properties.
@@ -3504,6 +2206,506 @@ export namespace currency {
   }
 }
 
+/** Namespace distribution. */
+export namespace distribution {
+  /** Properties of a Revenue. */
+  interface IRevenue {
+    /** While not enforced it is best to use a multisig contract here. */
+    admin?: Uint8Array | null;
+
+    /** distributed to. Must be at least one. */
+    recipients?: distribution.IRecipient[] | null;
+  }
+
+  /** the owners. */
+  class Revenue implements IRevenue {
+    /**
+     * Constructs a new Revenue.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: distribution.IRevenue);
+
+    /** While not enforced it is best to use a multisig contract here. */
+    public admin: Uint8Array;
+
+    /** distributed to. Must be at least one. */
+    public recipients: distribution.IRecipient[];
+
+    /**
+     * Creates a new Revenue instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Revenue instance
+     */
+    public static create(properties?: distribution.IRevenue): distribution.Revenue;
+
+    /**
+     * Encodes the specified Revenue message. Does not implicitly {@link distribution.Revenue.verify|verify} messages.
+     * @param message Revenue message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: distribution.IRevenue, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Revenue message, length delimited. Does not implicitly {@link distribution.Revenue.verify|verify} messages.
+     * @param message Revenue message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: distribution.IRevenue,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a Revenue message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Revenue
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): distribution.Revenue;
+
+    /**
+     * Decodes a Revenue message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Revenue
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): distribution.Revenue;
+
+    /**
+     * Verifies a Revenue message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Revenue message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Revenue
+     */
+    public static fromObject(object: { [k: string]: any }): distribution.Revenue;
+
+    /**
+     * Creates a plain object from a Revenue message. Also converts values to other types if specified.
+     * @param message Revenue
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: distribution.Revenue,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Revenue to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a Recipient. */
+  interface IRecipient {
+    /** of the validators. */
+    address?: Uint8Array | null;
+
+    /** second one. */
+    weight?: number | null;
+  }
+
+  /** Represents a Recipient. */
+  class Recipient implements IRecipient {
+    /**
+     * Constructs a new Recipient.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: distribution.IRecipient);
+
+    /** of the validators. */
+    public address: Uint8Array;
+
+    /** second one. */
+    public weight: number;
+
+    /**
+     * Creates a new Recipient instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Recipient instance
+     */
+    public static create(properties?: distribution.IRecipient): distribution.Recipient;
+
+    /**
+     * Encodes the specified Recipient message. Does not implicitly {@link distribution.Recipient.verify|verify} messages.
+     * @param message Recipient message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: distribution.IRecipient, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Recipient message, length delimited. Does not implicitly {@link distribution.Recipient.verify|verify} messages.
+     * @param message Recipient message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: distribution.IRecipient,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a Recipient message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Recipient
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): distribution.Recipient;
+
+    /**
+     * Decodes a Recipient message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Recipient
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): distribution.Recipient;
+
+    /**
+     * Verifies a Recipient message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Recipient message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Recipient
+     */
+    public static fromObject(object: { [k: string]: any }): distribution.Recipient;
+
+    /**
+     * Creates a plain object from a Recipient message. Also converts values to other types if specified.
+     * @param message Recipient
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: distribution.Recipient,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Recipient to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a NewRevenueMsg. */
+  interface INewRevenueMsg {
+    /** While not enforced it is best to use a multisig contract here. */
+    admin?: Uint8Array | null;
+
+    /** distributed to. Must be at least one. */
+    recipients?: distribution.IRecipient[] | null;
+  }
+
+  /** NewRevenueMsg is issuing the creation of a new revenue stream instance. */
+  class NewRevenueMsg implements INewRevenueMsg {
+    /**
+     * Constructs a new NewRevenueMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: distribution.INewRevenueMsg);
+
+    /** While not enforced it is best to use a multisig contract here. */
+    public admin: Uint8Array;
+
+    /** distributed to. Must be at least one. */
+    public recipients: distribution.IRecipient[];
+
+    /**
+     * Creates a new NewRevenueMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns NewRevenueMsg instance
+     */
+    public static create(properties?: distribution.INewRevenueMsg): distribution.NewRevenueMsg;
+
+    /**
+     * Encodes the specified NewRevenueMsg message. Does not implicitly {@link distribution.NewRevenueMsg.verify|verify} messages.
+     * @param message NewRevenueMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: distribution.INewRevenueMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified NewRevenueMsg message, length delimited. Does not implicitly {@link distribution.NewRevenueMsg.verify|verify} messages.
+     * @param message NewRevenueMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: distribution.INewRevenueMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a NewRevenueMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns NewRevenueMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): distribution.NewRevenueMsg;
+
+    /**
+     * Decodes a NewRevenueMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns NewRevenueMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): distribution.NewRevenueMsg;
+
+    /**
+     * Verifies a NewRevenueMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a NewRevenueMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns NewRevenueMsg
+     */
+    public static fromObject(object: { [k: string]: any }): distribution.NewRevenueMsg;
+
+    /**
+     * Creates a plain object from a NewRevenueMsg message. Also converts values to other types if specified.
+     * @param message NewRevenueMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: distribution.NewRevenueMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this NewRevenueMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a DistributeMsg. */
+  interface IDistributeMsg {
+    /** should be distributed between recipients. */
+    revenueId?: Uint8Array | null;
+  }
+
+  /** signed using admin key. */
+  class DistributeMsg implements IDistributeMsg {
+    /**
+     * Constructs a new DistributeMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: distribution.IDistributeMsg);
+
+    /** should be distributed between recipients. */
+    public revenueId: Uint8Array;
+
+    /**
+     * Creates a new DistributeMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns DistributeMsg instance
+     */
+    public static create(properties?: distribution.IDistributeMsg): distribution.DistributeMsg;
+
+    /**
+     * Encodes the specified DistributeMsg message. Does not implicitly {@link distribution.DistributeMsg.verify|verify} messages.
+     * @param message DistributeMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: distribution.IDistributeMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified DistributeMsg message, length delimited. Does not implicitly {@link distribution.DistributeMsg.verify|verify} messages.
+     * @param message DistributeMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: distribution.IDistributeMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a DistributeMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns DistributeMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): distribution.DistributeMsg;
+
+    /**
+     * Decodes a DistributeMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns DistributeMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): distribution.DistributeMsg;
+
+    /**
+     * Verifies a DistributeMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a DistributeMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns DistributeMsg
+     */
+    public static fromObject(object: { [k: string]: any }): distribution.DistributeMsg;
+
+    /**
+     * Creates a plain object from a DistributeMsg message. Also converts values to other types if specified.
+     * @param message DistributeMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: distribution.DistributeMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this DistributeMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a ResetRevenueMsg. */
+  interface IResetRevenueMsg {
+    /** Revenue ID reference an ID of a revenue instance that is updated. */
+    revenueId?: Uint8Array | null;
+
+    /** distributed to. Must be at least one. */
+    recipients?: distribution.IRecipient[] | null;
+  }
+
+  /** collected revenue amount is equal to zero the change is applied. */
+  class ResetRevenueMsg implements IResetRevenueMsg {
+    /**
+     * Constructs a new ResetRevenueMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: distribution.IResetRevenueMsg);
+
+    /** Revenue ID reference an ID of a revenue instance that is updated. */
+    public revenueId: Uint8Array;
+
+    /** distributed to. Must be at least one. */
+    public recipients: distribution.IRecipient[];
+
+    /**
+     * Creates a new ResetRevenueMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ResetRevenueMsg instance
+     */
+    public static create(properties?: distribution.IResetRevenueMsg): distribution.ResetRevenueMsg;
+
+    /**
+     * Encodes the specified ResetRevenueMsg message. Does not implicitly {@link distribution.ResetRevenueMsg.verify|verify} messages.
+     * @param message ResetRevenueMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: distribution.IResetRevenueMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ResetRevenueMsg message, length delimited. Does not implicitly {@link distribution.ResetRevenueMsg.verify|verify} messages.
+     * @param message ResetRevenueMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: distribution.IResetRevenueMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a ResetRevenueMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ResetRevenueMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): distribution.ResetRevenueMsg;
+
+    /**
+     * Decodes a ResetRevenueMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ResetRevenueMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): distribution.ResetRevenueMsg;
+
+    /**
+     * Verifies a ResetRevenueMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a ResetRevenueMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ResetRevenueMsg
+     */
+    public static fromObject(object: { [k: string]: any }): distribution.ResetRevenueMsg;
+
+    /**
+     * Creates a plain object from a ResetRevenueMsg message. Also converts values to other types if specified.
+     * @param message ResetRevenueMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: distribution.ResetRevenueMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this ResetRevenueMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+}
+
 /** Namespace escrow. */
 export namespace escrow {
   /** Properties of an Escrow. */
@@ -3517,11 +2719,8 @@ export namespace escrow {
     /** Escrow recipient */
     recipient?: Uint8Array | null;
 
-    /** amount may contain multiple token types */
-    amount?: x.ICoin[] | null;
-
-    /** timeout stored here is absolute block height */
-    timeout?: number | Long | null;
+    /** Timeout represents wall clock time as read from the block header. */
+    timeout?: google.protobuf.ITimestamp | null;
 
     /** max length 128 character */
     memo?: string | null;
@@ -3544,11 +2743,8 @@ export namespace escrow {
     /** Escrow recipient. */
     public recipient: Uint8Array;
 
-    /** amount may contain multiple token types */
-    public amount: x.ICoin[];
-
-    /** timeout stored here is absolute block height */
-    public timeout: number | Long;
+    /** Timeout represents wall clock time as read from the block header. */
+    public timeout?: google.protobuf.ITimestamp | null;
 
     /** max length 128 character */
     public memo: string;
@@ -3639,10 +2835,10 @@ export namespace escrow {
     recipient?: Uint8Array | null;
 
     /** amount may contain multiple token types */
-    amount?: x.ICoin[] | null;
+    amount?: coin.ICoin[] | null;
 
-    /** if unreleased before timeout, will return to sender */
-    timeout?: number | Long | null;
+    /** Timeout represents wall clock time. */
+    timeout?: google.protobuf.ITimestamp | null;
 
     /** max length 128 character */
     memo?: string | null;
@@ -3666,10 +2862,10 @@ export namespace escrow {
     public recipient: Uint8Array;
 
     /** amount may contain multiple token types */
-    public amount: x.ICoin[];
+    public amount: coin.ICoin[];
 
-    /** if unreleased before timeout, will return to sender */
-    public timeout: number | Long;
+    /** Timeout represents wall clock time. */
+    public timeout?: google.protobuf.ITimestamp | null;
 
     /** max length 128 character */
     public memo: string;
@@ -3757,7 +2953,7 @@ export namespace escrow {
     escrowId?: Uint8Array | null;
 
     /** ReleaseEscrowMsg amount */
-    amount?: x.ICoin[] | null;
+    amount?: coin.ICoin[] | null;
   }
 
   /** May be a subset of the current balance. */
@@ -3772,7 +2968,7 @@ export namespace escrow {
     public escrowId: Uint8Array;
 
     /** ReleaseEscrowMsg amount. */
-    public amount: x.ICoin[];
+    public amount: coin.ICoin[];
 
     /**
      * Creates a new ReleaseEscrowMsg instance using the specified properties.
@@ -4064,18 +3260,224 @@ export namespace escrow {
   }
 }
 
+/** Namespace google. */
+export namespace google {
+  /** Namespace protobuf. */
+  namespace protobuf {
+    /** Properties of a Timestamp. */
+    interface ITimestamp {
+      /** Timestamp seconds */
+      seconds?: number | Long | null;
+
+      /** Timestamp nanos */
+      nanos?: number | null;
+    }
+
+    /** Represents a Timestamp. */
+    class Timestamp implements ITimestamp {
+      /**
+       * Constructs a new Timestamp.
+       * @param [properties] Properties to set
+       */
+      constructor(properties?: google.protobuf.ITimestamp);
+
+      /** Timestamp seconds. */
+      public seconds: number | Long;
+
+      /** Timestamp nanos. */
+      public nanos: number;
+
+      /**
+       * Creates a new Timestamp instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns Timestamp instance
+       */
+      public static create(properties?: google.protobuf.ITimestamp): google.protobuf.Timestamp;
+
+      /**
+       * Encodes the specified Timestamp message. Does not implicitly {@link google.protobuf.Timestamp.verify|verify} messages.
+       * @param message Timestamp message or plain object to encode
+       * @param [writer] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(message: google.protobuf.ITimestamp, writer?: $protobuf.Writer): $protobuf.Writer;
+
+      /**
+       * Encodes the specified Timestamp message, length delimited. Does not implicitly {@link google.protobuf.Timestamp.verify|verify} messages.
+       * @param message Timestamp message or plain object to encode
+       * @param [writer] Writer to encode to
+       * @returns Writer
+       */
+      public static encodeDelimited(
+        message: google.protobuf.ITimestamp,
+        writer?: $protobuf.Writer,
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a Timestamp message from the specified reader or buffer.
+       * @param reader Reader or buffer to decode from
+       * @param [length] Message length if known beforehand
+       * @returns Timestamp
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): google.protobuf.Timestamp;
+
+      /**
+       * Decodes a Timestamp message from the specified reader or buffer, length delimited.
+       * @param reader Reader or buffer to decode from
+       * @returns Timestamp
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): google.protobuf.Timestamp;
+
+      /**
+       * Verifies a Timestamp message.
+       * @param message Plain object to verify
+       * @returns `null` if valid, otherwise the reason why it is not
+       */
+      public static verify(message: { [k: string]: any }): string | null;
+
+      /**
+       * Creates a Timestamp message from a plain object. Also converts values to their respective internal types.
+       * @param object Plain object
+       * @returns Timestamp
+       */
+      public static fromObject(object: { [k: string]: any }): google.protobuf.Timestamp;
+
+      /**
+       * Creates a plain object from a Timestamp message. Also converts values to other types if specified.
+       * @param message Timestamp
+       * @param [options] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        message: google.protobuf.Timestamp,
+        options?: $protobuf.IConversionOptions,
+      ): { [k: string]: any };
+
+      /**
+       * Converts this Timestamp to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+  }
+}
+
+/** Namespace msgfee. */
+export namespace msgfee {
+  /** Properties of a MsgFee. */
+  interface IMsgFee {
+    /** MsgFee msgPath */
+    msgPath?: string | null;
+
+    /** MsgFee fee */
+    fee?: coin.ICoin | null;
+  }
+
+  /** the message to be processed. */
+  class MsgFee implements IMsgFee {
+    /**
+     * Constructs a new MsgFee.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: msgfee.IMsgFee);
+
+    /** MsgFee msgPath. */
+    public msgPath: string;
+
+    /** MsgFee fee. */
+    public fee?: coin.ICoin | null;
+
+    /**
+     * Creates a new MsgFee instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns MsgFee instance
+     */
+    public static create(properties?: msgfee.IMsgFee): msgfee.MsgFee;
+
+    /**
+     * Encodes the specified MsgFee message. Does not implicitly {@link msgfee.MsgFee.verify|verify} messages.
+     * @param message MsgFee message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: msgfee.IMsgFee, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified MsgFee message, length delimited. Does not implicitly {@link msgfee.MsgFee.verify|verify} messages.
+     * @param message MsgFee message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: msgfee.IMsgFee, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a MsgFee message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns MsgFee
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): msgfee.MsgFee;
+
+    /**
+     * Decodes a MsgFee message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns MsgFee
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): msgfee.MsgFee;
+
+    /**
+     * Verifies a MsgFee message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a MsgFee message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns MsgFee
+     */
+    public static fromObject(object: { [k: string]: any }): msgfee.MsgFee;
+
+    /**
+     * Creates a plain object from a MsgFee message. Also converts values to other types if specified.
+     * @param message MsgFee
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: msgfee.MsgFee,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this MsgFee to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+}
+
 /** Namespace multisig. */
 export namespace multisig {
   /** Properties of a Contract. */
   interface IContract {
-    /** addresses to control it */
-    sigs?: Uint8Array[] | null;
+    /** contract. */
+    participants?: multisig.IParticipant[] | null;
 
-    /** threshold needed to sign to activate it */
-    activationThreshold?: number | Long | null;
+    /** computed as the sum of weights of all participating signatures. */
+    activationThreshold?: number | null;
 
-    /** threshold needed to sign to change it */
-    adminThreshold?: number | Long | null;
+    /** computed as the sum of weights of all participating signatures. */
+    adminThreshold?: number | null;
   }
 
   /** Represents a Contract. */
@@ -4086,14 +3488,14 @@ export namespace multisig {
      */
     constructor(properties?: multisig.IContract);
 
-    /** addresses to control it */
-    public sigs: Uint8Array[];
+    /** contract. */
+    public participants: multisig.IParticipant[];
 
-    /** threshold needed to sign to activate it */
-    public activationThreshold: number | Long;
+    /** computed as the sum of weights of all participating signatures. */
+    public activationThreshold: number;
 
-    /** threshold needed to sign to change it */
-    public adminThreshold: number | Long;
+    /** computed as the sum of weights of all participating signatures. */
+    public adminThreshold: number;
 
     /**
      * Creates a new Contract instance using the specified properties.
@@ -4169,16 +3571,116 @@ export namespace multisig {
     public toJSON(): { [k: string]: any };
   }
 
+  /** Properties of a Participant. */
+  interface IParticipant {
+    /** Participant signature */
+    signature?: Uint8Array | null;
+
+    /** Participant power */
+    power?: number | null;
+  }
+
+  /** the greater the power of a signature. */
+  class Participant implements IParticipant {
+    /**
+     * Constructs a new Participant.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: multisig.IParticipant);
+
+    /** Participant signature. */
+    public signature: Uint8Array;
+
+    /** Participant power. */
+    public power: number;
+
+    /**
+     * Creates a new Participant instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Participant instance
+     */
+    public static create(properties?: multisig.IParticipant): multisig.Participant;
+
+    /**
+     * Encodes the specified Participant message. Does not implicitly {@link multisig.Participant.verify|verify} messages.
+     * @param message Participant message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: multisig.IParticipant, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Participant message, length delimited. Does not implicitly {@link multisig.Participant.verify|verify} messages.
+     * @param message Participant message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: multisig.IParticipant,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a Participant message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Participant
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): multisig.Participant;
+
+    /**
+     * Decodes a Participant message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Participant
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): multisig.Participant;
+
+    /**
+     * Verifies a Participant message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Participant message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Participant
+     */
+    public static fromObject(object: { [k: string]: any }): multisig.Participant;
+
+    /**
+     * Creates a plain object from a Participant message. Also converts values to other types if specified.
+     * @param message Participant
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: multisig.Participant,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Participant to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
   /** Properties of a CreateContractMsg. */
   interface ICreateContractMsg {
-    /** addresses to control it */
-    sigs?: Uint8Array[] | null;
+    /** CreateContractMsg participants */
+    participants?: multisig.IParticipant[] | null;
 
-    /** threshold needed to sign to activate it */
-    activationThreshold?: number | Long | null;
+    /** CreateContractMsg activationThreshold */
+    activationThreshold?: number | null;
 
-    /** threshold needed to sign to change it */
-    adminThreshold?: number | Long | null;
+    /** CreateContractMsg adminThreshold */
+    adminThreshold?: number | null;
   }
 
   /** Represents a CreateContractMsg. */
@@ -4189,14 +3691,14 @@ export namespace multisig {
      */
     constructor(properties?: multisig.ICreateContractMsg);
 
-    /** addresses to control it */
-    public sigs: Uint8Array[];
+    /** CreateContractMsg participants. */
+    public participants: multisig.IParticipant[];
 
-    /** threshold needed to sign to activate it */
-    public activationThreshold: number | Long;
+    /** CreateContractMsg activationThreshold. */
+    public activationThreshold: number;
 
-    /** threshold needed to sign to change it */
-    public adminThreshold: number | Long;
+    /** CreateContractMsg adminThreshold. */
+    public adminThreshold: number;
 
     /**
      * Creates a new CreateContractMsg instance using the specified properties.
@@ -4277,17 +3779,17 @@ export namespace multisig {
 
   /** Properties of an UpdateContractMsg. */
   interface IUpdateContractMsg {
-    /** contract id */
-    id?: Uint8Array | null;
+    /** UpdateContractMsg contractId */
+    contractId?: Uint8Array | null;
 
-    /** addresses to control it */
-    sigs?: Uint8Array[] | null;
+    /** UpdateContractMsg participants */
+    participants?: multisig.IParticipant[] | null;
 
-    /** threshold needed to sign to activate it */
-    activationThreshold?: number | Long | null;
+    /** UpdateContractMsg activationThreshold */
+    activationThreshold?: number | null;
 
-    /** threshold needed to sign to change it */
-    adminThreshold?: number | Long | null;
+    /** UpdateContractMsg adminThreshold */
+    adminThreshold?: number | null;
   }
 
   /** Represents an UpdateContractMsg. */
@@ -4298,17 +3800,17 @@ export namespace multisig {
      */
     constructor(properties?: multisig.IUpdateContractMsg);
 
-    /** contract id */
-    public id: Uint8Array;
+    /** UpdateContractMsg contractId. */
+    public contractId: Uint8Array;
 
-    /** addresses to control it */
-    public sigs: Uint8Array[];
+    /** UpdateContractMsg participants. */
+    public participants: multisig.IParticipant[];
 
-    /** threshold needed to sign to activate it */
-    public activationThreshold: number | Long;
+    /** UpdateContractMsg activationThreshold. */
+    public activationThreshold: number;
 
-    /** threshold needed to sign to change it */
-    public adminThreshold: number | Long;
+    /** UpdateContractMsg adminThreshold. */
+    public adminThreshold: number;
 
     /**
      * Creates a new UpdateContractMsg instance using the specified properties.
@@ -4393,7 +3895,7 @@ export namespace namecoin {
   /** Properties of a Wallet. */
   interface IWallet {
     /** Wallet coins */
-    coins?: x.ICoin[] | null;
+    coins?: coin.ICoin[] | null;
 
     /** Wallet name */
     name?: string | null;
@@ -4408,7 +3910,7 @@ export namespace namecoin {
     constructor(properties?: namecoin.IWallet);
 
     /** Wallet coins. */
-    public coins: x.ICoin[];
+    public coins: coin.ICoin[];
 
     /** Wallet name. */
     public name: string;
@@ -5438,7 +4940,7 @@ export namespace paychan {
     recipient?: Uint8Array | null;
 
     /** payment channel. */
-    total?: x.ICoin | null;
+    total?: coin.ICoin | null;
 
     /** sender. */
     timeout?: number | Long | null;
@@ -5447,7 +4949,7 @@ export namespace paychan {
     memo?: string | null;
 
     /** (total) value. Transferred must never exceed total value. */
-    transferred?: x.ICoin | null;
+    transferred?: coin.ICoin | null;
   }
 
   /** PaymentChannel holds the state of a payment channel during its lifetime. */
@@ -5468,7 +4970,7 @@ export namespace paychan {
     public recipient: Uint8Array;
 
     /** payment channel. */
-    public total?: x.ICoin | null;
+    public total?: coin.ICoin | null;
 
     /** sender. */
     public timeout: number | Long;
@@ -5477,7 +4979,7 @@ export namespace paychan {
     public memo: string;
 
     /** (total) value. Transferred must never exceed total value. */
-    public transferred?: x.ICoin | null;
+    public transferred?: coin.ICoin | null;
 
     /**
      * Creates a new PaymentChannel instance using the specified properties.
@@ -5568,7 +5070,7 @@ export namespace paychan {
     recipient?: Uint8Array | null;
 
     /** Maximum amount that can be transferred via this channel. */
-    total?: x.ICoin | null;
+    total?: coin.ICoin | null;
 
     /** anyone. */
     timeout?: number | Long | null;
@@ -5595,7 +5097,7 @@ export namespace paychan {
     public recipient: Uint8Array;
 
     /** Maximum amount that can be transferred via this channel. */
-    public total?: x.ICoin | null;
+    public total?: coin.ICoin | null;
 
     /** anyone. */
     public timeout: number | Long;
@@ -5695,7 +5197,7 @@ export namespace paychan {
     channelId?: Uint8Array | null;
 
     /** Payment amount */
-    amount?: x.ICoin | null;
+    amount?: coin.ICoin | null;
 
     /** Max length 128 character. */
     memo?: string | null;
@@ -5716,7 +5218,7 @@ export namespace paychan {
     public channelId: Uint8Array;
 
     /** Payment amount. */
-    public amount?: x.ICoin | null;
+    public amount?: coin.ICoin | null;
 
     /** Max length 128 character. */
     public memo: string;

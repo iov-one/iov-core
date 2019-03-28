@@ -17,7 +17,6 @@ export {
   // transactions
   BnsTx,
   AddAddressToUsernameTx,
-  RegisterBlockchainTx,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
 } from "./types";

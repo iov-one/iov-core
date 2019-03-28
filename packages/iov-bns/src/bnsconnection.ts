@@ -46,17 +46,14 @@ import { broadcastTxSyncSuccess, Client as TendermintClient } from "@iov/tenderm
 
 import { bnsCodec } from "./bnscodec";
 import { ChainData, Context } from "./context";
-import { decodeBlockchainNft, decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
+import { decodeJsonAmount, decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
 import {
-  BnsBlockchainNft,
-  BnsBlockchainsQuery,
   BnsUsernameNft,
   BnsUsernamesQuery,
   decodePubkey,
   Decoder,
-  isBnsBlockchainsByChainIdQuery,
   isBnsTx,
   isBnsUsernamesByChainAndAddressQuery,
   isBnsUsernamesByOwnerAddressQuery,
@@ -71,6 +68,8 @@ import {
   identityToAddress,
   isConfirmedWithSwapClaimOrAbortTransaction,
   isConfirmedWithSwapOfferTransaction,
+  conditionToAddress,
+  escrowCondition,
 } from "./util";
 
 const { toAscii, toHex, toUtf8 } = Encoding;
@@ -359,7 +358,8 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     const res = await doQuery();
     const parser = createParser(codecImpl.escrow.Escrow, "esc:");
     const data = res.results.map(parser).map(escrow => this.context.decodeOpenSwap(escrow));
-    return data;
+    const withBalance = await Promise.all(data.map(this.updateEscrowBalance.bind(this)));
+    return withBalance;
   }
 
   /**
@@ -588,20 +588,6 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     );
   }
 
-  public async getBlockchains(query: BnsBlockchainsQuery): Promise<ReadonlyArray<BnsBlockchainNft>> {
-    // https://github.com/iov-one/weave/blob/v0.9.2/x/nft/username/handler_test.go#L207
-    let results: ReadonlyArray<Result>;
-    if (isBnsBlockchainsByChainIdQuery(query)) {
-      results = (await this.query("/nft/blockchains", toUtf8(query.chainId))).results;
-    } else {
-      throw new Error("Unsupported query");
-    }
-
-    const parser = createParser(codecImpl.blockchain.BlockchainToken, "bchnft:");
-    const nfts = results.map(parser).map(nft => decodeBlockchainNft(nft, this.chainId()));
-    return nfts;
-  }
-
   public async getUsernames(query: BnsUsernamesQuery): Promise<ReadonlyArray<BnsUsernameNft>> {
     // https://github.com/iov-one/weave/blob/v0.9.2/x/nft/username/handler_test.go#L207
     let results: ReadonlyArray<Result>;
@@ -623,22 +609,42 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   }
 
   public async getFeeQuote(transaction: UnsignedTransaction): Promise<Fee> {
-    if (isBnsTx(transaction)) {
-      const firstToken = (await this.getAllTickers())[0];
-      return {
-        tokens: {
-          quantity: "0",
-          fractionalDigits: firstToken.fractionalDigits,
-          tokenTicker: firstToken.tokenTicker,
-        },
-      };
+    if (!isBnsTx(transaction)) {
+      throw new Error("Received transaction of unsupported kind.");
     }
+    // get gconf fee
+    // TODO: get product fee for this type
+    // take maximum
+    const res = await this.query("/", Encoding.toAscii("gconf:cash:minimal_fee"));
+    if (res.results.length !== 1) {
+      throw new Error("Received unexpected number of fees");
+    }
+    const data = Encoding.fromAscii(res.results[0].value);
+    const amount = decodeJsonAmount(data);
+    return { tokens: amount };
+  }
 
-    throw new Error("Received transaction of unsupported kind.");
+  public async withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T> {
+    return { ...transaction, fee: await this.getFeeQuote(transaction) };
   }
 
   protected async query(path: string, data: Uint8Array): Promise<QueryResponse> {
     return performQuery(this.tmClient, path, data);
+  }
+
+  // updateEscrowBalance will query for the proper balance and then update the accounts of escrow before
+  // returning it. Designed to be used in a map chain.
+  protected async updateEscrowBalance<T extends AtomicSwap>(escrow: T): Promise<T> {
+    const addr = conditionToAddress(this.chainId(), escrowCondition(escrow.data.id));
+    const acct = await this.getAccount({ address: addr });
+    const balance = acct ? acct.balance : [];
+    // remove unneeded properties...
+    const amounts = balance.map(b => ({
+      quantity: b.quantity,
+      fractionalDigits: b.fractionalDigits,
+      tokenTicker: b.tokenTicker,
+    }));
+    return { ...escrow, data: { ...escrow.data, amounts: amounts } };
   }
 }
 

@@ -2,7 +2,7 @@ import {
   Algorithm,
   Amount,
   FullSignature,
-  isBlockHeightTimeout,
+  isTimestampTimeout,
   PublicKeyBundle,
   SendTransaction,
   SignatureBytes,
@@ -19,17 +19,12 @@ import {
   AddAddressToUsernameTx,
   isBnsTx,
   PrivateKeyBundle,
-  RegisterBlockchainTx,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
 } from "./types";
 import { decodeBnsAddress, hashIdentifier, identityToAddress } from "./util";
 
 const { toUtf8 } = Encoding;
-
-function encodeBoolean(value: boolean): true | undefined {
-  return value ? true : undefined;
-}
 
 function encodeInt(intNumber: number): number | null {
   if (!Number.isInteger(intNumber)) {
@@ -59,7 +54,7 @@ export function encodePrivkey(privateKey: PrivateKeyBundle): codecImpl.crypto.IP
   }
 }
 
-export function encodeAmount(amount: Amount): codecImpl.x.ICoin {
+export function encodeAmount(amount: Amount): codecImpl.coin.ICoin {
   if (amount.fractionalDigits !== 9) {
     throw new Error(`Fractional digits must be 9 but was ${amount.fractionalDigits}`);
   }
@@ -128,8 +123,6 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
     // BNS
     case "bns/add_address_to_username":
       return buildAddAddressToUsernameTx(tx);
-    case "bns/register_blockchain":
-      return buildRegisterBlockchainTx(tx);
     case "bns/register_username":
       return buildRegisterUsernameTx(tx);
     case "bns/remove_address_from_username":
@@ -161,7 +154,7 @@ function buildSendTransaction(tx: SendTransaction): codecImpl.app.ITx {
 }
 
 function buildSwapOfferTx(tx: SwapOfferTransaction): codecImpl.app.ITx {
-  if (!isBlockHeightTimeout(tx.timeout)) {
+  if (!isTimestampTimeout(tx.timeout)) {
     throw new Error("Got unsupported timeout type");
   }
 
@@ -171,7 +164,7 @@ function buildSwapOfferTx(tx: SwapOfferTransaction): codecImpl.app.ITx {
       arbiter: hashIdentifier(tx.hash),
       recipient: decodeBnsAddress(tx.recipient).data,
       amount: tx.amounts.map(encodeAmount),
-      timeout: tx.timeout.height,
+      timeout: { seconds: tx.timeout.timestamp },
       memo: tx.memo,
     }),
   };
@@ -190,30 +183,6 @@ function buildSwapAbortTransaction(tx: SwapAbortTransaction): codecImpl.app.ITx 
   return {
     returnEscrowMsg: codecImpl.escrow.ReturnEscrowMsg.create({
       escrowId: tx.swapId,
-    }),
-  };
-}
-
-function buildRegisterBlockchainTx(tx: RegisterBlockchainTx): codecImpl.app.ITx {
-  return {
-    issueBlockchainNftMsg: codecImpl.blockchain.IssueTokenMsg.create({
-      id: toUtf8(tx.chain.chainId),
-      owner: decodeBnsAddress(identityToAddress(tx.creator)).data,
-      approvals: undefined,
-      details: codecImpl.blockchain.TokenDetails.create({
-        chain: codecImpl.blockchain.Chain.create({
-          chainId: tx.chain.chainId,
-          name: tx.chain.name,
-          enabled: encodeBoolean(tx.chain.enabled),
-          production: encodeBoolean(tx.chain.production),
-          networkId: tx.chain.networkId,
-          mainTickerId: tx.chain.mainTickerId ? toUtf8(tx.chain.mainTickerId) : undefined,
-        }),
-        iov: codecImpl.blockchain.IOV.create({
-          codec: tx.codecName,
-          codecConfig: tx.codecConfig,
-        }),
-      }),
     }),
   };
 }

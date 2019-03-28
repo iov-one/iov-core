@@ -413,6 +413,10 @@ export class LiskConnection implements BcpConnection {
     }
   }
 
+  public async withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T> {
+    return { ...transaction, fee: await this.getFeeQuote(transaction) };
+  }
+
   private waitForTransaction(id: TransactionId): Stream<ConfirmedTransaction | FailedTransaction> {
     let pollInternal: NodeJS.Timeout | undefined;
     const producer: Producer<ConfirmedTransaction | FailedTransaction> = {

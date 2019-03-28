@@ -11,7 +11,7 @@ import { Bech32, Encoding } from "@iov/encoding";
 
 import {
   decodeAmount,
-  decodeBlockchainNft,
+  decodeJsonAmount,
   decodeNonce,
   decodeToken,
   decodeUsernameNft,
@@ -35,7 +35,6 @@ import {
   decodePrivkey,
   decodePubkey,
   isAddAddressToUsernameTx,
-  isRegisterBlockchainTx,
   isRegisterUsernameTx,
   isRemoveAddressFromUsernameTx,
   Keyed,
@@ -44,42 +43,6 @@ import {
 const { fromHex, toUtf8 } = Encoding;
 
 describe("Decode", () => {
-  it("decodes blokchain NFT", () => {
-    const nft: codecImpl.blockchain.IBlockchainToken = {
-      base: {
-        id: toUtf8("alice"),
-        owner: fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"),
-      },
-      details: {
-        chain: {
-          chainId: "wonderland",
-          networkId: "7rg047g4h",
-          production: false,
-          enabled: true,
-          mainTickerId: toUtf8("WONDER"),
-          name: "Wonderland",
-        },
-        iov: {
-          codec: "wonderland_rules",
-          codecConfig: `{ rules: ["make peace not war"] }`,
-        },
-      },
-    };
-    const decoded = decodeBlockchainNft(nft, "bns-testchain" as ChainId);
-    expect(decoded.id).toEqual("alice");
-    expect(decoded.owner).toEqual(Bech32.encode("tiov", fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472")));
-    expect(decoded.chain).toEqual({
-      chainId: "wonderland" as ChainId,
-      networkId: "7rg047g4h",
-      production: false,
-      enabled: true,
-      mainTickerId: "WONDER" as TokenTicker,
-      name: "Wonderland",
-    });
-    expect(decoded.codecName).toEqual("wonderland_rules");
-    expect(decoded.codecConfig).toEqual(`{ rules: ["make peace not war"] }`);
-  });
-
   it("decodes username NFT", () => {
     const nft: codecImpl.username.IUsernameToken = {
       base: {
@@ -145,7 +108,7 @@ describe("Decode", () => {
 
   describe("decodeAmount", () => {
     it("can decode amount 3.123456789 ASH", () => {
-      const backendAmount: codecImpl.x.ICoin = {
+      const backendAmount: codecImpl.coin.ICoin = {
         whole: 3,
         fractional: 123456789,
         ticker: "ASH",
@@ -159,7 +122,7 @@ describe("Decode", () => {
     });
 
     it("can decode amount 0.000000001 ASH", () => {
-      const backendAmount: codecImpl.x.ICoin = {
+      const backendAmount: codecImpl.coin.ICoin = {
         whole: 0,
         fractional: 1,
         ticker: "ASH",
@@ -174,7 +137,7 @@ describe("Decode", () => {
 
     it("can decode max amount 999999999999999.999999999 ASH", () => {
       // https://github.com/iov-one/weave/blob/v0.9.3/x/codec.proto#L15
-      const backendAmount: codecImpl.x.ICoin = {
+      const backendAmount: codecImpl.coin.ICoin = {
         whole: 10 ** 15 - 1,
         fractional: 10 ** 9 - 1,
         ticker: "ASH",
@@ -188,7 +151,7 @@ describe("Decode", () => {
     });
 
     it("is compatible to test data", () => {
-      const decoded = codecImpl.x.Coin.decode(coinBin);
+      const decoded = codecImpl.coin.Coin.decode(coinBin);
       const amount = decodeAmount(decoded);
       expect(amount).toEqual(coinJson);
     });
@@ -197,7 +160,7 @@ describe("Decode", () => {
       // ICoin allows negative values, which are now supported client-side
       {
         // -3.0 ASH
-        const backendAmount: codecImpl.x.ICoin = {
+        const backendAmount: codecImpl.coin.ICoin = {
           whole: -3,
           fractional: 0,
           ticker: "ASH",
@@ -206,13 +169,92 @@ describe("Decode", () => {
       }
       {
         // -0.123456789 ASH
-        const backendAmount: codecImpl.x.ICoin = {
+        const backendAmount: codecImpl.coin.ICoin = {
           whole: 0,
           fractional: -123456789,
           ticker: "ASH",
         };
         expect(() => decodeAmount(backendAmount)).toThrowError(/`fractional` must not be negative/i);
       }
+    });
+  });
+
+  describe("decodeJsonAmount", () => {
+    it("can decode strings", () => {
+      const decoded = decodeJsonAmount(`"3.123456789 ASH"`);
+      expect(decoded).toEqual({
+        quantity: "3123456789",
+        fractionalDigits: 9,
+        tokenTicker: "ASH" as TokenTicker,
+      });
+
+      const decoded2 = decodeJsonAmount(`"4IOV"`);
+      expect(decoded2).toEqual({
+        quantity: "4000000000",
+        fractionalDigits: 9,
+        tokenTicker: "IOV" as TokenTicker,
+      });
+
+      const decoded3 = decodeJsonAmount(`"0.0001   CASH"`);
+      expect(decoded3).toEqual({
+        quantity: "100000",
+        fractionalDigits: 9,
+        tokenTicker: "CASH" as TokenTicker,
+      });
+
+      // max decimals
+      const decoded4 = decodeJsonAmount(`"123456.123456789 IOV"`);
+      expect(decoded4).toEqual({
+        quantity: "123456123456789",
+        fractionalDigits: 9,
+        tokenTicker: "IOV" as TokenTicker,
+      });
+    });
+
+    it("rejects invalid strings ", () => {
+      // invalid format
+      expect(() => decodeJsonAmount(`"1,23 ASH"`)).toThrowError();
+      // leading spaces
+      expect(() => decodeJsonAmount(`"   1 ASH"`)).toThrowError();
+      // no whole numbers
+      expect(() => decodeJsonAmount(`".0001   CASH"`)).toThrowError();
+      // too many decimals
+      expect(() => decodeJsonAmount(`"0.1234567890 ASH"`)).toThrowError();
+      // just number
+      expect(() => decodeJsonAmount(`"42.13"`)).toThrowError();
+      // just ticker
+      expect(() => decodeJsonAmount(`"FOO"`)).toThrowError();
+      // wrong order
+      expect(() => decodeJsonAmount(`"ASH 22"`)).toThrowError();
+      // ticker bad size
+      expect(() => decodeJsonAmount(`"0.01 A"`)).toThrowError();
+      // ticker bad size
+      expect(() => decodeJsonAmount(`"0.01 SUPERLONG"`)).toThrowError();
+    });
+
+    it("can decode json objects", () => {
+      const backendAmount = `{ "whole": 1, "fractional": 230000000, "ticker": "ASH" }`;
+      const decoded = decodeJsonAmount(backendAmount);
+      expect(decoded).toEqual({
+        quantity: "1230000000",
+        fractionalDigits: 9,
+        tokenTicker: "ASH" as TokenTicker,
+      });
+    });
+
+    it("can decode json objects with missing fields", () => {
+      const backendAmount = `{ "fractional": 1230, "ticker": "FOO" }`;
+      const decoded = decodeJsonAmount(backendAmount);
+      expect(decoded).toEqual({
+        quantity: "1230",
+        fractionalDigits: 9,
+        tokenTicker: "FOO" as TokenTicker,
+      });
+    });
+
+    it("rejects other data", () => {
+      // string is not json encoded
+      expect(() => decodeJsonAmount("0.01 ASH")).toThrowError();
     });
   });
 
@@ -263,44 +305,6 @@ describe("Decode", () => {
       expect(parsed.username).toEqual("alice");
       expect(parsed.payload.chainId).toEqual("wonderland");
       expect(parsed.payload.address).toEqual("0xAABB001122DD");
-    });
-
-    it("works for RegisterBlockchain", () => {
-      const transactionMessage: codecImpl.app.ITx = {
-        issueBlockchainNftMsg: {
-          id: Encoding.toAscii("wonderland"),
-          owner: Encoding.fromHex("0011223344556677889900112233445566778899"),
-          approvals: undefined,
-          details: {
-            chain: {
-              chainId: "wonderland",
-              networkId: "7rg047g4h",
-              production: false,
-              enabled: true,
-              mainTickerId: toUtf8("WONDER"),
-              name: "Wonderland",
-            },
-            iov: {
-              codec: "wonderland_rules",
-              codecConfig: `{ rules: ["make peace not war"] }`,
-            },
-          },
-        },
-      };
-      const parsed = parseMsg(defaultBaseTx, transactionMessage);
-      if (!isRegisterBlockchainTx(parsed)) {
-        throw new Error("unexpected transaction kind");
-      }
-      expect(parsed.chain).toEqual({
-        chainId: "wonderland" as ChainId,
-        networkId: "7rg047g4h",
-        production: false,
-        enabled: true,
-        mainTickerId: "WONDER" as TokenTicker,
-        name: "Wonderland",
-      });
-      expect(parsed.codecName).toEqual("wonderland_rules");
-      expect(parsed.codecConfig).toEqual(`{ rules: ["make peace not war"] }`);
     });
 
     it("works for RegisterUsername", () => {

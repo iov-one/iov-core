@@ -1,1 +1,1 @@
-b0474f3b493de0a2bbeca196f8f6a1eb5c888903 (HEAD, tag: v0.11.1) Init validators in bcpd (#298)
+b33f16fe03ba952ab1bd3c7e67b153fed825bc95 (HEAD, tag: v0.13.0) Merge pull request #436 from iov-one/human_readable_coin_json

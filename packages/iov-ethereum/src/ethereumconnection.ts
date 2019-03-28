@@ -609,6 +609,10 @@ export class EthereumConnection implements BcpConnection {
     throw new Error("Not implemented");
   }
 
+  public async withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T> {
+    return { ...transaction, fee: await this.getFeeQuote(transaction) };
+  }
+
   private async socketSend(request: JsonRpcRequest, ignoreNetworkError: boolean = false): Promise<void> {
     if (!this.socket) {
       throw new Error("No socket available");

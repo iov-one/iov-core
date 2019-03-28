@@ -60,6 +60,27 @@ export function identityToAddress(identity: PublicIdentity): Address {
   return encodeBnsAddress(prefix, bytes);
 }
 
+// TODO: this maps to weave code... maybe we change a bit??
+// This is the same logic as keyToIdentifier...
+export type Condition = Uint8Array & As<"Condition">;
+
+function buildCondition(extension: string, typ: string, id: Uint8Array): Condition {
+  // https://github.com/iov-one/weave/blob/v0.13.0/conditions.go#L33-L36
+  const res = Uint8Array.from([...Encoding.toAscii(`${extension}/${typ}/`), ...id]);
+  return res as Condition;
+}
+
+export function escrowCondition(id: Uint8Array): Condition {
+  // https://github.com/iov-one/weave/blob/v0.13.0/x/escrow/model.go#L90
+  return buildCondition("escrow", "seq", id);
+}
+
+export function conditionToAddress(chainId: ChainId, cond: Condition): Address {
+  const prefix = addressPrefix(chainId);
+  const bytes = new Sha256(cond).digest().slice(0, 20);
+  return encodeBnsAddress(prefix, bytes);
+}
+
 export function isValidAddress(address: string): boolean {
   try {
     decodeBnsAddress(address as Address);

@@ -400,6 +400,10 @@ export class RiseConnection implements BcpConnection {
     }
   }
 
+  public async withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T> {
+    return { ...transaction, fee: await this.getFeeQuote(transaction) };
+  }
+
   private async searchSingleTransaction(searchId: TransactionId): Promise<ConfirmedTransaction | undefined> {
     const result = await axios.get(`${this.baseUrl}/api/transactions/get`, {
       params: { id: searchId },

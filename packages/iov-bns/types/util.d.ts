@@ -10,6 +10,9 @@ export declare function decodeBnsAddress(address: Address): {
     readonly data: Uint8Array;
 };
 export declare function identityToAddress(identity: PublicIdentity): Address;
+export declare type Condition = Uint8Array & As<"Condition">;
+export declare function escrowCondition(id: Uint8Array): Condition;
+export declare function conditionToAddress(chainId: ChainId, cond: Condition): Address;
 export declare function isValidAddress(address: string): boolean;
 export declare function appendSignBytes(bz: Uint8Array, chainId: ChainId, nonce: Nonce): SignableBytes;
 export declare function arraysEqual(a: Uint8Array, b: Uint8Array): boolean;
