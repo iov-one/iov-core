@@ -1,18 +1,18 @@
 import { Encoding } from "@iov/encoding";
 
-import { AtomicSwap, OpenSwap, SwapState } from "./atomicswaptypes";
+import { AtomicSwap, OpenSwap, SwapProcessState } from "./atomicswaptypes";
 import { SwapAbortTransaction, SwapClaimTransaction } from "./transactions";
 
 function settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTransaction | SwapAbortTransaction): AtomicSwap {
   if (tx.kind === "bcp/swap_claim") {
     return {
-      kind: SwapState.Claimed,
+      kind: SwapProcessState.Claimed,
       data: swap.data,
       preimage: tx.preimage,
     };
   } else {
     return {
-      kind: SwapState.Aborted,
+      kind: SwapProcessState.Aborted,
       data: swap.data,
     };
   }
@@ -28,7 +28,7 @@ export class AtomicSwapMerger {
    */
   public process(event: OpenSwap | SwapClaimTransaction | SwapAbortTransaction): AtomicSwap | undefined {
     switch (event.kind) {
-      case SwapState.Open: {
+      case SwapProcessState.Open: {
         const idAsHex = Encoding.toHex(event.data.id);
 
         const matchingSettlingElement = this.settling.get(idAsHex);

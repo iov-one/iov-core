@@ -4,7 +4,7 @@ import { Stream } from "xstream";
 import { BcpConnection } from "./connection";
 import { Address, Amount, SwapIdBytes, SwapTimeout } from "./transactions";
 
-export enum SwapState {
+export enum SwapProcessState {
   Open = "open",
   Claimed = "claimed",
   Aborted = "aborted",
@@ -35,20 +35,20 @@ export interface SwapData {
 
 // OpenSwap is an offer that has not yet been claimed
 export interface OpenSwap {
-  readonly kind: SwapState.Open;
+  readonly kind: SwapProcessState.Open;
   readonly data: SwapData;
 }
 
 // ClosedSwap is returned once the swap has been claimed, exposing the preimage that was used to claim it
 export interface ClaimedSwap {
-  readonly kind: SwapState.Claimed;
+  readonly kind: SwapProcessState.Claimed;
   readonly data: SwapData;
   readonly preimage: Preimage;
 }
 
 /** A swap offer that has been aborted */
 export interface AbortedSwap {
-  readonly kind: SwapState.Aborted;
+  readonly kind: SwapProcessState.Aborted;
   readonly data: SwapData;
 }
 

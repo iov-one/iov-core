@@ -10,6 +10,7 @@ Breaking changes
   `AbortedSwap`.
 - @iov/bcp: New type `Hash` used for atomic swap hashes. Use
   `AtomicSwapHelpers.hashPreimage` to create those hashes.
+- @iov/bcp: Rename `SwapState` to `SwapProcessState`.
 
 ## 0.13.1
 

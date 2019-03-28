@@ -2,7 +2,7 @@ import { As } from "type-tagger";
 import { Stream } from "xstream";
 import { BcpConnection } from "./connection";
 import { Address, Amount, SwapIdBytes, SwapTimeout } from "./transactions";
-export declare enum SwapState {
+export declare enum SwapProcessState {
     Open = "open",
     Claimed = "claimed",
     Aborted = "aborted"
@@ -29,17 +29,17 @@ export interface SwapData {
     readonly memo?: string;
 }
 export interface OpenSwap {
-    readonly kind: SwapState.Open;
+    readonly kind: SwapProcessState.Open;
     readonly data: SwapData;
 }
 export interface ClaimedSwap {
-    readonly kind: SwapState.Claimed;
+    readonly kind: SwapProcessState.Claimed;
     readonly data: SwapData;
     readonly preimage: Preimage;
 }
 /** A swap offer that has been aborted */
 export interface AbortedSwap {
-    readonly kind: SwapState.Aborted;
+    readonly kind: SwapProcessState.Aborted;
     readonly data: SwapData;
 }
 export declare type AtomicSwap = OpenSwap | ClaimedSwap | AbortedSwap;

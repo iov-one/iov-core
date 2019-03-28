@@ -15,7 +15,7 @@ import {
   SendTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
-  SwapState,
+  SwapProcessState,
   TokenTicker,
 } from "@iov/bcp";
 import { bnsConnector, bnsSwapQueryTag } from "@iov/bns";
@@ -214,7 +214,7 @@ class Actor {
     expect(searchResult.length).toEqual(1);
     const counterReview = searchResult[0];
 
-    if (counterReview.kind !== SwapState.Open) {
+    if (counterReview.kind !== SwapProcessState.Open) {
       throw new Error("Swap should be open");
     }
 
@@ -248,7 +248,7 @@ class Actor {
     expect(searchResults.length).toEqual(1);
     const claim1Review = searchResults[0];
 
-    if (claim1Review.kind !== SwapState.Claimed) {
+    if (claim1Review.kind !== SwapProcessState.Claimed) {
       throw new Error("Swap should be claimed");
     }
 

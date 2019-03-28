@@ -29,7 +29,7 @@ import {
   PostableBytes,
   PostTxResponse,
   PubkeyQuery,
-  SwapState,
+  SwapProcessState,
   TokenTicker,
   TransactionId,
   TransactionState,
@@ -779,7 +779,7 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
       return [
         {
           // TODO: Update when we return state from the get() call
-          kind: SwapState.Open,
+          kind: SwapProcessState.Open,
           data: {
             id: query.swapid,
             sender: sender,
