@@ -4,6 +4,8 @@
 
 - @iov/ethereum: Allow querying of ERC20 token balances
 - @iov/ethereum: Implement `getFeeQuote` method on `EthereumConnection`.
+- @iov/dpos: Let `Serialization.serializeTransaction` accept transactions with
+  fee set.
 
 ## 0.13.0
 

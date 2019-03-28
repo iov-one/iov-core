@@ -34,8 +34,19 @@ export class Serialization {
     creationTime: ReadonlyDate,
     options: TransactionSerializationOptions,
   ): Uint8Array {
-    if (unsigned.fee !== undefined) {
-      throw new Error("Fee must not be set. It is fixed and not included in the signed content.");
+    if (unsigned.fee) {
+      if (unsigned.fee.gasPrice) {
+        throw new Error("Found unexpected gasPrice in transaction fee");
+      }
+      if (unsigned.fee.gasLimit) {
+        throw new Error("Found unexpected gasLimit in transaction fee");
+      }
+      if (!unsigned.fee.tokens) {
+        throw new Error("Missing tokens in transaction fee");
+      }
+    } else {
+      // Fee is not serialized and determined by the blockchain rules. Thus we allow
+      // unset fee for simplicity.
     }
 
     if (isSendTransaction(unsigned)) {

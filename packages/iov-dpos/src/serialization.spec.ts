@@ -248,7 +248,7 @@ describe("Serialization", () => {
       ).toThrowError(/memo length exceeds limit/i);
     });
 
-    it("fails to serialize transaction with fee", () => {
+    it("works for transaction with fee", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
       const tx: SendTransaction = {
@@ -267,7 +267,8 @@ describe("Serialization", () => {
         },
         fee: {
           tokens: {
-            quantity: "0",
+            // 0.1 XNET
+            quantity: "10000000",
             fractionalDigits: 8,
             tokenTicker: "XNET" as TokenTicker,
           },
@@ -275,8 +276,98 @@ describe("Serialization", () => {
         recipient: "10010344879730196491X" as Address,
       };
 
+      expect(serializeTransaction(tx, defaultCreationDate, { maxMemoLength: 12 })).toBeTruthy();
+    });
+
+    it("fails to serialize transaction with empty fee", () => {
+      const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
+
+      const tx: SendTransaction = {
+        kind: "bcp/send",
+        creator: {
+          chainId: "xnet" as ChainId,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: pubkey as PublicKeyBytes,
+          },
+        },
+        amount: {
+          quantity: "123456789",
+          fractionalDigits: 8,
+          tokenTicker: "XNET" as TokenTicker,
+        },
+        fee: {
+          // all fields unset
+        },
+        recipient: "10010344879730196491X" as Address,
+      };
+
       expect(() => serializeTransaction(tx, defaultCreationDate, { maxMemoLength: 12 })).toThrowError(
-        /fee must not be set/i,
+        /missing tokens in transaction fee/i,
+      );
+    });
+
+    it("fails to serialize transaction with gasLimit", () => {
+      const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
+
+      const tx: SendTransaction = {
+        kind: "bcp/send",
+        creator: {
+          chainId: "xnet" as ChainId,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: pubkey as PublicKeyBytes,
+          },
+        },
+        amount: {
+          quantity: "123456789",
+          fractionalDigits: 8,
+          tokenTicker: "XNET" as TokenTicker,
+        },
+        recipient: "10010344879730196491X" as Address,
+        fee: {
+          gasLimit: {
+            quantity: "1",
+            fractionalDigits: 18,
+            tokenTicker: "ETH" as TokenTicker,
+          },
+        },
+      };
+
+      expect(() => serializeTransaction(tx, defaultCreationDate, { maxMemoLength: 12 })).toThrowError(
+        /found unexpected gasLimit in transaction fee/i,
+      );
+    });
+
+    it("fails to serialize transaction with gasPrice", () => {
+      const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
+
+      const tx: SendTransaction = {
+        kind: "bcp/send",
+        creator: {
+          chainId: "xnet" as ChainId,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: pubkey as PublicKeyBytes,
+          },
+        },
+        amount: {
+          quantity: "123456789",
+          fractionalDigits: 8,
+          tokenTicker: "XNET" as TokenTicker,
+        },
+        recipient: "10010344879730196491X" as Address,
+        fee: {
+          gasPrice: {
+            quantity: "1",
+            fractionalDigits: 18,
+            tokenTicker: "ETH" as TokenTicker,
+          },
+        },
+      };
+
+      expect(() => serializeTransaction(tx, defaultCreationDate, { maxMemoLength: 12 })).toThrowError(
+        /found unexpected gasPrice in transaction fee/i,
       );
     });
   });
