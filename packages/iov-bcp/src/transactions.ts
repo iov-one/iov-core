@@ -262,6 +262,7 @@ export interface SwapOfferTransaction extends UnsignedTransaction {
    */
   readonly hash: Uint8Array;
   readonly memo?: string;
+  readonly contractAddress?: Address;
 }
 
 export interface SwapClaimTransaction extends UnsignedTransaction {
