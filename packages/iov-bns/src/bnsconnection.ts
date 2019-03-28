@@ -63,13 +63,13 @@ import {
 } from "./types";
 import {
   buildTxQuery,
+  conditionToAddress,
   decodeBnsAddress,
+  escrowCondition,
   hashIdentifier,
   identityToAddress,
   isConfirmedWithSwapClaimOrAbortTransaction,
   isConfirmedWithSwapOfferTransaction,
-  conditionToAddress,
-  escrowCondition,
 } from "./util";
 
 const { toAscii, toHex, toUtf8 } = Encoding;
