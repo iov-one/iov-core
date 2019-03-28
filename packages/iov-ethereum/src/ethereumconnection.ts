@@ -8,8 +8,10 @@ import {
   AccountQuery,
   Address,
   AddressQuery,
+  AtomicSwap,
+  AtomicSwapQuery,
+  BcpAtomicSwapConnection,
   BcpCoin,
-  BcpConnection,
   BcpTicker,
   BcpTxQuery,
   BlockHeader,
@@ -78,7 +80,7 @@ export interface EthereumConnectionOptions {
   readonly pollInterval?: number;
 }
 
-export class EthereumConnection implements BcpConnection {
+export class EthereumConnection implements BcpAtomicSwapConnection {
   public static async establish(
     baseUrl: string,
     options?: EthereumConnectionOptions,
@@ -634,6 +636,14 @@ export class EthereumConnection implements BcpConnection {
 
   public async withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T> {
     return { ...transaction, fee: await this.getFeeQuote(transaction) };
+  }
+
+  public async getSwaps(_: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>> {
+    throw new Error("not implemented");
+  }
+
+  public watchSwaps(_: AtomicSwapQuery): Stream<AtomicSwap> {
+    throw new Error("not implemented");
   }
 
   private async socketSend(request: JsonRpcRequest, ignoreNetworkError: boolean = false): Promise<void> {
