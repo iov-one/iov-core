@@ -12,11 +12,11 @@ import {
   isSwapOfferTransaction,
   Preimage,
   PublicIdentity,
+  SendTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
   SwapState,
   TokenTicker,
-  SendTransaction,
 } from "@iov/bcp";
 import { bnsConnector, bnsSwapQueryTag } from "@iov/bns";
 import { Slip10RawIndex } from "@iov/crypto";
