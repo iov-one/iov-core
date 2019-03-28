@@ -1440,7 +1440,7 @@ describe("BnsConnection", () => {
     connection.disconnect();
   });
 
-  fit("can start atomic swap", async () => {
+  it("can start atomic swap", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
     const chainId = connection.chainId();

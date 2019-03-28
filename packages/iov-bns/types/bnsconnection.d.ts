@@ -72,6 +72,7 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     getFeeQuote(transaction: UnsignedTransaction): Promise<Fee>;
     withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;
     protected query(path: string, data: Uint8Array): Promise<QueryResponse>;
+    protected updateEscrowBalance<T extends AtomicSwap>(escrow: T): Promise<T>;
 }
 export interface QueryResponse {
     readonly height?: number;
