@@ -15,8 +15,8 @@ specification to build compatible components.
 
 ## Overview
 
-Two actors Alice (A) and Bob (B) agreed on a token exchange off-chain. Both have
-one address on each blockchain X and Y.
+Two actors Alice and Bob agreed on a token exchange off-chain. Both have one
+address on each blockchain X and Y.
 
 - Alice creates a secret key locally (called a "preimage") and stores it.
 - Alice creates a swap offer on X, the blockchain where her tokens live. This is
