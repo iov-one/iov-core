@@ -92,7 +92,7 @@ describe("BnsConnection", () => {
   // This account has money in the genesis file (setup in docker).
   const faucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
 
-  const bnsdTendermintUrl = "ws://localhost:22345";
+  const bnsdTendermintUrl = "ws://localhost:23456";
 
   async function userProfileWithFaucet(
     chainId: ChainId,

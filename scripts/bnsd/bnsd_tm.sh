@@ -2,7 +2,7 @@
 set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
-PORT=22345
+PORT=23456
 
 if [ -z "$BNSD_TM_VERSION" ]; then
   echo "BNSD_TM_VERSION must be set"; exit 1

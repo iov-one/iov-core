@@ -47,7 +47,7 @@ async function randomBnsAddress(): Promise<Address> {
 }
 
 describe("MultiChainSigner", () => {
-  const bnsdTendermintUrl = "ws://localhost:22345";
+  const bnsdTendermintUrl = "ws://localhost:23456";
   const httpEthereumUrl = "http://localhost:8545";
 
   it("works with no chains", () => {

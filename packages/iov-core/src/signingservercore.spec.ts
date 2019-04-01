@@ -38,7 +38,7 @@ async function randomBnsAddress(): Promise<Address> {
 }
 
 describe("SigningServerCore", () => {
-  const bnsdUrl = "ws://localhost:22345";
+  const bnsdUrl = "ws://localhost:23456";
 
   // The first simple address key (m/4804438'/0') generated from this mnemonic produces the address
   // tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f (bech32) / b1ca7e78f74423ae01da3b51e676934d9105f282 (hex).
