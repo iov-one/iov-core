@@ -662,12 +662,8 @@ export class EthereumConnection implements BcpConnection {
 
     const currentHeight = await this.height();
     const confirmations = currentHeight - transactionHeight + 1;
-    const transactionJson = {
-      ...transactionsResponse.result,
-      type: 0,
-    };
     const transaction = ethereumCodec.parseBytes(
-      Encoding.toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
+      Encoding.toUtf8(JSON.stringify(transactionsResponse.result)) as PostableBytes,
       this.myChainId,
     );
     const transactionId = `0x${normalizeHex(transactionsResponse.result.hash)}` as TransactionId;

@@ -71,42 +71,34 @@ export const ethereumCodec: TxCodec = {
     const messageHash = new Keccak256(message).digest();
     const signerPubkey = Secp256k1.recoverPubkey(signature, messageHash) as PublicKeyBytes;
 
-    let unsignedTransaction: SendTransaction;
-    switch (json.type) {
-      case 0:
-        const send: SendTransaction = {
-          kind: "bcp/send",
-          creator: {
-            chainId: chainId,
-            pubkey: {
-              algo: Algorithm.Secp256k1,
-              data: signerPubkey,
-            },
-          },
-          fee: {
-            // TODO: Make this make sense
-            tokens: {
-              quantity: decodeHexQuantityString(json.gas),
-              fractionalDigits: constants.primaryTokenFractionalDigits,
-              tokenTicker: constants.primaryTokenTicker,
-            },
-          },
-          amount: {
-            quantity: decodeHexQuantityString(json.value),
-            fractionalDigits: constants.primaryTokenFractionalDigits,
-            tokenTicker: constants.primaryTokenTicker,
-          },
-          recipient: toChecksummedAddress(json.to),
-          memo: Encoding.fromUtf8(Encoding.fromHex(normalizeHex(json.input))),
-        };
-        unsignedTransaction = send;
-        break;
-      default:
-        throw new Error("Unsupported transaction type");
-    }
+    const send: SendTransaction = {
+      kind: "bcp/send",
+      creator: {
+        chainId: chainId,
+        pubkey: {
+          algo: Algorithm.Secp256k1,
+          data: signerPubkey,
+        },
+      },
+      fee: {
+        // TODO: Make this make sense
+        tokens: {
+          quantity: decodeHexQuantityString(json.gas),
+          fractionalDigits: constants.primaryTokenFractionalDigits,
+          tokenTicker: constants.primaryTokenTicker,
+        },
+      },
+      amount: {
+        quantity: decodeHexQuantityString(json.value),
+        fractionalDigits: constants.primaryTokenFractionalDigits,
+        tokenTicker: constants.primaryTokenTicker,
+      },
+      recipient: toChecksummedAddress(json.to),
+      memo: Encoding.fromUtf8(Encoding.fromHex(normalizeHex(json.input))),
+    };
 
     return {
-      transaction: unsignedTransaction,
+      transaction: send,
       primarySignature: {
         nonce: nonce,
         pubkey: {

@@ -38,9 +38,7 @@ describe("ethereumCodec", () => {
         "041d4c015b00cbd914e280b871d3c6ae2a047ca650d3ecea4b5246bb3036d4d74960b7feb09068164d2b82f1c7df9e95839b29ae38e90d60578b2318a54e108cf8",
       ) as PublicKeyBytes;
 
-      const postableBytes = Encoding.toUtf8(
-        JSON.stringify({ ...rawGetTransactionByHashResult, type: 0 }),
-      ) as PostableBytes;
+      const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
       expect(ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-4" as ChainId)).toEqual({
         transaction: {
           kind: "bcp/send",
