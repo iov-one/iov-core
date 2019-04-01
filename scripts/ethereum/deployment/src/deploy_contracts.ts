@@ -54,6 +54,7 @@ export async function main(args: ReadonlyArray<string>): Promise<void> {
 
     if (typeof contract.methods.mint !== "undefined") {
       const mintingJobs: ReadonlyArray<MintingJob> = [
+        { recipient: mainIdentity, quantity: "1000000000000000000000000" /* 1 million */ },
         { recipient: secondIdentity, quantity: "33445566" },
         { recipient: Address.fromString("0x0000000000111111111122222222223333333333"), quantity: "38" },
       ];

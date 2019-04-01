@@ -468,6 +468,54 @@ describe("EthereumConnection", () => {
 
       connection.disconnect();
     }, 30_000);
+
+    it("can send ERC20 tokens", async () => {
+      pendingWithoutEthereum();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
+
+      const connection = await EthereumConnection.establish(testConfig.base, {
+        erc20Tokens: testConfig.erc20Tokens,
+      });
+
+      for (const transferTest of testConfig.erc20TransferTests) {
+        const recipientAddress = await randomAddress();
+
+        const sendTx: SendTransaction = {
+          kind: "bcp/send",
+          creator: mainIdentity,
+          recipient: recipientAddress,
+          fee: {
+            gasPrice: testConfig.gasPrice,
+            gasLimit: testConfig.gasLimit,
+          },
+          ...transferTest,
+        };
+        const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
+        const signed = await profile.signTransaction(sendTx, ethereumCodec, nonce);
+        const bytesToPost = ethereumCodec.bytesToPost(signed);
+
+        const result = await connection.postTx(bytesToPost);
+        expect(result).toBeTruthy();
+        expect(result.log).toBeUndefined();
+
+        // TODO: reactivate when parsing works
+        // const blockInfo = await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        // expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+
+        const recipientAccount = await connection.getAccount({ address: recipientAddress });
+        const erc20Balance = recipientAccount!.balance.find(
+          entry => entry.tokenTicker === transferTest.amount.tokenTicker,
+        );
+        expect(erc20Balance!.quantity).toEqual(transferTest.amount.quantity);
+        expect(erc20Balance!.fractionalDigits).toEqual(transferTest.amount.fractionalDigits);
+        expect(erc20Balance!.tokenTicker).toEqual(transferTest.amount.tokenTicker);
+      }
+
+      connection.disconnect();
+    }, 30_000);
   });
 
   describe("watchAccount", () => {

@@ -16,6 +16,11 @@ import { Erc20Options } from "./erc20";
 
 const { fromHex } = Encoding;
 
+export interface Erc20TransferTest {
+  readonly contractAddress: Address;
+  readonly amount: Amount;
+}
+
 export interface EthereumNetworkConfig {
   readonly env: string;
   readonly base: string;
@@ -60,6 +65,7 @@ export interface EthereumNetworkConfig {
     readonly gasLimitTooLow: RegExp;
   };
   readonly erc20Tokens: Map<TokenTicker, Erc20Options>;
+  readonly erc20TransferTests: ReadonlyArray<Erc20TransferTest>;
   readonly expectedTokens: ReadonlyArray<BcpTicker>;
 }
 
@@ -171,6 +177,24 @@ const local: EthereumNetworkConfig = {
       },
     ],
   ]),
+  erc20TransferTests: [
+    {
+      contractAddress: "0xCb642A87923580b6F7D07D1471F93361196f2650" as Address,
+      amount: {
+        quantity: "3",
+        tokenTicker: "ASH" as TokenTicker,
+        fractionalDigits: 12,
+      },
+    },
+    {
+      contractAddress: "0x9768ae2339B48643d710B11dDbDb8A7eDBEa15BC" as Address,
+      amount: {
+        quantity: "5678",
+        tokenTicker: "TRASH" as TokenTicker,
+        fractionalDigits: 9,
+      },
+    },
+  ],
   expectedTokens: [
     {
       tokenTicker: "ETH" as TokenTicker,
@@ -259,6 +283,7 @@ const ropsten: EthereumNetworkConfig = {
     gasLimitTooLow: /intrinsic gas too low/i,
   },
   erc20Tokens: new Map([]),
+  erc20TransferTests: [],
   expectedTokens: [
     {
       tokenTicker: "ETH" as TokenTicker,
@@ -353,6 +378,7 @@ const rinkeby: EthereumNetworkConfig = {
   erc20Tokens: new Map<TokenTicker, Erc20Options>([
     ["WETH" as TokenTicker, { contractAddress: "0xc778417e063141139fce010982780140aa0cd5ab" as Address }],
   ]),
+  erc20TransferTests: [],
   expectedTokens: [
     {
       tokenTicker: "ETH" as TokenTicker,
