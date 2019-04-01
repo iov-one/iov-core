@@ -54,6 +54,31 @@ describe("Abi", () => {
     });
   });
 
+  describe("encodeUint256", () => {
+    it("works", () => {
+      expect(Abi.encodeUint256("0")).toEqual(
+        fromHex("0000000000000000000000000000000000000000000000000000000000000000"),
+      );
+      expect(Abi.encodeUint256("1")).toEqual(
+        fromHex("0000000000000000000000000000000000000000000000000000000000000001"),
+      );
+      expect(Abi.encodeUint256("2")).toEqual(
+        fromHex("0000000000000000000000000000000000000000000000000000000000000002"),
+      );
+      expect(Abi.encodeUint256("123456789")).toEqual(
+        fromHex("00000000000000000000000000000000000000000000000000000000075bcd15"),
+      );
+    });
+
+    it("throws for invalid input", () => {
+      expect(() => Abi.encodeUint256("")).toThrow();
+      expect(() => Abi.encodeUint256(" 1")).toThrow();
+      expect(() => Abi.encodeUint256("-1")).toThrow();
+      expect(() => Abi.encodeUint256("0x1")).toThrow();
+      expect(() => Abi.encodeUint256("a")).toThrow();
+    });
+  });
+
   describe("decodeHeadTail", () => {
     it("works for single string", () => {
       const data = fromHex(
