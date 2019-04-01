@@ -114,19 +114,43 @@ export class Serialization {
           : { forkState: BlknumForkState.Before };
       const v = eip155V(chain, sig.recovery);
 
-      const valueHex = encodeQuantityString(unsigned.amount.quantity);
-      const data = Encoding.toUtf8(unsigned.memo || "");
-      return Serialization.serializeGenericTransaction(
-        signed.primarySignature.nonce,
-        gasPriceHex,
-        gasLimitHex,
-        unsigned.recipient,
-        valueHex,
-        data,
-        encodeQuantity(v),
-        r,
-        s,
-      );
+      if (unsigned.contractAddress) {
+        if (unsigned.memo) {
+          throw new Error("Memo cannot be serialized in a smart contract based token transfer.");
+        }
+
+        const erc20TransferCall = new Uint8Array([
+          ...Abi.calculateMethodId("transfer(address,uint256)"),
+          ...Abi.encodeAddress(unsigned.recipient),
+          ...Abi.encodeUint256(unsigned.amount.quantity),
+        ]);
+
+        return Serialization.serializeGenericTransaction(
+          signed.primarySignature.nonce,
+          gasPriceHex,
+          gasLimitHex,
+          unsigned.contractAddress,
+          "0x", // ETH value
+          erc20TransferCall,
+          encodeQuantity(v),
+          r,
+          s,
+        );
+      } else {
+        const valueHex = encodeQuantityString(unsigned.amount.quantity);
+        const data = Encoding.toUtf8(unsigned.memo || "");
+        return Serialization.serializeGenericTransaction(
+          signed.primarySignature.nonce,
+          gasPriceHex,
+          gasLimitHex,
+          unsigned.recipient,
+          valueHex,
+          data,
+          encodeQuantity(v),
+          r,
+          s,
+        );
+      }
     } else {
       throw new Error("Unsupported kind of transaction");
     }
