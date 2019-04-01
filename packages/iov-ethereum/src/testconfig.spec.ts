@@ -170,7 +170,7 @@ const local: EthereumNetworkConfig = {
     [
       "TRASH" as TokenTicker,
       {
-        contractAddress: "0x9768ae2339B48643d710B11dDbDb8A7eDBEa15BC" as Address,
+        contractAddress: "0xF01231195AE56d38fa03F5F2933863A2606A6052" as Address,
         decimals: 9,
         symbol: "TRASH",
         name: "Trash Token",
@@ -187,7 +187,7 @@ const local: EthereumNetworkConfig = {
       },
     },
     {
-      contractAddress: "0x9768ae2339B48643d710B11dDbDb8A7eDBEa15BC" as Address,
+      contractAddress: "0xF01231195AE56d38fa03F5F2933863A2606A6052" as Address,
       amount: {
         quantity: "5678",
         tokenTicker: "TRASH" as TokenTicker,
