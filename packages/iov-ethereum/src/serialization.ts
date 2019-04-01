@@ -1,4 +1,4 @@
-import { isSendTransaction, Nonce, SignedTransaction, UnsignedTransaction } from "@iov/bcp";
+import { Address, isSendTransaction, Nonce, SignedTransaction, UnsignedTransaction } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 
@@ -14,19 +14,23 @@ export class Serialization {
     nonce: Nonce,
     gasPriceHex: string,
     gasLimitHex: string,
-    recipientHex: string,
+    recipient: Address,
     valueHex: string,
     data: Uint8Array,
     v: string,
     r?: Uint8Array,
     s?: Uint8Array,
   ): Uint8Array {
+    if (!isValidAddress(recipient)) {
+      throw new Error("Invalid recipient address");
+    }
+
     // Last 3 items are v, r and s values. Are present to encode full structure.
     return toRlp([
       Serialization.encodeNonce(nonce),
       fromHex(normalizeHex(gasPriceHex)),
       fromHex(normalizeHex(gasLimitHex)),
-      fromHex(normalizeHex(recipientHex)),
+      fromHex(normalizeHex(recipient)),
       fromHex(normalizeHex(valueHex)),
       data,
       fromHex(normalizeHex(v)),
