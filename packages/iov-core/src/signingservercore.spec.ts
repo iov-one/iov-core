@@ -35,7 +35,7 @@ async function randomBnsAddress(): Promise<Address> {
 }
 
 describe("SigningServerCore", () => {
-  const bnsdUrl = "ws://localhost:22345";
+  const bnsdUrl = "ws://localhost:23456";
 
   const defaultAmount: Amount = {
     quantity: "1",

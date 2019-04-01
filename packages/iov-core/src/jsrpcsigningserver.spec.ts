@@ -49,7 +49,7 @@ async function randomBnsAddress(): Promise<Address> {
   return bnsCodec.identityToAddress(randomIdentity);
 }
 
-const bnsdUrl = "ws://localhost:22345";
+const bnsdUrl = "ws://localhost:23456";
 const bnsdFaucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
 const ethereumUrl = "http://localhost:8545";
 const ethereumChainId = "ethereum-eip155-5777" as ChainId;

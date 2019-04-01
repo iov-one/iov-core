@@ -94,7 +94,7 @@ describe("BnsConnection", () => {
     tokenTicker: cash,
   };
 
-  const bnsdTendermintUrl = "ws://localhost:22345";
+  const bnsdTendermintUrl = "ws://localhost:23456";
 
   async function userProfileWithFaucet(
     chainId: ChainId,
