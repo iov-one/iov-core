@@ -99,10 +99,14 @@ export class Serialization {
     const unsigned = signed.transaction;
 
     if (isSendTransaction(unsigned)) {
-      const gasPriceHex =
-        unsigned.fee && unsigned.fee.gasPrice ? encodeQuantityString(unsigned.fee.gasPrice.quantity) : "0x";
-      const gasLimitHex =
-        unsigned.fee && unsigned.fee.gasLimit ? encodeQuantityString(unsigned.fee.gasLimit.quantity) : "0x";
+      if (!unsigned.fee || !unsigned.fee.gasPrice) {
+        throw new Error("fee.gasPrice must be set");
+      }
+      const gasPriceHex = encodeQuantityString(unsigned.fee.gasPrice.quantity);
+      if (!unsigned.fee.gasLimit) {
+        throw new Error("fee.gasLimit must be set");
+      }
+      const gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit.quantity);
 
       if (!isValidAddress(unsigned.recipient)) {
         throw new Error("Invalid recipient address");
