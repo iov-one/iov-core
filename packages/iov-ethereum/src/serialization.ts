@@ -95,22 +95,15 @@ export class Serialization {
     const unsigned = signed.transaction;
 
     if (isSendTransaction(unsigned)) {
-      let gasPriceHex = "0x";
-      let gasLimitHex = "0x";
-
-      const valueHex = encodeQuantityString(unsigned.amount.quantity);
-      if (unsigned.fee && unsigned.fee.gasPrice) {
-        gasPriceHex = encodeQuantityString(unsigned.fee.gasPrice.quantity);
-      }
-      if (unsigned.fee && unsigned.fee.gasLimit) {
-        gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit.quantity);
-      }
-
-      const data = Encoding.toUtf8(unsigned.memo || "");
+      const gasPriceHex =
+        unsigned.fee && unsigned.fee.gasPrice ? encodeQuantityString(unsigned.fee.gasPrice.quantity) : "0x";
+      const gasLimitHex =
+        unsigned.fee && unsigned.fee.gasLimit ? encodeQuantityString(unsigned.fee.gasLimit.quantity) : "0x";
 
       if (!isValidAddress(unsigned.recipient)) {
         throw new Error("Invalid recipient address");
       }
+
       const sig = ExtendedSecp256k1Signature.fromFixedLength(signed.primarySignature.signature);
       const r = sig.r();
       const s = sig.s();
@@ -120,6 +113,9 @@ export class Serialization {
           ? { forkState: BlknumForkState.Forked, chainId: chainId }
           : { forkState: BlknumForkState.Before };
       const v = eip155V(chain, sig.recovery);
+
+      const valueHex = encodeQuantityString(unsigned.amount.quantity);
+      const data = Encoding.toUtf8(unsigned.memo || "");
       return Serialization.serializeGenericTransaction(
         signed.primarySignature.nonce,
         gasPriceHex,
