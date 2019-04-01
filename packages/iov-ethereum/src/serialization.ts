@@ -16,7 +16,7 @@ export class Serialization {
     gasLimitHex: string,
     recipientHex: string,
     valueHex: string,
-    dataHex: string,
+    data: Uint8Array,
     chainIdHex: string,
   ): Uint8Array {
     // Last 3 items are v, r and s values. Are present to encode full structure.
@@ -26,7 +26,7 @@ export class Serialization {
       fromHex(normalizeHex(gasLimitHex)),
       fromHex(normalizeHex(recipientHex)),
       fromHex(normalizeHex(valueHex)),
-      fromHex(normalizeHex(dataHex)),
+      data,
       fromHex(normalizeHex(chainIdHex)),
       new Uint8Array([]),
       new Uint8Array([]),
@@ -67,21 +67,20 @@ export class Serialization {
           gasPriceHex,
           gasLimitHex,
           unsigned.contractAddress,
-          "0x",
-          "0x" + Encoding.toHex(erc20TransferCall),
+          "0x", // ETH value
+          erc20TransferCall,
           chainIdHex,
         );
       } else {
-        const valueHex = encodeQuantityString(unsigned.amount.quantity);
-        const dataHex = unsigned.memo ? "0x" + Encoding.toHex(Encoding.toUtf8(unsigned.memo)) : "0x";
         // native ETH send
+        const memoData = unsigned.memo ? Encoding.toUtf8(unsigned.memo) : new Uint8Array([]);
         return Serialization.serializeUnsignedEthSendTransaction(
           nonce,
           gasPriceHex,
           gasLimitHex,
           unsigned.recipient,
-          valueHex,
-          dataHex,
+          encodeQuantityString(unsigned.amount.quantity),
+          memoData,
           chainIdHex,
         );
       }
