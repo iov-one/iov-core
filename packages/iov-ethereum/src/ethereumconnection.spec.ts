@@ -146,7 +146,7 @@ describe("EthereumConnection", () => {
         erc20Tokens: testConfig.erc20Tokens,
       });
       const tokens = await connection.getAllTickers();
-      expect(tokens).toEqual(testConfig.tokens);
+      expect(tokens).toEqual(testConfig.expectedTokens);
       connection.disconnect();
     });
   });

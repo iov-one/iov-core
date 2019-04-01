@@ -60,7 +60,7 @@ export interface EthereumNetworkConfig {
     readonly gasLimitTooLow: RegExp;
   };
   readonly erc20Tokens: Map<TokenTicker, Erc20Options>;
-  readonly tokens: ReadonlyArray<BcpTicker>;
+  readonly expectedTokens: ReadonlyArray<BcpTicker>;
 }
 
 // Set environment variable ETHEREUM_NETWORK to "local" (default), "ropsten", "rinkeby"
@@ -171,7 +171,7 @@ const local: EthereumNetworkConfig = {
       },
     ],
   ]),
-  tokens: [
+  expectedTokens: [
     {
       tokenTicker: "ETH" as TokenTicker,
       tokenName: "Ether",
@@ -259,7 +259,7 @@ const ropsten: EthereumNetworkConfig = {
     gasLimitTooLow: /intrinsic gas too low/i,
   },
   erc20Tokens: new Map([]),
-  tokens: [
+  expectedTokens: [
     {
       tokenTicker: "ETH" as TokenTicker,
       tokenName: "Ether",
@@ -353,7 +353,7 @@ const rinkeby: EthereumNetworkConfig = {
   erc20Tokens: new Map<TokenTicker, Erc20Options>([
     ["WETH" as TokenTicker, { contractAddress: "0xc778417e063141139fce010982780140aa0cd5ab" as Address }],
   ]),
-  tokens: [
+  expectedTokens: [
     {
       tokenTicker: "ETH" as TokenTicker,
       tokenName: "Ether",
