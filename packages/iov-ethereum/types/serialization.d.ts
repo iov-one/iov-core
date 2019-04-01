@@ -1,6 +1,6 @@
 import { Nonce, SignedTransaction, UnsignedTransaction } from "@iov/bcp";
 export declare class Serialization {
-    static serializeUnsignedEthSendTransaction(nonce: Nonce, gasPriceHex: string, gasLimitHex: string, recipientHex: string, valueHex: string, data: Uint8Array, chainIdHex: string): Uint8Array;
+    static serializeGenericTransaction(nonce: Nonce, gasPriceHex: string, gasLimitHex: string, recipientHex: string, valueHex: string, data: Uint8Array, v: string, r?: Uint8Array, s?: Uint8Array): Uint8Array;
     static serializeUnsignedTransaction(unsigned: UnsignedTransaction, nonce: Nonce): Uint8Array;
     static serializeSignedTransaction(signed: SignedTransaction): Uint8Array;
     /**

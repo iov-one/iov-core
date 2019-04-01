@@ -10,14 +10,16 @@ import { encodeQuantity, encodeQuantityString, fromBcpChainId, normalizeHex } fr
 const { fromHex } = Encoding;
 
 export class Serialization {
-  public static serializeUnsignedEthSendTransaction(
+  public static serializeGenericTransaction(
     nonce: Nonce,
     gasPriceHex: string,
     gasLimitHex: string,
     recipientHex: string,
     valueHex: string,
     data: Uint8Array,
-    chainIdHex: string,
+    v: string,
+    r?: Uint8Array,
+    s?: Uint8Array,
   ): Uint8Array {
     // Last 3 items are v, r and s values. Are present to encode full structure.
     return toRlp([
@@ -27,9 +29,9 @@ export class Serialization {
       fromHex(normalizeHex(recipientHex)),
       fromHex(normalizeHex(valueHex)),
       data,
-      fromHex(normalizeHex(chainIdHex)),
-      new Uint8Array([]),
-      new Uint8Array([]),
+      fromHex(normalizeHex(v)),
+      r || new Uint8Array([]),
+      s || new Uint8Array([]),
     ]);
   }
 
@@ -62,7 +64,7 @@ export class Serialization {
           ...Abi.encodeUint256(unsigned.amount.quantity),
         ]);
 
-        return Serialization.serializeUnsignedEthSendTransaction(
+        return Serialization.serializeGenericTransaction(
           nonce,
           gasPriceHex,
           gasLimitHex,
@@ -74,7 +76,7 @@ export class Serialization {
       } else {
         // native ETH send
         const memoData = unsigned.memo ? Encoding.toUtf8(unsigned.memo) : new Uint8Array([]);
-        return Serialization.serializeUnsignedEthSendTransaction(
+        return Serialization.serializeGenericTransaction(
           nonce,
           gasPriceHex,
           gasLimitHex,
@@ -95,7 +97,6 @@ export class Serialization {
     if (isSendTransaction(unsigned)) {
       let gasPriceHex = "0x";
       let gasLimitHex = "0x";
-      let dataHex = "0x";
 
       const valueHex = encodeQuantityString(unsigned.amount.quantity);
       if (unsigned.fee && unsigned.fee.gasPrice) {
@@ -104,13 +105,12 @@ export class Serialization {
       if (unsigned.fee && unsigned.fee.gasLimit) {
         gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit.quantity);
       }
-      if (unsigned.memo) {
-        dataHex += Encoding.toHex(Encoding.toUtf8(unsigned.memo));
-      }
+
+      const data = Encoding.toUtf8(unsigned.memo || "");
+
       if (!isValidAddress(unsigned.recipient)) {
         throw new Error("Invalid recipient address");
       }
-      const encodedNonce = Serialization.encodeNonce(signed.primarySignature.nonce);
       const sig = ExtendedSecp256k1Signature.fromFixedLength(signed.primarySignature.signature);
       const r = sig.r();
       const s = sig.s();
@@ -120,18 +120,17 @@ export class Serialization {
           ? { forkState: BlknumForkState.Forked, chainId: chainId }
           : { forkState: BlknumForkState.Before };
       const v = eip155V(chain, sig.recovery);
-      const postableTx = toRlp([
-        encodedNonce,
-        fromHex(normalizeHex(gasPriceHex)),
-        fromHex(normalizeHex(gasLimitHex)),
-        fromHex(normalizeHex(unsigned.recipient)),
-        fromHex(normalizeHex(valueHex)),
-        fromHex(normalizeHex(dataHex)),
-        fromHex(normalizeHex(encodeQuantity(v))),
+      return Serialization.serializeGenericTransaction(
+        signed.primarySignature.nonce,
+        gasPriceHex,
+        gasLimitHex,
+        unsigned.recipient,
+        valueHex,
+        data,
+        encodeQuantity(v),
         r,
         s,
-      ]);
-      return postableTx;
+      );
     } else {
       throw new Error("Unsupported kind of transaction");
     }

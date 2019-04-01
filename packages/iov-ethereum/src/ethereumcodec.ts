@@ -59,7 +59,7 @@ export const ethereumCodec: TxCodec = {
     const signature = new ExtendedSecp256k1Signature(r, s, recoveryParam);
     const signatureBytes = signature.toFixedLength() as SignatureBytes;
 
-    const message = Serialization.serializeUnsignedEthSendTransaction(
+    const message = Serialization.serializeGenericTransaction(
       nonce,
       json.gasPrice,
       json.gas,
