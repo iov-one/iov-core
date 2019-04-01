@@ -58,7 +58,7 @@ class Actor {
     const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic));
     const signer = new MultiChainSigner(profile);
 
-    const bnsConnection = (await signer.addChain(bnsConnector("ws://localhost:22345"))).connection;
+    const bnsConnection = (await signer.addChain(bnsConnector("ws://localhost:23456"))).connection;
     const bcpConnection = (await signer.addChain(bnsConnector("ws://localhost:23457"))).connection;
 
     const bnsIdentity = await profile.createIdentity(wallet.id, bnsConnection.chainId(), hdPath);

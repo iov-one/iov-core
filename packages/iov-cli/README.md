@@ -45,7 +45,7 @@ $ iov-cli
 ```
 > const profile = new UserProfile();
 > const signer = new MultiChainSigner(profile);
-> const { connection } = await signer.addChain(bnsConnector("ws://localhost:22345"));
+> const { connection } = await signer.addChain(bnsConnector("ws://localhost:23456"));
 > const chainId = connection.chainId();
 
 > chainId
