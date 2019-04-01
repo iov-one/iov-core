@@ -2,6 +2,7 @@ import { isSendTransaction, Nonce, SignedTransaction, UnsignedTransaction } from
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 
+import { Abi } from "./abi";
 import { isValidAddress } from "./address";
 import { BlknumForkState, Eip155ChainId, eip155V, toRlp } from "./encoding";
 import { encodeQuantity, encodeQuantityString, fromBcpChainId, normalizeHex } from "./utils";
@@ -35,7 +36,6 @@ export class Serialization {
   public static serializeUnsignedTransaction(unsigned: UnsignedTransaction, nonce: Nonce): Uint8Array {
     if (isSendTransaction(unsigned)) {
       const chainIdHex = encodeQuantity(fromBcpChainId(unsigned.creator.chainId));
-      const valueHex = encodeQuantityString(unsigned.amount.quantity);
       if (!unsigned.fee || !unsigned.fee.gasPrice) {
         throw new Error("fee.gasPrice must be set");
       }
@@ -44,21 +44,47 @@ export class Serialization {
         throw new Error("fee.gasLimit must be set");
       }
       const gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit.quantity);
-      const dataHex = unsigned.memo ? "0x" + Encoding.toHex(Encoding.toUtf8(unsigned.memo)) : "0x";
 
       if (!isValidAddress(unsigned.recipient)) {
         throw new Error("Invalid recipient address");
       }
 
-      return Serialization.serializeUnsignedEthSendTransaction(
-        nonce,
-        gasPriceHex,
-        gasLimitHex,
-        unsigned.recipient,
-        valueHex,
-        dataHex,
-        chainIdHex,
-      );
+      if (unsigned.contractAddress) {
+        if (unsigned.memo) {
+          throw new Error("Memo cannot be serialized in a smart contract based token transfer.");
+        }
+
+        // we assume that all send transactions with contract address set are ERC20 compatible
+
+        const erc20TransferCall = new Uint8Array([
+          ...Abi.calculateMethodId("transfer(address,uint256)"),
+          ...Abi.encodeAddress(unsigned.recipient),
+          ...Abi.encodeUint256(unsigned.amount.quantity),
+        ]);
+
+        return Serialization.serializeUnsignedEthSendTransaction(
+          nonce,
+          gasPriceHex,
+          gasLimitHex,
+          unsigned.contractAddress,
+          "0x",
+          "0x" + Encoding.toHex(erc20TransferCall),
+          chainIdHex,
+        );
+      } else {
+        const valueHex = encodeQuantityString(unsigned.amount.quantity);
+        const dataHex = unsigned.memo ? "0x" + Encoding.toHex(Encoding.toUtf8(unsigned.memo)) : "0x";
+        // native ETH send
+        return Serialization.serializeUnsignedEthSendTransaction(
+          nonce,
+          gasPriceHex,
+          gasLimitHex,
+          unsigned.recipient,
+          valueHex,
+          dataHex,
+          chainIdHex,
+        );
+      }
     } else {
       throw new Error("Unsupported kind of transaction");
     }
