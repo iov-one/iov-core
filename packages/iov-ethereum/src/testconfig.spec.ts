@@ -402,7 +402,22 @@ const rinkeby: EthereumNetworkConfig = {
       },
     ],
   ]),
-  erc20TransferTests: [],
+  erc20TransferTests: [
+    {
+      amount: {
+        quantity: "123",
+        tokenTicker: "AVO" as TokenTicker,
+        fractionalDigits: 18,
+      },
+    },
+    {
+      amount: {
+        quantity: "456",
+        tokenTicker: "WETH" as TokenTicker,
+        fractionalDigits: 18,
+      },
+    },
+  ],
   expectedTokens: [
     {
       tokenTicker: "ETH" as TokenTicker,
