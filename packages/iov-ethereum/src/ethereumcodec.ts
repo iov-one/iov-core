@@ -32,6 +32,28 @@ import {
   normalizeHex,
 } from "./utils";
 
+/**
+ * See https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash
+ *
+ * This interface is package-internal.
+ */
+export interface EthereumRpcTransactionResult {
+  readonly blockHash: string;
+  readonly blockNumber: string;
+  readonly from: string;
+  readonly gas: string;
+  readonly gasPrice: string;
+  readonly hash: string;
+  readonly input: string;
+  readonly nonce: string;
+  readonly r: string;
+  readonly s: string;
+  readonly to: string;
+  readonly transactionIndex: string;
+  readonly v: string;
+  readonly value: string;
+}
+
 export const ethereumCodec: TxCodec = {
   bytesToSign: (unsigned: UnsignedTransaction, nonce: Nonce): SigningJob => {
     return {
@@ -46,8 +68,9 @@ export const ethereumCodec: TxCodec = {
     throw new Error(`Not implemented tx: ${signed}`);
   },
   parseBytes: (bytes: PostableBytes, chainId: ChainId): SignedTransaction => {
-    const json = JSON.parse(Encoding.fromUtf8(bytes));
+    const json: EthereumRpcTransactionResult = JSON.parse(Encoding.fromUtf8(bytes));
     const nonce = decodeHexQuantityNonce(json.nonce);
+    const input = Encoding.fromHex(normalizeHex(json.input));
     const chain: Eip155ChainId = {
       forkState: BlknumForkState.Forked,
       chainId: fromBcpChainId(chainId),
@@ -63,9 +86,9 @@ export const ethereumCodec: TxCodec = {
       nonce,
       json.gasPrice,
       json.gas,
-      json.to,
+      json.to as Address,
       json.value,
-      json.input,
+      input,
       encodeQuantity(chain.chainId),
     );
     const messageHash = new Keccak256(message).digest();
@@ -94,7 +117,7 @@ export const ethereumCodec: TxCodec = {
         tokenTicker: constants.primaryTokenTicker,
       },
       recipient: toChecksummedAddress(json.to),
-      memo: Encoding.fromUtf8(Encoding.fromHex(normalizeHex(json.input))),
+      memo: Encoding.fromUtf8(input),
     };
 
     return {

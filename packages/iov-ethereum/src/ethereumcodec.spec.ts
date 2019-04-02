@@ -11,14 +11,15 @@ import {
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
-import { ethereumCodec } from "./ethereumcodec";
+import { ethereumCodec, EthereumRpcTransactionResult } from "./ethereumcodec";
 
 const { fromHex } = Encoding;
 
 describe("ethereumCodec", () => {
   describe("parseBytes", () => {
     it("works", () => {
-      const rawGetTransactionByHashResult = {
+      // curl -sS -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["0x3b87faa3410f33284124a6898fac1001673f0f7c3682d18f55bdff0031cce9ce"],"id":1}' https://rinkeby.infura.io | jq
+      const rawGetTransactionByHashResult: EthereumRpcTransactionResult = {
         blockHash: "0x05ebd1bd99956537f49cfa1104682b3b3f9ff9249fa41a09931ce93368606c21",
         blockNumber: "0x37ef3e",
         from: "0x0a65766695a712af41b5cfecaad217b1a11cb22a",
