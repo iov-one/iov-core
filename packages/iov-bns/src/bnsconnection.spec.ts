@@ -1587,14 +1587,14 @@ describe("BnsConnection", () => {
     expect(swapState.kind).toEqual(SwapState.Open);
 
     // and it matches expectations
-    const stateDate = swapState.data;
-    expect(stateDate.id).toEqual(txResult);
-    expect(stateDate.sender).toEqual(faucetAddr);
-    expect(stateDate.recipient).toEqual(recipientAddr);
-    expect(stateDate.timeout).toEqual(swapOfferTimeout);
-    expect(stateDate.amounts.length).toEqual(1);
-    expect(stateDate.amounts[0]).toEqual(amount);
-    expect(stateDate.hash).toEqual(swapOfferHash);
+    const stateData = swapState.data;
+    expect(stateData.id).toEqual(txResult);
+    expect(stateData.sender).toEqual(faucetAddr);
+    expect(stateData.recipient).toEqual(recipientAddr);
+    expect(stateData.timeout).toEqual(swapOfferTimeout);
+    expect(stateData.amounts.length).toEqual(1);
+    expect(stateData.amounts[0]).toEqual(amount);
+    expect(stateData.hash).toEqual(swapOfferHash);
 
     connection.disconnect();
   });
