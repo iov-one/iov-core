@@ -500,9 +500,8 @@ describe("EthereumConnection", () => {
         expect(result).toBeTruthy();
         expect(result.log).toBeUndefined();
 
-        // TODO: reactivate when parsing works
-        // const blockInfo = await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        // expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+        const blockInfo = await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
         const recipientAccount = await connection.getAccount({ address: recipientAddress });
         const erc20Balance = recipientAccount!.balance.find(
