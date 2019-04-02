@@ -26,7 +26,7 @@ import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 
 import { pubkeyToAddress } from "./address";
-import { ethereumCodec } from "./ethereumcodec";
+import { ethereumCodec, EthereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
 import { testConfig } from "./testconfig.spec";
 
@@ -65,7 +65,6 @@ async function randomAddress(): Promise<Address> {
 }
 
 describe("EthereumConnection", () => {
-  const defaultMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
   const defaultAmount: Amount = {
     quantity: "445500",
     fractionalDigits: 18,
@@ -146,7 +145,7 @@ describe("EthereumConnection", () => {
         erc20Tokens: testConfig.erc20Tokens,
       });
       const tokens = await connection.getAllTickers();
-      expect(tokens).toEqual(testConfig.tokens);
+      expect(tokens).toEqual(testConfig.expectedTokens);
       connection.disconnect();
     });
   });
@@ -290,7 +289,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
       const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
       const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
@@ -325,7 +324,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
       const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
       const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
@@ -372,7 +371,7 @@ describe("EthereumConnection", () => {
       const connection = await EthereumConnection.establish(testConfig.base);
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
       const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
       const sendTx: SendTransaction = {
@@ -406,7 +405,7 @@ describe("EthereumConnection", () => {
       const connection = await EthereumConnection.establish(testConfig.base);
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
       const brokeIdentity = await profile.createIdentity(
         wallet.id,
         testConfig.chainId,
@@ -439,7 +438,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
       const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
       const sendTx: SendTransaction = {
@@ -465,6 +464,57 @@ describe("EthereumConnection", () => {
         .postTx(ethereumCodec.bytesToPost(signed))
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(testConfig.expectedErrorMessages.invalidSignature));
+
+      connection.disconnect();
+    }, 30_000);
+
+    it("can send ERC20 tokens", async () => {
+      pendingWithoutEthereum();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
+      const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
+
+      const connection = await EthereumConnection.establish(testConfig.base, {
+        erc20Tokens: testConfig.erc20Tokens,
+      });
+
+      const codec = new EthereumCodec({
+        erc20Tokens: testConfig.erc20Tokens,
+      });
+
+      for (const transferTest of testConfig.erc20TransferTests) {
+        const recipientAddress = await randomAddress();
+
+        const sendTx: SendTransaction = {
+          kind: "bcp/send",
+          creator: mainIdentity,
+          recipient: recipientAddress,
+          fee: {
+            gasPrice: testConfig.gasPrice,
+            gasLimit: testConfig.gasLimit,
+          },
+          ...transferTest,
+        };
+        const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
+        const signed = await profile.signTransaction(sendTx, codec, nonce);
+        const bytesToPost = codec.bytesToPost(signed);
+
+        const result = await connection.postTx(bytesToPost);
+        expect(result).toBeTruthy();
+        expect(result.log).toBeUndefined();
+
+        const blockInfo = await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+
+        const recipientAccount = await connection.getAccount({ address: recipientAddress });
+        const erc20Balance = recipientAccount!.balance.find(
+          entry => entry.tokenTicker === transferTest.amount.tokenTicker,
+        );
+        expect(erc20Balance!.quantity).toEqual(transferTest.amount.quantity);
+        expect(erc20Balance!.fractionalDigits).toEqual(transferTest.amount.fractionalDigits);
+        expect(erc20Balance!.tokenTicker).toEqual(transferTest.amount.tokenTicker);
+      }
 
       connection.disconnect();
     }, 30_000);
@@ -506,7 +556,7 @@ describe("EthereumConnection", () => {
 
         // post transactions
         const profile = new UserProfile();
-        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
         const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
         const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
         await postTransaction(profile, mainIdentity, nonce, recipient, connection);
@@ -540,7 +590,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
       const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
       const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
@@ -617,7 +667,7 @@ describe("EthereumConnection", () => {
       });
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
       const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
       const recipientAddress = await randomAddress();
@@ -784,7 +834,7 @@ describe("EthereumConnection", () => {
         // send transactions
 
         const profile = new UserProfile();
-        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
         const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
 
         const sendA: SendTransaction = {
@@ -863,7 +913,7 @@ describe("EthereumConnection", () => {
         // send transactions
 
         const profile = new UserProfile();
-        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
         const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
 
         const sendA: SendTransaction = {
@@ -966,7 +1016,7 @@ describe("EthereumConnection", () => {
         });
 
         const profile = new UserProfile();
-        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
         const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
 
         const recipientAddress = await randomAddress();
@@ -1030,7 +1080,7 @@ describe("EthereumConnection", () => {
         // send transactions
 
         const profile = new UserProfile();
-        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
         const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
 
         const send: SendTransaction = {
@@ -1134,7 +1184,7 @@ describe("EthereumConnection", () => {
 
         // post transactions
         const profile = new UserProfile();
-        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
         const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
         const [nonceA, nonceB] = await connection.getNonces({ pubkey: mainIdentity.pubkey }, 2);

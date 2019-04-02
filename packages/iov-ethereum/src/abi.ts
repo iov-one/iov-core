@@ -28,6 +28,29 @@ export class Abi {
     return Abi.padTo32(addressBytes);
   }
 
+  public static encodeUint256(value: string): Uint8Array {
+    if (!value.match(/^[0-9]+$/)) {
+      throw new Error("Invalid string format");
+    }
+    const numericValue = new BN(value, 10);
+    return numericValue.toArrayLike(Uint8Array, "be", 32);
+  }
+
+  public static decodeAddress(binary: Uint8Array): Address {
+    if (binary.length !== 32) {
+      throw new Error("Input data not 256 bit long");
+    }
+    const lowBytes = binary.slice(12);
+    return `0x${Encoding.toHex(lowBytes)}` as Address;
+  }
+
+  public static decodeUint256(binary: Uint8Array): string {
+    if (binary.length !== 32) {
+      throw new Error("Input data not 256 bit long");
+    }
+    return new BN(binary).toString();
+  }
+
   /**
    * Decode head-tail encoded data as described in
    * https://medium.com/@hayeah/how-to-decipher-a-smart-contract-method-call-8ee980311603
