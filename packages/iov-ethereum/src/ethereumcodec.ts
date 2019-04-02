@@ -25,6 +25,7 @@ import { Abi } from "./abi";
 import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, getRecoveryParam } from "./encoding";
+import { Erc20Options } from "./erc20";
 import { Serialization } from "./serialization";
 import {
   decodeHexQuantity,
@@ -59,20 +60,31 @@ export interface EthereumRpcTransactionResult {
   readonly value: string;
 }
 
-export const ethereumCodec: TxCodec = {
-  bytesToSign: (unsigned: UnsignedTransaction, nonce: Nonce): SigningJob => {
+export interface EthereumCodecOptions {
+  /** List of supported ERC20 tokens */
+  readonly erc20Tokens?: Map<TokenTicker, Erc20Options>;
+}
+
+export class EthereumCodec implements TxCodec {
+  // tslint:disable-next-line: no-empty
+  constructor(_1: EthereumCodecOptions) {}
+
+  public bytesToSign(unsigned: UnsignedTransaction, nonce: Nonce): SigningJob {
     return {
       bytes: Serialization.serializeUnsignedTransaction(unsigned, nonce) as SignableBytes,
       prehashType: PrehashType.Keccak256,
     };
-  },
-  bytesToPost: (signed: SignedTransaction): PostableBytes => {
+  }
+
+  public bytesToPost(signed: SignedTransaction): PostableBytes {
     return Serialization.serializeSignedTransaction(signed) as PostableBytes;
-  },
-  identifier: (signed: SignedTransaction): TransactionId => {
+  }
+
+  public identifier(signed: SignedTransaction): TransactionId {
     throw new Error(`Not implemented tx: ${signed}`);
-  },
-  parseBytes: (bytes: PostableBytes, chainId: ChainId): SignedTransaction => {
+  }
+
+  public parseBytes(bytes: PostableBytes, chainId: ChainId): SignedTransaction {
     const json: EthereumRpcTransactionResult = JSON.parse(Encoding.fromUtf8(bytes));
     const nonce = decodeHexQuantityNonce(json.nonce);
     const value = decodeHexQuantityString(json.value);
@@ -163,9 +175,16 @@ export const ethereumCodec: TxCodec = {
       },
       otherSignatures: [],
     };
-  },
-  identityToAddress: (identity: PublicIdentity): Address => {
+  }
+
+  public identityToAddress(identity: PublicIdentity): Address {
     return pubkeyToAddress(identity.pubkey);
-  },
-  isValidAddress: isValidAddress,
-};
+  }
+
+  public isValidAddress(address: string): boolean {
+    return isValidAddress(address);
+  }
+}
+
+/** An unconfigured EthereumCodec for backwards compatibility */
+export const ethereumCodec = new EthereumCodec({});
