@@ -165,6 +165,15 @@ export class EthereumCodec implements TxCodec {
         memo: undefined,
       };
     } else {
+      let memo: string;
+      try {
+        memo = Encoding.fromUtf8(input);
+      } catch {
+        const hexstring = Encoding.toHex(input);
+        // split in space separated chunks up to 16 characters each
+        memo = (hexstring.match(/.{1,16}/g) || []).join(" ");
+      }
+
       send = {
         kind: "bcp/send",
         creator: creator,
@@ -175,7 +184,7 @@ export class EthereumCodec implements TxCodec {
           tokenTicker: constants.primaryTokenTicker,
         },
         recipient: toChecksummedAddress(json.to),
-        memo: Encoding.fromUtf8(input),
+        memo: memo,
       };
     }
 
