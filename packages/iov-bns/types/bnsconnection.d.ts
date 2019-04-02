@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { Account, AccountQuery, AddressQuery, AtomicSwap, AtomicSwapQuery, BcpAtomicSwapConnection, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, UnsignedTransaction } from "@iov/bcp";
+import { Account, AccountQuery, AddressQuery, Amount, AtomicSwap, AtomicSwapQuery, BcpAtomicSwapConnection, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, UnsignedTransaction } from "@iov/bcp";
 import { BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
  * Talks directly to the BNS blockchain and exposes the
@@ -73,6 +73,15 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;
     protected query(path: string, data: Uint8Array): Promise<QueryResponse>;
     protected updateEscrowBalance<T extends AtomicSwap>(escrow: T): Promise<T>;
+    /**
+     * Queries the blockchain for the enforced minimum anti-spam fee
+     */
+    protected getMinimumFee(): Promise<Amount>;
+    /**
+     * Queries the blockchain for the enforced product fee for this kind of transaction.
+     * Returns undefined if no product fee is defined
+     */
+    protected getProductFee(kind: string): Promise<Amount | undefined>;
 }
 export interface QueryResponse {
     readonly height?: number;
