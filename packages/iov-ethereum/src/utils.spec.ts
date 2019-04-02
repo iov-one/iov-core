@@ -1,5 +1,7 @@
 import { ChainId, Nonce } from "@iov/bcp";
+import { Encoding } from "@iov/encoding";
 
+import { Abi } from "./abi";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
@@ -8,8 +10,11 @@ import {
   encodeQuantityString,
   fromBcpChainId,
   normalizeHex,
+  shouldBeInterpretedAsErc20Transfer,
   toBcpChainId,
 } from "./utils";
+
+const { fromHex } = Encoding;
 
 describe("Ethereum utils", () => {
   describe("decodeHexQuantity", () => {
@@ -206,6 +211,46 @@ describe("Ethereum utils", () => {
       expect(() => fromBcpChainId("ethereum-eip155-1.1" as ChainId)).toThrowError(
         /Invalid format of EIP155 chain ID/i,
       );
+    });
+  });
+
+  describe("shouldBeInterpretedAsErc20Transfer", () => {
+    // https://rinkeby.etherscan.io/tx/0x5c3cda91447e749c6133ad26ab93a95dfb8d5e4a899e324a5cc74f5e19780c96
+    const erc20Input = fromHex(
+      "a9059cbb0000000000000000000000003b8a67ad64160e0b977b6dd877e0fb98878ab9020000000000000000000000003b8a67ad64160e0b977b6dd877e0fb98878ab902",
+    );
+
+    it("should work for ERC20 transfers", () => {
+      const ethValue = "0";
+      expect(shouldBeInterpretedAsErc20Transfer(erc20Input, ethValue)).toEqual(true);
+    });
+
+    it("should return false when ETH value is non-zero", () => {
+      const ethValue = "1";
+      expect(shouldBeInterpretedAsErc20Transfer(erc20Input, ethValue)).toEqual(false);
+    });
+
+    it("should return false for input other than 68 bytes", () => {
+      {
+        // 67 bytes
+        const input = erc20Input.slice(0, -1);
+        const ethValue = "0";
+        expect(shouldBeInterpretedAsErc20Transfer(input, ethValue)).toEqual(false);
+      }
+      {
+        // 69 bytes
+        const input = new Uint8Array([...erc20Input, 0x00]);
+        const ethValue = "0";
+        expect(shouldBeInterpretedAsErc20Transfer(input, ethValue)).toEqual(false);
+      }
+    });
+
+    it("should return false for other signature than transfer(address,uint256)", () => {
+      const otherMethodId = Abi.calculateMethodId("depositTokens(address,uint256)");
+
+      const input = new Uint8Array([...otherMethodId, ...erc20Input.slice(4)]);
+      const ethValue = "0";
+      expect(shouldBeInterpretedAsErc20Transfer(input, ethValue)).toEqual(false);
     });
   });
 });
