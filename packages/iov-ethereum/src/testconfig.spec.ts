@@ -65,7 +65,7 @@ export interface EthereumNetworkConfig {
     readonly invalidSignature: RegExp;
     readonly gasLimitTooLow: RegExp;
   };
-  readonly erc20Tokens: Map<TokenTicker, Erc20Options>;
+  readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
   readonly erc20TransferTests: ReadonlyArray<Erc20TransferTest>;
   readonly expectedTokens: ReadonlyArray<BcpTicker>;
 }

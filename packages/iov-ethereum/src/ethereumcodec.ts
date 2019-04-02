@@ -65,11 +65,11 @@ export interface EthereumCodecOptions {
    *
    * The behaviour of encoding/decoding transactions for other tokens is undefined.
    */
-  readonly erc20Tokens?: Map<TokenTicker, Erc20Options>;
+  readonly erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>;
 }
 
 export class EthereumCodec implements TxCodec {
-  private readonly erc20Tokens: Map<TokenTicker, Erc20Options>;
+  private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
 
   constructor(options: EthereumCodecOptions) {
     this.erc20Tokens = options.erc20Tokens ? options.erc20Tokens : new Map();
