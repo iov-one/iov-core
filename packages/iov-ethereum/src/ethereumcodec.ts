@@ -41,6 +41,7 @@ export interface EthereumRpcTransactionResult {
   readonly blockHash: string;
   readonly blockNumber: string;
   readonly from: string;
+  /** Gas limit as set by the user */
   readonly gas: string;
   readonly gasPrice: string;
   readonly hash: string;
@@ -104,9 +105,13 @@ export const ethereumCodec: TxCodec = {
         },
       },
       fee: {
-        // TODO: Make this make sense
-        tokens: {
+        gasLimit: {
           quantity: decodeHexQuantityString(json.gas),
+          fractionalDigits: constants.primaryTokenFractionalDigits,
+          tokenTicker: constants.primaryTokenTicker,
+        },
+        gasPrice: {
+          quantity: decodeHexQuantityString(json.gasPrice),
           fractionalDigits: constants.primaryTokenFractionalDigits,
           tokenTicker: constants.primaryTokenTicker,
         },

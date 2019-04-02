@@ -8,6 +8,7 @@ export interface EthereumRpcTransactionResult {
     readonly blockHash: string;
     readonly blockNumber: string;
     readonly from: string;
+    /** Gas limit as set by the user */
     readonly gas: string;
     readonly gasPrice: string;
     readonly hash: string;

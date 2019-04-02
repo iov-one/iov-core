@@ -51,9 +51,13 @@ describe("ethereumCodec", () => {
             },
           },
           fee: {
-            // TODO: Make this make sense
-            tokens: {
+            gasLimit: {
               quantity: "141000",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
+            gasPrice: {
+              quantity: "1000000000",
               fractionalDigits: 18,
               tokenTicker: "ETH" as TokenTicker,
             },

@@ -6,6 +6,7 @@
   contract based tokens
 - @iov/ethereum: Allow querying of ERC20 token balances
 - @iov/ethereum: Implement `getFeeQuote` method on `EthereumConnection`.
+- @iov/ethereum: Fix transaction fee parsing for transactions from RPC/scraper.
 - @iov/dpos: Let `Serialization.serializeTransaction` accept transactions with
   fee set.
 
