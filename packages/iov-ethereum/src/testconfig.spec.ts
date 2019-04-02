@@ -17,7 +17,6 @@ import { Erc20Options } from "./erc20";
 const { fromHex } = Encoding;
 
 export interface Erc20TransferTest {
-  readonly contractAddress: Address;
   readonly amount: Amount;
 }
 
@@ -183,7 +182,6 @@ const local: EthereumNetworkConfig = {
   ]),
   erc20TransferTests: [
     {
-      contractAddress: "0xCb642A87923580b6F7D07D1471F93361196f2650" as Address,
       amount: {
         quantity: "3",
         tokenTicker: "ASH" as TokenTicker,
@@ -191,7 +189,6 @@ const local: EthereumNetworkConfig = {
       },
     },
     {
-      contractAddress: "0xF01231195AE56d38fa03F5F2933863A2606A6052" as Address,
       amount: {
         quantity: "5678",
         tokenTicker: "TRASH" as TokenTicker,
