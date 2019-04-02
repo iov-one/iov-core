@@ -2,6 +2,7 @@ import {
   Address,
   Algorithm,
   ChainId,
+  Fee,
   Nonce,
   PostableBytes,
   PrehashType,
@@ -12,6 +13,7 @@ import {
   SignatureBytes,
   SignedTransaction,
   SigningJob,
+  TokenTicker,
   TransactionId,
   TxCodec,
   UnsignedTransaction,
@@ -19,6 +21,7 @@ import {
 import { ExtendedSecp256k1Signature, Keccak256, Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
+import { Abi } from "./abi";
 import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, getRecoveryParam } from "./encoding";
@@ -30,6 +33,7 @@ import {
   encodeQuantity,
   fromBcpChainId,
   normalizeHex,
+  shouldBeInterpretedAsErc20Transfer,
 } from "./utils";
 
 /**
@@ -95,36 +99,57 @@ export const ethereumCodec: TxCodec = {
     );
     const messageHash = new Keccak256(message).digest();
     const signerPubkey = Secp256k1.recoverPubkey(signature, messageHash) as PublicKeyBytes;
-
-    const send: SendTransaction = {
-      kind: "bcp/send",
-      creator: {
-        chainId: chainId,
-        pubkey: {
-          algo: Algorithm.Secp256k1,
-          data: signerPubkey,
-        },
+    const creator = {
+      chainId: chainId,
+      pubkey: {
+        algo: Algorithm.Secp256k1,
+        data: signerPubkey,
       },
-      fee: {
-        gasLimit: {
-          quantity: decodeHexQuantityString(json.gas),
-          fractionalDigits: constants.primaryTokenFractionalDigits,
-          tokenTicker: constants.primaryTokenTicker,
-        },
-        gasPrice: {
-          quantity: decodeHexQuantityString(json.gasPrice),
-          fractionalDigits: constants.primaryTokenFractionalDigits,
-          tokenTicker: constants.primaryTokenTicker,
-        },
-      },
-      amount: {
-        quantity: decodeHexQuantityString(json.value),
+    };
+    const fee: Fee = {
+      gasLimit: {
+        quantity: decodeHexQuantityString(json.gas),
         fractionalDigits: constants.primaryTokenFractionalDigits,
         tokenTicker: constants.primaryTokenTicker,
       },
-      recipient: toChecksummedAddress(json.to),
-      memo: Encoding.fromUtf8(input),
+      gasPrice: {
+        quantity: decodeHexQuantityString(json.gasPrice),
+        fractionalDigits: constants.primaryTokenFractionalDigits,
+        tokenTicker: constants.primaryTokenTicker,
+      },
     };
+
+    let send: SendTransaction;
+    if (shouldBeInterpretedAsErc20Transfer(input, decodeHexQuantityString(json.value))) {
+      const quantity = Abi.decodeUint256(input.slice(4 + 32, 4 + 32 + 32));
+      send = {
+        kind: "bcp/send",
+        creator: creator,
+        fee: fee,
+        amount: {
+          quantity: quantity,
+          // TODO: improve architecture (information not available)
+          fractionalDigits: 18,
+          tokenTicker: "TKN" as TokenTicker,
+        },
+        recipient: toChecksummedAddress(Abi.decodeAddress(input.slice(4, 4 + 32))),
+        memo: undefined,
+        contractAddress: toChecksummedAddress(json.to),
+      };
+    } else {
+      send = {
+        kind: "bcp/send",
+        creator: creator,
+        fee: fee,
+        amount: {
+          quantity: decodeHexQuantityString(json.value),
+          fractionalDigits: constants.primaryTokenFractionalDigits,
+          tokenTicker: constants.primaryTokenTicker,
+        },
+        recipient: toChecksummedAddress(json.to),
+        memo: Encoding.fromUtf8(input),
+      };
+    }
 
     return {
       transaction: send,
