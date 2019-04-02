@@ -27,6 +27,7 @@ export interface EthereumNetworkConfig {
   readonly wsUrl: string;
   readonly chainId: ChainId;
   readonly minHeight: number;
+  readonly mnemonic: string;
   readonly accountStates: {
     /** An account with ETH and ERC20 balance */
     readonly default: {
@@ -78,6 +79,7 @@ const local: EthereumNetworkConfig = {
   wsUrl: "ws://localhost:8545/ws",
   chainId: "ethereum-eip155-5777" as ChainId,
   minHeight: 0, // ganache does not auto-generate a genesis block
+  mnemonic: "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
   accountStates: {
     default: {
       pubkey: {
@@ -221,6 +223,7 @@ const ropsten: EthereumNetworkConfig = {
   wsUrl: "wss://ropsten.infura.io/ws",
   chainId: "ethereum-eip155-3" as ChainId,
   minHeight: 4284887,
+  mnemonic: "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
   accountStates: {
     default: {
       pubkey: {
@@ -299,6 +302,7 @@ const rinkeby: EthereumNetworkConfig = {
   wsUrl: "wss://rinkeby.infura.io/ws",
   chainId: "ethereum-eip155-4" as ChainId,
   minHeight: 3211058,
+  mnemonic: "retire bench island cushion panther noodle cactus keep danger assault home letter",
   accountStates: {
     default: {
       // Second account (m/44'/60'/0'/0/1) of
