@@ -36,7 +36,7 @@ import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { pubkeyToAddress } from "./address";
 import { constants } from "./constants";
 import { Erc20, Erc20Options } from "./erc20";
-import { ethereumCodec } from "./ethereumcodec";
+import { EthereumCodec } from "./ethereumcodec";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { Parse } from "./parse";
 import {
@@ -91,6 +91,7 @@ export class EthereumConnection implements BcpConnection {
   private readonly socket: StreamingSocket | undefined;
   private readonly scraperApiUrl: string | undefined;
   private readonly erc20Tokens = new Map<TokenTicker, Erc20>();
+  private readonly codec: EthereumCodec;
 
   constructor(baseUrl: string, chainId: ChainId, options?: EthereumConnectionOptions) {
     this.rpcClient = new HttpJsonRpcClient(baseUrl);
@@ -129,6 +130,10 @@ export class EthereumConnection implements BcpConnection {
         }
       }
     }
+
+    this.codec = new EthereumCodec({
+      erc20Tokens: options ? options.erc20Tokens : undefined,
+    });
   }
 
   public disconnect(): void {
@@ -662,12 +667,8 @@ export class EthereumConnection implements BcpConnection {
 
     const currentHeight = await this.height();
     const confirmations = currentHeight - transactionHeight + 1;
-    const transactionJson = {
-      ...transactionsResponse.result,
-      type: 0,
-    };
-    const transaction = ethereumCodec.parseBytes(
-      Encoding.toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
+    const transaction = this.codec.parseBytes(
+      Encoding.toUtf8(JSON.stringify(transactionsResponse.result)) as PostableBytes,
       this.myChainId,
     );
     const transactionId = `0x${normalizeHex(transactionsResponse.result.hash)}` as TransactionId;

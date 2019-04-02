@@ -2,6 +2,7 @@ import {
   Address,
   Algorithm,
   ChainId,
+  Fee,
   Nonce,
   PostableBytes,
   PrehashType,
@@ -12,6 +13,7 @@ import {
   SignatureBytes,
   SignedTransaction,
   SigningJob,
+  TokenTicker,
   TransactionId,
   TxCodec,
   UnsignedTransaction,
@@ -19,9 +21,11 @@ import {
 import { ExtendedSecp256k1Signature, Keccak256, Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
+import { Abi } from "./abi";
 import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, getRecoveryParam } from "./encoding";
+import { Erc20Options } from "./erc20";
 import { Serialization } from "./serialization";
 import {
   decodeHexQuantity,
@@ -30,24 +34,68 @@ import {
   encodeQuantity,
   fromBcpChainId,
   normalizeHex,
+  shouldBeInterpretedAsErc20Transfer,
 } from "./utils";
 
-export const ethereumCodec: TxCodec = {
-  bytesToSign: (unsigned: UnsignedTransaction, nonce: Nonce): SigningJob => {
+/**
+ * See https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash
+ *
+ * This interface is package-internal.
+ */
+export interface EthereumRpcTransactionResult {
+  readonly blockHash: string;
+  readonly blockNumber: string;
+  readonly from: string;
+  /** Gas limit as set by the user */
+  readonly gas: string;
+  readonly gasPrice: string;
+  readonly hash: string;
+  readonly input: string;
+  readonly nonce: string;
+  readonly r: string;
+  readonly s: string;
+  readonly to: string;
+  readonly transactionIndex: string;
+  readonly v: string;
+  readonly value: string;
+}
+
+export interface EthereumCodecOptions {
+  /**
+   * ERC20 tokens supported by the codec instance.
+   *
+   * The behaviour of encoding/decoding transactions for other tokens is undefined.
+   */
+  readonly erc20Tokens?: Map<TokenTicker, Erc20Options>;
+}
+
+export class EthereumCodec implements TxCodec {
+  private readonly erc20Tokens: Map<TokenTicker, Erc20Options>;
+
+  constructor(options: EthereumCodecOptions) {
+    this.erc20Tokens = options.erc20Tokens ? options.erc20Tokens : new Map();
+  }
+
+  public bytesToSign(unsigned: UnsignedTransaction, nonce: Nonce): SigningJob {
     return {
-      bytes: Serialization.serializeUnsignedTransaction(unsigned, nonce) as SignableBytes,
+      bytes: Serialization.serializeUnsignedTransaction(unsigned, nonce, this.erc20Tokens) as SignableBytes,
       prehashType: PrehashType.Keccak256,
     };
-  },
-  bytesToPost: (signed: SignedTransaction): PostableBytes => {
-    return Serialization.serializeSignedTransaction(signed) as PostableBytes;
-  },
-  identifier: (signed: SignedTransaction): TransactionId => {
+  }
+
+  public bytesToPost(signed: SignedTransaction): PostableBytes {
+    return Serialization.serializeSignedTransaction(signed, this.erc20Tokens) as PostableBytes;
+  }
+
+  public identifier(signed: SignedTransaction): TransactionId {
     throw new Error(`Not implemented tx: ${signed}`);
-  },
-  parseBytes: (bytes: PostableBytes, chainId: ChainId): SignedTransaction => {
-    const json = JSON.parse(Encoding.fromUtf8(bytes));
+  }
+
+  public parseBytes(bytes: PostableBytes, chainId: ChainId): SignedTransaction {
+    const json: EthereumRpcTransactionResult = JSON.parse(Encoding.fromUtf8(bytes));
     const nonce = decodeHexQuantityNonce(json.nonce);
+    const value = decodeHexQuantityString(json.value);
+    const input = Encoding.fromHex(normalizeHex(json.input));
     const chain: Eip155ChainId = {
       forkState: BlknumForkState.Forked,
       chainId: fromBcpChainId(chainId),
@@ -59,54 +107,84 @@ export const ethereumCodec: TxCodec = {
     const signature = new ExtendedSecp256k1Signature(r, s, recoveryParam);
     const signatureBytes = signature.toFixedLength() as SignatureBytes;
 
-    const message = Serialization.serializeUnsignedEthSendTransaction(
+    const message = Serialization.serializeGenericTransaction(
       nonce,
       json.gasPrice,
       json.gas,
-      json.to,
-      json.value,
-      json.input,
+      json.to as Address,
+      value,
+      input,
       encodeQuantity(chain.chainId),
     );
     const messageHash = new Keccak256(message).digest();
     const signerPubkey = Secp256k1.recoverPubkey(signature, messageHash) as PublicKeyBytes;
+    const creator = {
+      chainId: chainId,
+      pubkey: {
+        algo: Algorithm.Secp256k1,
+        data: signerPubkey,
+      },
+    };
+    const fee: Fee = {
+      gasLimit: {
+        quantity: decodeHexQuantityString(json.gas),
+        fractionalDigits: constants.primaryTokenFractionalDigits,
+        tokenTicker: constants.primaryTokenTicker,
+      },
+      gasPrice: {
+        quantity: decodeHexQuantityString(json.gasPrice),
+        fractionalDigits: constants.primaryTokenFractionalDigits,
+        tokenTicker: constants.primaryTokenTicker,
+      },
+    };
 
-    let unsignedTransaction: SendTransaction;
-    switch (json.type) {
-      case 0:
-        const send: SendTransaction = {
-          kind: "bcp/send",
-          creator: {
-            chainId: chainId,
-            pubkey: {
-              algo: Algorithm.Secp256k1,
-              data: signerPubkey,
-            },
-          },
-          fee: {
-            // TODO: Make this make sense
-            tokens: {
-              quantity: decodeHexQuantityString(json.gas),
-              fractionalDigits: constants.primaryTokenFractionalDigits,
-              tokenTicker: constants.primaryTokenTicker,
-            },
-          },
-          amount: {
-            quantity: decodeHexQuantityString(json.value),
-            fractionalDigits: constants.primaryTokenFractionalDigits,
-            tokenTicker: constants.primaryTokenTicker,
-          },
-          recipient: toChecksummedAddress(json.to),
-          memo: Encoding.fromUtf8(Encoding.fromHex(normalizeHex(json.input))),
-        };
-        unsignedTransaction = send;
-        break;
-      default:
-        throw new Error("Unsupported transaction type");
+    let send: SendTransaction;
+    if (shouldBeInterpretedAsErc20Transfer(input, decodeHexQuantityString(json.value))) {
+      const positionTransferMethodEnd = 4;
+      const positionTransferRecipientBegin = positionTransferMethodEnd;
+      const positionTransferRecipientEnd = positionTransferRecipientBegin + 32;
+      const positionTransferAmountBegin = positionTransferRecipientEnd;
+      const positionTransferAmountEnd = positionTransferRecipientEnd + 32;
+
+      const contractAddress = toChecksummedAddress(json.to);
+      const erc20Token = [...this.erc20Tokens.values()].find(
+        options => options.contractAddress.toLowerCase() === contractAddress.toLowerCase(),
+      );
+      if (!erc20Token) {
+        throw new Error(`No token configured for contract address ${contractAddress}`);
+      }
+      const quantity = Abi.decodeUint256(input.slice(positionTransferAmountBegin, positionTransferAmountEnd));
+      send = {
+        kind: "bcp/send",
+        creator: creator,
+        fee: fee,
+        amount: {
+          quantity: quantity,
+          fractionalDigits: erc20Token.decimals,
+          tokenTicker: erc20Token.symbol as TokenTicker,
+        },
+        recipient: toChecksummedAddress(
+          Abi.decodeAddress(input.slice(positionTransferRecipientBegin, positionTransferRecipientEnd)),
+        ),
+        memo: undefined,
+      };
+    } else {
+      send = {
+        kind: "bcp/send",
+        creator: creator,
+        fee: fee,
+        amount: {
+          quantity: decodeHexQuantityString(json.value),
+          fractionalDigits: constants.primaryTokenFractionalDigits,
+          tokenTicker: constants.primaryTokenTicker,
+        },
+        recipient: toChecksummedAddress(json.to),
+        memo: Encoding.fromUtf8(input),
+      };
     }
 
     return {
-      transaction: unsignedTransaction,
+      transaction: send,
       primarySignature: {
         nonce: nonce,
         pubkey: {
@@ -117,9 +195,16 @@ export const ethereumCodec: TxCodec = {
       },
       otherSignatures: [],
     };
-  },
-  identityToAddress: (identity: PublicIdentity): Address => {
+  }
+
+  public identityToAddress(identity: PublicIdentity): Address {
     return pubkeyToAddress(identity.pubkey);
-  },
-  isValidAddress: isValidAddress,
-};
+  }
+
+  public isValidAddress(address: string): boolean {
+    return isValidAddress(address);
+  }
+}
+
+/** An unconfigured EthereumCodec for backwards compatibility */
+export const ethereumCodec = new EthereumCodec({});

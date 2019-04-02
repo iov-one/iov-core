@@ -12,6 +12,7 @@ const ganacheGasPrice = 50000;
 // From README.md
 const mainIdentity = Address.fromString("0x88F3b5659075D0E06bB1004BE7b1a7E66F452284");
 const secondIdentity = Address.fromString("0x0A65766695A712Af41B5cfECAaD217B1a11CB22A");
+const noEthAddress = Address.fromString("0x0000000000111111111122222222223333333333");
 
 function debugAddress(address: Address | undefined): string | undefined {
   return address ? address.toString() : undefined;
@@ -27,6 +28,7 @@ interface DeploymentJob {
 }
 
 interface MintingJob {
+  readonly contract: DeployableContract;
   readonly recipient: Address;
   readonly quantity: string;
 }
@@ -36,6 +38,8 @@ export async function main(args: ReadonlyArray<string>): Promise<void> {
 
   const provider = new WebsocketProvider(ganacheUrl);
   const eth = new Eth(provider);
+
+  const mintingJobs = new Array<MintingJob>();
 
   // Order matters to get reproducible contract addresses
   const deploymentJobs: ReadonlyArray<DeploymentJob> = [
@@ -53,18 +57,20 @@ export async function main(args: ReadonlyArray<string>): Promise<void> {
     console.log(`${name} deployed to`, debugAddress(receipt.contractAddress));
 
     if (typeof contract.methods.mint !== "undefined") {
-      const mintingJobs: ReadonlyArray<MintingJob> = [
-        { recipient: secondIdentity, quantity: "33445566" },
-        { recipient: Address.fromString("0x0000000000111111111122222222223333333333"), quantity: "38" },
-      ];
-
-      for (const { recipient, quantity } of mintingJobs) {
-        console.log(`Minting ${quantity} atomic units for ${recipient} ...`);
-        await contract.methods
-          .mint(recipient, quantity)
-          .send({ from: mainIdentity, gasPrice: ganacheGasPrice })
-          .getReceipt();
-      }
+      mintingJobs.push(
+        { contract: contract, recipient: mainIdentity, quantity: "100000000" /* 100 million atomics */ },
+        { contract: contract, recipient: secondIdentity, quantity: "33445566" },
+        { contract: contract, recipient: noEthAddress, quantity: "38" },
+      );
     }
+  }
+
+  // Perform minting jobs after all deployments so that deployment nonces stay constant
+  for (const { contract, recipient, quantity } of mintingJobs) {
+    console.log(`Minting ${quantity} atomic units for ${recipient} ...`);
+    await contract.methods
+      .mint(recipient, quantity)
+      .send({ from: mainIdentity, gasPrice: ganacheGasPrice })
+      .getReceipt();
   }
 }

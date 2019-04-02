@@ -1,41 +1,62 @@
-import { isSendTransaction, Nonce, SignedTransaction, UnsignedTransaction } from "@iov/bcp";
+import BN = require("bn.js");
+
+import {
+  Address,
+  isSendTransaction,
+  Nonce,
+  SignedTransaction,
+  TokenTicker,
+  UnsignedTransaction,
+} from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 
+import { Abi } from "./abi";
 import { isValidAddress } from "./address";
+import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, eip155V, toRlp } from "./encoding";
+import { Erc20Options } from "./erc20";
 import { encodeQuantity, encodeQuantityString, fromBcpChainId, normalizeHex } from "./utils";
 
 const { fromHex } = Encoding;
 
 export class Serialization {
-  public static serializeUnsignedEthSendTransaction(
+  public static serializeGenericTransaction(
     nonce: Nonce,
     gasPriceHex: string,
     gasLimitHex: string,
-    recipientHex: string,
-    valueHex: string,
-    dataHex: string,
-    chainIdHex: string,
+    recipient: Address,
+    value: string,
+    data: Uint8Array,
+    v: string,
+    r?: Uint8Array,
+    s?: Uint8Array,
   ): Uint8Array {
+    if (!isValidAddress(recipient)) {
+      throw new Error("Invalid recipient address");
+    }
+
     // Last 3 items are v, r and s values. Are present to encode full structure.
     return toRlp([
       Serialization.encodeNonce(nonce),
       fromHex(normalizeHex(gasPriceHex)),
       fromHex(normalizeHex(gasLimitHex)),
-      fromHex(normalizeHex(recipientHex)),
-      fromHex(normalizeHex(valueHex)),
-      fromHex(normalizeHex(dataHex)),
-      fromHex(normalizeHex(chainIdHex)),
-      new Uint8Array([]),
-      new Uint8Array([]),
+      fromHex(normalizeHex(recipient)),
+      Serialization.encodeValue(value),
+      data,
+      fromHex(normalizeHex(v)),
+      r || new Uint8Array([]),
+      s || new Uint8Array([]),
     ]);
   }
 
-  public static serializeUnsignedTransaction(unsigned: UnsignedTransaction, nonce: Nonce): Uint8Array {
+  public static serializeUnsignedTransaction(
+    unsigned: UnsignedTransaction,
+    nonce: Nonce,
+    erc20Tokens: Map<TokenTicker, Erc20Options> = new Map(),
+  ): Uint8Array {
     if (isSendTransaction(unsigned)) {
       const chainIdHex = encodeQuantity(fromBcpChainId(unsigned.creator.chainId));
-      const valueHex = encodeQuantityString(unsigned.amount.quantity);
       if (!unsigned.fee || !unsigned.fee.gasPrice) {
         throw new Error("fee.gasPrice must be set");
       }
@@ -44,48 +65,74 @@ export class Serialization {
         throw new Error("fee.gasLimit must be set");
       }
       const gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit.quantity);
-      const dataHex = unsigned.memo ? "0x" + Encoding.toHex(Encoding.toUtf8(unsigned.memo)) : "0x";
 
       if (!isValidAddress(unsigned.recipient)) {
         throw new Error("Invalid recipient address");
       }
 
-      return Serialization.serializeUnsignedEthSendTransaction(
-        nonce,
-        gasPriceHex,
-        gasLimitHex,
-        unsigned.recipient,
-        valueHex,
-        dataHex,
-        chainIdHex,
-      );
+      if (unsigned.amount.tokenTicker !== constants.primaryTokenTicker) {
+        if (unsigned.memo) {
+          throw new Error("Memo cannot be serialized in a smart contract based token transfer.");
+        }
+
+        const erc20Token = erc20Tokens.get(unsigned.amount.tokenTicker);
+        if (!erc20Token) {
+          throw new Error(`No ERC 20 token configured for ticker ${unsigned.amount.tokenTicker}`);
+        }
+
+        const erc20TransferCall = new Uint8Array([
+          ...Abi.calculateMethodId("transfer(address,uint256)"),
+          ...Abi.encodeAddress(unsigned.recipient),
+          ...Abi.encodeUint256(unsigned.amount.quantity),
+        ]);
+
+        return Serialization.serializeGenericTransaction(
+          nonce,
+          gasPriceHex,
+          gasLimitHex,
+          erc20Token.contractAddress,
+          "0", // ETH value
+          erc20TransferCall,
+          chainIdHex,
+        );
+      } else {
+        // native ETH send
+        const memoData = unsigned.memo ? Encoding.toUtf8(unsigned.memo) : new Uint8Array([]);
+        return Serialization.serializeGenericTransaction(
+          nonce,
+          gasPriceHex,
+          gasLimitHex,
+          unsigned.recipient,
+          unsigned.amount.quantity,
+          memoData,
+          chainIdHex,
+        );
+      }
     } else {
       throw new Error("Unsupported kind of transaction");
     }
   }
 
-  public static serializeSignedTransaction(signed: SignedTransaction): Uint8Array {
+  public static serializeSignedTransaction(
+    signed: SignedTransaction,
+    erc20Tokens: Map<TokenTicker, Erc20Options> = new Map(),
+  ): Uint8Array {
     const unsigned = signed.transaction;
 
     if (isSendTransaction(unsigned)) {
-      let gasPriceHex = "0x";
-      let gasLimitHex = "0x";
-      let dataHex = "0x";
+      if (!unsigned.fee || !unsigned.fee.gasPrice) {
+        throw new Error("fee.gasPrice must be set");
+      }
+      const gasPriceHex = encodeQuantityString(unsigned.fee.gasPrice.quantity);
+      if (!unsigned.fee.gasLimit) {
+        throw new Error("fee.gasLimit must be set");
+      }
+      const gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit.quantity);
 
-      const valueHex = encodeQuantityString(unsigned.amount.quantity);
-      if (unsigned.fee && unsigned.fee.gasPrice) {
-        gasPriceHex = encodeQuantityString(unsigned.fee.gasPrice.quantity);
-      }
-      if (unsigned.fee && unsigned.fee.gasLimit) {
-        gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit.quantity);
-      }
-      if (unsigned.memo) {
-        dataHex += Encoding.toHex(Encoding.toUtf8(unsigned.memo));
-      }
       if (!isValidAddress(unsigned.recipient)) {
         throw new Error("Invalid recipient address");
       }
-      const encodedNonce = Serialization.encodeNonce(signed.primarySignature.nonce);
+
       const sig = ExtendedSecp256k1Signature.fromFixedLength(signed.primarySignature.signature);
       const r = sig.r();
       const s = sig.s();
@@ -95,18 +142,48 @@ export class Serialization {
           ? { forkState: BlknumForkState.Forked, chainId: chainId }
           : { forkState: BlknumForkState.Before };
       const v = eip155V(chain, sig.recovery);
-      const postableTx = toRlp([
-        encodedNonce,
-        fromHex(normalizeHex(gasPriceHex)),
-        fromHex(normalizeHex(gasLimitHex)),
-        fromHex(normalizeHex(unsigned.recipient)),
-        fromHex(normalizeHex(valueHex)),
-        fromHex(normalizeHex(dataHex)),
-        fromHex(normalizeHex(encodeQuantity(v))),
-        r,
-        s,
-      ]);
-      return postableTx;
+
+      if (unsigned.amount.tokenTicker !== constants.primaryTokenTicker) {
+        if (unsigned.memo) {
+          throw new Error("Memo cannot be serialized in a smart contract based token transfer.");
+        }
+
+        const erc20Token = erc20Tokens.get(unsigned.amount.tokenTicker);
+        if (!erc20Token) {
+          throw new Error(`No ERC 20 token configured for ticker ${unsigned.amount.tokenTicker}`);
+        }
+
+        const erc20TransferCall = new Uint8Array([
+          ...Abi.calculateMethodId("transfer(address,uint256)"),
+          ...Abi.encodeAddress(unsigned.recipient),
+          ...Abi.encodeUint256(unsigned.amount.quantity),
+        ]);
+
+        return Serialization.serializeGenericTransaction(
+          signed.primarySignature.nonce,
+          gasPriceHex,
+          gasLimitHex,
+          erc20Token.contractAddress,
+          "0", // ETH value
+          erc20TransferCall,
+          encodeQuantity(v),
+          r,
+          s,
+        );
+      } else {
+        const data = Encoding.toUtf8(unsigned.memo || "");
+        return Serialization.serializeGenericTransaction(
+          signed.primarySignature.nonce,
+          gasPriceHex,
+          gasLimitHex,
+          unsigned.recipient,
+          unsigned.amount.quantity,
+          data,
+          encodeQuantity(v),
+          r,
+          s,
+        );
+      }
     } else {
       throw new Error("Unsupported kind of transaction");
     }
@@ -122,6 +199,22 @@ export class Serialization {
       return new Uint8Array([]);
     } else {
       return fromHex(normalizeHex(encodeQuantity(checkedNonce.toNumber())));
+    }
+  }
+
+  /**
+   * Value 0 must be represented as 0x instead of 0x0 for some strange reason
+   */
+  private static encodeValue(value: string): Uint8Array {
+    if (!value.match(/^[0-9]+$/)) {
+      throw new Error("Invalid string format");
+    }
+    const numericValue = new BN(value, 10);
+
+    if (numericValue.isZero()) {
+      return new Uint8Array([]);
+    } else {
+      return numericValue.toArrayLike(Uint8Array, "be");
     }
   }
 }

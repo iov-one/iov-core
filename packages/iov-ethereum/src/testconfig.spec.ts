@@ -16,12 +16,18 @@ import { Erc20Options } from "./erc20";
 
 const { fromHex } = Encoding;
 
+export interface Erc20TransferTest {
+  readonly contractAddress: Address;
+  readonly amount: Amount;
+}
+
 export interface EthereumNetworkConfig {
   readonly env: string;
   readonly base: string;
   readonly wsUrl: string;
   readonly chainId: ChainId;
   readonly minHeight: number;
+  readonly mnemonic: string;
   readonly accountStates: {
     /** An account with ETH and ERC20 balance */
     readonly default: {
@@ -60,7 +66,8 @@ export interface EthereumNetworkConfig {
     readonly gasLimitTooLow: RegExp;
   };
   readonly erc20Tokens: Map<TokenTicker, Erc20Options>;
-  readonly tokens: ReadonlyArray<BcpTicker>;
+  readonly erc20TransferTests: ReadonlyArray<Erc20TransferTest>;
+  readonly expectedTokens: ReadonlyArray<BcpTicker>;
 }
 
 // Set environment variable ETHEREUM_NETWORK to "local" (default), "ropsten", "rinkeby"
@@ -72,6 +79,7 @@ const local: EthereumNetworkConfig = {
   wsUrl: "ws://localhost:8545/ws",
   chainId: "ethereum-eip155-5777" as ChainId,
   minHeight: 0, // ganache does not auto-generate a genesis block
+  mnemonic: "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
   accountStates: {
     default: {
       pubkey: {
@@ -159,19 +167,39 @@ const local: EthereumNetworkConfig = {
       "ASH" as TokenTicker,
       {
         contractAddress: "0xCb642A87923580b6F7D07D1471F93361196f2650" as Address,
+        decimals: 12,
+        symbol: "ASH",
       },
     ],
     [
       "TRASH" as TokenTicker,
       {
-        contractAddress: "0x9768ae2339B48643d710B11dDbDb8A7eDBEa15BC" as Address,
+        contractAddress: "0xF01231195AE56d38fa03F5F2933863A2606A6052" as Address,
         decimals: 9,
         symbol: "TRASH",
         name: "Trash Token",
       },
     ],
   ]),
-  tokens: [
+  erc20TransferTests: [
+    {
+      contractAddress: "0xCb642A87923580b6F7D07D1471F93361196f2650" as Address,
+      amount: {
+        quantity: "3",
+        tokenTicker: "ASH" as TokenTicker,
+        fractionalDigits: 12,
+      },
+    },
+    {
+      contractAddress: "0xF01231195AE56d38fa03F5F2933863A2606A6052" as Address,
+      amount: {
+        quantity: "5678",
+        tokenTicker: "TRASH" as TokenTicker,
+        fractionalDigits: 9,
+      },
+    },
+  ],
+  expectedTokens: [
     {
       tokenTicker: "ETH" as TokenTicker,
       tokenName: "Ether",
@@ -197,6 +225,7 @@ const ropsten: EthereumNetworkConfig = {
   wsUrl: "wss://ropsten.infura.io/ws",
   chainId: "ethereum-eip155-3" as ChainId,
   minHeight: 4284887,
+  mnemonic: "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
   accountStates: {
     default: {
       pubkey: {
@@ -259,7 +288,8 @@ const ropsten: EthereumNetworkConfig = {
     gasLimitTooLow: /intrinsic gas too low/i,
   },
   erc20Tokens: new Map([]),
-  tokens: [
+  erc20TransferTests: [],
+  expectedTokens: [
     {
       tokenTicker: "ETH" as TokenTicker,
       tokenName: "Ether",
@@ -274,6 +304,7 @@ const rinkeby: EthereumNetworkConfig = {
   wsUrl: "wss://rinkeby.infura.io/ws",
   chainId: "ethereum-eip155-4" as ChainId,
   minHeight: 3211058,
+  mnemonic: "retire bench island cushion panther noodle cactus keep danger assault home letter",
   accountStates: {
     default: {
       // Second account (m/44'/60'/0'/0/1) of
@@ -351,9 +382,17 @@ const rinkeby: EthereumNetworkConfig = {
     gasLimitTooLow: /intrinsic gas too low/i,
   },
   erc20Tokens: new Map<TokenTicker, Erc20Options>([
-    ["WETH" as TokenTicker, { contractAddress: "0xc778417e063141139fce010982780140aa0cd5ab" as Address }],
+    [
+      "WETH" as TokenTicker,
+      {
+        contractAddress: "0xc778417e063141139fce010982780140aa0cd5ab" as Address,
+        decimals: 18,
+        symbol: "WETH" as TokenTicker,
+      },
+    ],
   ]),
-  tokens: [
+  erc20TransferTests: [],
+  expectedTokens: [
     {
       tokenTicker: "ETH" as TokenTicker,
       tokenName: "Ether",

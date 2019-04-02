@@ -14,6 +14,7 @@ import {
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
+import { Erc20Options } from "./erc20";
 import { Serialization } from "./serialization";
 
 const { serializeSignedTransaction, serializeUnsignedTransaction } = Serialization;
@@ -205,6 +206,65 @@ describe("Serialization", () => {
         /not a unsigned safe integer/i,
       );
     });
+
+    it("can serialize ERC20 token transfer", () => {
+      // https://etherscan.io/getRawTx?tx=0x5d08a3cda172df9520f965549b4d7fc4b32baa026e8beff5293ba90c845c93b2
+      // 266151.44240739 HOT from 0xc023d0f30ef630db4f4be6219608d6bcf99684f0 to 0x8fec1c262599f4169401ff48a9d63503ceaaf742
+      const tx: SendTransaction = {
+        kind: "bcp/send",
+        creator: {
+          chainId: "ethereum-eip155-1" as ChainId,
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: fromHex("") as PublicKeyBytes,
+          },
+        },
+        amount: {
+          quantity: "266151442407390000000000",
+          fractionalDigits: 18,
+          tokenTicker: "HOT" as TokenTicker,
+        },
+        fee: {
+          gasPrice: {
+            quantity: "6000000000", // 6 Gwei
+            fractionalDigits: 18,
+            tokenTicker: "ETH" as TokenTicker,
+          },
+          gasLimit: {
+            quantity: "52669",
+            fractionalDigits: 18,
+            tokenTicker: "ETH" as TokenTicker,
+          },
+        },
+        recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
+      };
+      const nonce = 26 as Nonce;
+
+      const expected = fromHex(
+        // full length of list
+        "f869" +
+          // content from getRawTx with signatures stripped off
+          "1a850165a0bc0082cdbd946c6ee5e31d828de241282b9606c8e98ea48526e280b844a9059cbb0000000000000000000000008fec1c262599f4169401ff48a9d63503ceaaf74200000000000000000000000000000000000000000000385c193e12be6d312c00" +
+          // chain ID = 1
+          "01" +
+          // zero length r
+          "80" +
+          // zero length s
+          "80",
+      );
+      const erc20Tokens = new Map<TokenTicker, Erc20Options>([
+        [
+          "HOT" as TokenTicker,
+          {
+            contractAddress: "0x6c6ee5e31d828de241282b9606c8e98ea48526e2" as Address,
+            symbol: "HOT" as TokenTicker,
+            decimals: 18,
+          },
+        ],
+      ]);
+      const serializedTx = serializeUnsignedTransaction(tx, nonce, erc20Tokens);
+      expect(serializedTx).toEqual(expected);
+    });
   });
 
   describe("serializeSignedTransaction", () => {
@@ -263,6 +323,70 @@ describe("Serialization", () => {
           "f85f800182520894095e7baea6a6c7c4c2dfeb977efac326af552d870a801ba048b55bfa915ac795c431978d8a6a992b628d557da5ff759b307d495a36649353a01fffd310ac743f371de3b9f7f9cb56c0b28ad43601b4ab949f53faa07bd2c804",
         ),
       );
+    });
+
+    it("can serialize ERC20 token transfer", () => {
+      // https://etherscan.io/getRawTx?tx=0x5d08a3cda172df9520f965549b4d7fc4b32baa026e8beff5293ba90c845c93b2
+      // 266151.44240739 HOT from 0xc023d0f30ef630db4f4be6219608d6bcf99684f0 to 0x8fec1c262599f4169401ff48a9d63503ceaaf742
+      const signed: SignedTransaction<SendTransaction> = {
+        transaction: {
+          kind: "bcp/send",
+          creator: {
+            chainId: "ethereum-eip155-1" as ChainId,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: fromHex("") as PublicKeyBytes,
+            },
+          },
+          amount: {
+            quantity: "266151442407390000000000",
+            fractionalDigits: 18,
+            tokenTicker: "HOT" as TokenTicker,
+          },
+          fee: {
+            gasPrice: {
+              quantity: "6000000000", // 6 Gwei
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
+            gasLimit: {
+              quantity: "52669",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
+          },
+          recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
+        },
+        primarySignature: {
+          nonce: 26 as Nonce,
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
+          },
+          signature: new ExtendedSecp256k1Signature(
+            fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
+            fromHex("443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d"),
+            0,
+          ).toFixedLength() as SignatureBytes,
+        },
+        otherSignatures: [],
+      };
+      const expected = fromHex(
+        "f8a91a850165a0bc0082cdbd946c6ee5e31d828de241282b9606c8e98ea48526e280b844a9059cbb0000000000000000000000008fec1c262599f4169401ff48a9d63503ceaaf74200000000000000000000000000000000000000000000385c193e12be6d312c0025a06a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37a0443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d",
+      );
+
+      const erc20Tokens = new Map<TokenTicker, Erc20Options>([
+        [
+          "HOT" as TokenTicker,
+          {
+            contractAddress: "0x6c6ee5e31d828de241282b9606c8e98ea48526e2" as Address,
+            symbol: "HOT" as TokenTicker,
+            decimals: 18,
+          },
+        ],
+      ]);
+      const serializedTx = serializeSignedTransaction(signed, erc20Tokens);
+      expect(serializedTx).toEqual(expected);
     });
   });
 });

@@ -51,9 +51,11 @@ function makeClient(baseUrl: string): EthereumRpcClient {
 describe("Erc20", () => {
   const ashToken: Erc20Options = {
     contractAddress: "0xCb642A87923580b6F7D07D1471F93361196f2650" as Address,
+    decimals: 12,
+    symbol: "ASH",
   };
   const trashToken: Erc20Options = {
-    contractAddress: "0x9768ae2339B48643d710B11dDbDb8A7eDBEa15BC" as Address,
+    contractAddress: "0xF01231195AE56d38fa03F5F2933863A2606A6052" as Address,
     decimals: 9,
     symbol: "TRASH",
     name: "Trash Token",
