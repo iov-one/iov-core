@@ -68,6 +68,14 @@ describe("Abi", () => {
       expect(Abi.encodeUint256("123456789")).toEqual(
         fromHex("00000000000000000000000000000000000000000000000000000000075bcd15"),
       );
+      // 2^255
+      expect(
+        Abi.encodeUint256("57896044618658097711785492504343953926634992332820282019728792003956564819968"),
+      ).toEqual(fromHex("8000000000000000000000000000000000000000000000000000000000000000"));
+      // 2^256-1
+      expect(
+        Abi.encodeUint256("115792089237316195423570985008687907853269984665640564039457584007913129639935"),
+      ).toEqual(fromHex("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
     });
 
     it("throws for invalid input", () => {
@@ -76,6 +84,11 @@ describe("Abi", () => {
       expect(() => Abi.encodeUint256("-1")).toThrow();
       expect(() => Abi.encodeUint256("0x1")).toThrow();
       expect(() => Abi.encodeUint256("a")).toThrow();
+
+      // too large (2^256)
+      expect(() =>
+        Abi.encodeUint256("115792089237316195423570985008687907853269984665640564039457584007913129639936"),
+      ).toThrow();
     });
   });
 
