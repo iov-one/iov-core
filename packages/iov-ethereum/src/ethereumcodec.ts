@@ -34,7 +34,6 @@ import {
   encodeQuantity,
   fromBcpChainId,
   normalizeHex,
-  shouldBeInterpretedAsErc20Transfer,
 } from "./utils";
 
 /**
@@ -138,21 +137,18 @@ export class EthereumCodec implements TxCodec {
       },
     };
 
+    const erc20Token = [...this.erc20Tokens.values()].find(
+      options => options.contractAddress.toLowerCase() === toChecksummedAddress(json.to).toLowerCase(),
+    );
+
     let send: SendTransaction;
-    if (shouldBeInterpretedAsErc20Transfer(input, decodeHexQuantityString(json.value))) {
+    if (erc20Token) {
       const positionTransferMethodEnd = 4;
       const positionTransferRecipientBegin = positionTransferMethodEnd;
       const positionTransferRecipientEnd = positionTransferRecipientBegin + 32;
       const positionTransferAmountBegin = positionTransferRecipientEnd;
       const positionTransferAmountEnd = positionTransferRecipientEnd + 32;
 
-      const contractAddress = toChecksummedAddress(json.to);
-      const erc20Token = [...this.erc20Tokens.values()].find(
-        options => options.contractAddress.toLowerCase() === contractAddress.toLowerCase(),
-      );
-      if (!erc20Token) {
-        throw new Error(`No token configured for contract address ${contractAddress}`);
-      }
       const quantity = Abi.decodeUint256(input.slice(positionTransferAmountBegin, positionTransferAmountEnd));
       send = {
         kind: "bcp/send",
