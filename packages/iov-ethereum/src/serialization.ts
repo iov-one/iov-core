@@ -1,3 +1,5 @@
+import BN = require("bn.js");
+
 import { Address, isSendTransaction, Nonce, SignedTransaction, UnsignedTransaction } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
@@ -15,7 +17,7 @@ export class Serialization {
     gasPriceHex: string,
     gasLimitHex: string,
     recipient: Address,
-    valueHex: string,
+    value: string,
     data: Uint8Array,
     v: string,
     r?: Uint8Array,
@@ -31,7 +33,7 @@ export class Serialization {
       fromHex(normalizeHex(gasPriceHex)),
       fromHex(normalizeHex(gasLimitHex)),
       fromHex(normalizeHex(recipient)),
-      fromHex(normalizeHex(valueHex)),
+      Serialization.encodeValue(value),
       data,
       fromHex(normalizeHex(v)),
       r || new Uint8Array([]),
@@ -73,7 +75,7 @@ export class Serialization {
           gasPriceHex,
           gasLimitHex,
           unsigned.contractAddress,
-          "0x", // ETH value
+          "0", // ETH value
           erc20TransferCall,
           chainIdHex,
         );
@@ -85,7 +87,7 @@ export class Serialization {
           gasPriceHex,
           gasLimitHex,
           unsigned.recipient,
-          encodeQuantityString(unsigned.amount.quantity),
+          unsigned.amount.quantity,
           memoData,
           chainIdHex,
         );
@@ -138,21 +140,20 @@ export class Serialization {
           gasPriceHex,
           gasLimitHex,
           unsigned.contractAddress,
-          "0x", // ETH value
+          "0", // ETH value
           erc20TransferCall,
           encodeQuantity(v),
           r,
           s,
         );
       } else {
-        const valueHex = encodeQuantityString(unsigned.amount.quantity);
         const data = Encoding.toUtf8(unsigned.memo || "");
         return Serialization.serializeGenericTransaction(
           signed.primarySignature.nonce,
           gasPriceHex,
           gasLimitHex,
           unsigned.recipient,
-          valueHex,
+          unsigned.amount.quantity,
           data,
           encodeQuantity(v),
           r,
@@ -174,6 +175,22 @@ export class Serialization {
       return new Uint8Array([]);
     } else {
       return fromHex(normalizeHex(encodeQuantity(checkedNonce.toNumber())));
+    }
+  }
+
+  /**
+   * Value 0 must be represented as 0x instead of 0x0 for some strange reason
+   */
+  private static encodeValue(value: string): Uint8Array {
+    if (!value.match(/^[0-9]+$/)) {
+      throw new Error("Invalid string format");
+    }
+    const numericValue = new BN(value, 10);
+
+    if (numericValue.isZero()) {
+      return new Uint8Array([]);
+    } else {
+      return numericValue.toArrayLike(Uint8Array, "be");
     }
   }
 }

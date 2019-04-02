@@ -71,6 +71,7 @@ export const ethereumCodec: TxCodec = {
   parseBytes: (bytes: PostableBytes, chainId: ChainId): SignedTransaction => {
     const json: EthereumRpcTransactionResult = JSON.parse(Encoding.fromUtf8(bytes));
     const nonce = decodeHexQuantityNonce(json.nonce);
+    const value = decodeHexQuantityString(json.value);
     const input = Encoding.fromHex(normalizeHex(json.input));
     const chain: Eip155ChainId = {
       forkState: BlknumForkState.Forked,
@@ -88,7 +89,7 @@ export const ethereumCodec: TxCodec = {
       json.gasPrice,
       json.gas,
       json.to as Address,
-      json.value,
+      value,
       input,
       encodeQuantity(chain.chainId),
     );
