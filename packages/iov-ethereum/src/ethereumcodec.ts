@@ -66,8 +66,11 @@ export interface EthereumCodecOptions {
 }
 
 export class EthereumCodec implements TxCodec {
-  // tslint:disable-next-line: no-empty
-  constructor(_1: EthereumCodecOptions) {}
+  private readonly erc20Tokens: Map<TokenTicker, Erc20Options>;
+
+  constructor(options: EthereumCodecOptions) {
+    this.erc20Tokens = options.erc20Tokens ? options.erc20Tokens : new Map();
+  }
 
   public bytesToSign(unsigned: UnsignedTransaction, nonce: Nonce): SigningJob {
     return {
@@ -133,6 +136,13 @@ export class EthereumCodec implements TxCodec {
 
     let send: SendTransaction;
     if (shouldBeInterpretedAsErc20Transfer(input, decodeHexQuantityString(json.value))) {
+      const contractAddress = toChecksummedAddress(json.to);
+      const erc20Token = [...this.erc20Tokens.values()].find(
+        options => options.contractAddress.toLowerCase() === contractAddress.toLowerCase(),
+      );
+      if (!erc20Token) {
+        throw new Error(`No token configured for contract address ${contractAddress}`);
+      }
       const quantity = Abi.decodeUint256(input.slice(4 + 32, 4 + 32 + 32));
       send = {
         kind: "bcp/send",
@@ -140,13 +150,12 @@ export class EthereumCodec implements TxCodec {
         fee: fee,
         amount: {
           quantity: quantity,
-          // TODO: improve architecture (information not available)
-          fractionalDigits: 18,
-          tokenTicker: "TKN" as TokenTicker,
+          fractionalDigits: erc20Token.decimals,
+          tokenTicker: erc20Token.symbol as TokenTicker,
         },
         recipient: toChecksummedAddress(Abi.decodeAddress(input.slice(4, 4 + 32))),
         memo: undefined,
-        contractAddress: toChecksummedAddress(json.to),
+        contractAddress: contractAddress,
       };
     } else {
       send = {

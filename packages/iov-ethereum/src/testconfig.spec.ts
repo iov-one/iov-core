@@ -167,6 +167,8 @@ const local: EthereumNetworkConfig = {
       "ASH" as TokenTicker,
       {
         contractAddress: "0xCb642A87923580b6F7D07D1471F93361196f2650" as Address,
+        decimals: 12,
+        symbol: "ASH",
       },
     ],
     [
@@ -380,7 +382,14 @@ const rinkeby: EthereumNetworkConfig = {
     gasLimitTooLow: /intrinsic gas too low/i,
   },
   erc20Tokens: new Map<TokenTicker, Erc20Options>([
-    ["WETH" as TokenTicker, { contractAddress: "0xc778417e063141139fce010982780140aa0cd5ab" as Address }],
+    [
+      "WETH" as TokenTicker,
+      {
+        contractAddress: "0xc778417e063141139fce010982780140aa0cd5ab" as Address,
+        decimals: 18,
+        symbol: "WETH" as TokenTicker,
+      },
+    ],
   ]),
   erc20TransferTests: [],
   expectedTokens: [

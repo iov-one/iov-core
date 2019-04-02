@@ -11,12 +11,12 @@ export interface EthereumRpcClient {
 
 export interface Erc20Options {
   readonly contractAddress: Address;
-  /** Override on-chain symbol. Use this of contract does not define value on-chain */
-  readonly symbol?: string;
-  /** Override on-chain name. Use this of contract does not define value on-chain */
+  /** The token ticker. Overrides the on-chain value. */
+  readonly symbol: string;
+  /** The number of fractional digits. Overrides the on-chain value. */
+  readonly decimals: number;
+  /** Override on-chain name. Use this if contract does not define value on-chain. */
   readonly name?: string;
-  /** Override on-chain decimals. Use this of contract does not define value on-chain */
-  readonly decimals?: number;
 }
 
 export class Erc20 {

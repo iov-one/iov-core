@@ -11,7 +11,8 @@ import {
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
-import { ethereumCodec, EthereumRpcTransactionResult } from "./ethereumcodec";
+import { Erc20Options } from "./erc20";
+import { EthereumCodec, ethereumCodec, EthereumRpcTransactionResult } from "./ethereumcodec";
 
 const { fromHex } = Encoding;
 
@@ -110,7 +111,19 @@ describe("ethereumCodec", () => {
       ) as PublicKeyBytes;
 
       const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
-      expect(ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-4" as ChainId)).toEqual({
+      const codec = new EthereumCodec({
+        erc20Tokens: new Map<TokenTicker, Erc20Options>([
+          [
+            "WETH" as TokenTicker,
+            {
+              contractAddress: "0xc778417e063141139fce010982780140aa0cd5ab" as Address,
+              decimals: 18,
+              symbol: "WETH" as TokenTicker,
+            },
+          ],
+        ]),
+      });
+      expect(codec.parseBytes(postableBytes, "ethereum-eip155-4" as ChainId)).toEqual({
         transaction: {
           kind: "bcp/send",
           creator: {
@@ -135,7 +148,7 @@ describe("ethereumCodec", () => {
           amount: {
             quantity: "2",
             fractionalDigits: 18,
-            tokenTicker: "TKN" as TokenTicker,
+            tokenTicker: "WETH" as TokenTicker,
           },
           recipient: "0x9ea4094Ed5D7E089ac846C7D66fc518bd24753ab" as Address,
           memo: undefined,
