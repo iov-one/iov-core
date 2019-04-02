@@ -19,7 +19,7 @@ const { fromHex } = Encoding;
 describe("ethereumCodec", () => {
   describe("parseBytes", () => {
     it("works", () => {
-      // curl -sS -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["0x3b87faa3410f33284124a6898fac1001673f0f7c3682d18f55bdff0031cce9ce"],"id":1}' https://rinkeby.infura.io | jq
+      // curl -sS -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["0x3b87faa3410f33284124a6898fac1001673f0f7c3682d18f55bdff0031cce9ce"],"id":1}' https://rinkeby.infura.io | jq .result
       const rawGetTransactionByHashResult: EthereumRpcTransactionResult = {
         blockHash: "0x05ebd1bd99956537f49cfa1104682b3b3f9ff9249fa41a09931ce93368606c21",
         blockNumber: "0x37ef3e",
