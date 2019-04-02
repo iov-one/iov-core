@@ -61,7 +61,11 @@ export interface EthereumRpcTransactionResult {
 }
 
 export interface EthereumCodecOptions {
-  /** List of supported ERC20 tokens */
+  /**
+   * ERC20 tokens supported by the codec instance.
+   *
+   * The behaviour of encoding/decoding transactions for other tokens is undefined.
+   */
   readonly erc20Tokens?: Map<TokenTicker, Erc20Options>;
 }
 
