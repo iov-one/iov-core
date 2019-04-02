@@ -517,7 +517,7 @@ describe("EthereumConnection", () => {
       }
 
       connection.disconnect();
-    }, 30_000);
+    }, 60_000);
   });
 
   describe("watchAccount", () => {

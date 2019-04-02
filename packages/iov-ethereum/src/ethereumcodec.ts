@@ -34,7 +34,6 @@ import {
   encodeQuantity,
   fromBcpChainId,
   normalizeHex,
-  shouldBeInterpretedAsErc20Transfer,
 } from "./utils";
 
 /**
@@ -66,11 +65,11 @@ export interface EthereumCodecOptions {
    *
    * The behaviour of encoding/decoding transactions for other tokens is undefined.
    */
-  readonly erc20Tokens?: Map<TokenTicker, Erc20Options>;
+  readonly erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>;
 }
 
 export class EthereumCodec implements TxCodec {
-  private readonly erc20Tokens: Map<TokenTicker, Erc20Options>;
+  private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
 
   constructor(options: EthereumCodecOptions) {
     this.erc20Tokens = options.erc20Tokens ? options.erc20Tokens : new Map();
@@ -138,21 +137,18 @@ export class EthereumCodec implements TxCodec {
       },
     };
 
+    const erc20Token = [...this.erc20Tokens.values()].find(
+      options => options.contractAddress.toLowerCase() === toChecksummedAddress(json.to).toLowerCase(),
+    );
+
     let send: SendTransaction;
-    if (shouldBeInterpretedAsErc20Transfer(input, decodeHexQuantityString(json.value))) {
+    if (erc20Token) {
       const positionTransferMethodEnd = 4;
       const positionTransferRecipientBegin = positionTransferMethodEnd;
       const positionTransferRecipientEnd = positionTransferRecipientBegin + 32;
       const positionTransferAmountBegin = positionTransferRecipientEnd;
       const positionTransferAmountEnd = positionTransferRecipientEnd + 32;
 
-      const contractAddress = toChecksummedAddress(json.to);
-      const erc20Token = [...this.erc20Tokens.values()].find(
-        options => options.contractAddress.toLowerCase() === contractAddress.toLowerCase(),
-      );
-      if (!erc20Token) {
-        throw new Error(`No token configured for contract address ${contractAddress}`);
-      }
       const quantity = Abi.decodeUint256(input.slice(positionTransferAmountBegin, positionTransferAmountEnd));
       send = {
         kind: "bcp/send",
@@ -169,6 +165,15 @@ export class EthereumCodec implements TxCodec {
         memo: undefined,
       };
     } else {
+      let memo: string;
+      try {
+        memo = Encoding.fromUtf8(input);
+      } catch {
+        const hexstring = Encoding.toHex(input);
+        // split in space separated chunks up to 16 characters each
+        memo = (hexstring.match(/.{1,16}/g) || []).join(" ");
+      }
+
       send = {
         kind: "bcp/send",
         creator: creator,
@@ -179,7 +184,7 @@ export class EthereumCodec implements TxCodec {
           tokenTicker: constants.primaryTokenTicker,
         },
         recipient: toChecksummedAddress(json.to),
-        memo: Encoding.fromUtf8(input),
+        memo: memo,
       };
     }
 
