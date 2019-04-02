@@ -65,7 +65,7 @@ export async function main(args: ReadonlyArray<string>): Promise<void> {
     }
   }
 
-  // Perform all minting jobs after all deployments to not change delployment nonces when updating minting
+  // Perform minting jobs after all deployments so that deployment nonces stay constant
   for (const { contract, recipient, quantity } of mintingJobs) {
     console.log(`Minting ${quantity} atomic units for ${recipient} ...`);
     await contract.methods
