@@ -1498,7 +1498,7 @@ describe("BnsConnection", () => {
     // now query by the txid
     const search = (await connection.searchTx({ id: transactionId })).filter(isConfirmedTransaction);
     expect(search.length).toEqual(1);
-    // make sure we get he same tx loaded
+    // make sure we get the same tx loaded
     const loaded = search[0];
     expect(loaded.transactionId).toEqual(transactionId);
     // make sure it also stored a result
