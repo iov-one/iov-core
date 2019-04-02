@@ -9,6 +9,8 @@ export declare class Abi {
     static calculateMethodId(signature: string): Uint8Array;
     static encodeAddress(address: Address): Uint8Array;
     static encodeUint256(value: string): Uint8Array;
+    static decodeAddress(binary: Uint8Array): Address;
+    static decodeUint256(binary: Uint8Array): string;
     /**
      * Decode head-tail encoded data as described in
      * https://medium.com/@hayeah/how-to-decipher-a-smart-contract-method-call-8ee980311603

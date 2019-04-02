@@ -79,6 +79,59 @@ describe("Abi", () => {
     });
   });
 
+  describe("decodeAddress", () => {
+    it("works", () => {
+      expect(
+        Abi.decodeAddress(fromHex("0000000000000000000000000000000000000000000000000000000000000000")),
+      ).toEqual("0x0000000000000000000000000000000000000000");
+      expect(
+        Abi.decodeAddress(fromHex("0000000000000000000000000000000000000000000000000000000000000001")),
+      ).toEqual("0x0000000000000000000000000000000000000001");
+      expect(
+        Abi.decodeAddress(fromHex("0000000000000000000000000000000000000000000000000000000000000002")),
+      ).toEqual("0x0000000000000000000000000000000000000002");
+      expect(
+        Abi.decodeAddress(fromHex("00000000000000000000000000000000000000000000000000000000075bcd15")),
+      ).toEqual("0x00000000000000000000000000000000075bcd15");
+      expect(
+        Abi.decodeAddress(fromHex("0000000000000000000000003b8a67ad64160e0b977b6dd877e0fb98878ab902")),
+      ).toEqual("0x3b8a67ad64160e0b977b6dd877e0fb98878ab902");
+    });
+
+    it("throws for invalid input", () => {
+      const tooShort = fromHex("00000000000000000000000000000000000000000000000000000000000000");
+      expect(() => Abi.decodeAddress(tooShort)).toThrow();
+
+      const tooLong = fromHex("000000000000000000000000000000000000000000000000000000000000000000");
+      expect(() => Abi.decodeAddress(tooLong)).toThrow();
+    });
+  });
+
+  describe("decodeUint256", () => {
+    it("works", () => {
+      expect(
+        Abi.decodeUint256(fromHex("0000000000000000000000000000000000000000000000000000000000000000")),
+      ).toEqual("0");
+      expect(
+        Abi.decodeUint256(fromHex("0000000000000000000000000000000000000000000000000000000000000001")),
+      ).toEqual("1");
+      expect(
+        Abi.decodeUint256(fromHex("0000000000000000000000000000000000000000000000000000000000000002")),
+      ).toEqual("2");
+      expect(
+        Abi.decodeUint256(fromHex("00000000000000000000000000000000000000000000000000000000075bcd15")),
+      ).toEqual("123456789");
+    });
+
+    it("throws for invalid input", () => {
+      const tooShort = fromHex("00000000000000000000000000000000000000000000000000000000000000");
+      expect(() => Abi.decodeUint256(tooShort)).toThrow();
+
+      const tooLong = fromHex("000000000000000000000000000000000000000000000000000000000000000000");
+      expect(() => Abi.decodeUint256(tooLong)).toThrow();
+    });
+  });
+
   describe("decodeHeadTail", () => {
     it("works for single string", () => {
       const data = fromHex(
