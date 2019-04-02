@@ -136,6 +136,12 @@ export class EthereumCodec implements TxCodec {
 
     let send: SendTransaction;
     if (shouldBeInterpretedAsErc20Transfer(input, decodeHexQuantityString(json.value))) {
+      const positionTransferMethodEnd = 4;
+      const positionTransferRecipientBegin = positionTransferMethodEnd;
+      const positionTransferRecipientEnd = positionTransferRecipientBegin + 32;
+      const positionTransferAmountBegin = positionTransferRecipientEnd;
+      const positionTransferAmountEnd = positionTransferRecipientEnd + 32;
+
       const contractAddress = toChecksummedAddress(json.to);
       const erc20Token = [...this.erc20Tokens.values()].find(
         options => options.contractAddress.toLowerCase() === contractAddress.toLowerCase(),
@@ -143,7 +149,7 @@ export class EthereumCodec implements TxCodec {
       if (!erc20Token) {
         throw new Error(`No token configured for contract address ${contractAddress}`);
       }
-      const quantity = Abi.decodeUint256(input.slice(4 + 32, 4 + 32 + 32));
+      const quantity = Abi.decodeUint256(input.slice(positionTransferAmountBegin, positionTransferAmountEnd));
       send = {
         kind: "bcp/send",
         creator: creator,
@@ -153,7 +159,9 @@ export class EthereumCodec implements TxCodec {
           fractionalDigits: erc20Token.decimals,
           tokenTicker: erc20Token.symbol as TokenTicker,
         },
-        recipient: toChecksummedAddress(Abi.decodeAddress(input.slice(4, 4 + 32))),
+        recipient: toChecksummedAddress(
+          Abi.decodeAddress(input.slice(positionTransferRecipientBegin, positionTransferRecipientEnd)),
+        ),
         memo: undefined,
       };
     } else {
