@@ -345,6 +345,12 @@ const rinkeby: EthereumNetworkConfig = {
           quantity: "100000000000000000",
           tokenName: "Wrapped Ether",
         },
+        {
+          tokenTicker: "AVO" as TokenTicker,
+          fractionalDigits: 18,
+          quantity: "7123400000000000000",
+          tokenName: "Avocado",
+        },
       ],
     },
     unused: {
@@ -384,7 +390,15 @@ const rinkeby: EthereumNetworkConfig = {
       {
         contractAddress: "0xc778417e063141139fce010982780140aa0cd5ab" as Address,
         decimals: 18,
-        symbol: "WETH" as TokenTicker,
+        symbol: "WETH",
+      },
+    ],
+    [
+      "AVO" as TokenTicker,
+      {
+        contractAddress: "0x0c8184c21a51cdb7df9e5dc415a6a54b3a39c991" as Address,
+        decimals: 18,
+        symbol: "AVO",
       },
     ],
   ]),
@@ -398,6 +412,11 @@ const rinkeby: EthereumNetworkConfig = {
     {
       tokenTicker: "WETH" as TokenTicker,
       tokenName: "Wrapped Ether",
+      fractionalDigits: 18,
+    },
+    {
+      tokenTicker: "AVO" as TokenTicker,
+      tokenName: "Avocado",
       fractionalDigits: 18,
     },
   ],
