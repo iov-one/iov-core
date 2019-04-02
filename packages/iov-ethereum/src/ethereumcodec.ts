@@ -74,13 +74,13 @@ export class EthereumCodec implements TxCodec {
 
   public bytesToSign(unsigned: UnsignedTransaction, nonce: Nonce): SigningJob {
     return {
-      bytes: Serialization.serializeUnsignedTransaction(unsigned, nonce) as SignableBytes,
+      bytes: Serialization.serializeUnsignedTransaction(unsigned, nonce, this.erc20Tokens) as SignableBytes,
       prehashType: PrehashType.Keccak256,
     };
   }
 
   public bytesToPost(signed: SignedTransaction): PostableBytes {
-    return Serialization.serializeSignedTransaction(signed) as PostableBytes;
+    return Serialization.serializeSignedTransaction(signed, this.erc20Tokens) as PostableBytes;
   }
 
   public identifier(signed: SignedTransaction): TransactionId {
@@ -155,7 +155,6 @@ export class EthereumCodec implements TxCodec {
         },
         recipient: toChecksummedAddress(Abi.decodeAddress(input.slice(4, 4 + 32))),
         memo: undefined,
-        contractAddress: contractAddress,
       };
     } else {
       send = {

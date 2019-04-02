@@ -136,11 +136,6 @@ export interface SendTransaction extends UnsignedTransaction {
     readonly amount: Amount;
     readonly recipient: Address;
     readonly memo?: string;
-    /**
-     * For smart-contract based token transfers, this is the address of the token contract.
-     * For native token transfers, this is undefined.
-     */
-    readonly contractAddress?: Address;
 }
 /** A swap offer or a counter offer */
 export interface SwapOfferTransaction extends UnsignedTransaction {

@@ -2,8 +2,6 @@
 
 ## 0.13.1
 
-- @iov/bcp: Add optional `SendTransaction.contractAddress` to support smart
-  contract based tokens
 - @iov/ethereum: Allow querying of ERC20 token balances
 - @iov/ethereum: Implement `getFeeQuote` method on `EthereumConnection`.
 - @iov/ethereum: Fix transaction fee parsing for transactions from RPC/scraper.

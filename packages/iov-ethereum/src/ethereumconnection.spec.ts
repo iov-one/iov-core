@@ -26,7 +26,7 @@ import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 
 import { pubkeyToAddress } from "./address";
-import { ethereumCodec } from "./ethereumcodec";
+import { ethereumCodec, EthereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
 import { testConfig } from "./testconfig.spec";
 
@@ -479,6 +479,10 @@ describe("EthereumConnection", () => {
         erc20Tokens: testConfig.erc20Tokens,
       });
 
+      const codec = new EthereumCodec({
+        erc20Tokens: testConfig.erc20Tokens,
+      });
+
       for (const transferTest of testConfig.erc20TransferTests) {
         const recipientAddress = await randomAddress();
 
@@ -493,8 +497,8 @@ describe("EthereumConnection", () => {
           ...transferTest,
         };
         const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
-        const signed = await profile.signTransaction(sendTx, ethereumCodec, nonce);
-        const bytesToPost = ethereumCodec.bytesToPost(signed);
+        const signed = await profile.signTransaction(sendTx, codec, nonce);
+        const bytesToPost = codec.bytesToPost(signed);
 
         const result = await connection.postTx(bytesToPost);
         expect(result).toBeTruthy();

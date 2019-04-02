@@ -111,18 +111,18 @@ describe("ethereumCodec", () => {
       ) as PublicKeyBytes;
 
       const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
-      const codec = new EthereumCodec({
-        erc20Tokens: new Map<TokenTicker, Erc20Options>([
-          [
-            "WETH" as TokenTicker,
-            {
-              contractAddress: "0xc778417e063141139fce010982780140aa0cd5ab" as Address,
-              decimals: 18,
-              symbol: "WETH" as TokenTicker,
-            },
-          ],
-        ]),
-      });
+
+      const erc20Tokens = new Map<TokenTicker, Erc20Options>([
+        [
+          "WETH" as TokenTicker,
+          {
+            contractAddress: "0xc778417e063141139fce010982780140aa0cd5ab" as Address,
+            decimals: 18,
+            symbol: "WETH" as TokenTicker,
+          },
+        ],
+      ]);
+      const codec = new EthereumCodec({ erc20Tokens: erc20Tokens });
       expect(codec.parseBytes(postableBytes, "ethereum-eip155-4" as ChainId)).toEqual({
         transaction: {
           kind: "bcp/send",
@@ -152,7 +152,6 @@ describe("ethereumCodec", () => {
           },
           recipient: "0x9ea4094Ed5D7E089ac846C7D66fc518bd24753ab" as Address,
           memo: undefined,
-          contractAddress: "0xc778417E063141139Fce010982780140Aa0cD5Ab" as Address,
         },
         primarySignature: {
           nonce: 1 as Nonce,

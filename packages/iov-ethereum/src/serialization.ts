@@ -1,12 +1,21 @@
 import BN = require("bn.js");
 
-import { Address, isSendTransaction, Nonce, SignedTransaction, UnsignedTransaction } from "@iov/bcp";
+import {
+  Address,
+  isSendTransaction,
+  Nonce,
+  SignedTransaction,
+  TokenTicker,
+  UnsignedTransaction,
+} from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 
 import { Abi } from "./abi";
 import { isValidAddress } from "./address";
+import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, eip155V, toRlp } from "./encoding";
+import { Erc20Options } from "./erc20";
 import { encodeQuantity, encodeQuantityString, fromBcpChainId, normalizeHex } from "./utils";
 
 const { fromHex } = Encoding;
@@ -41,7 +50,11 @@ export class Serialization {
     ]);
   }
 
-  public static serializeUnsignedTransaction(unsigned: UnsignedTransaction, nonce: Nonce): Uint8Array {
+  public static serializeUnsignedTransaction(
+    unsigned: UnsignedTransaction,
+    nonce: Nonce,
+    erc20Tokens: Map<TokenTicker, Erc20Options> = new Map(),
+  ): Uint8Array {
     if (isSendTransaction(unsigned)) {
       const chainIdHex = encodeQuantity(fromBcpChainId(unsigned.creator.chainId));
       if (!unsigned.fee || !unsigned.fee.gasPrice) {
@@ -57,12 +70,15 @@ export class Serialization {
         throw new Error("Invalid recipient address");
       }
 
-      if (unsigned.contractAddress) {
+      if (unsigned.amount.tokenTicker !== constants.primaryTokenTicker) {
         if (unsigned.memo) {
           throw new Error("Memo cannot be serialized in a smart contract based token transfer.");
         }
 
-        // we assume that all send transactions with contract address set are ERC20 compatible
+        const erc20Token = erc20Tokens.get(unsigned.amount.tokenTicker);
+        if (!erc20Token) {
+          throw new Error(`No ERC 20 token configured for ticker ${unsigned.amount.tokenTicker}`);
+        }
 
         const erc20TransferCall = new Uint8Array([
           ...Abi.calculateMethodId("transfer(address,uint256)"),
@@ -74,7 +90,7 @@ export class Serialization {
           nonce,
           gasPriceHex,
           gasLimitHex,
-          unsigned.contractAddress,
+          erc20Token.contractAddress,
           "0", // ETH value
           erc20TransferCall,
           chainIdHex,
@@ -97,7 +113,10 @@ export class Serialization {
     }
   }
 
-  public static serializeSignedTransaction(signed: SignedTransaction): Uint8Array {
+  public static serializeSignedTransaction(
+    signed: SignedTransaction,
+    erc20Tokens: Map<TokenTicker, Erc20Options> = new Map(),
+  ): Uint8Array {
     const unsigned = signed.transaction;
 
     if (isSendTransaction(unsigned)) {
@@ -124,9 +143,14 @@ export class Serialization {
           : { forkState: BlknumForkState.Before };
       const v = eip155V(chain, sig.recovery);
 
-      if (unsigned.contractAddress) {
+      if (unsigned.amount.tokenTicker !== constants.primaryTokenTicker) {
         if (unsigned.memo) {
           throw new Error("Memo cannot be serialized in a smart contract based token transfer.");
+        }
+
+        const erc20Token = erc20Tokens.get(unsigned.amount.tokenTicker);
+        if (!erc20Token) {
+          throw new Error(`No ERC 20 token configured for ticker ${unsigned.amount.tokenTicker}`);
         }
 
         const erc20TransferCall = new Uint8Array([
@@ -139,7 +163,7 @@ export class Serialization {
           signed.primarySignature.nonce,
           gasPriceHex,
           gasLimitHex,
-          unsigned.contractAddress,
+          erc20Token.contractAddress,
           "0", // ETH value
           erc20TransferCall,
           encodeQuantity(v),

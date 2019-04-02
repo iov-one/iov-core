@@ -14,6 +14,7 @@ import {
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
+import { Erc20Options } from "./erc20";
 import { Serialization } from "./serialization";
 
 const { serializeSignedTransaction, serializeUnsignedTransaction } = Serialization;
@@ -236,7 +237,6 @@ describe("Serialization", () => {
           },
         },
         recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
-        contractAddress: "0x6c6ee5e31d828de241282b9606c8e98ea48526e2" as Address,
       };
       const nonce = 26 as Nonce;
 
@@ -252,7 +252,17 @@ describe("Serialization", () => {
           // zero length s
           "80",
       );
-      const serializedTx = serializeUnsignedTransaction(tx, nonce);
+      const erc20Tokens = new Map<TokenTicker, Erc20Options>([
+        [
+          "HOT" as TokenTicker,
+          {
+            contractAddress: "0x6c6ee5e31d828de241282b9606c8e98ea48526e2" as Address,
+            symbol: "HOT" as TokenTicker,
+            decimals: 18,
+          },
+        ],
+      ]);
+      const serializedTx = serializeUnsignedTransaction(tx, nonce, erc20Tokens);
       expect(serializedTx).toEqual(expected);
     });
   });
@@ -346,7 +356,6 @@ describe("Serialization", () => {
             },
           },
           recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
-          contractAddress: "0x6c6ee5e31d828de241282b9606c8e98ea48526e2" as Address,
         },
         primarySignature: {
           nonce: 26 as Nonce,
@@ -365,7 +374,18 @@ describe("Serialization", () => {
       const expected = fromHex(
         "f8a91a850165a0bc0082cdbd946c6ee5e31d828de241282b9606c8e98ea48526e280b844a9059cbb0000000000000000000000008fec1c262599f4169401ff48a9d63503ceaaf74200000000000000000000000000000000000000000000385c193e12be6d312c0025a06a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37a0443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d",
       );
-      const serializedTx = serializeSignedTransaction(signed);
+
+      const erc20Tokens = new Map<TokenTicker, Erc20Options>([
+        [
+          "HOT" as TokenTicker,
+          {
+            contractAddress: "0x6c6ee5e31d828de241282b9606c8e98ea48526e2" as Address,
+            symbol: "HOT" as TokenTicker,
+            decimals: 18,
+          },
+        ],
+      ]);
+      const serializedTx = serializeSignedTransaction(signed, erc20Tokens);
       expect(serializedTx).toEqual(expected);
     });
   });
