@@ -3,8 +3,6 @@ import BN = require("bn.js");
 import { ChainId, Nonce } from "@iov/bcp";
 import { Uint53 } from "@iov/encoding";
 
-import { Abi } from "./abi";
-
 const bcpChainIdPrefix = "ethereum-eip155-";
 
 export function decodeHexQuantity(hexString: string): number {
@@ -74,26 +72,4 @@ export function fromBcpChainId(chainId: ChainId): number {
   }
 
   return Uint53.fromString(rest).toNumber();
-}
-
-/**
- * A function to determine if a transaction is interpreted as ERC20 transfer.
- * We can not know for sure if it was a ERC20 call without knowledge of the recipient type,
- * which is not available at the codec level.
- */
-export function shouldBeInterpretedAsErc20Transfer(input: Uint8Array, ethQuantity: string): boolean {
-  if (ethQuantity !== "0") {
-    return false;
-  }
-
-  if (input.length !== 4 + 32 + 32) {
-    return false;
-  }
-
-  const expectedPrefix = Abi.calculateMethodId("transfer(address,uint256)");
-  if (expectedPrefix.some((byte, index) => input[index] !== byte)) {
-    return false;
-  }
-
-  return true;
 }

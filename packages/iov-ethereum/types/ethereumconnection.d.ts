@@ -6,7 +6,7 @@ export interface EthereumConnectionOptions {
     /** URL to an Etherscan compatible scraper API */
     readonly scraperApiUrl?: string;
     /** List of supported ERC20 tokens */
-    readonly erc20Tokens?: Map<TokenTicker, Erc20Options>;
+    readonly erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>;
 }
 export declare class EthereumConnection implements BcpConnection {
     static establish(baseUrl: string, options?: EthereumConnectionOptions): Promise<EthereumConnection>;

@@ -73,7 +73,7 @@ export interface EthereumConnectionOptions {
   /** URL to an Etherscan compatible scraper API */
   readonly scraperApiUrl?: string;
   /** List of supported ERC20 tokens */
-  readonly erc20Tokens?: Map<TokenTicker, Erc20Options>;
+  readonly erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>;
 }
 
 export class EthereumConnection implements BcpConnection {
@@ -90,7 +90,7 @@ export class EthereumConnection implements BcpConnection {
   private readonly myChainId: ChainId;
   private readonly socket: StreamingSocket | undefined;
   private readonly scraperApiUrl: string | undefined;
-  private readonly erc20Tokens = new Map<TokenTicker, Erc20>();
+  private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20>;
   private readonly codec: EthereumCodec;
 
   constructor(baseUrl: string, chainId: ChainId, options?: EthereumConnectionOptions) {
@@ -123,13 +123,19 @@ export class EthereumConnection implements BcpConnection {
       if (options.scraperApiUrl) {
         this.scraperApiUrl = options.scraperApiUrl;
       }
-
-      if (options.erc20Tokens) {
-        for (const [ticker, erc20Options] of options.erc20Tokens.entries()) {
-          this.erc20Tokens.set(ticker, new Erc20(ethereumClient, erc20Options));
-        }
-      }
     }
+
+    this.erc20Tokens =
+      options && options.erc20Tokens
+        ? new Map(
+            [...options.erc20Tokens.entries()].map(
+              ([ticker, erc20Options]): [TokenTicker, Erc20] => [
+                ticker,
+                new Erc20(ethereumClient, erc20Options),
+              ],
+            ),
+          )
+        : new Map();
 
     this.codec = new EthereumCodec({
       erc20Tokens: options ? options.erc20Tokens : undefined,

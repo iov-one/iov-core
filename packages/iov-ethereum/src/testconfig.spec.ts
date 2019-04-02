@@ -17,7 +17,6 @@ import { Erc20Options } from "./erc20";
 const { fromHex } = Encoding;
 
 export interface Erc20TransferTest {
-  readonly contractAddress: Address;
   readonly amount: Amount;
 }
 
@@ -65,7 +64,7 @@ export interface EthereumNetworkConfig {
     readonly invalidSignature: RegExp;
     readonly gasLimitTooLow: RegExp;
   };
-  readonly erc20Tokens: Map<TokenTicker, Erc20Options>;
+  readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
   readonly erc20TransferTests: ReadonlyArray<Erc20TransferTest>;
   readonly expectedTokens: ReadonlyArray<BcpTicker>;
 }
@@ -183,7 +182,6 @@ const local: EthereumNetworkConfig = {
   ]),
   erc20TransferTests: [
     {
-      contractAddress: "0xCb642A87923580b6F7D07D1471F93361196f2650" as Address,
       amount: {
         quantity: "3",
         tokenTicker: "ASH" as TokenTicker,
@@ -191,7 +189,6 @@ const local: EthereumNetworkConfig = {
       },
     },
     {
-      contractAddress: "0xF01231195AE56d38fa03F5F2933863A2606A6052" as Address,
       amount: {
         quantity: "5678",
         tokenTicker: "TRASH" as TokenTicker,
@@ -348,6 +345,12 @@ const rinkeby: EthereumNetworkConfig = {
           quantity: "100000000000000000",
           tokenName: "Wrapped Ether",
         },
+        {
+          tokenTicker: "AVO" as TokenTicker,
+          fractionalDigits: 18,
+          quantity: "7123400000000000000",
+          tokenName: "Avocado",
+        },
       ],
     },
     unused: {
@@ -387,11 +390,34 @@ const rinkeby: EthereumNetworkConfig = {
       {
         contractAddress: "0xc778417e063141139fce010982780140aa0cd5ab" as Address,
         decimals: 18,
-        symbol: "WETH" as TokenTicker,
+        symbol: "WETH",
+      },
+    ],
+    [
+      "AVO" as TokenTicker,
+      {
+        contractAddress: "0x0c8184c21a51cdb7df9e5dc415a6a54b3a39c991" as Address,
+        decimals: 18,
+        symbol: "AVO",
       },
     ],
   ]),
-  erc20TransferTests: [],
+  erc20TransferTests: [
+    {
+      amount: {
+        quantity: "123",
+        tokenTicker: "AVO" as TokenTicker,
+        fractionalDigits: 18,
+      },
+    },
+    {
+      amount: {
+        quantity: "456",
+        tokenTicker: "WETH" as TokenTicker,
+        fractionalDigits: 18,
+      },
+    },
+  ],
   expectedTokens: [
     {
       tokenTicker: "ETH" as TokenTicker,
@@ -401,6 +427,11 @@ const rinkeby: EthereumNetworkConfig = {
     {
       tokenTicker: "WETH" as TokenTicker,
       tokenName: "Wrapped Ether",
+      fractionalDigits: 18,
+    },
+    {
+      tokenTicker: "AVO" as TokenTicker,
+      tokenName: "Avocado",
       fractionalDigits: 18,
     },
   ],

@@ -53,7 +53,7 @@ export class Serialization {
   public static serializeUnsignedTransaction(
     unsigned: UnsignedTransaction,
     nonce: Nonce,
-    erc20Tokens: Map<TokenTicker, Erc20Options> = new Map(),
+    erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options> = new Map(),
   ): Uint8Array {
     if (isSendTransaction(unsigned)) {
       const chainIdHex = encodeQuantity(fromBcpChainId(unsigned.creator.chainId));
@@ -115,7 +115,7 @@ export class Serialization {
 
   public static serializeSignedTransaction(
     signed: SignedTransaction,
-    erc20Tokens: Map<TokenTicker, Erc20Options> = new Map(),
+    erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options> = new Map(),
   ): Uint8Array {
     const unsigned = signed.transaction;
 
