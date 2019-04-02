@@ -47,7 +47,7 @@ import { broadcastTxSyncSuccess, Client as TendermintClient } from "@iov/tenderm
 
 import { bnsCodec } from "./bnscodec";
 import { ChainData, Context } from "./context";
-import { decodeJsonAmount, decodeNonce, decodeToken, decodeUsernameNft, decodeAmount } from "./decode";
+import { decodeAmount, decodeJsonAmount, decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
 import {
