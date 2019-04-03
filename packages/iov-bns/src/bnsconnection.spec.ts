@@ -86,7 +86,7 @@ describe("BnsConnection", () => {
     fractionalDigits: 9,
     tokenTicker: cash,
   };
-  // this is enough money in an accout that registers names... twice the cost of one name registration product fee
+  // this is enough money in an account that registers names... twice the cost of one name registration product fee
   const registerAmount: Amount = {
     quantity: "10000000000",
     fractionalDigits: 9,

@@ -74,9 +74,9 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
     protected query(path: string, data: Uint8Array): Promise<QueryResponse>;
     protected updateEscrowBalance<T extends AtomicSwap>(escrow: T): Promise<T>;
     /**
-     * Queries the blockchain for the enforced minimum anti-spam fee
+     * Queries the blockchain for the enforced anti-spam fee
      */
-    protected getMinimumFee(): Promise<Amount>;
+    protected getDefaultFee(): Promise<Amount>;
     /**
      * Queries the blockchain for the enforced product fee for this kind of transaction.
      * Returns undefined if no product fee is defined

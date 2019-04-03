@@ -613,12 +613,11 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     if (!isBnsTx(transaction)) {
       throw new Error("Received transaction of unsupported kind.");
     }
-    // get gconf fee
-    const min = await this.getMinimumFee();
-    // get product fee for this type
-    const product = await this.getProductFee(transaction.kind);
-    // take maximum
-    const fee = product || min;
+    // use product fee if it exists, otherwise fallback to default anti-spam fee
+    let fee = await this.getProductFee(transaction.kind);
+    if (!fee) {
+      fee = await this.getDefaultFee();
+    }
     return { tokens: fee };
   }
 
@@ -646,9 +645,9 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   }
 
   /**
-   * Queries the blockchain for the enforced minimum anti-spam fee
+   * Queries the blockchain for the enforced anti-spam fee
    */
-  protected async getMinimumFee(): Promise<Amount> {
+  protected async getDefaultFee(): Promise<Amount> {
     const res = await this.query("/", Encoding.toAscii("gconf:cash:minimal_fee"));
     if (res.results.length !== 1) {
       throw new Error("Received unexpected number of fees");
