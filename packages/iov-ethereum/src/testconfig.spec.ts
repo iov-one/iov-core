@@ -13,6 +13,7 @@ import {
 import { Encoding } from "@iov/encoding";
 
 import { Erc20Options } from "./erc20";
+import { EthereumConnectionOptions } from "./ethereumconnection";
 
 const { fromHex } = Encoding;
 
@@ -23,7 +24,7 @@ export interface Erc20TransferTest {
 export interface EthereumNetworkConfig {
   readonly env: string;
   readonly base: string;
-  readonly wsUrl: string;
+  readonly connectionOptions: EthereumConnectionOptions;
   readonly chainId: ChainId;
   readonly minHeight: number;
   readonly mnemonic: string;
@@ -75,7 +76,12 @@ const env = process.env.ETHEREUM_NETWORK || "local";
 const local: EthereumNetworkConfig = {
   env: "local",
   base: "http://localhost:8545",
-  wsUrl: "ws://localhost:8545/ws",
+  connectionOptions: {
+    wsUrl: "ws://localhost:8545/ws",
+    // Low values to speedup test execution on the local ganache chain (using instant mine)
+    accountPollInterval: 0.1,
+    blockPollInterval: 0.1,
+  },
   chainId: "ethereum-eip155-5777" as ChainId,
   minHeight: 0, // ganache does not auto-generate a genesis block
   mnemonic: "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
@@ -219,7 +225,9 @@ const local: EthereumNetworkConfig = {
 const ropsten: EthereumNetworkConfig = {
   env: "ropsten",
   base: "https://ropsten.infura.io/",
-  wsUrl: "wss://ropsten.infura.io/ws",
+  connectionOptions: {
+    wsUrl: "wss://ropsten.infura.io/ws",
+  },
   chainId: "ethereum-eip155-3" as ChainId,
   minHeight: 4284887,
   mnemonic: "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
@@ -298,7 +306,9 @@ const ropsten: EthereumNetworkConfig = {
 const rinkeby: EthereumNetworkConfig = {
   env: "rinkeby",
   base: "https://rinkeby.infura.io",
-  wsUrl: "wss://rinkeby.infura.io/ws",
+  connectionOptions: {
+    wsUrl: "wss://rinkeby.infura.io/ws",
+  },
   chainId: "ethereum-eip155-4" as ChainId,
   minHeight: 3211058,
   mnemonic: "retire bench island cushion panther noodle cactus keep danger assault home letter",
