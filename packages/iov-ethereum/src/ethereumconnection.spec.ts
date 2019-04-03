@@ -637,23 +637,6 @@ describe("EthereumConnection", () => {
       connection.disconnect();
     }, 30_000);
 
-    // TODO: load ganache with db from github
-    xit("can search a transaction by hash", async () => {
-      pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
-      const storedTxId = "" as TransactionId;
-      const results = await connection.searchTx({ id: storedTxId });
-      expect(results.length).toEqual(1);
-      const result = results[0];
-      expect(result.transactionId).toEqual(storedTxId);
-      const transaction = result.transaction;
-      if (!isSendTransaction(transaction)) {
-        throw new Error("Unexpected transaction type");
-      }
-      expect(transaction.recipient).toEqual("recipient_address");
-      expect(transaction.amount.quantity).toEqual("tx_quantity");
-    });
-
     it("can search a transaction by account", async () => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
