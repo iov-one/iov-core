@@ -796,6 +796,121 @@ describe("EthereumConnection", () => {
 
       connection.disconnect();
     }, 50_000);
+
+    it("lists ERC20 transactions when searching by recipient", async () => {
+      pendingWithoutEthereum();
+
+      const connection = await EthereumConnection.establish(testConfig.base, {
+        erc20Tokens: testConfig.erc20Tokens,
+      });
+      const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
+      const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
+
+      const recipient = await randomAddress();
+
+      for (const sendTest of testConfig.erc20TransferTests) {
+        let transactionId: TransactionId;
+
+        // send
+        {
+          const sendTx: SendTransaction = {
+            kind: "bcp/send",
+            creator: mainIdentity,
+            recipient: recipient,
+            fee: {
+              gasPrice: testConfig.gasPrice,
+              gasLimit: testConfig.gasLimit,
+            },
+            ...sendTest,
+          };
+          const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
+          const signed = await profile.signTransaction(sendTx, codec, nonce);
+          const resultPost = await connection.postTx(codec.bytesToPost(signed));
+          transactionId = resultPost.transactionId;
+          await resultPost.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        }
+
+        // search by recipient
+        {
+          const resultSearch = await connection.searchTx({ sentFromOrTo: recipient });
+          expect(resultSearch.length).toBeGreaterThanOrEqual(1);
+          const latestResult = resultSearch[0];
+          expect(latestResult.transactionId).toEqual(transactionId);
+          expect(latestResult.confirmations).toEqual(1);
+          const transaction = latestResult.transaction;
+          if (!isSendTransaction(transaction)) {
+            throw new Error("Unexpected transaction type");
+          }
+          expect(transaction.creator).toEqual(mainIdentity);
+          expect(transaction.recipient).toEqual(recipient);
+          expect(transaction.amount).toEqual(sendTest.amount);
+          expect(transaction.memo).toBeUndefined();
+        }
+      }
+
+      connection.disconnect();
+    });
+
+    xit("lists ERC20 transactions when searching by sender", async () => {
+      pendingWithoutEthereum();
+
+      const connection = await EthereumConnection.establish(testConfig.base, {
+        erc20Tokens: testConfig.erc20Tokens,
+      });
+      const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
+      const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
+
+      const recipient = await randomAddress();
+
+      for (const sendTest of testConfig.erc20TransferTests) {
+        let transactionId: TransactionId;
+
+        // send
+        {
+          const sendTx: SendTransaction = {
+            kind: "bcp/send",
+            creator: mainIdentity,
+            recipient: recipient,
+            fee: {
+              gasPrice: testConfig.gasPrice,
+              gasLimit: testConfig.gasLimit,
+            },
+            ...sendTest,
+          };
+          const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
+          const signed = await profile.signTransaction(sendTx, codec, nonce);
+          const resultPost = await connection.postTx(codec.bytesToPost(signed));
+          transactionId = resultPost.transactionId;
+          await resultPost.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        }
+
+        // search by sender
+        {
+          const senderAddress = pubkeyToAddress(mainIdentity.pubkey);
+          const resultSearch = await connection.searchTx({ sentFromOrTo: senderAddress });
+          expect(resultSearch.length).toBeGreaterThanOrEqual(1);
+          const latestResult = resultSearch[0];
+          expect(latestResult.transactionId).toEqual(transactionId);
+          expect(latestResult.confirmations).toEqual(1);
+          const transaction = latestResult.transaction;
+          if (!isSendTransaction(transaction)) {
+            throw new Error("Unexpected transaction type");
+          }
+          expect(transaction.creator).toEqual(mainIdentity);
+          expect(transaction.recipient).toEqual(recipient);
+          expect(transaction.amount).toEqual(sendTest.amount);
+          expect(transaction.memo).toBeUndefined();
+        }
+      }
+
+      connection.disconnect();
+    });
   });
 
   describe("listenTx", () => {

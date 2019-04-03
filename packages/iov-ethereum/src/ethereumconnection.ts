@@ -33,6 +33,7 @@ import { isJsonRpcErrorResponse, JsonRpcRequest } from "@iov/jsonrpc";
 import { StreamingSocket } from "@iov/socket";
 import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
+import { Abi } from "./abi";
 import { pubkeyToAddress } from "./address";
 import { constants } from "./constants";
 import { Erc20, Erc20Options } from "./erc20";
@@ -690,35 +691,84 @@ export class EthereumConnection implements BcpConnection {
       return [];
     }
 
-    if (!this.scraperApiUrl) {
-      throw new Error("No scraper API URL specified. Cannot search for transactions by tags.");
-    }
-
-    // API: https://etherscan.io/apis#accounts
-    const responseBody = (await axios.get(this.scraperApiUrl, {
-      params: {
-        module: "account",
-        action: "txlist",
-        address: address,
-        startblock: minHeight,
-        endblock: maxHeight,
-        sort: "asc",
-      },
-    })).data;
-    if (responseBody.result === null) {
-      return [];
-    }
     // tslint:disable-next-line:readonly-array
-    const transactions: ConfirmedTransaction[] = [];
-    for (const tx of responseBody.result) {
-      if (tx.isError === "0" && tx.txreceipt_status === "1") {
-        const transactionId = `0x${normalizeHex(tx.hash)}` as TransactionId;
-        // Do an extra query to the node as the scraper result does not contain the
-        // transaction signature, which we need for recovering the signer's pubkey.
-        const transaction = (await this.searchTransactionsById(transactionId))[0];
-        transactions.push(transaction);
+    const out: ConfirmedTransaction[] = [];
+
+    if (this.scraperApiUrl) {
+      // API: https://etherscan.io/apis#accounts
+      const responseBody = (await axios.get(this.scraperApiUrl, {
+        params: {
+          module: "account",
+          action: "txlist",
+          address: address,
+          startblock: minHeight,
+          endblock: maxHeight,
+          sort: "desc",
+        },
+      })).data;
+      if (responseBody.result !== null) {
+        for (const tx of responseBody.result) {
+          if (tx.isError === "0" && tx.txreceipt_status === "1") {
+            // Do an extra query to the node as the scraper result does not contain the
+            // transaction signature, which we need for recovering the signer's pubkey.
+            const transaction = (await this.searchTransactionsById(Parse.transactionId(tx.hash)))[0];
+            out.push(transaction);
+          }
+        }
       }
     }
-    return transactions;
+
+    // https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs
+    const contractAddresses = [...this.erc20Tokens.values()].map(options => options.contractAddress);
+
+    const erc20TransferLogsResponse = await this.rpcClient.run({
+      jsonrpc: "2.0",
+      method: "eth_getLogs",
+      params: [
+        {
+          fromBlock: encodeQuantity(minHeight),
+          toBlock: encodeQuantity(maxHeight),
+          address: contractAddresses,
+          topics: [
+            `0x${Encoding.toHex(Abi.calculateMethodHash("Transfer(address,address,uint256)"))}`,
+            null, // any sender,
+            `0x${Encoding.toHex(Abi.encodeAddress(address))}`, // recipient equals address
+          ],
+        },
+      ],
+      id: 7,
+    });
+    if (isJsonRpcErrorResponse(erc20TransferLogsResponse)) {
+      throw new Error(JSON.stringify(erc20TransferLogsResponse.error));
+    }
+
+    if (!Array.isArray(erc20TransferLogsResponse.result)) {
+      throw new Error("Got unuepected type of result");
+    }
+
+    // console.log(logsResponse);
+    // console.log(
+    //   erc20TransferLogsResponse.result.map((row: any) => {
+    //     return {
+    //       height: decodeHexQuantity(row.blockNumber),
+    //       contractAddress: row.address,
+    //       topics: row.topics,
+    //     };
+    //   }),
+    // );
+
+    // TODO: query in parallel
+    for (const row of erc20TransferLogsResponse.result) {
+      const transaction = (await this.searchTransactionsById(Parse.transactionId(row.transactionHash)))[0];
+      out.push(transaction);
+    }
+
+    // Sort by height, descending.
+    // Order of multiple transactions in the same block is undetermined.
+    // In https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash
+    // Ethereum provides `transactionIndex` but this is not yet exposed in the BCP.
+    out.sort((a, b) => b.height - a.height);
+
+    return out;
   }
 }
