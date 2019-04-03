@@ -718,6 +718,35 @@ export class EthereumConnection implements BcpConnection {
       }
     }
 
+    const [erc20Outgoing, erc20Incoming] = await Promise.all([
+      this.searchErc20Transfers(address, null, minHeight, maxHeight),
+      this.searchErc20Transfers(null, address, minHeight, maxHeight),
+    ]);
+
+    out.push(...erc20Outgoing);
+    out.push(...erc20Incoming);
+
+    // Sort by height, descending.
+    // Order of multiple transactions in the same block is undetermined.
+    // In https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash
+    // Ethereum provides `transactionIndex` but this is not yet exposed in the BCP.
+    out.sort((a, b) => b.height - a.height);
+
+    return out;
+  }
+
+  /**
+   * The return values of this helper function are unsorted.
+   */
+  private async searchErc20Transfers(
+    sender: Address | null,
+    recipient: Address | null,
+    minHeight: number,
+    maxHeight: number,
+  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    // tslint:disable-next-line:readonly-array
+    const out: ConfirmedTransaction[] = [];
+
     // https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs
     const contractAddresses = [...this.erc20Tokens.values()].map(options => options.contractAddress);
 
@@ -731,8 +760,8 @@ export class EthereumConnection implements BcpConnection {
           address: contractAddresses,
           topics: [
             `0x${Encoding.toHex(Abi.calculateMethodHash("Transfer(address,address,uint256)"))}`,
-            null, // any sender,
-            `0x${Encoding.toHex(Abi.encodeAddress(address))}`, // recipient equals address
+            sender ? `0x${Encoding.toHex(Abi.encodeAddress(sender))}` : null,
+            recipient ? `0x${Encoding.toHex(Abi.encodeAddress(recipient))}` : null,
           ],
         },
       ],
@@ -762,12 +791,6 @@ export class EthereumConnection implements BcpConnection {
       const transaction = (await this.searchTransactionsById(Parse.transactionId(row.transactionHash)))[0];
       out.push(transaction);
     }
-
-    // Sort by height, descending.
-    // Order of multiple transactions in the same block is undetermined.
-    // In https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash
-    // Ethereum provides `transactionIndex` but this is not yet exposed in the BCP.
-    out.sort((a, b) => b.height - a.height);
 
     return out;
   }

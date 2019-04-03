@@ -854,7 +854,7 @@ describe("EthereumConnection", () => {
       connection.disconnect();
     });
 
-    xit("lists ERC20 transactions when searching by sender", async () => {
+    it("lists ERC20 transactions when searching by sender", async () => {
       pendingWithoutEthereum();
 
       const connection = await EthereumConnection.establish(testConfig.base, {
@@ -910,7 +910,7 @@ describe("EthereumConnection", () => {
       }
 
       connection.disconnect();
-    });
+    }, 30_000);
   });
 
   describe("listenTx", () => {

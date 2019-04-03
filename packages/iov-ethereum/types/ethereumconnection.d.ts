@@ -40,4 +40,8 @@ export declare class EthereumConnection implements BcpConnection {
     private socketSend;
     private searchTransactionsById;
     private searchSendTransactionsByAddress;
+    /**
+     * The return values of this helper function are unsorted.
+     */
+    private searchErc20Transfers;
 }
