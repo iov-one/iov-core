@@ -74,10 +74,8 @@ export interface EthereumConnectionOptions {
   readonly scraperApiUrl?: string;
   /** List of supported ERC20 tokens */
   readonly erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>;
-  /** Time between two polls for block and transaction watching in seconds */
-  readonly blockPollInterval?: number;
-  /** Time between two polls account watching */
-  readonly accountPollInterval?: number;
+  /** Time between two polls for block, transaction and account watching in seconds */
+  readonly pollInterval?: number;
 }
 
 export class EthereumConnection implements BcpConnection {
@@ -90,8 +88,7 @@ export class EthereumConnection implements BcpConnection {
     return new EthereumConnection(baseUrl, chainId, options);
   }
 
-  private readonly blockPollIntervalMs: number;
-  private readonly accountPollIntervalMs: number;
+  private readonly pollIntervalMs: number;
   private readonly rpcClient: HttpJsonRpcClient;
   private readonly myChainId: ChainId;
   private readonly socket: StreamingSocket | undefined;
@@ -101,10 +98,7 @@ export class EthereumConnection implements BcpConnection {
   private readonly codec: EthereumCodec;
 
   constructor(baseUrl: string, chainId: ChainId, options?: EthereumConnectionOptions) {
-    this.blockPollIntervalMs =
-      options && options.blockPollInterval ? options.blockPollInterval * 1000 : 4_000;
-    this.accountPollIntervalMs =
-      options && options.accountPollInterval ? options.accountPollInterval * 1000 : 5_000;
+    this.pollIntervalMs = options && options.pollInterval ? options.pollInterval * 1000 : 4_000;
     this.rpcClient = new HttpJsonRpcClient(baseUrl);
     this.myChainId = chainId;
 
@@ -210,7 +204,7 @@ export class EthereumConnection implements BcpConnection {
               height: confirmedTransaction.height,
               confirmations: confirmedTransaction.confirmations,
             });
-          }, this.blockPollIntervalMs);
+          }, this.pollIntervalMs);
         },
         onStop: () => {
           clearInterval(pollInterval!);
@@ -401,7 +395,7 @@ export class EthereumConnection implements BcpConnection {
                   this.getBlockHeader(decodeHexQuantity(blockHeaderJson.params.result.number))
                     .then(blockHeader => listener.next(blockHeader))
                     .catch(error => listener.error(error));
-                }, this.blockPollIntervalMs);
+                }, this.pollIntervalMs);
               }
             } else if (blockHeaderJson.id === subscribeRequestId) {
               if (
@@ -469,7 +463,7 @@ export class EthereumConnection implements BcpConnection {
           }
         };
 
-        setInterval(poll, this.accountPollIntervalMs);
+        setInterval(poll, this.pollIntervalMs);
         await poll();
       },
       stop: () => {
@@ -541,7 +535,7 @@ export class EthereumConnection implements BcpConnection {
           };
 
           await poll();
-          pollInterval = setInterval(poll, this.blockPollIntervalMs);
+          pollInterval = setInterval(poll, this.pollIntervalMs);
         },
         stop: () => {
           if (pollInterval) {
@@ -570,7 +564,7 @@ export class EthereumConnection implements BcpConnection {
             if (searchResult.length > 0) {
               resolve(searchResult[0]);
             } else {
-              await sleep(this.blockPollIntervalMs);
+              await sleep(this.pollIntervalMs);
             }
           }
         } catch (error) {
@@ -600,7 +594,7 @@ export class EthereumConnection implements BcpConnection {
           };
 
           await poll();
-          pollInterval = setInterval(poll, this.blockPollIntervalMs);
+          pollInterval = setInterval(poll, this.pollIntervalMs);
         },
         stop: () => {
           if (pollInterval) {

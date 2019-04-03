@@ -78,8 +78,7 @@ const local: EthereumNetworkConfig = {
   connectionOptions: {
     wsUrl: "ws://localhost:8545/ws",
     // Low values to speedup test execution on the local ganache chain (using instant mine)
-    accountPollInterval: 0.1,
-    blockPollInterval: 0.1,
+    pollInterval: 0.1,
   },
   chainId: "ethereum-eip155-5777" as ChainId,
   minHeight: 0, // ganache does not auto-generate a genesis block
