@@ -11,6 +11,7 @@ import {
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
+import { constants } from "./constants";
 import { Erc20Options } from "./erc20";
 import { EthereumCodec, ethereumCodec, EthereumRpcTransactionResult } from "./ethereumcodec";
 
@@ -240,6 +241,88 @@ describe("ethereumCodec", () => {
           signature: new ExtendedSecp256k1Signature(
             Encoding.fromHex("cbe96b38321e6ef536da5e74b558cf87acdda825be35be40627b2b3d8633b8f4"),
             Encoding.fromHex("7fc31ca5bb3dbd02e5e8fc5093082f3f2ab3e0042d4e5b25fe09e5f7485d83b7"),
+            0,
+          ).toFixedLength() as SignatureBytes,
+        },
+        otherSignatures: [],
+      });
+    });
+
+    it("works for Ether atomic swap offer", () => {
+      // Retrieved from local instance since we haven't deployed this to a public testnet
+      // curl - sS - X POST--data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["0x044870acdb5fdab0f76266eda11cdeee50de880f58ccf6bfb32a6b651914f637"],"id":1}' http://localhost:8545 | jq .result
+      const rawGetTransactionByHashResult: EthereumRpcTransactionResult = {
+        hash: "0x044870acdb5fdab0f76266eda11cdeee50de880f58ccf6bfb32a6b651914f637",
+        nonce: "0x36",
+        blockHash: "0x5fabed71b3d99dec733a8d513c1e91971d8446baeb044d00d609937148712929",
+        blockNumber: "0x37",
+        transactionIndex: "0x0",
+        from: "0x88f3b5659075d0e06bb1004be7b1a7e66f452284",
+        to: "0xe1c9ea25a621cf5c934a7e112ecab640ec7d8d18",
+        value: "0x1ca3660340",
+        gas: "0x200b20",
+        gasPrice: "0x4a817c800",
+        input:
+          "0x0eed85485cecbb0814d20c1f6221fdec0c2902172182d1b2f3212957f947e4cea398ebe6000000000000000000000000901a84da2b9c5cbb64d8aeeca58d5fd0339bb018015d55677261fb5deb1e94dac1ffb6dc0de51eb3b6c0631f7f9f2e4f41eca085000000000000000000000000000000000000000000000000000000000000003b",
+        v: "0x2d45",
+        r: "0x9351a7fa42078636bd36bbae0d8d5f009b92986991bcc92ae882bce8982360d5",
+        s: "0x706a6f90bb42b9d929150839fb9aa06207e40f8d814183e30789ac036263497f",
+      };
+      const expectedPubkey = fromHex(
+        "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
+      ) as PublicKeyBytes;
+      const expectedSwapId = fromHex("5cecbb0814d20c1f6221fdec0c2902172182d1b2f3212957f947e4cea398ebe6");
+      const expectedRecipient = "0x901A84DA2b9c5CBb64D8AEECa58D5FD0339bB018";
+      const expectedHash = fromHex("015d55677261fb5deb1e94dac1ffb6dc0de51eb3b6c0631f7f9f2e4f41eca085");
+
+      const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
+
+      expect(ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-5777" as ChainId)).toEqual({
+        transaction: {
+          kind: "bcp/swap_offer",
+          creator: {
+            chainId: "ethereum-eip155-5777" as ChainId,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: expectedPubkey,
+            },
+          },
+          fee: {
+            gasLimit: {
+              quantity: "2100000",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
+            gasPrice: {
+              quantity: "20000000000",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
+          },
+          amounts: [
+            {
+              quantity: "123000456000",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
+          ],
+          swapId: expectedSwapId,
+          recipient: expectedRecipient,
+          hash: expectedHash,
+          timeout: {
+            height: 59,
+          },
+          contractAddress: constants.atomicSwapEtherContractAddress,
+        },
+        primarySignature: {
+          nonce: 54 as Nonce,
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: expectedPubkey,
+          },
+          signature: new ExtendedSecp256k1Signature(
+            Encoding.fromHex("9351a7fa42078636bd36bbae0d8d5f009b92986991bcc92ae882bce8982360d5"),
+            Encoding.fromHex("706a6f90bb42b9d929150839fb9aa06207e40f8d814183e30789ac036263497f"),
             0,
           ).toFixedLength() as SignatureBytes,
         },
