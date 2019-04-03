@@ -14,9 +14,12 @@ export interface HeadTail {
 }
 
 export class Abi {
+  public static calculateMethodHash(signature: string): Uint8Array {
+    return new Keccak256(Encoding.toAscii(signature)).digest();
+  }
+
   public static calculateMethodId(signature: string): Uint8Array {
-    const hash = new Keccak256(Encoding.toAscii(signature)).digest();
-    return hash.slice(0, 4);
+    return Abi.calculateMethodHash(signature).slice(0, 4);
   }
 
   public static encodeAddress(address: Address): Uint8Array {
