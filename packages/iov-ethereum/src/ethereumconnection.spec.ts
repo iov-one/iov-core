@@ -962,7 +962,7 @@ describe("EthereumConnection", () => {
 
         const profile = new UserProfile();
         const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
-        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
+        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
         const sendA: SendTransaction = {
           kind: "bcp/send",
@@ -1042,7 +1042,7 @@ describe("EthereumConnection", () => {
 
         const profile = new UserProfile();
         const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
-        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
+        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
         const sendA: SendTransaction = {
           kind: "bcp/send",
@@ -1146,7 +1146,7 @@ describe("EthereumConnection", () => {
 
         const profile = new UserProfile();
         const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
-        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
+        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
         const recipientAddress = await randomAddress();
         const send: SendTransaction = {
@@ -1211,7 +1211,7 @@ describe("EthereumConnection", () => {
 
         const profile = new UserProfile();
         const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
-        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
+        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
         const send: SendTransaction = {
           kind: "bcp/send",
