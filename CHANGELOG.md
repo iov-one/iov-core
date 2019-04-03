@@ -15,6 +15,7 @@ Breaking changes
 - @iov/ethereum: Allow sending of ERC20 tokens
 - @iov/ethereum: Implement `getFeeQuote` method on `EthereumConnection`.
 - @iov/ethereum: Fix transaction fee parsing for transactions from RPC/scraper.
+- @iov/ethereum: Add `pollInterval` to `EthereumConnectionOptions`.
 - @iov/dpos: Let `Serialization.serializeTransaction` accept transactions with
   fee set.
 

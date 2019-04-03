@@ -74,6 +74,8 @@ export interface EthereumConnectionOptions {
   readonly scraperApiUrl?: string;
   /** List of supported ERC20 tokens */
   readonly erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>;
+  /** Time between two polls for block, transaction and account watching in seconds */
+  readonly pollInterval?: number;
 }
 
 export class EthereumConnection implements BcpConnection {
@@ -86,14 +88,17 @@ export class EthereumConnection implements BcpConnection {
     return new EthereumConnection(baseUrl, chainId, options);
   }
 
+  private readonly pollIntervalMs: number;
   private readonly rpcClient: HttpJsonRpcClient;
   private readonly myChainId: ChainId;
   private readonly socket: StreamingSocket | undefined;
   private readonly scraperApiUrl: string | undefined;
-  private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20>;
+  private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
+  private readonly erc20ContractReaders: ReadonlyMap<TokenTicker, Erc20>;
   private readonly codec: EthereumCodec;
 
   constructor(baseUrl: string, chainId: ChainId, options?: EthereumConnectionOptions) {
+    this.pollIntervalMs = options && options.pollInterval ? options.pollInterval * 1000 : 4_000;
     this.rpcClient = new HttpJsonRpcClient(baseUrl);
     this.myChainId = chainId;
 
@@ -125,21 +130,15 @@ export class EthereumConnection implements BcpConnection {
       }
     }
 
-    this.erc20Tokens =
-      options && options.erc20Tokens
-        ? new Map(
-            [...options.erc20Tokens.entries()].map(
-              ([ticker, erc20Options]): [TokenTicker, Erc20] => [
-                ticker,
-                new Erc20(ethereumClient, erc20Options),
-              ],
-            ),
-          )
-        : new Map();
+    const erc20Tokens = options && options.erc20Tokens ? options.erc20Tokens : new Map();
 
-    this.codec = new EthereumCodec({
-      erc20Tokens: options ? options.erc20Tokens : undefined,
-    });
+    this.erc20Tokens = erc20Tokens;
+    this.erc20ContractReaders = new Map(
+      [...erc20Tokens.entries()].map(
+        ([ticker, erc20Options]): [TokenTicker, Erc20] => [ticker, new Erc20(ethereumClient, erc20Options)],
+      ),
+    );
+    this.codec = new EthereumCodec({ erc20Tokens: erc20Tokens });
   }
 
   public disconnect(): void {
@@ -183,13 +182,7 @@ export class EthereumConnection implements BcpConnection {
       throw new Error("Result field was not a string");
     }
 
-    const transactionId = transactionResult as TransactionId;
-    if (!transactionId.match(/^0x[0-9a-f]{64}$/)) {
-      throw new Error("Invalid transaction ID format");
-    }
-
-    // 12-15 seconds average block time
-    const pollIntervalMs = 4_000;
+    const transactionId = Parse.transactionId(transactionResult);
 
     let pollInterval: NodeJS.Timeout | undefined;
     const blockInfoPending = new DefaultValueProducer<BlockInfo>(
@@ -211,7 +204,7 @@ export class EthereumConnection implements BcpConnection {
               height: confirmedTransaction.height,
               confirmations: confirmedTransaction.confirmations,
             });
-          }, pollIntervalMs);
+          }, this.pollIntervalMs);
         },
         onStop: () => {
           clearInterval(pollInterval!);
@@ -230,7 +223,7 @@ export class EthereumConnection implements BcpConnection {
 
   public async getAllTickers(): Promise<ReadonlyArray<BcpTicker>> {
     const erc20s = await Promise.all(
-      [...this.erc20Tokens.entries()].map(
+      [...this.erc20ContractReaders.entries()].map(
         async ([ticker, contract]): Promise<BcpTicker> => {
           const symbol = await contract.symbol();
           if (ticker !== symbol) {
@@ -274,7 +267,7 @@ export class EthereumConnection implements BcpConnection {
     const ethBalance = Parse.ethereumAmount(decodeHexQuantityString(response.result));
 
     const erc20Balances: ReadonlyArray<BcpCoin> = await Promise.all(
-      [...this.erc20Tokens.entries()].map(async ([ticker, contract]) => {
+      [...this.erc20ContractReaders.entries()].map(async ([ticker, contract]) => {
         const symbol = await contract.symbol();
         if (ticker !== symbol) {
           throw new Error(`Configured ticker '${ticker}' does not match contract symbol '${symbol}'`);
@@ -402,7 +395,7 @@ export class EthereumConnection implements BcpConnection {
                   this.getBlockHeader(decodeHexQuantity(blockHeaderJson.params.result.number))
                     .then(blockHeader => listener.next(blockHeader))
                     .catch(error => listener.error(error));
-                }, 3_000);
+                }, this.pollIntervalMs);
               }
             } else if (blockHeaderJson.id === subscribeRequestId) {
               if (
@@ -470,7 +463,7 @@ export class EthereumConnection implements BcpConnection {
           }
         };
 
-        setInterval(poll, 5_000);
+        setInterval(poll, this.pollIntervalMs);
         await poll();
       },
       stop: () => {
@@ -542,7 +535,7 @@ export class EthereumConnection implements BcpConnection {
           };
 
           await poll();
-          pollInterval = setInterval(poll, 4_000);
+          pollInterval = setInterval(poll, this.pollIntervalMs);
         },
         stop: () => {
           if (pollInterval) {
@@ -571,7 +564,7 @@ export class EthereumConnection implements BcpConnection {
             if (searchResult.length > 0) {
               resolve(searchResult[0]);
             } else {
-              await sleep(4_000);
+              await sleep(this.pollIntervalMs);
             }
           }
         } catch (error) {
@@ -601,7 +594,7 @@ export class EthereumConnection implements BcpConnection {
           };
 
           await poll();
-          pollInterval = setInterval(poll, 4_000);
+          pollInterval = setInterval(poll, this.pollIntervalMs);
         },
         stop: () => {
           if (pollInterval) {
@@ -681,7 +674,7 @@ export class EthereumConnection implements BcpConnection {
       Encoding.toUtf8(JSON.stringify(transactionsResponse.result)) as PostableBytes,
       this.myChainId,
     );
-    const transactionId = `0x${normalizeHex(transactionsResponse.result.hash)}` as TransactionId;
+    const transactionId = Parse.transactionId(transactionsResponse.result.hash);
     return [
       {
         ...transaction,

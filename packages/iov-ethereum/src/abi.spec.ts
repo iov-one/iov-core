@@ -6,6 +6,15 @@ import { Abi } from "./abi";
 const { fromHex } = Encoding;
 
 describe("Abi", () => {
+  describe("calculateMethodHash", () => {
+    it("works", () => {
+      // From https://rinkeby.etherscan.io/address/0x0c8184c21a51cdb7df9e5dc415a6a54b3a39c991#events
+      expect(Abi.calculateMethodHash("Transfer(address,address,uint256)")).toEqual(
+        fromHex("ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"),
+      );
+    });
+  });
+
   describe("calculateMethodId", () => {
     it("works", () => {
       // Examples from https://solidity.readthedocs.io/en/v0.5.7/abi-spec.html#examples
