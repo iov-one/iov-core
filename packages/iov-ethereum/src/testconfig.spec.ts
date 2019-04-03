@@ -52,7 +52,6 @@ export interface EthereumNetworkConfig {
   };
   readonly gasPrice: Amount;
   readonly gasLimit: Amount;
-  readonly waitForTx: number;
   readonly scraper:
     | {
         readonly apiUrl: string;
@@ -160,7 +159,6 @@ const local: EthereumNetworkConfig = {
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   },
-  waitForTx: 100, // by default, ganache will instantly mine a new block for every transaction
   scraper: undefined,
   expectedErrorMessages: {
     insufficientFunds: /sender doesn't have enough funds to send tx/i,
@@ -282,7 +280,6 @@ const ropsten: EthereumNetworkConfig = {
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   },
-  waitForTx: 4000,
   scraper: {
     apiUrl: "https://api-ropsten.etherscan.io/api",
     address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
@@ -383,7 +380,6 @@ const rinkeby: EthereumNetworkConfig = {
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   },
-  waitForTx: 4000,
   scraper: {
     apiUrl: "https://api-rinkeby.etherscan.io/api",
     // recipient address with no known keypair
