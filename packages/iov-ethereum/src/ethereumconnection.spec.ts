@@ -904,14 +904,17 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereumScraper();
 
       (async () => {
+        const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
         const connection = await EthereumConnection.establish(testConfig.base, {
           ...testConfig.connectionOptions,
           scraperApiUrl: testConfig.scraper!.apiUrl,
+          erc20Tokens: testConfig.erc20Tokens,
         });
 
         const recipientAddress = await randomAddress();
 
         // setup listener
+        const transactionIds = new Set<TransactionId>();
         const events = new Array<ConfirmedTransaction>();
         const subscription = connection.listenTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
@@ -929,10 +932,10 @@ describe("EthereumConnection", () => {
             expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
             if (events.length === 3) {
-              // This assumes we get two transactions into one block
-              // A == B < C
-              expect(events[0].height).toEqual(events[1].height);
-              expect(events[2].height).toBeGreaterThan(events[1].height);
+              // The order of the events 0, 1, 2 does not necessarily correspons to the send
+              // order A, B, C. However, we can at least make sure we got the right ones.
+              const receivedIds = new Set(events.map(e => e.transactionId));
+              expect(receivedIds).toEqual(transactionIds);
 
               subscription.unsubscribe();
               connection.disconnect();
@@ -971,41 +974,44 @@ describe("EthereumConnection", () => {
           memo: `listenTx() test B ${Math.random()}`,
         };
 
+        // an ERC 20 token transfer
         const sendC: SendTransaction = {
           kind: "bcp/send",
           creator: sender,
           recipient: recipientAddress,
-          amount: defaultAmount,
           fee: {
             gasPrice: testConfig.gasPrice,
             gasLimit: testConfig.gasLimit,
           },
-          memo: `listenTx() test C ${Math.random()}`,
+          ...testConfig.erc20TransferTests[0],
         };
 
         const [nonceA, nonceB, nonceC] = await connection.getNonces({ pubkey: sender.pubkey }, 3);
 
-        const signedA = await profile.signTransaction(sendA, ethereumCodec, nonceA);
-        const signedB = await profile.signTransaction(sendB, ethereumCodec, nonceB);
-        const signedC = await profile.signTransaction(sendC, ethereumCodec, nonceC);
-        const bytesToPostA = ethereumCodec.bytesToPost(signedA);
-        const bytesToPostB = ethereumCodec.bytesToPost(signedB);
-        const bytesToPostC = ethereumCodec.bytesToPost(signedC);
+        const signedA = await profile.signTransaction(sendA, codec, nonceA);
+        const signedB = await profile.signTransaction(sendB, codec, nonceB);
+        const signedC = await profile.signTransaction(sendC, codec, nonceC);
+        const bytesToPostA = codec.bytesToPost(signedA);
+        const bytesToPostB = codec.bytesToPost(signedB);
+        const bytesToPostC = codec.bytesToPost(signedC);
 
-        // Post A and B in parallel
-        const [postResultA, postResultB] = await Promise.all([
+        // Post A, B, C in parallel
+        const [postResultA, postResultB, postResultC] = await Promise.all([
           connection.postTx(bytesToPostA),
           connection.postTx(bytesToPostB),
+          connection.postTx(bytesToPostC),
         ]);
 
-        // Wait for a block
+        transactionIds.add(postResultA.transactionId);
+        transactionIds.add(postResultB.transactionId);
+        transactionIds.add(postResultC.transactionId);
+
+        // Wait for transaction success
         await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
         await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
-
-        // Post C
-        await connection.postTx(bytesToPostC);
+        await postResultC.blockInfo.waitFor(info => !isBlockInfoPending(info));
       })().catch(done.fail);
-    }, 60_000);
+    }, 90_000);
   });
 
   describe("liveTx", () => {

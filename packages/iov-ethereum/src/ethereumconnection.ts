@@ -517,15 +517,20 @@ export class EthereumConnection implements BcpConnection {
       );
     } else if (query.sentFromOrTo) {
       const sentFromOrTo = query.sentFromOrTo;
-      let pollInterval: NodeJS.Timeout | undefined;
-      const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
+
+      let pollIntervalScraper: NodeJS.Timeout | undefined;
+      const fromScraperProducer: Producer<ConfirmedTransaction | FailedTransaction> = {
         start: async listener => {
-          const currentHeight = await this.height();
-          let minHeight = Math.max(query.minHeight || 0, currentHeight + 1);
+          const searchStartHeight = (await this.height()) - 1; // TODO: get current height from scraper
+          let minHeight = Math.max(query.minHeight || 0, searchStartHeight);
           const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
 
           const poll = async (): Promise<void> => {
-            const result = await this.searchSendTransactionsByAddress(sentFromOrTo, minHeight, maxHeight);
+            const result = await this.searchSendTransactionsByAddressOnScraper(
+              sentFromOrTo,
+              minHeight,
+              maxHeight,
+            );
             for (const item of result) {
               listener.next(item);
               if (item.height >= minHeight) {
@@ -536,16 +541,50 @@ export class EthereumConnection implements BcpConnection {
           };
 
           await poll();
-          pollInterval = setInterval(poll, this.pollIntervalMs);
+          pollIntervalScraper = setInterval(poll, this.pollIntervalMs);
         },
         stop: () => {
-          if (pollInterval) {
-            clearInterval(pollInterval);
-            pollInterval = undefined;
+          if (pollIntervalScraper) {
+            clearInterval(pollIntervalScraper);
+            pollIntervalScraper = undefined;
           }
         },
       };
-      return Stream.create(producer);
+
+      let pollIntervalLogs: NodeJS.Timeout | undefined;
+      const fromLogsProducer: Producer<ConfirmedTransaction | FailedTransaction> = {
+        start: async listener => {
+          const currentHeight = await this.height();
+          let minHeight = Math.max(query.minHeight || 0, currentHeight + 1);
+          const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
+
+          const poll = async (): Promise<void> => {
+            const result = await this.searchSendTransactionsByAddressInLogs(
+              sentFromOrTo,
+              minHeight,
+              maxHeight,
+            );
+            for (const item of result) {
+              listener.next(item);
+              if (item.height >= minHeight) {
+                // we assume we got all matching transactions from block `item.height` now
+                minHeight = item.height + 1;
+              }
+            }
+          };
+
+          await poll();
+          pollIntervalLogs = setInterval(poll, this.pollIntervalMs);
+        },
+        stop: () => {
+          if (pollIntervalLogs) {
+            clearInterval(pollIntervalLogs);
+            pollIntervalLogs = undefined;
+          }
+        },
+      };
+
+      return Stream.merge(Stream.create(fromScraperProducer), Stream.create(fromLogsProducer));
     } else {
       throw new Error("Unsupported query.");
     }
