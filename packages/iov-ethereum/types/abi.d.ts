@@ -6,6 +6,7 @@ export interface HeadTail {
     readonly tail: ReadonlyArray<Uint8Array>;
 }
 export declare class Abi {
+    static calculateMethodHash(signature: string): Uint8Array;
     static calculateMethodId(signature: string): Uint8Array;
     static encodeAddress(address: Address): Uint8Array;
     static encodeUint256(value: string): Uint8Array;
