@@ -183,10 +183,7 @@ export class EthereumConnection implements BcpConnection {
       throw new Error("Result field was not a string");
     }
 
-    const transactionId = transactionResult as TransactionId;
-    if (!transactionId.match(/^0x[0-9a-f]{64}$/)) {
-      throw new Error("Invalid transaction ID format");
-    }
+    const transactionId = Parse.transactionId(transactionResult);
 
     // 12-15 seconds average block time
     const pollIntervalMs = 4_000;
@@ -677,7 +674,7 @@ export class EthereumConnection implements BcpConnection {
       Encoding.toUtf8(JSON.stringify(transactionsResponse.result)) as PostableBytes,
       this.myChainId,
     );
-    const transactionId = `0x${normalizeHex(transactionsResponse.result.hash)}` as TransactionId;
+    const transactionId = Parse.transactionId(transactionsResponse.result.hash);
     return [
       {
         ...transaction,

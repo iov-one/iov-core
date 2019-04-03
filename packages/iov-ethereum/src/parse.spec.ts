@@ -69,4 +69,30 @@ describe("Parse", () => {
     };
     expect(Parse.ethereumAmount("1234567890123456789")).toEqual(expected);
   });
+
+  describe("transactionId", () => {
+    it("works for correct transaction ID", () => {
+      expect(
+        Parse.transactionId("0x642859f823f80923b960c3bb552ab8cfc3095fa1a28805dd0f966bdf1b22f442"),
+      ).toEqual("0x642859f823f80923b960c3bb552ab8cfc3095fa1a28805dd0f966bdf1b22f442");
+    });
+
+    it("throws for invalid inputs", () => {
+      // missing prefix
+      expect(() =>
+        Parse.transactionId("642859f823f80923b960c3bb552ab8cfc3095fa1a28805dd0f966bdf1b22f442"),
+      ).toThrow();
+      // too short/long
+      expect(() =>
+        Parse.transactionId("0x642859f823f80923b960c3bb552ab8cfc3095fa1a28805dd0f966bdf1b22f4"),
+      ).toThrow();
+      expect(() =>
+        Parse.transactionId("0x642859f823f80923b960c3bb552ab8cfc3095fa1a28805dd0f966bdf1b22f442bb"),
+      ).toThrow();
+      // contains upper case hex
+      expect(() =>
+        Parse.transactionId("0xFF2859f823f80923b960c3bb552ab8cfc3095fa1a28805dd0f966bdf1b22f442"),
+      ).toThrow();
+    });
+  });
 });

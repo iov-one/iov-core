@@ -1,4 +1,4 @@
-import { Amount } from "@iov/bcp";
+import { Amount, TransactionId } from "@iov/bcp";
 
 import { constants } from "./constants";
 
@@ -17,5 +17,12 @@ export class Parse {
       fractionalDigits: fractionalDigits,
       tokenTicker: constants.primaryTokenTicker,
     };
+  }
+
+  public static transactionId(hash: string): TransactionId {
+    if (!hash.match(/^0x[0-9a-f]{64}$/)) {
+      throw new Error("Invalid transaction ID format");
+    }
+    return hash as TransactionId;
   }
 }
