@@ -744,9 +744,6 @@ export class EthereumConnection implements BcpConnection {
     minHeight: number,
     maxHeight: number,
   ): Promise<ReadonlyArray<ConfirmedTransaction>> {
-    // tslint:disable-next-line:readonly-array
-    const out: ConfirmedTransaction[] = [];
-
     // https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs
     const contractAddresses = [...this.erc20Tokens.values()].map(options => options.contractAddress);
 
@@ -786,12 +783,11 @@ export class EthereumConnection implements BcpConnection {
     //   }),
     // );
 
-    // TODO: query in parallel
-    for (const row of erc20TransferLogsResponse.result) {
-      const transaction = (await this.searchTransactionsById(Parse.transactionId(row.transactionHash)))[0];
-      out.push(transaction);
-    }
+    const ids = erc20TransferLogsResponse.result.map(row => Parse.transactionId(row.transactionHash));
+    // query all in paralel
+    const searches = await Promise.all(ids.map(id => this.searchTransactionsById(id)));
 
-    return out;
+    const transactions = searches.map(search => search[0]);
+    return transactions;
   }
 }
