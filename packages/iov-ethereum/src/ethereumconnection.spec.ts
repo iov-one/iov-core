@@ -292,12 +292,12 @@ describe("EthereumConnection", () => {
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
       const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
-      const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
+      const recipient = await randomAddress();
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
         creator: mainIdentity,
-        recipient: recipientAddress,
+        recipient: recipient,
         amount: defaultAmount,
         fee: {
           gasPrice: testConfig.gasPrice,
@@ -327,12 +327,12 @@ describe("EthereumConnection", () => {
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
       const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
-      const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
+      const recipient = await randomAddress();
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
         creator: mainIdentity,
-        recipient: recipientAddress,
+        recipient: recipient,
         amount: defaultAmount,
         fee: {
           gasPrice: testConfig.gasPrice,
@@ -593,12 +593,12 @@ describe("EthereumConnection", () => {
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
       const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
-      const recipientAddress = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
+      const recipient = await randomAddress();
 
       const sendTx: SendTransaction = {
         kind: "bcp/send",
         creator: mainIdentity,
-        recipient: recipientAddress,
+        recipient: recipient,
         amount: defaultAmount,
         fee: {
           gasPrice: testConfig.gasPrice,
@@ -624,7 +624,7 @@ describe("EthereumConnection", () => {
       if (!isSendTransaction(transaction)) {
         throw new Error("Unexpected transaction type");
       }
-      expect(transaction.recipient).toEqual(recipientAddress);
+      expect(transaction.recipient).toEqual(recipient);
       expect(transaction.amount.quantity).toEqual("445500");
       expect(transaction.creator.pubkey).toEqual(mainIdentity.pubkey);
       connection.disconnect();
@@ -1188,7 +1188,7 @@ describe("EthereumConnection", () => {
         const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
         const [nonceA, nonceB] = await connection.getNonces({ pubkey: mainIdentity.pubkey }, 2);
-        const recipient = "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address;
+        const recipient = await randomAddress();
         await postTransaction(profile, mainIdentity, nonceA, recipient, connection);
         await postTransaction(profile, mainIdentity, nonceB, recipient, connection);
       })().catch(done.fail);
