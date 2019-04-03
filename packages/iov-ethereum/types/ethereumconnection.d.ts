@@ -39,7 +39,15 @@ export declare class EthereumConnection implements BcpConnection {
     getFeeQuote(transaction: UnsignedTransaction): Promise<Fee>;
     private socketSend;
     private searchTransactionsById;
+    /**
+     * Merges search results from two different sources: scraper and logs.
+     *
+     * Those sources are not necessarily in sync, i.e. the a node's logs can contain
+     * results from blocks that are not available in the scraper or vice versa.
+     */
     private searchSendTransactionsByAddress;
+    private searchSendTransactionsByAddressOnScraper;
+    private searchSendTransactionsByAddressInLogs;
     /**
      * The return values of this helper function are unsorted.
      */

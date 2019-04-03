@@ -682,11 +682,46 @@ export class EthereumConnection implements BcpConnection {
     ];
   }
 
+  /**
+   * Merges search results from two different sources: scraper and logs.
+   *
+   * Those sources are not necessarily in sync, i.e. the a node's logs can contain
+   * results from blocks that are not available in the scraper or vice versa.
+   */
   private async searchSendTransactionsByAddress(
     address: Address,
     minHeight: number,
     maxHeight: number,
   ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    // tslint:disable-next-line:readonly-array
+    const out: ConfirmedTransaction[] = [];
+
+    if (this.scraperApiUrl) {
+      const fromScraper = await this.searchSendTransactionsByAddressOnScraper(address, minHeight, maxHeight);
+      out.push(...fromScraper);
+    }
+
+    const fromLogs = await this.searchSendTransactionsByAddressInLogs(address, minHeight, maxHeight);
+    out.push(...fromLogs);
+
+    // Sort by height, descending.
+    // Order of multiple transactions in the same block is undetermined.
+    // In https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash
+    // Ethereum provides `transactionIndex` but this is not yet exposed in the BCP.
+    out.sort((a, b) => b.height - a.height);
+
+    return out;
+  }
+
+  private async searchSendTransactionsByAddressOnScraper(
+    address: Address,
+    minHeight: number,
+    maxHeight: number,
+  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    if (!this.scraperApiUrl) {
+      throw new Error("No scraper API URL specified.");
+    }
+
     if (maxHeight < minHeight) {
       return [];
     }
@@ -694,37 +729,43 @@ export class EthereumConnection implements BcpConnection {
     // tslint:disable-next-line:readonly-array
     const out: ConfirmedTransaction[] = [];
 
-    if (this.scraperApiUrl) {
-      // API: https://etherscan.io/apis#accounts
-      const responseBody = (await axios.get(this.scraperApiUrl, {
-        params: {
-          module: "account",
-          action: "txlist",
-          address: address,
-          startblock: minHeight,
-          endblock: maxHeight,
-          sort: "desc",
-        },
-      })).data;
-      if (responseBody.result !== null) {
-        for (const tx of responseBody.result) {
-          if (tx.isError === "0" && tx.txreceipt_status === "1") {
-            // Do an extra query to the node as the scraper result does not contain the
-            // transaction signature, which we need for recovering the signer's pubkey.
-            const transaction = (await this.searchTransactionsById(Parse.transactionId(tx.hash)))[0];
-            out.push(transaction);
-          }
+    // API: https://etherscan.io/apis#accounts
+    const responseBody = (await axios.get(this.scraperApiUrl, {
+      params: {
+        module: "account",
+        action: "txlist",
+        address: address,
+        startblock: minHeight,
+        endblock: maxHeight,
+        sort: "desc",
+      },
+    })).data;
+    if (responseBody.result !== null) {
+      for (const tx of responseBody.result) {
+        if (tx.isError === "0" && tx.txreceipt_status === "1") {
+          // Do an extra query to the node as the scraper result does not contain the
+          // transaction signature, which we need for recovering the signer's pubkey.
+          const transaction = (await this.searchTransactionsById(Parse.transactionId(tx.hash)))[0];
+          out.push(transaction);
         }
       }
     }
 
+    return out;
+  }
+
+  private async searchSendTransactionsByAddressInLogs(
+    address: Address,
+    minHeight: number,
+    maxHeight: number,
+  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
     const [erc20Outgoing, erc20Incoming] = await Promise.all([
       this.searchErc20Transfers(address, null, minHeight, maxHeight),
       this.searchErc20Transfers(null, address, minHeight, maxHeight),
     ]);
 
-    out.push(...erc20Outgoing);
-    out.push(...erc20Incoming);
+    // tslint:disable-next-line:readonly-array
+    const out: ConfirmedTransaction[] = [...erc20Outgoing, ...erc20Incoming];
 
     // Sort by height, descending.
     // Order of multiple transactions in the same block is undetermined.
@@ -744,8 +785,16 @@ export class EthereumConnection implements BcpConnection {
     minHeight: number,
     maxHeight: number,
   ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    if (maxHeight < minHeight) {
+      return [];
+    }
+
     // https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs
     const contractAddresses = [...this.erc20Tokens.values()].map(options => options.contractAddress);
+
+    if (contractAddresses.length === 0) {
+      return [];
+    }
 
     const erc20TransferLogsResponse = await this.rpcClient.run({
       jsonrpc: "2.0",

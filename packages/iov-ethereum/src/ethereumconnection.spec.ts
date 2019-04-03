@@ -795,7 +795,7 @@ describe("EthereumConnection", () => {
       }
 
       connection.disconnect();
-    }, 50_000);
+    }, 60_000);
 
     it("lists ERC20 transactions when searching by recipient", async () => {
       pendingWithoutEthereum();
