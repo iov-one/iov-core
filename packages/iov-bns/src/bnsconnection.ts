@@ -5,6 +5,7 @@ import {
   Account,
   AccountQuery,
   AddressQuery,
+  Amount,
   AtomicSwap,
   AtomicSwapMerger,
   AtomicSwapQuery,
@@ -46,7 +47,7 @@ import { broadcastTxSyncSuccess, Client as TendermintClient } from "@iov/tenderm
 
 import { bnsCodec } from "./bnscodec";
 import { ChainData, Context } from "./context";
-import { decodeJsonAmount, decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
+import { decodeAmount, decodeJsonAmount, decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
 import {
@@ -612,16 +613,12 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     if (!isBnsTx(transaction)) {
       throw new Error("Received transaction of unsupported kind.");
     }
-    // get gconf fee
-    // TODO: get product fee for this type
-    // take maximum
-    const res = await this.query("/", Encoding.toAscii("gconf:cash:minimal_fee"));
-    if (res.results.length !== 1) {
-      throw new Error("Received unexpected number of fees");
+    // use product fee if it exists, otherwise fallback to default anti-spam fee
+    let fee = await this.getProductFee(transaction.kind);
+    if (!fee) {
+      fee = await this.getDefaultFee();
     }
-    const data = Encoding.fromAscii(res.results[0].value);
-    const amount = decodeJsonAmount(data);
-    return { tokens: amount };
+    return { tokens: fee };
   }
 
   public async withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T> {
@@ -645,6 +642,64 @@ export class BnsConnection implements BcpAtomicSwapConnection {
       tokenTicker: b.tokenTicker,
     }));
     return { ...escrow, data: { ...escrow.data, amounts: amounts } };
+  }
+
+  /**
+   * Queries the blockchain for the enforced anti-spam fee
+   */
+  protected async getDefaultFee(): Promise<Amount> {
+    const res = await this.query("/", Encoding.toAscii("gconf:cash:minimal_fee"));
+    if (res.results.length !== 1) {
+      throw new Error("Received unexpected number of fees");
+    }
+    const data = Encoding.fromAscii(res.results[0].value);
+    const amount = decodeJsonAmount(data);
+    return amount;
+  }
+
+  /**
+   * Queries the blockchain for the enforced product fee for this kind of transaction.
+   * Returns undefined if no product fee is defined
+   */
+  protected async getProductFee(kind: string): Promise<Amount | undefined> {
+    const path = mapKindToBnsPath(kind);
+
+    // TODO: add query handler to msgfee
+    const { results } = await this.query("/", Encoding.toAscii(`msgfee:${path}`));
+    if (results.length > 1) {
+      throw new Error("Received unexpected number of fees");
+    }
+    if (results.length === 0) {
+      return undefined;
+    }
+
+    const parser = createParser(codecImpl.msgfee.MsgFee, "msgfee:");
+    const fees = results
+      .map(parser)
+      .map(msg => msg.fee)
+      .map(x => decodeAmount(x!));
+    return fees.length > 0 ? fees[0] : undefined;
+  }
+}
+
+function mapKindToBnsPath(kind: string): string | undefined {
+  switch (kind) {
+    case "bcp/send":
+      return "cash/send";
+    case "bcp/swap_offer":
+      return "escrow/create";
+    case "bcp/swap_claim":
+      return "escrow/release";
+    case "bcp/swap_abort":
+      return "escrow/return";
+    case "bns/register_username":
+      return "nft/username/issue";
+    case "bns/add_address_to_username":
+      return "nft/username/address/add";
+    case "bns/remove_address_from_username":
+      return "nft/username/address/remove";
+    default:
+      return undefined;
   }
 }
 

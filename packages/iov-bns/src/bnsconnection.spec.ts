@@ -86,6 +86,12 @@ describe("BnsConnection", () => {
     fractionalDigits: 9,
     tokenTicker: cash,
   };
+  // this is enough money in an account that registers names... twice the cost of one name registration product fee
+  const registerAmount: Amount = {
+    quantity: "10000000000",
+    fractionalDigits: 9,
+    tokenTicker: cash,
+  };
 
   // The first simple address key (m/4804438'/0') generated from this mnemonic produces the address
   // tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f (bech32) / b1ca7e78f74423ae01da3b51e676934d9105f282 (hex).
@@ -596,7 +602,7 @@ describe("BnsConnection", () => {
 
       // we need funds to pay the fees
       const address = identityToAddress(identity);
-      await sendTokensFromFaucet(connection, address);
+      await sendTokensFromFaucet(connection, address, registerAmount);
 
       // Create and send registration
       const username = `testuser_${Math.random()}`;
@@ -638,7 +644,7 @@ describe("BnsConnection", () => {
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
       // we need funds to pay the fees
       const myAddress = identityToAddress(identity);
-      await sendTokensFromFaucet(connection, myAddress);
+      await sendTokensFromFaucet(connection, myAddress, registerAmount);
 
       // Create and send registration
       const username = `testuser_${Math.random()}`;
@@ -1238,7 +1244,7 @@ describe("BnsConnection", () => {
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
       const identityAddress = identityToAddress(identity);
-      await sendTokensFromFaucet(connection, identityAddress);
+      await sendTokensFromFaucet(connection, identityAddress, registerAmount);
 
       // Register username
       const username = `testuser_${Math.random()}`;
@@ -1296,7 +1302,7 @@ describe("BnsConnection", () => {
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
       const identityAddress = identityToAddress(identity);
-      await sendTokensFromFaucet(connection, identityAddress);
+      await sendTokensFromFaucet(connection, identityAddress, registerAmount);
 
       // With a  blockchain
       const chainId = `wonderland_${Math.random()}` as ChainId;
@@ -1801,8 +1807,8 @@ describe("BnsConnection", () => {
       };
 
       const result = await connection.getFeeQuote(usernameRegistration);
-      // anti-spam gconf fee from genesis
-      expect(result.tokens!.quantity).toEqual("10000000");
+      // 5 CASH product fee
+      expect(result.tokens!.quantity).toEqual("5000000000");
       expect(result.tokens!.fractionalDigits).toEqual(9);
       expect(result.tokens!.tokenTicker).toEqual("CASH" as TokenTicker);
 
