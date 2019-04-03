@@ -801,6 +801,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
 
       const connection = await EthereumConnection.establish(testConfig.base, {
+        ...testConfig.connectionOptions,
         erc20Tokens: testConfig.erc20Tokens,
       });
       const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
@@ -858,6 +859,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
 
       const connection = await EthereumConnection.establish(testConfig.base, {
+        ...testConfig.connectionOptions,
         erc20Tokens: testConfig.erc20Tokens,
       });
       const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
