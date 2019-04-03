@@ -7,9 +7,15 @@ export interface EthereumConnectionOptions {
     readonly scraperApiUrl?: string;
     /** List of supported ERC20 tokens */
     readonly erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>;
+    /** Time between two polls for block and transaction watching in seconds */
+    readonly blockPollInterval?: number;
+    /** Time between two polls account watching */
+    readonly accountPollInterval?: number;
 }
 export declare class EthereumConnection implements BcpConnection {
     static establish(baseUrl: string, options?: EthereumConnectionOptions): Promise<EthereumConnection>;
+    private readonly blockPollIntervalMs;
+    private readonly accountPollIntervalMs;
     private readonly rpcClient;
     private readonly myChainId;
     private readonly socket;
