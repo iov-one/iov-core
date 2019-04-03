@@ -370,7 +370,7 @@ const rinkeby: EthereumNetworkConfig = {
     },
   },
   gasPrice: {
-    quantity: "1000000000",
+    quantity: "3000000000", // 3 Gwei
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   },
