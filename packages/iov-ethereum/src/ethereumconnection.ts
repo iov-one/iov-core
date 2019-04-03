@@ -90,7 +90,8 @@ export class EthereumConnection implements BcpConnection {
   private readonly myChainId: ChainId;
   private readonly socket: StreamingSocket | undefined;
   private readonly scraperApiUrl: string | undefined;
-  private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20>;
+  private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
+  private readonly erc20ContractReaders: ReadonlyMap<TokenTicker, Erc20>;
   private readonly codec: EthereumCodec;
 
   constructor(baseUrl: string, chainId: ChainId, options?: EthereumConnectionOptions) {
@@ -125,21 +126,15 @@ export class EthereumConnection implements BcpConnection {
       }
     }
 
-    this.erc20Tokens =
-      options && options.erc20Tokens
-        ? new Map(
-            [...options.erc20Tokens.entries()].map(
-              ([ticker, erc20Options]): [TokenTicker, Erc20] => [
-                ticker,
-                new Erc20(ethereumClient, erc20Options),
-              ],
-            ),
-          )
-        : new Map();
+    const erc20Tokens = options && options.erc20Tokens ? options.erc20Tokens : new Map();
 
-    this.codec = new EthereumCodec({
-      erc20Tokens: options ? options.erc20Tokens : undefined,
-    });
+    this.erc20Tokens = erc20Tokens;
+    this.erc20ContractReaders = new Map(
+      [...erc20Tokens.entries()].map(
+        ([ticker, erc20Options]): [TokenTicker, Erc20] => [ticker, new Erc20(ethereumClient, erc20Options)],
+      ),
+    );
+    this.codec = new EthereumCodec({ erc20Tokens: erc20Tokens });
   }
 
   public disconnect(): void {
@@ -227,7 +222,7 @@ export class EthereumConnection implements BcpConnection {
 
   public async getAllTickers(): Promise<ReadonlyArray<BcpTicker>> {
     const erc20s = await Promise.all(
-      [...this.erc20Tokens.entries()].map(
+      [...this.erc20ContractReaders.entries()].map(
         async ([ticker, contract]): Promise<BcpTicker> => {
           const symbol = await contract.symbol();
           if (ticker !== symbol) {
@@ -271,7 +266,7 @@ export class EthereumConnection implements BcpConnection {
     const ethBalance = Parse.ethereumAmount(decodeHexQuantityString(response.result));
 
     const erc20Balances: ReadonlyArray<BcpCoin> = await Promise.all(
-      [...this.erc20Tokens.entries()].map(async ([ticker, contract]) => {
+      [...this.erc20ContractReaders.entries()].map(async ([ticker, contract]) => {
         const symbol = await contract.symbol();
         if (ticker !== symbol) {
           throw new Error(`Configured ticker '${ticker}' does not match contract symbol '${symbol}'`);
