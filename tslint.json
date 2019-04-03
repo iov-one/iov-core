@@ -26,7 +26,7 @@
     "no-mixed-interface": false,
     "no-object-mutation": true,
     "no-parameter-reassignment": true,
-    "no-unnecessary-class": ["allow-static-only"],
+    "no-unnecessary-class": [true, "allow-static-only"],
     "no-unnecessary-type-assertion": true,
     "no-var-keyword": true,
     "object-literal-shorthand": [true, "never"],
