@@ -637,31 +637,11 @@ describe("EthereumConnection", () => {
       connection.disconnect();
     }, 30_000);
 
-    // TODO: load ganache with db from github
-    xit("can search a transaction by hash", async () => {
-      pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
-      const storedTxId = "" as TransactionId;
-      const results = await connection.searchTx({ id: storedTxId });
-      expect(results.length).toEqual(1);
-      const result = results[0];
-      expect(result.transactionId).toEqual(storedTxId);
-      const transaction = result.transaction;
-      if (!isSendTransaction(transaction)) {
-        throw new Error("Unexpected transaction type");
-      }
-      expect(transaction.recipient).toEqual("recipient_address");
-      expect(transaction.amount.quantity).toEqual("tx_quantity");
-    });
-
     it("can search a transaction by account", async () => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
-      const connection = await EthereumConnection.establish(testConfig.base, {
-        ...testConfig.connectionOptions,
-        scraperApiUrl: testConfig.scraper!.apiUrl,
-      });
-      const results = await connection.searchTx({ sentFromOrTo: testConfig.scraper!.address });
+      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const results = await connection.searchTx({ sentFromOrTo: testConfig.accountStates.default.address });
       expect(results.length).toBeGreaterThan(1);
       connection.disconnect();
     });
@@ -670,10 +650,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
 
-      const connection = await EthereumConnection.establish(testConfig.base, {
-        ...testConfig.connectionOptions,
-        scraperApiUrl: testConfig.scraper!.apiUrl,
-      });
+      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
@@ -795,7 +772,124 @@ describe("EthereumConnection", () => {
       }
 
       connection.disconnect();
-    }, 50_000);
+    }, 60_000);
+
+    it("lists ERC20 transactions when searching by recipient", async () => {
+      pendingWithoutEthereum();
+
+      const connection = await EthereumConnection.establish(testConfig.base, {
+        ...testConfig.connectionOptions,
+        erc20Tokens: testConfig.erc20Tokens,
+      });
+      const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
+      const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
+
+      const recipient = await randomAddress();
+
+      for (const sendTest of testConfig.erc20TransferTests) {
+        let transactionId: TransactionId;
+
+        // send
+        {
+          const sendTx: SendTransaction = {
+            kind: "bcp/send",
+            creator: mainIdentity,
+            recipient: recipient,
+            fee: {
+              gasPrice: testConfig.gasPrice,
+              gasLimit: testConfig.gasLimit,
+            },
+            ...sendTest,
+          };
+          const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
+          const signed = await profile.signTransaction(sendTx, codec, nonce);
+          const resultPost = await connection.postTx(codec.bytesToPost(signed));
+          transactionId = resultPost.transactionId;
+          await resultPost.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        }
+
+        // search by recipient
+        {
+          const resultSearch = await connection.searchTx({ sentFromOrTo: recipient });
+          expect(resultSearch.length).toBeGreaterThanOrEqual(1);
+          const latestResult = resultSearch[0];
+          expect(latestResult.transactionId).toEqual(transactionId);
+          expect(latestResult.confirmations).toEqual(1);
+          const transaction = latestResult.transaction;
+          if (!isSendTransaction(transaction)) {
+            throw new Error("Unexpected transaction type");
+          }
+          expect(transaction.creator).toEqual(mainIdentity);
+          expect(transaction.recipient).toEqual(recipient);
+          expect(transaction.amount).toEqual(sendTest.amount);
+          expect(transaction.memo).toBeUndefined();
+        }
+      }
+
+      connection.disconnect();
+    }, 60_000);
+
+    it("lists ERC20 transactions when searching by sender", async () => {
+      pendingWithoutEthereum();
+
+      const connection = await EthereumConnection.establish(testConfig.base, {
+        ...testConfig.connectionOptions,
+        erc20Tokens: testConfig.erc20Tokens,
+      });
+      const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
+      const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
+
+      const recipient = await randomAddress();
+
+      for (const sendTest of testConfig.erc20TransferTests) {
+        let transactionId: TransactionId;
+
+        // send
+        {
+          const sendTx: SendTransaction = {
+            kind: "bcp/send",
+            creator: mainIdentity,
+            recipient: recipient,
+            fee: {
+              gasPrice: testConfig.gasPrice,
+              gasLimit: testConfig.gasLimit,
+            },
+            ...sendTest,
+          };
+          const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
+          const signed = await profile.signTransaction(sendTx, codec, nonce);
+          const resultPost = await connection.postTx(codec.bytesToPost(signed));
+          transactionId = resultPost.transactionId;
+          await resultPost.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        }
+
+        // search by sender
+        {
+          const senderAddress = pubkeyToAddress(mainIdentity.pubkey);
+          const resultSearch = await connection.searchTx({ sentFromOrTo: senderAddress });
+          expect(resultSearch.length).toBeGreaterThanOrEqual(1);
+          const latestResult = resultSearch[0];
+          expect(latestResult.transactionId).toEqual(transactionId);
+          expect(latestResult.confirmations).toEqual(1);
+          const transaction = latestResult.transaction;
+          if (!isSendTransaction(transaction)) {
+            throw new Error("Unexpected transaction type");
+          }
+          expect(transaction.creator).toEqual(mainIdentity);
+          expect(transaction.recipient).toEqual(recipient);
+          expect(transaction.amount).toEqual(sendTest.amount);
+          expect(transaction.memo).toBeUndefined();
+        }
+      }
+
+      connection.disconnect();
+    }, 60_000);
   });
 
   describe("listenTx", () => {
@@ -804,14 +898,16 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereumScraper();
 
       (async () => {
+        const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
         const connection = await EthereumConnection.establish(testConfig.base, {
           ...testConfig.connectionOptions,
-          scraperApiUrl: testConfig.scraper!.apiUrl,
+          erc20Tokens: testConfig.erc20Tokens,
         });
 
         const recipientAddress = await randomAddress();
 
         // setup listener
+        const transactionIds = new Set<TransactionId>();
         const events = new Array<ConfirmedTransaction>();
         const subscription = connection.listenTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
@@ -829,10 +925,10 @@ describe("EthereumConnection", () => {
             expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
             if (events.length === 3) {
-              // This assumes we get two transactions into one block
-              // A == B < C
-              expect(events[0].height).toEqual(events[1].height);
-              expect(events[2].height).toBeGreaterThan(events[1].height);
+              // The order of the events 0, 1, 2 does not necessarily correspond to the send
+              // order A, B, C. However, we can at least make sure we got the right ones.
+              const receivedIds = new Set(events.map(e => e.transactionId));
+              expect(receivedIds).toEqual(transactionIds);
 
               subscription.unsubscribe();
               connection.disconnect();
@@ -845,7 +941,7 @@ describe("EthereumConnection", () => {
 
         const profile = new UserProfile();
         const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
-        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
+        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
         const sendA: SendTransaction = {
           kind: "bcp/send",
@@ -871,53 +967,55 @@ describe("EthereumConnection", () => {
           memo: `listenTx() test B ${Math.random()}`,
         };
 
+        // an ERC 20 token transfer
         const sendC: SendTransaction = {
           kind: "bcp/send",
           creator: sender,
           recipient: recipientAddress,
-          amount: defaultAmount,
           fee: {
             gasPrice: testConfig.gasPrice,
             gasLimit: testConfig.gasLimit,
           },
-          memo: `listenTx() test C ${Math.random()}`,
+          ...testConfig.erc20TransferTests[0],
         };
 
         const [nonceA, nonceB, nonceC] = await connection.getNonces({ pubkey: sender.pubkey }, 3);
 
-        const signedA = await profile.signTransaction(sendA, ethereumCodec, nonceA);
-        const signedB = await profile.signTransaction(sendB, ethereumCodec, nonceB);
-        const signedC = await profile.signTransaction(sendC, ethereumCodec, nonceC);
-        const bytesToPostA = ethereumCodec.bytesToPost(signedA);
-        const bytesToPostB = ethereumCodec.bytesToPost(signedB);
-        const bytesToPostC = ethereumCodec.bytesToPost(signedC);
+        const signedA = await profile.signTransaction(sendA, codec, nonceA);
+        const signedB = await profile.signTransaction(sendB, codec, nonceB);
+        const signedC = await profile.signTransaction(sendC, codec, nonceC);
+        const bytesToPostA = codec.bytesToPost(signedA);
+        const bytesToPostB = codec.bytesToPost(signedB);
+        const bytesToPostC = codec.bytesToPost(signedC);
 
-        // Post A and B in parallel
-        const [postResultA, postResultB] = await Promise.all([
+        // Post A, B, C in parallel
+        const [postResultA, postResultB, postResultC] = await Promise.all([
           connection.postTx(bytesToPostA),
           connection.postTx(bytesToPostB),
+          connection.postTx(bytesToPostC),
         ]);
 
-        // Wait for a block
-        await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        transactionIds.add(postResultA.transactionId);
+        transactionIds.add(postResultB.transactionId);
+        transactionIds.add(postResultC.transactionId);
 
-        // Post C
-        await connection.postTx(bytesToPostC);
+        // Wait for transaction success
+        await Promise.all([
+          postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info)),
+          postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info)),
+          postResultC.blockInfo.waitFor(info => !isBlockInfoPending(info)),
+        ]);
       })().catch(done.fail);
-    }, 60_000);
+    }, 90_000);
   });
 
   describe("liveTx", () => {
-    it("can listen to transactions by recipient address (transactions in history and updates)", done => {
+    it("works for ETH transactions by recipient (in history and updates)", done => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
 
       (async () => {
-        const connection = await EthereumConnection.establish(testConfig.base, {
-          ...testConfig.connectionOptions,
-          scraperApiUrl: testConfig.scraper!.apiUrl,
-        });
+        const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
 
         const recipientAddress = await randomAddress();
 
@@ -925,7 +1023,7 @@ describe("EthereumConnection", () => {
 
         const profile = new UserProfile();
         const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
-        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
+        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
         const sendA: SendTransaction = {
           kind: "bcp/send",
@@ -1017,19 +1115,244 @@ describe("EthereumConnection", () => {
       })().catch(done.fail);
     }, 60_000);
 
-    it("can listen to transactions by ID (transaction in history)", done => {
+    it("works for ERC20 transactions by recipient (in history and updates)", done => {
+      pendingWithoutEthereum();
+
+      (async () => {
+        const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
+        const connection = await EthereumConnection.establish(testConfig.base, {
+          ...testConfig.connectionOptions,
+          erc20Tokens: testConfig.erc20Tokens,
+        });
+
+        const recipientAddress = await randomAddress();
+
+        // send transactions
+
+        const profile = new UserProfile();
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
+        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
+
+        const sendA: SendTransaction = {
+          kind: "bcp/send",
+          creator: sender,
+          recipient: recipientAddress,
+          fee: {
+            gasPrice: testConfig.gasPrice,
+            gasLimit: testConfig.gasLimit,
+          },
+          ...testConfig.erc20TransferTests[0],
+        };
+
+        const sendB: SendTransaction = {
+          kind: "bcp/send",
+          creator: sender,
+          recipient: recipientAddress,
+          fee: {
+            gasPrice: testConfig.gasPrice,
+            gasLimit: testConfig.gasLimit,
+          },
+          ...testConfig.erc20TransferTests[0],
+        };
+
+        const sendC: SendTransaction = {
+          kind: "bcp/send",
+          creator: sender,
+          recipient: recipientAddress,
+          fee: {
+            gasPrice: testConfig.gasPrice,
+            gasLimit: testConfig.gasLimit,
+          },
+          ...testConfig.erc20TransferTests[0],
+        };
+
+        const [nonceA, nonceB, nonceC] = await connection.getNonces({ pubkey: sender.pubkey }, 3);
+
+        const signedA = await profile.signTransaction(sendA, codec, nonceA);
+        const signedB = await profile.signTransaction(sendB, codec, nonceB);
+        const signedC = await profile.signTransaction(sendC, codec, nonceC);
+        const bytesToPostA = codec.bytesToPost(signedA);
+        const bytesToPostB = codec.bytesToPost(signedB);
+        const bytesToPostC = codec.bytesToPost(signedC);
+
+        const transactionIds = new Set<TransactionId>();
+
+        // Post A and B, wait for a block
+        const postResultA = await connection.postTx(bytesToPostA);
+        const postResultB = await connection.postTx(bytesToPostB);
+        transactionIds.add(postResultA.transactionId);
+        transactionIds.add(postResultB.transactionId);
+        await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
+
+        // setup listener after A and B are in block
+        const events = new Array<ConfirmedTransaction>();
+        const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
+          next: event => {
+            if (!isConfirmedTransaction(event)) {
+              throw new Error("Confirmed transaction expected");
+            }
+
+            events.push(event);
+
+            if (!isSendTransaction(event.transaction)) {
+              throw new Error("Unexpected transaction type");
+            }
+            expect(event.transaction.recipient).toEqual(recipientAddress);
+            expect(event.transaction.creator).toEqual(sender);
+            expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
+
+            if (events.length === 3) {
+              const receivedIds = new Set(events.map(e => e.transactionId));
+              expect(receivedIds).toEqual(transactionIds);
+
+              subscription.unsubscribe();
+              connection.disconnect();
+              done();
+            }
+          },
+        });
+
+        // Post C
+        const postResultC = await connection.postTx(bytesToPostC);
+        transactionIds.add(postResultC.transactionId);
+      })().catch(done.fail);
+    }, 60_000);
+
+    it("works for ETH and ERC20 transactions by recipient (in history and updates)", done => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
 
       (async () => {
+        const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
         const connection = await EthereumConnection.establish(testConfig.base, {
           ...testConfig.connectionOptions,
-          scraperApiUrl: testConfig.scraper!.apiUrl,
+          erc20Tokens: testConfig.erc20Tokens,
         });
+
+        const recipientAddress = await randomAddress();
+
+        // send transactions
 
         const profile = new UserProfile();
         const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
-        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
+        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
+
+        const sendA: SendTransaction = {
+          kind: "bcp/send",
+          creator: sender,
+          recipient: recipientAddress,
+          fee: {
+            gasPrice: testConfig.gasPrice,
+            gasLimit: testConfig.gasLimit,
+          },
+          amount: defaultAmount,
+        };
+
+        const sendB: SendTransaction = {
+          kind: "bcp/send",
+          creator: sender,
+          recipient: recipientAddress,
+          fee: {
+            gasPrice: testConfig.gasPrice,
+            gasLimit: testConfig.gasLimit,
+          },
+          ...testConfig.erc20TransferTests[0],
+        };
+
+        const sendC: SendTransaction = {
+          kind: "bcp/send",
+          creator: sender,
+          recipient: recipientAddress,
+          fee: {
+            gasPrice: testConfig.gasPrice,
+            gasLimit: testConfig.gasLimit,
+          },
+          amount: defaultAmount,
+        };
+
+        const sendD: SendTransaction = {
+          kind: "bcp/send",
+          creator: sender,
+          recipient: recipientAddress,
+          fee: {
+            gasPrice: testConfig.gasPrice,
+            gasLimit: testConfig.gasLimit,
+          },
+          ...testConfig.erc20TransferTests[0],
+        };
+
+        const [nonceA, nonceB, nonceC, nonceD] = await connection.getNonces({ pubkey: sender.pubkey }, 4);
+
+        const signedA = await profile.signTransaction(sendA, codec, nonceA);
+        const signedB = await profile.signTransaction(sendB, codec, nonceB);
+        const signedC = await profile.signTransaction(sendC, codec, nonceC);
+        const signedD = await profile.signTransaction(sendD, codec, nonceD);
+        const bytesToPostA = codec.bytesToPost(signedA);
+        const bytesToPostB = codec.bytesToPost(signedB);
+        const bytesToPostC = codec.bytesToPost(signedC);
+        const bytesToPostD = codec.bytesToPost(signedD);
+
+        const transactionIds = new Set<TransactionId>();
+
+        // Post A and B, wait for a block
+        const [postResultA, postResultB] = await Promise.all([
+          connection.postTx(bytesToPostA),
+          connection.postTx(bytesToPostB),
+        ]);
+        transactionIds.add(postResultA.transactionId);
+        transactionIds.add(postResultB.transactionId);
+        await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
+
+        // setup listener after A and B are in block
+        const events = new Array<ConfirmedTransaction>();
+        const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
+          next: event => {
+            if (!isConfirmedTransaction(event)) {
+              throw new Error("Confirmed transaction expected");
+            }
+
+            events.push(event);
+
+            if (!isSendTransaction(event.transaction)) {
+              throw new Error("Unexpected transaction type");
+            }
+            expect(event.transaction.recipient).toEqual(recipientAddress);
+            expect(event.transaction.creator).toEqual(sender);
+            expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
+
+            if (events.length === 4) {
+              const receivedIds = new Set(events.map(e => e.transactionId));
+              expect(receivedIds).toEqual(transactionIds);
+
+              subscription.unsubscribe();
+              connection.disconnect();
+              done();
+            }
+          },
+        });
+
+        // Post C and D in parallel
+        const [postResultC, postResultD] = await Promise.all([
+          connection.postTx(bytesToPostC),
+          connection.postTx(bytesToPostD),
+        ]);
+        transactionIds.add(postResultC.transactionId);
+        transactionIds.add(postResultD.transactionId);
+      })().catch(done.fail);
+    }, 70_000);
+
+    it("works for transactions by ID (in history)", done => {
+      pendingWithoutEthereum();
+      pendingWithoutEthereumScraper();
+
+      (async () => {
+        const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+
+        const profile = new UserProfile();
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
+        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
         const recipientAddress = await randomAddress();
         const send: SendTransaction = {
@@ -1078,15 +1401,12 @@ describe("EthereumConnection", () => {
       })().catch(done.fail);
     }, 30_000);
 
-    it("can listen to transactions by ID (transaction in updates)", done => {
+    it("works for transactions by ID (in updates)", done => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
 
       (async () => {
-        const connection = await EthereumConnection.establish(testConfig.base, {
-          ...testConfig.connectionOptions,
-          scraperApiUrl: testConfig.scraper!.apiUrl,
-        });
+        const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
 
         const recipientAddress = await randomAddress();
 
@@ -1094,7 +1414,7 @@ describe("EthereumConnection", () => {
 
         const profile = new UserProfile();
         const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
-        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(1));
+        const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
         const send: SendTransaction = {
           kind: "bcp/send",
