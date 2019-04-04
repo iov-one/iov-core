@@ -925,7 +925,7 @@ describe("EthereumConnection", () => {
             expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
             if (events.length === 3) {
-              // The order of the events 0, 1, 2 does not necessarily correspons to the send
+              // The order of the events 0, 1, 2 does not necessarily correspond to the send
               // order A, B, C. However, we can at least make sure we got the right ones.
               const receivedIds = new Set(events.map(e => e.transactionId));
               expect(receivedIds).toEqual(transactionIds);
@@ -1000,9 +1000,11 @@ describe("EthereumConnection", () => {
         transactionIds.add(postResultC.transactionId);
 
         // Wait for transaction success
-        await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        await postResultC.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await Promise.all([
+          postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info)),
+          postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info)),
+          postResultC.blockInfo.waitFor(info => !isBlockInfoPending(info)),
+        ]);
       })().catch(done.fail);
     }, 90_000);
   });

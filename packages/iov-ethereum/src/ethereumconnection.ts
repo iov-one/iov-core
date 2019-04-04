@@ -907,22 +907,11 @@ export class EthereumConnection implements BcpConnection {
     }
 
     if (!Array.isArray(erc20TransferLogsResponse.result)) {
-      throw new Error("Got unuepected type of result");
+      throw new Error("Expected result to be an array");
     }
 
-    // console.log(erc20TransferLogsResponse.result);
-    // console.log(
-    //   erc20TransferLogsResponse.result.map((row: any) => {
-    //     return {
-    //       height: decodeHexQuantity(row.blockNumber),
-    //       contractAddress: row.address,
-    //       topics: row.topics,
-    //     };
-    //   }),
-    // );
-
     const ids = erc20TransferLogsResponse.result.map(row => Parse.transactionId(row.transactionHash));
-    // query all in paralel
+    // query all in parallel
     const searches = await Promise.all(ids.map(id => this.searchTransactionsById(id)));
 
     const transactions = searches.map(search => search[0]);
