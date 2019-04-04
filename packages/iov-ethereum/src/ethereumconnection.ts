@@ -526,6 +526,9 @@ export class EthereumConnection implements BcpConnection {
           const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
 
           const poll = async (): Promise<void> => {
+            if (!this.scraperApiUrl) {
+              return;
+            }
             const result = await this.searchSendTransactionsByAddressOnScraper(
               sentFromOrTo,
               minHeight,
@@ -624,6 +627,9 @@ export class EthereumConnection implements BcpConnection {
           const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
 
           const poll = async (): Promise<void> => {
+            if (!this.scraperApiUrl) {
+              return;
+            }
             const result = await this.searchSendTransactionsByAddressOnScraper(
               sentFromOrTo,
               minHeight,
