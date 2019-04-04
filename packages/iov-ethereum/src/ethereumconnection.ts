@@ -668,10 +668,10 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
         return [];
       }
 
-      const senderBegin = 12;
-      const senderEnd = senderBegin + 20;
-      const recipientBegin = senderEnd + 12;
-      const recipientEnd = recipientBegin + 20;
+      const senderBegin = 0;
+      const senderEnd = senderBegin + 32;
+      const recipientBegin = senderEnd;
+      const recipientEnd = recipientBegin + 32;
       const hashBegin = recipientEnd;
       const hashEnd = hashBegin + 32;
       const timeoutBegin = hashEnd;
@@ -679,10 +679,10 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
       const amountBegin = timeoutEnd;
       const amountEnd = amountBegin + 32;
 
-      const resultArray = Encoding.fromHex(swapsResponse.result.slice(2));
-      const sender = toChecksummedAddress("0x" + Encoding.toHex(resultArray.slice(senderBegin, senderEnd)));
+      const resultArray = Encoding.fromHex(normalizeHex(swapsResponse.result));
+      const sender = toChecksummedAddress(Abi.decodeAddress(resultArray.slice(senderBegin, senderEnd)));
       const recipient = toChecksummedAddress(
-        "0x" + Encoding.toHex(resultArray.slice(recipientBegin, recipientEnd)),
+        Abi.decodeAddress(resultArray.slice(recipientBegin, recipientEnd)),
       );
       const hash = resultArray.slice(hashBegin, hashEnd);
       const timeoutHeight = new BN(resultArray.slice(timeoutBegin, timeoutEnd)).toNumber();
