@@ -910,7 +910,7 @@ export class EthereumConnection implements BcpConnection {
       throw new Error("Got unuepected type of result");
     }
 
-    // console.log(logsResponse);
+    // console.log(erc20TransferLogsResponse.result);
     // console.log(
     //   erc20TransferLogsResponse.result.map((row: any) => {
     //     return {
