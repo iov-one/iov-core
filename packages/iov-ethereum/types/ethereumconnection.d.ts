@@ -38,7 +38,7 @@ export declare class EthereumConnection implements BcpAtomicSwapConnection {
     liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction>;
     getFeeQuote(transaction: UnsignedTransaction): Promise<Fee>;
     withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;
-    getSwaps(_: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>>;
+    getSwaps(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>>;
     watchSwaps(_: AtomicSwapQuery): Stream<AtomicSwap>;
     private socketSend;
     private searchTransactionsById;
