@@ -152,6 +152,12 @@ export declare function createTimestampTimeout(secondsFromNow: number): Timestam
 /** A swap offer or a counter offer */
 export interface SwapOfferTransaction extends UnsignedTransaction {
     readonly kind: "bcp/swap_offer";
+    /**
+     * The ID of the swap to aid coordination between the two parties.
+     *
+     * This should be generated randomly by the client to avoid collisions.
+     */
+    readonly swapId?: SwapIdBytes;
     readonly amounts: ReadonlyArray<Amount>;
     readonly recipient: Address;
     /**

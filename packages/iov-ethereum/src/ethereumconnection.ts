@@ -1,4 +1,5 @@
 import axios from "axios";
+import BN from "bn.js";
 import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
 import { Producer, Stream, Subscription } from "xstream";
@@ -8,8 +9,11 @@ import {
   AccountQuery,
   Address,
   AddressQuery,
+  Amount,
+  AtomicSwap,
+  AtomicSwapQuery,
+  BcpAtomicSwapConnection,
   BcpCoin,
-  BcpConnection,
   BcpTicker,
   BcpTxQuery,
   BlockHeader,
@@ -18,11 +22,13 @@ import {
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
+  isAtomicSwapIdQuery,
   isPubkeyQuery,
   Nonce,
   PostableBytes,
   PostTxResponse,
   PubkeyQuery,
+  SwapState,
   TokenTicker,
   TransactionId,
   TransactionState,
@@ -33,7 +39,8 @@ import { isJsonRpcErrorResponse, JsonRpcRequest } from "@iov/jsonrpc";
 import { StreamingSocket } from "@iov/socket";
 import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
-import { pubkeyToAddress } from "./address";
+import { Abi } from "./abi";
+import { pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { Erc20, Erc20Options } from "./erc20";
 import { EthereumCodec } from "./ethereumcodec";
@@ -78,7 +85,7 @@ export interface EthereumConnectionOptions {
   readonly pollInterval?: number;
 }
 
-export class EthereumConnection implements BcpConnection {
+export class EthereumConnection implements BcpAtomicSwapConnection {
   public static async establish(
     baseUrl: string,
     options?: EthereumConnectionOptions,
@@ -612,6 +619,7 @@ export class EthereumConnection implements BcpConnection {
   public async getFeeQuote(transaction: UnsignedTransaction): Promise<Fee> {
     switch (transaction.kind) {
       case "bcp/send":
+      case "bcp/swap_offer":
         return {
           gasPrice: {
             // TODO: calculate dynamically from previous blocks or external API
@@ -634,6 +642,79 @@ export class EthereumConnection implements BcpConnection {
 
   public async withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T> {
     return { ...transaction, fee: await this.getFeeQuote(transaction) };
+  }
+
+  public async getSwaps(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>> {
+    if (isAtomicSwapIdQuery(query)) {
+      const data = Uint8Array.from([...Abi.calculateMethodId("get(bytes32)"), ...query.swapid]);
+
+      const params = [
+        {
+          to: constants.atomicSwapEtherContractAddress,
+          data: "0x" + Encoding.toHex(data),
+        },
+      ] as ReadonlyArray<any>;
+      const swapsResponse = await this.rpcClient.run({
+        jsonrpc: "2.0",
+        method: "eth_call",
+        params: params,
+        id: 7,
+      });
+      if (isJsonRpcErrorResponse(swapsResponse)) {
+        throw new Error(JSON.stringify(swapsResponse.error));
+      }
+
+      if (swapsResponse.result === null) {
+        return [];
+      }
+
+      const senderBegin = 0;
+      const senderEnd = senderBegin + 32;
+      const recipientBegin = senderEnd;
+      const recipientEnd = recipientBegin + 32;
+      const hashBegin = recipientEnd;
+      const hashEnd = hashBegin + 32;
+      const timeoutBegin = hashEnd;
+      const timeoutEnd = timeoutBegin + 32;
+      const amountBegin = timeoutEnd;
+      const amountEnd = amountBegin + 32;
+
+      const resultArray = Encoding.fromHex(normalizeHex(swapsResponse.result));
+      const sender = toChecksummedAddress(Abi.decodeAddress(resultArray.slice(senderBegin, senderEnd)));
+      const recipient = toChecksummedAddress(
+        Abi.decodeAddress(resultArray.slice(recipientBegin, recipientEnd)),
+      );
+      const hash = resultArray.slice(hashBegin, hashEnd);
+      const timeoutHeight = new BN(resultArray.slice(timeoutBegin, timeoutEnd)).toNumber();
+      const amount = {
+        quantity: new BN(resultArray.slice(amountBegin, amountEnd)).toString(),
+        fractionalDigits: constants.primaryTokenFractionalDigits,
+        tokenTicker: constants.primaryTokenTicker,
+      };
+
+      return [
+        {
+          // TODO: Update when we return state from the get() call
+          kind: SwapState.Open,
+          data: {
+            id: query.swapid,
+            sender: sender,
+            recipient: recipient,
+            hash: hash,
+            amounts: [amount] as ReadonlyArray<Amount>,
+            timeout: {
+              height: timeoutHeight,
+            },
+          },
+        },
+      ];
+    } else {
+      throw new Error("unsupported query type");
+    }
+  }
+
+  public watchSwaps(_: AtomicSwapQuery): Stream<AtomicSwap> {
+    throw new Error("not implemented");
   }
 
   private async socketSend(request: JsonRpcRequest, ignoreNetworkError: boolean = false): Promise<void> {

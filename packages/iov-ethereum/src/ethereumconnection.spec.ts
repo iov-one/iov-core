@@ -3,18 +3,28 @@ import {
   Address,
   Algorithm,
   Amount,
+  AtomicSwapHelpers,
+  AtomicSwapQuery,
+  BcpTxQuery,
   BlockHeader,
   BlockInfoFailed,
   BlockInfoSucceeded,
+  ChainId,
   ConfirmedTransaction,
   isBlockInfoPending,
+  isBlockInfoSucceeded,
   isConfirmedTransaction,
   isSendTransaction,
+  isSwapOfferTransaction,
   Nonce,
   PostTxResponse,
   PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
+  SwapIdBytes,
+  SwapOfferTransaction,
+  SwapState,
+  SwapTimeout,
   TokenTicker,
   TransactionId,
   TransactionState,
@@ -22,15 +32,17 @@ import {
 } from "@iov/bcp";
 import { Random, Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
+import { HdPaths, Secp256k1HdWallet, UserProfile, WalletId } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 
 import { pubkeyToAddress } from "./address";
+import { constants } from "./constants";
 import { ethereumCodec, EthereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
 import { testConfig } from "./testconfig.spec";
 
 const { fromHex } = Encoding;
+const ETH = "ETH" as TokenTicker;
 
 function skipTests(): boolean {
   return !process.env.ETHEREUM_ENABLED;
@@ -70,6 +82,19 @@ describe("EthereumConnection", () => {
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   };
+
+  async function userProfileWithFaucet(
+    chainId: ChainId,
+  ): Promise<{
+    readonly profile: UserProfile;
+    readonly walletId: WalletId;
+    readonly faucet: PublicIdentity;
+  }> {
+    const profile = new UserProfile();
+    const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
+    const faucet = await profile.createIdentity(wallet.id, chainId, HdPaths.ethereum(0));
+    return { profile: profile, walletId: wallet.id, faucet: faucet };
+  }
 
   async function postTransaction(
     profile: UserProfile,
@@ -1260,5 +1285,97 @@ describe("EthereumConnection", () => {
 
       connection.disconnect();
     });
+  });
+
+  describe("atomic swap", () => {
+    it("can start atomic swap", async () => {
+      pendingWithoutEthereum();
+
+      const connection = await EthereumConnection.establish(testConfig.base);
+      const chainId = connection.chainId();
+
+      const { profile, faucet } = await userProfileWithFaucet(chainId);
+      const faucetAddress = ethereumCodec.identityToAddress(faucet);
+      const recipientAddress = await randomAddress();
+
+      const swapId = (await Random.getBytes(32)) as SwapIdBytes;
+      const swapOfferPreimage = await AtomicSwapHelpers.createPreimage();
+      const swapOfferHash = AtomicSwapHelpers.hashPreimage(swapOfferPreimage);
+
+      const swapOfferTimeout: SwapTimeout = {
+        height: (await connection.height()) + 5,
+      };
+      const amount = {
+        quantity: "123000456000",
+        fractionalDigits: 18,
+        tokenTicker: ETH,
+      };
+      const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction>({
+        kind: "bcp/swap_offer",
+        creator: faucet,
+        swapId: swapId,
+        recipient: recipientAddress,
+        amounts: [amount],
+        timeout: swapOfferTimeout,
+        hash: swapOfferHash,
+      });
+
+      const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
+      const signed = await profile.signTransaction(swapOfferTx, ethereumCodec, nonce);
+      const result = await connection.postTx(ethereumCodec.bytesToPost(signed));
+      expect(result).toBeTruthy();
+      expect(result.log).toBeUndefined();
+
+      const { transactionId } = result;
+      expect(transactionId).toMatch(/^0x[0-9a-f]{64}$/i);
+
+      const blockInfo = await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      if (!isBlockInfoSucceeded(blockInfo)) {
+        throw new Error(`Expected transaction state success but got state: ${blockInfo.state}`);
+      }
+
+      // now query by the txid
+      const search = (await connection.searchTx({ id: transactionId })).filter(isConfirmedTransaction);
+      expect(search.length).toEqual(1);
+      // make sure we get the same tx loaded
+      const loaded = search[0];
+      expect(loaded.transactionId).toEqual(transactionId);
+      expect(loaded.height).toEqual(blockInfo.height);
+      const loadedTransaction = loaded.transaction;
+      if (!isSwapOfferTransaction(loadedTransaction)) {
+        throw new Error("Wrong transaction type");
+      }
+      expect(loadedTransaction.recipient).toEqual(swapOfferTx.recipient);
+
+      // prepare queries
+      const queryTransactionId: BcpTxQuery = { id: transactionId };
+      const querySwapId: AtomicSwapQuery = { swapid: swapId };
+
+      // ----- connection.searchTx() -----
+
+      const txById = (await connection.searchTx(queryTransactionId)).filter(isConfirmedTransaction);
+      expect(txById.length).toEqual(1);
+      expect(txById[0].transactionId).toEqual(transactionId);
+
+      // ----- connection.getSwaps() -------
+
+      // we can get swap by id
+      const idSwaps = await connection.getSwaps(querySwapId);
+      expect(idSwaps.length).toEqual(1);
+
+      const swap = idSwaps[0];
+      expect(swap.kind).toEqual(SwapState.Open);
+
+      const swapData = swap.data;
+      expect(swapData.id).toEqual(swapId);
+      expect(swapData.sender).toEqual(faucetAddress);
+      expect(swapData.recipient).toEqual(recipientAddress);
+      expect(swapData.timeout).toEqual(swapOfferTimeout);
+      expect(swapData.amounts.length).toEqual(1);
+      expect(swapData.amounts[0]).toEqual(amount);
+      expect(swapData.hash).toEqual(swapOfferHash);
+
+      connection.disconnect();
+    }, 30_000);
   });
 });

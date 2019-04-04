@@ -1,3 +1,5 @@
+import BN from "bn.js";
+
 import {
   Address,
   Algorithm,
@@ -13,6 +15,8 @@ import {
   SignatureBytes,
   SignedTransaction,
   SigningJob,
+  SwapIdBytes,
+  SwapOfferTransaction,
   TokenTicker,
   TransactionId,
   TxCodec,
@@ -61,6 +65,10 @@ export interface EthereumRpcTransactionResult {
 
 export interface EthereumCodecOptions {
   /**
+   * Address of the deployed atomic swap contract for ETH.
+   */
+  readonly atomicSwapEtherContractAddress?: Address;
+  /**
    * ERC20 tokens supported by the codec instance.
    *
    * The behaviour of encoding/decoding transactions for other tokens is undefined.
@@ -69,21 +77,33 @@ export interface EthereumCodecOptions {
 }
 
 export class EthereumCodec implements TxCodec {
+  private readonly atomicSwapEtherContractAddress: Address;
   private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
 
   constructor(options: EthereumCodecOptions) {
+    this.atomicSwapEtherContractAddress =
+      options.atomicSwapEtherContractAddress || constants.atomicSwapEtherContractAddress;
     this.erc20Tokens = options.erc20Tokens ? options.erc20Tokens : new Map();
   }
 
   public bytesToSign(unsigned: UnsignedTransaction, nonce: Nonce): SigningJob {
     return {
-      bytes: Serialization.serializeUnsignedTransaction(unsigned, nonce, this.erc20Tokens) as SignableBytes,
+      bytes: Serialization.serializeUnsignedTransaction(
+        unsigned,
+        nonce,
+        this.erc20Tokens,
+        this.atomicSwapEtherContractAddress,
+      ) as SignableBytes,
       prehashType: PrehashType.Keccak256,
     };
   }
 
   public bytesToPost(signed: SignedTransaction): PostableBytes {
-    return Serialization.serializeSignedTransaction(signed, this.erc20Tokens) as PostableBytes;
+    return Serialization.serializeSignedTransaction(
+      signed,
+      this.erc20Tokens,
+      this.atomicSwapEtherContractAddress,
+    ) as PostableBytes;
   }
 
   public identifier(signed: SignedTransaction): TransactionId {
@@ -137,12 +157,53 @@ export class EthereumCodec implements TxCodec {
       },
     };
 
-    const erc20Token = [...this.erc20Tokens.values()].find(
-      options => options.contractAddress.toLowerCase() === toChecksummedAddress(json.to).toLowerCase(),
-    );
+    const atomicSwap =
+      toChecksummedAddress(json.to).toLowerCase() === this.atomicSwapEtherContractAddress.toLowerCase();
 
-    let send: SendTransaction;
-    if (erc20Token) {
+    const erc20Token =
+      !atomicSwap &&
+      [...this.erc20Tokens.values()].find(
+        options => options.contractAddress.toLowerCase() === toChecksummedAddress(json.to).toLowerCase(),
+      );
+
+    let transaction: SendTransaction | SwapOfferTransaction;
+    if (atomicSwap) {
+      const positionOpenMethodEnd = 4;
+      const positionOpenSwapIdBegin = positionOpenMethodEnd;
+      const positionOpenSwapIdEnd = positionOpenSwapIdBegin + 32;
+      const positionOpenRecipientBegin = positionOpenSwapIdEnd;
+      const positionOpenRecipientEnd = positionOpenRecipientBegin + 32;
+      const positionOpenHashBegin = positionOpenRecipientEnd;
+      const positionOpenHashEnd = positionOpenHashBegin + 32;
+      const positionOpenTimeoutBegin = positionOpenHashEnd;
+      const positionOpenTimeoutEnd = positionOpenTimeoutBegin + 32;
+
+      const swapId = input.slice(positionOpenSwapIdBegin, positionOpenSwapIdEnd) as SwapIdBytes;
+      const recipientChecksummedAddress = toChecksummedAddress(
+        Abi.decodeAddress(input.slice(positionOpenRecipientBegin, positionOpenRecipientEnd)),
+      );
+      const hash = input.slice(positionOpenHashBegin, positionOpenHashEnd);
+      const timeoutHeight = new BN(input.slice(positionOpenTimeoutBegin, positionOpenTimeoutEnd)).toNumber();
+
+      transaction = {
+        kind: "bcp/swap_offer",
+        creator: creator,
+        swapId: swapId,
+        fee: fee,
+        amounts: [
+          {
+            quantity: decodeHexQuantityString(json.value),
+            fractionalDigits: constants.primaryTokenFractionalDigits,
+            tokenTicker: constants.primaryTokenTicker,
+          },
+        ],
+        recipient: recipientChecksummedAddress,
+        timeout: {
+          height: timeoutHeight,
+        },
+        hash: hash,
+      };
+    } else if (erc20Token) {
       const positionTransferMethodEnd = 4;
       const positionTransferRecipientBegin = positionTransferMethodEnd;
       const positionTransferRecipientEnd = positionTransferRecipientBegin + 32;
@@ -150,7 +211,7 @@ export class EthereumCodec implements TxCodec {
       const positionTransferAmountEnd = positionTransferRecipientEnd + 32;
 
       const quantity = Abi.decodeUint256(input.slice(positionTransferAmountBegin, positionTransferAmountEnd));
-      send = {
+      transaction = {
         kind: "bcp/send",
         creator: creator,
         fee: fee,
@@ -174,7 +235,7 @@ export class EthereumCodec implements TxCodec {
         memo = (hexstring.match(/.{1,16}/g) || []).join(" ");
       }
 
-      send = {
+      transaction = {
         kind: "bcp/send",
         creator: creator,
         fee: fee,
@@ -189,7 +250,7 @@ export class EthereumCodec implements TxCodec {
     }
 
     return {
-      transaction: send,
+      transaction: transaction,
       primarySignature: {
         nonce: nonce,
         pubkey: {

@@ -1,4 +1,4 @@
-import BN = require("bn.js");
+import BN from "bn.js";
 
 import { Address } from "@iov/bcp";
 import { Keccak256 } from "@iov/crypto";

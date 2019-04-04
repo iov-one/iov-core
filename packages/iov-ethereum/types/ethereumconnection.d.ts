@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { Account, AccountQuery, AddressQuery, BcpConnection, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, UnsignedTransaction } from "@iov/bcp";
+import { Account, AccountQuery, AddressQuery, AtomicSwap, AtomicSwapQuery, BcpAtomicSwapConnection, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, UnsignedTransaction } from "@iov/bcp";
 import { Erc20Options } from "./erc20";
 export interface EthereumConnectionOptions {
     readonly wsUrl?: string;
@@ -10,7 +10,7 @@ export interface EthereumConnectionOptions {
     /** Time between two polls for block, transaction and account watching in seconds */
     readonly pollInterval?: number;
 }
-export declare class EthereumConnection implements BcpConnection {
+export declare class EthereumConnection implements BcpAtomicSwapConnection {
     static establish(baseUrl: string, options?: EthereumConnectionOptions): Promise<EthereumConnection>;
     private readonly pollIntervalMs;
     private readonly rpcClient;
@@ -38,6 +38,8 @@ export declare class EthereumConnection implements BcpConnection {
     liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction>;
     getFeeQuote(transaction: UnsignedTransaction): Promise<Fee>;
     withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;
+    getSwaps(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>>;
+    watchSwaps(_: AtomicSwapQuery): Stream<AtomicSwap>;
     private socketSend;
     private searchTransactionsById;
     private searchSendTransactionsByAddress;
