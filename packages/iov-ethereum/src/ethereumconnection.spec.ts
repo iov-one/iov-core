@@ -1015,7 +1015,7 @@ describe("EthereumConnection", () => {
   });
 
   describe("liveTx", () => {
-    it("can listen to ETH transactions by recipient address (transactions in history and updates)", done => {
+    it("works for ETH transactions by recipient (in history and updates)", done => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
 
@@ -1123,7 +1123,7 @@ describe("EthereumConnection", () => {
       })().catch(done.fail);
     }, 60_000);
 
-    it("can listen to ERC20 transactions by recipient address (transactions in history and updates)", done => {
+    it("works for ERC20 transactions by recipient (in history and updates)", done => {
       pendingWithoutEthereum();
 
       (async () => {
@@ -1227,7 +1227,7 @@ describe("EthereumConnection", () => {
       })().catch(done.fail);
     }, 60_000);
 
-    it("can listen to transactions by ID (transaction in history)", done => {
+    it("works for transactions by ID (in history)", done => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
 
@@ -1288,7 +1288,7 @@ describe("EthereumConnection", () => {
       })().catch(done.fail);
     }, 30_000);
 
-    it("can listen to transactions by ID (transaction in updates)", done => {
+    it("works for transactions by ID (in updates)", done => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
 
