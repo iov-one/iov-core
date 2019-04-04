@@ -141,7 +141,10 @@ export class Serialization {
         throw new Error("Timeout must be specified as a block height");
       }
 
-      if (unsigned.amounts.length !== 1 || unsigned.amounts[0].tokenTicker !== constants.primaryTokenTicker) {
+      if (unsigned.amounts.length !== 1) {
+        throw new Error("Cannot serialize a swap offer with more than one amount");
+      }
+      if (unsigned.amounts[0].tokenTicker !== constants.primaryTokenTicker) {
         // TODO: Remove when ERC20 swaps are supported
         throw new Error("Only ETH atomic swap offers are currently supported");
       }
@@ -269,7 +272,10 @@ export class Serialization {
         throw new Error("Timeout must be specified as a block height");
       }
 
-      if (unsigned.amounts.length !== 1 || unsigned.amounts[0].tokenTicker !== constants.primaryTokenTicker) {
+      if (unsigned.amounts.length !== 1) {
+        throw new Error("Cannot serialize a swap offer with more than one amount");
+      }
+      if (unsigned.amounts[0].tokenTicker !== constants.primaryTokenTicker) {
         // TODO: Remove when ERC20 swaps are supported
         throw new Error("Only ETH atomic swap offers are currently supported");
       }
