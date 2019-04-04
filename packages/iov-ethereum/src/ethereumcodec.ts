@@ -147,7 +147,7 @@ export class EthereumCodec implements TxCodec {
       const positionTransferRecipientBegin = positionTransferMethodEnd;
       const positionTransferRecipientEnd = positionTransferRecipientBegin + 32;
       const positionTransferAmountBegin = positionTransferRecipientEnd;
-      const positionTransferAmountEnd = positionTransferRecipientEnd + 32;
+      const positionTransferAmountEnd = positionTransferAmountBegin + 32;
 
       const quantity = Abi.decodeUint256(input.slice(positionTransferAmountBegin, positionTransferAmountEnd));
       send = {
