@@ -40,6 +40,12 @@ import {
   normalizeHex,
 } from "./utils";
 
+const methodCallPrefix = {
+  erc20: {
+    transfer: `0x${Encoding.toHex(Abi.calculateMethodId("transfer(address,uint256)"))}`,
+  },
+};
+
 /**
  * See https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash
  *
@@ -203,12 +209,12 @@ export class EthereumCodec implements TxCodec {
         },
         hash: hash,
       };
-    } else if (erc20Token) {
+    } else if (erc20Token && json.input.startsWith(methodCallPrefix.erc20.transfer)) {
       const positionTransferMethodEnd = 4;
       const positionTransferRecipientBegin = positionTransferMethodEnd;
       const positionTransferRecipientEnd = positionTransferRecipientBegin + 32;
       const positionTransferAmountBegin = positionTransferRecipientEnd;
-      const positionTransferAmountEnd = positionTransferRecipientEnd + 32;
+      const positionTransferAmountEnd = positionTransferAmountBegin + 32;
 
       const quantity = Abi.decodeUint256(input.slice(positionTransferAmountBegin, positionTransferAmountEnd));
       transaction = {

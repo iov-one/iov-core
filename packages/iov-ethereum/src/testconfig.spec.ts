@@ -52,13 +52,6 @@ export interface EthereumNetworkConfig {
   };
   readonly gasPrice: Amount;
   readonly gasLimit: Amount;
-  readonly scraper:
-    | {
-        readonly apiUrl: string;
-        /** Account to query using the above API URL */
-        readonly address: Address;
-      }
-    | undefined;
   readonly expectedErrorMessages: {
     readonly insufficientFunds: RegExp;
     readonly invalidSignature: RegExp;
@@ -79,6 +72,7 @@ const local: EthereumNetworkConfig = {
     wsUrl: "ws://localhost:8545/ws",
     // Low values to speedup test execution on the local ganache chain (using instant mine)
     pollInterval: 0.1,
+    scraperApiUrl: undefined,
   },
   chainId: "ethereum-eip155-5777" as ChainId,
   minHeight: 0, // ganache does not auto-generate a genesis block
@@ -158,7 +152,6 @@ const local: EthereumNetworkConfig = {
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   },
-  scraper: undefined,
   expectedErrorMessages: {
     insufficientFunds: /sender doesn't have enough funds to send tx/i,
     invalidSignature: /invalid signature/i,
@@ -224,6 +217,7 @@ const ropsten: EthereumNetworkConfig = {
   base: "https://ropsten.infura.io/",
   connectionOptions: {
     wsUrl: "wss://ropsten.infura.io/ws",
+    scraperApiUrl: "https://api-ropsten.etherscan.io/api",
   },
   chainId: "ethereum-eip155-3" as ChainId,
   minHeight: 4284887,
@@ -279,10 +273,6 @@ const ropsten: EthereumNetworkConfig = {
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   },
-  scraper: {
-    apiUrl: "https://api-ropsten.etherscan.io/api",
-    address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
-  },
   expectedErrorMessages: {
     insufficientFunds: /insufficient funds for gas \* price \+ value/i,
     invalidSignature: /invalid sender/i,
@@ -304,6 +294,7 @@ const rinkeby: EthereumNetworkConfig = {
   base: "https://rinkeby.infura.io",
   connectionOptions: {
     wsUrl: "wss://rinkeby.infura.io/ws",
+    scraperApiUrl: "https://api-rinkeby.etherscan.io/api",
   },
   chainId: "ethereum-eip155-4" as ChainId,
   minHeight: 3211058,
@@ -370,7 +361,7 @@ const rinkeby: EthereumNetworkConfig = {
     },
   },
   gasPrice: {
-    quantity: "1000000000",
+    quantity: "3000000000", // 3 Gwei
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   },
@@ -378,11 +369,6 @@ const rinkeby: EthereumNetworkConfig = {
     quantity: "141000",
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
-  },
-  scraper: {
-    apiUrl: "https://api-rinkeby.etherscan.io/api",
-    // recipient address with no known keypair
-    address: "0x7C14eF21979996A49551a16c7a96899e9C485eb4" as Address,
   },
   expectedErrorMessages: {
     insufficientFunds: /insufficient funds for gas \* price \+ value/i,

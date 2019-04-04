@@ -13,6 +13,7 @@ Breaking changes
 
 - @iov/ethereum: Allow querying of ERC20 token balances
 - @iov/ethereum: Allow sending of ERC20 tokens
+- @iov/ethereum: Support ERC20 tokens in `searchTx`, `listenTx` and `liveTx`.
 - @iov/ethereum: Implement `getFeeQuote` method on `EthereumConnection`.
 - @iov/ethereum: Fix transaction fee parsing for transactions from RPC/scraper.
 - @iov/ethereum: Add `pollInterval` to `EthereumConnectionOptions`.

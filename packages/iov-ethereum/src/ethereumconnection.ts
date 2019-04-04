@@ -523,15 +523,23 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
       );
     } else if (query.sentFromOrTo) {
       const sentFromOrTo = query.sentFromOrTo;
-      let pollInterval: NodeJS.Timeout | undefined;
-      const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
+
+      let pollIntervalScraper: NodeJS.Timeout | undefined;
+      const fromScraperProducer: Producer<ConfirmedTransaction | FailedTransaction> = {
         start: async listener => {
-          const currentHeight = await this.height();
-          let minHeight = Math.max(query.minHeight || 0, currentHeight + 1);
+          const searchStartHeight = (await this.height()) - 1; // TODO: get current height from scraper
+          let minHeight = Math.max(query.minHeight || 0, searchStartHeight);
           const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
 
           const poll = async (): Promise<void> => {
-            const result = await this.searchSendTransactionsByAddress(sentFromOrTo, minHeight, maxHeight);
+            if (!this.scraperApiUrl) {
+              return;
+            }
+            const result = await this.searchSendTransactionsByAddressOnScraper(
+              sentFromOrTo,
+              minHeight,
+              maxHeight,
+            );
             for (const item of result) {
               listener.next(item);
               if (item.height >= minHeight) {
@@ -542,16 +550,50 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
           };
 
           await poll();
-          pollInterval = setInterval(poll, this.pollIntervalMs);
+          pollIntervalScraper = setInterval(poll, this.pollIntervalMs);
         },
         stop: () => {
-          if (pollInterval) {
-            clearInterval(pollInterval);
-            pollInterval = undefined;
+          if (pollIntervalScraper) {
+            clearInterval(pollIntervalScraper);
+            pollIntervalScraper = undefined;
           }
         },
       };
-      return Stream.create(producer);
+
+      let pollIntervalLogs: NodeJS.Timeout | undefined;
+      const fromLogsProducer: Producer<ConfirmedTransaction | FailedTransaction> = {
+        start: async listener => {
+          const currentHeight = await this.height();
+          let minHeight = Math.max(query.minHeight || 0, currentHeight + 1);
+          const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
+
+          const poll = async (): Promise<void> => {
+            const result = await this.searchSendTransactionsByAddressInLogs(
+              sentFromOrTo,
+              minHeight,
+              maxHeight,
+            );
+            for (const item of result) {
+              listener.next(item);
+              if (item.height >= minHeight) {
+                // we assume we got all matching transactions from block `item.height` now
+                minHeight = item.height + 1;
+              }
+            }
+          };
+
+          await poll();
+          pollIntervalLogs = setInterval(poll, this.pollIntervalMs);
+        },
+        stop: () => {
+          if (pollIntervalLogs) {
+            clearInterval(pollIntervalLogs);
+            pollIntervalLogs = undefined;
+          }
+        },
+      };
+
+      return Stream.merge(Stream.create(fromScraperProducer), Stream.create(fromLogsProducer));
     } else {
       throw new Error("Unsupported query.");
     }
@@ -583,14 +625,22 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
       return concat(Stream.fromPromise(resultPromise), Stream.never());
     } else if (query.sentFromOrTo) {
       const sentFromOrTo = query.sentFromOrTo;
-      let pollInterval: NodeJS.Timeout | undefined;
-      const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
+
+      let pollIntervalScraper: NodeJS.Timeout | undefined;
+      const fromScraperProducer: Producer<ConfirmedTransaction | FailedTransaction> = {
         start: async listener => {
           let minHeight = query.minHeight || 0;
           const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
 
           const poll = async (): Promise<void> => {
-            const result = await this.searchSendTransactionsByAddress(sentFromOrTo, minHeight, maxHeight);
+            if (!this.scraperApiUrl) {
+              return;
+            }
+            const result = await this.searchSendTransactionsByAddressOnScraper(
+              sentFromOrTo,
+              minHeight,
+              maxHeight,
+            );
             for (const item of result) {
               listener.next(item);
               if (item.height >= minHeight) {
@@ -601,16 +651,49 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
           };
 
           await poll();
-          pollInterval = setInterval(poll, this.pollIntervalMs);
+          pollIntervalScraper = setInterval(poll, this.pollIntervalMs);
         },
         stop: () => {
-          if (pollInterval) {
-            clearInterval(pollInterval);
-            pollInterval = undefined;
+          if (pollIntervalScraper) {
+            clearInterval(pollIntervalScraper);
+            pollIntervalScraper = undefined;
           }
         },
       };
-      return Stream.create(producer);
+
+      let pollIntervalLogs: NodeJS.Timeout | undefined;
+      const fromLogsProducer: Producer<ConfirmedTransaction | FailedTransaction> = {
+        start: async listener => {
+          let minHeight = query.minHeight || 0;
+          const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
+
+          const poll = async (): Promise<void> => {
+            const result = await this.searchSendTransactionsByAddressInLogs(
+              sentFromOrTo,
+              minHeight,
+              maxHeight,
+            );
+            for (const item of result) {
+              listener.next(item);
+              if (item.height >= minHeight) {
+                // we assume we got all matching transactions from block `item.height` now
+                minHeight = item.height + 1;
+              }
+            }
+          };
+
+          await poll();
+          pollIntervalLogs = setInterval(poll, this.pollIntervalMs);
+        },
+        stop: () => {
+          if (pollIntervalLogs) {
+            clearInterval(pollIntervalLogs);
+            pollIntervalLogs = undefined;
+          }
+        },
+      };
+
+      return Stream.merge(Stream.create(fromScraperProducer), Stream.create(fromLogsProducer));
     } else {
       throw new Error("Unsupported query.");
     }
@@ -744,9 +827,15 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
       throw new Error(JSON.stringify(transactionsResponse.error));
     }
 
-    if (transactionsResponse.result === null || transactionsResponse.result.blockNumber === null) {
+    if (transactionsResponse.result === null) {
       return [];
     }
+
+    if (transactionsResponse.result.blockNumber === null) {
+      // transaction is pending
+      return [];
+    }
+
     const transactionHeight = decodeHexQuantity(transactionsResponse.result.blockNumber);
 
     const currentHeight = await this.height();
@@ -766,18 +855,52 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
     ];
   }
 
+  /**
+   * Merges search results from two different sources: scraper and logs.
+   *
+   * Those sources are not necessarily in sync, i.e. the a node's logs can contain
+   * results from blocks that are not available in the scraper or vice versa.
+   */
   private async searchSendTransactionsByAddress(
     address: Address,
     minHeight: number,
     maxHeight: number,
   ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    // tslint:disable-next-line:readonly-array
+    const out: ConfirmedTransaction[] = [];
+
+    if (this.scraperApiUrl) {
+      const fromScraper = await this.searchSendTransactionsByAddressOnScraper(address, minHeight, maxHeight);
+      out.push(...fromScraper);
+    }
+
+    const fromLogs = await this.searchSendTransactionsByAddressInLogs(address, minHeight, maxHeight);
+    out.push(...fromLogs);
+
+    // Sort by height, descending.
+    // Order of multiple transactions in the same block is undetermined.
+    // In https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash
+    // Ethereum provides `transactionIndex` but this is not yet exposed in the BCP.
+    out.sort((a, b) => b.height - a.height);
+
+    return out;
+  }
+
+  private async searchSendTransactionsByAddressOnScraper(
+    address: Address,
+    minHeight: number,
+    maxHeight: number,
+  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    if (!this.scraperApiUrl) {
+      throw new Error("No scraper API URL specified.");
+    }
+
     if (maxHeight < minHeight) {
       return [];
     }
 
-    if (!this.scraperApiUrl) {
-      throw new Error("No scraper API URL specified. Cannot search for transactions by tags.");
-    }
+    // tslint:disable-next-line:readonly-array
+    const out: ConfirmedTransaction[] = [];
 
     // API: https://etherscan.io/apis#accounts
     const responseBody = (await axios.get(this.scraperApiUrl, {
@@ -787,23 +910,95 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
         address: address,
         startblock: minHeight,
         endblock: maxHeight,
-        sort: "asc",
+        sort: "desc",
       },
     })).data;
-    if (responseBody.result === null) {
-      return [];
-    }
-    // tslint:disable-next-line:readonly-array
-    const transactions: ConfirmedTransaction[] = [];
-    for (const tx of responseBody.result) {
-      if (tx.isError === "0" && tx.txreceipt_status === "1") {
-        const transactionId = `0x${normalizeHex(tx.hash)}` as TransactionId;
-        // Do an extra query to the node as the scraper result does not contain the
-        // transaction signature, which we need for recovering the signer's pubkey.
-        const transaction = (await this.searchTransactionsById(transactionId))[0];
-        transactions.push(transaction);
+    if (responseBody.result !== null) {
+      for (const tx of responseBody.result) {
+        if (tx.isError === "0" && tx.txreceipt_status === "1") {
+          // Do an extra query to the node as the scraper result does not contain the
+          // transaction signature, which we need for recovering the signer's pubkey.
+          const transaction = (await this.searchTransactionsById(Parse.transactionId(tx.hash)))[0];
+          out.push(transaction);
+        }
       }
     }
+
+    return out;
+  }
+
+  private async searchSendTransactionsByAddressInLogs(
+    address: Address,
+    minHeight: number,
+    maxHeight: number,
+  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    const [erc20Outgoing, erc20Incoming] = await Promise.all([
+      this.searchErc20Transfers(address, null, minHeight, maxHeight),
+      this.searchErc20Transfers(null, address, minHeight, maxHeight),
+    ]);
+
+    // tslint:disable-next-line:readonly-array
+    const out: ConfirmedTransaction[] = [...erc20Outgoing, ...erc20Incoming];
+
+    // Sort by height, descending.
+    // Order of multiple transactions in the same block is undetermined.
+    // In https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash
+    // Ethereum provides `transactionIndex` but this is not yet exposed in the BCP.
+    out.sort((a, b) => b.height - a.height);
+
+    return out;
+  }
+
+  /**
+   * The return values of this helper function are unsorted.
+   */
+  private async searchErc20Transfers(
+    sender: Address | null,
+    recipient: Address | null,
+    minHeight: number,
+    maxHeight: number,
+  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+    if (maxHeight < minHeight) {
+      return [];
+    }
+
+    // https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs
+    const contractAddresses = [...this.erc20Tokens.values()].map(options => options.contractAddress);
+
+    if (contractAddresses.length === 0) {
+      return [];
+    }
+
+    const erc20TransferLogsResponse = await this.rpcClient.run({
+      jsonrpc: "2.0",
+      method: "eth_getLogs",
+      params: [
+        {
+          fromBlock: encodeQuantity(minHeight),
+          toBlock: encodeQuantity(maxHeight),
+          address: contractAddresses,
+          topics: [
+            `0x${Encoding.toHex(Abi.calculateMethodHash("Transfer(address,address,uint256)"))}`,
+            sender ? `0x${Encoding.toHex(Abi.encodeAddress(sender))}` : null,
+            recipient ? `0x${Encoding.toHex(Abi.encodeAddress(recipient))}` : null,
+          ],
+        },
+      ],
+      id: 7,
+    });
+    if (isJsonRpcErrorResponse(erc20TransferLogsResponse)) {
+      throw new Error(JSON.stringify(erc20TransferLogsResponse.error));
+    }
+
+    if (!Array.isArray(erc20TransferLogsResponse.result)) {
+      throw new Error("Expected result to be an array");
+    }
+
+    const ids = erc20TransferLogsResponse.result.map(row => Parse.transactionId(row.transactionHash));
+    // query all in parallel
+    const searches = await Promise.all(ids.map(id => this.searchTransactionsById(id)));
+
+    const transactions = searches.map(search => search[0]);
     return transactions;
   }
 }
