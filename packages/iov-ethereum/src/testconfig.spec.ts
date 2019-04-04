@@ -52,11 +52,6 @@ export interface EthereumNetworkConfig {
   };
   readonly gasPrice: Amount;
   readonly gasLimit: Amount;
-  readonly scraper:
-    | {
-        readonly apiUrl: string;
-      }
-    | undefined;
   readonly expectedErrorMessages: {
     readonly insufficientFunds: RegExp;
     readonly invalidSignature: RegExp;
@@ -77,6 +72,7 @@ const local: EthereumNetworkConfig = {
     wsUrl: "ws://localhost:8545/ws",
     // Low values to speedup test execution on the local ganache chain (using instant mine)
     pollInterval: 0.1,
+    scraperApiUrl: undefined,
   },
   chainId: "ethereum-eip155-5777" as ChainId,
   minHeight: 0, // ganache does not auto-generate a genesis block
@@ -156,7 +152,6 @@ const local: EthereumNetworkConfig = {
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   },
-  scraper: undefined,
   expectedErrorMessages: {
     insufficientFunds: /sender doesn't have enough funds to send tx/i,
     invalidSignature: /invalid signature/i,
@@ -222,6 +217,7 @@ const ropsten: EthereumNetworkConfig = {
   base: "https://ropsten.infura.io/",
   connectionOptions: {
     wsUrl: "wss://ropsten.infura.io/ws",
+    scraperApiUrl: "https://api-ropsten.etherscan.io/api",
   },
   chainId: "ethereum-eip155-3" as ChainId,
   minHeight: 4284887,
@@ -277,9 +273,6 @@ const ropsten: EthereumNetworkConfig = {
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   },
-  scraper: {
-    apiUrl: "https://api-ropsten.etherscan.io/api",
-  },
   expectedErrorMessages: {
     insufficientFunds: /insufficient funds for gas \* price \+ value/i,
     invalidSignature: /invalid sender/i,
@@ -301,6 +294,7 @@ const rinkeby: EthereumNetworkConfig = {
   base: "https://rinkeby.infura.io",
   connectionOptions: {
     wsUrl: "wss://rinkeby.infura.io/ws",
+    scraperApiUrl: "https://api-rinkeby.etherscan.io/api",
   },
   chainId: "ethereum-eip155-4" as ChainId,
   minHeight: 3211058,
@@ -375,9 +369,6 @@ const rinkeby: EthereumNetworkConfig = {
     quantity: "141000",
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
-  },
-  scraper: {
-    apiUrl: "https://api-rinkeby.etherscan.io/api",
   },
   expectedErrorMessages: {
     insufficientFunds: /insufficient funds for gas \* price \+ value/i,

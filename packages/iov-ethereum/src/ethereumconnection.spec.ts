@@ -640,10 +640,7 @@ describe("EthereumConnection", () => {
     it("can search a transaction by account", async () => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
-      const connection = await EthereumConnection.establish(testConfig.base, {
-        ...testConfig.connectionOptions,
-        scraperApiUrl: testConfig.scraper!.apiUrl,
-      });
+      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
       const results = await connection.searchTx({ sentFromOrTo: testConfig.accountStates.default.address });
       expect(results.length).toBeGreaterThan(1);
       connection.disconnect();
@@ -653,10 +650,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
 
-      const connection = await EthereumConnection.establish(testConfig.base, {
-        ...testConfig.connectionOptions,
-        scraperApiUrl: testConfig.scraper!.apiUrl,
-      });
+      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
@@ -907,7 +901,6 @@ describe("EthereumConnection", () => {
         const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
         const connection = await EthereumConnection.establish(testConfig.base, {
           ...testConfig.connectionOptions,
-          scraperApiUrl: testConfig.scraper!.apiUrl,
           erc20Tokens: testConfig.erc20Tokens,
         });
 
@@ -1020,10 +1013,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereumScraper();
 
       (async () => {
-        const connection = await EthereumConnection.establish(testConfig.base, {
-          ...testConfig.connectionOptions,
-          scraperApiUrl: testConfig.scraper!.apiUrl,
-        });
+        const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
 
         const recipientAddress = await randomAddress();
 
@@ -1236,7 +1226,6 @@ describe("EthereumConnection", () => {
         const connection = await EthereumConnection.establish(testConfig.base, {
           ...testConfig.connectionOptions,
           erc20Tokens: testConfig.erc20Tokens,
-          scraperApiUrl: testConfig.scraper!.apiUrl,
         });
 
         const recipientAddress = await randomAddress();
@@ -1357,10 +1346,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereumScraper();
 
       (async () => {
-        const connection = await EthereumConnection.establish(testConfig.base, {
-          ...testConfig.connectionOptions,
-          scraperApiUrl: testConfig.scraper!.apiUrl,
-        });
+        const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
 
         const profile = new UserProfile();
         const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
@@ -1418,10 +1404,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereumScraper();
 
       (async () => {
-        const connection = await EthereumConnection.establish(testConfig.base, {
-          ...testConfig.connectionOptions,
-          scraperApiUrl: testConfig.scraper!.apiUrl,
-        });
+        const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
 
         const recipientAddress = await randomAddress();
 
