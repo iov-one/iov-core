@@ -55,8 +55,6 @@ export interface EthereumNetworkConfig {
   readonly scraper:
     | {
         readonly apiUrl: string;
-        /** Account to query using the above API URL */
-        readonly address: Address;
       }
     | undefined;
   readonly expectedErrorMessages: {
@@ -281,7 +279,6 @@ const ropsten: EthereumNetworkConfig = {
   },
   scraper: {
     apiUrl: "https://api-ropsten.etherscan.io/api",
-    address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
   },
   expectedErrorMessages: {
     insufficientFunds: /insufficient funds for gas \* price \+ value/i,
@@ -381,8 +378,6 @@ const rinkeby: EthereumNetworkConfig = {
   },
   scraper: {
     apiUrl: "https://api-rinkeby.etherscan.io/api",
-    // recipient address with no known keypair
-    address: "0x7C14eF21979996A49551a16c7a96899e9C485eb4" as Address,
   },
   expectedErrorMessages: {
     insufficientFunds: /insufficient funds for gas \* price \+ value/i,

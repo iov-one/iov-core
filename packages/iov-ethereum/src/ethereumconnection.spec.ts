@@ -644,7 +644,7 @@ describe("EthereumConnection", () => {
         ...testConfig.connectionOptions,
         scraperApiUrl: testConfig.scraper!.apiUrl,
       });
-      const results = await connection.searchTx({ sentFromOrTo: testConfig.scraper!.address });
+      const results = await connection.searchTx({ sentFromOrTo: testConfig.accountStates.default.address });
       expect(results.length).toBeGreaterThan(1);
       connection.disconnect();
     });
