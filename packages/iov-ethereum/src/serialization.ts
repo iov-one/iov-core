@@ -57,6 +57,7 @@ export class Serialization {
     unsigned: UnsignedTransaction,
     nonce: Nonce,
     erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options> = new Map(),
+    atomicSwapEtherContractAddress: Address = constants.atomicSwapEtherContractAddress,
   ): Uint8Array {
     if (isSendTransaction(unsigned)) {
       const chainIdHex = encodeQuantity(fromBcpChainId(unsigned.creator.chainId));
@@ -126,10 +127,6 @@ export class Serialization {
         throw new Error("No swap ID provided");
       }
 
-      if (!unsigned.contractAddress || !isValidAddress(unsigned.contractAddress)) {
-        throw new Error("Invalid contract address");
-      }
-
       if (!isValidAddress(unsigned.recipient)) {
         throw new Error("Invalid recipient address");
       }
@@ -162,7 +159,7 @@ export class Serialization {
         nonce,
         gasPriceHex,
         gasLimitHex,
-        unsigned.contractAddress,
+        atomicSwapEtherContractAddress,
         unsigned.amounts[0].quantity,
         atomicSwapOpenCall,
         chainIdHex,
@@ -175,6 +172,7 @@ export class Serialization {
   public static serializeSignedTransaction(
     signed: SignedTransaction,
     erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options> = new Map(),
+    atomicSwapEtherContractAddress: Address = constants.atomicSwapEtherContractAddress,
   ): Uint8Array {
     const unsigned = signed.transaction;
 
@@ -257,10 +255,6 @@ export class Serialization {
         throw new Error("No swap ID provided");
       }
 
-      if (!unsigned.contractAddress || !isValidAddress(unsigned.contractAddress)) {
-        throw new Error("Invalid contract address");
-      }
-
       if (!isValidAddress(unsigned.recipient)) {
         throw new Error("Invalid recipient address");
       }
@@ -303,7 +297,7 @@ export class Serialization {
         signed.primarySignature.nonce,
         gasPriceHex,
         gasLimitHex,
-        unsigned.contractAddress,
+        atomicSwapEtherContractAddress,
         unsigned.amounts[0].quantity,
         atomicSwapOpenCall,
         encodeQuantity(v),

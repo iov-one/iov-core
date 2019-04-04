@@ -24,6 +24,10 @@ export interface EthereumRpcTransactionResult {
 }
 export interface EthereumCodecOptions {
     /**
+     * Address of the deployed atomic swap contract for ETH.
+     */
+    readonly atomicSwapEtherContractAddress?: Address;
+    /**
      * ERC20 tokens supported by the codec instance.
      *
      * The behaviour of encoding/decoding transactions for other tokens is undefined.
@@ -31,6 +35,7 @@ export interface EthereumCodecOptions {
     readonly erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>;
 }
 export declare class EthereumCodec implements TxCodec {
+    private readonly atomicSwapEtherContractAddress;
     private readonly erc20Tokens;
     constructor(options: EthereumCodecOptions);
     bytesToSign(unsigned: UnsignedTransaction, nonce: Nonce): SigningJob;

@@ -65,6 +65,10 @@ export interface EthereumRpcTransactionResult {
 
 export interface EthereumCodecOptions {
   /**
+   * Address of the deployed atomic swap contract for ETH.
+   */
+  readonly atomicSwapEtherContractAddress?: Address;
+  /**
    * ERC20 tokens supported by the codec instance.
    *
    * The behaviour of encoding/decoding transactions for other tokens is undefined.
@@ -73,21 +77,33 @@ export interface EthereumCodecOptions {
 }
 
 export class EthereumCodec implements TxCodec {
+  private readonly atomicSwapEtherContractAddress: Address;
   private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
 
   constructor(options: EthereumCodecOptions) {
+    this.atomicSwapEtherContractAddress =
+      options.atomicSwapEtherContractAddress || constants.atomicSwapEtherContractAddress;
     this.erc20Tokens = options.erc20Tokens ? options.erc20Tokens : new Map();
   }
 
   public bytesToSign(unsigned: UnsignedTransaction, nonce: Nonce): SigningJob {
     return {
-      bytes: Serialization.serializeUnsignedTransaction(unsigned, nonce, this.erc20Tokens) as SignableBytes,
+      bytes: Serialization.serializeUnsignedTransaction(
+        unsigned,
+        nonce,
+        this.erc20Tokens,
+        this.atomicSwapEtherContractAddress,
+      ) as SignableBytes,
       prehashType: PrehashType.Keccak256,
     };
   }
 
   public bytesToPost(signed: SignedTransaction): PostableBytes {
-    return Serialization.serializeSignedTransaction(signed, this.erc20Tokens) as PostableBytes;
+    return Serialization.serializeSignedTransaction(
+      signed,
+      this.erc20Tokens,
+      this.atomicSwapEtherContractAddress,
+    ) as PostableBytes;
   }
 
   public identifier(signed: SignedTransaction): TransactionId {
@@ -142,7 +158,7 @@ export class EthereumCodec implements TxCodec {
     };
 
     const atomicSwap =
-      toChecksummedAddress(json.to).toLowerCase() === constants.atomicSwapEtherContractAddress.toLowerCase();
+      toChecksummedAddress(json.to).toLowerCase() === this.atomicSwapEtherContractAddress.toLowerCase();
 
     const erc20Token =
       !atomicSwap &&
@@ -186,7 +202,6 @@ export class EthereumCodec implements TxCodec {
           height: timeoutHeight,
         },
         hash: hash,
-        contractAddress: constants.atomicSwapEtherContractAddress,
       };
     } else if (erc20Token) {
       const positionTransferMethodEnd = 4;

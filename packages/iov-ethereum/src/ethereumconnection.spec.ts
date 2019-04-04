@@ -1318,7 +1318,6 @@ describe("EthereumConnection", () => {
         amounts: [amount],
         timeout: swapOfferTimeout,
         hash: swapOfferHash,
-        contractAddress: constants.atomicSwapEtherContractAddress,
       });
 
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });

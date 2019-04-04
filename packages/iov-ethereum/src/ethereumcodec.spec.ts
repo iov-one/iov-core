@@ -312,7 +312,6 @@ describe("ethereumCodec", () => {
           timeout: {
             height: 59,
           },
-          contractAddress: constants.atomicSwapEtherContractAddress,
         },
         primarySignature: {
           nonce: 54 as Nonce,

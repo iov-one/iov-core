@@ -304,14 +304,18 @@ describe("Serialization", () => {
         timeout: {
           height: 1,
         },
-        contractAddress: constants.atomicSwapEtherContractAddress,
       };
       const nonce = 26 as Nonce;
 
       const expected = fromHex(
         "f8731a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d188a385c193e12be6d312c00b8440eed85480000000000000000000000008fec1c262599f4169401ff48a9d63503ceaaf7420000000000000000000000000000000000000000000000000000000000000001018080",
       );
-      const serializedTransaction = serializeUnsignedTransaction(transaction, nonce);
+      const serializedTransaction = serializeUnsignedTransaction(
+        transaction,
+        nonce,
+        undefined,
+        constants.atomicSwapEtherContractAddress,
+      );
       expect(serializedTransaction).toEqual(expected);
     });
   });
@@ -474,7 +478,6 @@ describe("Serialization", () => {
           timeout: {
             height: 1,
           },
-          contractAddress: constants.atomicSwapEtherContractAddress,
         },
         primarySignature: {
           nonce: 26 as Nonce,
@@ -494,7 +497,11 @@ describe("Serialization", () => {
         "f8b31a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d188a385c193e12be6d312c00b8440eed85480000000000000000000000008fec1c262599f4169401ff48a9d63503ceaaf742000000000000000000000000000000000000000000000000000000000000000125a06a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37a0443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d",
       );
 
-      const serializedTransaction = serializeSignedTransaction(signed);
+      const serializedTransaction = serializeSignedTransaction(
+        signed,
+        undefined,
+        constants.atomicSwapEtherContractAddress,
+      );
       expect(serializedTransaction).toEqual(expected);
     });
   });
