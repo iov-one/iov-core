@@ -743,9 +743,15 @@ export class EthereumConnection implements BcpConnection {
       throw new Error(JSON.stringify(transactionsResponse.error));
     }
 
-    if (transactionsResponse.result === null || transactionsResponse.result.blockNumber === null) {
+    if (transactionsResponse.result === null) {
       return [];
     }
+
+    if (transactionsResponse.result.blockNumber === null) {
+      // transaction is pending
+      return [];
+    }
+
     const transactionHeight = decodeHexQuantity(transactionsResponse.result.blockNumber);
 
     const currentHeight = await this.height();
