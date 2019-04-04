@@ -3,6 +3,7 @@ import BN from "bn.js";
 import {
   Address,
   BlockHeightTimeout,
+  isBlockHeightTimeout,
   isSendTransaction,
   isSwapOfferTransaction,
   Nonce,
@@ -137,7 +138,7 @@ export class Serialization {
         throw new Error("Memo cannot be serialized in an atomic swap offer transaction");
       }
 
-      if (!(unsigned.timeout as BlockHeightTimeout).height) {
+      if (!isBlockHeightTimeout(unsigned.timeout)) {
         throw new Error("Timeout must be specified as a block height");
       }
 
@@ -154,7 +155,7 @@ export class Serialization {
         ...unsigned.swapId,
         ...Abi.encodeAddress(unsigned.recipient),
         ...unsigned.hash,
-        ...Abi.encodeUint256((unsigned.timeout as BlockHeightTimeout).height.toString()),
+        ...Abi.encodeUint256(unsigned.timeout.height.toString()),
       ]);
 
       return Serialization.serializeGenericTransaction(
@@ -268,7 +269,7 @@ export class Serialization {
         throw new Error("Memo cannot be serialized in an atomic swap offer transaction");
       }
 
-      if (!(unsigned.timeout as BlockHeightTimeout).height) {
+      if (!isBlockHeightTimeout(unsigned.timeout)) {
         throw new Error("Timeout must be specified as a block height");
       }
 
@@ -295,7 +296,7 @@ export class Serialization {
         ...unsigned.swapId,
         ...Abi.encodeAddress(unsigned.recipient),
         ...unsigned.hash,
-        ...Abi.encodeUint256((unsigned.timeout as BlockHeightTimeout).height.toString()),
+        ...Abi.encodeUint256(unsigned.timeout.height.toString()),
       ]);
 
       return Serialization.serializeGenericTransaction(
