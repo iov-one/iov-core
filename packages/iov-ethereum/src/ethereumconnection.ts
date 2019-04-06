@@ -22,13 +22,14 @@ import {
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
+  Hash,
   isAtomicSwapIdQuery,
   isPubkeyQuery,
   Nonce,
   PostableBytes,
   PostTxResponse,
   PubkeyQuery,
-  SwapState,
+  SwapProcessState,
   TokenTicker,
   TransactionId,
   TransactionState,
@@ -767,7 +768,7 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
       const recipient = toChecksummedAddress(
         Abi.decodeAddress(resultArray.slice(recipientBegin, recipientEnd)),
       );
-      const hash = resultArray.slice(hashBegin, hashEnd);
+      const hash = resultArray.slice(hashBegin, hashEnd) as Hash;
       const timeoutHeight = new BN(resultArray.slice(timeoutBegin, timeoutEnd)).toNumber();
       const amount = {
         quantity: new BN(resultArray.slice(amountBegin, amountEnd)).toString(),
@@ -778,7 +779,7 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
       return [
         {
           // TODO: Update when we return state from the get() call
-          kind: SwapState.Open,
+          kind: SwapProcessState.Open,
           data: {
             id: query.swapid,
             sender: sender,

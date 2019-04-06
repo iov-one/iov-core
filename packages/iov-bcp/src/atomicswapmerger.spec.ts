@@ -1,9 +1,8 @@
-import { Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
 import { AtomicSwapHelpers } from "./atomicswaphelpers";
 import { AtomicSwapMerger } from "./atomicswapmerger";
-import { ClaimedSwap, OpenSwap, Preimage, SwapState } from "./atomicswaptypes";
+import { ClaimedSwap, OpenSwap, Preimage, SwapProcessState } from "./atomicswaptypes";
 import {
   Address,
   Algorithm,
@@ -36,7 +35,7 @@ describe("AtomicSwapMerger", () => {
     const hash = AtomicSwapHelpers.hashPreimage(preimage);
     const swapId = fromHex("aabbcc") as SwapIdBytes;
     const open: OpenSwap = {
-      kind: SwapState.Open,
+      kind: SwapProcessState.Open,
       data: {
         id: swapId,
         sender: alice,
@@ -64,7 +63,7 @@ describe("AtomicSwapMerger", () => {
     expect(merger.openSwaps().length).toEqual(1);
 
     const expectedSettle: ClaimedSwap = {
-      kind: SwapState.Claimed,
+      kind: SwapProcessState.Claimed,
       data: open.data,
       preimage: preimage,
     };
@@ -82,12 +81,12 @@ describe("AtomicSwapMerger", () => {
 
     const preimageA = fromHex("00110011") as Preimage;
     const preimageB = fromHex("aabbeeff") as Preimage;
-    const hashA = new Sha256(preimageA).digest();
-    const hashB = new Sha256(preimageB).digest();
+    const hashA = AtomicSwapHelpers.hashPreimage(preimageA);
+    const hashB = AtomicSwapHelpers.hashPreimage(preimageB);
     const swapIdA = fromHex("aabbcc") as SwapIdBytes;
     const swapIdB = fromHex("112233") as SwapIdBytes;
     const openA: OpenSwap = {
-      kind: SwapState.Open,
+      kind: SwapProcessState.Open,
       data: {
         id: swapIdA,
         sender: alice,
@@ -98,7 +97,7 @@ describe("AtomicSwapMerger", () => {
       },
     };
     const openB: OpenSwap = {
-      kind: SwapState.Open,
+      kind: SwapProcessState.Open,
       data: {
         id: swapIdB,
         sender: alice,
@@ -139,7 +138,7 @@ describe("AtomicSwapMerger", () => {
     expect(merger.openSwaps().length).toEqual(2);
 
     const expectedSettleB: ClaimedSwap = {
-      kind: SwapState.Claimed,
+      kind: SwapProcessState.Claimed,
       data: openB.data,
       preimage: preimageB,
     };
@@ -147,7 +146,7 @@ describe("AtomicSwapMerger", () => {
     expect(merger.openSwaps().length).toEqual(1);
 
     const expectedSettleA: ClaimedSwap = {
-      kind: SwapState.Claimed,
+      kind: SwapProcessState.Claimed,
       data: openA.data,
       preimage: preimageA,
     };
@@ -162,7 +161,7 @@ describe("AtomicSwapMerger", () => {
     const hash = AtomicSwapHelpers.hashPreimage(preimage);
     const swapId = fromHex("aabbcc") as SwapIdBytes;
     const open: OpenSwap = {
-      kind: SwapState.Open,
+      kind: SwapProcessState.Open,
       data: {
         id: swapId,
         sender: alice,
@@ -192,7 +191,7 @@ describe("AtomicSwapMerger", () => {
     const hash = AtomicSwapHelpers.hashPreimage(preimage);
     const swapId = fromHex("aabbcc") as SwapIdBytes;
     const open: OpenSwap = {
-      kind: SwapState.Open,
+      kind: SwapProcessState.Open,
       data: {
         id: swapId,
         sender: alice,
@@ -220,7 +219,7 @@ describe("AtomicSwapMerger", () => {
     expect(merger.openSwaps().length).toEqual(0);
 
     const expectedSettle: ClaimedSwap = {
-      kind: SwapState.Claimed,
+      kind: SwapProcessState.Claimed,
       data: open.data,
       preimage: preimage,
     };

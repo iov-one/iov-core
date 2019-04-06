@@ -4,11 +4,14 @@ import { Stream } from "xstream";
 import { BcpConnection } from "./connection";
 import { Address, Amount, SwapIdBytes, SwapTimeout } from "./transactions";
 
-export enum SwapState {
+export enum SwapProcessState {
   Open = "open",
   Claimed = "claimed",
   Aborted = "aborted",
 }
+
+export type Preimage = Uint8Array & As<"preimage">;
+export type Hash = Uint8Array & As<"hash">;
 
 export interface SwapData {
   readonly id: SwapIdBytes; // this is used as an unique identitier to locate the swap
@@ -19,7 +22,7 @@ export interface SwapData {
    *
    * Until we have a way to specify the hashing algirithm, this is SHA256.
    */
-  readonly hash: Uint8Array;
+  readonly hash: Hash;
   readonly amounts: ReadonlyArray<Amount>;
   /**
    * The first point in time at which the offer is expired.
@@ -32,22 +35,20 @@ export interface SwapData {
 
 // OpenSwap is an offer that has not yet been claimed
 export interface OpenSwap {
-  readonly kind: SwapState.Open;
+  readonly kind: SwapProcessState.Open;
   readonly data: SwapData;
 }
 
-export type Preimage = Uint8Array & As<"preimage">;
-
 // ClosedSwap is returned once the swap has been claimed, exposing the preimage that was used to claim it
 export interface ClaimedSwap {
-  readonly kind: SwapState.Claimed;
+  readonly kind: SwapProcessState.Claimed;
   readonly data: SwapData;
   readonly preimage: Preimage;
 }
 
 /** A swap offer that has been aborted */
 export interface AbortedSwap {
-  readonly kind: SwapState.Aborted;
+  readonly kind: SwapProcessState.Aborted;
   readonly data: SwapData;
 }
 

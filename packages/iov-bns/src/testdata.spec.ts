@@ -4,6 +4,7 @@ import {
   Amount,
   ChainId,
   FullSignature,
+  Hash,
   Nonce,
   Preimage,
   PublicKeyBundle,
@@ -185,7 +186,7 @@ const swapOfferTransaction: SwapOfferTransaction = {
       tokenTicker: "FOO" as TokenTicker,
     },
   ],
-  hash: fromHex("1122334455aabbccddee"),
+  hash: fromHex("1122334455aabbccddee") as Hash,
 };
 
 export const swapOfferTxJson: SignedTransaction = {

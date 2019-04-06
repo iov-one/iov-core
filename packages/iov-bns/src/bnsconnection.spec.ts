@@ -13,6 +13,7 @@ import {
   BlockInfoSucceeded,
   ChainId,
   createTimestampTimeout,
+  Hash,
   isBlockInfoPending,
   isBlockInfoSucceeded,
   isConfirmedTransaction,
@@ -29,13 +30,13 @@ import {
   SwapClaimTransaction,
   SwapIdBytes,
   SwapOfferTransaction,
-  SwapState,
+  SwapProcessState,
   SwapTimeout,
   TokenTicker,
   TransactionState,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Random, Sha256 } from "@iov/crypto";
+import { Random } from "@iov/crypto";
 import { Encoding, Uint64 } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol";
 import { asArray, firstEvent, lastValue, toListPromise } from "@iov/stream";
@@ -1458,8 +1459,8 @@ describe("BnsConnection", () => {
     const initSwaps = await connection.getSwaps({ recipient: recipientAddr });
     expect(initSwaps.length).toEqual(0);
 
-    const swapOfferPreimage = Encoding.toAscii(`my top secret phrase... ${Math.random()}`);
-    const swapOfferHash = new Sha256(swapOfferPreimage).digest();
+    const swapOfferPreimage = await AtomicSwapHelpers.createPreimage();
+    const swapOfferHash = AtomicSwapHelpers.hashPreimage(swapOfferPreimage);
 
     // it will live 30 seconds
     const swapOfferTimeout: SwapTimeout = createTimestampTimeout(30);
@@ -1550,7 +1551,7 @@ describe("BnsConnection", () => {
     expect(idSwaps.length).toEqual(1);
 
     const swap = idSwaps[0];
-    expect(swap.kind).toEqual(SwapState.Open);
+    expect(swap.kind).toEqual(SwapProcessState.Open);
 
     // and it matches expectations
     const swapData = swap.data;
@@ -1569,7 +1570,7 @@ describe("BnsConnection", () => {
 
     // we can also get it by the sender
     const sendOpenSwapData = (await connection.getSwaps(querySwapSender)).filter(
-      s => s.kind === SwapState.Open,
+      s => s.kind === SwapProcessState.Open,
     );
     expect(sendOpenSwapData.length).toBeGreaterThanOrEqual(1);
     expect(sendOpenSwapData[sendOpenSwapData.length - 1]).toEqual(swap);
@@ -1584,7 +1585,7 @@ describe("BnsConnection", () => {
     expect(swapStates.length).toEqual(1);
 
     const swapState = swapStates[0];
-    expect(swapState.kind).toEqual(SwapState.Open);
+    expect(swapState.kind).toEqual(SwapProcessState.Open);
 
     // and it matches expectations
     const stateData = swapState.data;
@@ -1604,7 +1605,7 @@ describe("BnsConnection", () => {
     profile: UserProfile,
     creator: PublicIdentity,
     rcptAddr: Address,
-    hash: Uint8Array,
+    hash: Hash,
   ): Promise<PostTxResponse> => {
     // construct a swapOfferTx, sign and post to the chain
     const swapOfferTimeout: SwapTimeout = createTimestampTimeout(30);
@@ -1688,9 +1689,9 @@ describe("BnsConnection", () => {
     const midSwaps = await connection.getSwaps(rcptQuery);
     expect(midSwaps.length).toEqual(2);
     const [open1, open2] = midSwaps;
-    expect(open1.kind).toEqual(SwapState.Open);
+    expect(open1.kind).toEqual(SwapProcessState.Open);
     expect(open1.data.id).toEqual(id1);
-    expect(open2.kind).toEqual(SwapState.Open);
+    expect(open2.kind).toEqual(SwapProcessState.Open);
     expect(open2.data.id).toEqual(id2);
 
     // then claim, offer, claim - 2 closed, 1 open
@@ -1719,11 +1720,11 @@ describe("BnsConnection", () => {
     const finalSwaps = await connection.getSwaps({ recipient: recipientAddr });
     expect(finalSwaps.length).toEqual(3);
     const [open3, claim2, claim1] = finalSwaps;
-    expect(open3.kind).toEqual(SwapState.Open);
+    expect(open3.kind).toEqual(SwapProcessState.Open);
     expect(open3.data.id).toEqual(id3);
-    expect(claim2.kind).toEqual(SwapState.Claimed);
+    expect(claim2.kind).toEqual(SwapProcessState.Claimed);
     expect(claim2.data.id).toEqual(id2);
-    expect(claim1.kind).toEqual(SwapState.Claimed);
+    expect(claim1.kind).toEqual(SwapProcessState.Claimed);
     expect(claim1.data.id).toEqual(id1);
 
     // We have no guarantees which events are fired exactly,
@@ -1736,17 +1737,17 @@ describe("BnsConnection", () => {
 
     expect(latestEventPerId.size).toEqual(3);
     expect(latestEventPerId.get(toHex(id1))).toEqual({
-      kind: SwapState.Claimed,
+      kind: SwapProcessState.Claimed,
       data: open1.data,
       preimage: preimage1,
     });
     expect(latestEventPerId.get(toHex(id2))).toEqual({
-      kind: SwapState.Claimed,
+      kind: SwapProcessState.Claimed,
       data: open2.data,
       preimage: preimage2,
     });
     expect(latestEventPerId.get(toHex(id3))).toEqual({
-      kind: SwapState.Open,
+      kind: SwapProcessState.Open,
       data: open3.data,
     });
 

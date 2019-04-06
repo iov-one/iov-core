@@ -1,5 +1,5 @@
 import { As } from "type-tagger";
-import { Address, BcpTxQuery, ChainId, ConfirmedTransaction, Nonce, PublicIdentity, SignableBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TransactionId } from "@iov/bcp";
+import { Address, BcpTxQuery, ChainId, ConfirmedTransaction, Hash, Nonce, PublicIdentity, SignableBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TransactionId } from "@iov/bcp";
 import { QueryString } from "@iov/tendermint-rpc";
 export declare function addressPrefix(chainId: ChainId): "iov" | "tiov";
 /** Encodes raw bytes into a bech32 address */
@@ -20,7 +20,7 @@ export declare function arraysEqual(a: Uint8Array, b: Uint8Array): boolean;
 export declare type HashId = Uint8Array & As<"hashid">;
 export declare function hashIdentifier(hash: Uint8Array): HashId;
 export declare function isHashIdentifier(ident: Uint8Array): ident is HashId;
-export declare function hashFromIdentifier(ident: HashId): Uint8Array;
+export declare function hashFromIdentifier(ident: HashId): Hash;
 export declare function bucketKey(bucket: string): Uint8Array;
 export declare function indexKey(bucket: string, index: string): Uint8Array;
 export declare function isConfirmedWithSwapOfferTransaction(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapOfferTransaction>;

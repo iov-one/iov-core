@@ -5,6 +5,7 @@ import {
   Algorithm,
   ChainId,
   Fee,
+  Hash,
   Nonce,
   PostableBytes,
   PrehashType,
@@ -188,7 +189,7 @@ export class EthereumCodec implements TxCodec {
       const recipientChecksummedAddress = toChecksummedAddress(
         Abi.decodeAddress(input.slice(positionOpenRecipientBegin, positionOpenRecipientEnd)),
       );
-      const hash = input.slice(positionOpenHashBegin, positionOpenHashEnd);
+      const hash = input.slice(positionOpenHashBegin, positionOpenHashEnd) as Hash;
       const timeoutHeight = new BN(input.slice(positionOpenTimeoutBegin, positionOpenTimeoutEnd)).toNumber();
 
       transaction = {

@@ -8,7 +8,7 @@ import {
   OpenSwap,
   SwapIdBytes,
   SwapOfferTransaction,
-  SwapState,
+  SwapProcessState,
 } from "@iov/bcp";
 
 import { decodeAmount } from "./decode";
@@ -66,7 +66,7 @@ export class Context {
     const hash = hashFromIdentifier(swap.arbiter);
 
     return {
-      kind: SwapState.Open,
+      kind: SwapProcessState.Open,
       data: {
         id: swap._id as SwapIdBytes,
         sender: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.sender)),
@@ -84,7 +84,7 @@ export class Context {
   public swapOfferFromTx(confirmed: ConfirmedTransaction<SwapOfferTransaction>): OpenSwap {
     const transaction = confirmed.transaction;
     return {
-      kind: SwapState.Open,
+      kind: SwapProcessState.Open,
       data: {
         id: confirmed.result as SwapIdBytes,
         sender: identityToAddress(transaction.creator),

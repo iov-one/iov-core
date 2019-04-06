@@ -23,7 +23,7 @@ import {
   SendTransaction,
   SwapIdBytes,
   SwapOfferTransaction,
-  SwapState,
+  SwapProcessState,
   SwapTimeout,
   TokenTicker,
   TransactionId,
@@ -1684,7 +1684,7 @@ describe("EthereumConnection", () => {
       expect(idSwaps.length).toEqual(1);
 
       const swap = idSwaps[0];
-      expect(swap.kind).toEqual(SwapState.Open);
+      expect(swap.kind).toEqual(SwapProcessState.Open);
 
       const swapData = swap.data;
       expect(swapData.id).toEqual(swapId);

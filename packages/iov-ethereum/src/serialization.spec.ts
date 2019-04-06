@@ -3,6 +3,7 @@ import {
   Algorithm,
   Amount,
   ChainId,
+  Hash,
   Nonce,
   PublicIdentity,
   PublicKeyBytes,
@@ -300,7 +301,7 @@ describe("Serialization", () => {
         },
         swapId: Uint8Array.from([]) as SwapIdBytes,
         recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
-        hash: Uint8Array.from([]),
+        hash: Uint8Array.from([]) as Hash,
         timeout: {
           height: 1,
         },
@@ -474,7 +475,7 @@ describe("Serialization", () => {
           },
           swapId: Uint8Array.from([]) as SwapIdBytes,
           recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
-          hash: Uint8Array.from([]),
+          hash: Uint8Array.from([]) as Hash,
           timeout: {
             height: 1,
           },
