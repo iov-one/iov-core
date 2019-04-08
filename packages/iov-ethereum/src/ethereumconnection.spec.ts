@@ -1072,11 +1072,15 @@ describe("EthereumConnection", () => {
         const bytesToPostB = ethereumCodec.bytesToPost(signedB);
         const bytesToPostC = ethereumCodec.bytesToPost(signedC);
 
+        const transactionIds = new Set<TransactionId>();
+
         // Post A and B in parallel
         const [postResultA, postResultB] = await Promise.all([
           connection.postTx(bytesToPostA),
           connection.postTx(bytesToPostB),
         ]);
+        transactionIds.add(postResultA.transactionId);
+        transactionIds.add(postResultB.transactionId);
 
         // Wait for a block
         await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -1100,10 +1104,8 @@ describe("EthereumConnection", () => {
             expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
             if (events.length === 3) {
-              // This assumes we get two transactions into one block
-              // A == B < C
-              expect(events[0].height).toEqual(events[1].height);
-              expect(events[2].height).toBeGreaterThan(events[1].height);
+              const receivedIds = new Set(events.map(e => e.transactionId));
+              expect(receivedIds).toEqual(transactionIds);
 
               subscription.unsubscribe();
               connection.disconnect();
@@ -1113,7 +1115,8 @@ describe("EthereumConnection", () => {
         });
 
         // Post C
-        await connection.postTx(bytesToPostC);
+        const postResultC = await connection.postTx(bytesToPostC);
+        transactionIds.add(postResultC.transactionId);
       })().catch(done.fail);
     }, 60_000);
 
