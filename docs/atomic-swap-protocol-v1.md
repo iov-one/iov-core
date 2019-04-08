@@ -117,10 +117,11 @@ automatically changes on-chain as the underlying time (wall time or block
 height) increases. A state can switch from _non-expired_ to _expired_ but not
 vice versa.
 
-- **Non-expired:** In the range `[creation, timeout)`, the swap offer is
-  _non-expired_. This is the default state for most offers. However, an offer
-  can be created in _expired_ state directly if the above interval is empty.
-- **Expired** In the range `[timeout, ∞)`, the swap offer is _expired_.
+- **Non-expired:** In the half-open interval `[creation, timeout)`, the swap
+  offer is _non-expired_. This is the default state for most offers. However, an
+  offer can be created in _expired_ state directly if the above interval is
+  empty.
+- **Expired** In the interval `[timeout, ∞)`, the swap offer is _expired_.
 
 Common synonym: _abortable = expired_.
 
