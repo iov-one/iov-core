@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.13.3
+
+- @iov/ethereum: Export `Erc20Options`.
+
 ## 0.13.2
 
 - @iov/ethereum: Avoid dependency on `@types/bn.js` from `index.d.ts`.
