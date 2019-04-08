@@ -1,6 +1,6 @@
 import { ChainConnector, ChainId } from "@iov/bcp";
 
-import { ethereumCodec } from "./ethereumcodec";
+import { EthereumCodec } from "./ethereumcodec";
 import { EthereumConnection, EthereumConnectionOptions } from "./ethereumconnection";
 
 /**
@@ -16,7 +16,9 @@ export function ethereumConnector(
   const usedOptions: EthereumConnectionOptions = options || {};
   return {
     client: async () => EthereumConnection.establish(url, usedOptions),
-    codec: ethereumCodec,
+    codec: new EthereumCodec({
+      erc20Tokens: usedOptions.erc20Tokens,
+    }),
     expectedChainId: expectedChainId,
   };
 }

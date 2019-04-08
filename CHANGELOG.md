@@ -3,6 +3,7 @@
 ## 0.13.3
 
 - @iov/ethereum: Export `Erc20Options`.
+- @iov/ethereum: Set ERC20 tokens in codec of `ethereumConnector`.
 
 ## 0.13.2
 
