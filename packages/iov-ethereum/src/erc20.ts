@@ -19,7 +19,8 @@ export interface Erc20Options {
   readonly name?: string;
 }
 
-export class Erc20 {
+/** Class to query read-only information from an ERC20 contract. */
+export class Erc20Reader {
   private readonly client: EthereumRpcClient;
   private readonly options: Erc20Options;
 

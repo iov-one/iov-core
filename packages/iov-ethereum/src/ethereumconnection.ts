@@ -36,7 +36,7 @@ import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { Abi } from "./abi";
 import { pubkeyToAddress } from "./address";
 import { constants } from "./constants";
-import { Erc20, Erc20Options } from "./erc20";
+import { Erc20Options, Erc20Reader } from "./erc20";
 import { EthereumCodec } from "./ethereumcodec";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { Parse } from "./parse";
@@ -95,7 +95,7 @@ export class EthereumConnection implements BcpConnection {
   private readonly socket: StreamingSocket | undefined;
   private readonly scraperApiUrl: string | undefined;
   private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
-  private readonly erc20ContractReaders: ReadonlyMap<TokenTicker, Erc20>;
+  private readonly erc20ContractReaders: ReadonlyMap<TokenTicker, Erc20Reader>;
   private readonly codec: EthereumCodec;
 
   constructor(baseUrl: string, chainId: ChainId, options?: EthereumConnectionOptions) {
@@ -136,7 +136,10 @@ export class EthereumConnection implements BcpConnection {
     this.erc20Tokens = erc20Tokens;
     this.erc20ContractReaders = new Map(
       [...erc20Tokens.entries()].map(
-        ([ticker, erc20Options]): [TokenTicker, Erc20] => [ticker, new Erc20(ethereumClient, erc20Options)],
+        ([ticker, erc20Options]): [TokenTicker, Erc20Reader] => [
+          ticker,
+          new Erc20Reader(ethereumClient, erc20Options),
+        ],
       ),
     );
     this.codec = new EthereumCodec({ erc20Tokens: erc20Tokens });
