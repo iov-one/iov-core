@@ -1012,6 +1012,8 @@ describe("EthereumConnection", () => {
   });
 
   describe("liveTx", () => {
+    const waitForAdditionalEventsMs = 3 * (testConfig.connectionOptions.pollInterval || 4) * 1000;
+
     it("works for ETH transactions by recipient (in history and updates)", done => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
@@ -1107,9 +1109,14 @@ describe("EthereumConnection", () => {
               const receivedIds = new Set(events.map(e => e.transactionId));
               expect(receivedIds).toEqual(transactionIds);
 
-              subscription.unsubscribe();
-              connection.disconnect();
-              done();
+              setTimeout(() => {
+                // ensure no more events received
+                expect(events.length).toEqual(3);
+
+                subscription.unsubscribe();
+                connection.disconnect();
+                done();
+              }, waitForAdditionalEventsMs);
             }
           },
         });
@@ -1118,7 +1125,7 @@ describe("EthereumConnection", () => {
         const postResultC = await connection.postTx(bytesToPostC);
         transactionIds.add(postResultC.transactionId);
       })().catch(done.fail);
-    }, 60_000);
+    }, 70_000);
 
     it("works for ERC20 transactions by recipient (in history and updates)", done => {
       pendingWithoutEthereum();
@@ -1211,9 +1218,14 @@ describe("EthereumConnection", () => {
               const receivedIds = new Set(events.map(e => e.transactionId));
               expect(receivedIds).toEqual(transactionIds);
 
-              subscription.unsubscribe();
-              connection.disconnect();
-              done();
+              setTimeout(() => {
+                // ensure no more events received
+                expect(events.length).toEqual(3);
+
+                subscription.unsubscribe();
+                connection.disconnect();
+                done();
+              }, waitForAdditionalEventsMs);
             }
           },
         });
@@ -1222,7 +1234,7 @@ describe("EthereumConnection", () => {
         const postResultC = await connection.postTx(bytesToPostC);
         transactionIds.add(postResultC.transactionId);
       })().catch(done.fail);
-    }, 60_000);
+    }, 70_000);
 
     it("works for ETH and ERC20 transactions by recipient (in history and updates)", done => {
       pendingWithoutEthereum();
@@ -1331,9 +1343,14 @@ describe("EthereumConnection", () => {
               const receivedIds = new Set(events.map(e => e.transactionId));
               expect(receivedIds).toEqual(transactionIds);
 
-              subscription.unsubscribe();
-              connection.disconnect();
-              done();
+              setTimeout(() => {
+                // ensure no more events received
+                expect(events.length).toEqual(4);
+
+                subscription.unsubscribe();
+                connection.disconnect();
+                done();
+              }, waitForAdditionalEventsMs);
             }
           },
         });
@@ -1346,7 +1363,7 @@ describe("EthereumConnection", () => {
         transactionIds.add(postResultC.transactionId);
         transactionIds.add(postResultD.transactionId);
       })().catch(done.fail);
-    }, 70_000);
+    }, 80_000);
 
     it("works for transactions by ID (in history)", done => {
       pendingWithoutEthereum();
