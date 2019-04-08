@@ -134,7 +134,7 @@ at the same time.
 
 The following risks for cross-chain atomic swaps have been identified. Some of
 them are fully avoided by this protocol but still documented for tranparancy.
-Others need to be mitigated by smart choice of parameters.
+Others need to be mitigated by the user's choice of parameters.
 
 ### Pre-image attacks
 
