@@ -58,8 +58,8 @@ actor's swap offer before creating an offer oneself.
 
 A swap offer is a HTLC with the following properties:
 
-- The amount of tokens is fixed. Implementation may support a group of multiple
-  amounts.
+- The amount of tokens is fixed. Implementations may support including multiple
+  different tokens at once.
 - The recipient address is fixed.
 - Creating the contract locks the funds.
 - A hash of the preimage is fixed.
