@@ -521,7 +521,7 @@ describe("EthereumConnection", () => {
       }
 
       connection.disconnect();
-    }, 60_000);
+    }, 90_000);
   });
 
   describe("watchAccount", () => {
@@ -827,7 +827,7 @@ describe("EthereumConnection", () => {
       }
 
       connection.disconnect();
-    }, 60_000);
+    }, 90_000);
 
     it("lists ERC20 transactions when searching by sender", async () => {
       pendingWithoutEthereum();
@@ -837,6 +837,8 @@ describe("EthereumConnection", () => {
         ...testConfig.connectionOptions,
         erc20Tokens: testConfig.erc20Tokens,
       });
+      // filter search result by min height to avoid long test run time
+      const minHeight = (await connection.height()) - 10;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
@@ -869,7 +871,10 @@ describe("EthereumConnection", () => {
         // search by sender
         {
           const senderAddress = pubkeyToAddress(mainIdentity.pubkey);
-          const resultSearch = await connection.searchTx({ sentFromOrTo: senderAddress });
+          const resultSearch = await connection.searchTx({
+            sentFromOrTo: senderAddress,
+            minHeight: minHeight,
+          });
           expect(resultSearch.length).toBeGreaterThanOrEqual(1);
           const latestResult = resultSearch[0];
           expect(latestResult.transactionId).toEqual(transactionId);
@@ -886,7 +891,7 @@ describe("EthereumConnection", () => {
       }
 
       connection.disconnect();
-    }, 60_000);
+    }, 90_000);
   });
 
   describe("listenTx", () => {

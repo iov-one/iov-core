@@ -348,6 +348,12 @@ const rinkeby: EthereumNetworkConfig = {
           quantity: "7123400000000000000",
           tokenName: "Avocado",
         },
+        {
+          tokenTicker: "ZEENUS" as TokenTicker,
+          tokenName: "Zeenus 💪",
+          quantity: "5",
+          fractionalDigits: 0,
+        },
       ],
     },
     unused: {
@@ -392,6 +398,14 @@ const rinkeby: EthereumNetworkConfig = {
         symbol: "AVO",
       },
     ],
+    [
+      "ZEENUS" as TokenTicker,
+      {
+        contractAddress: "0x1f9061B953bBa0E36BF50F21876132DcF276fC6e" as Address,
+        decimals: 0,
+        symbol: "ZEENUS",
+      },
+    ],
   ]),
   erc20TransferTests: [
     {
@@ -406,6 +420,13 @@ const rinkeby: EthereumNetworkConfig = {
         quantity: "456",
         tokenTicker: "WETH" as TokenTicker,
         fractionalDigits: 18,
+      },
+    },
+    {
+      amount: {
+        tokenTicker: "ZEENUS" as TokenTicker,
+        quantity: "1",
+        fractionalDigits: 0,
       },
     },
   ],
@@ -424,6 +445,11 @@ const rinkeby: EthereumNetworkConfig = {
       tokenTicker: "AVO" as TokenTicker,
       tokenName: "Avocado",
       fractionalDigits: 18,
+    },
+    {
+      tokenTicker: "ZEENUS" as TokenTicker,
+      tokenName: "Zeenus 💪",
+      fractionalDigits: 0,
     },
   ],
 };
