@@ -36,7 +36,7 @@ import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { Abi } from "./abi";
 import { pubkeyToAddress } from "./address";
 import { constants } from "./constants";
-import { Erc20Options, Erc20Reader } from "./erc20";
+import { Erc20Options, Erc20Reader } from "./erc20reader";
 import { EthereumCodec } from "./ethereumcodec";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { Parse } from "./parse";
