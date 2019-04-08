@@ -481,12 +481,9 @@ describe("EthereumConnection", () => {
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
       const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
+      const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
       const connection = await EthereumConnection.establish(testConfig.base, {
         ...testConfig.connectionOptions,
-        erc20Tokens: testConfig.erc20Tokens,
-      });
-
-      const codec = new EthereumCodec({
         erc20Tokens: testConfig.erc20Tokens,
       });
 
@@ -777,11 +774,11 @@ describe("EthereumConnection", () => {
     it("lists ERC20 transactions when searching by recipient", async () => {
       pendingWithoutEthereum();
 
+      const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
       const connection = await EthereumConnection.establish(testConfig.base, {
         ...testConfig.connectionOptions,
         erc20Tokens: testConfig.erc20Tokens,
       });
-      const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
@@ -835,11 +832,11 @@ describe("EthereumConnection", () => {
     it("lists ERC20 transactions when searching by sender", async () => {
       pendingWithoutEthereum();
 
+      const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
       const connection = await EthereumConnection.establish(testConfig.base, {
         ...testConfig.connectionOptions,
         erc20Tokens: testConfig.erc20Tokens,
       });
-      const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
