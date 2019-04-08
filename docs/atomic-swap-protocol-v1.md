@@ -138,19 +138,19 @@ Others need to be mitigated by the user's choice of parameters.
 
 ### Pre-image attacks
 
-The short position copies the hash without knowing the preimage. This means the
-long position could use a very long preimage that is either expensive or
-impossible to process on one chain but works easily on the other chain. This can
-make it unprofitable or impossible for short to claim their tokens, leading to
-free tokens for long.
+The actor in short position copies the hash without knowing the preimage. This
+means the actor in long position could use a very long preimage that is either
+expensive or impossible to process on one chain but works easily on the other
+chain. This can make it unprofitable or impossible for the actor in short to
+claim their tokens, leading to free tokens for the actor in long.
 
 This risk is avoided in this protocol by having a fixed preimage length.
 
 ### No counter offer created
 
-The short position can pretend to have the intention to create a counter offer
-but not do it. In this case long loses access to the locked tokens until the
-timeout is reached.
+The actor in short position can pretend to have the intention to create a
+counter offer but not do it. In this case the actor in long loses access to the
+locked tokens until the timeout is reached.
 
 ### Half executed atomic swaps
 
