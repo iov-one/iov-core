@@ -4,6 +4,7 @@
 
 - @iov/ethereum: Export `Erc20Options`.
 - @iov/ethereum: Set ERC20 tokens in codec of `ethereumConnector`.
+- @iov/ethereum: Deduplicate transaction events in `liveTx`/`listenTx`.
 
 ## 0.13.2
 

@@ -600,7 +600,15 @@ export class EthereumConnection implements BcpConnection {
         },
       };
 
-      return Stream.merge(Stream.create(fromScraperProducer), Stream.create(fromLogsProducer));
+      const mergedStream = Stream.merge(Stream.create(fromScraperProducer), Stream.create(fromLogsProducer));
+
+      // remove duplicates
+      const alreadySent = new Set<TransactionId>();
+      const deduplicatedStream = mergedStream
+        .filter(ct => !alreadySent.has(ct.transactionId))
+        .debug(ct => alreadySent.add(ct.transactionId));
+
+      return deduplicatedStream;
     } else {
       throw new Error("Unsupported query.");
     }
@@ -700,7 +708,15 @@ export class EthereumConnection implements BcpConnection {
         },
       };
 
-      return Stream.merge(Stream.create(fromScraperProducer), Stream.create(fromLogsProducer));
+      const mergedStream = Stream.merge(Stream.create(fromScraperProducer), Stream.create(fromLogsProducer));
+
+      // remove duplicates
+      const alreadySent = new Set<TransactionId>();
+      const deduplicatedStream = mergedStream
+        .filter(ct => !alreadySent.has(ct.transactionId))
+        .debug(ct => alreadySent.add(ct.transactionId));
+
+      return deduplicatedStream;
     } else {
       throw new Error("Unsupported query.");
     }
