@@ -399,6 +399,7 @@ const rinkeby: EthereumNetworkConfig = {
       },
     ],
     [
+      // from https://ethereum.stackexchange.com/a/68072
       "ZEENUS" as TokenTicker,
       {
         contractAddress: "0x1f9061B953bBa0E36BF50F21876132DcF276fC6e" as Address,
