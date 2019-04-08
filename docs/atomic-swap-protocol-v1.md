@@ -1,8 +1,8 @@
 # IOV atomic swap protocol version 1
 
-| Status | Authors | Created    | Last updated | License   |
-| ------ | ------- | ---------- | ------------ | --------- |
-| Draft  |         | 2019-03-27 | 2019-03-27   | CC-BY-4.0 |
+| Status | Authors                                | Created    | Last updated | License   |
+| ------ | -------------------------------------- | ---------- | ------------ | --------- |
+| Draft  | Simon Warta, Ethan Frey, Isabella Dell | 2019-03-27 | 2019-04-08   | CC-BY-4.0 |
 
 ## Abstract
 
