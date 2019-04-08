@@ -10,6 +10,8 @@
   `EthereumCodec` with default options.
 - @iov/ethereum: Implement `getFeeQuote` method on `EthereumConnection`.
 - @iov/ethereum: Fix transaction fee parsing for transactions from RPC/scraper.
+- @iov/ethereum: In `parseBytes`, convert on-chain `input`/memo data into hex
+  representation when it is no valid UTF-8.
 - @iov/ethereum: Add `pollInterval` to `EthereumConnectionOptions`.
 - @iov/dpos: Let `Serialization.serializeTransaction` accept transactions with
   fee set.
