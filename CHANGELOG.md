@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.13.2
+
+- @iov/ethereum: Avoid dependency on `@types/bn.js` from `index.d.ts`.
+
 ## 0.13.1
 
 - @iov/ethereum: Allow querying of ERC20 token balances

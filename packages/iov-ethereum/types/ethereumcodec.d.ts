@@ -1,5 +1,5 @@
 import { Address, ChainId, Nonce, PostableBytes, PublicIdentity, SignedTransaction, SigningJob, TokenTicker, TransactionId, TxCodec, UnsignedTransaction } from "@iov/bcp";
-import { Erc20Options } from "./erc20reader";
+import { Erc20Options } from "./erc20";
 /**
  * See https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash
  *

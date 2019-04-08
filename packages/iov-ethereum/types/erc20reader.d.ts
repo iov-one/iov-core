@@ -1,16 +1,8 @@
 import BN = require("bn.js");
 import { Address } from "@iov/bcp";
+import { Erc20Options } from "./erc20";
 export interface EthereumRpcClient {
     readonly ethCall: (to: Address, data: Uint8Array) => Promise<Uint8Array>;
-}
-export interface Erc20Options {
-    readonly contractAddress: Address;
-    /** The token ticker. Overrides the on-chain value. */
-    readonly symbol: string;
-    /** The number of fractional digits. Overrides the on-chain value. */
-    readonly decimals: number;
-    /** Override on-chain name. Use this if contract does not define value on-chain. */
-    readonly name?: string;
 }
 /** Class to query read-only information from an ERC20 contract. */
 export declare class Erc20Reader {

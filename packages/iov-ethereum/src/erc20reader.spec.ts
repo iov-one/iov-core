@@ -6,7 +6,8 @@ import { Encoding } from "@iov/encoding";
 import { isJsonRpcErrorResponse } from "@iov/jsonrpc";
 
 import { pubkeyToAddress } from "./address";
-import { Erc20Options, Erc20Reader, EthereumRpcClient } from "./erc20reader";
+import { Erc20Options } from "./erc20";
+import { Erc20Reader, EthereumRpcClient } from "./erc20reader";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { testConfig } from "./testconfig.spec";
 import { normalizeHex } from "./utils";

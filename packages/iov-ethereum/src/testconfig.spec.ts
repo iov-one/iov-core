@@ -12,7 +12,7 @@ import {
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
-import { Erc20Options } from "./erc20reader";
+import { Erc20Options } from "./erc20";
 import { EthereumConnectionOptions } from "./ethereumconnection";
 
 const { fromHex } = Encoding;

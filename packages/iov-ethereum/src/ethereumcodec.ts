@@ -25,7 +25,7 @@ import { Abi } from "./abi";
 import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, getRecoveryParam } from "./encoding";
-import { Erc20Options } from "./erc20reader";
+import { Erc20Options } from "./erc20";
 import { Serialization } from "./serialization";
 import {
   decodeHexQuantity,
