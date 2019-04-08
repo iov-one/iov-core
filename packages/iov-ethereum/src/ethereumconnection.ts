@@ -243,7 +243,8 @@ export class EthereumConnection implements BcpConnection {
       ),
     );
 
-    return [
+    // tslint:disable-next-line: readonly-array
+    const out = [
       {
         tokenTicker: constants.primaryTokenTicker,
         tokenName: constants.primaryTokenName,
@@ -251,6 +252,9 @@ export class EthereumConnection implements BcpConnection {
       },
       ...erc20s,
     ];
+    // Sort by ticker
+    out.sort((a, b) => a.tokenTicker.localeCompare(b.tokenTicker));
+    return out;
   }
 
   public async getAccount(query: AccountQuery): Promise<Account | undefined> {
@@ -295,16 +299,21 @@ export class EthereumConnection implements BcpConnection {
       return undefined;
     }
 
+    // tslint:disable-next-line: readonly-array
+    const outBalance = [
+      {
+        tokenName: constants.primaryTokenName,
+        ...ethBalance,
+      },
+      ...nonEmptyErc20Balances,
+    ];
+    // Sort by ticker
+    outBalance.sort((a, b) => a.tokenTicker.localeCompare(b.tokenTicker));
+
     const account: Account = {
       address: address,
       pubkey: undefined, // TODO: get from a transaction sent by this address
-      balance: [
-        {
-          tokenName: constants.primaryTokenName,
-          ...ethBalance,
-        },
-        ...nonEmptyErc20Balances,
-      ],
+      balance: outBalance,
     };
     return account;
   }
