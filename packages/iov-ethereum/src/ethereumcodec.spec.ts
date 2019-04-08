@@ -11,7 +11,7 @@ import {
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
-import { Erc20Options } from "./erc20";
+import { Erc20Options } from "./erc20reader";
 import { EthereumCodec, ethereumCodec, EthereumRpcTransactionResult } from "./ethereumcodec";
 
 const { fromHex } = Encoding;

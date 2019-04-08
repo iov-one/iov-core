@@ -1,6 +1,6 @@
 import { Stream } from "xstream";
 import { Account, AccountQuery, AddressQuery, BcpConnection, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, UnsignedTransaction } from "@iov/bcp";
-import { Erc20Options } from "./erc20";
+import { Erc20Options } from "./erc20reader";
 export interface EthereumConnectionOptions {
     readonly wsUrl?: string;
     /** URL to an Etherscan compatible scraper API */

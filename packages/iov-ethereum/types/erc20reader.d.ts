@@ -12,7 +12,8 @@ export interface Erc20Options {
     /** Override on-chain name. Use this if contract does not define value on-chain. */
     readonly name?: string;
 }
-export declare class Erc20 {
+/** Class to query read-only information from an ERC20 contract. */
+export declare class Erc20Reader {
     private readonly client;
     private readonly options;
     constructor(client: EthereumRpcClient, options: Erc20Options);

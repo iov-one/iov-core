@@ -15,7 +15,7 @@ import { Abi } from "./abi";
 import { isValidAddress } from "./address";
 import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, eip155V, toRlp } from "./encoding";
-import { Erc20Options } from "./erc20";
+import { Erc20Options } from "./erc20reader";
 import { encodeQuantity, encodeQuantityString, fromBcpChainId, normalizeHex } from "./utils";
 
 const { fromHex } = Encoding;
