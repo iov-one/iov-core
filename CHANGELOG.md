@@ -12,13 +12,28 @@ Breaking changes
   `AtomicSwapHelpers.hashPreimage` to create those hashes.
 - @iov/bcp: Rename `SwapState` to `SwapProcessState`.
 
+## 0.13.3
+
+- @iov/ethereum: Export `Erc20Options`.
+- @iov/ethereum: Set ERC20 tokens in codec of `ethereumConnector`.
+- @iov/ethereum: Deduplicate transaction events in `liveTx`/`listenTx`.
+
+## 0.13.2
+
+- @iov/ethereum: Avoid dependency on `@types/bn.js` from `index.d.ts`.
+
 ## 0.13.1
 
 - @iov/ethereum: Allow querying of ERC20 token balances
 - @iov/ethereum: Allow sending of ERC20 tokens
 - @iov/ethereum: Support ERC20 tokens in `searchTx`, `listenTx` and `liveTx`.
+- @iov/ethereum: Export instantiable `EthereumCodec` with `EthereumCodecOptions`
+  argument. The old `ethereumCodec` is now a backward compatible instance of
+  `EthereumCodec` with default options.
 - @iov/ethereum: Implement `getFeeQuote` method on `EthereumConnection`.
 - @iov/ethereum: Fix transaction fee parsing for transactions from RPC/scraper.
+- @iov/ethereum: In `parseBytes`, convert on-chain `input`/memo data into hex
+  representation when it is no valid UTF-8.
 - @iov/ethereum: Add `pollInterval` to `EthereumConnectionOptions`.
 - @iov/dpos: Let `Serialization.serializeTransaction` accept transactions with
   fee set.

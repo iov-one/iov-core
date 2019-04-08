@@ -88,22 +88,22 @@ const local: EthereumNetworkConfig = {
       address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
       expectedBalance: [
         {
-          quantity: "1234567890987654321",
-          fractionalDigits: 18,
-          tokenTicker: "ETH" as TokenTicker,
-          tokenName: "Ether",
+          tokenTicker: "ASH" as TokenTicker,
+          tokenName: "Ash Token",
+          quantity: "33445566",
+          fractionalDigits: 12,
         },
         {
-          tokenTicker: "ASH" as TokenTicker,
-          fractionalDigits: 12,
-          quantity: "33445566",
-          tokenName: "Ash Token",
+          tokenTicker: "ETH" as TokenTicker,
+          tokenName: "Ether",
+          quantity: "1234567890987654321",
+          fractionalDigits: 18,
         },
         {
           tokenTicker: "TRASH" as TokenTicker,
-          fractionalDigits: 9,
-          quantity: "33445566",
           tokenName: "Trash Token",
+          quantity: "33445566",
+          fractionalDigits: 9,
         },
       ],
       expectedNonce: 0 as Nonce,
@@ -111,24 +111,24 @@ const local: EthereumNetworkConfig = {
     noEth: {
       address: "0x0000000000111111111122222222223333333333" as Address,
       expectedBalance: [
-        // ETH balance should be listed anyway
-        {
-          quantity: "0",
-          fractionalDigits: 18,
-          tokenTicker: "ETH" as TokenTicker,
-          tokenName: "Ether",
-        },
         {
           tokenTicker: "ASH" as TokenTicker,
-          fractionalDigits: 12,
-          quantity: "38",
           tokenName: "Ash Token",
+          quantity: "38",
+          fractionalDigits: 12,
+        },
+        // ETH balance should be listed anyway
+        {
+          tokenTicker: "ETH" as TokenTicker,
+          tokenName: "Ether",
+          quantity: "0",
+          fractionalDigits: 18,
         },
         {
           tokenTicker: "TRASH" as TokenTicker,
-          fractionalDigits: 9,
-          quantity: "38",
           tokenName: "Trash Token",
+          quantity: "38",
+          fractionalDigits: 9,
         },
       ],
     },
@@ -194,14 +194,14 @@ const local: EthereumNetworkConfig = {
   ],
   expectedTokens: [
     {
-      tokenTicker: "ETH" as TokenTicker,
-      tokenName: "Ether",
-      fractionalDigits: 18,
-    },
-    {
       tokenTicker: "ASH" as TokenTicker,
       tokenName: "Ash Token",
       fractionalDigits: 12,
+    },
+    {
+      tokenTicker: "ETH" as TokenTicker,
+      tokenName: "Ether",
+      fractionalDigits: 18,
     },
     {
       tokenTicker: "TRASH" as TokenTicker,
@@ -233,10 +233,10 @@ const ropsten: EthereumNetworkConfig = {
       address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
       expectedBalance: [
         {
-          quantity: "2999979000000000000",
-          fractionalDigits: 18,
           tokenTicker: "ETH" as TokenTicker,
           tokenName: "Ether",
+          quantity: "2999979000000000000",
+          fractionalDigits: 18,
         },
       ],
       expectedNonce: 1 as Nonce,
@@ -246,10 +246,10 @@ const ropsten: EthereumNetworkConfig = {
       expectedBalance: [
         // ETH balance should be listed anyway
         {
-          quantity: "0",
-          fractionalDigits: 18,
           tokenTicker: "ETH" as TokenTicker,
           tokenName: "Ether",
+          quantity: "0",
+          fractionalDigits: 18,
         },
       ],
     },
@@ -312,16 +312,16 @@ const rinkeby: EthereumNetworkConfig = {
       address: "0x2eF42084759d67CA34aA910DFE22d78bbb66964f" as Address,
       expectedBalance: [
         {
-          quantity: "1775182474000000000",
-          fractionalDigits: 18,
           tokenTicker: "ETH" as TokenTicker,
           tokenName: "Ether",
+          quantity: "1775182474000000000",
+          fractionalDigits: 18,
         },
         {
-          quantity: "1123344550000000000",
-          fractionalDigits: 18,
           tokenTicker: "WETH" as TokenTicker,
           tokenName: "Wrapped Ether",
+          quantity: "1123344550000000000",
+          fractionalDigits: 18,
         },
       ],
       expectedNonce: 3 as Nonce,
@@ -329,24 +329,30 @@ const rinkeby: EthereumNetworkConfig = {
     noEth: {
       address: "0x2244224422448877887744444444445555555555" as Address,
       expectedBalance: [
+        {
+          tokenTicker: "AVO" as TokenTicker,
+          tokenName: "Avocado",
+          quantity: "7123400000000000000",
+          fractionalDigits: 18,
+        },
         // ETH balance should be listed anyway
         {
-          quantity: "0",
-          fractionalDigits: 18,
           tokenTicker: "ETH" as TokenTicker,
           tokenName: "Ether",
+          quantity: "0",
+          fractionalDigits: 18,
         },
         {
           tokenTicker: "WETH" as TokenTicker,
-          fractionalDigits: 18,
-          quantity: "100000000000000000",
           tokenName: "Wrapped Ether",
+          quantity: "100000000000000000",
+          fractionalDigits: 18,
         },
         {
-          tokenTicker: "AVO" as TokenTicker,
-          fractionalDigits: 18,
-          quantity: "7123400000000000000",
-          tokenName: "Avocado",
+          tokenTicker: "ZEENUS" as TokenTicker,
+          tokenName: "Zeenus 💪",
+          quantity: "5",
+          fractionalDigits: 0,
         },
       ],
     },
@@ -392,6 +398,15 @@ const rinkeby: EthereumNetworkConfig = {
         symbol: "AVO",
       },
     ],
+    [
+      // from https://ethereum.stackexchange.com/a/68072
+      "ZEENUS" as TokenTicker,
+      {
+        contractAddress: "0x1f9061B953bBa0E36BF50F21876132DcF276fC6e" as Address,
+        decimals: 0,
+        symbol: "ZEENUS",
+      },
+    ],
   ]),
   erc20TransferTests: [
     {
@@ -408,8 +423,20 @@ const rinkeby: EthereumNetworkConfig = {
         fractionalDigits: 18,
       },
     },
+    {
+      amount: {
+        tokenTicker: "ZEENUS" as TokenTicker,
+        quantity: "1",
+        fractionalDigits: 0,
+      },
+    },
   ],
   expectedTokens: [
+    {
+      tokenTicker: "AVO" as TokenTicker,
+      tokenName: "Avocado",
+      fractionalDigits: 18,
+    },
     {
       tokenTicker: "ETH" as TokenTicker,
       tokenName: "Ether",
@@ -421,9 +448,9 @@ const rinkeby: EthereumNetworkConfig = {
       fractionalDigits: 18,
     },
     {
-      tokenTicker: "AVO" as TokenTicker,
-      tokenName: "Avocado",
-      fractionalDigits: 18,
+      tokenTicker: "ZEENUS" as TokenTicker,
+      tokenName: "Zeenus 💪",
+      fractionalDigits: 0,
     },
   ],
 };

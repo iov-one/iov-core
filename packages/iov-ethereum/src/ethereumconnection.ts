@@ -43,7 +43,8 @@ import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { Abi } from "./abi";
 import { pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
-import { Erc20, Erc20Options } from "./erc20";
+import { Erc20Options } from "./erc20";
+import { Erc20Reader } from "./erc20reader";
 import { EthereumCodec } from "./ethereumcodec";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { Parse } from "./parse";
@@ -102,7 +103,7 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
   private readonly socket: StreamingSocket | undefined;
   private readonly scraperApiUrl: string | undefined;
   private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
-  private readonly erc20ContractReaders: ReadonlyMap<TokenTicker, Erc20>;
+  private readonly erc20ContractReaders: ReadonlyMap<TokenTicker, Erc20Reader>;
   private readonly codec: EthereumCodec;
 
   constructor(baseUrl: string, chainId: ChainId, options?: EthereumConnectionOptions) {
@@ -143,7 +144,10 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
     this.erc20Tokens = erc20Tokens;
     this.erc20ContractReaders = new Map(
       [...erc20Tokens.entries()].map(
-        ([ticker, erc20Options]): [TokenTicker, Erc20] => [ticker, new Erc20(ethereumClient, erc20Options)],
+        ([ticker, erc20Options]): [TokenTicker, Erc20Reader] => [
+          ticker,
+          new Erc20Reader(ethereumClient, erc20Options),
+        ],
       ),
     );
     this.codec = new EthereumCodec({ erc20Tokens: erc20Tokens });
@@ -247,7 +251,8 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
       ),
     );
 
-    return [
+    // tslint:disable-next-line: readonly-array
+    const out = [
       {
         tokenTicker: constants.primaryTokenTicker,
         tokenName: constants.primaryTokenName,
@@ -255,6 +260,9 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
       },
       ...erc20s,
     ];
+    // Sort by ticker
+    out.sort((a, b) => a.tokenTicker.localeCompare(b.tokenTicker));
+    return out;
   }
 
   public async getAccount(query: AccountQuery): Promise<Account | undefined> {
@@ -299,16 +307,21 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
       return undefined;
     }
 
+    // tslint:disable-next-line: readonly-array
+    const outBalance = [
+      {
+        tokenName: constants.primaryTokenName,
+        ...ethBalance,
+      },
+      ...nonEmptyErc20Balances,
+    ];
+    // Sort by ticker
+    outBalance.sort((a, b) => a.tokenTicker.localeCompare(b.tokenTicker));
+
     const account: Account = {
       address: address,
       pubkey: undefined, // TODO: get from a transaction sent by this address
-      balance: [
-        {
-          tokenName: constants.primaryTokenName,
-          ...ethBalance,
-        },
-        ...nonEmptyErc20Balances,
-      ],
+      balance: outBalance,
     };
     return account;
   }
@@ -594,7 +607,15 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
         },
       };
 
-      return Stream.merge(Stream.create(fromScraperProducer), Stream.create(fromLogsProducer));
+      const mergedStream = Stream.merge(Stream.create(fromScraperProducer), Stream.create(fromLogsProducer));
+
+      // remove duplicates
+      const alreadySent = new Set<TransactionId>();
+      const deduplicatedStream = mergedStream
+        .filter(ct => !alreadySent.has(ct.transactionId))
+        .debug(ct => alreadySent.add(ct.transactionId));
+
+      return deduplicatedStream;
     } else {
       throw new Error("Unsupported query.");
     }
@@ -694,7 +715,15 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
         },
       };
 
-      return Stream.merge(Stream.create(fromScraperProducer), Stream.create(fromLogsProducer));
+      const mergedStream = Stream.merge(Stream.create(fromScraperProducer), Stream.create(fromLogsProducer));
+
+      // remove duplicates
+      const alreadySent = new Set<TransactionId>();
+      const deduplicatedStream = mergedStream
+        .filter(ct => !alreadySent.has(ct.transactionId))
+        .debug(ct => alreadySent.add(ct.transactionId));
+
+      return deduplicatedStream;
     } else {
       throw new Error("Unsupported query.");
     }
