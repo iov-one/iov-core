@@ -10,6 +10,7 @@ describe("AtomicSwapHelpers", () => {
     it("works", async () => {
       const preimage = await AtomicSwapHelpers.createPreimage();
       expect(preimage.length).toEqual(32);
+      expect(new Set(preimage).size).toBeGreaterThanOrEqual(25);
     });
   });
 
