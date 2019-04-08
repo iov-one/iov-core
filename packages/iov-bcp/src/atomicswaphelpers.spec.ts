@@ -22,4 +22,12 @@ describe("AtomicSwapHelpers", () => {
       expect(hash).toEqual(fromHex("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"));
     });
   });
+
+  describe("createId", () => {
+    it("works", async () => {
+      const id = await AtomicSwapHelpers.createId();
+      expect(id.length).toEqual(32);
+      expect(new Set(id).size).toBeGreaterThanOrEqual(25);
+    });
+  });
 });

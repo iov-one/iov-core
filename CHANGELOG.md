@@ -15,6 +15,7 @@ Breaking changes
 - @iov/bcp: Change type of `Account.balance` to array of `Amount`, i.e. remove
   the `tokenName` field.
 - @iov/bcp: Remove obsolete type `BcpCoin`.
+- @iov/bcp: Add `AtomicSwapHelpers.createId`.
 
 ## 0.13.3
 
