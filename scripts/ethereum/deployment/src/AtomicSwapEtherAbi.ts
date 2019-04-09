@@ -10,6 +10,11 @@ export default new ContractAbi([
       },
       {
         indexed: false,
+        name: "sender",
+        type: "address",
+      },
+      {
+        indexed: false,
         name: "recipient",
         type: "address",
       },
@@ -17,6 +22,16 @@ export default new ContractAbi([
         indexed: false,
         name: "hash",
         type: "bytes32",
+      },
+      {
+        indexed: false,
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        name: "timeout",
+        type: "uint256",
       },
     ],
     name: "Opened",
@@ -142,6 +157,10 @@ export default new ContractAbi([
       {
         name: "preimage",
         type: "bytes32",
+      },
+      {
+        name: "state",
+        type: "uint8",
       },
     ],
     payable: false,
