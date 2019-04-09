@@ -175,6 +175,32 @@ describe("BnsConnection", () => {
     connection.disconnect();
   });
 
+  describe("getToken", () => {
+    it("can get existing token", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+      const token = await connection.getToken("ASH" as TokenTicker);
+      expect(token).toEqual({
+        tokenTicker: "ASH" as TokenTicker,
+        tokenName: "Let the Phoenix arise",
+        fractionalDigits: 9,
+      });
+
+      connection.disconnect();
+    });
+
+    it("produces empty result for non-existing token", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+      const token = await connection.getToken("ETH" as TokenTicker);
+      expect(token).toBeUndefined();
+
+      connection.disconnect();
+    });
+  });
+
   describe("getAllTokens", () => {
     it("can query all tokens", async () => {
       pendingWithoutBnsd();
