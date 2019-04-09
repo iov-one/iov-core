@@ -21,11 +21,13 @@ import {
   Fee,
   Hash,
   isAtomicSwapIdQuery,
+  isAtomicSwapRecipientQuery,
   isPubkeyQuery,
   Nonce,
   PostableBytes,
   PostTxResponse,
   PubkeyQuery,
+  SwapIdBytes,
   SwapProcessState,
   Token,
   TokenTicker,
@@ -35,7 +37,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Encoding, Uint53 } from "@iov/encoding";
-import { isJsonRpcErrorResponse, JsonRpcRequest } from "@iov/jsonrpc";
+import { isJsonRpcErrorResponse, JsonRpcRequest, JsonRpcSuccessResponse } from "@iov/jsonrpc";
 import { StreamingSocket } from "@iov/socket";
 import { concat, DefaultValueProducer, dropDuplicates, ValueAndUpdates } from "@iov/stream";
 
@@ -76,10 +78,18 @@ async function loadChainId(baseUrl: string): Promise<ChainId> {
   return toBcpChainId(numericChainId.toNumber());
 }
 
+export interface EthereumLog {
+  readonly transactionIndex: string;
+  readonly data: string;
+  readonly topics: ReadonlyArray<string>;
+}
+
 export interface EthereumConnectionOptions {
   readonly wsUrl?: string;
   /** URL to an Etherscan compatible scraper API */
   readonly scraperApiUrl?: string;
+  /** Address of the deployed atomic swap contract for ETH */
+  readonly atomicSwapEtherContractAddress?: Address;
   /** List of supported ERC20 tokens */
   readonly erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>;
   /** Time between two polls for block, transaction and account watching in seconds */
@@ -101,6 +111,7 @@ export class EthereumConnection implements AtomicSwapConnection {
   private readonly myChainId: ChainId;
   private readonly socket: StreamingSocket | undefined;
   private readonly scraperApiUrl: string | undefined;
+  private readonly atomicSwapEtherContractAddress?: Address;
   private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
   private readonly erc20ContractReaders: ReadonlyMap<TokenTicker, Erc20Reader>;
   private readonly codec: EthereumCodec;
@@ -133,8 +144,11 @@ export class EthereumConnection implements AtomicSwapConnection {
       this.socket.connect();
     }
 
+    const atomicSwapEtherContractAddress =
+      (options && options.atomicSwapEtherContractAddress) || constants.atomicSwapEtherContractAddress;
     const erc20Tokens = options.erc20Tokens ? options.erc20Tokens : new Map();
 
+    this.atomicSwapEtherContractAddress = atomicSwapEtherContractAddress;
     this.erc20Tokens = erc20Tokens;
     this.erc20ContractReaders = new Map(
       [...erc20Tokens.entries()].map(
@@ -144,7 +158,10 @@ export class EthereumConnection implements AtomicSwapConnection {
         ],
       ),
     );
-    this.codec = new EthereumCodec({ erc20Tokens: erc20Tokens });
+    this.codec = new EthereumCodec({
+      erc20Tokens: erc20Tokens,
+      atomicSwapEtherContractAddress: atomicSwapEtherContractAddress,
+    });
   }
 
   public disconnect(): void {
@@ -792,6 +809,67 @@ export class EthereumConnection implements AtomicSwapConnection {
           },
         },
       ];
+    } else if (isAtomicSwapRecipientQuery(query)) {
+      const params = [
+        {
+          address: this.atomicSwapEtherContractAddress,
+        },
+      ] as ReadonlyArray<any>;
+      const swapsResponse = await this.rpcClient.run({
+        jsonrpc: "2.0",
+        method: "eth_getLogs",
+        params: params,
+        id: 9,
+      });
+      if (isJsonRpcErrorResponse(swapsResponse)) {
+        throw new Error(JSON.stringify(swapsResponse.error));
+      }
+
+      if (swapsResponse.result === null) {
+        return [];
+      }
+
+      const swapIdBegin = 0;
+      const swapIdEnd = swapIdBegin + 32;
+      const senderBegin = swapIdEnd;
+      const senderEnd = senderBegin + 32;
+      const recipientBegin = senderEnd;
+      const recipientEnd = recipientBegin + 32;
+      const hashBegin = recipientEnd;
+      const hashEnd = hashBegin + 32;
+      const amountBegin = hashEnd;
+      const amountEnd = amountBegin + 32;
+      const timeoutBegin = amountEnd;
+      const timeoutEnd = timeoutBegin + 32;
+
+      return swapsResponse.result
+        .map(
+          (log: EthereumLog): AtomicSwap => {
+            const dataArray = Encoding.fromHex(normalizeHex(log.data));
+            return {
+              kind: SwapProcessState.Open,
+              data: {
+                id: dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes,
+                sender: toChecksummedAddress(Abi.decodeAddress(dataArray.slice(senderBegin, senderEnd))),
+                recipient: toChecksummedAddress(
+                  Abi.decodeAddress(dataArray.slice(recipientBegin, recipientEnd)),
+                ),
+                hash: dataArray.slice(hashBegin, hashEnd) as Hash,
+                amounts: [
+                  {
+                    quantity: new BN(dataArray.slice(amountBegin, amountEnd)).toString(),
+                    fractionalDigits: constants.primaryTokenFractionalDigits,
+                    tokenTicker: constants.primaryTokenTicker,
+                  },
+                ],
+                timeout: {
+                  height: new BN(dataArray.slice(timeoutBegin, timeoutEnd)).toNumber(),
+                },
+              },
+            };
+          },
+        )
+        .filter((swap: AtomicSwap) => swap.data.recipient === query.recipient);
     } else {
       throw new Error("unsupported query type");
     }
