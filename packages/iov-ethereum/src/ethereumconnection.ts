@@ -733,6 +733,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     switch (transaction.kind) {
       case "bcp/send":
       case "bcp/swap_offer":
+      case "bcp/swap_claim":
         return {
           gasPrice: {
             // TODO: calculate dynamically from previous blocks or external API
