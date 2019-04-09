@@ -1,13 +1,13 @@
 import {
   Address,
   Amount,
-  BcpTicker,
   ChainId,
   ConfirmedTransaction,
   OpenSwap,
   SwapIdBytes,
   SwapOfferTransaction,
   SwapProcessState,
+  Token,
 } from "@iov/bcp";
 
 import { decodeAmount } from "./decode";
@@ -28,7 +28,7 @@ import {
  */
 export interface ChainData {
   readonly chainId: ChainId;
-  readonly tickers: Map<string, BcpTicker>;
+  readonly tokens: Map<string, Token>;
 }
 
 /** Like BCP's Account but with no pubkey. Keep compatible to Account! */

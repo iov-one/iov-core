@@ -13,7 +13,6 @@ import {
   AtomicSwap,
   AtomicSwapConnection,
   AtomicSwapQuery,
-  BcpTicker,
   BlockHeader,
   BlockInfo,
   ChainId,
@@ -28,6 +27,7 @@ import {
   PostTxResponse,
   PubkeyQuery,
   SwapProcessState,
+  Token,
   TokenTicker,
   TransactionId,
   TransactionQuery,
@@ -228,14 +228,14 @@ export class EthereumConnection implements AtomicSwapConnection {
     };
   }
 
-  public async getTicker(searchTicker: TokenTicker): Promise<BcpTicker | undefined> {
+  public async getTicker(searchTicker: TokenTicker): Promise<Token | undefined> {
     return (await this.getAllTickers()).find(t => t.tokenTicker === searchTicker);
   }
 
-  public async getAllTickers(): Promise<ReadonlyArray<BcpTicker>> {
+  public async getAllTickers(): Promise<ReadonlyArray<Token>> {
     const erc20s = await Promise.all(
       [...this.erc20ContractReaders.entries()].map(
-        async ([ticker, contract]): Promise<BcpTicker> => {
+        async ([ticker, contract]): Promise<Token> => {
           const symbol = await contract.symbol();
           if (ticker !== symbol) {
             throw new Error(`Configured ticker '${ticker}' does not match contract symbol '${symbol}'`);

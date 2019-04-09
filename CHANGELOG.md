@@ -21,6 +21,7 @@ Breaking changes
   `TransactionQuery`.
 - @iov/bcp: Rename `BcpAtomicSwapConnection` to `AtomicSwapConnection` and
   `BcpConnection` to `BlockchainConnection`.
+- @iov/bcp: Rename `BcpTicker` to `Token`.
 
 ## 0.13.3
 

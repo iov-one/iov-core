@@ -10,7 +10,6 @@ import {
   AtomicSwapConnection,
   AtomicSwapMerger,
   AtomicSwapQuery,
-  BcpTicker,
   BlockHeader,
   BlockId,
   BlockInfo,
@@ -34,6 +33,7 @@ import {
   PublicKeyBundle,
   SwapAbortTransaction,
   SwapClaimTransaction,
+  Token,
   TokenTicker,
   TransactionId,
   TransactionQuery,
@@ -124,9 +124,9 @@ export class BnsConnection implements AtomicSwapConnection {
     const parser = createParser(codecImpl.currency.TokenInfo, "tokeninfo:");
     const data = res.results.map(parser).map(decodeToken);
 
-    const toKeyValue = (t: BcpTicker): [string, BcpTicker] => [t.tokenTicker, t];
+    const toKeyValue = (t: Token): [string, Token] => [t.tokenTicker, t];
     const tickers = new Map(data.map(toKeyValue));
-    return { chainId: chainId, tickers: tickers };
+    return { chainId: chainId, tokens: tickers };
   }
 
   private readonly tmClient: TendermintClient;
@@ -248,7 +248,7 @@ export class BnsConnection implements AtomicSwapConnection {
     };
   }
 
-  public async getTicker(ticker: TokenTicker): Promise<BcpTicker | undefined> {
+  public async getTicker(ticker: TokenTicker): Promise<Token | undefined> {
     const res = await this.query("/tokens", Encoding.toAscii(ticker));
     const parser = createParser(codecImpl.currency.TokenInfo, "tokeninfo:");
     const data = res.results.map(parser).map(decodeToken);
@@ -262,7 +262,7 @@ export class BnsConnection implements AtomicSwapConnection {
     }
   }
 
-  public async getAllTickers(): Promise<ReadonlyArray<BcpTicker>> {
+  public async getAllTickers(): Promise<ReadonlyArray<Token>> {
     const res = await this.query("/tokens?prefix", Uint8Array.from([]));
     const parser = createParser(codecImpl.currency.TokenInfo, "tokeninfo:");
     const data = res.results.map(parser).map(decodeToken);

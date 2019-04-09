@@ -2,11 +2,11 @@ import {
   Address,
   Algorithm,
   Amount,
-  BcpTicker,
   ChainId,
   Nonce,
   PublicKeyBundle,
   PublicKeyBytes,
+  Token,
   TokenTicker,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
@@ -58,7 +58,7 @@ export interface EthereumNetworkConfig {
   };
   readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
   readonly erc20TransferTests: ReadonlyArray<Erc20TransferTest>;
-  readonly expectedTokens: ReadonlyArray<BcpTicker>;
+  readonly expectedTokens: ReadonlyArray<Token>;
 }
 
 // Set environment variable ETHEREUM_NETWORK to "local" (default), "ropsten", "rinkeby"

@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { Account, AccountQuery, AddressQuery, BcpTicker, BlockchainConnection, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
+import { Account, AccountQuery, AddressQuery, BlockchainConnection, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, Token, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
 /**
  * Encodes the current date and time as a nonce
  */
@@ -13,8 +13,8 @@ export declare class RiseConnection implements BlockchainConnection {
     chainId(): ChainId;
     height(): Promise<number>;
     postTx(bytes: PostableBytes): Promise<PostTxResponse>;
-    getTicker(searchTicker: TokenTicker): Promise<BcpTicker | undefined>;
-    getAllTickers(): Promise<ReadonlyArray<BcpTicker>>;
+    getTicker(searchTicker: TokenTicker): Promise<Token | undefined>;
+    getAllTickers(): Promise<ReadonlyArray<Token>>;
     getAccount(query: AccountQuery): Promise<Account | undefined>;
     getNonce(_: AddressQuery | PubkeyQuery): Promise<Nonce>;
     getNonces(_: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>>;

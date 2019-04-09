@@ -8,7 +8,6 @@ import {
   AccountQuery,
   AddressQuery,
   Algorithm,
-  BcpTicker,
   BlockchainConnection,
   BlockHeader,
   BlockId,
@@ -24,6 +23,7 @@ import {
   PubkeyQuery,
   PublicKeyBundle,
   PublicKeyBytes,
+  Token,
   TokenTicker,
   TransactionId,
   TransactionQuery,
@@ -162,12 +162,12 @@ export class RiseConnection implements BlockchainConnection {
     };
   }
 
-  public async getTicker(searchTicker: TokenTicker): Promise<BcpTicker | undefined> {
+  public async getTicker(searchTicker: TokenTicker): Promise<Token | undefined> {
     const results = (await this.getAllTickers()).find(t => t.tokenTicker === searchTicker);
     return results;
   }
 
-  public async getAllTickers(): Promise<ReadonlyArray<BcpTicker>> {
+  public async getAllTickers(): Promise<ReadonlyArray<Token>> {
     return [
       {
         tokenTicker: constants.primaryTokenTicker,
