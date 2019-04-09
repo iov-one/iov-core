@@ -1920,7 +1920,9 @@ describe("EthereumConnection", () => {
       // prepare queries
       const queryTransactionId: TransactionQuery = { id: transactionId };
       const querySwapId: AtomicSwapQuery = { swapid: swapId };
+      const querySwapSender: AtomicSwapQuery = { sender: faucetAddress };
       const querySwapRecipient: AtomicSwapQuery = { recipient: recipientAddress };
+      const querySwapHash: AtomicSwapQuery = { hashlock: swapOfferHash };
 
       // ----- connection.searchTx() -----
 
@@ -1950,6 +1952,18 @@ describe("EthereumConnection", () => {
       const rcptSwaps = await connection.getSwaps(querySwapRecipient);
       expect(rcptSwaps.length).toEqual(1);
       expect(rcptSwaps[0]).toEqual(swap);
+
+      // we can also get it by the sender
+      const sendOpenSwapData = (await connection.getSwaps(querySwapSender)).filter(
+        s => s.kind === SwapProcessState.Open,
+      );
+      expect(sendOpenSwapData.length).toBeGreaterThanOrEqual(1);
+      expect(sendOpenSwapData[sendOpenSwapData.length - 1]).toEqual(swap);
+
+      // we can also get it by the hash
+      const hashSwap = await connection.getSwaps(querySwapHash);
+      expect(hashSwap.length).toEqual(1);
+      expect(hashSwap[0]).toEqual(swap);
 
       connection.disconnect();
     }, 30_000);
