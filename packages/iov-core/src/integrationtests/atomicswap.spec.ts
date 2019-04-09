@@ -3,8 +3,8 @@ import BN = require("bn.js");
 import {
   Address,
   Amount,
+  AtomicSwapConnection,
   AtomicSwapHelpers,
-  BcpAtomicSwapConnection,
   createTimestampTimeout,
   isBlockInfoPending,
   isBlockInfoSucceeded,
@@ -48,8 +48,8 @@ function pendingWithoutBcpd(): void {
 
 interface ActorData {
   readonly signer: MultiChainSigner;
-  readonly bnsConnection: BcpAtomicSwapConnection;
-  readonly bcpConnection: BcpAtomicSwapConnection;
+  readonly bnsConnection: AtomicSwapConnection;
+  readonly bcpConnection: AtomicSwapConnection;
   readonly bnsIdentity: PublicIdentity;
   readonly bcpIdentity: PublicIdentity;
 }
@@ -68,8 +68,8 @@ class Actor {
 
     return new Actor({
       signer: signer,
-      bnsConnection: bnsConnection as BcpAtomicSwapConnection,
-      bcpConnection: bcpConnection as BcpAtomicSwapConnection,
+      bnsConnection: bnsConnection as AtomicSwapConnection,
+      bcpConnection: bcpConnection as AtomicSwapConnection,
       bnsIdentity: bnsIdentity,
       bcpIdentity: bcpIdentity,
     });
@@ -85,8 +85,8 @@ class Actor {
   }
 
   private readonly signer: MultiChainSigner;
-  private readonly bnsConnection: BcpAtomicSwapConnection;
-  private readonly bcpConnection: BcpAtomicSwapConnection;
+  private readonly bnsConnection: AtomicSwapConnection;
+  private readonly bcpConnection: AtomicSwapConnection;
   // tslint:disable-next-line:readonly-keyword
   private preimage: Preimage | undefined;
 

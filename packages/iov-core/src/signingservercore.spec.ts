@@ -2,7 +2,7 @@ import {
   Address,
   Algorithm,
   Amount,
-  BcpConnection,
+  BlockchainConnection,
   ChainId,
   isBlockInfoPending,
   isPublicIdentity,
@@ -70,7 +70,7 @@ describe("SigningServerCore", () => {
   }
 
   async function sendTokensFromFaucet(
-    connection: BcpConnection,
+    connection: BlockchainConnection,
     recipient: Address | PublicIdentity,
     amount: Amount = defaultAmount,
   ): Promise<void> {

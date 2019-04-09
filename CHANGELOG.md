@@ -19,6 +19,8 @@ Breaking changes
 - @iov/bcp: Remove obsolete type `BcpCoin`.
 - @iov/bcp: Rename `BcpQueryTag` to `QueryTag` and `BcpTxQuery` to
   `TransactionQuery`.
+- @iov/bcp: Rename `BcpAtomicSwapConnection` to `AtomicSwapConnection` and
+  `BcpConnection` to `BlockchainConnection`.
 
 ## 0.13.3
 

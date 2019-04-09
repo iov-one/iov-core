@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { Account, AccountQuery, AddressQuery, AtomicSwap, AtomicSwapQuery, BcpAtomicSwapConnection, BcpTicker, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
+import { Account, AccountQuery, AddressQuery, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BcpTicker, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
 import { Erc20Options } from "./erc20";
 export interface EthereumConnectionOptions {
     readonly wsUrl?: string;
@@ -10,7 +10,7 @@ export interface EthereumConnectionOptions {
     /** Time between two polls for block, transaction and account watching in seconds */
     readonly pollInterval?: number;
 }
-export declare class EthereumConnection implements BcpAtomicSwapConnection {
+export declare class EthereumConnection implements AtomicSwapConnection {
     static establish(baseUrl: string, options?: EthereumConnectionOptions): Promise<EthereumConnection>;
     private readonly pollIntervalMs;
     private readonly rpcClient;

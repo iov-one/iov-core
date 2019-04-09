@@ -8,7 +8,7 @@ point out missing items
 
 ---------------- (Mostly) finished, may need polish ----------------
 
-## BcpConnection/writer MVP
+## BCP BlockchainConnection MVP
 
 MVP just shows we can generate HD keys, save/load them, and use them to sign
 transactions and send tokens on the network.
@@ -124,7 +124,8 @@ Depends on: BNS implementation on backend completed and deployed
 - [ ] Query and parse account balances from cosmos-sdk binary
 - [ ] Create a sendtx accepted by cosmos-sdk binary
 - [ ] Query and parse transaction (given an account)
-- [ ] Complete high-level BcpConnection tests for querying and moving tokens
+- [ ] Complete high-level BlockchainConnection tests for querying and moving
+      tokens
 - [ ] Add streaming support (watch transactions and account)
 - [ ] Add 1-2 custom transactions and queries to demonstrate feasibility
 
@@ -172,8 +173,8 @@ Depends on: BNS implementation on backend completed and deployed
 
 ## Enhancement: Electron App
 
-- [ ] Package webapp containing `BcpConnection` and `MultiChainSigner` into an
-      electron binary
+- [ ] Package webapp containing `BlockchainConnection` and `MultiChainSigner`
+      into an electron binary
 - [ ] Provide streamlined integration of confirmation steps, as the binary
       should trust itself
 - [ ] Provide packaged version of electron app for download
@@ -183,8 +184,8 @@ Depends on: BNS implementation on backend completed and deployed
 
 ## Enhancement: React-Native App
 
-- [ ] Package webapp containing `BcpConnection` and `MultiChainSigner` into a
-      react-native binary
+- [ ] Package webapp containing `BlockchainConnection` and `MultiChainSigner`
+      into a react-native binary
 - [ ] Provide simple tx sending workflow (as per electron app)
 - [ ] Provide downloadable version of Android (and iOS?) app for download
 - [ ] Experiment with deterministic builds, allowing multiple people to compile

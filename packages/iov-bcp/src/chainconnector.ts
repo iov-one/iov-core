@@ -1,9 +1,9 @@
 import { TxCodec } from "./codec";
-import { BcpConnection } from "./connection";
+import { BlockchainConnection } from "./connection";
 import { ChainId } from "./transactions";
 
 export interface ChainConnector {
-  readonly client: () => Promise<BcpConnection>;
+  readonly client: () => Promise<BlockchainConnection>;
   readonly codec: TxCodec;
   readonly expectedChainId?: ChainId;
 }

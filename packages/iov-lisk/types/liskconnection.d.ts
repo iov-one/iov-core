@@ -1,10 +1,10 @@
 import { Stream } from "xstream";
-import { Account, AccountQuery, AddressQuery, BcpConnection, BcpTicker, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
+import { Account, AccountQuery, AddressQuery, BcpTicker, BlockchainConnection, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
 /**
  * Encodes the current date and time as a nonce
  */
 export declare function generateNonce(): Nonce;
-export declare class LiskConnection implements BcpConnection {
+export declare class LiskConnection implements BlockchainConnection {
     static establish(baseUrl: string): Promise<LiskConnection>;
     private readonly baseUrl;
     private readonly myChainId;

@@ -7,9 +7,9 @@ import {
   AddressQuery,
   Amount,
   AtomicSwap,
+  AtomicSwapConnection,
   AtomicSwapMerger,
   AtomicSwapQuery,
-  BcpAtomicSwapConnection,
   BcpTicker,
   BlockHeader,
   BlockId,
@@ -108,7 +108,7 @@ function isDefined<T>(value: T | undefined): value is T {
  *
  * We can embed in iov-core process or use this in a BCP-relay
  */
-export class BnsConnection implements BcpAtomicSwapConnection {
+export class BnsConnection implements AtomicSwapConnection {
   public static async establish(url: string): Promise<BnsConnection> {
     const tm = await TendermintClient.connect(url);
     const chainData = await this.initialize(tm);

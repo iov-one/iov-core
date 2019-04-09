@@ -8,8 +8,8 @@ import {
   AccountQuery,
   AddressQuery,
   Algorithm,
-  BcpConnection,
   BcpTicker,
+  BlockchainConnection,
   BlockHeader,
   BlockId,
   BlockInfo,
@@ -67,7 +67,7 @@ async function loadChainId(baseUrl: string): Promise<ChainId> {
   return responseBody.nethash;
 }
 
-export class RiseConnection implements BcpConnection {
+export class RiseConnection implements BlockchainConnection {
   public static async establish(baseUrl: string): Promise<RiseConnection> {
     const chainId = await loadChainId(baseUrl);
     return new RiseConnection(baseUrl, chainId);

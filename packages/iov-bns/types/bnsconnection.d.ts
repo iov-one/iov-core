@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { Account, AccountQuery, AddressQuery, Amount, AtomicSwap, AtomicSwapQuery, BcpAtomicSwapConnection, BcpTicker, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
+import { Account, AccountQuery, AddressQuery, Amount, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BcpTicker, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
 import { BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
  * Talks directly to the BNS blockchain and exposes the
@@ -7,7 +7,7 @@ import { BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
  *
  * We can embed in iov-core process or use this in a BCP-relay
  */
-export declare class BnsConnection implements BcpAtomicSwapConnection {
+export declare class BnsConnection implements AtomicSwapConnection {
     static establish(url: string): Promise<BnsConnection>;
     private static initialize;
     private readonly tmClient;

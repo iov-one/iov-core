@@ -11,8 +11,8 @@ import {
   AddressQuery,
   Amount,
   AtomicSwap,
+  AtomicSwapConnection,
   AtomicSwapQuery,
-  BcpAtomicSwapConnection,
   BcpTicker,
   BlockHeader,
   BlockInfo,
@@ -86,7 +86,7 @@ export interface EthereumConnectionOptions {
   readonly pollInterval?: number;
 }
 
-export class EthereumConnection implements BcpAtomicSwapConnection {
+export class EthereumConnection implements AtomicSwapConnection {
   public static async establish(
     baseUrl: string,
     options?: EthereumConnectionOptions,
