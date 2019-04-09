@@ -28,7 +28,7 @@ async function main(): Promise<void> {
 
   const bnsdConnection = (await signer.addChain(bnsConnector(bnsdUrl))).connection;
   const bnsdChainId = bnsdConnection.chainId();
-  const ethereumConnection = (await signer.addChain(ethereumConnector(ethereumUrl, undefined))).connection;
+  const ethereumConnection = (await signer.addChain(ethereumConnector(ethereumUrl, {}))).connection;
   const ethereumChainId = ethereumConnection.chainId();
 
   // faucet identity

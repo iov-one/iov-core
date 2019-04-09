@@ -141,7 +141,7 @@ describe("MultiChainSigner", () => {
       const { faucet } = await addWalletWithFaucet(profile, bovId);
 
       // add a ethereum chain
-      await signer.addChain(ethereumConnector(httpEthereumUrl, undefined));
+      await signer.addChain(ethereumConnector(httpEthereumUrl, {}));
       const ethereumChainId = signer.chainIds()[1];
       const twoChains = signer.chainIds();
       // it should store both chains
@@ -184,7 +184,7 @@ describe("MultiChainSigner", () => {
       expect(signer.chainIds().length).toEqual(0);
 
       const { connection: bnsConnection } = await signer.addChain(bnsConnector(bnsdTendermintUrl));
-      await signer.addChain(ethereumConnector(httpEthereumUrl, undefined));
+      await signer.addChain(ethereumConnector(httpEthereumUrl, {}));
       const [bnsId, ethereumChainId] = signer.chainIds();
 
       // Create sender identities
@@ -289,8 +289,7 @@ describe("MultiChainSigner", () => {
       const signer = new MultiChainSigner(new UserProfile());
 
       const bnsConnection = (await signer.addChain(bnsConnector(bnsdTendermintUrl))).connection;
-      const ethereumConnection = (await signer.addChain(ethereumConnector(httpEthereumUrl, undefined)))
-        .connection;
+      const ethereumConnection = (await signer.addChain(ethereumConnector(httpEthereumUrl, {}))).connection;
 
       const bnsChainId = bnsConnection.chainId();
       const ethereumChainId = ethereumConnection.chainId();
