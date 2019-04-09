@@ -18,8 +18,6 @@ import {
   UnsignedTransaction,
 } from "./transactions";
 
-export interface BcpCoin extends BcpTicker, Amount {}
-
 export interface Account {
   readonly address: Address;
   /**
@@ -29,7 +27,7 @@ export interface Account {
    * - Available after first transaction sent (e.g. Lisk, Tendermint, Ethereum)
    */
   readonly pubkey?: PublicKeyBundle;
-  readonly balance: ReadonlyArray<BcpCoin>;
+  readonly balance: ReadonlyArray<Amount>;
 }
 
 export interface BcpTicker {

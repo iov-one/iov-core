@@ -182,8 +182,7 @@ When you are done using a WebSocket connection, disconnect the connection
 > (await connection.getAccount({ address: faucetAddress })).balance
 [ { quantity: '123456755876543211',
     fractionalDigits: 9,
-    tokenTicker: 'CASH',
-    tokenName: 'Main token of this chain' } ]
+    tokenTicker: 'CASH' } ]
 > connection.disconnect()
 undefined
 > (await connection.getAccount({ address: faucetAddress })).balance
@@ -217,8 +216,7 @@ In this example we connect to a public test network.
 > (await connection.getAccount({ address: aliceAddress })).balance
 [ { quantity: '10000000000',
     fractionalDigits: 9,
-    tokenTicker: 'IOV',
-    tokenName: 'Main token of this chain' } ]
+    tokenTicker: 'IOV' } ]
 ```
 
 ## License

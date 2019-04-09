@@ -11,6 +11,9 @@ Breaking changes
 - @iov/bcp: New type `Hash` used for atomic swap hashes. Use
   `AtomicSwapHelpers.hashPreimage` to create those hashes.
 - @iov/bcp: Rename `SwapState` to `SwapProcessState`.
+- @iov/bcp: Change type of `Account.balance` to array of `Amount`, i.e. remove
+  the `tokenName` field.
+- @iov/bcp: Remove obsolete type `BcpCoin`.
 
 ## 0.13.3
 

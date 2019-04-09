@@ -633,15 +633,9 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   // returning it. Designed to be used in a map chain.
   protected async updateEscrowBalance<T extends AtomicSwap>(escrow: T): Promise<T> {
     const addr = conditionToAddress(this.chainId(), escrowCondition(escrow.data.id));
-    const acct = await this.getAccount({ address: addr });
-    const balance = acct ? acct.balance : [];
-    // remove unneeded properties...
-    const amounts = balance.map(b => ({
-      quantity: b.quantity,
-      fractionalDigits: b.fractionalDigits,
-      tokenTicker: b.tokenTicker,
-    }));
-    return { ...escrow, data: { ...escrow.data, amounts: amounts } };
+    const account = await this.getAccount({ address: addr });
+    const balance = account ? account.balance : [];
+    return { ...escrow, data: { ...escrow.data, amounts: balance } };
   }
 
   /**
