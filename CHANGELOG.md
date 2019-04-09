@@ -12,6 +12,9 @@ Breaking changes
   `AtomicSwapHelpers.hashPreimage` to create those hashes.
 - @iov/bcp: Rename `SwapState` to `SwapProcessState`.
 - @iov/bcp: Change type of `Fee.gasLimit` to string.
+- @iov/bcp: Change type of `Account.balance` to array of `Amount`, i.e. remove
+  the `tokenName` field.
+- @iov/bcp: Remove obsolete type `BcpCoin`.
 
 ## 0.13.3
 

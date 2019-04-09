@@ -2,7 +2,6 @@ import {
   Address,
   Algorithm,
   Amount,
-  BcpCoin,
   BcpTicker,
   ChainId,
   Nonce,
@@ -34,7 +33,7 @@ export interface EthereumNetworkConfig {
       readonly pubkey: PublicKeyBundle;
       readonly address: Address;
       /** expected balance for the `address` */
-      readonly expectedBalance: ReadonlyArray<BcpCoin>;
+      readonly expectedBalance: ReadonlyArray<Amount>;
       /** expected nonce for the `address` */
       readonly expectedNonce: Nonce;
     };
@@ -42,7 +41,7 @@ export interface EthereumNetworkConfig {
     readonly noEth: {
       readonly address: Address;
       /** expected balance for the `address` */
-      readonly expectedBalance: ReadonlyArray<BcpCoin>;
+      readonly expectedBalance: ReadonlyArray<Amount>;
     };
     /** An account not used on this network */
     readonly unused: {
@@ -89,19 +88,16 @@ const local: EthereumNetworkConfig = {
       expectedBalance: [
         {
           tokenTicker: "ASH" as TokenTicker,
-          tokenName: "Ash Token",
           quantity: "33445566",
           fractionalDigits: 12,
         },
         {
           tokenTicker: "ETH" as TokenTicker,
-          tokenName: "Ether",
           quantity: "1234567890987654321",
           fractionalDigits: 18,
         },
         {
           tokenTicker: "TRASH" as TokenTicker,
-          tokenName: "Trash Token",
           quantity: "33445566",
           fractionalDigits: 9,
         },
@@ -113,20 +109,17 @@ const local: EthereumNetworkConfig = {
       expectedBalance: [
         {
           tokenTicker: "ASH" as TokenTicker,
-          tokenName: "Ash Token",
           quantity: "38",
           fractionalDigits: 12,
         },
         // ETH balance should be listed anyway
         {
           tokenTicker: "ETH" as TokenTicker,
-          tokenName: "Ether",
           quantity: "0",
           fractionalDigits: 18,
         },
         {
           tokenTicker: "TRASH" as TokenTicker,
-          tokenName: "Trash Token",
           quantity: "38",
           fractionalDigits: 9,
         },
@@ -230,7 +223,6 @@ const ropsten: EthereumNetworkConfig = {
       expectedBalance: [
         {
           tokenTicker: "ETH" as TokenTicker,
-          tokenName: "Ether",
           quantity: "2999979000000000000",
           fractionalDigits: 18,
         },
@@ -243,7 +235,6 @@ const ropsten: EthereumNetworkConfig = {
         // ETH balance should be listed anyway
         {
           tokenTicker: "ETH" as TokenTicker,
-          tokenName: "Ether",
           quantity: "0",
           fractionalDigits: 18,
         },
@@ -305,13 +296,11 @@ const rinkeby: EthereumNetworkConfig = {
       expectedBalance: [
         {
           tokenTicker: "ETH" as TokenTicker,
-          tokenName: "Ether",
           quantity: "1775182474000000000",
           fractionalDigits: 18,
         },
         {
           tokenTicker: "WETH" as TokenTicker,
-          tokenName: "Wrapped Ether",
           quantity: "1123344550000000000",
           fractionalDigits: 18,
         },
@@ -323,26 +312,22 @@ const rinkeby: EthereumNetworkConfig = {
       expectedBalance: [
         {
           tokenTicker: "AVO" as TokenTicker,
-          tokenName: "Avocado",
           quantity: "7123400000000000000",
           fractionalDigits: 18,
         },
         // ETH balance should be listed anyway
         {
           tokenTicker: "ETH" as TokenTicker,
-          tokenName: "Ether",
           quantity: "0",
           fractionalDigits: 18,
         },
         {
           tokenTicker: "WETH" as TokenTicker,
-          tokenName: "Wrapped Ether",
           quantity: "100000000000000000",
           fractionalDigits: 18,
         },
         {
           tokenTicker: "ZEENUS" as TokenTicker,
-          tokenName: "Zeenus 💪",
           quantity: "5",
           fractionalDigits: 0,
         },

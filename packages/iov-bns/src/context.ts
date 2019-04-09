@@ -1,7 +1,6 @@
 import {
   Address,
   Amount,
-  BcpCoin,
   BcpTicker,
   ChainId,
   ConfirmedTransaction,
@@ -35,7 +34,7 @@ export interface ChainData {
 /** Like BCP's Account but with no pubkey. Keep compatible to Account! */
 export interface WalletData {
   readonly address: Address;
-  readonly balance: ReadonlyArray<BcpCoin>;
+  readonly balance: ReadonlyArray<Amount>;
 }
 
 export class Context {
@@ -49,13 +48,8 @@ export class Context {
     // acct.name is ignored in favour of username NFTs
     return {
       address: encodeBnsAddress(addressPrefix(this.chainData.chainId), acct._id),
-      balance: ensure(acct.coins).map(c => this.coin(c)),
+      balance: ensure(acct.coins).map(c => decodeAmount(c)),
     };
-  }
-
-  public coin(coin: codecImpl.coin.ICoin): BcpCoin {
-    const amount = decodeAmount(coin);
-    return this.amountToCoin(amount);
   }
 
   /** Decode within a Context to have the chain ID available */
@@ -94,15 +88,6 @@ export class Context {
         timeout: transaction.timeout,
         memo: transaction.memo,
       },
-    };
-  }
-
-  private amountToCoin(amount: Amount): BcpCoin {
-    const tickerInfo = this.chainData.tickers.get(amount.tokenTicker);
-    return {
-      ...amount,
-      // Better defaults?
-      tokenName: tickerInfo ? tickerInfo.tokenName : "<Unknown token>",
     };
   }
 }

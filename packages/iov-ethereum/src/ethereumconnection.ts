@@ -13,7 +13,6 @@ import {
   AtomicSwap,
   AtomicSwapQuery,
   BcpAtomicSwapConnection,
-  BcpCoin,
   BcpTicker,
   BcpTxQuery,
   BlockHeader,
@@ -282,20 +281,21 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
     // eth_getBalance always returns one result. Balance is 0x0 if account does not exist.
     const ethBalance = Parse.ethereumAmount(decodeHexQuantityString(response.result));
 
-    const erc20Balances: ReadonlyArray<BcpCoin> = await Promise.all(
-      [...this.erc20ContractReaders.entries()].map(async ([ticker, contract]) => {
-        const symbol = await contract.symbol();
-        if (ticker !== symbol) {
-          throw new Error(`Configured ticker '${ticker}' does not match contract symbol '${symbol}'`);
-        }
+    const erc20Balances: ReadonlyArray<Amount> = await Promise.all(
+      [...this.erc20ContractReaders.entries()].map(
+        async ([ticker, contract]): Promise<Amount> => {
+          const symbol = await contract.symbol();
+          if (ticker !== symbol) {
+            throw new Error(`Configured ticker '${ticker}' does not match contract symbol '${symbol}'`);
+          }
 
-        return {
-          tokenTicker: ticker,
-          quantity: (await contract.balanceOf(address)).toString(),
-          fractionalDigits: await contract.decimals(),
-          tokenName: await contract.name(),
-        };
-      }),
+          return {
+            tokenTicker: ticker,
+            quantity: (await contract.balanceOf(address)).toString(),
+            fractionalDigits: await contract.decimals(),
+          };
+        },
+      ),
     );
     const nonEmptyErc20Balances = erc20Balances.filter(balance => balance.quantity !== "0");
 
@@ -308,13 +308,7 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
     }
 
     // tslint:disable-next-line: readonly-array
-    const outBalance = [
-      {
-        tokenName: constants.primaryTokenName,
-        ...ethBalance,
-      },
-      ...nonEmptyErc20Balances,
-    ];
+    const outBalance = [ethBalance, ...nonEmptyErc20Balances];
     // Sort by ticker
     outBalance.sort((a, b) => a.tokenTicker.localeCompare(b.tokenTicker));
 

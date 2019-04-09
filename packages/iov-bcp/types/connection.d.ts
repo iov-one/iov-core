@@ -4,8 +4,6 @@ import { Stream } from "xstream";
 import { ValueAndUpdates } from "@iov/stream";
 import { PostableBytes } from "./codec";
 import { Address, Amount, ChainId, Fee, Nonce, PublicKeyBundle, SignedTransaction, TokenTicker, TransactionId, UnsignedTransaction } from "./transactions";
-export interface BcpCoin extends BcpTicker, Amount {
-}
 export interface Account {
     readonly address: Address;
     /**
@@ -15,7 +13,7 @@ export interface Account {
      * - Available after first transaction sent (e.g. Lisk, Tendermint, Ethereum)
      */
     readonly pubkey?: PublicKeyBundle;
-    readonly balance: ReadonlyArray<BcpCoin>;
+    readonly balance: ReadonlyArray<Amount>;
 }
 export interface BcpTicker {
     readonly tokenTicker: TokenTicker;
