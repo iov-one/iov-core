@@ -1,6 +1,6 @@
 import BN from "bn.js";
 
-import { Address } from "@iov/bcp";
+import { Address, SwapProcessState } from "@iov/bcp";
 import { Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
@@ -110,6 +110,21 @@ export class Abi {
     const length = new BN(data.slice(0, 32)).toNumber();
 
     return data.slice(32, 32 + length);
+  }
+
+  public static decodeSwapProcessState(data: Uint8Array): SwapProcessState {
+    const key = Abi.decodeUint256(data);
+    const map: { readonly [key: string]: SwapProcessState } = {
+      1: SwapProcessState.Open,
+      2: SwapProcessState.Claimed,
+      3: SwapProcessState.Aborted,
+    };
+    const state: SwapProcessState | undefined = map[key];
+
+    if (state === undefined) {
+      throw new Error("Invalid swap process state");
+    }
+    return state;
   }
 
   private static padTo32(data: Uint8Array): Uint8Array {

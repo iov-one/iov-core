@@ -1,4 +1,4 @@
-import { Address } from "@iov/bcp";
+import { Address, SwapProcessState } from "@iov/bcp";
 export interface HeadTail {
     /** An array of start positions within the original data */
     readonly head: ReadonlyArray<number>;
@@ -18,5 +18,6 @@ export declare class Abi {
      */
     static decodeHeadTail(data: Uint8Array): HeadTail;
     static decodeVariableLength(data: Uint8Array): Uint8Array;
+    static decodeSwapProcessState(data: Uint8Array): SwapProcessState;
     private static padTo32;
 }
