@@ -40,6 +40,7 @@ import {
   TransactionState,
   UnsignedTransaction,
   isAtomicSwapSenderQuery,
+  isAtomicSwapHashlockQuery,
 } from "@iov/bcp";
 import { Encoding, Uint53 } from "@iov/encoding";
 import { isJsonRpcErrorResponse, JsonRpcRequest, JsonRpcSuccessResponse } from "@iov/jsonrpc";
@@ -761,7 +762,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       const params = [
         {
           to: constants.atomicSwapEtherContractAddress,
-          data: "0x" + Encoding.toHex(data),
+          data: `0x${Encoding.toHex(data)}`,
         },
       ] as ReadonlyArray<any>;
       const swapsResponse = await this.rpcClient.run({
@@ -832,7 +833,11 @@ export class EthereumConnection implements AtomicSwapConnection {
       }
 
       return [swap];
-    } else if (isAtomicSwapRecipientQuery(query) || isAtomicSwapSenderQuery(query)) {
+    } else if (
+      isAtomicSwapRecipientQuery(query) ||
+      isAtomicSwapSenderQuery(query) ||
+      isAtomicSwapHashlockQuery(query)
+    ) {
       const params = [
         {
           fromBlock: encodeQuantity(minHeight),
@@ -899,6 +904,8 @@ export class EthereumConnection implements AtomicSwapConnection {
             return swap.data.recipient === query.recipient;
           } else if (isAtomicSwapSenderQuery(query)) {
             return swap.data.sender === query.sender;
+          } else if (isAtomicSwapHashlockQuery(query)) {
+            return Encoding.toHex(swap.data.hash) === Encoding.toHex(query.hashlock);
           }
           throw new Error("unsupported query type");
         });
