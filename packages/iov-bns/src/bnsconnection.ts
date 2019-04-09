@@ -240,17 +240,7 @@ export class BnsConnection implements AtomicSwapConnection {
   }
 
   public async getToken(ticker: TokenTicker): Promise<Token | undefined> {
-    const res = await this.query("/tokens", Encoding.toAscii(ticker));
-    const parser = createParser(codecImpl.currency.TokenInfo, "tokeninfo:");
-    const data = res.results.map(parser).map(decodeToken);
-    switch (data.length) {
-      case 0:
-        return undefined;
-      case 1:
-        return data[0];
-      default:
-        throw new Error("Received unexpected number of token results");
-    }
+    return (await this.getAllTokens()).find(t => t.tokenTicker === ticker);
   }
 
   public async getAllTokens(): Promise<ReadonlyArray<Token>> {
