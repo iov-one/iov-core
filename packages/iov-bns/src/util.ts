@@ -18,7 +18,6 @@ import {
   SwapAbortTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
-  TransactionId,
 } from "@iov/bcp";
 import { Sha256 } from "@iov/crypto";
 import { Bech32, Encoding } from "@iov/encoding";
@@ -186,10 +185,4 @@ export function buildTxQuery(query: BcpTxQuery): QueryString {
     ...maxHeightComponents,
   ];
   return components.join(" AND ") as QueryString;
-}
-
-export function buildTxHashQuery(id: TransactionId): QueryString {
-  // In Tendermint, hash can be lower case for search queries but must be
-  // upper case for subscribe queries. TransactionId is always upper case hex.
-  return `tx.hash='${id}'` as QueryString;
 }
