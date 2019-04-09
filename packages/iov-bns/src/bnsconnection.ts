@@ -10,7 +10,6 @@ import {
   AtomicSwapConnection,
   AtomicSwapMerger,
   AtomicSwapQuery,
-  BcpTicker,
   BlockHeader,
   BlockId,
   BlockInfo,
@@ -34,6 +33,7 @@ import {
   PublicKeyBundle,
   SwapAbortTransaction,
   SwapClaimTransaction,
+  Token,
   TokenTicker,
   TransactionId,
   TransactionQuery,
@@ -117,22 +117,15 @@ export class BnsConnection implements AtomicSwapConnection {
 
   private static async initialize(tmClient: TendermintClient): Promise<ChainData> {
     const status = await tmClient.status();
-    const chainId = status.nodeInfo.network as ChainId;
-
-    // inlining getAllTickers
-    const res = await performQuery(tmClient, "/tokens?prefix", Uint8Array.from([]));
-    const parser = createParser(codecImpl.currency.TokenInfo, "tokeninfo:");
-    const data = res.results.map(parser).map(decodeToken);
-
-    const toKeyValue = (t: BcpTicker): [string, BcpTicker] => [t.tokenTicker, t];
-    const tickers = new Map(data.map(toKeyValue));
-    return { chainId: chainId, tickers: tickers };
+    return { chainId: status.nodeInfo.network as ChainId };
   }
 
   private readonly tmClient: TendermintClient;
   private readonly codec: TxReadCodec;
   private readonly chainData: ChainData;
   private readonly context: Context;
+  // tslint:disable-next-line: readonly-keyword
+  private tokensCache: ReadonlyArray<Token> | undefined;
 
   /**
    * Private constructor to hide package private types from the public interface
@@ -248,27 +241,21 @@ export class BnsConnection implements AtomicSwapConnection {
     };
   }
 
-  public async getTicker(ticker: TokenTicker): Promise<BcpTicker | undefined> {
-    const res = await this.query("/tokens", Encoding.toAscii(ticker));
-    const parser = createParser(codecImpl.currency.TokenInfo, "tokeninfo:");
-    const data = res.results.map(parser).map(decodeToken);
-    switch (data.length) {
-      case 0:
-        return undefined;
-      case 1:
-        return data[0];
-      default:
-        throw new Error("Received unexpected number of tickers");
-    }
+  public async getToken(ticker: TokenTicker): Promise<Token | undefined> {
+    return (await this.getAllTokens()).find(t => t.tokenTicker === ticker);
   }
 
-  public async getAllTickers(): Promise<ReadonlyArray<BcpTicker>> {
-    const res = await this.query("/tokens?prefix", Uint8Array.from([]));
-    const parser = createParser(codecImpl.currency.TokenInfo, "tokeninfo:");
-    const data = res.results.map(parser).map(decodeToken);
-    // Sort by ticker
-    data.sort((a, b) => a.tokenTicker.localeCompare(b.tokenTicker));
-    return data;
+  public async getAllTokens(): Promise<ReadonlyArray<Token>> {
+    if (!this.tokensCache) {
+      const res = await this.query("/tokens?prefix", Uint8Array.from([]));
+      const parser = createParser(codecImpl.currency.TokenInfo, "tokeninfo:");
+      const data = res.results.map(parser).map(decodeToken);
+      // Sort by ticker
+      data.sort((a, b) => a.tokenTicker.localeCompare(b.tokenTicker));
+      // tslint:disable-next-line: no-object-mutation
+      this.tokensCache = data;
+    }
+    return this.tokensCache;
   }
 
   public async getAccount(query: AccountQuery): Promise<Account | undefined> {

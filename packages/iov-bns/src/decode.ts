@@ -3,7 +3,6 @@ import BN = require("bn.js");
 import {
   Address,
   Amount,
-  BcpTicker,
   ChainId,
   FullSignature,
   Nonce,
@@ -14,6 +13,7 @@ import {
   SwapClaimTransaction,
   SwapIdBytes,
   SwapOfferTransaction,
+  Token,
   TokenTicker,
   UnsignedTransaction,
 } from "@iov/bcp";
@@ -61,7 +61,7 @@ export function decodeNonce(acct: codecImpl.sigs.IUserData & Keyed): Nonce {
   return asInt53(acct.sequence).toNumber() as Nonce;
 }
 
-export function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): BcpTicker {
+export function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): Token {
   return {
     tokenTicker: Encoding.fromAscii(data._id) as TokenTicker,
     tokenName: ensure(data.name),
@@ -70,7 +70,7 @@ export function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): BcpTic
 }
 
 export function decodeAmount(coin: codecImpl.coin.ICoin): Amount {
-  const fractionalDigits = 9; // fixed for all tickers in BNS
+  const fractionalDigits = 9; // fixed for all tokens in BNS
 
   const wholeNumber = asNumber(coin.whole);
   if (wholeNumber < 0) {

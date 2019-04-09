@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { Account, AccountQuery, AddressQuery, Amount, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BcpTicker, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
+import { Account, AccountQuery, AddressQuery, Amount, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, Token, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
 import { BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
  * Talks directly to the BNS blockchain and exposes the
@@ -14,6 +14,7 @@ export declare class BnsConnection implements AtomicSwapConnection {
     private readonly codec;
     private readonly chainData;
     private readonly context;
+    private tokensCache;
     /**
      * Private constructor to hide package private types from the public interface
      *
@@ -29,8 +30,8 @@ export declare class BnsConnection implements AtomicSwapConnection {
     chainId(): ChainId;
     height(): Promise<number>;
     postTx(tx: PostableBytes): Promise<PostTxResponse>;
-    getTicker(ticker: TokenTicker): Promise<BcpTicker | undefined>;
-    getAllTickers(): Promise<ReadonlyArray<BcpTicker>>;
+    getToken(ticker: TokenTicker): Promise<Token | undefined>;
+    getAllTokens(): Promise<ReadonlyArray<Token>>;
     getAccount(query: AccountQuery): Promise<Account | undefined>;
     getNonce(query: AddressQuery | PubkeyQuery): Promise<Nonce>;
     getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>>;

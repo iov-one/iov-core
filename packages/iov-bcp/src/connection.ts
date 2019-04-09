@@ -30,7 +30,7 @@ export interface Account {
   readonly balance: ReadonlyArray<Amount>;
 }
 
-export interface BcpTicker {
+export interface Token {
   readonly tokenTicker: TokenTicker;
   /**
    * A name to be displayed to the user which allows differentiation
@@ -233,8 +233,8 @@ export interface BlockchainConnection {
   readonly disconnect: () => void;
   readonly chainId: () => ChainId;
   readonly height: () => Promise<number>;
-  readonly getTicker: (ticker: TokenTicker) => Promise<BcpTicker | undefined>;
-  readonly getAllTickers: () => Promise<ReadonlyArray<BcpTicker>>;
+  readonly getToken: (ticker: TokenTicker) => Promise<Token | undefined>;
+  readonly getAllTokens: () => Promise<ReadonlyArray<Token>>;
 
   // accounts
   /**

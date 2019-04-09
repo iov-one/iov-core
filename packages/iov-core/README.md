@@ -170,13 +170,13 @@ await signer.addChain(bnsConnector('wss://bov.hugnet.iov.one/'));
 console.log(signer.chainIds()[0]); // is this what you got yourself?
 ```
 
-List the tickers on the network:
+List the tokens on the network:
 
 ```ts
 const connection = signer.connection(chainId);
 
-const tickers = await connection.getAllTickers();
-console.log(tickers);
+const tokens = await connection.getAllTokens();
+console.log(tokens);
 ```
 
 Query the testnet for some existing genesis accounts:

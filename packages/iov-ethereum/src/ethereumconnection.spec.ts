@@ -142,35 +142,36 @@ describe("EthereumConnection", () => {
     connection.disconnect();
   });
 
-  describe("getTicker", () => {
+  describe("getToken", () => {
     it("can get existing ticker", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
-      const ticker = await connection.getTicker("ETH" as TokenTicker);
-      expect(ticker).toBeDefined();
-      expect(ticker!.tokenTicker).toEqual("ETH");
-      expect(ticker!.tokenName).toEqual("Ether");
-      expect(ticker!.fractionalDigits).toEqual(18);
+      const token = await connection.getToken("ETH" as TokenTicker);
+      expect(token).toEqual({
+        tokenTicker: "ETH" as TokenTicker,
+        tokenName: "Ether",
+        fractionalDigits: 18,
+      });
       connection.disconnect();
     });
 
     it("produces empty result for non-existing ticker", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
-      const ticker = await connection.getTicker("ALX" as TokenTicker);
-      expect(ticker).toBeUndefined();
+      const token = await connection.getToken("ALX" as TokenTicker);
+      expect(token).toBeUndefined();
       connection.disconnect();
     });
   });
 
-  describe("getAllTickers", () => {
-    it("can get all tickers", async () => {
+  describe("getAllTokens", () => {
+    it("can get all tokens", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(testConfig.base, {
         ...testConfig.connectionOptions,
         erc20Tokens: testConfig.erc20Tokens,
       });
-      const tokens = await connection.getAllTickers();
+      const tokens = await connection.getAllTokens();
       expect(tokens).toEqual(testConfig.expectedTokens);
       connection.disconnect();
     });

@@ -1,4 +1,4 @@
-import { Address, Amount, BcpTicker, ChainId, ConfirmedTransaction, OpenSwap, SwapOfferTransaction } from "@iov/bcp";
+import { Address, Amount, ChainId, ConfirmedTransaction, OpenSwap, SwapOfferTransaction } from "@iov/bcp";
 import * as codecImpl from "./generated/codecimpl";
 import { Keyed } from "./types";
 /**
@@ -8,7 +8,6 @@ import { Keyed } from "./types";
  */
 export interface ChainData {
     readonly chainId: ChainId;
-    readonly tickers: Map<string, BcpTicker>;
 }
 /** Like BCP's Account but with no pubkey. Keep compatible to Account! */
 export interface WalletData {

@@ -119,26 +119,38 @@ describe("RiseConnection", () => {
     expect(() => connection.disconnect()).not.toThrow();
   });
 
-  it("can get existing ticker", async () => {
-    const connection = new RiseConnection(base, riseTestnet);
-    const ticker = await connection.getTicker("RISE" as TokenTicker);
-    expect(ticker).toBeDefined();
-    expect(ticker!.tokenTicker).toEqual("RISE");
-    expect(ticker!.tokenName).toEqual("RISE");
+  describe("getToken", () => {
+    it("can get existing token", async () => {
+      const connection = new RiseConnection(base, riseTestnet);
+      const token = await connection.getToken("RISE" as TokenTicker);
+      expect(token).toEqual({
+        tokenTicker: "RISE" as TokenTicker,
+        tokenName: "RISE",
+        fractionalDigits: 8,
+      });
+      connection.disconnect();
+    });
+
+    it("produces empty result for non-existing token", async () => {
+      const connection = new RiseConnection(base, riseTestnet);
+      const token = await connection.getToken("ETH" as TokenTicker);
+      expect(token).toBeUndefined();
+      connection.disconnect();
+    });
   });
 
-  it("produces empty result for non-existing ticker", async () => {
-    const connection = new RiseConnection(base, riseTestnet);
-    const ticker = await connection.getTicker("ETH" as TokenTicker);
-    expect(ticker).toBeUndefined();
-  });
-
-  it("can get all tickers", async () => {
-    const connection = new RiseConnection(base, riseTestnet);
-    const tickers = await connection.getAllTickers();
-    expect(tickers.length).toEqual(1);
-    expect(tickers[0].tokenTicker).toEqual("RISE");
-    expect(tickers[0].tokenName).toEqual("RISE");
+  describe("getAllTokens", () => {
+    it("can get all tokens", async () => {
+      const connection = new RiseConnection(base, riseTestnet);
+      const tokens = await connection.getAllTokens();
+      expect(tokens.length).toEqual(1);
+      expect(tokens[0]).toEqual({
+        tokenTicker: "RISE" as TokenTicker,
+        tokenName: "RISE",
+        fractionalDigits: 8,
+      });
+      connection.disconnect();
+    });
   });
 
   it("can get chain ID", async () => {

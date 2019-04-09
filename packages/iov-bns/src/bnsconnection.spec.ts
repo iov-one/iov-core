@@ -175,23 +175,58 @@ describe("BnsConnection", () => {
     connection.disconnect();
   });
 
-  it("can query all tickers", async () => {
-    pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
+  describe("getToken", () => {
+    it("can get existing token", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
-    const tickers = await connection.getAllTickers();
-    expect(tickers.length).toEqual(3);
+      const token = await connection.getToken("ASH" as TokenTicker);
+      expect(token).toEqual({
+        tokenTicker: "ASH" as TokenTicker,
+        tokenName: "Let the Phoenix arise",
+        fractionalDigits: 9,
+      });
 
-    expect(tickers[0].tokenTicker).toEqual("ASH" as TokenTicker);
-    expect(tickers[0].tokenName).toEqual("Let the Phoenix arise");
+      connection.disconnect();
+    });
 
-    expect(tickers[1].tokenTicker).toEqual("BASH" as TokenTicker);
-    expect(tickers[1].tokenName).toEqual("Another token of this chain");
+    it("produces empty result for non-existing token", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
-    expect(tickers[2].tokenTicker).toEqual("CASH" as TokenTicker);
-    expect(tickers[2].tokenName).toEqual("Main token of this chain");
+      const token = await connection.getToken("ETH" as TokenTicker);
+      expect(token).toBeUndefined();
 
-    connection.disconnect();
+      connection.disconnect();
+    });
+  });
+
+  describe("getAllTokens", () => {
+    it("can query all tokens", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+      const tokens = await connection.getAllTokens();
+      expect(tokens.length).toEqual(3);
+
+      expect(tokens[0]).toEqual({
+        tokenTicker: "ASH" as TokenTicker,
+        tokenName: "Let the Phoenix arise",
+        fractionalDigits: 9,
+      });
+      expect(tokens[1]).toEqual({
+        tokenTicker: "BASH" as TokenTicker,
+        tokenName: "Another token of this chain",
+        fractionalDigits: 9,
+      });
+      expect(tokens[2]).toEqual({
+        tokenTicker: "CASH" as TokenTicker,
+        tokenName: "Main token of this chain",
+        fractionalDigits: 9,
+      });
+
+      connection.disconnect();
+    });
   });
 
   describe("getAccount", () => {

@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { Account, AccountQuery, AddressQuery, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BcpTicker, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
+import { Account, AccountQuery, AddressQuery, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, Token, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
 import { Erc20Options } from "./erc20";
 export interface EthereumConnectionOptions {
     readonly wsUrl?: string;
@@ -25,8 +25,8 @@ export declare class EthereumConnection implements AtomicSwapConnection {
     chainId(): ChainId;
     height(): Promise<number>;
     postTx(bytes: PostableBytes): Promise<PostTxResponse>;
-    getTicker(searchTicker: TokenTicker): Promise<BcpTicker | undefined>;
-    getAllTickers(): Promise<ReadonlyArray<BcpTicker>>;
+    getToken(searchTicker: TokenTicker): Promise<Token | undefined>;
+    getAllTokens(): Promise<ReadonlyArray<Token>>;
     getAccount(query: AccountQuery): Promise<Account | undefined>;
     getNonce(query: AddressQuery | PubkeyQuery): Promise<Nonce>;
     getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>>;

@@ -126,26 +126,38 @@ describe("LiskConnection", () => {
     expect(() => connection.disconnect()).not.toThrow();
   });
 
-  it("can get existing ticker", async () => {
-    const connection = new LiskConnection(dummynetBase, dummynetChainId);
-    const ticker = await connection.getTicker("LSK" as TokenTicker);
-    expect(ticker).toBeDefined();
-    expect(ticker!.tokenTicker).toEqual("LSK");
-    expect(ticker!.tokenName).toEqual("Lisk");
+  describe("getToken", () => {
+    it("can get existing tokens", async () => {
+      const connection = new LiskConnection(dummynetBase, dummynetChainId);
+      const token = await connection.getToken("LSK" as TokenTicker);
+      expect(token).toEqual({
+        tokenTicker: "LSK" as TokenTicker,
+        tokenName: "Lisk",
+        fractionalDigits: 8,
+      });
+      connection.disconnect();
+    });
+
+    it("produces empty result for non-existing tokens", async () => {
+      const connection = new LiskConnection(dummynetBase, dummynetChainId);
+      const token = await connection.getToken("ETH" as TokenTicker);
+      expect(token).toBeUndefined();
+      connection.disconnect();
+    });
   });
 
-  it("produces empty result for non-existing ticker", async () => {
-    const connection = new LiskConnection(dummynetBase, dummynetChainId);
-    const ticker = await connection.getTicker("ETH" as TokenTicker);
-    expect(ticker).toBeUndefined();
-  });
-
-  it("can get all tickers", async () => {
-    const connection = new LiskConnection(dummynetBase, dummynetChainId);
-    const tickers = await connection.getAllTickers();
-    expect(tickers.length).toEqual(1);
-    expect(tickers[0].tokenTicker).toEqual("LSK");
-    expect(tickers[0].tokenName).toEqual("Lisk");
+  describe("getAllTokens", () => {
+    it("can get all tokens", async () => {
+      const connection = new LiskConnection(dummynetBase, dummynetChainId);
+      const tokens = await connection.getAllTokens();
+      expect(tokens.length).toEqual(1);
+      expect(tokens[0]).toEqual({
+        tokenTicker: "LSK" as TokenTicker,
+        tokenName: "Lisk",
+        fractionalDigits: 8,
+      });
+      connection.disconnect();
+    });
   });
 
   it("can get chain ID", async () => {
