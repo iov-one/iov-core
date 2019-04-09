@@ -29,8 +29,8 @@ export declare class BnsConnection implements AtomicSwapConnection {
     chainId(): ChainId;
     height(): Promise<number>;
     postTx(tx: PostableBytes): Promise<PostTxResponse>;
-    getTicker(ticker: TokenTicker): Promise<Token | undefined>;
-    getAllTickers(): Promise<ReadonlyArray<Token>>;
+    getToken(ticker: TokenTicker): Promise<Token | undefined>;
+    getAllTokens(): Promise<ReadonlyArray<Token>>;
     getAccount(query: AccountQuery): Promise<Account | undefined>;
     getNonce(query: AddressQuery | PubkeyQuery): Promise<Nonce>;
     getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>>;

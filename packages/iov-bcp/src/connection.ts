@@ -233,8 +233,8 @@ export interface BlockchainConnection {
   readonly disconnect: () => void;
   readonly chainId: () => ChainId;
   readonly height: () => Promise<number>;
-  readonly getTicker: (ticker: TokenTicker) => Promise<Token | undefined>;
-  readonly getAllTickers: () => Promise<ReadonlyArray<Token>>;
+  readonly getToken: (ticker: TokenTicker) => Promise<Token | undefined>;
+  readonly getAllTokens: () => Promise<ReadonlyArray<Token>>;
 
   // accounts
   /**

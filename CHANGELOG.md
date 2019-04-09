@@ -22,6 +22,8 @@ Breaking changes
 - @iov/bcp: Rename `BcpAtomicSwapConnection` to `AtomicSwapConnection` and
   `BcpConnection` to `BlockchainConnection`.
 - @iov/bcp: Rename `BcpTicker` to `Token`.
+- @iov/bcp: Rename `BcpConnection.getTicker` to `getToken` and
+  `BcpConnection.getAllTickers` to `.getAllTokens`.
 
 ## 0.13.3
 

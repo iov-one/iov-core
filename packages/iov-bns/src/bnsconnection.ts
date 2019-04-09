@@ -248,7 +248,7 @@ export class BnsConnection implements AtomicSwapConnection {
     };
   }
 
-  public async getTicker(ticker: TokenTicker): Promise<Token | undefined> {
+  public async getToken(ticker: TokenTicker): Promise<Token | undefined> {
     const res = await this.query("/tokens", Encoding.toAscii(ticker));
     const parser = createParser(codecImpl.currency.TokenInfo, "tokeninfo:");
     const data = res.results.map(parser).map(decodeToken);
@@ -258,11 +258,11 @@ export class BnsConnection implements AtomicSwapConnection {
       case 1:
         return data[0];
       default:
-        throw new Error("Received unexpected number of tickers");
+        throw new Error("Received unexpected number of token results");
     }
   }
 
-  public async getAllTickers(): Promise<ReadonlyArray<Token>> {
+  public async getAllTokens(): Promise<ReadonlyArray<Token>> {
     const res = await this.query("/tokens?prefix", Uint8Array.from([]));
     const parser = createParser(codecImpl.currency.TokenInfo, "tokeninfo:");
     const data = res.results.map(parser).map(decodeToken);

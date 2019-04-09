@@ -25,8 +25,8 @@ export declare class EthereumConnection implements AtomicSwapConnection {
     chainId(): ChainId;
     height(): Promise<number>;
     postTx(bytes: PostableBytes): Promise<PostTxResponse>;
-    getTicker(searchTicker: TokenTicker): Promise<Token | undefined>;
-    getAllTickers(): Promise<ReadonlyArray<Token>>;
+    getToken(searchTicker: TokenTicker): Promise<Token | undefined>;
+    getAllTokens(): Promise<ReadonlyArray<Token>>;
     getAccount(query: AccountQuery): Promise<Account | undefined>;
     getNonce(query: AddressQuery | PubkeyQuery): Promise<Nonce>;
     getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>>;

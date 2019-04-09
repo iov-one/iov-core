@@ -175,23 +175,25 @@ describe("BnsConnection", () => {
     connection.disconnect();
   });
 
-  it("can query all tickers", async () => {
-    pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
+  describe("getAllTokens", () => {
+    it("can query all tokens", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
-    const tickers = await connection.getAllTickers();
-    expect(tickers.length).toEqual(3);
+      const tokens = await connection.getAllTokens();
+      expect(tokens.length).toEqual(3);
 
-    expect(tickers[0].tokenTicker).toEqual("ASH" as TokenTicker);
-    expect(tickers[0].tokenName).toEqual("Let the Phoenix arise");
+      expect(tokens[0].tokenTicker).toEqual("ASH" as TokenTicker);
+      expect(tokens[0].tokenName).toEqual("Let the Phoenix arise");
 
-    expect(tickers[1].tokenTicker).toEqual("BASH" as TokenTicker);
-    expect(tickers[1].tokenName).toEqual("Another token of this chain");
+      expect(tokens[1].tokenTicker).toEqual("BASH" as TokenTicker);
+      expect(tokens[1].tokenName).toEqual("Another token of this chain");
 
-    expect(tickers[2].tokenTicker).toEqual("CASH" as TokenTicker);
-    expect(tickers[2].tokenName).toEqual("Main token of this chain");
+      expect(tokens[2].tokenTicker).toEqual("CASH" as TokenTicker);
+      expect(tokens[2].tokenName).toEqual("Main token of this chain");
 
-    connection.disconnect();
+      connection.disconnect();
+    });
   });
 
   describe("getAccount", () => {

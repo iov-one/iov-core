@@ -228,11 +228,11 @@ export class EthereumConnection implements AtomicSwapConnection {
     };
   }
 
-  public async getTicker(searchTicker: TokenTicker): Promise<Token | undefined> {
-    return (await this.getAllTickers()).find(t => t.tokenTicker === searchTicker);
+  public async getToken(searchTicker: TokenTicker): Promise<Token | undefined> {
+    return (await this.getAllTokens()).find(t => t.tokenTicker === searchTicker);
   }
 
-  public async getAllTickers(): Promise<ReadonlyArray<Token>> {
+  public async getAllTokens(): Promise<ReadonlyArray<Token>> {
     const erc20s = await Promise.all(
       [...this.erc20ContractReaders.entries()].map(
         async ([ticker, contract]): Promise<Token> => {

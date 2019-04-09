@@ -13,8 +13,8 @@ export declare class RiseConnection implements BlockchainConnection {
     chainId(): ChainId;
     height(): Promise<number>;
     postTx(bytes: PostableBytes): Promise<PostTxResponse>;
-    getTicker(searchTicker: TokenTicker): Promise<Token | undefined>;
-    getAllTickers(): Promise<ReadonlyArray<Token>>;
+    getToken(searchTicker: TokenTicker): Promise<Token | undefined>;
+    getAllTokens(): Promise<ReadonlyArray<Token>>;
     getAccount(query: AccountQuery): Promise<Account | undefined>;
     getNonce(_: AddressQuery | PubkeyQuery): Promise<Nonce>;
     getNonces(_: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>>;

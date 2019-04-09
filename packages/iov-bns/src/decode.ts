@@ -70,7 +70,7 @@ export function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): Token 
 }
 
 export function decodeAmount(coin: codecImpl.coin.ICoin): Amount {
-  const fractionalDigits = 9; // fixed for all tickers in BNS
+  const fractionalDigits = 9; // fixed for all tokens in BNS
 
   const wholeNumber = asNumber(coin.whole);
   if (wholeNumber < 0) {
