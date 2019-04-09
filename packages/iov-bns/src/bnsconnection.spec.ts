@@ -1579,7 +1579,7 @@ describe("BnsConnection", () => {
     expect(txByHash.length).toEqual(1);
     expect(txByHash[0].transactionId).toEqual(transactionId);
 
-    // ----- connection.getSwap() -------
+    // ----- connection.getSwaps() -------
 
     // we can also swap by id (returned by the transaction result)
     const idSwaps = await connection.getSwaps(querySwapId);
