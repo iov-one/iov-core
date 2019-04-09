@@ -39,6 +39,7 @@ import {
   TransactionQuery,
   TransactionState,
   UnsignedTransaction,
+  isAtomicSwapSenderQuery,
 } from "@iov/bcp";
 import { Encoding, Uint53 } from "@iov/encoding";
 import { isJsonRpcErrorResponse, JsonRpcRequest, JsonRpcSuccessResponse } from "@iov/jsonrpc";
@@ -831,7 +832,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       }
 
       return [swap];
-    } else if (isAtomicSwapRecipientQuery(query)) {
+    } else if (isAtomicSwapRecipientQuery(query) || isAtomicSwapSenderQuery(query)) {
       const params = [
         {
           fromBlock: encodeQuantity(minHeight),
@@ -893,7 +894,14 @@ export class EthereumConnection implements AtomicSwapConnection {
             };
           },
         )
-        .filter((swap: AtomicSwap) => swap.data.recipient === query.recipient);
+        .filter((swap: AtomicSwap) => {
+          if (isAtomicSwapRecipientQuery(query)) {
+            return swap.data.recipient === query.recipient;
+          } else if (isAtomicSwapSenderQuery(query)) {
+            return swap.data.sender === query.sender;
+          }
+          throw new Error("unsupported query type");
+        });
     } else {
       throw new Error("unsupported query type");
     }
