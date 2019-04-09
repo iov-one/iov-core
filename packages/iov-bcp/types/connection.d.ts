@@ -114,18 +114,18 @@ export interface FailedTransaction {
 }
 export declare function isConfirmedTransaction(transaction: ConfirmedTransaction | FailedTransaction): transaction is ConfirmedTransaction;
 export declare function isFailedTransaction(transaction: ConfirmedTransaction | FailedTransaction): transaction is FailedTransaction;
-export interface BcpQueryTag {
+export interface QueryTag {
     readonly key: string;
     readonly value: string;
 }
-export interface BcpTxQuery {
+export interface TransactionQuery {
     readonly id?: TransactionId;
     /** any send transaction to or from this address */
     readonly sentFromOrTo?: Address;
     /** any transaction signed by this address */
     readonly signedBy?: Address;
     /** chain-specific key value pairs that encode a query */
-    readonly tags?: ReadonlyArray<BcpQueryTag>;
+    readonly tags?: ReadonlyArray<QueryTag>;
     readonly height?: number;
     readonly minHeight?: number;
     readonly maxHeight?: number;
@@ -153,7 +153,22 @@ export interface BlockHeader {
     readonly time: ReadonlyDate;
     readonly transactionCount: number;
 }
-export interface BcpConnection {
+/**
+ * A high-level interface to a blockchain node,
+ * abstracted over all blockchain types and communication channel.
+ * A direct connection or a proxy server should implement this.
+ * The implementation takes care to convert our internal types into
+ * the proper format for the blockchain.
+ *
+ * BlockchainConnection is the minimal interface needed to be supported by any blockchain
+ * that is compatible with the BCP spec and IOV-Core library. This supports
+ * getting account balances, sending tokens, and observing the blockchain state.
+ *
+ * There are other optional interfaces that extend this functionality with
+ * features like atomic swap, NFTs, etc which may be implemented by any connector
+ * to enable enhanced features in the clients.
+ */
+export interface BlockchainConnection {
     readonly disconnect: () => void;
     readonly chainId: () => ChainId;
     readonly height: () => Promise<number>;
@@ -182,16 +197,16 @@ export interface BcpConnection {
     readonly getBlockHeader: (height: number) => Promise<BlockHeader>;
     readonly watchBlockHeaders: () => Stream<BlockHeader>;
     readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
-    readonly searchTx: (query: BcpTxQuery) => Promise<ReadonlyArray<ConfirmedTransaction | FailedTransaction>>;
+    readonly searchTx: (query: TransactionQuery) => Promise<ReadonlyArray<ConfirmedTransaction | FailedTransaction>>;
     /**
      * Subscribes to all newly added transactions that match the query
      */
-    readonly listenTx: (query: BcpTxQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
+    readonly listenTx: (query: TransactionQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
     /**
      * Returns a stream for all historical transactions that match
      * the query, along with all new transactions arriving from listenTx
      */
-    readonly liveTx: (txQuery: BcpTxQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
+    readonly liveTx: (query: TransactionQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
     readonly getFeeQuote: (tx: UnsignedTransaction) => Promise<Fee>;
     readonly withDefaultFee: <T extends UnsignedTransaction>(tx: T) => Promise<T>;
 }

@@ -7,11 +7,10 @@ import {
   AddressQuery,
   Amount,
   AtomicSwap,
+  AtomicSwapConnection,
   AtomicSwapMerger,
   AtomicSwapQuery,
-  BcpAtomicSwapConnection,
   BcpTicker,
-  BcpTxQuery,
   BlockHeader,
   BlockId,
   BlockInfo,
@@ -37,6 +36,7 @@ import {
   SwapClaimTransaction,
   TokenTicker,
   TransactionId,
+  TransactionQuery,
   TransactionState,
   TxReadCodec,
   UnsignedTransaction,
@@ -63,7 +63,7 @@ import {
   Result,
 } from "./types";
 import {
-  buildTxQuery,
+  buildQueryString,
   conditionToAddress,
   decodeBnsAddress,
   escrowCondition,
@@ -108,7 +108,7 @@ function isDefined<T>(value: T | undefined): value is T {
  *
  * We can embed in iov-core process or use this in a BCP-relay
  */
-export class BnsConnection implements BcpAtomicSwapConnection {
+export class BnsConnection implements AtomicSwapConnection {
   public static async establish(url: string): Promise<BnsConnection> {
     const tm = await TendermintClient.connect(url);
     const chainData = await this.initialize(tm);
@@ -422,11 +422,11 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   }
 
   public async searchTx(
-    txQuery: BcpTxQuery,
+    query: TransactionQuery,
   ): Promise<ReadonlyArray<ConfirmedTransaction | FailedTransaction>> {
     // this will paginate over all transactions, even if multiple pages.
     // FIXME: consider making a streaming interface here, but that will break clients
-    const res = await this.tmClient.txSearchAll({ query: buildTxQuery(txQuery) });
+    const res = await this.tmClient.txSearchAll({ query: buildQueryString(query) });
     const chainId = await this.chainId();
     const currentHeight = await this.height();
 
@@ -460,9 +460,9 @@ export class BnsConnection implements BcpAtomicSwapConnection {
   /**
    * A stream of all transactions that match the tags from the present moment on
    */
-  public listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
+  public listenTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction> {
     const chainId = this.chainId();
-    const rawQuery = buildTxQuery(query);
+    const rawQuery = buildQueryString(query);
     return this.tmClient.subscribeTx(rawQuery).map(
       (transaction): ConfirmedTransaction | FailedTransaction => {
         const transactionId = Encoding.toHex(transaction.hash).toUpperCase() as TransactionId;
@@ -495,9 +495,9 @@ export class BnsConnection implements BcpAtomicSwapConnection {
    * It returns a stream starting the array of all existing transactions
    * and then continuing with live feeds
    */
-  public liveTx(txQuery: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
-    const historyStream = fromListPromise(this.searchTx(txQuery));
-    const updatesStream = this.listenTx(txQuery);
+  public liveTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction> {
+    const historyStream = fromListPromise(this.searchTx(query));
+    const updatesStream = this.listenTx(query);
     const combinedStream = concat(historyStream, updatesStream);
 
     // remove duplicates
@@ -583,7 +583,7 @@ export class BnsConnection implements BcpAtomicSwapConnection {
     return concat(
       Stream.fromPromise(this.getAccount(query)),
       this.tmClient
-        .subscribeTx(buildTxQuery({ sentFromOrTo: address }))
+        .subscribeTx(buildQueryString({ sentFromOrTo: address }))
         .map(() => Stream.fromPromise(this.getAccount(query)))
         .flatten(),
     );

@@ -1,6 +1,6 @@
 import { As } from "type-tagger";
 import { Stream } from "xstream";
-import { BcpConnection } from "./connection";
+import { BlockchainConnection } from "./connection";
 import { Address, Amount, SwapIdBytes, SwapTimeout } from "./transactions";
 export declare enum SwapProcessState {
     Open = "open",
@@ -65,10 +65,10 @@ export declare function isAtomicSwapIdQuery(query: AtomicSwapQuery): query is At
 /** a type guard to use in the swap-based queries  */
 export declare function isAtomicSwapHashlockQuery(query: AtomicSwapQuery): query is AtomicSwapHashlockQuery;
 /**
- * An optional extension to the base BcpConnection that
+ * An optional extension to the base BlockchainConnection that
  * allows querying and watching atomic swaps
  */
-export interface BcpAtomicSwapConnection extends BcpConnection {
+export interface AtomicSwapConnection extends BlockchainConnection {
     /** returns all matching swaps in their current state */
     readonly getSwaps: (swap: AtomicSwapQuery) => Promise<ReadonlyArray<AtomicSwap>>;
     /**
@@ -79,4 +79,4 @@ export interface BcpAtomicSwapConnection extends BcpConnection {
      */
     readonly watchSwaps: (swap: AtomicSwapQuery) => Stream<AtomicSwap>;
 }
-export declare function isAtomicSwapConnection(conn: BcpConnection): conn is BcpAtomicSwapConnection;
+export declare function isAtomicSwapConnection(conn: BlockchainConnection): conn is AtomicSwapConnection;

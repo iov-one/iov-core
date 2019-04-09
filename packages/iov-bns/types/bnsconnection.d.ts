@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { Account, AccountQuery, AddressQuery, Amount, AtomicSwap, AtomicSwapQuery, BcpAtomicSwapConnection, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, UnsignedTransaction } from "@iov/bcp";
+import { Account, AccountQuery, AddressQuery, Amount, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BcpTicker, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
 import { BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 /**
  * Talks directly to the BNS blockchain and exposes the
@@ -7,7 +7,7 @@ import { BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
  *
  * We can embed in iov-core process or use this in a BCP-relay
  */
-export declare class BnsConnection implements BcpAtomicSwapConnection {
+export declare class BnsConnection implements AtomicSwapConnection {
     static establish(url: string): Promise<BnsConnection>;
     private static initialize;
     private readonly tmClient;
@@ -50,18 +50,18 @@ export declare class BnsConnection implements BcpAtomicSwapConnection {
      * This includes an open swap beind claimed/aborted as well as a new matching swap being offered
      */
     watchSwaps(query: AtomicSwapQuery): Stream<AtomicSwap>;
-    searchTx(txQuery: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction | FailedTransaction>>;
+    searchTx(query: TransactionQuery): Promise<ReadonlyArray<ConfirmedTransaction | FailedTransaction>>;
     /**
      * A stream of all transactions that match the tags from the present moment on
      */
-    listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction>;
+    listenTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction>;
     /**
      * Does a search and then subscribes to all future changes.
      *
      * It returns a stream starting the array of all existing transactions
      * and then continuing with live feeds
      */
-    liveTx(txQuery: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction>;
+    liveTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction>;
     getBlockHeader(height: number): Promise<BlockHeader>;
     watchBlockHeaders(): Stream<BlockHeader>;
     /**

@@ -1,15 +1,15 @@
 import {
   AtomicSwapQuery,
-  BcpQueryTag,
   isAtomicSwapIdQuery,
   isAtomicSwapRecipientQuery,
   isAtomicSwapSenderQuery,
+  QueryTag,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
 import { bucketKey, decodeBnsAddress, hashIdentifier, indexKey } from "./util";
 
-export function bnsSwapQueryTag(query: AtomicSwapQuery, set = true): BcpQueryTag {
+export function bnsSwapQueryTag(query: AtomicSwapQuery, set = true): QueryTag {
   let binKey: Uint8Array;
   const bucket = "esc";
   if (isAtomicSwapIdQuery(query)) {

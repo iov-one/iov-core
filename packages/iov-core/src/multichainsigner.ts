@@ -1,6 +1,6 @@
 import {
   Address,
-  BcpConnection,
+  BlockchainConnection,
   ChainConnector,
   ChainId,
   Nonce,
@@ -15,7 +15,7 @@ import {
  * An internal helper to pass around the tuple
  */
 interface Chain {
-  readonly connection: BcpConnection;
+  readonly connection: BlockchainConnection;
   readonly codec: TxCodec;
 }
 
@@ -70,16 +70,16 @@ export class MultiChainSigner {
     return Array.from(this.knownChains.keys()).map(key => key as ChainId);
   }
 
-  public connection(chainId: ChainId): BcpConnection {
+  public connection(chainId: ChainId): BlockchainConnection {
     return this.getChain(chainId).connection;
   }
 
   /**
    * Connects to a chain using the provided connector.
    *
-   * @returns an object of chain information, currently just a BcpConnection
+   * @returns an object of chain information, currently just a BlockchainConnection
    */
-  public async addChain(connector: ChainConnector): Promise<{ readonly connection: BcpConnection }> {
+  public async addChain(connector: ChainConnector): Promise<{ readonly connection: BlockchainConnection }> {
     const chain = await connectChain(connector);
     const chainId = chain.connection.chainId();
     if (connector.expectedChainId && connector.expectedChainId !== chainId) {

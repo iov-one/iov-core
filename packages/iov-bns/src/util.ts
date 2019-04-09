@@ -4,7 +4,6 @@ import { As } from "type-tagger";
 import {
   Address,
   Algorithm,
-  BcpTxQuery,
   ChainId,
   ConfirmedTransaction,
   Hash,
@@ -18,7 +17,7 @@ import {
   SwapAbortTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
-  TransactionId,
+  TransactionQuery,
 } from "@iov/bcp";
 import { Sha256 } from "@iov/crypto";
 import { Bech32, Encoding } from "@iov/encoding";
@@ -166,7 +165,7 @@ function signedByTag(addr: Address): string {
   return `${key}='${value}'`;
 }
 
-export function buildTxQuery(query: BcpTxQuery): QueryString {
+export function buildQueryString(query: TransactionQuery): QueryString {
   const sentComponents = query.sentFromOrTo !== undefined ? [sentFromOrToTag(query.sentFromOrTo)] : [];
   const signedByComponents = query.signedBy !== undefined ? [signedByTag(query.signedBy)] : [];
   const tagComponents = query.tags !== undefined ? query.tags.map(tag => `${tag.key}='${tag.value}'`) : [];
@@ -186,10 +185,4 @@ export function buildTxQuery(query: BcpTxQuery): QueryString {
     ...maxHeightComponents,
   ];
   return components.join(" AND ") as QueryString;
-}
-
-export function buildTxHashQuery(id: TransactionId): QueryString {
-  // In Tendermint, hash can be lower case for search queries but must be
-  // upper case for subscribe queries. TransactionId is always upper case hex.
-  return `tx.hash='${id}'` as QueryString;
 }

@@ -1,10 +1,10 @@
 import { Stream } from "xstream";
-import { Account, AccountQuery, AddressQuery, BcpConnection, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, UnsignedTransaction } from "@iov/bcp";
+import { Account, AccountQuery, AddressQuery, BcpTicker, BlockchainConnection, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
 /**
  * Encodes the current date and time as a nonce
  */
 export declare function generateNonce(): Nonce;
-export declare class LiskConnection implements BcpConnection {
+export declare class LiskConnection implements BlockchainConnection {
     static establish(baseUrl: string): Promise<LiskConnection>;
     private readonly baseUrl;
     private readonly myChainId;
@@ -21,9 +21,9 @@ export declare class LiskConnection implements BcpConnection {
     watchAccount(query: AccountQuery): Stream<Account | undefined>;
     getBlockHeader(height: number): Promise<BlockHeader>;
     watchBlockHeaders(): Stream<BlockHeader>;
-    searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
-    listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction>;
-    liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction>;
+    searchTx(query: TransactionQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
+    listenTx(_: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction>;
+    liveTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction>;
     getFeeQuote(tx: UnsignedTransaction): Promise<Fee>;
     withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;
     private waitForTransaction;
