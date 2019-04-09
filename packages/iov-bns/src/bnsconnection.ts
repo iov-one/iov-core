@@ -117,16 +117,7 @@ export class BnsConnection implements AtomicSwapConnection {
 
   private static async initialize(tmClient: TendermintClient): Promise<ChainData> {
     const status = await tmClient.status();
-    const chainId = status.nodeInfo.network as ChainId;
-
-    // inlining getAllTickers
-    const res = await performQuery(tmClient, "/tokens?prefix", Uint8Array.from([]));
-    const parser = createParser(codecImpl.currency.TokenInfo, "tokeninfo:");
-    const data = res.results.map(parser).map(decodeToken);
-
-    const toKeyValue = (t: Token): [string, Token] => [t.tokenTicker, t];
-    const tickers = new Map(data.map(toKeyValue));
-    return { chainId: chainId, tokens: tickers };
+    return { chainId: status.nodeInfo.network as ChainId };
   }
 
   private readonly tmClient: TendermintClient;

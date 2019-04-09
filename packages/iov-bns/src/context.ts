@@ -28,7 +28,6 @@ import {
  */
 export interface ChainData {
   readonly chainId: ChainId;
-  readonly tokens: Map<string, Token>;
 }
 
 /** Like BCP's Account but with no pubkey. Keep compatible to Account! */
