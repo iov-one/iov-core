@@ -121,7 +121,7 @@ describe("EthereumConnection", () => {
 
   it("can be constructed", () => {
     pendingWithoutEthereum();
-    const connection = new EthereumConnection(testConfig.base, testConfig.chainId);
+    const connection = new EthereumConnection(testConfig.base, testConfig.chainId, {});
     expect(connection).toBeTruthy();
     connection.disconnect();
   });
@@ -1858,7 +1858,7 @@ describe("EthereumConnection", () => {
     it("can start atomic swap", async () => {
       pendingWithoutEthereum();
 
-      const connection = await EthereumConnection.establish(testConfig.base);
+      const connection = await EthereumConnection.establish(testConfig.base, {});
       const chainId = connection.chainId();
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);

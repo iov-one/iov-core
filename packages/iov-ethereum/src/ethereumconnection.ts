@@ -89,7 +89,7 @@ export interface EthereumConnectionOptions {
 export class EthereumConnection implements AtomicSwapConnection {
   public static async establish(
     baseUrl: string,
-    options?: EthereumConnectionOptions,
+    options: EthereumConnectionOptions,
   ): Promise<EthereumConnection> {
     const chainId = await loadChainId(baseUrl);
 
@@ -105,10 +105,11 @@ export class EthereumConnection implements AtomicSwapConnection {
   private readonly erc20ContractReaders: ReadonlyMap<TokenTicker, Erc20Reader>;
   private readonly codec: EthereumCodec;
 
-  constructor(baseUrl: string, chainId: ChainId, options?: EthereumConnectionOptions) {
-    this.pollIntervalMs = options && options.pollInterval ? options.pollInterval * 1000 : 4_000;
+  constructor(baseUrl: string, chainId: ChainId, options: EthereumConnectionOptions) {
+    this.pollIntervalMs = options.pollInterval ? options.pollInterval * 1000 : 4_000;
     this.rpcClient = new HttpJsonRpcClient(baseUrl);
     this.myChainId = chainId;
+    this.scraperApiUrl = options.scraperApiUrl;
 
     const ethereumClient = {
       ethCall: async (contractAddress: Address, data: Uint8Array): Promise<Uint8Array> => {
@@ -127,18 +128,12 @@ export class EthereumConnection implements AtomicSwapConnection {
       },
     };
 
-    if (options) {
-      if (options.wsUrl) {
-        this.socket = new StreamingSocket(options.wsUrl);
-        this.socket.connect();
-      }
-
-      if (options.scraperApiUrl) {
-        this.scraperApiUrl = options.scraperApiUrl;
-      }
+    if (options.wsUrl) {
+      this.socket = new StreamingSocket(options.wsUrl);
+      this.socket.connect();
     }
 
-    const erc20Tokens = options && options.erc20Tokens ? options.erc20Tokens : new Map();
+    const erc20Tokens = options.erc20Tokens ? options.erc20Tokens : new Map();
 
     this.erc20Tokens = erc20Tokens;
     this.erc20ContractReaders = new Map(

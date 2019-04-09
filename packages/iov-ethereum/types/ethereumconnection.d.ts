@@ -11,7 +11,7 @@ export interface EthereumConnectionOptions {
     readonly pollInterval?: number;
 }
 export declare class EthereumConnection implements AtomicSwapConnection {
-    static establish(baseUrl: string, options?: EthereumConnectionOptions): Promise<EthereumConnection>;
+    static establish(baseUrl: string, options: EthereumConnectionOptions): Promise<EthereumConnection>;
     private readonly pollIntervalMs;
     private readonly rpcClient;
     private readonly myChainId;
@@ -20,7 +20,7 @@ export declare class EthereumConnection implements AtomicSwapConnection {
     private readonly erc20Tokens;
     private readonly erc20ContractReaders;
     private readonly codec;
-    constructor(baseUrl: string, chainId: ChainId, options?: EthereumConnectionOptions);
+    constructor(baseUrl: string, chainId: ChainId, options: EthereumConnectionOptions);
     disconnect(): void;
     chainId(): ChainId;
     height(): Promise<number>;

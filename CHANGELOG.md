@@ -25,8 +25,8 @@ Breaking changes
 - @iov/bcp: Rename `BcpTicker` to `Token`.
 - @iov/bcp: Rename `BcpConnection.getTicker` to `getToken` and
   `BcpConnection.getAllTickers` to `.getAllTokens`.
-- @iov/ethereum: Options argument in `ethereumConnector` is now required. Can be
-  `{}`.
+- @iov/ethereum: Options argument in `ethereumConnector`, `EthereumConnection`
+  and `EthereumConnection.establish` is now required. Can be `{}`.
 
 ## 0.13.3
 
