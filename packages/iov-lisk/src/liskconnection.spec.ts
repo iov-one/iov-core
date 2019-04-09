@@ -130,9 +130,11 @@ describe("LiskConnection", () => {
     it("can get existing tokens", async () => {
       const connection = new LiskConnection(dummynetBase, dummynetChainId);
       const token = await connection.getToken("LSK" as TokenTicker);
-      expect(token).toBeDefined();
-      expect(token!.tokenTicker).toEqual("LSK");
-      expect(token!.tokenName).toEqual("Lisk");
+      expect(token).toEqual({
+        tokenTicker: "LSK" as TokenTicker,
+        tokenName: "Lisk",
+        fractionalDigits: 8,
+      });
       connection.disconnect();
     });
 
@@ -149,8 +151,11 @@ describe("LiskConnection", () => {
       const connection = new LiskConnection(dummynetBase, dummynetChainId);
       const tokens = await connection.getAllTokens();
       expect(tokens.length).toEqual(1);
-      expect(tokens[0].tokenTicker).toEqual("LSK");
-      expect(tokens[0].tokenName).toEqual("Lisk");
+      expect(tokens[0]).toEqual({
+        tokenTicker: "LSK" as TokenTicker,
+        tokenName: "Lisk",
+        fractionalDigits: 8,
+      });
       connection.disconnect();
     });
   });

@@ -147,10 +147,11 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
       const token = await connection.getToken("ETH" as TokenTicker);
-      expect(token).toBeDefined();
-      expect(token!.tokenTicker).toEqual("ETH");
-      expect(token!.tokenName).toEqual("Ether");
-      expect(token!.fractionalDigits).toEqual(18);
+      expect(token).toEqual({
+        tokenTicker: "ETH" as TokenTicker,
+        tokenName: "Ether",
+        fractionalDigits: 18,
+      });
       connection.disconnect();
     });
 

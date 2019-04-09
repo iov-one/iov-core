@@ -209,14 +209,21 @@ describe("BnsConnection", () => {
       const tokens = await connection.getAllTokens();
       expect(tokens.length).toEqual(3);
 
-      expect(tokens[0].tokenTicker).toEqual("ASH" as TokenTicker);
-      expect(tokens[0].tokenName).toEqual("Let the Phoenix arise");
-
-      expect(tokens[1].tokenTicker).toEqual("BASH" as TokenTicker);
-      expect(tokens[1].tokenName).toEqual("Another token of this chain");
-
-      expect(tokens[2].tokenTicker).toEqual("CASH" as TokenTicker);
-      expect(tokens[2].tokenName).toEqual("Main token of this chain");
+      expect(tokens[0]).toEqual({
+        tokenTicker: "ASH" as TokenTicker,
+        tokenName: "Let the Phoenix arise",
+        fractionalDigits: 9,
+      });
+      expect(tokens[1]).toEqual({
+        tokenTicker: "BASH" as TokenTicker,
+        tokenName: "Another token of this chain",
+        fractionalDigits: 9,
+      });
+      expect(tokens[2]).toEqual({
+        tokenTicker: "CASH" as TokenTicker,
+        tokenName: "Main token of this chain",
+        fractionalDigits: 9,
+      });
 
       connection.disconnect();
     });

@@ -123,9 +123,11 @@ describe("RiseConnection", () => {
     it("can get existing token", async () => {
       const connection = new RiseConnection(base, riseTestnet);
       const token = await connection.getToken("RISE" as TokenTicker);
-      expect(token).toBeDefined();
-      expect(token!.tokenTicker).toEqual("RISE");
-      expect(token!.tokenName).toEqual("RISE");
+      expect(token).toEqual({
+        tokenTicker: "RISE" as TokenTicker,
+        tokenName: "RISE",
+        fractionalDigits: 8,
+      });
       connection.disconnect();
     });
 
@@ -142,8 +144,11 @@ describe("RiseConnection", () => {
       const connection = new RiseConnection(base, riseTestnet);
       const tokens = await connection.getAllTokens();
       expect(tokens.length).toEqual(1);
-      expect(tokens[0].tokenTicker).toEqual("RISE");
-      expect(tokens[0].tokenName).toEqual("RISE");
+      expect(tokens[0]).toEqual({
+        tokenTicker: "RISE" as TokenTicker,
+        tokenName: "RISE",
+        fractionalDigits: 8,
+      });
       connection.disconnect();
     });
   });
