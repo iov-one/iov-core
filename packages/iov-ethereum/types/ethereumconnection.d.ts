@@ -46,7 +46,7 @@ export declare class EthereumConnection implements AtomicSwapConnection {
     liveTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction>;
     getFeeQuote(transaction: UnsignedTransaction): Promise<Fee>;
     withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;
-    getSwaps(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>>;
+    getSwaps(query: AtomicSwapQuery, minHeight?: number, maxHeight?: number): Promise<ReadonlyArray<AtomicSwap>>;
     watchSwaps(_: AtomicSwapQuery): Stream<AtomicSwap>;
     private socketSend;
     private searchTransactionsById;

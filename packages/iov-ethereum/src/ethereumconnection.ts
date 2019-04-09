@@ -749,7 +749,11 @@ export class EthereumConnection implements AtomicSwapConnection {
     return { ...transaction, fee: await this.getFeeQuote(transaction) };
   }
 
-  public async getSwaps(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>> {
+  public async getSwaps(
+    query: AtomicSwapQuery,
+    minHeight: number = 0,
+    maxHeight: number = Number.MAX_SAFE_INTEGER,
+  ): Promise<ReadonlyArray<AtomicSwap>> {
     if (isAtomicSwapIdQuery(query)) {
       const data = Uint8Array.from([...Abi.calculateMethodId("get(bytes32)"), ...query.swapid]);
 
@@ -830,6 +834,8 @@ export class EthereumConnection implements AtomicSwapConnection {
     } else if (isAtomicSwapRecipientQuery(query)) {
       const params = [
         {
+          fromBlock: encodeQuantity(minHeight),
+          toBlock: encodeQuantity(maxHeight),
           address: this.atomicSwapEtherContractAddress,
         },
       ] as ReadonlyArray<any>;
