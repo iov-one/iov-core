@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { Account, AccountQuery, AddressQuery, AtomicSwap, AtomicSwapQuery, BcpAtomicSwapConnection, BcpTicker, BcpTxQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, UnsignedTransaction } from "@iov/bcp";
+import { Account, AccountQuery, AddressQuery, AtomicSwap, AtomicSwapQuery, BcpAtomicSwapConnection, BcpTicker, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
 import { Erc20Options } from "./erc20";
 export interface EthereumConnectionOptions {
     readonly wsUrl?: string;
@@ -33,9 +33,9 @@ export declare class EthereumConnection implements BcpAtomicSwapConnection {
     getBlockHeader(height: number): Promise<BlockHeader>;
     watchBlockHeaders(): Stream<BlockHeader>;
     watchAccount(query: AccountQuery): Stream<Account | undefined>;
-    searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
-    listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction>;
-    liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction>;
+    searchTx(query: TransactionQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
+    listenTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction>;
+    liveTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction>;
     getFeeQuote(transaction: UnsignedTransaction): Promise<Fee>;
     withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;
     getSwaps(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>>;

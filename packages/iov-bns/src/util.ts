@@ -4,7 +4,6 @@ import { As } from "type-tagger";
 import {
   Address,
   Algorithm,
-  BcpTxQuery,
   ChainId,
   ConfirmedTransaction,
   Hash,
@@ -18,6 +17,7 @@ import {
   SwapAbortTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
+  TransactionQuery,
 } from "@iov/bcp";
 import { Sha256 } from "@iov/crypto";
 import { Bech32, Encoding } from "@iov/encoding";
@@ -165,7 +165,7 @@ function signedByTag(addr: Address): string {
   return `${key}='${value}'`;
 }
 
-export function buildTxQuery(query: BcpTxQuery): QueryString {
+export function buildQueryString(query: TransactionQuery): QueryString {
   const sentComponents = query.sentFromOrTo !== undefined ? [sentFromOrToTag(query.sentFromOrTo)] : [];
   const signedByComponents = query.signedBy !== undefined ? [signedByTag(query.signedBy)] : [];
   const tagComponents = query.tags !== undefined ? query.tags.map(tag => `${tag.key}='${tag.value}'`) : [];

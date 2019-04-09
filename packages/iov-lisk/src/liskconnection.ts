@@ -10,7 +10,6 @@ import {
   Algorithm,
   BcpConnection,
   BcpTicker,
-  BcpTxQuery,
   BlockHeader,
   BlockId,
   BlockInfo,
@@ -27,6 +26,7 @@ import {
   PublicKeyBytes,
   TokenTicker,
   TransactionId,
+  TransactionQuery,
   TransactionState,
   UnsignedTransaction,
 } from "@iov/bcp";
@@ -325,7 +325,7 @@ export class LiskConnection implements BcpConnection {
     return Stream.create(producer);
   }
 
-  public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  public async searchTx(query: TransactionQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
     }
@@ -343,11 +343,11 @@ export class LiskConnection implements BcpConnection {
     }
   }
 
-  public listenTx(_: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
+  public listenTx(_: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction> {
     throw new Error("Not implemented");
   }
 
-  public liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
+  public liveTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
     }

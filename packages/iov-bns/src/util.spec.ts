@@ -4,7 +4,7 @@ import { Encoding } from "@iov/encoding";
 import { address, pubJson } from "./testdata.spec";
 import {
   arraysEqual,
-  buildTxQuery,
+  buildQueryString,
   decodeBnsAddress,
   encodeBnsAddress,
   identityToAddress,
@@ -113,56 +113,58 @@ describe("Util", () => {
     expect(isValidAddress(bad3)).toEqual(false);
   });
 
-  describe("buildTxQuery", () => {
+  describe("buildQueryString", () => {
     it("handles empty query", () => {
-      const query = buildTxQuery({});
+      const query = buildQueryString({});
       expect(query).toEqual("");
     });
 
     it("handles sentFromOrTo", () => {
-      const query = buildTxQuery({ sentFromOrTo: "tiov142a64wa2hw4th24m42a64wa2hw4th24m593zc3" as Address });
+      const query = buildQueryString({
+        sentFromOrTo: "tiov142a64wa2hw4th24m42a64wa2hw4th24m593zc3" as Address,
+      });
       const expected = `${toHex(toAscii("cash:")).toUpperCase()}AABBAABBAABBAABBAABBAABBAABBAABBAABBAABB='s'`;
       expect(query).toEqual(expected);
     });
 
     it("handles signedBy", () => {
-      const query = buildTxQuery({ signedBy: "tiov142a64wa2hw4th24m42a64wa2hw4th24m593zc3" as Address });
+      const query = buildQueryString({ signedBy: "tiov142a64wa2hw4th24m42a64wa2hw4th24m593zc3" as Address });
       const expected = `${toHex(toAscii("sigs:")).toUpperCase()}AABBAABBAABBAABBAABBAABBAABBAABBAABBAABB='s'`;
       expect(query).toEqual(expected);
     });
 
     it("handles empty tag list", () => {
-      const query = buildTxQuery({ tags: [] });
+      const query = buildQueryString({ tags: [] });
       expect(query).toEqual("");
     });
 
     it("handles one tags", () => {
-      const query = buildTxQuery({ tags: [{ key: "abc", value: "def" }] });
+      const query = buildQueryString({ tags: [{ key: "abc", value: "def" }] });
       expect(query).toEqual("abc='def'");
     });
 
     it("handles two tags", () => {
-      const query = buildTxQuery({ tags: [{ key: "k", value: "9" }, { key: "L", value: "7" }] });
+      const query = buildQueryString({ tags: [{ key: "k", value: "9" }, { key: "L", value: "7" }] });
       expect(query).toEqual("k='9' AND L='7'");
     });
 
     it("handles height", () => {
-      const query = buildTxQuery({ height: 17 });
+      const query = buildQueryString({ height: 17 });
       expect(query).toEqual("tx.height=17");
     });
 
     it("handles min and max height", () => {
-      const query = buildTxQuery({ minHeight: 21, maxHeight: 111 });
+      const query = buildQueryString({ minHeight: 21, maxHeight: 111 });
       expect(query).toEqual("tx.height>21 AND tx.height<111");
     });
 
     it("handles height with tags", () => {
-      const query = buildTxQuery({ minHeight: 77, tags: [{ key: "some", value: "info" }] });
+      const query = buildQueryString({ minHeight: 77, tags: [{ key: "some", value: "info" }] });
       expect(query).toEqual("some='info' AND tx.height>77");
     });
 
     it("handles id", () => {
-      const query = buildTxQuery({ id: "AABB33" as TransactionId });
+      const query = buildQueryString({ id: "AABB33" as TransactionId });
       expect(query).toEqual("tx.hash='AABB33'");
     });
   });

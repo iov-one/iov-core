@@ -1,5 +1,5 @@
 import { As } from "type-tagger";
-import { Address, BcpTxQuery, ChainId, ConfirmedTransaction, Hash, Nonce, PublicIdentity, SignableBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction } from "@iov/bcp";
+import { Address, ChainId, ConfirmedTransaction, Hash, Nonce, PublicIdentity, SignableBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TransactionQuery } from "@iov/bcp";
 import { QueryString } from "@iov/tendermint-rpc";
 export declare function addressPrefix(chainId: ChainId): "iov" | "tiov";
 /** Encodes raw bytes into a bech32 address */
@@ -25,4 +25,4 @@ export declare function bucketKey(bucket: string): Uint8Array;
 export declare function indexKey(bucket: string, index: string): Uint8Array;
 export declare function isConfirmedWithSwapOfferTransaction(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapOfferTransaction>;
 export declare function isConfirmedWithSwapClaimOrAbortTransaction(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapClaimTransaction | SwapAbortTransaction>;
-export declare function buildTxQuery(query: BcpTxQuery): QueryString;
+export declare function buildQueryString(query: TransactionQuery): QueryString;

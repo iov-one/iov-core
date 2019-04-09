@@ -5,7 +5,6 @@ import {
   Amount,
   AtomicSwapHelpers,
   AtomicSwapQuery,
-  BcpTxQuery,
   BlockHeader,
   BlockInfoFailed,
   BlockInfoSucceeded,
@@ -27,6 +26,7 @@ import {
   SwapTimeout,
   TokenTicker,
   TransactionId,
+  TransactionQuery,
   TransactionState,
   UnsignedTransaction,
 } from "@iov/bcp";
@@ -1914,7 +1914,7 @@ describe("EthereumConnection", () => {
       expect(loadedTransaction.recipient).toEqual(swapOfferTx.recipient);
 
       // prepare queries
-      const queryTransactionId: BcpTxQuery = { id: transactionId };
+      const queryTransactionId: TransactionQuery = { id: transactionId };
       const querySwapId: AtomicSwapQuery = { swapid: swapId };
 
       // ----- connection.searchTx() -----

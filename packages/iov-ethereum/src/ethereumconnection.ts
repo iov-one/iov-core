@@ -14,7 +14,6 @@ import {
   AtomicSwapQuery,
   BcpAtomicSwapConnection,
   BcpTicker,
-  BcpTxQuery,
   BlockHeader,
   BlockInfo,
   ChainId,
@@ -31,6 +30,7 @@ import {
   SwapProcessState,
   TokenTicker,
   TransactionId,
+  TransactionQuery,
   TransactionState,
   UnsignedTransaction,
 } from "@iov/bcp";
@@ -492,7 +492,7 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
     return Stream.create(producer);
   }
 
-  public async searchTx(query: BcpTxQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  public async searchTx(query: TransactionQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
     }
@@ -520,7 +520,7 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
     }
   }
 
-  public listenTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
+  public listenTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
     }
@@ -615,7 +615,7 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
     }
   }
 
-  public liveTx(query: BcpTxQuery): Stream<ConfirmedTransaction | FailedTransaction> {
+  public liveTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
     }

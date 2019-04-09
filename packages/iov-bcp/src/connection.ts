@@ -160,19 +160,19 @@ export function isFailedTransaction(
   return !isConfirmedTransaction(transaction);
 }
 
-export interface BcpQueryTag {
+export interface QueryTag {
   readonly key: string;
   readonly value: string;
 }
 
-export interface BcpTxQuery {
+export interface TransactionQuery {
   readonly id?: TransactionId;
   /** any send transaction to or from this address */
   readonly sentFromOrTo?: Address;
   /** any transaction signed by this address */
   readonly signedBy?: Address;
   /** chain-specific key value pairs that encode a query */
-  readonly tags?: ReadonlyArray<BcpQueryTag>;
+  readonly tags?: ReadonlyArray<QueryTag>;
   readonly height?: number;
   readonly minHeight?: number;
   readonly maxHeight?: number;
@@ -262,16 +262,18 @@ export interface BcpConnection {
 
   // transactions
   readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
-  readonly searchTx: (query: BcpTxQuery) => Promise<ReadonlyArray<ConfirmedTransaction | FailedTransaction>>;
+  readonly searchTx: (
+    query: TransactionQuery,
+  ) => Promise<ReadonlyArray<ConfirmedTransaction | FailedTransaction>>;
   /**
    * Subscribes to all newly added transactions that match the query
    */
-  readonly listenTx: (query: BcpTxQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
+  readonly listenTx: (query: TransactionQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
   /**
    * Returns a stream for all historical transactions that match
    * the query, along with all new transactions arriving from listenTx
    */
-  readonly liveTx: (txQuery: BcpTxQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
+  readonly liveTx: (query: TransactionQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
   readonly getFeeQuote: (tx: UnsignedTransaction) => Promise<Fee>;
   // withDefaultFee will set the fee of the transaction to the result of getFeeQuote
   readonly withDefaultFee: <T extends UnsignedTransaction>(tx: T) => Promise<T>;
