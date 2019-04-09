@@ -740,13 +740,7 @@ export class EthereumConnection implements BcpAtomicSwapConnection {
             fractionalDigits: constants.primaryTokenFractionalDigits,
             tokenTicker: constants.primaryTokenTicker,
           },
-          gasLimit: {
-            quantity: "2100000",
-            // Those fields are pointless and will be removed in 0.14
-            // https://github.com/iov-one/iov-core/issues/858
-            fractionalDigits: constants.primaryTokenFractionalDigits,
-            tokenTicker: constants.primaryTokenTicker,
-          },
+          gasLimit: "2100000",
         };
       default:
         throw new Error("Received transaction of unsupported kind.");

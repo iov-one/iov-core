@@ -105,7 +105,7 @@ export declare function isAmount(data: any): data is Amount;
 export interface Fee {
     readonly tokens?: Amount;
     readonly gasPrice?: Amount;
-    readonly gasLimit?: Amount;
+    readonly gasLimit?: string;
 }
 export declare function isFee(data: any): data is Fee;
 /** The basic transaction type all transactions should extend */

@@ -11,6 +11,7 @@ Breaking changes
 - @iov/bcp: New type `Hash` used for atomic swap hashes. Use
   `AtomicSwapHelpers.hashPreimage` to create those hashes.
 - @iov/bcp: Rename `SwapState` to `SwapProcessState`.
+- @iov/bcp: Change type of `Fee.gasLimit` to string.
 
 ## 0.13.3
 

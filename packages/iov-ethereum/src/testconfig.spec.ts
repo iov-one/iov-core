@@ -51,7 +51,7 @@ export interface EthereumNetworkConfig {
     };
   };
   readonly gasPrice: Amount;
-  readonly gasLimit: Amount;
+  readonly gasLimit: string;
   readonly expectedErrorMessages: {
     readonly insufficientFunds: RegExp;
     readonly invalidSignature: RegExp;
@@ -147,11 +147,7 @@ const local: EthereumNetworkConfig = {
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   },
-  gasLimit: {
-    quantity: "2100000",
-    fractionalDigits: 18,
-    tokenTicker: "ETH" as TokenTicker,
-  },
+  gasLimit: "2100000",
   expectedErrorMessages: {
     insufficientFunds: /sender doesn't have enough funds to send tx/i,
     invalidSignature: /invalid signature/i,
@@ -268,11 +264,7 @@ const ropsten: EthereumNetworkConfig = {
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   },
-  gasLimit: {
-    quantity: "141000",
-    fractionalDigits: 18,
-    tokenTicker: "ETH" as TokenTicker,
-  },
+  gasLimit: "141000",
   expectedErrorMessages: {
     insufficientFunds: /insufficient funds for gas \* price \+ value/i,
     invalidSignature: /invalid sender/i,
@@ -371,11 +363,7 @@ const rinkeby: EthereumNetworkConfig = {
     fractionalDigits: 18,
     tokenTicker: "ETH" as TokenTicker,
   },
-  gasLimit: {
-    quantity: "141000",
-    fractionalDigits: 18,
-    tokenTicker: "ETH" as TokenTicker,
-  },
+  gasLimit: "141000",
   expectedErrorMessages: {
     insufficientFunds: /insufficient funds for gas \* price \+ value/i,
     invalidSignature: /invalid sender/i,

@@ -168,14 +168,14 @@ export function isAmount(data: any): data is Amount {
 export interface Fee {
   readonly tokens?: Amount;
   readonly gasPrice?: Amount;
-  readonly gasLimit?: Amount;
+  readonly gasLimit?: string;
 }
 
 export function isFee(data: any): data is Fee {
   return (
     typeof data === "object" &&
     data !== null &&
-    (isAmount(data.tokens) || (isAmount(data.gasPrice) && isAmount(data.gasLimit)))
+    (isAmount(data.tokens) || (isAmount(data.gasPrice) && typeof data.gasLimit === "string"))
   );
 }
 

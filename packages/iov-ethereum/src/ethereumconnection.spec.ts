@@ -412,11 +412,7 @@ describe("EthereumConnection", () => {
         amount: defaultAmount,
         fee: {
           gasPrice: testConfig.gasPrice,
-          gasLimit: {
-            quantity: "1",
-            fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
-          },
+          gasLimit: "1",
         },
         memo: "We \u2665 developers – iov.one",
       };
@@ -1829,7 +1825,7 @@ describe("EthereumConnection", () => {
         fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
       });
-      expect(result.gasLimit!.quantity).toEqual("2100000");
+      expect(result.gasLimit).toEqual("2100000");
 
       connection.disconnect();
     });

@@ -51,11 +51,7 @@ describe("Serialization", () => {
             fractionalDigits: 18,
             tokenTicker: "ETH" as TokenTicker,
           },
-          gasLimit: {
-            quantity: "21000",
-            fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
-          },
+          gasLimit: "21000",
         },
         recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
       };
@@ -93,11 +89,7 @@ describe("Serialization", () => {
             fractionalDigits: 18,
             tokenTicker: "ETH" as TokenTicker,
           },
-          gasLimit: {
-            quantity: "21000",
-            fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
-          },
+          gasLimit: "21000",
         },
         recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
         memo:
@@ -132,11 +124,7 @@ describe("Serialization", () => {
         fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
       };
-      const gasLimit: Amount = {
-        quantity: "21000",
-        fractionalDigits: 18,
-        tokenTicker: "ETH" as TokenTicker,
-      };
+      const gasLimit = "21000";
       const nonce = 0 as Nonce;
 
       // gasPrice unset
@@ -190,11 +178,7 @@ describe("Serialization", () => {
         fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
       };
-      const gasLimit: Amount = {
-        quantity: "21000",
-        fractionalDigits: 18,
-        tokenTicker: "ETH" as TokenTicker,
-      };
+      const gasLimit = "21000";
 
       const tx: SendTransaction = {
         kind: "bcp/send",
@@ -234,11 +218,7 @@ describe("Serialization", () => {
             fractionalDigits: 18,
             tokenTicker: "ETH" as TokenTicker,
           },
-          gasLimit: {
-            quantity: "52669",
-            fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
-          },
+          gasLimit: "52669",
         },
         recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
       };
@@ -293,11 +273,7 @@ describe("Serialization", () => {
             fractionalDigits: 18,
             tokenTicker: "ETH" as TokenTicker,
           },
-          gasLimit: {
-            quantity: "52669",
-            fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
-          },
+          gasLimit: "52669",
         },
         swapId: Uint8Array.from([]) as SwapIdBytes,
         recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
@@ -348,11 +324,7 @@ describe("Serialization", () => {
               fractionalDigits: 18,
               tokenTicker: "ETH" as TokenTicker,
             },
-            gasLimit: {
-              quantity: "21000",
-              fractionalDigits: 18,
-              tokenTicker: "ETH" as TokenTicker,
-            },
+            gasLimit: "21000",
           },
           recipient: "0x095e7baea6a6c7c4c2dfeb977efac326af552d87" as Address,
         },
@@ -403,11 +375,7 @@ describe("Serialization", () => {
               fractionalDigits: 18,
               tokenTicker: "ETH" as TokenTicker,
             },
-            gasLimit: {
-              quantity: "52669",
-              fractionalDigits: 18,
-              tokenTicker: "ETH" as TokenTicker,
-            },
+            gasLimit: "52669",
           },
           recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
         },
@@ -467,11 +435,7 @@ describe("Serialization", () => {
               fractionalDigits: 18,
               tokenTicker: "ETH" as TokenTicker,
             },
-            gasLimit: {
-              quantity: "52669",
-              fractionalDigits: 18,
-              tokenTicker: "ETH" as TokenTicker,
-            },
+            gasLimit: "52669",
           },
           swapId: Uint8Array.from([]) as SwapIdBytes,
           recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,

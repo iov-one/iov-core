@@ -326,11 +326,7 @@ describe("Serialization", () => {
         },
         recipient: "10010344879730196491X" as Address,
         fee: {
-          gasLimit: {
-            quantity: "1",
-            fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
-          },
+          gasLimit: "1",
         },
       };
 
