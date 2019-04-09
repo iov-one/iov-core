@@ -126,12 +126,14 @@ describe("RiseConnection", () => {
       expect(token).toBeDefined();
       expect(token!.tokenTicker).toEqual("RISE");
       expect(token!.tokenName).toEqual("RISE");
+      connection.disconnect();
     });
 
     it("produces empty result for non-existing token", async () => {
       const connection = new RiseConnection(base, riseTestnet);
       const token = await connection.getToken("ETH" as TokenTicker);
       expect(token).toBeUndefined();
+      connection.disconnect();
     });
   });
 
@@ -142,6 +144,7 @@ describe("RiseConnection", () => {
       expect(tokens.length).toEqual(1);
       expect(tokens[0].tokenTicker).toEqual("RISE");
       expect(tokens[0].tokenName).toEqual("RISE");
+      connection.disconnect();
     });
   });
 

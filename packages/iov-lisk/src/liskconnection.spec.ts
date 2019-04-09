@@ -133,12 +133,14 @@ describe("LiskConnection", () => {
       expect(token).toBeDefined();
       expect(token!.tokenTicker).toEqual("LSK");
       expect(token!.tokenName).toEqual("Lisk");
+      connection.disconnect();
     });
 
     it("produces empty result for non-existing tokens", async () => {
       const connection = new LiskConnection(dummynetBase, dummynetChainId);
       const token = await connection.getToken("ETH" as TokenTicker);
       expect(token).toBeUndefined();
+      connection.disconnect();
     });
   });
 
@@ -149,6 +151,7 @@ describe("LiskConnection", () => {
       expect(tokens.length).toEqual(1);
       expect(tokens[0].tokenTicker).toEqual("LSK");
       expect(tokens[0].tokenName).toEqual("Lisk");
+      connection.disconnect();
     });
   });
 
