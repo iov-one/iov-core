@@ -2,6 +2,8 @@
 
 ## 0.14.0
 
+- @iov/bcp: Add `AtomicSwapHelpers.createId`.
+
 Breaking changes
 
 - @iov/bcp: Change type of `SwapData.timeout` and `SwapOfferTransaction.timeout`

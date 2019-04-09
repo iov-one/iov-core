@@ -1864,7 +1864,7 @@ describe("EthereumConnection", () => {
       const faucetAddress = ethereumCodec.identityToAddress(faucet);
       const recipientAddress = await randomAddress();
 
-      const swapId = (await Random.getBytes(32)) as SwapIdBytes;
+      const swapId = await AtomicSwapHelpers.createId();
       const swapOfferPreimage = await AtomicSwapHelpers.createPreimage();
       const swapOfferHash = AtomicSwapHelpers.hashPreimage(swapOfferPreimage);
 
