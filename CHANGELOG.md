@@ -3,6 +3,7 @@
 ## 0.14.0
 
 - @iov/bcp: Add `AtomicSwapHelpers.createId`.
+- @iov/bns: Cache token data from chain
 
 Breaking changes
 

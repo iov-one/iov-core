@@ -124,6 +124,8 @@ export class BnsConnection implements AtomicSwapConnection {
   private readonly codec: TxReadCodec;
   private readonly chainData: ChainData;
   private readonly context: Context;
+  // tslint:disable-next-line: readonly-keyword
+  private tokensCache: ReadonlyArray<Token> | undefined;
 
   /**
    * Private constructor to hide package private types from the public interface
@@ -244,12 +246,16 @@ export class BnsConnection implements AtomicSwapConnection {
   }
 
   public async getAllTokens(): Promise<ReadonlyArray<Token>> {
-    const res = await this.query("/tokens?prefix", Uint8Array.from([]));
-    const parser = createParser(codecImpl.currency.TokenInfo, "tokeninfo:");
-    const data = res.results.map(parser).map(decodeToken);
-    // Sort by ticker
-    data.sort((a, b) => a.tokenTicker.localeCompare(b.tokenTicker));
-    return data;
+    if (!this.tokensCache) {
+      const res = await this.query("/tokens?prefix", Uint8Array.from([]));
+      const parser = createParser(codecImpl.currency.TokenInfo, "tokeninfo:");
+      const data = res.results.map(parser).map(decodeToken);
+      // Sort by ticker
+      data.sort((a, b) => a.tokenTicker.localeCompare(b.tokenTicker));
+      // tslint:disable-next-line: no-object-mutation
+      this.tokensCache = data;
+    }
+    return this.tokensCache;
   }
 
   public async getAccount(query: AccountQuery): Promise<Account | undefined> {
