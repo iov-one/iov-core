@@ -68,7 +68,7 @@ export class Serialization {
       if (!unsigned.fee.gasLimit) {
         throw new Error("fee.gasLimit must be set");
       }
-      const gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit.quantity);
+      const gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit);
 
       if (!isValidAddress(unsigned.recipient)) {
         throw new Error("Invalid recipient address");
@@ -121,7 +121,7 @@ export class Serialization {
       if (!unsigned.fee.gasLimit) {
         throw new Error("fee.gasLimit must be set");
       }
-      const gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit.quantity);
+      const gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit);
 
       if (!unsigned.swapId) {
         throw new Error("No swap ID provided");
@@ -184,7 +184,7 @@ export class Serialization {
       if (!unsigned.fee.gasLimit) {
         throw new Error("fee.gasLimit must be set");
       }
-      const gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit.quantity);
+      const gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit);
 
       if (!isValidAddress(unsigned.recipient)) {
         throw new Error("Invalid recipient address");
@@ -249,7 +249,7 @@ export class Serialization {
       if (!unsigned.fee.gasLimit) {
         throw new Error("fee.gasLimit must be set");
       }
-      const gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit.quantity);
+      const gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit);
 
       if (!unsigned.swapId) {
         throw new Error("No swap ID provided");

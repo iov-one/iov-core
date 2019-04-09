@@ -237,11 +237,7 @@ describe("MultiChainSigner", () => {
               fractionalDigits: 18,
               tokenTicker: "ETH" as TokenTicker,
             },
-            gasLimit: {
-              quantity: "2100000",
-              fractionalDigits: 18,
-              tokenTicker: "ETH" as TokenTicker,
-            },
+            gasLimit: "2100000",
           },
         };
         const postResponse = await signer.signAndPost(sendOnEthereum);

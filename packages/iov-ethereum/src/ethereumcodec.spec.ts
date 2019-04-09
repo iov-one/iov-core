@@ -53,11 +53,7 @@ describe("ethereumCodec", () => {
             },
           },
           fee: {
-            gasLimit: {
-              quantity: "141000",
-              fractionalDigits: 18,
-              tokenTicker: "ETH" as TokenTicker,
-            },
+            gasLimit: "141000",
             gasPrice: {
               quantity: "1000000000",
               fractionalDigits: 18,
@@ -135,11 +131,7 @@ describe("ethereumCodec", () => {
             },
           },
           fee: {
-            gasLimit: {
-              quantity: "141000",
-              fractionalDigits: 18,
-              tokenTicker: "ETH" as TokenTicker,
-            },
+            gasLimit: "141000",
             gasPrice: {
               quantity: "1000000000",
               fractionalDigits: 18,
@@ -211,11 +203,7 @@ describe("ethereumCodec", () => {
             },
           },
           fee: {
-            gasLimit: {
-              quantity: "141000",
-              fractionalDigits: 18,
-              tokenTicker: "ETH" as TokenTicker,
-            },
+            gasLimit: "141000",
             gasPrice: {
               quantity: "1000000000",
               fractionalDigits: 18,
@@ -288,11 +276,7 @@ describe("ethereumCodec", () => {
             },
           },
           fee: {
-            gasLimit: {
-              quantity: "2100000",
-              fractionalDigits: 18,
-              tokenTicker: "ETH" as TokenTicker,
-            },
+            gasLimit: "2100000",
             gasPrice: {
               quantity: "20000000000",
               fractionalDigits: 18,

@@ -152,11 +152,7 @@ export class EthereumCodec implements TxCodec {
       },
     };
     const fee: Fee = {
-      gasLimit: {
-        quantity: decodeHexQuantityString(json.gas),
-        fractionalDigits: constants.primaryTokenFractionalDigits,
-        tokenTicker: constants.primaryTokenTicker,
-      },
+      gasLimit: decodeHexQuantityString(json.gas),
       gasPrice: {
         quantity: decodeHexQuantityString(json.gasPrice),
         fractionalDigits: constants.primaryTokenFractionalDigits,
