@@ -5,6 +5,7 @@ import { ReadonlyDate } from "readonly-date";
 import { Producer, Stream, Subscription } from "xstream";
 
 import {
+  AbortedSwap,
   Account,
   AccountQuery,
   Address,
@@ -16,6 +17,7 @@ import {
   BlockHeader,
   BlockInfo,
   ChainId,
+  ClaimedSwap,
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
@@ -24,8 +26,10 @@ import {
   isAtomicSwapRecipientQuery,
   isPubkeyQuery,
   Nonce,
+  OpenSwap,
   PostableBytes,
   PostTxResponse,
+  Preimage,
   PubkeyQuery,
   SwapIdBytes,
   SwapProcessState,
@@ -779,36 +783,50 @@ export class EthereumConnection implements AtomicSwapConnection {
       const timeoutEnd = timeoutBegin + 32;
       const amountBegin = timeoutEnd;
       const amountEnd = amountBegin + 32;
+      const preimageBegin = amountEnd;
+      const preimageEnd = preimageBegin + 32;
+      const stateBegin = preimageEnd;
+      const stateEnd = stateBegin + 32;
 
       const resultArray = Encoding.fromHex(normalizeHex(swapsResponse.result));
-      const sender = toChecksummedAddress(Abi.decodeAddress(resultArray.slice(senderBegin, senderEnd)));
-      const recipient = toChecksummedAddress(
-        Abi.decodeAddress(resultArray.slice(recipientBegin, recipientEnd)),
-      );
-      const hash = resultArray.slice(hashBegin, hashEnd) as Hash;
-      const timeoutHeight = new BN(resultArray.slice(timeoutBegin, timeoutEnd)).toNumber();
-      const amount = {
-        quantity: new BN(resultArray.slice(amountBegin, amountEnd)).toString(),
-        fractionalDigits: constants.primaryTokenFractionalDigits,
-        tokenTicker: constants.primaryTokenTicker,
+      const swapData = {
+        id: query.swapid,
+        sender: toChecksummedAddress(Abi.decodeAddress(resultArray.slice(senderBegin, senderEnd))),
+        recipient: toChecksummedAddress(Abi.decodeAddress(resultArray.slice(recipientBegin, recipientEnd))),
+        hash: resultArray.slice(hashBegin, hashEnd) as Hash,
+        amounts: [
+          {
+            quantity: new BN(resultArray.slice(amountBegin, amountEnd)).toString(),
+            fractionalDigits: constants.primaryTokenFractionalDigits,
+            tokenTicker: constants.primaryTokenTicker,
+          },
+        ] as ReadonlyArray<Amount>,
+        timeout: {
+          height: new BN(resultArray.slice(timeoutBegin, timeoutEnd)).toNumber(),
+        },
       };
 
-      return [
-        {
-          // TODO: Update when we return state from the get() call
-          kind: SwapProcessState.Open,
-          data: {
-            id: query.swapid,
-            sender: sender,
-            recipient: recipient,
-            hash: hash,
-            amounts: [amount] as ReadonlyArray<Amount>,
-            timeout: {
-              height: timeoutHeight,
-            },
-          },
-        },
-      ];
+      const kind = Abi.decodeSwapProcessState(resultArray.slice(stateBegin, stateEnd));
+      let swap: AtomicSwap;
+      if (kind === SwapProcessState.Open) {
+        swap = ({
+          kind: kind,
+          data: swapData,
+        } as any) as OpenSwap;
+      } else if (kind === SwapProcessState.Claimed) {
+        swap = ({
+          kind: kind,
+          data: swapData,
+          preimage: resultArray.slice(preimageBegin, preimageEnd) as Preimage,
+        } as any) as ClaimedSwap;
+      } else {
+        swap = ({
+          kind: kind,
+          data: swapData,
+        } as any) as AbortedSwap;
+      }
+
+      return [swap];
     } else if (isAtomicSwapRecipientQuery(query)) {
       const params = [
         {
