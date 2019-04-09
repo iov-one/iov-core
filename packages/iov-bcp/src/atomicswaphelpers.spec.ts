@@ -12,6 +12,12 @@ describe("AtomicSwapHelpers", () => {
       expect(preimage.length).toEqual(32);
       expect(new Set(preimage).size).toBeGreaterThanOrEqual(25);
     });
+
+    it("created different results", async () => {
+      const value1 = await AtomicSwapHelpers.createPreimage();
+      const value2 = await AtomicSwapHelpers.createPreimage();
+      expect(value1).not.toEqual(value2);
+    });
   });
 
   describe("createPreimage", () => {
@@ -28,6 +34,12 @@ describe("AtomicSwapHelpers", () => {
       const id = await AtomicSwapHelpers.createId();
       expect(id.length).toEqual(32);
       expect(new Set(id).size).toBeGreaterThanOrEqual(25);
+    });
+
+    it("created different results", async () => {
+      const value1 = await AtomicSwapHelpers.createId();
+      const value2 = await AtomicSwapHelpers.createId();
+      expect(value1).not.toEqual(value2);
     });
   });
 });
