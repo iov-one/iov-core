@@ -22,8 +22,10 @@ import {
   FailedTransaction,
   Fee,
   Hash,
+  isAtomicSwapHashlockQuery,
   isAtomicSwapIdQuery,
   isAtomicSwapRecipientQuery,
+  isAtomicSwapSenderQuery,
   isPubkeyQuery,
   Nonce,
   OpenSwap,
@@ -31,6 +33,7 @@ import {
   PostTxResponse,
   Preimage,
   PubkeyQuery,
+  SwapData,
   SwapIdBytes,
   SwapProcessState,
   Token,
@@ -39,15 +42,13 @@ import {
   TransactionQuery,
   TransactionState,
   UnsignedTransaction,
-  isAtomicSwapSenderQuery,
-  isAtomicSwapHashlockQuery,
 } from "@iov/bcp";
 import { Encoding, Uint53 } from "@iov/encoding";
-import { isJsonRpcErrorResponse, JsonRpcRequest, JsonRpcSuccessResponse } from "@iov/jsonrpc";
+import { isJsonRpcErrorResponse, JsonRpcRequest } from "@iov/jsonrpc";
 import { StreamingSocket } from "@iov/socket";
 import { concat, DefaultValueProducer, dropDuplicates, ValueAndUpdates } from "@iov/stream";
 
-import { Abi } from "./abi";
+import { Abi, SwapContractEvent } from "./abi";
 import { pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { Erc20Options } from "./erc20";
@@ -796,7 +797,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       const stateEnd = stateBegin + 32;
 
       const resultArray = Encoding.fromHex(normalizeHex(swapsResponse.result));
-      const swapData = {
+      const swapData: SwapData = {
         id: query.swapid,
         sender: toChecksummedAddress(Abi.decodeAddress(resultArray.slice(senderBegin, senderEnd))),
         recipient: toChecksummedAddress(Abi.decodeAddress(resultArray.slice(recipientBegin, recipientEnd))),
@@ -862,54 +863,88 @@ export class EthereumConnection implements AtomicSwapConnection {
 
       const swapIdBegin = 0;
       const swapIdEnd = swapIdBegin + 32;
-      const senderBegin = swapIdEnd;
-      const senderEnd = senderBegin + 32;
-      const recipientBegin = senderEnd;
-      const recipientEnd = recipientBegin + 32;
-      const hashBegin = recipientEnd;
-      const hashEnd = hashBegin + 32;
-      const amountBegin = hashEnd;
-      const amountEnd = amountBegin + 32;
-      const timeoutBegin = amountEnd;
-      const timeoutEnd = timeoutBegin + 32;
+      const openedSenderBegin = swapIdEnd;
+      const openedSenderEnd = openedSenderBegin + 32;
+      const openedRecipientBegin = openedSenderEnd;
+      const openedRecipientEnd = openedRecipientBegin + 32;
+      const openedHashBegin = openedRecipientEnd;
+      const openedHashEnd = openedHashBegin + 32;
+      const openedAmountBegin = openedHashEnd;
+      const openedAmountEnd = openedAmountBegin + 32;
+      const openedTimeoutBegin = openedAmountEnd;
+      const openedTimeoutEnd = openedTimeoutBegin + 32;
+      const claimedPreimageBegin = swapIdEnd;
+      const claimedPreimageEnd = claimedPreimageBegin + 32;
 
       return swapsResponse.result
-        .map(
-          (log: EthereumLog): AtomicSwap => {
-            const dataArray = Encoding.fromHex(normalizeHex(log.data));
-            return {
-              kind: SwapProcessState.Open,
-              data: {
-                id: dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes,
-                sender: toChecksummedAddress(Abi.decodeAddress(dataArray.slice(senderBegin, senderEnd))),
-                recipient: toChecksummedAddress(
-                  Abi.decodeAddress(dataArray.slice(recipientBegin, recipientEnd)),
-                ),
-                hash: dataArray.slice(hashBegin, hashEnd) as Hash,
-                amounts: [
-                  {
-                    quantity: new BN(dataArray.slice(amountBegin, amountEnd)).toString(),
-                    fractionalDigits: constants.primaryTokenFractionalDigits,
-                    tokenTicker: constants.primaryTokenTicker,
+        .reduce((accumulator: ReadonlyArray<AtomicSwap>, log: EthereumLog): ReadonlyArray<AtomicSwap> => {
+          const dataArray = Encoding.fromHex(normalizeHex(log.data));
+          const kind = Abi.decodeEventSignature(Encoding.fromHex(normalizeHex(log.topics[0])));
+          switch (kind) {
+            case SwapContractEvent.Opened:
+              return [
+                ...accumulator,
+                {
+                  kind: SwapProcessState.Open,
+                  data: {
+                    id: dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes,
+                    sender: toChecksummedAddress(
+                      Abi.decodeAddress(dataArray.slice(openedSenderBegin, openedSenderEnd)),
+                    ),
+                    recipient: toChecksummedAddress(
+                      Abi.decodeAddress(dataArray.slice(openedRecipientBegin, openedRecipientEnd)),
+                    ),
+                    hash: dataArray.slice(openedHashBegin, openedHashEnd) as Hash,
+                    amounts: [
+                      {
+                        quantity: new BN(dataArray.slice(openedAmountBegin, openedAmountEnd)).toString(),
+                        fractionalDigits: constants.primaryTokenFractionalDigits,
+                        tokenTicker: constants.primaryTokenTicker,
+                      },
+                    ],
+                    timeout: {
+                      height: new BN(dataArray.slice(openedTimeoutBegin, openedTimeoutEnd)).toNumber(),
+                    },
                   },
-                ],
-                timeout: {
-                  height: new BN(dataArray.slice(timeoutBegin, timeoutEnd)).toNumber(),
                 },
-              },
-            };
+              ];
+            case SwapContractEvent.Claimed:
+              const swapId = dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes;
+              const swapIndex = accumulator.findIndex(
+                s => Encoding.toHex(s.data.id) === Encoding.toHex(swapId),
+              );
+              if (swapIndex === -1) {
+                throw new Error("Found Claimed event for non-existent swap");
+              }
+              const oldSwap = accumulator[swapIndex];
+              const newSwap: ClaimedSwap = {
+                kind: SwapProcessState.Claimed,
+                data: {
+                  ...oldSwap.data,
+                },
+                preimage: dataArray.slice(claimedPreimageBegin, claimedPreimageEnd) as Preimage,
+              };
+              return [...accumulator.slice(0, swapIndex), ...accumulator.slice(swapIndex + 1), newSwap];
+            default:
+              throw new Error("SwapContractEvent type not handled");
+          }
+        }, [])
+        .filter(
+          (swap: AtomicSwap): boolean => {
+            if (isAtomicSwapRecipientQuery(query)) {
+              return swap.data.recipient === query.recipient;
+            } else if (isAtomicSwapSenderQuery(query)) {
+              return swap.data.sender === query.sender;
+            } else if (isAtomicSwapHashlockQuery(query)) {
+              return Encoding.toHex(swap.data.hash) === Encoding.toHex(query.hashlock);
+            }
+            throw new Error("unsupported query type");
           },
         )
-        .filter((swap: AtomicSwap) => {
-          if (isAtomicSwapRecipientQuery(query)) {
-            return swap.data.recipient === query.recipient;
-          } else if (isAtomicSwapSenderQuery(query)) {
-            return swap.data.sender === query.sender;
-          } else if (isAtomicSwapHashlockQuery(query)) {
-            return Encoding.toHex(swap.data.hash) === Encoding.toHex(query.hashlock);
-          }
-          throw new Error("unsupported query type");
-        });
+        .sort(
+          (a: AtomicSwap, b: AtomicSwap): number =>
+            a.kind !== SwapProcessState.Open && b.kind === SwapProcessState.Open ? 1 : -1,
+        );
     } else {
       throw new Error("unsupported query type");
     }
