@@ -51,7 +51,7 @@ export class Abi {
       throw new Error("Input data not 256 bit long");
     }
     const lowBytes = binary.slice(12);
-    return toEthereumHex(Encoding.toHex(lowBytes)) as Address;
+    return toEthereumHex(lowBytes) as Address;
   }
 
   public static decodeUint256(binary: Uint8Array): string {

@@ -37,7 +37,7 @@ function makeClient(baseUrl: string): EthereumRpcClient {
       const response = await new HttpJsonRpcClient(baseUrl).run({
         jsonrpc: "2.0",
         method: "eth_call",
-        params: [{ to: contractAddress, data: toEthereumHex(Encoding.toHex(data)) }, "latest"],
+        params: [{ to: contractAddress, data: toEthereumHex(data) }, "latest"],
         id: 42,
       });
       if (isJsonRpcErrorResponse(response)) {

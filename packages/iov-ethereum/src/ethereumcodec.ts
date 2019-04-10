@@ -44,7 +44,7 @@ import {
 
 const methodCallPrefix = {
   erc20: {
-    transfer: toEthereumHex(Encoding.toHex(Abi.calculateMethodId("transfer(address,uint256)"))),
+    transfer: toEthereumHex(Abi.calculateMethodId("transfer(address,uint256)")),
   },
 };
 

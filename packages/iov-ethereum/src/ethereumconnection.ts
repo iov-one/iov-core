@@ -136,7 +136,7 @@ export class EthereumConnection implements AtomicSwapConnection {
         const response = await this.rpcClient.run({
           jsonrpc: "2.0",
           method: "eth_call",
-          params: [{ to: contractAddress, data: toEthereumHex(Encoding.toHex(data)) }, "latest"],
+          params: [{ to: contractAddress, data: toEthereumHex(data) }, "latest"],
           id: 42,
         });
         if (isJsonRpcErrorResponse(response)) {
@@ -201,7 +201,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     const response = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_sendRawTransaction",
-      params: [toEthereumHex(Encoding.toHex(bytes))],
+      params: [toEthereumHex(bytes)],
       id: 5,
     });
     if (isJsonRpcErrorResponse(response)) {
@@ -765,7 +765,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       const params = [
         {
           to: constants.atomicSwapEtherContractAddress,
-          data: toEthereumHex(Encoding.toHex(data)),
+          data: toEthereumHex(data),
         },
       ] as ReadonlyArray<any>;
       const swapsResponse = await this.rpcClient.run({
@@ -1133,9 +1133,9 @@ export class EthereumConnection implements AtomicSwapConnection {
           toBlock: encodeQuantity(maxHeight),
           address: contractAddresses,
           topics: [
-            toEthereumHex(Encoding.toHex(Abi.calculateMethodHash("Transfer(address,address,uint256)"))),
-            sender ? toEthereumHex(Encoding.toHex(Abi.encodeAddress(sender))) : null,
-            recipient ? toEthereumHex(Encoding.toHex(Abi.encodeAddress(recipient))) : null,
+            toEthereumHex(Abi.calculateMethodHash("Transfer(address,address,uint256)")),
+            sender ? toEthereumHex(Abi.encodeAddress(sender)) : null,
+            recipient ? toEthereumHex(Abi.encodeAddress(recipient)) : null,
           ],
         },
       ],
