@@ -5,6 +5,7 @@ import { Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
 import { isValidAddress } from "./address";
+import { toEthereumHex } from "./utils";
 
 export interface HeadTail {
   /** An array of start positions within the original data */
@@ -50,7 +51,7 @@ export class Abi {
       throw new Error("Input data not 256 bit long");
     }
     const lowBytes = binary.slice(12);
-    return `0x${Encoding.toHex(lowBytes)}` as Address;
+    return toEthereumHex(Encoding.toHex(lowBytes)) as Address;
   }
 
   public static decodeUint256(binary: Uint8Array): string {

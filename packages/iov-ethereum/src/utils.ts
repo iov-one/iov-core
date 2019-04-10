@@ -30,7 +30,7 @@ export function decodeHexQuantityNonce(hexString: string): Nonce {
 export function encodeQuantity(value: number): string {
   try {
     const checkedValue = new Uint53(value);
-    return "0x" + new BN(checkedValue.toNumber()).toString(16);
+    return toEthereumHex(new BN(checkedValue.toNumber()).toString(16));
   } catch {
     throw new Error("Input is not a unsigned safe integer");
   }
@@ -40,7 +40,7 @@ export function encodeQuantityString(value: string): string {
   if (!value.match(/^[0-9]+$/)) {
     throw new Error("Input is not a valid string number");
   }
-  return "0x" + new BN(value).toString(16);
+  return toEthereumHex(new BN(value).toString(16));
 }
 
 /**

@@ -39,11 +39,12 @@ import {
   encodeQuantity,
   fromBcpChainId,
   normalizeHex,
+  toEthereumHex,
 } from "./utils";
 
 const methodCallPrefix = {
   erc20: {
-    transfer: `0x${Encoding.toHex(Abi.calculateMethodId("transfer(address,uint256)"))}`,
+    transfer: toEthereumHex(Encoding.toHex(Abi.calculateMethodId("transfer(address,uint256)"))),
   },
 };
 
