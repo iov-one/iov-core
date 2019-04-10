@@ -1,7 +1,7 @@
-import { Address } from "@iov/bcp";
+import { Address, SwapProcessState } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
-import { Abi } from "./abi";
+import { Abi, SwapContractEvent } from "./abi";
 
 const { fromHex } = Encoding;
 
@@ -303,6 +303,62 @@ describe("Abi", () => {
       );
       const result = Abi.decodeVariableLength(data);
       expect(result).toEqual(fromHex(""));
+    });
+  });
+
+  describe("decodeSwapProcessState", () => {
+    it("works for Open", () => {
+      const data = fromHex("0000000000000000000000000000000000000000000000000000000000000001");
+      const result = Abi.decodeSwapProcessState(data);
+      expect(result).toEqual(SwapProcessState.Open);
+    });
+
+    it("works for Claimed", () => {
+      const data = fromHex("0000000000000000000000000000000000000000000000000000000000000002");
+      const result = Abi.decodeSwapProcessState(data);
+      expect(result).toEqual(SwapProcessState.Claimed);
+    });
+
+    it("works for Aborted", () => {
+      const data = fromHex("0000000000000000000000000000000000000000000000000000000000000003");
+      const result = Abi.decodeSwapProcessState(data);
+      expect(result).toEqual(SwapProcessState.Aborted);
+    });
+
+    it("throws for anything else", () => {
+      const data1 = fromHex("0000000000000000000000000000000000000000000000000000000000000000");
+      expect(() => Abi.decodeSwapProcessState(data1)).toThrowError(/invalid swap process state/i);
+      const data2 = fromHex("0000000000000000000000000000000000000000000000000000000000000004");
+      expect(() => Abi.decodeSwapProcessState(data2)).toThrowError(/invalid swap process state/i);
+    });
+  });
+
+  describe("decodeEventSignature", () => {
+    it("works for Opened", () => {
+      // Abi.calculateMethodHash("Opened(bytes32,address,address,bytes32,uint256,uint256)");
+      const data = fromHex("22f9086560da4f3a67d5fcc1a440655671d27a7e0884f260be3ce12ead52e156");
+      const result = Abi.decodeEventSignature(data);
+      expect(result).toEqual(SwapContractEvent.Opened);
+    });
+
+    it("works for Claimed", () => {
+      // Abi.calculateMethodHash("Claimed(bytes32,bytes32)");
+      const data = fromHex("38d6042dbdae8e73a7f6afbabd3fbe0873f9f5ed3cd71294591c3908c2e65fee");
+      const result = Abi.decodeEventSignature(data);
+      expect(result).toEqual(SwapContractEvent.Claimed);
+    });
+
+    it("works for Aborted", () => {
+      // Abi.calculateMethodHash("Aborted(bytes32)");
+      const data = fromHex("f7fe6a2a9810864c5fce35c9d3c75940da5f9612d43350b505aa0aa4c6494d99");
+      const result = Abi.decodeEventSignature(data);
+      expect(result).toEqual(SwapContractEvent.Aborted);
+    });
+
+    it("throws for anything else", () => {
+      // Same as Aborted with final byte edited
+      const data = fromHex("f7fe6a2a9810864c5fce35c9d3c75940da5f9612d43350b505aa0aa4c6494d9a");
+      expect(() => Abi.decodeEventSignature(data)).toThrowError(/invalid event signature/i);
     });
   });
 });
