@@ -56,6 +56,15 @@ export function normalizeHex(input: string): string {
   }
 }
 
+/**
+ * Takes a hex representation optionally prefixed with 0x and returns an Ethereum-friendly
+ * representation with a prefix.
+ */
+export function toEthereumHex(input: string): string {
+  const match = input.match(/^(?:0x)?(.*)$/);
+  return `0x${match![1]}`;
+}
+
 export function toBcpChainId(numericChainId: number): ChainId {
   const parsed = new Uint53(numericChainId);
   return `${bcpChainIdPrefix}${parsed.toString()}` as ChainId;

@@ -9,6 +9,7 @@ import {
   fromBcpChainId,
   normalizeHex,
   toBcpChainId,
+  toEthereumHex,
 } from "./utils";
 
 describe("Ethereum utils", () => {
@@ -155,6 +156,22 @@ describe("Ethereum utils", () => {
       expect(normalizeHex("Ab")).toEqual("ab");
       expect(normalizeHex("aB")).toEqual("ab");
       expect(normalizeHex("ab")).toEqual("ab");
+    });
+  });
+
+  describe("toEthereumHex", () => {
+    it("adds prefixes", () => {
+      expect(toEthereumHex("")).toEqual("0x");
+      expect(toEthereumHex("0")).toEqual("0x0");
+      expect(toEthereumHex("01")).toEqual("0x01");
+      expect(toEthereumHex("52abc")).toEqual("0x52abc");
+    });
+
+    it("ignores prefixes", () => {
+      expect(toEthereumHex("0x")).toEqual("0x");
+      expect(toEthereumHex("0x0")).toEqual("0x0");
+      expect(toEthereumHex("0x01")).toEqual("0x01");
+      expect(toEthereumHex("0x52abc")).toEqual("0x52abc");
     });
   });
 
