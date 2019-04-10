@@ -17,7 +17,7 @@ export type SameTypeStreamOperator<T> = (ins: Stream<T>) => Stream<T>;
  * -1-----2-4-3------
  * ```
  *
- * Each value must be uniquely identiified by a string given by
+ * Each value must be uniquely identified by a string given by
  * valueToKey(value).
  *
  * Internally this maintains a set of keys that have been processed already,
