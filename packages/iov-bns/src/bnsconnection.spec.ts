@@ -1763,7 +1763,7 @@ describe("BnsConnection", () => {
     expect(claim1.data.id).toEqual(id1);
 
     // We have no guarantees which events are fired exactly,
-    // as it is a race condition if we get Open, Claimed or Claimed
+    // as it is a race condition if we get Open, Claimed or Aborted
     // directly. So let's just check the last information per ID.
     const latestEventPerId = new Map<string, AtomicSwap>();
     for (const event of liveView.value()) {
