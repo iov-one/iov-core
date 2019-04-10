@@ -3,7 +3,15 @@
 ## 0.14.0
 
 - @iov/bcp: Add `AtomicSwapHelpers.createId`.
-- @iov/bns: Cache token data from chain
+- @iov/bns: Cache token data from chain.
+- @iov/ethereum: Export `SwapContractEvent` enum and related helpers.
+- @iov/ethereum: Export `EthereumLog` interface.
+- @iov/ethereum: Add `decodeSwapProcessState` and `decodeEventSignature` ABI
+  methods.
+- @iov/ethereum: Add `atomicSwapEtherContractAddress` property to
+  `EthereumConnectionOptions`.
+- @iov/ethereum: Add optional `minHeight` and `maxHeight` parameters to
+  `EthereumConnection.getSwaps`.
 - @iov/stream: Create stream operator `dropDuplicates`.
 
 Breaking changes
