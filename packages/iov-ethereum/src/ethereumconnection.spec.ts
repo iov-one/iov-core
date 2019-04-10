@@ -10,6 +10,7 @@ import {
   BlockInfoSucceeded,
   ChainId,
   ConfirmedTransaction,
+  Hash,
   isBlockInfoPending,
   isBlockInfoSucceeded,
   isConfirmedTransaction,
@@ -17,9 +18,11 @@ import {
   isSwapOfferTransaction,
   Nonce,
   PostTxResponse,
+  Preimage,
   PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
+  SwapClaimTransaction,
   SwapIdBytes,
   SwapOfferTransaction,
   SwapProcessState,
@@ -36,7 +39,6 @@ import { HdPaths, Secp256k1HdWallet, UserProfile, WalletId } from "@iov/keycontr
 import { toListPromise } from "@iov/stream";
 
 import { pubkeyToAddress } from "./address";
-import { constants } from "./constants";
 import { ethereumCodec, EthereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
 import { testConfig } from "./testconfig.spec";
@@ -1966,6 +1968,136 @@ describe("EthereumConnection", () => {
       expect(hashSwap[0]).toEqual(swap);
 
       connection.disconnect();
+    }, 30_000);
+
+    const openSwap = async (
+      connection: EthereumConnection,
+      profile: UserProfile,
+      creator: PublicIdentity,
+      rcptAddr: Address,
+      hash: Hash,
+      swapId: SwapIdBytes,
+    ): Promise<PostTxResponse> => {
+      // construct a swapOfferTx, sign and post to the chain
+      const swapOfferTimeout: SwapTimeout = {
+        height: (await connection.height()) + 1000,
+      };
+      const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction>({
+        kind: "bcp/swap_offer",
+        swapId: swapId,
+        creator: creator,
+        recipient: rcptAddr,
+        amounts: [
+          {
+            quantity: "21000000000",
+            fractionalDigits: 18,
+            tokenTicker: ETH,
+          },
+        ],
+        timeout: swapOfferTimeout,
+        hash: hash,
+      });
+      const nonce = await connection.getNonce({ pubkey: creator.pubkey });
+      const signed = await profile.signTransaction(swapOfferTx, ethereumCodec, nonce);
+      const txBytes = ethereumCodec.bytesToPost(signed);
+      return connection.postTx(txBytes);
+    };
+
+    const claimSwap = async (
+      connection: EthereumConnection,
+      profile: UserProfile,
+      creator: PublicIdentity,
+      swapId: SwapIdBytes,
+      preimage: Preimage,
+    ): Promise<PostTxResponse> => {
+      // construct a swapOfferTx, sign and post to the chain
+      const swapClaimTx = await connection.withDefaultFee<SwapClaimTransaction>({
+        kind: "bcp/swap_claim",
+        creator: creator,
+        swapId: swapId,
+        preimage: preimage,
+      });
+      const nonce = await connection.getNonce({ pubkey: creator.pubkey });
+      const signed = await profile.signTransaction(swapClaimTx, ethereumCodec, nonce);
+      const txBytes = ethereumCodec.bytesToPost(signed);
+      return connection.postTx(txBytes);
+    };
+
+    it("can start and watch an atomic swap lifecycle", async () => {
+      pendingWithoutEthereum();
+
+      const connection = await EthereumConnection.establish(testConfig.base, {});
+      const chainId = connection.chainId();
+
+      const { profile, faucet } = await userProfileWithFaucet(chainId);
+      const faucetAddress = ethereumCodec.identityToAddress(faucet);
+      const recipientAddress = await randomAddress();
+
+      // create the preimages for the three swaps
+      const swapId1 = await AtomicSwapHelpers.createId();
+      const preimage1 = await AtomicSwapHelpers.createPreimage();
+      const hash1 = AtomicSwapHelpers.hashPreimage(preimage1);
+      const swapId2 = await AtomicSwapHelpers.createId();
+      const preimage2 = await AtomicSwapHelpers.createPreimage();
+      const hash2 = AtomicSwapHelpers.hashPreimage(preimage2);
+      const swapId3 = await AtomicSwapHelpers.createId();
+      const preimage3 = await AtomicSwapHelpers.createPreimage();
+      const hash3 = AtomicSwapHelpers.hashPreimage(preimage3);
+
+      // nothing to start with
+      const rcptQuery = { recipient: recipientAddress };
+      const initSwaps = await connection.getSwaps(rcptQuery);
+      expect(initSwaps.length).toEqual(0);
+
+      // make two offers
+      const post1 = await openSwap(connection, profile, faucet, recipientAddress, hash1, swapId1);
+      const blockInfo1 = await post1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      if (!isBlockInfoSucceeded(blockInfo1)) {
+        throw new Error(`Expected transaction state success but got state: ${blockInfo1.state}`);
+      }
+
+      const post2 = await openSwap(connection, profile, faucet, recipientAddress, hash2, swapId2);
+      const blockInfo2 = await post2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      if (!isBlockInfoSucceeded(blockInfo2)) {
+        throw new Error(`Expected transaction state success but got state: ${blockInfo2.state}`);
+      }
+
+      // find two open
+      const midSwaps = await connection.getSwaps(rcptQuery);
+      expect(midSwaps.length).toEqual(2);
+      const [open1, open2] = midSwaps;
+      expect(open1.kind).toEqual(SwapProcessState.Open);
+      expect(open1.data.id).toEqual(swapId1);
+      expect(open2.kind).toEqual(SwapProcessState.Open);
+      expect(open2.data.id).toEqual(swapId2);
+
+      // then claim, offer, claim - 2 closed, 1 open
+      {
+        const post = await claimSwap(connection, profile, faucet, swapId2, preimage2);
+        await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      }
+
+      const post3 = await openSwap(connection, profile, faucet, recipientAddress, hash3, swapId3);
+      const blockInfo3 = await post3.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      if (!isBlockInfoSucceeded(blockInfo3)) {
+        throw new Error(`Expected transaction state success but got state: ${blockInfo3.state}`);
+      }
+
+      {
+        const post = await claimSwap(connection, profile, faucet, swapId1, preimage1);
+        await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      }
+
+      // make sure we find two claims, one open
+      const finalSwaps = await connection.getSwaps({ recipient: recipientAddress });
+      expect(finalSwaps.length).toEqual(3);
+      const [open3, claim2, claim1] = finalSwaps;
+      expect(open3.kind).toEqual(SwapProcessState.Open);
+      expect(open3.data.id).toEqual(swapId3);
+      expect(claim2.kind).toEqual(SwapProcessState.Claimed);
+      expect(claim2.data.id).toEqual(swapId2);
+      expect(claim1.kind).toEqual(SwapProcessState.Claimed);
+      expect(claim1.data.id).toEqual(swapId1);
     }, 30_000);
   });
 });
