@@ -155,7 +155,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       this.socket.connect();
     }
 
-    const atomicSwapEtherContractAddress = options.atomicSwapEtherContractAddress || ("0x0" as Address);
+    const atomicSwapEtherContractAddress = options.atomicSwapEtherContractAddress;
     const erc20Tokens = options.erc20Tokens || new Map();
 
     this.atomicSwapEtherContractAddress = atomicSwapEtherContractAddress;

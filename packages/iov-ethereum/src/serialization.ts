@@ -57,7 +57,7 @@ export class Serialization {
     unsigned: UnsignedTransaction,
     nonce: Nonce,
     erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options> = new Map(),
-    atomicSwapEtherContractAddress: Address = "0x0" as Address,
+    atomicSwapEtherContractAddress?: Address,
   ): Uint8Array {
     if (isSendTransaction(unsigned)) {
       const chainIdHex = encodeQuantity(fromBcpChainId(unsigned.creator.chainId));
@@ -147,6 +147,10 @@ export class Serialization {
         throw new Error("Only ETH atomic swap offers are currently supported");
       }
 
+      if (!atomicSwapEtherContractAddress) {
+        throw new Error("Atomic swap offer transactions require a contract address");
+      }
+
       const atomicSwapOpenCall = new Uint8Array([
         ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)"),
         ...unsigned.swapId,
@@ -175,6 +179,10 @@ export class Serialization {
       }
       const gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit);
 
+      if (!atomicSwapEtherContractAddress) {
+        throw new Error("Atomic swap claim transactions require a contract address");
+      }
+
       const atomicSwapClaimCall = new Uint8Array([
         ...Abi.calculateMethodId("claim(bytes32,bytes32)"),
         ...unsigned.swapId,
@@ -198,7 +206,7 @@ export class Serialization {
   public static serializeSignedTransaction(
     signed: SignedTransaction,
     erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options> = new Map(),
-    atomicSwapEtherContractAddress: Address = "0x0" as Address,
+    atomicSwapEtherContractAddress?: Address,
   ): Uint8Array {
     const unsigned = signed.transaction;
 
@@ -301,6 +309,10 @@ export class Serialization {
         throw new Error("Only ETH atomic swap offers are currently supported");
       }
 
+      if (!atomicSwapEtherContractAddress) {
+        throw new Error("Atomic swap offer transactions require a contract address");
+      }
+
       const sig = ExtendedSecp256k1Signature.fromFixedLength(signed.primarySignature.signature);
       const r = sig.r();
       const s = sig.s();
@@ -342,6 +354,10 @@ export class Serialization {
 
       if (!unsigned.swapId) {
         throw new Error("No swap ID provided");
+      }
+
+      if (!atomicSwapEtherContractAddress) {
+        throw new Error("Atomic swap claim transactions require a contract address");
       }
 
       const sig = ExtendedSecp256k1Signature.fromFixedLength(signed.primarySignature.signature);

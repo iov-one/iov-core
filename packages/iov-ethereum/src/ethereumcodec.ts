@@ -85,11 +85,11 @@ export interface EthereumCodecOptions {
 }
 
 export class EthereumCodec implements TxCodec {
-  private readonly atomicSwapEtherContractAddress: Address;
+  private readonly atomicSwapEtherContractAddress?: Address;
   private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
 
   constructor(options: EthereumCodecOptions) {
-    this.atomicSwapEtherContractAddress = options.atomicSwapEtherContractAddress || ("0x0" as Address);
+    this.atomicSwapEtherContractAddress = options.atomicSwapEtherContractAddress;
     this.erc20Tokens = options.erc20Tokens || new Map();
   }
 
@@ -161,6 +161,7 @@ export class EthereumCodec implements TxCodec {
     };
 
     const atomicSwap =
+      this.atomicSwapEtherContractAddress &&
       toChecksummedAddress(json.to).toLowerCase() === this.atomicSwapEtherContractAddress.toLowerCase();
 
     const erc20Token =
