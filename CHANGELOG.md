@@ -4,6 +4,7 @@
 
 - @iov/bcp: Add `AtomicSwapHelpers.createId`.
 - @iov/bns: Cache token data from chain
+- @iov/stream: Create stream operator `dropDuplicates`.
 
 Breaking changes
 
