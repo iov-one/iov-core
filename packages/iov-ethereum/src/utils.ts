@@ -1,7 +1,7 @@
 import BN = require("bn.js");
 
 import { ChainId, Nonce } from "@iov/bcp";
-import { Uint53 } from "@iov/encoding";
+import { Encoding, Uint53 } from "@iov/encoding";
 
 const bcpChainIdPrefix = "ethereum-eip155-";
 
@@ -60,8 +60,9 @@ export function normalizeHex(input: string): string {
  * Takes a hex representation optionally prefixed with 0x and returns an Ethereum-friendly
  * representation with a prefix.
  */
-export function toEthereumHex(input: string): string {
-  const match = input.match(/^(?:0x)?(.*)$/);
+export function toEthereumHex(input: string | Uint8Array): string {
+  const str = typeof input === "string" ? input : Encoding.toHex(input);
+  const match = str.match(/^(?:0x)?(.*)$/);
   return `0x${match![1]}`;
 }
 

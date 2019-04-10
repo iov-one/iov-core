@@ -160,18 +160,25 @@ describe("Ethereum utils", () => {
   });
 
   describe("toEthereumHex", () => {
-    it("adds prefixes", () => {
+    it("adds prefixes for strings", () => {
       expect(toEthereumHex("")).toEqual("0x");
       expect(toEthereumHex("0")).toEqual("0x0");
       expect(toEthereumHex("01")).toEqual("0x01");
       expect(toEthereumHex("52abc")).toEqual("0x52abc");
     });
 
-    it("ignores prefixes", () => {
+    it("ignores prefixes for strings", () => {
       expect(toEthereumHex("0x")).toEqual("0x");
       expect(toEthereumHex("0x0")).toEqual("0x0");
       expect(toEthereumHex("0x01")).toEqual("0x01");
       expect(toEthereumHex("0x52abc")).toEqual("0x52abc");
+    });
+
+    it("adds prefixes for Uint8Arrays", () => {
+      expect(toEthereumHex(new Uint8Array([]))).toEqual("0x");
+      expect(toEthereumHex(new Uint8Array([0]))).toEqual("0x00");
+      expect(toEthereumHex(new Uint8Array([1]))).toEqual("0x01");
+      expect(toEthereumHex(new Uint8Array([0x5, 0x2a, 0xbc]))).toEqual("0x052abc");
     });
   });
 
