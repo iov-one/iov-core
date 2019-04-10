@@ -37,7 +37,7 @@ import {
 import { Encoding, Uint53 } from "@iov/encoding";
 import { isJsonRpcErrorResponse, JsonRpcRequest } from "@iov/jsonrpc";
 import { StreamingSocket } from "@iov/socket";
-import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
+import { concat, DefaultValueProducer, dropDuplicates, ValueAndUpdates } from "@iov/stream";
 
 import { Abi } from "./abi";
 import { pubkeyToAddress, toChecksummedAddress } from "./address";
@@ -597,13 +597,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       };
 
       const mergedStream = Stream.merge(Stream.create(fromScraperProducer), Stream.create(fromLogsProducer));
-
-      // remove duplicates
-      const alreadySent = new Set<TransactionId>();
-      const deduplicatedStream = mergedStream
-        .filter(ct => !alreadySent.has(ct.transactionId))
-        .debug(ct => alreadySent.add(ct.transactionId));
-
+      const deduplicatedStream = mergedStream.compose(dropDuplicates(ct => ct.transactionId));
       return deduplicatedStream;
     } else {
       throw new Error("Unsupported query.");
@@ -705,13 +699,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       };
 
       const mergedStream = Stream.merge(Stream.create(fromScraperProducer), Stream.create(fromLogsProducer));
-
-      // remove duplicates
-      const alreadySent = new Set<TransactionId>();
-      const deduplicatedStream = mergedStream
-        .filter(ct => !alreadySent.has(ct.transactionId))
-        .debug(ct => alreadySent.add(ct.transactionId));
-
+      const deduplicatedStream = mergedStream.compose(dropDuplicates(ct => ct.transactionId));
       return deduplicatedStream;
     } else {
       throw new Error("Unsupported query.");
