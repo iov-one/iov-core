@@ -42,7 +42,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Encoding, Uint53 } from "@iov/encoding";
-import { concat, DefaultValueProducer, fromListPromise, ValueAndUpdates } from "@iov/stream";
+import { concat, DefaultValueProducer, dropDuplicates, fromListPromise, ValueAndUpdates } from "@iov/stream";
 import { broadcastTxSyncSuccess, Client as TendermintClient } from "@iov/tendermint-rpc";
 
 import { bnsCodec } from "./bnscodec";
@@ -486,13 +486,7 @@ export class BnsConnection implements AtomicSwapConnection {
     const historyStream = fromListPromise(this.searchTx(query));
     const updatesStream = this.listenTx(query);
     const combinedStream = concat(historyStream, updatesStream);
-
-    // remove duplicates
-    const alreadySent = new Set<TransactionId>();
-    const deduplicatedStream = combinedStream
-      .filter(ct => !alreadySent.has(ct.transactionId))
-      .debug(ct => alreadySent.add(ct.transactionId));
-
+    const deduplicatedStream = combinedStream.compose(dropDuplicates(ct => ct.transactionId));
     return deduplicatedStream;
   }
 
