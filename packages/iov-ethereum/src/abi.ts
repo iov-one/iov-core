@@ -13,6 +13,12 @@ export interface HeadTail {
   readonly tail: ReadonlyArray<Uint8Array>;
 }
 
+export enum SwapContractEvent {
+  Opened,
+  Claimed,
+  Aborted,
+}
+
 export class Abi {
   public static calculateMethodHash(signature: string): Uint8Array {
     return new Keccak256(Encoding.toAscii(signature)).digest();
@@ -113,6 +119,9 @@ export class Abi {
   }
 
   public static decodeSwapProcessState(data: Uint8Array): SwapProcessState {
+    if (data.length !== 32) {
+      throw new Error("Input data not 256 bit long");
+    }
     const key = Abi.decodeUint256(data);
     const map: { readonly [key: string]: SwapProcessState } = {
       1: SwapProcessState.Open,
@@ -126,6 +135,36 @@ export class Abi {
     }
     return state;
   }
+
+  public static decodeEventSignature(data: Uint8Array): SwapContractEvent {
+    if (data.length !== 32) {
+      throw new Error("Input data not 256 bit long");
+    }
+    const key = Encoding.toHex(data);
+    const map: { readonly [key: string]: SwapContractEvent } = {
+      [Abi.eventSignatures.opened]: SwapContractEvent.Opened,
+      [Abi.eventSignatures.claimed]: SwapContractEvent.Claimed,
+      [Abi.eventSignatures.aborted]: SwapContractEvent.Aborted,
+    };
+    const event: SwapContractEvent | undefined = map[key];
+
+    if (event === undefined) {
+      throw new Error("Invalid event signature");
+    }
+    return event;
+  }
+
+  private static readonly eventSignatures: {
+    readonly opened: string;
+    readonly claimed: string;
+    readonly aborted: string;
+  } = {
+    opened: Encoding.toHex(
+      Abi.calculateMethodHash("Opened(bytes32,address,address,bytes32,uint256,uint256)"),
+    ),
+    claimed: Encoding.toHex(Abi.calculateMethodHash("Claimed(bytes32,bytes32)")),
+    aborted: Encoding.toHex(Abi.calculateMethodHash("Aborted(bytes32)")),
+  };
 
   private static padTo32(data: Uint8Array): Uint8Array {
     if (data.length > 32) {
