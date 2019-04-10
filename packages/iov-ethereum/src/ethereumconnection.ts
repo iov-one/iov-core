@@ -27,6 +27,9 @@ import {
   isAtomicSwapRecipientQuery,
   isAtomicSwapSenderQuery,
   isPubkeyQuery,
+  isSwapProcessStateAborted,
+  isSwapProcessStateClaimed,
+  isSwapProcessStateOpen,
   Nonce,
   OpenSwap,
   PostableBytes,
@@ -816,22 +819,24 @@ export class EthereumConnection implements AtomicSwapConnection {
 
       const kind = Abi.decodeSwapProcessState(resultArray.slice(stateBegin, stateEnd));
       let swap: AtomicSwap;
-      if (kind === SwapProcessState.Open) {
-        swap = ({
+      if (isSwapProcessStateOpen(kind)) {
+        swap = {
           kind: kind,
           data: swapData,
-        } as any) as OpenSwap;
-      } else if (kind === SwapProcessState.Claimed) {
-        swap = ({
+        };
+      } else if (isSwapProcessStateClaimed(kind)) {
+        swap = {
           kind: kind,
           data: swapData,
           preimage: resultArray.slice(preimageBegin, preimageEnd) as Preimage,
-        } as any) as ClaimedSwap;
-      } else {
-        swap = ({
+        };
+      } else if (isSwapProcessStateAborted(kind)) {
+        swap = {
           kind: kind,
           data: swapData,
-        } as any) as AbortedSwap;
+        };
+      } else {
+        throw new Error("unknown swap process state");
       }
 
       return [swap];
