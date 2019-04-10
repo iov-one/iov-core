@@ -57,7 +57,7 @@ export class Serialization {
     unsigned: UnsignedTransaction,
     nonce: Nonce,
     erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options> = new Map(),
-    atomicSwapEtherContractAddress: Address = constants.atomicSwapEtherContractAddress,
+    atomicSwapEtherContractAddress: Address = "0x0" as Address,
   ): Uint8Array {
     if (isSendTransaction(unsigned)) {
       const chainIdHex = encodeQuantity(fromBcpChainId(unsigned.creator.chainId));
@@ -198,7 +198,7 @@ export class Serialization {
   public static serializeSignedTransaction(
     signed: SignedTransaction,
     erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options> = new Map(),
-    atomicSwapEtherContractAddress: Address = constants.atomicSwapEtherContractAddress,
+    atomicSwapEtherContractAddress: Address = "0x0" as Address,
   ): Uint8Array {
     const unsigned = signed.transaction;
 

@@ -152,9 +152,8 @@ export class EthereumConnection implements AtomicSwapConnection {
       this.socket.connect();
     }
 
-    const atomicSwapEtherContractAddress =
-      (options && options.atomicSwapEtherContractAddress) || constants.atomicSwapEtherContractAddress;
-    const erc20Tokens = options.erc20Tokens ? options.erc20Tokens : new Map();
+    const atomicSwapEtherContractAddress = options.atomicSwapEtherContractAddress || ("0x0" as Address);
+    const erc20Tokens = options.erc20Tokens || new Map();
 
     this.atomicSwapEtherContractAddress = atomicSwapEtherContractAddress;
     this.erc20Tokens = erc20Tokens;
@@ -764,7 +763,7 @@ export class EthereumConnection implements AtomicSwapConnection {
 
       const params = [
         {
-          to: constants.atomicSwapEtherContractAddress,
+          to: this.atomicSwapEtherContractAddress,
           data: toEthereumHex(data),
         },
       ] as ReadonlyArray<any>;

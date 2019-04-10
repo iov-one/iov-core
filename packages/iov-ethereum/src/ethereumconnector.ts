@@ -17,6 +17,7 @@ export function ethereumConnector(
     client: async () => EthereumConnection.establish(url, options),
     codec: new EthereumCodec({
       erc20Tokens: options.erc20Tokens,
+      atomicSwapEtherContractAddress: options.atomicSwapEtherContractAddress,
     }),
     expectedChainId: expectedChainId,
   };

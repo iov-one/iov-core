@@ -89,9 +89,8 @@ export class EthereumCodec implements TxCodec {
   private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
 
   constructor(options: EthereumCodecOptions) {
-    this.atomicSwapEtherContractAddress =
-      options.atomicSwapEtherContractAddress || constants.atomicSwapEtherContractAddress;
-    this.erc20Tokens = options.erc20Tokens ? options.erc20Tokens : new Map();
+    this.atomicSwapEtherContractAddress = options.atomicSwapEtherContractAddress || ("0x0" as Address);
+    this.erc20Tokens = options.erc20Tokens || new Map();
   }
 
   public bytesToSign(unsigned: UnsignedTransaction, nonce: Nonce): SigningJob {

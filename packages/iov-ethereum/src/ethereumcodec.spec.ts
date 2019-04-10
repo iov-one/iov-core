@@ -11,11 +11,15 @@ import {
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
-import { constants } from "./constants";
 import { Erc20Options } from "./erc20";
-import { EthereumCodec, ethereumCodec, EthereumRpcTransactionResult } from "./ethereumcodec";
+import { EthereumCodec, EthereumRpcTransactionResult } from "./ethereumcodec";
+import { testConfig } from "./testconfig.spec";
 
 const { fromHex } = Encoding;
+
+const ethereumCodec = new EthereumCodec({
+  atomicSwapEtherContractAddress: testConfig.connectionOptions.atomicSwapEtherContractAddress,
+});
 
 describe("ethereumCodec", () => {
   describe("parseBytes", () => {
@@ -246,6 +250,7 @@ describe("ethereumCodec", () => {
         blockNumber: "0x37",
         transactionIndex: "0x0",
         from: "0x88f3b5659075d0e06bb1004be7b1a7e66f452284",
+        // lowercase value of testConfig.connectionOptions.atomicSwapEtherContractAddress
         to: "0xe1c9ea25a621cf5c934a7e112ecab640ec7d8d18",
         value: "0x1ca3660340",
         gas: "0x200b20",

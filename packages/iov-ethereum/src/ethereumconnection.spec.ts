@@ -39,12 +39,16 @@ import { HdPaths, Secp256k1HdWallet, UserProfile, WalletId } from "@iov/keycontr
 import { toListPromise } from "@iov/stream";
 
 import { pubkeyToAddress } from "./address";
-import { ethereumCodec, EthereumCodec } from "./ethereumcodec";
+import { EthereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
 import { testConfig } from "./testconfig.spec";
 
 const { fromHex } = Encoding;
 const ETH = "ETH" as TokenTicker;
+
+const ethereumCodec = new EthereumCodec({
+  atomicSwapEtherContractAddress: testConfig.connectionOptions.atomicSwapEtherContractAddress,
+});
 
 function skipTests(): boolean {
   return !process.env.ETHEREUM_ENABLED;
@@ -1860,7 +1864,7 @@ describe("EthereumConnection", () => {
     it("can start atomic swap", async () => {
       pendingWithoutEthereum();
 
-      const connection = await EthereumConnection.establish(testConfig.base, {});
+      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
       const chainId = connection.chainId();
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
@@ -2026,7 +2030,7 @@ describe("EthereumConnection", () => {
     it("can start and watch an atomic swap lifecycle", async () => {
       pendingWithoutEthereum();
 
-      const connection = await EthereumConnection.establish(testConfig.base, {});
+      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
       const chainId = connection.chainId();
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);

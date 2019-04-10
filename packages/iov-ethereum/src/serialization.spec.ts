@@ -17,9 +17,9 @@ import {
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
-import { constants } from "./constants";
 import { Erc20Options } from "./erc20";
 import { Serialization } from "./serialization";
+import { testConfig } from "./testconfig.spec";
 
 const { serializeSignedTransaction, serializeUnsignedTransaction } = Serialization;
 const { fromHex } = Encoding;
@@ -291,7 +291,7 @@ describe("Serialization", () => {
         transaction,
         nonce,
         undefined,
-        constants.atomicSwapEtherContractAddress,
+        testConfig.connectionOptions.atomicSwapEtherContractAddress,
       );
       expect(serializedTransaction).toEqual(expected);
     });
@@ -465,7 +465,7 @@ describe("Serialization", () => {
       const serializedTransaction = serializeSignedTransaction(
         signed,
         undefined,
-        constants.atomicSwapEtherContractAddress,
+        testConfig.connectionOptions.atomicSwapEtherContractAddress,
       );
       expect(serializedTransaction).toEqual(expected);
     });
