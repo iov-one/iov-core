@@ -10,6 +10,18 @@ export enum SwapProcessState {
   Aborted = "aborted",
 }
 
+export function isSwapProcessStateOpen(state: SwapProcessState): state is SwapProcessState.Open {
+  return state === SwapProcessState.Open;
+}
+
+export function isSwapProcessStateClaimed(state: SwapProcessState): state is SwapProcessState.Claimed {
+  return state === SwapProcessState.Claimed;
+}
+
+export function isSwapProcessStateAborted(state: SwapProcessState): state is SwapProcessState.Aborted {
+  return state === SwapProcessState.Aborted;
+}
+
 export type Preimage = Uint8Array & As<"preimage">;
 export type Hash = Uint8Array & As<"hash">;
 
