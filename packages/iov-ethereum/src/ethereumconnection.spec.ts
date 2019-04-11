@@ -3,6 +3,7 @@ import {
   Address,
   Algorithm,
   Amount,
+  AtomicSwap,
   AtomicSwapHelpers,
   AtomicSwapQuery,
   BlockHeader,
@@ -80,6 +81,10 @@ async function randomAddress(): Promise<Address> {
     algo: Algorithm.Secp256k1,
     data: keypair.pubkey as PublicKeyBytes,
   });
+}
+
+function matchId(id: Uint8Array): (swap: AtomicSwap) => boolean {
+  return s => Encoding.toHex(s.data.id) === Encoding.toHex(id);
 }
 
 describe("EthereumConnection", () => {
@@ -2069,11 +2074,12 @@ describe("EthereumConnection", () => {
       // find two open
       const midSwaps = await connection.getSwaps(rcptQuery);
       expect(midSwaps.length).toEqual(2);
-      const [open1, open2] = midSwaps;
-      expect(open1.kind).toEqual(SwapProcessState.Open);
-      expect(open1.data.id).toEqual(swapId1);
-      expect(open2.kind).toEqual(SwapProcessState.Open);
-      expect(open2.data.id).toEqual(swapId2);
+      const open1 = midSwaps.find(matchId(swapId1));
+      const open2 = midSwaps.find(matchId(swapId2));
+      expect(open1).toBeDefined();
+      expect(open2).toBeDefined();
+      expect(open1!.kind).toEqual(SwapProcessState.Open);
+      expect(open2!.kind).toEqual(SwapProcessState.Open);
 
       // then claim, offer, claim - 2 closed, 1 open
       {
@@ -2095,13 +2101,15 @@ describe("EthereumConnection", () => {
       // make sure we find two claims, one open
       const finalSwaps = await connection.getSwaps({ recipient: recipientAddress });
       expect(finalSwaps.length).toEqual(3);
-      const [open3, claim2, claim1] = finalSwaps;
-      expect(open3.kind).toEqual(SwapProcessState.Open);
-      expect(open3.data.id).toEqual(swapId3);
-      expect(claim2.kind).toEqual(SwapProcessState.Claimed);
-      expect(claim2.data.id).toEqual(swapId2);
-      expect(claim1.kind).toEqual(SwapProcessState.Claimed);
-      expect(claim1.data.id).toEqual(swapId1);
+      const claim1 = finalSwaps.find(matchId(swapId1));
+      const claim2 = finalSwaps.find(matchId(swapId2));
+      const open3 = finalSwaps.find(matchId(swapId3));
+      expect(claim1).toBeDefined();
+      expect(claim2).toBeDefined();
+      expect(open3).toBeDefined();
+      expect(claim1!.kind).toEqual(SwapProcessState.Claimed);
+      expect(claim2!.kind).toEqual(SwapProcessState.Claimed);
+      expect(open3!.kind).toEqual(SwapProcessState.Open);
     }, 30_000);
   });
 });
