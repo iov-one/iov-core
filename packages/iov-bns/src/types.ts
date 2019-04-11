@@ -171,10 +171,17 @@ export function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature 
   };
 }
 
-export function asNumber(maybeLong: Long | number | null | undefined): number {
+/**
+ * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
+ * number.
+ */
+export function asIntegerNumber(maybeLong: Long | number | null | undefined): number {
   if (!maybeLong) {
     return 0;
   } else if (typeof maybeLong === "number") {
+    if (!Number.isInteger(maybeLong)) {
+      throw new Error("Number is not an integer.");
+    }
     return maybeLong;
   } else {
     return maybeLong.toInt();

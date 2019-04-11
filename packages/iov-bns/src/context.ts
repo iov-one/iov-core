@@ -12,7 +12,7 @@ import {
 
 import { decodeAmount } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
-import { asNumber, ensure, Keyed } from "./types";
+import { asIntegerNumber, ensure, Keyed } from "./types";
 import {
   addressPrefix,
   encodeBnsAddress,
@@ -68,7 +68,7 @@ export class Context {
         // amounts: ensure(swap.amount).map(coin => decodeAmount(coin)),
         // TODO: read this is a second query
         amounts: [],
-        timeout: { timestamp: asNumber(ensure(swap.timeout).seconds) },
+        timeout: { timestamp: asIntegerNumber(ensure(swap.timeout).seconds) },
         memo: swap.memo,
       },
     };

@@ -69,7 +69,11 @@ export declare function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): Pu
 export declare function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivateKeyBundle;
 export declare function decodeSignature(signature: codecImpl.crypto.ISignature): SignatureBytes;
 export declare function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature;
-export declare function asNumber(maybeLong: Long | number | null | undefined): number;
+/**
+ * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
+ * number.
+ */
+export declare function asIntegerNumber(maybeLong: Long | number | null | undefined): number;
 export declare function asInt53(input: Long | number | null | undefined): Int53;
 export declare function ensure<T>(maybe: T | null | undefined, msg?: string): T;
 export interface AddAddressToUsernameTx extends UnsignedTransaction {
