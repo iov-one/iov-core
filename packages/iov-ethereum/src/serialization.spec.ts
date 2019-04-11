@@ -5,11 +5,13 @@ import {
   ChainId,
   Hash,
   Nonce,
+  Preimage,
   PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   SignatureBytes,
   SignedTransaction,
+  SwapClaimTransaction,
   SwapIdBytes,
   SwapOfferTransaction,
   TokenTicker,
@@ -295,6 +297,41 @@ describe("Serialization", () => {
       );
       expect(serializedTransaction).toEqual(expected);
     });
+
+    it("can serialize Ether atomic swap claim", () => {
+      const transaction: SwapClaimTransaction = {
+        kind: "bcp/swap_claim",
+        creator: {
+          chainId: "ethereum-eip155-1" as ChainId,
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: fromHex("") as PublicKeyBytes,
+          },
+        },
+        fee: {
+          gasPrice: {
+            quantity: "6000000000", // 6 Gwei
+            fractionalDigits: 18,
+            tokenTicker: "ETH" as TokenTicker,
+          },
+          gasLimit: "52669",
+        },
+        swapId: Uint8Array.from([]) as SwapIdBytes,
+        preimage: Uint8Array.from([]) as Preimage,
+      };
+      const nonce = 26 as Nonce;
+
+      const expected = fromHex(
+        "e81a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d18808484cc9dfb018080",
+      );
+      const serializedTransaction = serializeUnsignedTransaction(
+        transaction,
+        nonce,
+        undefined,
+        testConfig.connectionOptions.atomicSwapEtherContractAddress,
+      );
+      expect(serializedTransaction).toEqual(expected);
+    });
   });
 
   describe("serializeSignedTransaction", () => {
@@ -460,6 +497,54 @@ describe("Serialization", () => {
       };
       const expected = fromHex(
         "f8b31a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d188a385c193e12be6d312c00b8440eed85480000000000000000000000008fec1c262599f4169401ff48a9d63503ceaaf742000000000000000000000000000000000000000000000000000000000000000125a06a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37a0443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d",
+      );
+
+      const serializedTransaction = serializeSignedTransaction(
+        signed,
+        undefined,
+        testConfig.connectionOptions.atomicSwapEtherContractAddress,
+      );
+      expect(serializedTransaction).toEqual(expected);
+    });
+
+    it("can serialize Ether atomic swap claim", () => {
+      const signed: SignedTransaction<SwapClaimTransaction> = {
+        transaction: {
+          kind: "bcp/swap_claim",
+          creator: {
+            chainId: "ethereum-eip155-1" as ChainId,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: fromHex("") as PublicKeyBytes,
+            },
+          },
+          fee: {
+            gasPrice: {
+              quantity: "6000000000", // 6 Gwei
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
+            gasLimit: "52669",
+          },
+          swapId: Uint8Array.from([]) as SwapIdBytes,
+          preimage: Uint8Array.from([]) as Preimage,
+        },
+        primarySignature: {
+          nonce: 26 as Nonce,
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
+          },
+          signature: new ExtendedSecp256k1Signature(
+            fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
+            fromHex("443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d"),
+            0,
+          ).toFixedLength() as SignatureBytes,
+        },
+        otherSignatures: [],
+      };
+      const expected = fromHex(
+        "f8681a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d18808484cc9dfb25a06a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37a0443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d",
       );
 
       const serializedTransaction = serializeSignedTransaction(
