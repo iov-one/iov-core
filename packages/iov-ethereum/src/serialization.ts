@@ -7,7 +7,10 @@ import {
   isSwapClaimTransaction,
   isSwapOfferTransaction,
   Nonce,
+  SendTransaction,
   SignedTransaction,
+  SwapOfferTransaction,
+  SwapTransaction,
   TokenTicker,
   UnsignedTransaction,
 } from "@iov/bcp";
@@ -59,34 +62,18 @@ export class Serialization {
     erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options> = new Map(),
     atomicSwapEtherContractAddress?: Address,
   ): Uint8Array {
-    if (!Serialization.isSupportedTransaction(unsigned)) {
-      throw new Error("Unsupported kind of transaction");
-    }
+    Serialization.checkIsSupportedTransaction(unsigned);
 
-    const chainIdHex = encodeQuantity(fromBcpChainId(unsigned.creator.chainId));
-    if (!unsigned.fee || !unsigned.fee.gasPrice) {
-      throw new Error("fee.gasPrice must be set");
-    }
-    const gasPriceHex = encodeQuantityString(unsigned.fee.gasPrice.quantity);
-    if (!unsigned.fee.gasLimit) {
-      throw new Error("fee.gasLimit must be set");
-    }
-    const gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit);
+    const chainIdHex = Serialization.getChainIdHex(unsigned);
+    const gasPriceHex = Serialization.getGasPriceHex(unsigned);
+    const gasLimitHex = Serialization.getGasLimitHex(unsigned);
 
     if (isSendTransaction(unsigned)) {
-      if (!isValidAddress(unsigned.recipient)) {
-        throw new Error("Invalid recipient address");
-      }
+      Serialization.checkRecipientAddress(unsigned);
 
       if (unsigned.amount.tokenTicker !== constants.primaryTokenTicker) {
-        if (unsigned.memo) {
-          throw new Error("Memo cannot be serialized in a smart contract-based token transfer");
-        }
-
-        const erc20Token = erc20Tokens.get(unsigned.amount.tokenTicker);
-        if (!erc20Token) {
-          throw new Error(`No ERC 20 token configured for ticker ${unsigned.amount.tokenTicker}`);
-        }
+        Serialization.checkMemoNotPresent(unsigned);
+        const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
 
         const erc20TransferCall = new Uint8Array([
           ...Abi.calculateMethodId("transfer(address,uint256)"),
@@ -105,7 +92,7 @@ export class Serialization {
         );
       } else {
         // native ETH send
-        const memoData = unsigned.memo ? Encoding.toUtf8(unsigned.memo) : new Uint8Array([]);
+        const memoData = Encoding.toUtf8(unsigned.memo || "");
         return Serialization.serializeGenericTransaction(
           nonce,
           gasPriceHex,
@@ -117,37 +104,19 @@ export class Serialization {
         );
       }
     } else if (isSwapOfferTransaction(unsigned)) {
-      if (!unsigned.swapId) {
-        throw new Error("No swap ID provided");
-      }
-
-      if (!isValidAddress(unsigned.recipient)) {
-        throw new Error("Invalid recipient address");
-      }
-
-      if (unsigned.memo) {
-        throw new Error("Memo cannot be serialized in an atomic swap offer transaction");
-      }
+      Serialization.checkSwapId(unsigned);
+      Serialization.checkRecipientAddress(unsigned);
+      Serialization.checkMemoNotPresent(unsigned);
+      Serialization.checkAmounts(unsigned);
+      Serialization.checkAtomicSwapContractAddress(atomicSwapEtherContractAddress);
 
       if (!isBlockHeightTimeout(unsigned.timeout)) {
         throw new Error("Timeout must be specified as a block height");
       }
 
-      if (unsigned.amounts.length !== 1) {
-        throw new Error("Cannot serialize a swap offer with more than one amount");
-      }
-      if (unsigned.amounts[0].tokenTicker !== constants.primaryTokenTicker) {
-        // TODO: Remove when ERC20 swaps are supported
-        throw new Error("Only ETH atomic swap offers are currently supported");
-      }
-
-      if (!atomicSwapEtherContractAddress) {
-        throw new Error("Atomic swap offer transactions require a contract address");
-      }
-
       const atomicSwapOpenCall = new Uint8Array([
         ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)"),
-        ...unsigned.swapId,
+        ...unsigned.swapId!,
         ...Abi.encodeAddress(unsigned.recipient),
         ...unsigned.hash,
         ...Abi.encodeUint256(unsigned.timeout.height.toString()),
@@ -157,15 +126,13 @@ export class Serialization {
         nonce,
         gasPriceHex,
         gasLimitHex,
-        atomicSwapEtherContractAddress,
+        atomicSwapEtherContractAddress!,
         unsigned.amounts[0].quantity,
         atomicSwapOpenCall,
         chainIdHex,
       );
     } else if (isSwapClaimTransaction(unsigned)) {
-      if (!atomicSwapEtherContractAddress) {
-        throw new Error("Atomic swap claim transactions require a contract address");
-      }
+      Serialization.checkAtomicSwapContractAddress(atomicSwapEtherContractAddress);
 
       const atomicSwapClaimCall = new Uint8Array([
         ...Abi.calculateMethodId("claim(bytes32,bytes32)"),
@@ -177,7 +144,7 @@ export class Serialization {
         nonce,
         gasPriceHex,
         gasLimitHex,
-        atomicSwapEtherContractAddress,
+        atomicSwapEtherContractAddress!,
         "0",
         atomicSwapClaimCall,
         chainIdHex,
@@ -193,18 +160,10 @@ export class Serialization {
     atomicSwapEtherContractAddress?: Address,
   ): Uint8Array {
     const unsigned = signed.transaction;
-    if (!Serialization.isSupportedTransaction(unsigned)) {
-      throw new Error("Unsupported kind of transaction");
-    }
+    Serialization.checkIsSupportedTransaction(unsigned);
 
-    if (!unsigned.fee || !unsigned.fee.gasPrice) {
-      throw new Error("fee.gasPrice must be set");
-    }
-    const gasPriceHex = encodeQuantityString(unsigned.fee.gasPrice.quantity);
-    if (!unsigned.fee.gasLimit) {
-      throw new Error("fee.gasLimit must be set");
-    }
-    const gasLimitHex = encodeQuantityString(unsigned.fee.gasLimit);
+    const gasPriceHex = Serialization.getGasPriceHex(unsigned);
+    const gasLimitHex = Serialization.getGasLimitHex(unsigned);
 
     const sig = ExtendedSecp256k1Signature.fromFixedLength(signed.primarySignature.signature);
     const r = sig.r();
@@ -217,19 +176,11 @@ export class Serialization {
     const v = eip155V(chain, sig.recovery);
 
     if (isSendTransaction(unsigned)) {
-      if (!isValidAddress(unsigned.recipient)) {
-        throw new Error("Invalid recipient address");
-      }
+      Serialization.checkRecipientAddress(unsigned);
 
       if (unsigned.amount.tokenTicker !== constants.primaryTokenTicker) {
-        if (unsigned.memo) {
-          throw new Error("Memo cannot be serialized in a smart contract based token transfer.");
-        }
-
-        const erc20Token = erc20Tokens.get(unsigned.amount.tokenTicker);
-        if (!erc20Token) {
-          throw new Error(`No ERC 20 token configured for ticker ${unsigned.amount.tokenTicker}`);
-        }
+        Serialization.checkMemoNotPresent(unsigned);
+        const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
 
         const erc20TransferCall = new Uint8Array([
           ...Abi.calculateMethodId("transfer(address,uint256)"),
@@ -263,37 +214,19 @@ export class Serialization {
         );
       }
     } else if (isSwapOfferTransaction(unsigned)) {
-      if (!unsigned.swapId) {
-        throw new Error("No swap ID provided");
-      }
-
-      if (!isValidAddress(unsigned.recipient)) {
-        throw new Error("Invalid recipient address");
-      }
-
-      if (unsigned.memo) {
-        throw new Error("Memo cannot be serialized in an atomic swap offer transaction");
-      }
+      Serialization.checkSwapId(unsigned);
+      Serialization.checkRecipientAddress(unsigned);
+      Serialization.checkMemoNotPresent(unsigned);
+      Serialization.checkAmounts(unsigned);
+      Serialization.checkAtomicSwapContractAddress(atomicSwapEtherContractAddress);
 
       if (!isBlockHeightTimeout(unsigned.timeout)) {
         throw new Error("Timeout must be specified as a block height");
       }
 
-      if (unsigned.amounts.length !== 1) {
-        throw new Error("Cannot serialize a swap offer with more than one amount");
-      }
-      if (unsigned.amounts[0].tokenTicker !== constants.primaryTokenTicker) {
-        // TODO: Remove when ERC20 swaps are supported
-        throw new Error("Only ETH atomic swap offers are currently supported");
-      }
-
-      if (!atomicSwapEtherContractAddress) {
-        throw new Error("Atomic swap offer transactions require a contract address");
-      }
-
       const atomicSwapOpenCall = new Uint8Array([
         ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)"),
-        ...unsigned.swapId,
+        ...unsigned.swapId!,
         ...Abi.encodeAddress(unsigned.recipient),
         ...unsigned.hash,
         ...Abi.encodeUint256(unsigned.timeout.height.toString()),
@@ -303,7 +236,7 @@ export class Serialization {
         signed.primarySignature.nonce,
         gasPriceHex,
         gasLimitHex,
-        atomicSwapEtherContractAddress,
+        atomicSwapEtherContractAddress!,
         unsigned.amounts[0].quantity,
         atomicSwapOpenCall,
         encodeQuantity(v),
@@ -311,13 +244,8 @@ export class Serialization {
         s,
       );
     } else if (isSwapClaimTransaction(unsigned)) {
-      if (!unsigned.swapId) {
-        throw new Error("No swap ID provided");
-      }
-
-      if (!atomicSwapEtherContractAddress) {
-        throw new Error("Atomic swap claim transactions require a contract address");
-      }
+      Serialization.checkSwapId(unsigned);
+      Serialization.checkAtomicSwapContractAddress(atomicSwapEtherContractAddress);
 
       const atomicSwapClaimCall = new Uint8Array([
         ...Abi.calculateMethodId("claim(bytes32,bytes32)"),
@@ -329,7 +257,7 @@ export class Serialization {
         signed.primarySignature.nonce,
         gasPriceHex,
         gasLimitHex,
-        atomicSwapEtherContractAddress,
+        atomicSwapEtherContractAddress!,
         "0",
         atomicSwapClaimCall,
         encodeQuantity(v),
@@ -341,13 +269,78 @@ export class Serialization {
     }
   }
 
-  private static isSupportedTransaction(unsigned: UnsignedTransaction): boolean {
+  private static checkIsSupportedTransaction(unsigned: UnsignedTransaction): void {
     const supportedTransactionCheckers: ReadonlyArray<(unsigned: UnsignedTransaction) => boolean> = [
       isSendTransaction,
       isSwapOfferTransaction,
       isSwapClaimTransaction,
     ];
-    return supportedTransactionCheckers.some(fn => fn(unsigned));
+    if (!supportedTransactionCheckers.some(fn => fn(unsigned))) {
+      throw new Error("Unsupported kind of transaction");
+    }
+  }
+
+  private static checkRecipientAddress(unsigned: SendTransaction | SwapOfferTransaction): void {
+    if (!isValidAddress(unsigned.recipient)) {
+      throw new Error("Invalid recipient address");
+    }
+  }
+
+  private static checkSwapId(unsigned: SwapTransaction): void {
+    if (!unsigned.swapId) {
+      throw new Error("No swap ID provided");
+    }
+  }
+
+  private static checkAtomicSwapContractAddress(address?: Address): void {
+    if (!address) {
+      throw new Error("Atomic swap transactions require a contract address");
+    }
+  }
+
+  private static checkMemoNotPresent(unsigned: SendTransaction | SwapOfferTransaction): void {
+    if (unsigned.memo) {
+      throw new Error("Memo cannot be serialized in a smart contract-based transaction");
+    }
+  }
+
+  private static checkAmounts(unsigned: SwapOfferTransaction): void {
+    if (unsigned.amounts.length !== 1) {
+      throw new Error("Cannot serialize a swap offer with more than one amount");
+    }
+    if (unsigned.amounts[0].tokenTicker !== constants.primaryTokenTicker) {
+      // TODO: Remove when ERC20 swaps are supported
+      throw new Error("Only ETH atomic swap offers are currently supported");
+    }
+  }
+
+  private static getChainIdHex(unsigned: UnsignedTransaction): string {
+    return encodeQuantity(fromBcpChainId(unsigned.creator.chainId));
+  }
+
+  private static getGasPriceHex(unsigned: UnsignedTransaction): string {
+    if (!unsigned.fee || !unsigned.fee.gasPrice) {
+      throw new Error("fee.gasPrice must be set");
+    }
+    return encodeQuantityString(unsigned.fee.gasPrice.quantity);
+  }
+
+  private static getGasLimitHex(unsigned: UnsignedTransaction): string {
+    if (!unsigned.fee || !unsigned.fee.gasLimit) {
+      throw new Error("fee.gasLimit must be set");
+    }
+    return encodeQuantityString(unsigned.fee.gasLimit);
+  }
+
+  private static getErc20Token(
+    unsigned: SendTransaction,
+    erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
+  ): Erc20Options {
+    const erc20Token = erc20Tokens.get(unsigned.amount.tokenTicker);
+    if (!erc20Token) {
+      throw new Error(`No ERC 20 token configured for ticker ${unsigned.amount.tokenTicker}`);
+    }
+    return erc20Token;
   }
 
   /**
