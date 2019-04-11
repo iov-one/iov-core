@@ -14,6 +14,7 @@ import {
   SwapTransaction,
   TokenTicker,
   UnsignedTransaction,
+  SwapClaimTransaction,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
