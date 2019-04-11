@@ -277,9 +277,9 @@ describe("Serialization", () => {
           },
           gasLimit: "52669",
         },
-        swapId: Uint8Array.from([]) as SwapIdBytes,
+        swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
         recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
-        hash: Uint8Array.from([]) as Hash,
+        hash: Uint8Array.from(Array(32).fill(8)) as Hash,
         timeout: {
           height: 1,
         },
@@ -287,7 +287,7 @@ describe("Serialization", () => {
       const nonce = 26 as Nonce;
 
       const expected = fromHex(
-        "f8731a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d188a385c193e12be6d312c00b8440eed85480000000000000000000000008fec1c262599f4169401ff48a9d63503ceaaf7420000000000000000000000000000000000000000000000000000000000000001018080",
+        "f8b31a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d188a385c193e12be6d312c00b8840eed854809090909090909090909090909090909090909090909090909090909090909090000000000000000000000008fec1c262599f4169401ff48a9d63503ceaaf74208080808080808080808080808080808080808080808080808080808080808080000000000000000000000000000000000000000000000000000000000000001018080",
       );
       const serializedTransaction = serializeUnsignedTransaction(
         transaction,
@@ -316,13 +316,13 @@ describe("Serialization", () => {
           },
           gasLimit: "52669",
         },
-        swapId: Uint8Array.from([]) as SwapIdBytes,
-        preimage: Uint8Array.from([]) as Preimage,
+        swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+        preimage: Uint8Array.from(Array(32).fill(16)) as Preimage,
       };
       const nonce = 26 as Nonce;
 
       const expected = fromHex(
-        "e81a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d18808484cc9dfb018080",
+        "f8691a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d1880b84484cc9dfb09090909090909090909090909090909090909090909090909090909090909091010101010101010101010101010101010101010101010101010101010101010018080",
       );
       const serializedTransaction = serializeUnsignedTransaction(
         transaction,
@@ -474,9 +474,9 @@ describe("Serialization", () => {
             },
             gasLimit: "52669",
           },
-          swapId: Uint8Array.from([]) as SwapIdBytes,
+          swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
           recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
-          hash: Uint8Array.from([]) as Hash,
+          hash: Uint8Array.from(Array(32).fill(8)) as Hash,
           timeout: {
             height: 1,
           },
@@ -496,7 +496,7 @@ describe("Serialization", () => {
         otherSignatures: [],
       };
       const expected = fromHex(
-        "f8b31a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d188a385c193e12be6d312c00b8440eed85480000000000000000000000008fec1c262599f4169401ff48a9d63503ceaaf742000000000000000000000000000000000000000000000000000000000000000125a06a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37a0443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d",
+        "f8f31a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d188a385c193e12be6d312c00b8840eed854809090909090909090909090909090909090909090909090909090909090909090000000000000000000000008fec1c262599f4169401ff48a9d63503ceaaf7420808080808080808080808080808080808080808080808080808080808080808000000000000000000000000000000000000000000000000000000000000000125a06a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37a0443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d",
       );
 
       const serializedTransaction = serializeSignedTransaction(
@@ -526,8 +526,8 @@ describe("Serialization", () => {
             },
             gasLimit: "52669",
           },
-          swapId: Uint8Array.from([]) as SwapIdBytes,
-          preimage: Uint8Array.from([]) as Preimage,
+          swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+          preimage: Uint8Array.from(Array(32).fill(16)) as Preimage,
         },
         primarySignature: {
           nonce: 26 as Nonce,
@@ -544,7 +544,7 @@ describe("Serialization", () => {
         otherSignatures: [],
       };
       const expected = fromHex(
-        "f8681a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d18808484cc9dfb25a06a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37a0443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d",
+        "f8a91a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d1880b84484cc9dfb0909090909090909090909090909090909090909090909090909090909090909101010101010101010101010101010101010101010101010101010101010101025a06a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37a0443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d",
       );
 
       const serializedTransaction = serializeSignedTransaction(
