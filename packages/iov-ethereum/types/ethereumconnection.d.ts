@@ -1,10 +1,17 @@
 import { Stream } from "xstream";
-import { Account, AccountQuery, AddressQuery, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, Token, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
+import { Account, AccountQuery, Address, AddressQuery, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, Token, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
 import { Erc20Options } from "./erc20";
+export interface EthereumLog {
+    readonly transactionIndex: string;
+    readonly data: string;
+    readonly topics: ReadonlyArray<string>;
+}
 export interface EthereumConnectionOptions {
     readonly wsUrl?: string;
     /** URL to an Etherscan compatible scraper API */
     readonly scraperApiUrl?: string;
+    /** Address of the deployed atomic swap contract for ETH */
+    readonly atomicSwapEtherContractAddress?: Address;
     /** List of supported ERC20 tokens */
     readonly erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>;
     /** Time between two polls for block, transaction and account watching in seconds */
@@ -17,6 +24,7 @@ export declare class EthereumConnection implements AtomicSwapConnection {
     private readonly myChainId;
     private readonly socket;
     private readonly scraperApiUrl;
+    private readonly atomicSwapEtherContractAddress?;
     private readonly erc20Tokens;
     private readonly erc20ContractReaders;
     private readonly codec;
@@ -38,7 +46,7 @@ export declare class EthereumConnection implements AtomicSwapConnection {
     liveTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction>;
     getFeeQuote(transaction: UnsignedTransaction): Promise<Fee>;
     withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;
-    getSwaps(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>>;
+    getSwaps(query: AtomicSwapQuery, minHeight?: number, maxHeight?: number): Promise<ReadonlyArray<AtomicSwap>>;
     watchSwaps(_: AtomicSwapQuery): Stream<AtomicSwap>;
     private socketSend;
     private searchTransactionsById;

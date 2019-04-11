@@ -10,7 +10,7 @@ import { Erc20Options } from "./erc20";
 import { Erc20Reader, EthereumRpcClient } from "./erc20reader";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { testConfig } from "./testconfig.spec";
-import { normalizeHex } from "./utils";
+import { normalizeHex, toEthereumHex } from "./utils";
 
 function skipTests(): boolean {
   return !process.env.ETHEREUM_ENABLED;
@@ -37,7 +37,7 @@ function makeClient(baseUrl: string): EthereumRpcClient {
       const response = await new HttpJsonRpcClient(baseUrl).run({
         jsonrpc: "2.0",
         method: "eth_call",
-        params: [{ to: contractAddress, data: `0x${Encoding.toHex(data)}` }, "latest"],
+        params: [{ to: contractAddress, data: toEthereumHex(data) }, "latest"],
         id: 42,
       });
       if (isJsonRpcErrorResponse(response)) {

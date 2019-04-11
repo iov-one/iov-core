@@ -1,7 +1,7 @@
 import BN = require("bn.js");
 
 import { ChainId, Nonce } from "@iov/bcp";
-import { Uint53 } from "@iov/encoding";
+import { Encoding, Uint53 } from "@iov/encoding";
 
 const bcpChainIdPrefix = "ethereum-eip155-";
 
@@ -30,7 +30,7 @@ export function decodeHexQuantityNonce(hexString: string): Nonce {
 export function encodeQuantity(value: number): string {
   try {
     const checkedValue = new Uint53(value);
-    return "0x" + new BN(checkedValue.toNumber()).toString(16);
+    return toEthereumHex(new BN(checkedValue.toNumber()).toString(16));
   } catch {
     throw new Error("Input is not a unsigned safe integer");
   }
@@ -40,7 +40,7 @@ export function encodeQuantityString(value: string): string {
   if (!value.match(/^[0-9]+$/)) {
     throw new Error("Input is not a valid string number");
   }
-  return "0x" + new BN(value).toString(16);
+  return toEthereumHex(new BN(value).toString(16));
 }
 
 /**
@@ -54,6 +54,16 @@ export function normalizeHex(input: string): string {
   } else {
     return unprefixedLower;
   }
+}
+
+/**
+ * Takes a hex representation optionally prefixed with 0x and returns an Ethereum-friendly
+ * representation with a prefix.
+ */
+export function toEthereumHex(input: string | Uint8Array): string {
+  const str = typeof input === "string" ? input : Encoding.toHex(input);
+  const match = str.match(/^(?:0x)?(.*)$/);
+  return `0x${match![1]}`;
 }
 
 export function toBcpChainId(numericChainId: number): ChainId {

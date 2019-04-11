@@ -35,7 +35,7 @@ export interface EthereumCodecOptions {
     readonly erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>;
 }
 export declare class EthereumCodec implements TxCodec {
-    private readonly atomicSwapEtherContractAddress;
+    private readonly atomicSwapEtherContractAddress?;
     private readonly erc20Tokens;
     constructor(options: EthereumCodecOptions);
     bytesToSign(unsigned: UnsignedTransaction, nonce: Nonce): SigningJob;

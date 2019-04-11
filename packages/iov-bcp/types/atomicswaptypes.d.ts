@@ -7,6 +7,9 @@ export declare enum SwapProcessState {
     Claimed = "claimed",
     Aborted = "aborted"
 }
+export declare function isSwapProcessStateOpen(state: SwapProcessState): state is SwapProcessState.Open;
+export declare function isSwapProcessStateClaimed(state: SwapProcessState): state is SwapProcessState.Claimed;
+export declare function isSwapProcessStateAborted(state: SwapProcessState): state is SwapProcessState.Aborted;
 export declare type Preimage = Uint8Array & As<"preimage">;
 export declare type Hash = Uint8Array & As<"hash">;
 export interface SwapData {

@@ -2,6 +2,8 @@ import { Address, Algorithm, PublicKeyBundle } from "@iov/bcp";
 import { Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
+import { toEthereumHex } from "./utils";
+
 const { toAscii, toHex } = Encoding;
 
 export function isValidAddress(address: string): boolean {
@@ -42,11 +44,11 @@ export function toChecksummedAddress(address: string): Address {
 
   const addressLower = address.toLowerCase().replace("0x", "");
   const addressHash = toHex(new Keccak256(toAscii(addressLower)).digest());
-  let checksumAddress = "0x";
+  let checksumAddress = "";
   for (let i = 0; i < 40; i++) {
     checksumAddress += parseInt(addressHash[i], 16) > 7 ? addressLower[i].toUpperCase() : addressLower[i];
   }
-  return checksumAddress as Address;
+  return toEthereumHex(checksumAddress) as Address;
 }
 
 export function pubkeyToAddress(pubkey: PublicKeyBundle): Address {
@@ -55,6 +57,6 @@ export function pubkeyToAddress(pubkey: PublicKeyBundle): Address {
   }
   const hash = toHex(new Keccak256(pubkey.data.slice(1)).digest());
   const lastFortyChars = hash.slice(-40);
-  const addressString = toChecksummedAddress("0x" + lastFortyChars);
+  const addressString = toChecksummedAddress(toEthereumHex(lastFortyChars));
   return addressString;
 }

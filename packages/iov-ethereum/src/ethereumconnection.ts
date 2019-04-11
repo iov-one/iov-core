@@ -5,6 +5,7 @@ import { ReadonlyDate } from "readonly-date";
 import { Producer, Stream, Subscription } from "xstream";
 
 import {
+  AbortedSwap,
   Account,
   AccountQuery,
   Address,
@@ -16,16 +17,27 @@ import {
   BlockHeader,
   BlockInfo,
   ChainId,
+  ClaimedSwap,
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
   Hash,
+  isAtomicSwapHashlockQuery,
   isAtomicSwapIdQuery,
+  isAtomicSwapRecipientQuery,
+  isAtomicSwapSenderQuery,
   isPubkeyQuery,
+  isSwapProcessStateAborted,
+  isSwapProcessStateClaimed,
+  isSwapProcessStateOpen,
   Nonce,
+  OpenSwap,
   PostableBytes,
   PostTxResponse,
+  Preimage,
   PubkeyQuery,
+  SwapData,
+  SwapIdBytes,
   SwapProcessState,
   Token,
   TokenTicker,
@@ -39,7 +51,7 @@ import { isJsonRpcErrorResponse, JsonRpcRequest } from "@iov/jsonrpc";
 import { StreamingSocket } from "@iov/socket";
 import { concat, DefaultValueProducer, dropDuplicates, ValueAndUpdates } from "@iov/stream";
 
-import { Abi } from "./abi";
+import { Abi, SwapContractEvent } from "./abi";
 import { pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { Erc20Options } from "./erc20";
@@ -54,6 +66,7 @@ import {
   encodeQuantity,
   normalizeHex,
   toBcpChainId,
+  toEthereumHex,
 } from "./utils";
 
 async function sleep(ms: number): Promise<void> {
@@ -76,10 +89,18 @@ async function loadChainId(baseUrl: string): Promise<ChainId> {
   return toBcpChainId(numericChainId.toNumber());
 }
 
+export interface EthereumLog {
+  readonly transactionIndex: string;
+  readonly data: string;
+  readonly topics: ReadonlyArray<string>;
+}
+
 export interface EthereumConnectionOptions {
   readonly wsUrl?: string;
   /** URL to an Etherscan compatible scraper API */
   readonly scraperApiUrl?: string;
+  /** Address of the deployed atomic swap contract for ETH */
+  readonly atomicSwapEtherContractAddress?: Address;
   /** List of supported ERC20 tokens */
   readonly erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>;
   /** Time between two polls for block, transaction and account watching in seconds */
@@ -101,6 +122,7 @@ export class EthereumConnection implements AtomicSwapConnection {
   private readonly myChainId: ChainId;
   private readonly socket: StreamingSocket | undefined;
   private readonly scraperApiUrl: string | undefined;
+  private readonly atomicSwapEtherContractAddress?: Address;
   private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
   private readonly erc20ContractReaders: ReadonlyMap<TokenTicker, Erc20Reader>;
   private readonly codec: EthereumCodec;
@@ -117,7 +139,7 @@ export class EthereumConnection implements AtomicSwapConnection {
         const response = await this.rpcClient.run({
           jsonrpc: "2.0",
           method: "eth_call",
-          params: [{ to: contractAddress, data: `0x${Encoding.toHex(data)}` }, "latest"],
+          params: [{ to: contractAddress, data: toEthereumHex(data) }, "latest"],
           id: 42,
         });
         if (isJsonRpcErrorResponse(response)) {
@@ -133,8 +155,10 @@ export class EthereumConnection implements AtomicSwapConnection {
       this.socket.connect();
     }
 
-    const erc20Tokens = options.erc20Tokens ? options.erc20Tokens : new Map();
+    const atomicSwapEtherContractAddress = options.atomicSwapEtherContractAddress;
+    const erc20Tokens = options.erc20Tokens || new Map();
 
+    this.atomicSwapEtherContractAddress = atomicSwapEtherContractAddress;
     this.erc20Tokens = erc20Tokens;
     this.erc20ContractReaders = new Map(
       [...erc20Tokens.entries()].map(
@@ -144,7 +168,10 @@ export class EthereumConnection implements AtomicSwapConnection {
         ],
       ),
     );
-    this.codec = new EthereumCodec({ erc20Tokens: erc20Tokens });
+    this.codec = new EthereumCodec({
+      erc20Tokens: erc20Tokens,
+      atomicSwapEtherContractAddress: atomicSwapEtherContractAddress,
+    });
   }
 
   public disconnect(): void {
@@ -176,7 +203,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     const response = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_sendRawTransaction",
-      params: ["0x" + Encoding.toHex(bytes)],
+      params: [toEthereumHex(bytes)],
       id: 5,
     });
     if (isJsonRpcErrorResponse(response)) {
@@ -710,6 +737,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     switch (transaction.kind) {
       case "bcp/send":
       case "bcp/swap_offer":
+      case "bcp/swap_claim":
         return {
           gasPrice: {
             // TODO: calculate dynamically from previous blocks or external API
@@ -728,14 +756,18 @@ export class EthereumConnection implements AtomicSwapConnection {
     return { ...transaction, fee: await this.getFeeQuote(transaction) };
   }
 
-  public async getSwaps(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>> {
+  public async getSwaps(
+    query: AtomicSwapQuery,
+    minHeight: number = 0,
+    maxHeight: number = Number.MAX_SAFE_INTEGER,
+  ): Promise<ReadonlyArray<AtomicSwap>> {
     if (isAtomicSwapIdQuery(query)) {
       const data = Uint8Array.from([...Abi.calculateMethodId("get(bytes32)"), ...query.swapid]);
 
       const params = [
         {
-          to: constants.atomicSwapEtherContractAddress,
-          data: "0x" + Encoding.toHex(data),
+          to: this.atomicSwapEtherContractAddress,
+          data: toEthereumHex(data),
         },
       ] as ReadonlyArray<any>;
       const swapsResponse = await this.rpcClient.run({
@@ -762,36 +794,158 @@ export class EthereumConnection implements AtomicSwapConnection {
       const timeoutEnd = timeoutBegin + 32;
       const amountBegin = timeoutEnd;
       const amountEnd = amountBegin + 32;
+      const preimageBegin = amountEnd;
+      const preimageEnd = preimageBegin + 32;
+      const stateBegin = preimageEnd;
+      const stateEnd = stateBegin + 32;
 
       const resultArray = Encoding.fromHex(normalizeHex(swapsResponse.result));
-      const sender = toChecksummedAddress(Abi.decodeAddress(resultArray.slice(senderBegin, senderEnd)));
-      const recipient = toChecksummedAddress(
-        Abi.decodeAddress(resultArray.slice(recipientBegin, recipientEnd)),
-      );
-      const hash = resultArray.slice(hashBegin, hashEnd) as Hash;
-      const timeoutHeight = new BN(resultArray.slice(timeoutBegin, timeoutEnd)).toNumber();
-      const amount = {
-        quantity: new BN(resultArray.slice(amountBegin, amountEnd)).toString(),
-        fractionalDigits: constants.primaryTokenFractionalDigits,
-        tokenTicker: constants.primaryTokenTicker,
+      const swapData: SwapData = {
+        id: query.swapid,
+        sender: toChecksummedAddress(Abi.decodeAddress(resultArray.slice(senderBegin, senderEnd))),
+        recipient: toChecksummedAddress(Abi.decodeAddress(resultArray.slice(recipientBegin, recipientEnd))),
+        hash: resultArray.slice(hashBegin, hashEnd) as Hash,
+        amounts: [
+          {
+            quantity: new BN(resultArray.slice(amountBegin, amountEnd)).toString(),
+            fractionalDigits: constants.primaryTokenFractionalDigits,
+            tokenTicker: constants.primaryTokenTicker,
+          },
+        ] as ReadonlyArray<Amount>,
+        timeout: {
+          height: new BN(resultArray.slice(timeoutBegin, timeoutEnd)).toNumber(),
+        },
       };
 
-      return [
+      const kind = Abi.decodeSwapProcessState(resultArray.slice(stateBegin, stateEnd));
+      let swap: AtomicSwap;
+      if (isSwapProcessStateOpen(kind)) {
+        swap = {
+          kind: kind,
+          data: swapData,
+        };
+      } else if (isSwapProcessStateClaimed(kind)) {
+        swap = {
+          kind: kind,
+          data: swapData,
+          preimage: resultArray.slice(preimageBegin, preimageEnd) as Preimage,
+        };
+      } else if (isSwapProcessStateAborted(kind)) {
+        swap = {
+          kind: kind,
+          data: swapData,
+        };
+      } else {
+        throw new Error("unknown swap process state");
+      }
+
+      return [swap];
+    } else if (
+      isAtomicSwapRecipientQuery(query) ||
+      isAtomicSwapSenderQuery(query) ||
+      isAtomicSwapHashlockQuery(query)
+    ) {
+      const params = [
         {
-          // TODO: Update when we return state from the get() call
-          kind: SwapProcessState.Open,
-          data: {
-            id: query.swapid,
-            sender: sender,
-            recipient: recipient,
-            hash: hash,
-            amounts: [amount] as ReadonlyArray<Amount>,
-            timeout: {
-              height: timeoutHeight,
-            },
-          },
+          fromBlock: encodeQuantity(minHeight),
+          toBlock: encodeQuantity(maxHeight),
+          address: this.atomicSwapEtherContractAddress,
         },
-      ];
+      ] as ReadonlyArray<any>;
+      const swapsResponse = await this.rpcClient.run({
+        jsonrpc: "2.0",
+        method: "eth_getLogs",
+        params: params,
+        id: 9,
+      });
+      if (isJsonRpcErrorResponse(swapsResponse)) {
+        throw new Error(JSON.stringify(swapsResponse.error));
+      }
+
+      if (swapsResponse.result === null) {
+        return [];
+      }
+
+      const swapIdBegin = 0;
+      const swapIdEnd = swapIdBegin + 32;
+      const openedSenderBegin = swapIdEnd;
+      const openedSenderEnd = openedSenderBegin + 32;
+      const openedRecipientBegin = openedSenderEnd;
+      const openedRecipientEnd = openedRecipientBegin + 32;
+      const openedHashBegin = openedRecipientEnd;
+      const openedHashEnd = openedHashBegin + 32;
+      const openedAmountBegin = openedHashEnd;
+      const openedAmountEnd = openedAmountBegin + 32;
+      const openedTimeoutBegin = openedAmountEnd;
+      const openedTimeoutEnd = openedTimeoutBegin + 32;
+      const claimedPreimageBegin = swapIdEnd;
+      const claimedPreimageEnd = claimedPreimageBegin + 32;
+
+      return swapsResponse.result
+        .reduce((accumulator: ReadonlyArray<AtomicSwap>, log: EthereumLog): ReadonlyArray<AtomicSwap> => {
+          const dataArray = Encoding.fromHex(normalizeHex(log.data));
+          const kind = Abi.decodeEventSignature(Encoding.fromHex(normalizeHex(log.topics[0])));
+          switch (kind) {
+            case SwapContractEvent.Opened:
+              return [
+                ...accumulator,
+                {
+                  kind: SwapProcessState.Open,
+                  data: {
+                    id: dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes,
+                    sender: toChecksummedAddress(
+                      Abi.decodeAddress(dataArray.slice(openedSenderBegin, openedSenderEnd)),
+                    ),
+                    recipient: toChecksummedAddress(
+                      Abi.decodeAddress(dataArray.slice(openedRecipientBegin, openedRecipientEnd)),
+                    ),
+                    hash: dataArray.slice(openedHashBegin, openedHashEnd) as Hash,
+                    amounts: [
+                      {
+                        quantity: new BN(dataArray.slice(openedAmountBegin, openedAmountEnd)).toString(),
+                        fractionalDigits: constants.primaryTokenFractionalDigits,
+                        tokenTicker: constants.primaryTokenTicker,
+                      },
+                    ],
+                    timeout: {
+                      height: new BN(dataArray.slice(openedTimeoutBegin, openedTimeoutEnd)).toNumber(),
+                    },
+                  },
+                },
+              ];
+            case SwapContractEvent.Claimed:
+              const swapId = dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes;
+              const swapIndex = accumulator.findIndex(
+                s => Encoding.toHex(s.data.id) === Encoding.toHex(swapId),
+              );
+              if (swapIndex === -1) {
+                throw new Error("Found Claimed event for non-existent swap");
+              }
+              const oldSwap = accumulator[swapIndex];
+              const newSwap: ClaimedSwap = {
+                kind: SwapProcessState.Claimed,
+                data: {
+                  ...oldSwap.data,
+                },
+                preimage: dataArray.slice(claimedPreimageBegin, claimedPreimageEnd) as Preimage,
+              };
+              return [...accumulator.slice(0, swapIndex), ...accumulator.slice(swapIndex + 1), newSwap];
+            default:
+              throw new Error("SwapContractEvent type not handled");
+          }
+        }, [])
+        .filter(
+          (swap: AtomicSwap): boolean => {
+            if (isAtomicSwapRecipientQuery(query)) {
+              return swap.data.recipient === query.recipient;
+            } else if (isAtomicSwapSenderQuery(query)) {
+              return swap.data.sender === query.sender;
+            } else if (isAtomicSwapHashlockQuery(query)) {
+              return Encoding.toHex(swap.data.hash) === Encoding.toHex(query.hashlock);
+            }
+            throw new Error("unsupported query type");
+          },
+        );
     } else {
       throw new Error("unsupported query type");
     }
@@ -979,9 +1133,9 @@ export class EthereumConnection implements AtomicSwapConnection {
           toBlock: encodeQuantity(maxHeight),
           address: contractAddresses,
           topics: [
-            `0x${Encoding.toHex(Abi.calculateMethodHash("Transfer(address,address,uint256)"))}`,
-            sender ? `0x${Encoding.toHex(Abi.encodeAddress(sender))}` : null,
-            recipient ? `0x${Encoding.toHex(Abi.encodeAddress(recipient))}` : null,
+            toEthereumHex(Abi.calculateMethodHash("Transfer(address,address,uint256)")),
+            sender ? toEthereumHex(Abi.encodeAddress(sender)) : null,
+            recipient ? toEthereumHex(Abi.encodeAddress(recipient)) : null,
           ],
         },
       ],

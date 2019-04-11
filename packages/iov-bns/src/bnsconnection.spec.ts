@@ -77,6 +77,10 @@ async function randomBnsAddress(): Promise<Address> {
   return encodeBnsAddress("tiov", await Random.getBytes(20));
 }
 
+function matchId(id: Uint8Array): (swap: AtomicSwap) => boolean {
+  return s => Encoding.toHex(s.data.id) === Encoding.toHex(id);
+}
+
 const cash = "CASH" as TokenTicker;
 const blockTime = 1000;
 
@@ -1579,7 +1583,7 @@ describe("BnsConnection", () => {
     expect(txByHash.length).toEqual(1);
     expect(txByHash[0].transactionId).toEqual(transactionId);
 
-    // ----- connection.getSwap() -------
+    // ----- connection.getSwaps() -------
 
     // we can also swap by id (returned by the transaction result)
     const idSwaps = await connection.getSwaps(querySwapId);
@@ -1723,11 +1727,12 @@ describe("BnsConnection", () => {
     // find two open
     const midSwaps = await connection.getSwaps(rcptQuery);
     expect(midSwaps.length).toEqual(2);
-    const [open1, open2] = midSwaps;
-    expect(open1.kind).toEqual(SwapProcessState.Open);
-    expect(open1.data.id).toEqual(id1);
-    expect(open2.kind).toEqual(SwapProcessState.Open);
-    expect(open2.data.id).toEqual(id2);
+    const open1 = midSwaps.find(matchId(id1));
+    const open2 = midSwaps.find(matchId(id2));
+    expect(open1).toBeDefined();
+    expect(open2).toBeDefined();
+    expect(open1!.kind).toEqual(SwapProcessState.Open);
+    expect(open2!.kind).toEqual(SwapProcessState.Open);
 
     // then claim, offer, claim - 2 closed, 1 open
     {
@@ -1754,16 +1759,18 @@ describe("BnsConnection", () => {
     // make sure we find two claims, one open
     const finalSwaps = await connection.getSwaps({ recipient: recipientAddr });
     expect(finalSwaps.length).toEqual(3);
-    const [open3, claim2, claim1] = finalSwaps;
-    expect(open3.kind).toEqual(SwapProcessState.Open);
-    expect(open3.data.id).toEqual(id3);
-    expect(claim2.kind).toEqual(SwapProcessState.Claimed);
-    expect(claim2.data.id).toEqual(id2);
-    expect(claim1.kind).toEqual(SwapProcessState.Claimed);
-    expect(claim1.data.id).toEqual(id1);
+    const claim1 = finalSwaps.find(matchId(id1));
+    const claim2 = finalSwaps.find(matchId(id2));
+    const open3 = finalSwaps.find(matchId(id3));
+    expect(claim1).toBeDefined();
+    expect(claim2).toBeDefined();
+    expect(open3).toBeDefined();
+    expect(claim1!.kind).toEqual(SwapProcessState.Claimed);
+    expect(claim2!.kind).toEqual(SwapProcessState.Claimed);
+    expect(open3!.kind).toEqual(SwapProcessState.Open);
 
     // We have no guarantees which events are fired exactly,
-    // as it is a race condition if we get Open, Claimed or Claimed
+    // as it is a race condition if we get Open, Claimed or Aborted
     // directly. So let's just check the last information per ID.
     const latestEventPerId = new Map<string, AtomicSwap>();
     for (const event of liveView.value()) {
@@ -1773,17 +1780,17 @@ describe("BnsConnection", () => {
     expect(latestEventPerId.size).toEqual(3);
     expect(latestEventPerId.get(toHex(id1))).toEqual({
       kind: SwapProcessState.Claimed,
-      data: open1.data,
+      data: open1!.data,
       preimage: preimage1,
     });
     expect(latestEventPerId.get(toHex(id2))).toEqual({
       kind: SwapProcessState.Claimed,
-      data: open2.data,
+      data: open2!.data,
       preimage: preimage2,
     });
     expect(latestEventPerId.get(toHex(id3))).toEqual({
       kind: SwapProcessState.Open,
-      data: open3.data,
+      data: open3!.data,
     });
 
     connection.disconnect();

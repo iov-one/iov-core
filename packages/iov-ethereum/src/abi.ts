@@ -1,16 +1,23 @@
 import BN from "bn.js";
 
-import { Address } from "@iov/bcp";
+import { Address, SwapProcessState } from "@iov/bcp";
 import { Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
 import { isValidAddress } from "./address";
+import { toEthereumHex } from "./utils";
 
 export interface HeadTail {
   /** An array of start positions within the original data */
   readonly head: ReadonlyArray<number>;
   /** Arguments split by positions as defined by head */
   readonly tail: ReadonlyArray<Uint8Array>;
+}
+
+export enum SwapContractEvent {
+  Opened,
+  Claimed,
+  Aborted,
 }
 
 export class Abi {
@@ -44,7 +51,7 @@ export class Abi {
       throw new Error("Input data not 256 bit long");
     }
     const lowBytes = binary.slice(12);
-    return `0x${Encoding.toHex(lowBytes)}` as Address;
+    return toEthereumHex(lowBytes) as Address;
   }
 
   public static decodeUint256(binary: Uint8Array): string {
@@ -111,6 +118,54 @@ export class Abi {
 
     return data.slice(32, 32 + length);
   }
+
+  public static decodeSwapProcessState(data: Uint8Array): SwapProcessState {
+    if (data.length !== 32) {
+      throw new Error("Input data not 256 bit long");
+    }
+    const key = Abi.decodeUint256(data);
+    const map: { readonly [key: string]: SwapProcessState } = {
+      1: SwapProcessState.Open,
+      2: SwapProcessState.Claimed,
+      3: SwapProcessState.Aborted,
+    };
+    const state: SwapProcessState | undefined = map[key];
+
+    if (state === undefined) {
+      throw new Error("Invalid swap process state");
+    }
+    return state;
+  }
+
+  public static decodeEventSignature(data: Uint8Array): SwapContractEvent {
+    if (data.length !== 32) {
+      throw new Error("Input data not 256 bit long");
+    }
+    const key = Encoding.toHex(data);
+    const map: { readonly [key: string]: SwapContractEvent } = {
+      [Abi.eventSignatures.opened]: SwapContractEvent.Opened,
+      [Abi.eventSignatures.claimed]: SwapContractEvent.Claimed,
+      [Abi.eventSignatures.aborted]: SwapContractEvent.Aborted,
+    };
+    const event: SwapContractEvent | undefined = map[key];
+
+    if (event === undefined) {
+      throw new Error("Invalid event signature");
+    }
+    return event;
+  }
+
+  private static readonly eventSignatures: {
+    readonly opened: string;
+    readonly claimed: string;
+    readonly aborted: string;
+  } = {
+    opened: Encoding.toHex(
+      Abi.calculateMethodHash("Opened(bytes32,address,address,bytes32,uint256,uint256)"),
+    ),
+    claimed: Encoding.toHex(Abi.calculateMethodHash("Claimed(bytes32,bytes32)")),
+    aborted: Encoding.toHex(Abi.calculateMethodHash("Aborted(bytes32)")),
+  };
 
   private static padTo32(data: Uint8Array): Uint8Array {
     if (data.length > 32) {

@@ -39,11 +39,12 @@ import {
   encodeQuantity,
   fromBcpChainId,
   normalizeHex,
+  toEthereumHex,
 } from "./utils";
 
 const methodCallPrefix = {
   erc20: {
-    transfer: `0x${Encoding.toHex(Abi.calculateMethodId("transfer(address,uint256)"))}`,
+    transfer: toEthereumHex(Abi.calculateMethodId("transfer(address,uint256)")),
   },
 };
 
@@ -84,13 +85,12 @@ export interface EthereumCodecOptions {
 }
 
 export class EthereumCodec implements TxCodec {
-  private readonly atomicSwapEtherContractAddress: Address;
+  private readonly atomicSwapEtherContractAddress?: Address;
   private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
 
   constructor(options: EthereumCodecOptions) {
-    this.atomicSwapEtherContractAddress =
-      options.atomicSwapEtherContractAddress || constants.atomicSwapEtherContractAddress;
-    this.erc20Tokens = options.erc20Tokens ? options.erc20Tokens : new Map();
+    this.atomicSwapEtherContractAddress = options.atomicSwapEtherContractAddress;
+    this.erc20Tokens = options.erc20Tokens || new Map();
   }
 
   public bytesToSign(unsigned: UnsignedTransaction, nonce: Nonce): SigningJob {
@@ -161,6 +161,7 @@ export class EthereumCodec implements TxCodec {
     };
 
     const atomicSwap =
+      this.atomicSwapEtherContractAddress &&
       toChecksummedAddress(json.to).toLowerCase() === this.atomicSwapEtherContractAddress.toLowerCase();
 
     const erc20Token =

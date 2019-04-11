@@ -1,9 +1,14 @@
-import { Address } from "@iov/bcp";
+import { Address, SwapProcessState } from "@iov/bcp";
 export interface HeadTail {
     /** An array of start positions within the original data */
     readonly head: ReadonlyArray<number>;
     /** Arguments split by positions as defined by head */
     readonly tail: ReadonlyArray<Uint8Array>;
+}
+export declare enum SwapContractEvent {
+    Opened = 0,
+    Claimed = 1,
+    Aborted = 2
 }
 export declare class Abi {
     static calculateMethodHash(signature: string): Uint8Array;
@@ -18,5 +23,8 @@ export declare class Abi {
      */
     static decodeHeadTail(data: Uint8Array): HeadTail;
     static decodeVariableLength(data: Uint8Array): Uint8Array;
+    static decodeSwapProcessState(data: Uint8Array): SwapProcessState;
+    static decodeEventSignature(data: Uint8Array): SwapContractEvent;
+    private static readonly eventSignatures;
     private static padTo32;
 }
