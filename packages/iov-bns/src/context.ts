@@ -68,7 +68,7 @@ export class Context {
         // amounts: ensure(swap.amount).map(coin => decodeAmount(coin)),
         // TODO: read this is a second query
         amounts: [],
-        timeout: { timestamp: asIntegerNumber(ensure(swap.timeout).seconds) },
+        timeout: { timestamp: asIntegerNumber(ensure(swap.timeout)) },
         memo: swap.memo,
       },
     };

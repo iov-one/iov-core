@@ -1,1 +1,1 @@
-b33f16fe03ba952ab1bd3c7e67b153fed825bc95 (HEAD, tag: v0.13.0) Merge pull request #436 from iov-one/human_readable_coin_json
+3c1504ec3f8e2529d6f126436f361188ebbe3b0a (HEAD, tag: v0.14.0) store/iavl: refactor tests (#509)

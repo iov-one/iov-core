@@ -1521,100 +1521,6 @@ export namespace orm {
   }
 }
 
-/** Namespace weavetest. */
-export namespace weavetest {
-  /** Properties of a ResultSet. */
-  interface IResultSet {
-    /** ResultSet results */
-    results?: Uint8Array[] | null;
-  }
-
-  /** and therefore it is binary compatible with it. Copied to avoid import. */
-  class ResultSet implements IResultSet {
-    /**
-     * Constructs a new ResultSet.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: weavetest.IResultSet);
-
-    /** ResultSet results. */
-    public results: Uint8Array[];
-
-    /**
-     * Creates a new ResultSet instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns ResultSet instance
-     */
-    public static create(properties?: weavetest.IResultSet): weavetest.ResultSet;
-
-    /**
-     * Encodes the specified ResultSet message. Does not implicitly {@link weavetest.ResultSet.verify|verify} messages.
-     * @param message ResultSet message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: weavetest.IResultSet, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified ResultSet message, length delimited. Does not implicitly {@link weavetest.ResultSet.verify|verify} messages.
-     * @param message ResultSet message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: weavetest.IResultSet, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a ResultSet message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns ResultSet
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): weavetest.ResultSet;
-
-    /**
-     * Decodes a ResultSet message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns ResultSet
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): weavetest.ResultSet;
-
-    /**
-     * Verifies a ResultSet message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a ResultSet message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns ResultSet
-     */
-    public static fromObject(object: { [k: string]: any }): weavetest.ResultSet;
-
-    /**
-     * Creates a plain object from a ResultSet message. Also converts values to other types if specified.
-     * @param message ResultSet
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: weavetest.ResultSet,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this ResultSet to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-}
-
 /** Namespace batch. */
 export namespace batch {
   /** Properties of a ByteArrayList. */
@@ -2719,8 +2625,8 @@ export namespace escrow {
     /** Escrow recipient */
     recipient?: Uint8Array | null;
 
-    /** Timeout represents wall clock time as read from the block header. */
-    timeout?: google.protobuf.ITimestamp | null;
+    /** expired: [timeout, infinity) */
+    timeout?: number | Long | null;
 
     /** max length 128 character */
     memo?: string | null;
@@ -2743,8 +2649,8 @@ export namespace escrow {
     /** Escrow recipient. */
     public recipient: Uint8Array;
 
-    /** Timeout represents wall clock time as read from the block header. */
-    public timeout?: google.protobuf.ITimestamp | null;
+    /** expired: [timeout, infinity) */
+    public timeout: number | Long;
 
     /** max length 128 character */
     public memo: string;
@@ -2838,7 +2744,7 @@ export namespace escrow {
     amount?: coin.ICoin[] | null;
 
     /** Timeout represents wall clock time. */
-    timeout?: google.protobuf.ITimestamp | null;
+    timeout?: number | Long | null;
 
     /** max length 128 character */
     memo?: string | null;
@@ -2865,7 +2771,7 @@ export namespace escrow {
     public amount: coin.ICoin[];
 
     /** Timeout represents wall clock time. */
-    public timeout?: google.protobuf.ITimestamp | null;
+    public timeout: number | Long;
 
     /** max length 128 character */
     public memo: string;
@@ -3260,109 +3166,1102 @@ export namespace escrow {
   }
 }
 
-/** Namespace google. */
-export namespace google {
-  /** Namespace protobuf. */
-  namespace protobuf {
-    /** Properties of a Timestamp. */
-    interface ITimestamp {
-      /** Timestamp seconds */
-      seconds?: number | Long | null;
+/** Namespace gov. */
+export namespace gov {
+  /** Properties of an Electorate. */
+  interface IElectorate {
+    /** Human readable title. */
+    title?: string | null;
 
-      /** Timestamp nanos */
-      nanos?: number | null;
+    /** Elector defines a list of all signatures that are allowed to participate in a vote */
+    electors?: gov.IElector[] | null;
+
+    /** TotalWeightElectorate is the sum of all electors weights. */
+    totalWeightElectorate?: number | Long | null;
+  }
+
+  /** and is stored for re-use */
+  class Electorate implements IElectorate {
+    /**
+     * Constructs a new Electorate.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: gov.IElectorate);
+
+    /** Human readable title. */
+    public title: string;
+
+    /** Elector defines a list of all signatures that are allowed to participate in a vote */
+    public electors: gov.IElector[];
+
+    /** TotalWeightElectorate is the sum of all electors weights. */
+    public totalWeightElectorate: number | Long;
+
+    /**
+     * Creates a new Electorate instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Electorate instance
+     */
+    public static create(properties?: gov.IElectorate): gov.Electorate;
+
+    /**
+     * Encodes the specified Electorate message. Does not implicitly {@link gov.Electorate.verify|verify} messages.
+     * @param message Electorate message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: gov.IElectorate, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Electorate message, length delimited. Does not implicitly {@link gov.Electorate.verify|verify} messages.
+     * @param message Electorate message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: gov.IElectorate, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes an Electorate message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Electorate
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.Electorate;
+
+    /**
+     * Decodes an Electorate message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Electorate
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.Electorate;
+
+    /**
+     * Verifies an Electorate message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an Electorate message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Electorate
+     */
+    public static fromObject(object: { [k: string]: any }): gov.Electorate;
+
+    /**
+     * Creates a plain object from an Electorate message. Also converts values to other types if specified.
+     * @param message Electorate
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: gov.Electorate,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Electorate to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of an Elector. */
+  interface IElector {
+    /** The address of the voter. */
+    signature?: Uint8Array | null;
+
+    /** Weight defines the power of the participants vote. max value is 65535 (2^16-1). */
+    weight?: number | null;
+  }
+
+  /** the greater the power of a participant. */
+  class Elector implements IElector {
+    /**
+     * Constructs a new Elector.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: gov.IElector);
+
+    /** The address of the voter. */
+    public signature: Uint8Array;
+
+    /** Weight defines the power of the participants vote. max value is 65535 (2^16-1). */
+    public weight: number;
+
+    /**
+     * Creates a new Elector instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Elector instance
+     */
+    public static create(properties?: gov.IElector): gov.Elector;
+
+    /**
+     * Encodes the specified Elector message. Does not implicitly {@link gov.Elector.verify|verify} messages.
+     * @param message Elector message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: gov.IElector, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Elector message, length delimited. Does not implicitly {@link gov.Elector.verify|verify} messages.
+     * @param message Elector message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: gov.IElector, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes an Elector message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Elector
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.Elector;
+
+    /**
+     * Decodes an Elector message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Elector
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.Elector;
+
+    /**
+     * Verifies an Elector message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an Elector message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Elector
+     */
+    public static fromObject(object: { [k: string]: any }): gov.Elector;
+
+    /**
+     * Creates a plain object from an Elector message. Also converts values to other types if specified.
+     * @param message Elector
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: gov.Elector,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Elector to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of an ElectionRule. */
+  interface IElectionRule {
+    /** Human readable title. */
+    title?: string | null;
+
+    /** Duration how long the voting period will take place. */
+    votingPeriodHours?: number | null;
+
+    /** of the eligible voters. */
+    threshold?: gov.IFraction | null;
+  }
+
+  /** Election Rule defines how an election is run. A proposal must be voted upon via a pre-defined ruleset. */
+  class ElectionRule implements IElectionRule {
+    /**
+     * Constructs a new ElectionRule.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: gov.IElectionRule);
+
+    /** Human readable title. */
+    public title: string;
+
+    /** Duration how long the voting period will take place. */
+    public votingPeriodHours: number;
+
+    /** of the eligible voters. */
+    public threshold?: gov.IFraction | null;
+
+    /**
+     * Creates a new ElectionRule instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ElectionRule instance
+     */
+    public static create(properties?: gov.IElectionRule): gov.ElectionRule;
+
+    /**
+     * Encodes the specified ElectionRule message. Does not implicitly {@link gov.ElectionRule.verify|verify} messages.
+     * @param message ElectionRule message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: gov.IElectionRule, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ElectionRule message, length delimited. Does not implicitly {@link gov.ElectionRule.verify|verify} messages.
+     * @param message ElectionRule message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: gov.IElectionRule, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes an ElectionRule message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ElectionRule
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.ElectionRule;
+
+    /**
+     * Decodes an ElectionRule message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ElectionRule
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.ElectionRule;
+
+    /**
+     * Verifies an ElectionRule message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an ElectionRule message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ElectionRule
+     */
+    public static fromObject(object: { [k: string]: any }): gov.ElectionRule;
+
+    /**
+     * Creates a plain object from an ElectionRule message. Also converts values to other types if specified.
+     * @param message ElectionRule
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: gov.ElectionRule,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this ElectionRule to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a Fraction. */
+  interface IFraction {
+    /** The top number in a fraction. */
+    numerator?: number | null;
+
+    /** The bottom number */
+    denominator?: number | null;
+  }
+
+  /** Valid range of the fraction is 0.5 to 1. */
+  class Fraction implements IFraction {
+    /**
+     * Constructs a new Fraction.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: gov.IFraction);
+
+    /** The top number in a fraction. */
+    public numerator: number;
+
+    /** The bottom number */
+    public denominator: number;
+
+    /**
+     * Creates a new Fraction instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Fraction instance
+     */
+    public static create(properties?: gov.IFraction): gov.Fraction;
+
+    /**
+     * Encodes the specified Fraction message. Does not implicitly {@link gov.Fraction.verify|verify} messages.
+     * @param message Fraction message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: gov.IFraction, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Fraction message, length delimited. Does not implicitly {@link gov.Fraction.verify|verify} messages.
+     * @param message Fraction message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: gov.IFraction, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a Fraction message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Fraction
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.Fraction;
+
+    /**
+     * Decodes a Fraction message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Fraction
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.Fraction;
+
+    /**
+     * Verifies a Fraction message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Fraction message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Fraction
+     */
+    public static fromObject(object: { [k: string]: any }): gov.Fraction;
+
+    /**
+     * Creates a plain object from a Fraction message. Also converts values to other types if specified.
+     * @param message Fraction
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: gov.Fraction,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Fraction to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a TextProposal. */
+  interface ITextProposal {
+    /** Human readable title. */
+    title?: string | null;
+
+    /** Description of the proposal in text form. */
+    description?: string | null;
+
+    /** Reference to the election rule */
+    electionRuleId?: Uint8Array | null;
+
+    /** Reference to the electorate to define the group of possible voters. */
+    electorateId?: Uint8Array | null;
+
+    /** to this start time. */
+    votingStartTime?: number | Long | null;
+
+    /** to be included in the election. */
+    votingEndTime?: number | Long | null;
+
+    /** Unix timestamp of the block where the proposal was added to the chain. */
+    submissionTime?: number | Long | null;
+
+    /** Address of the author who created the proposal. If not set explicit on creation it will default to the main signer. */
+    author?: Uint8Array | null;
+
+    /** Votes contain the list of individual votes with elector and voted option. */
+    votes?: gov.IVote[] | null;
+
+    /** Result of the election. Contains intermediate tally results while voting period is open. */
+    voteResult?: gov.ITallyResult | null;
+
+    /** status is the final result based on the votes and election rule. */
+    status?: gov.TextProposal.Status | null;
+  }
+
+  /** A text form proposal for an on-chain governance process. */
+  class TextProposal implements ITextProposal {
+    /**
+     * Constructs a new TextProposal.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: gov.ITextProposal);
+
+    /** Human readable title. */
+    public title: string;
+
+    /** Description of the proposal in text form. */
+    public description: string;
+
+    /** Reference to the election rule */
+    public electionRuleId: Uint8Array;
+
+    /** Reference to the electorate to define the group of possible voters. */
+    public electorateId: Uint8Array;
+
+    /** to this start time. */
+    public votingStartTime: number | Long;
+
+    /** to be included in the election. */
+    public votingEndTime: number | Long;
+
+    /** Unix timestamp of the block where the proposal was added to the chain. */
+    public submissionTime: number | Long;
+
+    /** Address of the author who created the proposal. If not set explicit on creation it will default to the main signer. */
+    public author: Uint8Array;
+
+    /** Votes contain the list of individual votes with elector and voted option. */
+    public votes: gov.IVote[];
+
+    /** Result of the election. Contains intermediate tally results while voting period is open. */
+    public voteResult?: gov.ITallyResult | null;
+
+    /** status is the final result based on the votes and election rule. */
+    public status: gov.TextProposal.Status;
+
+    /**
+     * Creates a new TextProposal instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns TextProposal instance
+     */
+    public static create(properties?: gov.ITextProposal): gov.TextProposal;
+
+    /**
+     * Encodes the specified TextProposal message. Does not implicitly {@link gov.TextProposal.verify|verify} messages.
+     * @param message TextProposal message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: gov.ITextProposal, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified TextProposal message, length delimited. Does not implicitly {@link gov.TextProposal.verify|verify} messages.
+     * @param message TextProposal message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: gov.ITextProposal, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a TextProposal message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns TextProposal
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.TextProposal;
+
+    /**
+     * Decodes a TextProposal message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns TextProposal
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.TextProposal;
+
+    /**
+     * Verifies a TextProposal message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a TextProposal message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns TextProposal
+     */
+    public static fromObject(object: { [k: string]: any }): gov.TextProposal;
+
+    /**
+     * Creates a plain object from a TextProposal message. Also converts values to other types if specified.
+     * @param message TextProposal
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: gov.TextProposal,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this TextProposal to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  namespace TextProposal {
+    /** Status of the proposal base on the final tally result. `UNDEFINED` as initial value. */
+    enum Status {
+      TEXT_PROPOSAL_STATUS_INVALID = 0,
+      TEXT_PROPOSAL_STATUS_UNDEFINED = 1,
+      TEXT_PROPOSAL_STATUS_ACCEPTED = 2,
+      TEXT_PROPOSAL_STATUS_REJECTED = 3,
     }
+  }
 
-    /** Represents a Timestamp. */
-    class Timestamp implements ITimestamp {
-      /**
-       * Constructs a new Timestamp.
-       * @param [properties] Properties to set
-       */
-      constructor(properties?: google.protobuf.ITimestamp);
+  /** Properties of a TallyResult. */
+  interface ITallyResult {
+    /** Sum of weights of all the voters that approved the proposal */
+    totalYes?: number | null;
 
-      /** Timestamp seconds. */
-      public seconds: number | Long;
+    /** Sum of weights of all the voters that rejected the proposal */
+    totalNo?: number | null;
 
-      /** Timestamp nanos. */
-      public nanos: number;
+    /** Sum of weights of all the voters that voted abstain */
+    totalAbstain?: number | null;
 
-      /**
-       * Creates a new Timestamp instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns Timestamp instance
-       */
-      public static create(properties?: google.protobuf.ITimestamp): google.protobuf.Timestamp;
+    /** Sum of all weights in the electorate. */
+    totalWeightElectorate?: number | Long | null;
 
-      /**
-       * Encodes the specified Timestamp message. Does not implicitly {@link google.protobuf.Timestamp.verify|verify} messages.
-       * @param message Timestamp message or plain object to encode
-       * @param [writer] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(message: google.protobuf.ITimestamp, writer?: $protobuf.Writer): $protobuf.Writer;
+    /** proposal this value must be exceeded. */
+    threshold?: gov.IFraction | null;
+  }
 
-      /**
-       * Encodes the specified Timestamp message, length delimited. Does not implicitly {@link google.protobuf.Timestamp.verify|verify} messages.
-       * @param message Timestamp message or plain object to encode
-       * @param [writer] Writer to encode to
-       * @returns Writer
-       */
-      public static encodeDelimited(
-        message: google.protobuf.ITimestamp,
-        writer?: $protobuf.Writer,
-      ): $protobuf.Writer;
+  /** TallyResult contains sums of the votes and all data for the final result. */
+  class TallyResult implements ITallyResult {
+    /**
+     * Constructs a new TallyResult.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: gov.ITallyResult);
 
-      /**
-       * Decodes a Timestamp message from the specified reader or buffer.
-       * @param reader Reader or buffer to decode from
-       * @param [length] Message length if known beforehand
-       * @returns Timestamp
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): google.protobuf.Timestamp;
+    /** Sum of weights of all the voters that approved the proposal */
+    public totalYes: number;
 
-      /**
-       * Decodes a Timestamp message from the specified reader or buffer, length delimited.
-       * @param reader Reader or buffer to decode from
-       * @returns Timestamp
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): google.protobuf.Timestamp;
+    /** Sum of weights of all the voters that rejected the proposal */
+    public totalNo: number;
 
-      /**
-       * Verifies a Timestamp message.
-       * @param message Plain object to verify
-       * @returns `null` if valid, otherwise the reason why it is not
-       */
-      public static verify(message: { [k: string]: any }): string | null;
+    /** Sum of weights of all the voters that voted abstain */
+    public totalAbstain: number;
 
-      /**
-       * Creates a Timestamp message from a plain object. Also converts values to their respective internal types.
-       * @param object Plain object
-       * @returns Timestamp
-       */
-      public static fromObject(object: { [k: string]: any }): google.protobuf.Timestamp;
+    /** Sum of all weights in the electorate. */
+    public totalWeightElectorate: number | Long;
 
-      /**
-       * Creates a plain object from a Timestamp message. Also converts values to other types if specified.
-       * @param message Timestamp
-       * @param [options] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        message: google.protobuf.Timestamp,
-        options?: $protobuf.IConversionOptions,
-      ): { [k: string]: any };
+    /** proposal this value must be exceeded. */
+    public threshold?: gov.IFraction | null;
 
-      /**
-       * Converts this Timestamp to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
+    /**
+     * Creates a new TallyResult instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns TallyResult instance
+     */
+    public static create(properties?: gov.ITallyResult): gov.TallyResult;
+
+    /**
+     * Encodes the specified TallyResult message. Does not implicitly {@link gov.TallyResult.verify|verify} messages.
+     * @param message TallyResult message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: gov.ITallyResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified TallyResult message, length delimited. Does not implicitly {@link gov.TallyResult.verify|verify} messages.
+     * @param message TallyResult message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: gov.ITallyResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a TallyResult message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns TallyResult
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.TallyResult;
+
+    /**
+     * Decodes a TallyResult message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns TallyResult
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.TallyResult;
+
+    /**
+     * Verifies a TallyResult message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a TallyResult message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns TallyResult
+     */
+    public static fromObject(object: { [k: string]: any }): gov.TallyResult;
+
+    /**
+     * Creates a plain object from a TallyResult message. Also converts values to other types if specified.
+     * @param message TallyResult
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: gov.TallyResult,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this TallyResult to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a Vote. */
+  interface IVote {
+    /** Vote elector */
+    elector?: gov.IElector | null;
+
+    /** Vote voted */
+    voted?: gov.VoteOption | null;
+  }
+
+  /** Vote combines the elector and his voted option to archive them. */
+  class Vote implements IVote {
+    /**
+     * Constructs a new Vote.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: gov.IVote);
+
+    /** Vote elector. */
+    public elector?: gov.IElector | null;
+
+    /** Vote voted. */
+    public voted: gov.VoteOption;
+
+    /**
+     * Creates a new Vote instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Vote instance
+     */
+    public static create(properties?: gov.IVote): gov.Vote;
+
+    /**
+     * Encodes the specified Vote message. Does not implicitly {@link gov.Vote.verify|verify} messages.
+     * @param message Vote message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: gov.IVote, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Vote message, length delimited. Does not implicitly {@link gov.Vote.verify|verify} messages.
+     * @param message Vote message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: gov.IVote, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a Vote message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Vote
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.Vote;
+
+    /**
+     * Decodes a Vote message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Vote
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.Vote;
+
+    /**
+     * Verifies a Vote message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Vote message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Vote
+     */
+    public static fromObject(object: { [k: string]: any }): gov.Vote;
+
+    /**
+     * Creates a plain object from a Vote message. Also converts values to other types if specified.
+     * @param message Vote
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: gov.Vote, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this Vote to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a CreateTextProposalMsg. */
+  interface ICreateTextProposalMsg {
+    /** Human readable title. Must match `^[a-zA-Z0-9 _.-]{4,128}$` */
+    title?: string | null;
+
+    /** Human readable description with 3 to 5000 chars. */
+    description?: string | null;
+
+    /** Reference to the election rule */
+    electionRuleId?: Uint8Array | null;
+
+    /** Reference to the electorate to define the group of possible voters. */
+    electorateId?: Uint8Array | null;
+
+    /** Unix timestamp when the proposal starts. Must be in the future. */
+    startTime?: number | Long | null;
+
+    /** When not set it will default to the main signer. */
+    author?: Uint8Array | null;
+  }
+
+  /** CreateTextProposalMsg creates a new governance proposal. */
+  class CreateTextProposalMsg implements ICreateTextProposalMsg {
+    /**
+     * Constructs a new CreateTextProposalMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: gov.ICreateTextProposalMsg);
+
+    /** Human readable title. Must match `^[a-zA-Z0-9 _.-]{4,128}$` */
+    public title: string;
+
+    /** Human readable description with 3 to 5000 chars. */
+    public description: string;
+
+    /** Reference to the election rule */
+    public electionRuleId: Uint8Array;
+
+    /** Reference to the electorate to define the group of possible voters. */
+    public electorateId: Uint8Array;
+
+    /** Unix timestamp when the proposal starts. Must be in the future. */
+    public startTime: number | Long;
+
+    /** When not set it will default to the main signer. */
+    public author: Uint8Array;
+
+    /**
+     * Creates a new CreateTextProposalMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns CreateTextProposalMsg instance
+     */
+    public static create(properties?: gov.ICreateTextProposalMsg): gov.CreateTextProposalMsg;
+
+    /**
+     * Encodes the specified CreateTextProposalMsg message. Does not implicitly {@link gov.CreateTextProposalMsg.verify|verify} messages.
+     * @param message CreateTextProposalMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: gov.ICreateTextProposalMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified CreateTextProposalMsg message, length delimited. Does not implicitly {@link gov.CreateTextProposalMsg.verify|verify} messages.
+     * @param message CreateTextProposalMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: gov.ICreateTextProposalMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a CreateTextProposalMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns CreateTextProposalMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.CreateTextProposalMsg;
+
+    /**
+     * Decodes a CreateTextProposalMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns CreateTextProposalMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.CreateTextProposalMsg;
+
+    /**
+     * Verifies a CreateTextProposalMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a CreateTextProposalMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns CreateTextProposalMsg
+     */
+    public static fromObject(object: { [k: string]: any }): gov.CreateTextProposalMsg;
+
+    /**
+     * Creates a plain object from a CreateTextProposalMsg message. Also converts values to other types if specified.
+     * @param message CreateTextProposalMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: gov.CreateTextProposalMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this CreateTextProposalMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** VoteOptions define possible values for a vote including the INVALID default. */
+  enum VoteOption {
+    VOTE_OPTION_INVALID = 0,
+    VOTE_OPTION_YES = 1,
+    VOTE_OPTION_NO = 2,
+    VOTE_OPTION_ABSTAIN = 3,
+  }
+
+  /** Properties of a VoteMsg. */
+  interface IVoteMsg {
+    /** The unique id of the proposal. */
+    proposalId?: Uint8Array | null;
+
+    /** must be included in the electorate for a valid vote. */
+    voter?: Uint8Array | null;
+
+    /** Option for the vote. Must be Yes, No or Abstain for a valid vote. */
+    selected?: gov.VoteOption | null;
+  }
+
+  /** VoteMsg is the way to express a voice and participate in an election of a proposal on chain. */
+  class VoteMsg implements IVoteMsg {
+    /**
+     * Constructs a new VoteMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: gov.IVoteMsg);
+
+    /** The unique id of the proposal. */
+    public proposalId: Uint8Array;
+
+    /** must be included in the electorate for a valid vote. */
+    public voter: Uint8Array;
+
+    /** Option for the vote. Must be Yes, No or Abstain for a valid vote. */
+    public selected: gov.VoteOption;
+
+    /**
+     * Creates a new VoteMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns VoteMsg instance
+     */
+    public static create(properties?: gov.IVoteMsg): gov.VoteMsg;
+
+    /**
+     * Encodes the specified VoteMsg message. Does not implicitly {@link gov.VoteMsg.verify|verify} messages.
+     * @param message VoteMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: gov.IVoteMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified VoteMsg message, length delimited. Does not implicitly {@link gov.VoteMsg.verify|verify} messages.
+     * @param message VoteMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: gov.IVoteMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a VoteMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns VoteMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.VoteMsg;
+
+    /**
+     * Decodes a VoteMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns VoteMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.VoteMsg;
+
+    /**
+     * Verifies a VoteMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a VoteMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns VoteMsg
+     */
+    public static fromObject(object: { [k: string]: any }): gov.VoteMsg;
+
+    /**
+     * Creates a plain object from a VoteMsg message. Also converts values to other types if specified.
+     * @param message VoteMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: gov.VoteMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this VoteMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a TallyMsg. */
+  interface ITallyMsg {
+    /** ProposalID is UUID of the proposal to close. */
+    proposalId?: Uint8Array | null;
+  }
+
+  /** A final tally can be execute only once. A second submission will fail with an invalid state error. */
+  class TallyMsg implements ITallyMsg {
+    /**
+     * Constructs a new TallyMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: gov.ITallyMsg);
+
+    /** ProposalID is UUID of the proposal to close. */
+    public proposalId: Uint8Array;
+
+    /**
+     * Creates a new TallyMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns TallyMsg instance
+     */
+    public static create(properties?: gov.ITallyMsg): gov.TallyMsg;
+
+    /**
+     * Encodes the specified TallyMsg message. Does not implicitly {@link gov.TallyMsg.verify|verify} messages.
+     * @param message TallyMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: gov.ITallyMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified TallyMsg message, length delimited. Does not implicitly {@link gov.TallyMsg.verify|verify} messages.
+     * @param message TallyMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: gov.ITallyMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a TallyMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns TallyMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.TallyMsg;
+
+    /**
+     * Decodes a TallyMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns TallyMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.TallyMsg;
+
+    /**
+     * Verifies a TallyMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a TallyMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns TallyMsg
+     */
+    public static fromObject(object: { [k: string]: any }): gov.TallyMsg;
+
+    /**
+     * Creates a plain object from a TallyMsg message. Also converts values to other types if specified.
+     * @param message TallyMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: gov.TallyMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this TallyMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
   }
 }
 
@@ -5707,6 +6606,100 @@ export namespace sigs {
 
     /**
      * Converts this StdSignature to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a BumpSequenceMsg. */
+  interface IBumpSequenceMsg {
+    /** total increment value, including the default increment. */
+    increment?: number | null;
+  }
+
+  /** that signed the transaction. */
+  class BumpSequenceMsg implements IBumpSequenceMsg {
+    /**
+     * Constructs a new BumpSequenceMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: sigs.IBumpSequenceMsg);
+
+    /** total increment value, including the default increment. */
+    public increment: number;
+
+    /**
+     * Creates a new BumpSequenceMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns BumpSequenceMsg instance
+     */
+    public static create(properties?: sigs.IBumpSequenceMsg): sigs.BumpSequenceMsg;
+
+    /**
+     * Encodes the specified BumpSequenceMsg message. Does not implicitly {@link sigs.BumpSequenceMsg.verify|verify} messages.
+     * @param message BumpSequenceMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: sigs.IBumpSequenceMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified BumpSequenceMsg message, length delimited. Does not implicitly {@link sigs.BumpSequenceMsg.verify|verify} messages.
+     * @param message BumpSequenceMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: sigs.IBumpSequenceMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a BumpSequenceMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns BumpSequenceMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): sigs.BumpSequenceMsg;
+
+    /**
+     * Decodes a BumpSequenceMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns BumpSequenceMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): sigs.BumpSequenceMsg;
+
+    /**
+     * Verifies a BumpSequenceMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a BumpSequenceMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns BumpSequenceMsg
+     */
+    public static fromObject(object: { [k: string]: any }): sigs.BumpSequenceMsg;
+
+    /**
+     * Creates a plain object from a BumpSequenceMsg message. Also converts values to other types if specified.
+     * @param message BumpSequenceMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: sigs.BumpSequenceMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this BumpSequenceMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
