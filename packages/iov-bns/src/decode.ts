@@ -23,7 +23,7 @@ import * as codecImpl from "./generated/codecimpl";
 import {
   AddAddressToUsernameTx,
   asInt53,
-  asNumber,
+  asIntegerNumber,
   BnsUsernameNft,
   ChainAddressPair,
   decodeFullSig,
@@ -72,12 +72,12 @@ export function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): Token 
 export function decodeAmount(coin: codecImpl.coin.ICoin): Amount {
   const fractionalDigits = 9; // fixed for all tokens in BNS
 
-  const wholeNumber = asNumber(coin.whole);
+  const wholeNumber = asIntegerNumber(coin.whole);
   if (wholeNumber < 0) {
     throw new Error("Component `whole` must not be negative");
   }
 
-  const fractionalNumber = asNumber(coin.fractional);
+  const fractionalNumber = asIntegerNumber(coin.fractional);
   if (fractionalNumber < 0) {
     throw new Error("Component `fractional` must not be negative");
   }
@@ -196,7 +196,7 @@ function parseSwapOfferTx(
     kind: "bcp/swap_offer",
     hash: hashFromIdentifier(hashIdentifier),
     recipient: encodeBnsAddress(prefix, ensure(msg.recipient, "recipient")),
-    timeout: { timestamp: asNumber(ensure(msg.timeout).seconds) },
+    timeout: { timestamp: asIntegerNumber(ensure(msg.timeout)) },
     amounts: (msg.amount || []).map(decodeAmount),
   };
 }

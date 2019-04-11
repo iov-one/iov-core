@@ -163,21 +163,30 @@ export function decodeSignature(signature: codecImpl.crypto.ISignature): Signatu
   }
 }
 
-export const decodeFullSig = (sig: codecImpl.sigs.IStdSignature): FullSignature => ({
-  nonce: asInt53(sig.sequence).toNumber() as Nonce,
-  pubkey: decodePubkey(ensure(sig.pubkey)),
-  signature: decodeSignature(ensure(sig.signature)),
-});
+export function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature {
+  return {
+    nonce: asInt53(sig.sequence).toNumber() as Nonce,
+    pubkey: decodePubkey(ensure(sig.pubkey)),
+    signature: decodeSignature(ensure(sig.signature)),
+  };
+}
 
-export const asNumber = (maybeLong: Long | number | null | undefined): number => {
+/**
+ * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
+ * number.
+ */
+export function asIntegerNumber(maybeLong: Long | number | null | undefined): number {
   if (!maybeLong) {
     return 0;
   } else if (typeof maybeLong === "number") {
+    if (!Number.isInteger(maybeLong)) {
+      throw new Error("Number is not an integer.");
+    }
     return maybeLong;
   } else {
     return maybeLong.toInt();
   }
-};
+}
 
 export function asInt53(input: Long | number | null | undefined): Int53 {
   if (!input) {
@@ -189,12 +198,12 @@ export function asInt53(input: Long | number | null | undefined): Int53 {
   }
 }
 
-export const ensure = <T>(maybe: T | null | undefined, msg?: string): T => {
+export function ensure<T>(maybe: T | null | undefined, msg?: string): T {
   if (maybe === null || maybe === undefined) {
     throw new Error("missing " + (msg || "field"));
   }
   return maybe;
-};
+}
 
 // transactions
 

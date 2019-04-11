@@ -68,10 +68,14 @@ export interface Decoder<T extends {}> {
 export declare function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PublicKeyBundle;
 export declare function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivateKeyBundle;
 export declare function decodeSignature(signature: codecImpl.crypto.ISignature): SignatureBytes;
-export declare const decodeFullSig: (sig: codecImpl.sigs.IStdSignature) => FullSignature;
-export declare const asNumber: (maybeLong: number | Long | null | undefined) => number;
+export declare function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature;
+/**
+ * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
+ * number.
+ */
+export declare function asIntegerNumber(maybeLong: Long | number | null | undefined): number;
 export declare function asInt53(input: Long | number | null | undefined): Int53;
-export declare const ensure: <T>(maybe: T | null | undefined, msg?: string | undefined) => T;
+export declare function ensure<T>(maybe: T | null | undefined, msg?: string): T;
 export interface AddAddressToUsernameTx extends UnsignedTransaction {
     readonly kind: "bns/add_address_to_username";
     /** the username to be updated, must exist on chain */

@@ -164,7 +164,7 @@ function buildSwapOfferTx(tx: SwapOfferTransaction): codecImpl.app.ITx {
       arbiter: hashIdentifier(tx.hash),
       recipient: decodeBnsAddress(tx.recipient).data,
       amount: tx.amounts.map(encodeAmount),
-      timeout: { seconds: tx.timeout.timestamp },
+      timeout: encodeInt(tx.timeout.timestamp),
       memo: tx.memo,
     }),
   };

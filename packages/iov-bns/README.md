@@ -23,7 +23,7 @@ const connection = await BnsConnection.establish("wss://bns.hugnet.iov.one");
 
 | IOV-Core version | Supported weave versions |
 | ---------------- | ------------------------ |
-| 0.14             | 0.13.x                   |
+| 0.14             | 0.14.x                   |
 | 0.12 – 0.13      | 0.10.x - 0.11.x          |
 | 0.9 – 0.11       | 0.4.x - 0.9.x            |
 | 0.1 – 0.8        | 0.4.x - 0.8.x            |

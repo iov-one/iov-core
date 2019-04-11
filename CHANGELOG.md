@@ -26,6 +26,7 @@ Breaking changes
 - @iov/bcp: Rename `BcpTicker` to `Token`.
 - @iov/bcp: Rename `BcpConnection.getTicker` to `getToken` and
   `BcpConnection.getAllTickers` to `.getAllTokens`.
+- @iov/bns: Upgrade codec for compatibility with weave 0.14.x.
 - @iov/ethereum: Options argument in `ethereumConnector`, `EthereumConnection`
   and `EthereumConnection.establish` is now required. Can be `{}`.
 
