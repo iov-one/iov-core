@@ -183,6 +183,7 @@ export interface SwapAbortTransaction extends UnsignedTransaction {
     readonly kind: "bcp/swap_abort";
     readonly swapId: SwapIdBytes;
 }
+export declare type SwapTransaction = SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction;
 export declare function isSendTransaction(transaction: UnsignedTransaction): transaction is SendTransaction;
 export declare function isSwapOfferTransaction(transaction: UnsignedTransaction): transaction is SwapOfferTransaction;
 export declare function isSwapClaimTransaction(transaction: UnsignedTransaction): transaction is SwapClaimTransaction;

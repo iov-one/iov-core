@@ -281,6 +281,8 @@ export interface SwapAbortTransaction extends UnsignedTransaction {
   readonly swapId: SwapIdBytes; // pulled from the offer transaction
 }
 
+export type SwapTransaction = SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction;
+
 export function isSendTransaction(transaction: UnsignedTransaction): transaction is SendTransaction {
   return (transaction as SendTransaction).kind === "bcp/send";
 }
