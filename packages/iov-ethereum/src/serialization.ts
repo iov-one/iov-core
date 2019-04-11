@@ -9,6 +9,7 @@ import {
   Nonce,
   SendTransaction,
   SignedTransaction,
+  SwapClaimTransaction,
   SwapOfferTransaction,
   SwapTransaction,
   TokenTicker,
@@ -105,6 +106,7 @@ export class Serialization {
       }
     } else if (isSwapOfferTransaction(unsigned)) {
       Serialization.checkSwapId(unsigned);
+      Serialization.checkHash(unsigned);
       Serialization.checkRecipientAddress(unsigned);
       Serialization.checkMemoNotPresent(unsigned);
       Serialization.checkAmounts(unsigned);
@@ -114,7 +116,7 @@ export class Serialization {
         throw new Error("Timeout must be specified as a block height");
       }
 
-      const atomicSwapOpenCall = new Uint8Array([
+      const atomicSwapOfferCall = new Uint8Array([
         ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)"),
         ...unsigned.swapId!,
         ...Abi.encodeAddress(unsigned.recipient),
@@ -128,10 +130,12 @@ export class Serialization {
         gasLimitHex,
         atomicSwapEtherContractAddress!,
         unsigned.amounts[0].quantity,
-        atomicSwapOpenCall,
+        atomicSwapOfferCall,
         chainIdHex,
       );
     } else if (isSwapClaimTransaction(unsigned)) {
+      Serialization.checkSwapId(unsigned);
+      Serialization.checkPreimage(unsigned);
       Serialization.checkAtomicSwapContractAddress(atomicSwapEtherContractAddress);
 
       const atomicSwapClaimCall = new Uint8Array([
@@ -215,6 +219,7 @@ export class Serialization {
       }
     } else if (isSwapOfferTransaction(unsigned)) {
       Serialization.checkSwapId(unsigned);
+      Serialization.checkHash(unsigned);
       Serialization.checkRecipientAddress(unsigned);
       Serialization.checkMemoNotPresent(unsigned);
       Serialization.checkAmounts(unsigned);
@@ -224,7 +229,7 @@ export class Serialization {
         throw new Error("Timeout must be specified as a block height");
       }
 
-      const atomicSwapOpenCall = new Uint8Array([
+      const atomicSwapOfferCall = new Uint8Array([
         ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)"),
         ...unsigned.swapId!,
         ...Abi.encodeAddress(unsigned.recipient),
@@ -238,13 +243,14 @@ export class Serialization {
         gasLimitHex,
         atomicSwapEtherContractAddress!,
         unsigned.amounts[0].quantity,
-        atomicSwapOpenCall,
+        atomicSwapOfferCall,
         encodeQuantity(v),
         r,
         s,
       );
     } else if (isSwapClaimTransaction(unsigned)) {
       Serialization.checkSwapId(unsigned);
+      Serialization.checkPreimage(unsigned);
       Serialization.checkAtomicSwapContractAddress(atomicSwapEtherContractAddress);
 
       const atomicSwapClaimCall = new Uint8Array([
@@ -289,6 +295,21 @@ export class Serialization {
   private static checkSwapId(unsigned: SwapTransaction): void {
     if (!unsigned.swapId) {
       throw new Error("No swap ID provided");
+    }
+    if (unsigned.swapId.length !== 32) {
+      throw new Error("Swap ID must be 32 bytes");
+    }
+  }
+
+  private static checkHash(unsigned: SwapOfferTransaction): void {
+    if (unsigned.hash.length !== 32) {
+      throw new Error("Hash must be 32 bytes");
+    }
+  }
+
+  private static checkPreimage(unsigned: SwapClaimTransaction): void {
+    if (unsigned.preimage.length !== 32) {
+      throw new Error("Preimage must be 32 bytes");
     }
   }
 

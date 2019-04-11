@@ -7,6 +7,8 @@ export declare class Serialization {
     private static checkIsSupportedTransaction;
     private static checkRecipientAddress;
     private static checkSwapId;
+    private static checkHash;
+    private static checkPreimage;
     private static checkAtomicSwapContractAddress;
     private static checkMemoNotPresent;
     private static checkAmounts;
