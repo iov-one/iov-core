@@ -947,8 +947,12 @@ export class EthereumConnection implements AtomicSwapConnection {
           },
         )
         .sort(
-          (a: AtomicSwap, b: AtomicSwap): number =>
-            a.kind !== SwapProcessState.Open && b.kind === SwapProcessState.Open ? 1 : -1,
+          (a: AtomicSwap, b: AtomicSwap): number => {
+            if (a.kind === b.kind || (a.kind !== SwapProcessState.Open && b.kind !== SwapProcessState.Open)) {
+              return 0;
+            }
+            return a.kind !== SwapProcessState.Open && b.kind === SwapProcessState.Open ? 1 : -1;
+          },
         );
     } else {
       throw new Error("unsupported query type");
