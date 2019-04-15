@@ -5,13 +5,13 @@ https://github.com/LiskHQ/lisk/blob/v1.2.0/config/devnet/genesis_block.json.
 
 This account owns 100 million initial supply:
 
-* 16313739661670634666L
-* c094ebee7ec0c50ebee32918655e089f6e1a604b83bcaa760293c61e0f18ab6f
-* wagon stock borrow episode laundry kitten salute link globe zero feed marble
+- 16313739661670634666L
+- c094ebee7ec0c50ebee32918655e089f6e1a604b83bcaa760293c61e0f18ab6f
+- wagon stock borrow episode laundry kitten salute link globe zero feed marble
 
 ## Requirements
 
-* docker and docker-compose
+- docker and docker-compose
 
 ## Start
 
@@ -28,9 +28,9 @@ export LISK_ENABLED=1
 
 The account
 
-* 1349293588603668134L
-* e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6
-* parrot idle tattoo cheese island stand adult reunion tool tell neglect abandon
+- 1349293588603668134L
+- e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6
+- parrot idle tattoo cheese island stand adult reunion tool tell neglect abandon
 
 gets an initial amount of money and initializes its public key:
 

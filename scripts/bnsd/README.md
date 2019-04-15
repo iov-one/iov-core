@@ -4,7 +4,7 @@ This starts a local [bnsd](https://github.com/iov-one/weave) application.
 
 ## Requirements
 
-* docker and docker-compose
+- docker and docker-compose
 
 ## Start
 

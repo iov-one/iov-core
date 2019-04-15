@@ -27,8 +27,10 @@
     "cash:minimal_fee": "0.01 CASH",
     "cash:collector_address": "0000000000000000000000000000000000000000"
   },
-  "msgfee": [{
-    "msg_path": "nft/username/issue",
-    "fee":      "5 CASH"
-  }]
+  "msgfee": [
+    {
+      "msg_path": "nft/username/issue",
+      "fee": "5 CASH"
+    }
+  ]
 }
