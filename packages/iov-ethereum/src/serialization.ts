@@ -4,6 +4,7 @@ import {
   Address,
   isBlockHeightTimeout,
   isSendTransaction,
+  isSwapAbortTransaction,
   isSwapClaimTransaction,
   isSwapOfferTransaction,
   Nonce,
@@ -153,6 +154,24 @@ export class Serialization {
         atomicSwapClaimCall,
         chainIdHex,
       );
+    } else if (isSwapAbortTransaction(unsigned)) {
+      Serialization.checkSwapId(unsigned);
+      Serialization.checkAtomicSwapContractAddress(atomicSwapEtherContractAddress);
+
+      const atomicSwapAbortCall = new Uint8Array([
+        ...Abi.calculateMethodId("abort(bytes32)"),
+        ...unsigned.swapId,
+      ]);
+
+      return Serialization.serializeGenericTransaction(
+        nonce,
+        gasPriceHex,
+        gasLimitHex,
+        atomicSwapEtherContractAddress!,
+        "0",
+        atomicSwapAbortCall,
+        chainIdHex,
+      );
     } else {
       throw new Error("Unsupported kind of transaction");
     }
@@ -270,6 +289,26 @@ export class Serialization {
         r,
         s,
       );
+    } else if (isSwapAbortTransaction(unsigned)) {
+      Serialization.checkSwapId(unsigned);
+      Serialization.checkAtomicSwapContractAddress(atomicSwapEtherContractAddress);
+
+      const atomicSwapAbortCall = new Uint8Array([
+        ...Abi.calculateMethodId("abort(bytes32)"),
+        ...unsigned.swapId,
+      ]);
+
+      return Serialization.serializeGenericTransaction(
+        signed.primarySignature.nonce,
+        gasPriceHex,
+        gasLimitHex,
+        atomicSwapEtherContractAddress!,
+        "0",
+        atomicSwapAbortCall,
+        encodeQuantity(v),
+        r,
+        s,
+      );
     } else {
       throw new Error("Unsupported kind of transaction");
     }
@@ -280,6 +319,7 @@ export class Serialization {
       isSendTransaction,
       isSwapOfferTransaction,
       isSwapClaimTransaction,
+      isSwapAbortTransaction,
     ];
     if (!supportedTransactionCheckers.some(fn => fn(unsigned))) {
       throw new Error("Unsupported kind of transaction");
