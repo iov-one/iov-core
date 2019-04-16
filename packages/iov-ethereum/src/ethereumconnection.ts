@@ -738,6 +738,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       case "bcp/send":
       case "bcp/swap_offer":
       case "bcp/swap_claim":
+      case "bcp/swap_abort":
         return {
           gasPrice: {
             // TODO: calculate dynamically from previous blocks or external API
@@ -913,7 +914,7 @@ export class EthereumConnection implements AtomicSwapConnection {
                   },
                 },
               ];
-            case SwapContractEvent.Claimed:
+            case SwapContractEvent.Claimed: {
               const swapId = dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes;
               const swapIndex = accumulator.findIndex(
                 s => Encoding.toHex(s.data.id) === Encoding.toHex(swapId),
@@ -930,6 +931,24 @@ export class EthereumConnection implements AtomicSwapConnection {
                 preimage: dataArray.slice(claimedPreimageBegin, claimedPreimageEnd) as Preimage,
               };
               return [...accumulator.slice(0, swapIndex), ...accumulator.slice(swapIndex + 1), newSwap];
+            }
+            case SwapContractEvent.Aborted: {
+              const swapId = dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes;
+              const swapIndex = accumulator.findIndex(
+                s => Encoding.toHex(s.data.id) === Encoding.toHex(swapId),
+              );
+              if (swapIndex === -1) {
+                throw new Error("Found Aborted event for non-existent swap");
+              }
+              const oldSwap = accumulator[swapIndex];
+              const newSwap: AbortedSwap = {
+                kind: SwapProcessState.Aborted,
+                data: {
+                  ...oldSwap.data,
+                },
+              };
+              return [...accumulator.slice(0, swapIndex), ...accumulator.slice(swapIndex + 1), newSwap];
+            }
             default:
               throw new Error("SwapContractEvent type not handled");
           }
