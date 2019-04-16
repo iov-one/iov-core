@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.13.4
+
+- @iov/keycontrol: Export `ReadonlyWallet`.
+
 ## 0.13.3
 
 - @iov/ethereum: Export `Erc20Options`.
