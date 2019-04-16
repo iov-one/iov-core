@@ -23,7 +23,9 @@ unset ETHEREUM_ENABLED
 
 ## Query transactions by account
 
-Since this functionality is not standard in ethereum ecosystem, we provide a setup to connect with blockchain scrapers that index transactions by user account. To enable such functionality:
+Since this functionality is not standard in ethereum ecosystem, we provide a
+setup to connect with blockchain scrapers that index transactions by user
+account. To enable such functionality:
 
 ```
 export ETHEREUM_SCRAPER=1
@@ -33,30 +35,43 @@ export ETHEREUM_SCRAPER=1
 
 When starting the development chain, we seed the following accounts with tokens
 
-* Main identity `m/44'/60'/0'/0/0` that sends all the test transactions
-* Second identity `m/44'/60'/0'/0/1` that has a fixed balance for state queries
-* Third identity `m/44'/60'/0'/0/2` unused for now
-* Faucet token holder `m/1229936198'/1'/0'/0'`
+- Main identity `m/44'/60'/0'/0/0` that sends all the test transactions
+- Second identity `m/44'/60'/0'/0/1` that has a fixed balance for state queries
+- Third identity `m/44'/60'/0'/0/2` unused for now
+- Faucet token holder `m/1229936198'/1'/0'/0'`
 
 ### Generate secret keys for Ganache CLI
 
-Use @iov/cli to get a list of secret keys, public keys and addressed for the identities above
+Use @iov/cli to get a list of secret keys, public keys and addressed for the
+identities above
 
 ```ts
-const seed = await Bip39.mnemonicToSeed(new EnglishMnemonic("oxygen fall sure lava energy veteran enroll frown question detail include maximum"));
+const seed = await Bip39.mnemonicToSeed(
+  new EnglishMnemonic(
+    "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+  ),
+);
 const paths: ReadonlyArray<ReadonlyArray<Slip10RawIndex>> = [
   HdPaths.ethereum(0), // main
   HdPaths.ethereum(1), // second
   HdPaths.ethereum(2), // third
   // faucet token holder
-  [Slip10RawIndex.hardened(1229936198), Slip10RawIndex.hardened(1), Slip10RawIndex.hardened(0), Slip10RawIndex.hardened(0)],
-]
+  [
+    Slip10RawIndex.hardened(1229936198),
+    Slip10RawIndex.hardened(1),
+    Slip10RawIndex.hardened(0),
+    Slip10RawIndex.hardened(0),
+  ],
+];
 
 for (const path of paths) {
   const { privkey } = Slip10.derivePath(Slip10Curve.Secp256k1, seed, path);
   const { pubkey } = await Secp256k1.makeKeypair(privkey);
-  const address = ethereumPubkeyToAddress({ algo: Algorithm.Secp256k1, data: pubkey as PublicKeyBytes })
-  console.log(`0x${toHex(privkey)},0x${toHex(pubkey)},${address}`)
+  const address = ethereumPubkeyToAddress({
+    algo: Algorithm.Secp256k1,
+    data: pubkey as PublicKeyBytes,
+  });
+  console.log(`0x${toHex(privkey)},0x${toHex(pubkey)},${address}`);
 }
 ```
 

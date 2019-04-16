@@ -18,7 +18,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "format": "lerna run format",
-    "format-text": "prettier --write --prose-wrap always --print-width 80 \"./*.md\" \"./docs/**/*.md\" && lerna run format-text",
+    "format-text": "prettier --write --prose-wrap always --print-width 80 \"./*.md\" \"./docs/**/*.md\" \"./scripts/**/*.{json,md}\" && lerna run format-text",
     "lint": "lerna run lint",
     "test": "lerna run test",
     "build": "lerna run build",
