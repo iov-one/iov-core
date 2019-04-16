@@ -1,7 +1,7 @@
 import { Address, SwapProcessState } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
-import { Abi, SwapContractEvent } from "./abi";
+import { Abi, SwapContractEvent, SwapContractMethod } from "./abi";
 
 const { fromHex } = Encoding;
 
@@ -359,6 +359,35 @@ describe("Abi", () => {
       // Same as Aborted with final byte edited
       const data = fromHex("f7fe6a2a9810864c5fce35c9d3c75940da5f9612d43350b505aa0aa4c6494d9a");
       expect(() => Abi.decodeEventSignature(data)).toThrowError(/invalid event signature/i);
+    });
+  });
+
+  describe("decodeMethodId", () => {
+    it("works for Open", () => {
+      // Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)");
+      const data = fromHex("0eed8548");
+      const result = Abi.decodeMethodId(data);
+      expect(result).toEqual(SwapContractMethod.Open);
+    });
+
+    it("works for Claim", () => {
+      // Abi.calculateMethodId("claim(bytes32,bytes32)");
+      const data = fromHex("84cc9dfb");
+      const result = Abi.decodeMethodId(data);
+      expect(result).toEqual(SwapContractMethod.Claim);
+    });
+
+    it("works for Abort", () => {
+      // Abi.calculateMethodId("abort(bytes32)");
+      const data = fromHex("09d6ce0e");
+      const result = Abi.decodeMethodId(data);
+      expect(result).toEqual(SwapContractMethod.Abort);
+    });
+
+    it("throws for anything else", () => {
+      // Same as Abort with final byte edited
+      const data = fromHex("09d6ce0f");
+      expect(() => Abi.decodeMethodId(data)).toThrowError(/invalid method id/i);
     });
   });
 });

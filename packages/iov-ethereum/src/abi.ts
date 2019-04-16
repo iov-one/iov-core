@@ -20,6 +20,12 @@ export enum SwapContractEvent {
   Aborted,
 }
 
+export enum SwapContractMethod {
+  Open,
+  Claim,
+  Abort,
+}
+
 export class Abi {
   public static calculateMethodHash(signature: string): Uint8Array {
     return new Keccak256(Encoding.toAscii(signature)).digest();
@@ -155,6 +161,24 @@ export class Abi {
     return event;
   }
 
+  public static decodeMethodId(data: Uint8Array): SwapContractMethod {
+    if (data.length !== 4) {
+      throw new Error("Input data not 32 bit long");
+    }
+    const key = Encoding.toHex(data);
+    const map: { readonly [key: string]: SwapContractMethod } = {
+      [Abi.methodIds.open]: SwapContractMethod.Open,
+      [Abi.methodIds.claim]: SwapContractMethod.Claim,
+      [Abi.methodIds.abort]: SwapContractMethod.Abort,
+    };
+    const method: SwapContractMethod | undefined = map[key];
+
+    if (method === undefined) {
+      throw new Error("Invalid method ID");
+    }
+    return method;
+  }
+
   private static readonly eventSignatures: {
     readonly opened: string;
     readonly claimed: string;
@@ -165,6 +189,16 @@ export class Abi {
     ),
     claimed: Encoding.toHex(Abi.calculateMethodHash("Claimed(bytes32,bytes32)")),
     aborted: Encoding.toHex(Abi.calculateMethodHash("Aborted(bytes32)")),
+  };
+
+  private static readonly methodIds: {
+    readonly open: string;
+    readonly claim: string;
+    readonly abort: string;
+  } = {
+    open: Encoding.toHex(Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)")),
+    claim: Encoding.toHex(Abi.calculateMethodId("claim(bytes32,bytes32)")),
+    abort: Encoding.toHex(Abi.calculateMethodId("abort(bytes32)")),
   };
 
   private static padTo32(data: Uint8Array): Uint8Array {

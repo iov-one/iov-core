@@ -317,5 +317,132 @@ describe("ethereumCodec", () => {
         otherSignatures: [],
       });
     });
+
+    it("works for Ether atomic swap claim", async () => {
+      // Retrieved from local instance since we haven't deployed this to a public testnet
+      // curl -sS -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["0x85bbdfabbf38e6888488f7e967a5b7784bc8041416773ecdfc2b57e365bc3777"],"id":1}' http://localhost:8545 | jq .result
+      const rawGetTransactionByHashResult: EthereumRpcTransactionResult = {
+        hash: "0x85bbdfabbf38e6888488f7e967a5b7784bc8041416773ecdfc2b57e365bc3777",
+        nonce: "0x7e",
+        blockHash: "0x3e89a5ab1eff099d952cc0a942c12f8802ba1ff5ed2e97b2711a5a94866f8ed6",
+        blockNumber: "0x7f",
+        transactionIndex: "0x0",
+        from: "0x88f3b5659075d0e06bb1004be7b1a7e66f452284",
+        to: "0xe1c9ea25a621cf5c934a7e112ecab640ec7d8d18",
+        value: "0x0",
+        gas: "0x200b20",
+        gasPrice: "0x4a817c800",
+        input:
+          "0x84cc9dfb069446e5b7469d5301212de56f17a8786bee70d9bf4c072e99fcfb2c4d9f5242c863ca8b63351354c4dafbf585a28095bf9ef5c6719fd7eacc7a1ce0ad27a298",
+        v: "0x2d46",
+        r: "0xde9a75921207a5df2757d76408436e38f2186a0047e2955f884f0672c805282c",
+        s: "0x259c0f7c9a1383ef35fa5f41996dfb38744f9df6fe027a2e107d0b6d40ab1ae6",
+      };
+      const expectedPubkey = fromHex(
+        "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
+      ) as PublicKeyBytes;
+      const expectedSwapId = fromHex("069446e5b7469d5301212de56f17a8786bee70d9bf4c072e99fcfb2c4d9f5242");
+      const expectedPreimage = fromHex("c863ca8b63351354c4dafbf585a28095bf9ef5c6719fd7eacc7a1ce0ad27a298");
+
+      const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
+
+      expect(ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-5777" as ChainId)).toEqual({
+        transaction: {
+          kind: "bcp/swap_claim",
+          creator: {
+            chainId: "ethereum-eip155-5777" as ChainId,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: expectedPubkey,
+            },
+          },
+          fee: {
+            gasLimit: "2100000",
+            gasPrice: {
+              quantity: "20000000000",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
+          },
+          swapId: expectedSwapId,
+          preimage: expectedPreimage,
+        },
+        primarySignature: {
+          nonce: 126 as Nonce,
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: expectedPubkey,
+          },
+          signature: new ExtendedSecp256k1Signature(
+            Encoding.fromHex("de9a75921207a5df2757d76408436e38f2186a0047e2955f884f0672c805282c"),
+            Encoding.fromHex("259c0f7c9a1383ef35fa5f41996dfb38744f9df6fe027a2e107d0b6d40ab1ae6"),
+            1,
+          ).toFixedLength() as SignatureBytes,
+        },
+        otherSignatures: [],
+      });
+    });
+
+    it("works for Ether atomic swap abort", async () => {
+      // Retrieved from local instance since we haven't deployed this to a public testnet
+      // curl -sS -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["0xb8a6bdbcc56f30e385e928fee46374bceec1c6887814c0b4bddb23c8df25d91b"],"id":1}' http://localhost:8545 | jq .result
+      const rawGetTransactionByHashResult: EthereumRpcTransactionResult = {
+        hash: "0xb8a6bdbcc56f30e385e928fee46374bceec1c6887814c0b4bddb23c8df25d91b",
+        nonce: "0xa0",
+        blockHash: "0x06d53572b61a054d12afab59fde70cbde3cbd9385e5a4fc07dadcf0c87abd414",
+        blockNumber: "0xa1",
+        transactionIndex: "0x0",
+        from: "0x88f3b5659075d0e06bb1004be7b1a7e66f452284",
+        to: "0xe1c9ea25a621cf5c934a7e112ecab640ec7d8d18",
+        value: "0x0",
+        gas: "0x200b20",
+        gasPrice: "0x4a817c800",
+        input: "0x09d6ce0ea7679de779f2df7fde7617a9cdd013c8dbf5701aa158173d9c615766a212d243",
+        v: "0x2d45",
+        r: "0x3449246d974d28fffae32af389ef7271c18ff6e6766ce6f54f6243764e6877d6",
+        s: "0x7e2280164650d4fc0c4a2fd1edfeedb70e7c8453117f9cbd6a644abd5e1ddf9b",
+      };
+      const expectedPubkey = fromHex(
+        "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
+      ) as PublicKeyBytes;
+      const expectedSwapId = fromHex("a7679de779f2df7fde7617a9cdd013c8dbf5701aa158173d9c615766a212d243");
+
+      const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
+
+      expect(ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-5777" as ChainId)).toEqual({
+        transaction: {
+          kind: "bcp/swap_abort",
+          creator: {
+            chainId: "ethereum-eip155-5777" as ChainId,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: expectedPubkey,
+            },
+          },
+          fee: {
+            gasLimit: "2100000",
+            gasPrice: {
+              quantity: "20000000000",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
+          },
+          swapId: expectedSwapId,
+        },
+        primarySignature: {
+          nonce: 160 as Nonce,
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: expectedPubkey,
+          },
+          signature: new ExtendedSecp256k1Signature(
+            Encoding.fromHex("3449246d974d28fffae32af389ef7271c18ff6e6766ce6f54f6243764e6877d6"),
+            Encoding.fromHex("7e2280164650d4fc0c4a2fd1edfeedb70e7c8453117f9cbd6a644abd5e1ddf9b"),
+            0,
+          ).toFixedLength() as SignatureBytes,
+        },
+        otherSignatures: [],
+      });
+    });
   });
 });
