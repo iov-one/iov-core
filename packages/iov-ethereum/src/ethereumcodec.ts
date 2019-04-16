@@ -183,60 +183,64 @@ export class EthereumCodec implements TxCodec {
       const method = Abi.decodeMethodId(input.slice(positionMethodIdBegin, positionMethodIdEnd));
       const swapId = input.slice(positionSwapIdBegin, positionSwapIdEnd) as SwapIdBytes;
 
-      if (method === SwapContractMethod.Open) {
-        const positionRecipientBegin = positionSwapIdEnd;
-        const positionRecipientEnd = positionRecipientBegin + 32;
-        const positionHashBegin = positionRecipientEnd;
-        const positionHashEnd = positionHashBegin + 32;
-        const positionTimeoutBegin = positionHashEnd;
-        const positionTimeoutEnd = positionTimeoutBegin + 32;
+      switch (method) {
+        case SwapContractMethod.Open:
+          const positionRecipientBegin = positionSwapIdEnd;
+          const positionRecipientEnd = positionRecipientBegin + 32;
+          const positionHashBegin = positionRecipientEnd;
+          const positionHashEnd = positionHashBegin + 32;
+          const positionTimeoutBegin = positionHashEnd;
+          const positionTimeoutEnd = positionTimeoutBegin + 32;
 
-        const recipientChecksummedAddress = toChecksummedAddress(
-          Abi.decodeAddress(input.slice(positionRecipientBegin, positionRecipientEnd)),
-        );
-        const hash = input.slice(positionHashBegin, positionHashEnd) as Hash;
-        const timeoutHeight = new BN(input.slice(positionTimeoutBegin, positionTimeoutEnd)).toNumber();
+          const recipientChecksummedAddress = toChecksummedAddress(
+            Abi.decodeAddress(input.slice(positionRecipientBegin, positionRecipientEnd)),
+          );
+          const hash = input.slice(positionHashBegin, positionHashEnd) as Hash;
+          const timeoutHeight = new BN(input.slice(positionTimeoutBegin, positionTimeoutEnd)).toNumber();
 
-        transaction = {
-          kind: "bcp/swap_offer",
-          creator: creator,
-          swapId: swapId,
-          fee: fee,
-          amounts: [
-            {
-              quantity: decodeHexQuantityString(json.value),
-              fractionalDigits: constants.primaryTokenFractionalDigits,
-              tokenTicker: constants.primaryTokenTicker,
+          transaction = {
+            kind: "bcp/swap_offer",
+            creator: creator,
+            swapId: swapId,
+            fee: fee,
+            amounts: [
+              {
+                quantity: decodeHexQuantityString(json.value),
+                fractionalDigits: constants.primaryTokenFractionalDigits,
+                tokenTicker: constants.primaryTokenTicker,
+              },
+            ],
+            recipient: recipientChecksummedAddress,
+            timeout: {
+              height: timeoutHeight,
             },
-          ],
-          recipient: recipientChecksummedAddress,
-          timeout: {
-            height: timeoutHeight,
-          },
-          hash: hash,
-        };
-      } else if (method === SwapContractMethod.Claim) {
-        const positionPreimageBegin = positionSwapIdEnd;
-        const positionPreimageEnd = positionPreimageBegin + 32;
+            hash: hash,
+          };
+          break;
+        case SwapContractMethod.Claim:
+          const positionPreimageBegin = positionSwapIdEnd;
+          const positionPreimageEnd = positionPreimageBegin + 32;
 
-        const preimage = input.slice(positionPreimageBegin, positionPreimageEnd) as Preimage;
+          const preimage = input.slice(positionPreimageBegin, positionPreimageEnd) as Preimage;
 
-        transaction = {
-          kind: "bcp/swap_claim",
-          creator: creator,
-          fee: fee,
-          swapId: swapId,
-          preimage: preimage,
-        };
-      } else if (method === SwapContractMethod.Abort) {
-        transaction = {
-          kind: "bcp/swap_abort",
-          creator: creator,
-          fee: fee,
-          swapId: swapId,
-        };
-      } else {
-        throw new Error("Atomic swap method not recognized");
+          transaction = {
+            kind: "bcp/swap_claim",
+            creator: creator,
+            fee: fee,
+            swapId: swapId,
+            preimage: preimage,
+          };
+          break;
+        case SwapContractMethod.Abort:
+          transaction = {
+            kind: "bcp/swap_abort",
+            creator: creator,
+            fee: fee,
+            swapId: swapId,
+          };
+          break;
+        default:
+          throw new Error("Atomic swap method not recognized");
       }
     } else if (erc20Token && json.input.startsWith(methodCallPrefix.erc20.transfer)) {
       const positionTransferMethodEnd = 4;
