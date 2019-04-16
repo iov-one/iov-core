@@ -9,6 +9,7 @@ import {
   Nonce,
   PostableBytes,
   PrehashType,
+  Preimage,
   PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
@@ -16,6 +17,7 @@ import {
   SignatureBytes,
   SignedTransaction,
   SigningJob,
+  SwapClaimTransaction,
   SwapIdBytes,
   SwapOfferTransaction,
   TokenTicker,
@@ -26,7 +28,7 @@ import {
 import { ExtendedSecp256k1Signature, Keccak256, Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
-import { Abi } from "./abi";
+import { Abi, SwapContractMethod } from "./abi";
 import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, getRecoveryParam } from "./encoding";
@@ -170,43 +172,66 @@ export class EthereumCodec implements TxCodec {
         options => options.contractAddress.toLowerCase() === toChecksummedAddress(json.to).toLowerCase(),
       );
 
-    let transaction: SendTransaction | SwapOfferTransaction;
+    let transaction: SendTransaction | SwapOfferTransaction | SwapClaimTransaction;
     if (atomicSwap) {
-      const positionOpenMethodEnd = 4;
-      const positionOpenSwapIdBegin = positionOpenMethodEnd;
-      const positionOpenSwapIdEnd = positionOpenSwapIdBegin + 32;
-      const positionOpenRecipientBegin = positionOpenSwapIdEnd;
-      const positionOpenRecipientEnd = positionOpenRecipientBegin + 32;
-      const positionOpenHashBegin = positionOpenRecipientEnd;
-      const positionOpenHashEnd = positionOpenHashBegin + 32;
-      const positionOpenTimeoutBegin = positionOpenHashEnd;
-      const positionOpenTimeoutEnd = positionOpenTimeoutBegin + 32;
+      const positionMethodIdBegin = 0;
+      const positionMethodIdEnd = positionMethodIdBegin + 4;
+      const positionSwapIdBegin = positionMethodIdEnd;
+      const positionSwapIdEnd = positionSwapIdBegin + 32;
 
-      const swapId = input.slice(positionOpenSwapIdBegin, positionOpenSwapIdEnd) as SwapIdBytes;
-      const recipientChecksummedAddress = toChecksummedAddress(
-        Abi.decodeAddress(input.slice(positionOpenRecipientBegin, positionOpenRecipientEnd)),
-      );
-      const hash = input.slice(positionOpenHashBegin, positionOpenHashEnd) as Hash;
-      const timeoutHeight = new BN(input.slice(positionOpenTimeoutBegin, positionOpenTimeoutEnd)).toNumber();
+      const method = Abi.decodeMethodId(input.slice(positionMethodIdBegin, positionMethodIdEnd));
+      const swapId = input.slice(positionSwapIdBegin, positionSwapIdEnd) as SwapIdBytes;
 
-      transaction = {
-        kind: "bcp/swap_offer",
-        creator: creator,
-        swapId: swapId,
-        fee: fee,
-        amounts: [
-          {
-            quantity: decodeHexQuantityString(json.value),
-            fractionalDigits: constants.primaryTokenFractionalDigits,
-            tokenTicker: constants.primaryTokenTicker,
+      if (method === SwapContractMethod.Open) {
+        const positionRecipientBegin = positionSwapIdEnd;
+        const positionRecipientEnd = positionRecipientBegin + 32;
+        const positionHashBegin = positionRecipientEnd;
+        const positionHashEnd = positionHashBegin + 32;
+        const positionTimeoutBegin = positionHashEnd;
+        const positionTimeoutEnd = positionTimeoutBegin + 32;
+
+        const recipientChecksummedAddress = toChecksummedAddress(
+          Abi.decodeAddress(input.slice(positionRecipientBegin, positionRecipientEnd)),
+        );
+        const hash = input.slice(positionHashBegin, positionHashEnd) as Hash;
+        const timeoutHeight = new BN(input.slice(positionTimeoutBegin, positionTimeoutEnd)).toNumber();
+
+        transaction = {
+          kind: "bcp/swap_offer",
+          creator: creator,
+          swapId: swapId,
+          fee: fee,
+          amounts: [
+            {
+              quantity: decodeHexQuantityString(json.value),
+              fractionalDigits: constants.primaryTokenFractionalDigits,
+              tokenTicker: constants.primaryTokenTicker,
+            },
+          ],
+          recipient: recipientChecksummedAddress,
+          timeout: {
+            height: timeoutHeight,
           },
-        ],
-        recipient: recipientChecksummedAddress,
-        timeout: {
-          height: timeoutHeight,
-        },
-        hash: hash,
-      };
+          hash: hash,
+        };
+      } else if (method === SwapContractMethod.Claim) {
+        const positionPreimageBegin = positionSwapIdEnd;
+        const positionPreimageEnd = positionPreimageBegin + 32;
+
+        const preimage = input.slice(positionPreimageBegin, positionPreimageEnd) as Preimage;
+
+        transaction = {
+          kind: "bcp/swap_claim",
+          creator: creator,
+          fee: fee,
+          swapId: swapId,
+          preimage: preimage,
+        };
+      } else if (method === SwapContractMethod.Abort) {
+        throw new Error("Atomic swap abort method not implemented");
+      } else {
+        throw new Error("Atomic swap method not recognized");
+      }
     } else if (erc20Token && json.input.startsWith(methodCallPrefix.erc20.transfer)) {
       const positionTransferMethodEnd = 4;
       const positionTransferRecipientBegin = positionTransferMethodEnd;
