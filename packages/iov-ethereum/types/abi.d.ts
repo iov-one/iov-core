@@ -10,6 +10,11 @@ export declare enum SwapContractEvent {
     Claimed = 1,
     Aborted = 2
 }
+export declare enum SwapContractMethod {
+    Open = 0,
+    Claim = 1,
+    Abort = 2
+}
 export declare class Abi {
     static calculateMethodHash(signature: string): Uint8Array;
     static calculateMethodId(signature: string): Uint8Array;
@@ -25,6 +30,8 @@ export declare class Abi {
     static decodeVariableLength(data: Uint8Array): Uint8Array;
     static decodeSwapProcessState(data: Uint8Array): SwapProcessState;
     static decodeEventSignature(data: Uint8Array): SwapContractEvent;
+    static decodeMethodId(data: Uint8Array): SwapContractMethod;
     private static readonly eventSignatures;
+    private static readonly methodIds;
     private static padTo32;
 }
