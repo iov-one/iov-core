@@ -382,5 +382,67 @@ describe("ethereumCodec", () => {
         otherSignatures: [],
       });
     });
+
+    it("works for Ether atomic swap abort", async () => {
+      // Retrieved from local instance since we haven't deployed this to a public testnet
+      // curl -sS -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["0xb8a6bdbcc56f30e385e928fee46374bceec1c6887814c0b4bddb23c8df25d91b"],"id":1}' http://localhost:8545 | jq .result
+      const rawGetTransactionByHashResult: EthereumRpcTransactionResult = {
+        hash: "0xb8a6bdbcc56f30e385e928fee46374bceec1c6887814c0b4bddb23c8df25d91b",
+        nonce: "0xa0",
+        blockHash: "0x06d53572b61a054d12afab59fde70cbde3cbd9385e5a4fc07dadcf0c87abd414",
+        blockNumber: "0xa1",
+        transactionIndex: "0x0",
+        from: "0x88f3b5659075d0e06bb1004be7b1a7e66f452284",
+        to: "0xe1c9ea25a621cf5c934a7e112ecab640ec7d8d18",
+        value: "0x0",
+        gas: "0x200b20",
+        gasPrice: "0x4a817c800",
+        input: "0x09d6ce0ea7679de779f2df7fde7617a9cdd013c8dbf5701aa158173d9c615766a212d243",
+        v: "0x2d45",
+        r: "0x3449246d974d28fffae32af389ef7271c18ff6e6766ce6f54f6243764e6877d6",
+        s: "0x7e2280164650d4fc0c4a2fd1edfeedb70e7c8453117f9cbd6a644abd5e1ddf9b",
+      };
+      const expectedPubkey = fromHex(
+        "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
+      ) as PublicKeyBytes;
+      const expectedSwapId = fromHex("a7679de779f2df7fde7617a9cdd013c8dbf5701aa158173d9c615766a212d243");
+
+      const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
+
+      expect(ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-5777" as ChainId)).toEqual({
+        transaction: {
+          kind: "bcp/swap_abort",
+          creator: {
+            chainId: "ethereum-eip155-5777" as ChainId,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: expectedPubkey,
+            },
+          },
+          fee: {
+            gasLimit: "2100000",
+            gasPrice: {
+              quantity: "20000000000",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
+          },
+          swapId: expectedSwapId,
+        },
+        primarySignature: {
+          nonce: 160 as Nonce,
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: expectedPubkey,
+          },
+          signature: new ExtendedSecp256k1Signature(
+            Encoding.fromHex("3449246d974d28fffae32af389ef7271c18ff6e6766ce6f54f6243764e6877d6"),
+            Encoding.fromHex("7e2280164650d4fc0c4a2fd1edfeedb70e7c8453117f9cbd6a644abd5e1ddf9b"),
+            0,
+          ).toFixedLength() as SignatureBytes,
+        },
+        otherSignatures: [],
+      });
+    });
   });
 });
