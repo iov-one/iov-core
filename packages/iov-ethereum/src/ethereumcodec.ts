@@ -17,6 +17,7 @@ import {
   SignatureBytes,
   SignedTransaction,
   SigningJob,
+  SwapAbortTransaction,
   SwapClaimTransaction,
   SwapIdBytes,
   SwapOfferTransaction,
@@ -172,7 +173,7 @@ export class EthereumCodec implements TxCodec {
         options => options.contractAddress.toLowerCase() === toChecksummedAddress(json.to).toLowerCase(),
       );
 
-    let transaction: SendTransaction | SwapOfferTransaction | SwapClaimTransaction;
+    let transaction: SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction;
     if (atomicSwap) {
       const positionMethodIdBegin = 0;
       const positionMethodIdEnd = positionMethodIdBegin + 4;
@@ -228,7 +229,12 @@ export class EthereumCodec implements TxCodec {
           preimage: preimage,
         };
       } else if (method === SwapContractMethod.Abort) {
-        throw new Error("Atomic swap abort method not implemented");
+        transaction = {
+          kind: "bcp/swap_abort",
+          creator: creator,
+          fee: fee,
+          swapId: swapId,
+        };
       } else {
         throw new Error("Atomic swap method not recognized");
       }
