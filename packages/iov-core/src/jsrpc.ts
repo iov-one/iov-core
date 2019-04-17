@@ -1,12 +1,4 @@
-import {
-  jsonRpcCodeInternalError,
-  jsonRpcCodeInvalidParams,
-  jsonRpcCodeInvalidRequest,
-  jsonRpcCodeMethodNotFound,
-  jsonRpcCodeParseError,
-  jsonRpcCodeServerErrorDefault,
-  SimpleMessagingConnection,
-} from "@iov/jsonrpc";
+import { jsonRpcCode, SimpleMessagingConnection } from "@iov/jsonrpc";
 import { firstEvent } from "@iov/stream";
 
 // An RPC interface very similar to JSON-RPC but supporting
@@ -100,12 +92,12 @@ export function isJsRpcErrorResponse(response: JsRpcResponse): response is JsRpc
 }
 
 export const jsRpcCode = {
-  parseError: jsonRpcCodeParseError,
-  invalidRequest: jsonRpcCodeInvalidRequest,
-  methodNotFound: jsonRpcCodeMethodNotFound,
-  invalidParams: jsonRpcCodeInvalidParams,
-  internalError: jsonRpcCodeInternalError,
-  serverErrorDefault: jsonRpcCodeServerErrorDefault,
+  parseError: jsonRpcCode.parseError,
+  invalidRequest: jsonRpcCode.invalidRequest,
+  methodNotFound: jsonRpcCode.methodNotFound,
+  invalidParams: jsonRpcCode.invalidParams,
+  internalError: jsonRpcCode.internalError,
+  serverErrorDefault: jsonRpcCode.serverError.default,
 };
 
 export function parseJsRpcId(data: unknown): number | null {
