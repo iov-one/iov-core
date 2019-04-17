@@ -104,7 +104,7 @@ export class JsonRpcSigningServer {
     }
 
     if (data instanceof Uint8Array) {
-      return `Uint8Array:${Encoding.toHex(data)}`;
+      return `bytes:${Encoding.toHex(data)}`;
     }
 
     if (Array.isArray(data)) {
@@ -144,8 +144,8 @@ export class JsonRpcSigningServer {
         return data.slice(7);
       }
 
-      if (data.startsWith("Uint8Array:")) {
-        return Encoding.fromHex(data.slice(11));
+      if (data.startsWith("bytes:")) {
+        return Encoding.fromHex(data.slice(6));
       }
 
       throw new Error("Found string with unknown prefix");

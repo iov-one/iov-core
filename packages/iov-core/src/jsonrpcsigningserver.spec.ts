@@ -131,9 +131,9 @@ describe("JsonRpcSigningServer", () => {
     });
 
     it("prefixes and hex encodes Uint8Array", () => {
-      expect(toJson(new Uint8Array([]))).toEqual("Uint8Array:");
-      expect(toJson(new Uint8Array([0x12]))).toEqual("Uint8Array:12");
-      expect(toJson(new Uint8Array([0x12, 0xab]))).toEqual("Uint8Array:12ab");
+      expect(toJson(new Uint8Array([]))).toEqual("bytes:");
+      expect(toJson(new Uint8Array([0x12]))).toEqual("bytes:12");
+      expect(toJson(new Uint8Array([0x12, 0xab]))).toEqual("bytes:12ab");
     });
 
     // Encoding recursive objects is explicitly undefined behavior. Just use this
@@ -186,10 +186,10 @@ describe("JsonRpcSigningServer", () => {
       expect(fromJson("string:abc")).toEqual("abc");
       expect(fromJson("string:\0")).toEqual("\0");
 
-      // "Uint8Array:" prefix
-      expect(fromJson("Uint8Array:")).toEqual(new Uint8Array([]));
-      expect(fromJson("Uint8Array:12")).toEqual(new Uint8Array([0x12]));
-      expect(fromJson("Uint8Array:aabb")).toEqual(new Uint8Array([0xaa, 0xbb]));
+      // "bytes:" prefix
+      expect(fromJson("bytes:")).toEqual(new Uint8Array([]));
+      expect(fromJson("bytes:12")).toEqual(new Uint8Array([0x12]));
+      expect(fromJson("bytes:aabb")).toEqual(new Uint8Array([0xaa, 0xbb]));
 
       // other prefixes
       expect(() => fromJson("")).toThrowError(/Found string with unknown prefix/i);
