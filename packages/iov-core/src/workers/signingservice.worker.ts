@@ -34,7 +34,7 @@ async function main(): Promise<void> {
   // faucet identity
   await profile.createIdentity(ed25519Wallet.id, bnsdChainId, HdPaths.simpleAddress(0));
   // ganache second identity
-  await profile.createIdentity(secp256k1Wallet.id, ethereumChainId, HdPaths.bip44(60, 0, 0, 1));
+  await profile.createIdentity(secp256k1Wallet.id, ethereumChainId, HdPaths.ethereum(1));
 
   const core = new SigningServerCore(
     profile,
