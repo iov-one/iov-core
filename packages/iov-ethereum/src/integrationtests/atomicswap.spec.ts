@@ -3,11 +3,13 @@ import BN from "bn.js";
 import {
   Address,
   Amount,
+  AtomicSwap,
   AtomicSwapConnection,
   AtomicSwapHelpers,
   ClaimedSwap,
   isBlockInfoPending,
   isBlockInfoSucceeded,
+  OpenSwap,
   Preimage,
   PublicIdentity,
   SendTransaction,
@@ -121,6 +123,14 @@ class Actor {
     return new BN(amount ? amount.quantity : 0);
   }
 
+  public async getReceiverSwaps(): Promise<ReadonlyArray<AtomicSwap>> {
+    return this.connection.getSwaps({ recipient: this.receiveAddress });
+  }
+
+  public async getSenderSwaps(): Promise<ReadonlyArray<AtomicSwap>> {
+    return this.connection.getSwaps({ sender: this.sendAddress });
+  }
+
   public async generatePreimage(): Promise<void> {
     // tslint:disable-next-line:no-object-mutation
     this.preimage = await AtomicSwapHelpers.createPreimage();
@@ -149,19 +159,7 @@ class Actor {
     }
   }
 
-  public async sendSwapCounter(recipient: Address, amount: Amount): Promise<void> {
-    // review offer
-    const swaps = await this.connection.getSwaps({ recipient: this.receiveAddress });
-    const offer = swaps[swaps.length - 1];
-    expect(offer.kind).toEqual(SwapProcessState.Open);
-    expect(offer.data.recipient).toEqual(this.receiveAddress);
-    expect(offer.data.amounts.length).toEqual(1);
-    expect(offer.data.amounts[0]).toEqual({
-      quantity: "2000000000000000000",
-      fractionalDigits: 18,
-      tokenTicker: ETH,
-    });
-
+  public async sendSwapCounter(recipient: Address, amount: Amount, offer: AtomicSwap): Promise<void> {
     // send counteroffer
     const counter = await this.connection.withDefaultFee<SwapOfferTransaction>({
       kind: "bcp/swap_offer",
@@ -184,19 +182,7 @@ class Actor {
     }
   }
 
-  public async claimFromKnownPreimage(): Promise<void> {
-    // review counteroffer
-    const swaps = await this.connection.getSwaps({ recipient: this.receiveAddress });
-    const counter = swaps[swaps.length - 1];
-    expect(counter.kind).toEqual(SwapProcessState.Open);
-    expect(counter.data.recipient).toEqual(this.receiveAddress);
-    expect(counter.data.amounts.length).toEqual(1);
-    expect(counter.data.amounts[0]).toEqual({
-      quantity: "5000000000000000000",
-      fractionalDigits: 18,
-      tokenTicker: ETH,
-    });
-
+  public async claimFromKnownPreimage(counter: AtomicSwap): Promise<void> {
     // claim funds
     const claim = await this.connection.withDefaultFee<SwapClaimTransaction>({
       kind: "bcp/swap_claim",
@@ -214,25 +200,16 @@ class Actor {
     }
   }
 
-  public async claimFromRevealedPreimage(): Promise<void> {
-    // find claim
-    const claimSwaps = await this.connection.getSwaps({ sender: this.sendAddress });
-    const claim1 = claimSwaps[claimSwaps.length - 1];
-    expect(claim1.kind).toEqual(SwapProcessState.Claimed);
-
-    const offerSwaps = await this.connection.getSwaps({ recipient: this.receiveAddress });
-    const offer = offerSwaps[offerSwaps.length - 1];
-    expect(offer.kind).toEqual(SwapProcessState.Open);
-
+  public async claimFromRevealedPreimage(offer: OpenSwap, claimed: ClaimedSwap): Promise<void> {
     // counter claim funds
-    const claim2 = await this.connection.withDefaultFee<SwapClaimTransaction>({
+    const counterClaim = await this.connection.withDefaultFee<SwapClaimTransaction>({
       kind: "bcp/swap_claim",
       creator: this.receiverIdentity,
       swapId: offer.data.id,
-      preimage: (claim1 as ClaimedSwap).preimage,
+      preimage: claimed.preimage,
     });
     const nonce = await this.connection.getNonce({ pubkey: this.receiverIdentity.pubkey });
-    const signed = await this.profile.signTransaction(claim2, ethereumCodec, nonce);
+    const signed = await this.profile.signTransaction(counterClaim, ethereumCodec, nonce);
     const postable = await ethereumCodec.bytesToPost(signed);
     const post = await this.connection.postTx(postable);
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -293,23 +270,60 @@ describe("Full atomic swap", () => {
     // Alice's Ether are locked in the contract (also includes fee)
     expect(aliceInitialSender.sub(await alice.getSenderBalance()).gtn(2000000000000000000)).toEqual(true);
 
-    await bob.sendSwapCounter(alice.receiveAddress, {
+    // review offer
+    const bobReceiverSwaps = await bob.getReceiverSwaps();
+    const aliceOffer = bobReceiverSwaps[bobReceiverSwaps.length - 1];
+    expect(aliceOffer.kind).toEqual(SwapProcessState.Open);
+    expect(aliceOffer.data.recipient).toEqual(bob.receiveAddress);
+    expect(aliceOffer.data.amounts.length).toEqual(1);
+    expect(aliceOffer.data.amounts[0]).toEqual({
+      quantity: "2000000000000000000",
+      fractionalDigits: 18,
+      tokenTicker: ETH,
+    });
+
+    await bob.sendSwapCounter(
+      alice.receiveAddress,
+      {
+        quantity: "5000000000000000000",
+        fractionalDigits: 18,
+        tokenTicker: ETH,
+      },
+      aliceOffer,
+    );
+
+    // Bob's Ether are locked in the contract (also includes fee)
+    expect(bobInitialSender.sub(await bob.getSenderBalance()).gtn(5000000000000000000)).toEqual(true);
+
+    // review counteroffer
+    const aliceReceiverSwaps = await alice.getReceiverSwaps();
+    const counter = aliceReceiverSwaps[aliceReceiverSwaps.length - 1];
+    expect(counter.kind).toEqual(SwapProcessState.Open);
+    expect(counter.data.recipient).toEqual(alice.receiveAddress);
+    expect(counter.data.amounts.length).toEqual(1);
+    expect(counter.data.amounts[0]).toEqual({
       quantity: "5000000000000000000",
       fractionalDigits: 18,
       tokenTicker: ETH,
     });
 
-    // Bob's Ether are locked in the contract (also includes fee)
-    expect(bobInitialSender.sub(await bob.getSenderBalance()).gtn(5000000000000000000)).toEqual(true);
-
-    await alice.claimFromKnownPreimage();
+    await alice.claimFromKnownPreimage(counter);
 
     // Alice revealed her secret and should unlock the funds
     expect((await alice.getReceiverBalance()).sub(aliceInitialReceiver).gtn(4900000000000000000)).toEqual(
       true,
     );
 
-    await bob.claimFromRevealedPreimage();
+    // find claim
+    const bobSenderSwaps = await bob.getSenderSwaps();
+    const aliceClaimed = bobSenderSwaps[bobSenderSwaps.length - 1];
+    expect(aliceClaimed.kind).toEqual(SwapProcessState.Claimed);
+
+    const bobReceiverSwaps2 = await bob.getReceiverSwaps();
+    const aliceOffer2 = bobReceiverSwaps2[bobReceiverSwaps2.length - 1];
+    expect(aliceOffer2.kind).toEqual(SwapProcessState.Open);
+
+    await bob.claimFromRevealedPreimage(aliceOffer2 as OpenSwap, aliceClaimed as ClaimedSwap);
 
     // Bob used Alice's preimage to claim unlock his funds
     expect((await bob.getReceiverBalance()).sub(bobInitialReceiver).gtn(4900000000000000000)).toEqual(true);
