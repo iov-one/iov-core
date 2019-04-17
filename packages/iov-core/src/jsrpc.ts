@@ -1,3 +1,4 @@
+// tslint:disable: deprecation
 import { jsonRpcCode, SimpleMessagingConnection } from "@iov/jsonrpc";
 import { firstEvent } from "@iov/stream";
 
@@ -5,7 +6,11 @@ import { firstEvent } from "@iov/stream";
 // all the data types from the structured clone algorithm
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#Supported_types
 
-/** A single structured clone algorithm compatible value */
+/**
+ * A single structured clone algorithm compatible value
+ *
+ * @deprecated use JsonRpcSigningServer and friends
+ */
 export declare type JsRpcCompatibleValue =
   | string
   | number
@@ -15,14 +20,23 @@ export declare type JsRpcCompatibleValue =
   | JsRpcCompatibleArray
   | JsRpcCompatibleDictionary;
 
-/** An array of JsRpcCompatibleValue */
+/**
+ * An array of JsRpcCompatibleValue
+ *
+ * @deprecated use JsonRpcSigningServer and friends
+ */
 export interface JsRpcCompatibleArray extends ReadonlyArray<JsRpcCompatibleValue> {}
 
-/** A string to JsRpcCompatibleValue dictionary. */
+/**
+ * A string to JsRpcCompatibleValue dictionary.
+ *
+ * @deprecated use JsonRpcSigningServer and friends
+ */
 export interface JsRpcCompatibleDictionary {
   readonly [key: string]: JsRpcCompatibleValue;
 }
 
+/** @deprecated use JsonRpcSigningServer and friends */
 export function isJsRpcCompatibleValue(value: unknown): value is JsRpcCompatibleValue {
   return (
     typeof value === "string" ||
@@ -35,6 +49,7 @@ export function isJsRpcCompatibleValue(value: unknown): value is JsRpcCompatible
   );
 }
 
+/** @deprecated use JsonRpcSigningServer and friends */
 export function isJsRpcCompatibleArray(value: unknown): value is JsRpcCompatibleArray {
   if (!Array.isArray(value)) {
     return false;
@@ -42,6 +57,7 @@ export function isJsRpcCompatibleArray(value: unknown): value is JsRpcCompatible
   return value.every(isJsRpcCompatibleValue);
 }
 
+/** @deprecated use JsonRpcSigningServer and friends */
 export function isJsRpcCompatibleDictionary(data: unknown): data is JsRpcCompatibleDictionary {
   if (typeof data !== "object" || data === null) {
     // data must be a non-null object
@@ -60,17 +76,20 @@ export function isJsRpcCompatibleDictionary(data: unknown): data is JsRpcCompati
   return values.every(isJsRpcCompatibleValue);
 }
 
+/** @deprecated use JsonRpcSigningServer and friends */
 export interface JsRpcRequest {
   readonly id: number;
   readonly method: string;
   readonly params: JsRpcCompatibleArray | JsRpcCompatibleDictionary;
 }
 
+/** @deprecated use JsonRpcSigningServer and friends */
 export interface JsRpcSuccessResponse {
   readonly id: number;
   readonly result: any;
 }
 
+/** @deprecated use JsonRpcSigningServer and friends */
 export interface JsRpcError {
   readonly code: number;
   readonly message: string;
@@ -79,18 +98,23 @@ export interface JsRpcError {
 
 /**
  * And error object as described in https://www.jsonrpc.org/specification#error_object
+ *
+ * @deprecated use JsonRpcSigningServer and friends
  */
 export interface JsRpcErrorResponse {
   readonly id: number | null;
   readonly error: JsRpcError;
 }
 
+/** @deprecated use JsonRpcSigningServer and friends */
 export type JsRpcResponse = JsRpcSuccessResponse | JsRpcErrorResponse;
 
+/** @deprecated use JsonRpcSigningServer and friends */
 export function isJsRpcErrorResponse(response: JsRpcResponse): response is JsRpcErrorResponse {
   return typeof (response as JsRpcErrorResponse).error === "object";
 }
 
+/** @deprecated use JsonRpcSigningServer and friends */
 export const jsRpcCode = {
   parseError: jsonRpcCode.parseError,
   invalidRequest: jsonRpcCode.invalidRequest,
@@ -100,6 +124,7 @@ export const jsRpcCode = {
   serverErrorDefault: jsonRpcCode.serverError.default,
 };
 
+/** @deprecated use JsonRpcSigningServer and friends */
 export function parseJsRpcId(data: unknown): number | null {
   if (!isJsRpcCompatibleDictionary(data)) {
     throw new Error("Data must be JS RPC compatible dictionary");
@@ -112,6 +137,7 @@ export function parseJsRpcId(data: unknown): number | null {
   return id;
 }
 
+/** @deprecated use JsonRpcSigningServer and friends */
 export function parseJsRpcRequest(data: unknown): JsRpcRequest {
   if (!isJsRpcCompatibleDictionary(data)) {
     throw new Error("Data must be JS RPC compatible dictionary");
@@ -164,6 +190,7 @@ function parseError(error: JsRpcCompatibleDictionary): JsRpcError {
   };
 }
 
+/** @deprecated use JsonRpcSigningServer and friends */
 export function parseJsRpcErrorResponse(data: unknown): JsRpcErrorResponse | undefined {
   if (!isJsRpcCompatibleDictionary(data)) {
     throw new Error("Data must be JS RPC compatible dictionary");
@@ -188,6 +215,7 @@ export function parseJsRpcErrorResponse(data: unknown): JsRpcErrorResponse | und
   };
 }
 
+/** @deprecated use JsonRpcSigningServer and friends */
 export function parseJsRpcResponse(data: unknown): JsRpcSuccessResponse {
   if (!isJsRpcCompatibleDictionary(data)) {
     throw new Error("Data must be JS RPC compatible dictionary");
@@ -206,6 +234,7 @@ export function parseJsRpcResponse(data: unknown): JsRpcSuccessResponse {
   };
 }
 
+/** @deprecated use JsonRpcSigningServer and friends */
 export class JsRpcClient {
   private readonly connection: SimpleMessagingConnection<JsRpcRequest, JsRpcResponse>;
 

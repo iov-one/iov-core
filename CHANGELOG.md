@@ -6,6 +6,8 @@
 - @iov/jsonrpc: Add `jsonRpcCode` constant object. Deprecate old `jsonRpcCode*`
   constants in favour of `jsonRpcCode`.
 - @iov/core: Add `JsonRpcSigningServer`.
+- @iov/core: Deprecate `JsRpcSigningServer` and related types in favour of
+  `JsonRpcSigningServer`.
 
 ## 0.13.3
 

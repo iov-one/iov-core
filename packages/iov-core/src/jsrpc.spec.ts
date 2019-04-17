@@ -1,3 +1,4 @@
+// tslint:disable: deprecation
 import { isJsRpcCompatibleArray, isJsRpcCompatibleDictionary, isJsRpcCompatibleValue } from "./jsrpc";
 
 describe("jsrpc", () => {

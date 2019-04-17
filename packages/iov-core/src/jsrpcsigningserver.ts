@@ -1,3 +1,4 @@
+// tslint:disable: deprecation
 import { ChainId, isUnsignedTransaction, UnsignedTransaction } from "@iov/bcp";
 import { parseJsonRpcId } from "@iov/jsonrpc";
 
@@ -80,6 +81,8 @@ function parseRpcCall(data: JsRpcRequest): RpcCall {
 
 /**
  * A transport-agnostic JavaScript RPC wrapper around SigningServerCore
+ *
+ * @deprecated use JsonRpcSigningServer and friends
  */
 export class JsRpcSigningServer {
   private readonly core: SigningServerCore;

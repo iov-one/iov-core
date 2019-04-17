@@ -1,3 +1,4 @@
+// tslint:disable: deprecation
 import {
   Address,
   Algorithm,
