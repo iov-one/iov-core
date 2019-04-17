@@ -12,12 +12,14 @@ import {
   OpenSwap,
   Preimage,
   PublicIdentity,
+  PublicKeyBundle,
   SendTransaction,
   SwapClaimTransaction,
   SwapIdBytes,
   SwapOfferTransaction,
   SwapProcessState,
   TokenTicker,
+  UnsignedTransaction,
 } from "@iov/bcp";
 import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 
@@ -92,21 +94,25 @@ class Actor {
     this.receiverIdentity = data.receiverIdentity;
   }
 
-  public async sendEther(recipient: Address, amount: Amount): Promise<void> {
-    const send = await this.connection.withDefaultFee<SendTransaction>({
-      kind: "bcp/send",
-      creator: this.senderIdentity,
-      recipient: recipient,
-      amount: amount,
-    });
-    const nonce = await this.connection.getNonce({ pubkey: this.senderIdentity.pubkey });
-    const signed = await this.profile.signTransaction(send, ethereumCodec, nonce);
+  public async sendTransaction(transaction: UnsignedTransaction, pubkey: PublicKeyBundle): Promise<void> {
+    const nonce = await this.connection.getNonce({ pubkey: pubkey });
+    const signed = await this.profile.signTransaction(transaction, ethereumCodec, nonce);
     const postable = await ethereumCodec.bytesToPost(signed);
     const post = await this.connection.postTx(postable);
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo)) {
       throw new Error("Transaction failed");
     }
+  }
+
+  public async sendEther(recipient: Address, amount: Amount): Promise<void> {
+    const transaction = await this.connection.withDefaultFee<SendTransaction>({
+      kind: "bcp/send",
+      creator: this.senderIdentity,
+      recipient: recipient,
+      amount: amount,
+    });
+    return this.sendTransaction(transaction, this.senderIdentity.pubkey);
   }
 
   public async getSenderBalance(): Promise<BN> {
@@ -138,7 +144,7 @@ class Actor {
 
   public async sendSwapOffer(recipient: Address, amount: Amount): Promise<void> {
     // tslint:disable-next-line:no-object-mutation
-    const offer = await this.connection.withDefaultFee<SwapOfferTransaction>({
+    const transaction = await this.connection.withDefaultFee<SwapOfferTransaction>({
       kind: "bcp/swap_offer",
       creator: this.senderIdentity,
       recipient: recipient,
@@ -149,19 +155,12 @@ class Actor {
         height: (await this.connection.height()) + 5,
       },
     });
-    const nonce = await this.connection.getNonce({ pubkey: this.senderIdentity.pubkey });
-    const signed = await this.profile.signTransaction(offer, ethereumCodec, nonce);
-    const postable = await ethereumCodec.bytesToPost(signed);
-    const post = await this.connection.postTx(postable);
-    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
-    if (!isBlockInfoSucceeded(blockInfo)) {
-      throw new Error("Transaction failed");
-    }
+    return this.sendTransaction(transaction, this.senderIdentity.pubkey);
   }
 
   public async sendSwapCounter(recipient: Address, amount: Amount, offer: AtomicSwap): Promise<void> {
     // send counteroffer
-    const counter = await this.connection.withDefaultFee<SwapOfferTransaction>({
+    const transaction = await this.connection.withDefaultFee<SwapOfferTransaction>({
       kind: "bcp/swap_offer",
       creator: this.senderIdentity,
       recipient: recipient,
@@ -172,50 +171,29 @@ class Actor {
         height: (await this.connection.height()) + 5,
       },
     });
-    const nonce = await this.connection.getNonce({ pubkey: this.senderIdentity.pubkey });
-    const signed = await this.profile.signTransaction(counter, ethereumCodec, nonce);
-    const postable = await ethereumCodec.bytesToPost(signed);
-    const post = await this.connection.postTx(postable);
-    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
-    if (!isBlockInfoSucceeded(blockInfo)) {
-      throw new Error("Transaction failed");
-    }
+    return this.sendTransaction(transaction, this.senderIdentity.pubkey);
   }
 
   public async claimFromKnownPreimage(counter: AtomicSwap): Promise<void> {
     // claim funds
-    const claim = await this.connection.withDefaultFee<SwapClaimTransaction>({
+    const transaction = await this.connection.withDefaultFee<SwapClaimTransaction>({
       kind: "bcp/swap_claim",
       creator: this.receiverIdentity,
       swapId: counter.data.id,
       preimage: this.preimage!,
     });
-    const nonce = await this.connection.getNonce({ pubkey: this.receiverIdentity.pubkey });
-    const signed = await this.profile.signTransaction(claim, ethereumCodec, nonce);
-    const postable = await ethereumCodec.bytesToPost(signed);
-    const post = await this.connection.postTx(postable);
-    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
-    if (!isBlockInfoSucceeded(blockInfo)) {
-      throw new Error("Transaction failed");
-    }
+    return this.sendTransaction(transaction, this.receiverIdentity.pubkey);
   }
 
   public async claimFromRevealedPreimage(offer: OpenSwap, claimed: ClaimedSwap): Promise<void> {
     // counter claim funds
-    const counterClaim = await this.connection.withDefaultFee<SwapClaimTransaction>({
+    const transaction = await this.connection.withDefaultFee<SwapClaimTransaction>({
       kind: "bcp/swap_claim",
       creator: this.receiverIdentity,
       swapId: offer.data.id,
       preimage: claimed.preimage,
     });
-    const nonce = await this.connection.getNonce({ pubkey: this.receiverIdentity.pubkey });
-    const signed = await this.profile.signTransaction(counterClaim, ethereumCodec, nonce);
-    const postable = await ethereumCodec.bytesToPost(signed);
-    const post = await this.connection.postTx(postable);
-    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
-    if (!isBlockInfoSucceeded(blockInfo)) {
-      throw new Error("Transaction failed");
-    }
+    return this.sendTransaction(transaction, this.receiverIdentity.pubkey);
   }
 }
 
