@@ -1,0 +1,93 @@
+import { Encoding } from "@iov/encoding";
+import { JsonCompatibleValue } from "@iov/jsonrpc";
+
+export class JsonRpcSigningServer {
+  /**
+   * Encodes a non-recursive JavaScript object as JSON in a way that is
+   * 1. compact for binary data
+   * 2. supports serializing/deserializing non-JSON types like Uint8Array
+   */
+  public static toJson(data: unknown): JsonCompatibleValue {
+    if (typeof data === "number" || typeof data === "boolean") {
+      return data;
+    }
+
+    if (data === null) {
+      return null;
+    }
+
+    if (typeof data === "string") {
+      return `string:${data}`;
+    }
+
+    if (data instanceof Uint8Array) {
+      return `Uint8Array:${Encoding.toHex(data)}`;
+    }
+
+    if (Array.isArray(data)) {
+      return data.map(JsonRpcSigningServer.toJson);
+    }
+
+    // Exclude special kind of objects like Array, Date or Uint8Array
+    // Object.prototype.toString() returns a specified value:
+    // http://www.ecma-international.org/ecma-262/7.0/index.html#sec-object.prototype.tostring
+    if (
+      typeof data === "object" &&
+      data !== null &&
+      Object.prototype.toString.call(data) === "[object Object]"
+    ) {
+      const out: any = {};
+      for (const key of Object.keys(data)) {
+        // tslint:disable-next-line: no-object-mutation
+        out[key] = JsonRpcSigningServer.toJson((data as any)[key]);
+      }
+      return out;
+    }
+
+    throw new Error("Cannot encode type to JSON");
+  }
+
+  public static fromJson(data: JsonCompatibleValue): any {
+    if (typeof data === "number" || typeof data === "boolean") {
+      return data;
+    }
+
+    if (data === null) {
+      return null;
+    }
+
+    if (typeof data === "string") {
+      if (data.startsWith("string:")) {
+        return data.slice(7);
+      }
+
+      if (data.startsWith("Uint8Array:")) {
+        return Encoding.fromHex(data.slice(11));
+      }
+
+      throw new Error("Found string with unknown prefix");
+    }
+
+    if (Array.isArray(data)) {
+      return data.map(JsonRpcSigningServer.fromJson);
+    }
+
+    // Exclude special kind of objects like Array, Date or Uint8Array
+    // Object.prototype.toString() returns a specified value:
+    // http://www.ecma-international.org/ecma-262/7.0/index.html#sec-object.prototype.tostring
+    if (
+      typeof data === "object" &&
+      data !== null &&
+      Object.prototype.toString.call(data) === "[object Object]"
+    ) {
+      const out: any = {};
+      for (const key of Object.keys(data)) {
+        // tslint:disable-next-line: no-object-mutation
+        out[key] = JsonRpcSigningServer.fromJson((data as any)[key]);
+      }
+      return out;
+    }
+
+    throw new Error("Cannot decode type from JSON");
+  }
+}
