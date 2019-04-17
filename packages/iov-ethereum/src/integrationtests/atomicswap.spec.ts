@@ -32,12 +32,8 @@ const ethereumCodec = new EthereumCodec({
   atomicSwapEtherContractAddress: testConfig.connectionOptions.atomicSwapEtherContractAddress,
 });
 
-function skipTests(): boolean {
-  return !process.env.ETHEREUM_ENABLED;
-}
-
 function pendingWithoutEthereum(): void {
-  if (skipTests()) {
+  if (!process.env.ETHEREUM_ENABLED) {
     return pending("Set ETHEREUM_ENABLED to enable ethereum-node-based tests");
   }
 }
