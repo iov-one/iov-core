@@ -3,6 +3,8 @@
 ## 0.13.4
 
 - @iov/keycontrol: Export `ReadonlyWallet`.
+- @iov/jsonrpc: Add `jsonRpcCode` constant object. Deprecate old `jsonRpcCode*`
+  constants in favour of `jsonRpcCode`.
 
 ## 0.13.3
 

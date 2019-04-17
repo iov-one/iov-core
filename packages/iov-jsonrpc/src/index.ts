@@ -14,6 +14,7 @@ export {
   JsonRpcErrorResponse,
   JsonRpcResponse,
   JsonRpcSuccessResponse,
+  jsonRpcCode,
   jsonRpcCodeInternalError,
   jsonRpcCodeInvalidParams,
   jsonRpcCodeInvalidRequest,
