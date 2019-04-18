@@ -28,7 +28,11 @@ interface RpcCallSignAndPost {
 type RpcCall = RpcCallGetIdentities | RpcCallSignAndPost;
 
 class ParamsError extends Error {}
-class MethodNotFoundError extends Error {}
+class MethodNotFoundError extends Error {
+  constructor(message?: string) {
+    super(message || "Unknown method name");
+  }
+}
 
 function isArrayOfStrings(array: ReadonlyArray<any>): array is ReadonlyArray<string> {
   return array.every(element => typeof element === "string");
@@ -43,13 +47,10 @@ function parseRpcCall(data: JsonRpcRequest): RpcCall {
     case "getIdentities": {
       const { reason, chainIds } = data.params;
       if (typeof reason !== "string") {
-        throw new ParamsError("1st parameter (reason) must be a string");
+        throw new ParamsError("Parameter 'reason' must be a string");
       }
-      if (!Array.isArray(chainIds)) {
-        throw new ParamsError("2nd parameter (chainIds) must be an array");
-      }
-      if (!isArrayOfStrings(chainIds)) {
-        throw new ParamsError("Found non-string element in chainIds array");
+      if (!Array.isArray(chainIds) || !isArrayOfStrings(chainIds)) {
+        throw new ParamsError("Parameter 'chainIds' must be an array of strings");
       }
       return {
         name: "getIdentities",
@@ -60,14 +61,11 @@ function parseRpcCall(data: JsonRpcRequest): RpcCall {
     case "signAndPost": {
       const { reason, transaction } = data.params;
       if (typeof reason !== "string") {
-        throw new ParamsError("1st parameter (reason) must be a string");
-      }
-      if (typeof transaction !== "object") {
-        throw new ParamsError("2nd parameter (transaction) must be an object");
+        throw new ParamsError("Parameter 'reason' must be a string");
       }
       const parsedTransaction = TransactionEncoder.fromJson(transaction);
       if (!isUnsignedTransaction(parsedTransaction)) {
-        throw new ParamsError("2nd parameter (transaction) does not look like an unsigned transaction");
+        throw new ParamsError("Parameter 'transaction' does not look like an unsigned transaction");
       }
       return {
         name: "signAndPost",
@@ -76,7 +74,7 @@ function parseRpcCall(data: JsonRpcRequest): RpcCall {
       };
     }
     default:
-      throw new MethodNotFoundError("Unknown method name");
+      throw new MethodNotFoundError();
   }
 }
 
