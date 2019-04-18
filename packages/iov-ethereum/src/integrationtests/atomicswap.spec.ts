@@ -32,12 +32,8 @@ const ethereumCodec = new EthereumCodec({
   atomicSwapEtherContractAddress: testConfig.connectionOptions.atomicSwapEtherContractAddress,
 });
 
-function skipTests(): boolean {
-  return !process.env.ETHEREUM_ENABLED;
-}
-
 function pendingWithoutEthereum(): void {
-  if (skipTests()) {
+  if (!process.env.ETHEREUM_ENABLED) {
     return pending("Set ETHEREUM_ENABLED to enable ethereum-node-based tests");
   }
 }
@@ -84,8 +80,6 @@ class Actor {
   private readonly connection: AtomicSwapConnection;
   // tslint:disable-next-line:readonly-keyword
   private preimage?: Preimage;
-  // tslint:disable-next-line:readonly-keyword
-  private swapId?: SwapIdBytes;
 
   constructor(data: ActorData) {
     this.profile = data.profile;
@@ -198,7 +192,6 @@ class Actor {
 }
 
 describe("Full atomic swap", () => {
-  // Note: due to some assumptions this only runs when ethereum is restarted before this test
   // TODO: handle different fees... right now assumes the same fee is used for all send txs
   it("works", async () => {
     pendingWithoutEthereum();

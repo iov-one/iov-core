@@ -3,27 +3,31 @@ import BN = require("bn.js");
 import {
   Address,
   Amount,
+  AtomicSwap,
   AtomicSwapConnection,
   AtomicSwapHelpers,
+  ClaimedSwap,
   createTimestampTimeout,
   isBlockInfoPending,
   isBlockInfoSucceeded,
-  isFailedTransaction,
-  isSwapOfferTransaction,
   Preimage,
   PublicIdentity,
   SendTransaction,
   SwapClaimTransaction,
+  SwapIdBytes,
   SwapOfferTransaction,
   SwapProcessState,
   TokenTicker,
+  UnsignedTransaction,
 } from "@iov/bcp";
-import { bnsConnector, bnsSwapQueryTag } from "@iov/bns";
+import { bnsConnector } from "@iov/bns";
 import { Slip10RawIndex } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
-import { firstEvent } from "@iov/stream";
 
 import { MultiChainSigner } from "../multichainsigner";
+
+const CASH = "CASH" as TokenTicker;
+const MASH = "MASH" as TokenTicker;
 
 async function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -102,7 +106,7 @@ class Actor {
   public async getCashBalance(): Promise<BN> {
     const account = await this.bnsConnection.getAccount({ pubkey: this.bnsIdentity.pubkey });
     const balance = account ? account.balance : [];
-    const amount = balance.find(row => row.tokenTicker === "CASH");
+    const amount = balance.find(row => row.tokenTicker === CASH);
     return new BN(amount ? amount.quantity : 0);
   }
 
@@ -110,8 +114,18 @@ class Actor {
   public async getMashBalance(): Promise<BN> {
     const account = await this.bcpConnection.getAccount({ pubkey: this.bcpIdentity.pubkey });
     const balance = account ? account.balance : [];
-    const amount = balance.find(row => row.tokenTicker === "MASH");
+    const amount = balance.find(row => row.tokenTicker === MASH);
     return new BN(amount ? amount.quantity : 0);
+  }
+
+  public async getBnsSwap(id: SwapIdBytes): Promise<AtomicSwap> {
+    const swaps = await this.bnsConnection.getSwaps({ swapid: id });
+    return swaps[swaps.length - 1];
+  }
+
+  public async getBcpSwap(id: SwapIdBytes): Promise<AtomicSwap> {
+    const swaps = await this.bcpConnection.getSwaps({ swapid: id });
+    return swaps[swaps.length - 1];
   }
 
   public async generatePreimage(): Promise<void> {
@@ -119,158 +133,90 @@ class Actor {
     this.preimage = await AtomicSwapHelpers.createPreimage();
   }
 
-  public async sendBnsTokens(recipient: Address, amount: Amount): Promise<void> {
-    const send = await this.bnsConnection.withDefaultFee<SendTransaction>({
+  public async sendTransaction(transaction: UnsignedTransaction): Promise<Uint8Array | undefined> {
+    const post = await this.signer.signAndPost(transaction);
+    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    if (!isBlockInfoSucceeded(blockInfo)) {
+      throw new Error("Transaction failed");
+    }
+    await tendermintSearchIndexUpdated();
+    return blockInfo.result;
+  }
+
+  public async sendBnsTokens(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
+    const transaction = await this.bnsConnection.withDefaultFee<SendTransaction>({
       kind: "bcp/send",
       creator: this.bnsIdentity,
       recipient: recipient,
       amount: amount,
     });
-    const post = await this.signer.signAndPost(send);
-    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
-    if (!isBlockInfoSucceeded(blockInfo)) {
-      throw new Error("Transaction failed");
-    }
-    await tendermintSearchIndexUpdated();
+    return this.sendTransaction(transaction);
   }
 
-  public async sendBcpTokens(recipient: Address, amount: Amount): Promise<void> {
-    const send = await this.bcpConnection.withDefaultFee<SendTransaction>({
+  public async sendBcpTokens(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
+    const transaction = await this.bcpConnection.withDefaultFee<SendTransaction>({
       kind: "bcp/send",
       creator: this.bcpIdentity,
       recipient: recipient,
       amount: amount,
     });
-    const post = await this.signer.signAndPost(send);
-    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
-    if (!isBlockInfoSucceeded(blockInfo)) {
-      throw new Error("Transaction failed");
-    }
-    await tendermintSearchIndexUpdated();
+    return this.sendTransaction(transaction);
   }
 
-  public async sendSwapOfferOnBns(recipient: Address, amount: Amount): Promise<void> {
-    const offer = await this.bnsConnection.withDefaultFee<SwapOfferTransaction>({
+  public async sendSwapOfferOnBns(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
+    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction>({
       kind: "bcp/swap_offer",
       creator: this.bnsIdentity,
       memo: "Take this cash",
       recipient: recipient,
-      timeout: createTimestampTimeout(100),
+      timeout: createTimestampTimeout(200),
       hash: AtomicSwapHelpers.hashPreimage(this.preimage!),
       amounts: [amount],
     });
-    const post = await this.signer.signAndPost(offer);
-    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
-    if (!isBlockInfoSucceeded(blockInfo)) {
-      throw new Error("Transaction failed");
-    }
-    await tendermintSearchIndexUpdated();
+    return this.sendTransaction(transaction);
   }
 
-  public async sendSwapCounterOnBcp(recipient: Address, amount: Amount): Promise<void> {
-    // ensure correct offer was sent on BNS
-    // TODO: search swap offer by ID
-    const offerReview = await firstEvent(
-      this.bnsConnection.liveTx({ tags: [bnsSwapQueryTag({ recipient: this.bnsAddress })] }),
-    );
-    if (isFailedTransaction(offerReview)) {
-      throw new Error("Transaction must not fail");
-    }
-    if (!isSwapOfferTransaction(offerReview.transaction)) {
-      throw new Error("Expected swap offer type");
-    }
-
-    if (offerReview.transaction.recipient !== this.bnsAddress) {
-      throw new Error("Swap offer has wrong recipient");
-    }
-
-    expect(offerReview.transaction.amounts.length).toEqual(1);
-    expect(offerReview.transaction.amounts[0].quantity).toEqual("2000000000");
-    expect(offerReview.transaction.amounts[0].fractionalDigits).toEqual(9);
-    expect(offerReview.transaction.amounts[0].tokenTicker).toEqual("CASH");
-
-    // sent counter offer on BCP
-    const counterOffer = await this.bcpConnection.withDefaultFee<SwapOfferTransaction>({
+  public async sendSwapCounterOnBcp(
+    offer: AtomicSwap,
+    recipient: Address,
+    amount: Amount,
+  ): Promise<Uint8Array | undefined> {
+    const transaction = await this.bcpConnection.withDefaultFee<SwapOfferTransaction>({
       kind: "bcp/swap_offer",
       creator: this.bcpIdentity,
       amounts: [amount],
       recipient: recipient,
-      timeout: createTimestampTimeout(200),
-      hash: offerReview.transaction.hash,
+      timeout: createTimestampTimeout(100),
+      hash: offer.data.hash,
     });
-
-    const post = await this.signer.signAndPost(counterOffer);
-    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
-    if (!isBlockInfoSucceeded(blockInfo)) {
-      throw new Error("Transaction failed");
-    }
-    await tendermintSearchIndexUpdated();
+    return this.sendTransaction(transaction);
   }
 
-  public async claimFromPreimageOnBcp(): Promise<void> {
-    // review counter
-    // TODO: search counter by swap ID
-    const searchResult = await this.bcpConnection.getSwaps({ recipient: this.bcpAddress });
-    expect(searchResult.length).toEqual(1);
-    const counterReview = searchResult[0];
-
-    if (counterReview.kind !== SwapProcessState.Open) {
-      throw new Error("Swap should be open");
-    }
-
-    if (counterReview.data.recipient !== this.bcpAddress) {
-      throw new Error("Swap counter has wrong recipient");
-    }
-
-    expect(counterReview.data.amounts.length).toEqual(1);
-    expect(counterReview.data.amounts[0].quantity).toEqual("5000000000");
-    expect(counterReview.data.amounts[0].fractionalDigits).toEqual(9);
-    expect(counterReview.data.amounts[0].tokenTicker).toEqual("MASH");
-
-    // reciew ok, alice claims MASH on BCP
-    const claim = await this.bcpConnection.withDefaultFee<SwapClaimTransaction>({
+  public async claimFromKnownPreimageOnBcp(offer: AtomicSwap): Promise<Uint8Array | undefined> {
+    const transaction = await this.bcpConnection.withDefaultFee<SwapClaimTransaction>({
       kind: "bcp/swap_claim",
       creator: this.bcpIdentity,
-      swapId: counterReview.data.id,
+      swapId: offer.data.id,
       preimage: this.preimage!,
     });
-
-    const post = await this.signer.signAndPost(claim);
-    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
-    if (!isBlockInfoSucceeded(blockInfo)) {
-      throw new Error("Transaction failed");
-    }
-    await tendermintSearchIndexUpdated();
+    return this.sendTransaction(transaction);
   }
 
-  public async claimFromClaimOnBns(): Promise<void> {
-    const searchResults = await this.bcpConnection.getSwaps({ sender: this.bcpAddress });
-    expect(searchResults.length).toEqual(1);
-    const claim1Review = searchResults[0];
-
-    if (claim1Review.kind !== SwapProcessState.Claimed) {
-      throw new Error("Swap should be claimed");
-    }
-
-    // found preimage on BCP, now bob claims CASH on BNS
-    const claim2 = await this.bnsConnection.withDefaultFee<SwapClaimTransaction>({
+  public async claimFromRevealedPreimageOnBns(
+    claim: AtomicSwap,
+    unclaimedId: Uint8Array,
+  ): Promise<Uint8Array | undefined> {
+    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction>({
       kind: "bcp/swap_claim",
       creator: this.bnsIdentity,
-      swapId: claim1Review.data.id,
-      preimage: claim1Review.preimage, // public data now!
+      swapId: unclaimedId as SwapIdBytes,
+      preimage: (claim as ClaimedSwap).preimage, // public data now!
     });
-
-    const post = await this.signer.signAndPost(claim2);
-    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
-    if (!isBlockInfoSucceeded(blockInfo)) {
-      throw new Error("Transaction failed");
-    }
-    await tendermintSearchIndexUpdated();
+    return this.sendTransaction(transaction);
   }
 }
 
-describe("Full atomic swap", () => {
-  // Note: due to some assumptions this only runs when bnsd and bcpd are restarted before this test
+describe("Full atomic swap between bns and bcp", () => {
   // TODO: handle different fees... right now with assumes 0.01 of the main token as fee
   it("works", async () => {
     pendingWithoutBnsd();
@@ -294,56 +240,83 @@ describe("Full atomic swap", () => {
     await alice.sendBnsTokens(bob.bnsAddress, {
       quantity: "10000000",
       fractionalDigits: 9,
-      tokenTicker: "CASH" as TokenTicker,
+      tokenTicker: CASH,
     });
     await bob.sendBcpTokens(alice.bcpAddress, {
       quantity: "10000000",
       fractionalDigits: 9,
-      tokenTicker: "MASH" as TokenTicker,
+      tokenTicker: MASH,
     });
 
     // alice owns CASH on BNS but no MASH
     const aliceInitialCash = await alice.getCashBalance();
     const aliceInitialMash = await alice.getMashBalance();
     expect(aliceInitialCash.gtn(100_000000000)).toEqual(true);
-    expect(aliceInitialMash.toString()).toEqual("10000000");
 
     // bob owns MASH on BCP but no CASH
     const bobInitialCash = await bob.getCashBalance();
     const bobInitialMash = await bob.getMashBalance();
-    expect(bobInitialCash.toString()).toEqual("10000000");
     expect(bobInitialMash.gtn(100_000000000)).toEqual(true);
 
     // A secret that only Alice knows
     await alice.generatePreimage();
 
-    await alice.sendSwapOfferOnBns(bob.bnsAddress, {
+    const aliceOfferId = await alice.sendSwapOfferOnBns(bob.bnsAddress, {
       quantity: "2000000000",
       fractionalDigits: 9,
-      tokenTicker: "CASH" as TokenTicker,
+      tokenTicker: CASH,
     });
 
     // Alice's 2 CASH are locked in the contract (also consider fee)
     expect(aliceInitialCash.sub(await alice.getCashBalance()).toString()).toEqual("2010000000");
 
-    await bob.sendSwapCounterOnBcp(alice.bcpAddress, {
+    // check correct offer was sent on BNS
+    const aliceOffer = await bob.getBnsSwap(aliceOfferId as SwapIdBytes);
+    expect(aliceOffer.kind).toEqual(SwapProcessState.Open);
+    expect(aliceOffer.data.recipient).toEqual(bob.bnsAddress);
+    expect(aliceOffer.data.amounts.length).toEqual(1);
+    expect(aliceOffer.data.amounts[0]).toEqual({
+      quantity: "2000000000",
+      fractionalDigits: 9,
+      tokenTicker: CASH,
+    });
+
+    const bobOfferId = await bob.sendSwapCounterOnBcp(aliceOffer, alice.bcpAddress, {
       quantity: "5000000000",
       fractionalDigits: 9,
-      tokenTicker: "MASH" as TokenTicker,
+      tokenTicker: MASH,
     });
 
     // Bob's 5 MASH are locked in the contract (plus the fee deduction)
     expect(bobInitialMash.sub(await bob.getMashBalance()).toString()).toEqual("5010000000");
 
-    await alice.claimFromPreimageOnBcp();
+    // check correct counteroffer was made on BCP
+    const bobOffer = await alice.getBcpSwap(bobOfferId as SwapIdBytes);
+    expect(bobOffer.kind).toEqual(SwapProcessState.Open);
+    expect(bobOffer.data.recipient).toEqual(alice.bcpAddress);
+    expect(bobOffer.data.amounts.length).toEqual(1);
+    expect(bobOffer.data.amounts[0]).toEqual({
+      quantity: "5000000000",
+      fractionalDigits: 9,
+      tokenTicker: MASH,
+    });
+    await alice.claimFromKnownPreimageOnBcp(bobOffer);
 
     // Alice revealed her secret and should own 5 MASH now
-    expect((await alice.getMashBalance()).toString()).toEqual("5000000000");
+    expect((await alice.getMashBalance()).sub(aliceInitialMash).toString()).toEqual("4990000000");
 
-    await bob.claimFromClaimOnBns();
+    // check claim was made on BCP
+    const aliceClaim = await bob.getBcpSwap(bobOfferId as SwapIdBytes);
+    expect(aliceClaim.kind).toEqual(SwapProcessState.Claimed);
+
+    await bob.claimFromRevealedPreimageOnBns(aliceClaim, aliceOfferId!);
+
+    // check claim was made on BNS
+    const bobClaim = await alice.getBnsSwap(aliceOfferId as SwapIdBytes);
+    expect(bobClaim.kind).toEqual(SwapProcessState.Claimed);
 
     // Bob used Alice's preimage to claim his 2 CASH
-    expect((await bob.getCashBalance()).toString()).toEqual("2000000000");
+    expect((await bob.getCashBalance()).sub(bobInitialCash).toString()).toEqual("1990000000");
 
     // Alice's CASH balance now down by 2 (plus fees)
     expect(aliceInitialCash.sub(await alice.getCashBalance()).toString()).toEqual("2010000000");
