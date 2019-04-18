@@ -5,6 +5,7 @@ import { Eth } from "web3x/eth";
 import { WebsocketProvider } from "web3x/providers";
 
 import { AshToken } from "./AshToken";
+import { AtomicSwapErc20 } from "./AtomicSwapErc20";
 import { AtomicSwapEther } from "./AtomicSwapEther";
 import { TrashToken } from "./TrashToken";
 
@@ -47,6 +48,7 @@ export async function main(args: ReadonlyArray<string>): Promise<void> {
     { name: "AshToken", contract: new AshToken(eth) },
     { name: "TrashToken", contract: new TrashToken(eth) },
     { name: "AtomicSwapEther", contract: new AtomicSwapEther(eth) },
+    { name: "AtomicSwapErc20", contract: new AtomicSwapErc20(eth) },
   ];
 
   for (const { name, contract } of deploymentJobs) {
