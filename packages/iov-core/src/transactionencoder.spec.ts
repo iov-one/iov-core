@@ -46,16 +46,18 @@ describe("TransactionEncoder", () => {
     });
 
     it("fails for unsupported objects", () => {
-      expect(() => toJson(() => 0)).toThrowError(/Cannot encode type to JSON/i);
-      expect(() => toJson(/[0-9]+/)).toThrowError(/Cannot encode type to JSON/i);
-      expect(() => toJson(new Uint32Array())).toThrowError(/Cannot encode type to JSON/i);
-      expect(() => toJson(undefined)).toThrowError(/Cannot encode type to JSON/i);
+      const expectedError = /Cannot encode type to JSON/i;
+      expect(() => toJson(() => 0)).toThrowError(expectedError);
+      expect(() => toJson(/[0-9]+/)).toThrowError(expectedError);
+      expect(() => toJson(new Uint32Array())).toThrowError(expectedError);
+      expect(() => toJson(undefined)).toThrowError(expectedError);
     });
 
     it("prefixes strings", () => {
       expect(toJson("")).toEqual("string:");
       expect(toJson("abc")).toEqual("string:abc");
       expect(toJson("\0")).toEqual("string:\0");
+      expect(toJson("string:abc")).toEqual("string:string:abc");
     });
 
     it("prefixes and hex encodes Uint8Array", () => {
@@ -64,9 +66,9 @@ describe("TransactionEncoder", () => {
       expect(toJson(new Uint8Array([0x12, 0xab]))).toEqual("bytes:12ab");
     });
 
-    // Encoding recursive objects is explicitly undefined behavior. Just use this
+    // Encoding circular objects is explicitly undefined behavior. Just use this
     // test to play around.
-    xit("fails for recursive objects", () => {
+    xit("fails for circular objects", () => {
       const a: any = {};
       const b: any = {};
       // tslint:disable-next-line: no-object-mutation
@@ -82,6 +84,9 @@ describe("TransactionEncoder", () => {
       expect(fromJson(0)).toEqual(0);
       expect(fromJson(1)).toEqual(1);
       expect(fromJson(-1)).toEqual(-1);
+      expect(fromJson(Number.MAX_SAFE_INTEGER)).toEqual(Number.MAX_SAFE_INTEGER);
+      expect(fromJson(2 * Number.MAX_SAFE_INTEGER)).toEqual(2 * Number.MAX_SAFE_INTEGER);
+      expect(fromJson(Number.MAX_SAFE_INTEGER + 10_000000)).toEqual(Number.MAX_SAFE_INTEGER + 10_000000);
       expect(fromJson(Number.POSITIVE_INFINITY)).toEqual(Number.POSITIVE_INFINITY);
       expect(fromJson(Number.NaN)).toEqual(Number.NaN);
     });
@@ -120,9 +125,10 @@ describe("TransactionEncoder", () => {
       expect(fromJson("bytes:aabb")).toEqual(new Uint8Array([0xaa, 0xbb]));
 
       // other prefixes
-      expect(() => fromJson("")).toThrowError(/Found string with unknown prefix/i);
-      expect(() => fromJson("abc")).toThrowError(/Found string with unknown prefix/i);
-      expect(() => fromJson("Integer:123")).toThrowError(/Found string with unknown prefix/i);
+      const expectedError = /Found string with unknown prefix/i;
+      expect(() => fromJson("")).toThrowError(expectedError);
+      expect(() => fromJson("abc")).toThrowError(expectedError);
+      expect(() => fromJson("Integer:123")).toThrowError(expectedError);
     });
 
     it("decodes a full send transaction", () => {

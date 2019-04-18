@@ -73,7 +73,6 @@ function makeSimpleMessagingConnection(
     start: listener => {
       // tslint:disable-next-line:no-object-mutation
       worker.onmessage = event => {
-        // console.log("Got message from connection", event);
         const responseError = parseJsonRpcError(event.data);
         if (responseError) {
           listener.next(responseError);
@@ -142,10 +141,12 @@ describe("signingservice.worker", () => {
     const result = TransactionEncoder.fromJson(response.result);
     expect(result).toEqual(jasmine.any(Array));
     expect((result as ReadonlyArray<any>).length).toEqual(1);
-    expect(result[0].chainId).toEqual(bnsConnection.chainId());
-    expect(result[0].pubkey).toEqual({
-      algo: Algorithm.Ed25519,
-      data: fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
+    expect(result[0]).toEqual({
+      chainId: bnsConnection.chainId(),
+      pubkey: {
+        algo: Algorithm.Ed25519,
+        data: fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
+      },
     });
 
     worker.terminate();
@@ -204,10 +205,12 @@ describe("signingservice.worker", () => {
     const result = TransactionEncoder.fromJson(response.result);
     expect(result).toEqual(jasmine.any(Array));
     expect((result as ReadonlyArray<any>).length).toEqual(2);
-    expect(result[0].chainId).toEqual(bnsConnection.chainId());
-    expect(result[0].pubkey).toEqual({
-      algo: Algorithm.Ed25519,
-      data: fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
+    expect(result[0]).toEqual({
+      chainId: bnsConnection.chainId(),
+      pubkey: {
+        algo: Algorithm.Ed25519,
+        data: fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
+      },
     });
     expect(result[1]).toEqual(ganacheSecondIdentity);
 
@@ -215,7 +218,7 @@ describe("signingservice.worker", () => {
     bnsConnection.disconnect();
   });
 
-  it("send a signing request to service", async () => {
+  it("handles signing requests", async () => {
     pendingWithoutBnsd();
     pendingWithoutEthereum();
     pendingWithoutWorker();
@@ -265,12 +268,12 @@ describe("signingservice.worker", () => {
     const transactionId: TransactionId = TransactionEncoder.fromJson(signAndPostResponse.result);
     expect(transactionId).toMatch(/^[0-9A-F]+$/);
 
-    const trandactionResult = await firstEvent(bnsConnection.liveTx({ id: transactionId }));
-    if (!isConfirmedTransaction(trandactionResult)) {
-      throw new Error("Confirmed transaction extected");
+    const transactionResult = await firstEvent(bnsConnection.liveTx({ id: transactionId }));
+    if (!isConfirmedTransaction(transactionResult)) {
+      throw new Error("Expected confirmed transaction");
     }
-    expect(trandactionResult.transactionId).toEqual(transactionId);
-    expect(trandactionResult.transaction).toEqual(send);
+    expect(transactionResult.transactionId).toEqual(transactionId);
+    expect(transactionResult.transaction).toEqual(send);
 
     worker.terminate();
     bnsConnection.disconnect();

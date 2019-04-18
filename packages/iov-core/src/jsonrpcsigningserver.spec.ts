@@ -125,10 +125,12 @@ describe("JsonRpcSigningServer", () => {
     const result = TransactionEncoder.fromJson(response.result);
     expect(result).toEqual(jasmine.any(Array));
     expect((result as ReadonlyArray<any>).length).toEqual(1);
-    expect(result[0].chainId).toEqual(bnsConnection.chainId());
-    expect(result[0].pubkey).toEqual({
-      algo: Algorithm.Ed25519,
-      data: fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
+    expect(result[0]).toEqual({
+      chainId: bnsConnection.chainId(),
+      pubkey: {
+        algo: Algorithm.Ed25519,
+        data: fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
+      },
     });
 
     server.shutdown();
@@ -186,10 +188,12 @@ describe("JsonRpcSigningServer", () => {
     const result = TransactionEncoder.fromJson(response.result);
     expect(result).toEqual(jasmine.any(Array));
     expect((result as ReadonlyArray<any>).length).toEqual(2);
-    expect(result[0].chainId).toEqual(bnsConnection.chainId());
-    expect(result[0].pubkey).toEqual({
-      algo: Algorithm.Ed25519,
-      data: fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
+    expect(result[0]).toEqual({
+      chainId: bnsConnection.chainId(),
+      pubkey: {
+        algo: Algorithm.Ed25519,
+        data: fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
+      },
     });
     expect(result[1]).toEqual(ganacheSecondIdentity);
 
@@ -197,7 +201,7 @@ describe("JsonRpcSigningServer", () => {
     bnsConnection.disconnect();
   });
 
-  it("send a signing request to service", async () => {
+  it("handles signing requests", async () => {
     pendingWithoutBnsd();
     pendingWithoutEthereum();
 
@@ -249,7 +253,7 @@ describe("JsonRpcSigningServer", () => {
 
     const result = await firstEvent(bnsConnection.liveTx({ id: transactionId }));
     if (!isConfirmedTransaction(result)) {
-      throw new Error("Confirmed transaction extected");
+      throw new Error("Expected confirmed transaction");
     }
     expect(result.transactionId).toEqual(transactionId);
     expect(result.transaction).toEqual(send);

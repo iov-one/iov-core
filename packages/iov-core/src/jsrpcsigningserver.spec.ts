@@ -190,7 +190,7 @@ describe("JsRpcSigningServer", () => {
     bnsConnection.disconnect();
   });
 
-  it("send a signing request to service", async () => {
+  it("handles signing requests", async () => {
     pendingWithoutBnsd();
     pendingWithoutEthereum();
 
@@ -242,7 +242,7 @@ describe("JsRpcSigningServer", () => {
 
     const result = await firstEvent(bnsConnection.liveTx({ id: transactionId }));
     if (!isConfirmedTransaction(result)) {
-      throw new Error("Confirmed transaction extected");
+      throw new Error("Expected confirmed transaction");
     }
     expect(result.transactionId).toEqual(transactionId);
     expect(result.transaction).toEqual(send);

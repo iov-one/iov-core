@@ -1,6 +1,11 @@
 import { Encoding } from "@iov/encoding";
 import { JsonCompatibleValue } from "@iov/jsonrpc";
 
+const prefixes = {
+  string: "string:",
+  bytes: "bytes:",
+};
+
 /**
  * Encodes non-circular JavaScript objects and primitives into JSON.
  * Used for encoding/decoding transactions but works for kind of data consisting of the supported types.
@@ -25,11 +30,11 @@ export class TransactionEncoder {
     }
 
     if (typeof data === "string") {
-      return `string:${data}`;
+      return `${prefixes.string}${data}`;
     }
 
     if (data instanceof Uint8Array) {
-      return `bytes:${Encoding.toHex(data)}`;
+      return `${prefixes.bytes}${Encoding.toHex(data)}`;
     }
 
     if (Array.isArray(data)) {
@@ -65,12 +70,12 @@ export class TransactionEncoder {
     }
 
     if (typeof data === "string") {
-      if (data.startsWith("string:")) {
-        return data.slice(7);
+      if (data.startsWith(prefixes.string)) {
+        return data.slice(prefixes.string.length);
       }
 
-      if (data.startsWith("bytes:")) {
-        return Encoding.fromHex(data.slice(6));
+      if (data.startsWith(prefixes.bytes)) {
+        return Encoding.fromHex(data.slice(prefixes.bytes.length));
       }
 
       throw new Error("Found string with unknown prefix");

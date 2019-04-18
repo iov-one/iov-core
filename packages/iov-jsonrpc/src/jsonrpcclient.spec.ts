@@ -19,7 +19,6 @@ function makeSimpleMessagingConnection(
     start: listener => {
       // tslint:disable-next-line:no-object-mutation
       worker.onmessage = event => {
-        // console.log("Got message from connection", event);
         const responseError = parseJsonRpcError(event.data);
         if (responseError) {
           listener.next(responseError);
