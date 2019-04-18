@@ -5,6 +5,10 @@
       "source": "truffle",
       "buildFile": "contracts/AshToken.json"
     },
+    "AtomicSwapErc20": {
+      "source": "truffle",
+      "buildFile": "contracts/AtomicSwapERC20.json"
+    },
     "AtomicSwapEther": {
       "source": "truffle",
       "buildFile": "contracts/AtomicSwapEther.json"
