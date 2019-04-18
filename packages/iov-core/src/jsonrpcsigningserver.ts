@@ -88,6 +88,9 @@ export class JsonRpcSigningServer {
     this.core = core;
   }
 
+  /**
+   * Handles a request from a possible untrusted source.
+   */
   public async handleUnchecked(request: unknown): Promise<JsonRpcResponse> {
     let checkedRequest: JsonRpcRequest;
     try {
@@ -109,7 +112,8 @@ export class JsonRpcSigningServer {
   }
 
   /**
-   * Handles a checked JsonRpcRequest
+   * Handles a checked request, i.e. a request that is known to be a valid
+   * JSON-RPC "Request object".
    *
    * 1. convert JsRpcRequest into calls to SigningServerCore
    * 2. call SigningServerCore

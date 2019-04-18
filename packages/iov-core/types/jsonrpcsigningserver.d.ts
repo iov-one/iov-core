@@ -6,9 +6,13 @@ import { SigningServerCore } from "./signingservercore";
 export declare class JsonRpcSigningServer {
     private readonly core;
     constructor(core: SigningServerCore);
+    /**
+     * Handles a request from a possible untrusted source.
+     */
     handleUnchecked(request: unknown): Promise<JsonRpcResponse>;
     /**
-     * Handles a checked JsonRpcRequest
+     * Handles a checked request, i.e. a request that is known to be a valid
+     * JSON-RPC "Request object".
      *
      * 1. convert JsRpcRequest into calls to SigningServerCore
      * 2. call SigningServerCore
