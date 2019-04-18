@@ -261,4 +261,60 @@ describe("JsonRpcSigningServer", () => {
     server.shutdown();
     bnsConnection.disconnect();
   });
+
+  it("sends correct error codes", async () => {
+    pendingWithoutBnsd();
+    pendingWithoutEthereum();
+
+    const server = await makeBnsEthereumSigningServer();
+
+    // unknown method
+    {
+      const response = await server.handleChecked({
+        jsonrpc: "2.0",
+        id: 123,
+        method: "doSomeStuff",
+        params: {},
+      });
+      if (!isJsonRpcErrorResponse(response)) {
+        throw new Error("Expected RPC response to be an error");
+      }
+      expect(response.error.code).toEqual(-32601);
+    }
+
+    // parameter 'chainIds' missing
+    {
+      const response = await server.handleChecked({
+        jsonrpc: "2.0",
+        id: 123,
+        method: "getIdentities",
+        params: {
+          reason: "Who are you?",
+        },
+      });
+      if (!isJsonRpcErrorResponse(response)) {
+        throw new Error("Expected RPC response to be an error");
+      }
+      expect(response.error.code).toEqual(-32602);
+    }
+
+    // parameter 'reason' of wrong type
+    {
+      const response = await server.handleChecked({
+        jsonrpc: "2.0",
+        id: 123,
+        method: "getIdentities",
+        params: {
+          reason: 1,
+          chainIds: [ethereumChainId],
+        },
+      });
+      if (!isJsonRpcErrorResponse(response)) {
+        throw new Error("Expected RPC response to be an error");
+      }
+      expect(response.error.code).toEqual(-32602);
+    }
+
+    server.shutdown();
+  });
 });

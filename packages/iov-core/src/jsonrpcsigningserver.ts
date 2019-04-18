@@ -120,11 +120,21 @@ export class JsonRpcSigningServer {
     try {
       call = parseRpcCall(request);
     } catch (error) {
+      let errorCode: number;
+      if (error instanceof MethodNotFoundError) {
+        errorCode = jsonRpcCode.methodNotFound;
+      } else if (error instanceof ParamsError) {
+        errorCode = jsonRpcCode.invalidParams;
+      } else {
+        // An unexpected error is the server's fault
+        errorCode = jsonRpcCode.serverError.default;
+      }
+
       const errorResponse: JsonRpcErrorResponse = {
         jsonrpc: "2.0",
         id: request.id,
         error: {
-          code: jsonRpcCode.methodNotFound,
+          code: errorCode,
           message: error.toString(),
         },
       };
