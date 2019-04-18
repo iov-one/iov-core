@@ -38,11 +38,33 @@ export function isJsonRpcErrorResponse(response: JsonRpcResponse): response is J
   return typeof (response as JsonRpcErrorResponse).error === "object";
 }
 
-export const jsonRpcCodeParseError = -32700;
-export const jsonRpcCodeInvalidRequest = -32600;
-export const jsonRpcCodeMethodNotFound = -32601;
-export const jsonRpcCodeInvalidParams = -32602;
-export const jsonRpcCodeInternalError = -32603;
-// server error (Reserved for implementation-defined server-errors.):
-// -32000 to -32099
-export const jsonRpcCodeServerErrorDefault = -32000;
+/**
+ * Error codes as specified in JSON-RPC 2.0
+ *
+ * @see https://www.jsonrpc.org/specification#error_object
+ */
+export const jsonRpcCode = {
+  parseError: -32700,
+  invalidRequest: -32600,
+  methodNotFound: -32601,
+  invalidParams: -32602,
+  internalError: -32603,
+  // server error (Reserved for implementation-defined server-errors.):
+  // -32000 to -32099
+  serverError: {
+    default: -32000,
+  },
+};
+
+/** @deprecated: use jsonRpcCode */
+export const jsonRpcCodeParseError = jsonRpcCode.parseError;
+/** @deprecated: use jsonRpcCode */
+export const jsonRpcCodeInvalidRequest = jsonRpcCode.invalidRequest;
+/** @deprecated: use jsonRpcCode */
+export const jsonRpcCodeMethodNotFound = jsonRpcCode.methodNotFound;
+/** @deprecated: use jsonRpcCode */
+export const jsonRpcCodeInvalidParams = jsonRpcCode.invalidParams;
+/** @deprecated: use jsonRpcCode */
+export const jsonRpcCodeInternalError = jsonRpcCode.internalError;
+/** @deprecated: use jsonRpcCode */
+export const jsonRpcCodeServerErrorDefault = jsonRpcCode.serverError.default;

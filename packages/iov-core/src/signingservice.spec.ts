@@ -18,16 +18,17 @@ import {
 import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { SimpleMessagingConnection } from "@iov/jsonrpc";
-import { firstEvent } from "@iov/stream";
 import {
-  JsRpcClient,
-  JsRpcCompatibleDictionary,
-  JsRpcRequest,
-  JsRpcResponse,
-  parseJsRpcErrorResponse,
-  parseJsRpcResponse,
-} from "./jsrpc";
+  JsonRpcClient,
+  JsonRpcRequest,
+  JsonRpcResponse,
+  parseJsonRpcError,
+  parseJsonRpcResponse,
+  SimpleMessagingConnection,
+} from "@iov/jsonrpc";
+import { firstEvent } from "@iov/stream";
+
+import { TransactionEncoder } from "./transactionencoder";
 
 const { fromHex } = Encoding;
 
@@ -67,17 +68,16 @@ async function randomBnsAddress(): Promise<Address> {
 
 function makeSimpleMessagingConnection(
   worker: Worker,
-): SimpleMessagingConnection<JsRpcRequest, JsRpcResponse> {
-  const producer: Producer<JsRpcResponse> = {
+): SimpleMessagingConnection<JsonRpcRequest, JsonRpcResponse> {
+  const producer: Producer<JsonRpcResponse> = {
     start: listener => {
       // tslint:disable-next-line:no-object-mutation
       worker.onmessage = event => {
-        // console.log("Got message from connection", event);
-        const responseError = parseJsRpcErrorResponse(event.data);
+        const responseError = parseJsonRpcError(event.data);
         if (responseError) {
           listener.next(responseError);
         } else {
-          const response = parseJsRpcResponse(event.data);
+          const response = parseJsonRpcResponse(event.data);
           listener.next(response);
         }
       };
@@ -127,8 +127,9 @@ describe("signingservice.worker", () => {
     const worker = new Worker(signingserviceKarmaUrl);
     await sleep(signingserviceBootTime);
 
-    const client = new JsRpcClient(makeSimpleMessagingConnection(worker));
+    const client = new JsonRpcClient(makeSimpleMessagingConnection(worker));
     const response = await client.run({
+      jsonrpc: "2.0",
       id: 123,
       method: "getIdentities",
       params: {
@@ -137,13 +138,16 @@ describe("signingservice.worker", () => {
       },
     });
     expect(response.id).toEqual(123);
-    expect(response.result).toEqual(jasmine.any(Array));
-    expect((response.result as ReadonlyArray<any>).length).toEqual(1);
-    expect(response.result[0].chainId).toEqual(bnsConnection.chainId());
-    expect(response.result[0].pubkey.algo).toEqual("ed25519");
-    expect(response.result[0].pubkey.data).toEqual(
-      fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
-    );
+    const result = TransactionEncoder.fromJson(response.result);
+    expect(result).toEqual(jasmine.any(Array));
+    expect((result as ReadonlyArray<any>).length).toEqual(1);
+    expect(result[0]).toEqual({
+      chainId: bnsConnection.chainId(),
+      pubkey: {
+        algo: Algorithm.Ed25519,
+        data: fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
+      },
+    });
 
     worker.terminate();
     bnsConnection.disconnect();
@@ -157,8 +161,9 @@ describe("signingservice.worker", () => {
     const worker = new Worker(signingserviceKarmaUrl);
     await sleep(signingserviceBootTime);
 
-    const client = new JsRpcClient(makeSimpleMessagingConnection(worker));
+    const client = new JsonRpcClient(makeSimpleMessagingConnection(worker));
     const response = await client.run({
+      jsonrpc: "2.0",
       id: 123,
       method: "getIdentities",
       params: {
@@ -167,9 +172,10 @@ describe("signingservice.worker", () => {
       },
     });
     expect(response.id).toEqual(123);
-    expect(response.result).toEqual(jasmine.any(Array));
-    expect((response.result as ReadonlyArray<any>).length).toEqual(1);
-    expect(response.result[0]).toEqual(ganacheSecondIdentity);
+    const result = TransactionEncoder.fromJson(response.result);
+    expect(result).toEqual(jasmine.any(Array));
+    expect((result as ReadonlyArray<any>).length).toEqual(1);
+    expect(result[0]).toEqual(ganacheSecondIdentity);
 
     worker.terminate();
   });
@@ -184,8 +190,9 @@ describe("signingservice.worker", () => {
     const worker = new Worker(signingserviceKarmaUrl);
     await sleep(signingserviceBootTime);
 
-    const client = new JsRpcClient(makeSimpleMessagingConnection(worker));
+    const client = new JsonRpcClient(makeSimpleMessagingConnection(worker));
     const response = await client.run({
+      jsonrpc: "2.0",
       id: 123,
       method: "getIdentities",
       params: {
@@ -194,20 +201,24 @@ describe("signingservice.worker", () => {
       },
     });
     expect(response.id).toEqual(123);
-    expect(response.result).toEqual(jasmine.any(Array));
-    expect((response.result as ReadonlyArray<any>).length).toEqual(2);
-    expect(response.result[0].chainId).toEqual(bnsConnection.chainId());
-    expect(response.result[0].pubkey.algo).toEqual("ed25519");
-    expect(response.result[0].pubkey.data).toEqual(
-      fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
-    );
-    expect(response.result[1]).toEqual(ganacheSecondIdentity);
+
+    const result = TransactionEncoder.fromJson(response.result);
+    expect(result).toEqual(jasmine.any(Array));
+    expect((result as ReadonlyArray<any>).length).toEqual(2);
+    expect(result[0]).toEqual({
+      chainId: bnsConnection.chainId(),
+      pubkey: {
+        algo: Algorithm.Ed25519,
+        data: fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
+      },
+    });
+    expect(result[1]).toEqual(ganacheSecondIdentity);
 
     worker.terminate();
     bnsConnection.disconnect();
   });
 
-  it("send a signing request to service", async () => {
+  it("handles signing requests", async () => {
     pendingWithoutBnsd();
     pendingWithoutEthereum();
     pendingWithoutWorker();
@@ -217,9 +228,10 @@ describe("signingservice.worker", () => {
     const worker = new Worker(signingserviceKarmaUrl);
     await sleep(signingserviceBootTime);
 
-    const client = new JsRpcClient(makeSimpleMessagingConnection(worker));
+    const client = new JsonRpcClient(makeSimpleMessagingConnection(worker));
 
     const identitiesResponse = await client.run({
+      jsonrpc: "2.0",
       id: 1,
       method: "getIdentities",
       params: {
@@ -227,9 +239,11 @@ describe("signingservice.worker", () => {
         chainIds: [bnsConnection.chainId()],
       },
     });
-    expect(identitiesResponse.result).toEqual(jasmine.any(Array));
-    expect((identitiesResponse.result as ReadonlyArray<any>).length).toEqual(1);
-    const signer = identitiesResponse.result[0];
+
+    const result = TransactionEncoder.fromJson(identitiesResponse.result);
+    expect(result).toEqual(jasmine.any(Array));
+    expect((result as ReadonlyArray<any>).length).toEqual(1);
+    const signer = result[0];
     if (!isPublicIdentity(signer)) {
       throw new Error("Identity element is not valid");
     }
@@ -243,24 +257,23 @@ describe("signingservice.worker", () => {
     };
 
     const signAndPostResponse = await client.run({
+      jsonrpc: "2.0",
       id: 2,
       method: "signAndPost",
       params: {
         reason: "Please sign",
-        // Cast needed since type of indices of transaction is not string at compile time.
-        // see https://stackoverflow.com/a/37006179/2013738
-        transaction: (send as unknown) as JsRpcCompatibleDictionary,
+        transaction: TransactionEncoder.toJson(send),
       },
     });
-    const transactionId: TransactionId = signAndPostResponse.result;
+    const transactionId: TransactionId = TransactionEncoder.fromJson(signAndPostResponse.result);
     expect(transactionId).toMatch(/^[0-9A-F]+$/);
 
-    const result = await firstEvent(bnsConnection.liveTx({ id: transactionId }));
-    if (!isConfirmedTransaction(result)) {
-      throw new Error("Confirmed transaction extected");
+    const transactionResult = await firstEvent(bnsConnection.liveTx({ id: transactionId }));
+    if (!isConfirmedTransaction(transactionResult)) {
+      throw new Error("Expected confirmed transaction");
     }
-    expect(result.transactionId).toEqual(transactionId);
-    expect(result.transaction).toEqual(send);
+    expect(transactionResult.transactionId).toEqual(transactionId);
+    expect(transactionResult.transaction).toEqual(send);
 
     worker.terminate();
     bnsConnection.disconnect();

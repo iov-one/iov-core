@@ -2,6 +2,8 @@ import { JsRpcRequest, JsRpcResponse } from "./jsrpc";
 import { SigningServerCore } from "./signingservercore";
 /**
  * A transport-agnostic JavaScript RPC wrapper around SigningServerCore
+ *
+ * @deprecated use JsonRpcSigningServer and friends
  */
 export declare class JsRpcSigningServer {
     private readonly core;

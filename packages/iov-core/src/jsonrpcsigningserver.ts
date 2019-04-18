@@ -1,17 +1,17 @@
-// tslint:disable: deprecation
 import { ChainId, isUnsignedTransaction, UnsignedTransaction } from "@iov/bcp";
-import { parseJsonRpcId } from "@iov/jsonrpc";
-
 import {
-  isJsRpcCompatibleDictionary,
-  jsRpcCode,
-  JsRpcErrorResponse,
-  JsRpcRequest,
-  JsRpcResponse,
-  JsRpcSuccessResponse,
-  parseJsRpcRequest,
-} from "./jsrpc";
+  isJsonCompatibleDictionary,
+  jsonRpcCode,
+  JsonRpcErrorResponse,
+  JsonRpcRequest,
+  JsonRpcResponse,
+  JsonRpcSuccessResponse,
+  parseJsonRpcId,
+  parseJsonRpcRequest,
+} from "@iov/jsonrpc";
+
 import { SigningServerCore } from "./signingservercore";
+import { TransactionEncoder } from "./transactionencoder";
 
 interface RpcCallGetIdentities {
   readonly name: "getIdentities";
@@ -28,14 +28,18 @@ interface RpcCallSignAndPost {
 type RpcCall = RpcCallGetIdentities | RpcCallSignAndPost;
 
 class ParamsError extends Error {}
-class MethodNotFoundError extends Error {}
+class MethodNotFoundError extends Error {
+  constructor(message?: string) {
+    super(message || "Unknown method name");
+  }
+}
 
 function isArrayOfStrings(array: ReadonlyArray<any>): array is ReadonlyArray<string> {
   return array.every(element => typeof element === "string");
 }
 
-function parseRpcCall(data: JsRpcRequest): RpcCall {
-  if (!isJsRpcCompatibleDictionary(data.params)) {
+function parseRpcCall(data: JsonRpcRequest): RpcCall {
+  if (!isJsonCompatibleDictionary(data.params)) {
     throw new Error("Request params are only supported as dictionary");
   }
 
@@ -43,13 +47,10 @@ function parseRpcCall(data: JsRpcRequest): RpcCall {
     case "getIdentities": {
       const { reason, chainIds } = data.params;
       if (typeof reason !== "string") {
-        throw new ParamsError("1st parameter (reason) must be a string");
+        throw new ParamsError("Parameter 'reason' must be a string");
       }
-      if (!Array.isArray(chainIds)) {
-        throw new ParamsError("2nd parameter (chainIds) must be an array");
-      }
-      if (!isArrayOfStrings(chainIds)) {
-        throw new ParamsError("Found non-string element in chainIds array");
+      if (!Array.isArray(chainIds) || !isArrayOfStrings(chainIds)) {
+        throw new ParamsError("Parameter 'chainIds' must be an array of strings");
       }
       return {
         name: "getIdentities",
@@ -60,47 +61,47 @@ function parseRpcCall(data: JsRpcRequest): RpcCall {
     case "signAndPost": {
       const { reason, transaction } = data.params;
       if (typeof reason !== "string") {
-        throw new ParamsError("1st parameter (reason) must be a string");
+        throw new ParamsError("Parameter 'reason' must be a string");
       }
-      if (typeof transaction !== "object") {
-        throw new ParamsError("2nd parameter (transaction) must be an object");
-      }
-      if (!isUnsignedTransaction(transaction)) {
-        throw new ParamsError("2nd parameter (transaction) does not look like an unsigned transaction");
+      const parsedTransaction = TransactionEncoder.fromJson(transaction);
+      if (!isUnsignedTransaction(parsedTransaction)) {
+        throw new ParamsError("Parameter 'transaction' does not look like an unsigned transaction");
       }
       return {
         name: "signAndPost",
         reason: reason,
-        transaction: transaction,
+        transaction: parsedTransaction,
       };
     }
     default:
-      throw new MethodNotFoundError("Unknown method name");
+      throw new MethodNotFoundError();
   }
 }
 
 /**
- * A transport-agnostic JavaScript RPC wrapper around SigningServerCore
- *
- * @deprecated use JsonRpcSigningServer and friends
+ * A transport-agnostic JSON-RPC wrapper around SigningServerCore
  */
-export class JsRpcSigningServer {
+export class JsonRpcSigningServer {
   private readonly core: SigningServerCore;
 
   constructor(core: SigningServerCore) {
     this.core = core;
   }
 
-  public async handleUnchecked(request: unknown): Promise<JsRpcResponse> {
-    let checkedRequest: JsRpcRequest;
+  /**
+   * Handles a request from a possible untrusted source.
+   */
+  public async handleUnchecked(request: unknown): Promise<JsonRpcResponse> {
+    let checkedRequest: JsonRpcRequest;
     try {
-      checkedRequest = parseJsRpcRequest(request);
+      checkedRequest = parseJsonRpcRequest(request);
     } catch (error) {
       const requestId = parseJsonRpcId(request);
-      const errorResponse: JsRpcErrorResponse = {
+      const errorResponse: JsonRpcErrorResponse = {
+        jsonrpc: "2.0",
         id: requestId,
         error: {
-          code: jsRpcCode.invalidRequest,
+          code: jsonRpcCode.invalidRequest,
           message: error.toString(),
         },
       };
@@ -111,21 +112,33 @@ export class JsRpcSigningServer {
   }
 
   /**
-   * Handles a checked JsRpcRequest
+   * Handles a checked request, i.e. a request that is known to be a valid
+   * JSON-RPC "Request object".
    *
    * 1. convert JsRpcRequest into calls to SigningServerCore
    * 2. call SigningServerCore
-   * 3. convert result to JS RPC format
+   * 3. convert result to JSON-RPC format
    */
-  public async handleChecked(request: JsRpcRequest): Promise<JsRpcResponse> {
+  public async handleChecked(request: JsonRpcRequest): Promise<JsonRpcResponse> {
     let call: RpcCall;
     try {
       call = parseRpcCall(request);
     } catch (error) {
-      const errorResponse: JsRpcErrorResponse = {
+      let errorCode: number;
+      if (error instanceof MethodNotFoundError) {
+        errorCode = jsonRpcCode.methodNotFound;
+      } else if (error instanceof ParamsError) {
+        errorCode = jsonRpcCode.invalidParams;
+      } else {
+        // An unexpected error is the server's fault
+        errorCode = jsonRpcCode.serverError.default;
+      }
+
+      const errorResponse: JsonRpcErrorResponse = {
+        jsonrpc: "2.0",
         id: request.id,
         error: {
-          code: jsRpcCode.methodNotFound,
+          code: errorCode,
           message: error.toString(),
         },
       };
@@ -133,18 +146,20 @@ export class JsRpcSigningServer {
     }
 
     try {
-      let response: JsRpcSuccessResponse;
+      let response: JsonRpcSuccessResponse;
       switch (call.name) {
         case "getIdentities":
           response = {
+            jsonrpc: "2.0",
             id: request.id,
-            result: await this.core.getIdentities(call.reason, call.chainIds),
+            result: TransactionEncoder.toJson(await this.core.getIdentities(call.reason, call.chainIds)),
           };
           break;
         case "signAndPost":
           response = {
+            jsonrpc: "2.0",
             id: request.id,
-            result: await this.core.signAndPost(call.reason, call.transaction),
+            result: TransactionEncoder.toJson(await this.core.signAndPost(call.reason, call.transaction)),
           };
           break;
         default:
@@ -154,14 +169,15 @@ export class JsRpcSigningServer {
     } catch (error) {
       let errorCode: number;
       if (error instanceof ParamsError) {
-        errorCode = jsRpcCode.invalidParams;
+        errorCode = jsonRpcCode.invalidParams;
       } else if (error instanceof MethodNotFoundError) {
-        errorCode = jsRpcCode.methodNotFound;
+        errorCode = jsonRpcCode.methodNotFound;
       } else {
-        errorCode = jsRpcCode.serverErrorDefault;
+        errorCode = jsonRpcCode.serverError.default;
       }
 
-      const errorResponse: JsRpcErrorResponse = {
+      const errorResponse: JsonRpcErrorResponse = {
+        jsonrpc: "2.0",
         id: request.id,
         error: {
           code: errorCode,
