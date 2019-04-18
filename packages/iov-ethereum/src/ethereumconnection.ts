@@ -101,6 +101,8 @@ export interface EthereumConnectionOptions {
   readonly scraperApiUrl?: string;
   /** Address of the deployed atomic swap contract for ETH */
   readonly atomicSwapEtherContractAddress?: Address;
+  /** Address of the deployed atomic swap contract for ERC20 tokens */
+  readonly atomicSwapErc20ContractAddress?: Address;
   /** List of supported ERC20 tokens */
   readonly erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>;
   /** Time between two polls for block, transaction and account watching in seconds */

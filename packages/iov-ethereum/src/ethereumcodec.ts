@@ -80,6 +80,10 @@ export interface EthereumCodecOptions {
    */
   readonly atomicSwapEtherContractAddress?: Address;
   /**
+   * Address of the deployed atomic swap contract for ERC20 tokens.
+   */
+  readonly atomicSwapErc20ContractAddress?: Address;
+  /**
    * ERC20 tokens supported by the codec instance.
    *
    * The behaviour of encoding/decoding transactions for other tokens is undefined.
