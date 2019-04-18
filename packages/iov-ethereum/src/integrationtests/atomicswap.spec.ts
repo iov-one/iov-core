@@ -80,8 +80,6 @@ class Actor {
   private readonly connection: AtomicSwapConnection;
   // tslint:disable-next-line:readonly-keyword
   private preimage?: Preimage;
-  // tslint:disable-next-line:readonly-keyword
-  private swapId?: SwapIdBytes;
 
   constructor(data: ActorData) {
     this.profile = data.profile;
