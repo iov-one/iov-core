@@ -169,7 +169,7 @@ class Actor {
       creator: this.bnsIdentity,
       memo: "Take this cash",
       recipient: recipient,
-      timeout: createTimestampTimeout(100),
+      timeout: createTimestampTimeout(200),
       hash: AtomicSwapHelpers.hashPreimage(this.preimage!),
       amounts: [amount],
     });
@@ -186,7 +186,7 @@ class Actor {
       creator: this.bcpIdentity,
       amounts: [amount],
       recipient: recipient,
-      timeout: createTimestampTimeout(200),
+      timeout: createTimestampTimeout(100),
       hash: offer.data.hash,
     });
     return this.sendTransaction(transaction);
