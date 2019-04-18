@@ -149,7 +149,8 @@ export class Abi {
     }
     const key = Encoding.toHex(data);
     const map: { readonly [key: string]: SwapContractEvent } = {
-      [Abi.eventSignatures.opened]: SwapContractEvent.Opened,
+      [Abi.eventSignatures.openedEth]: SwapContractEvent.Opened,
+      [Abi.eventSignatures.openedErc20]: SwapContractEvent.Opened,
       [Abi.eventSignatures.claimed]: SwapContractEvent.Claimed,
       [Abi.eventSignatures.aborted]: SwapContractEvent.Aborted,
     };
@@ -167,7 +168,8 @@ export class Abi {
     }
     const key = Encoding.toHex(data);
     const map: { readonly [key: string]: SwapContractMethod } = {
-      [Abi.methodIds.open]: SwapContractMethod.Open,
+      [Abi.methodIds.openEth]: SwapContractMethod.Open,
+      [Abi.methodIds.openErc20]: SwapContractMethod.Open,
       [Abi.methodIds.claim]: SwapContractMethod.Claim,
       [Abi.methodIds.abort]: SwapContractMethod.Abort,
     };
@@ -180,23 +182,29 @@ export class Abi {
   }
 
   private static readonly eventSignatures: {
-    readonly opened: string;
+    readonly openedEth: string;
+    readonly openedErc20: string;
     readonly claimed: string;
     readonly aborted: string;
   } = {
-    opened: Encoding.toHex(
+    openedEth: Encoding.toHex(
       Abi.calculateMethodHash("Opened(bytes32,address,address,bytes32,uint256,uint256)"),
+    ),
+    openedErc20: Encoding.toHex(
+      Abi.calculateMethodHash("Opened(bytes32,address,address,bytes32,uint256,uint256,address)"),
     ),
     claimed: Encoding.toHex(Abi.calculateMethodHash("Claimed(bytes32,bytes32)")),
     aborted: Encoding.toHex(Abi.calculateMethodHash("Aborted(bytes32)")),
   };
 
   private static readonly methodIds: {
-    readonly open: string;
+    readonly openEth: string;
+    readonly openErc20: string;
     readonly claim: string;
     readonly abort: string;
   } = {
-    open: Encoding.toHex(Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)")),
+    openEth: Encoding.toHex(Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)")),
+    openErc20: Encoding.toHex(Abi.calculateMethodId("open(bytes32,address,bytes32,uint256,address,uint256)")),
     claim: Encoding.toHex(Abi.calculateMethodId("claim(bytes32,bytes32)")),
     abort: Encoding.toHex(Abi.calculateMethodId("abort(bytes32)")),
   };
