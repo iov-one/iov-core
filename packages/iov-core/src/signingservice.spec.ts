@@ -27,7 +27,8 @@ import {
   SimpleMessagingConnection,
 } from "@iov/jsonrpc";
 import { firstEvent } from "@iov/stream";
-import { JsonRpcSigningServer } from "./jsonrpcsigningserver";
+
+import { TransactionEncoder } from "./transactionencoder";
 
 const { fromHex } = Encoding;
 
@@ -138,7 +139,7 @@ describe("signingservice.worker", () => {
       },
     });
     expect(response.id).toEqual(123);
-    const result = JsonRpcSigningServer.fromJson(response.result);
+    const result = TransactionEncoder.fromJson(response.result);
     expect(result).toEqual(jasmine.any(Array));
     expect((result as ReadonlyArray<any>).length).toEqual(1);
     expect(result[0].chainId).toEqual(bnsConnection.chainId());
@@ -170,7 +171,7 @@ describe("signingservice.worker", () => {
       },
     });
     expect(response.id).toEqual(123);
-    const result = JsonRpcSigningServer.fromJson(response.result);
+    const result = TransactionEncoder.fromJson(response.result);
     expect(result).toEqual(jasmine.any(Array));
     expect((result as ReadonlyArray<any>).length).toEqual(1);
     expect(result[0]).toEqual(ganacheSecondIdentity);
@@ -200,7 +201,7 @@ describe("signingservice.worker", () => {
     });
     expect(response.id).toEqual(123);
 
-    const result = JsonRpcSigningServer.fromJson(response.result);
+    const result = TransactionEncoder.fromJson(response.result);
     expect(result).toEqual(jasmine.any(Array));
     expect((result as ReadonlyArray<any>).length).toEqual(2);
     expect(result[0].chainId).toEqual(bnsConnection.chainId());
@@ -236,7 +237,7 @@ describe("signingservice.worker", () => {
       },
     });
 
-    const result = JsonRpcSigningServer.fromJson(identitiesResponse.result);
+    const result = TransactionEncoder.fromJson(identitiesResponse.result);
     expect(result).toEqual(jasmine.any(Array));
     expect((result as ReadonlyArray<any>).length).toEqual(1);
     const signer = result[0];
@@ -258,10 +259,10 @@ describe("signingservice.worker", () => {
       method: "signAndPost",
       params: {
         reason: "Please sign",
-        transaction: JsonRpcSigningServer.toJson(send),
+        transaction: TransactionEncoder.toJson(send),
       },
     });
-    const transactionId: TransactionId = JsonRpcSigningServer.fromJson(signAndPostResponse.result);
+    const transactionId: TransactionId = TransactionEncoder.fromJson(signAndPostResponse.result);
     expect(transactionId).toMatch(/^[0-9A-F]+$/);
 
     const trandactionResult = await firstEvent(bnsConnection.liveTx({ id: transactionId }));

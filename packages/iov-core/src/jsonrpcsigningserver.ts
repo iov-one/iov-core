@@ -1,8 +1,6 @@
 import { ChainId, isUnsignedTransaction, UnsignedTransaction } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
 import {
   isJsonCompatibleDictionary,
-  JsonCompatibleValue,
   jsonRpcCode,
   JsonRpcErrorResponse,
   JsonRpcRequest,
@@ -13,6 +11,7 @@ import {
 } from "@iov/jsonrpc";
 
 import { SigningServerCore } from "./signingservercore";
+import { TransactionEncoder } from "./transactionencoder";
 
 interface RpcCallGetIdentities {
   readonly name: "getIdentities";
@@ -66,7 +65,7 @@ function parseRpcCall(data: JsonRpcRequest): RpcCall {
       if (typeof transaction !== "object") {
         throw new ParamsError("2nd parameter (transaction) must be an object");
       }
-      const parsedTransaction = JsonRpcSigningServer.fromJson(transaction);
+      const parsedTransaction = TransactionEncoder.fromJson(transaction);
       if (!isUnsignedTransaction(parsedTransaction)) {
         throw new ParamsError("2nd parameter (transaction) does not look like an unsigned transaction");
       }
@@ -85,95 +84,6 @@ function parseRpcCall(data: JsonRpcRequest): RpcCall {
  * A transport-agnostic JSON-RPC wrapper around SigningServerCore
  */
 export class JsonRpcSigningServer {
-  /**
-   * Encodes a non-recursive JavaScript object as JSON in a way that is
-   * 1. compact for binary data
-   * 2. supports serializing/deserializing non-JSON types like Uint8Array
-   */
-  public static toJson(data: unknown): JsonCompatibleValue {
-    if (typeof data === "number" || typeof data === "boolean") {
-      return data;
-    }
-
-    if (data === null) {
-      return null;
-    }
-
-    if (typeof data === "string") {
-      return `string:${data}`;
-    }
-
-    if (data instanceof Uint8Array) {
-      return `bytes:${Encoding.toHex(data)}`;
-    }
-
-    if (Array.isArray(data)) {
-      return data.map(JsonRpcSigningServer.toJson);
-    }
-
-    // Exclude special kind of objects like Array, Date or Uint8Array
-    // Object.prototype.toString() returns a specified value:
-    // http://www.ecma-international.org/ecma-262/7.0/index.html#sec-object.prototype.tostring
-    if (
-      typeof data === "object" &&
-      data !== null &&
-      Object.prototype.toString.call(data) === "[object Object]"
-    ) {
-      const out: any = {};
-      for (const key of Object.keys(data)) {
-        // tslint:disable-next-line: no-object-mutation
-        out[key] = JsonRpcSigningServer.toJson((data as any)[key]);
-      }
-      return out;
-    }
-
-    throw new Error("Cannot encode type to JSON");
-  }
-
-  public static fromJson(data: JsonCompatibleValue): any {
-    if (typeof data === "number" || typeof data === "boolean") {
-      return data;
-    }
-
-    if (data === null) {
-      return null;
-    }
-
-    if (typeof data === "string") {
-      if (data.startsWith("string:")) {
-        return data.slice(7);
-      }
-
-      if (data.startsWith("bytes:")) {
-        return Encoding.fromHex(data.slice(6));
-      }
-
-      throw new Error("Found string with unknown prefix");
-    }
-
-    if (Array.isArray(data)) {
-      return data.map(JsonRpcSigningServer.fromJson);
-    }
-
-    // Exclude special kind of objects like Array, Date or Uint8Array
-    // Object.prototype.toString() returns a specified value:
-    // http://www.ecma-international.org/ecma-262/7.0/index.html#sec-object.prototype.tostring
-    if (
-      typeof data === "object" &&
-      data !== null &&
-      Object.prototype.toString.call(data) === "[object Object]"
-    ) {
-      const out: any = {};
-      for (const key of Object.keys(data)) {
-        // tslint:disable-next-line: no-object-mutation
-        out[key] = JsonRpcSigningServer.fromJson((data as any)[key]);
-      }
-      return out;
-    }
-
-    throw new Error("Cannot decode type from JSON");
-  }
-
   private readonly core: SigningServerCore;
 
   constructor(core: SigningServerCore) {
@@ -230,14 +140,14 @@ export class JsonRpcSigningServer {
           response = {
             jsonrpc: "2.0",
             id: request.id,
-            result: JsonRpcSigningServer.toJson(await this.core.getIdentities(call.reason, call.chainIds)),
+            result: TransactionEncoder.toJson(await this.core.getIdentities(call.reason, call.chainIds)),
           };
           break;
         case "signAndPost":
           response = {
             jsonrpc: "2.0",
             id: request.id,
-            result: JsonRpcSigningServer.toJson(await this.core.signAndPost(call.reason, call.transaction)),
+            result: TransactionEncoder.toJson(await this.core.signAndPost(call.reason, call.transaction)),
           };
           break;
         default:
