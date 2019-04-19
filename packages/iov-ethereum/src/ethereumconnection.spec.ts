@@ -50,6 +50,7 @@ const ETH = "ETH" as TokenTicker;
 
 const ethereumCodec = new EthereumCodec({
   atomicSwapEtherContractAddress: testConfig.connectionOptions.atomicSwapEtherContractAddress,
+  atomicSwapErc20ContractAddress: testConfig.connectionOptions.atomicSwapErc20ContractAddress,
 });
 
 function skipTests(): boolean {

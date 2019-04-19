@@ -73,6 +73,7 @@ const local: EthereumNetworkConfig = {
     pollInterval: 0.1,
     scraperApiUrl: undefined,
     atomicSwapEtherContractAddress: "0xE1C9Ea25A621Cf5C934a7E112ECaB640eC7D8d18" as Address,
+    atomicSwapErc20ContractAddress: "0x9768ae2339B48643d710B11dDbDb8A7eDBEa15BC" as Address,
   },
   chainId: "ethereum-eip155-5777" as ChainId,
   minHeight: 0, // ganache does not auto-generate a genesis block
