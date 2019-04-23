@@ -81,9 +81,13 @@ export type Nonce = number & As<"nonce">;
 export type TokenTicker = string & As<"token-ticker">;
 
 export type SwapIdBytes = Uint8Array & As<"swap-id">;
-
-export function swapIdEquals(left: SwapIdBytes, right: SwapIdBytes): boolean {
-  return left.length === right.length && left.every((value, index) => value === right[index]);
+export interface SwapId {
+  readonly data: SwapIdBytes;
+}
+export function swapIdEquals(left: SwapId, right: SwapId): boolean {
+  return (
+    left.data.length === right.data.length && left.data.every((value, index) => value === right.data[index])
+  );
 }
 
 /**
@@ -253,9 +257,13 @@ export interface SwapOfferTransaction extends UnsignedTransaction {
   /**
    * The ID of the swap to aid coordination between the two parties.
    *
-   * This should be generated randomly by the client to avoid collisions.
+   * If required, the data should be generated randomly by the client to avoid
+   * collisions.
+   *
+   * The type of this may be extended with additional properties depending on
+   * the requirements of the individual chain.
    */
-  readonly swapId?: SwapIdBytes;
+  readonly swapId?: SwapId;
   readonly amounts: ReadonlyArray<Amount>;
   readonly recipient: Address;
   /**
@@ -276,12 +284,12 @@ export interface SwapOfferTransaction extends UnsignedTransaction {
 export interface SwapClaimTransaction extends UnsignedTransaction {
   readonly kind: "bcp/swap_claim";
   readonly preimage: Preimage;
-  readonly swapId: SwapIdBytes; // pulled from the offer transaction
+  readonly swapId: SwapId; // pulled from the offer transaction
 }
 
 export interface SwapAbortTransaction extends UnsignedTransaction {
   readonly kind: "bcp/swap_abort";
-  readonly swapId: SwapIdBytes; // pulled from the offer transaction
+  readonly swapId: SwapId; // pulled from the offer transaction
 }
 
 export type SwapTransaction = SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction;

@@ -2,7 +2,7 @@ import { As } from "type-tagger";
 import { Stream } from "xstream";
 
 import { BlockchainConnection } from "./connection";
-import { Address, Amount, SwapIdBytes, SwapTimeout } from "./transactions";
+import { Address, Amount, SwapId, SwapTimeout } from "./transactions";
 
 export enum SwapProcessState {
   Open = "open",
@@ -26,7 +26,7 @@ export type Preimage = Uint8Array & As<"preimage">;
 export type Hash = Uint8Array & As<"hash">;
 
 export interface SwapData {
-  readonly id: SwapIdBytes; // this is used as an unique identitier to locate the swap
+  readonly id: SwapId; // this is used as an unique identitier to locate the swap
   readonly sender: Address;
   readonly recipient: Address;
   /**
@@ -75,7 +75,7 @@ export interface AtomicSwapSenderQuery {
 }
 
 export interface AtomicSwapIdQuery {
-  readonly swapid: SwapIdBytes;
+  readonly swapid: SwapId;
 }
 
 // on some chains, swapid may equal hashlock, but often these may differ

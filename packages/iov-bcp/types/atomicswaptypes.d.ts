@@ -1,7 +1,7 @@
 import { As } from "type-tagger";
 import { Stream } from "xstream";
 import { BlockchainConnection } from "./connection";
-import { Address, Amount, SwapIdBytes, SwapTimeout } from "./transactions";
+import { Address, Amount, SwapId, SwapTimeout } from "./transactions";
 export declare enum SwapProcessState {
     Open = "open",
     Claimed = "claimed",
@@ -13,7 +13,7 @@ export declare function isSwapProcessStateAborted(state: SwapProcessState): stat
 export declare type Preimage = Uint8Array & As<"preimage">;
 export declare type Hash = Uint8Array & As<"hash">;
 export interface SwapData {
-    readonly id: SwapIdBytes;
+    readonly id: SwapId;
     readonly sender: Address;
     readonly recipient: Address;
     /**
@@ -53,7 +53,7 @@ export interface AtomicSwapSenderQuery {
     readonly sender: Address;
 }
 export interface AtomicSwapIdQuery {
-    readonly swapid: SwapIdBytes;
+    readonly swapid: SwapId;
 }
 export interface AtomicSwapHashlockQuery {
     readonly hashlock: Uint8Array;
