@@ -3,7 +3,7 @@
 import { Producer, Stream } from "xstream";
 
 import { JsonRpcClient, SimpleMessagingConnection } from "./jsonrpcclient";
-import { parseJsonRpcError, parseJsonRpcResponse } from "./parse";
+import { parseJsonRpcErrorResponse, parseJsonRpcSuccessResponse } from "./parse";
 import { JsonRpcRequest, JsonRpcResponse } from "./types";
 
 function pendingWithoutWorker(): void {
@@ -19,13 +19,13 @@ function makeSimpleMessagingConnection(
     start: listener => {
       // tslint:disable-next-line:no-object-mutation
       worker.onmessage = event => {
-        const responseError = parseJsonRpcError(event.data);
-        if (responseError) {
-          listener.next(responseError);
-        } else {
-          const response = parseJsonRpcResponse(event.data);
-          listener.next(response);
+        let response: JsonRpcResponse;
+        try {
+          response = parseJsonRpcErrorResponse(event.data);
+        } catch (_) {
+          response = parseJsonRpcSuccessResponse(event.data);
         }
+        listener.next(response);
       };
     },
     stop: () => {

@@ -38,6 +38,10 @@ export function isJsonRpcErrorResponse(response: JsonRpcResponse): response is J
   return typeof (response as JsonRpcErrorResponse).error === "object";
 }
 
+export function isJsonRpcSuccessResponse(response: JsonRpcResponse): response is JsonRpcSuccessResponse {
+  return !isJsonRpcErrorResponse(response);
+}
+
 /**
  * Error codes as specified in JSON-RPC 2.0
  *

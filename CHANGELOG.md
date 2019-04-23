@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.13.5
+
+- @iov/jsonrpc: Create `isJsonRpcSuccessResponse` analogue to
+  `isJsonRpcErrorResponse`.
+- @iov/jsonrpc: Create `parseJsonRpcErrorResponse`.
+- @iov/jsonrpc: Create `parseJsonRpcSuccessResponse`.
+- @iov/jsonrpc: Deprecate `parseJsonRpcError` and `parseJsonRpcResponse`.
+
 ## 0.13.4
 
 - @iov/keycontrol: Export `ReadonlyWallet`.
