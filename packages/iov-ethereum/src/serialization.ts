@@ -63,6 +63,7 @@ export class Serialization {
     nonce: Nonce,
     erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options> = new Map(),
     atomicSwapEtherContractAddress?: Address,
+    atomicSwapErc20ContractAddress?: Address,
   ): Uint8Array {
     Serialization.checkIsSupportedTransaction(unsigned);
 
@@ -110,34 +111,65 @@ export class Serialization {
       Serialization.checkHash(unsigned);
       Serialization.checkRecipientAddress(unsigned);
       Serialization.checkMemoNotPresent(unsigned);
-      Serialization.checkAmounts(unsigned);
-      Serialization.checkAtomicSwapContractAddress(atomicSwapEtherContractAddress);
-
+      Serialization.checkAtomicSwapContractAddress(
+        atomicSwapEtherContractAddress,
+        atomicSwapErc20ContractAddress,
+      );
       if (!isBlockHeightTimeout(unsigned.timeout)) {
         throw new Error("Timeout must be specified as a block height");
       }
 
-      const atomicSwapOfferCall = new Uint8Array([
-        ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)"),
-        ...unsigned.swapId!,
-        ...Abi.encodeAddress(unsigned.recipient),
-        ...unsigned.hash,
-        ...Abi.encodeUint256(unsigned.timeout.height.toString()),
-      ]);
+      if (atomicSwapEtherContractAddress) {
+        Serialization.checkEtherAmount(unsigned);
 
-      return Serialization.serializeGenericTransaction(
-        nonce,
-        gasPriceHex,
-        gasLimitHex,
-        atomicSwapEtherContractAddress!,
-        unsigned.amounts[0].quantity,
-        atomicSwapOfferCall,
-        chainIdHex,
-      );
+        const atomicSwapOfferCall = new Uint8Array([
+          ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)"),
+          ...unsigned.swapId!,
+          ...Abi.encodeAddress(unsigned.recipient),
+          ...unsigned.hash,
+          ...Abi.encodeUint256(unsigned.timeout.height.toString()),
+        ]);
+
+        return Serialization.serializeGenericTransaction(
+          nonce,
+          gasPriceHex,
+          gasLimitHex,
+          atomicSwapEtherContractAddress,
+          unsigned.amounts[0].quantity,
+          atomicSwapOfferCall,
+          chainIdHex,
+        );
+      } else {
+        Serialization.checkErc20Amount(unsigned, erc20Tokens);
+
+        const erc20ContractAddress = erc20Tokens.get(unsigned.amounts[0].tokenTicker)!.contractAddress;
+        const atomicSwapOfferCall = new Uint8Array([
+          ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256,address,uint256)"),
+          ...unsigned.swapId!,
+          ...Abi.encodeAddress(unsigned.recipient),
+          ...unsigned.hash,
+          ...Abi.encodeUint256(unsigned.timeout.height.toString()),
+          ...Abi.encodeAddress(erc20ContractAddress),
+          ...Abi.encodeUint256(unsigned.amounts[0].quantity),
+        ]);
+
+        return Serialization.serializeGenericTransaction(
+          nonce,
+          gasPriceHex,
+          gasLimitHex,
+          atomicSwapErc20ContractAddress!,
+          "0",
+          atomicSwapOfferCall,
+          chainIdHex,
+        );
+      }
     } else if (isSwapClaimTransaction(unsigned)) {
       Serialization.checkSwapId(unsigned);
       Serialization.checkPreimage(unsigned);
-      Serialization.checkAtomicSwapContractAddress(atomicSwapEtherContractAddress);
+      Serialization.checkAtomicSwapContractAddress(
+        atomicSwapEtherContractAddress,
+        atomicSwapErc20ContractAddress,
+      );
 
       const atomicSwapClaimCall = new Uint8Array([
         ...Abi.calculateMethodId("claim(bytes32,bytes32)"),
@@ -149,14 +181,17 @@ export class Serialization {
         nonce,
         gasPriceHex,
         gasLimitHex,
-        atomicSwapEtherContractAddress!,
+        (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
         "0",
         atomicSwapClaimCall,
         chainIdHex,
       );
     } else if (isSwapAbortTransaction(unsigned)) {
       Serialization.checkSwapId(unsigned);
-      Serialization.checkAtomicSwapContractAddress(atomicSwapEtherContractAddress);
+      Serialization.checkAtomicSwapContractAddress(
+        atomicSwapEtherContractAddress,
+        atomicSwapErc20ContractAddress,
+      );
 
       const atomicSwapAbortCall = new Uint8Array([
         ...Abi.calculateMethodId("abort(bytes32)"),
@@ -167,7 +202,7 @@ export class Serialization {
         nonce,
         gasPriceHex,
         gasLimitHex,
-        atomicSwapEtherContractAddress!,
+        (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
         "0",
         atomicSwapAbortCall,
         chainIdHex,
@@ -181,6 +216,7 @@ export class Serialization {
     signed: SignedTransaction,
     erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options> = new Map(),
     atomicSwapEtherContractAddress?: Address,
+    atomicSwapErc20ContractAddress?: Address,
   ): Uint8Array {
     const unsigned = signed.transaction;
     Serialization.checkIsSupportedTransaction(unsigned);
@@ -241,8 +277,11 @@ export class Serialization {
       Serialization.checkHash(unsigned);
       Serialization.checkRecipientAddress(unsigned);
       Serialization.checkMemoNotPresent(unsigned);
-      Serialization.checkAmounts(unsigned);
-      Serialization.checkAtomicSwapContractAddress(atomicSwapEtherContractAddress);
+      Serialization.checkAtomicSwapContractAddress(
+        atomicSwapEtherContractAddress,
+        atomicSwapErc20ContractAddress,
+      );
+      Serialization.checkEtherAmount(unsigned);
 
       if (!isBlockHeightTimeout(unsigned.timeout)) {
         throw new Error("Timeout must be specified as a block height");
@@ -270,7 +309,10 @@ export class Serialization {
     } else if (isSwapClaimTransaction(unsigned)) {
       Serialization.checkSwapId(unsigned);
       Serialization.checkPreimage(unsigned);
-      Serialization.checkAtomicSwapContractAddress(atomicSwapEtherContractAddress);
+      Serialization.checkAtomicSwapContractAddress(
+        atomicSwapEtherContractAddress,
+        atomicSwapErc20ContractAddress,
+      );
 
       const atomicSwapClaimCall = new Uint8Array([
         ...Abi.calculateMethodId("claim(bytes32,bytes32)"),
@@ -291,7 +333,10 @@ export class Serialization {
       );
     } else if (isSwapAbortTransaction(unsigned)) {
       Serialization.checkSwapId(unsigned);
-      Serialization.checkAtomicSwapContractAddress(atomicSwapEtherContractAddress);
+      Serialization.checkAtomicSwapContractAddress(
+        atomicSwapEtherContractAddress,
+        atomicSwapErc20ContractAddress,
+      );
 
       const atomicSwapAbortCall = new Uint8Array([
         ...Abi.calculateMethodId("abort(bytes32)"),
@@ -353,9 +398,15 @@ export class Serialization {
     }
   }
 
-  private static checkAtomicSwapContractAddress(address?: Address): void {
-    if (!address) {
-      throw new Error("Atomic swap transactions require a contract address");
+  private static checkAtomicSwapContractAddress(
+    atomicSwapEtherContractAddress?: Address,
+    atomicSwapErc20ContractAddress?: Address,
+  ): void {
+    const numContractAddresses = [atomicSwapEtherContractAddress, atomicSwapErc20ContractAddress].filter(
+      Boolean,
+    ).length;
+    if (numContractAddresses !== 1) {
+      throw new Error("Atomic swap transactions require exactly one atomic swap contract address");
     }
   }
 
@@ -365,13 +416,26 @@ export class Serialization {
     }
   }
 
-  private static checkAmounts(unsigned: SwapOfferTransaction): void {
+  private static checkEtherAmount(unsigned: SwapOfferTransaction): void {
     if (unsigned.amounts.length !== 1) {
       throw new Error("Cannot serialize a swap offer with more than one amount");
     }
-    if (unsigned.amounts[0].tokenTicker !== constants.primaryTokenTicker) {
-      // TODO: Remove when ERC20 swaps are supported
-      throw new Error("Only ETH atomic swap offers are currently supported");
+    const { tokenTicker } = unsigned.amounts[0];
+    if (tokenTicker !== constants.primaryTokenTicker) {
+      throw new Error("Invalid amount: Ether atomic swap must specify amount in ETH");
+    }
+  }
+
+  private static checkErc20Amount(
+    unsigned: SwapOfferTransaction,
+    erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
+  ): void {
+    if (unsigned.amounts.length !== 1) {
+      throw new Error("Cannot serialize a swap offer with more than one amount");
+    }
+    const { tokenTicker } = unsigned.amounts[0];
+    if (!erc20Tokens.get(tokenTicker)) {
+      throw new Error("Invalid amount: unknown ERC20 token");
     }
   }
 

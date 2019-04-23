@@ -2,8 +2,8 @@ import { Address, Nonce, SignedTransaction, TokenTicker, UnsignedTransaction } f
 import { Erc20Options } from "./erc20";
 export declare class Serialization {
     static serializeGenericTransaction(nonce: Nonce, gasPriceHex: string, gasLimitHex: string, recipient: Address, value: string, data: Uint8Array, v: string, r?: Uint8Array, s?: Uint8Array): Uint8Array;
-    static serializeUnsignedTransaction(unsigned: UnsignedTransaction, nonce: Nonce, erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>, atomicSwapEtherContractAddress?: Address): Uint8Array;
-    static serializeSignedTransaction(signed: SignedTransaction, erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>, atomicSwapEtherContractAddress?: Address): Uint8Array;
+    static serializeUnsignedTransaction(unsigned: UnsignedTransaction, nonce: Nonce, erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>, atomicSwapEtherContractAddress?: Address, atomicSwapErc20ContractAddress?: Address): Uint8Array;
+    static serializeSignedTransaction(signed: SignedTransaction, erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>, atomicSwapEtherContractAddress?: Address, atomicSwapErc20ContractAddress?: Address): Uint8Array;
     private static checkIsSupportedTransaction;
     private static checkRecipientAddress;
     private static checkSwapId;
@@ -11,7 +11,8 @@ export declare class Serialization {
     private static checkPreimage;
     private static checkAtomicSwapContractAddress;
     private static checkMemoNotPresent;
-    private static checkAmounts;
+    private static checkEtherAmount;
+    private static checkErc20Amount;
     private static getChainIdHex;
     private static getGasPriceHex;
     private static getGasLimitHex;
