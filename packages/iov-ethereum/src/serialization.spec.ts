@@ -31,6 +31,7 @@ const ETH = "ETH" as TokenTicker;
 const HOT = "HOT" as TokenTicker;
 
 describe("Serialization", () => {
+  const defaultNonce = 26 as Nonce;
   const defaultErc20Tokens = new Map<TokenTicker, Erc20Options>([
     [
       HOT,
@@ -239,7 +240,6 @@ describe("Serialization", () => {
         },
         recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
       };
-      const nonce = 26 as Nonce;
 
       const expected = fromHex(
         // full length of list
@@ -253,7 +253,7 @@ describe("Serialization", () => {
           // zero length s
           "80",
       );
-      const serializedTx = serializeUnsignedTransaction(tx, nonce, defaultErc20Tokens);
+      const serializedTx = serializeUnsignedTransaction(tx, defaultNonce, defaultErc20Tokens);
       expect(serializedTx).toEqual(expected);
     });
 
@@ -289,14 +289,13 @@ describe("Serialization", () => {
           height: 1,
         },
       };
-      const nonce = 26 as Nonce;
 
       const expected = fromHex(
         "f8b31a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d188a385c193e12be6d312c00b8840eed854809090909090909090909090909090909090909090909090909090909090909090000000000000000000000008fec1c262599f4169401ff48a9d63503ceaaf74208080808080808080808080808080808080808080808080808080808080808080000000000000000000000000000000000000000000000000000000000000001018080",
       );
       const serializedTransaction = serializeUnsignedTransaction(
         transaction,
-        nonce,
+        defaultNonce,
         undefined,
         testConfig.connectionOptions.atomicSwapEtherContractAddress,
       );
@@ -324,14 +323,13 @@ describe("Serialization", () => {
         swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
         preimage: Uint8Array.from(Array(32).fill(16)) as Preimage,
       };
-      const nonce = 26 as Nonce;
 
       const expected = fromHex(
         "f8691a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d1880b84484cc9dfb09090909090909090909090909090909090909090909090909090909090909091010101010101010101010101010101010101010101010101010101010101010018080",
       );
       const serializedTransaction = serializeUnsignedTransaction(
         transaction,
-        nonce,
+        defaultNonce,
         undefined,
         testConfig.connectionOptions.atomicSwapEtherContractAddress,
       );
@@ -358,14 +356,13 @@ describe("Serialization", () => {
         },
         swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
       };
-      const nonce = 26 as Nonce;
 
       const expected = fromHex(
         "f8481a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d1880a409d6ce0e0909090909090909090909090909090909090909090909090909090909090909018080",
       );
       const serializedTransaction = serializeUnsignedTransaction(
         transaction,
-        nonce,
+        defaultNonce,
         undefined,
         testConfig.connectionOptions.atomicSwapEtherContractAddress,
       );
@@ -404,14 +401,13 @@ describe("Serialization", () => {
           height: 1,
         },
       };
-      const nonce = 26 as Nonce;
 
       const expected = fromHex(
         "f8e91a850165a0bc0082cdbd949768ae2339b48643d710b11ddbdb8a7edbea15bc80b8c4e8d8a29309090909090909090909090909090909090909090909090909090909090909090000000000000000000000008fec1c262599f4169401ff48a9d63503ceaaf74208080808080808080808080808080808080808080808080808080808080808080000000000000000000000000000000000000000000000000000000000000001000000000000000000000000202020202020202020202020202020202020202000000000000000000000000000000000000000000000385c193e12be6d312c00018080",
       );
       const serializedTransaction = serializeUnsignedTransaction(
         transaction,
-        nonce,
+        defaultNonce,
         defaultErc20Tokens,
         undefined,
         testConfig.connectionOptions.atomicSwapErc20ContractAddress,
@@ -440,14 +436,13 @@ describe("Serialization", () => {
         swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
         preimage: Uint8Array.from(Array(32).fill(16)) as Preimage,
       };
-      const nonce = 26 as Nonce;
 
       const expected = fromHex(
         "f8691a850165a0bc0082cdbd949768ae2339b48643d710b11ddbdb8a7edbea15bc80b84484cc9dfb09090909090909090909090909090909090909090909090909090909090909091010101010101010101010101010101010101010101010101010101010101010018080",
       );
       const serializedTransaction = serializeUnsignedTransaction(
         transaction,
-        nonce,
+        defaultNonce,
         defaultErc20Tokens,
         undefined,
         testConfig.connectionOptions.atomicSwapErc20ContractAddress,
@@ -475,14 +470,13 @@ describe("Serialization", () => {
         },
         swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
       };
-      const nonce = 26 as Nonce;
 
       const expected = fromHex(
         "f8481a850165a0bc0082cdbd949768ae2339b48643d710b11ddbdb8a7edbea15bc80a409d6ce0e0909090909090909090909090909090909090909090909090909090909090909018080",
       );
       const serializedTransaction = serializeUnsignedTransaction(
         transaction,
-        nonce,
+        defaultNonce,
         defaultErc20Tokens,
         undefined,
         testConfig.connectionOptions.atomicSwapErc20ContractAddress,
@@ -574,7 +568,7 @@ describe("Serialization", () => {
           recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
         },
         primarySignature: {
-          nonce: 26 as Nonce,
+          nonce: defaultNonce,
           pubkey: {
             algo: Algorithm.Secp256k1,
             data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
@@ -639,7 +633,7 @@ describe("Serialization", () => {
           },
         },
         primarySignature: {
-          nonce: 26 as Nonce,
+          nonce: defaultNonce,
           pubkey: {
             algo: Algorithm.Secp256k1,
             data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
@@ -687,7 +681,7 @@ describe("Serialization", () => {
           preimage: Uint8Array.from(Array(32).fill(16)) as Preimage,
         },
         primarySignature: {
-          nonce: 26 as Nonce,
+          nonce: defaultNonce,
           pubkey: {
             algo: Algorithm.Secp256k1,
             data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
@@ -734,7 +728,7 @@ describe("Serialization", () => {
           swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
         },
         primarySignature: {
-          nonce: 26 as Nonce,
+          nonce: defaultNonce,
           pubkey: {
             algo: Algorithm.Secp256k1,
             data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
@@ -793,7 +787,7 @@ describe("Serialization", () => {
           },
         },
         primarySignature: {
-          nonce: 26 as Nonce,
+          nonce: defaultNonce,
           pubkey: {
             algo: Algorithm.Secp256k1,
             data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
@@ -842,7 +836,7 @@ describe("Serialization", () => {
           preimage: Uint8Array.from(Array(32).fill(16)) as Preimage,
         },
         primarySignature: {
-          nonce: 26 as Nonce,
+          nonce: defaultNonce,
           pubkey: {
             algo: Algorithm.Secp256k1,
             data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
@@ -890,7 +884,7 @@ describe("Serialization", () => {
           swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
         },
         primarySignature: {
-          nonce: 26 as Nonce,
+          nonce: defaultNonce,
           pubkey: {
             algo: Algorithm.Secp256k1,
             data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
