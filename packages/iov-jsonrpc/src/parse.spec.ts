@@ -16,6 +16,18 @@ describe("parse", () => {
       expect(parseJsonRpcErrorResponse(response)).toEqual(response);
     });
 
+    it("works for error with null ID", () => {
+      const response: any = {
+        jsonrpc: "2.0",
+        id: null,
+        error: {
+          code: jsonRpcCode.parseError,
+          message: "Could not parse request ID",
+        },
+      };
+      expect(parseJsonRpcErrorResponse(response)).toEqual(response);
+    });
+
     it("works for error with null data", () => {
       const response: any = {
         jsonrpc: "2.0",
@@ -185,6 +197,15 @@ describe("parse", () => {
         const response: any = {
           jsonrpc: "2.0",
           id: [1, 2, 3],
+          result: 3000,
+        };
+        expect(() => parseJsonRpcSuccessResponse(response)).toThrowError(/invalid id field/i);
+      }
+      // wrong type
+      {
+        const response: any = {
+          jsonrpc: "2.0",
+          id: null,
           result: 3000,
         };
         expect(() => parseJsonRpcSuccessResponse(response)).toThrowError(/invalid id field/i);
