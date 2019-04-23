@@ -31,12 +31,12 @@ import {
   isSwapProcessStateClaimed,
   isSwapProcessStateOpen,
   Nonce,
-  OpenSwap,
   PostableBytes,
   PostTxResponse,
   Preimage,
   PubkeyQuery,
   SwapData,
+  SwapId,
   SwapIdBytes,
   SwapProcessState,
   Token,
@@ -46,6 +46,7 @@ import {
   TransactionState,
   UnsignedTransaction,
 } from "@iov/bcp";
+import { Random } from "@iov/crypto";
 import { Encoding, Uint53 } from "@iov/encoding";
 import { isJsonRpcErrorResponse, JsonRpcRequest } from "@iov/jsonrpc";
 import { StreamingSocket } from "@iov/socket";
@@ -110,6 +111,20 @@ export interface EthereumConnectionOptions {
 }
 
 export class EthereumConnection implements AtomicSwapConnection {
+  public static async createEtherSwapId(): Promise<SwapId> {
+    const bytes = await Random.getBytes(32);
+    return {
+      data: bytes as SwapIdBytes,
+    };
+  }
+
+  public static async createErc20SwapId(): Promise<SwapId> {
+    const bytes = await Random.getBytes(32);
+    return {
+      data: bytes as SwapIdBytes,
+    };
+  }
+
   public static async establish(
     baseUrl: string,
     options: EthereumConnectionOptions,
