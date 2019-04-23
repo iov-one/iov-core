@@ -34,4 +34,8 @@ export declare class Serialization {
     private static serializeUnsignedSwapOfferTransaction;
     private static serializeUnsignedSwapClaimTransaction;
     private static serializeUnsignedSwapAbortTransaction;
+    private static serializeSignedSendTransaction;
+    private static serializeSignedSwapOfferTransaction;
+    private static serializeSignedSwapClaimTransaction;
+    private static serializeSignedSwapAbortTransaction;
 }

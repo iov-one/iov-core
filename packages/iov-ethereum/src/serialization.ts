@@ -126,6 +126,7 @@ export class Serialization {
     const unsigned = signed.transaction;
     Serialization.checkIsSupportedTransaction(unsigned);
 
+    const { nonce } = signed.primarySignature;
     const gasPriceHex = Serialization.getGasPriceHex(unsigned);
     const gasLimitHex = Serialization.getGasLimitHex(unsigned);
 
@@ -140,132 +141,52 @@ export class Serialization {
     const v = eip155V(chain, sig.recovery);
 
     if (isSendTransaction(unsigned)) {
-      Serialization.checkRecipientAddress(unsigned);
-
-      if (unsigned.amount.tokenTicker !== constants.primaryTokenTicker) {
-        Serialization.checkMemoNotPresent(unsigned);
-
-        const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
-        const erc20TransferCall = Serialization.buildErc20TransferCall(unsigned);
-
-        return Serialization.serializeGenericTransaction(
-          signed.primarySignature.nonce,
-          gasPriceHex,
-          gasLimitHex,
-          erc20Token.contractAddress,
-          ZERO_AMOUNT, // ETH value
-          erc20TransferCall,
-          encodeQuantity(v),
-          r,
-          s,
-        );
-      } else {
-        const data = toUtf8(unsigned.memo || "");
-
-        return Serialization.serializeGenericTransaction(
-          signed.primarySignature.nonce,
-          gasPriceHex,
-          gasLimitHex,
-          unsigned.recipient,
-          unsigned.amount.quantity,
-          data,
-          encodeQuantity(v),
-          r,
-          s,
-        );
-      }
-    } else if (isSwapOfferTransaction(unsigned)) {
-      Serialization.checkSwapId(unsigned);
-      Serialization.checkHash(unsigned);
-      Serialization.checkRecipientAddress(unsigned);
-      Serialization.checkMemoNotPresent(unsigned);
-      Serialization.checkAtomicSwapContractAddress(
-        atomicSwapEtherContractAddress,
-        atomicSwapErc20ContractAddress,
-      );
-      if (!isBlockHeightTimeout(unsigned.timeout)) {
-        throw new Error("Timeout must be specified as a block height");
-      }
-
-      if (atomicSwapEtherContractAddress) {
-        // native ETH swap
-        Serialization.checkEtherAmount(unsigned);
-
-        const atomicSwapOfferCall = Serialization.buildAtomicSwapOfferEtherCall(unsigned);
-
-        return Serialization.serializeGenericTransaction(
-          signed.primarySignature.nonce,
-          gasPriceHex,
-          gasLimitHex,
-          atomicSwapEtherContractAddress,
-          unsigned.amounts[0].quantity,
-          atomicSwapOfferCall,
-          encodeQuantity(v),
-          r,
-          s,
-        );
-      } else {
-        // ERC20 swap
-        Serialization.checkErc20Amount(unsigned, erc20Tokens);
-
-        const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
-        const atomicSwapOfferCall = Serialization.buildAtomicSwapOfferErc20Call(
-          unsigned,
-          erc20Token.contractAddress,
-        );
-
-        return Serialization.serializeGenericTransaction(
-          signed.primarySignature.nonce,
-          gasPriceHex,
-          gasLimitHex,
-          atomicSwapErc20ContractAddress!,
-          ZERO_AMOUNT,
-          atomicSwapOfferCall,
-          encodeQuantity(v),
-          r,
-          s,
-        );
-      }
-    } else if (isSwapClaimTransaction(unsigned)) {
-      Serialization.checkSwapId(unsigned);
-      Serialization.checkPreimage(unsigned);
-      Serialization.checkAtomicSwapContractAddress(
-        atomicSwapEtherContractAddress,
-        atomicSwapErc20ContractAddress,
-      );
-
-      const atomicSwapClaimCall = Serialization.buildAtomicSwapClaimCall(unsigned);
-
-      return Serialization.serializeGenericTransaction(
-        signed.primarySignature.nonce,
+      return Serialization.serializeSignedSendTransaction(
+        unsigned,
+        nonce,
+        erc20Tokens,
         gasPriceHex,
         gasLimitHex,
-        (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
-        ZERO_AMOUNT,
-        atomicSwapClaimCall,
-        encodeQuantity(v),
+        v,
         r,
         s,
+      );
+    } else if (isSwapOfferTransaction(unsigned)) {
+      return Serialization.serializeSignedSwapOfferTransaction(
+        unsigned,
+        nonce,
+        erc20Tokens,
+        gasPriceHex,
+        gasLimitHex,
+        v,
+        r,
+        s,
+        atomicSwapEtherContractAddress,
+        atomicSwapErc20ContractAddress,
+      );
+    } else if (isSwapClaimTransaction(unsigned)) {
+      return Serialization.serializeSignedSwapClaimTransaction(
+        unsigned,
+        nonce,
+        gasPriceHex,
+        gasLimitHex,
+        v,
+        r,
+        s,
+        atomicSwapEtherContractAddress,
+        atomicSwapErc20ContractAddress,
       );
     } else if (isSwapAbortTransaction(unsigned)) {
-      Serialization.checkSwapId(unsigned);
-      Serialization.checkAtomicSwapContractAddress(
-        atomicSwapEtherContractAddress,
-        atomicSwapErc20ContractAddress,
-      );
-
-      const atomicSwapAbortCall = Serialization.buildAtomicSwapAbortCall(unsigned);
-
-      return Serialization.serializeGenericTransaction(
-        signed.primarySignature.nonce,
+      return Serialization.serializeSignedSwapAbortTransaction(
+        unsigned,
+        nonce,
         gasPriceHex,
         gasLimitHex,
-        (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
-        ZERO_AMOUNT,
-        atomicSwapAbortCall,
-        encodeQuantity(v),
+        v,
         r,
         s,
+        atomicSwapEtherContractAddress,
+        atomicSwapErc20ContractAddress,
       );
     } else {
       throw new Error("Unsupported kind of transaction");
@@ -622,6 +543,184 @@ export class Serialization {
       ZERO_AMOUNT,
       atomicSwapAbortCall,
       chainIdHex,
+    );
+  }
+
+  private static serializeSignedSendTransaction(
+    unsigned: SendTransaction,
+    nonce: Nonce,
+    erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
+    gasPriceHex: string,
+    gasLimitHex: string,
+    v: number,
+    r: Uint8Array,
+    s: Uint8Array,
+  ): Uint8Array {
+    Serialization.checkRecipientAddress(unsigned);
+
+    if (unsigned.amount.tokenTicker !== constants.primaryTokenTicker) {
+      // ERC20 send
+      Serialization.checkMemoNotPresent(unsigned);
+
+      const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
+      const erc20TransferCall = Serialization.buildErc20TransferCall(unsigned);
+
+      return Serialization.serializeGenericTransaction(
+        nonce,
+        gasPriceHex,
+        gasLimitHex,
+        erc20Token.contractAddress,
+        ZERO_AMOUNT, // ETH value
+        erc20TransferCall,
+        encodeQuantity(v),
+        r,
+        s,
+      );
+    } else {
+      // native ETH send
+      const data = toUtf8(unsigned.memo || "");
+
+      return Serialization.serializeGenericTransaction(
+        nonce,
+        gasPriceHex,
+        gasLimitHex,
+        unsigned.recipient,
+        unsigned.amount.quantity,
+        data,
+        encodeQuantity(v),
+        r,
+        s,
+      );
+    }
+  }
+
+  private static serializeSignedSwapOfferTransaction(
+    unsigned: SwapOfferTransaction,
+    nonce: Nonce,
+    erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
+    gasPriceHex: string,
+    gasLimitHex: string,
+    v: number,
+    r: Uint8Array,
+    s: Uint8Array,
+    atomicSwapEtherContractAddress?: Address,
+    atomicSwapErc20ContractAddress?: Address,
+  ): Uint8Array {
+    Serialization.checkSwapId(unsigned);
+    Serialization.checkHash(unsigned);
+    Serialization.checkRecipientAddress(unsigned);
+    Serialization.checkMemoNotPresent(unsigned);
+    Serialization.checkAtomicSwapContractAddress(
+      atomicSwapEtherContractAddress,
+      atomicSwapErc20ContractAddress,
+    );
+    if (!isBlockHeightTimeout(unsigned.timeout)) {
+      throw new Error("Timeout must be specified as a block height");
+    }
+
+    if (atomicSwapEtherContractAddress) {
+      // native ETH swap
+      Serialization.checkEtherAmount(unsigned);
+
+      const atomicSwapOfferCall = Serialization.buildAtomicSwapOfferEtherCall(unsigned);
+
+      return Serialization.serializeGenericTransaction(
+        nonce,
+        gasPriceHex,
+        gasLimitHex,
+        atomicSwapEtherContractAddress,
+        unsigned.amounts[0].quantity,
+        atomicSwapOfferCall,
+        encodeQuantity(v),
+        r,
+        s,
+      );
+    } else {
+      // ERC20 swap
+      Serialization.checkErc20Amount(unsigned, erc20Tokens);
+
+      const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
+      const atomicSwapOfferCall = Serialization.buildAtomicSwapOfferErc20Call(
+        unsigned,
+        erc20Token.contractAddress,
+      );
+
+      return Serialization.serializeGenericTransaction(
+        nonce,
+        gasPriceHex,
+        gasLimitHex,
+        atomicSwapErc20ContractAddress!,
+        ZERO_AMOUNT,
+        atomicSwapOfferCall,
+        encodeQuantity(v),
+        r,
+        s,
+      );
+    }
+  }
+
+  private static serializeSignedSwapClaimTransaction(
+    unsigned: SwapClaimTransaction,
+    nonce: Nonce,
+    gasPriceHex: string,
+    gasLimitHex: string,
+    v: number,
+    r: Uint8Array,
+    s: Uint8Array,
+    atomicSwapEtherContractAddress?: Address,
+    atomicSwapErc20ContractAddress?: Address,
+  ): Uint8Array {
+    Serialization.checkSwapId(unsigned);
+    Serialization.checkPreimage(unsigned);
+    Serialization.checkAtomicSwapContractAddress(
+      atomicSwapEtherContractAddress,
+      atomicSwapErc20ContractAddress,
+    );
+
+    const atomicSwapClaimCall = Serialization.buildAtomicSwapClaimCall(unsigned);
+
+    return Serialization.serializeGenericTransaction(
+      nonce,
+      gasPriceHex,
+      gasLimitHex,
+      (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
+      ZERO_AMOUNT,
+      atomicSwapClaimCall,
+      encodeQuantity(v),
+      r,
+      s,
+    );
+  }
+
+  private static serializeSignedSwapAbortTransaction(
+    unsigned: SwapAbortTransaction,
+    nonce: Nonce,
+    gasPriceHex: string,
+    gasLimitHex: string,
+    v: number,
+    r: Uint8Array,
+    s: Uint8Array,
+    atomicSwapEtherContractAddress?: Address,
+    atomicSwapErc20ContractAddress?: Address,
+  ): Uint8Array {
+    Serialization.checkSwapId(unsigned);
+    Serialization.checkAtomicSwapContractAddress(
+      atomicSwapEtherContractAddress,
+      atomicSwapErc20ContractAddress,
+    );
+
+    const atomicSwapAbortCall = Serialization.buildAtomicSwapAbortCall(unsigned);
+
+    return Serialization.serializeGenericTransaction(
+      nonce,
+      gasPriceHex,
+      gasLimitHex,
+      (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
+      ZERO_AMOUNT,
+      atomicSwapAbortCall,
+      encodeQuantity(v),
+      r,
+      s,
     );
   }
 }
