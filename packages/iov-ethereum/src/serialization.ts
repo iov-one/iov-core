@@ -29,7 +29,7 @@ import { Erc20Options } from "./erc20";
 import { encodeQuantity, encodeQuantityString, fromBcpChainId, normalizeHex } from "./utils";
 
 const { fromHex, toUtf8 } = Encoding;
-const ZERO_AMOUNT = "0";
+const ZERO_ETH_QUANTITY = "0";
 
 export class Serialization {
   public static serializeGenericTransaction(
@@ -296,7 +296,7 @@ export class Serialization {
     erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
   ): Erc20Options {
     let erc20Token: Erc20Options | undefined;
-    let ticker: string = "";
+    let ticker: string;
     if (isSendTransaction(unsigned)) {
       erc20Token = erc20Tokens.get(unsigned.amount.tokenTicker);
       ticker = unsigned.amount.tokenTicker;
@@ -410,7 +410,7 @@ export class Serialization {
         gasPriceHex,
         gasLimitHex,
         erc20Token.contractAddress,
-        ZERO_AMOUNT, // ETH value
+        ZERO_ETH_QUANTITY,
         erc20TransferCall,
         chainIdHex,
       );
@@ -482,7 +482,7 @@ export class Serialization {
         gasPriceHex,
         gasLimitHex,
         atomicSwapErc20ContractAddress!,
-        ZERO_AMOUNT,
+        ZERO_ETH_QUANTITY,
         atomicSwapOfferCall,
         chainIdHex,
       );
@@ -512,7 +512,7 @@ export class Serialization {
       gasPriceHex,
       gasLimitHex,
       (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
-      ZERO_AMOUNT,
+      ZERO_ETH_QUANTITY,
       atomicSwapClaimCall,
       chainIdHex,
     );
@@ -540,7 +540,7 @@ export class Serialization {
       gasPriceHex,
       gasLimitHex,
       (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
-      ZERO_AMOUNT,
+      ZERO_ETH_QUANTITY,
       atomicSwapAbortCall,
       chainIdHex,
     );
@@ -570,7 +570,7 @@ export class Serialization {
         gasPriceHex,
         gasLimitHex,
         erc20Token.contractAddress,
-        ZERO_AMOUNT, // ETH value
+        ZERO_ETH_QUANTITY,
         erc20TransferCall,
         encodeQuantity(v),
         r,
@@ -650,7 +650,7 @@ export class Serialization {
         gasPriceHex,
         gasLimitHex,
         atomicSwapErc20ContractAddress!,
-        ZERO_AMOUNT,
+        ZERO_ETH_QUANTITY,
         atomicSwapOfferCall,
         encodeQuantity(v),
         r,
@@ -684,7 +684,7 @@ export class Serialization {
       gasPriceHex,
       gasLimitHex,
       (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
-      ZERO_AMOUNT,
+      ZERO_ETH_QUANTITY,
       atomicSwapClaimCall,
       encodeQuantity(v),
       r,
@@ -716,7 +716,7 @@ export class Serialization {
       gasPriceHex,
       gasLimitHex,
       (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
-      ZERO_AMOUNT,
+      ZERO_ETH_QUANTITY,
       atomicSwapAbortCall,
       encodeQuantity(v),
       r,
