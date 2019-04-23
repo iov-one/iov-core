@@ -281,31 +281,58 @@ export class Serialization {
         atomicSwapEtherContractAddress,
         atomicSwapErc20ContractAddress,
       );
-      Serialization.checkEtherAmount(unsigned);
-
       if (!isBlockHeightTimeout(unsigned.timeout)) {
         throw new Error("Timeout must be specified as a block height");
       }
 
-      const atomicSwapOfferCall = new Uint8Array([
-        ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)"),
-        ...unsigned.swapId!,
-        ...Abi.encodeAddress(unsigned.recipient),
-        ...unsigned.hash,
-        ...Abi.encodeUint256(unsigned.timeout.height.toString()),
-      ]);
+      if (atomicSwapEtherContractAddress) {
+        Serialization.checkEtherAmount(unsigned);
 
-      return Serialization.serializeGenericTransaction(
-        signed.primarySignature.nonce,
-        gasPriceHex,
-        gasLimitHex,
-        atomicSwapEtherContractAddress!,
-        unsigned.amounts[0].quantity,
-        atomicSwapOfferCall,
-        encodeQuantity(v),
-        r,
-        s,
-      );
+        const atomicSwapOfferCall = new Uint8Array([
+          ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)"),
+          ...unsigned.swapId!,
+          ...Abi.encodeAddress(unsigned.recipient),
+          ...unsigned.hash,
+          ...Abi.encodeUint256(unsigned.timeout.height.toString()),
+        ]);
+
+        return Serialization.serializeGenericTransaction(
+          signed.primarySignature.nonce,
+          gasPriceHex,
+          gasLimitHex,
+          atomicSwapEtherContractAddress,
+          unsigned.amounts[0].quantity,
+          atomicSwapOfferCall,
+          encodeQuantity(v),
+          r,
+          s,
+        );
+      } else {
+        Serialization.checkErc20Amount(unsigned, erc20Tokens);
+
+        const erc20ContractAddress = erc20Tokens.get(unsigned.amounts[0].tokenTicker)!.contractAddress;
+        const atomicSwapOfferCall = new Uint8Array([
+          ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256,address,uint256)"),
+          ...unsigned.swapId!,
+          ...Abi.encodeAddress(unsigned.recipient),
+          ...unsigned.hash,
+          ...Abi.encodeUint256(unsigned.timeout.height.toString()),
+          ...Abi.encodeAddress(erc20ContractAddress),
+          ...Abi.encodeUint256(unsigned.amounts[0].quantity),
+        ]);
+
+        return Serialization.serializeGenericTransaction(
+          signed.primarySignature.nonce,
+          gasPriceHex,
+          gasLimitHex,
+          atomicSwapErc20ContractAddress!,
+          "0",
+          atomicSwapOfferCall,
+          encodeQuantity(v),
+          r,
+          s,
+        );
+      }
     } else if (isSwapClaimTransaction(unsigned)) {
       Serialization.checkSwapId(unsigned);
       Serialization.checkPreimage(unsigned);
@@ -324,7 +351,7 @@ export class Serialization {
         signed.primarySignature.nonce,
         gasPriceHex,
         gasLimitHex,
-        atomicSwapEtherContractAddress!,
+        (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
         "0",
         atomicSwapClaimCall,
         encodeQuantity(v),
@@ -347,7 +374,7 @@ export class Serialization {
         signed.primarySignature.nonce,
         gasPriceHex,
         gasLimitHex,
-        atomicSwapEtherContractAddress!,
+        (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
         "0",
         atomicSwapAbortCall,
         encodeQuantity(v),
