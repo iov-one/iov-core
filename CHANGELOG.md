@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.14.1
+
+- @iov/ethereum: Support serialization of atomic swap transactions (ETH and
+  ERC20).
+
 ## 0.14.0
 
 - @iov/bcp: Add `AtomicSwapHelpers.createId`.
