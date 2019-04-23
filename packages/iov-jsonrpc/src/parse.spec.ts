@@ -1,5 +1,5 @@
 import { parseJsonRpcErrorResponse, parseJsonRpcSuccessResponse } from "./parse";
-import { jsonRpcCode } from "./types";
+import { jsonRpcCode, JsonRpcSuccessResponse } from "./types";
 
 describe("parse", () => {
   describe("parseJsonRpcErrorResponse", () => {
@@ -127,6 +127,15 @@ describe("parse", () => {
         };
         expect(() => parseJsonRpcErrorResponse(response)).toThrowError(/invalid id field/i);
       }
+    });
+
+    it("throws for success response", () => {
+      const response: JsonRpcSuccessResponse = {
+        jsonrpc: "2.0",
+        id: 123,
+        result: 3000,
+      };
+      expect(() => parseJsonRpcErrorResponse(response)).toThrowError(/invalid error field/i);
     });
   });
 

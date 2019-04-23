@@ -91,8 +91,8 @@ export function parseJsonRpcErrorResponse(data: unknown): JsonRpcErrorResponse {
     throw new Error("Invalid id field");
   }
 
-  if (!isJsonCompatibleDictionary(data.error)) {
-    throw new Error("Property 'error' is defined but not a JSON compatible dictionary");
+  if (typeof data.error === "undefined" || !isJsonCompatibleDictionary(data.error)) {
+    throw new Error("Invalid error field");
   }
 
   return {
