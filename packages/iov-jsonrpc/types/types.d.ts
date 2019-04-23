@@ -25,6 +25,7 @@ export interface JsonRpcErrorResponse {
 }
 export declare type JsonRpcResponse = JsonRpcSuccessResponse | JsonRpcErrorResponse;
 export declare function isJsonRpcErrorResponse(response: JsonRpcResponse): response is JsonRpcErrorResponse;
+export declare function isJsonRpcSuccessResponse(response: JsonRpcResponse): response is JsonRpcSuccessResponse;
 /**
  * Error codes as specified in JSON-RPC 2.0
  *
