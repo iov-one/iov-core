@@ -14,6 +14,7 @@ import {
   PublicIdentity,
   SendTransaction,
   SwapClaimTransaction,
+  SwapId,
   SwapIdBytes,
   SwapOfferTransaction,
   SwapProcessState,
@@ -118,12 +119,12 @@ class Actor {
     return new BN(amount ? amount.quantity : 0);
   }
 
-  public async getBnsSwap(id: SwapIdBytes): Promise<AtomicSwap> {
+  public async getBnsSwap(id: SwapId): Promise<AtomicSwap> {
     const swaps = await this.bnsConnection.getSwaps({ swapid: id });
     return swaps[swaps.length - 1];
   }
 
-  public async getBcpSwap(id: SwapIdBytes): Promise<AtomicSwap> {
+  public async getBcpSwap(id: SwapId): Promise<AtomicSwap> {
     const swaps = await this.bcpConnection.getSwaps({ swapid: id });
     return swaps[swaps.length - 1];
   }
@@ -204,12 +205,12 @@ class Actor {
 
   public async claimFromRevealedPreimageOnBns(
     claim: AtomicSwap,
-    unclaimedId: Uint8Array,
+    unclaimedId: SwapId,
   ): Promise<Uint8Array | undefined> {
     const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction>({
       kind: "bcp/swap_claim",
       creator: this.bnsIdentity,
-      swapId: unclaimedId as SwapIdBytes,
+      swapId: unclaimedId,
       preimage: (claim as ClaimedSwap).preimage, // public data now!
     });
     return this.sendTransaction(transaction);
@@ -261,17 +262,19 @@ describe("Full atomic swap between bns and bcp", () => {
     // A secret that only Alice knows
     await alice.generatePreimage();
 
-    const aliceOfferId = await alice.sendSwapOfferOnBns(bob.bnsAddress, {
-      quantity: "2000000000",
-      fractionalDigits: 9,
-      tokenTicker: CASH,
-    });
+    const aliceOfferId = {
+      data: (await alice.sendSwapOfferOnBns(bob.bnsAddress, {
+        quantity: "2000000000",
+        fractionalDigits: 9,
+        tokenTicker: CASH,
+      })) as SwapIdBytes,
+    };
 
     // Alice's 2 CASH are locked in the contract (also consider fee)
     expect(aliceInitialCash.sub(await alice.getCashBalance()).toString()).toEqual("2010000000");
 
     // check correct offer was sent on BNS
-    const aliceOffer = await bob.getBnsSwap(aliceOfferId as SwapIdBytes);
+    const aliceOffer = await bob.getBnsSwap(aliceOfferId);
     expect(aliceOffer.kind).toEqual(SwapProcessState.Open);
     expect(aliceOffer.data.recipient).toEqual(bob.bnsAddress);
     expect(aliceOffer.data.amounts.length).toEqual(1);
@@ -281,17 +284,19 @@ describe("Full atomic swap between bns and bcp", () => {
       tokenTicker: CASH,
     });
 
-    const bobOfferId = await bob.sendSwapCounterOnBcp(aliceOffer, alice.bcpAddress, {
-      quantity: "5000000000",
-      fractionalDigits: 9,
-      tokenTicker: MASH,
-    });
+    const bobOfferId = {
+      data: (await bob.sendSwapCounterOnBcp(aliceOffer, alice.bcpAddress, {
+        quantity: "5000000000",
+        fractionalDigits: 9,
+        tokenTicker: MASH,
+      })) as SwapIdBytes,
+    };
 
     // Bob's 5 MASH are locked in the contract (plus the fee deduction)
     expect(bobInitialMash.sub(await bob.getMashBalance()).toString()).toEqual("5010000000");
 
     // check correct counteroffer was made on BCP
-    const bobOffer = await alice.getBcpSwap(bobOfferId as SwapIdBytes);
+    const bobOffer = await alice.getBcpSwap(bobOfferId);
     expect(bobOffer.kind).toEqual(SwapProcessState.Open);
     expect(bobOffer.data.recipient).toEqual(alice.bcpAddress);
     expect(bobOffer.data.amounts.length).toEqual(1);
@@ -306,13 +311,13 @@ describe("Full atomic swap between bns and bcp", () => {
     expect((await alice.getMashBalance()).sub(aliceInitialMash).toString()).toEqual("4990000000");
 
     // check claim was made on BCP
-    const aliceClaim = await bob.getBcpSwap(bobOfferId as SwapIdBytes);
+    const aliceClaim = await bob.getBcpSwap(bobOfferId);
     expect(aliceClaim.kind).toEqual(SwapProcessState.Claimed);
 
-    await bob.claimFromRevealedPreimageOnBns(aliceClaim, aliceOfferId!);
+    await bob.claimFromRevealedPreimageOnBns(aliceClaim, aliceOfferId);
 
     // check claim was made on BNS
-    const bobClaim = await alice.getBnsSwap(aliceOfferId as SwapIdBytes);
+    const bobClaim = await alice.getBnsSwap(aliceOfferId);
     expect(bobClaim.kind).toEqual(SwapProcessState.Claimed);
 
     // Bob used Alice's preimage to claim his 2 CASH
