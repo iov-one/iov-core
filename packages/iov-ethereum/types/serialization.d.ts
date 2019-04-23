@@ -30,4 +30,8 @@ export declare class Serialization {
     private static buildAtomicSwapOfferErc20Call;
     private static buildAtomicSwapClaimCall;
     private static buildAtomicSwapAbortCall;
+    private static serializeUnsignedSendTransaction;
+    private static serializeUnsignedSwapOfferTransaction;
+    private static serializeUnsignedSwapClaimTransaction;
+    private static serializeUnsignedSwapAbortTransaction;
 }
