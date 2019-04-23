@@ -209,7 +209,9 @@ function parseSwapClaimTx(
   return {
     ...base,
     kind: "bcp/swap_claim",
-    swapId: ensure(msg.escrowId) as SwapIdBytes,
+    swapId: {
+      data: ensure(msg.escrowId) as SwapIdBytes,
+    },
     preimage: ensure(tx.preimage) as Preimage,
   };
 }
@@ -221,7 +223,9 @@ function parseSwapAbortTransaction(
   return {
     ...base,
     kind: "bcp/swap_abort",
-    swapId: ensure(msg.escrowId) as SwapIdBytes,
+    swapId: {
+      data: ensure(msg.escrowId) as SwapIdBytes,
+    },
   };
 }
 

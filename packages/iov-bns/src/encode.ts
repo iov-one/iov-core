@@ -173,7 +173,7 @@ function buildSwapOfferTx(tx: SwapOfferTransaction): codecImpl.app.ITx {
 function buildSwapClaimTx(tx: SwapClaimTransaction): codecImpl.app.ITx {
   return {
     releaseEscrowMsg: codecImpl.escrow.ReleaseEscrowMsg.create({
-      escrowId: tx.swapId,
+      escrowId: tx.swapId.data,
     }),
     preimage: tx.preimage,
   };
@@ -182,7 +182,7 @@ function buildSwapClaimTx(tx: SwapClaimTransaction): codecImpl.app.ITx {
 function buildSwapAbortTransaction(tx: SwapAbortTransaction): codecImpl.app.ITx {
   return {
     returnEscrowMsg: codecImpl.escrow.ReturnEscrowMsg.create({
-      escrowId: tx.swapId,
+      escrowId: tx.swapId.data,
     }),
   };
 }
