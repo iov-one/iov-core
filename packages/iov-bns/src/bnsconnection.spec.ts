@@ -81,9 +81,9 @@ const blockTime = 1000;
 
 describe("BnsConnection", () => {
   const defaultChain = "chain123" as ChainId;
-  // the first key generated from this mneumonic produces the given address
-  // this account has money in the genesis file (setup in docker)
-  // expectedFaucetAddress generated using https://github.com/nym-zone/bech32
+  // The key at m/4804438'/0' (simple address derivation) generated from this mnemonic is the faucet identity.
+  // This account has money in the genesis file (setup in docker).
+  // defaultFaucetAddress generated using https://github.com/nym-zone/bech32
   // bech32 -e -h tiov b1ca7e78f74423ae01da3b51e676934d9105f282
   const defaultMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
   // address must match defaultChain
