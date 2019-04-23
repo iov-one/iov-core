@@ -54,22 +54,14 @@ const ethereumCodec = new EthereumCodec({
   atomicSwapErc20ContractAddress: testConfig.connectionOptions.atomicSwapErc20ContractAddress,
 });
 
-function skipTests(): boolean {
-  return !process.env.ETHEREUM_ENABLED;
-}
-
 function pendingWithoutEthereum(): void {
-  if (skipTests()) {
+  if (!process.env.ETHEREUM_ENABLED) {
     return pending("Set ETHEREUM_ENABLED to enable ethereum-node-based tests");
   }
 }
 
-function skipTestsScraper(): boolean {
-  return !process.env.ETHEREUM_SCRAPER;
-}
-
 function pendingWithoutEthereumScraper(): void {
-  if (skipTestsScraper()) {
+  if (!process.env.ETHEREUM_SCRAPER) {
     return pending("Set ETHEREUM_SCRAPER to enable out-of-blockchain functionality tests");
   }
 }
