@@ -334,9 +334,16 @@ describe("Abi", () => {
   });
 
   describe("decodeEventSignature", () => {
-    it("works for Opened", () => {
+    it("works for Opened (ETH)", () => {
       // Abi.calculateMethodHash("Opened(bytes32,address,address,bytes32,uint256,uint256)");
       const data = fromHex("22f9086560da4f3a67d5fcc1a440655671d27a7e0884f260be3ce12ead52e156");
+      const result = Abi.decodeEventSignature(data);
+      expect(result).toEqual(SwapContractEvent.Opened);
+    });
+
+    it("works for Opened (ERC20)", () => {
+      // Abi.calculateMethodHash("Opened(bytes32,address,address,bytes32,uint256,uint256,address)");
+      const data = fromHex("26bc31c92066e78c047aa344b0f41cf8ee926fe610bb21ee73329697475bc9d3");
       const result = Abi.decodeEventSignature(data);
       expect(result).toEqual(SwapContractEvent.Opened);
     });
@@ -363,9 +370,16 @@ describe("Abi", () => {
   });
 
   describe("decodeMethodId", () => {
-    it("works for Open", () => {
+    it("works for Open (ETH)", () => {
       // Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)");
       const data = fromHex("0eed8548");
+      const result = Abi.decodeMethodId(data);
+      expect(result).toEqual(SwapContractMethod.Open);
+    });
+
+    it("works for Open (ERC20)", () => {
+      // Abi.calculateMethodId("open(bytes32,address,bytes32,uint256,address,uint256)");
+      const data = fromHex("e8d8a293");
       const result = Abi.decodeMethodId(data);
       expect(result).toEqual(SwapContractMethod.Open);
     });
