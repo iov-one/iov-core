@@ -13,6 +13,7 @@ export {
   parseJsonRpcResponse,
   parseJsonRpcError,
   parseJsonRpcErrorResponse,
+  parseJsonRpcSuccessResponse,
 } from "./parse";
 export {
   isJsonRpcErrorResponse,

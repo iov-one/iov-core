@@ -1,4 +1,4 @@
-import { parseJsonRpcErrorResponse } from "./parse";
+import { parseJsonRpcErrorResponse, parseJsonRpcSuccessResponse } from "./parse";
 import { jsonRpcCode } from "./types";
 
 describe("parse", () => {
@@ -114,6 +114,88 @@ describe("parse", () => {
           },
         };
         expect(() => parseJsonRpcErrorResponse(response)).toThrowError(/invalid id field/i);
+      }
+    });
+  });
+
+  describe("parseJsonRpcSuccessResponse", () => {
+    it("works for response with dict result", () => {
+      const response: any = {
+        jsonrpc: "2.0",
+        id: 123,
+        result: {
+          foo: "bar",
+        },
+      };
+      expect(parseJsonRpcSuccessResponse(response)).toEqual(response);
+    });
+
+    it("works for response with null result", () => {
+      const response: any = {
+        jsonrpc: "2.0",
+        id: 123,
+        result: null,
+      };
+      expect(parseJsonRpcSuccessResponse(response)).toEqual(response);
+    });
+
+    it("throws for invalid type", () => {
+      const expectedError = /data must be JSON compatible dictionary/i;
+      expect(() => parseJsonRpcSuccessResponse(undefined)).toThrowError(expectedError);
+      expect(() => parseJsonRpcSuccessResponse(null)).toThrowError(expectedError);
+      expect(() => parseJsonRpcSuccessResponse(false)).toThrowError(expectedError);
+      expect(() => parseJsonRpcSuccessResponse("success")).toThrowError(expectedError);
+      expect(() => parseJsonRpcSuccessResponse(42)).toThrowError(expectedError);
+      expect(() => parseJsonRpcSuccessResponse(() => true)).toThrowError(expectedError);
+      expect(() => parseJsonRpcSuccessResponse({ foo: () => true })).toThrowError(expectedError);
+    });
+
+    it("throws for invalid version", () => {
+      // wrong type
+      {
+        const response: any = {
+          jsonrpc: 2.0,
+          id: 123,
+          result: 3000,
+        };
+        expect(() => parseJsonRpcSuccessResponse(response)).toThrowError(/got unexpected jsonrpc version/i);
+      }
+      // wrong version
+      {
+        const response: any = {
+          jsonrpc: "1.0",
+          id: 123,
+          result: 3000,
+        };
+        expect(() => parseJsonRpcSuccessResponse(response)).toThrowError(/got unexpected jsonrpc version/i);
+      }
+      // unset
+      {
+        const response: any = {
+          id: 123,
+          result: 3000,
+        };
+        expect(() => parseJsonRpcSuccessResponse(response)).toThrowError(/got unexpected jsonrpc version/i);
+      }
+    });
+
+    it("throws for invalid ID", () => {
+      // wrong type
+      {
+        const response: any = {
+          jsonrpc: "2.0",
+          id: [1, 2, 3],
+          result: 3000,
+        };
+        expect(() => parseJsonRpcSuccessResponse(response)).toThrowError(/invalid id field/i);
+      }
+      // unset
+      {
+        const response: any = {
+          jsonrpc: "2.0",
+          result: 3000,
+        };
+        expect(() => parseJsonRpcSuccessResponse(response)).toThrowError(/invalid id field/i);
       }
     });
   });
