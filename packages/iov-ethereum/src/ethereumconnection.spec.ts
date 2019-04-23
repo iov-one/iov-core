@@ -25,7 +25,7 @@ import {
   SendTransaction,
   SwapAbortTransaction,
   SwapClaimTransaction,
-  SwapIdBytes,
+  SwapId,
   SwapOfferTransaction,
   SwapProcessState,
   SwapTimeout,
@@ -86,7 +86,7 @@ async function randomAddress(): Promise<Address> {
 }
 
 function matchId(id: Uint8Array): (swap: AtomicSwap) => boolean {
-  return s => Encoding.toHex(s.data.id) === Encoding.toHex(id);
+  return s => Encoding.toHex(s.data.id.data) === Encoding.toHex(id);
 }
 
 describe("EthereumConnection", () => {
@@ -1987,7 +1987,7 @@ describe("EthereumConnection", () => {
       creator: PublicIdentity,
       rcptAddr: Address,
       hash: Hash,
-      swapId: SwapIdBytes,
+      swapId: SwapId,
       timeoutOffset: number = 1000,
     ): Promise<PostTxResponse> => {
       // construct a swapOfferTx, sign and post to the chain
@@ -2019,7 +2019,7 @@ describe("EthereumConnection", () => {
       connection: EthereumConnection,
       profile: UserProfile,
       creator: PublicIdentity,
-      swapId: SwapIdBytes,
+      swapId: SwapId,
       preimage: Preimage,
     ): Promise<PostTxResponse> => {
       // construct a swapOfferTx, sign and post to the chain
@@ -2039,7 +2039,7 @@ describe("EthereumConnection", () => {
       connection: EthereumConnection,
       profile: UserProfile,
       creator: PublicIdentity,
-      swapId: SwapIdBytes,
+      swapId: SwapId,
     ): Promise<PostTxResponse> => {
       const swapAbortTx = await connection.withDefaultFee<SwapAbortTransaction>({
         kind: "bcp/swap_abort",

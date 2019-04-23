@@ -215,7 +215,7 @@ export class Serialization {
     if (!unsigned.swapId) {
       throw new Error("No swap ID provided");
     }
-    if (unsigned.swapId.length !== 32) {
+    if (unsigned.swapId.data.length !== 32) {
       throw new Error("Swap ID must be 32 bytes");
     }
   }
@@ -354,7 +354,7 @@ export class Serialization {
     const timeout = unsigned.timeout as BlockHeightTimeout;
     return new Uint8Array([
       ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)"),
-      ...unsigned.swapId!,
+      ...unsigned.swapId!.data,
       ...Abi.encodeAddress(unsigned.recipient),
       ...unsigned.hash,
       ...Abi.encodeUint256(timeout.height.toString()),
@@ -368,7 +368,7 @@ export class Serialization {
     const timeout = unsigned.timeout as BlockHeightTimeout;
     return new Uint8Array([
       ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256,address,uint256)"),
-      ...unsigned.swapId!,
+      ...unsigned.swapId!.data,
       ...Abi.encodeAddress(unsigned.recipient),
       ...unsigned.hash,
       ...Abi.encodeUint256(timeout.height.toString()),
@@ -380,13 +380,13 @@ export class Serialization {
   private static buildAtomicSwapClaimCall(unsigned: SwapClaimTransaction): Uint8Array {
     return new Uint8Array([
       ...Abi.calculateMethodId("claim(bytes32,bytes32)"),
-      ...unsigned.swapId,
+      ...unsigned.swapId.data,
       ...unsigned.preimage,
     ]);
   }
 
   private static buildAtomicSwapAbortCall(unsigned: SwapAbortTransaction): Uint8Array {
-    return new Uint8Array([...Abi.calculateMethodId("abort(bytes32)"), ...unsigned.swapId]);
+    return new Uint8Array([...Abi.calculateMethodId("abort(bytes32)"), ...unsigned.swapId.data]);
   }
 
   private static serializeUnsignedSendTransaction(

@@ -765,7 +765,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     maxHeight: number = Number.MAX_SAFE_INTEGER,
   ): Promise<ReadonlyArray<AtomicSwap>> {
     if (isAtomicSwapIdQuery(query)) {
-      const data = Uint8Array.from([...Abi.calculateMethodId("get(bytes32)"), ...query.swapid]);
+      const data = Uint8Array.from([...Abi.calculateMethodId("get(bytes32)"), ...query.swapid.data]);
 
       const params = [
         {
@@ -895,7 +895,9 @@ export class EthereumConnection implements AtomicSwapConnection {
                 {
                   kind: SwapProcessState.Open,
                   data: {
-                    id: dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes,
+                    id: {
+                      data: dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes,
+                    },
                     sender: toChecksummedAddress(
                       Abi.decodeAddress(dataArray.slice(openedSenderBegin, openedSenderEnd)),
                     ),
@@ -919,7 +921,7 @@ export class EthereumConnection implements AtomicSwapConnection {
             case SwapContractEvent.Claimed: {
               const swapId = dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes;
               const swapIndex = accumulator.findIndex(
-                s => Encoding.toHex(s.data.id) === Encoding.toHex(swapId),
+                s => Encoding.toHex(s.data.id.data) === Encoding.toHex(swapId),
               );
               if (swapIndex === -1) {
                 throw new Error("Found Claimed event for non-existent swap");
@@ -937,7 +939,7 @@ export class EthereumConnection implements AtomicSwapConnection {
             case SwapContractEvent.Aborted: {
               const swapId = dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes;
               const swapIndex = accumulator.findIndex(
-                s => Encoding.toHex(s.data.id) === Encoding.toHex(swapId),
+                s => Encoding.toHex(s.data.id.data) === Encoding.toHex(swapId),
               );
               if (swapIndex === -1) {
                 throw new Error("Found Aborted event for non-existent swap");
