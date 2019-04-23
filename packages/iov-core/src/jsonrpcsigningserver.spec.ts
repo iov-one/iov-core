@@ -57,7 +57,10 @@ const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown quest
 const defaultGetIdentitiesCallback: GetIdentitiesAuthorization = async (_, matching) => matching;
 const defaultSignAndPostCallback: SignAndPostAuthorization = async (_1, _2) => true;
 
-async function makeBnsEthereumSigningServer(): Promise<JsonRpcSigningServer> {
+async function makeBnsEthereumSigningServer(
+  authorizeGetIdentities: GetIdentitiesAuthorization = defaultGetIdentitiesCallback,
+  authorizeSignAndPost: SignAndPostAuthorization = defaultSignAndPostCallback,
+): Promise<JsonRpcSigningServer> {
   const profile = new UserProfile();
   const ed25519Wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(bnsdFaucetMnemonic));
   const secp256k1Wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(ganacheMnemonic));
@@ -72,12 +75,7 @@ async function makeBnsEthereumSigningServer(): Promise<JsonRpcSigningServer> {
   // ganache second identity
   await profile.createIdentity(secp256k1Wallet.id, ethereumConnection.chainId(), HdPaths.bip44(60, 0, 0, 1));
 
-  const core = new SigningServerCore(
-    profile,
-    signer,
-    defaultGetIdentitiesCallback,
-    defaultSignAndPostCallback,
-  );
+  const core = new SigningServerCore(profile, signer, authorizeGetIdentities, authorizeSignAndPost);
   return new JsonRpcSigningServer(core);
 }
 
@@ -257,6 +255,59 @@ describe("JsonRpcSigningServer", () => {
     }
     expect(result.transactionId).toEqual(transactionId);
     expect(result.transaction).toEqual(send);
+
+    server.shutdown();
+    bnsConnection.disconnect();
+  });
+
+  it("returns null when user denied signing request", async () => {
+    pendingWithoutBnsd();
+    pendingWithoutEthereum();
+
+    const bnsConnection = await bnsConnector(bnsdUrl).client();
+
+    const server = await makeBnsEthereumSigningServer(defaultGetIdentitiesCallback, async () => false);
+
+    const identitiesResponse = await server.handleChecked({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "getIdentities",
+      params: {
+        reason: "Who are you?",
+        chainIds: [bnsConnection.chainId()],
+      },
+    });
+    if (isJsonRpcErrorResponse(identitiesResponse)) {
+      throw new Error(`Response must not be an error, but got '${identitiesResponse.error.message}'`);
+    }
+    expect(identitiesResponse.result).toEqual(jasmine.any(Array));
+    expect((identitiesResponse.result as ReadonlyArray<any>).length).toEqual(1);
+    const signer = TransactionEncoder.fromJson(identitiesResponse.result[0]);
+    if (!isPublicIdentity(signer)) {
+      throw new Error("Identity element is not valid");
+    }
+
+    const send: SendTransaction = {
+      kind: "bcp/send",
+      creator: signer,
+      memo: `Hello ${Math.random()}`,
+      amount: defaultAmount,
+      recipient: await randomBnsAddress(),
+    };
+
+    const signAndPostResponse = await server.handleChecked({
+      jsonrpc: "2.0",
+      id: 2,
+      method: "signAndPost",
+      params: {
+        reason: "Please sign",
+        transaction: TransactionEncoder.toJson(send),
+      },
+    });
+    if (isJsonRpcErrorResponse(signAndPostResponse)) {
+      throw new Error(`Response must not be an error, but got '${signAndPostResponse.error.message}'`);
+    }
+    expect(TransactionEncoder.fromJson(signAndPostResponse.result)).toBeNull();
 
     server.shutdown();
     bnsConnection.disconnect();
