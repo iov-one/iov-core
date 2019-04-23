@@ -72,7 +72,33 @@ function parseError(error: JsonCompatibleDictionary): JsonRpcError {
   return {
     code: error.code,
     message: error.message,
-    data: maybeUndefinedData,
+    ...(maybeUndefinedData !== undefined ? { data: maybeUndefinedData } : {}),
+  };
+}
+
+/** Throws if data is not a JsonRpcErrorResponse */
+export function parseJsonRpcErrorResponse(data: unknown): JsonRpcErrorResponse {
+  if (!isJsonCompatibleDictionary(data)) {
+    throw new Error("Data must be JSON compatible dictionary");
+  }
+
+  if (data.jsonrpc !== "2.0") {
+    throw new Error(`Got unexpected jsonrpc version: ${JSON.stringify(data)}`);
+  }
+
+  const id = data.id;
+  if (typeof id !== "number") {
+    throw new Error("Invalid id field");
+  }
+
+  if (!isJsonCompatibleDictionary(data.error)) {
+    throw new Error("Property 'error' is defined but not a JSON compatible dictionary");
+  }
+
+  return {
+    jsonrpc: "2.0",
+    id: id,
+    error: parseError(data.error),
   };
 }
 

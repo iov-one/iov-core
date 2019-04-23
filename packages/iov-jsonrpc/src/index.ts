@@ -7,7 +7,13 @@ export {
   isJsonCompatibleDictionary,
   isJsonCompatibleValue,
 } from "./jsoncompatibledictionary";
-export { parseJsonRpcId, parseJsonRpcRequest, parseJsonRpcResponse, parseJsonRpcError } from "./parse";
+export {
+  parseJsonRpcId,
+  parseJsonRpcRequest,
+  parseJsonRpcResponse,
+  parseJsonRpcError,
+  parseJsonRpcErrorResponse,
+} from "./parse";
 export {
   isJsonRpcErrorResponse,
   isJsonRpcSuccessResponse,

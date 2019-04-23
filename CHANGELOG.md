@@ -4,6 +4,7 @@
 
 - @iov/jsonrpc: Create `isJsonRpcSuccessResponse` analogue to
   `isJsonRpcErrorResponse`.
+- @iov/jsonrpc: Create `parseJsonRpcErrorResponse`.
 
 ## 0.13.4
 
