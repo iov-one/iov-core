@@ -6,6 +6,7 @@
   `isJsonRpcErrorResponse`.
 - @iov/jsonrpc: Create `parseJsonRpcErrorResponse`.
 - @iov/jsonrpc: Create `parseJsonRpcSuccessResponse`.
+- @iov/jsonrpc: Deprecate `parseJsonRpcError` and `parseJsonRpcResponse`.
 
 ## 0.13.4
 

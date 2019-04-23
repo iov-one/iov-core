@@ -102,6 +102,7 @@ export function parseJsonRpcErrorResponse(data: unknown): JsonRpcErrorResponse {
   };
 }
 
+/** @deprecated use parseJsonRpcErrorResponse */
 export function parseJsonRpcError(data: unknown): JsonRpcErrorResponse | undefined {
   if (!isJsonCompatibleDictionary(data)) {
     throw new Error("Data must be JSON compatible dictionary");
@@ -155,6 +156,7 @@ export function parseJsonRpcSuccessResponse(data: unknown): JsonRpcSuccessRespon
   };
 }
 
+/** @deprecated use parseJsonRpcSuccessResponse */
 export function parseJsonRpcResponse(data: unknown): JsonRpcSuccessResponse {
   return parseJsonRpcSuccessResponse(data);
 }
