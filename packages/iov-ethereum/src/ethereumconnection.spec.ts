@@ -133,11 +133,17 @@ describe("EthereumConnection", () => {
   }
 
   describe("createEtherSwapId", () => {
-    it("works");
+    it('works', async () => {
+      const swapId = await EthereumConnection.createEtherSwapId();
+      expect(swapId.data.length).toEqual(32);
+    })
   });
 
   describe("createErc20SwapId", () => {
-    it("works");
+    it('works', async () => {
+      const swapId = await EthereumConnection.createErc20SwapId();
+      expect(swapId.data.length).toEqual(32);
+    })
   });
 
   it("can be constructed", () => {
