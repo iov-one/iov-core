@@ -133,8 +133,8 @@ describe("signingservice.worker", () => {
       id: 123,
       method: "getIdentities",
       params: {
-        reason: "Who are you?",
-        chainIds: [bnsConnection.chainId()],
+        reason: "string:Who are you?",
+        chainIds: [`string:${bnsConnection.chainId()}`],
       },
     });
     expect(response.id).toEqual(123);
@@ -167,8 +167,8 @@ describe("signingservice.worker", () => {
       id: 123,
       method: "getIdentities",
       params: {
-        reason: "Who are you?",
-        chainIds: [ganacheChainId],
+        reason: "string:Who are you?",
+        chainIds: [`string:${ganacheChainId}`],
       },
     });
     expect(response.id).toEqual(123);
@@ -196,8 +196,8 @@ describe("signingservice.worker", () => {
       id: 123,
       method: "getIdentities",
       params: {
-        reason: "Who are you?",
-        chainIds: [ganacheChainId, bnsConnection.chainId()],
+        reason: "string:Who are you?",
+        chainIds: [`string:${ganacheChainId}`, `string:${bnsConnection.chainId()}`],
       },
     });
     expect(response.id).toEqual(123);
@@ -235,8 +235,8 @@ describe("signingservice.worker", () => {
       id: 1,
       method: "getIdentities",
       params: {
-        reason: "Who are you?",
-        chainIds: [bnsConnection.chainId()],
+        reason: "string:Who are you?",
+        chainIds: [`string:${bnsConnection.chainId()}`],
       },
     });
 
@@ -261,7 +261,7 @@ describe("signingservice.worker", () => {
       id: 2,
       method: "signAndPost",
       params: {
-        reason: "Please sign",
+        reason: "string:Please sign",
         transaction: TransactionEncoder.toJson(send),
       },
     });

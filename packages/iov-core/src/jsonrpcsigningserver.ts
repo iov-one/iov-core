@@ -45,7 +45,7 @@ function parseRpcCall(data: JsonRpcRequest): RpcCall {
 
   switch (data.method) {
     case "getIdentities": {
-      const { reason, chainIds } = data.params;
+      const { reason, chainIds } = TransactionEncoder.fromJson(data.params);
       if (typeof reason !== "string") {
         throw new ParamsError("Parameter 'reason' must be a string");
       }
@@ -59,18 +59,17 @@ function parseRpcCall(data: JsonRpcRequest): RpcCall {
       };
     }
     case "signAndPost": {
-      const { reason, transaction } = data.params;
+      const { reason, transaction } = TransactionEncoder.fromJson(data.params);
       if (typeof reason !== "string") {
         throw new ParamsError("Parameter 'reason' must be a string");
       }
-      const parsedTransaction = TransactionEncoder.fromJson(transaction);
-      if (!isUnsignedTransaction(parsedTransaction)) {
+      if (!isUnsignedTransaction(transaction)) {
         throw new ParamsError("Parameter 'transaction' does not look like an unsigned transaction");
       }
       return {
         name: "signAndPost",
         reason: reason,
-        transaction: parsedTransaction,
+        transaction: transaction,
       };
     }
     default:
