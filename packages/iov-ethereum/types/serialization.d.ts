@@ -9,7 +9,7 @@ export declare class Serialization {
     private static checkSwapId;
     private static checkHash;
     private static checkPreimage;
-    private static checkAtomicSwapContractAddress;
+    private static getAtomicSwapContractAddress;
     private static checkMemoNotPresent;
     private static checkEtherAmount;
     private static checkErc20Amount;

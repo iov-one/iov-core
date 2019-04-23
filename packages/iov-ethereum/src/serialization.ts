@@ -232,16 +232,17 @@ export class Serialization {
     }
   }
 
-  private static checkAtomicSwapContractAddress(
+  private static getAtomicSwapContractAddress(
     atomicSwapEtherContractAddress?: Address,
     atomicSwapErc20ContractAddress?: Address,
-  ): void {
-    const numContractAddresses = [atomicSwapEtherContractAddress, atomicSwapErc20ContractAddress].filter(
+  ): Address {
+    const contractAddresses = [atomicSwapEtherContractAddress, atomicSwapErc20ContractAddress].filter(
       Boolean,
-    ).length;
-    if (numContractAddresses !== 1) {
+    );
+    if (contractAddresses.length !== 1) {
       throw new Error("Atomic swap transactions require exactly one atomic swap contract address");
     }
+    return contractAddresses[0]!;
   }
 
   private static checkMemoNotPresent(unsigned: SendTransaction | SwapOfferTransaction): void {
@@ -444,7 +445,7 @@ export class Serialization {
     Serialization.checkHash(unsigned);
     Serialization.checkRecipientAddress(unsigned);
     Serialization.checkMemoNotPresent(unsigned);
-    Serialization.checkAtomicSwapContractAddress(
+    const atomicSwapContractAddress = Serialization.getAtomicSwapContractAddress(
       atomicSwapEtherContractAddress,
       atomicSwapErc20ContractAddress,
     );
@@ -452,7 +453,7 @@ export class Serialization {
       throw new Error("Timeout must be specified as a block height");
     }
 
-    if (atomicSwapEtherContractAddress) {
+    if (atomicSwapContractAddress === atomicSwapEtherContractAddress) {
       // native ETH swap
       Serialization.checkEtherAmount(unsigned);
 
@@ -462,7 +463,7 @@ export class Serialization {
         nonce,
         gasPriceHex,
         gasLimitHex,
-        atomicSwapEtherContractAddress,
+        atomicSwapContractAddress,
         unsigned.amounts[0].quantity,
         atomicSwapOfferCall,
         chainIdHex,
@@ -481,7 +482,7 @@ export class Serialization {
         nonce,
         gasPriceHex,
         gasLimitHex,
-        atomicSwapErc20ContractAddress!,
+        atomicSwapContractAddress,
         ZERO_ETH_QUANTITY,
         atomicSwapOfferCall,
         chainIdHex,
@@ -500,7 +501,7 @@ export class Serialization {
   ): Uint8Array {
     Serialization.checkSwapId(unsigned);
     Serialization.checkPreimage(unsigned);
-    Serialization.checkAtomicSwapContractAddress(
+    const atomicSwapContractAddress = Serialization.getAtomicSwapContractAddress(
       atomicSwapEtherContractAddress,
       atomicSwapErc20ContractAddress,
     );
@@ -511,7 +512,7 @@ export class Serialization {
       nonce,
       gasPriceHex,
       gasLimitHex,
-      (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
+      atomicSwapContractAddress,
       ZERO_ETH_QUANTITY,
       atomicSwapClaimCall,
       chainIdHex,
@@ -528,7 +529,7 @@ export class Serialization {
     atomicSwapErc20ContractAddress?: Address,
   ): Uint8Array {
     Serialization.checkSwapId(unsigned);
-    Serialization.checkAtomicSwapContractAddress(
+    const atomicSwapContractAddress = Serialization.getAtomicSwapContractAddress(
       atomicSwapEtherContractAddress,
       atomicSwapErc20ContractAddress,
     );
@@ -539,7 +540,7 @@ export class Serialization {
       nonce,
       gasPriceHex,
       gasLimitHex,
-      (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
+      atomicSwapContractAddress,
       ZERO_ETH_QUANTITY,
       atomicSwapAbortCall,
       chainIdHex,
@@ -610,7 +611,7 @@ export class Serialization {
     Serialization.checkHash(unsigned);
     Serialization.checkRecipientAddress(unsigned);
     Serialization.checkMemoNotPresent(unsigned);
-    Serialization.checkAtomicSwapContractAddress(
+    const atomicSwapContractAddress = Serialization.getAtomicSwapContractAddress(
       atomicSwapEtherContractAddress,
       atomicSwapErc20ContractAddress,
     );
@@ -618,7 +619,7 @@ export class Serialization {
       throw new Error("Timeout must be specified as a block height");
     }
 
-    if (atomicSwapEtherContractAddress) {
+    if (atomicSwapContractAddress === atomicSwapEtherContractAddress) {
       // native ETH swap
       Serialization.checkEtherAmount(unsigned);
 
@@ -628,7 +629,7 @@ export class Serialization {
         nonce,
         gasPriceHex,
         gasLimitHex,
-        atomicSwapEtherContractAddress,
+        atomicSwapContractAddress,
         unsigned.amounts[0].quantity,
         atomicSwapOfferCall,
         encodeQuantity(v),
@@ -649,7 +650,7 @@ export class Serialization {
         nonce,
         gasPriceHex,
         gasLimitHex,
-        atomicSwapErc20ContractAddress!,
+        atomicSwapContractAddress,
         ZERO_ETH_QUANTITY,
         atomicSwapOfferCall,
         encodeQuantity(v),
@@ -672,7 +673,7 @@ export class Serialization {
   ): Uint8Array {
     Serialization.checkSwapId(unsigned);
     Serialization.checkPreimage(unsigned);
-    Serialization.checkAtomicSwapContractAddress(
+    Serialization.getAtomicSwapContractAddress(
       atomicSwapEtherContractAddress,
       atomicSwapErc20ContractAddress,
     );
@@ -704,7 +705,7 @@ export class Serialization {
     atomicSwapErc20ContractAddress?: Address,
   ): Uint8Array {
     Serialization.checkSwapId(unsigned);
-    Serialization.checkAtomicSwapContractAddress(
+    Serialization.getAtomicSwapContractAddress(
       atomicSwapEtherContractAddress,
       atomicSwapErc20ContractAddress,
     );
