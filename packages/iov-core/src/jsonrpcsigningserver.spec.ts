@@ -112,8 +112,8 @@ describe("JsonRpcSigningServer", () => {
       id: 123,
       method: "getIdentities",
       params: {
-        reason: "Who are you?",
-        chainIds: [bnsConnection.chainId()],
+        reason: "string:Who are you?",
+        chainIds: [`string:${bnsConnection.chainId()}`],
       },
     });
     expect(response.id).toEqual(123);
@@ -146,8 +146,8 @@ describe("JsonRpcSigningServer", () => {
       id: 123,
       method: "getIdentities",
       params: {
-        reason: "Who are you?",
-        chainIds: [ethereumChainId],
+        reason: "string:Who are you?",
+        chainIds: [`string:${ethereumChainId}`],
       },
     });
     expect(response.id).toEqual(123);
@@ -175,8 +175,8 @@ describe("JsonRpcSigningServer", () => {
       id: 123,
       method: "getIdentities",
       params: {
-        reason: "Who are you?",
-        chainIds: [ethereumChainId, bnsConnection.chainId()],
+        reason: "string:Who are you?",
+        chainIds: [`string:${ethereumChainId}`, `string:${bnsConnection.chainId()}`],
       },
     });
     expect(response.id).toEqual(123);
@@ -212,8 +212,8 @@ describe("JsonRpcSigningServer", () => {
       id: 1,
       method: "getIdentities",
       params: {
-        reason: "Who are you?",
-        chainIds: [bnsConnection.chainId()],
+        reason: "string:Who are you?",
+        chainIds: [`string:${bnsConnection.chainId()}`],
       },
     });
     if (isJsonRpcErrorResponse(identitiesResponse)) {
@@ -239,7 +239,7 @@ describe("JsonRpcSigningServer", () => {
       id: 2,
       method: "signAndPost",
       params: {
-        reason: "Please sign",
+        reason: "string:Please sign",
         transaction: TransactionEncoder.toJson(send),
       },
     });
@@ -273,8 +273,8 @@ describe("JsonRpcSigningServer", () => {
       id: 1,
       method: "getIdentities",
       params: {
-        reason: "Who are you?",
-        chainIds: [bnsConnection.chainId()],
+        reason: "string:Who are you?",
+        chainIds: [`string:${bnsConnection.chainId()}`],
       },
     });
     if (isJsonRpcErrorResponse(identitiesResponse)) {
@@ -300,7 +300,7 @@ describe("JsonRpcSigningServer", () => {
       id: 2,
       method: "signAndPost",
       params: {
-        reason: "Please sign",
+        reason: "string:Please sign",
         transaction: TransactionEncoder.toJson(send),
       },
     });
@@ -340,7 +340,7 @@ describe("JsonRpcSigningServer", () => {
         id: 123,
         method: "getIdentities",
         params: {
-          reason: "Who are you?",
+          reason: "string:Who are you?",
         },
       });
       if (!isJsonRpcErrorResponse(response)) {
@@ -357,7 +357,7 @@ describe("JsonRpcSigningServer", () => {
         method: "getIdentities",
         params: {
           reason: 1,
-          chainIds: [ethereumChainId],
+          chainIds: [`string:${ethereumChainId}`],
         },
       });
       if (!isJsonRpcErrorResponse(response)) {

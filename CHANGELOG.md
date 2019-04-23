@@ -2,6 +2,9 @@
 
 ## 0.13.5
 
+- @iov/core: In `JsonRpcSigningServer`, decode all application level parameters
+  via `TransactionEncoder.fromJson`. Before this was done inconsistently for
+  `transaction` in `getIdentities` only.
 - @iov/jsonrpc: Create `isJsonRpcSuccessResponse` analogue to
   `isJsonRpcErrorResponse`.
 - @iov/jsonrpc: Create `parseJsonRpcErrorResponse`.
