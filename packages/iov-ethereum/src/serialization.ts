@@ -2,6 +2,7 @@ import BN from "bn.js";
 
 import {
   Address,
+  BlockHeightTimeout,
   isBlockHeightTimeout,
   isSendTransaction,
   isSwapAbortTransaction,
@@ -10,6 +11,7 @@ import {
   Nonce,
   SendTransaction,
   SignedTransaction,
+  SwapAbortTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
   SwapTransaction,
@@ -75,14 +77,11 @@ export class Serialization {
       Serialization.checkRecipientAddress(unsigned);
 
       if (unsigned.amount.tokenTicker !== constants.primaryTokenTicker) {
+        // ERC20 send
         Serialization.checkMemoNotPresent(unsigned);
-        const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
 
-        const erc20TransferCall = new Uint8Array([
-          ...Abi.calculateMethodId("transfer(address,uint256)"),
-          ...Abi.encodeAddress(unsigned.recipient),
-          ...Abi.encodeUint256(unsigned.amount.quantity),
-        ]);
+        const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
+        const erc20TransferCall = Serialization.buildErc20TransferCall(unsigned);
 
         return Serialization.serializeGenericTransaction(
           nonce,
@@ -95,14 +94,15 @@ export class Serialization {
         );
       } else {
         // native ETH send
-        const memoData = Encoding.toUtf8(unsigned.memo || "");
+        const data = Encoding.toUtf8(unsigned.memo || "");
+
         return Serialization.serializeGenericTransaction(
           nonce,
           gasPriceHex,
           gasLimitHex,
           unsigned.recipient,
           unsigned.amount.quantity,
-          memoData,
+          data,
           chainIdHex,
         );
       }
@@ -120,15 +120,10 @@ export class Serialization {
       }
 
       if (atomicSwapEtherContractAddress) {
+        // native ETH swap
         Serialization.checkEtherAmount(unsigned);
 
-        const atomicSwapOfferCall = new Uint8Array([
-          ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)"),
-          ...unsigned.swapId!,
-          ...Abi.encodeAddress(unsigned.recipient),
-          ...unsigned.hash,
-          ...Abi.encodeUint256(unsigned.timeout.height.toString()),
-        ]);
+        const atomicSwapOfferCall = Serialization.buildAtomicSwapOfferEtherCall(unsigned);
 
         return Serialization.serializeGenericTransaction(
           nonce,
@@ -140,18 +135,14 @@ export class Serialization {
           chainIdHex,
         );
       } else {
+        // ERC20 swap
         Serialization.checkErc20Amount(unsigned, erc20Tokens);
 
-        const erc20ContractAddress = erc20Tokens.get(unsigned.amounts[0].tokenTicker)!.contractAddress;
-        const atomicSwapOfferCall = new Uint8Array([
-          ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256,address,uint256)"),
-          ...unsigned.swapId!,
-          ...Abi.encodeAddress(unsigned.recipient),
-          ...unsigned.hash,
-          ...Abi.encodeUint256(unsigned.timeout.height.toString()),
-          ...Abi.encodeAddress(erc20ContractAddress),
-          ...Abi.encodeUint256(unsigned.amounts[0].quantity),
-        ]);
+        const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
+        const atomicSwapOfferCall = Serialization.buildAtomicSwapOfferErc20Call(
+          unsigned,
+          erc20Token.contractAddress,
+        );
 
         return Serialization.serializeGenericTransaction(
           nonce,
@@ -171,11 +162,7 @@ export class Serialization {
         atomicSwapErc20ContractAddress,
       );
 
-      const atomicSwapClaimCall = new Uint8Array([
-        ...Abi.calculateMethodId("claim(bytes32,bytes32)"),
-        ...unsigned.swapId,
-        ...unsigned.preimage,
-      ]);
+      const atomicSwapClaimCall = Serialization.buildAtomicSwapClaimCall(unsigned);
 
       return Serialization.serializeGenericTransaction(
         nonce,
@@ -193,10 +180,7 @@ export class Serialization {
         atomicSwapErc20ContractAddress,
       );
 
-      const atomicSwapAbortCall = new Uint8Array([
-        ...Abi.calculateMethodId("abort(bytes32)"),
-        ...unsigned.swapId,
-      ]);
+      const atomicSwapAbortCall = Serialization.buildAtomicSwapAbortCall(unsigned);
 
       return Serialization.serializeGenericTransaction(
         nonce,
@@ -239,13 +223,9 @@ export class Serialization {
 
       if (unsigned.amount.tokenTicker !== constants.primaryTokenTicker) {
         Serialization.checkMemoNotPresent(unsigned);
-        const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
 
-        const erc20TransferCall = new Uint8Array([
-          ...Abi.calculateMethodId("transfer(address,uint256)"),
-          ...Abi.encodeAddress(unsigned.recipient),
-          ...Abi.encodeUint256(unsigned.amount.quantity),
-        ]);
+        const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
+        const erc20TransferCall = Serialization.buildErc20TransferCall(unsigned);
 
         return Serialization.serializeGenericTransaction(
           signed.primarySignature.nonce,
@@ -260,6 +240,7 @@ export class Serialization {
         );
       } else {
         const data = Encoding.toUtf8(unsigned.memo || "");
+
         return Serialization.serializeGenericTransaction(
           signed.primarySignature.nonce,
           gasPriceHex,
@@ -286,15 +267,10 @@ export class Serialization {
       }
 
       if (atomicSwapEtherContractAddress) {
+        // native ETH swap
         Serialization.checkEtherAmount(unsigned);
 
-        const atomicSwapOfferCall = new Uint8Array([
-          ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)"),
-          ...unsigned.swapId!,
-          ...Abi.encodeAddress(unsigned.recipient),
-          ...unsigned.hash,
-          ...Abi.encodeUint256(unsigned.timeout.height.toString()),
-        ]);
+        const atomicSwapOfferCall = Serialization.buildAtomicSwapOfferEtherCall(unsigned);
 
         return Serialization.serializeGenericTransaction(
           signed.primarySignature.nonce,
@@ -308,18 +284,14 @@ export class Serialization {
           s,
         );
       } else {
+        // ERC20 swap
         Serialization.checkErc20Amount(unsigned, erc20Tokens);
 
-        const erc20ContractAddress = erc20Tokens.get(unsigned.amounts[0].tokenTicker)!.contractAddress;
-        const atomicSwapOfferCall = new Uint8Array([
-          ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256,address,uint256)"),
-          ...unsigned.swapId!,
-          ...Abi.encodeAddress(unsigned.recipient),
-          ...unsigned.hash,
-          ...Abi.encodeUint256(unsigned.timeout.height.toString()),
-          ...Abi.encodeAddress(erc20ContractAddress),
-          ...Abi.encodeUint256(unsigned.amounts[0].quantity),
-        ]);
+        const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
+        const atomicSwapOfferCall = Serialization.buildAtomicSwapOfferErc20Call(
+          unsigned,
+          erc20Token.contractAddress,
+        );
 
         return Serialization.serializeGenericTransaction(
           signed.primarySignature.nonce,
@@ -341,11 +313,7 @@ export class Serialization {
         atomicSwapErc20ContractAddress,
       );
 
-      const atomicSwapClaimCall = new Uint8Array([
-        ...Abi.calculateMethodId("claim(bytes32,bytes32)"),
-        ...unsigned.swapId,
-        ...unsigned.preimage,
-      ]);
+      const atomicSwapClaimCall = Serialization.buildAtomicSwapClaimCall(unsigned);
 
       return Serialization.serializeGenericTransaction(
         signed.primarySignature.nonce,
@@ -365,10 +333,7 @@ export class Serialization {
         atomicSwapErc20ContractAddress,
       );
 
-      const atomicSwapAbortCall = new Uint8Array([
-        ...Abi.calculateMethodId("abort(bytes32)"),
-        ...unsigned.swapId,
-      ]);
+      const atomicSwapAbortCall = Serialization.buildAtomicSwapAbortCall(unsigned);
 
       return Serialization.serializeGenericTransaction(
         signed.primarySignature.nonce,
@@ -485,12 +450,22 @@ export class Serialization {
   }
 
   private static getErc20Token(
-    unsigned: SendTransaction,
+    unsigned: UnsignedTransaction,
     erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
   ): Erc20Options {
-    const erc20Token = erc20Tokens.get(unsigned.amount.tokenTicker);
+    let erc20Token: Erc20Options | undefined;
+    let ticker: string = "";
+    if (isSendTransaction(unsigned)) {
+      erc20Token = erc20Tokens.get(unsigned.amount.tokenTicker);
+      ticker = unsigned.amount.tokenTicker;
+    } else if (isSwapOfferTransaction(unsigned)) {
+      erc20Token = erc20Tokens.get(unsigned.amounts[0].tokenTicker);
+      ticker = unsigned.amounts[0].tokenTicker;
+    } else {
+      throw new Error("Cannot get ERC20 token for unsupported transaction type");
+    }
     if (!erc20Token) {
-      throw new Error(`No ERC 20 token configured for ticker ${unsigned.amount.tokenTicker}`);
+      throw new Error(`No ERC20 token configured for ticker ${ticker}`);
     }
     return erc20Token;
   }
@@ -522,5 +497,52 @@ export class Serialization {
     } else {
       return numericValue.toArrayLike(Uint8Array, "be");
     }
+  }
+
+  private static buildErc20TransferCall(unsigned: SendTransaction): Uint8Array {
+    return new Uint8Array([
+      ...Abi.calculateMethodId("transfer(address,uint256)"),
+      ...Abi.encodeAddress(unsigned.recipient),
+      ...Abi.encodeUint256(unsigned.amount.quantity),
+    ]);
+  }
+
+  private static buildAtomicSwapOfferEtherCall(unsigned: SwapOfferTransaction): Uint8Array {
+    const timeout = unsigned.timeout as BlockHeightTimeout;
+    return new Uint8Array([
+      ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)"),
+      ...unsigned.swapId!,
+      ...Abi.encodeAddress(unsigned.recipient),
+      ...unsigned.hash,
+      ...Abi.encodeUint256(timeout.height.toString()),
+    ]);
+  }
+
+  private static buildAtomicSwapOfferErc20Call(
+    unsigned: SwapOfferTransaction,
+    erc20ContractAddress: Address,
+  ): Uint8Array {
+    const timeout = unsigned.timeout as BlockHeightTimeout;
+    return new Uint8Array([
+      ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256,address,uint256)"),
+      ...unsigned.swapId!,
+      ...Abi.encodeAddress(unsigned.recipient),
+      ...unsigned.hash,
+      ...Abi.encodeUint256(timeout.height.toString()),
+      ...Abi.encodeAddress(erc20ContractAddress),
+      ...Abi.encodeUint256(unsigned.amounts[0].quantity),
+    ]);
+  }
+
+  private static buildAtomicSwapClaimCall(unsigned: SwapClaimTransaction): Uint8Array {
+    return new Uint8Array([
+      ...Abi.calculateMethodId("claim(bytes32,bytes32)"),
+      ...unsigned.swapId,
+      ...unsigned.preimage,
+    ]);
+  }
+
+  private static buildAtomicSwapAbortCall(unsigned: SwapAbortTransaction): Uint8Array {
+    return new Uint8Array([...Abi.calculateMethodId("abort(bytes32)"), ...unsigned.swapId]);
   }
 }

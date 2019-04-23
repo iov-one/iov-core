@@ -25,4 +25,9 @@ export declare class Serialization {
      * Value 0 must be represented as 0x instead of 0x0 for some strange reason
      */
     private static encodeValue;
+    private static buildErc20TransferCall;
+    private static buildAtomicSwapOfferEtherCall;
+    private static buildAtomicSwapOfferErc20Call;
+    private static buildAtomicSwapClaimCall;
+    private static buildAtomicSwapAbortCall;
 }
