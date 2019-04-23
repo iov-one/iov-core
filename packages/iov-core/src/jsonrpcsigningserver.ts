@@ -156,10 +156,12 @@ export class JsonRpcSigningServer {
           };
           break;
         case "signAndPost":
+          // Simplify when https://github.com/iov-one/iov-core/issues/929 is done
+          const result = (await this.core.signAndPost(call.reason, call.transaction)) || null;
           response = {
             jsonrpc: "2.0",
             id: request.id,
-            result: TransactionEncoder.toJson(await this.core.signAndPost(call.reason, call.transaction)),
+            result: TransactionEncoder.toJson(result),
           };
           break;
         default:
