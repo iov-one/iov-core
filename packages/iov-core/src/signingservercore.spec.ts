@@ -7,6 +7,7 @@ import {
   PublicKeyBytes,
   SendTransaction,
   TokenTicker,
+  TransactionState,
   UnsignedTransaction,
 } from "@iov/bcp";
 import { bnsCodec, bnsConnector } from "@iov/bns";
@@ -344,6 +345,56 @@ describe("SigningServerCore", () => {
         .signAndPost("Please sign now", send)
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(/internal server error/i));
+
+      core.shutdown();
+    });
+  });
+
+  describe("signedAndPosted", () => {
+    it("can get signed and posted transactions", async () => {
+      pendingWithoutBnsd();
+
+      const profile = new UserProfile();
+      const signer = new MultiChainSigner(profile);
+      const { connection } = await signer.addChain(bnsConnector(bnsdUrl));
+      const bnsChain = connection.chainId();
+
+      {
+        const wallet = profile.addWallet(
+          Ed25519HdWallet.fromMnemonic(
+            "option diagram plastic million educate they arrow fat comic excite abandon green",
+          ),
+        );
+        await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
+      }
+
+      const core = new SigningServerCore(
+        profile,
+        signer,
+        defaultGetIdentitiesCallback,
+        defaultSignAndPostCallback,
+      );
+
+      expect(core.signedAndPosted.value).toEqual([]);
+
+      const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
+      const send: SendTransaction = {
+        kind: "bcp/send",
+        creator: signingIdentity,
+        amount: defaultAmount,
+        recipient: await randomBnsAddress(),
+      };
+      const transactionId = await core.signAndPost("Please sign now", send);
+      if (!transactionId) {
+        throw new Error("Expected transaction ID to be set");
+      }
+
+      expect(core.signedAndPosted.value.length).toEqual(1);
+      expect(core.signedAndPosted.value[0].transaction).toEqual(send);
+      expect(core.signedAndPosted.value[0].postResponse.blockInfo.value.state).toEqual(
+        TransactionState.Pending,
+      );
+      expect(core.signedAndPosted.value[0].postResponse.transactionId).toEqual(transactionId);
 
       core.shutdown();
     });

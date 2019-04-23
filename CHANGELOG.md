@@ -8,6 +8,7 @@
 - @iov/core: Add `JsonRpcSigningServer`.
 - @iov/core: Deprecate `JsRpcSigningServer` and related types in favour of
   `JsonRpcSigningServer`.
+- @iov/core: Add `SigningServerCore.signedAndPosted`.
 
 ## 0.13.3
 
