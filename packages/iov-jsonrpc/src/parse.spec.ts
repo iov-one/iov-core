@@ -1,5 +1,5 @@
 import { parseJsonRpcErrorResponse, parseJsonRpcSuccessResponse } from "./parse";
-import { jsonRpcCode, JsonRpcSuccessResponse } from "./types";
+import { jsonRpcCode, JsonRpcErrorResponse, JsonRpcSuccessResponse } from "./types";
 
 describe("parse", () => {
   describe("parseJsonRpcErrorResponse", () => {
@@ -227,6 +227,18 @@ describe("parse", () => {
         };
         expect(() => parseJsonRpcSuccessResponse(response)).toThrowError(/invalid id field/i);
       }
+    });
+
+    it("throws for error response", () => {
+      const response: JsonRpcErrorResponse = {
+        jsonrpc: "2.0",
+        id: 123,
+        error: {
+          code: jsonRpcCode.parseError,
+          message: "Could not parse request ID",
+        },
+      };
+      expect(() => parseJsonRpcSuccessResponse(response)).toThrowError(/invalid result field/i);
     });
   });
 });

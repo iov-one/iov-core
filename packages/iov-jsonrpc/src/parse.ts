@@ -147,6 +147,10 @@ export function parseJsonRpcSuccessResponse(data: unknown): JsonRpcSuccessRespon
     throw new Error("Invalid id field");
   }
 
+  if (typeof data.result === "undefined") {
+    throw new Error("Invalid result field");
+  }
+
   const result = data.result;
 
   return {
