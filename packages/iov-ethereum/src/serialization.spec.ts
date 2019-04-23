@@ -27,6 +27,9 @@ import { testConfig } from "./testconfig.spec";
 const { serializeSignedTransaction, serializeUnsignedTransaction } = Serialization;
 const { fromHex } = Encoding;
 
+const ETH = "ETH" as TokenTicker;
+const HOT = "HOT" as TokenTicker;
+
 describe("Serialization", () => {
   describe("serializeUnsignedTransaction", () => {
     it("can serialize transaction without memo", () => {
@@ -46,13 +49,13 @@ describe("Serialization", () => {
         amount: {
           quantity: "20000000000000000000",
           fractionalDigits: 18,
-          tokenTicker: "ETH" as TokenTicker,
+          tokenTicker: ETH,
         },
         fee: {
           gasPrice: {
             quantity: "20000000000",
             fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
+            tokenTicker: ETH,
           },
           gasLimit: "21000",
         },
@@ -84,13 +87,13 @@ describe("Serialization", () => {
         amount: {
           quantity: "20000000000000000000",
           fractionalDigits: 18,
-          tokenTicker: "ETH" as TokenTicker,
+          tokenTicker: ETH,
         },
         fee: {
           gasPrice: {
             quantity: "20000000000",
             fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
+            tokenTicker: ETH,
           },
           gasLimit: "21000",
         },
@@ -120,12 +123,12 @@ describe("Serialization", () => {
       const amount: Amount = {
         quantity: "20000000000000000000",
         fractionalDigits: 18,
-        tokenTicker: "ETH" as TokenTicker,
+        tokenTicker: ETH,
       };
       const gasPrice: Amount = {
         quantity: "20000000000",
         fractionalDigits: 18,
-        tokenTicker: "ETH" as TokenTicker,
+        tokenTicker: ETH,
       };
       const gasLimit = "21000";
       const nonce = 0 as Nonce;
@@ -174,12 +177,12 @@ describe("Serialization", () => {
       const amount: Amount = {
         quantity: "20000000000000000000",
         fractionalDigits: 18,
-        tokenTicker: "ETH" as TokenTicker,
+        tokenTicker: ETH,
       };
       const gasPrice: Amount = {
         quantity: "20000000000",
         fractionalDigits: 18,
-        tokenTicker: "ETH" as TokenTicker,
+        tokenTicker: ETH,
       };
       const gasLimit = "21000";
 
@@ -213,13 +216,13 @@ describe("Serialization", () => {
         amount: {
           quantity: "266151442407390000000000",
           fractionalDigits: 18,
-          tokenTicker: "HOT" as TokenTicker,
+          tokenTicker: HOT,
         },
         fee: {
           gasPrice: {
             quantity: "6000000000", // 6 Gwei
             fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
+            tokenTicker: ETH,
           },
           gasLimit: "52669",
         },
@@ -241,10 +244,10 @@ describe("Serialization", () => {
       );
       const erc20Tokens = new Map<TokenTicker, Erc20Options>([
         [
-          "HOT" as TokenTicker,
+          HOT,
           {
             contractAddress: "0x6c6ee5e31d828de241282b9606c8e98ea48526e2" as Address,
-            symbol: "HOT" as TokenTicker,
+            symbol: HOT,
             decimals: 18,
           },
         ],
@@ -267,14 +270,14 @@ describe("Serialization", () => {
           {
             quantity: "266151442407390000000000",
             fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
+            tokenTicker: ETH,
           },
         ],
         fee: {
           gasPrice: {
             quantity: "6000000000", // 6 Gwei
             fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
+            tokenTicker: ETH,
           },
           gasLimit: "52669",
         },
@@ -313,7 +316,7 @@ describe("Serialization", () => {
           gasPrice: {
             quantity: "6000000000", // 6 Gwei
             fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
+            tokenTicker: ETH,
           },
           gasLimit: "52669",
         },
@@ -348,7 +351,7 @@ describe("Serialization", () => {
           gasPrice: {
             quantity: "6000000000", // 6 Gwei
             fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
+            tokenTicker: ETH,
           },
           gasLimit: "52669",
         },
@@ -364,6 +367,154 @@ describe("Serialization", () => {
         nonce,
         undefined,
         testConfig.connectionOptions.atomicSwapEtherContractAddress,
+      );
+      expect(serializedTransaction).toEqual(expected);
+    });
+
+    it("can serialize ERC20 atomic swap offer", () => {
+      const transaction: SwapOfferTransaction = {
+        kind: "bcp/swap_offer",
+        creator: {
+          chainId: "ethereum-eip155-1" as ChainId,
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: fromHex("") as PublicKeyBytes,
+          },
+        },
+        amounts: [
+          {
+            quantity: "266151442407390000000000",
+            fractionalDigits: 18,
+            tokenTicker: HOT,
+          },
+        ],
+        fee: {
+          gasPrice: {
+            quantity: "6000000000", // 6 Gwei
+            fractionalDigits: 18,
+            tokenTicker: ETH,
+          },
+          gasLimit: "52669",
+        },
+        swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+        recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
+        hash: Uint8Array.from(Array(32).fill(8)) as Hash,
+        timeout: {
+          height: 1,
+        },
+      };
+      const nonce = 26 as Nonce;
+      const erc20Tokens = new Map<TokenTicker, Erc20Options>([
+        [
+          HOT,
+          {
+            contractAddress: "0x2020202020202020202020202020202020202020" as Address,
+            symbol: HOT,
+            decimals: 18,
+          },
+        ],
+      ]);
+
+      const expected = fromHex(
+        "f8e91a850165a0bc0082cdbd949768ae2339b48643d710b11ddbdb8a7edbea15bc80b8c4e8d8a29309090909090909090909090909090909090909090909090909090909090909090000000000000000000000008fec1c262599f4169401ff48a9d63503ceaaf74208080808080808080808080808080808080808080808080808080808080808080000000000000000000000000000000000000000000000000000000000000001000000000000000000000000202020202020202020202020202020202020202000000000000000000000000000000000000000000000385c193e12be6d312c00018080",
+      );
+      const serializedTransaction = serializeUnsignedTransaction(
+        transaction,
+        nonce,
+        erc20Tokens,
+        undefined,
+        testConfig.connectionOptions.atomicSwapErc20ContractAddress,
+      );
+      expect(serializedTransaction).toEqual(expected);
+    });
+
+    it("can serialize ERC20 atomic swap claim", () => {
+      const transaction: SwapClaimTransaction = {
+        kind: "bcp/swap_claim",
+        creator: {
+          chainId: "ethereum-eip155-1" as ChainId,
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: fromHex("") as PublicKeyBytes,
+          },
+        },
+        fee: {
+          gasPrice: {
+            quantity: "6000000000", // 6 Gwei
+            fractionalDigits: 18,
+            tokenTicker: ETH,
+          },
+          gasLimit: "52669",
+        },
+        swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+        preimage: Uint8Array.from(Array(32).fill(16)) as Preimage,
+      };
+      const nonce = 26 as Nonce;
+      const erc20Tokens = new Map<TokenTicker, Erc20Options>([
+        [
+          HOT,
+          {
+            contractAddress: "0x2020202020202020202020202020202020202020" as Address,
+            symbol: HOT,
+            decimals: 18,
+          },
+        ],
+      ]);
+
+      const expected = fromHex(
+        "f8691a850165a0bc0082cdbd949768ae2339b48643d710b11ddbdb8a7edbea15bc80b84484cc9dfb09090909090909090909090909090909090909090909090909090909090909091010101010101010101010101010101010101010101010101010101010101010018080",
+      );
+      const serializedTransaction = serializeUnsignedTransaction(
+        transaction,
+        nonce,
+        erc20Tokens,
+        undefined,
+        testConfig.connectionOptions.atomicSwapErc20ContractAddress,
+      );
+      expect(serializedTransaction).toEqual(expected);
+    });
+
+    it("can serialize ERC20 atomic swap abort", () => {
+      const transaction: SwapAbortTransaction = {
+        kind: "bcp/swap_abort",
+        creator: {
+          chainId: "ethereum-eip155-1" as ChainId,
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: fromHex("") as PublicKeyBytes,
+          },
+        },
+        fee: {
+          gasPrice: {
+            quantity: "6000000000", // 6 Gwei
+            fractionalDigits: 18,
+            tokenTicker: ETH,
+          },
+          gasLimit: "52669",
+        },
+        swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+      };
+      const nonce = 26 as Nonce;
+      const erc20Tokens = new Map<TokenTicker, Erc20Options>([
+        [
+          HOT,
+          {
+            contractAddress: "0x2020202020202020202020202020202020202020" as Address,
+            symbol: HOT,
+            decimals: 18,
+          },
+        ],
+      ]);
+
+      const expected = fromHex(
+        "f8481a850165a0bc0082cdbd949768ae2339b48643d710b11ddbdb8a7edbea15bc80a409d6ce0e0909090909090909090909090909090909090909090909090909090909090909018080",
+      );
+      const serializedTransaction = serializeUnsignedTransaction(
+        transaction,
+        nonce,
+        erc20Tokens,
+        undefined,
+        testConfig.connectionOptions.atomicSwapErc20ContractAddress,
       );
       expect(serializedTransaction).toEqual(expected);
     });
@@ -388,13 +539,13 @@ describe("Serialization", () => {
           amount: {
             quantity: "10",
             fractionalDigits: 18,
-            tokenTicker: "ETH" as TokenTicker,
+            tokenTicker: ETH,
           },
           fee: {
             gasPrice: {
               quantity: "1",
               fractionalDigits: 18,
-              tokenTicker: "ETH" as TokenTicker,
+              tokenTicker: ETH,
             },
             gasLimit: "21000",
           },
@@ -445,7 +596,7 @@ describe("Serialization", () => {
             gasPrice: {
               quantity: "6000000000", // 6 Gwei
               fractionalDigits: 18,
-              tokenTicker: "ETH" as TokenTicker,
+              tokenTicker: ETH,
             },
             gasLimit: "52669",
           },
@@ -471,10 +622,10 @@ describe("Serialization", () => {
 
       const erc20Tokens = new Map<TokenTicker, Erc20Options>([
         [
-          "HOT" as TokenTicker,
+          HOT,
           {
             contractAddress: "0x6c6ee5e31d828de241282b9606c8e98ea48526e2" as Address,
-            symbol: "HOT" as TokenTicker,
+            symbol: HOT,
             decimals: 18,
           },
         ],
@@ -498,14 +649,14 @@ describe("Serialization", () => {
             {
               quantity: "266151442407390000000000",
               fractionalDigits: 18,
-              tokenTicker: "ETH" as TokenTicker,
+              tokenTicker: ETH,
             },
           ],
           fee: {
             gasPrice: {
               quantity: "6000000000", // 6 Gwei
               fractionalDigits: 18,
-              tokenTicker: "ETH" as TokenTicker,
+              tokenTicker: ETH,
             },
             gasLimit: "52669",
           },
@@ -557,7 +708,7 @@ describe("Serialization", () => {
             gasPrice: {
               quantity: "6000000000", // 6 Gwei
               fractionalDigits: 18,
-              tokenTicker: "ETH" as TokenTicker,
+              tokenTicker: ETH,
             },
             gasLimit: "52669",
           },
@@ -605,7 +756,7 @@ describe("Serialization", () => {
             gasPrice: {
               quantity: "6000000000", // 6 Gwei
               fractionalDigits: 18,
-              tokenTicker: "ETH" as TokenTicker,
+              tokenTicker: ETH,
             },
             gasLimit: "52669",
           },
