@@ -318,3 +318,11 @@ export function isSwapAbortTransaction(
 ): transaction is SwapAbortTransaction {
   return (transaction as SwapAbortTransaction).kind === "bcp/swap_abort";
 }
+
+export function isSwapTransaction(transaction: UnsignedTransaction): transaction is SwapTransaction {
+  return (
+    isSwapOfferTransaction(transaction) ||
+    isSwapClaimTransaction(transaction) ||
+    isSwapAbortTransaction(transaction)
+  );
+}

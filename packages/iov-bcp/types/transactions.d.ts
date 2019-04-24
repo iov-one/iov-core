@@ -196,3 +196,4 @@ export declare function isSendTransaction(transaction: UnsignedTransaction): tra
 export declare function isSwapOfferTransaction(transaction: UnsignedTransaction): transaction is SwapOfferTransaction;
 export declare function isSwapClaimTransaction(transaction: UnsignedTransaction): transaction is SwapClaimTransaction;
 export declare function isSwapAbortTransaction(transaction: UnsignedTransaction): transaction is SwapAbortTransaction;
+export declare function isSwapTransaction(transaction: UnsignedTransaction): transaction is SwapTransaction;
