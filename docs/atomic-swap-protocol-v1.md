@@ -81,7 +81,23 @@ data with `hash = sha256(preimage)`.
 
 ### Timeouts
 
-TODO
+A timeout is the first point in time, when the HTLC is expired. It is measured
+in one of the two types absolute times or block height.
+
+- **Absolute time** is a second resolution
+  [UNIX time](https://en.wikipedia.org/wiki/Unix_time). It is used for
+  blockchains that have a strong guarantee for correct and fair timestamps with
+  reasonable precision.
+- **Block height** is an integer counting the number of blocks created. It is
+  used when absolute time is not appropriate.
+
+Note: Since the type of timeout is fixed in the HTLC, which belongs to the
+blockchain, a cross-chain atomic swap may need to use different types of
+timeouts for the initial offer and the counter offer.
+
+The counter offer is claimed first. I.e. the time between the counter offer's
+timeout and the initial offer's timeout is the minimal time the actor in short
+position has to claim the initial offer.
 
 ### Swap offer actions
 
@@ -160,7 +176,24 @@ locked tokens until the timeout is reached.
 
 ### Half executed atomic swaps
 
-TODO: timeout issue etc.
+1. **Timeout difference:** The actor in short position needs to ensure to have a
+   sufficient amount of time to claim the initial offer, even if the preimage
+   was revealed by claiming the counter offer at the very last possible point in
+   time. This should cover all risks that can delay the execution of the claim
+   transaction like different time zones, downtimes of the default blockchain
+   nodes, temporary loss of power, internet connection and access to key
+   material.
+2. **Block height based timeout calculation:** The above timeout difference is
+   even harder to calculate when timeouts are measured in block height.
+   Especially with non-constant block times one needs to calculate the expected
+   block height at the desired timeout time and take into account a safety
+   margin.
+3. **Chain stops:** When one chain in a cross-chain atomic swap stops, two
+   things can happen that lead to half executed atomic swaps. (a) A timeout
+   measured in absolute time is reached without the chance to get a claim
+   transaction processed. (b) An initial offer's block height based timeout is
+   pushed unexpectedly far into the future, such that the timeout difference for
+   the actor in short position to claim is 0 or negative.
 
 ## License
 
