@@ -26,7 +26,7 @@ export type Preimage = Uint8Array & As<"preimage">;
 export type Hash = Uint8Array & As<"hash">;
 
 export interface SwapData {
-  readonly id: SwapId; // this is used as an unique identitier to locate the swap
+  readonly id: SwapId;
   readonly sender: Address;
   readonly recipient: Address;
   /**
