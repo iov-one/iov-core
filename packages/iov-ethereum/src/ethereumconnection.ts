@@ -91,6 +91,11 @@ async function loadChainId(baseUrl: string): Promise<ChainId> {
   return toBcpChainId(numericChainId.toNumber());
 }
 
+export enum SwapIdPrefixes {
+  Ether = "ether",
+  Erc20 = "erc20",
+}
+
 export interface EthereumLog {
   readonly transactionIndex: string;
   readonly data: string;
@@ -115,6 +120,7 @@ export class EthereumConnection implements AtomicSwapConnection {
   public static async createEtherSwapId(): Promise<SwapId> {
     const bytes = await Random.getBytes(32);
     return {
+      prefix: SwapIdPrefixes.Ether,
       data: bytes as SwapIdBytes,
     };
   }
@@ -122,6 +128,7 @@ export class EthereumConnection implements AtomicSwapConnection {
   public static async createErc20SwapId(): Promise<SwapId> {
     const bytes = await Random.getBytes(32);
     return {
+      prefix: SwapIdPrefixes.Erc20,
       data: bytes as SwapIdBytes,
     };
   }

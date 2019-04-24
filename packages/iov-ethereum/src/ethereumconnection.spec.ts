@@ -43,7 +43,7 @@ import { toListPromise } from "@iov/stream";
 
 import { pubkeyToAddress } from "./address";
 import { EthereumCodec } from "./ethereumcodec";
-import { EthereumConnection } from "./ethereumconnection";
+import { EthereumConnection, SwapIdPrefixes } from "./ethereumconnection";
 import { testConfig } from "./testconfig.spec";
 
 const { fromHex } = Encoding;
@@ -128,14 +128,28 @@ describe("EthereumConnection", () => {
   describe("createEtherSwapId", () => {
     it("works", async () => {
       const swapId = await EthereumConnection.createEtherSwapId();
+      expect(swapId.prefix).toEqual(SwapIdPrefixes.Ether);
       expect(swapId.data.length).toEqual(32);
+    });
+
+    it("is non-deterministic", async () => {
+      const swapId1 = await EthereumConnection.createEtherSwapId();
+      const swapId2 = await EthereumConnection.createEtherSwapId();
+      expect(swapId1.data).not.toEqual(swapId2.data);
     });
   });
 
   describe("createErc20SwapId", () => {
     it("works", async () => {
       const swapId = await EthereumConnection.createErc20SwapId();
+      expect(swapId.prefix).toEqual(SwapIdPrefixes.Erc20);
       expect(swapId.data.length).toEqual(32);
+    });
+
+    it("is non-deterministic", async () => {
+      const swapId1 = await EthereumConnection.createErc20SwapId();
+      const swapId2 = await EthereumConnection.createErc20SwapId();
+      expect(swapId1.data).not.toEqual(swapId2.data);
     });
   });
 
