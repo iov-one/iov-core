@@ -124,7 +124,6 @@ export class Serialization {
     atomicSwapErc20ContractAddress?: Address,
   ): Uint8Array {
     const unsigned = signed.transaction;
-    Serialization.checkIsSupportedTransaction(unsigned);
 
     const { nonce } = signed.primarySignature;
     const gasPriceHex = Serialization.getGasPriceHex(unsigned);
@@ -189,18 +188,6 @@ export class Serialization {
         atomicSwapErc20ContractAddress,
       );
     } else {
-      throw new Error("Unsupported kind of transaction");
-    }
-  }
-
-  private static checkIsSupportedTransaction(unsigned: UnsignedTransaction): void {
-    const supportedTransactionCheckers: ReadonlyArray<(unsigned: UnsignedTransaction) => boolean> = [
-      isSendTransaction,
-      isSwapOfferTransaction,
-      isSwapClaimTransaction,
-      isSwapAbortTransaction,
-    ];
-    if (!supportedTransactionCheckers.some(fn => fn(unsigned))) {
       throw new Error("Unsupported kind of transaction");
     }
   }
