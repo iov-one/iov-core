@@ -1,5 +1,3 @@
-import { Encoding } from "@iov/encoding";
-
 import { AtomicSwap, OpenSwap, SwapProcessState } from "./atomicswaptypes";
 import { SwapAbortTransaction, SwapClaimTransaction, swapIdEquals } from "./transactions";
 
@@ -67,6 +65,6 @@ export class AtomicSwapMerger {
 
   /** The unsettled swaps this object currently holds in undefined order */
   public openSwaps(): ReadonlyArray<OpenSwap> {
-    return [...this.open.values()];
+    return [...this.open];
   }
 }
