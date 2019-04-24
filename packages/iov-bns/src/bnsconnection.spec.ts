@@ -30,6 +30,7 @@ import {
   SwapClaimTransaction,
   SwapId,
   SwapIdBytes,
+  swapIdEquals,
   SwapOfferTransaction,
   SwapProcessState,
   SwapTimeout,
@@ -79,7 +80,11 @@ async function randomBnsAddress(): Promise<Address> {
 }
 
 function matchId(id: SwapId): (swap: AtomicSwap) => boolean {
-  return s => Encoding.toHex(s.data.id.data) === Encoding.toHex(id.data);
+  return s => swapIdEquals(id, s.data.id);
+}
+
+function serializeBnsSwapId(id: SwapId): string {
+  return toHex(id.data);
 }
 
 const cash = "CASH" as TokenTicker;
@@ -1529,7 +1534,7 @@ describe("BnsConnection", () => {
       throw new Error(`Expected transaction state success but got state: ${blockInfo.state}`);
     }
     const txHeight = blockInfo.height;
-    const txResult = blockInfo.result!;
+    const txResult = blockInfo.result! as SwapIdBytes;
     // the transaction result is 8 byte number assigned by the application
     expect(Uint64.fromBytesBigEndian(txResult).toNumber()).toBeGreaterThanOrEqual(1);
     expect(Uint64.fromBytesBigEndian(txResult).toNumber()).toBeLessThanOrEqual(1000);
@@ -1554,7 +1559,7 @@ describe("BnsConnection", () => {
     // ----  prepare queries
     const querySwapId: AtomicSwapQuery = {
       swapid: {
-        data: txResult as SwapIdBytes,
+        data: txResult,
       },
     };
     const querySwapSender: AtomicSwapQuery = { sender: faucetAddr };
@@ -1599,7 +1604,7 @@ describe("BnsConnection", () => {
 
     // and it matches expectations
     const swapData = swap.data;
-    expect(swapData.id.data).toEqual(txResult);
+    expect(swapData.id).toEqual({ data: txResult });
     expect(swapData.sender).toEqual(faucetAddr);
     expect(swapData.recipient).toEqual(recipientAddr);
     expect(swapData.timeout).toEqual(swapOfferTimeout);
@@ -1633,7 +1638,7 @@ describe("BnsConnection", () => {
 
     // and it matches expectations
     const stateData = swapState.data;
-    expect(stateData.id.data).toEqual(txResult);
+    expect(stateData.id).toEqual({ data: txResult });
     expect(stateData.sender).toEqual(faucetAddr);
     expect(stateData.recipient).toEqual(recipientAddr);
     expect(stateData.timeout).toEqual(swapOfferTimeout);
@@ -1785,21 +1790,21 @@ describe("BnsConnection", () => {
     // directly. So let's just check the last information per ID.
     const latestEventPerId = new Map<string, AtomicSwap>();
     for (const event of liveView.value()) {
-      latestEventPerId.set(toHex(event.data.id.data), event);
+      latestEventPerId.set(serializeBnsSwapId(event.data.id), event);
     }
 
     expect(latestEventPerId.size).toEqual(3);
-    expect(latestEventPerId.get(toHex(id1.data))).toEqual({
+    expect(latestEventPerId.get(serializeBnsSwapId(id1))).toEqual({
       kind: SwapProcessState.Claimed,
       data: open1!.data,
       preimage: preimage1,
     });
-    expect(latestEventPerId.get(toHex(id2.data))).toEqual({
+    expect(latestEventPerId.get(serializeBnsSwapId(id2))).toEqual({
       kind: SwapProcessState.Claimed,
       data: open2!.data,
       preimage: preimage2,
     });
-    expect(latestEventPerId.get(toHex(id3.data))).toEqual({
+    expect(latestEventPerId.get(serializeBnsSwapId(id3))).toEqual({
       kind: SwapProcessState.Open,
       data: open3!.data,
     });

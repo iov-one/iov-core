@@ -38,6 +38,7 @@ import {
   SwapData,
   SwapId,
   SwapIdBytes,
+  swapIdEquals,
   SwapProcessState,
   Token,
   TokenTicker,
@@ -935,9 +936,7 @@ export class EthereumConnection implements AtomicSwapConnection {
               ];
             case SwapContractEvent.Claimed: {
               const swapId = dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes;
-              const swapIndex = accumulator.findIndex(
-                s => Encoding.toHex(s.data.id.data) === Encoding.toHex(swapId),
-              );
+              const swapIndex = accumulator.findIndex(s => swapIdEquals(s.data.id, { data: swapId }));
               if (swapIndex === -1) {
                 throw new Error("Found Claimed event for non-existent swap");
               }
@@ -953,9 +952,7 @@ export class EthereumConnection implements AtomicSwapConnection {
             }
             case SwapContractEvent.Aborted: {
               const swapId = dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes;
-              const swapIndex = accumulator.findIndex(
-                s => Encoding.toHex(s.data.id.data) === Encoding.toHex(swapId),
-              );
+              const swapIndex = accumulator.findIndex(s => swapIdEquals(s.data.id, { data: swapId }));
               if (swapIndex === -1) {
                 throw new Error("Found Aborted event for non-existent swap");
               }

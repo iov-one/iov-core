@@ -26,6 +26,7 @@ import {
   SwapAbortTransaction,
   SwapClaimTransaction,
   SwapId,
+  swapIdEquals,
   SwapOfferTransaction,
   SwapProcessState,
   SwapTimeout,
@@ -86,7 +87,7 @@ async function randomAddress(): Promise<Address> {
 }
 
 function matchId(id: SwapId): (swap: AtomicSwap) => boolean {
-  return s => Encoding.toHex(s.data.id.data) === Encoding.toHex(id.data);
+  return s => swapIdEquals(id, s.data.id);
 }
 
 describe("EthereumConnection", () => {
@@ -133,17 +134,17 @@ describe("EthereumConnection", () => {
   }
 
   describe("createEtherSwapId", () => {
-    it('works', async () => {
+    it("works", async () => {
       const swapId = await EthereumConnection.createEtherSwapId();
       expect(swapId.data.length).toEqual(32);
-    })
+    });
   });
 
   describe("createErc20SwapId", () => {
-    it('works', async () => {
+    it("works", async () => {
       const swapId = await EthereumConnection.createErc20SwapId();
       expect(swapId.data.length).toEqual(32);
-    })
+    });
   });
 
   it("can be constructed", () => {
