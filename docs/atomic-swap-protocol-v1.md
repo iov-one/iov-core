@@ -2,7 +2,7 @@
 
 | Status | Authors                                | Created    | Last updated | License   |
 | ------ | -------------------------------------- | ---------- | ------------ | --------- |
-| Draft  | Simon Warta, Ethan Frey, Isabella Dell | 2019-03-27 | 2019-04-08   | CC-BY-4.0 |
+| Draft  | Simon Warta, Ethan Frey, Isabella Dell | 2019-03-27 | 2019-04-24   | CC-BY-4.0 |
 
 ## Abstract
 
@@ -91,9 +91,11 @@ Actions are mutations of the on-chain state triggered by transactions.
   timeout and a hash must be specified.
 - **Claim:** By revealing a preimage for the hash before the timeout is reached,
   the contract transfers the tokens to the recipient. Requires a preimage of
-  exactly 32 bytes. Common synonyms: _release_, _execute_.
+  exactly 32 bytes.
 - **Abort:** Withdraws the tokens from the contract to the creator. Requires
   timeout to be reached.
+
+Common synonyms: _release = claim_, _execute = claim_.
 
 ### Swap offer process state
 
