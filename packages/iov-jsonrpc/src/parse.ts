@@ -5,7 +5,13 @@ import {
   JsonCompatibleDictionary,
   JsonCompatibleValue,
 } from "./jsoncompatibledictionary";
-import { JsonRpcError, JsonRpcErrorResponse, JsonRpcRequest, JsonRpcSuccessResponse } from "./types";
+import {
+  JsonRpcError,
+  JsonRpcErrorResponse,
+  JsonRpcRequest,
+  JsonRpcResponse,
+  JsonRpcSuccessResponse,
+} from "./types";
 
 export function parseJsonRpcId(data: unknown): number | null {
   if (!isJsonCompatibleDictionary(data)) {
@@ -163,4 +169,20 @@ export function parseJsonRpcSuccessResponse(data: unknown): JsonRpcSuccessRespon
 /** @deprecated use parseJsonRpcSuccessResponse */
 export function parseJsonRpcResponse(data: unknown): JsonRpcSuccessResponse {
   return parseJsonRpcSuccessResponse(data);
+}
+
+/**
+ * Returns a JsonRpcErrorResponse if input can be parsed as a JSON-RPC error. Otherwise parses
+ * input as JsonRpcSuccessResponse. Throws if input is neither a valid error nor success response.
+ *
+ * This function will be renamed to parseJsonRpcResponse() in the future.
+ */
+export function parseJsonRpcResponse2(data: unknown): JsonRpcResponse {
+  let response: JsonRpcResponse;
+  try {
+    response = parseJsonRpcErrorResponse(data);
+  } catch (_) {
+    response = parseJsonRpcSuccessResponse(data);
+  }
+  return response;
 }
