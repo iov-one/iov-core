@@ -1,10 +1,6 @@
 import { Stream } from "xstream";
 import { Account, AccountQuery, Address, AddressQuery, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, SwapId, Token, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
 import { Erc20Options } from "./erc20";
-export declare enum SwapIdPrefixes {
-    Ether = "ether",
-    Erc20 = "erc20"
-}
 export interface EthereumLog {
     readonly transactionIndex: string;
     readonly data: string;

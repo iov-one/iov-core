@@ -42,8 +42,8 @@ import { HdPaths, Secp256k1HdWallet, UserProfile, WalletId } from "@iov/keycontr
 import { toListPromise } from "@iov/stream";
 
 import { pubkeyToAddress } from "./address";
-import { EthereumCodec } from "./ethereumcodec";
-import { EthereumConnection, SwapIdPrefixes } from "./ethereumconnection";
+import { EthereumCodec, SwapIdPrefixes } from "./ethereumcodec";
+import { EthereumConnection } from "./ethereumconnection";
 import { testConfig } from "./testconfig.spec";
 
 const { fromHex } = Encoding;

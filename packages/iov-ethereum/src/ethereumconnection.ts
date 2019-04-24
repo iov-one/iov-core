@@ -58,7 +58,7 @@ import { pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { Erc20Options } from "./erc20";
 import { Erc20Reader } from "./erc20reader";
-import { EthereumCodec } from "./ethereumcodec";
+import { EthereumCodec, SwapIdPrefixes } from "./ethereumcodec";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { Parse } from "./parse";
 import {
@@ -89,11 +89,6 @@ async function loadChainId(baseUrl: string): Promise<ChainId> {
 
   const numericChainId = Uint53.fromString(response.result);
   return toBcpChainId(numericChainId.toNumber());
-}
-
-export enum SwapIdPrefixes {
-  Ether = "ether",
-  Erc20 = "erc20",
 }
 
 export interface EthereumLog {

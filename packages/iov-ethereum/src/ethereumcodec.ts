@@ -91,6 +91,11 @@ export interface EthereumCodecOptions {
   readonly erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>;
 }
 
+export enum SwapIdPrefixes {
+  Ether = "ether",
+  Erc20 = "erc20",
+}
+
 export class EthereumCodec implements TxCodec {
   private readonly atomicSwapEtherContractAddress?: Address;
   private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
