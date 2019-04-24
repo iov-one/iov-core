@@ -11,6 +11,7 @@ export {
   parseJsonRpcId,
   parseJsonRpcRequest,
   parseJsonRpcResponse,
+  parseJsonRpcResponse2,
   parseJsonRpcError,
   parseJsonRpcErrorResponse,
   parseJsonRpcSuccessResponse,

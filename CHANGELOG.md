@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.13.6
+
+- @iov/jsonrpc: Create `parseJsonRpcResponse2`, which combines
+  `parseJsonRpcErrorResponse` and `parseJsonRpcSuccessResponse`. It will be
+  renamed to `parseJsonRpcResponse` as soon as the existing
+  `parseJsonRpcResponse` is removed.
+
 ## 0.13.5
 
 - @iov/core: In `JsonRpcSigningServer`, decode all application level parameters
