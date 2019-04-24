@@ -30,6 +30,7 @@ interface DeploymentJob {
 }
 
 interface MintingJob {
+  readonly name: string;
   readonly contract: DeployableContract;
   readonly recipient: Address;
   readonly quantity: string;
@@ -58,20 +59,20 @@ export async function main(args: ReadonlyArray<string>): Promise<void> {
     const gasLimit = Math.round(estimatedGas * 1.5);
 
     const receipt = await deploymentTransaction.send({ from: mainIdentity, gas: gasLimit }).getReceipt();
-    console.log(`${name} deployed to`, debugAddress(receipt.contractAddress));
+    console.info(`${name} deployed to`, debugAddress(receipt.contractAddress));
 
     if (typeof contract.methods.mint !== "undefined") {
       mintingJobs.push(
-        { contract: contract, recipient: mainIdentity, quantity: "100000000" /* 100 million atomics */ },
-        { contract: contract, recipient: secondIdentity, quantity: "33445566" },
-        { contract: contract, recipient: noEthAddress, quantity: "38" },
+        { name: name, contract: contract, recipient: mainIdentity, quantity: "100000000" /* 100 million atomics */ },
+        { name: name, contract: contract, recipient: secondIdentity, quantity: "33445566" },
+        { name: name, contract: contract, recipient: noEthAddress, quantity: "38" },
       );
     }
   }
 
   // Perform minting jobs after all deployments so that deployment nonces stay constant
-  for (const { contract, recipient, quantity } of mintingJobs) {
-    console.log(`Minting ${quantity} atomic units for ${recipient} ...`);
+  for (const { name, contract, recipient, quantity } of mintingJobs) {
+    console.info(`Minting ${quantity} atomic units of ${name} for ${recipient} ...`);
     await contract.methods
       .mint(recipient, quantity)
       .send({ from: mainIdentity, gasPrice: ganacheGasPrice })
