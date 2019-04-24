@@ -332,7 +332,7 @@ export class BnsConnection implements AtomicSwapConnection {
   public async getSwapsFromState(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>> {
     const doQuery = async (): Promise<QueryResponse> => {
       if (isAtomicSwapIdQuery(query)) {
-        return this.query("/escrows", query.swapid);
+        return this.query("/escrows", query.swapid.data);
       } else if (isAtomicSwapSenderQuery(query)) {
         return this.query("/escrows/sender", decodeBnsAddress(query.sender).data);
       } else if (isAtomicSwapRecipientQuery(query)) {
@@ -613,7 +613,7 @@ export class BnsConnection implements AtomicSwapConnection {
   // updateEscrowBalance will query for the proper balance and then update the accounts of escrow before
   // returning it. Designed to be used in a map chain.
   protected async updateEscrowBalance<T extends AtomicSwap>(escrow: T): Promise<T> {
-    const addr = conditionToAddress(this.chainId(), escrowCondition(escrow.data.id));
+    const addr = conditionToAddress(this.chainId(), escrowCondition(escrow.data.id.data));
     const account = await this.getAccount({ address: addr });
     const balance = account ? account.balance : [];
     return { ...escrow, data: { ...escrow.data, amounts: balance } };

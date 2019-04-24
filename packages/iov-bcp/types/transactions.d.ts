@@ -42,7 +42,11 @@ export declare type SignatureBytes = Uint8Array & As<"signature">;
 export declare type Nonce = number & As<"nonce">;
 export declare type TokenTicker = string & As<"token-ticker">;
 export declare type SwapIdBytes = Uint8Array & As<"swap-id">;
-export declare function swapIdEquals(left: SwapIdBytes, right: SwapIdBytes): boolean;
+export interface SwapId {
+    readonly prefix?: string;
+    readonly data: SwapIdBytes;
+}
+export declare function swapIdEquals(left: SwapId, right: SwapId): boolean;
 /**
  * A printable transaction ID in a blockchain-specific format.
  *
@@ -155,9 +159,13 @@ export interface SwapOfferTransaction extends UnsignedTransaction {
     /**
      * The ID of the swap to aid coordination between the two parties.
      *
-     * This should be generated randomly by the client to avoid collisions.
+     * If required, the data should be generated randomly by the client to avoid
+     * collisions.
+     *
+     * The type of this may be extended with additional properties depending on
+     * the requirements of the individual chain.
      */
-    readonly swapId?: SwapIdBytes;
+    readonly swapId?: SwapId;
     readonly amounts: ReadonlyArray<Amount>;
     readonly recipient: Address;
     /**
@@ -177,11 +185,11 @@ export interface SwapOfferTransaction extends UnsignedTransaction {
 export interface SwapClaimTransaction extends UnsignedTransaction {
     readonly kind: "bcp/swap_claim";
     readonly preimage: Preimage;
-    readonly swapId: SwapIdBytes;
+    readonly swapId: SwapId;
 }
 export interface SwapAbortTransaction extends UnsignedTransaction {
     readonly kind: "bcp/swap_abort";
-    readonly swapId: SwapIdBytes;
+    readonly swapId: SwapId;
 }
 export declare type SwapTransaction = SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction;
 export declare function isSendTransaction(transaction: UnsignedTransaction): transaction is SendTransaction;

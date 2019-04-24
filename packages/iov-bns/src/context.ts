@@ -61,7 +61,9 @@ export class Context {
     return {
       kind: SwapProcessState.Open,
       data: {
-        id: swap._id as SwapIdBytes,
+        id: {
+          data: swap._id as SwapIdBytes,
+        },
         sender: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.sender)),
         recipient: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.recipient)),
         hash: hash,
@@ -79,7 +81,9 @@ export class Context {
     return {
       kind: SwapProcessState.Open,
       data: {
-        id: confirmed.result as SwapIdBytes,
+        id: {
+          data: confirmed.result as SwapIdBytes,
+        },
         sender: identityToAddress(transaction.creator),
         recipient: transaction.recipient,
         hash: transaction.hash,

@@ -28,7 +28,9 @@ import {
   PublicKeyBytes,
   SendTransaction,
   SwapClaimTransaction,
+  SwapId,
   SwapIdBytes,
+  swapIdEquals,
   SwapOfferTransaction,
   SwapProcessState,
   SwapTimeout,
@@ -77,8 +79,12 @@ async function randomBnsAddress(): Promise<Address> {
   return encodeBnsAddress("tiov", await Random.getBytes(20));
 }
 
-function matchId(id: Uint8Array): (swap: AtomicSwap) => boolean {
-  return s => Encoding.toHex(s.data.id) === Encoding.toHex(id);
+function matchId(id: SwapId): (swap: AtomicSwap) => boolean {
+  return s => swapIdEquals(id, s.data.id);
+}
+
+function serializeBnsSwapId(id: SwapId): string {
+  return toHex(id.data);
 }
 
 const cash = "CASH" as TokenTicker;
@@ -1528,7 +1534,7 @@ describe("BnsConnection", () => {
       throw new Error(`Expected transaction state success but got state: ${blockInfo.state}`);
     }
     const txHeight = blockInfo.height;
-    const txResult = blockInfo.result!;
+    const txResult = blockInfo.result! as SwapIdBytes;
     // the transaction result is 8 byte number assigned by the application
     expect(Uint64.fromBytesBigEndian(txResult).toNumber()).toBeGreaterThanOrEqual(1);
     expect(Uint64.fromBytesBigEndian(txResult).toNumber()).toBeLessThanOrEqual(1000);
@@ -1551,7 +1557,11 @@ describe("BnsConnection", () => {
     expect(loadedTransaction.recipient).toEqual(swapOfferTx.recipient);
 
     // ----  prepare queries
-    const querySwapId: AtomicSwapQuery = { swapid: txResult as SwapIdBytes };
+    const querySwapId: AtomicSwapQuery = {
+      swapid: {
+        data: txResult,
+      },
+    };
     const querySwapSender: AtomicSwapQuery = { sender: faucetAddr };
     const querySwapRecipient: AtomicSwapQuery = { recipient: recipientAddr };
     const querySwapHash: AtomicSwapQuery = { hashlock: swapOfferHash };
@@ -1594,7 +1604,7 @@ describe("BnsConnection", () => {
 
     // and it matches expectations
     const swapData = swap.data;
-    expect(swapData.id).toEqual(txResult);
+    expect(swapData.id).toEqual({ data: txResult });
     expect(swapData.sender).toEqual(faucetAddr);
     expect(swapData.recipient).toEqual(recipientAddr);
     expect(swapData.timeout).toEqual(swapOfferTimeout);
@@ -1628,7 +1638,7 @@ describe("BnsConnection", () => {
 
     // and it matches expectations
     const stateData = swapState.data;
-    expect(stateData.id).toEqual(txResult);
+    expect(stateData.id).toEqual({ data: txResult });
     expect(stateData.sender).toEqual(faucetAddr);
     expect(stateData.recipient).toEqual(recipientAddr);
     expect(stateData.timeout).toEqual(swapOfferTimeout);
@@ -1672,7 +1682,7 @@ describe("BnsConnection", () => {
     connection: BnsConnection,
     profile: UserProfile,
     creator: PublicIdentity,
-    swapId: SwapIdBytes,
+    swapId: SwapId,
     preimage: Preimage,
   ): Promise<PostTxResponse> => {
     // construct a swapOfferTx, sign and post to the chain
@@ -1713,16 +1723,20 @@ describe("BnsConnection", () => {
     if (!isBlockInfoSucceeded(blockInfo1)) {
       throw new Error(`Expected transaction state success but got state: ${blockInfo1.state}`);
     }
-    const id1 = blockInfo1.result! as SwapIdBytes;
-    expect(id1.length).toEqual(8);
+    const id1: SwapId = {
+      data: blockInfo1.result! as SwapIdBytes,
+    };
+    expect(id1.data.length).toEqual(8);
 
     const post2 = await openSwap(connection, profile, faucet, recipientAddr, hash2);
     const blockInfo2 = await post2.blockInfo.waitFor(info => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo2)) {
       throw new Error(`Expected transaction state success but got state: ${blockInfo2.state}`);
     }
-    const id2 = blockInfo2.result! as SwapIdBytes;
-    expect(id2.length).toEqual(8);
+    const id2: SwapId = {
+      data: blockInfo2.result! as SwapIdBytes,
+    };
+    expect(id2.data.length).toEqual(8);
 
     // find two open
     const midSwaps = await connection.getSwaps(rcptQuery);
@@ -1748,8 +1762,10 @@ describe("BnsConnection", () => {
     if (!isBlockInfoSucceeded(blockInfo3)) {
       throw new Error(`Expected transaction state success but got state: ${blockInfo3.state}`);
     }
-    const id3 = blockInfo3.result! as SwapIdBytes;
-    expect(id3.length).toEqual(8);
+    const id3: SwapId = {
+      data: blockInfo3.result! as SwapIdBytes,
+    };
+    expect(id3.data.length).toEqual(8);
 
     {
       const post = await claimSwap(connection, profile, faucet, id1, preimage1);
@@ -1774,21 +1790,21 @@ describe("BnsConnection", () => {
     // directly. So let's just check the last information per ID.
     const latestEventPerId = new Map<string, AtomicSwap>();
     for (const event of liveView.value()) {
-      latestEventPerId.set(toHex(event.data.id), event);
+      latestEventPerId.set(serializeBnsSwapId(event.data.id), event);
     }
 
     expect(latestEventPerId.size).toEqual(3);
-    expect(latestEventPerId.get(toHex(id1))).toEqual({
+    expect(latestEventPerId.get(serializeBnsSwapId(id1))).toEqual({
       kind: SwapProcessState.Claimed,
       data: open1!.data,
       preimage: preimage1,
     });
-    expect(latestEventPerId.get(toHex(id2))).toEqual({
+    expect(latestEventPerId.get(serializeBnsSwapId(id2))).toEqual({
       kind: SwapProcessState.Claimed,
       data: open2!.data,
       preimage: preimage2,
     });
-    expect(latestEventPerId.get(toHex(id3))).toEqual({
+    expect(latestEventPerId.get(serializeBnsSwapId(id3))).toEqual({
       kind: SwapProcessState.Open,
       data: open3!.data,
     });

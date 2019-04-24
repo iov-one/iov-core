@@ -14,6 +14,7 @@ import {
   PublicIdentity,
   SendTransaction,
   SwapClaimTransaction,
+  SwapId,
   SwapIdBytes,
   SwapOfferTransaction,
   SwapProcessState,
@@ -22,7 +23,7 @@ import {
 } from "@iov/bcp";
 import { bnsConnector } from "@iov/bns";
 import { Slip10RawIndex } from "@iov/crypto";
-import { ethereumConnector } from "@iov/ethereum";
+import { EthereumConnection, ethereumConnector } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "../multichainsigner";
@@ -143,12 +144,12 @@ class Actor {
     return new BN(amount ? amount.quantity : 0);
   }
 
-  public async getBnsSwap(id: SwapIdBytes): Promise<AtomicSwap> {
+  public async getBnsSwap(id: SwapId): Promise<AtomicSwap> {
     const swaps = await this.bnsConnection.getSwaps({ swapid: id });
     return swaps[swaps.length - 1];
   }
 
-  public async getEthereumSwap(id: SwapIdBytes): Promise<AtomicSwap> {
+  public async getEthereumSwap(id: SwapId): Promise<AtomicSwap> {
     const swaps = await this.ethereumConnection.getSwaps({ swapid: id });
     return swaps[swaps.length - 1];
   }
@@ -203,7 +204,7 @@ class Actor {
 
   public async sendSwapCounterOnEthereum(
     offer: AtomicSwap,
-    id: SwapIdBytes,
+    id: SwapId,
     recipient: Address,
     amount: Amount,
   ): Promise<Uint8Array | undefined> {
@@ -233,12 +234,12 @@ class Actor {
 
   public async claimFromRevealedPreimageOnBns(
     claim: AtomicSwap,
-    unclaimedId: Uint8Array,
+    unclaimedId: SwapId,
   ): Promise<Uint8Array | undefined> {
     const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction>({
       kind: "bcp/swap_claim",
       creator: this.bnsIdentity,
-      swapId: unclaimedId as SwapIdBytes,
+      swapId: unclaimedId,
       preimage: (claim as ClaimedSwap).preimage, // public data now!
     });
     return this.sendTransaction(transaction);
@@ -294,17 +295,19 @@ describe("Full atomic swap between bns and ethereum", () => {
     // A secret that only Alice knows
     await alice.generatePreimage();
 
-    const aliceOfferId = await alice.sendSwapOfferOnBns(bob.bnsAddress, {
-      quantity: "2000000000",
-      fractionalDigits: 9,
-      tokenTicker: CASH,
-    });
+    const aliceOfferId = {
+      data: (await alice.sendSwapOfferOnBns(bob.bnsAddress, {
+        quantity: "2000000000",
+        fractionalDigits: 9,
+        tokenTicker: CASH,
+      })) as SwapIdBytes,
+    };
 
     // Alice's 2 CASH are locked in the contract (also consider fee)
     expect(aliceInitialCash.sub(await alice.getCashBalance()).toString()).toEqual("2010000000");
 
     // check correct offer was sent on BNS
-    const aliceOffer = await bob.getBnsSwap(aliceOfferId as SwapIdBytes);
+    const aliceOffer = await bob.getBnsSwap(aliceOfferId);
     expect(aliceOffer.kind).toEqual(SwapProcessState.Open);
     expect(aliceOffer.data.recipient).toEqual(bob.bnsAddress);
     expect(aliceOffer.data.amounts.length).toEqual(1);
@@ -314,7 +317,7 @@ describe("Full atomic swap between bns and ethereum", () => {
       tokenTicker: CASH,
     });
 
-    const bobOfferId = await AtomicSwapHelpers.createId();
+    const bobOfferId = await EthereumConnection.createEtherSwapId();
     await bob.sendSwapCounterOnEthereum(aliceOffer, bobOfferId, alice.ethereumAddress, {
       quantity: "5000000000000000000",
       fractionalDigits: 18,
@@ -349,10 +352,10 @@ describe("Full atomic swap between bns and ethereum", () => {
     const aliceClaim = await bob.getEthereumSwap(bobOfferId);
     expect(aliceClaim.kind).toEqual(SwapProcessState.Claimed);
 
-    await bob.claimFromRevealedPreimageOnBns(aliceClaim, aliceOfferId!);
+    await bob.claimFromRevealedPreimageOnBns(aliceClaim, aliceOfferId);
 
     // check claim was made on BNS
-    const bobClaim = await alice.getBnsSwap(aliceOfferId as SwapIdBytes);
+    const bobClaim = await alice.getBnsSwap(aliceOfferId);
     expect(bobClaim.kind).toEqual(SwapProcessState.Claimed);
 
     // Bob used Alice's preimage to claim his 2 CASH

@@ -265,7 +265,9 @@ describe("ethereumCodec", () => {
       const expectedPubkey = fromHex(
         "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
       ) as PublicKeyBytes;
-      const expectedSwapId = fromHex("5cecbb0814d20c1f6221fdec0c2902172182d1b2f3212957f947e4cea398ebe6");
+      const expectedSwapId = {
+        data: fromHex("5cecbb0814d20c1f6221fdec0c2902172182d1b2f3212957f947e4cea398ebe6"),
+      };
       const expectedRecipient = "0x901A84DA2b9c5CBb64D8AEECa58D5FD0339bB018";
       const expectedHash = fromHex("015d55677261fb5deb1e94dac1ffb6dc0de51eb3b6c0631f7f9f2e4f41eca085");
 
@@ -342,7 +344,9 @@ describe("ethereumCodec", () => {
       const expectedPubkey = fromHex(
         "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
       ) as PublicKeyBytes;
-      const expectedSwapId = fromHex("069446e5b7469d5301212de56f17a8786bee70d9bf4c072e99fcfb2c4d9f5242");
+      const expectedSwapId = {
+        data: fromHex("069446e5b7469d5301212de56f17a8786bee70d9bf4c072e99fcfb2c4d9f5242"),
+      };
       const expectedPreimage = fromHex("c863ca8b63351354c4dafbf585a28095bf9ef5c6719fd7eacc7a1ce0ad27a298");
 
       const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
@@ -406,7 +410,9 @@ describe("ethereumCodec", () => {
       const expectedPubkey = fromHex(
         "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
       ) as PublicKeyBytes;
-      const expectedSwapId = fromHex("a7679de779f2df7fde7617a9cdd013c8dbf5701aa158173d9c615766a212d243");
+      const expectedSwapId = {
+        data: fromHex("a7679de779f2df7fde7617a9cdd013c8dbf5701aa158173d9c615766a212d243"),
+      };
 
       const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
 

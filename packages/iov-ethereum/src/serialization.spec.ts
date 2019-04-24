@@ -282,7 +282,7 @@ describe("Serialization", () => {
           },
           gasLimit: "52669",
         },
-        swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+        swapId: { data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes },
         recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
         hash: Uint8Array.from(Array(32).fill(8)) as Hash,
         timeout: {
@@ -320,7 +320,7 @@ describe("Serialization", () => {
           },
           gasLimit: "52669",
         },
-        swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+        swapId: { data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes },
         preimage: Uint8Array.from(Array(32).fill(16)) as Preimage,
       };
 
@@ -354,7 +354,7 @@ describe("Serialization", () => {
           },
           gasLimit: "52669",
         },
-        swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+        swapId: { data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes },
       };
 
       const expected = fromHex(
@@ -394,7 +394,7 @@ describe("Serialization", () => {
           },
           gasLimit: "52669",
         },
-        swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+        swapId: { data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes },
         recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
         hash: Uint8Array.from(Array(32).fill(8)) as Hash,
         timeout: {
@@ -433,7 +433,7 @@ describe("Serialization", () => {
           },
           gasLimit: "52669",
         },
-        swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+        swapId: { data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes },
         preimage: Uint8Array.from(Array(32).fill(16)) as Preimage,
       };
 
@@ -468,7 +468,7 @@ describe("Serialization", () => {
           },
           gasLimit: "52669",
         },
-        swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+        swapId: { data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes },
       };
 
       const expected = fromHex(
@@ -625,7 +625,7 @@ describe("Serialization", () => {
             },
             gasLimit: "52669",
           },
-          swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+          swapId: { data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes },
           recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
           hash: Uint8Array.from(Array(32).fill(8)) as Hash,
           timeout: {
@@ -677,7 +677,7 @@ describe("Serialization", () => {
             },
             gasLimit: "52669",
           },
-          swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+          swapId: { data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes },
           preimage: Uint8Array.from(Array(32).fill(16)) as Preimage,
         },
         primarySignature: {
@@ -725,7 +725,9 @@ describe("Serialization", () => {
             },
             gasLimit: "52669",
           },
-          swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+          swapId: {
+            data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+          },
         },
         primarySignature: {
           nonce: defaultNonce,
@@ -779,7 +781,9 @@ describe("Serialization", () => {
             },
             gasLimit: "52669",
           },
-          swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+          swapId: {
+            data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+          },
           recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
           hash: Uint8Array.from(Array(32).fill(8)) as Hash,
           timeout: {
@@ -832,7 +836,9 @@ describe("Serialization", () => {
             },
             gasLimit: "52669",
           },
-          swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+          swapId: {
+            data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+          },
           preimage: Uint8Array.from(Array(32).fill(16)) as Preimage,
         },
         primarySignature: {
@@ -881,7 +887,9 @@ describe("Serialization", () => {
             },
             gasLimit: "52669",
           },
-          swapId: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+          swapId: {
+            data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+          },
         },
         primarySignature: {
           nonce: defaultNonce,

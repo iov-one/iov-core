@@ -11,6 +11,7 @@ import {
   PublicKeyBundle,
   PublicKeyBytes,
   SwapClaimTransaction,
+  SwapId,
   SwapIdBytes,
   TokenTicker,
 } from "./transactions";
@@ -33,7 +34,9 @@ describe("AtomicSwapMerger", () => {
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
     const preimage = fromHex("00110011") as Preimage;
     const hash = AtomicSwapHelpers.hashPreimage(preimage);
-    const swapId = fromHex("aabbcc") as SwapIdBytes;
+    const swapId: SwapId = {
+      data: fromHex("aabbcc") as SwapIdBytes,
+    };
     const open: OpenSwap = {
       kind: SwapProcessState.Open,
       data: {
@@ -83,8 +86,12 @@ describe("AtomicSwapMerger", () => {
     const preimageB = fromHex("aabbeeff") as Preimage;
     const hashA = AtomicSwapHelpers.hashPreimage(preimageA);
     const hashB = AtomicSwapHelpers.hashPreimage(preimageB);
-    const swapIdA = fromHex("aabbcc") as SwapIdBytes;
-    const swapIdB = fromHex("112233") as SwapIdBytes;
+    const swapIdA: SwapId = {
+      data: fromHex("aabbcc") as SwapIdBytes,
+    };
+    const swapIdB: SwapId = {
+      data: fromHex("112233") as SwapIdBytes,
+    };
     const openA: OpenSwap = {
       kind: SwapProcessState.Open,
       data: {
@@ -159,7 +166,9 @@ describe("AtomicSwapMerger", () => {
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
     const preimage = fromHex("00110011") as Preimage;
     const hash = AtomicSwapHelpers.hashPreimage(preimage);
-    const swapId = fromHex("aabbcc") as SwapIdBytes;
+    const swapId: SwapId = {
+      data: fromHex("aabbcc") as SwapIdBytes,
+    };
     const open: OpenSwap = {
       kind: SwapProcessState.Open,
       data: {
@@ -189,7 +198,9 @@ describe("AtomicSwapMerger", () => {
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
     const preimage = fromHex("00110011") as Preimage;
     const hash = AtomicSwapHelpers.hashPreimage(preimage);
-    const swapId = fromHex("aabbcc") as SwapIdBytes;
+    const swapId: SwapId = {
+      data: fromHex("aabbcc") as SwapIdBytes,
+    };
     const open: OpenSwap = {
       kind: SwapProcessState.Open,
       data: {

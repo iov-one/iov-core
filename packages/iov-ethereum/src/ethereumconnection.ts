@@ -31,13 +31,14 @@ import {
   isSwapProcessStateClaimed,
   isSwapProcessStateOpen,
   Nonce,
-  OpenSwap,
   PostableBytes,
   PostTxResponse,
   Preimage,
   PubkeyQuery,
   SwapData,
+  SwapId,
   SwapIdBytes,
+  swapIdEquals,
   SwapProcessState,
   Token,
   TokenTicker,
@@ -46,6 +47,7 @@ import {
   TransactionState,
   UnsignedTransaction,
 } from "@iov/bcp";
+import { Random } from "@iov/crypto";
 import { Encoding, Uint53 } from "@iov/encoding";
 import { isJsonRpcErrorResponse, JsonRpcRequest } from "@iov/jsonrpc";
 import { StreamingSocket } from "@iov/socket";
@@ -110,6 +112,20 @@ export interface EthereumConnectionOptions {
 }
 
 export class EthereumConnection implements AtomicSwapConnection {
+  public static async createEtherSwapId(): Promise<SwapId> {
+    const bytes = await Random.getBytes(32);
+    return {
+      data: bytes as SwapIdBytes,
+    };
+  }
+
+  public static async createErc20SwapId(): Promise<SwapId> {
+    const bytes = await Random.getBytes(32);
+    return {
+      data: bytes as SwapIdBytes,
+    };
+  }
+
   public static async establish(
     baseUrl: string,
     options: EthereumConnectionOptions,
@@ -765,7 +781,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     maxHeight: number = Number.MAX_SAFE_INTEGER,
   ): Promise<ReadonlyArray<AtomicSwap>> {
     if (isAtomicSwapIdQuery(query)) {
-      const data = Uint8Array.from([...Abi.calculateMethodId("get(bytes32)"), ...query.swapid]);
+      const data = Uint8Array.from([...Abi.calculateMethodId("get(bytes32)"), ...query.swapid.data]);
 
       const params = [
         {
@@ -895,7 +911,9 @@ export class EthereumConnection implements AtomicSwapConnection {
                 {
                   kind: SwapProcessState.Open,
                   data: {
-                    id: dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes,
+                    id: {
+                      data: dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes,
+                    },
                     sender: toChecksummedAddress(
                       Abi.decodeAddress(dataArray.slice(openedSenderBegin, openedSenderEnd)),
                     ),
@@ -918,9 +936,7 @@ export class EthereumConnection implements AtomicSwapConnection {
               ];
             case SwapContractEvent.Claimed: {
               const swapId = dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes;
-              const swapIndex = accumulator.findIndex(
-                s => Encoding.toHex(s.data.id) === Encoding.toHex(swapId),
-              );
+              const swapIndex = accumulator.findIndex(s => swapIdEquals(s.data.id, { data: swapId }));
               if (swapIndex === -1) {
                 throw new Error("Found Claimed event for non-existent swap");
               }
@@ -936,9 +952,7 @@ export class EthereumConnection implements AtomicSwapConnection {
             }
             case SwapContractEvent.Aborted: {
               const swapId = dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes;
-              const swapIndex = accumulator.findIndex(
-                s => Encoding.toHex(s.data.id) === Encoding.toHex(swapId),
-              );
+              const swapIndex = accumulator.findIndex(s => swapIdEquals(s.data.id, { data: swapId }));
               if (swapIndex === -1) {
                 throw new Error("Found Aborted event for non-existent swap");
               }

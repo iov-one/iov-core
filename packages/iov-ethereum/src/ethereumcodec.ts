@@ -185,7 +185,9 @@ export class EthereumCodec implements TxCodec {
       const positionSwapIdEnd = positionSwapIdBegin + 32;
 
       const method = Abi.decodeMethodId(input.slice(positionMethodIdBegin, positionMethodIdEnd));
-      const swapId = input.slice(positionSwapIdBegin, positionSwapIdEnd) as SwapIdBytes;
+      const swapId = {
+        data: input.slice(positionSwapIdBegin, positionSwapIdEnd) as SwapIdBytes,
+      };
 
       switch (method) {
         case SwapContractMethod.Open:

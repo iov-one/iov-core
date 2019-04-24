@@ -202,7 +202,9 @@ const swapClaimMsg: SwapClaimTransaction = {
   },
   kind: "bcp/swap_claim",
   preimage: fromHex("00000000fffffffffff000000000") as Preimage,
-  swapId: fromHex("1234") as SwapIdBytes,
+  swapId: {
+    data: fromHex("1234") as SwapIdBytes,
+  },
 };
 export const swapClaimTxJson: SignedTransaction = {
   transaction: swapClaimMsg,
@@ -216,7 +218,9 @@ const swapAbort: SwapAbortTransaction = {
     pubkey: pubJson,
   },
   kind: "bcp/swap_abort",
-  swapId: fromHex("1234") as SwapIdBytes,
+  swapId: {
+    data: fromHex("1234") as SwapIdBytes,
+  },
 };
 export const swapAbortTxJson: SignedTransaction = {
   transaction: swapAbort,

@@ -143,7 +143,7 @@ class Actor {
       creator: this.senderIdentity,
       recipient: recipient,
       amounts: [amount],
-      swapId: await AtomicSwapHelpers.createId(),
+      swapId: await EthereumConnection.createEtherSwapId(),
       hash: AtomicSwapHelpers.hashPreimage(this.preimage!),
       timeout: {
         height: (await this.connection.height()) + 5,
@@ -159,7 +159,7 @@ class Actor {
       creator: this.senderIdentity,
       recipient: recipient,
       amounts: [amount],
-      swapId: await AtomicSwapHelpers.createId(),
+      swapId: await EthereumConnection.createEtherSwapId(),
       hash: offer.data.hash,
       timeout: {
         height: (await this.connection.height()) + 5,

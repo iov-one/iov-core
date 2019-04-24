@@ -25,7 +25,8 @@ import {
   SendTransaction,
   SwapAbortTransaction,
   SwapClaimTransaction,
-  SwapIdBytes,
+  SwapId,
+  swapIdEquals,
   SwapOfferTransaction,
   SwapProcessState,
   SwapTimeout,
@@ -85,8 +86,8 @@ async function randomAddress(): Promise<Address> {
   });
 }
 
-function matchId(id: Uint8Array): (swap: AtomicSwap) => boolean {
-  return s => Encoding.toHex(s.data.id) === Encoding.toHex(id);
+function matchId(id: SwapId): (swap: AtomicSwap) => boolean {
+  return s => swapIdEquals(id, s.data.id);
 }
 
 describe("EthereumConnection", () => {
@@ -131,6 +132,20 @@ describe("EthereumConnection", () => {
     const resultPost = await connection.postTx(ethereumCodec.bytesToPost(signedTransaction));
     return resultPost;
   }
+
+  describe("createEtherSwapId", () => {
+    it("works", async () => {
+      const swapId = await EthereumConnection.createEtherSwapId();
+      expect(swapId.data.length).toEqual(32);
+    });
+  });
+
+  describe("createErc20SwapId", () => {
+    it("works", async () => {
+      const swapId = await EthereumConnection.createErc20SwapId();
+      expect(swapId.data.length).toEqual(32);
+    });
+  });
 
   it("can be constructed", () => {
     pendingWithoutEthereum();
@@ -1881,7 +1896,7 @@ describe("EthereumConnection", () => {
       const initSwaps = await connection.getSwaps({ recipient: recipientAddress });
       expect(initSwaps.length).toEqual(0);
 
-      const swapId = await AtomicSwapHelpers.createId();
+      const swapId = await EthereumConnection.createEtherSwapId();
       const swapOfferPreimage = await AtomicSwapHelpers.createPreimage();
       const swapOfferHash = AtomicSwapHelpers.hashPreimage(swapOfferPreimage);
 
@@ -1987,7 +2002,7 @@ describe("EthereumConnection", () => {
       creator: PublicIdentity,
       rcptAddr: Address,
       hash: Hash,
-      swapId: SwapIdBytes,
+      swapId: SwapId,
       timeoutOffset: number = 1000,
     ): Promise<PostTxResponse> => {
       // construct a swapOfferTx, sign and post to the chain
@@ -2019,7 +2034,7 @@ describe("EthereumConnection", () => {
       connection: EthereumConnection,
       profile: UserProfile,
       creator: PublicIdentity,
-      swapId: SwapIdBytes,
+      swapId: SwapId,
       preimage: Preimage,
     ): Promise<PostTxResponse> => {
       // construct a swapOfferTx, sign and post to the chain
@@ -2039,7 +2054,7 @@ describe("EthereumConnection", () => {
       connection: EthereumConnection,
       profile: UserProfile,
       creator: PublicIdentity,
-      swapId: SwapIdBytes,
+      swapId: SwapId,
     ): Promise<PostTxResponse> => {
       const swapAbortTx = await connection.withDefaultFee<SwapAbortTransaction>({
         kind: "bcp/swap_abort",
@@ -2062,13 +2077,13 @@ describe("EthereumConnection", () => {
       const recipientAddress = await randomAddress();
 
       // create the preimages for the three swaps
-      const swapId1 = await AtomicSwapHelpers.createId();
+      const swapId1 = await EthereumConnection.createEtherSwapId();
       const preimage1 = await AtomicSwapHelpers.createPreimage();
       const hash1 = AtomicSwapHelpers.hashPreimage(preimage1);
-      const swapId2 = await AtomicSwapHelpers.createId();
+      const swapId2 = await EthereumConnection.createEtherSwapId();
       const preimage2 = await AtomicSwapHelpers.createPreimage();
       const hash2 = AtomicSwapHelpers.hashPreimage(preimage2);
-      const swapId3 = await AtomicSwapHelpers.createId();
+      const swapId3 = await EthereumConnection.createEtherSwapId();
       const preimage3 = await AtomicSwapHelpers.createPreimage();
       const hash3 = AtomicSwapHelpers.hashPreimage(preimage3);
 
@@ -2141,13 +2156,13 @@ describe("EthereumConnection", () => {
       const recipientAddress = await randomAddress();
 
       // create the preimages for the three swaps
-      const swapId1 = await AtomicSwapHelpers.createId();
+      const swapId1 = await EthereumConnection.createEtherSwapId();
       const preimage1 = await AtomicSwapHelpers.createPreimage();
       const hash1 = AtomicSwapHelpers.hashPreimage(preimage1);
-      const swapId2 = await AtomicSwapHelpers.createId();
+      const swapId2 = await EthereumConnection.createEtherSwapId();
       const preimage2 = await AtomicSwapHelpers.createPreimage();
       const hash2 = AtomicSwapHelpers.hashPreimage(preimage2);
-      const swapId3 = await AtomicSwapHelpers.createId();
+      const swapId3 = await EthereumConnection.createEtherSwapId();
       const preimage3 = await AtomicSwapHelpers.createPreimage();
       const hash3 = AtomicSwapHelpers.hashPreimage(preimage3);
 
