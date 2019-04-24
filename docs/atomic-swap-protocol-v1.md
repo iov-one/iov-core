@@ -95,6 +95,10 @@ Actions are mutations of the on-chain state triggered by transactions.
 - **Abort:** Withdraws the tokens from the contract to the creator. Requires
   timeout to be reached.
 
+Every account must have permission to perform the _claim_ and _abort_ action to
+allow claiming and aborting when the swap recipient cannot access their keys
+temporarily or has insufficient funds to pay transaction fees.
+
 Common synonyms: _release = claim_, _execute = claim_.
 
 ### Swap offer process state
