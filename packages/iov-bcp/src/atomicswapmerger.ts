@@ -1,7 +1,5 @@
-import { Encoding } from "@iov/encoding";
-
 import { AtomicSwap, OpenSwap, SwapProcessState } from "./atomicswaptypes";
-import { SwapAbortTransaction, SwapClaimTransaction } from "./transactions";
+import { SwapAbortTransaction, SwapClaimTransaction, swapIdEquals } from "./transactions";
 
 function settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTransaction | SwapAbortTransaction): AtomicSwap {
   if (tx.kind === "bcp/swap_claim") {
@@ -19,8 +17,8 @@ function settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTransaction | SwapAbortTr
 }
 
 export class AtomicSwapMerger {
-  private readonly open = new Map<string, OpenSwap>();
-  private readonly settling = new Map<string, SwapClaimTransaction | SwapAbortTransaction>();
+  private readonly open = new Array<OpenSwap>();
+  private readonly settling = new Array<SwapClaimTransaction | SwapAbortTransaction>();
 
   /**
    * Takes an event, checks if there is already a matching open or settling event
@@ -29,37 +27,36 @@ export class AtomicSwapMerger {
   public process(event: OpenSwap | SwapClaimTransaction | SwapAbortTransaction): AtomicSwap | undefined {
     switch (event.kind) {
       case SwapProcessState.Open: {
-        const idAsHex = Encoding.toHex(event.data.id);
-
-        const matchingSettlingElement = this.settling.get(idAsHex);
+        const eventId = event.data.id;
+        const matchingSettlingElement = this.settling.find(s => swapIdEquals(s.swapId, eventId));
         if (matchingSettlingElement) {
           // we can settle
           const settled = settleAtomicSwap(event, matchingSettlingElement);
-          this.settling.delete(idAsHex);
+          this.settling.splice(this.settling.findIndex(s => swapIdEquals(s.swapId, eventId)), 1);
           return settled;
         } else {
           // store for later
-          if (this.open.has(idAsHex)) {
+          if (this.open.find(o => swapIdEquals(o.data.id, eventId))) {
             throw new Error("Swap ID already in open swaps pool");
           }
-          this.open.set(idAsHex, event);
+          this.open.push(event);
           return event;
         }
       }
       default: {
         // event is a swap claim/abort, resolve an open swap and return new state
-        const idAsHex = Encoding.toHex(event.swapId);
-        const matchingOpenElement = this.open.get(idAsHex);
+        const eventId = event.swapId;
+        const matchingOpenElement = this.open.find(o => swapIdEquals(o.data.id, eventId));
         if (matchingOpenElement) {
           const settled = settleAtomicSwap(matchingOpenElement, event);
-          this.open.delete(idAsHex);
+          this.open.splice(this.open.findIndex(o => swapIdEquals(o.data.id, eventId)), 1);
           return settled;
         } else {
           // store swap claim/abort in case a matching open comes in delayed
-          if (this.settling.has(idAsHex)) {
+          if (this.settling.find(s => swapIdEquals(s.swapId, eventId))) {
             throw new Error("Swap ID already in closing swaps pool");
           }
-          this.settling.set(idAsHex, event);
+          this.settling.push(event);
           return undefined;
         }
       }
@@ -68,6 +65,6 @@ export class AtomicSwapMerger {
 
   /** The unsettled swaps this object currently holds in undefined order */
   public openSwaps(): ReadonlyArray<OpenSwap> {
-    return [...this.open.values()];
+    return [...this.open];
   }
 }

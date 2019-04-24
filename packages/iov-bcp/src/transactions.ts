@@ -81,7 +81,10 @@ export type Nonce = number & As<"nonce">;
 export type TokenTicker = string & As<"token-ticker">;
 
 export type SwapIdBytes = Uint8Array & As<"swap-id">;
-export type SwapIdString = string & As<"swap-id">;
+
+export function swapIdEquals(left: SwapIdBytes, right: SwapIdBytes): boolean {
+  return left.length === right.length && left.every((value, index) => value === right[index]);
+}
 
 /**
  * A printable transaction ID in a blockchain-specific format.
