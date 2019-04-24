@@ -86,8 +86,6 @@ export function swapIdEquals(left: SwapIdBytes, right: SwapIdBytes): boolean {
   return left.length === right.length && left.every((value, index) => value === right[index]);
 }
 
-export type SwapIdString = string & As<"swap-id">;
-
 /**
  * A printable transaction ID in a blockchain-specific format.
  *

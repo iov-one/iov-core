@@ -43,7 +43,6 @@ export declare type Nonce = number & As<"nonce">;
 export declare type TokenTicker = string & As<"token-ticker">;
 export declare type SwapIdBytes = Uint8Array & As<"swap-id">;
 export declare function swapIdEquals(left: SwapIdBytes, right: SwapIdBytes): boolean;
-export declare type SwapIdString = string & As<"swap-id">;
 /**
  * A printable transaction ID in a blockchain-specific format.
  *

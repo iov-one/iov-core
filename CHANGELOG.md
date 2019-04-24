@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.15.0
+
+- @iov/bcp: Remove unused type `SwapIdString`.
+
 ## 0.14.1
 
 - @iov/ethereum: Support serialization of atomic swap transactions (ETH and
