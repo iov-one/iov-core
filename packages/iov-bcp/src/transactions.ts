@@ -82,11 +82,14 @@ export type TokenTicker = string & As<"token-ticker">;
 
 export type SwapIdBytes = Uint8Array & As<"swap-id">;
 export interface SwapId {
+  readonly prefix?: string;
   readonly data: SwapIdBytes;
 }
 export function swapIdEquals(left: SwapId, right: SwapId): boolean {
   return (
-    left.data.length === right.data.length && left.data.every((value, index) => value === right.data[index])
+    left.prefix === right.prefix &&
+    left.data.length === right.data.length &&
+    left.data.every((value, index) => value === right.data[index])
   );
 }
 

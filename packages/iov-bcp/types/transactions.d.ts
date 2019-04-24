@@ -43,6 +43,7 @@ export declare type Nonce = number & As<"nonce">;
 export declare type TokenTicker = string & As<"token-ticker">;
 export declare type SwapIdBytes = Uint8Array & As<"swap-id">;
 export interface SwapId {
+    readonly prefix?: string;
     readonly data: SwapIdBytes;
 }
 export declare function swapIdEquals(left: SwapId, right: SwapId): boolean;
