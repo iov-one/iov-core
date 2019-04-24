@@ -2,8 +2,55 @@
 
 ## 0.14.1
 
+- @iov/core: Add `JsonRpcSigningServer`.
+- @iov/core: Deprecate `JsRpcSigningServer` and related types in favour of
+  `JsonRpcSigningServer`.
+- @iov/core: Add `SigningServerCore.signedAndPosted`.
+- @iov/core: In `JsonRpcSigningServer`, decode all application level parameters
+  via `TransactionEncoder.fromJson`. Before this was done inconsistently for
+  `transaction` in `getIdentities` only.
 - @iov/ethereum: Support serialization of atomic swap transactions (ETH and
   ERC20).
+- @iov/jsonrpc: Add `jsonRpcCode` constant object. Deprecate old `jsonRpcCode*`
+  constants in favour of `jsonRpcCode`.
+- @iov/jsonrpc: Create `isJsonRpcSuccessResponse` analogue to
+  `isJsonRpcErrorResponse`.
+- @iov/jsonrpc: Create `parseJsonRpcErrorResponse`.
+- @iov/jsonrpc: Create `parseJsonRpcSuccessResponse`.
+- @iov/jsonrpc: Deprecate `parseJsonRpcError` and `parseJsonRpcResponse`.
+- @iov/jsonrpc: Create `parseJsonRpcResponse2`, which combines
+  `parseJsonRpcErrorResponse` and `parseJsonRpcSuccessResponse`. It will be
+  renamed to `parseJsonRpcResponse` as soon as the existing
+  `parseJsonRpcResponse` is removed.
+- @iov/keycontrol: Export `ReadonlyWallet`.
+
+## 0.13.6
+
+- @iov/jsonrpc: Create `parseJsonRpcResponse2`, which combines
+  `parseJsonRpcErrorResponse` and `parseJsonRpcSuccessResponse`. It will be
+  renamed to `parseJsonRpcResponse` as soon as the existing
+  `parseJsonRpcResponse` is removed.
+
+## 0.13.5
+
+- @iov/core: In `JsonRpcSigningServer`, decode all application level parameters
+  via `TransactionEncoder.fromJson`. Before this was done inconsistently for
+  `transaction` in `getIdentities` only.
+- @iov/jsonrpc: Create `isJsonRpcSuccessResponse` analogue to
+  `isJsonRpcErrorResponse`.
+- @iov/jsonrpc: Create `parseJsonRpcErrorResponse`.
+- @iov/jsonrpc: Create `parseJsonRpcSuccessResponse`.
+- @iov/jsonrpc: Deprecate `parseJsonRpcError` and `parseJsonRpcResponse`.
+
+## 0.13.4
+
+- @iov/keycontrol: Export `ReadonlyWallet`.
+- @iov/jsonrpc: Add `jsonRpcCode` constant object. Deprecate old `jsonRpcCode*`
+  constants in favour of `jsonRpcCode`.
+- @iov/core: Add `JsonRpcSigningServer`.
+- @iov/core: Deprecate `JsRpcSigningServer` and related types in favour of
+  `JsonRpcSigningServer`.
+- @iov/core: Add `SigningServerCore.signedAndPosted`.
 
 ## 0.14.0
 

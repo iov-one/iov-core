@@ -61,8 +61,8 @@ describe("MultiChainSigner", () => {
   // This uses setup from iov-bns...
   // Same secrets and assume the same blockchain scripts are running
   describe("BNS compatibility", () => {
-    // the first key generated from this mneumonic produces the given address
-    // this account has money in the genesis file (setup in docker)
+    // The key at m/4804438'/0' (simple address derivation) generated from this mnemonic is the faucet identity.
+    // This account has money in the genesis file (setup in docker).
     const mnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
     const cash = "CASH" as TokenTicker;
 

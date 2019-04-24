@@ -7,7 +7,7 @@ import { bnsConnector } from "@iov/bns";
 import { ethereumConnector } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 
-import { JsRpcSigningServer } from "../jsrpcsigningserver";
+import { JsonRpcSigningServer } from "../jsonrpcsigningserver";
 import { MultiChainSigner } from "../multichainsigner";
 import { SigningServerCore } from "../signingservercore";
 
@@ -34,7 +34,7 @@ async function main(): Promise<void> {
   // faucet identity
   await profile.createIdentity(ed25519Wallet.id, bnsdChainId, HdPaths.simpleAddress(0));
   // ganache second identity
-  await profile.createIdentity(secp256k1Wallet.id, ethereumChainId, HdPaths.bip44(60, 0, 0, 1));
+  await profile.createIdentity(secp256k1Wallet.id, ethereumChainId, HdPaths.ethereum(1));
 
   const core = new SigningServerCore(
     profile,
@@ -48,7 +48,7 @@ async function main(): Promise<void> {
       return true;
     },
   );
-  const server = new JsRpcSigningServer(core);
+  const server = new JsonRpcSigningServer(core);
 
   onmessage = async event => {
     // console.log("Received message", JSON.stringify(event));
@@ -63,4 +63,5 @@ async function main(): Promise<void> {
   };
 }
 
+// tslint:disable-next-line: no-floating-promises
 main();

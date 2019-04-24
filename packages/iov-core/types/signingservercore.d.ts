@@ -1,5 +1,6 @@
-import { ChainId, PublicIdentity, TransactionId, UnsignedTransaction } from "@iov/bcp";
+import { ChainId, PostTxResponse, PublicIdentity, TransactionId, UnsignedTransaction } from "@iov/bcp";
 import { UserProfile } from "@iov/keycontrol";
+import { ValueAndUpdates } from "@iov/stream";
 import { MultiChainSigner } from "./multichainsigner";
 export interface GetIdentitiesAuthorization {
     /**
@@ -31,11 +32,17 @@ export interface SignAndPostAuthorization {
      */
     (reason: string, transaction: UnsignedTransaction): Promise<boolean>;
 }
+export interface SignedAndPosted {
+    readonly transaction: UnsignedTransaction;
+    readonly postResponse: PostTxResponse;
+}
 export declare class SigningServerCore {
+    readonly signedAndPosted: ValueAndUpdates<ReadonlyArray<SignedAndPosted>>;
     private readonly signer;
     private readonly profile;
     private readonly authorizeGetIdentities;
     private readonly authorizeSignAndPost;
+    private readonly signedAndPostedProducer;
     constructor(profile: UserProfile, signer: MultiChainSigner, authorizeGetIdentities: GetIdentitiesAuthorization, authorizeSignAndPost: SignAndPostAuthorization);
     /**
      * Handles a identities request

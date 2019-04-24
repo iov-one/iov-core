@@ -5,7 +5,13 @@ import {
   JsonCompatibleDictionary,
   JsonCompatibleValue,
 } from "./jsoncompatibledictionary";
-import { JsonRpcError, JsonRpcErrorResponse, JsonRpcRequest, JsonRpcSuccessResponse } from "./types";
+import {
+  JsonRpcError,
+  JsonRpcErrorResponse,
+  JsonRpcRequest,
+  JsonRpcResponse,
+  JsonRpcSuccessResponse,
+} from "./types";
 
 export function parseJsonRpcId(data: unknown): number | null {
   if (!isJsonCompatibleDictionary(data)) {
@@ -72,10 +78,37 @@ function parseError(error: JsonCompatibleDictionary): JsonRpcError {
   return {
     code: error.code,
     message: error.message,
-    data: maybeUndefinedData,
+    ...(maybeUndefinedData !== undefined ? { data: maybeUndefinedData } : {}),
   };
 }
 
+/** Throws if data is not a JsonRpcErrorResponse */
+export function parseJsonRpcErrorResponse(data: unknown): JsonRpcErrorResponse {
+  if (!isJsonCompatibleDictionary(data)) {
+    throw new Error("Data must be JSON compatible dictionary");
+  }
+
+  if (data.jsonrpc !== "2.0") {
+    throw new Error(`Got unexpected jsonrpc version: ${JSON.stringify(data)}`);
+  }
+
+  const id = data.id;
+  if (typeof id !== "number" && id !== null) {
+    throw new Error("Invalid id field");
+  }
+
+  if (typeof data.error === "undefined" || !isJsonCompatibleDictionary(data.error)) {
+    throw new Error("Invalid error field");
+  }
+
+  return {
+    jsonrpc: "2.0",
+    id: id,
+    error: parseError(data.error),
+  };
+}
+
+/** @deprecated use parseJsonRpcErrorResponse */
 export function parseJsonRpcError(data: unknown): JsonRpcErrorResponse | undefined {
   if (!isJsonCompatibleDictionary(data)) {
     throw new Error("Data must be JSON compatible dictionary");
@@ -105,7 +138,8 @@ export function parseJsonRpcError(data: unknown): JsonRpcErrorResponse | undefin
   };
 }
 
-export function parseJsonRpcResponse(data: unknown): JsonRpcSuccessResponse {
+/** Throws if data is not a JsonRpcSuccessResponse */
+export function parseJsonRpcSuccessResponse(data: unknown): JsonRpcSuccessResponse {
   if (!isJsonCompatibleDictionary(data)) {
     throw new Error("Data must be JSON compatible dictionary");
   }
@@ -119,6 +153,10 @@ export function parseJsonRpcResponse(data: unknown): JsonRpcSuccessResponse {
     throw new Error("Invalid id field");
   }
 
+  if (typeof data.result === "undefined") {
+    throw new Error("Invalid result field");
+  }
+
   const result = data.result;
 
   return {
@@ -126,4 +164,25 @@ export function parseJsonRpcResponse(data: unknown): JsonRpcSuccessResponse {
     id: id,
     result: result,
   };
+}
+
+/** @deprecated use parseJsonRpcSuccessResponse */
+export function parseJsonRpcResponse(data: unknown): JsonRpcSuccessResponse {
+  return parseJsonRpcSuccessResponse(data);
+}
+
+/**
+ * Returns a JsonRpcErrorResponse if input can be parsed as a JSON-RPC error. Otherwise parses
+ * input as JsonRpcSuccessResponse. Throws if input is neither a valid error nor success response.
+ *
+ * This function will be renamed to parseJsonRpcResponse() in the future.
+ */
+export function parseJsonRpcResponse2(data: unknown): JsonRpcResponse {
+  let response: JsonRpcResponse;
+  try {
+    response = parseJsonRpcErrorResponse(data);
+  } catch (_) {
+    response = parseJsonRpcSuccessResponse(data);
+  }
+  return response;
 }

@@ -17,11 +17,14 @@ BNSD_DIR=$(mktemp -d "${TMPDIR:-/tmp}/bnsd.XXXXXXXXX")
 export BNSD_DIR
 echo "BNSD_DIR = $BNSD_DIR"
 
+LOGS_FILE_TM="${TMPDIR:-/tmp}/bnsd_tm.log"
+LOGS_FILE_APP="${TMPDIR:-/tmp}/bnsd_app.log"
+
 "${SCRIPT_DIR}"/bnsd_init.sh
-"${SCRIPT_DIR}"/bnsd_tm.sh > /tmp/bnsd_tm.log &
-"${SCRIPT_DIR}"/bnsd_app.sh > /tmp/bnsd_app.log &
+"${SCRIPT_DIR}"/bnsd_tm.sh > "$LOGS_FILE_TM" &
+"${SCRIPT_DIR}"/bnsd_app.sh > "$LOGS_FILE_APP" &
 
 sleep 3
 # for debug output
-cat /tmp/bnsd_tm.log
-cat /tmp/bnsd_app.log
+cat "$LOGS_FILE_TM"
+cat "$LOGS_FILE_APP"

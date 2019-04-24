@@ -24,5 +24,4 @@ deep-link URLs.
 
 ## TODO
 
-1. signAndPost needs a way to return when the user rejected the signing
-2. signAndPost could take a list of unsigned transactions. Do we want that?
+1. signAndPost could take a list of unsigned transactions. Do we want that?

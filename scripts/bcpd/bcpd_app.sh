@@ -18,7 +18,7 @@ fi
 exec docker run --rm \
   --user="$UID" \
   -v "${BCPD_DIR}:/data" \
-  --name "bcpd_app" \
+  --name "bcpd-app" \
   "iov1/bcpd:${BCPD_VERSION}" \
   -home "/data" \
   start -bind="unix:///data/app.sock"

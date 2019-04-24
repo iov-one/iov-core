@@ -16,11 +16,15 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BCPD_DIR=$(mktemp -d "${TMPDIR:-/tmp}/bcpd.XXXXXXXXX")
 export BCPD_DIR
 echo "BCPD_DIR = $BCPD_DIR"
-bash "${SCRIPT_DIR}"/bcpd_init.sh
-bash "${SCRIPT_DIR}"/bcpd_tm.sh > "${TMPDIR:-/tmp}/bcpd_tm.log" &
-bash "${SCRIPT_DIR}"/bcpd_app.sh > "${TMPDIR:-/tmp}/bcpd_app.log" &
+
+LOGS_FILE_TM="${TMPDIR:-/tmp}/bcpd_tm.log"
+LOGS_FILE_APP="${TMPDIR:-/tmp}/bcpd_app.log"
+
+"${SCRIPT_DIR}"/bcpd_init.sh
+"${SCRIPT_DIR}"/bcpd_tm.sh > "$LOGS_FILE_TM" &
+"${SCRIPT_DIR}"/bcpd_app.sh > "$LOGS_FILE_APP" &
 
 sleep 3
 # for debug output
-cat "${TMPDIR:-/tmp}/bcpd_tm.log"
-cat "${TMPDIR:-/tmp}/bcpd_app.log"
+cat "$LOGS_FILE_TM"
+cat "$LOGS_FILE_APP"

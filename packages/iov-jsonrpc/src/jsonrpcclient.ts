@@ -9,6 +9,12 @@ export interface SimpleMessagingConnection<Request, Response> {
   readonly sendRequest: (request: Request) => void;
 }
 
+/**
+ * A thin wrapper that is used to bring together requests and responses by ID.
+ *
+ * Using this class is only advised for continous communication channels like
+ * WebSockets or WebWorker messaging.
+ */
 export class JsonRpcClient {
   private readonly connection: SimpleMessagingConnection<JsonRpcRequest, JsonRpcResponse>;
 
