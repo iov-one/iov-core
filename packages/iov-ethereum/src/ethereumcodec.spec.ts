@@ -422,6 +422,7 @@ describe("ethereumCodec", () => {
         "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
       ) as PublicKeyBytes;
       const expectedSwapId = {
+        prefix: SwapIdPrefix.Ether,
         data: fromHex("069446e5b7469d5301212de56f17a8786bee70d9bf4c072e99fcfb2c4d9f5242"),
       };
       const expectedPreimage = fromHex("c863ca8b63351354c4dafbf585a28095bf9ef5c6719fd7eacc7a1ce0ad27a298");
@@ -615,6 +616,87 @@ describe("ethereumCodec", () => {
             Encoding.fromHex("26a7e609ce83e01b8e754641fbd9315f5a558c7b279d1bbe186d8be786c6fb18"),
             Encoding.fromHex("02555167f9584575f9740c0487dcdd2e1462a8374dd9dcc9e66cfa98eb1efd87"),
             1,
+          ).toFixedLength() as SignatureBytes,
+        },
+        otherSignatures: [],
+      });
+    });
+
+    it("works for Erc20 atomic swap claim", async () => {
+      // Retrieved from local instance since we haven't deployed this to a public testnet
+      const rawGetTransactionByHashResult: EthereumRpcTransactionResult = {
+        hash: "0xa7a4ed452ee5861aaa20837a4fdf077b8ab28a2c08a228b6eb64268b8ee35764",
+        nonce: "0x133",
+        blockHash: "0x468c58013ef907cd84c40484e35a183f28b48469ff38f6e8c761d42e07c85a0c",
+        blockNumber: "0x150",
+        transactionIndex: "0x0",
+        from: "0x88f3b5659075d0e06bb1004be7b1a7e66f452284",
+        to: "0x9768ae2339b48643d710b11ddbdb8a7edbea15bc",
+        value: "0x0",
+        gas: "0x200b20",
+        gasPrice: "0x4a817c800",
+        input:
+          "0x84cc9dfb94d53ea2d55dc86e65e44fcb473fb58dbbc00eab27f414d1b280af26222a995c2d5620657269304e87faf497880c77f5a4f7bb7b3eff66da70a83408549c219f",
+        v: "0x2d45",
+        r: "0x388baff61d88ff954b40e8980c42a50633d08f954a3b281513ffbd1759fa902e",
+        s: "0x578e59f1cfba37881d4851d0cb96eee287436fbe4a3a9ea4f6407c064f1e4f03",
+      };
+      const expectedPubkey = fromHex(
+        "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
+      ) as PublicKeyBytes;
+      const expectedSwapId = {
+        prefix: SwapIdPrefix.Erc20,
+        data: fromHex("94d53ea2d55dc86e65e44fcb473fb58dbbc00eab27f414d1b280af26222a995c"),
+      };
+      const expectedPreimage = fromHex("2d5620657269304e87faf497880c77f5a4f7bb7b3eff66da70a83408549c219f");
+      const erc20Tokens = new Map<TokenTicker, Erc20Options>([
+        [
+          "ASH" as TokenTicker,
+          {
+            contractAddress: "0xCb642A87923580b6F7D07D1471F93361196f2650" as Address,
+            decimals: 12,
+            symbol: "ASH" as TokenTicker,
+          },
+        ],
+      ]);
+
+      const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
+      const codec = new EthereumCodec({
+        atomicSwapErc20ContractAddress: testConfig.connectionOptions.atomicSwapErc20ContractAddress,
+        erc20Tokens: erc20Tokens,
+      });
+
+      expect(codec.parseBytes(postableBytes, "ethereum-eip155-5777" as ChainId)).toEqual({
+        transaction: {
+          kind: "bcp/swap_claim",
+          creator: {
+            chainId: "ethereum-eip155-5777" as ChainId,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: expectedPubkey,
+            },
+          },
+          fee: {
+            gasLimit: "2100000",
+            gasPrice: {
+              quantity: "20000000000",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
+          },
+          swapId: expectedSwapId,
+          preimage: expectedPreimage,
+        },
+        primarySignature: {
+          nonce: 307 as Nonce,
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: expectedPubkey,
+          },
+          signature: new ExtendedSecp256k1Signature(
+            Encoding.fromHex("388baff61d88ff954b40e8980c42a50633d08f954a3b281513ffbd1759fa902e"),
+            Encoding.fromHex("578e59f1cfba37881d4851d0cb96eee287436fbe4a3a9ea4f6407c064f1e4f03"),
+            0,
           ).toFixedLength() as SignatureBytes,
         },
         otherSignatures: [],
