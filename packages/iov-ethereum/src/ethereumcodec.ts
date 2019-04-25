@@ -33,7 +33,7 @@ import { Abi, SwapContractMethod } from "./abi";
 import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, getRecoveryParam } from "./encoding";
-import { Erc20Options } from "./erc20";
+import { Erc20TokensMap } from "./erc20";
 import { Serialization } from "./serialization";
 import {
   decodeHexQuantity,
@@ -88,7 +88,7 @@ export interface EthereumCodecOptions {
    *
    * The behaviour of encoding/decoding transactions for other tokens is undefined.
    */
-  readonly erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>;
+  readonly erc20Tokens?: Erc20TokensMap;
 }
 
 export enum SwapIdPrefixes {
@@ -98,7 +98,7 @@ export enum SwapIdPrefixes {
 
 export class EthereumCodec implements TxCodec {
   private readonly atomicSwapEtherContractAddress?: Address;
-  private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
+  private readonly erc20Tokens: Erc20TokensMap;
 
   constructor(options: EthereumCodecOptions) {
     this.atomicSwapEtherContractAddress = options.atomicSwapEtherContractAddress;

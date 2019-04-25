@@ -15,7 +15,6 @@ import {
   SwapClaimTransaction,
   SwapOfferTransaction,
   SwapTransaction,
-  TokenTicker,
   UnsignedTransaction,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
@@ -25,7 +24,7 @@ import { Abi } from "./abi";
 import { isValidAddress } from "./address";
 import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, eip155V, toRlp } from "./encoding";
-import { Erc20Options, isErc20ApproveTransaction, Erc20ApproveTransaction } from "./erc20";
+import { Erc20ApproveTransaction, Erc20Options, Erc20TokensMap, isErc20ApproveTransaction } from "./erc20";
 import { encodeQuantity, encodeQuantityString, fromBcpChainId, normalizeHex } from "./utils";
 
 const { fromHex, toUtf8 } = Encoding;
@@ -64,7 +63,7 @@ export class Serialization {
   public static serializeUnsignedTransaction(
     unsigned: UnsignedTransaction,
     nonce: Nonce,
-    erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options> = new Map(),
+    erc20Tokens: Erc20TokensMap = new Map(),
     atomicSwapEtherContractAddress?: Address,
     atomicSwapErc20ContractAddress?: Address,
   ): Uint8Array {
@@ -128,7 +127,7 @@ export class Serialization {
 
   public static serializeSignedTransaction(
     signed: SignedTransaction,
-    erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options> = new Map(),
+    erc20Tokens: Erc20TokensMap = new Map(),
     atomicSwapEtherContractAddress?: Address,
     atomicSwapErc20ContractAddress?: Address,
   ): Uint8Array {
@@ -268,10 +267,7 @@ export class Serialization {
     }
   }
 
-  private static checkErc20Amount(
-    unsigned: SwapOfferTransaction,
-    erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
-  ): void {
+  private static checkErc20Amount(unsigned: SwapOfferTransaction, erc20Tokens: Erc20TokensMap): void {
     if (unsigned.amounts.length !== 1) {
       throw new Error("Cannot serialize a swap offer with more than one amount");
     }
@@ -299,10 +295,7 @@ export class Serialization {
     return encodeQuantityString(unsigned.fee.gasLimit);
   }
 
-  private static getErc20Token(
-    unsigned: UnsignedTransaction,
-    erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
-  ): Erc20Options {
+  private static getErc20Token(unsigned: UnsignedTransaction, erc20Tokens: Erc20TokensMap): Erc20Options {
     let erc20Token: Erc20Options | undefined;
     let ticker: string;
     if (isSendTransaction(unsigned) || isErc20ApproveTransaction(unsigned)) {
@@ -407,7 +400,7 @@ export class Serialization {
   private static serializeUnsignedSendTransaction(
     unsigned: SendTransaction,
     nonce: Nonce,
-    erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
+    erc20Tokens: Erc20TokensMap,
     chainIdHex: string,
     gasPriceHex: string,
     gasLimitHex: string,
@@ -449,7 +442,7 @@ export class Serialization {
   private static serializeUnsignedSwapOfferTransaction(
     unsigned: SwapOfferTransaction,
     nonce: Nonce,
-    erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
+    erc20Tokens: Erc20TokensMap,
     chainIdHex: string,
     gasPriceHex: string,
     gasLimitHex: string,
@@ -565,7 +558,7 @@ export class Serialization {
   private static serializeUnsignedErc20ApproveTransaction(
     unsigned: Erc20ApproveTransaction,
     nonce: Nonce,
-    erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
+    erc20Tokens: Erc20TokensMap,
     chainIdHex: string,
     gasPriceHex: string,
     gasLimitHex: string,
@@ -586,7 +579,7 @@ export class Serialization {
   private static serializeSignedSendTransaction(
     unsigned: SendTransaction,
     nonce: Nonce,
-    erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
+    erc20Tokens: Erc20TokensMap,
     gasPriceHex: string,
     gasLimitHex: string,
     v: string,
@@ -634,7 +627,7 @@ export class Serialization {
   private static serializeSignedSwapOfferTransaction(
     unsigned: SwapOfferTransaction,
     nonce: Nonce,
-    erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
+    erc20Tokens: Erc20TokensMap,
     gasPriceHex: string,
     gasLimitHex: string,
     v: string,
@@ -764,7 +757,7 @@ export class Serialization {
   private static serializeSignedErc20ApproveTransaction(
     unsigned: Erc20ApproveTransaction,
     nonce: Nonce,
-    erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
+    erc20Tokens: Erc20TokensMap,
     gasPriceHex: string,
     gasLimitHex: string,
     v: string,

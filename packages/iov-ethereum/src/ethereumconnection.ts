@@ -56,7 +56,7 @@ import { concat, DefaultValueProducer, dropDuplicates, ValueAndUpdates } from "@
 import { Abi, SwapContractEvent } from "./abi";
 import { pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
-import { Erc20Options } from "./erc20";
+import { Erc20TokensMap } from "./erc20";
 import { Erc20Reader } from "./erc20reader";
 import { EthereumCodec, SwapIdPrefixes } from "./ethereumcodec";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
@@ -106,7 +106,7 @@ export interface EthereumConnectionOptions {
   /** Address of the deployed atomic swap contract for ERC20 tokens */
   readonly atomicSwapErc20ContractAddress?: Address;
   /** List of supported ERC20 tokens */
-  readonly erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>;
+  readonly erc20Tokens?: Erc20TokensMap;
   /** Time between two polls for block, transaction and account watching in seconds */
   readonly pollInterval?: number;
 }
@@ -143,7 +143,7 @@ export class EthereumConnection implements AtomicSwapConnection {
   private readonly socket: StreamingSocket | undefined;
   private readonly scraperApiUrl: string | undefined;
   private readonly atomicSwapEtherContractAddress?: Address;
-  private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
+  private readonly erc20Tokens: Erc20TokensMap;
   private readonly erc20ContractReaders: ReadonlyMap<TokenTicker, Erc20Reader>;
   private readonly codec: EthereumCodec;
 
