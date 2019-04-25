@@ -144,6 +144,7 @@ export class EthereumConnection implements AtomicSwapConnection {
   private readonly socket: StreamingSocket | undefined;
   private readonly scraperApiUrl: string | undefined;
   private readonly atomicSwapEtherContractAddress?: Address;
+  private readonly atomicSwapErc20ContractAddress?: Address;
   private readonly erc20Tokens: Erc20TokensMap;
   private readonly erc20ContractReaders: ReadonlyMap<TokenTicker, Erc20Reader>;
   private readonly codec: EthereumCodec;
@@ -177,9 +178,11 @@ export class EthereumConnection implements AtomicSwapConnection {
     }
 
     const atomicSwapEtherContractAddress = options.atomicSwapEtherContractAddress;
+    const atomicSwapErc20ContractAddress = options.atomicSwapErc20ContractAddress;
     const erc20Tokens = options.erc20Tokens || new Map();
 
     this.atomicSwapEtherContractAddress = atomicSwapEtherContractAddress;
+    this.atomicSwapErc20ContractAddress = atomicSwapErc20ContractAddress;
     this.erc20Tokens = erc20Tokens;
     this.erc20ContractReaders = new Map(
       [...erc20Tokens.entries()].map(
@@ -192,6 +195,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     this.codec = new EthereumCodec({
       erc20Tokens: erc20Tokens,
       atomicSwapEtherContractAddress: atomicSwapEtherContractAddress,
+      atomicSwapErc20ContractAddress: atomicSwapErc20ContractAddress,
     });
   }
 
@@ -760,6 +764,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       case "bcp/swap_offer":
       case "bcp/swap_claim":
       case "bcp/swap_abort":
+      case "erc20/approve":
         return {
           gasPrice: {
             // TODO: calculate dynamically from previous blocks or external API
@@ -785,10 +790,14 @@ export class EthereumConnection implements AtomicSwapConnection {
   ): Promise<ReadonlyArray<AtomicSwap>> {
     if (isAtomicSwapIdQuery(query)) {
       const data = Uint8Array.from([...Abi.calculateMethodId("get(bytes32)"), ...query.id.data]);
+      const atomicSwapContractAddress =
+        query.id.prefix === SwapIdPrefix.Ether
+          ? this.atomicSwapEtherContractAddress
+          : this.atomicSwapErc20ContractAddress;
 
       const params = [
         {
-          to: this.atomicSwapEtherContractAddress,
+          to: atomicSwapContractAddress,
           data: toEthereumHex(data),
         },
       ] as ReadonlyArray<any>;
@@ -820,8 +829,21 @@ export class EthereumConnection implements AtomicSwapConnection {
       const preimageEnd = preimageBegin + 32;
       const stateBegin = preimageEnd;
       const stateEnd = stateBegin + 32;
+      const erc20ContractAddressBegin = stateEnd;
+      const erc20ContractAddressEnd = erc20ContractAddressBegin + 32;
 
       const resultArray = Encoding.fromHex(normalizeHex(swapsResponse.result));
+      const erc20ContractAddress =
+        query.id.prefix === SwapIdPrefix.Erc20
+          ? toChecksummedAddress(
+              Abi.decodeAddress(resultArray.slice(erc20ContractAddressBegin, erc20ContractAddressEnd)),
+            )
+          : null;
+      const erc20Token = erc20ContractAddress
+        ? [...this.erc20Tokens.values()].find(token => token.contractAddress === erc20ContractAddress)
+        : null;
+      const fractionalDigits = erc20Token ? erc20Token.decimals : constants.primaryTokenFractionalDigits;
+      const tokenTicker = erc20Token ? (erc20Token.symbol as TokenTicker) : constants.primaryTokenTicker;
       const swapData: SwapData = {
         id: query.id,
         sender: toChecksummedAddress(Abi.decodeAddress(resultArray.slice(senderBegin, senderEnd))),
@@ -830,8 +852,8 @@ export class EthereumConnection implements AtomicSwapConnection {
         amounts: [
           {
             quantity: new BN(resultArray.slice(amountBegin, amountEnd)).toString(),
-            fractionalDigits: constants.primaryTokenFractionalDigits,
-            tokenTicker: constants.primaryTokenTicker,
+            fractionalDigits: fractionalDigits,
+            tokenTicker: tokenTicker,
           },
         ] as ReadonlyArray<Amount>,
         timeout: {

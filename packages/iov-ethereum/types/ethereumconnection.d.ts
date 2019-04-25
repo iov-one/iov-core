@@ -29,6 +29,7 @@ export declare class EthereumConnection implements AtomicSwapConnection {
     private readonly socket;
     private readonly scraperApiUrl;
     private readonly atomicSwapEtherContractAddress?;
+    private readonly atomicSwapErc20ContractAddress?;
     private readonly erc20Tokens;
     private readonly erc20ContractReaders;
     private readonly codec;
