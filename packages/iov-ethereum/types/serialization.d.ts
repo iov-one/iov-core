@@ -1,5 +1,9 @@
 import { Address, Nonce, SignedTransaction, UnsignedTransaction } from "@iov/bcp";
 import { Erc20TokensMap } from "./erc20";
+export declare enum SwapIdPrefix {
+    Ether = "ether",
+    Erc20 = "erc20"
+}
 export declare class Serialization {
     static serializeGenericTransaction(nonce: Nonce, gasPriceHex: string, gasLimitHex: string, recipient: Address, value: string, data: Uint8Array, v: string, r?: Uint8Array, s?: Uint8Array): Uint8Array;
     static serializeUnsignedTransaction(unsigned: UnsignedTransaction, nonce: Nonce, erc20Tokens?: Erc20TokensMap, atomicSwapEtherContractAddress?: Address, atomicSwapErc20ContractAddress?: Address): Uint8Array;

@@ -38,10 +38,6 @@ export interface EthereumCodecOptions {
      */
     readonly erc20Tokens?: Erc20TokensMap;
 }
-export declare enum SwapIdPrefix {
-    Ether = "ether",
-    Erc20 = "erc20"
-}
 export declare class EthereumCodec implements TxCodec {
     private readonly atomicSwapEtherContractAddress?;
     private readonly erc20Tokens;

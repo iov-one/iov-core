@@ -34,7 +34,7 @@ import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address
 import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, getRecoveryParam } from "./encoding";
 import { Erc20TokensMap } from "./erc20";
-import { Serialization } from "./serialization";
+import { Serialization, SwapIdPrefix } from "./serialization";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
@@ -89,11 +89,6 @@ export interface EthereumCodecOptions {
    * The behaviour of encoding/decoding transactions for other tokens is undefined.
    */
   readonly erc20Tokens?: Erc20TokensMap;
-}
-
-export enum SwapIdPrefix {
-  Ether = "ether",
-  Erc20 = "erc20",
 }
 
 export class EthereumCodec implements TxCodec {

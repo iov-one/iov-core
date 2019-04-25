@@ -30,6 +30,11 @@ import { encodeQuantity, encodeQuantityString, fromBcpChainId, normalizeHex } fr
 const { fromHex, toUtf8 } = Encoding;
 const ZERO_ETH_QUANTITY = "0";
 
+export enum SwapIdPrefix {
+  Ether = "ether",
+  Erc20 = "erc20",
+}
+
 export class Serialization {
   public static serializeGenericTransaction(
     nonce: Nonce,

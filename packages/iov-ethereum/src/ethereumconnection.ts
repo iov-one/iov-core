@@ -58,9 +58,10 @@ import { pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { Erc20TokensMap } from "./erc20";
 import { Erc20Reader } from "./erc20reader";
-import { EthereumCodec, SwapIdPrefix } from "./ethereumcodec";
+import { EthereumCodec } from "./ethereumcodec";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { Parse } from "./parse";
+import { SwapIdPrefix } from "./serialization";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
