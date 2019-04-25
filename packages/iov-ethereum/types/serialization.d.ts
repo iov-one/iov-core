@@ -25,6 +25,7 @@ export declare class Serialization {
      */
     private static encodeValue;
     private static buildErc20TransferCall;
+    private static buildErc20ApproveCall;
     private static buildAtomicSwapOfferEtherCall;
     private static buildAtomicSwapOfferErc20Call;
     private static buildAtomicSwapClaimCall;
@@ -33,8 +34,10 @@ export declare class Serialization {
     private static serializeUnsignedSwapOfferTransaction;
     private static serializeUnsignedSwapClaimTransaction;
     private static serializeUnsignedSwapAbortTransaction;
+    private static serializeUnsignedErc20ApproveTransaction;
     private static serializeSignedSendTransaction;
     private static serializeSignedSwapOfferTransaction;
     private static serializeSignedSwapClaimTransaction;
     private static serializeSignedSwapAbortTransaction;
+    private static serializeSignedErc20ApproveTransaction;
 }

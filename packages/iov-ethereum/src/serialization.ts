@@ -25,7 +25,7 @@ import { Abi } from "./abi";
 import { isValidAddress } from "./address";
 import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, eip155V, toRlp } from "./encoding";
-import { Erc20Options } from "./erc20";
+import { Erc20Options, isErc20ApproveTransaction, Erc20ApproveTransaction } from "./erc20";
 import { encodeQuantity, encodeQuantityString, fromBcpChainId, normalizeHex } from "./utils";
 
 const { fromHex, toUtf8 } = Encoding;
@@ -112,6 +112,15 @@ export class Serialization {
         atomicSwapEtherContractAddress,
         atomicSwapErc20ContractAddress,
       );
+    } else if (isErc20ApproveTransaction(unsigned)) {
+      return Serialization.serializeUnsignedErc20ApproveTransaction(
+        unsigned,
+        nonce,
+        erc20Tokens,
+        chainIdHex,
+        gasPriceHex,
+        gasLimitHex,
+      );
     } else {
       throw new Error("Unsupported kind of transaction");
     }
@@ -186,6 +195,17 @@ export class Serialization {
         s,
         atomicSwapEtherContractAddress,
         atomicSwapErc20ContractAddress,
+      );
+    } else if (isErc20ApproveTransaction(unsigned)) {
+      return Serialization.serializeSignedErc20ApproveTransaction(
+        unsigned,
+        nonce,
+        erc20Tokens,
+        gasPriceHex,
+        gasLimitHex,
+        v,
+        r,
+        s,
       );
     } else {
       throw new Error("Unsupported kind of transaction");
@@ -285,7 +305,7 @@ export class Serialization {
   ): Erc20Options {
     let erc20Token: Erc20Options | undefined;
     let ticker: string;
-    if (isSendTransaction(unsigned)) {
+    if (isSendTransaction(unsigned) || isErc20ApproveTransaction(unsigned)) {
       erc20Token = erc20Tokens.get(unsigned.amount.tokenTicker);
       ticker = unsigned.amount.tokenTicker;
     } else if (isSwapOfferTransaction(unsigned)) {
@@ -333,6 +353,14 @@ export class Serialization {
     return new Uint8Array([
       ...Abi.calculateMethodId("transfer(address,uint256)"),
       ...Abi.encodeAddress(unsigned.recipient),
+      ...Abi.encodeUint256(unsigned.amount.quantity),
+    ]);
+  }
+
+  private static buildErc20ApproveCall(unsigned: Erc20ApproveTransaction): Uint8Array {
+    return new Uint8Array([
+      ...Abi.calculateMethodId("approve(address,uint256)"),
+      ...Abi.encodeAddress(unsigned.spender),
       ...Abi.encodeUint256(unsigned.amount.quantity),
     ]);
   }
@@ -534,6 +562,27 @@ export class Serialization {
     );
   }
 
+  private static serializeUnsignedErc20ApproveTransaction(
+    unsigned: Erc20ApproveTransaction,
+    nonce: Nonce,
+    erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
+    chainIdHex: string,
+    gasPriceHex: string,
+    gasLimitHex: string,
+  ): Uint8Array {
+    const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
+    const erc20ApproveCall = Serialization.buildErc20ApproveCall(unsigned);
+    return Serialization.serializeGenericTransaction(
+      nonce,
+      gasPriceHex,
+      gasLimitHex,
+      erc20Token.contractAddress,
+      ZERO_ETH_QUANTITY,
+      erc20ApproveCall,
+      chainIdHex,
+    );
+  }
+
   private static serializeSignedSendTransaction(
     unsigned: SendTransaction,
     nonce: Nonce,
@@ -706,6 +755,32 @@ export class Serialization {
       (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
       ZERO_ETH_QUANTITY,
       atomicSwapAbortCall,
+      encodeQuantity(v),
+      r,
+      s,
+    );
+  }
+
+  private static serializeSignedErc20ApproveTransaction(
+    unsigned: Erc20ApproveTransaction,
+    nonce: Nonce,
+    erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
+    gasPriceHex: string,
+    gasLimitHex: string,
+    v: number,
+    r: Uint8Array,
+    s: Uint8Array,
+  ): Uint8Array {
+    const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
+    const erc20ApproveCall = Serialization.buildErc20ApproveCall(unsigned);
+
+    return Serialization.serializeGenericTransaction(
+      nonce,
+      gasPriceHex,
+      gasLimitHex,
+      erc20Token.contractAddress,
+      ZERO_ETH_QUANTITY,
+      erc20ApproveCall,
       encodeQuantity(v),
       r,
       s,
