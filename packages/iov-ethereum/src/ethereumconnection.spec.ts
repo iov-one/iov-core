@@ -42,6 +42,7 @@ import { HdPaths, Secp256k1HdWallet, UserProfile, WalletId } from "@iov/keycontr
 import { toListPromise } from "@iov/stream";
 
 import { pubkeyToAddress } from "./address";
+import { Erc20ApproveTransaction } from "./erc20";
 import { EthereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
 import { SwapIdPrefix } from "./serialization";
@@ -49,10 +50,12 @@ import { testConfig } from "./testconfig.spec";
 
 const { fromHex } = Encoding;
 const ETH = "ETH" as TokenTicker;
+const ASH = "ASH" as TokenTicker;
 
 const ethereumCodec = new EthereumCodec({
   atomicSwapEtherContractAddress: testConfig.connectionOptions.atomicSwapEtherContractAddress,
   atomicSwapErc20ContractAddress: testConfig.connectionOptions.atomicSwapErc20ContractAddress,
+  erc20Tokens: testConfig.erc20Tokens,
 });
 
 function pendingWithoutEthereum(): void {
@@ -2221,6 +2224,140 @@ describe("EthereumConnection", () => {
         expect(claim1!.kind).toEqual(SwapProcessState.Aborted);
         expect(claim2!.kind).toEqual(SwapProcessState.Aborted);
         expect(open3!.kind).toEqual(SwapProcessState.Open);
+      }, 30_000);
+    });
+
+    describe("Erc20", () => {
+      it("can start atomic swap", async () => {
+        pendingWithoutEthereum();
+
+        const connection = await EthereumConnection.establish(testConfig.base, {
+          ...testConfig.connectionOptions,
+          erc20Tokens: testConfig.erc20Tokens,
+        });
+        const chainId = connection.chainId();
+
+        const { profile, faucet } = await userProfileWithFaucet(chainId);
+        const faucetAddress = ethereumCodec.identityToAddress(faucet);
+        const recipientAddress = await randomAddress();
+
+        const initSwaps = await connection.getSwaps({
+          recipient: recipientAddress,
+        });
+        expect(initSwaps.length).toEqual(0);
+
+        const swapId = await EthereumConnection.createErc20SwapId();
+        const swapOfferPreimage = await AtomicSwapHelpers.createPreimage();
+        const swapOfferHash = AtomicSwapHelpers.hashPreimage(swapOfferPreimage);
+
+        const swapOfferTimeout: SwapTimeout = {
+          height: (await connection.height()) + 5,
+        };
+        const amount = {
+          quantity: "123000",
+          fractionalDigits: 12,
+          tokenTicker: ASH,
+        };
+
+        const approvalTx = await connection.withDefaultFee<Erc20ApproveTransaction>({
+          kind: "erc20/approve",
+          creator: faucet,
+          spender: testConfig.connectionOptions.atomicSwapErc20ContractAddress!,
+          amount: amount,
+        });
+        const approvalNonce = await connection.getNonce({ pubkey: faucet.pubkey });
+        const signedApproval = await profile.signTransaction(approvalTx, ethereumCodec, approvalNonce);
+        const approvalResult = await connection.postTx(ethereumCodec.bytesToPost(signedApproval));
+        const approvalBlockInfo = await approvalResult.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        if (!isBlockInfoSucceeded(approvalBlockInfo)) {
+          throw new Error(`Expected transaction state success but got state: ${approvalBlockInfo.state}`);
+        }
+
+        const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction>({
+          kind: "bcp/swap_offer",
+          creator: faucet,
+          swapId: swapId,
+          recipient: recipientAddress,
+          amounts: [amount],
+          timeout: swapOfferTimeout,
+          hash: swapOfferHash,
+        });
+        const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
+        const signed = await profile.signTransaction(swapOfferTx, ethereumCodec, nonce);
+        const result = await connection.postTx(ethereumCodec.bytesToPost(signed));
+        expect(result).toBeTruthy();
+        expect(result.log).toBeUndefined();
+
+        const { transactionId } = result;
+        expect(transactionId).toMatch(/^0x[0-9a-f]{64}$/i);
+
+        const blockInfo = await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        if (!isBlockInfoSucceeded(blockInfo)) {
+          throw new Error(`Expected transaction state success but got state: ${blockInfo.state}`);
+        }
+
+        // now query by the txid
+        const search = (await connection.searchTx({ id: transactionId })).filter(isConfirmedTransaction);
+        expect(search.length).toEqual(1);
+        // make sure we get the same tx loaded
+        const loaded = search[0];
+        expect(loaded.transactionId).toEqual(transactionId);
+        expect(loaded.height).toEqual(blockInfo.height);
+        const loadedTransaction = loaded.transaction;
+        if (!isSwapOfferTransaction(loadedTransaction)) {
+          throw new Error("Wrong transaction type");
+        }
+        expect(loadedTransaction.recipient).toEqual(swapOfferTx.recipient);
+
+        // prepare queries
+        const queryTransactionId: TransactionQuery = { id: transactionId };
+        const querySwapId: AtomicSwapQuery = { swapid: swapId };
+        // const querySwapSender: AtomicSwapQuery = { sender: faucetAddress };
+        // const querySwapRecipient: AtomicSwapQuery = { recipient: recipientAddress };
+        // const querySwapHash: AtomicSwapQuery = { hashlock: swapOfferHash };
+
+        // ----- connection.searchTx() -----
+
+        const txById = (await connection.searchTx(queryTransactionId)).filter(isConfirmedTransaction);
+        expect(txById.length).toEqual(1);
+        expect(txById[0].transactionId).toEqual(transactionId);
+
+        // ----- connection.getSwaps() -------
+
+        // we can get swap by id
+        const idSwaps = await connection.getSwaps(querySwapId);
+        expect(idSwaps.length).toEqual(1);
+
+        const swap = idSwaps[0];
+        expect(swap.kind).toEqual(SwapProcessState.Open);
+
+        const swapData = swap.data;
+        expect(swapData.id).toEqual(swapId);
+        expect(swapData.sender).toEqual(faucetAddress);
+        expect(swapData.recipient).toEqual(recipientAddress);
+        expect(swapData.timeout).toEqual(swapOfferTimeout);
+        expect(swapData.amounts.length).toEqual(1);
+        expect(swapData.amounts[0]).toEqual(amount);
+        expect(swapData.hash).toEqual(swapOfferHash);
+
+        // // we can get the swap by the recipient
+        // const rcptSwaps = await connection.getSwaps(querySwapRecipient);
+        // expect(rcptSwaps.length).toEqual(1);
+        // expect(rcptSwaps[0]).toEqual(swap);
+
+        // // we can also get it by the sender
+        // const sendOpenSwapData = (await connection.getSwaps(querySwapSender)).filter(
+        //   s => s.kind === SwapProcessState.Open,
+        // );
+        // expect(sendOpenSwapData.length).toBeGreaterThanOrEqual(1);
+        // expect(sendOpenSwapData[sendOpenSwapData.length - 1]).toEqual(swap);
+
+        // // we can also get it by the hash
+        // const hashSwap = await connection.getSwaps(querySwapHash);
+        // expect(hashSwap.length).toEqual(1);
+        // expect(hashSwap[0]).toEqual(swap);
+
+        connection.disconnect();
       }, 30_000);
     });
   });
