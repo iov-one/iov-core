@@ -241,6 +241,83 @@ describe("ethereumCodec", () => {
       });
     });
 
+    it("works for ERC20 approve", () => {
+      // curl -sS -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["0x4734349dd36860c9f7c981e2c673f986ade036e2b7b64dcc55f0bf0ce461daae"],"id":1}' https://mainnet.infura.io | jq .result
+      const rawGetTransactionByHashResult: EthereumRpcTransactionResult = {
+        blockHash: "0x6181b9dd9b4237a4a0228accd86d9c989882187bc66f57070a725f61298e3860",
+        blockNumber: "0x7482d5",
+        from: "0xbdfd9e1fa05c6ad0714e6f27bdb4b821ec99f7a2",
+        gas: "0x186a0",
+        gasPrice: "0xa7a358200",
+        hash: "0x4734349dd36860c9f7c981e2c673f986ade036e2b7b64dcc55f0bf0ce461daae",
+        input:
+          "0x095ea7b30000000000000000000000004b525ae3a20021639d6e00bf752e6d2b7f65196effffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        nonce: "0x0",
+        r: "0x194013d2767d86e0aac07f5e713e52c1bafdbe20361b59257ae7e5665d504bf1",
+        s: "0x76deb0b778442ff69b61fa9c27333e4b2e6c184643b1ce3d60b4da2cb39266c3",
+        to: "0x1985365e9f78359a9b6ad760e32412f4a445e862",
+        transactionIndex: "0x33",
+        v: "0x25",
+        value: "0x0",
+      };
+      const expectedPubkey = fromHex(
+        "043e82ebc5dd773720677229f4eedcb61dbb131533ce0a4206e3788a92b70224505ef120ca98418d3657c891d0cd74cb15dca10f94a3ffd7a7f65bc99e1138b5c2",
+      ) as PublicKeyBytes;
+
+      const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
+
+      const erc20Tokens = new Map<TokenTicker, Erc20Options>([
+        [
+          "REP" as TokenTicker,
+          {
+            contractAddress: "0x1985365e9f78359a9b6ad760e32412f4a445e862" as Address,
+            decimals: 18,
+            symbol: "REP" as TokenTicker,
+          },
+        ],
+      ]);
+      const codec = new EthereumCodec({ erc20Tokens: erc20Tokens });
+      expect(codec.parseBytes(postableBytes, "ethereum-eip155-1" as ChainId)).toEqual({
+        transaction: {
+          kind: "erc20/approve",
+          creator: {
+            chainId: "ethereum-eip155-1" as ChainId,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: expectedPubkey,
+            },
+          },
+          fee: {
+            gasLimit: "100000",
+            gasPrice: {
+              quantity: "45000000000",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
+          },
+          amount: {
+            quantity: "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+            fractionalDigits: 18,
+            tokenTicker: "REP" as TokenTicker,
+          },
+          spender: "0x4b525ae3a20021639d6e00bf752e6d2b7f65196e" as Address,
+        },
+        primarySignature: {
+          nonce: 0 as Nonce,
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: expectedPubkey,
+          },
+          signature: new ExtendedSecp256k1Signature(
+            Encoding.fromHex("194013d2767d86e0aac07f5e713e52c1bafdbe20361b59257ae7e5665d504bf1"),
+            Encoding.fromHex("76deb0b778442ff69b61fa9c27333e4b2e6c184643b1ce3d60b4da2cb39266c3"),
+            0,
+          ).toFixedLength() as SignatureBytes,
+        },
+        otherSignatures: [],
+      });
+    });
+
     it("works for Ether atomic swap offer", () => {
       // Retrieved from local instance since we haven't deployed this to a public testnet
       const rawGetTransactionByHashResult: EthereumRpcTransactionResult = {
