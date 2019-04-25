@@ -34,7 +34,7 @@ import { Abi, SwapContractMethod } from "./abi";
 import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, getRecoveryParam } from "./encoding";
-import { Erc20TokensMap } from "./erc20";
+import { Erc20ApproveTransaction, Erc20TokensMap } from "./erc20";
 import { Serialization, SwapIdPrefix } from "./serialization";
 import {
   decodeHexQuantity,
@@ -49,6 +49,7 @@ import {
 const methodCallPrefix = {
   erc20: {
     transfer: toEthereumHex(Abi.calculateMethodId("transfer(address,uint256)")),
+    approve: toEthereumHex(Abi.calculateMethodId("approve(address,uint256)")),
   },
 };
 
@@ -174,13 +175,17 @@ export class EthereumCodec implements TxCodec {
       this.atomicSwapEtherContractAddress &&
       toChecksummedAddress(json.to).toLowerCase() === this.atomicSwapEtherContractAddress.toLowerCase();
 
-    const erc20Token =
-      !atomicSwap &&
-      [...this.erc20Tokens.values()].find(
-        options => options.contractAddress.toLowerCase() === toChecksummedAddress(json.to).toLowerCase(),
-      );
+    const erc20Token = [...this.erc20Tokens.values()].find(
+      options => options.contractAddress.toLowerCase() === toChecksummedAddress(json.to).toLowerCase(),
+    );
 
-    let transaction: SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction;
+    let transaction:
+      | SendTransaction
+      | Erc20ApproveTransaction
+      | SwapOfferTransaction
+      | SwapClaimTransaction
+      | SwapAbortTransaction;
+
     if (atomicSwap) {
       const positionMethodIdBegin = 0;
       const positionMethodIdEnd = positionMethodIdBegin + 4;
@@ -259,6 +264,7 @@ export class EthereumCodec implements TxCodec {
       const positionTransferAmountEnd = positionTransferAmountBegin + 32;
 
       const quantity = Abi.decodeUint256(input.slice(positionTransferAmountBegin, positionTransferAmountEnd));
+
       transaction = {
         kind: "bcp/send",
         creator: creator,
@@ -272,6 +278,27 @@ export class EthereumCodec implements TxCodec {
           Abi.decodeAddress(input.slice(positionTransferRecipientBegin, positionTransferRecipientEnd)),
         ),
         memo: undefined,
+      };
+    } else if (erc20Token && json.input.startsWith(methodCallPrefix.erc20.approve)) {
+      const positionApproveMethodEnd = 4;
+      const positionApproveSpenderBegin = positionApproveMethodEnd;
+      const positionApproveSpenderEnd = positionApproveSpenderBegin + 32;
+      const positionApproveAmountBegin = positionApproveSpenderEnd;
+      const positionApproveAmountEnd = positionApproveAmountBegin + 32;
+
+      const spender = Abi.decodeAddress(input.slice(positionApproveSpenderBegin, positionApproveSpenderEnd));
+      const quantity = Abi.decodeUint256(input.slice(positionApproveAmountBegin, positionApproveAmountEnd));
+
+      transaction = {
+        kind: "erc20/approve",
+        creator: creator,
+        fee: fee,
+        amount: {
+          quantity: quantity,
+          fractionalDigits: erc20Token.decimals,
+          tokenTicker: erc20Token.symbol as TokenTicker,
+        },
+        spender: spender,
       };
     } else {
       let memo: string;
