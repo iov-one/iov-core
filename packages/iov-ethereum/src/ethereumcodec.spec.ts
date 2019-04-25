@@ -13,6 +13,7 @@ import { Encoding } from "@iov/encoding";
 
 import { Erc20Options } from "./erc20";
 import { EthereumCodec, EthereumRpcTransactionResult } from "./ethereumcodec";
+import { SwapIdPrefix } from "./serialization";
 import { testConfig } from "./testconfig.spec";
 
 const { fromHex } = Encoding;
@@ -342,6 +343,7 @@ describe("ethereumCodec", () => {
         "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
       ) as PublicKeyBytes;
       const expectedSwapId = {
+        prefix: SwapIdPrefix.Ether,
         data: fromHex("5cecbb0814d20c1f6221fdec0c2902172182d1b2f3212957f947e4cea398ebe6"),
       };
       const expectedRecipient = "0x901A84DA2b9c5CBb64D8AEECa58D5FD0339bB018";
@@ -520,6 +522,99 @@ describe("ethereumCodec", () => {
             Encoding.fromHex("3449246d974d28fffae32af389ef7271c18ff6e6766ce6f54f6243764e6877d6"),
             Encoding.fromHex("7e2280164650d4fc0c4a2fd1edfeedb70e7c8453117f9cbd6a644abd5e1ddf9b"),
             0,
+          ).toFixedLength() as SignatureBytes,
+        },
+        otherSignatures: [],
+      });
+    });
+
+    it("works for Erc20 atomic swap offer", () => {
+      // Retrieved from local instance since we haven't deployed this to a public testnet
+      const rawGetTransactionByHashResult: EthereumRpcTransactionResult = {
+        hash: "0x293419b275bfdab614697c2dabe85cf9f47ad8d728675d622d65e0839992afc2",
+        nonce: "0xf5",
+        blockHash: "0x9b87730ec2ff05f8017a7226f21eba47bc680e2edec681474efbbe4878602067",
+        blockNumber: "0x10e",
+        transactionIndex: "0x0",
+        from: "0x88f3b5659075d0e06bb1004be7b1a7e66f452284",
+        to: "0x9768ae2339b48643d710b11ddbdb8a7edbea15bc",
+        value: "0x0",
+        gas: "0x200b20",
+        gasPrice: "0x4a817c800",
+        input:
+          "0xe8d8a293c42b0efc99bb1726bb429b5a4ccf7b4b236c54027eb15cd5c24761f8adf8def30000000000000000000000009c212466a863c2635a31c41f6384818816869a0fc7c270042ff9d49b3283da3b12adb1711608096f3774bbb1fabf7727d9b1b0a20000000000000000000000000000000000000000000000000000000000000111000000000000000000000000cb642a87923580b6f7d07d1471f93361196f2650000000000000000000000000000000000000000000000000000000000001e078",
+        v: "0x2d46",
+        r: "0x26a7e609ce83e01b8e754641fbd9315f5a558c7b279d1bbe186d8be786c6fb18",
+        s: "0x02555167f9584575f9740c0487dcdd2e1462a8374dd9dcc9e66cfa98eb1efd87",
+      };
+      const expectedPubkey = fromHex(
+        "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
+      ) as PublicKeyBytes;
+      const expectedSwapId = {
+        prefix: SwapIdPrefix.Erc20,
+        data: fromHex("c42b0efc99bb1726bb429b5a4ccf7b4b236c54027eb15cd5c24761f8adf8def3"),
+      };
+      const expectedRecipient = "0x9c212466A863C2635A31c41f6384818816869a0F";
+      const expectedHash = fromHex("c7c270042ff9d49b3283da3b12adb1711608096f3774bbb1fabf7727d9b1b0a2");
+
+      const erc20Tokens = new Map<TokenTicker, Erc20Options>([
+        [
+          "ASH" as TokenTicker,
+          {
+            contractAddress: "0xCb642A87923580b6F7D07D1471F93361196f2650" as Address,
+            decimals: 12,
+            symbol: "ASH" as TokenTicker,
+          },
+        ],
+      ]);
+      const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
+      const codec = new EthereumCodec({
+        atomicSwapErc20ContractAddress: testConfig.connectionOptions.atomicSwapErc20ContractAddress,
+        erc20Tokens: erc20Tokens,
+      });
+
+      expect(codec.parseBytes(postableBytes, "ethereum-eip155-5777" as ChainId)).toEqual({
+        transaction: {
+          kind: "bcp/swap_offer",
+          creator: {
+            chainId: "ethereum-eip155-5777" as ChainId,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: expectedPubkey,
+            },
+          },
+          fee: {
+            gasLimit: "2100000",
+            gasPrice: {
+              quantity: "20000000000",
+              fractionalDigits: 18,
+              tokenTicker: "ETH" as TokenTicker,
+            },
+          },
+          amounts: [
+            {
+              quantity: "123000",
+              fractionalDigits: 12,
+              tokenTicker: "ASH" as TokenTicker,
+            },
+          ],
+          swapId: expectedSwapId,
+          recipient: expectedRecipient,
+          hash: expectedHash,
+          timeout: {
+            height: 273,
+          },
+        },
+        primarySignature: {
+          nonce: 245 as Nonce,
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: expectedPubkey,
+          },
+          signature: new ExtendedSecp256k1Signature(
+            Encoding.fromHex("26a7e609ce83e01b8e754641fbd9315f5a558c7b279d1bbe186d8be786c6fb18"),
+            Encoding.fromHex("02555167f9584575f9740c0487dcdd2e1462a8374dd9dcc9e66cfa98eb1efd87"),
+            1,
           ).toFixedLength() as SignatureBytes,
         },
         otherSignatures: [],
