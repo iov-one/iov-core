@@ -6,6 +6,7 @@ import {
   ChainId,
   Fee,
   Hash,
+  isSwapTransaction,
   Nonce,
   PostableBytes,
   PrehashType,
@@ -93,10 +94,12 @@ export interface EthereumCodecOptions {
 
 export class EthereumCodec implements TxCodec {
   private readonly atomicSwapEtherContractAddress?: Address;
+  private readonly atomicSwapErc20ContractAddress?: Address;
   private readonly erc20Tokens: Erc20TokensMap;
 
   constructor(options: EthereumCodecOptions) {
     this.atomicSwapEtherContractAddress = options.atomicSwapEtherContractAddress;
+    this.atomicSwapErc20ContractAddress = options.atomicSwapErc20ContractAddress;
     this.erc20Tokens = options.erc20Tokens || new Map();
   }
 
@@ -106,7 +109,7 @@ export class EthereumCodec implements TxCodec {
         unsigned,
         nonce,
         this.erc20Tokens,
-        this.atomicSwapEtherContractAddress,
+        this.getAtomicSwapContractAddress(unsigned),
       ) as SignableBytes,
       prehashType: PrehashType.Keccak256,
     };
@@ -116,7 +119,7 @@ export class EthereumCodec implements TxCodec {
     return Serialization.serializeSignedTransaction(
       signed,
       this.erc20Tokens,
-      this.atomicSwapEtherContractAddress,
+      this.getAtomicSwapContractAddress(signed.transaction),
     ) as PostableBytes;
   }
 
@@ -314,6 +317,16 @@ export class EthereumCodec implements TxCodec {
 
   public isValidAddress(address: string): boolean {
     return isValidAddress(address);
+  }
+
+  private getAtomicSwapContractAddress(unsigned: UnsignedTransaction): Address | undefined {
+    const maybeSwapId = isSwapTransaction(unsigned) ? unsigned.swapId : undefined;
+    return (
+      maybeSwapId &&
+      (maybeSwapId.prefix === SwapIdPrefix.Ether
+        ? this.atomicSwapEtherContractAddress
+        : this.atomicSwapErc20ContractAddress)
+    );
   }
 }
 

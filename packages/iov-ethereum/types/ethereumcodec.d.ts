@@ -40,6 +40,7 @@ export interface EthereumCodecOptions {
 }
 export declare class EthereumCodec implements TxCodec {
     private readonly atomicSwapEtherContractAddress?;
+    private readonly atomicSwapErc20ContractAddress?;
     private readonly erc20Tokens;
     constructor(options: EthereumCodecOptions);
     bytesToSign(unsigned: UnsignedTransaction, nonce: Nonce): SigningJob;
@@ -48,6 +49,7 @@ export declare class EthereumCodec implements TxCodec {
     parseBytes(bytes: PostableBytes, chainId: ChainId): SignedTransaction;
     identityToAddress(identity: PublicIdentity): Address;
     isValidAddress(address: string): boolean;
+    private getAtomicSwapContractAddress;
 }
 /** An unconfigured EthereumCodec for backwards compatibility */
 export declare const ethereumCodec: EthereumCodec;
