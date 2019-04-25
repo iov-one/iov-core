@@ -146,7 +146,7 @@ export class Serialization {
       chainId > 0
         ? { forkState: BlknumForkState.Forked, chainId: chainId }
         : { forkState: BlknumForkState.Before };
-    const v = eip155V(chain, sig.recovery);
+    const v = encodeQuantity(eip155V(chain, sig.recovery));
 
     if (isSendTransaction(unsigned)) {
       return Serialization.serializeSignedSendTransaction(
@@ -589,7 +589,7 @@ export class Serialization {
     erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
     gasPriceHex: string,
     gasLimitHex: string,
-    v: number,
+    v: string,
     r: Uint8Array,
     s: Uint8Array,
   ): Uint8Array {
@@ -609,7 +609,7 @@ export class Serialization {
         erc20Token.contractAddress,
         ZERO_ETH_QUANTITY,
         erc20TransferCall,
-        encodeQuantity(v),
+        v,
         r,
         s,
       );
@@ -624,7 +624,7 @@ export class Serialization {
         unsigned.recipient,
         unsigned.amount.quantity,
         data,
-        encodeQuantity(v),
+        v,
         r,
         s,
       );
@@ -637,7 +637,7 @@ export class Serialization {
     erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
     gasPriceHex: string,
     gasLimitHex: string,
-    v: number,
+    v: string,
     r: Uint8Array,
     s: Uint8Array,
     atomicSwapEtherContractAddress?: Address,
@@ -668,7 +668,7 @@ export class Serialization {
         atomicSwapContractAddress,
         unsigned.amounts[0].quantity,
         atomicSwapOfferCall,
-        encodeQuantity(v),
+        v,
         r,
         s,
       );
@@ -689,7 +689,7 @@ export class Serialization {
         atomicSwapContractAddress,
         ZERO_ETH_QUANTITY,
         atomicSwapOfferCall,
-        encodeQuantity(v),
+        v,
         r,
         s,
       );
@@ -701,7 +701,7 @@ export class Serialization {
     nonce: Nonce,
     gasPriceHex: string,
     gasLimitHex: string,
-    v: number,
+    v: string,
     r: Uint8Array,
     s: Uint8Array,
     atomicSwapEtherContractAddress?: Address,
@@ -723,7 +723,7 @@ export class Serialization {
       (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
       ZERO_ETH_QUANTITY,
       atomicSwapClaimCall,
-      encodeQuantity(v),
+      v,
       r,
       s,
     );
@@ -734,7 +734,7 @@ export class Serialization {
     nonce: Nonce,
     gasPriceHex: string,
     gasLimitHex: string,
-    v: number,
+    v: string,
     r: Uint8Array,
     s: Uint8Array,
     atomicSwapEtherContractAddress?: Address,
@@ -755,7 +755,7 @@ export class Serialization {
       (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
       ZERO_ETH_QUANTITY,
       atomicSwapAbortCall,
-      encodeQuantity(v),
+      v,
       r,
       s,
     );
@@ -767,7 +767,7 @@ export class Serialization {
     erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>,
     gasPriceHex: string,
     gasLimitHex: string,
-    v: number,
+    v: string,
     r: Uint8Array,
     s: Uint8Array,
   ): Uint8Array {
@@ -781,7 +781,7 @@ export class Serialization {
       erc20Token.contractAddress,
       ZERO_ETH_QUANTITY,
       erc20ApproveCall,
-      encodeQuantity(v),
+      v,
       r,
       s,
     );
