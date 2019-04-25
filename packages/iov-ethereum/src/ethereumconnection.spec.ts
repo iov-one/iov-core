@@ -2359,6 +2359,243 @@ describe("EthereumConnection", () => {
 
         connection.disconnect();
       }, 30_000);
+
+      const openSwap = async (
+        connection: EthereumConnection,
+        profile: UserProfile,
+        creator: PublicIdentity,
+        rcptAddr: Address,
+        hash: Hash,
+        swapId: SwapId,
+        timeoutOffset: number = 1000,
+      ): Promise<PostTxResponse> => {
+        const amount: Amount = {
+          quantity: "21000",
+          fractionalDigits: 12,
+          tokenTicker: ASH,
+        };
+        const approvalTx = await connection.withDefaultFee<Erc20ApproveTransaction>({
+          kind: "erc20/approve",
+          creator: creator,
+          spender: testConfig.connectionOptions.atomicSwapErc20ContractAddress!,
+          amount: amount,
+        });
+        const approvalNonce = await connection.getNonce({ pubkey: creator.pubkey });
+        const signedApproval = await profile.signTransaction(approvalTx, ethereumCodec, approvalNonce);
+        const approvalResult = await connection.postTx(ethereumCodec.bytesToPost(signedApproval));
+        const approvalBlockInfo = await approvalResult.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        if (!isBlockInfoSucceeded(approvalBlockInfo)) {
+          throw new Error(`Expected transaction state success but got state: ${approvalBlockInfo.state}`);
+        }
+        // construct a swapOfferTx, sign and post to the chain
+        const swapOfferTimeout: SwapTimeout = {
+          height: (await connection.height()) + timeoutOffset,
+        };
+        const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction>({
+          kind: "bcp/swap_offer",
+          swapId: swapId,
+          creator: creator,
+          recipient: rcptAddr,
+          amounts: [amount],
+          timeout: swapOfferTimeout,
+          hash: hash,
+        });
+        const nonce = await connection.getNonce({ pubkey: creator.pubkey });
+        const signed = await profile.signTransaction(swapOfferTx, ethereumCodec, nonce);
+        const txBytes = ethereumCodec.bytesToPost(signed);
+        return connection.postTx(txBytes);
+      };
+
+      const claimSwap = async (
+        connection: EthereumConnection,
+        profile: UserProfile,
+        creator: PublicIdentity,
+        swapId: SwapId,
+        preimage: Preimage,
+      ): Promise<PostTxResponse> => {
+        // construct a swapOfferTx, sign and post to the chain
+        const swapClaimTx = await connection.withDefaultFee<SwapClaimTransaction>({
+          kind: "bcp/swap_claim",
+          creator: creator,
+          swapId: swapId,
+          preimage: preimage,
+        });
+        const nonce = await connection.getNonce({ pubkey: creator.pubkey });
+        const signed = await profile.signTransaction(swapClaimTx, ethereumCodec, nonce);
+        const txBytes = ethereumCodec.bytesToPost(signed);
+        return connection.postTx(txBytes);
+      };
+
+      const abortSwap = async (
+        connection: EthereumConnection,
+        profile: UserProfile,
+        creator: PublicIdentity,
+        swapId: SwapId,
+      ): Promise<PostTxResponse> => {
+        const swapAbortTx = await connection.withDefaultFee<SwapAbortTransaction>({
+          kind: "bcp/swap_abort",
+          creator: creator,
+          swapId: swapId,
+        });
+        const nonce = await connection.getNonce({ pubkey: creator.pubkey });
+        const signed = await profile.signTransaction(swapAbortTx, ethereumCodec, nonce);
+        const txBytes = ethereumCodec.bytesToPost(signed);
+        return connection.postTx(txBytes);
+      };
+
+      it("can start and watch an atomic swap lifecycle", async () => {
+        pendingWithoutEthereum();
+
+        const connection = await EthereumConnection.establish(testConfig.base, {
+          ...testConfig.connectionOptions,
+          erc20Tokens: testConfig.erc20Tokens,
+        });
+        const chainId = connection.chainId();
+
+        const { profile, faucet } = await userProfileWithFaucet(chainId);
+        const recipientAddress = await randomAddress();
+
+        // create the preimages for the three swaps
+        const swapId1 = await EthereumConnection.createErc20SwapId();
+        const preimage1 = await AtomicSwapHelpers.createPreimage();
+        const hash1 = AtomicSwapHelpers.hashPreimage(preimage1);
+        const swapId2 = await EthereumConnection.createErc20SwapId();
+        const preimage2 = await AtomicSwapHelpers.createPreimage();
+        const hash2 = AtomicSwapHelpers.hashPreimage(preimage2);
+        const swapId3 = await EthereumConnection.createErc20SwapId();
+        const preimage3 = await AtomicSwapHelpers.createPreimage();
+        const hash3 = AtomicSwapHelpers.hashPreimage(preimage3);
+
+        // nothing to start with
+        const rcptQuery = { recipient: recipientAddress };
+        const initSwaps = await connection.getSwaps(rcptQuery);
+        expect(initSwaps.length).toEqual(0);
+
+        // make two offers
+        const post1 = await openSwap(connection, profile, faucet, recipientAddress, hash1, swapId1);
+        const blockInfo1 = await post1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        if (!isBlockInfoSucceeded(blockInfo1)) {
+          throw new Error(`Expected transaction state success but got state: ${blockInfo1.state}`);
+        }
+
+        const post2 = await openSwap(connection, profile, faucet, recipientAddress, hash2, swapId2);
+        const blockInfo2 = await post2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        if (!isBlockInfoSucceeded(blockInfo2)) {
+          throw new Error(`Expected transaction state success but got state: ${blockInfo2.state}`);
+        }
+
+        // // find two open
+        // const midSwaps = await connection.getSwaps(rcptQuery);
+        // expect(midSwaps.length).toEqual(2);
+        // const open1 = midSwaps.find(matchId(swapId1));
+        // const open2 = midSwaps.find(matchId(swapId2));
+        // expect(open1).toBeDefined();
+        // expect(open2).toBeDefined();
+        // expect(open1!.kind).toEqual(SwapProcessState.Open);
+        // expect(open2!.kind).toEqual(SwapProcessState.Open);
+
+        // then claim, offer, claim - 2 closed, 1 open
+        {
+          const post = await claimSwap(connection, profile, faucet, swapId2, preimage2);
+          await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        }
+
+        const post3 = await openSwap(connection, profile, faucet, recipientAddress, hash3, swapId3);
+        const blockInfo3 = await post3.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        if (!isBlockInfoSucceeded(blockInfo3)) {
+          throw new Error(`Expected transaction state success but got state: ${blockInfo3.state}`);
+        }
+
+        {
+          const post = await claimSwap(connection, profile, faucet, swapId1, preimage1);
+          await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        }
+
+        // // make sure we find two claims, one open
+        // const finalSwaps = await connection.getSwaps({ recipient: recipientAddress });
+        // expect(finalSwaps.length).toEqual(3);
+        // const claim1 = finalSwaps.find(matchId(swapId1));
+        // const claim2 = finalSwaps.find(matchId(swapId2));
+        // const open3 = finalSwaps.find(matchId(swapId3));
+        // expect(claim1).toBeDefined();
+        // expect(claim2).toBeDefined();
+        // expect(open3).toBeDefined();
+        // expect(claim1!.kind).toEqual(SwapProcessState.Claimed);
+        // expect(claim2!.kind).toEqual(SwapProcessState.Claimed);
+        // expect(open3!.kind).toEqual(SwapProcessState.Open);
+      }, 30_000);
+
+      it("can start and watch aborted atomic swaps", async () => {
+        pendingWithoutEthereum();
+
+        const connection = await EthereumConnection.establish(testConfig.base, {
+          ...testConfig.connectionOptions,
+          erc20Tokens: testConfig.erc20Tokens,
+        });
+        const chainId = connection.chainId();
+
+        const { profile, faucet } = await userProfileWithFaucet(chainId);
+        const recipientAddress = await randomAddress();
+
+        // create the preimages for the three swaps
+        const swapId1 = await EthereumConnection.createErc20SwapId();
+        const preimage1 = await AtomicSwapHelpers.createPreimage();
+        const hash1 = AtomicSwapHelpers.hashPreimage(preimage1);
+        const swapId2 = await EthereumConnection.createErc20SwapId();
+        const preimage2 = await AtomicSwapHelpers.createPreimage();
+        const hash2 = AtomicSwapHelpers.hashPreimage(preimage2);
+        const swapId3 = await EthereumConnection.createErc20SwapId();
+        const preimage3 = await AtomicSwapHelpers.createPreimage();
+        const hash3 = AtomicSwapHelpers.hashPreimage(preimage3);
+
+        // nothing to start with
+        const rcptQuery = { recipient: recipientAddress };
+        const initSwaps = await connection.getSwaps(rcptQuery);
+        expect(initSwaps.length).toEqual(0);
+
+        // make two offers
+        const post1 = await openSwap(connection, profile, faucet, recipientAddress, hash1, swapId1, 1);
+        const blockInfo1 = await post1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        if (!isBlockInfoSucceeded(blockInfo1)) {
+          throw new Error(`Expected transaction state success but got state: ${blockInfo1.state}`);
+        }
+
+        const post2 = await openSwap(connection, profile, faucet, recipientAddress, hash2, swapId2, 1);
+        const blockInfo2 = await post2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        if (!isBlockInfoSucceeded(blockInfo2)) {
+          throw new Error(`Expected transaction state success but got state: ${blockInfo2.state}`);
+        }
+
+        // then abort, offer, abort - 2 aborted, 1 open
+        {
+          const post = await abortSwap(connection, profile, faucet, swapId2);
+          await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        }
+
+        const post3 = await openSwap(connection, profile, faucet, recipientAddress, hash3, swapId3, 1);
+        const blockInfo3 = await post3.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        if (!isBlockInfoSucceeded(blockInfo3)) {
+          throw new Error(`Expected transaction state success but got state: ${blockInfo3.state}`);
+        }
+
+        {
+          const post = await abortSwap(connection, profile, faucet, swapId1);
+          await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        }
+
+        // // make sure we find two claims, one open
+        // const finalSwaps = await connection.getSwaps({ recipient: recipientAddress });
+        // expect(finalSwaps.length).toEqual(3);
+        // const claim1 = finalSwaps.find(matchId(swapId1));
+        // const claim2 = finalSwaps.find(matchId(swapId2));
+        // const open3 = finalSwaps.find(matchId(swapId3));
+        // expect(claim1).toBeDefined();
+        // expect(claim2).toBeDefined();
+        // expect(open3).toBeDefined();
+        // expect(claim1!.kind).toEqual(SwapProcessState.Aborted);
+        // expect(claim2!.kind).toEqual(SwapProcessState.Aborted);
+        // expect(open3!.kind).toEqual(SwapProcessState.Open);
+      }, 30_000);
     });
   });
 });
