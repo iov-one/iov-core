@@ -21,7 +21,7 @@ import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
 import { Erc20ApproveTransaction, Erc20Options } from "./erc20";
-import { Serialization } from "./serialization";
+import { Serialization, SwapIdPrefix } from "./serialization";
 import { testConfig } from "./testconfig.spec";
 
 const { serializeSignedTransaction, serializeUnsignedTransaction } = Serialization;
@@ -335,7 +335,10 @@ describe("Serialization", () => {
           },
           gasLimit: "52669",
         },
-        swapId: { data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes },
+        swapId: {
+          prefix: SwapIdPrefix.Ether,
+          data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+        },
         recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
         hash: Uint8Array.from(Array(32).fill(8)) as Hash,
         timeout: {
@@ -373,7 +376,10 @@ describe("Serialization", () => {
           },
           gasLimit: "52669",
         },
-        swapId: { data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes },
+        swapId: {
+          prefix: SwapIdPrefix.Ether,
+          data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+        },
         preimage: Uint8Array.from(Array(32).fill(16)) as Preimage,
       };
 
@@ -407,7 +413,10 @@ describe("Serialization", () => {
           },
           gasLimit: "52669",
         },
-        swapId: { data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes },
+        swapId: {
+          prefix: SwapIdPrefix.Ether,
+          data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+        },
       };
 
       const expected = fromHex(
@@ -447,7 +456,10 @@ describe("Serialization", () => {
           },
           gasLimit: "52669",
         },
-        swapId: { data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes },
+        swapId: {
+          prefix: SwapIdPrefix.Erc20,
+          data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+        },
         recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
         hash: Uint8Array.from(Array(32).fill(8)) as Hash,
         timeout: {
@@ -462,7 +474,6 @@ describe("Serialization", () => {
         transaction,
         defaultNonce,
         defaultErc20Tokens,
-        undefined,
         testConfig.connectionOptions.atomicSwapErc20ContractAddress,
       );
       expect(serializedTransaction).toEqual(expected);
@@ -486,7 +497,10 @@ describe("Serialization", () => {
           },
           gasLimit: "52669",
         },
-        swapId: { data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes },
+        swapId: {
+          prefix: SwapIdPrefix.Erc20,
+          data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+        },
         preimage: Uint8Array.from(Array(32).fill(16)) as Preimage,
       };
 
@@ -497,7 +511,6 @@ describe("Serialization", () => {
         transaction,
         defaultNonce,
         defaultErc20Tokens,
-        undefined,
         testConfig.connectionOptions.atomicSwapErc20ContractAddress,
       );
       expect(serializedTransaction).toEqual(expected);
@@ -521,7 +534,10 @@ describe("Serialization", () => {
           },
           gasLimit: "52669",
         },
-        swapId: { data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes },
+        swapId: {
+          prefix: SwapIdPrefix.Erc20,
+          data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+        },
       };
 
       const expected = fromHex(
@@ -531,7 +547,6 @@ describe("Serialization", () => {
         transaction,
         defaultNonce,
         defaultErc20Tokens,
-        undefined,
         testConfig.connectionOptions.atomicSwapErc20ContractAddress,
       );
       expect(serializedTransaction).toEqual(expected);
@@ -678,7 +693,10 @@ describe("Serialization", () => {
             },
             gasLimit: "52669",
           },
-          swapId: { data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes },
+          swapId: {
+            prefix: SwapIdPrefix.Ether,
+            data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+          },
           recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
           hash: Uint8Array.from(Array(32).fill(8)) as Hash,
           timeout: {
@@ -730,7 +748,10 @@ describe("Serialization", () => {
             },
             gasLimit: "52669",
           },
-          swapId: { data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes },
+          swapId: {
+            prefix: SwapIdPrefix.Ether,
+            data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
+          },
           preimage: Uint8Array.from(Array(32).fill(16)) as Preimage,
         },
         primarySignature: {
@@ -779,6 +800,7 @@ describe("Serialization", () => {
             gasLimit: "52669",
           },
           swapId: {
+            prefix: SwapIdPrefix.Ether,
             data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
           },
         },
@@ -835,6 +857,7 @@ describe("Serialization", () => {
             gasLimit: "52669",
           },
           swapId: {
+            prefix: SwapIdPrefix.Erc20,
             data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
           },
           recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
@@ -864,7 +887,6 @@ describe("Serialization", () => {
       const serializedTransaction = serializeSignedTransaction(
         signed,
         defaultErc20Tokens,
-        undefined,
         testConfig.connectionOptions.atomicSwapErc20ContractAddress,
       );
       expect(serializedTransaction).toEqual(expected);
@@ -890,6 +912,7 @@ describe("Serialization", () => {
             gasLimit: "52669",
           },
           swapId: {
+            prefix: SwapIdPrefix.Erc20,
             data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
           },
           preimage: Uint8Array.from(Array(32).fill(16)) as Preimage,
@@ -915,7 +938,6 @@ describe("Serialization", () => {
       const serializedTransaction = serializeSignedTransaction(
         signed,
         defaultErc20Tokens,
-        undefined,
         testConfig.connectionOptions.atomicSwapErc20ContractAddress,
       );
       expect(serializedTransaction).toEqual(expected);
@@ -941,6 +963,7 @@ describe("Serialization", () => {
             gasLimit: "52669",
           },
           swapId: {
+            prefix: SwapIdPrefix.Erc20,
             data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
           },
         },
@@ -965,7 +988,6 @@ describe("Serialization", () => {
       const serializedTransaction = serializeSignedTransaction(
         signed,
         defaultErc20Tokens,
-        undefined,
         testConfig.connectionOptions.atomicSwapErc20ContractAddress,
       );
       expect(serializedTransaction).toEqual(expected);
