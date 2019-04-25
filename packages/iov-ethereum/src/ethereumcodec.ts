@@ -171,9 +171,13 @@ export class EthereumCodec implements TxCodec {
       },
     };
 
-    const atomicSwap =
-      this.atomicSwapEtherContractAddress &&
-      toChecksummedAddress(json.to).toLowerCase() === this.atomicSwapEtherContractAddress.toLowerCase();
+    const atomicSwapContractAddress = [
+      this.atomicSwapEtherContractAddress,
+      this.atomicSwapErc20ContractAddress,
+    ].find(
+      address =>
+        address !== undefined && toChecksummedAddress(json.to).toLowerCase() === address.toLowerCase(),
+    );
 
     const erc20Token = [...this.erc20Tokens.values()].find(
       options => options.contractAddress.toLowerCase() === toChecksummedAddress(json.to).toLowerCase(),
@@ -186,14 +190,14 @@ export class EthereumCodec implements TxCodec {
       | SwapClaimTransaction
       | SwapAbortTransaction;
 
-    if (atomicSwap) {
+    if (atomicSwapContractAddress) {
       const positionMethodIdBegin = 0;
       const positionMethodIdEnd = positionMethodIdBegin + 4;
       const positionSwapIdBegin = positionMethodIdEnd;
       const positionSwapIdEnd = positionSwapIdBegin + 32;
 
       const method = Abi.decodeMethodId(input.slice(positionMethodIdBegin, positionMethodIdEnd));
-      const swapId = {
+      const swapIdWithoutPrefix = {
         data: input.slice(positionSwapIdBegin, positionSwapIdEnd) as SwapIdBytes,
       };
 
@@ -205,6 +209,10 @@ export class EthereumCodec implements TxCodec {
           const positionHashEnd = positionHashBegin + 32;
           const positionTimeoutBegin = positionHashEnd;
           const positionTimeoutEnd = positionTimeoutBegin + 32;
+          const positionErc20ContractAddressBegin = positionTimeoutEnd;
+          const positionErc20ContractAddressEnd = positionErc20ContractAddressBegin + 32;
+          const positionAmountBegin = positionErc20ContractAddressEnd;
+          const positionAmountEnd = positionAmountBegin + 32;
 
           const recipientChecksummedAddress = toChecksummedAddress(
             Abi.decodeAddress(input.slice(positionRecipientBegin, positionRecipientEnd)),
@@ -212,16 +220,36 @@ export class EthereumCodec implements TxCodec {
           const hash = input.slice(positionHashBegin, positionHashEnd) as Hash;
           const timeoutHeight = new BN(input.slice(positionTimeoutBegin, positionTimeoutEnd)).toNumber();
 
+          const erc20ContractAddressBytes = input.slice(
+            positionErc20ContractAddressBegin,
+            positionErc20ContractAddressEnd,
+          );
+          const token = erc20ContractAddressBytes.length
+            ? [...this.erc20Tokens.values()].find(
+                t =>
+                  t.contractAddress.toLowerCase() ===
+                  Abi.decodeAddress(erc20ContractAddressBytes).toLowerCase(),
+              )
+            : null;
+          const fractionalDigits = token ? token.decimals : constants.primaryTokenFractionalDigits;
+          const tokenTicker = token ? (token.symbol as TokenTicker) : constants.primaryTokenTicker;
+          const quantity = token
+            ? Abi.decodeUint256(input.slice(positionAmountBegin, positionAmountEnd))
+            : value;
+
           transaction = {
             kind: "bcp/swap_offer",
             creator: creator,
-            swapId: swapId,
+            swapId: {
+              ...swapIdWithoutPrefix,
+              prefix: token ? SwapIdPrefix.Erc20 : SwapIdPrefix.Ether,
+            },
             fee: fee,
             amounts: [
               {
-                quantity: decodeHexQuantityString(json.value),
-                fractionalDigits: constants.primaryTokenFractionalDigits,
-                tokenTicker: constants.primaryTokenTicker,
+                quantity: quantity,
+                fractionalDigits: fractionalDigits,
+                tokenTicker: tokenTicker,
               },
             ],
             recipient: recipientChecksummedAddress,
@@ -241,7 +269,7 @@ export class EthereumCodec implements TxCodec {
             kind: "bcp/swap_claim",
             creator: creator,
             fee: fee,
-            swapId: swapId,
+            swapId: swapIdWithoutPrefix,
             preimage: preimage,
           };
           break;
@@ -250,7 +278,7 @@ export class EthereumCodec implements TxCodec {
             kind: "bcp/swap_abort",
             creator: creator,
             fee: fee,
-            swapId: swapId,
+            swapId: swapIdWithoutPrefix,
           };
           break;
         default:
