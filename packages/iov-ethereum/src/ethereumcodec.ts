@@ -91,7 +91,7 @@ export interface EthereumCodecOptions {
   readonly erc20Tokens?: Erc20TokensMap;
 }
 
-export enum SwapIdPrefixes {
+export enum SwapIdPrefix {
   Ether = "ether",
   Erc20 = "erc20",
 }

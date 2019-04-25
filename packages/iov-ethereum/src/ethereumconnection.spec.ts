@@ -42,7 +42,7 @@ import { HdPaths, Secp256k1HdWallet, UserProfile, WalletId } from "@iov/keycontr
 import { toListPromise } from "@iov/stream";
 
 import { pubkeyToAddress } from "./address";
-import { EthereumCodec, SwapIdPrefixes } from "./ethereumcodec";
+import { EthereumCodec, SwapIdPrefix } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
 import { testConfig } from "./testconfig.spec";
 
@@ -128,7 +128,7 @@ describe("EthereumConnection", () => {
   describe("createEtherSwapId", () => {
     it("works", async () => {
       const swapId = await EthereumConnection.createEtherSwapId();
-      expect(swapId.prefix).toEqual(SwapIdPrefixes.Ether);
+      expect(swapId.prefix).toEqual(SwapIdPrefix.Ether);
       expect(swapId.data.length).toEqual(32);
     });
 
@@ -142,7 +142,7 @@ describe("EthereumConnection", () => {
   describe("createErc20SwapId", () => {
     it("works", async () => {
       const swapId = await EthereumConnection.createErc20SwapId();
-      expect(swapId.prefix).toEqual(SwapIdPrefixes.Erc20);
+      expect(swapId.prefix).toEqual(SwapIdPrefix.Erc20);
       expect(swapId.data.length).toEqual(32);
     });
 

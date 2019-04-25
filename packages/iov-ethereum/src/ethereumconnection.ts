@@ -58,7 +58,7 @@ import { pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { Erc20TokensMap } from "./erc20";
 import { Erc20Reader } from "./erc20reader";
-import { EthereumCodec, SwapIdPrefixes } from "./ethereumcodec";
+import { EthereumCodec, SwapIdPrefix } from "./ethereumcodec";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
 import { Parse } from "./parse";
 import {
@@ -115,7 +115,7 @@ export class EthereumConnection implements AtomicSwapConnection {
   public static async createEtherSwapId(): Promise<SwapId> {
     const bytes = await Random.getBytes(32);
     return {
-      prefix: SwapIdPrefixes.Ether,
+      prefix: SwapIdPrefix.Ether,
       data: bytes as SwapIdBytes,
     };
   }
@@ -123,7 +123,7 @@ export class EthereumConnection implements AtomicSwapConnection {
   public static async createErc20SwapId(): Promise<SwapId> {
     const bytes = await Random.getBytes(32);
     return {
-      prefix: SwapIdPrefixes.Erc20,
+      prefix: SwapIdPrefix.Erc20,
       data: bytes as SwapIdBytes,
     };
   }
@@ -914,7 +914,7 @@ export class EthereumConnection implements AtomicSwapConnection {
                   kind: SwapProcessState.Open,
                   data: {
                     id: {
-                      prefix: SwapIdPrefixes.Ether,
+                      prefix: SwapIdPrefix.Ether,
                       data: dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes,
                     },
                     sender: toChecksummedAddress(
@@ -940,7 +940,7 @@ export class EthereumConnection implements AtomicSwapConnection {
             case SwapContractEvent.Claimed: {
               const swapId = dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes;
               const swapIndex = accumulator.findIndex(s =>
-                swapIdEquals(s.data.id, { prefix: SwapIdPrefixes.Ether, data: swapId }),
+                swapIdEquals(s.data.id, { prefix: SwapIdPrefix.Ether, data: swapId }),
               );
               if (swapIndex === -1) {
                 throw new Error("Found Claimed event for non-existent swap");
@@ -958,7 +958,7 @@ export class EthereumConnection implements AtomicSwapConnection {
             case SwapContractEvent.Aborted: {
               const swapId = dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes;
               const swapIndex = accumulator.findIndex(s =>
-                swapIdEquals(s.data.id, { prefix: SwapIdPrefixes.Ether, data: swapId }),
+                swapIdEquals(s.data.id, { prefix: SwapIdPrefix.Ether, data: swapId }),
               );
               if (swapIndex === -1) {
                 throw new Error("Found Aborted event for non-existent swap");
