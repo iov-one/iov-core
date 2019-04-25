@@ -259,7 +259,7 @@ export class EthereumCodec implements TxCodec {
             hash: hash,
           };
           break;
-        case SwapContractMethod.Claim:
+        case SwapContractMethod.Claim: {
           const positionPreimageBegin = positionSwapIdEnd;
           const positionPreimageEnd = positionPreimageBegin + 32;
 
@@ -280,14 +280,23 @@ export class EthereumCodec implements TxCodec {
             preimage: preimage,
           };
           break;
-        case SwapContractMethod.Abort:
+        }
+        case SwapContractMethod.Abort: {
+          const prefix =
+            atomicSwapContractAddress === this.atomicSwapErc20ContractAddress
+              ? SwapIdPrefix.Erc20
+              : SwapIdPrefix.Ether;
           transaction = {
             kind: "bcp/swap_abort",
             creator: creator,
             fee: fee,
-            swapId: swapIdWithoutPrefix,
+            swapId: {
+              ...swapIdWithoutPrefix,
+              prefix: prefix,
+            },
           };
           break;
+        }
         default:
           throw new Error("Atomic swap method not recognized");
       }
