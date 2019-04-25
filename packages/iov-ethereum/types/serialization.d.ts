@@ -6,13 +6,13 @@ export declare enum SwapIdPrefix {
 }
 export declare class Serialization {
     static serializeGenericTransaction(nonce: Nonce, gasPriceHex: string, gasLimitHex: string, recipient: Address, value: string, data: Uint8Array, v: string, r?: Uint8Array, s?: Uint8Array): Uint8Array;
-    static serializeUnsignedTransaction(unsigned: UnsignedTransaction, nonce: Nonce, erc20Tokens?: Erc20TokensMap, atomicSwapEtherContractAddress?: Address, atomicSwapErc20ContractAddress?: Address): Uint8Array;
-    static serializeSignedTransaction(signed: SignedTransaction, erc20Tokens?: Erc20TokensMap, atomicSwapEtherContractAddress?: Address, atomicSwapErc20ContractAddress?: Address): Uint8Array;
+    static serializeUnsignedTransaction(unsigned: UnsignedTransaction, nonce: Nonce, erc20Tokens?: Erc20TokensMap, atomicSwapContractAddress?: Address): Uint8Array;
+    static serializeSignedTransaction(signed: SignedTransaction, erc20Tokens?: Erc20TokensMap, atomicSwapContractAddress?: Address): Uint8Array;
     private static checkRecipientAddress;
     private static checkSwapId;
     private static checkHash;
     private static checkPreimage;
-    private static getAtomicSwapContractAddress;
+    private static checkAtomicSwapContractAddress;
     private static checkMemoNotPresent;
     private static checkEtherAmount;
     private static checkErc20Amount;

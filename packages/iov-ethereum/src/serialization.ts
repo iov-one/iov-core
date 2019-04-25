@@ -69,21 +69,19 @@ export class Serialization {
     unsigned: UnsignedTransaction,
     nonce: Nonce,
     erc20Tokens: Erc20TokensMap = new Map(),
-    atomicSwapEtherContractAddress?: Address,
-    atomicSwapErc20ContractAddress?: Address,
+    atomicSwapContractAddress?: Address,
   ): Uint8Array {
     const chainIdHex = Serialization.getChainIdHex(unsigned);
     const gasPriceHex = Serialization.getGasPriceHex(unsigned);
     const gasLimitHex = Serialization.getGasLimitHex(unsigned);
 
-    const args: [string, string, string, Nonce, Erc20TokensMap, Address?, Address?] = [
+    const args: [string, string, string, Nonce, Erc20TokensMap, Address?] = [
       chainIdHex,
       gasPriceHex,
       gasLimitHex,
       nonce,
       erc20Tokens,
-      atomicSwapEtherContractAddress,
-      atomicSwapErc20ContractAddress,
+      atomicSwapContractAddress,
     ];
 
     if (isSendTransaction(unsigned)) {
@@ -104,8 +102,7 @@ export class Serialization {
   public static serializeSignedTransaction(
     signed: SignedTransaction,
     erc20Tokens: Erc20TokensMap = new Map(),
-    atomicSwapEtherContractAddress?: Address,
-    atomicSwapErc20ContractAddress?: Address,
+    atomicSwapContractAddress?: Address,
   ): Uint8Array {
     const unsigned = signed.transaction;
 
@@ -123,17 +120,7 @@ export class Serialization {
         : { forkState: BlknumForkState.Before };
     const v = encodeQuantity(eip155V(chain, sig.recovery));
 
-    const args: [
-      string,
-      Uint8Array,
-      Uint8Array,
-      string,
-      string,
-      Nonce,
-      Erc20TokensMap,
-      Address?,
-      Address?
-    ] = [
+    const args: [string, Uint8Array, Uint8Array, string, string, Nonce, Erc20TokensMap, Address?] = [
       v,
       r,
       s,
@@ -141,8 +128,7 @@ export class Serialization {
       gasLimitHex,
       nonce,
       erc20Tokens,
-      atomicSwapEtherContractAddress,
-      atomicSwapErc20ContractAddress,
+      atomicSwapContractAddress,
     ];
 
     if (isSendTransaction(unsigned)) {
@@ -187,17 +173,10 @@ export class Serialization {
     }
   }
 
-  private static getAtomicSwapContractAddress(
-    atomicSwapEtherContractAddress?: Address,
-    atomicSwapErc20ContractAddress?: Address,
-  ): Address {
-    const contractAddresses = [atomicSwapEtherContractAddress, atomicSwapErc20ContractAddress].filter(
-      Boolean,
-    );
-    if (contractAddresses.length !== 1) {
-      throw new Error("Atomic swap transactions require exactly one atomic swap contract address");
+  private static checkAtomicSwapContractAddress(atomicSwapContractAddress?: Address): void {
+    if (!atomicSwapContractAddress) {
+      throw new Error("No atomic swap contract address provided");
     }
-    return contractAddresses[0]!;
   }
 
   private static checkMemoNotPresent(unsigned: SendTransaction | SwapOfferTransaction): void {
@@ -397,22 +376,18 @@ export class Serialization {
     gasLimitHex: string,
     nonce: Nonce,
     erc20Tokens: Erc20TokensMap,
-    atomicSwapEtherContractAddress?: Address,
-    atomicSwapErc20ContractAddress?: Address,
+    atomicSwapContractAddress?: Address,
   ): Uint8Array {
     Serialization.checkSwapId(unsigned);
     Serialization.checkHash(unsigned);
     Serialization.checkRecipientAddress(unsigned);
     Serialization.checkMemoNotPresent(unsigned);
-    const atomicSwapContractAddress = Serialization.getAtomicSwapContractAddress(
-      atomicSwapEtherContractAddress,
-      atomicSwapErc20ContractAddress,
-    );
+    Serialization.checkAtomicSwapContractAddress(atomicSwapContractAddress);
     if (!isBlockHeightTimeout(unsigned.timeout)) {
       throw new Error("Timeout must be specified as a block height");
     }
 
-    if (atomicSwapContractAddress === atomicSwapEtherContractAddress) {
+    if (unsigned.swapId!.prefix === SwapIdPrefix.Ether) {
       // native ETH swap
       Serialization.checkEtherAmount(unsigned);
 
@@ -422,7 +397,7 @@ export class Serialization {
         nonce,
         gasPriceHex,
         gasLimitHex,
-        atomicSwapContractAddress,
+        atomicSwapContractAddress!,
         unsigned.amounts[0].quantity,
         atomicSwapOfferCall,
         chainIdHex,
@@ -441,7 +416,7 @@ export class Serialization {
         nonce,
         gasPriceHex,
         gasLimitHex,
-        atomicSwapContractAddress,
+        atomicSwapContractAddress!,
         ZERO_ETH_QUANTITY,
         atomicSwapOfferCall,
         chainIdHex,
@@ -456,15 +431,11 @@ export class Serialization {
     gasLimitHex: string,
     nonce: Nonce,
     _?: any,
-    atomicSwapEtherContractAddress?: Address,
-    atomicSwapErc20ContractAddress?: Address,
+    atomicSwapContractAddress?: Address,
   ): Uint8Array {
     Serialization.checkSwapId(unsigned);
     Serialization.checkPreimage(unsigned);
-    const atomicSwapContractAddress = Serialization.getAtomicSwapContractAddress(
-      atomicSwapEtherContractAddress,
-      atomicSwapErc20ContractAddress,
-    );
+    Serialization.checkAtomicSwapContractAddress(atomicSwapContractAddress);
 
     const atomicSwapClaimCall = Serialization.buildAtomicSwapClaimCall(unsigned);
 
@@ -472,7 +443,7 @@ export class Serialization {
       nonce,
       gasPriceHex,
       gasLimitHex,
-      atomicSwapContractAddress,
+      atomicSwapContractAddress!,
       ZERO_ETH_QUANTITY,
       atomicSwapClaimCall,
       chainIdHex,
@@ -486,14 +457,10 @@ export class Serialization {
     gasLimitHex: string,
     nonce: Nonce,
     _?: any,
-    atomicSwapEtherContractAddress?: Address,
-    atomicSwapErc20ContractAddress?: Address,
+    atomicSwapContractAddress?: Address,
   ): Uint8Array {
     Serialization.checkSwapId(unsigned);
-    const atomicSwapContractAddress = Serialization.getAtomicSwapContractAddress(
-      atomicSwapEtherContractAddress,
-      atomicSwapErc20ContractAddress,
-    );
+    Serialization.checkAtomicSwapContractAddress(atomicSwapContractAddress);
 
     const atomicSwapAbortCall = Serialization.buildAtomicSwapAbortCall(unsigned);
 
@@ -501,7 +468,7 @@ export class Serialization {
       nonce,
       gasPriceHex,
       gasLimitHex,
-      atomicSwapContractAddress,
+      atomicSwapContractAddress!,
       ZERO_ETH_QUANTITY,
       atomicSwapAbortCall,
       chainIdHex,
@@ -515,8 +482,7 @@ export class Serialization {
     gasLimitHex: string,
     nonce: Nonce,
     erc20Tokens: Erc20TokensMap,
-    _1?: any,
-    _2?: any,
+    _?: any,
   ): Uint8Array {
     const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
     const erc20ApproveCall = Serialization.buildErc20ApproveCall(unsigned);
@@ -540,8 +506,7 @@ export class Serialization {
     gasLimitHex: string,
     nonce: Nonce,
     erc20Tokens: Erc20TokensMap,
-    _1?: any,
-    _2?: any,
+    _?: any,
   ): Uint8Array {
     Serialization.checkRecipientAddress(unsigned);
 
@@ -590,22 +555,18 @@ export class Serialization {
     gasLimitHex: string,
     nonce: Nonce,
     erc20Tokens: Erc20TokensMap,
-    atomicSwapEtherContractAddress?: Address,
-    atomicSwapErc20ContractAddress?: Address,
+    atomicSwapContractAddress?: Address,
   ): Uint8Array {
     Serialization.checkSwapId(unsigned);
     Serialization.checkHash(unsigned);
     Serialization.checkRecipientAddress(unsigned);
     Serialization.checkMemoNotPresent(unsigned);
-    const atomicSwapContractAddress = Serialization.getAtomicSwapContractAddress(
-      atomicSwapEtherContractAddress,
-      atomicSwapErc20ContractAddress,
-    );
+    Serialization.checkAtomicSwapContractAddress(atomicSwapContractAddress);
     if (!isBlockHeightTimeout(unsigned.timeout)) {
       throw new Error("Timeout must be specified as a block height");
     }
 
-    if (atomicSwapContractAddress === atomicSwapEtherContractAddress) {
+    if (unsigned.swapId!.prefix === SwapIdPrefix.Ether) {
       // native ETH swap
       Serialization.checkEtherAmount(unsigned);
 
@@ -615,7 +576,7 @@ export class Serialization {
         nonce,
         gasPriceHex,
         gasLimitHex,
-        atomicSwapContractAddress,
+        atomicSwapContractAddress!,
         unsigned.amounts[0].quantity,
         atomicSwapOfferCall,
         v,
@@ -636,7 +597,7 @@ export class Serialization {
         nonce,
         gasPriceHex,
         gasLimitHex,
-        atomicSwapContractAddress,
+        atomicSwapContractAddress!,
         ZERO_ETH_QUANTITY,
         atomicSwapOfferCall,
         v,
@@ -655,15 +616,11 @@ export class Serialization {
     gasLimitHex: string,
     nonce: Nonce,
     _?: any,
-    atomicSwapEtherContractAddress?: Address,
-    atomicSwapErc20ContractAddress?: Address,
+    atomicSwapContractAddress?: Address,
   ): Uint8Array {
     Serialization.checkSwapId(unsigned);
     Serialization.checkPreimage(unsigned);
-    Serialization.getAtomicSwapContractAddress(
-      atomicSwapEtherContractAddress,
-      atomicSwapErc20ContractAddress,
-    );
+    Serialization.checkAtomicSwapContractAddress(atomicSwapContractAddress);
 
     const atomicSwapClaimCall = Serialization.buildAtomicSwapClaimCall(unsigned);
 
@@ -671,7 +628,7 @@ export class Serialization {
       nonce,
       gasPriceHex,
       gasLimitHex,
-      (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
+      atomicSwapContractAddress!,
       ZERO_ETH_QUANTITY,
       atomicSwapClaimCall,
       v,
@@ -689,14 +646,10 @@ export class Serialization {
     gasLimitHex: string,
     nonce: Nonce,
     _?: any,
-    atomicSwapEtherContractAddress?: Address,
-    atomicSwapErc20ContractAddress?: Address,
+    atomicSwapContractAddress?: Address,
   ): Uint8Array {
     Serialization.checkSwapId(unsigned);
-    Serialization.getAtomicSwapContractAddress(
-      atomicSwapEtherContractAddress,
-      atomicSwapErc20ContractAddress,
-    );
+    Serialization.checkAtomicSwapContractAddress(atomicSwapContractAddress);
 
     const atomicSwapAbortCall = Serialization.buildAtomicSwapAbortCall(unsigned);
 
@@ -704,7 +657,7 @@ export class Serialization {
       nonce,
       gasPriceHex,
       gasLimitHex,
-      (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
+      atomicSwapContractAddress!,
       ZERO_ETH_QUANTITY,
       atomicSwapAbortCall,
       v,
@@ -722,8 +675,7 @@ export class Serialization {
     gasLimitHex: string,
     nonce: Nonce,
     erc20Tokens: Erc20TokensMap,
-    _1?: any,
-    _2?: any,
+    _?: any,
   ): Uint8Array {
     const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
     const erc20ApproveCall = Serialization.buildErc20ApproveCall(unsigned);
