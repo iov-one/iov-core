@@ -264,12 +264,19 @@ export class EthereumCodec implements TxCodec {
           const positionPreimageEnd = positionPreimageBegin + 32;
 
           const preimage = input.slice(positionPreimageBegin, positionPreimageEnd) as Preimage;
+          const prefix =
+            atomicSwapContractAddress === this.atomicSwapErc20ContractAddress
+              ? SwapIdPrefix.Erc20
+              : SwapIdPrefix.Ether;
 
           transaction = {
             kind: "bcp/swap_claim",
             creator: creator,
             fee: fee,
-            swapId: swapIdWithoutPrefix,
+            swapId: {
+              ...swapIdWithoutPrefix,
+              prefix: prefix,
+            },
             preimage: preimage,
           };
           break;
