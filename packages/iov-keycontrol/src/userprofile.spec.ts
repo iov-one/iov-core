@@ -209,9 +209,9 @@ describe("UserProfile", () => {
     expect(profile.wallets.value.map(i => i.label)).toEqual(["first", "second"]);
 
     // make some new ids
-    await profile.createIdentity(wallet1.id, defaultChain, HdPaths.simpleAddress(0));
-    const key = await profile.createIdentity(wallet2.id, defaultChain, HdPaths.simpleAddress(0));
-    await profile.createIdentity(wallet2.id, defaultChain, HdPaths.simpleAddress(1));
+    await profile.createIdentity(wallet1.id, defaultChain, HdPaths.iov(0));
+    const key = await profile.createIdentity(wallet2.id, defaultChain, HdPaths.iov(0));
+    await profile.createIdentity(wallet2.id, defaultChain, HdPaths.iov(1));
     expect(profile.getIdentities(wallet1.id).length).toEqual(1);
     expect(profile.getIdentities(wallet2.id).length).toEqual(2);
 
@@ -246,7 +246,7 @@ describe("UserProfile", () => {
     expect(profile.getIdentities(newWallet.id).length).toEqual(0);
 
     // manipulate wallet reference that has been added before
-    await newWallet.createIdentity(defaultChain, HdPaths.simpleAddress(0));
+    await newWallet.createIdentity(defaultChain, HdPaths.iov(0));
     expect(newWallet.getIdentities().length).toEqual(1);
 
     // nothing hapenned to the profile
@@ -527,7 +527,7 @@ describe("UserProfile", () => {
       /No wallet for identity '{"chainId":"ethereum","pubkey":{"algo":"ed25519","data":{"0":170}}}' found in keyring/,
     );
     await profile
-      .createIdentity(walletId, defaultChain, HdPaths.simpleAddress(0))
+      .createIdentity(walletId, defaultChain, HdPaths.iov(0))
       .then(() => fail("Promise must not resolve"))
       .catch(error => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
     await profile
@@ -552,7 +552,7 @@ describe("UserProfile", () => {
     const createdAt = new ReadonlyDate(ReadonlyDate.now());
     const keyring = new Keyring();
     const wallet = keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic1));
-    const mainIdentity = await keyring.createIdentity(wallet.id, defaultChain, HdPaths.simpleAddress(0));
+    const mainIdentity = await keyring.createIdentity(wallet.id, defaultChain, HdPaths.iov(0));
     const profile = new UserProfile({ createdAt: createdAt, keyring: keyring });
 
     const fakeTransaction: SendTransaction = {
