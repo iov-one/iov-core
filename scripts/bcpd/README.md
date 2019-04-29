@@ -1,5 +1,9 @@
 # BCPd app
 
+## Requirements
+
+- docker
+
 ## Genesis account
 
 ```
