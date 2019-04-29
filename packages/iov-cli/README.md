@@ -56,7 +56,7 @@ $ iov-cli
 > profile.getIdentities(wallet.id)
 []
 
-> const faucet = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(0))
+> const faucet = await profile.createIdentity(wallet.id, chainId, HdPaths.iov(0))
 
 > faucet.pubkey
 { algo: 'ed25519',
@@ -78,7 +78,7 @@ $ iov-cli
 'tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f'
 > (await connection.getAccount({ address: faucetAddress })).balance
 
-> const recipient = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(1));
+> const recipient = await profile.createIdentity(wallet.id, chainId, HdPaths.iov(1));
 > const recipientAddress = signer.identityToAddress(recipient);
 
 > .editor
@@ -207,7 +207,7 @@ In this example we connect to a public test network.
 > const { connection } = await signer.addChain(bnsConnector("https://bns.hugnet.iov.one"));
 > const chainId = connection.chainId();
 
-> const alice = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(0));
+> const alice = await profile.createIdentity(wallet.id, chainId, HdPaths.iov(0));
 > const aliceAddress = signer.identityToAddress(alice);
 
 > const faucet = new IovFaucet("https://iov-faucet.hugnet.iov.one");
