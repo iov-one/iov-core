@@ -92,7 +92,7 @@ describe("signingservice.worker", () => {
   const bnsdUrl = "ws://localhost:23456";
   const signingserviceKarmaUrl = "/base/dist/web/signingservice.worker.js";
   // time to wait until service is initialized and conected to chain
-  const signingserviceBootTime = 1_500;
+  const signingserviceBootTime = 2_000;
 
   const bnsdFaucetPubkey: PublicKeyBundle = {
     algo: Algorithm.Ed25519,
