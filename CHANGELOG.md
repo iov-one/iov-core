@@ -23,6 +23,7 @@
   renamed to `parseJsonRpcResponse` as soon as the existing
   `parseJsonRpcResponse` is removed.
 - @iov/keycontrol: Export `ReadonlyWallet`.
+- @iov/keycontrol: Deprecate `HdPaths.simpleAddress`.
 
 ## 0.13.6
 

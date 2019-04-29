@@ -5,6 +5,7 @@ export class HdPaths {
    * IOV's SimpleAddress derivation path
    *
    * @see https://github.com/iov-one/iov-core/blob/v0.6.1/docs/KeyBase.md#simple-addresses
+   * @deprecated we use IOV HD paths in the form m/44'/234'/a' now
    */
   public static simpleAddress(index: number): ReadonlyArray<Slip10RawIndex> {
     const iovPurpose = 4804438;
