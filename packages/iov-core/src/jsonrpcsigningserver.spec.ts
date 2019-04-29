@@ -227,13 +227,13 @@ describe("JsonRpcSigningServer", () => {
       throw new Error("Identity element is not valid");
     }
 
-    const send: SendTransaction = {
+    const send = await bnsConnection.withDefaultFee<SendTransaction>({
       kind: "bcp/send",
       creator: signer,
       memo: `Hello ${Math.random()}`,
       amount: defaultAmount,
       recipient: await randomBnsAddress(),
-    };
+    });
 
     const signAndPostResponse = await server.handleChecked({
       jsonrpc: "2.0",
