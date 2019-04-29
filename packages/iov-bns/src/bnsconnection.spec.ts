@@ -1564,7 +1564,7 @@ describe("BnsConnection", () => {
     };
     const querySwapSender: AtomicSwapQuery = { sender: faucetAddr };
     const querySwapRecipient: AtomicSwapQuery = { recipient: recipientAddr };
-    const querySwapHash: AtomicSwapQuery = { hashlock: swapOfferHash };
+    const querySwapHash: AtomicSwapQuery = { hash: swapOfferHash };
 
     // ----- connection.searchTx() -----
     // we should be able to find the transaction through quite a number of tag queries

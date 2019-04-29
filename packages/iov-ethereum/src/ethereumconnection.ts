@@ -22,7 +22,7 @@ import {
   FailedTransaction,
   Fee,
   Hash,
-  isAtomicSwapHashlockQuery,
+  isAtomicSwapHashQuery,
   isAtomicSwapIdQuery,
   isAtomicSwapRecipientQuery,
   isAtomicSwapSenderQuery,
@@ -862,7 +862,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     } else if (
       isAtomicSwapRecipientQuery(query) ||
       isAtomicSwapSenderQuery(query) ||
-      isAtomicSwapHashlockQuery(query)
+      isAtomicSwapHashQuery(query)
     ) {
       const params = [
         {
@@ -975,8 +975,8 @@ export class EthereumConnection implements AtomicSwapConnection {
               return swap.data.recipient === query.recipient;
             } else if (isAtomicSwapSenderQuery(query)) {
               return swap.data.sender === query.sender;
-            } else if (isAtomicSwapHashlockQuery(query)) {
-              return Encoding.toHex(swap.data.hash) === Encoding.toHex(query.hashlock);
+            } else if (isAtomicSwapHashQuery(query)) {
+              return Encoding.toHex(swap.data.hash) === Encoding.toHex(query.hash);
             }
             throw new Error("unsupported query type");
           },

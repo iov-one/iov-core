@@ -12,6 +12,9 @@ Breaking changes
 - @iov/bcp: Add `SwapId` type, and use where appropriate. This is an interface
   containing `SwapIdBytes` and can be extended on a per-chain basis.
 - @iov/bcp: Rename `AtomicSwapIdQuery.swapid` to `AtomicSwapIdQuery.id`.
+- @iov/bcp: Rename `AtomicSwapHashlockQuery.hashlock` to
+  `AtomicSwapHashQuery.hash` and change to type `Hash`; rename
+  `isAtomicSwapHashlockQuery` to `isAtomicSwapHashQuery`.
 - @iov/ethereum: Switch to new `SwapId` type instead of `SwapIdBytes` where
   appropriate.
 - @iov/bns: Switch to new `SwapId` type instead of `SwapIdBytes` where

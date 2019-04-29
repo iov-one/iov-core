@@ -115,7 +115,7 @@ export type HashId = Uint8Array & As<"hashid">;
 
 const hashIdentifierPrefix = Encoding.toAscii("hash/sha256/");
 
-export function hashIdentifier(hash: Uint8Array): HashId {
+export function hashIdentifier(hash: Hash): HashId {
   return Uint8Array.from([...hashIdentifierPrefix, ...hash]) as HashId;
 }
 

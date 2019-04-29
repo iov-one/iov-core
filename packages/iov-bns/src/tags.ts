@@ -20,7 +20,7 @@ export function bnsSwapQueryTag(query: AtomicSwapQuery, set = true): QueryTag {
     binKey = Uint8Array.from([...indexKey(bucket, "recipient"), ...decodeBnsAddress(query.recipient).data]);
   } else {
     // if (isQueryBySwapHash(query))
-    binKey = Uint8Array.from([...indexKey(bucket, "arbiter"), ...hashIdentifier(query.hashlock)]);
+    binKey = Uint8Array.from([...indexKey(bucket, "arbiter"), ...hashIdentifier(query.hash)]);
   }
 
   return {

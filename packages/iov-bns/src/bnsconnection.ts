@@ -338,8 +338,8 @@ export class BnsConnection implements AtomicSwapConnection {
       } else if (isAtomicSwapRecipientQuery(query)) {
         return this.query("/escrows/recipient", decodeBnsAddress(query.recipient).data);
       } else {
-        // if (isQueryBySwapHash(query))
-        return this.query("/escrows/arbiter", hashIdentifier(query.hashlock));
+        // if (isAtomicSwapHashQuery(query))
+        return this.query("/escrows/arbiter", hashIdentifier(query.hash));
       }
     };
 
