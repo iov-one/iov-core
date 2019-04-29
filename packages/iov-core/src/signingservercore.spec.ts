@@ -379,12 +379,12 @@ describe("SigningServerCore", () => {
       expect(core.signedAndPosted.value).toEqual([]);
 
       const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
-      const send: SendTransaction = {
+      const send = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         creator: signingIdentity,
         amount: defaultAmount,
         recipient: await randomBnsAddress(),
-      };
+      });
       const transactionId = await core.signAndPost("Please sign now", send);
       if (!transactionId) {
         throw new Error("Expected transaction ID to be set");
