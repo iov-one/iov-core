@@ -13,6 +13,7 @@ import { SigningServerCore } from "../signingservercore";
 
 const bnsdUrl = "ws://localhost:23456";
 const bnsdFaucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
+const bnsdFaucetPath = HdPaths.iov(0);
 const ethereumUrl = "http://localhost:8545";
 const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
 
@@ -32,7 +33,7 @@ async function main(): Promise<void> {
   const ethereumChainId = ethereumConnection.chainId();
 
   // faucet identity
-  await profile.createIdentity(ed25519Wallet.id, bnsdChainId, HdPaths.simpleAddress(0));
+  await profile.createIdentity(ed25519Wallet.id, bnsdChainId, bnsdFaucetPath);
   // ganache second identity
   await profile.createIdentity(secp256k1Wallet.id, ethereumChainId, HdPaths.ethereum(1));
 

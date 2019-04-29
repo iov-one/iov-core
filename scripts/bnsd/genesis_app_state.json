@@ -1,8 +1,24 @@
 {
   "cash": [
     {
-      "address": "b1ca7e78f74423ae01da3b51e676934d9105f282",
-      "coins": ["123456789 CASH"]
+      "address": "bech32:tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea",
+      "coins": ["1000000 CASH"]
+    },
+    {
+      "address": "bech32:tiov12shyht3pvvacvyee36w5844jkfh5s0mf4gszp9",
+      "coins": ["1000000 CASH"]
+    },
+    {
+      "address": "bech32:tiov18mgvcwg4339w40ktv0hmmln80ttvza2n6hjaxh",
+      "coins": ["1000000 CASH"]
+    },
+    {
+      "address": "bech32:tiov1n29gges26z4napj5lqjkmzuq6mpkqk32plsgyz",
+      "coins": ["1000000 CASH"]
+    },
+    {
+      "address": "bech32:tiov192ehw3lerre6s4vadrnkt82x4zlq0uw5j48dcs",
+      "coins": ["1000000 CASH"]
     }
   ],
   "currencies": [

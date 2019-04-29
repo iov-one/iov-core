@@ -107,10 +107,11 @@ describe("BnsConnection", () => {
     data: fromHex("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb") as PublicKeyBytes,
   };
 
-  // The first simple address key (m/4804438'/0') generated from this mnemonic produces the address
-  // tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f (bech32) / b1ca7e78f74423ae01da3b51e676934d9105f282 (hex).
-  // This account has money in the genesis file (setup in docker).
+  // The first IOV key (m/44'/234'/0') generated from this mnemonic produces the address
+  // tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea (bech32) / a4f97447e7df55b6ef0d6209ebef2a7b22625376 (hex).
+  // This account has money in the genesis file (see scripts/bnsd/README.md).
   const faucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
+  const faucetPath = HdPaths.iov(0);
 
   const bnsdTendermintUrl = "ws://localhost:23456";
 
@@ -123,7 +124,7 @@ describe("BnsConnection", () => {
   }> {
     const profile = new UserProfile();
     const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(faucetMnemonic));
-    const faucet = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(0));
+    const faucet = await profile.createIdentity(wallet.id, chainId, faucetPath);
     return { profile: profile, walletId: wallet.id, faucet: faucet };
   }
 
@@ -259,7 +260,7 @@ describe("BnsConnection", () => {
         expect(account.pubkey).toEqual(faucet.pubkey);
         expect(account.balance.length).toEqual(1);
         expect(account.balance[0].tokenTicker).toEqual(cash);
-        expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
+        expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(100000_000000000);
       }
 
       // can get the faucet by publicKey, same result
@@ -271,7 +272,7 @@ describe("BnsConnection", () => {
         expect(account.pubkey).toEqual(faucet.pubkey);
         expect(account.balance.length).toEqual(1);
         expect(account.balance[0].tokenTicker).toEqual(cash);
-        expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
+        expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(100000_000000000);
       }
 
       connection.disconnect();

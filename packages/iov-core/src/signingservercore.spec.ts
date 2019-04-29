@@ -41,11 +41,11 @@ async function randomBnsAddress(): Promise<Address> {
 describe("SigningServerCore", () => {
   const bnsdUrl = "ws://localhost:23456";
 
-  // The first simple address key (m/4804438'/0') generated from this mnemonic produces the address
-  // tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f (bech32) / b1ca7e78f74423ae01da3b51e676934d9105f282 (hex).
-  // This account has money in the genesis file (setup in docker).
+  // The first IOV key (m/44'/234'/0') generated from this mnemonic produces the address
+  // tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea (bech32) / a4f97447e7df55b6ef0d6209ebef2a7b22625376 (hex).
+  // This account has money in the genesis file (see scripts/bnsd/README.md).
   const faucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
-  const faucetPath = HdPaths.simpleAddress(0);
+  const faucetPath = HdPaths.iov(0);
 
   const minimalFee: Amount = {
     quantity: "10000000",
