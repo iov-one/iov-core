@@ -2,6 +2,10 @@
 
 ## 0.15.0
 
+- @iov/ethereum: Add `createEtherSwapId` and `createErc20SwapId` static methods.
+
+Breaking changes
+
 - @iov/bcp: Remove unused type `SwapIdString`.
 - @iov/bcp: Remove `AtomicSwapHelpers.createId`, which is now the responsibility
   of individual blockchain connections.
@@ -9,7 +13,6 @@
   containing `SwapIdBytes` and can be extended on a per-chain basis.
 - @iov/ethereum: Switch to new `SwapId` type instead of `SwapIdBytes` where
   appropriate.
-- @iov/ethereum: Add `createEtherSwapId` and `createErc20SwapId` static methods.
 - @iov/bns: Switch to new `SwapId` type instead of `SwapIdBytes` where
   appropriate.
 
