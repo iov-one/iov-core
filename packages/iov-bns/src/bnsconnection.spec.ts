@@ -1558,7 +1558,7 @@ describe("BnsConnection", () => {
 
     // ----  prepare queries
     const querySwapId: AtomicSwapQuery = {
-      swapid: {
+      id: {
         data: txResult,
       },
     };

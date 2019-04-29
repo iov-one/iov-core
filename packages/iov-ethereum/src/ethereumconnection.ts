@@ -781,7 +781,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     maxHeight: number = Number.MAX_SAFE_INTEGER,
   ): Promise<ReadonlyArray<AtomicSwap>> {
     if (isAtomicSwapIdQuery(query)) {
-      const data = Uint8Array.from([...Abi.calculateMethodId("get(bytes32)"), ...query.swapid.data]);
+      const data = Uint8Array.from([...Abi.calculateMethodId("get(bytes32)"), ...query.id.data]);
 
       const params = [
         {
@@ -820,7 +820,7 @@ export class EthereumConnection implements AtomicSwapConnection {
 
       const resultArray = Encoding.fromHex(normalizeHex(swapsResponse.result));
       const swapData: SwapData = {
-        id: query.swapid,
+        id: query.id,
         sender: toChecksummedAddress(Abi.decodeAddress(resultArray.slice(senderBegin, senderEnd))),
         recipient: toChecksummedAddress(Abi.decodeAddress(resultArray.slice(recipientBegin, recipientEnd))),
         hash: resultArray.slice(hashBegin, hashEnd) as Hash,

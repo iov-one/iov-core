@@ -332,7 +332,7 @@ export class BnsConnection implements AtomicSwapConnection {
   public async getSwapsFromState(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>> {
     const doQuery = async (): Promise<QueryResponse> => {
       if (isAtomicSwapIdQuery(query)) {
-        return this.query("/escrows", query.swapid.data);
+        return this.query("/escrows", query.id.data);
       } else if (isAtomicSwapSenderQuery(query)) {
         return this.query("/escrows/sender", decodeBnsAddress(query.sender).data);
       } else if (isAtomicSwapRecipientQuery(query)) {

@@ -120,12 +120,12 @@ class Actor {
   }
 
   public async getBnsSwap(id: SwapId): Promise<AtomicSwap> {
-    const swaps = await this.bnsConnection.getSwaps({ swapid: id });
+    const swaps = await this.bnsConnection.getSwaps({ id: id });
     return swaps[swaps.length - 1];
   }
 
   public async getBcpSwap(id: SwapId): Promise<AtomicSwap> {
-    const swaps = await this.bcpConnection.getSwaps({ swapid: id });
+    const swaps = await this.bcpConnection.getSwaps({ id: id });
     return swaps[swaps.length - 1];
   }
 

@@ -11,6 +11,7 @@ Breaking changes
   of individual blockchain connections.
 - @iov/bcp: Add `SwapId` type, and use where appropriate. This is an interface
   containing `SwapIdBytes` and can be extended on a per-chain basis.
+- @iov/bcp: Rename `AtomicSwapIdQuery.swapid` to `AtomicSwapIdQuery.id`.
 - @iov/ethereum: Switch to new `SwapId` type instead of `SwapIdBytes` where
   appropriate.
 - @iov/bns: Switch to new `SwapId` type instead of `SwapIdBytes` where

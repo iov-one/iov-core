@@ -53,7 +53,7 @@ export interface AtomicSwapSenderQuery {
     readonly sender: Address;
 }
 export interface AtomicSwapIdQuery {
-    readonly swapid: SwapId;
+    readonly id: SwapId;
 }
 export interface AtomicSwapHashlockQuery {
     readonly hashlock: Uint8Array;

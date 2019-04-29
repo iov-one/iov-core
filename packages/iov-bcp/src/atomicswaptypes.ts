@@ -75,7 +75,7 @@ export interface AtomicSwapSenderQuery {
 }
 
 export interface AtomicSwapIdQuery {
-  readonly swapid: SwapId;
+  readonly id: SwapId;
 }
 
 // on some chains, swapid may equal hashlock, but often these may differ
@@ -101,7 +101,7 @@ export function isAtomicSwapSenderQuery(query: AtomicSwapQuery): query is Atomic
 
 /** a type guard to use in the swap-based queries  */
 export function isAtomicSwapIdQuery(query: AtomicSwapQuery): query is AtomicSwapIdQuery {
-  return (query as AtomicSwapIdQuery).swapid !== undefined;
+  return (query as AtomicSwapIdQuery).id !== undefined;
 }
 
 /** a type guard to use in the swap-based queries  */
