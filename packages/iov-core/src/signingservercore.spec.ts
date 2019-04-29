@@ -255,12 +255,9 @@ describe("SigningServerCore", () => {
       const bnsChain = connection.chainId();
 
       {
-        const wallet = profile.addWallet(
-          Ed25519HdWallet.fromMnemonic(
-            "option diagram plastic million educate they arrow fat comic excite abandon green",
-          ),
-        );
-        await profile.createIdentity(wallet.id, bnsChain, HdPaths.simpleAddress(0));
+        const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(16)));
+        const identity = await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
+        await sendTokensFromFaucet(connection, identity, minimalFee);
       }
 
       const core = new SigningServerCore(
@@ -271,8 +268,6 @@ describe("SigningServerCore", () => {
       );
 
       const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
-
-      await sendTokensFromFaucet(connection, signingIdentity, minimalFee);
 
       const send = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
@@ -369,12 +364,9 @@ describe("SigningServerCore", () => {
       const bnsChain = connection.chainId();
 
       {
-        const wallet = profile.addWallet(
-          Ed25519HdWallet.fromMnemonic(
-            "option diagram plastic million educate they arrow fat comic excite abandon green",
-          ),
-        );
-        await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
+        const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(16)));
+        const identity = await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
+        await sendTokensFromFaucet(connection, identity, minimalFee);
       }
 
       const core = new SigningServerCore(
