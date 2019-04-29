@@ -103,13 +103,13 @@ describe("SigningServerCore", () => {
   });
 
   describe("getIdentities", () => {
+    // unused in the sense that there are no balances on the derives accounts
+    const unusedMnemonicA = "culture speed parent picture lock inquiry around pizza bleak leaf fish hand";
+    const unusedMnemonicB = "muffin width month typical depth boost beauty surface orphan cage youth rack";
+
     it("can get identities", async () => {
       const profile = new UserProfile();
-      const wallet = profile.addWallet(
-        Ed25519HdWallet.fromMnemonic(
-          "option diagram plastic million educate they arrow fat comic excite abandon green",
-        ),
-      );
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(unusedMnemonicA));
       const identity0 = await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0));
       const identity1 = await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(1));
 
@@ -129,11 +129,7 @@ describe("SigningServerCore", () => {
 
     it("can get some selected identities", async () => {
       const profile = new UserProfile();
-      const wallet = profile.addWallet(
-        Ed25519HdWallet.fromMnemonic(
-          "option diagram plastic million educate they arrow fat comic excite abandon green",
-        ),
-      );
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(unusedMnemonicA));
 
       const identities: ReadonlyArray<PublicIdentity> = [
         await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0)),
@@ -166,11 +162,7 @@ describe("SigningServerCore", () => {
 
     it("can get no identities", async () => {
       const profile = new UserProfile();
-      const wallet = profile.addWallet(
-        Ed25519HdWallet.fromMnemonic(
-          "option diagram plastic million educate they arrow fat comic excite abandon green",
-        ),
-      );
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(unusedMnemonicA));
 
       await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0));
       await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(1));
@@ -203,22 +195,14 @@ describe("SigningServerCore", () => {
       const ynet = "ynet" as ChainId;
 
       const profile = new UserProfile();
-      const walletA = profile.addWallet(
-        Ed25519HdWallet.fromMnemonic(
-          "option diagram plastic million educate they arrow fat comic excite abandon green",
-        ),
-      );
-      const idA0 = await profile.createIdentity(walletA.id, ynet, HdPaths.simpleAddress(0));
-      const idA1 = await profile.createIdentity(walletA.id, xnet, HdPaths.simpleAddress(1));
+      const walletA = profile.addWallet(Ed25519HdWallet.fromMnemonic(unusedMnemonicA));
+      const idA0 = await profile.createIdentity(walletA.id, ynet, HdPaths.iov(0));
+      const idA1 = await profile.createIdentity(walletA.id, xnet, HdPaths.iov(1));
 
-      const walletB = profile.addWallet(
-        Ed25519HdWallet.fromMnemonic(
-          "add critic turtle frown attract shop answer cook social wagon humble power",
-        ),
-      );
-      const idB0 = await profile.createIdentity(walletB.id, xnet, HdPaths.simpleAddress(0));
-      const idB1 = await profile.createIdentity(walletB.id, ynet, HdPaths.simpleAddress(1));
-      const idB2 = await profile.createIdentity(walletB.id, xnet, HdPaths.simpleAddress(2));
+      const walletB = profile.addWallet(Ed25519HdWallet.fromMnemonic(unusedMnemonicB));
+      const idB0 = await profile.createIdentity(walletB.id, xnet, HdPaths.iov(0));
+      const idB1 = await profile.createIdentity(walletB.id, ynet, HdPaths.iov(1));
+      const idB2 = await profile.createIdentity(walletB.id, xnet, HdPaths.iov(2));
 
       const signer = new MultiChainSigner(profile);
       const core = new SigningServerCore(
@@ -242,11 +226,7 @@ describe("SigningServerCore", () => {
 
     it("handles exceptions in callback", async () => {
       const profile = new UserProfile();
-      const wallet = profile.addWallet(
-        Ed25519HdWallet.fromMnemonic(
-          "option diagram plastic million educate they arrow fat comic excite abandon green",
-        ),
-      );
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(unusedMnemonicA));
 
       await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0));
       await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(1));
