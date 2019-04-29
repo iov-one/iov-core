@@ -2,7 +2,7 @@
 
 | Status | Authors                                | Created    | Last updated | License   |
 | ------ | -------------------------------------- | ---------- | ------------ | --------- |
-| Draft  | Simon Warta, Ethan Frey, Isabella Dell | 2019-03-27 | 2019-04-24   | CC-BY-4.0 |
+| Draft  | Simon Warta, Ethan Frey, Isabella Dell | 2019-03-27 | 2019-04-29   | CC-BY-4.0 |
 
 ## Abstract
 
@@ -82,12 +82,12 @@ data with `hash = sha256(preimage)`.
 ### Timeouts
 
 A timeout is the first point in time, when the HTLC is expired. It is measured
-in one of the two types absolute times or block height.
+in one of the two types: absolute time or block height.
 
-- **Absolute time** is a second resolution
-  [UNIX time](https://en.wikipedia.org/wiki/Unix_time). It is used for
-  blockchains that have a strong guarantee for correct and fair timestamps with
-  reasonable precision.
+- **Absolute time** is a [UNIX time](https://en.wikipedia.org/wiki/Unix_time)
+  with a resolution of one second. It is used for blockchains that have a strong
+  guarantee for correct and fair timestamps with reasonable precision (e.g.
+  Tendermint-based blockchains).
 - **Block height** is an integer counting the number of blocks created. It is
   used when absolute time is not appropriate.
 
@@ -176,15 +176,15 @@ locked tokens until the timeout is reached.
 
 ### Half executed atomic swaps
 
-1. **Timeout difference:** The actor in short position needs to ensure to have a
-   sufficient amount of time to claim the initial offer, even if the preimage
-   was revealed by claiming the counter offer at the very last possible point in
+1. **Timeout difference:** The actor in short position needs to ensure there is
+   a sufficient amount of time to claim the initial offer, even if the preimage
+   is revealed by claiming the counter offer at the very last possible point in
    time. This should cover all risks that can delay the execution of the claim
-   transaction like different time zones, downtimes of the default blockchain
-   nodes, temporary loss of power, internet connection and access to key
-   material.
+   transaction like different time zones, temporary loss of power, internet
+   connection, access to key material as well as downtimes of the default
+   blockchain nodes and blockchain-related issues.
 2. **Block height based timeout calculation:** The above timeout difference is
-   even harder to calculate when timeouts are measured in block height.
+   even harder to calculate when timeouts are measured in terms of block height.
    Especially with non-constant block times one needs to calculate the expected
    block height at the desired timeout time and take into account a safety
    margin.
@@ -193,7 +193,8 @@ locked tokens until the timeout is reached.
    measured in absolute time is reached without the chance to get a claim
    transaction processed. (b) An initial offer's block height based timeout is
    pushed unexpectedly far into the future, such that the timeout difference for
-   the actor in short position to claim is 0 or negative.
+   the actor in short position to claim is 0 or negative (i.e. impossible to
+   claim).
 
 ## License
 
