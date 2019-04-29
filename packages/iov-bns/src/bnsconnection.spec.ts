@@ -260,7 +260,7 @@ describe("BnsConnection", () => {
         expect(account.pubkey).toEqual(faucet.pubkey);
         expect(account.balance.length).toEqual(1);
         expect(account.balance[0].tokenTicker).toEqual(cash);
-        expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(100000_000000000);
+        expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
       }
 
       // can get the faucet by publicKey, same result
@@ -272,7 +272,7 @@ describe("BnsConnection", () => {
         expect(account.pubkey).toEqual(faucet.pubkey);
         expect(account.balance.length).toEqual(1);
         expect(account.balance[0].tokenTicker).toEqual(cash);
-        expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(100000_000000000);
+        expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
       }
 
       connection.disconnect();
