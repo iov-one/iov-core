@@ -41,6 +41,10 @@ async function randomBnsAddress(): Promise<Address> {
 describe("SigningServerCore", () => {
   const bnsdUrl = "ws://localhost:23456";
 
+  // unused in the sense that there are no balances on the derives accounts
+  const unusedMnemonicA = "culture speed parent picture lock inquiry around pizza bleak leaf fish hand";
+  const unusedMnemonicB = "muffin width month typical depth boost beauty surface orphan cage youth rack";
+
   // The first IOV key (m/44'/234'/0') generated from this mnemonic produces the address
   // tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea (bech32) / a4f97447e7df55b6ef0d6209ebef2a7b22625376 (hex).
   // This account has money in the genesis file (see scripts/bnsd/README.md).
@@ -103,10 +107,6 @@ describe("SigningServerCore", () => {
   });
 
   describe("getIdentities", () => {
-    // unused in the sense that there are no balances on the derives accounts
-    const unusedMnemonicA = "culture speed parent picture lock inquiry around pizza bleak leaf fish hand";
-    const unusedMnemonicB = "muffin width month typical depth boost beauty surface orphan cage youth rack";
-
     it("can get identities", async () => {
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(unusedMnemonicA));
@@ -303,12 +303,8 @@ describe("SigningServerCore", () => {
       const bnsChain = connection.chainId();
 
       {
-        const wallet = profile.addWallet(
-          Ed25519HdWallet.fromMnemonic(
-            "option diagram plastic million educate they arrow fat comic excite abandon green",
-          ),
-        );
-        await profile.createIdentity(wallet.id, bnsChain, HdPaths.simpleAddress(1));
+        const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(unusedMnemonicA));
+        await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
       }
 
       async function rejectAllTransactions(_1: string, _2: UnsignedTransaction): Promise<boolean> {
@@ -345,12 +341,8 @@ describe("SigningServerCore", () => {
       const bnsChain = connection.chainId();
 
       {
-        const wallet = profile.addWallet(
-          Ed25519HdWallet.fromMnemonic(
-            "option diagram plastic million educate they arrow fat comic excite abandon green",
-          ),
-        );
-        await profile.createIdentity(wallet.id, bnsChain, HdPaths.simpleAddress(0));
+        const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(unusedMnemonicA));
+        await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
       }
 
       async function throwingCallback(_1: string, _2: UnsignedTransaction): Promise<boolean> {
