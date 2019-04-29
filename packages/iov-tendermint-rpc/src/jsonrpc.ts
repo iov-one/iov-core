@@ -2,23 +2,24 @@ import { As } from "type-tagger";
 
 export type RpcId = string & As<"rpcid">;
 
-export interface JsonRpc {
+export interface JsonRpcRequest {
   readonly jsonrpc: "2.0";
   readonly id: RpcId;
-}
-
-export interface JsonRpcRequest extends JsonRpc {
   readonly method: string;
   readonly params: {};
 }
 
 export type JsonRpcResponse = JsonRpcSuccess | JsonRpcError;
 
-export interface JsonRpcSuccess extends JsonRpc {
+export interface JsonRpcSuccess {
+  readonly jsonrpc: "2.0";
+  readonly id: RpcId;
   readonly result: any;
 }
 
-export interface JsonRpcError extends JsonRpc {
+export interface JsonRpcError {
+  readonly jsonrpc: "2.0";
+  readonly id: RpcId;
   readonly error: {
     readonly code: number;
     readonly message: string;
@@ -35,13 +36,10 @@ export interface JsonRpcEvent {
   };
 }
 
-export function jsonRpc(): JsonRpc {
-  return { jsonrpc: "2.0", id: randomId() };
-}
-
 export function jsonRpcWith(method: string, params?: {}): JsonRpcRequest {
   return {
-    ...jsonRpc(),
+    jsonrpc: "2.0",
+    id: randomId(),
     method: method,
     params: params || {},
   };

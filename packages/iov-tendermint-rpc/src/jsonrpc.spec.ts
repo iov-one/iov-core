@@ -1,4 +1,4 @@
-import { jsonRpc, jsonRpcWith, randomChar, randomId } from "./jsonrpc";
+import { jsonRpcWith, randomChar, randomId } from "./jsonrpc";
 
 describe("jsonrpc", () => {
   it("Generates random chars", () => {
@@ -27,14 +27,15 @@ describe("jsonrpc", () => {
   });
 
   it("Generates proper jsonrpc objects with distinct ids", () => {
-    const rpc = jsonRpc();
+    const rpc = jsonRpcWith("foo");
     expect(rpc.jsonrpc).toEqual("2.0");
     expect(rpc.id).toBeTruthy();
     expect(rpc.id.length).toEqual(12);
 
-    const rpc2 = jsonRpc();
+    const rpc2 = jsonRpcWith("foo");
     expect(rpc2.id).toBeTruthy();
     expect(rpc2.id.length).toEqual(12);
+
     expect(rpc2.id).not.toEqual(rpc.id);
   });
 
