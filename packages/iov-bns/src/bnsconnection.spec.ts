@@ -645,7 +645,7 @@ describe("BnsConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
 
       // we need funds to pay the fees
       const address = identityToAddress(identity);
@@ -688,7 +688,7 @@ describe("BnsConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
       // we need funds to pay the fees
       const myAddress = identityToAddress(identity);
       await sendTokensFromFaucet(connection, myAddress, registerAmount);
@@ -950,16 +950,15 @@ describe("BnsConnection", () => {
       const chainId = connection.chainId();
       const initialHeight = await connection.height();
 
-      const { profile, walletId, faucet } = await userProfileWithFaucet(chainId);
-      const rcpt = await profile.createIdentity(walletId, defaultChain, HdPaths.simpleAddress(68));
-      const rcptAddress = identityToAddress(rcpt);
+      const { profile, faucet } = await userProfileWithFaucet(chainId);
+      const recipientAddress = await randomBnsAddress();
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
       const memo = `Payment ${Math.random()}`;
       const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         creator: faucet,
-        recipient: rcptAddress,
+        recipient: recipientAddress,
         memo: memo,
         amount: defaultAmount,
       });
@@ -973,7 +972,7 @@ describe("BnsConnection", () => {
 
       {
         // finds transaction using sentFromOrTo and minHeight = 1
-        const results = (await connection.searchTx({ sentFromOrTo: rcptAddress, minHeight: 1 })).filter(
+        const results = (await connection.searchTx({ sentFromOrTo: recipientAddress, minHeight: 1 })).filter(
           isConfirmedTransaction,
         );
         expect(results.length).toBeGreaterThanOrEqual(1);
@@ -987,7 +986,7 @@ describe("BnsConnection", () => {
       {
         // finds transaction using sentFromOrTo and minHeight = initialHeight
         const results = (await connection.searchTx({
-          sentFromOrTo: rcptAddress,
+          sentFromOrTo: recipientAddress,
           minHeight: initialHeight,
         })).filter(isConfirmedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
@@ -1001,7 +1000,7 @@ describe("BnsConnection", () => {
       {
         // finds transaction using sentFromOrTo and maxHeight = 500 million
         const results = (await connection.searchTx({
-          sentFromOrTo: rcptAddress,
+          sentFromOrTo: recipientAddress,
           maxHeight: 500_000_000,
         })).filter(isConfirmedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
@@ -1015,7 +1014,7 @@ describe("BnsConnection", () => {
       {
         // finds transaction using sentFromOrTo and maxHeight = initialHeight + 10
         const results = (await connection.searchTx({
-          sentFromOrTo: rcptAddress,
+          sentFromOrTo: recipientAddress,
           maxHeight: initialHeight + 10,
         })).filter(isConfirmedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
@@ -1037,7 +1036,7 @@ describe("BnsConnection", () => {
 
       const { profile, walletId } = await userProfileWithFaucet(chainId);
       // this will never have tokens, but can try to sign
-      const brokeIdentity = await profile.createIdentity(walletId, chainId, HdPaths.simpleAddress(1234));
+      const brokeIdentity = await profile.createIdentity(walletId, chainId, HdPaths.iov(1234));
 
       const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
@@ -1208,7 +1207,7 @@ describe("BnsConnection", () => {
 
       const { profile, walletId } = await userProfileWithFaucet(chainId);
       // this will never have tokens, but can try to sign
-      const brokeIdentity = await profile.createIdentity(walletId, chainId, HdPaths.simpleAddress(1234));
+      const brokeIdentity = await profile.createIdentity(walletId, chainId, HdPaths.iov(1234));
 
       const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
@@ -1249,7 +1248,7 @@ describe("BnsConnection", () => {
 
       const { profile, walletId } = await userProfileWithFaucet(chainId);
       // this will never have tokens, but can try to sign
-      const brokeIdentity = await profile.createIdentity(walletId, chainId, HdPaths.simpleAddress(1234));
+      const brokeIdentity = await profile.createIdentity(walletId, chainId, HdPaths.iov(1234));
 
       // Sending tokens from an empty account will trigger a failure in DeliverTx
       const sendTx = await connection.withDefaultFee<SendTransaction>({
@@ -1289,7 +1288,7 @@ describe("BnsConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
       const identityAddress = identityToAddress(identity);
       await sendTokensFromFaucet(connection, identityAddress, registerAmount);
 
@@ -1347,7 +1346,7 @@ describe("BnsConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
       const identityAddress = identityToAddress(identity);
       await sendTokensFromFaucet(connection, identityAddress, registerAmount);
 
