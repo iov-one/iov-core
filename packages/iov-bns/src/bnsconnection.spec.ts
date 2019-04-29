@@ -98,6 +98,15 @@ describe("BnsConnection", () => {
     tokenTicker: cash,
   };
 
+  // Generated using https://github.com/nym-zone/bech32
+  // bech32 -e -h tiov 010101020202030303040404050505050A0A0A0A
+  const unusedAddress = "tiov1qyqszqszqgpsxqcyqszq2pg9q59q5zs2fx9n6s" as Address;
+
+  const unusedPubkey: PublicKeyBundle = {
+    algo: Algorithm.Ed25519,
+    data: fromHex("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb") as PublicKeyBytes,
+  };
+
   // The first simple address key (m/4804438'/0') generated from this mnemonic produces the address
   // tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f (bech32) / b1ca7e78f74423ae01da3b51e676934d9105f282 (hex).
   // This account has money in the genesis file (setup in docker).
@@ -288,11 +297,15 @@ describe("BnsConnection", () => {
     it("returns empty list when getting an unused account", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      // unusedAddress generated using https://github.com/nym-zone/bech32
-      // bech32 -e -h tiov 010101020202030303040404050505050A0A0A0A
-      const unusedAddress = "tiov1qyqszqszqgpsxqcyqszq2pg9q59q5zs2fx9n6s" as Address;
-      const response = await connection.getAccount({ address: unusedAddress });
-      expect(response).toBeUndefined();
+
+      // by address
+      const response1 = await connection.getAccount({ address: unusedAddress });
+      expect(response1).toBeUndefined();
+
+      // by pubkey
+      const response2 = await connection.getAccount({ pubkey: unusedPubkey });
+      expect(response2).toBeUndefined();
+
       connection.disconnect();
     });
   });
@@ -303,17 +316,10 @@ describe("BnsConnection", () => {
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
       // by address
-      const unusedAddress = "tiov1qyqszqszqgpsxqcyqszq2pg9q59q5zs2fx9n6s" as Address;
       const nonce1 = await connection.getNonce({ address: unusedAddress });
       expect(nonce1).toEqual(0 as Nonce);
 
       // by pubkey
-      const unusedPubkey: PublicKeyBundle = {
-        algo: Algorithm.Ed25519,
-        data: Encoding.fromHex(
-          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-        ) as PublicKeyBytes,
-      };
       const nonce2 = await connection.getNonce({ pubkey: unusedPubkey });
       expect(nonce2).toEqual(0 as Nonce);
 
