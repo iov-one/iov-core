@@ -65,21 +65,14 @@ describe("SigningServerCore", () => {
   const defaultGetIdentitiesCallback: GetIdentitiesAuthorization = async (_, matching) => matching;
   const defaultSignAndPostCallback: SignAndPostAuthorization = async (_1, _2) => true;
 
-  async function userProfileWithFaucet(
-    chainId: ChainId,
-  ): Promise<{ readonly profile: UserProfile; readonly faucet: PublicIdentity }> {
-    const profile = new UserProfile();
-    const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(faucetMnemonic));
-    const faucet = await profile.createIdentity(wallet.id, chainId, faucetPath);
-    return { profile: profile, faucet: faucet };
-  }
-
   async function sendTokensFromFaucet(
     connection: BlockchainConnection,
     recipient: Address | PublicIdentity,
     amount: Amount = defaultAmount,
   ): Promise<void> {
-    const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
+    const profile = new UserProfile();
+    const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(faucetMnemonic));
+    const faucet = await profile.createIdentity(wallet.id, connection.chainId(), faucetPath);
 
     const sendTx = await connection.withDefaultFee<SendTransaction>({
       kind: "bcp/send",
