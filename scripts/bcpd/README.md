@@ -4,6 +4,24 @@
 
 - docker
 
+## Start
+
+From repo root:
+
+```
+./scripts/bcpd/start.sh
+export BCPD_ENABLED=1
+```
+
+## Stop
+
+From repo root:
+
+```
+./scripts/bcpd/stop.sh
+unset BCPD_ENABLED
+```
+
 ## Genesis account
 
 ```
