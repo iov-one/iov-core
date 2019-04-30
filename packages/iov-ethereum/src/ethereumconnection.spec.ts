@@ -1947,10 +1947,10 @@ describe("EthereumConnection", () => {
 
       // prepare queries
       const queryTransactionId: TransactionQuery = { id: transactionId };
-      const querySwapId: AtomicSwapQuery = { swapid: swapId };
+      const querySwapId: AtomicSwapQuery = { id: swapId };
       const querySwapSender: AtomicSwapQuery = { sender: faucetAddress };
       const querySwapRecipient: AtomicSwapQuery = { recipient: recipientAddress };
-      const querySwapHash: AtomicSwapQuery = { hashlock: swapOfferHash };
+      const querySwapHash: AtomicSwapQuery = { hash: swapOfferHash };
 
       // ----- connection.searchTx() -----
 

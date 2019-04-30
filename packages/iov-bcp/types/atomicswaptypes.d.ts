@@ -53,12 +53,12 @@ export interface AtomicSwapSenderQuery {
     readonly sender: Address;
 }
 export interface AtomicSwapIdQuery {
-    readonly swapid: SwapId;
+    readonly id: SwapId;
 }
-export interface AtomicSwapHashlockQuery {
-    readonly hashlock: Uint8Array;
+export interface AtomicSwapHashQuery {
+    readonly hash: Hash;
 }
-export declare type AtomicSwapQuery = AtomicSwapRecipientQuery | AtomicSwapSenderQuery | AtomicSwapIdQuery | AtomicSwapHashlockQuery;
+export declare type AtomicSwapQuery = AtomicSwapRecipientQuery | AtomicSwapSenderQuery | AtomicSwapIdQuery | AtomicSwapHashQuery;
 /** a type guard to use in the swap-based queries  */
 export declare function isAtomicSwapRecipientQuery(query: AtomicSwapQuery): query is AtomicSwapRecipientQuery;
 /** a type guard to use in the swap-based queries  */
@@ -66,7 +66,7 @@ export declare function isAtomicSwapSenderQuery(query: AtomicSwapQuery): query i
 /** a type guard to use in the swap-based queries  */
 export declare function isAtomicSwapIdQuery(query: AtomicSwapQuery): query is AtomicSwapIdQuery;
 /** a type guard to use in the swap-based queries  */
-export declare function isAtomicSwapHashlockQuery(query: AtomicSwapQuery): query is AtomicSwapHashlockQuery;
+export declare function isAtomicSwapHashQuery(query: AtomicSwapQuery): query is AtomicSwapHashQuery;
 /**
  * An optional extension to the base BlockchainConnection that
  * allows querying and watching atomic swaps

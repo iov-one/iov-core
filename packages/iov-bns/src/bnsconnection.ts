@@ -19,6 +19,7 @@ import {
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
+  isAtomicSwapHashQuery,
   isAtomicSwapIdQuery,
   isAtomicSwapRecipientQuery,
   isAtomicSwapSenderQuery,
@@ -332,14 +333,15 @@ export class BnsConnection implements AtomicSwapConnection {
   public async getSwapsFromState(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>> {
     const doQuery = async (): Promise<QueryResponse> => {
       if (isAtomicSwapIdQuery(query)) {
-        return this.query("/escrows", query.swapid.data);
+        return this.query("/escrows", query.id.data);
       } else if (isAtomicSwapSenderQuery(query)) {
         return this.query("/escrows/sender", decodeBnsAddress(query.sender).data);
       } else if (isAtomicSwapRecipientQuery(query)) {
         return this.query("/escrows/recipient", decodeBnsAddress(query.recipient).data);
+      } else if (isAtomicSwapHashQuery(query)) {
+        return this.query("/escrows/arbiter", hashIdentifier(query.hash));
       } else {
-        // if (isQueryBySwapHash(query))
-        return this.query("/escrows/arbiter", hashIdentifier(query.hashlock));
+        throw new Error("Unexpected type of query");
       }
     };
 
