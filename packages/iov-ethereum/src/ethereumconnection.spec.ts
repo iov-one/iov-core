@@ -1959,8 +1959,8 @@ describe("EthereumConnection", () => {
         // prepare queries
         const queryTransactionId: TransactionQuery = { id: transactionId };
         const querySwapId: AtomicSwapQuery = { id: swapId };
-        const querySwapSender: AtomicSwapQuery = { sender: faucetAddress };
         const querySwapRecipient: AtomicSwapQuery = { recipient: recipientAddress };
+        const querySwapSender: AtomicSwapQuery = { sender: faucetAddress };
         const querySwapHash: AtomicSwapQuery = { hash: swapOfferHash };
 
         // ----- connection.searchTx() -----
@@ -2322,9 +2322,9 @@ describe("EthereumConnection", () => {
         // prepare queries
         const queryTransactionId: TransactionQuery = { id: transactionId };
         const querySwapId: AtomicSwapQuery = { id: swapId };
-        // const querySwapSender: AtomicSwapQuery = { sender: faucetAddress };
-        // const querySwapRecipient: AtomicSwapQuery = { recipient: recipientAddress };
-        // const querySwapHash: AtomicSwapQuery = { hashlock: swapOfferHash };
+        const querySwapRecipient: AtomicSwapQuery = { recipient: recipientAddress };
+        const querySwapSender: AtomicSwapQuery = { sender: faucetAddress };
+        const querySwapHash: AtomicSwapQuery = { hash: swapOfferHash };
 
         // ----- connection.searchTx() -----
 
@@ -2350,22 +2350,22 @@ describe("EthereumConnection", () => {
         expect(swapData.amounts[0]).toEqual(amount);
         expect(swapData.hash).toEqual(swapOfferHash);
 
-        // // we can get the swap by the recipient
-        // const rcptSwaps = await connection.getSwaps(querySwapRecipient);
-        // expect(rcptSwaps.length).toEqual(1);
-        // expect(rcptSwaps[0]).toEqual(swap);
+        // we can get the swap by the recipient
+        const rcptSwaps = await connection.getSwaps(querySwapRecipient);
+        expect(rcptSwaps.length).toEqual(1);
+        expect(rcptSwaps[0]).toEqual(swap);
 
-        // // we can also get it by the sender
-        // const sendOpenSwapData = (await connection.getSwaps(querySwapSender)).filter(
-        //   s => s.kind === SwapProcessState.Open,
-        // );
-        // expect(sendOpenSwapData.length).toBeGreaterThanOrEqual(1);
-        // expect(sendOpenSwapData[sendOpenSwapData.length - 1]).toEqual(swap);
+        // we can also get it by the sender
+        const sendOpenSwapData = (await connection.getSwaps(querySwapSender)).filter(
+          s => s.kind === SwapProcessState.Open,
+        );
+        expect(sendOpenSwapData.length).toBeGreaterThanOrEqual(1);
+        expect(sendOpenSwapData[sendOpenSwapData.length - 1]).toEqual(swap);
 
-        // // we can also get it by the hash
-        // const hashSwap = await connection.getSwaps(querySwapHash);
-        // expect(hashSwap.length).toEqual(1);
-        // expect(hashSwap[0]).toEqual(swap);
+        // we can also get it by the hash
+        const hashSwap = await connection.getSwaps(querySwapHash);
+        expect(hashSwap.length).toEqual(1);
+        expect(hashSwap[0]).toEqual(swap);
 
         connection.disconnect();
       }, 30_000);
