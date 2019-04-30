@@ -55,10 +55,10 @@ export declare class SigningServerCore {
     /**
      * Handles a transaction signing request
      *
-     * Returns the transaction ID in case the user authorized the signing.
-     * Returns undefined in the case the user rejected.
+     * @returns the transaction ID in case the user authorized the signing
+     * and `null` in case the user rejected.
      */
-    signAndPost(reason: string, transaction: UnsignedTransaction): Promise<TransactionId | undefined>;
+    signAndPost(reason: string, transaction: UnsignedTransaction): Promise<TransactionId | null>;
     /**
      * Call this to free ressources when server is not needed anymore
      */

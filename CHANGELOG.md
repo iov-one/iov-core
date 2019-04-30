@@ -27,6 +27,8 @@ Breaking changes
 - @iov/bns: Switch to new `SwapId` type instead of `SwapIdBytes` where
   appropriate.
 - @iov/core: Remove `JsRpcSigningServer` and all related JS-RPC types.
+- @iov/core: Change return type of `SigningServerCore.signAndPost` to
+  `TransactionId | null`.
 - @iov/ethereum: Switch to new `SwapId` type instead of `SwapIdBytes` where
   appropriate.
 

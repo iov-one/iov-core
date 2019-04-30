@@ -315,7 +315,7 @@ describe("SigningServerCore", () => {
         recipient: await randomBnsAddress(),
       };
       const transactionId = await core.signAndPost("Please sign now", send);
-      expect(transactionId).toBeUndefined();
+      expect(transactionId).toBeNull();
 
       core.shutdown();
     });
