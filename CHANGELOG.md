@@ -15,9 +15,9 @@ Breaking changes
 - @iov/bcp: Rename `AtomicSwapHashlockQuery.hashlock` to
   `AtomicSwapHashQuery.hash` and change to type `Hash`; rename
   `isAtomicSwapHashlockQuery` to `isAtomicSwapHashQuery`.
-- @iov/ethereum: Switch to new `SwapId` type instead of `SwapIdBytes` where
-  appropriate.
 - @iov/bns: Switch to new `SwapId` type instead of `SwapIdBytes` where
+  appropriate.
+- @iov/ethereum: Switch to new `SwapId` type instead of `SwapIdBytes` where
   appropriate.
 
 ## 0.14.1
