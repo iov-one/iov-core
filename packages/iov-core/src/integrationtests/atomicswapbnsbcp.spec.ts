@@ -6,10 +6,10 @@ import {
   AtomicSwap,
   AtomicSwapConnection,
   AtomicSwapHelpers,
-  ClaimedSwap,
   createTimestampTimeout,
   isBlockInfoPending,
   isBlockInfoSucceeded,
+  isClaimedSwap,
   Preimage,
   PublicIdentity,
   SendTransaction,
@@ -207,11 +207,14 @@ class Actor {
     claim: AtomicSwap,
     unclaimedId: SwapId,
   ): Promise<Uint8Array | undefined> {
+    if (!isClaimedSwap(claim)) {
+      throw new Error("Expected swap to be claimed");
+    }
     const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction>({
       kind: "bcp/swap_claim",
       creator: this.bnsIdentity,
       swapId: unclaimedId,
-      preimage: (claim as ClaimedSwap).preimage, // public data now!
+      preimage: claim.preimage, // public data now!
     });
     return this.sendTransaction(transaction);
   }
