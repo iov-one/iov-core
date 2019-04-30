@@ -2195,6 +2195,16 @@ describe("EthereumConnection", () => {
           throw new Error(`Expected transaction state success but got state: ${blockInfo2.state}`);
         }
 
+        // find two open
+        const midSwaps = await connection.getSwaps(rcptQuery);
+        expect(midSwaps.length).toEqual(2);
+        const open1 = midSwaps.find(matchId(swapId1));
+        const open2 = midSwaps.find(matchId(swapId2));
+        expect(open1).toBeDefined();
+        expect(open2).toBeDefined();
+        expect(open1!.kind).toEqual(SwapProcessState.Open);
+        expect(open2!.kind).toEqual(SwapProcessState.Open);
+
         // then abort, offer, abort - 2 aborted, 1 open
         {
           const post = await abortSwap(connection, profile, faucet, swapId2);
